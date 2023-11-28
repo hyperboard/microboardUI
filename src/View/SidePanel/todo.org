@@ -1,0 +1,274 @@
+** [[file:~/microboard/src/client/src/View/SidePanel/SidePanel.tsx]]
+:LOGBOOK:
+CREATED: [2023-10-25 Wed 10:42]
+:END:
+
+#+begin_ai
+[ME]: In the following I will show you a question and then a code snippet. I want you to answer that question based on the code snippet.
+
+Here is the question:
+How to make the width of sidepanel resizable by dragging the right edge? 
+
+Here is the code snippet:
+export class SidePanel extends React.Component<{
+	app: App;
+	sidePanelState: SidePanelState;
+}> {
+	panelRef = React.createRef<HTMLDivElement>();
+
+	animationFrameId: number | null = null;
+
+	update = (): void => {
+		if (this.animationFrameId) {
+			return; // Function already scheduled to run
+		}
+
+		this.animationFrameId = requestAnimationFrame(() => {
+			this.forceUpdate();
+			this.animationFrameId = null;
+		});
+	};
+
+	componentDidMount(): void {
+		this.props.sidePanelState.subject.subscribe(this.update);
+	}
+
+	componentDidUpdate(): void {}
+
+	componentWillUnmount(): void {
+		this.props.sidePanelState.subject.unsubscribe(this.update);
+	}
+
+	render(): React.ReactElement | null {
+		const { isOn, width } = this.props.sidePanelState;
+		if (!isOn) {
+			return null;
+		}
+		return (
+			<div
+				id="SidePanel"
+				className="SidePanel"
+				style={{
+					top: "60px",
+					left: "8px",
+					width: `${width}px`,
+					height: "calc(100% - 90px)",
+					paddingLeft: "4px",
+					paddingRight: "4px",
+				}}
+			>
+				<ul className="SidePanelList">
+					<Login app={app} />
+					<PublicBoards app={app} />
+				</ul>
+			</div>
+		);
+	}
+}
+
+
+
+[AI]: To make the width of the side panel resizable by dragging the right edge, you would need to add event listeners to the side panel element that track the position of the mouse when it is clicked and dragged. Based on the new position of the mouse, you would then update the width of the side panel.
+
+Here is an example of how you can achieve this:
+
+1. Add a state variable in the SidePanel component to keep track of the current width:
+
+```jsx
+state = {
+  width: this.props.sidePanelState.width,
+};
+```
+
+2. Add a function to handle the mouse down event on the right edge of the side panel:
+
+```jsx
+handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+  document.addEventListener("mousemove", this.handleMouseMove);
+  document.addEventListener("mouseup", this.handleMouseUp);
+};
+```
+
+3. Add a function to handle the mouse move event when the mouse is dragged:
+
+```jsx
+handleMouseMove = (event: MouseEvent) => {
+  const currentX = event.clientX;
+  const panelWidth = this.panelRef.current.offsetWidth;
+  const newWidth = panelWidth + (currentX - panelWidth);
+  
+  this.setState({ width: newWidth });
+};
+```
+
+4. Add a function to handle the mouse up event when the dragging is finished:
+
+```jsx
+handleMouseUp = () => {
+  document.removeEventListener("mousemove", this.handleMouseMove);
+  document.removeEventListener("mouseup", this.handleMouseUp);
+};
+```
+
+5. Add an event listener to the right edge of the side panel in the render method:
+
+```jsx
+render(): React.ReactElement | null {
+  // ...
+
+  return (
+    <div
+      id="SidePanel"
+      className="SidePanel"
+      style={{
+        // ...
+      }}
+    >
+      <div
+        className="ResizableEdge"
+        onMouseDown={this.handleMouseDown}
+      />
+      <ul className="SidePanelList">
+        {/* ... */}
+      </ul>
+    </div>
+  );
+}
+```
+
+6. Add some CSS styles for the resizable edge:
+
+```css
+.ResizableEdge {
+  position: absolute;
+  top: 0;
+  right: -8px;
+  width: 8px;
+  height: 100%;
+  cursor: ew-resize;
+}
+```
+
+With these changes, when the user clicks and drags the right edge of the side panel, the width will update dynamically based on the mouse position.
+
+[ME]: Use pointer events because i need to support touchscreens. Do not add listeners to the document. Only add listeners to side panel or its children.
+
+[AI]: To make the width of the side panel resizable using pointer events and only adding listeners to the side panel or its children, you can follow these steps:
+
+1. Add a state variable in the SidePanel component to keep track of the current width:
+
+```jsx
+state = {
+  width: this.props.sidePanelState.width,
+};
+```
+
+2. Create a ref for the resizable edge element:
+
+```jsx
+resizableRef = React.createRef<HTMLDivElement>();
+```
+
+3. Add event listeners to the resizable edge element for pointer events:
+
+```jsx
+componentDidMount(): void {
+  const resizableElement = this.resizableRef.current;
+
+  if (resizableElement) {
+    resizableElement.addEventListener("pointerdown", this.handlePointerDown);
+    resizableElement.addEventListener("pointermove", this.handlePointerMove);
+    resizableElement.addEventListener("pointerup", this.handlePointerUp);
+    resizableElement.addEventListener("pointercancel", this.handlePointerCancel);
+  }
+}
+```
+
+4. Remove the event listeners when the component is unmounted:
+
+```jsx
+componentWillUnmount(): void {
+  const resizableElement = this.resizableRef.current;
+
+  if (resizableElement) {
+    resizableElement.removeEventListener("pointerdown", this.handlePointerDown);
+    resizableElement.removeEventListener("pointermove", this.handlePointerMove);
+    resizableElement.removeEventListener("pointerup", this.handlePointerUp);
+    resizableElement.removeEventListener("pointercancel", this.handlePointerCancel);
+  }
+}
+```
+
+5. Implement the event handlers for pointer events:
+
+```jsx
+handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
+  event.currentTarget.setPointerCapture(event.pointerId);
+};
+
+handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+  const currentX = event.clientX;
+  const panelWidth = this.panelRef.current.offsetWidth;
+  const newWidth = panelWidth + (currentX - panelWidth);
+
+  this.setState({ width: newWidth });
+};
+
+handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+  event.currentTarget.releasePointerCapture(event.pointerId);
+};
+
+handlePointerCancel = (event: React.PointerEvent<HTMLDivElement>) => {
+  event.currentTarget.releasePointerCapture(event.pointerId);
+};
+```
+
+6. Modify the render method to include the resizable edge element and attach the ref:
+
+```jsx
+render(): React.ReactElement | null {
+  // ...
+
+  return (
+    <div
+      id="SidePanel"
+      className="SidePanel"
+      style={{
+        // ...
+      }}
+      ref={this.panelRef}
+    >
+      <div
+        className="ResizableEdge"
+        onPointerDown={this.handlePointerDown}
+        onPointerMove={this.handlePointerMove}
+        onPointerUp={this.handlePointerUp}
+        onPointerCancel={this.handlePointerCancel}
+        ref={this.resizableRef}
+      />
+      <ul className="SidePanelList">
+        {/* ... */}
+      </ul>
+    </div>
+  );
+}
+```
+
+7. Add CSS styles for the resizable edge:
+
+```css
+.ResizableEdge {
+  position: absolute;
+  top: 0;
+  right: -8px;
+  width: 8px;
+  height: 100%;
+  cursor: ew-resize;
+  touch-action: none;
+}
+```
+
+With these changes, the side panel will be resizable by dragging the right edge using pointer events. Event listeners are only added to the side panel and its resizable edge, ensuring compatibility with touchscreens.
+
+[ME]: 
+#+end_ai

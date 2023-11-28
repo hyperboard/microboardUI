@@ -1,0 +1,91 @@
+import * as React from "react";
+import { Board } from "Board";
+import { SidePanelState } from "View/SidePanel/SidePanelState";
+import { Button } from "View/ContextPanel/Button";
+import { SidePanelOpenIcon } from "View/Icon/SidePanelOpenIcon";
+import { SidePanelCloseIcon } from "View/Icon/SidePanelCloseIcon";
+import { useStyle } from "View";
+
+export class TitlePanel extends React.Component<{
+	board: Board;
+	sidePanelState: SidePanelState;
+}> {
+	update = (): void => {
+		this.forceUpdate();
+	};
+
+	componentDidMount(): void {
+		this.props.sidePanelState.subject.subscribe(this.update);
+	}
+
+	componentWillUnmount(): void {
+		this.props.sidePanelState.subject.unsubscribe(this.update);
+	}
+
+	toggleSidePanel = () => {
+		this.props.sidePanelState.toggle();
+	};
+
+	render(): React.ReactElement {
+		const isSidePanelOpen = this.props.sidePanelState.isOn;
+
+		return (
+			<div
+				id="TitlePanel"
+				className="TitlePanel"
+			>
+				<SidePanelButton
+					isOpen={isSidePanelOpen}
+					toggle={this.toggleSidePanel}
+				/>
+				<Button id="Microboard" title="Microboard" onClick={() => {}} width={80}>
+					<span
+						style={{
+							display: "inline-block",
+							paddingLeft: "4px",
+							paddingRight: "4px",
+							fontWeight: 600,
+						}}
+					>
+						{"Microboard"}
+					</span>
+				</Button>
+			</div>
+		);
+	}
+}
+
+function SidePanelButton ({
+	isOpen,
+	toggle,
+}: {
+	isOpen: boolean;
+	toggle: () => void;
+}): React.ReactElement {
+	const IconComponent = isOpen ? SidePanelCloseIcon : SidePanelOpenIcon;
+	return null;
+	return (
+		<Button
+			id={isOpen ? "CloseSidePanel" : "OpenSidePanel"}
+			title={isOpen ? "Close Menu" : "Open Menu"}
+			onClick={toggle}
+			tipOnBottomLeft={true}
+		>
+			<IconComponent width={24} height={24} />
+		</Button>
+	);
+};
+
+useStyle(`
+.TitlePanel {
+	display: flex;
+	position: absolute;
+	top: 8px;
+	left: 8px;
+	background-color: white;
+	border-radius: 4px;
+	box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.12);
+	padding-right: 4px;
+	z-index: 100;
+}
+`);
