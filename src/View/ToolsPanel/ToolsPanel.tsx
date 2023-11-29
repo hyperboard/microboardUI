@@ -114,6 +114,10 @@ export class ToolsPanel extends React.Component<Props, State> {
 					board={board}
 					isOn={board.tools.getSelect() !== undefined}
 				/>
+				<AddSticker
+					board={board}
+					isOn={board.tools.getAddSticker() !== undefined}
+				/>
 				<AddShape
 					board={board}
 					isOn={board.tools.getAddShape() !== undefined}
@@ -210,6 +214,29 @@ class Select extends React.PureComponent<{
 				tipOnLeft
 			>
 				<Icon name="Pointer" width={24} height={24} />
+			</Button>
+		);
+	}
+}
+class AddSticker extends React.PureComponent<{
+	board: Board;
+	isOn: boolean;
+}> {
+	handleClick = (): void => {
+		this.props.board.tools.addSticker();
+	};
+
+	render(): React.ReactElement {
+		return (
+			<Button
+				id="AddSticker"
+				onClick={this.handleClick}
+				title="Add sticker"
+				hotkey="N"
+				isOn={this.props.isOn}
+				tipOnLeft
+			>
+				<Icon name="PredefinedProcess" width={24} height={24} />
 			</Button>
 		);
 	}
