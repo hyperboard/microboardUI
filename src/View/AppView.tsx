@@ -183,7 +183,7 @@ export class AppView extends React.Component<{
 				return;
 			} else if (
 				item &&
-				item.itemType === "Shape" &&
+				["Shape", "Sticker"].indexOf(item.itemType) > -1 &&
 				board.selection.getContext() === "EditUnderPointer"
 			) {
 				board.selection.editText();
@@ -197,6 +197,9 @@ export class AppView extends React.Component<{
 				break;
 			case "s":
 				board.tools.addShape();
+				break;
+			case "n":
+				board.tools.addSticker();
 				break;
 			case "t":
 				board.tools.addText();

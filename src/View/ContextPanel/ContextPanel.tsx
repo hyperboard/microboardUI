@@ -1578,7 +1578,7 @@ function FillStyle({
 	windowHeight: number;
 }): React.ReactElement | null {
 	const context = board.selection.getContext();
-	const canChangeFillStyle = board.selection.items.isItemTypes(["Shape"]);
+	const canChangeFillStyle = board.selection.items.isItemTypes(["Shape", "Sticker"]);
 	if (context === "SelectUnderPointer" || !canChangeFillStyle) {
 		return null;
 	}
@@ -1637,7 +1637,7 @@ function PathStyleSeparator({
 		"Drawing",
 	]);
 	const context = board.selection.getContext();
-	const canChangeFillStyle = board.selection.items.isItemTypes(["Shape"]);
+	const canChangeFillStyle = board.selection.items.isItemTypes(["Shape", "Sticker"]);
 	if (
 		context === "SelectUnderPointer" ||
 		(!canChangeFillStyle && !canChangeBorderStyle)
