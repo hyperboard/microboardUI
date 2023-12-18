@@ -272,6 +272,14 @@ export class ContextPanel extends React.Component<
 						panelMbr={panelRect}
 						windowHeight={windowHeight}
 					/>
+					<StickerFillStyle
+						board={board}
+						toggleMenu={this.toggleMenu}
+						color={board.selection.getFillColor()}
+						menu={menu}
+						panelMbr={panelRect}
+						windowHeight={windowHeight}
+					/>
 					<PathStyleSeparator board={board} />
 
 					<Duplicate board={board} />
@@ -1057,7 +1065,8 @@ class FontSize extends React.PureComponent<{
 			this.props;
 
 		if (board.selection.getContext() !== "EditTextUnderPointer") {
-			return null;
+			if(!board.selection.items.isItemTypes(["Sticker"]))
+				return null;
 		}
 
 		return (
@@ -1143,7 +1152,8 @@ function FontStyle({
 	windowHeight: number;
 }): React.ReactElement | null {
 	if (board.selection.getContext() !== "EditTextUnderPointer") {
-		return null;
+		if(!board.selection.items.isItemTypes(["Sticker"]))
+			return null;
 	}
 	const menuRef = React.useRef<HTMLDivElement>(null);
 
@@ -1197,7 +1207,8 @@ function TextAlignment({
 	windowHeight: number;
 }): React.ReactElement | null {
 	if (board.selection.getContext() !== "EditTextUnderPointer") {
-		return null;
+		if(!board.selection.items.isItemTypes(["Sticker"]))
+			return null;
 	}
 	const menuRef = React.useRef<HTMLDivElement>(null);
 
@@ -1578,7 +1589,7 @@ function FillStyle({
 	windowHeight: number;
 }): React.ReactElement | null {
 	const context = board.selection.getContext();
-	const canChangeFillStyle = board.selection.items.isItemTypes(["Shape", "Sticker"]);
+	const canChangeFillStyle = board.selection.items.isItemTypes(["Shape"]);
 	if (context === "SelectUnderPointer" || !canChangeFillStyle) {
 		return null;
 	}
@@ -1621,6 +1632,81 @@ function FillStyle({
 						board.selection.setFillColor(color);
 						toggleMenu("None");
 					}}
+				/>
+			</div>
+		</ButtonWithMenu>
+	);
+}
+export const stickerColors = {
+	"blue": "rgb(174, 212, 250)",
+	"yellow": "rgb(252, 245, 174)",
+	"green": "rgba(175, 214, 167, 1)",
+	"purple": "rgba(233, 191, 233, 1)",
+	"cyan": "rgba(171, 221, 221, 1)",
+	"red": "rgba(246, 168, 168, 1)",
+	"gray": "rgba(230, 230, 230, 1)",
+} as const;
+function StickerFillStyle({
+	board,
+	toggleMenu,
+	menu,
+	panelMbr,
+	windowHeight,
+
+	color,
+}: {
+	board: Board;
+	toggleMenu: (menu: string) => void;
+	menu: string;
+	panelMbr: Mbr;
+	color: string;
+	windowHeight: number;
+}): React.ReactElement | null {
+	const context = board.selection.getContext();
+	const canChangeFillStyle = board.selection.items.isItemTypes(["Sticker"]);
+	if (context === "SelectUnderPointer" || !canChangeFillStyle) {
+		return null;
+	}
+	const menuRef = React.useRef<HTMLDivElement>(null);
+
+	return (
+		<ButtonWithMenu
+			panelMbr={panelMbr}
+			windowHeight={windowHeight}
+			menuRef={menuRef}
+		>
+			<Button
+				id="ChangeStickerFillStyle"
+				onClick={() => {
+					toggleMenu("StickerFillStyle");
+				}}
+				title="Sticker Fill Style"
+			>
+				<CircleIcon
+					strokeWidth={1}
+					fill={color}
+					stroke="rgba(0,0,0,1)"
+					width={IconSize}
+					height={IconSize}
+				/>
+			</Button>
+			<div
+				id="StickerFillStyleMenu"
+				ref={menuRef}
+				className="ContextPanelMenu"
+				style={{
+					width: "160px",
+					marginLeft: "-80px",
+					visibility: menu === "StickerFillStyle" ? "visible" : "hidden",
+				}}
+			>
+				<ColorPicker
+					allowNone={true}
+					onPick={(color: string) => {
+						board.selection.setFillColor(color);
+						toggleMenu("None");
+					}}
+					list={stickerColors}
 				/>
 			</div>
 		</ButtonWithMenu>

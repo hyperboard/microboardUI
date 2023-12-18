@@ -236,7 +236,7 @@ class AddSticker extends React.PureComponent<{
 				isOn={this.props.isOn}
 				tipOnLeft
 			>
-				<Icon name="PredefinedProcess" width={24} height={24} />
+				<Icon name="Sticker" width={28} height={28} />
 			</Button>
 		);
 	}

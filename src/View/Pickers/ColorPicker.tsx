@@ -27,9 +27,11 @@ export const colors = {
 export function ColorPicker({
 	onPick,
 	allowNone,
+	list
 }: {
 	allowNone: boolean;
 	onPick: (color: string) => void;
+	list?: any;
 }): React.ReactElement {
 	const buttons = [];
 	if (allowNone) {
@@ -53,8 +55,9 @@ export function ColorPicker({
 			</Button>,
 		);
 	}
-	for (const key in colors) {
-		const color = colors[key];
+	const a = list ?? colors;
+	for (const key in a) {
+		const color = a[key];
 		buttons.push(
 			<Button
 				id={color}
