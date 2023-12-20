@@ -1065,7 +1065,7 @@ class FontSize extends React.PureComponent<{
 			this.props;
 
 		if (board.selection.getContext() !== "EditTextUnderPointer") {
-			if(!board.selection.items.isItemTypes(["Sticker"]))
+			if(!board.selection.items.isItemTypes(["Sticker"]) || board.selection.getContext() === "SelectUnderPointer")
 				return null;
 		}
 
@@ -1152,7 +1152,7 @@ function FontStyle({
 	windowHeight: number;
 }): React.ReactElement | null {
 	if (board.selection.getContext() !== "EditTextUnderPointer") {
-		if(!board.selection.items.isItemTypes(["Sticker"]))
+		if(!board.selection.items.isItemTypes(["Sticker"]) || board.selection.getContext() === "SelectUnderPointer")
 			return null;
 	}
 	const menuRef = React.useRef<HTMLDivElement>(null);
@@ -1207,7 +1207,7 @@ function TextAlignment({
 	windowHeight: number;
 }): React.ReactElement | null {
 	if (board.selection.getContext() !== "EditTextUnderPointer") {
-		if(!board.selection.items.isItemTypes(["Sticker"]))
+		if(!board.selection.items.isItemTypes(["Sticker"]) || board.selection.getContext() === "SelectUnderPointer")
 			return null;
 	}
 	const menuRef = React.useRef<HTMLDivElement>(null);
@@ -1701,7 +1701,7 @@ function StickerFillStyle({
 				}}
 			>
 				<ColorPicker
-					allowNone={true}
+					allowNone={false}
 					onPick={(color: string) => {
 						board.selection.setFillColor(color);
 						toggleMenu("None");
