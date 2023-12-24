@@ -16,6 +16,8 @@ import { PenIcon } from "View/Icon/PenIcon";
 import { Button } from "View/ContextPanel/Button";
 import { ConnectorLineStyle } from "Board/Items/Connector";
 import { SidePanelState } from "View/SidePanel/SidePanelState";
+import {StickerColorPicker} from "../Pickers/StickerPicker";
+import {AddSticker} from "../../Board/Tools/AddSticker";
 
 interface Props {
 	app: App;
@@ -114,7 +116,7 @@ export class ToolsPanel extends React.Component<Props, State> {
 					board={board}
 					isOn={board.tools.getSelect() !== undefined}
 				/>
-				<AddSticker
+				<AddStickerTool
 					board={board}
 					isOn={board.tools.getAddSticker() !== undefined}
 				/>
@@ -218,7 +220,7 @@ class Select extends React.PureComponent<{
 		);
 	}
 }
-class AddSticker extends React.PureComponent<{
+class AddStickerTool extends React.PureComponent<{
 	board: Board;
 	isOn: boolean;
 }> {
@@ -228,16 +230,31 @@ class AddSticker extends React.PureComponent<{
 
 	render(): React.ReactElement {
 		return (
-			<Button
-				id="AddSticker"
-				onClick={this.handleClick}
-				title="Add sticker"
-				hotkey="N"
-				isOn={this.props.isOn}
-				tipOnLeft
-			>
-				<Icon name="Sticker" width={28} height={28} />
-			</Button>
+			<div className="ToolsPanelMenuContainer">
+				<Button
+					id="AddSticker"
+					onClick={this.handleClick}
+					title="Add sticker"
+					hotkey="N"
+					isOn={this.props.isOn}
+					tipOnLeft
+				>
+					<Icon name="Sticker" width={28} height={28} />
+				</Button>
+				<div
+					id="AddStickerMenu"
+					className="ToolsPanelMenu"
+					style={{
+						width: "32px",
+						visibility: this.props.isOn ? "visible" : "hidden",
+						marginTop: "-194px",
+					}}
+				>
+					<StickerColorPicker onPick={(color) => {
+						AddSticker.backgroundColor = color;
+					}} />
+				</div>
+			</div>
 		);
 	}
 }

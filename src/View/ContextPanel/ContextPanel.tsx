@@ -32,6 +32,7 @@ import { ConnectorLineStylePicker } from "View/Pickers/ConnectorLineStylePicker"
 import { SliderPicker } from "View/Pickers/SliderPicker";
 import { toggleEdit } from "Board/Items/RichText/RichText";
 import { toFiniteNumber } from "utils";
+import {StickerColorPicker} from "../Pickers/StickerPicker";
 
 export const IconSize = 24;
 
@@ -1637,15 +1638,6 @@ function FillStyle({
 		</ButtonWithMenu>
 	);
 }
-export const stickerColors = {
-	"blue": "rgb(174, 212, 250)",
-	"yellow": "rgb(252, 245, 174)",
-	"green": "rgba(175, 214, 167, 1)",
-	"purple": "rgba(233, 191, 233, 1)",
-	"cyan": "rgba(171, 221, 221, 1)",
-	"red": "rgba(246, 168, 168, 1)",
-	"gray": "rgba(230, 230, 230, 1)",
-} as const;
 function StickerFillStyle({
 	board,
 	toggleMenu,
@@ -1700,13 +1692,11 @@ function StickerFillStyle({
 					visibility: menu === "StickerFillStyle" ? "visible" : "hidden",
 				}}
 			>
-				<ColorPicker
-					allowNone={false}
+				<StickerColorPicker
 					onPick={(color: string) => {
 						board.selection.setFillColor(color);
 						toggleMenu("None");
 					}}
-					list={stickerColors}
 				/>
 			</div>
 		</ButtonWithMenu>
