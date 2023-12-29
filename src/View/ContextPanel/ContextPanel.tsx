@@ -172,6 +172,11 @@ export class ContextPanel extends React.Component<
 						panelMbr={panelRect}
 						windowHeight={windowHeight}
 					/>
+					<ConnectorAddText
+						board={board}
+						panelMbr={panelRect}
+						windowHeight={windowHeight}
+					/>
 					<ConnectorStyleSeparator board={board} />
 
 					<ItemType
@@ -658,6 +663,42 @@ function EndPointer({
 					}}
 				></ConnectorEndPointerPicker>{" "}
 			</div>
+		</ButtonWithMenu>
+	);
+}
+
+function ConnectorAddText({
+	board,
+	panelMbr,
+	windowHeight,
+}: {
+	board: Board;
+	panelMbr: Mbr;
+	windowHeight: number;
+}): React.ReactElement | null {
+	const canChangePointer = board.selection.items.isItemTypes(["Connector"]);
+	if (
+		board.selection.getContext() === "SelectUnderPointer" ||
+		!canChangePointer
+	) {
+		return null;
+	}
+	const menuRef = React.useRef<HTMLDivElement>(null);
+
+	return (
+		<ButtonWithMenu
+			panelMbr={panelMbr}
+			windowHeight={windowHeight}
+			menuRef={menuRef}
+		>
+			<Button
+				id="ChangeConnectorType"
+				onClick={() => {
+				}}
+				title="Text"
+			>
+				<Icon name="AddText" width={IconSize} height={IconSize} />
+			</Button>
 		</ButtonWithMenu>
 	);
 }

@@ -255,6 +255,11 @@ export const Icons = {
 		width: 100,
 		height: 100,
 	},
+	AddText: {
+		paths: ["M8 6H20V6.8H14.4V18H13.6V6.8H8V6Z", "M9 12.4286H6.42857V15H5.57143V12.4286H3V11.5714H5.57143V9H6.42857V11.5714H9V12.4286Z"],
+		width: 24,
+		height: 24,
+	},
 	Connector: {
 		paths: ["M 5,95 85,15", "M 68,14 94.5,5 85.5,31.5 Z"],
 		width: 100,
