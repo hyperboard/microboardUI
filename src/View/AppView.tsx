@@ -60,6 +60,7 @@ export class AppView extends React.Component<{
 				style={{
 					width: "100%",
 					height: "100%",
+					backgroundColor: "rgba(200,200,200,0.2)"
 				}}
 				ref={this.containerRef}
 			>
@@ -159,9 +160,10 @@ export class AppView extends React.Component<{
 		if (isEditInProcess()) {
 			return;
 		}
-		const key = event.key.toLowerCase();
+		// const key = event.key.toLowerCase();
+		const key = event.code;
 		board.keyboard.keyDown(event);
-		if ((event.ctrlKey || event.metaKey) && key === "z") {
+		if ((event.ctrlKey || event.metaKey) && key === "KeyZ") {
 			if (event.shiftKey) {
 				board.events.redo();
 			} else {
@@ -169,7 +171,7 @@ export class AppView extends React.Component<{
 			}
 			return;
 		}
-		if (((event.ctrlKey || event.metaKey) && key === "c") || key === "v") {
+		if ((event.ctrlKey || event.metaKey) && (key === "KeyC" || key === "KeyV")) {
 			return;
 		}
 		if (
@@ -192,27 +194,27 @@ export class AppView extends React.Component<{
 		}
 
 		switch (key) {
-			case "v":
+			case "KeyV":
 				board.tools.select();
 				break;
-			case "s":
+			case "KeyS":
 				board.tools.addShape();
 				break;
-			case "n":
+			case "KeyN":
 				board.tools.addSticker();
 				break;
-			case "t":
+			case "KeyT":
 				board.tools.addText();
 				break;
-			case "l":
+			case "KeyL":
 				board.tools.addConnector();
 				break;
-			case "p":
+			case "KeyP":
 				board.tools.addDrawing();
 				break;
 		}
 		if (board.selection.getContext() !== "SelectUnderPointer") {
-			if (key === "delete" || key === "backspace") {
+			if (key === "Delete" || key === "Backspace") {
 				board.selection.removeFromBoard();
 				toggleEdit(false);
 			}

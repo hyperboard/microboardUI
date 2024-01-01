@@ -32,7 +32,7 @@ import { ConnectorLineStylePicker } from "View/Pickers/ConnectorLineStylePicker"
 import { SliderPicker } from "View/Pickers/SliderPicker";
 import { toggleEdit } from "Board/Items/RichText/RichText";
 import { toFiniteNumber } from "utils";
-import {StickerColorPicker} from "../Pickers/StickerPicker";
+import { stickerColors } from "Board/Items/Sticker";
 
 export const IconSize = 24;
 
@@ -137,6 +137,7 @@ export class ContextPanel extends React.Component<
 				style={{
 					left: `${this.state.panelRect.left}px`,
 					top: `${this.state.panelRect.top}px`,
+					userSelect: "none"
 					// overflow: "hidden",
 				}}
 			>
@@ -1028,7 +1029,7 @@ function FontFamily({
 	windowHeight: number;
 }): React.ReactElement | null {
 	return null;
-	if (board.selection.getContext() !== "EditTextUnderPointer") {
+	if (board.selection.getContext() !== "EditTextUnderPointer"  || !board.selection.canChangeText()) {
 		return null;
 	}
 	const menuRef = React.useRef<HTMLDivElement>(null);
@@ -1106,9 +1107,8 @@ class FontSize extends React.PureComponent<{
 		const { board, toggleMenu, menu, panelMbr, windowHeight, fontSize } =
 			this.props;
 
-		if (board.selection.getContext() !== "EditTextUnderPointer") {
-			if(!board.selection.items.isItemTypes(["Sticker"]) || board.selection.getContext() === "SelectUnderPointer")
-				return null;
+		if (board.selection.getContext() !== "EditTextUnderPointer" || !board.selection.canChangeText()) {
+			return null;
 		}
 
 		return (
@@ -1193,9 +1193,8 @@ function FontStyle({
 	panelMbr: Mbr;
 	windowHeight: number;
 }): React.ReactElement | null {
-	if (board.selection.getContext() !== "EditTextUnderPointer") {
-		if(!board.selection.items.isItemTypes(["Sticker"]) || board.selection.getContext() === "SelectUnderPointer")
-			return null;
+	if (board.selection.getContext() !== "EditTextUnderPointer" || !board.selection.canChangeText()) {
+		return null;
 	}
 	const menuRef = React.useRef<HTMLDivElement>(null);
 
@@ -1248,9 +1247,8 @@ function TextAlignment({
 	panelMbr: Mbr;
 	windowHeight: number;
 }): React.ReactElement | null {
-	if (board.selection.getContext() !== "EditTextUnderPointer") {
-		if(!board.selection.items.isItemTypes(["Sticker"]) || board.selection.getContext() === "SelectUnderPointer")
-			return null;
+	if (board.selection.getContext() !== "EditTextUnderPointer" || !board.selection.items.isItemTypes(["Shape"])) {
+		return null;
 	}
 	const menuRef = React.useRef<HTMLDivElement>(null);
 
@@ -1315,7 +1313,7 @@ function AddList({
 	windowHeight: number;
 }): React.ReactElement | null {
 	return null;
-	if (board.selection.getContext() !== "EditTextUnderPointer") {
+	if (board.selection.getContext() !== "EditTextUnderPointer"  || !board.selection.canChangeText()) {
 		return null;
 	}
 	const menuRef = React.useRef<HTMLDivElement>(null);
@@ -1372,7 +1370,7 @@ function TextFeaturesSeparator({
 }: {
 	board: Board;
 }): React.ReactElement | null {
-	if (board.selection.getContext() !== "EditTextUnderPointer") {
+	if (board.selection.getContext() !== "EditTextUnderPointer" || !board.selection.canChangeText()) {
 		return null;
 	}
 	return (
@@ -1403,7 +1401,7 @@ function TextColor({
 	color: string;
 	windowHeight: number;
 }): React.ReactElement | null {
-	if (board.selection.getContext() !== "EditTextUnderPointer") {
+	if (board.selection.getContext() !== "EditTextUnderPointer" || !board.selection.canChangeText()) {
 		return null;
 	}
 	const menuRef = React.useRef<HTMLDivElement>(null);
@@ -1464,7 +1462,7 @@ function TextHighlight({
 	windowHeight: number;
 	color: string;
 }): React.ReactElement | null {
-	if (board.selection.getContext() !== "EditTextUnderPointer") {
+	if (board.selection.getContext() !== "EditTextUnderPointer" || !board.selection.canChangeText()) {
 		return null;
 	}
 	const menuRef = React.useRef<HTMLDivElement>(null);
@@ -1499,7 +1497,7 @@ function TextHighlight({
 				}}
 			>
 				<ColorPicker
-					allowNone={false}
+					allowNone={true}
 					onPick={(color: string) => {
 						board.selection.setFontHighlight(color);
 						toggleMenu("None");
@@ -1515,7 +1513,7 @@ function TextColorSeparator({
 }: {
 	board: Board;
 }): React.ReactElement | null {
-	if (board.selection.getContext() !== "EditTextUnderPointer") {
+	if (board.selection.getContext() !== "EditTextUnderPointer"  || !board.selection.canChangeText()) {
 		return null;
 	}
 	return (
@@ -1679,6 +1677,7 @@ function FillStyle({
 		</ButtonWithMenu>
 	);
 }
+
 function StickerFillStyle({
 	board,
 	toggleMenu,
@@ -1733,11 +1732,12 @@ function StickerFillStyle({
 					visibility: menu === "StickerFillStyle" ? "visible" : "hidden",
 				}}
 			>
-				<StickerColorPicker
+				<ColorPicker
 					onPick={(color: string) => {
 						board.selection.setFillColor(color);
 						toggleMenu("None");
 					}}
+					list={stickerColors}
 				/>
 			</div>
 		</ButtonWithMenu>

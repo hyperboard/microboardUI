@@ -16,8 +16,7 @@ import { PenIcon } from "View/Icon/PenIcon";
 import { Button } from "View/ContextPanel/Button";
 import { ConnectorLineStyle } from "Board/Items/Connector";
 import { SidePanelState } from "View/SidePanel/SidePanelState";
-import {StickerColorPicker} from "../Pickers/StickerPicker";
-import {AddSticker} from "../../Board/Tools/AddSticker";
+import { stickerColors } from "Board/Items/Sticker"
 
 interface Props {
 	app: App;
@@ -116,10 +115,6 @@ export class ToolsPanel extends React.Component<Props, State> {
 					board={board}
 					isOn={board.tools.getSelect() !== undefined}
 				/>
-				<AddStickerTool
-					board={board}
-					isOn={board.tools.getAddSticker() !== undefined}
-				/>
 				<AddShape
 					board={board}
 					isOn={board.tools.getAddShape() !== undefined}
@@ -131,6 +126,10 @@ export class ToolsPanel extends React.Component<Props, State> {
 				<AddConnector
 					board={board}
 					isOn={board.tools.getAddConnector() !== undefined}
+				/>
+				<AddStickerTool
+					board={board}
+					isOn={board.tools.getAddSticker() !== undefined}
 				/>
 				<AddDrawing
 					board={board}
@@ -220,12 +219,21 @@ class Select extends React.PureComponent<{
 		);
 	}
 }
+
 class AddStickerTool extends React.PureComponent<{
 	board: Board;
 	isOn: boolean;
 }> {
 	handleClick = (): void => {
 		this.props.board.tools.addSticker();
+	};
+
+	handlePick = (color: string): void => {
+		const { board } = this.props;
+		const add = board.tools.getAddSticker();
+		if (add) {
+			add.setBackgroundColor(color);
+		}
 	};
 
 	render(): React.ReactElement {
@@ -245,14 +253,11 @@ class AddStickerTool extends React.PureComponent<{
 					id="AddStickerMenu"
 					className="ToolsPanelMenu"
 					style={{
-						width: "32px",
 						visibility: this.props.isOn ? "visible" : "hidden",
 						marginTop: "-194px",
 					}}
 				>
-					<StickerColorPicker onPick={(color) => {
-						AddSticker.backgroundColor = color;
-					}} />
+					<ColorPicker allowNone={false} onPick={this.handlePick} list={stickerColors}></ColorPicker>
 				</div>
 			</div>
 		);
@@ -372,7 +377,9 @@ class AddConnector extends React.PureComponent<{
 					id="AddConnectorMenu"
 					className="ToolsPanelMenu"
 					style={{
-						width: "52px",
+						//width: "52px",
+						paddingLeft: "0px",
+						paddingRight: "0px",
 						visibility: isOn ? "visible" : "hidden",
 						marginTop: "-80px",
 					}}

@@ -68,17 +68,17 @@ export class TextEditor extends React.Component<
 			return null;
 		}
 		const { camera } = this.props.board;
-		const leftTopPoint = text.getLeftTopPoint();
-		leftTopPoint.transform(camera.getMatrix());
-		const left = leftTopPoint.x;
+		const { point, width, height, maxWidth, maxHeight, textScale } = text.getDimensions();
+		point.transform(camera.getMatrix());
+		const left = point.x;
 		/** A heuristic trick to better align editor with canvas */
-		const top = leftTopPoint.y + 2 * camera.getScale();
-		// const top = leftTopPoint.y;
-		const { width, height, maxWidth, maxHeight } = text.getDimensions();
-		// console.info('TextEditor.render()')
-		const textScale = text.isInShape ? 1 : text.getScale();
+		const top = point.y; + 2 * camera.getScale();
 		const editorScale = textScale * camera.getScale();
 		const verticalAlignment = text.getVerticalAlignment();
+
+		const container = text.getTransformedContainer();
+		container.transform(camera.getMatrix());
+
 		if (this.state.hasError) {
 			return (
 				<div
@@ -102,7 +102,7 @@ export class TextEditor extends React.Component<
 						width: `${maxWidth}px`,
 						height: `${maxHeight}px`,
 
-						transformOrigin: "left top",
+						//transformOrigin: "left top",
 						transform: `scale(${editorScale})`,
 
 						display: "flex",
@@ -121,6 +121,20 @@ export class TextEditor extends React.Component<
 		}
 
 		return (
+
+			/*<div 
+				style={{
+					position: 'absolute',
+					left: `${container.left}px`, 
+					top: `${container.top}px`, 
+					width: `${container.getWidth()/editorScale}px`, 
+					height: `${container.getHeight()/editorScale}px`,
+					overflow: 'hidden', // This will cut off any overflowing content
+					transformOrigin: "left top",
+					transform: `scale(${editorScale})`,
+				}}
+			>*/
+
 			<div
 				id="TextEditor"
 				ref={this.containerRef}
@@ -128,19 +142,25 @@ export class TextEditor extends React.Component<
 					border: "none",
 					padding: "0px",
 					margin: "0px",
-					overflow: "hidden",
+					// overflow: "hidden",
 					background: "none",
 					outline: "none",
 					resize: "none",
+
+					//position: "relative",
+					//left: `${left - container.left}px`,
+					//top: `${top - container.top}px`,
 
 					position: "absolute",
 					left: `${left}px`,
 					top: `${top}px`,
 
-					maxWidth: `${maxWidth}px`,
-					maxHeight: `${maxHeight}px`,
-					width: `${maxWidth}px`,
-					height: `${maxHeight}px`,
+					maxWidth: `${maxWidth+1}px`,
+					maxHeight: `${maxHeight+1}px`,
+					//width: `${maxWidth}px`,
+					//height: `${maxHeight}px`,
+					width: `${container.getWidth()/editorScale}px`, 
+					height: `${container.getHeight()/editorScale}px`,
 
 					transformOrigin: "left top",
 					transform: `scale(${editorScale})`,
@@ -157,10 +177,10 @@ export class TextEditor extends React.Component<
 			>
 				<div
 					style={{
-						position: "relative",
 						width: "100%",
 						height: "100%",
 						display: "flex",
+						justifyContent: "center", // horisontal
 						alignItems: verticalAlignmentToFlex(verticalAlignment),
 					}}
 				>
@@ -191,6 +211,7 @@ export class TextEditor extends React.Component<
 					</Slate>
 				</div>
 			</div>
+		//</div>
 		);
 	}
 }
