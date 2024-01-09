@@ -1,7 +1,7 @@
 import { App } from "App";
 import { Board } from "Board";
 import * as React from "react";
-import { Mbr } from "Board/Items";
+import { Connector, Mbr } from "Board/Items";
 import { fitContextPanel } from "../fit";
 import { ShapeType } from "Board/Items/Shape/Basic";
 import { Icon } from "View/Icon";
@@ -695,6 +695,9 @@ function ConnectorAddText({
 			<Button
 				id="ChangeConnectorType"
 				onClick={() => {
+					const connector = board.selection.items.getItemsByItemTypes(["Connector"])[0] as Connector;
+					if (!connector) {return};
+					connector.createTitle();
 				}}
 				title="Text"
 			>
