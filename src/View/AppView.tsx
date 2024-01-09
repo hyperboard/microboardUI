@@ -62,11 +62,12 @@ export class AppView extends React.Component<{
 					height: "100%",
 					backgroundColor: "rgba(200,200,200,0.2)"
 				}}
-				ref={this.containerRef}
+				
 			>
-				<div>
+				<div
+					ref={this.containerRef}
+				>
 					<Canvas app={app} board={board} />
-					<SidePanel app={app} sidePanelState={this.sidePanelState} />
 					<TextEditors app={app} board={board} />
 					<ToolsPanel
 						app={app}
@@ -80,6 +81,7 @@ export class AppView extends React.Component<{
 						sidePanelState={this.sidePanelState}
 					/>
 				</div>
+				<SidePanel app={app} sidePanelState={this.sidePanelState} />
 			</div>
 		);
 	}
@@ -276,7 +278,7 @@ export class AppView extends React.Component<{
 				const file = item.getAsFile();
 				const reader = new FileReader();
 				reader.onload = event => {
-					const image = new ImageItem(event.target?.result);
+					const image = new ImageItem(event.target?.resut);
 					image.transformation.translateTo(
 						board.pointer.point.x,
 						board.pointer.point.y,
@@ -350,7 +352,7 @@ export class AppView extends React.Component<{
 		const container = this.containerRef.current;
 		// updateFPS();
 		if (container) {
-			window.addEventListener("wheel", this.onWheel, {
+			container.addEventListener("wheel", this.onWheel, {
 				capture: true,
 				passive: false,
 			});
@@ -385,7 +387,7 @@ export class AppView extends React.Component<{
 		this.props.app.boardSubject.unsubscribe(this.update);
 		const container = this.containerRef.current;
 		if (container) {
-			window.removeEventListener("wheel", this.onWheel);
+			container.removeEventListener("wheel", this.onWheel);
 			window.removeEventListener("resize", this.onResize);
 			container.removeEventListener("contextmenu", this.onContextMenu);
 			container.removeEventListener("pointermove", this.onPointerMove);

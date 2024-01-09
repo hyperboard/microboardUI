@@ -63,7 +63,6 @@ function SidePanelButton ({
 	toggle: () => void;
 }): React.ReactElement {
 	const IconComponent = isOpen ? SidePanelCloseIcon : SidePanelOpenIcon;
-	return null;
 	return (
 		<Button
 			id={isOpen ? "CloseSidePanel" : "OpenSidePanel"}
@@ -87,5 +86,8 @@ useStyle(`
 	box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.12);
 	padding-right: 4px;
 	z-index: 100;
+	-webkit-user-select: none; /* Safari */
+	-ms-user-select: none; /* IE 10 and IE 11 */
+	user-select: none; /* Standard syntax */
 }
 `);

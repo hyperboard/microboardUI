@@ -60,6 +60,7 @@ export class ZoomPanel extends React.Component<Props> {
 					boxShadow: "0 8px 16px 0 rgba(0, 0, 0, 0.12)",
 					paddingLeft: "4px",
 					paddingRight: "4px",
+					userSelect: "none",
 				}}
 			>
 				<Button

@@ -4,6 +4,7 @@ import { SidePanelState } from "./SidePanelState";
 import { Login } from "./Login";
 import { PublicBoards } from "./PublicBoards";
 import { useStyle } from "View/useStyle";
+import { Menu } from "./Menu";
 
 export const SidePanelMenuOffset = 10;
 
@@ -54,19 +55,19 @@ export class SidePanel extends React.Component<{
 					top: "60px",
 					left: "8px",
 					width: `${width}px`,
-					height: "calc(100% - 90px)",
+					height: "calc(100% - 70px)",
 				}}
 			>
-				<div className="SidePanelOverflow">
+					<div className="SidePanelMenuContainer">
+					<ul className="SidePanelMenu">
+						<Login app={app} />
+						<PublicBoards app={app} />
+					</ul>
+					</div>
 					<ResizableEdge
 						panelWidth={this.props.sidePanelState.width}
 						setWidth={this.setWidth}
 					/>
-					<ul className="SidePanelList">
-						<Login app={app} />
-						<PublicBoards app={app} />
-					</ul>
-				</div>
 			</div>
 		);
 	}
@@ -88,7 +89,7 @@ class ResizableEdge extends React.Component {
 		}
 		const currentX = event.clientX;
 		const panelWidth = this.props.panelWidth;
-		const newWidth = panelWidth + (currentX - panelWidth);
+		const newWidth = panelWidth + (currentX - panelWidth) - 14;
 
 		this.props.setWidth(newWidth);
 	};
@@ -132,75 +133,35 @@ class ResizableEdge extends React.Component {
 	}
 }
 
-export class Menu extends React.Component {
-	render(): React.ReactElement | null {
-		const { isOpen, onToggle, heading, offset, children } = this.props;
-
-		return (
-			<li className="SidePanelListElement">
-				<Toggle isOpen={isOpen} offset={offset} onToggle={onToggle}>
-					{heading}
-				</Toggle>
-				<ul
-					className="SidePanelMenuList"
-					style={{
-						display: isOpen ? "block" : "none",
-					}}
-				>
-					{children}
-				</ul>
-			</li>
-		);
-	}
-}
-
-class Toggle extends React.PureComponent<{
-	isOpen: boolean;
-	offset: number;
-	onToggle: () => void;
-	children: React.ReactChildren | string;
-}> {
-	render(): React.ReactElement | null {
-		const { isOpen, offset, onToggle, children } = this.props;
-
-		return (
-			<div className="SidePanelMenuToggle" onClick={onToggle}>
-				<div
-					className="SidePanelMenuToggleContent"
-					style={{
-						marginLeft: offset * 1,
-					}}
-				>
-					<span id="emailToggle">{isOpen ? "▼" : "►"}</span>
-					{children}
-				</div>
-			</div>
-		);
-	}
-}
-
 useStyle(`
 .SidePanel {
 	padding-left: 4px;
-	padding-right: 8px;
-	padding-top: 10px;
-	padding-bottom: 10px;
 	background-color: white;
 	border-radius: 4px;
 	box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.12);
 	position: absolute;
 	z-index: 90;
-}
-
-.SidePanelOverflow {
-	white-space: nowrap;
-	overflow: hidden;
+    background: rgba(255,255,255,0.5);
+    backdrop-filter: blur(14px);
 }
 
 .SidePanelList {
 	list-style-type: none;
 	padding-left: 0;
 	pointer: finger;
+}
+
+.SidePanelMenu {
+	list-style-type: none;
+	padding-left: 0;
+	overflow-y: auto;
+}
+
+.SidePanelMenuContainer {
+	white-space: nowrap;
+	overflow-x: hidden;
+	overflow-y: auto;
+	height: 100%;
 }
 
 .SidePanelInput {
@@ -213,14 +174,6 @@ useStyle(`
 	background-color: rgba(100,150,255,0.3);
 }
 
-.SidePanelContextMenu {
-	display: inline-block;
-}
-
-.SidePanelContextMenu:hover {
-	border: 1px solid rgba(100,150,255,0);
-}
-
 .SidePanelInput:focus {
 	outline: none;
 }
@@ -228,12 +181,13 @@ useStyle(`
 .SidePanelResizableEdge {
 	position: absolute;
 	top: 0;
-	right: 0px;
-	width: 8px;
+	right: -4px;
+	width: 4px;
 	height: 100%;
 	cursor: ew-resize;
 	touch-action: none;
 	border-right: black;
+	background-color: rgba(100,100,100,0.2);
 }
 
 .SidePanelListElement {
@@ -256,26 +210,6 @@ useStyle(`
 .SidePanelMenuLine:hover {
 	color: blue;
 	border: 1px solid rgba(100,150,255,1);
-}
-
-.SidePanelMenuToggle {
-	padding-top: 4px;
-	padding-bottom: 4px;
-	cursor: pointer;
-	border: 1px solid rgba(100,150,255,0);
-	-webkit-user-select: none; /* Safari */
-	-ms-user-select: none; /* IE 10 and IE 11 */
-	user-select: none; /* Standard syntax */
-}
-
-.SidePanelMenuToggle:hover {
-	color: blue;
-	border: 1px solid rgba(100,150,255,1);
-}
-
-.SidePanelMenuToggleContent {
-	display: flex;
-	align-items: center;
 }
 
 .SidePanelMenuList {

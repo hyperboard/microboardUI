@@ -1,6 +1,6 @@
 import * as React from "react";
-import { Menu } from "./SidePanel";
 import { EmailLogin } from "./EmailLogin";
+import { Menu } from "./Menu";
 
 export class Login extends React.PureComponent<
 	{},
@@ -20,6 +20,7 @@ export class Login extends React.PureComponent<
 	};
 
 	render(): React.ReactElement | null {
+		return null;
 		const { isOpen } = this.state;
 		return (
 			<Menu

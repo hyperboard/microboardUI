@@ -1,10 +1,13 @@
 import * as React from "react";
 import { App } from "App";
-import { Menu, SidePanelMenuOffset } from "./SidePanel";
+import { SidePanelMenuOffset } from "./SidePanel";
+import { Menu } from "./Menu";
+import { BoardIcon } from "View/Icon/BoardIcon";
 
 class PublicBoardsState {
 	isOpen = true;
 	contextMenuItem: string | undefined = undefined;
+  editingBoardId: string | undefined = undefined;
 }
 
 export class PublicBoards extends React.PureComponent<{
@@ -32,6 +35,37 @@ PublicBoardsState> {
 		});
 	};
 
+  handleRename = (boardId: string) => {
+    this.setState({
+      editingBoardId: boardId,
+      contextMenuItem: undefined, // Close context menu
+    });
+  };
+
+  handleCancel = () => {
+    this.setState({
+      editingBoardId: undefined
+    });
+  }
+
+  handleSave = (boardId: string, newName: string) => {
+    this.props.app.storage.setPublicBoard({
+      boardId: boardId, 
+      name: newName
+    });
+    this.setState({
+      editingBoardId: undefined
+    });
+  };
+
+  handleRemove = (boardId: string) => {
+    // Implement logic to remove the board.
+    // e.g., this.props.app.storage.removePublicBoard(boardId);
+    this.setState({
+      contextMenuItem: undefined // Close context menu
+    });
+  };
+
 	componentDidMount(): void {
 		this.props.app.storage.subject.subscribe(this.update);
 	}
@@ -43,97 +77,48 @@ PublicBoardsState> {
 	}
 
 	render(): React.ReactElement | null {
-		const { isOpen } = this.state;
-		const boards = this.props.app.storage.listPublicBoards();
-		const boardLinks: React.ReactElement[] = [];
-		const offset = SidePanelMenuOffset;
-		const length = boards.length;
-		const contextMenuItem = this.state.contextMenuItem;
-		for (let i = 0; i<length; i++) {
-			const board = boards[i];
-			if (contextMenuItem === board.boardId) {
-				boardLinks.push(
-					<BoardNameInput
-						board={board}
-						offset={offset}
-						onNameChange={(event) => {
-							const inputValue = event.target.value;
-							this.props.app.storage.setPublicBoard({...board, name: inputValue});
-						}}
-						closeContextMenu={() => {
-							this.setState({
-								contextMenuItem: undefined
-							});
-						}}
-					/>						
-				);
-			} else {
-				boardLinks.push(
-					<BoardName
-						board={board}
-						offset={offset}
-						onClick={() => {
-							this.props.app.openBoard(board.boardId);
-						}}
-						onContextMenu={() => {
-							this.setState({
-								contextMenuItem: board.boardId
-							})
-						}}
-					/>
-				);
-			}
-		}
-		
-		return (
-			<Menu
-				isOpen={isOpen}
-				offset={0}
-				onToggle={this.toggleMenu}
-				heading={"Public Boards"}
-			>
-				{boardLinks}
-			</Menu>
-		);
+
+    const { isOpen, editingBoardId, contextMenuItem } = this.state;
+    const boards = this.props.app.storage.listPublicBoards();
+	const offset = SidePanelMenuOffset;
+
+    return (
+      <Menu
+        isOpen={isOpen}
+        offset={0}
+        onToggle={this.toggleMenu}
+        heading={"Public Boards"}
+      >
+        {boards.map((board) =>
+            <div key={board.boardId}>
+				<Menu
+					key={board.boardId}
+					heading={board.name ? board.name : `${board.boardId.substring(0, 5)}...${board.boardId.substring(board.boardId.length - 5)}`}
+					offset={offset}
+				  	onClick={() => {
+				  		this.props.app.openBoard(board.boardId);
+				  	}}
+				  	onContextMenu={() => {
+				  		this.setState({
+				  			contextMenuItem: board.boardId
+				  		})
+				  	}}
+		            icon={<BoardIcon width={20} height={20} />}
+					onRename={(newName) => this.handleSave(board.boardId, newName)}
+				>
+				</Menu>
+
+			  {contextMenuItem === board.boardId && (
+
+				    <div>
+				      <div onClick={() => this.handleRename(board.boardId)}>Rename</div>
+				      <div onClick={() => this.handleRemove(board.boardId)}>Remove</div>
+				    </div>
+			  )}
+			</div>
+        )}
+      </Menu>
+    );
 	}
 }
 
-function BoardName ({ 
-	board, offset, onClick, onContextMenu
-}): React.ReactElement{
-	return (
-		<Menu
-			key={board.boardId}
-			heading={board.name ? board.name : `${board.boardId.substring(0, 5)}...${board.boardId.substring(board.boardId.length - 5)}`}
-			offset={offset}
-			onToggle={onClick}
-		>
-				<span 
-					className="SidePanelContextMenu" 
-					onClick={onContextMenu}>...</span>
-		</Menu>
-	);
-}
-
-function BoardNameInput ({ 
-    board, offset, onNameChange, closeContextMenu  
-}): React.ReactElement {
-    return (
-        <li className={"SidePanelListElement"} key={board.boardId}>
-            <div className="SidePanelMenuLine" style={{ paddingLeft: offset }}>
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <input
-						className="SidePanelInput"
-                        style={{ flex: 1 }}
-                        type="text"
-                        value={board.name ? board.name : ""}
-                        onChange={onNameChange}
-                    />
-                    <span 
-						className="SidePanelContextMenu" 
-						onClick={closeContextMenu}>...</span>
-                </div>
-            </div>
-        </li>
-    );
-};

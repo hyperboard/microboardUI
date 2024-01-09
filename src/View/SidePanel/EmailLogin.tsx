@@ -3,6 +3,7 @@ import * as React from "react";
 import { Menu, SidePanelMenuOffset } from "./SidePanel";
 import { getApiUrl } from "Config";
 import { App } from "App";
+import { Menu } from "./Menu";
 
 // TODO email password login
 class EmailLoginState {

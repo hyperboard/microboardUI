@@ -18,7 +18,7 @@ style.innerHTML = `
 	padding: 5px 0;
 	position: absolute;
 	z-index: 2;
-	top: 100%;
+	top: 110%;
 	left: 50%;
 	margin-left: -60px;
 }
@@ -32,6 +32,7 @@ style.innerHTML = `
 	border-width: 5px;
 	border-style: solid;
 	border-color: transparent transparent black transparent;
+	pointer-events: none;
 }
   
 .ButtonContainer .ButtonTipOnLeft {
@@ -44,7 +45,7 @@ style.innerHTML = `
 	padding: 5px 0;
 	position: absolute;
 	z-index: 2;
-	top: 10%;
+	top: 8px;
 	left: 110%;
 }
   
@@ -57,6 +58,7 @@ style.innerHTML = `
 	border-width: 5px;
 	border-style: solid;
 	border-color: transparent black transparent transparent;
+	pointer-events: none;
 }
 
 .ButtonContainer .ButtonTipOnBottomLeft {
@@ -83,6 +85,7 @@ style.innerHTML = `
 	border-width: 5px;
 	border-style: solid;
 	border-color: transparent transparent black transparent;
+	pointer-events: none;
 }
 
 .ButtonContainer .ButtonTipOnTop {
@@ -109,6 +112,7 @@ style.innerHTML = `
 	border-width: 5px;
 	border-style: solid;
 	border-color: black transparent transparent transparent;
+	pointer-events: none;
 }
 
 .ButtonContainer:hover .ButtonTipOnBottom {
@@ -145,7 +149,14 @@ style.innerHTML = `
 
 
 .Button {
-
+	display: flex;
+	justify-content: center;
+	height: 44px;
+	align-items: center;
+	padding: 0px;
+	border: none;
+	background-color: white;
+	cursor: pointer;
 }
 `;
 
@@ -182,18 +193,11 @@ export function Button(props: Props): React.ReactElement {
 						? "blue"
 						: "black";
 				}}
+				className="Button"
 				style={{
-					display: "flex",
 					marginLeft: `${margin}px`,
 					marginRight: `${margin}px`,
 					width: `${width}px`,
-					height: "44px",
-					justifyContent: "center",
-					alignItems: "center",
-					padding: "0px",
-					border: "none",
-					backgroundColor: "white",
-					cursor: "pointer",
 					color: props.isOn ? "blue" : "black",
 				}}
 			>
