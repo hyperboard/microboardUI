@@ -3,11 +3,14 @@ import { App } from "App";
 import { SidePanelMenuOffset } from "./SidePanel";
 import { Menu } from "./Menu";
 import { BoardIcon } from "View/Icon/BoardIcon";
+import { Icon } from "View/Icon";
 
 class PublicBoardsState {
 	isOpen = true;
 	contextMenuItem: string | undefined = undefined;
   editingBoardId: string | undefined = undefined;
+  draggedBoardId: string | undefined = undefined;
+  dragOverBoardId: string | undefined = undefined;
 }
 
 export class PublicBoards extends React.PureComponent<{
@@ -76,6 +79,38 @@ PublicBoardsState> {
 		this.props.app.storage.subject.unsubscribe(this.update);
 	}
 
+  handleDragStart = (e: React.DragEvent<HTMLDivElement>, boardId: string): void => {
+    e.dataTransfer.effectAllowed = 'move';
+    this.setState({ draggedBoardId: boardId });
+  };
+
+  handleDragOver = (e: React.DragEvent<HTMLDivElement>, boardId: string): void => {
+    e.preventDefault();
+    this.setState({ dragOverBoardId: boardId });
+  };
+
+  handleDrop = (e: React.DragEvent<HTMLDivElement>, boardId: string): void => {
+    e.preventDefault();
+    e.stopPropagation();
+    const { draggedBoardId, dragOverBoardId } = this.state;
+    if (draggedBoardId && dragOverBoardId) {
+      // Logic to reorder the boards
+      this.props.app.storage.reorderPublicBoard(draggedBoardId, dragOverBoardId);
+      this.setState({
+        draggedBoardId: undefined,
+        dragOverBoardId: undefined,
+      });
+      this.update();
+    }
+  };
+
+  handleDragEnd = (): void => {
+    this.setState({
+      draggedBoardId: undefined,
+      dragOverBoardId: undefined,
+    });
+  };
+
 	render(): React.ReactElement | null {
 
     const { isOpen, editingBoardId, contextMenuItem } = this.state;
@@ -88,9 +123,26 @@ PublicBoardsState> {
         offset={0}
         onToggle={this.toggleMenu}
         heading={"Public Boards"}
+		additionalAction={{
+			label: "AddBoard",
+			icon: <Icon name="ZoomIn" width={24} height={20} />,
+			action: () => {
+				const app = this.props.app;
+				app.createPublicBoard().then((id: stirng) => {
+					app.openBoard(id);
+				});
+			}
+		}}
       >
         {boards.map((board) =>
-            <div key={board.boardId}>
+            <div
+			 key={board.boardId}
+             draggable
+             onDragStart={(e) => this.handleDragStart(e, board.boardId)}
+             onDragOver={(e) => this.handleDragOver(e, board.boardId)}
+             onDrop={(e) => this.handleDrop(e, board.boardId)}
+             onDragEnd={this.handleDragEnd}
+			>
 				<Menu
 					key={board.boardId}
 					heading={board.name ? board.name : `${board.boardId.substring(0, 5)}...${board.boardId.substring(board.boardId.length - 5)}`}
@@ -121,4 +173,5 @@ PublicBoardsState> {
     );
 	}
 }
+
 

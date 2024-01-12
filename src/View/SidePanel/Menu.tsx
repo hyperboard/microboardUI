@@ -11,7 +11,7 @@ export class Menu extends React.Component<{
   onClick?: () => void;
   onRename?: (newHeading: string) => void; // Changed to receive newHeading
   icon?: React.ReactNode;
-  additionalAction?: { label: string; action: () => void };
+  additionalAction?: { label: string; icon: React.ReactNode; action: () => void };
   onDoubleClick?: () => void;
 }> {
   state = {
@@ -94,7 +94,7 @@ export class Menu extends React.Component<{
             )}
             {icon && <button className="MenuIcon">{icon}</button>}
             {!isRenaming ? (
-              <span onDoubleClick={handleDoubleClick}>{heading}</span> // Applied double click handler to span
+              <span className="MenuHeading" onDoubleClick={handleDoubleClick}>{heading}</span> // Applied double click handler to span
             ) : (
               <span className="RenamingInputContainer">
                 <input 
@@ -117,7 +117,7 @@ export class Menu extends React.Component<{
                   additionalAction.action();
                 }}
               >
-                {additionalAction.label}
+                {additionalAction.icon}
               </button>
             )}
             {onContextMenu && !isRenaming && (
@@ -178,11 +178,27 @@ useStyle(`
   color: blue;
 }
 
+
+.MenuHeading {
+  color: black;
+}
+
+.MenuHeading:hover {
+  color: blue;
+}
+
 .MenuIcon {
+  padding: 0px;
   background: none;
-  border: none;
+  border: solid transparent 1px;
   vertical-align: middle;
-  height: 20px;
+  height: 22px;
+  width: 24px;
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+.MenuIcon:hover {
 }
 
 .SidePanelContextMenuButton {

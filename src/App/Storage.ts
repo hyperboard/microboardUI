@@ -48,4 +48,23 @@ export class Storage {
             }
         }
     }
+    reorderPublicBoard(draggedBoardId: string, targetBoardId: string): void {
+        const visitedBoards = this.listPublicBoards();
+        const draggedBoardIndex = visitedBoards.findIndex(board => board.boardId === draggedBoardId);
+        const targetBoardIndex = visitedBoards.findIndex(board => board.boardId === targetBoardId);
+
+        if (draggedBoardIndex < 0 || targetBoardIndex < 0) {
+            return; // One of the boards wasn't found
+        }
+
+        // Remove the dragged board from its current position
+        const [draggedBoard] = visitedBoards.splice(draggedBoardIndex, 1);
+        // Insert it just before the target board's index
+        visitedBoards.splice(targetBoardIndex, 0, draggedBoard);
+
+        localStorage.setItem(this.visitedPublicBoards, JSON.stringify(visitedBoards));
+        this.subject.publish();
+    }
+
 }
+
