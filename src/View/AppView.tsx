@@ -19,6 +19,7 @@ import { TextEditors } from "./TextEditor/TextEditor";
 import { isNotControlCharacter } from "./isNotControlCharacter";
 import { SidePanel } from "./SidePanel";
 import { SidePanelState } from "./SidePanel/SidePanelState";
+import { ContextMenuState, ContextMenu } from "./ContextMenu";
 
 export class AppView extends React.Component<{
 	app: App;
@@ -34,6 +35,7 @@ export class AppView extends React.Component<{
 	};
 
 	sidePanelState = new SidePanelState();
+	contextMenuState = new ContextMenuState();
 
 	animationFrameId: number | null = null;
 
@@ -67,7 +69,11 @@ export class AppView extends React.Component<{
 				<div
 					ref={this.containerRef}
 				>
-					<Canvas app={app} board={board} />
+					<Canvas
+					 app={app}
+					 board={board}
+					 contextMenuState={this.contextMenuState}
+					/>
 					<TextEditors app={app} board={board} />
 					<ToolsPanel
 						app={app}
@@ -81,7 +87,12 @@ export class AppView extends React.Component<{
 						sidePanelState={this.sidePanelState}
 					/>
 				</div>
-				<SidePanel app={app} sidePanelState={this.sidePanelState} />
+				<SidePanel 
+				 app={app}
+				 sidePanelState={this.sidePanelState}
+				 contextMenuState={this.contextMenuState}
+				/>
+				<ContextMenu app={app} contextMenuState={this.contextMenuState} />
 			</div>
 		);
 	}
@@ -132,6 +143,7 @@ export class AppView extends React.Component<{
 	};
 
 	onPointerMove = (event: PointerEvent): boolean => {
+		this.isRightClickForContextMenu = false;
 		const board = this.props.app.getBoard();
 		if (!board) {
 			return false;

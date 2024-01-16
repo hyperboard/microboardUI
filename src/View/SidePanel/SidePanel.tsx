@@ -5,12 +5,13 @@ import { Login } from "./Login";
 import { PublicBoards } from "./PublicBoards";
 import { useStyle } from "View/useStyle";
 import { Menu } from "./Menu";
+import { ContextMenuState } from "View/ContextMenu";
 
 export const SidePanelMenuOffset = 10;
 
 export class SidePanel extends React.Component<{
 	app: App;
-	sidePanelState: SidePanelState;
+	contextMenuState: contextMenuState;
 }> {
 	panelRef = React.createRef<HTMLDivElement>();
 
@@ -61,7 +62,7 @@ export class SidePanel extends React.Component<{
 					<div className="SidePanelMenuContainer">
 					<ul className="SidePanelMenu">
 						<Login app={app} />
-						<PublicBoards app={app} />
+						<PublicBoards app={app} contextMenuState={this.props.contextMenuState}/>
 					</ul>
 					</div>
 					<ResizableEdge

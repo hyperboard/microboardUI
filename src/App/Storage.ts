@@ -19,7 +19,7 @@ export class Storage {
         }
     }
 
-    /* Adds an id of a visited public board to the local storage */
+    /* Adds an id of a visited public board to the local storage
     setPublicBoard(board: VisitedPublicBoard): void {
         let visitedBoards = this.listPublicBoards();
         const length = visitedBoards.length;
@@ -35,10 +35,38 @@ export class Storage {
         localStorage.setItem(this.visitedPublicBoards, JSON.stringify(visitedBoards));
         this.subject.publish();
     }
+    */
+
+    /* Adds an id of a visited public board to the local storage */
+    setPublicBoard(board: VisitedPublicBoard): void {
+        let visitedBoards = this.listPublicBoards();
+        const length = visitedBoards.length;
+        let boardExists = false;
+
+        for (let i = 0; i < length; i++) {
+            if (visitedBoards[i].boardId === board.boardId) {
+                // If the board already exists, update its information.
+                visitedBoards[i] = { ...visitedBoards[i], ...board };
+                boardExists = true;
+                break; // No need to continue the loop once the board is found.
+            }
+        }
+
+        if (!boardExists) {
+            // If the board does not exist, add it to the start of the array.
+            visitedBoards.unshift(board);
+        }
+
+        // Store the updated array in the local storage.
+        localStorage.setItem(this.visitedPublicBoards, JSON.stringify(visitedBoards));
+        this.subject.publish(); // Notify subscribers that a change has occurred.
+    }
+
 
     /* Removes an id of a visited public board from the local storage */
     removePublicBoard(id: string): void {
         let visitedBoards = this.listPublicBoards();
+        const length = visitedBoards.length;
         for (let i = 0; i < length; i++) {
             if (visitedBoards[i].boardId === id) {
                 visitedBoards.splice(i, 1);

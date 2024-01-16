@@ -4,10 +4,12 @@ import { SidePanelMenuOffset } from "./SidePanel";
 import { Menu } from "./Menu";
 import { BoardIcon } from "View/Icon/BoardIcon";
 import { Icon } from "View/Icon";
+import { ContextMenuState } from "View/ContextMenu";
 
 class PublicBoardsState {
 	isOpen = true;
 	contextMenuItem: string | undefined = undefined;
+    renamingItem: string | null;
   editingBoardId: string | undefined = undefined;
   draggedBoardId: string | undefined = undefined;
   dragOverBoardId: string | undefined = undefined;
@@ -15,6 +17,7 @@ class PublicBoardsState {
 
 export class PublicBoards extends React.PureComponent<{
 	app: App;
+	contextMenuState: ContextMenuState;
 },
 PublicBoardsState> {
 	animationFrameId: number | null = null;
@@ -41,8 +44,9 @@ PublicBoardsState> {
   handleRename = (boardId: string) => {
     this.setState({
       editingBoardId: boardId,
-      contextMenuItem: undefined, // Close context menu
+	  renamingItem: null
     });
+	this.props.contextMenuState.toggleOff();
   };
 
   handleCancel = () => {
@@ -62,11 +66,11 @@ PublicBoardsState> {
   };
 
   handleRemove = (boardId: string) => {
-    // Implement logic to remove the board.
-    // e.g., this.props.app.storage.removePublicBoard(boardId);
+    this.props.app.storage.removePublicBoard(boardId);
     this.setState({
-      contextMenuItem: undefined // Close context menu
+      renamingItem: null
     });
+	this.props.contextMenuState.toggleOff();
   };
 
 	componentDidMount(): void {
@@ -125,7 +129,7 @@ PublicBoardsState> {
         heading={"Public Boards"}
 		additionalAction={{
 			label: "AddBoard",
-			icon: <Icon name="ZoomIn" width={24} height={20} />,
+			icon: <Icon name="ZoomIn" width={20} height={20} />,
 			action: () => {
 				const app = this.props.app;
 				app.createPublicBoard().then((id: stirng) => {
@@ -144,29 +148,40 @@ PublicBoardsState> {
              onDragEnd={this.handleDragEnd}
 			>
 				<Menu
+					isSelected={selectedBoard === board.boardId}
 					key={board.boardId}
 					heading={board.name ? board.name : `${board.boardId.substring(0, 5)}...${board.boardId.substring(board.boardId.length - 5)}`}
 					offset={offset}
 				  	onClick={() => {
 				  		this.props.app.openBoard(board.boardId);
 				  	}}
-				  	onContextMenu={() => {
-				  		this.setState({
-				  			contextMenuItem: board.boardId
-				  		})
+					isRenaming={this.state.renamingItem === board.boardId}
+				  	onContextMenu={(x, y) => {
+						this.props.contextMenuState.toggle({
+							targetId: `SidePanelPublicBoard-${board.boardId}`,
+							position: {x, y},
+							options: [
+								{ 
+									label: "Rename",
+									action: () => {
+										this.setState({
+											renamingItem: board.boardId
+										});
+									}
+								},
+								{ 
+									label: "Delete",
+									action: () => {
+										this.handleRemove(board.boardId);
+									}
+								}
+							]
+						});
 				  	}}
 		            icon={<BoardIcon width={20} height={20} />}
-					onRename={(newName) => this.handleSave(board.boardId, newName)}
+					onRename={(newName) => {this.handleSave(board.boardId, newName); this.handleRename();}}
 				>
 				</Menu>
-
-			  {contextMenuItem === board.boardId && (
-
-				    <div>
-				      <div onClick={() => this.handleRename(board.boardId)}>Rename</div>
-				      <div onClick={() => this.handleRemove(board.boardId)}>Remove</div>
-				    </div>
-			  )}
 			</div>
         )}
       </Menu>

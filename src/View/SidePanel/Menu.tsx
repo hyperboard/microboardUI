@@ -7,9 +7,10 @@ export class Menu extends React.Component<{
   heading: string;
   offset?: number;
   children?: React.ReactNode;
-  onContextMenu?: () => void;
+  onContextMenu?: (x: number, y: number) => void;
   onClick?: () => void;
-  onRename?: (newHeading: string) => void; // Changed to receive newHeading
+  onRename?: (newHeading: string) => void;
+  isRenaming: boolean;
   icon?: React.ReactNode;
   additionalAction?: { label: string; icon: React.ReactNode; action: () => void };
   onDoubleClick?: () => void;
@@ -27,19 +28,16 @@ export class Menu extends React.Component<{
   };
 
   handleDoubleClick = () => {
-    // Check if onRename is provided to toggle renaming
     if (this.props.onRename) {
       this.setState({ isRenaming: !this.state.isRenaming });
     }
   };
 
   handleRenameChange = (e) => {
-    // Update state with current input value
     this.setState({ renameInput: e.target.value });
   };
 
   handleRenameConfirm = () => {
-    // Pass the current input value to onRename
     if (this.props.onRename) {
       this.props.onRename(this.state.renameInput);
     }
@@ -67,10 +65,10 @@ export class Menu extends React.Component<{
       icon,
       additionalAction,
     } = this.props;
-    const { isRenaming, renameInput } = this.state;
+    const { renameInput } = this.state;
     const hasChildren = Boolean(children);
+	const isRenaming = this.state.isRenaming || this.props.isRenaming;
 
-    // Corrected the toggle of isRenaming with double click on the heading
     const handleDoubleClick = this.props.onRename ? this.handleDoubleClick : undefined;
 
     return (
@@ -78,7 +76,7 @@ export class Menu extends React.Component<{
         <div 
           className="SidePanelMenuToggle"
           onClick={onClick ? onClick : hasChildren ? onToggle : undefined}
-          onDoubleClick={handleDoubleClick} // Applied corrected double click handler
+          onDoubleClick={handleDoubleClick}
         >
           <div
             className="SidePanelMenuToggleContent"
@@ -93,7 +91,7 @@ export class Menu extends React.Component<{
               </button>
             )}
             {icon && <button className="MenuIcon">{icon}</button>}
-            {!isRenaming ? (
+            {!isRenaming && !this.props.isRenaming ? (
               <span className="MenuHeading" onDoubleClick={handleDoubleClick}>{heading}</span> // Applied double click handler to span
             ) : (
               <span className="RenamingInputContainer">
@@ -125,7 +123,11 @@ export class Menu extends React.Component<{
                 className="SidePanelContextMenuButton"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onContextMenu();
+				  const target = e.currentTarget;
+				  const rect = target.getBoundingClientRect();
+			      const bottomRightX = rect.right;
+			      const bottomRightY = rect.bottom;
+			      onContextMenu(bottomRightX, bottomRightY);
                 }}
               >
                 &nbsp;...&nbsp;
@@ -154,17 +156,19 @@ useStyle(`
   cursor: pointer;
   border: 1px solid rgba(100,150,255,0);
   user-select: none;
+  color: black;
 }
 
 .SidePanelMenuToggle:hover {
   color: blue;
-  border: 1px solid rgba(100,150,255,1);
+  border: 1px solid rgba(0,0,255,1);
 }
 
 .SidePanelMenuToggleContent {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  color: inherit;
 }
 
 .ToggleExpandButton {
@@ -172,6 +176,7 @@ useStyle(`
   user-select: none;
   background: none;
   border: none;
+  color: inherit;
 }
 
 .ToggleExpandButton:hover {
@@ -180,11 +185,11 @@ useStyle(`
 
 
 .MenuHeading {
-  color: black;
+  color: inherit;
 }
 
 .MenuHeading:hover {
-  color: blue;
+  color: inherit;
 }
 
 .MenuIcon {
