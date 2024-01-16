@@ -148,7 +148,7 @@ PublicBoardsState> {
              onDragEnd={this.handleDragEnd}
 			>
 				<Menu
-					isSelected={selectedBoard === board.boardId}
+					
 					key={board.boardId}
 					heading={board.name ? board.name : `${board.boardId.substring(0, 5)}...${board.boardId.substring(board.boardId.length - 5)}`}
 					offset={offset}
