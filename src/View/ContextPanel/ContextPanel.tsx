@@ -697,7 +697,9 @@ function ConnectorAddText({
 				onClick={() => {
 					const connector = board.selection.items.getItemsByItemTypes(["Connector"])[0] as Connector;
 					if (!connector) {return};
-					connector.createTitle();
+					board.selection.setTextToEdit(connector);
+					board.selection.setContext("EditTextUnderPointer");
+					board.items.subject.publish(board.items);
 				}}
 				title="Text"
 			>
@@ -1110,20 +1112,13 @@ class FontSize extends React.PureComponent<{
 		const { board, toggleMenu, menu, panelMbr, windowHeight, fontSize } =
 			this.props;
 
-		const connector = board.selection.items.getSingle();
-
-		const isConnector = connector instanceof Connector;
-		if (isConnector) {
-			this.setState({ fontSize: connector.getFontSize() });
-		}
-
 		if (
 			board.selection.getContext() === "SelectUnderPointer"
 		) {
 			return null;
 		}
 
-		if ((!isConnector || !connector?.hasTitle()) && (board.selection.getContext() !== "EditTextUnderPointer" || !board.selection.canChangeText())) {
+		if ((board.selection.getContext() !== "EditTextUnderPointer" || !board.selection.canChangeText())) {
 			return null;
 		}
 
@@ -1153,9 +1148,6 @@ class FontSize extends React.PureComponent<{
 								return;
 							}
 							board.selection.setFontSize(size);
-							if (connector instanceof Connector && connector.hasTitle()) {
-								connector.setFontSize(size);
-							}
 						}}
 						onFocus={() => {
 							toggleEdit(true);
@@ -1212,17 +1204,13 @@ function FontStyle({
 	panelMbr: Mbr;
 	windowHeight: number;
 }): React.ReactElement | null {
-	const connector = board.selection.items.getSingle();
-
-	const isConnector = connector instanceof Connector;
-
 	if (
 		board.selection.getContext() === "SelectUnderPointer"
 	) {
 		return null;
 	}
 
-	if ((!isConnector || !connector?.hasTitle()) && (board.selection.getContext() !== "EditTextUnderPointer" || !board.selection.canChangeText())) {
+	if ((board.selection.getContext() !== "EditTextUnderPointer" || !board.selection.canChangeText())) {
 		return null;
 	}
 	const menuRef = React.useRef<HTMLDivElement>(null);
@@ -1255,17 +1243,6 @@ function FontStyle({
 				<FontStylePicker
 					onPick={style => {
 						board.selection.setFontStyle([style]);
-						if (connector instanceof Connector && connector.hasTitle()) {
-							board.selection.add(connector.getTitle()!);
-							board.selection.remove(connector);
-
-							board.selection.setFontStyle([style]);
-							connector.setFontStyle([style]);
-
-							board.selection.add(connector);
-							board.selection.remove(connector.getTitle()!);
-							
-						}
 						toggleMenu("None");
 					}}
 				/>
@@ -1287,15 +1264,14 @@ function TextAlignment({
 	panelMbr: Mbr;
 	windowHeight: number;
 }): React.ReactElement | null {
-	// const connector = board.selection.items.getSingle();
+	const connector = board.selection.items.getSingle();
+	const isConnector = connector instanceof Connector;
 
-	// const isConnector = connector instanceof Connector;
-
-	// if (
-	// 	board.selection.getContext() === "SelectUnderPointer"
-	// ) {
-	// 	return null;
-	// }
+	if (
+		isConnector
+	) {
+		return null;
+	}
 
 	if ((board.selection.getContext() !== "EditTextUnderPointer" || !board.selection.canChangeText())) {
 		return null;
@@ -1335,9 +1311,6 @@ function TextAlignment({
 				<HorisontalAlignmentPicker
 					onPick={alignment => {
 						board.selection.setHorisontalAlignment(alignment);
-						// if(connector instanceof Connector && connector.hasTitle()){
-						// 	connector.setHorisontalAlignment(alignment);
-						// }
 						toggleMenu("None");
 					}}
 				/>
@@ -1345,9 +1318,6 @@ function TextAlignment({
 				<VerticalAlignmentPicker
 					onPick={alignment => {
 						board.selection.setVerticalAlignment(alignment);
-						if(connector instanceof Connector && connector.hasTitle()){
-							(()=>{})();
-						}
 						toggleMenu("None");
 					}}
 				/>
@@ -1427,16 +1397,13 @@ function TextFeaturesSeparator({
 }: {
 	board: Board;
 }): React.ReactElement | null {
-	const connector = board.selection.items.getSingle();
-	const isConnector = connector instanceof Connector;
-
 	if (
 		board.selection.getContext() === "SelectUnderPointer"
 	) {
 		return null;
 	}
 
-	if ((!isConnector || !connector?.hasTitle()) && (board.selection.getContext() !== "EditTextUnderPointer" || !board.selection.canChangeText())) {
+	if ((board.selection.getContext() !== "EditTextUnderPointer" || !board.selection.canChangeText())) {
 		return null;
 	}
 
@@ -1468,22 +1435,13 @@ function TextColor({
 	color: string;
 	windowHeight: number;
 }): React.ReactElement | null {
-	const connector = board.selection.items.getSingle();
-	let connectorColor: string | null = null;
-
-	const isConnector = connector instanceof Connector;
-
-	if (isConnector){
-		connectorColor = connector.getFontColor();
-	}
-	
 	if (
 		board.selection.getContext() === "SelectUnderPointer"
 	) {
 		return null;
 	}
 
-	if ((!isConnector || !connector?.hasTitle()) && (board.selection.getContext() !== "EditTextUnderPointer" || !board.selection.canChangeText())) {
+	if ((board.selection.getContext() !== "EditTextUnderPointer" || !board.selection.canChangeText())) {
 		return null;
 	}
 
@@ -1503,7 +1461,7 @@ function TextColor({
 				title="Text color"
 			>
 				<TextColorIcon
-					color={connectorColor || color}
+					color={color}
 					width={IconSize}
 					height={IconSize}
 				/>
@@ -1522,9 +1480,6 @@ function TextColor({
 					allowNone={false}
 					onPick={(color: string) => {
 						board.selection.setFontColor(color);
-						if (connector instanceof Connector && connector.hasTitle()){
-							connector.setFontColor(color);
-						}
 						toggleMenu("None");
 					}}
 				/>
@@ -1548,22 +1503,13 @@ function TextHighlight({
 	windowHeight: number;
 	color: string;
 }): React.ReactElement | null {
-	const connector = board.selection.items.getSingle();
-
-	const isConnector = connector instanceof Connector;
-	let connectorColor: string | null = null;
-
-	if (isConnector){
-		connectorColor = connector.getTextHighlight();
-	}
-
 	if (
 		board.selection.getContext() === "SelectUnderPointer"
 	) {
 		return null;
 	}
 
-	if ((!isConnector || !connector?.hasTitle()) && (board.selection.getContext() !== "EditTextUnderPointer" || !board.selection.canChangeText())) {
+	if ((board.selection.getContext() !== "EditTextUnderPointer" || !board.selection.canChangeText())) {
 		return null;
 	}
 
@@ -1583,7 +1529,7 @@ function TextHighlight({
 				title="Text highlight"
 			>
 				<TextHighlightIcon
-					color={connectorColor || color}
+					color={color}
 					width={IconSize}
 					height={IconSize}
 				/>
@@ -1602,9 +1548,6 @@ function TextHighlight({
 					allowNone={true}
 					onPick={(color: string) => {
 						board.selection.setFontHighlight(color);
-						if (connector instanceof Connector && connector.hasTitle()){
-							connector.setTextHighlight(color);
-						}
 						toggleMenu("None");
 					}}
 				/>
@@ -1904,12 +1847,6 @@ function Delete({ board }: { board: Board }): React.ReactElement | null {
 		<Button
 			id="DeleteSelection"
 			onClick={() => {
-				for (const item of board.selection.list()) {
-					if (item instanceof Connector && item.hasTitle()){
-						board.selection.add(item.getTitle()!);
-					}
-				}
-				
 				board.selection.removeFromBoard();
 			}}
 			title="Delete"
