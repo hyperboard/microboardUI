@@ -695,11 +695,17 @@ function ConnectorAddText({
 			<Button
 				id="ChangeConnectorType"
 				onClick={() => {
+					if (board.selection.getContext() === "EditTextUnderPointer") {
+						board.selection.setContext("EditUnderPointer");
+						board.items.subject.publish(board.items);
+						return;
+					}
 					const connector = board.selection.items.getItemsByItemTypes(["Connector"])[0] as Connector;
 					if (!connector) {return};
 					board.selection.setTextToEdit(connector);
 					board.selection.setContext("EditTextUnderPointer");
 					board.items.subject.publish(board.items);
+					
 				}}
 				title="Text"
 			>
