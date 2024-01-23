@@ -3,7 +3,7 @@ import { DrawingContext } from "Board/Items/DrawingContext";
 import { Board } from "Board";
 
 interface Props {
-	setDrawingContext: (ctx: DrawingContext) => void;
+	setDrawingContext?: (ctx: DrawingContext) => void;
 	board: Board;
 	render(context: DrawingContext): void;
 	subscribe(observer: () => void): void;
@@ -24,7 +24,9 @@ export class Layer extends React.Component<Props> {
 					this.props.board.camera,
 					ctx,
 				);
-				this.props.ctxRef.current = drawingContext;
+				if (this.props.setDrawingContext) {
+					this.props.setDrawingContext(drawingContext);
+				}
 				this.draw = () => {
 					this.props.render(drawingContext);
 				};

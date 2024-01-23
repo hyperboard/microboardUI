@@ -337,7 +337,5 @@ export const Icons = {
 		],
 		width: 24,
 		hieght: 24,
-		fill: "currentColor",
-		stroke: "none",
 	},
 };
