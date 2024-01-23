@@ -15,6 +15,8 @@
 		/>
 		<title>Microboard</title>
 		<link rel="icon" type="image/svg" href="/favicon.svg">
+	    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js"></script>
+	    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js"></script>
 	</head>
 	<body
 		style="
@@ -52,7 +54,7 @@
 				<label for="loading"><h1>Loading...</h1></label>
 			</div>
 		</div>
-		<input type="file" accept="image/*" id="image-upload" style="display: none;">
+		<input type="file" accept="image/*,application/pdf" id="image-upload" style="display: none;">
 		<script src="/bundle.js"></script>
 	</body>
 </html>
