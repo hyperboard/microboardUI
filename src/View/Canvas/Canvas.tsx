@@ -13,6 +13,8 @@ let touchtime = 0;
 const delay = 300;
 
 export class Canvas extends React.Component<Props> {
+	canvasContext: DrawingContext | null = null;
+
 	stageRef = React.createRef<HTMLDivElement>();
 	options = {
 		pointerdown: {},
@@ -22,6 +24,10 @@ export class Canvas extends React.Component<Props> {
 
 	timerTopLayer: NodeJS.Timer | undefined = undefined;
 	timerBottomLayer: NodeJS.Timer | undefined = undefined;
+
+	setDrawingContext = (canvasContext: DrawingContext): void => {
+		this.canvasContext = canvasContext;
+	};
 
 	onPointerDown = (event: PointerEvent): boolean => {
 		const board = this.props.board;
@@ -248,6 +254,9 @@ export class Canvas extends React.Component<Props> {
 			stage.addEventListener("pointermove", this.onPointerMove);
 		}
 		this.props.app.subscribe(this.subscription);
+		if (this.canvasContext !== null) {
+			this.props.board.setDrawingContext(this.canvasContext);
+		}
 	}
 
 	componentWillUnmount(): void {
@@ -323,6 +332,7 @@ export class Canvas extends React.Component<Props> {
 				}}
 			>
 				<Layer
+					setDrawingContext={this.setDrawingContext}
 					render={this.renderBottomLayer}
 					subscribe={this.subscribeBottomLayer}
 					unsubscribe={this.unsubscribeBottomLayer}
@@ -331,6 +341,7 @@ export class Canvas extends React.Component<Props> {
 					height={height}
 				/>
 				<Layer
+					setDrawingContext={this.setDrawingContext}
 					render={this.renderTopLayer}
 					subscribe={this.subscribeTopLayer}
 					unsubscribe={this.unsubscribeTopLayer}

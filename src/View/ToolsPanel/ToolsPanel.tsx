@@ -16,7 +16,8 @@ import { PenIcon } from "View/Icon/PenIcon";
 import { Button } from "View/ContextPanel/Button";
 import { ConnectorLineStyle } from "Board/Items/Connector";
 import { SidePanelState } from "View/SidePanel/SidePanelState";
-import { stickerColors } from "Board/Items/Sticker"
+import { stickerColors } from "Board/Items/Sticker";
+import { exportBoardSnapshot } from "App/ExportBoardSnapshot";
 
 interface Props {
 	app: App;
@@ -138,6 +139,7 @@ export class ToolsPanel extends React.Component<Props, State> {
 				/>
 				<AddImage />
 
+				<ExportBoardSnapshot board={board} />
 				<HorisontalSeparator height={4}></HorisontalSeparator>
 
 				<Undo board={board} isOn={board.events.canUndo()} />
@@ -257,7 +259,11 @@ class AddStickerTool extends React.PureComponent<{
 						marginTop: "-194px",
 					}}
 				>
-					<ColorPicker allowNone={false} onPick={this.handlePick} list={stickerColors}></ColorPicker>
+					<ColorPicker
+						allowNone={false}
+						onPick={this.handlePick}
+						list={stickerColors}
+					></ColorPicker>
 				</div>
 			</div>
 		);
@@ -477,6 +483,25 @@ class AddImage extends React.PureComponent {
 				tipOnLeft
 			>
 				<Icon name="Image" width={24} height={24} />
+			</Button>
+		);
+	}
+}
+
+class ExportBoardSnapshot extends React.PureComponent<{ board: Board }> {
+	handleClick = (): void => {
+		exportBoardSnapshot(this.props.board);
+	};
+
+	render(): React.ReactElement {
+		return (
+			<Button
+				id="ExportBoardSnapshot"
+				onClick={this.handleClick}
+				title="Export this board"
+				tipOnLeft
+			>
+				<Icon name="Export" width={24} height={24} />
 			</Button>
 		);
 	}
