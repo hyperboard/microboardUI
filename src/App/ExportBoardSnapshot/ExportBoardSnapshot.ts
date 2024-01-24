@@ -1,5 +1,7 @@
 import { Board } from "Board";
 import { Quality, Resolution } from "./types";
+import { DrawingContext } from "Board/Items/DrawingContext";
+import { Camera } from "Board/Camera";
 
 export function exportBoardSnapshot(board: Board, quality: Quality): void {
 	const boardId = board.getBoardId();
@@ -18,7 +20,6 @@ export function exportBoardSnapshot(board: Board, quality: Quality): void {
 	}
 
 	const newCanvas = document.createElement("canvas");
-
 	newCanvas.width = canvas.width * resolution;
 	newCanvas.height = canvas.height * resolution;
 
@@ -30,9 +31,14 @@ export function exportBoardSnapshot(board: Board, quality: Quality): void {
 
 	context.scale(resolution, resolution);
 
-	context.drawImage(canvas, 0, 0);
+	const newDrawingContext = new DrawingContext(
+		new Camera(board.pointer),
+		context,
+	);
 
-	const dataURL = newCanvas.toDataURL("image/png");
+	board.items.render(newDrawingContext);
+
+	const dataURL = newDrawingContext.ctx.canvas.toDataURL("image/png");
 
 	const link = document.createElement("a");
 	link.href = dataURL;

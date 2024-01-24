@@ -5,6 +5,7 @@ import { Button } from "View/ContextPanel/Button";
 import { SidePanelOpenIcon } from "View/Icon/SidePanelOpenIcon";
 import { SidePanelCloseIcon } from "View/Icon/SidePanelCloseIcon";
 import { useStyle } from "View";
+import { ExportBoardSnapshotButton } from "App/ExportBoardSnapshot";
 
 export class TitlePanel extends React.Component<{
 	board: Board;
@@ -30,15 +31,17 @@ export class TitlePanel extends React.Component<{
 		const isSidePanelOpen = this.props.sidePanelState.isOn;
 
 		return (
-			<div
-				id="TitlePanel"
-				className="TitlePanel"
-			>
+			<div id="TitlePanel" className="TitlePanel">
 				<SidePanelButton
 					isOpen={isSidePanelOpen}
 					toggle={this.toggleSidePanel}
 				/>
-				<Button id="Microboard" title="Microboard" onClick={() => {}} width={80}>
+				<Button
+					id="Microboard"
+					title="Microboard"
+					onClick={() => {}}
+					width={80}
+				>
 					<span
 						style={{
 							display: "inline-block",
@@ -50,12 +53,13 @@ export class TitlePanel extends React.Component<{
 						{"Microboard"}
 					</span>
 				</Button>
+				<ExportBoardSnapshotButton board={this.props.board} />
 			</div>
 		);
 	}
 }
 
-function SidePanelButton ({
+function SidePanelButton({
 	isOpen,
 	toggle,
 }: {
@@ -73,7 +77,7 @@ function SidePanelButton ({
 			<IconComponent width={24} height={24} />
 		</Button>
 	);
-};
+}
 
 useStyle(`
 .TitlePanel {
