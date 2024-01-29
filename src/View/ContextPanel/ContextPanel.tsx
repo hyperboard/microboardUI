@@ -137,7 +137,7 @@ export class ContextPanel extends React.Component<
 				style={{
 					left: `${this.state.panelRect.left}px`,
 					top: `${this.state.panelRect.top}px`,
-					userSelect: "none"
+					userSelect: "none",
 					// overflow: "hidden",
 				}}
 			>
@@ -695,17 +695,22 @@ function ConnectorAddText({
 			<Button
 				id="ChangeConnectorType"
 				onClick={() => {
-					if (board.selection.getContext() === "EditTextUnderPointer") {
+					if (
+						board.selection.getContext() === "EditTextUnderPointer"
+					) {
 						board.selection.setContext("EditUnderPointer");
 						board.items.subject.publish(board.items);
 						return;
 					}
-					const connector = board.selection.items.getItemsByItemTypes(["Connector"])[0] as Connector;
-					if (!connector) {return};
+					const connector = board.selection.items.getItemsByItemTypes(
+						["Connector"],
+					)[0] as Connector;
+					if (!connector) {
+						return;
+					}
 					board.selection.setTextToEdit(connector);
 					board.selection.setContext("EditTextUnderPointer");
 					board.items.subject.publish(board.items);
-					
 				}}
 				title="Text"
 			>
@@ -1040,7 +1045,10 @@ function FontFamily({
 	windowHeight: number;
 }): React.ReactElement | null {
 	return null;
-	if (board.selection.getContext() !== "EditTextUnderPointer"  || !board.selection.canChangeText()) {
+	if (
+		board.selection.getContext() !== "EditTextUnderPointer" ||
+		!board.selection.canChangeText()
+	) {
 		return null;
 	}
 	const menuRef = React.useRef<HTMLDivElement>(null);
@@ -1118,13 +1126,14 @@ class FontSize extends React.PureComponent<{
 		const { board, toggleMenu, menu, panelMbr, windowHeight, fontSize } =
 			this.props;
 
-		if (
-			board.selection.getContext() === "SelectUnderPointer"
-		) {
+		if (board.selection.getContext() === "SelectUnderPointer") {
 			return null;
 		}
 
-		if ((board.selection.getContext() !== "EditTextUnderPointer" || !board.selection.canChangeText())) {
+		if (
+			board.selection.getContext() !== "EditTextUnderPointer" ||
+			!board.selection.canChangeText()
+		) {
 			return null;
 		}
 
@@ -1210,13 +1219,14 @@ function FontStyle({
 	panelMbr: Mbr;
 	windowHeight: number;
 }): React.ReactElement | null {
-	if (
-		board.selection.getContext() === "SelectUnderPointer"
-	) {
+	if (board.selection.getContext() === "SelectUnderPointer") {
 		return null;
 	}
 
-	if ((board.selection.getContext() !== "EditTextUnderPointer" || !board.selection.canChangeText())) {
+	if (
+		board.selection.getContext() !== "EditTextUnderPointer" ||
+		!board.selection.canChangeText()
+	) {
 		return null;
 	}
 	const menuRef = React.useRef<HTMLDivElement>(null);
@@ -1273,13 +1283,14 @@ function TextAlignment({
 	const connector = board.selection.items.getSingle();
 	const isConnector = connector instanceof Connector;
 
-	if (
-		isConnector
-	) {
+	if (isConnector) {
 		return null;
 	}
 
-	if ((board.selection.getContext() !== "EditTextUnderPointer" || !board.selection.canChangeText())) {
+	if (
+		board.selection.getContext() !== "EditTextUnderPointer" ||
+		!board.selection.canChangeText()
+	) {
 		return null;
 	}
 
@@ -1346,7 +1357,10 @@ function AddList({
 	windowHeight: number;
 }): React.ReactElement | null {
 	return null;
-	if (board.selection.getContext() !== "EditTextUnderPointer"  || !board.selection.canChangeText()) {
+	if (
+		board.selection.getContext() !== "EditTextUnderPointer" ||
+		!board.selection.canChangeText()
+	) {
 		return null;
 	}
 	const menuRef = React.useRef<HTMLDivElement>(null);
@@ -1403,13 +1417,14 @@ function TextFeaturesSeparator({
 }: {
 	board: Board;
 }): React.ReactElement | null {
-	if (
-		board.selection.getContext() === "SelectUnderPointer"
-	) {
+	if (board.selection.getContext() === "SelectUnderPointer") {
 		return null;
 	}
 
-	if ((board.selection.getContext() !== "EditTextUnderPointer" || !board.selection.canChangeText())) {
+	if (
+		board.selection.getContext() !== "EditTextUnderPointer" ||
+		!board.selection.canChangeText()
+	) {
 		return null;
 	}
 
@@ -1441,13 +1456,14 @@ function TextColor({
 	color: string;
 	windowHeight: number;
 }): React.ReactElement | null {
-	if (
-		board.selection.getContext() === "SelectUnderPointer"
-	) {
+	if (board.selection.getContext() === "SelectUnderPointer") {
 		return null;
 	}
 
-	if ((board.selection.getContext() !== "EditTextUnderPointer" || !board.selection.canChangeText())) {
+	if (
+		board.selection.getContext() !== "EditTextUnderPointer" ||
+		!board.selection.canChangeText()
+	) {
 		return null;
 	}
 
@@ -1509,13 +1525,14 @@ function TextHighlight({
 	windowHeight: number;
 	color: string;
 }): React.ReactElement | null {
-	if (
-		board.selection.getContext() === "SelectUnderPointer"
-	) {
+	if (board.selection.getContext() === "SelectUnderPointer") {
 		return null;
 	}
 
-	if ((board.selection.getContext() !== "EditTextUnderPointer" || !board.selection.canChangeText())) {
+	if (
+		board.selection.getContext() !== "EditTextUnderPointer" ||
+		!board.selection.canChangeText()
+	) {
 		return null;
 	}
 
@@ -1567,7 +1584,10 @@ function TextColorSeparator({
 }: {
 	board: Board;
 }): React.ReactElement | null {
-	if (board.selection.getContext() !== "EditTextUnderPointer"  || !board.selection.canChangeText()) {
+	if (
+		board.selection.getContext() !== "EditTextUnderPointer" ||
+		!board.selection.canChangeText()
+	) {
 		return null;
 	}
 	return (
@@ -1783,7 +1803,8 @@ function StickerFillStyle({
 				style={{
 					width: "160px",
 					marginLeft: "-80px",
-					visibility: menu === "StickerFillStyle" ? "visible" : "hidden",
+					visibility:
+						menu === "StickerFillStyle" ? "visible" : "hidden",
 				}}
 			>
 				<ColorPicker
@@ -1808,7 +1829,10 @@ function PathStyleSeparator({
 		"Drawing",
 	]);
 	const context = board.selection.getContext();
-	const canChangeFillStyle = board.selection.items.isItemTypes(["Shape", "Sticker"]);
+	const canChangeFillStyle = board.selection.items.isItemTypes([
+		"Shape",
+		"Sticker",
+	]);
 	if (
 		context === "SelectUnderPointer" ||
 		(!canChangeFillStyle && !canChangeBorderStyle)

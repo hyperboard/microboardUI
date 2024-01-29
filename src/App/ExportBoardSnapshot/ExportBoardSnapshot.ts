@@ -2,8 +2,14 @@ import { Board } from "Board";
 import { Quality, Resolution } from "./types";
 import { DrawingContext } from "Board/Items/DrawingContext";
 import { Camera } from "Board/Camera";
+import { drawExportBackground } from "./utils";
+import { Selection } from "Board/Selection";
 
-export function exportBoardSnapshot(board: Board, quality: Quality): void {
+export function exportBoardSnapshot(
+	board: Board,
+	quality: Quality,
+	selection?: Selection,
+): void {
 	const boardId = board.getBoardId();
 	const drawingContext = board.getDrawingContext();
 	const resolution = Resolution[quality];
@@ -31,10 +37,23 @@ export function exportBoardSnapshot(board: Board, quality: Quality): void {
 
 	context.scale(resolution, resolution);
 
-	const newDrawingContext = new DrawingContext(
-		new Camera(board.pointer),
+	let newMbr = drawingContext.camera.getMbr();
+
+	if (selection) {
+		newMbr = selection.getMbr()!;
+	}
+
+	const newCamera = new Camera();
+	const newDrawingContext = new DrawingContext(newCamera, context);
+
+	newDrawingContext.camera.viewRectangle(newMbr);
+	newDrawingContext.setCamera(newCamera);
+	drawExportBackground({
 		context,
-	);
+		width: newCanvas.width,
+		height: newCanvas.height,
+	});
+	newDrawingContext.applyChanges();
 
 	board.items.render(newDrawingContext);
 
