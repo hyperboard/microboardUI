@@ -4,63 +4,52 @@ import { DrawingContext } from "Board/Items/DrawingContext";
 import { Camera } from "Board/Camera";
 import { drawExportBackground } from "./utils";
 import { Selection } from "Board/Selection";
+import { CANVAS_EXPORT_BACKGROUND } from "./const";
 
 export function exportBoardSnapshot(
-	board: Board,
-	quality: Quality,
-	selection?: Selection,
+    board: Board,
+    quality: Quality,
+    selection?: Selection,
 ): void {
-	const boardId = board.getBoardId();
-	const drawingContext = board.getDrawingContext();
-	const resolution = Resolution[quality];
-	if (!drawingContext) {
-		console.log("no drawingContext in board");
-		return;
-	}
+    const boardId = board.getBoardId();
+    const resolution = Resolution[quality];
 
-	const canvas = drawingContext.ctx.canvas;
+    const canvas = document.createElement("canvas");
 
-	if (!canvas) {
-		console.log("no board canvas");
-		return;
-	}
+    const { width, height } = board.camera.window;
+    canvas.width = Math.floor(width * window.devicePixelRatio) * resolution;
+    canvas.height = Math.floor(height * window.devicePixelRatio) * resolution;
 
-	const newCanvas = document.createElement("canvas");
-	newCanvas.width = canvas.width * resolution;
-	newCanvas.height = canvas.height * resolution;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+        console.error("Export Board: Unable to get 2D context");
+        return;
+    }
 
-	const context = newCanvas.getContext("2d");
-	if (!context) {
-		console.error("Unable to get 2D context");
-		return;
-	}
+    ctx.rect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = CANVAS_EXPORT_BACKGROUND;
+    ctx.fill();
 
-	context.scale(resolution, resolution);
+    const camera = new Camera();
+    camera.matrix = board.camera.matrix.copy();
+    const context = new DrawingContext(camera, ctx);
 
-	let newMbr = drawingContext.camera.getMbr();
+    context.setCamera(camera);
+    context.ctx.setTransform(
+        resolution * context.DPI, 0, 0, resolution * context.DPI, 0, 0
+    );
+    context.matrix.applyToContext(context.ctx);
 
-	if (selection) {
-		newMbr = selection.getMbr()!;
-	}
+    const { left, top, right, bottom } = camera.getMbr();
+    const inView = board.items.index.getRectsEnclosedOrCrossed(left, top, right, bottom);
+    for (const item of inView) {
+        item.render(context);
+    }
 
-	const newCamera = new Camera();
-	const newDrawingContext = new DrawingContext(newCamera, context);
+    const dataURL = context.ctx.canvas.toDataURL("image/png");
 
-	newDrawingContext.camera.viewRectangle(newMbr);
-	newDrawingContext.setCamera(newCamera);
-	drawExportBackground({
-		context,
-		width: newCanvas.width,
-		height: newCanvas.height,
-	});
-	newDrawingContext.applyChanges();
-
-	board.items.render(newDrawingContext);
-
-	const dataURL = newDrawingContext.ctx.canvas.toDataURL("image/png");
-
-	const link = document.createElement("a");
-	link.href = dataURL;
-	link.download = `board-${boardId}.png`;
-	link.click();
+    const link = document.createElement("a");
+    link.href = dataURL;
+    link.download = `board-${boardId}.png`;
+    link.click();
 }
