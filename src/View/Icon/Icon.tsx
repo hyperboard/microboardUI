@@ -9,12 +9,13 @@ interface Props {
 	fill?: string;
 	stroke?: string;
 	style?: React.CSSProperties;
+	scale?: string;
 }
 
 export function Icon(props: Props): React.ReactElement {
 	const icon = Icons[props.name];
 	const pathElements = [];
-	const scale = (props.width - 2) / icon.width;
+	const scale = props.scale || (props.width - 2) / icon.width;
 	const strokeWidth = (icon.width / props.width) * 1.2;
 	for (const path of icon.paths) {
 		pathElements.push(

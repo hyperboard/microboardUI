@@ -1,0 +1,20 @@
+import { applyStyle } from "lib/applyStyle";
+import React, { FC, ReactNode } from "react";
+
+export const Panel: FC<{ children: ReactNode }> = ({ children }) => {
+	return <div className="Panel">{children}</div>;
+};
+
+applyStyle(`
+    .Panel {
+        display: flex;
+        background-color: white;
+        border-radius: 4px;
+        box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.12);
+        padding-right: 4px;
+        z-index: 100;
+        -webkit-user-select: none; /* Safari */
+        -ms-user-select: none; /* IE 10 and IE 11 */
+        user-select: none; /* Standard syntax */
+    }
+`);

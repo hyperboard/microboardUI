@@ -20,6 +20,11 @@ import { isNotControlCharacter } from "./isNotControlCharacter";
 import { SidePanel } from "./SidePanel";
 import { SidePanelState } from "./SidePanel/SidePanelState";
 import { ContextMenuState, ContextMenu } from "./ContextMenu";
+import {
+	ExportSnapshotProvider,
+	ExportSelectionBox,
+	ExportSnapshotMode,
+} from "App/ExportBoardSnapshot";
 
 export class AppView extends React.Component<{
 	app: App;
@@ -58,42 +63,50 @@ export class AppView extends React.Component<{
 		}
 
 		return (
-			<div
-				style={{
-					width: "100%",
-					height: "100%",
-					backgroundColor: "rgba(200,200,200,0.2)"
-				}}
-				
-			>
+			<ExportSnapshotProvider board={board}>
 				<div
-					ref={this.containerRef}
+					style={{
+						width: "100%",
+						height: "100%",
+						backgroundColor: "rgba(200,200,200,0.2)",
+					}}
 				>
-					<Canvas
-					 app={app}
-					 board={board}
-					 contextMenuState={this.contextMenuState}
-					/>
-					<TextEditors app={app} board={board} />
-					<ToolsPanel
-						app={app}
-						board={board}
-						sidePanelState={this.sidePanelState}
-					/>
-					<ZoomPanel app={app} board={board} />
-					<ContextPanel app={app} board={board} />
-					<TitlePanel
-						board={board}
-						sidePanelState={this.sidePanelState}
-					/>
+					<div ref={this.containerRef}>
+						<Canvas
+							app={app}
+							board={board}
+							contextMenuState={this.contextMenuState}
+						/>
+						<ExportSnapshotMode>
+							<TextEditors app={app} board={board} />
+							<ToolsPanel
+								app={app}
+								board={board}
+								sidePanelState={this.sidePanelState}
+							/>
+							<ZoomPanel app={app} board={board} />
+							<ContextPanel app={app} board={board} />
+							<TitlePanel
+								board={board}
+								sidePanelState={this.sidePanelState}
+							/>
+						</ExportSnapshotMode>
+					</div>
+					<ExportSnapshotMode>
+						<SidePanel
+							app={app}
+							sidePanelState={this.sidePanelState}
+							contextMenuState={this.contextMenuState}
+						/>
+						<ContextMenu
+							app={app}
+							contextMenuState={this.contextMenuState}
+						/>
+					</ExportSnapshotMode>
+
+					<ExportSelectionBox />
 				</div>
-				<SidePanel 
-				 app={app}
-				 sidePanelState={this.sidePanelState}
-				 contextMenuState={this.contextMenuState}
-				/>
-				<ContextMenu app={app} contextMenuState={this.contextMenuState} />
-			</div>
+			</ExportSnapshotProvider>
 		);
 	}
 
@@ -185,7 +198,10 @@ export class AppView extends React.Component<{
 			}
 			return;
 		}
-		if ((event.ctrlKey || event.metaKey) && (key === "KeyC" || key === "KeyV")) {
+		if (
+			(event.ctrlKey || event.metaKey) &&
+			(key === "KeyC" || key === "KeyV")
+		) {
 			return;
 		}
 		if (
