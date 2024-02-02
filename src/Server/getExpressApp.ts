@@ -6,7 +6,7 @@ import winston from "winston";
 import path from "path";
 import helmet from "helmet";
 import { nocache } from "./nocache";
-import { Boards } from "./Boards";
+import { Boards } from "./Routes/API/V1/Boards";
 import { getDatabase } from "./Database";
 import { getV1Router } from "./Routes";
 import { WebsocketServer } from "./WebSocket";

@@ -1,8 +1,8 @@
 import express from "express";
 import winston from "winston";
 import { WebsocketServer } from "Server/WebSocket";
-import { BoardEventSM } from "Server/Message";
 import { Boards } from "./Boards";
+import { BoardEventSM } from "Server/Message"
 
 export function getBoardsRouter(
     boards: Boards,
