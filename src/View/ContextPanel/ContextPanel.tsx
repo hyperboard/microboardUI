@@ -292,6 +292,8 @@ export class ContextPanel extends React.Component<
 					<Duplicate board={board} />
 					<Delete board={board} />
 					<Lock board={board} />
+
+					<BringBackForward board={board} />
 				</Scroll>
 			</div>
 		);
@@ -1917,4 +1919,56 @@ function Lock({ board }: { board: Board }): React.ReactElement | null {
 			</Button>
 		);
 	}
+}
+
+function BringBackForward({
+	board,
+	panelMbr,
+	windowHeight,
+}: {
+	board: Board;
+	toggleMenu: (menu: string) => void;
+
+	menu: string;
+	panelMbr: Mbr;
+	color: string;
+	windowHeight: number;
+}): React.ReactElement | null {
+	const menuRef = React.useRef<HTMLDivElement>(null);
+	const context = board.selection.getContext();
+	if (context !== "SelectUnderPointer" && context !== "SelectByRect") {
+		return null;
+	}
+	const items = board.selection.items;
+
+	return (
+		<ButtonWithMenu
+			panelMbr={panelMbr}
+			windowHeight={windowHeight}
+			menuRef={menuRef}
+		>
+			<Button
+				id="BringBack"
+				onClick={() => {
+					for (const item of items.list()) {
+						board.items.index.sendToBack(item);
+					}
+				}}
+				title="Send to back"
+			>
+				<Icon name={"Rectangle"} width={IconSize} height={IconSize} />
+			</Button>
+			<Button
+				id="BringToFront"
+				onClick={() => {
+					for (const item of items.list()) {
+						board.items.index.bringToFront(item);
+					}
+				}}
+				title="Bring to front"
+			>
+				<Icon name={"Rectangle"} width={IconSize} height={IconSize} />
+			</Button>
+		</ButtonWithMenu>
+	);
 }
