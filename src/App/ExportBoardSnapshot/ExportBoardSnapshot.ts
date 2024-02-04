@@ -3,7 +3,7 @@ import { Quality, Resolution } from "./types";
 import { DrawingContext } from "Board/Items/DrawingContext";
 import { Camera } from "Board/Camera";
 import { CANVAS_EXPORT_BACKGROUND } from "./const";
-import { Mbr } from "Board/Items";
+import { Matrix, Mbr } from "Board/Items";
 
 export function exportBoardSnapshot(
 	board: Board,
@@ -12,10 +12,15 @@ export function exportBoardSnapshot(
 ): void {
 	const boardId = board.getBoardId();
 	const resolution = Resolution[quality];
-	console.log("selection", selection);
 	const canvas = document.createElement("canvas");
 
-	const { width, height } = board.camera.window;
+	let { width, height } = board.camera.window;
+
+	if (selection) {
+		width = selection.getWidth();
+		height = selection.getHeight();
+	}
+
 	canvas.width = Math.floor(width * window.devicePixelRatio) * resolution;
 	canvas.height = Math.floor(height * window.devicePixelRatio) * resolution;
 
@@ -30,7 +35,31 @@ export function exportBoardSnapshot(
 	ctx.fill();
 
 	const camera = new Camera();
-	camera.matrix = board.camera.matrix.copy();
+	const cameraMatrix = board.camera.matrix.copy();
+	camera.matrix = cameraMatrix;
+
+	if (selection) {
+		const mbrWidth = selection.getWidth();
+		const mbrHeight = selection.getHeight();
+		const scaleX = width / mbrWidth;
+		const scaleY = height / mbrHeight;
+
+		const scale = Math.min(scaleX, scaleY);
+
+		const translationX =
+			width / 2 - (selection.left + mbrWidth / 2) * scale;
+		const translationY =
+			height / 2 - (selection.top + mbrHeight / 2) * scale;
+
+		const selectionMatrix = new Matrix(
+			translationX,
+			translationY,
+			scaleX,
+			scaleY,
+		);
+
+		camera.matrix = selectionMatrix;
+	}
 
 	const context = new DrawingContext(camera, ctx);
 
@@ -45,11 +74,7 @@ export function exportBoardSnapshot(
 	);
 	context.matrix.applyToContext(context.ctx);
 
-	let mbr = camera.getMbr();
-
-	if (selection) {
-		mbr = selection;
-	}
+	const mbr = camera.getMbr();
 
 	const { left, top, right, bottom } = mbr;
 	const inView = board.items.index.getRectsEnclosedOrCrossed(

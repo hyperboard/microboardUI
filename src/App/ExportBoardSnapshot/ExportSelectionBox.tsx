@@ -24,31 +24,22 @@ export const ExportSelectionBox: FC = () => {
 	}
 
 	return (
-		<div className="SnapshotSelectionBoxContainer">
-			<div className="SnapshotSelectionBox">
-				<Panel>
-					<Button onClick={handleConfirmSnapshot}>Submit</Button>
-					<VerticalSeparator />
-					<Button onClick={handleCancelSnapshot}>Cancel</Button>
-				</Panel>
-			</div>
+		<div className="SnapshotSelectionBox">
+			<Panel>
+				<Button onClick={handleConfirmSnapshot}>Submit</Button>
+				<VerticalSeparator />
+				<Button onClick={handleCancelSnapshot}>Cancel</Button>
+			</Panel>
 		</div>
 	);
 };
 
 applyStyle(`
-	.SnapshotSelectionBoxContainer {
-		position: fixed;
-		left: 0;
-		right: 0;
-		top: 0;
-		bottom: 0;
-	}
-
 	.SnapshotSelectionBox {
-		position: absolute;
+		position: fixed;
 		left: 8px;
 		top: 8px;
 		width: auto;
+		z-index: 2;
 	}
 `);

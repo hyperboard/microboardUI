@@ -38,6 +38,7 @@ export class ExportSnapshotProvider extends PureComponent<
 			Quality.HIGH,
 			this.state.selection,
 		);
+
 		this.toggleSnapshotMode();
 	};
 
