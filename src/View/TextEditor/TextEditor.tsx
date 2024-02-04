@@ -72,7 +72,7 @@ export class TextEditor extends React.Component<
 		point.transform(camera.getMatrix());
 		const left = point.x;
 		/** A heuristic trick to better align editor with canvas */
-		const top = point.y; + 2 * camera.getScale();
+		const top = point.y - (0.8 * camera.getScale());
 		const editorScale = textScale * camera.getScale();
 		const verticalAlignment = text.getVerticalAlignment();
 
@@ -102,7 +102,7 @@ export class TextEditor extends React.Component<
 						width: `${maxWidth}px`,
 						height: `${maxHeight}px`,
 
-						//transformOrigin: "left top",
+						// transformOrigin: "left top",
 						transform: `scale(${editorScale})`,
 
 						display: "flex",
@@ -122,7 +122,7 @@ export class TextEditor extends React.Component<
 
 		return (
 
-			/*<div 
+			/* <div 
 				style={{
 					position: 'absolute',
 					left: `${container.left}px`, 
@@ -147,9 +147,9 @@ export class TextEditor extends React.Component<
 					outline: "none",
 					resize: "none",
 
-					//position: "relative",
-					//left: `${left - container.left}px`,
-					//top: `${top - container.top}px`,
+					// position: "relative",
+					// left: `${left - container.left}px`,
+					// top: `${top - container.top}px`,
 
 					position: "absolute",
 					left: `${left}px`,
@@ -157,13 +157,15 @@ export class TextEditor extends React.Component<
 
 					maxWidth: `${maxWidth+1}px`,
 					maxHeight: `${maxHeight+1}px`,
-					//width: `${maxWidth}px`,
-					//height: `${maxHeight}px`,
+					// width: `${maxWidth}px`,
+					// height: `${maxHeight}px`,
 					width: `${container.getWidth()/editorScale}px`, 
 					height: `${container.getHeight()/editorScale}px`,
 
 					transformOrigin: "left top",
-					transform: `scale(${editorScale})`,
+					// transform: `scale(${editorScale})`,
+					'--webkit-font-smoothing': 'antialiased',
+					fontKerning: 'auto',
 
 					display: "flex",
 					alignItems: verticalAlignmentToFlex(verticalAlignment), // vertical
@@ -182,6 +184,8 @@ export class TextEditor extends React.Component<
 						display: "flex",
 						justifyContent: "center", // horisontal
 						alignItems: verticalAlignmentToFlex(verticalAlignment),
+						transform: `scale(${editorScale})`,
+						transformOrigin: `left top`,
 					}}
 				>
 					<Slate
@@ -205,13 +209,15 @@ export class TextEditor extends React.Component<
 								overflowWrap: "break-word",
 								wordBreak: "normal",
 								width: "100%",
+								// transform: `scale(${editorScale})`,
+								// transformOrigin: `left top`,
 							}}
 							autoFocus
 						/>
 					</Slate>
 				</div>
 			</div>
-		//</div>
+		// </div>
 		);
 	}
 }

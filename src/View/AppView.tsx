@@ -11,7 +11,6 @@ import {
 	RichText,
 	toggleEdit,
 } from "../Board/Items/RichText/RichText";
-import { updateFPS } from "./fpsCounter";
 import { validateItemsMap } from "Board/Validators";
 import { Mbr } from "Board/Items";
 import { ImageItem } from "Board/Items/Image";
