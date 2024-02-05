@@ -16,6 +16,8 @@ interface State {
 	startY: number;
 	endX: number;
 	endY: number;
+	offsetX: number;
+	offsetY: number;
 	isDragging: boolean;
 }
 
@@ -44,6 +46,8 @@ export class ExportSelection extends PureComponent<Props, State> {
 			startY: middleY - DEFAULT_SELECTION_SIZE.height / 2,
 			endX: middleX + DEFAULT_SELECTION_SIZE.width / 2,
 			endY: middleY + DEFAULT_SELECTION_SIZE.height / 2,
+			offsetX: 0,
+			offsetY: 0,
 			isDragging: false,
 		};
 	}
@@ -107,12 +111,17 @@ export class ExportSelection extends PureComponent<Props, State> {
 	startSelection = (event: PointerEvent): void => {
 		const { clientX, clientY } = event;
 
-		// if (this.inSelectionBox(event)) {
-		// 	this.setState({
-		// 		isDragging: true,
-		// 	});
-		// 	return;
-		// }
+		if (this.inSelectionBox(event)) {
+			const offsetX = event.clientX - this.state.startX;
+			const offsetY = event.clientY - this.state.startY;
+
+			this.setState({
+				isDragging: true,
+				offsetX,
+				offsetY,
+			});
+			return;
+		}
 		if (!this.isArea(event)) {
 			return;
 		}
@@ -132,16 +141,22 @@ export class ExportSelection extends PureComponent<Props, State> {
 		if (this.state.isDragging) {
 			const { clientX, clientY } = event;
 
-			// if (this.inSelectionBox(event)) {
-			// 	this.setState(prevState => ({
-			// 		startX: clientX,
-			// 		startY: clientY,
-			// 		endX: prevState.endX + clientX,
-			// 		endY: prevState.endY + clientY,
-			// 	}));
+			if (this.inSelectionBox(event)) {
+				this.setState(prevState => ({
+					startX: event.clientX - prevState.offsetX,
+					startY: event.clientY - prevState.offsetY,
+					endX:
+						event.clientX -
+						prevState.offsetX +
+						(prevState.endX - prevState.startX),
+					endY:
+						event.clientY -
+						prevState.offsetY +
+						(prevState.endY - prevState.startY),
+				}));
 
-			// 	return;
-			// }
+				return;
+			}
 
 			this.setState({
 				endX: clientX,
