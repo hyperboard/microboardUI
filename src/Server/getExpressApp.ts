@@ -7,6 +7,7 @@ import path from "path";
 import helmet from "helmet";
 import { nocache } from "./nocache";
 import { Boards } from "./Routes/API/V1/Boards";
+import { Auth } from "./Routes/API/V1/Auth";
 import { getDatabase } from "./Database";
 import { getV1Router } from "./Routes";
 import { WebsocketServer } from "./WebSocket";
@@ -93,6 +94,7 @@ export async function getExpressApp(
 
     const database = await getDatabase(logger);
     const boards = new Boards(database, logger);
+    const auth = new Auth(database, logger);
     const eventsQueueManager = new EventsQueueManager();
 
     app.get("/", (request, response) => {
@@ -104,7 +106,7 @@ export async function getExpressApp(
         response.status(200).json({ connection: timestamp });
     });
 
-    app.use("/", getV1Router(boards, logger, ws));
+    app.use("/", getV1Router(boards, logger, ws, auth));
 
     ws.streamMessages.subscribe(({ client, socketMessage }) => {
         if (socketMessage.type === "BoardEvent") {
