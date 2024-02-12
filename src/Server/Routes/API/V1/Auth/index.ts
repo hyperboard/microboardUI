@@ -1,2 +1,2 @@
-export { getAuthRouter } from "./Router";
+export {getAuthRouter} from "./Router";
 export * from "./Auth";

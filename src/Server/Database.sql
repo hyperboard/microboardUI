@@ -446,6 +446,8 @@ $$;
 create table if not exists users (
 	id serial primary key,
 	email varchar(100),
+	activated boolean default false,
+  refresh_token varchar
 );
 
 -- Function to add new user
@@ -498,9 +500,9 @@ $$ language plpgsql;
 
 -- Table to store user passcode
 create table if not exists user_passcode (
-	user_id integer references users(id) on delete cascade
-	passcode VARCHAR(10)
-	created timestamp default now(),
+	user_id integer references users(id) on delete cascade,
+	passcode VARCHAR(10),
+	created timestamp default now()
 );
 
 -- Function to add passcode to a user
@@ -516,21 +518,21 @@ $$ language plpgsql;
 
 -- Function to check passcode
 create or replace function check_passcode(
-    user_id integer,
-    passcode varchar
+    id integer,
+    pass_code varchar
 )
 returns boolean as $$
 declare
     valid_passcode record;
 begin
-    select * into valid_passcode from user_passcode where user_id = user_id and passcode = passcode;
+    select * into valid_passcode from user_passcode where user_id = id and passcode = pass_code limit 1;
     return found;
 end;
 $$ language plpgsql;
 
 -- Table to store user passwords
 create table if not exists user_password (
-	user_id integer references users(id) on delete cascade
+	user_id integer references users(id) on delete cascade,
 	password varchar(100)
 );
 
@@ -556,5 +558,15 @@ declare
 begin
     select * into valid_password from user_password where user_id = user_id and password = password;
     return found;
+end;
+$$ language plpgsql;
+
+create or replace function  save_token(
+    user_id integer,
+    token varchar
+)
+returns void as $$
+begin
+    update users set refresh_token = token where id = user_id;
 end;
 $$ language plpgsql;

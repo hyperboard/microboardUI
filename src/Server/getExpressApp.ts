@@ -5,22 +5,25 @@ import cookieParser from "cookie-parser";
 import winston from "winston";
 import path from "path";
 import helmet from "helmet";
-import { nocache } from "./nocache";
-import { Boards } from "./Routes/API/V1/Boards";
-import { Auth } from "./Routes/API/V1/Auth";
-import { getDatabase } from "./Database";
-import { getV1Router } from "./Routes";
-import { WebsocketServer } from "./WebSocket";
-import { BoardEventListSM } from "../Connection/SocketMessage";
-import { EventsManager, EventsQueueManager } from "./WebSocket/EventsManager";
+import {nocache} from "./nocache";
+import {Boards} from "./Routes/API/V1/Boards";
+import {Auth} from "./Routes/API/V1/Auth";
+import {Users} from "./Routes/API/V1/Users";
+import {getDatabase} from "./Database";
+import {getV1Router} from "./Routes";
+import {WebsocketServer} from "./WebSocket";
+import {BoardEventListSM} from "../Connection/SocketMessage";
+import {EventsManager, EventsQueueManager} from "./WebSocket/EventsManager";
+import {Config} from "./shared/config/config";
+import {Mailer} from "./shared/modules/mailer/mailer";
 
 export async function getExpressApp(
-    ws: WebsocketServer,
+    ws: WebsocketServer
 ): Promise<express.Express> {
     const app = express();
 
     app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(bodyParser.urlencoded({extended: false}));
     app.use(cookieParser());
     app.use(compression());
 
@@ -38,7 +41,7 @@ export async function getExpressApp(
                 level: "error",
             }),
             // Write to all logs with level `info` and below to `combined.log`
-            new winston.transports.File({ filename: "combined.log" }),
+            new winston.transports.File({filename: "combined.log"}),
             // Write all logs with level `info` and below to console.
             new winston.transports.Console({
                 format: winston.format.simple(),
@@ -66,12 +69,12 @@ export async function getExpressApp(
         helmet.hsts({
             maxAge: 31536000,
             includeSubDomains: false,
-        }),
+        })
     );
     app.use(
         helmet.referrerPolicy({
             policy: ["origin"],
-        }),
+        })
     );
 
     const staticPath = path.join(process.cwd(), "public");
@@ -82,19 +85,23 @@ export async function getExpressApp(
     app.use((req, res, next) => {
         // TODO 'crutch' where borowser request page - Content-Type is undefined.
         if (req.path.includes("favicon.svg")) {
-            res.sendFile("favicon.svg", { root: staticPath });
+            res.sendFile("favicon.svg", {root: staticPath});
         } else if (req.path.includes("bundle.js.map")) {
-            res.sendFile("bundle.js.map", { root: staticPath });
+            res.sendFile("bundle.js.map", {root: staticPath});
         } else if (req.accepts("html") && !req.get("Content-Type")) {
-            res.sendFile("index.html", { root: staticPath });
+            res.sendFile("index.html", {root: staticPath});
         } else {
             next();
         }
     });
 
+    const config = new Config();
+    const mailer = new Mailer(config, logger);
+
     const database = await getDatabase(logger);
     const boards = new Boards(database, logger);
-    const auth = new Auth(database, logger);
+    const auth = new Auth(database, logger, config, mailer);
+    const users = new Users(database, logger);
     const eventsQueueManager = new EventsQueueManager();
 
     app.get("/", (request, response) => {
@@ -103,25 +110,28 @@ export async function getExpressApp(
 
     app.get("/api/v1/connection", (request, response) => {
         const timestamp = new Date().getTime();
-        response.status(200).json({ connection: timestamp });
+        response.status(200).json({connection: timestamp});
     });
 
-    app.use("/", getV1Router(boards, logger, ws, auth));
+    app.use("/", getV1Router(config, mailer, boards, logger, ws, auth, users));
 
-    ws.streamMessages.subscribe(({ client, socketMessage }) => {
+    ws.streamMessages.subscribe(({client, socketMessage}) => {
         if (socketMessage.type === "BoardEvent") {
-            eventsQueueManager.addEvent(socketMessage.boardId, socketMessage.event.body);
+            eventsQueueManager.addEvent(
+                socketMessage.boardId,
+                socketMessage.event.body
+            );
         } else if (socketMessage.type === "Subscribe") {
             const index = socketMessage.index;
-            boards.getBoard(socketMessage.boardId).then(board => {
+            boards.getBoard(socketMessage.boardId).then((board) => {
                 if (board) {
-                    board.listEvents(index).then(events => {
+                    board.listEvents(index).then((events) => {
                         // TODO сериализация вно не должна производится здесь, а внутри ws.publish, к примеру.
                         //  Нужно передавать не WebSocket, а клиента, с его методами.
                         client.send(
                             JSON.stringify(
-                                new BoardEventListSM(board.uuid, events),
-                            ),
+                                new BoardEventListSM(board.uuid, events)
+                            )
                         );
                     });
                 }
@@ -129,20 +139,26 @@ export async function getExpressApp(
         }
     });
 
-    const eventsManager = new EventsManager(boards, (boardId, events) => {
-        ws.publish(boardId, new BoardEventListSM(boardId, events));
-    }, logger);
+    const eventsManager = new EventsManager(
+        boards,
+        (boardId, events) => {
+            ws.publish(boardId, new BoardEventListSM(boardId, events));
+        },
+        logger
+    );
 
     setInterval(() => {
-        eventsQueueManager.getAllQueue().forEach(eventsQueue => {
+        eventsQueueManager.getAllQueue().forEach((eventsQueue) => {
             const boardId = eventsQueue.boardId;
             if (eventsManager.isBoardReady(boardId)) {
                 eventsQueueManager.remove(eventsQueue);
-                eventsManager.saveBodyEvents(boardId, eventsQueue.eventBodyQueue);
+                eventsManager.saveBodyEvents(
+                    boardId,
+                    eventsQueue.eventBodyQueue
+                );
             }
-        })
+        });
     }, 10);
-
 
     return app;
 }
