@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Link } from 'react-router-dom';
 import { Board } from "Board";
 import { SidePanelState } from "View/SidePanel/SidePanelState";
 import { Button } from "View/ContextPanel/Button";
@@ -6,11 +7,20 @@ import { SidePanelOpenIcon } from "View/Icon/SidePanelOpenIcon";
 import { SidePanelCloseIcon } from "View/Icon/SidePanelCloseIcon";
 import { useStyle } from "View";
 import { ExportBoardSnapshotButton } from "App/ExportBoardSnapshot";
+import { Modal } from "View/Modal/Modal";
 
 export class TitlePanel extends React.Component<{
 	board: Board;
 	sidePanelState: SidePanelState;
 }> {
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			isModalVisible: false,
+		};
+	}
+
 	update = (): void => {
 		this.forceUpdate();
 	};
@@ -25,6 +35,14 @@ export class TitlePanel extends React.Component<{
 
 	toggleSidePanel = () => {
 		this.props.sidePanelState.toggle();
+	};
+
+	openModal = () => {
+		this.setState({ isModalVisible: true });
+	};
+
+	closeModal = () => {
+		this.setState({ isModalVisible: false });
 	};
 
 	render(): React.ReactElement {
@@ -42,17 +60,34 @@ export class TitlePanel extends React.Component<{
 					onClick={() => {}}
 					width={80}
 				>
-					<span
+					<Link
+						to={'/dashboard'}
 						style={{
 							display: "inline-block",
+							color: "black",
+							textDecoration: "none",
 							paddingLeft: "4px",
 							paddingRight: "4px",
 							fontWeight: 600,
 						}}
 					>
 						{"Microboard"}
-					</span>
+					</Link>
 				</Button>
+				<span
+					onClick={() => this.openModal()}
+					style={{
+						maxWidth: 100,
+						textOverflow: "ellipsis",
+						whiteSpace: "nowrap",
+						margin: "auto",
+						overflow: "hidden",
+						cursor: "pointer"
+					}}
+				>
+					{this.props.board?.boardId}
+					{this.state.isModalVisible && <Modal boardLink={location.href} closeModal={this.closeModal} />}
+				</span>
 				<ExportBoardSnapshotButton board={this.props.board} />
 			</div>
 		);

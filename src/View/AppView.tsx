@@ -1,5 +1,4 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import { App } from "App";
 import { Canvas } from "./Canvas";
 import { TitlePanel } from "./TitlePanel";
@@ -57,6 +56,13 @@ export class AppView extends React.Component<{
 	render(): React.ReactElement {
 		const { app } = this.props;
 		const board = app.getBoard();
+		const urlString = new URL(window.location.href).pathname;
+		const boardId = urlString.split("/").pop();
+
+		if (boardId) {
+			app.openBoard(boardId!);
+		}
+		
 		if (!board) {
 			return <div></div>;
 		}
@@ -431,13 +437,4 @@ export class AppView extends React.Component<{
 			*/
 		}
 	}
-}
-
-export function getRender(app: App): () => void {
-	return function () {
-		ReactDOM.render(
-			<AppView app={app} />,
-			document.getElementById("root") as HTMLDivElement,
-		);
-	};
 }

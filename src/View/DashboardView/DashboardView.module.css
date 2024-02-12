@@ -1,0 +1,59 @@
+.dashboard-wrapper {
+  overflow: auto;
+  padding: 20px;
+}
+
+.dashboard-view-title {
+  font-family: 'Arial';
+  font-weight: 700;
+  color: #050038;
+}
+
+.board-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.add-board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #2462ff;
+  border-radius: 8px;
+  transition: 0.2s;
+  cursor: pointer;
+}
+
+.add-board:hover {
+  background-color: #1e54dc;
+}
+
+.add-board-plus {
+  color: white;
+  font-size: 48px;
+}
+
+.board-card {
+  overflow: hidden;
+  border: 1px solid #e7e7e7;
+  border-radius: 8px;
+  cursor: pointer;
+  /* height: 100px; */
+}
+
+.board-card-background {
+  height: 200px;
+  width: 100%;
+  background-color: #FAF7EF;
+}
+
+.board-card-title {
+  padding: 10px;
+}
+
+.board-card-date {
+  padding: 10px;
+  color: #5f5c80;
+}

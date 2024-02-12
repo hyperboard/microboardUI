@@ -1,0 +1,44 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+}
+
+.form {
+  border: 1px solid black;
+  border-radius: 8px;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 300px;
+}
+
+.link {
+  text-decoration: none;
+  color: #6c7173;
+  align-self: flex-start;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.link:visited {
+  color: #6c7173;
+}
+
+.title {
+  font-family: 'Arial';
+  font-weight: 700;
+  text-align: center;
+}
+
+.error {
+  color: red;
+}

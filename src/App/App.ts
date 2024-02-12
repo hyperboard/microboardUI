@@ -168,6 +168,7 @@ export class App {
         for (const sub of this.subscriptions) {
             this.activateSubscription(sub);
         }
+        // FIX: Migrate to react router
         window.history.pushState({}, "", this.location.getPathname(id));
         this.boardSubject.publish(board);
     }

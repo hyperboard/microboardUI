@@ -18,7 +18,8 @@ connection
 	.connect()
 	.then(() => {
 		window.app = new App(connection);
-		return window.app.openStartingBoard();
+		const boards = window.app.storage.listPublicBoards();
+		return boards.length === 0 ? window.app.openStartingBoard() : Promise.resolve();
 	})
 	.then(() => {
 		window.app.render();

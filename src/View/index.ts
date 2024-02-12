@@ -1,2 +1,3 @@
-export { AppView, getRender } from "./AppView";
+export { AppView } from "./AppView";
+export { getRender } from './router';
 export { useStyle } from "./useStyle";
