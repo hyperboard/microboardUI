@@ -1,8 +1,8 @@
-import {Pool, QueryResult, QueryResultRow} from "pg";
+import { Pool, QueryResult, QueryResultRow } from "pg";
 import winston from "winston";
-import {sql} from "./sql";
+import { sql } from "./sql";
 
-const {DB_PORT, DB_USER, DB_PASSWORD, DB_NAME, DB_HOST} = process.env;
+const { DB_PORT, DB_USER, DB_PASSWORD, DB_NAME, DB_HOST } = process.env;
 
 export class Database {
     private pool = new Pool({
@@ -30,9 +30,8 @@ function loadFunctions(database: Database, logger: winston.Logger): void {
         } catch (error) {
             const retry = 1000;
             logger.error(
-                `Error when loading PGSQL function: ${name}
-				${body}
-				`,
+                `Error when loading PGSQL function: ${name}`,
+                // ` ${body}`,
                 error,
                 `Will retry in ${retry}ms`,
             );
@@ -41,7 +40,7 @@ function loadFunctions(database: Database, logger: winston.Logger): void {
                 setTimeout(() => {
                     loadFunction(name, body);
                     resolve(true);
-                }, 1000),
+                }, retry),
             );
         }
     }

@@ -1,5 +1,13 @@
 create extension if not exists "uuid-ossp";
 
+-- Table to store users
+create table if not exists users (
+	id serial primary key,
+	email varchar(100),
+	activated boolean default false,
+    refresh_token varchar
+);
+
 -- Intialize the boards table.
 create table if not exists boards (
 	id serial primary key,
@@ -70,8 +78,8 @@ $body$;
 create or replace function selectBoardId(
 	uuid uuid
 )
-	returns integer
-	language plpgsql
+returns integer
+language plpgsql
 as $body$
 declare
     boardId integer;
@@ -142,20 +150,12 @@ $body$;
 
 -- Web app client objects to call server endponts, that call nodejs objects that call Postgresql database functions to CRUD boards and users
 
--- Table to link board serial id to its uuid
-create table if not exists boards (
-	id serial primary key,
-	uniq_id uuid,
-	created timestamp default now(),
-	boardname varchar(32),
-);
-
-
 -- Table to link board to its owner
 create table if not exists board_owner (
 	board_id integer references boards(id) on delete cascade,
-	owner_id integer references users(id) on delete cascade
-)
+	owner_id integer references users(id) on delete cascade,
+	primary key (board_id, owner_id)
+);
 
 -- Table to store board permissions
 create table if not exists board_permissions (
@@ -163,8 +163,7 @@ create table if not exists board_permissions (
 	user_id integer references users(id) on delete cascade,
 	can_view boolean default false,
 	can_edit boolean default false,
-	primary key (board_id, user_id),
-	foreign key (board_id) references board_owner(board_id)
+	primary key (board_id, user_id)
 );
 
 
@@ -296,7 +295,7 @@ create or replace function create_private_board(
     owner_id integer,
     out board_id integer
 )
-returns void
+returns integer
 language plpgsql
 as $$
 begin
@@ -315,7 +314,7 @@ $$;
 -- Table to store board edit link
 create table if not exists board_edit_link (
 	board_id integer references boards(id) on delete cascade,
-	edit_link_uuid UUID,
+	edit_link_uuid UUID
 );
 
 -- Function to generate an edit link for a board
@@ -442,13 +441,6 @@ begin
 end;
 $$;
 
--- Table to store users
-create table if not exists users (
-	id serial primary key,
-	email varchar(100),
-	activated boolean default false,
-  refresh_token varchar
-);
 
 -- Function to add new user
 create or replace function add_user(
@@ -472,7 +464,7 @@ $$ language plpgsql;
 
 -- Table to store user names
 create table if not exists user_name (
-	user_id integer references users(id) on delete cascade
+	user_id integer references users(id) on delete cascade,
 	name VARCHAR(100)
 );
 
