@@ -4,6 +4,7 @@ export const FontSizes = [10, 12, 14, 18, 24, 36, 48, 64, 80, 144, 288];
 
 interface Props {
 	onPick: (size: number) => void;
+	maxSize?: number;
 }
 
 export function FontSizePicker(props: Props): React.ReactElement {
@@ -18,6 +19,7 @@ export function FontSizePicker(props: Props): React.ReactElement {
 		float: "left",
 		position: "relative",
 	};
+	const max = props.maxSize || 288
 	const fontButtons = [];
 	for (let i = 0; i < FontSizes.length; i++) {
 		const size = FontSizes[i];
@@ -34,6 +36,7 @@ export function FontSizePicker(props: Props): React.ReactElement {
 						event.currentTarget.style.color = "black";
 					}}
 					style={buttonStyle}
+					disabled={max < size}
 				>
 					{size}
 				</button>

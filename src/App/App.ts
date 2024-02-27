@@ -41,7 +41,7 @@ export class App {
 
     subscriptions: Subscription[] = [];
 
-    constructor(private connection: Connection) { }
+    constructor(private connection: Connection, private isHistory: boolean = true) { }
 
     findSubscription(subscription: {
         subjects: string[];
@@ -168,8 +168,10 @@ export class App {
         for (const sub of this.subscriptions) {
             this.activateSubscription(sub);
         }
-        // FIX: Migrate to react router
-        window.history.pushState({}, "", this.location.getPathname(id));
+
+        if(this.isHistory) {
+            window.history.pushState({}, "", this.location.getPathname(id));
+        }
         this.boardSubject.publish(board);
     }
 

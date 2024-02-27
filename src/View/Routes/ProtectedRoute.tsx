@@ -64,7 +64,6 @@ export const ProtectedRoute: React.FC<TProtectedRoute> = ({ allowRoles, isPublic
 	useEffect(() => {
 		const accessToken = Cookies.get("accessToken");
 		const refreshToken = Cookies.get("refreshToken");
-		console.log(accessToken, refreshToken);
 
 		if (accessToken && refreshToken) {
 			setIsLoggedIn(true);
