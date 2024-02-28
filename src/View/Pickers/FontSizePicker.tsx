@@ -8,6 +8,7 @@ interface Props {
 }
 
 export function FontSizePicker(props: Props): React.ReactElement {
+	const max = props.maxSize || 288;
 	const buttonStyle: React.CSSProperties = {
 		justifyContent: "center",
 		alignItems: "center",
@@ -19,10 +20,16 @@ export function FontSizePicker(props: Props): React.ReactElement {
 		float: "left",
 		position: "relative",
 	};
-	const max = props.maxSize || 288
+
 	const fontButtons = [];
 	for (let i = 0; i < FontSizes.length; i++) {
 		const size = FontSizes[i];
+		const isDisabled = max < size;
+		const additionalStyle: React.CSSProperties = {}
+		if (isDisabled) {
+			additionalStyle.color = "rgba(0, 0, 0, 0.4)";
+			additionalStyle.cursor = "default";
+		}
 		fontButtons.push(
 			<React.Fragment key={i}>
 				<button
@@ -30,13 +37,15 @@ export function FontSizePicker(props: Props): React.ReactElement {
 						props.onPick(size);
 					}}
 					onMouseEnter={event => {
+						if (isDisabled) {return;}
 						event.currentTarget.style.color = "blue";
 					}}
 					onMouseLeave={event => {
+						if (isDisabled) {return;}
 						event.currentTarget.style.color = "black";
 					}}
-					style={buttonStyle}
-					disabled={max < size}
+					style={{...buttonStyle, ...additionalStyle}}
+					disabled={isDisabled}
 				>
 					{size}
 				</button>

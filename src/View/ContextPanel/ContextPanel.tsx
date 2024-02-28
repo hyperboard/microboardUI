@@ -1133,7 +1133,7 @@ class FontSize extends React.PureComponent<{
 		}
 
 		if (
-			board.selection.getContext() !== "EditTextUnderPointer" ||
+			board.selection.getContext() !== "EditTextUnderPointer" &&
 			!board.selection.canChangeText()
 		) {
 			return null;
@@ -1154,6 +1154,10 @@ class FontSize extends React.PureComponent<{
 						min="10"
 						max="288"
 						value={`${this.state.fontSize}`}
+						onInput={(event) => {
+							event.preventDefault();
+							return;
+						}}
 						onChange={(
 							event: React.ChangeEvent<HTMLInputElement>,
 						): void => {
@@ -1226,7 +1230,7 @@ function FontStyle({
 	}
 
 	if (
-		board.selection.getContext() !== "EditTextUnderPointer" ||
+		board.selection.getContext() !== "EditTextUnderPointer" &&
 		!board.selection.canChangeText()
 	) {
 		return null;
@@ -1290,7 +1294,7 @@ function TextAlignment({
 	}
 
 	if (
-		board.selection.getContext() !== "EditTextUnderPointer" ||
+		board.selection.getContext() !== "EditTextUnderPointer" &&
 		!board.selection.canChangeText()
 	) {
 		return null;
@@ -1424,7 +1428,7 @@ function TextFeaturesSeparator({
 	}
 
 	if (
-		board.selection.getContext() !== "EditTextUnderPointer" ||
+		board.selection.getContext() !== "EditTextUnderPointer" &&
 		!board.selection.canChangeText()
 	) {
 		return null;
@@ -1463,7 +1467,7 @@ function TextColor({
 	}
 
 	if (
-		board.selection.getContext() !== "EditTextUnderPointer" ||
+		board.selection.getContext() !== "EditTextUnderPointer" &&
 		!board.selection.canChangeText()
 	) {
 		return null;
@@ -1532,7 +1536,7 @@ function TextHighlight({
 	}
 
 	if (
-		board.selection.getContext() !== "EditTextUnderPointer" ||
+		board.selection.getContext() !== "EditTextUnderPointer" &&
 		!board.selection.canChangeText()
 	) {
 		return null;
@@ -1587,7 +1591,7 @@ function TextColorSeparator({
 	board: Board;
 }): React.ReactElement | null {
 	if (
-		board.selection.getContext() !== "EditTextUnderPointer" ||
+		board.selection.getContext() !== "EditTextUnderPointer" &&
 		!board.selection.canChangeText()
 	) {
 		return null;
