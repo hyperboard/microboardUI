@@ -20,8 +20,11 @@ export class WhiteboardModuleView implements WhiteboardModule {
     render(params: Params): Promise<void> {
         return new Promise((resolve, reject) => {
             const { container, baseUrl, boardId } = params;
+            const searchParams = new URLSearchParams();
+            searchParams.append("external", "true");
+            const src = `${baseUrl}/${boardId}${searchParams.toString()}`;
             const iframe = React.createElement('iframe', {
-                src: `${baseUrl}/${boardId}`,
+                src,
                 style: {
                     border: "0px",
                     width: params.width || '100%',

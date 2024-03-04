@@ -8,9 +8,14 @@ import ReactDOM from "react-dom";
 import { BoardView } from "./BoardView";
 import "../index.css";
 import { ProtectedRoute } from "./Routes/ProtectedRoute";
+import RootView from "./RootView/RootView";
 
 export function getRender(app: App): () => void {
 	const router = createBrowserRouter([
+		{
+			path: "/",
+			element: <RootView app={app} />,
+		},
 		{
 			path: "/sign-up",
 			element: <SignupView />,

@@ -1,10 +1,37 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styles from './DashboardView.module.css';
 import { useNavigate } from 'react-router-dom';
 import { App } from 'App';
+import { WhiteboardModuleView } from 'WhiteBoardModule/WhiteBoardModuleNative';
+import { getApiUrl } from 'Config';
+import Cookies from 'js-cookie';
 
 interface BoardCardProps extends React.HTMLAttributes<HTMLDivElement> {
   name: string;
+}
+
+type PrivateBoards = {
+  privateBoards: {board: string}[];
+}
+
+const fetchPrivateBoards = async (): Promise<PrivateBoards | undefined> => {
+  try {
+    console.log("fetchPrivateBoards")
+    const privateBoards = await fetch(getApiUrl("/boards/private"), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${Cookies.get("accessToken")}`
+      },
+      body: JSON.stringify({})
+    });
+    const data = await privateBoards.json();
+    console.log("data: ",data);
+    return data;
+  } catch(error) {
+    console.log('error: ', error);
+    return undefined;
+  }
 }
 
 const BoardCard: React.FC<BoardCardProps> = ({ name }) => {
@@ -47,23 +74,66 @@ const AddBoard: React.FC<{app: App}> = ({app}) => {
 export const DashboardView: React.FC<{app: App}> = (props) => {
   const navigate = useNavigate();
   const boards = props.app.storage.listPublicBoards();
+  const [privateBoards, setPrivateBoards] = useState<PrivateBoards | undefined>();
+
+  React.useEffect(() => {
+    if (!boards.length || window.self !== window.top) { 
+      return; 
+    }
+    const iframeTest = new WhiteboardModuleView();
+    iframeTest.render({
+        container: document.querySelector("#frameTest")!,
+        baseUrl: "/boards",
+        boardId: boards[0].boardId,
+        userToken: '',
+        width: '800px',
+        height: '400px',
+    })
+  }, []);
+
+  React.useEffect(() => {
+    if (Cookies.get("accessToken")) {
+      fetchPrivateBoards().then((data) => {
+        setPrivateBoards(data);
+      })
+    }
+  }, []);
 
   return (
     <div className={styles["dashboardWrapper"]}>
       <h1>Dashboard</h1>
+      {window.self !== window.top ? null : (
+        <>
+        <h2>Public boards</h2>
+        <div className={styles["boardGrid"]}>
+          <AddBoard app={props.app} />
+          {
+          boards.map((board) => 
+            <BoardCard 
+              key={board.boardId} 
+              name={board.name || board.boardId || 'Unnamed'} 
+              onClick={() => {
+                props.app.openBoard(board.boardId);
+                navigate(`/boards/${board.boardId}`);
+              }
+            } />)
+          }
+        </div></>
+      )}
+      
+      <h2>Private boards</h2>
       <div className={styles["boardGrid"]}>
-        <AddBoard app={props.app} />
         {
-        boards.map((board) => 
-          <BoardCard 
-            key={board.boardId} 
-            name={board.name || board.boardId || 'Unnamed'} 
-            onClick={() => {
-              props.app.openBoard(board.boardId);
-              navigate(`/boards/${board.boardId}`);
-            }
-          } />)
+        privateBoards?.privateBoards?.length ?
+         privateBoards.privateBoards.map((board) => 
+         (<BoardCard key={board.board} name={board.board} />)
+         ): "No private boards"
         }
+      </div>
+      
+      <div>Test frame (first public board):</div>
+      <div id='frameTest'></div>
+      <div>
       </div>
     </div>
 

@@ -154,6 +154,10 @@ export class App {
         return id;
     }
 
+    // async createPrivateBoard(owner: string): Promise<any> {
+    //     const url = await this.connection.getNewPrivateBoardURL(owner);
+    // }
+
     openBoard(id: string): void {
         let board = this.boards.get(id);
         if (!board) {
@@ -169,9 +173,10 @@ export class App {
             this.activateSubscription(sub);
         }
 
-        if(this.isHistory) {
-            window.history.pushState({}, "", this.location.getPathname(id));
-        }
+        // if(this.isHistory) {
+        //     console.log('isHistory')
+        //     window.history.pushState({}, "", this.location.getPathname(id));
+        // }
         this.boardSubject.publish(board);
     }
 

@@ -5,6 +5,8 @@ type Params = {
     baseUrl: string;
     boardId: string;
     userToken: string;
+    width?: string;
+    height?: string;
 }
 
 interface WhiteboardModule {
@@ -21,8 +23,8 @@ export class WhiteboardModuleView implements WhiteboardModule {
             this.iframe = document.createElement('iframe');
             this.iframe.src = `${baseUrl}/${boardId}`;
             this.iframe.id = 'iframe';
-            this.iframe.width = '100%';
-            this.iframe.height = '400px';
+            this.iframe.width = params.width || '100%';
+            this.iframe.height = params.height || '400px';
             this.iframe.sandbox.add('allow-same-origin', 'allow-scripts');
 
             this.iframe.onload = () => {

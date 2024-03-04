@@ -101,7 +101,11 @@ function SidePanelButton({
 	isOpen: boolean;
 	toggle: () => void;
 }): React.ReactElement {
+	const isIframe = window.self !== window.top;
 	const IconComponent = isOpen ? SidePanelCloseIcon : SidePanelOpenIcon;
+	if (isIframe) {
+		return (<></>);
+	}
 	return (
 		<Button
 			id={isOpen ? "CloseSidePanel" : "OpenSidePanel"}
