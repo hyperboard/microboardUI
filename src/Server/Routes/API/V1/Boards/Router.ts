@@ -3,6 +3,7 @@ import winston from "winston";
 import { WebsocketServer } from "Server/WebSocket";
 import { Boards } from "./Boards";
 import { BoardEventSM } from "Server/Message"
+import { jwtMiddleware } from "Server/shared/middlewares";
 
 export function getBoardsRouter(
     boards: Boards,
@@ -13,7 +14,8 @@ export function getBoardsRouter(
 
     /** Create a new board */
     router.post("/boards", async (request, response) => {
-        const board = await boards.addBoard();
+        const { body } = request;
+        const board = await boards.addBoard(body);
         if (!board) {
             logger.info(`post /api/v1/boards/ Exception: create a new board`);
             return;
@@ -103,6 +105,25 @@ export function getBoardsRouter(
         logger.info(
             `get /api/v1/boards/:uuid/events/:event Success: list events after ${event} for ${uuid}`,
         );
+        response.json(json);
+        response.end();
+    });
+
+    router.post("/boards/private", jwtMiddleware(logger) , async (request, response) => {
+        console.log('Get private boards: ', request.user);
+        const user = request.user;
+        const privateBoards = await boards.getPrivateBoards(user);
+        console.log('Get private boards: ', privateBoards);
+        if (!privateBoards) {
+            logger.info(
+                `get /api/v1/boards/private Exception: get private boards`,
+            );
+            response.status(404).end();
+            return;
+        }
+        const json = {
+            privateBoards,
+        }
         response.json(json);
         response.end();
     });

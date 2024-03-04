@@ -562,3 +562,17 @@ begin
     update users set refresh_token = token where id = user_id;
 end;
 $$ language plpgsql;
+
+create or replace function get_private_boards(
+	userId integer
+)
+returns setof uuid as $$
+begin
+	return query
+	select distinct b.uniq_id
+	from public.boards b
+	inner join public.board_permissions p ON b.id = p.board_id  
+	where p.user_id = userId
+	and (p.can_view = true or p.can_edit = true);
+end;
+$$ language plpgsql;
