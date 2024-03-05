@@ -85,10 +85,11 @@ export const DashboardView: React.FC<{app: App}> = (props) => {
         container: document.querySelector("#frameTest")!,
         baseUrl: "/boards",
         boardId: boards[0].boardId,
-        userToken: '',
+        userToken: 'token',
         width: '800px',
         height: '400px',
-    })
+    });
+    iframeTest.setAuthToken('testToken', 'testRefreshToken');
   }, []);
 
   React.useEffect(() => {

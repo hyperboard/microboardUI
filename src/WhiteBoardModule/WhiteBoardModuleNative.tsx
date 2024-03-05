@@ -1,5 +1,3 @@
-import Cookies from "js-cookie";
-
 type Params = {
     container: HTMLElement;
     baseUrl: string;
@@ -24,7 +22,7 @@ export class WhiteboardModuleView implements WhiteboardModule {
             this.iframe.src = `${baseUrl}/${boardId}`;
             this.iframe.id = 'iframe';
             this.iframe.width = params.width || '100%';
-            this.iframe.height = params.height || '400px';
+            this.iframe.height = params.height || '100%';
             this.iframe.sandbox.add('allow-same-origin', 'allow-scripts');
 
             this.iframe.onload = () => {
@@ -40,8 +38,14 @@ export class WhiteboardModuleView implements WhiteboardModule {
     }
 
     setAuthToken(accessToken: string, refreshToken: string): void {
-        Cookies.set("accessToken", accessToken, { secure: true });
-        Cookies.set("refreshToken", refreshToken, { secure: true });
+        const message = {
+            pattern: 'setTalkAuthToken',
+            payload: {
+                accessToken,
+                refreshToken
+            }
+        };
+        this.iframe?.contentWindow?.postMessage(message, '*');
     }
 
     async dispose(): Promise<void> {

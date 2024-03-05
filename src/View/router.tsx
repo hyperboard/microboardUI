@@ -9,8 +9,11 @@ import { BoardView } from "./BoardView";
 import "../index.css";
 import { ProtectedRoute } from "./Routes/ProtectedRoute";
 import RootView from "./RootView/RootView";
+import { TalkModule } from "lib/TalkModule";
 
 export function getRender(app: App): () => void {
+	new TalkModule(); 
+
 	const router = createBrowserRouter([
 		{
 			path: "/",
@@ -45,6 +48,7 @@ export function getRender(app: App): () => void {
 			],
 		},
 	]);
+
 	return function () {
 		ReactDOM.render(
 			<RouterProvider router={router} />,

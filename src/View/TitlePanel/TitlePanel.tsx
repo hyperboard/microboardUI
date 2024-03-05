@@ -8,6 +8,7 @@ import { SidePanelCloseIcon } from "View/Icon/SidePanelCloseIcon";
 import { useStyle } from "View";
 import { ExportBoardSnapshotButton } from "App/ExportBoardSnapshot";
 import { Modal } from "View/Modal/Modal";
+import { isIframe } from "lib/isIframe";
 
 export class TitlePanel extends React.Component<{
 	board: Board;
@@ -60,7 +61,8 @@ export class TitlePanel extends React.Component<{
 					onClick={() => {}}
 					width={80}
 				>
-					<Link
+					{!isIframe() ? (
+						<Link
 						to={'/dashboard'}
 						style={{
 							display: "inline-block",
@@ -70,9 +72,22 @@ export class TitlePanel extends React.Component<{
 							paddingRight: "4px",
 							fontWeight: 600,
 						}}
-					>
-						{"Microboard"}
-					</Link>
+						>
+							{"Microboard"}
+						</Link>
+					) : (
+							<span
+							style={{
+								display: "inline-block",
+								color: "black",
+								textDecoration: "none",
+								paddingLeft: "4px",
+								paddingRight: "4px",
+								fontWeight: 600,
+							}}>
+								{"Microboard"}
+							</span>
+					)}
 				</Button>
 				<span
 					onClick={() => this.openModal()}
