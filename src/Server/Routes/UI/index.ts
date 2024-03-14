@@ -1,1 +1,0 @@
-export { getUIRoutes } from "./Ui";
