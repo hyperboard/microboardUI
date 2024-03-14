@@ -57,26 +57,26 @@ returns integer
 language plpgsql
 as $body$
 declare
-	board_id integer;
+	board_found_id integer;
 begin
 	-- First, try to find the board_id using the board UUID
-	select id into board_id from boards where uniq_id = board_or_edit_link_uuid;
+	select id into board_found_id from boards where uniq_id = board_or_edit_link_uuid;
 
 	-- If not found, try finding the board_id using the edit link UUID
-	if board_id is null then
-	    select board_id into board_id
+	if board_found_id is null then
+	    select board_id into board_found_id
 	    from board_edit_link bel
 	    where bel.edit_link_uuid = board_or_edit_link_uuid;
 	end if;
 
 	-- If no board_id was found by now, raise an error
-	if board_id is null then
+	if board_found_id is null then
 	    raise exception 'Board UUID or Edit Link UUID does not exist';
 	end if;
 
 	-- Call addevent function with the found board_id
     -- addevent function handles unique eventid checking and other logic
-	return addevent(board_id, eventid, eventbody);
+	return addevent(board_found_id, eventid, eventbody);
 end;
 $body$;
 
@@ -95,17 +95,32 @@ returns table (
 language plpgsql
 as $body$
 declare
-    board_id integer;
+    board_identifier integer;
 	selectevents text;
+	link_result record;
 begin
-    board_id := selectBoardId(board_uuid);
-	if ( board_id is null ) then
-		raise exception 'board_id is null';
-	end if;
-	selectevents := format('select * from board%s where logid>=%s order by logid asc', board_id, afterlogid);
-	return query execute selectevents;
+    -- First, try to find the board_id using the direct board UUID
+    select id into board_identifier from boards where uniq_id = board_uuid;
+
+    -- If not found, use the get_link function to retrieve the board_id using edit or view link UUID
+    if board_identifier is null then
+        select * into link_result from get_link(board_uuid);
+        board_identifier := link_result.board_id; -- Explicitly assign the value from returned record
+    end if;
+
+    -- If no board_id was found by now, raise an error
+    if board_identifier is null then
+        raise exception 'Board UUID or Link UUID does not exist';
+    end if;
+
+    -- Prepare the SQL query to select events
+    selectevents := format('select * from board%s where logid>=%s order by logid asc', board_identifier, afterlogid);
+
+    -- Execute the prepared SQL query and return the result
+    return query execute selectevents;
 end;
 $body$;
+
 
 create or replace function selectBoardId(
 	uuid uuid
@@ -123,6 +138,31 @@ begin
 	return boardId;
 end;
 $body$;
+
+create or replace function create_board(
+    board_id uuid,
+    title varchar(32)
+)
+returns uuid
+language plpgsql
+as $$
+declare
+    new_board_id uuid := board_id; 
+    created_board_id integer;
+begin
+    if (new_board_id is null) then
+        new_board_id := uuid_generate_v4();
+    end if;
+
+    INSERT INTO boards (uniq_id, boardname)
+    VALUES (new_board_id, title)
+    RETURNING id INTO created_board_id;
+
+    PERFORM addboardtable(created_board_id);
+
+    return new_board_id;
+end;
+$$;
 
 -- A function to add a new board to the database.
 -- Calls addboardrecord to create a new board record and get its id to call addboardtable.

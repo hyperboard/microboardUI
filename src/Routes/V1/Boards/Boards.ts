@@ -8,12 +8,13 @@ export class Boards {
 
     async createBoard(boardId: string, title: string): Promise<any> {
         try {
+            const truncatedTitle = title.slice(0, 32);
+
             const result = await this.database.query(
                 "SELECT * FROM create_board($1, $2)",
-                [boardId, title]
+                [boardId, truncatedTitle]
             );
-            return;
-            // return result.rows[0].boardId;
+            return result.rows[0].boardId;
         } catch (error) {
             this.logger.error(`Error creating board: ${error}`);
             throw error;
