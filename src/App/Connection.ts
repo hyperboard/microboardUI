@@ -154,7 +154,7 @@ export function getSubscription(
 	// Function to handle messages received from the WebSocket
 	const onMessage = (event: any): void => {
 		try {
-			const parsedEvent = JSON.parse(event.data);
+			const parsedEvent = event; // JSON.parse(event.data);
 			if (parsedEvent && parsedEvent.type === "Error") {
 				throw new Error("Error received: " + parsedEvent.message);
 			}

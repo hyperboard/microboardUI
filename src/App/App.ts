@@ -50,6 +50,7 @@ export function createApp(isHistory = true) {
 			storage.setPublicBoard({ boardId: locationId });
 			return locationId;
 		}
+		return null;
 		const visited = storage.listPublicBoards();
 		const lastVisited = visited[visited.length - 1];
 		if (lastVisited) {
