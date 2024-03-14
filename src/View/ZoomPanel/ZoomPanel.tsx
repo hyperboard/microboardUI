@@ -20,11 +20,11 @@ export class ZoomPanel extends React.Component<Props> {
 	};
 
 	componentDidMount(): void {
-		this.props.app.subscribe(this.subscription);
+		this.props.app.subscriptions.add(this.subscription);
 	}
 
 	componentWillUnmount(): void {
-		this.props.app.unsubscribe(this.subscription);
+		this.props.app.subscriptions.remove(this.subscription);
 	}
 
 	zoomToFit = (): void => {

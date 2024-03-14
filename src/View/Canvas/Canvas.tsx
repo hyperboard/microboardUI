@@ -1,9 +1,9 @@
 import { Board } from "Board";
-import { App } from "App";
 import { DrawingContext } from "Board/Items/DrawingContext";
 import * as React from "react";
 import { Layer } from "./Layer";
 import { isSafari } from "App/isSafari";
+import { App } from "App";
 export interface Props {
 	app: App;
 	board: Board;
@@ -253,7 +253,7 @@ export class Canvas extends React.Component<Props> {
 			stage.addEventListener("pointercancel", this.onPointerCancel);
 			stage.addEventListener("pointermove", this.onPointerMove);
 		}
-		this.props.app.subscribe(this.subscription);
+		this.props.app.subscriptions.add(this.subscription);
 		if (this.drawingContext !== null) {
 			this.props.board.setDrawingContext(this.drawingContext);
 		}
@@ -270,7 +270,7 @@ export class Canvas extends React.Component<Props> {
 			stage.removeEventListener("pointercancel", this.onPointerCancel);
 			stage.removeEventListener("pointermove", this.onPointerMove);
 		}
-		this.props.app.unsubscribe(this.subscription);
+		this.props.app.subscriptions.remove(this.subscription);
 	}
 
 	renderTopLayer = (context: DrawingContext): void => {
@@ -288,11 +288,11 @@ export class Canvas extends React.Component<Props> {
 
 	subscribeTopLayer = (observer: () => void): void => {
 		this.topLayerSubscription.observer = observer;
-		this.props.app.subscribe(this.topLayerSubscription);
+		this.props.app.subscriptions.add(this.topLayerSubscription);
 	};
 
 	unsubscribeTopLayer = (observer: () => void): void => {
-		this.props.app.unsubscribe(this.topLayerSubscription);
+		this.props.app.subscriptions.remove(this.topLayerSubscription);
 	};
 
 	renderBottomLayer = (context: DrawingContext): void => {
@@ -309,11 +309,11 @@ export class Canvas extends React.Component<Props> {
 
 	subscribeBottomLayer = (observer: () => void): void => {
 		this.bottomLayerSubscription.observer = observer;
-		this.props.app.subscribe(this.bottomLayerSubscription);
+		this.props.app.subscriptions.add(this.bottomLayerSubscription);
 	};
 
 	unsubscribeBottomLayer = (observer: () => void): void => {
-		this.props.app.unsubscribe(this.bottomLayerSubscription);
+		this.props.app.subscriptions.remove(this.bottomLayerSubscription);
 	};
 
 	render(): React.ReactElement {

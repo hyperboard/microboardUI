@@ -1,7 +1,7 @@
 import { Board } from "Board";
 import { getApiUrl } from "Config";
 import { Subject } from "Subject";
-import { Connection } from "Connection";
+import { Connection } from "./Connection";
 
 export class Account {
     boards: Board[] = [];

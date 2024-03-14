@@ -37,19 +37,6 @@ export class ExportBoardSnapshotButton extends PureComponent<
 						height={24}
 					/>
 				</Button>
-				<Button
-					id="ExportBoardSnapshot"
-					onClick={this.handleToggleSnapshotMode}
-					title="Export section of board"
-				>
-					<Icon
-						name="Export"
-						fill="currentColor"
-						stroke="none"
-						width={24}
-						height={24}
-					/>
-				</Button>
 			</>
 		);
 	}

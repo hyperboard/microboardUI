@@ -1,20 +1,11 @@
-import React from "react";
+import * as React from "react";
 import { App } from "App";
 import { Canvas } from "./Canvas";
 import { TitlePanel } from "./TitlePanel";
 import { ToolsPanel } from "./ToolsPanel";
 import { ZoomPanel } from "./ZoomPanel";
 import { ContextPanel } from "./ContextPanel";
-import {
-	isEditInProcess,
-	RichText,
-	toggleEdit,
-} from "../Board/Items/RichText/RichText";
-import { validateItemsMap } from "Board/Validators";
-import { Mbr } from "Board/Items";
-import { ImageItem } from "Board/Items/Image";
 import { TextEditors } from "./TextEditor/TextEditor";
-import { isNotControlCharacter } from "./isNotControlCharacter";
 import { SidePanel } from "./SidePanel";
 import { SidePanelState } from "./SidePanel/SidePanelState";
 import { ContextMenuState, ContextMenu } from "./ContextMenu";
@@ -62,7 +53,7 @@ export class AppView extends React.Component<{
 		if (boardId) {
 			app.openBoard(boardId!);
 		}
-		
+
 		if (!board) {
 			return <div></div>;
 		}
@@ -74,7 +65,7 @@ export class AppView extends React.Component<{
 						width: "100%",
 						height: "100%",
 						backgroundColor: "rgba(200,200,200,0.2)",
-						overflow: 'hidden',
+						overflow: "hidden",
 					}}
 				>
 					<div ref={this.containerRef}>
@@ -116,291 +107,31 @@ export class AppView extends React.Component<{
 		);
 	}
 
-	onClick = (event: MouseEvent): boolean => {
-		const board = this.props.app.getBoard();
-		if (!board) {
-			return false;
-		}
-		if (event.detail === 2) {
-			const { tools, selection } = board;
-			const transformerTool = selection.tool;
-			switch (event.button) {
-				case 0:
-					return (
-						transformerTool.leftButtonDouble() ||
-						tools.leftButtonDouble()
-					);
-				case 1:
-					return (
-						transformerTool.middleButtonDouble() ||
-						tools.middleButtonDouble()
-					);
-				case 2:
-					return (
-						transformerTool.rightButtonDouble() ||
-						tools.rightButtonDouble()
-					);
-			}
-		}
-		return false;
-	};
-
-	onWheel = (event: WheelEvent): void => {
-		event.preventDefault();
-		event.stopPropagation();
-		this.props.app.onWheel(event);
-	};
-
-	onContextMenu = (event: MouseEvent): void => {
-		const target = event.target;
-		if (target instanceof HTMLElement) {
-			if (target.classList.contains("NoContextMenu")) {
-				event.preventDefault();
-				event.stopPropagation();
-			}
-		}
-	};
-
-	onPointerMove = (event: PointerEvent): boolean => {
-		this.isRightClickForContextMenu = false;
-		const board = this.props.app.getBoard();
-		if (!board) {
-			return false;
-		}
-		const { camera, tools } = board;
-		const selection = board.selection;
-		const oldPoint = board.pointer.point.copy();
-		camera.pointTo(event.pageX, event.pageY);
-		const newPoint = board.pointer.point.copy();
-		const dx = newPoint.x - oldPoint.x;
-		const dy = newPoint.y - oldPoint.y;
-		const isSelect = tools.getSelect() !== undefined;
-		if (isSelect) {
-			return (
-				selection.tool.pointerMoveBy(dx, dy) ||
-				tools.pointerMoveBy(dx, dy)
-			);
-		} else {
-			return tools.pointerMoveBy(dx, dy);
-		}
-	};
-
-	onKeyDown = (event: KeyboardEvent): void => {
-		const board = this.props.app.getBoard();
-		if (!board || !board.events) {
-			return;
-		}
-		if (isEditInProcess()) {
-			return;
-		}
-		// const key = event.key.toLowerCase();
-		const key = event.code;
-		board.keyboard.keyDown(event);
-		if ((event.ctrlKey || event.metaKey) && key === "KeyZ") {
-			if (event.shiftKey) {
-				board.events.redo();
-			} else {
-				board.events.undo();
-			}
-			return;
-		}
-		if (
-			(event.ctrlKey || event.metaKey) &&
-			(key === "KeyC" || key === "KeyV")
-		) {
-			return;
-		}
-		if (
-			isNotControlCharacter(event.key) &&
-			board.selection.items.isSingle()
-		) {
-			const item = board.selection.items.getSingle();
-
-			if (board.selection.getContext() === "EditTextUnderPointer") {
-				board.selection.editText();
-				return;
-			} else if (
-				item &&
-				["Shape", "Sticker"].indexOf(item.itemType) > -1 &&
-				board.selection.getContext() === "EditUnderPointer"
-			) {
-				board.selection.editText();
-				return;
-			}
-		}
-
-		switch (key) {
-			case "KeyV":
-				board.tools.select();
-				break;
-			case "KeyS":
-				board.tools.addShape();
-				break;
-			case "KeyN":
-				board.tools.addSticker();
-				break;
-			case "KeyT":
-				board.tools.addText();
-				break;
-			case "KeyL":
-				board.tools.addConnector();
-				break;
-			case "KeyP":
-				board.tools.addDrawing();
-				break;
-		}
-		if (board.selection.getContext() !== "SelectUnderPointer") {
-			if (key === "Delete" || key === "Backspace") {
-				board.selection.removeFromBoard();
-				toggleEdit(false);
-			}
-		}
-		if (!board.selection.tool.keyDown(board.keyboard.down)) {
-			board.tools.keyDown(board.keyboard.down);
-		}
-	};
-
-	onKeyUp = (event: KeyboardEvent): void => {
-		const board = this.props.app.getBoard();
-		if (!board) {
-			return;
-		}
-
-		if (isEditInProcess()) {
-			return;
-		}
-
-		board.keyboard.keyUp(event);
-		if (!board.selection.tool.keyUp(board.keyboard.up)) {
-			board.tools.keyUp(board.keyboard.up);
-		}
-	};
-
-	onResize = (): void => {
-		const board = this.props.app.getBoard();
-		if (!board) {
-			return;
-		}
-		board.camera.onWindowResize();
-	};
-
-	onCopy = (event): void => {
-		if (isEditInProcess()) {
-			return;
-		}
-		const board = this.props.app.getBoard();
-		if (!board) {
-			return;
-		}
-		const data = board.selection.copy();
-		const text = JSON.stringify(data);
-		event.clipboardData.setData("text/plain", text);
-		event.preventDefault();
-	};
-
-	onPaste = (event): void => {
-		if (isEditInProcess()) {
-			return;
-		}
-		const board = this.props.app.getBoard();
-		if (!board) {
-			return;
-		}
-		const items = event.clipboardData.items;
-		for (const item of items) {
-			if (item.type.indexOf("image") !== -1) {
-				const file = item.getAsFile();
-				const reader = new FileReader();
-				reader.onload = event => {
-					const image = new ImageItem(event.target?.resut);
-					image.transformation.translateTo(
-						board.pointer.point.x,
-						board.pointer.point.y,
-					);
-					board.add(image);
-				};
-
-				reader.readAsDataURL(file);
-			}
-		}
-
-		const text = event.clipboardData.getData("text/plain");
-		try {
-			const data = JSON.parse(text);
-			const isDataValid = validateItemsMap(data);
-			if (isDataValid) {
-				board.paste(data);
-			} else {
-				throw new Error();
-			}
-		} catch (error) {
-			const richtext = new RichText(new Mbr());
-			richtext.transformation.translateTo(
-				board.pointer.point.x,
-				board.pointer.point.y,
-			);
-			richtext.editor.editor.children = [
-				{
-					type: "paragraph",
-					children: [
-						{
-							type: "text",
-							text: text,
-						},
-					],
-				},
-			];
-			const dimensions = richtext.getDimensions();
-			if (dimensions.width > board.camera.window.width) {
-				richtext.editor.setMaxWidth(board.camera.window.width);
-			}
-			board.add(richtext);
-		}
-		event.preventDefault();
-	};
-
-	onDrop = (event): void => {
-		event.preventDefault();
-		const board = this.props.app.getBoard();
-		if (!board) {
-			return;
-		}
-
-		const file = event.dataTransfer.files[0];
-		const reader = new FileReader();
-
-		reader.onload = function (event) {
-			const image = new ImageItem(event.target?.result);
-			image.transformation.translateTo(
-				board.pointer.point.x,
-				board.pointer.point.y,
-			);
-			board.add(image);
-		};
-
-		reader.readAsDataURL(file);
-	};
-
 	componentDidMount(): void {
 		this.props.app.boardSubject.subscribe(this.update);
 		const container = this.containerRef.current;
+		const controller = this.props.app.controller;
 		// updateFPS();
 		if (container) {
-			container.addEventListener("wheel", this.onWheel, {
+			container.addEventListener("wheel", controller.onWheel, {
 				capture: true,
 				passive: false,
 			});
-			window.addEventListener("resize", this.onResize);
-			container.addEventListener("contextmenu", this.onContextMenu, {
-				capture: false,
-				passive: false,
-			});
-			container.addEventListener("pointermove", this.onPointerMove);
-			window.addEventListener("keydown", this.onKeyDown);
-			window.addEventListener("keyup", this.onKeyUp);
-			container.addEventListener("copy", this.onCopy);
-			container.addEventListener("paste", this.onPaste);
-			window.addEventListener("drop", this.onDrop);
+			window.addEventListener("resize", controller.onResize);
+			container.addEventListener(
+				"contextmenu",
+				controller.onContextMenu,
+				{
+					capture: false,
+					passive: false,
+				},
+			);
+			container.addEventListener("pointermove", controller.onPointerMove);
+			window.addEventListener("keydown", controller.onKeyDown);
+			window.addEventListener("keyup", controller.onKeyUp);
+			container.addEventListener("copy", controller.onCopy);
+			container.addEventListener("paste", controller.onPaste);
+			window.addEventListener("drop", controller.onDrop);
 			window.addEventListener("dragover", event => {
 				event.preventDefault();
 			});
@@ -420,16 +151,23 @@ export class AppView extends React.Component<{
 	componentWillUnmount(): void {
 		this.props.app.boardSubject.unsubscribe(this.update);
 		const container = this.containerRef.current;
+		const controller = this.props.app.controller;
 		if (container) {
-			container.removeEventListener("wheel", this.onWheel);
-			window.removeEventListener("resize", this.onResize);
-			container.removeEventListener("contextmenu", this.onContextMenu);
-			container.removeEventListener("pointermove", this.onPointerMove);
-			window.removeEventListener("keydown", this.onKeyDown);
-			window.removeEventListener("keyup", this.onKeyUp);
-			container.removeEventListener("copy", this.onCopy);
-			container.removeEventListener("paste", this.onPaste);
-			window.removeEventListener("drop", this.onDrop);
+			container.removeEventListener("wheel", controller.onWheel);
+			window.removeEventListener("resize", controller.onResize);
+			container.removeEventListener(
+				"contextmenu",
+				controller.onContextMenu,
+			);
+			container.removeEventListener(
+				"pointermove",
+				controller.onPointerMove,
+			);
+			window.removeEventListener("keydown", controller.onKeyDown);
+			window.removeEventListener("keyup", controller.onKeyUp);
+			container.removeEventListener("copy", controller.onCopy);
+			container.removeEventListener("paste", controller.onPaste);
+			window.removeEventListener("drop", controller.onDrop);
 
 			/*
 			container.removeEventListener("pointerdown", this.onPointerDown);

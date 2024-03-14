@@ -1,4 +1,3 @@
-import { App } from "App";
 import { Board } from "Board";
 import * as React from "react";
 import { Connector, Mbr } from "Board/Items";
@@ -84,8 +83,8 @@ export class ContextPanel extends React.Component<
 	};
 
 	componentDidMount(): void {
-		this.props.app.subscribe(this.updateSubscription);
-		this.props.app.subscribe(this.menuSubscription);
+		this.props.app.subscriptions.add(this.updateSubscription);
+		this.props.app.subscriptions.add(this.menuSubscription);
 		this.updateRects();
 	}
 
@@ -94,8 +93,8 @@ export class ContextPanel extends React.Component<
 	}
 
 	componentWillUnmount(): void {
-		this.props.app.unsubscribe(this.updateSubscription);
-		this.props.app.unsubscribe(this.menuSubscription);
+		this.props.app.subscriptions.remove(this.updateSubscription);
+		this.props.app.subscriptions.remove(this.menuSubscription);
 	}
 
 	updateRects(): void {
@@ -1154,7 +1153,7 @@ class FontSize extends React.PureComponent<{
 						min="10"
 						max="288"
 						value={`${this.state.fontSize}`}
-						onInput={(event) => {
+						onInput={event => {
 							event.preventDefault();
 							return;
 						}}

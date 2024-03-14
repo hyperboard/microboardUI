@@ -1,20 +1,11 @@
-import { App } from "./App/App";
-import { Connection } from "Connection";
-import { getWebSocketOrHttpSubscription } from "Connection/Subscription";
-import { getWebsocketOrHttpPublisher } from "./Connection/Publisher/getPublisher";
+import { createApp } from "App/App";
 
-let app: App | undefined;
-
-const connection = new Connection(
-	getWebsocketOrHttpPublisher,
-	getWebSocketOrHttpSubscription,
-);
-connection
+const app = createApp();
+app.connection
 	.connect()
 	.then(() => {
-		app = new App(connection);
 		return app.openStartingBoard();
 	})
 	.then(() => {
-		app?.render();
+		app.render();
 	});

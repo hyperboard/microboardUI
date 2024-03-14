@@ -53,7 +53,7 @@ export class ToolsPanel extends React.Component<Props, State> {
 	};
 
 	componentDidMount(): void {
-		this.props.app.subscribe(this.subscription);
+		this.props.app.subscriptions.add(this.subscription);
 		const uploadInput = document.getElementById("image-upload");
 		uploadInput.addEventListener("change", this.onUploadImage);
 		this.props.sidePanelState.subject.subscribe(this.update);
@@ -62,76 +62,109 @@ export class ToolsPanel extends React.Component<Props, State> {
 	componentWillUnmount(): void {
 		const uploadInput = document.getElementById("image-upload");
 		uploadInput.removeEventListener("change", this.onUploadImage);
-		this.props.app.unsubscribe(this.subscription);
+		this.props.app.subscriptions.remove(this.subscription);
 		this.props.sidePanelState.subject.unsubscribe(this.update);
 	}
 
 	onUploadImage = (): void => {
-		const uploadInput = document.getElementById("image-upload") as HTMLInputElement;
+		const uploadInput = document.getElementById(
+			"image-upload",
+		) as HTMLInputElement;
 		const file = uploadInput.files[0];
-	
+
 		if (file) {
 			const reader = new FileReader();
 
-	        if (file.type === 'application/pdf') {
-        reader.onload = (event) => {
-            var typedarray = new Uint8Array(event.target.result);
-            pdfjsLib.getDocument({data: typedarray}).promise.then((pdf) => {
-				// var maxPages = Math.min(pdf.numPages, 2);
-				var maxPages = pdf.numPages;
-                var pagesRendered = 0;
-                var viewportYOffset = 0;
-                var pageHeight;
-                var renderPage = (pageNum) => {
-                    pdf.getPage(pageNum).then((page) => {
-                        var viewport = page.getViewport({scale: 1});
-                        pageHeight = viewport.height;
-                        var canvas = document.createElement('canvas');
-                        var context = canvas.getContext('2d');
-                        canvas.height = viewport.height;
-                        canvas.width = viewport.width;
+			if (file.type === "application/pdf") {
+				reader.onload = event => {
+					var typedarray = new Uint8Array(event.target.result);
+					pdfjsLib.getDocument({ data: typedarray }).promise.then(
+						pdf => {
+							// var maxPages = Math.min(pdf.numPages, 2);
+							var maxPages = pdf.numPages;
+							var pagesRendered = 0;
+							var viewportYOffset = 0;
+							var pageHeight;
+							var renderPage = pageNum => {
+								pdf.getPage(pageNum).then(page => {
+									var viewport = page.getViewport({
+										scale: 1,
+									});
+									pageHeight = viewport.height;
+									var canvas =
+										document.createElement("canvas");
+									var context = canvas.getContext("2d");
+									canvas.height = viewport.height;
+									canvas.width = viewport.width;
 
-                        var renderContext = {
-                            canvasContext: context,
-                            viewport: viewport
-                        };
-                        page.render(renderContext).promise.then(() => {
-                            pagesRendered++;
-                            var base64String = canvas.toDataURL('image/png');
-                            const image = new ImageItem(base64String);
-                            const boardImage = this.props.board.add(image);
-                            boardImage.doOnceOnLoad(() => {
-                                const viewportMbr = this.props.board.camera.getMbr();
-                                const scale = 1;
-                                const viewportCenter = viewportMbr.getCenter();
-								viewportCenter.y = viewportMbr.top;
-                                const offsetX = ((pagesRendered - 1) % 2) * (scale * image.getWidth()) - (scale * image.getWidth()) / 2;
-                                const offsetY = viewportYOffset;
-                                const centeredX = viewportCenter.x + offsetX;
-                                const centeredY = viewportCenter.y + offsetY;
-                                boardImage.transformation.translateTo(centeredX, centeredY);
-                                boardImage.transformation.scaleTo(scale, scale);
+									var renderContext = {
+										canvasContext: context,
+										viewport: viewport,
+									};
+									page.render(renderContext).promise.then(
+										() => {
+											pagesRendered++;
+											var base64String =
+												canvas.toDataURL("image/png");
+											const image = new ImageItem(
+												base64String,
+											);
+											const boardImage =
+												this.props.board.add(image);
+											boardImage.doOnceOnLoad(() => {
+												const viewportMbr =
+													this.props.board.camera.getMbr();
+												const scale = 1;
+												const viewportCenter =
+													viewportMbr.getCenter();
+												viewportCenter.y =
+													viewportMbr.top;
+												const offsetX =
+													((pagesRendered - 1) % 2) *
+														(scale *
+															image.getWidth()) -
+													(scale * image.getWidth()) /
+														2;
+												const offsetY = viewportYOffset;
+												const centeredX =
+													viewportCenter.x + offsetX;
+												const centeredY =
+													viewportCenter.y + offsetY;
+												boardImage.transformation.translateTo(
+													centeredX,
+													centeredY,
+												);
+												boardImage.transformation.scaleTo(
+													scale,
+													scale,
+												);
 
-                                if (pageNum % 2 === 0 || pageNum === maxPages) {
-                                    viewportYOffset += (pageHeight * scale);
-                                }
+												if (
+													pageNum % 2 === 0 ||
+													pageNum === maxPages
+												) {
+													viewportYOffset +=
+														pageHeight * scale;
+												}
 
-                                if (pagesRendered < maxPages) {
-                                    renderPage(pageNum + 1);
-                                }
-                            });
-                            canvas.remove();
-                        });
-                    });
-                };
+												if (pagesRendered < maxPages) {
+													renderPage(pageNum + 1);
+												}
+											});
+											canvas.remove();
+										},
+									);
+								});
+							};
 
-                renderPage(1);
-
-            }, function(reason) {
-                console.error(reason);
-            });
-        };
-        reader.readAsArrayBuffer(file);
+							renderPage(1);
+						},
+						function (reason) {
+							console.error(reason);
+						},
+					);
+				};
+				reader.readAsArrayBuffer(file);
 				/*
 				console.log("Pdf file is selected");
 		        reader.onload = (event) => {
@@ -177,7 +210,7 @@ export class ToolsPanel extends React.Component<Props, State> {
 		        };
 		        reader.readAsArrayBuffer(file);
 				*/
-	        } else {
+			} else {
 				reader.onload = (event: any) => {
 					const base64String = event.target.result;
 					const image = new ImageItem(base64String);
@@ -185,44 +218,52 @@ export class ToolsPanel extends React.Component<Props, State> {
 					boardImage.doOnceOnLoad(() => {
 						const board = this.props.board;
 						const viewportMbr = board.camera.getMbr();
-						
+
 						const viewportWidth = viewportMbr.getWidth();
 						const viewportHeight = viewportMbr.getHeight();
-						
+
 						const margin = viewportHeight * 0.05;
-						
-						const viewportWidthWithMargin = viewportWidth - 2 * margin;
-						const viewportHeightWithMargin = viewportHeight - 2 * margin;
-						
+
+						const viewportWidthWithMargin =
+							viewportWidth - 2 * margin;
+						const viewportHeightWithMargin =
+							viewportHeight - 2 * margin;
+
 						const imageWidth = boardImage.getWidth();
 						const imageHeight = boardImage.getHeight();
-						
+
 						const scaleX = viewportWidthWithMargin / imageWidth;
 						const scaleY = viewportHeightWithMargin / imageHeight;
-						
+
 						const scaleToFit = Math.min(scaleX, scaleY);
-						
+
 						const finalScale = scaleToFit;
-						
-				        const scaledImageWidth = imageWidth * finalScale;
-				        const scaledImageHeight = imageHeight * finalScale;
-				
-				        const scaledImageCenterX = scaledImageWidth / 2;
-				        const scaledImageCenterY = scaledImageHeight / 2;
-				
-				        // Calculate the translation required to center the image.
+
+						const scaledImageWidth = imageWidth * finalScale;
+						const scaledImageHeight = imageHeight * finalScale;
+
+						const scaledImageCenterX = scaledImageWidth / 2;
+						const scaledImageCenterY = scaledImageHeight / 2;
+
+						// Calculate the translation required to center the image.
 						const centerPoint = viewportMbr.getCenter();
-				        const translateX = centerPoint.x - scaledImageCenterX;
-				        const translateY = centerPoint.y - scaledImageCenterY;
-				        boardImage.transformation.translateTo(translateX, translateY);
-						boardImage.transformation.scaleTo(finalScale, finalScale);
-	
+						const translateX = centerPoint.x - scaledImageCenterX;
+						const translateY = centerPoint.y - scaledImageCenterY;
+						boardImage.transformation.translateTo(
+							translateX,
+							translateY,
+						);
+						boardImage.transformation.scaleTo(
+							finalScale,
+							finalScale,
+						);
+
 						board.selection.removeAll();
 						board.selection.add(boardImage);
 					});
 					// Reset the input after processing to ensure change event
 					// fires again even if the next selected file is the same.
-					uploadInput.value = '';
+					uploadInput.value = "";
 				};
 				reader.readAsDataURL(file);
 			}

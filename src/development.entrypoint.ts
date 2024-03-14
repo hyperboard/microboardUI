@@ -1,7 +1,5 @@
-import { App } from "./App";
-import { Connection } from "Connection";
-import { getWebSocketOrHttpSubscription } from "Connection/Subscription";
-import { getWebsocketOrHttpPublisher } from "./Connection/Publisher/getPublisher";
+import { App } from "App";
+import { createApp } from "App/App";
 
 declare global {
 	interface Window {
@@ -10,16 +8,14 @@ declare global {
 	}
 }
 
-const connection = new Connection(
-	getWebsocketOrHttpPublisher,
-	getWebSocketOrHttpSubscription,
-);
-connection
+window.app = createApp();
+window.app.connection
 	.connect()
 	.then(() => {
-		window.app = new App(connection);
 		const boards = window.app.storage.listPublicBoards();
-		return boards.length === 0 ? window.app.openStartingBoard() : Promise.resolve();
+		return boards.length === 0
+			? window.app.openStartingBoard()
+			: Promise.resolve();
 	})
 	.then(() => {
 		window.app.render();

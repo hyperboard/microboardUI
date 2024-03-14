@@ -25,11 +25,11 @@ export class TextEditors extends React.Component<
 	};
 
 	componentDidMount(): void {
-		this.props.app.subscribe(this.subscription);
+		this.props.app.subscriptions.add(this.subscription);
 	}
 
 	componentWillUnmount(): void {
-		this.props.app.unsubscribe(this.subscription);
+		this.props.app.subscriptions.remove(this.subscription);
 	}
 
 	render(): React.ReactElement | null {
@@ -68,11 +68,12 @@ export class TextEditor extends React.Component<
 			return null;
 		}
 		const { camera } = this.props.board;
-		const { point, width, height, maxWidth, maxHeight, textScale } = text.getDimensions();
+		const { point, width, height, maxWidth, maxHeight, textScale } =
+			text.getDimensions();
 		point.transform(camera.getMatrix());
 		const left = point.x;
 		/** A heuristic trick to better align editor with canvas */
-		const top = point.y - (0.8 * camera.getScale());
+		const top = point.y - 0.8 * camera.getScale();
 		const editorScale = textScale * camera.getScale();
 		const verticalAlignment = text.getVerticalAlignment();
 
@@ -121,7 +122,6 @@ export class TextEditor extends React.Component<
 		}
 
 		return (
-
 			/* <div 
 				style={{
 					position: 'absolute',
@@ -155,17 +155,17 @@ export class TextEditor extends React.Component<
 					left: `${left}px`,
 					top: `${top}px`,
 
-					maxWidth: `${maxWidth+1}px`,
-					maxHeight: `${maxHeight+1}px`,
+					maxWidth: `${maxWidth + 1}px`,
+					maxHeight: `${maxHeight + 1}px`,
 					// width: `${maxWidth}px`,
 					// height: `${maxHeight}px`,
-					width: `${container.getWidth()/editorScale}px`, 
-					height: `${container.getHeight()/editorScale}px`,
+					width: `${container.getWidth() / editorScale}px`,
+					height: `${container.getHeight() / editorScale}px`,
 
 					transformOrigin: "left top",
 					// transform: `scale(${editorScale})`,
-					'--webkit-font-smoothing': 'antialiased',
-					fontKerning: 'auto',
+					"--webkit-font-smoothing": "antialiased",
+					fontKerning: "auto",
 
 					display: "flex",
 					alignItems: verticalAlignmentToFlex(verticalAlignment), // vertical
@@ -217,7 +217,7 @@ export class TextEditor extends React.Component<
 					</Slate>
 				</div>
 			</div>
-		// </div>
+			// </div>
 		);
 	}
 }
