@@ -9,6 +9,7 @@ import { Board } from "Board";
 import { Mbr } from "Board/Items";
 import { ImageItem } from "Board/Items/Image";
 import { validateItemsMap } from "Board/Validators";
+import { isSafari } from "./isSafari";
 
 export function getController(getBoard: () => Board) {
 	const isMouse = true;
@@ -159,35 +160,6 @@ export function getController(getBoard: () => Board) {
 		}
 	}
 
-	function onClick(event: MouseEvent): boolean {
-		const board = getBoard();
-		if (!board) {
-			return false;
-		}
-		if (event.detail === 2) {
-			const { tools, selection } = board;
-			const transformerTool = selection.tool;
-			switch (event.button) {
-				case 0:
-					return (
-						transformerTool.leftButtonDouble() ||
-						tools.leftButtonDouble()
-					);
-				case 1:
-					return (
-						transformerTool.middleButtonDouble() ||
-						tools.middleButtonDouble()
-					);
-				case 2:
-					return (
-						transformerTool.rightButtonDouble() ||
-						tools.rightButtonDouble()
-					);
-			}
-		}
-		return false;
-	}
-
 	function onResize(): void {
 		const board = getBoard();
 		if (board) {
@@ -205,12 +177,97 @@ export function getController(getBoard: () => Board) {
 		}
 	}
 
+	function onPointerDown(event: PointerEvent): boolean {
+		const board = getBoard();
+		if (!board) {
+			return false;
+		}
+		const { tools, camera, selection } = board;
+		const transformerTool = selection.tool;
+		camera.saveDownEvent(event);
+		if (camera.isTwoPointers()) {
+			return false;
+		}
+		camera.pointTo(event.pageX, event.pageY);
+		const isSelect = tools.getSelect() !== undefined;
+		if (isSelect) {
+			switch (event.button) {
+				case 0:
+					return (
+						transformerTool.leftButtonDown() ||
+						tools.leftButtonDown()
+					);
+				case 1:
+					return (
+						transformerTool.middleButtonDown() ||
+						tools.middleButtonDown()
+					);
+				case 2:
+					return (
+						transformerTool.rightButtonDown() ||
+						tools.rightButtonDown()
+					);
+				default:
+					return (
+						transformerTool.leftButtonDown() ||
+						tools.leftButtonDown()
+					);
+			}
+		} else {
+			switch (event.button) {
+				case 0:
+					return tools.leftButtonDown();
+				case 1:
+					return tools.middleButtonDown();
+				case 2:
+					return tools.rightButtonDown();
+				default:
+					return tools.leftButtonDown();
+			}
+		}
+	}
+
 	function onPointerMove(event: PointerEvent): boolean {
 		const board = getBoard();
 		if (!board) {
 			return false;
 		}
 		const { camera, tools } = board;
+
+		camera.updateDownEvent(event);
+
+		if (camera.isTwoPointers()) {
+			const pinchCenter = camera.getPinchCenter();
+			const scale = camera.getPinchScale();
+			const delta = camera.getPanDelta();
+			camera.translateBy(delta.x, delta.y);
+			camera.zoomRelativeToPointBy(scale, pinchCenter.x, pinchCenter.y);
+			camera.updatePositions();
+			camera.updateDistance();
+			tools.leftButtonUp();
+			return false;
+			/*
+			if (camera.isPinch()) {
+				const pinchCenter = camera.getPinchCenter();
+				const scale = camera.getPinchScale();
+				camera.updateDistance();
+				camera.zoomRelativeToPointBy(
+					scale,
+					pinchCenter.x,
+					pinchCenter.y,
+				);
+				tools.leftButtonUp();
+				return false;
+			} else {
+				const delta = camera.getPanDelta();
+				camera.updatePositions();
+				camera.translateBy(delta.x, delta.y);
+				tools.leftButtonUp();
+				return false;
+			}
+			*/
+		}
+
 		const selection = board.selection;
 		const oldPoint = board.pointer.point.copy();
 		camera.pointTo(event.pageX, event.pageY);
@@ -226,6 +283,126 @@ export function getController(getBoard: () => Board) {
 		} else {
 			return tools.pointerMoveBy(dx, dy);
 		}
+	}
+
+	let touchtime = 0;
+	const delay = 300;
+
+	function onPointerUp(event: PointerEvent): boolean {
+		const board = getBoard();
+		if (!board) {
+			return false;
+		}
+		const { tools, selection, camera } = board;
+		camera.removeDownEvent(event);
+		if (isSafari()) {
+			if (touchtime === 0) {
+				touchtime = new Date().getTime();
+			} else {
+				if (new Date().getTime() - touchtime < delay) {
+					triggerDoubleClick(event);
+					touchtime = 0;
+				} else {
+					touchtime = new Date().getTime();
+				}
+			}
+		}
+		const transformerTool = selection.tool;
+		const isSelect = tools.getSelect() !== undefined;
+		if (isSelect) {
+			switch (event.button) {
+				case 0:
+					return (
+						transformerTool.leftButtonUp() || tools.leftButtonUp()
+					);
+				case 1:
+					return (
+						transformerTool.middleButtonUp() ||
+						tools.middleButtonUp()
+					);
+				case 2:
+					return (
+						transformerTool.rightButtonUp() || tools.rightButtonUp()
+					);
+				default:
+					return (
+						transformerTool.leftButtonUp() || tools.leftButtonUp()
+					);
+			}
+		} else {
+			switch (event.button) {
+				case 0:
+					return tools.leftButtonUp();
+				case 1:
+					return tools.middleButtonUp();
+				case 2:
+					return tools.rightButtonUp();
+				default:
+					return tools.leftButtonUp();
+			}
+		}
+	}
+
+	function onClick(event: MouseEvent): boolean {
+		if (event.detail === 2) {
+			triggerDoubleClick(event);
+		}
+		return false;
+	}
+
+	function triggerDoubleClick(event: PointerEvent | MouseEvent): boolean {
+		const board = getBoard();
+		if (!board) {
+			return false;
+		}
+		const { tools, selection } = board;
+		const transformerTool = selection.tool;
+		switch (event.button) {
+			case 0:
+				return (
+					transformerTool.leftButtonDouble() ||
+					tools.leftButtonDouble()
+				);
+			case 1:
+				return (
+					transformerTool.middleButtonDouble() ||
+					tools.middleButtonDouble()
+				);
+			case 2:
+				return (
+					transformerTool.rightButtonDouble() ||
+					tools.rightButtonDouble()
+				);
+			default:
+				return false;
+		}
+	}
+
+	function onPointerLeave(event: PointerEvent): void {
+		const board = getBoard();
+		if (!board) {
+			return;
+		}
+		const { camera } = board;
+		camera.removeDownEvent(event);
+	}
+
+	function onPointerCancel(event: PointerEvent): void {
+		const board = getBoard();
+		if (!board) {
+			return;
+		}
+		const { camera } = board;
+		camera.removeDownEvent(event);
+	}
+
+	function onPointerOut(event: PointerEvent): void {
+		const board = getBoard();
+		if (!board) {
+			return;
+		}
+		const { camera } = board;
+		camera.removeDownEvent(event);
 	}
 
 	function onCopy(event): void {
@@ -327,7 +504,12 @@ export function getController(getBoard: () => Board) {
 
 	return {
 		onWheel,
+		onPointerDown,
 		onPointerMove,
+		onPointerUp,
+		onPointerLeave,
+		onPointerCancel,
+		onPointerOut,
 		onKeyDown,
 		onKeyUp,
 		onClick,

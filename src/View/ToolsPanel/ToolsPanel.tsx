@@ -37,6 +37,8 @@ export class ToolsPanel extends React.Component<Props, State> {
 	animationFrameId: number | null = null;
 
 	update = (): void => {
+		this.forceUpdate();
+		return;
 		if (this.animationFrameId) {
 			return; // Function already scheduled to run
 		}

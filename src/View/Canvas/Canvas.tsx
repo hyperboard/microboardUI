@@ -1,319 +1,98 @@
 import { Board } from "Board";
 import { DrawingContext } from "Board/Items/DrawingContext";
 import * as React from "react";
-import { Layer } from "./Layer";
-import { isSafari } from "App/isSafari";
 import { App } from "App";
 export interface Props {
 	app: App;
 	board: Board;
 }
 
-let touchtime = 0;
-const delay = 300;
-
 export class Canvas extends React.Component<Props> {
-	drawingContext: DrawingContext | null = null;
-
 	stageRef = React.createRef<HTMLDivElement>();
+	canvasRef = React.createRef<HTMLCanvasElement>();
 	options = {
 		pointerdown: {},
 		pointerup: {},
 		click: {},
 	};
 
-	timerTopLayer: NodeJS.Timer | undefined = undefined;
-	timerBottomLayer: NodeJS.Timer | undefined = undefined;
-
-	setDrawingContext = (drawingContext: DrawingContext): void => {
-		this.drawingContext = drawingContext;
-	};
-
-	onPointerDown = (event: PointerEvent): boolean => {
-		const board = this.props.board;
-		const { tools, camera, selection } = board;
-		const transformerTool = selection.tool;
-		camera.saveDownEvent(event);
-		if (camera.isTwoPointers()) {
-			return false;
-		}
-		camera.pointTo(event.pageX, event.pageY);
-		const isSelect = tools.getSelect() !== undefined;
-		if (isSelect) {
-			switch (event.button) {
-				case 0:
-					return (
-						transformerTool.leftButtonDown() ||
-						tools.leftButtonDown()
-					);
-				case 1:
-					return (
-						transformerTool.middleButtonDown() ||
-						tools.middleButtonDown()
-					);
-				case 2:
-					return (
-						transformerTool.rightButtonDown() ||
-						tools.rightButtonDown()
-					);
-				default:
-					return (
-						transformerTool.leftButtonDown() ||
-						tools.leftButtonDown()
-					);
-			}
-		} else {
-			switch (event.button) {
-				case 0:
-					return tools.leftButtonDown();
-				case 1:
-					return tools.middleButtonDown();
-				case 2:
-					return tools.rightButtonDown();
-				default:
-					return tools.leftButtonDown();
-			}
-		}
-	};
-
-	onPointerUp = (event: PointerEvent): boolean => {
-		const board = this.props.board;
-		const { tools, selection, camera } = board;
-		camera.removeDownEvent(event);
-		if (isSafari()) {
-			if (touchtime === 0) {
-				touchtime = new Date().getTime();
-			} else {
-				if (new Date().getTime() - touchtime < delay) {
-					this.triggerDoubleClick(event);
-					touchtime = 0;
-				} else {
-					touchtime = new Date().getTime();
-				}
-			}
-		}
-		const transformerTool = selection.tool;
-		const isSelect = tools.getSelect() !== undefined;
-		if (isSelect) {
-			switch (event.button) {
-				case 0:
-					return (
-						transformerTool.leftButtonUp() || tools.leftButtonUp()
-					);
-				case 1:
-					return (
-						transformerTool.middleButtonUp() ||
-						tools.middleButtonUp()
-					);
-				case 2:
-					return (
-						transformerTool.rightButtonUp() || tools.rightButtonUp()
-					);
-				default:
-					return (
-						transformerTool.leftButtonUp() || tools.leftButtonUp()
-					);
-			}
-		} else {
-			switch (event.button) {
-				case 0:
-					return tools.leftButtonUp();
-				case 1:
-					return tools.middleButtonUp();
-				case 2:
-					return tools.rightButtonUp();
-				default:
-					return tools.leftButtonUp();
-			}
-		}
-	};
-	onPointerLeave = (event: PointerEvent): void => {
-		const board = this.props.board;
-		const { camera } = board;
-		camera.removeDownEvent(event);
-	};
-
-	onPointerCancel = (event: PointerEvent): void => {
-		const board = this.props.board;
-		const { camera } = board;
-		camera.removeDownEvent(event);
-	};
-
-	onPointerOut = (event: PointerEvent): void => {
-		const board = this.props.board;
-		const { camera } = board;
-		camera.removeDownEvent(event);
-	};
-
-	triggerDoubleClick = (event: PointerEvent | MouseEvent): boolean => {
-		const { tools, selection } = this.props.board;
-		const transformerTool = selection.tool;
-		switch (event.button) {
-			case 0:
-				return (
-					transformerTool.leftButtonDouble() ||
-					tools.leftButtonDouble()
-				);
-			case 1:
-				return (
-					transformerTool.middleButtonDouble() ||
-					tools.middleButtonDouble()
-				);
-			case 2:
-				return (
-					transformerTool.rightButtonDouble() ||
-					tools.rightButtonDouble()
-				);
-			default:
-				return false;
-		}
-	};
-
-	onClick = (event: MouseEvent): boolean => {
-		if (event.detail === 2) {
-			this.triggerDoubleClick(event);
-		}
-		return false;
-	};
-
-	onChangeCursor = (): void => {
+	updateCursor = (): void => {
 		const stage = this.stageRef.current;
 		if (stage) {
 			stage.style.cursor = this.props.board.pointer.getCursor();
 		}
 	};
 
-	onPointerMove = (event: PointerEvent): boolean => {
-		const board = this.props.board;
-		if (!board) {
-			return false;
-		}
-		const { camera, tools } = board;
-		camera.updateDownEvent(event);
-
-		if (camera.isTwoPointers()) {
-			const pinchCenter = camera.getPinchCenter();
-			const scale = camera.getPinchScale();
-			const delta = camera.getPanDelta();
-			camera.translateBy(delta.x, delta.y);
-			camera.zoomRelativeToPointBy(scale, pinchCenter.x, pinchCenter.y);
-			camera.updatePositions();
-			camera.updateDistance();
-			tools.leftButtonUp();
-			return false;
-			/*
-			if (camera.isPinch()) {
-				const pinchCenter = camera.getPinchCenter();
-				const scale = camera.getPinchScale();
-				camera.updateDistance();
-				camera.zoomRelativeToPointBy(
-					scale,
-					pinchCenter.x,
-					pinchCenter.y,
-				);
-				tools.leftButtonUp();
-				return false;
-			} else {
-				const delta = camera.getPanDelta();
-				camera.updatePositions();
-				camera.translateBy(delta.x, delta.y);
-				tools.leftButtonUp();
-				return false;
-			}
-			*/
-		}
-	};
-
-	animationFrameId: number | null = null;
-
 	update = (): void => {
-		if (this.animationFrameId) {
-			return; // Function already scheduled to run
-		}
-
-		this.animationFrameId = requestAnimationFrame(() => {
-			this.forceUpdate();
-			this.animationFrameId = null;
-		});
-	};
-
-	subscription = {
-		observer: this.update,
-		subjects: ["camera", "pointer"],
+		this.forceUpdate();
 	};
 
 	componentDidMount(): void {
 		const stage = this.stageRef.current;
+		const controller = this.props.app.controller;
 		if (stage) {
-			stage.addEventListener("pointerdown", this.onPointerDown);
-			stage.addEventListener("pointerup", this.onPointerUp);
-			stage.addEventListener("dblclick", this.onClick);
-			stage.addEventListener("pointerleave", this.onPointerLeave);
-			stage.addEventListener("pointerout", this.onPointerOut);
-			stage.addEventListener("pointercancel", this.onPointerCancel);
-			stage.addEventListener("pointermove", this.onPointerMove);
+			stage.addEventListener("pointerdown", controller.onPointerDown);
+			stage.addEventListener("pointerup", controller.onPointerUp);
+			stage.addEventListener("dblclick", controller.onClick);
+			stage.addEventListener("pointerleave", controller.onPointerLeave);
+			stage.addEventListener("pointerout", controller.onPointerOut);
+			stage.addEventListener("pointercancel", controller.onPointerCancel);
 		}
-		this.props.app.subscriptions.add(this.subscription);
-		if (this.drawingContext !== null) {
-			this.props.board.setDrawingContext(this.drawingContext);
+
+		const canvas = this.canvasRef.current;
+		if (!canvas) {
+			return;
 		}
+		const ctx = canvas.getContext("2d");
+		if (!ctx) {
+			return;
+		}
+		const context = new DrawingContext(this.props.board.camera, ctx);
+		const { board } = this.props;
+		this.renderToContext = (): void => {
+			context.setCamera(board.camera);
+			context.clear();
+			board.items.render(context);
+			board.selection.render(context);
+			board.tools.render(context);
+		};
+		this.renderToContext();
+		this.drawingContextSubscription.observer = this.renderToContext;
+		this.props.app.subscriptions.add(this.drawingContextSubscription);
+		this.props.app.subscriptions.add(this.cursorSubsctiption);
 	}
 
 	componentWillUnmount(): void {
 		const stage = this.stageRef.current;
+		const controller = this.props.app.controller;
 		if (stage) {
-			stage.removeEventListener("pointerdown", this.onPointerDown);
-			stage.removeEventListener("pointerup", this.onPointerUp);
-			stage.removeEventListener("dblclick", this.onClick);
-			stage.removeEventListener("pointerleave", this.onPointerLeave);
-			stage.removeEventListener("pointerout", this.onPointerOut);
-			stage.removeEventListener("pointercancel", this.onPointerCancel);
-			stage.removeEventListener("pointermove", this.onPointerMove);
+			stage.removeEventListener("pointerdown", controller.onPointerDown);
+			stage.removeEventListener("pointerup", controller.onPointerUp);
+			stage.removeEventListener("dblclick", controller.onClick);
+			stage.removeEventListener(
+				"pointerleave",
+				controller.onPointerLeave,
+			);
+			stage.removeEventListener("pointerout", controller.onPointerOut);
+			stage.removeEventListener(
+				"pointercancel",
+				controller.onPointerCancel,
+			);
 		}
-		this.props.app.subscriptions.remove(this.subscription);
+		this.props.app.subscriptions.remove(this.drawingContextSubscription);
+		this.props.app.subscriptions.remove(this.cursorSubsctiption);
 	}
 
-	renderTopLayer = (context: DrawingContext): void => {
-		const { board } = this.props;
-		context.setCamera(board.camera);
-		context.clear();
-		board.selection.render(context);
-		board.tools.render(context);
-	};
+	renderToContext = (): void => {};
 
-	topLayerSubscription = {
+	drawingContextSubscription = {
 		observer: () => {},
-		subjects: ["tools", "selection", "camera", "items"],
+		subjects: ["camera", "items", "tools", "selection"],
 	};
 
-	subscribeTopLayer = (observer: () => void): void => {
-		this.topLayerSubscription.observer = observer;
-		this.props.app.subscriptions.add(this.topLayerSubscription);
-	};
-
-	unsubscribeTopLayer = (observer: () => void): void => {
-		this.props.app.subscriptions.remove(this.topLayerSubscription);
-	};
-
-	renderBottomLayer = (context: DrawingContext): void => {
-		const { board } = this.props;
-		context.setCamera(board.camera);
-		context.clear();
-		board.items.render(context);
-	};
-
-	bottomLayerSubscription = {
-		observer: () => {},
-		subjects: ["camera", "items"],
-	};
-
-	subscribeBottomLayer = (observer: () => void): void => {
-		this.bottomLayerSubscription.observer = observer;
-		this.props.app.subscriptions.add(this.bottomLayerSubscription);
-	};
-
-	unsubscribeBottomLayer = (observer: () => void): void => {
-		this.props.app.subscriptions.remove(this.bottomLayerSubscription);
+	cursorSubsctiption = {
+		observer: this.updateCursor,
+		subjects: ["pointer"],
 	};
 
 	render(): React.ReactElement {
@@ -325,28 +104,35 @@ export class Canvas extends React.Component<Props> {
 				className="NoContextMenu"
 				ref={this.stageRef}
 				style={{
-					cursor: board.pointer.getCursor(),
 					position: "relative",
-					width: width,
-					height: height,
+					padding: "0px",
+					margin: "0px",
+					border: "0px",
+					background: "rgba(200,200,200,0.2)",
+					cursor: board.pointer.getCursor(),
+					top: "0px",
+					left: "0px",
+					display: "block",
+					width: `${width}px`,
+					height: `${height}px`,
 				}}
 			>
-				<Layer
-					setDrawingContext={this.setDrawingContext}
-					render={this.renderBottomLayer}
-					subscribe={this.subscribeBottomLayer}
-					unsubscribe={this.unsubscribeBottomLayer}
-					board={board}
-					width={width}
-					height={height}
-				/>
-				<Layer
-					render={this.renderTopLayer}
-					subscribe={this.subscribeTopLayer}
-					unsubscribe={this.unsubscribeTopLayer}
-					board={board}
-					width={width}
-					height={height}
+				<canvas
+					ref={this.canvasRef}
+					width={Math.floor(width * window.devicePixelRatio)}
+					height={Math.floor(height * window.devicePixelRatio)}
+					className="NoContextMenu"
+					style={{
+						padding: "0px",
+						margin: "0px",
+						border: "0px",
+						background: "rgba(200,200,200,0.2)",
+						top: "0px",
+						left: "0px",
+						display: "block",
+						width: `${width}px`,
+						height: `${height}px`,
+					}}
 				/>
 			</div>
 		);

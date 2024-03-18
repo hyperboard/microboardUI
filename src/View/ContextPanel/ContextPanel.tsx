@@ -55,6 +55,9 @@ export class ContextPanel extends React.Component<
 	animationFrameId: number | null = null;
 
 	update = (): void => {
+		// this.updateRects();
+		this.forceUpdate();
+		return;
 		if (this.animationFrameId) {
 			return; // Function already scheduled to run
 		}
@@ -122,6 +125,9 @@ export class ContextPanel extends React.Component<
 
 	render(): React.ReactElement | null {
 		const { board } = this.props;
+		if (!board.selection.isOn) {
+			return null;
+		}
 		const { menu, panelRect } = this.state;
 		const context = board.selection.getContext();
 		if (context === "None") {
@@ -1118,10 +1124,10 @@ class FontSize extends React.PureComponent<{
 		this.setState({ fontSize: this.props.board.selection.getFontSize() });
 	};
 	componentDidMount(): void {
-		this.props.board.selection.itemSubject.subscribe(this.updateFontSize);
+		// this.props.board.selection.itemSubject.subscribe(this.updateFontSize);
 	}
 	componentWillUnmount(): void {
-		this.props.board.selection.itemSubject.unsubscribe(this.updateFontSize);
+		// this.props.board.selection.itemSubject.unsubscribe(this.updateFontSize);
 	}
 	render(): React.ReactElement | null {
 		const { board, toggleMenu, menu, panelMbr, windowHeight, fontSize } =
@@ -1937,6 +1943,7 @@ function BringBackForward({
 	color: string;
 	windowHeight: number;
 }): React.ReactElement | null {
+	return null;
 	const menuRef = React.useRef<HTMLDivElement>(null);
 	const context = board.selection.getContext();
 	if (context !== "SelectUnderPointer" && context !== "SelectByRect") {
