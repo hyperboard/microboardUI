@@ -69,13 +69,13 @@ export class Boards {
                 [boardId, eventId, eventBody]
             );
             const order = result.rows[0].order;
-            const boardEvent = { order, body: eventBody };
+            const event = { order, body: eventBody };
             this.onEventSave(boardId, {
                 type: "BoardEvent",
                 boardId,
-                boardEvent,
+                event,
             });
-            return boardEvent;
+            return event;
         } catch (error) {
             this.logger.error(`Error adding event to board: ${error}`);
             throw error;
