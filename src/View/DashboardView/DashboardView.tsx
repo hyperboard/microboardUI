@@ -80,16 +80,19 @@ export const DashboardView: React.FC<{app: App}> = (props) => {
     if (!boards.length || window.self !== window.top) { 
       return; 
     }
-    const iframeTest = new WhiteboardModuleView();
-    iframeTest.render({
-        container: document.querySelector("#frameTest")!,
-        baseUrl: "/boards",
-        boardId: boards[0].boardId,
-        userToken: 'token',
-        width: '800px',
-        height: '400px',
-    });
-    iframeTest.setAuthToken('testToken', 'testRefreshToken');
+    // const iframeTest = new WhiteboardModuleView();
+    // iframeTest.render({
+    //     container: document.querySelector("#frameTest")!,
+    //     baseUrl: "/boards",
+    //     boardId: boards[0].boardId,
+    //     userToken: 'token',
+    //     width: '800px',
+    //     height: '400px',
+    // });
+    setTimeout(() => {
+      console.log('Timeout')
+      // iframeTest.setAuthToken('testToken', 'testRefreshToken');
+    }, 5000);
   }, []);
 
   React.useEffect(() => {

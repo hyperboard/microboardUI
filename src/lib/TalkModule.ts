@@ -27,7 +27,7 @@ export class TalkModule {
   }
 
   setEventListeners(): void {
-    if (!isIframe()) { return; }
+    // if (!isIframe()) { return; }
     window.addEventListener("message", (event: MessageEvent<Message<DataTypes>>) => {
       console.log("event: ", event.data.pattern);
       // if (event.origin !== "https://example-talk.com") {

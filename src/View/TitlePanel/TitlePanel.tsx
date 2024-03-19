@@ -9,6 +9,7 @@ import { useStyle } from "View";
 import { ExportBoardSnapshotButton } from "App/ExportBoardSnapshot";
 import { Modal } from "View/Modal/Modal";
 import { isIframe } from "lib/isIframe";
+import Cookies from "js-cookie";
 
 export class TitlePanel extends React.Component<{
 	board: Board;
@@ -85,7 +86,7 @@ export class TitlePanel extends React.Component<{
 								paddingRight: "4px",
 								fontWeight: 600,
 							}}>
-								{"Microboard"}
+								{`${Cookies.get("accessToken_talk")}`}
 							</span>
 					)}
 				</Button>

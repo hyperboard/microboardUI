@@ -45,6 +45,7 @@ export class WhiteboardModuleView implements WhiteboardModule {
                 refreshToken
             }
         };
+        console.log('Set auth token:', message);
         this.iframe?.contentWindow?.postMessage(message, '*');
     }
 

@@ -10,6 +10,7 @@ import "../index.css";
 import { ProtectedRoute } from "./Routes/ProtectedRoute";
 import RootView from "./RootView/RootView";
 import { TalkModule } from "lib/TalkModule";
+import { VerifyMailView } from "./VerifyMailView/VerifyMailView";
 
 export function getRender(app: App): () => void {
 	new TalkModule(); 
@@ -26,6 +27,10 @@ export function getRender(app: App): () => void {
 		{
 			path: "/sign-in",
 			element: <SigninView />,
+		},
+		{
+			path: "/verify",
+			element: <VerifyMailView />,
 		},
 		{
 			path: "/dashboard",

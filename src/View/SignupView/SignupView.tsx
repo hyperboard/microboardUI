@@ -1,16 +1,16 @@
 import { getApiUrl } from "Config";
-import Cookies from "js-cookie";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, createSearchParams, useNavigate } from "react-router-dom";
 import styles from "./SignupView.module.css";
 
 type RegisterOkResponse = {
-	accessToken: string;
-	refreshToken: string;
+	id: number;
+	email: string;
 };
 
 export const SignupView = (): React.ReactElement => {
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const navigate = useNavigate();
 	const onSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
 	): Promise<void> => {
@@ -35,8 +35,13 @@ export const SignupView = (): React.ReactElement => {
 				}
 			})
 			.then((data: RegisterOkResponse) => {
-				Cookies.set("accessToken", data.accessToken);
-				Cookies.set("refreshToken", data.refreshToken);
+				navigate({
+					pathname: '/verify',
+					search: createSearchParams({
+						userId: `${data.id}`,
+						email: data.email,
+					}).toString()
+				});
 			})
 			.catch(error => {
 				setErrorMessage(error.message);
