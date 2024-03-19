@@ -685,9 +685,11 @@ $$ language plpgsql;
 
 -- Table to store user passcode
 create table if not exists user_passcode (
+	id serial primary key,
 	user_id integer references users(id) on delete cascade,
 	passcode VARCHAR(10),
-	created timestamp default now()
+	created timestamp default now(),
+	remaining_attempts integer default 3
 );
 
 -- Function to add passcode to a user
@@ -703,15 +705,17 @@ $$ language plpgsql;
 
 -- Function to check passcode
 create or replace function check_passcode(
-    id integer,
-    pass_code varchar
+		pass_code varchar,
+		userid integer
 )
 returns boolean as $$
 declare
-    valid_passcode record;
+		valid_passcode record;
 begin
-    select * into valid_passcode from user_passcode where user_id = id and passcode = pass_code limit 1;
-    return found;
+		with last_passcode as (select * from user_passcode where user_id = userid order by created desc limit 1)
+		update user_passcode set remaining_attempts = remaining_attempts - 1 where user_id = userid and id = (select id from last_passcode);
+		select * into valid_passcode from user_passcode where passcode = pass_code and remaining_attempts > 0 limit 1;
+		return found;
 end;
 $$ language plpgsql;
 

@@ -205,6 +205,7 @@ export class Auth {
                     context: {
                         passcode: passcode,
                         userId: createdUser.rows[0].id,
+                        email: createdUser.rows[0].email,
                     },
                 }
             );
@@ -301,8 +302,34 @@ export class Auth {
     async verifyEmail(payload: VerifyEmailPayload): Promise<any> {
         const checkPasscode = await this.database.query(
             `select check_passcode($1, $2)`,
-            [payload.userId, payload.passcode]
+            [payload.passcode, payload.userId]
         );
+
+        const lastPasscode = await this.database.query(
+            `select * from user_passcode where user_id = $1 order by created desc limit 1`,
+            [payload.userId]
+        );
+        if (lastPasscode.rows.length === 0) {
+            throw new HttpException(
+                HttpStatus.UNAUTHORIZED,
+                "Passcode not found"
+            );
+        }
+
+        const HOURS_24 = 24 * 60 * 60 * 1000
+        if (lastPasscode.rows[0].created < Date.now() - HOURS_24 ) {
+            throw new HttpException(
+                HttpStatus.UNAUTHORIZED,
+                "Passcode expired"
+            );
+        }
+        if (lastPasscode.rows[0].remaining_attempts <= 0) {
+            throw new HttpException(
+                HttpStatus.UNAUTHORIZED,
+                "PASSCODE_ATTEMPTS_EXCEEDED"
+            );
+            
+        }
 
         if (!checkPasscode.rows[0].check_passcode) {
             throw new HttpException(
@@ -335,11 +362,40 @@ export class Auth {
             updateUser.rows[0].id
         );
 
+        const salt = await bcrypt.genSalt(10);
+        const refreshTokenHash = await bcrypt.hash(tokens.refreshToken, salt);
+
+        try {
+            await this.database.query(
+                `
+                select save_token($1, $2)
+                `,
+                [updateUser.rows[0].id, refreshTokenHash]
+            );
+        } catch (e) {
+            this.logger.error(`save_token error: ${e}`);
+            throw new HttpException(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Error occurred when saving refresh token"
+            );
+        }
+
         return tokens;
     }
 
     async resendEmail(payload: ResendEmailPayload): Promise<any> {
         const passcode = this.authHelper.generatePasscode();
+        const lastPasscode = await this.database.query(
+            `select * from user_passcode where user_id = $1 order by created desc limit 1`,
+            [payload.userId]
+        );
+
+        if (lastPasscode.rows[0].created > Date.now() - 3 * 60 * 1000) {
+            throw new HttpException(
+                HttpStatus.UNAUTHORIZED,
+                "Can retry after 3 minutes"
+            );
+        }
         try {
             await this.database.query(
                 `
@@ -364,6 +420,7 @@ export class Auth {
                     context: {
                         passcode: passcode,
                         userId: payload.userId,
+                        email: payload.email
                     },
                 }
             );

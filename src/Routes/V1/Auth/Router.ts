@@ -169,7 +169,7 @@ export function getAuthRouter(authService: Auth): express.Router {
         response.end();
     });
 
-    router.post("auth/resendEmail", async (request, response) => {
+    router.post("/auth/resendEmail", async (request, response) => {
         const { email, userId } = request.body;
         if (!email || !userId) {
             response

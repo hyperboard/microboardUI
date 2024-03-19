@@ -8,6 +8,7 @@ type Template = {
     context: {
         passcode: string;
         userId: number;
+        email: string;
     };
 };
 
