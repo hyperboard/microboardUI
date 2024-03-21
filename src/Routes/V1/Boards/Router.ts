@@ -35,7 +35,7 @@ export function getBoardsRouter(
     router.post(
         "/boards",
         authenticate,
-        body("catalogId").isUUID(),
+        body("catalogId").optional().isUUID(),
         body("title").optional().isString(),
         async (req: Request, res: Response) => {
             try {
@@ -47,7 +47,7 @@ export function getBoardsRouter(
                 const boardId = uuidv4();
                 const title: string = req.body.title || boardId;
 
-                const catalogId = req.params.catalogId;
+                const catalogId = req.params.catalogId ?? "root";
                 if (
                     !checkPermissions(req.user, "owns", "catalogs", catalogId)
                 ) {
@@ -96,7 +96,7 @@ export function getBoardsRouter(
     router.delete(
         "/boards",
         authenticate,
-        body("catalogId").isUUID(),
+        body("catalogId").optional().isUUID(),
         query("boardId").isUUID(),
         async (req: Request, res: Response) => {
             try {
@@ -106,13 +106,20 @@ export function getBoardsRouter(
                 }
 
                 const catalogId = req.params.catalogId;
+                const boardId = req.query.boardId as string;
+
                 if (
-                    !checkPermissions(req.user, "owns", "catalogs", catalogId)
+                    !checkPermissions(
+                        req.user,
+                        "owns",
+                        "catalogs",
+                        catalogId
+                    ) &&
+                    !checkPermissions(req.user, "owns", "boards", boardId)
                 ) {
                     return forbidden(res);
                 }
 
-                const boardId = req.query.boardId as string;
                 await boards.deleteBoard(boardId);
                 return res.status(204).send();
             } catch (err) {
@@ -126,7 +133,7 @@ export function getBoardsRouter(
     router.post(
         "/boards/:boardId/duplicate",
         authenticate,
-        body("catalogId").isUUID(),
+        body("catalogId").optional().isUUID(),
         param("boardId").isUUID(),
         async (req: Request, res: Response) => {
             try {
@@ -136,13 +143,25 @@ export function getBoardsRouter(
                 }
 
                 const catalogId = req.params.catalogId;
+                const originalBoardId = req.params.boardId;
+
                 if (
-                    !checkPermissions(req.user, "owns", "catalogs", catalogId)
+                    !checkPermissions(
+                        req.user,
+                        "owns",
+                        "catalogs",
+                        catalogId
+                    ) &&
+                    !checkPermissions(
+                        req.user,
+                        "owns",
+                        "boards",
+                        originalBoardId
+                    )
                 ) {
                     return forbidden(res);
                 }
 
-                const originalBoardId = req.params.boardId;
                 const newBoardId = uuidv4();
                 await boards.duplicateBoard(originalBoardId, newBoardId);
                 return res.status(200).json({ newBoardId: newBoardId });
@@ -157,7 +176,7 @@ export function getBoardsRouter(
     router.patch(
         "/boards/:boardId",
         authenticate,
-        body("catalogId").isUUID(),
+        body("catalogId").optional().isUUID(),
         param("boardId").isUUID(),
         body("newTitle").isString(),
         async (req: Request, res: Response) => {
@@ -172,7 +191,13 @@ export function getBoardsRouter(
                 const newTitle = req.body.newTitle;
 
                 if (
-                    !checkPermissions(req.user, "owns", "catalogs", catalogId)
+                    !checkPermissions(
+                        req.user,
+                        "owns",
+                        "catalogs",
+                        catalogId
+                    ) &&
+                    !checkPermissions(req.user, "owns", "boards", boardId)
                 ) {
                     return forbidden(res);
                 }

@@ -2,6 +2,7 @@ import WebSocket, { WebSocketServer } from "ws";
 import { Boards } from "Routes/V1/Boards";
 import jwt from "jsonwebtoken";
 import { AccessToken } from "Interface";
+import { verifyToken } from "Tokens";
 
 export function withWebSocketApi(wss: WebSocketServer, boards: Boards): void {
     const boardClients = new Map<string, WebSocket.WebSocket[]>();
@@ -68,23 +69,6 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards): void {
             return saveToken(ws, token);
         } else {
             return sendError(ws, "Invalid or expired token");
-        }
-    }
-
-    async function verifyToken(
-        tokenString: string
-    ): Promise<AccessToken | null> {
-        try {
-            const token = jwt.verify(
-                tokenString,
-                process.env.JWT_SECRET
-            ) as AccessToken;
-            if (token.exp * 1000 < Date.now()) {
-                return null; // Token is expired
-            }
-            return token;
-        } catch (error) {
-            return null; // Token validation failed
         }
     }
 
