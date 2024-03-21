@@ -59,7 +59,11 @@ export async function verifyToken(
         const token = jwt.verify(tokenString, publicKey, {
             algorithms: ["ES256"],
         }) as AccessToken;
-        return token;
+        if (isTokenValid(token)) {
+            return token;
+        } else {
+            return null;
+        }
     } catch (error) {
         return null;
     }
