@@ -142,6 +142,7 @@ export function getController(getBoard: () => Board) {
 		if (!board.selection.tool.keyDown(board.keyboard.down)) {
 			board.tools.keyDown(board.keyboard.down);
 		}
+		postKeyboardEvent(event);
 	}
 
 	function onKeyUp(event: KeyboardEvent): void {
@@ -158,6 +159,7 @@ export function getController(getBoard: () => Board) {
 		if (!board.selection.tool.keyUp(board.keyboard.up)) {
 			board.tools.keyUp(board.keyboard.up);
 		}
+		postKeyboardEvent(event);
 	}
 
 	function onResize(): void {
@@ -518,5 +520,25 @@ export function getController(getBoard: () => Board) {
 		onCopy,
 		onPaste,
 		onDrop,
+	};
+}
+
+function postKeyboardEvent(event: KeyboardEvent) {
+	window.parent.postMessage(serializeKeyboardEvent(event), "*");
+}
+
+function serializeKeyboardEvent(event: KeyboardEvent) {
+	return {
+		type: "keyboardEvent",
+		eventType: event.type,
+		eventData: {
+			key: event.key,
+			code: event.code,
+			ctrlKey: event.ctrlKey,
+			shiftKey: event.shiftKey,
+			altKey: event.altKey,
+			metaKey: event.metaKey,
+			repeat: event.repeat,
+		},
 	};
 }
