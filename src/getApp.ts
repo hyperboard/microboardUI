@@ -111,6 +111,7 @@ export async function getApp(): Promise<http.Server> {
         } else if (req.path.includes("bundle.js.map")) {
             res.sendFile("bundle.js.map", { root: staticPath });
         } else if (req.accepts("html") && !req.get("Content-Type")) {
+            // BUG: blocks delete requests of downstream routers
             res.sendFile("index.html", { root: staticPath });
         } else {
             next();
