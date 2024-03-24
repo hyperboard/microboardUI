@@ -19,6 +19,6 @@ export async function authenticate(
             .json({ message: "Invalid or expired JWT token" });
     }
 
-    req.user = decodedToken;
+    req.token = decodedToken;
     next();
 }

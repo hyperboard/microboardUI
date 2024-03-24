@@ -18,10 +18,10 @@ export function getV1Router(
 ): express.Router {
     const router = express.Router();
     const authMiddleware = jwtMiddleware(logger);
-    router.use("/api/v1", getAuthRouter(auth));
+    // router.use("/api/v1", getAuthRouter(auth));
     router.use("/api/v1", getBoardsRouter(boards, logger));
-    router.use(authMiddleware);
-    router.use("/api/v1", getUsersRouter(users, logger));
+    // router.use(authMiddleware);
+    // router.use("/api/v1", getUsersRouter(users, logger));
 
     return router;
 }

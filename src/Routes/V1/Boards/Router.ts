@@ -12,10 +12,10 @@ function checkPermissions(
     resource: "boards" | "catalogs" | "groups",
     resourceId: string
 ): boolean {
-    if (!jwt || !jwt[action] || !jwt[action]![resource]) {
+    if (!jwt || !jwt[action]?.[resource]) {
         return false;
     }
-    return jwt[action]![resource].includes(resourceId);
+    return jwt[action]![resource]?.includes(resourceId) ?? false;
 }
 
 function forbidden(res: Response): void {
@@ -49,7 +49,7 @@ export function getBoardsRouter(
 
                 const catalogId = req.params.catalogId ?? "root";
                 if (
-                    !checkPermissions(req.user, "owns", "catalogs", catalogId)
+                    !checkPermissions(req.token, "owns", "catalogs", catalogId)
                 ) {
                     return forbidden(res);
                 }
@@ -94,10 +94,10 @@ export function getBoardsRouter(
 
     // Deleting a board
     router.delete(
-        "/boards",
+        "/boards/:boardId",
         authenticate,
-        body("catalogId").optional().isUUID(),
-        query("boardId").isUUID(),
+        param("boardId").isUUID(),
+        //        body("catalogId").optional().isUUID(),
         async (req: Request, res: Response) => {
             try {
                 const errors = validationResult(req);
@@ -105,17 +105,17 @@ export function getBoardsRouter(
                     return res.status(400).json({ errors: errors.array() });
                 }
 
-                const catalogId = req.params.catalogId;
-                const boardId = req.query.boardId as string;
+                const catalogId = req.body.catalogId;
+                const boardId = req.params.boardId as string;
 
                 if (
                     !checkPermissions(
-                        req.user,
+                        req.token,
                         "owns",
                         "catalogs",
                         catalogId
                     ) &&
-                    !checkPermissions(req.user, "owns", "boards", boardId)
+                    !checkPermissions(req.token, "owns", "boards", boardId)
                 ) {
                     return forbidden(res);
                 }
@@ -147,13 +147,13 @@ export function getBoardsRouter(
 
                 if (
                     !checkPermissions(
-                        req.user,
+                        req.token,
                         "owns",
                         "catalogs",
                         catalogId
                     ) &&
                     !checkPermissions(
-                        req.user,
+                        req.token,
                         "owns",
                         "boards",
                         originalBoardId
@@ -192,12 +192,12 @@ export function getBoardsRouter(
 
                 if (
                     !checkPermissions(
-                        req.user,
+                        req.token,
                         "owns",
                         "catalogs",
                         catalogId
                     ) &&
-                    !checkPermissions(req.user, "owns", "boards", boardId)
+                    !checkPermissions(req.token, "owns", "boards", boardId)
                 ) {
                     return forbidden(res);
                 }
@@ -230,8 +230,8 @@ export function getBoardsRouter(
                 const eventBody = req.body.eventBody;
 
                 if (
-                    !checkPermissions(req.user, "owns", "boards", boardId) &&
-                    !checkPermissions(req.user, "edits", "boards", boardId)
+                    !checkPermissions(req.token, "owns", "boards", boardId) &&
+                    !checkPermissions(req.token, "edits", "boards", boardId)
                 ) {
                     return forbidden(res);
                 }
@@ -268,9 +268,9 @@ export function getBoardsRouter(
                 const limit: number = parseInt(req.query.limit as string) || 10;
 
                 if (
-                    !checkPermissions(req.user, "owns", "boards", boardId) &&
-                    !checkPermissions(req.user, "edits", "boards", boardId) &&
-                    !checkPermissions(req.user, "views", "boards", boardId)
+                    !checkPermissions(req.token, "owns", "boards", boardId) &&
+                    !checkPermissions(req.token, "edits", "boards", boardId) &&
+                    !checkPermissions(req.token, "reads", "boards", boardId)
                 ) {
                     return forbidden(res);
                 }
@@ -305,7 +305,7 @@ export function getBoardsRouter(
                 const type = req.body.type;
                 const linkId = uuidv4();
 
-                if (!checkPermissions(req.user, "owns", "boards", boardId)) {
+                if (!checkPermissions(req.token, "owns", "boards", boardId)) {
                     return forbidden(res);
                 }
 
@@ -339,7 +339,7 @@ export function getBoardsRouter(
                 const boardId = req.params.boardId;
                 const linkId = req.params.linkId;
 
-                if (!checkPermissions(req.user, "owns", "boards", boardId)) {
+                if (!checkPermissions(req.token, "owns", "boards", boardId)) {
                     return forbidden(res);
                 }
 

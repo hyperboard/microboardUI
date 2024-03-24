@@ -266,7 +266,7 @@ export type SocketMessage =
     | Unsubscribe
     | Error;
 
-type BoardEventBody = unknown;
+type BoardEventBody = any;
 
 export class EventsManager {
     readonly processing: string[] = [];

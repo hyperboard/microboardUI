@@ -2,8 +2,6 @@ import { Pool } from "pg";
 import winston from "winston";
 import { sql } from "./sql";
 
-const { DB_PORT, DB_USER, DB_PASSWORD, DB_NAME, DB_HOST } = process.env;
-
 function loadFunctions(database: Pool, logger: winston.Logger): void {
     async function loadFunction(name: string, body: string): Promise<void> {
         try {
@@ -31,6 +29,7 @@ function loadFunctions(database: Pool, logger: winston.Logger): void {
 }
 
 export async function getDatabase(logger: winston.Logger): Promise<Pool> {
+    const { DB_PORT, DB_USER, DB_PASSWORD, DB_NAME, DB_HOST } = process.env;
     const database = new Pool({
         user: DB_USER,
         database: DB_NAME,

@@ -16,9 +16,12 @@ import { Config } from "./shared/config/config";
 import { Mailer } from "./shared/modules/mailer/mailer";
 import http from "http";
 import { WebSocketServer } from "ws";
+import morgan from "morgan";
 
 export async function getApp(): Promise<http.Server> {
     const app = express();
+    app.use(morgan("combined"));
+
     const server = http.createServer(app);
     const wss = new WebSocketServer({
         server,
@@ -83,18 +86,6 @@ export async function getApp(): Promise<http.Server> {
     app.use(express.static(staticPath));
     app.use(nocache);
 
-    app.use((req, res, next) => {
-        if (req.path.includes("favicon.svg")) {
-            res.sendFile("favicon.svg", { root: staticPath });
-        } else if (req.path.includes("bundle.js.map")) {
-            res.sendFile("bundle.js.map", { root: staticPath });
-        } else if (req.accepts("html") && !req.get("Content-Type")) {
-            res.sendFile("index.html", { root: staticPath });
-        } else {
-            next();
-        }
-    });
-
     const config = new Config();
     const mailer = new Mailer(config, logger);
     const database = await getDatabase(logger);
@@ -113,6 +104,18 @@ export async function getApp(): Promise<http.Server> {
     });
 
     app.use("/", getV1Router(config, mailer, boards, logger, auth, users));
+
+    app.use((req, res, next) => {
+        if (req.path.includes("favicon.svg")) {
+            res.sendFile("favicon.svg", { root: staticPath });
+        } else if (req.path.includes("bundle.js.map")) {
+            res.sendFile("bundle.js.map", { root: staticPath });
+        } else if (req.accepts("html") && !req.get("Content-Type")) {
+            res.sendFile("index.html", { root: staticPath });
+        } else {
+            next();
+        }
+    });
 
     return server;
 }
