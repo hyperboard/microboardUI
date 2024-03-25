@@ -21,6 +21,19 @@ export class Boards {
         }
     }
 
+    async isBoardExists(boardId: string): Promise<boolean> {
+        try {
+            const result = await this.database.query(
+                "SELECT id FROM boards WHERE uniq_id = $1 LIMIT 1",
+                [boardId]
+            );
+            return result.rows.length === 1;
+        } catch (error) {
+            this.logger.error(`Error checking if board exists: ${error}`);
+            throw error;
+        }
+    }
+
     async deleteBoard(boardId: string): Promise<void> {
         try {
             await this.database.query("SELECT delete_board($1)", [boardId]);
@@ -36,7 +49,7 @@ export class Boards {
     ): Promise<any> {
         try {
             const result = await this.database.query(
-                "SELECT * FROM duplicate_board($1)",
+                "SELECT * FROM duplicate_board($1, $2)",
                 [originalBoardId, newBoardId]
             );
             return result.rows[0];
@@ -127,7 +140,7 @@ export class Boards {
     async deleteLink(boardId: string, linkId: string): Promise<any> {
         try {
             const table = await this.database.query(
-                "select deleta_link($1, $2)",
+                "select delete_link($1, $2)",
                 [boardId, linkId]
             );
             return table;
@@ -139,7 +152,7 @@ export class Boards {
 
     async isValidLink(
         linkId: string,
-        linkTypes: ("read" | "edit")[]
+        linkTypes: ("view" | "edit")[]
     ): Promise<boolean> {
         try {
             const result = await this.database.query(

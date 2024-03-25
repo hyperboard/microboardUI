@@ -202,6 +202,11 @@ export function getBoardsRouter(
                     return forbidden(res);
                 }
 
+                const isBoardExists = await boards.isBoardExists(boardId);
+                if (!isBoardExists) {
+                    return res.status(404).json({ message: "Board not found" });
+                }
+
                 await boards.renameBoard(boardId, newTitle);
                 return res.status(200).send();
             } catch (err) {
@@ -293,7 +298,7 @@ export function getBoardsRouter(
         "/boards/:boardId/links",
         authenticate,
         param("boardId").isUUID(),
-        body("type").isIn(["read", "edit"]),
+        body("type").isIn(["edit", "view"]),
         async (req: Request, res: Response) => {
             try {
                 const errors = validationResult(req);
@@ -341,6 +346,11 @@ export function getBoardsRouter(
 
                 if (!checkPermissions(req.token, "owns", "boards", boardId)) {
                     return forbidden(res);
+                }
+
+                const isBoardExists = await boards.isBoardExists(boardId);
+                if (!isBoardExists) {
+                    return res.status(404).json({ message: "Board not found" });
                 }
 
                 await boards.deleteLink(boardId, linkId);

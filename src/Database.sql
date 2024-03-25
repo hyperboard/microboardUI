@@ -187,21 +187,21 @@ language plpgsql
 as $$
 begin
     declare
-        board_id integer;
+        board_id_to_delete integer;
     begin
-        select id into board_id from boards where uniq_id = board_uuid;
+        select id into board_id_to_delete from boards where uniq_id = board_uuid;
         
         if not found then
             raise exception 'Board not found with UUID %', board_uuid;
         end if;
         
-        delete from board_permissions where board_id = board_id;
-        delete from board_owner where board_id = board_id;
-        delete from board_edit_link where board_id = board_id;
-        delete from board_view_link where board_id = board_id;
-        delete from board_snapshots where board_id = board_id;
-        execute format('drop table if exists board%s', board_id);
-        delete from boards where id = board_id;
+        delete from board_permissions where board_id = board_id_to_delete;
+        delete from board_owner where board_id = board_id_to_delete;
+        delete from board_edit_link where board_id = board_id_to_delete;
+        delete from board_view_link where board_id = board_id_to_delete;
+        delete from board_snapshots where board_id = board_id_to_delete;
+        execute format('drop table if exists board%s', board_id_to_delete);
+        delete from boards where id = board_id_to_delete;
     end;
 end;
 $$;
@@ -235,8 +235,14 @@ $$;
 
 create or replace function rename_board(board_uuid UUID, new_boardname varchar)
 returns VOID AS $$
+declare
+    board_id integer;
 begin
-    update boards set boardname = new_boardname where uniq_id = board_uuid;
+    select id into board_id from boards where uniq_id = board_uuid;
+    if not found then
+        raise exception 'Board not found with UUID %', board_uuid using errcode = 'XXXXX';
+    end if;
+    update boards set boardname = new_boardname where id = board_id;
 end;
 $$ language plpgsql;
 

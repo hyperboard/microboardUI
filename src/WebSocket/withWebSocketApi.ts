@@ -105,14 +105,14 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards): void {
         boardId: string
     ): Promise<boolean> {
         return (
-            (await isValidLink(boardId, ["read", "edit"])) ||
+            (await isValidLink(boardId, ["view", "edit"])) ||
             hasAnyRightInTokens(ws, boardId, ["reads", "edits", "owns"])
         );
     }
 
     async function isValidLink(
         boardId: string,
-        linkTypes: ("read" | "edit")[]
+        linkTypes: ("view" | "edit")[]
     ): Promise<boolean> {
         return boards.isValidLink(boardId, linkTypes);
     }
