@@ -20,7 +20,8 @@ export function getV1Router(
     const authMiddleware = jwtMiddleware(logger);
     router.use("/api/v1", getAuthRouter(auth));
     router.use("/api/v1", getBoardsRouter(boards, logger));
-    router.use(authMiddleware);
+    // BUG: Миддлвар блокирует запрос GET boards/:id без токена по edit/view ссылке
+    // router.use(authMiddleware);
     router.use("/api/v1", getUsersRouter(users, logger));
 
     return router;
