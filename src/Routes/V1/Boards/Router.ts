@@ -5,6 +5,7 @@ import { body, validationResult, param, query } from "express-validator";
 import { Boards } from "./Boards";
 import { authenticate } from "Middlewares";
 import { AccessToken } from "Interface";
+import { jwtMiddleware } from "Middlewares/jwt.middleware";
 
 function checkPermissions(
     jwt: AccessToken,
@@ -46,6 +47,7 @@ export function getBoardsRouter(
 
                 const boardId = uuidv4();
                 const title: string = req.body.title || boardId;
+                const ownerId = req.body.ownerId || undefined;
 
                 const catalogId = req.params.catalogId ?? "root";
                 if (
@@ -54,7 +56,7 @@ export function getBoardsRouter(
                     return forbidden(res);
                 }
 
-                await boards.createBoard(boardId, title);
+                await boards.createBoard(boardId, title, ownerId);
                 return res.status(201).json({
                     boardId: boardId,
                     boardUrl: `/boards/${boardId}`,
@@ -362,6 +364,25 @@ export function getBoardsRouter(
             }
         }
     );
+
+    // Get private boards
+    router.get("/boards/private", jwtMiddleware(logger) , async (request, response) => {
+        const user = request.token;
+        const privateBoards = await boards.getPrivateBoards(user);
+        if (!privateBoards) {
+            logger.info(
+                `get /api/v1/boards/private Exception: get private boards`,
+            );
+            response.status(404).end();
+            return;
+        }
+        const json = {
+            privateBoards,
+        }
+        response.json(json);
+        response.end();
+    });
+
 
     return router;
 }

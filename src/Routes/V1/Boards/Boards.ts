@@ -1,3 +1,4 @@
+import { AccessToken } from "Interface";
 import { Pool } from "pg";
 import winston from "winston";
 
@@ -6,15 +7,23 @@ export class Boards {
 
     onEventSave(boardId: string, boardEvent: any): void {}
 
-    async createBoard(boardId: string, title: string): Promise<any> {
+    async createBoard(boardId: string, title: string, ownerId?: string): Promise<any> {
         try {
             const truncatedTitle = title.slice(0, 32);
 
-            const result = await this.database.query(
-                "SELECT * FROM create_board($1, $2)",
-                [boardId, truncatedTitle]
-            );
-            return result.rows[0].boardId;
+            if (ownerId) {
+                const privateBoard = await this.database.query<{board_id: number}>(
+                    "select * from create_private_board($1, $2, $3)",
+                    [boardId, truncatedTitle, ownerId],
+                );
+                return privateBoard.rows[0].board_id;
+            } else {
+                const result = await this.database.query(
+                    "SELECT * FROM create_board($1, $2)",
+                    [boardId, truncatedTitle]
+                );
+                return result.rows[0].boardId;
+            }
         } catch (error) {
             this.logger.error(`Error creating board: ${error}`);
             throw error;
@@ -169,4 +178,18 @@ export class Boards {
             throw error;
         }
     }
+
+    async getPrivateBoards(user: AccessToken): Promise<Array<{get_private_boards: string}> | undefined> {
+        try {
+            const privateBoards = await this.database.query<{get_private_boards: string}>(
+                "select * from get_private_boards($1) as board",
+                [user.sub]
+            );
+            return privateBoards.rows;
+        } catch(e) {
+            this.logger.error("Get private boards error");
+            return undefined;
+        }
+    }
+
 }

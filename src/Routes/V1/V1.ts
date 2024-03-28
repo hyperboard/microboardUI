@@ -3,7 +3,7 @@ import { getBoardsRouter, Boards } from "Routes/V1/Boards";
 import { getAuthRouter, Auth } from "Routes/V1/Auth";
 import { Users } from "Routes/V1/Users";
 import winston from "winston";
-import { jwtMiddleware } from "shared/middlewares";
+import { jwtMiddleware } from "Middlewares/jwt.middleware";
 import { getUsersRouter } from "./Users";
 import { Config } from "shared/config/config";
 import { Mailer } from "shared/modules/mailer/mailer";

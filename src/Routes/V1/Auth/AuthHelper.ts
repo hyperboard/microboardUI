@@ -1,5 +1,7 @@
 import { Config } from "shared/config/config";
-import { sign } from "jsonwebtoken";
+import { AccessToken } from "Interface";
+import { Permissions } from "./types";
+import { createToken } from "Tokens";
 
 export class AuthHelper {
     constructor(private config: Config) {}
@@ -16,35 +18,61 @@ export class AuthHelper {
         return passcode;
     }
 
-    public generateRefreshToken(email: string, id: number): string {
-        return sign(
-            { email, id },
-            this.config.environment.JWT_REFRESH_SECRET as string,
-            {
-                expiresIn: "7d",
-            }
+    public async generateRefreshToken(id: number, permissions?: Permissions): Promise<string> {
+        const claims: Partial<AccessToken> = {
+            ...permissions,
+        };
+
+        const token = await createToken(
+            claims,
+            `${id}}`,
+            60 * 60, // 1 hour
+            'Whiteboard',
+            'Whiteboard'
         );
+
+        if (!token) {
+            throw new Error("Failed to generate refresh token");
+        }
+
+        return token;
     }
 
-    public generateAccessToken(email: string, id: number): string {
-        return sign(
-            { email, id },
-            this.config.environment.JWT_SECRET as string,
-            {
-                expiresIn: "1h",
-            }
+    public async generateAccessToken(id: number, permissions?: Permissions): Promise<string> {
+        
+        const claims: Partial<AccessToken> = {
+            ...permissions,
+        };
+
+        const token = await createToken(
+            claims,
+            `${id}}`,
+            60 * 60 * 24 * 7, // 7 days
+            'Whiteboard',
+            'Whiteboard'
         );
+
+        if (!token) {
+            throw new Error("Failed to generate access token");
+        }
+
+        return token;
     }
 
-    public generateTokens(
-        email: string,
-        id: number
-    ): {
+    public async generateTokens(
+        id: number,
+        permissions?: Permissions
+    ): Promise<{
         accessToken: string;
         refreshToken: string;
-    } {
-        const accessToken = this.generateAccessToken(email, id);
-        const refreshToken = this.generateRefreshToken(email, id);
+    }> {
+        const accessToken = await this.generateAccessToken(id, permissions);
+        const refreshToken = await this.generateRefreshToken(id, permissions);
+
+        if (!accessToken || !refreshToken) {
+            throw new Error("Failed to generate tokens");
+        }
+
         return {
             accessToken,
             refreshToken,

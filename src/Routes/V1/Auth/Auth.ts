@@ -7,6 +7,9 @@ import { Config } from "shared/config/config";
 import { Mailer } from "shared/modules/mailer/mailer";
 import { AuthHelper } from "./AuthHelper";
 import { Pool } from "pg";
+import { AccessToken } from "Interface";
+import { Permissions } from "./types";
+import { publicKey } from "shared/config/keys";
 
 type RegisterPayload = {
     email: string;
@@ -90,9 +93,13 @@ export class Auth {
             );
         }
 
-        const { accessToken, refreshToken } = this.authHelper.generateTokens(
-            user.rows[0].email,
-            user.rows[0].id
+        const permissions = await this.getPermissions(user.rows[0].id);
+
+        const { accessToken, refreshToken } = await this.authHelper.generateTokens(
+            user.rows[0].id,
+            {
+                ...permissions,
+            }
         );
 
         const salt = await bcrypt.genSalt(10);
@@ -220,9 +227,9 @@ export class Auth {
         accessToken: string;
         refreshToken: string;
     } | null> {
-        const decodedUser: RequestUser = decode(
+        const claims: AccessToken = decode(
             payload.refreshToken
-        ) as RequestUser;
+        ) as AccessToken;
 
         const savedRefreshTokenHash = await this.database.query<{
             refresh_token: string;
@@ -232,7 +239,7 @@ export class Auth {
                 from users
                 where id = $1
             `,
-            [decodedUser.id]
+            [claims.sub]
         );
 
         if (!savedRefreshTokenHash.rows[0]) {
@@ -260,7 +267,8 @@ export class Auth {
 
         const verifiedUser = verify(
             payload.refreshToken,
-            process.env.JWT_REFRESH_SECRET!
+            publicKey,
+            {algorithms: ['ES256']}
         );
 
         if (!verifiedUser) {
@@ -270,9 +278,15 @@ export class Auth {
             );
         }
 
-        const { accessToken, refreshToken } = this.authHelper.generateTokens(
-            decodedUser.email,
-            +decodedUser.id
+        const permissions = await this.getPermissions(+claims.sub);
+
+        const { accessToken, refreshToken } = await this.authHelper.generateTokens(
+            +claims.sub,
+            {
+                owns: {...claims.owns, ...permissions.owns},
+                edits: {...claims.edits, ...permissions.edits},
+                reads: {...claims.reads, ...permissions.reads},
+            }
         );
 
         const salt = await bcrypt.genSalt(10);
@@ -283,7 +297,7 @@ export class Auth {
                 `
                 select save_token($1, $2)
                 `,
-                [decodedUser.id, refreshTokenHash]
+                [claims.sub, refreshTokenHash]
             );
         } catch (e) {
             this.logger.error(`save_token error: ${e}`);
@@ -357,9 +371,15 @@ export class Auth {
             );
         }
 
-        const tokens = this.authHelper.generateTokens(
-            updateUser.rows[0].email,
-            updateUser.rows[0].id
+        const permissions = await this.getPermissions(updateUser.rows[0].id);
+
+        const tokens = await this.authHelper.generateTokens(
+            updateUser.rows[0].id,
+            {
+                owns: {...permissions.owns},
+                edits: {...permissions.edits},
+                reads: {...permissions.reads},
+            }
         );
 
         const salt = await bcrypt.genSalt(10);
@@ -431,5 +451,48 @@ export class Auth {
                 "Error occurred when sending verification email"
             );
         }
+    }
+
+    private async getPermissions(user_id: number): Promise<Permissions> {
+        const permissions: Permissions = {
+            owns: {
+                boards: []
+            },
+            edits: {
+                boards: []
+            },
+            reads: {
+                boards: []
+            }
+        }
+
+        const boardsOwnerships = await this.database.query<{
+            board_id: number;
+            can_view: boolean;
+            can_edit: boolean;
+            user_id: number;
+            owner_id: number;
+        }>(`
+        SELECT bp.board_id, bp.can_view,  bp.can_edit, bp.user_id, bo.owner_id
+        FROM board_permissions bp 
+        JOIN board_owner bo 
+        ON bo.board_id = bp.board_id 
+        `);
+
+        if (boardsOwnerships) {
+            for (const rights of boardsOwnerships.rows) {
+                if (rights.can_view) {
+                    permissions.reads.boards.push(`${rights.board_id}`);
+                }
+                if (rights.can_edit) {
+                    permissions.edits.boards.push(`${rights.board_id}`);
+                }
+                if (rights.user_id === rights.owner_id) {
+                    permissions.owns.boards.push(`${rights.board_id}`);
+                }
+            }
+        }
+
+        return permissions;
     }
 }

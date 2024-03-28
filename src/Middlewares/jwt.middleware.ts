@@ -1,20 +1,11 @@
 import { Request, Response, NextFunction } from "express";
-import { decode, verify } from "jsonwebtoken";
+import { verify } from "jsonwebtoken";
 import winston from "winston";
+import { AccessToken } from "Interface";
+import { publicKey } from "shared/config/keys";
 
 export function jwtMiddleware(logger: winston.Logger) {
     return (request: Request, response: Response, next: NextFunction): void => {
-        if (!process.env.JWT_SECRET) {
-            logger.error("process.env.JWT_SECRET not found");
-
-            response
-                .status(500)
-                .json({
-                    status: 500,
-                    message: "",
-                })
-                .end();
-        }
         const authorization = request.headers["authorization"];
         const token = authorization?.split(" ")[1];
         if (!token) {
@@ -26,8 +17,8 @@ export function jwtMiddleware(logger: winston.Logger) {
             response.end();
             return;
         }
-        const isValidToken = verify(token, process.env.JWT_SECRET!);
-        if (!isValidToken) {
+        const claims = verify(token, publicKey, { algorithms: ["ES256"] });
+        if (!claims) {
             response.status(401);
             response.json({
                 status: 401,
@@ -36,8 +27,7 @@ export function jwtMiddleware(logger: winston.Logger) {
             response.end();
             return;
         }
-        const decodedUser = decode(token) as EncodedUser;
-        request.user = decodedUser as EncodedUser;
+        request.token = claims as AccessToken;
         next();
     };
 }

@@ -1,6 +1,5 @@
 import WebSocket, { WebSocketServer } from "ws";
 import { Boards } from "Routes/V1/Boards";
-import jwt from "jsonwebtoken";
 import { AccessToken } from "Interface";
 import { verifyToken } from "Tokens";
 

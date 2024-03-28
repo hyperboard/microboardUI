@@ -164,6 +164,34 @@ begin
 end;
 $$;
 
+create or replace function create_private_board(
+    board_id uuid,
+    title varchar(32),
+    owner_id integer
+)
+returns uuid
+language plpgsql
+as $$
+declare
+	board_uuid uuid := board_id;
+	created_board_id integer;
+begin
+	if (board_uuid is null) then
+        board_uuid := uuid_generate_v4();
+    end if;
+   	perform create_board(board_uuid, title);
+    select id into created_board_id from boards where uniq_id = board_uuid;
+    
+    insert into board_owner ("board_id", owner_id)
+    values (created_board_id, owner_id);
+    
+    insert into board_permissions ("board_id", user_id, can_view, can_edit)
+    values (created_board_id, owner_id, true, true);
+   
+    return board_uuid;
+end;
+$$;
+
 -- A function to add a new board to the database.
 -- Calls addboardrecord to create a new board record and get its id to call addboardtable.
 -- Returns the id of the new board record.
