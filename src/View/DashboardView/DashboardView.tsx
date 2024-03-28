@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import styles from './DashboardView.module.css';
 import { useNavigate } from 'react-router-dom';
 import { App } from 'App';
-import { WhiteboardModuleView } from 'WhiteBoardModule/WhiteBoardModuleNative';
+// import { WhiteboardModuleView } from 'WhiteBoardModule/WhiteBoardModuleNative';
 import { getApiUrl } from 'Config';
 import Cookies from 'js-cookie';
 
@@ -18,12 +18,11 @@ const fetchPrivateBoards = async (): Promise<PrivateBoards | undefined> => {
   try {
     console.log("fetchPrivateBoards")
     const privateBoards = await fetch(getApiUrl("/boards/private"), {
-      method: "POST",
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${Cookies.get("accessToken")}`
-      },
-      body: JSON.stringify({})
+      }
     });
     const data = await privateBoards.json();
     console.log("data: ",data);
