@@ -104,7 +104,9 @@ export class TextEditor extends React.Component<
 						height: `${maxHeight}px`,
 
 						// transformOrigin: "left top",
-						transform: `scale(${editorScale})`,
+						// transform: `translate(0px) scale(${editorScale})`,
+						willChange: 'transform',
+						transform: "translate3d(0,0,0)",
 
 						display: "flex",
 						alignItems: verticalAlignmentToFlex(verticalAlignment), // vertical
@@ -175,6 +177,9 @@ export class TextEditor extends React.Component<
 					fontSize: `${defaultTextStyle.fontSize}px`,
 					lineHeight: defaultTextStyle.lineHeight,
 					color: defaultTextStyle.fontColor,
+
+					willChange: 'transform',
+					transform: "translate3d(0,0,0)",
 				}}
 			>
 				<div
@@ -184,7 +189,7 @@ export class TextEditor extends React.Component<
 						display: "flex",
 						justifyContent: "center", // horisontal
 						alignItems: verticalAlignmentToFlex(verticalAlignment),
-						transform: `scale(${editorScale})`,
+						transform: `translate(0px) scale(${editorScale})`,
 						transformOrigin: `left top`,
 					}}
 				>
