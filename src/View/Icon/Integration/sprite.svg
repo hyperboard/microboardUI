@@ -1,0 +1,66 @@
+<svg width="0" height="0" class="hidden">
+  <symbol fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="Dots">
+    <path d="M12.6717 11.9454C12.6415 11.6028 12.3539 11.3342 12.0034 11.3342C11.6329 11.3342 11.3326 11.6345 11.3326 12.005C11.3326 12.3755 11.6329 12.6759 12.0034 12.6759C12.3539 12.6759 12.6415 12.4072 12.6717 12.0646M5.67225 11.9454C5.64206 11.6025 5.35415 11.3336 5.00345 11.3336C4.63263 11.3336 4.33203 11.6342 4.33203 12.005C4.33203 12.3758 4.63263 12.6764 5.00345 12.6764C5.35415 12.6764 5.64206 12.4076 5.67225 12.0647M19.6697 11.9455C19.6397 11.6039 19.3528 11.3361 19.0034 11.3361C18.634 11.3361 18.3345 11.6355 18.3345 12.005C18.3345 12.3744 18.634 12.6739 19.0034 12.6739C19.3528 12.6739 19.6397 12.406 19.6697 12.0644" stroke="black" stroke-opacity="0.8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+  </symbol>
+
+  <symbol fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" id="ColoredCircle">
+    <rect x="1.5" y="1.5" width="27" height="27" rx="13.5" stroke="#1481DD" stroke-width="3"></rect>
+    <rect x="3.5" y="3.5" width="23" height="23" rx="11.5" fill="black"></rect>
+    <rect x="3.5" y="3.5" width="23" height="23" rx="11.5" stroke="white"></rect>
+  </symbol>
+  <symbol fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" id="TextAlignRight">
+    <path d="M8 8H24M12 13H24M8 19H24M16 24H24" stroke="black" stroke-opacity="0.8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+  </symbol>
+  <symbol fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" id="TextAlignCenter">
+    <path d="M8 8H24M11 13H21M8 19H24M11 24H21" stroke="black" stroke-opacity="0.8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+  </symbol>
+  <symbol fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" id="TextAlignLeft">
+    <path d="M8 8H24M8 13H20M8 19H24M8 24H16" stroke="black" stroke-opacity="0.8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+  </symbol>
+  <symbol fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" id="TextUnderline">
+    <path d="M9 24H23M22 8V15C22 18.3137 19.3137 21 16 21C12.6863 21 10 18.3137 10 15V8" stroke="black" stroke-opacity="0.8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+  </symbol>
+  <symbol fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="TextStrike">
+    <path d="M16.5 5.5C15.8334 4.83333 13.8835 3.5 11.5 3.5C9.11654 3.5 6.49998 5 6.5 7.5C6.5 8.06078 6.68209 8.54512 7 8.96165M6 17.5C7 18.5 9.03013 19.5 11.5 19.5C14 19.5 16.9588 18.0002 17 15.5C17.0267 13.8816 16.0922 12.7501 14.6791 12M20.5 12H14.6791M3.5 12H14.6791" stroke="black" stroke-opacity="0.8" stroke-width="1.5" stroke-linecap="round"></path>
+  </symbol>
+  <symbol fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="TextItalic">
+    <path d="M14.2465 20H5.51953H9.49953L14.5195 4H18.4995H9.77249" stroke="black" stroke-opacity="0.8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+  </symbol>
+  <symbol fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="TextFormat">
+    <path d="M7 9H13C14.6569 9 16 7.65685 16 6C16 4.34315 14.6569 3 13 3H8L7 9ZM7 9H14.5C16.433 9 18 10.567 18 12.5C18 14.433 16.433 16 14.5 16H6L7 9Z" stroke="black" stroke-opacity="0.8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    <path d="M5 21L18 21" stroke="black" stroke-opacity="0.8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+  </symbol>
+  <symbol viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" id="TextBold">
+<path d="M6 12H13C15.2091 12 17 10.2091 17 8C17 5.79086 15.2091 4 13 4H6V12ZM6 12H14.5C16.7091 12 18.5 13.7909 18.5 16C18.5 18.2091 16.7091 20 14.5 20H6V12Z" stroke="black" stroke-opacity="0.8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</symbol>
+  <symbol fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" id="UpDownArrow">
+    <path d="M5.83398 12.5L10.0007 16.6667L14.1673 12.5M5.83398 7.50001L10.0007 3.33334L14.1673 7.50001" stroke="black" stroke-opacity="0.8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+  </symbol>
+  <symbol fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 17" id="Redo">
+    <path d="M13.0007 1L16.0007 4M16.0007 4L13.0007 7M16.0007 4H7.00069C3.68669 4 0.974609 6.96486 0.974609 10.0029C0.974609 13.0409 3.68669 16 7.00069 16H15.0007" stroke="currentColor" stroke-opacity="0.4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+  </symbol>
+  <symbol fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 17" id="Undo">
+    <path d="M4 1L1 4M1 4L4 7M1 4H10C13.314 4 16.0261 6.96486 16.0261 10.0029C16.0261 13.0409 13.314 16 10 16H2" stroke="currentColor" stroke-opacity="0.4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+  </symbol>
+  <symbol fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 20" id="Image">
+    <path d="M21 14L18.0486 11.0486C17.217 10.217 15.8509 10.279 15.098 11.1825L12.1402 14.7318C11.7866 15.1561 11.1561 15.2134 10.7318 14.8598L9.9031 14.1693C9.10845 13.507 7.93996 13.56 7.20852 14.2915L3 18.5M4 19H18C19.6569 19 21 17.6569 21 16V4C21 2.34315 19.6569 1 18 1H4C2.34315 1 1 2.34315 1 4V16C1 17.6569 2.34315 19 4 19ZM7 9C5.89543 9 5 8.10457 5 7C5 5.89543 5.89543 5 7 5C8.10457 5 9 5.89543 9 7C9 8.10457 8.10457 9 7 9Z" stroke="currentColor" stroke-opacity="0.8" stroke-width="1.6" stroke-linecap="round"></path>
+  </symbol>
+  <symbol fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" id="Pen">
+    <path d="M3.84712 12.1899C6 12.1899 7.78585 14 7.78585 16.0462M8.05976 15.8168L18.3398 5.53675C19.1208 4.75575 19.1208 3.48975 18.3398 2.70875L17.2178 1.58575C16.4368 0.80475 15.1708 0.80475 14.3898 1.58575L4.10876 11.8667C3.96276 12.0127 3.84076 12.1808 3.74576 12.3638L1.11576 17.4597C0.669755 18.3247 1.59676 19.2528 2.46176 18.8078L7.56076 16.1818C7.74576 16.0858 7.91376 15.9638 8.05976 15.8168Z" stroke="currentColor" stroke-opacity="0.8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+  </symbol>
+  <symbol fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" id="Arrow">
+    <path d="M1 17L17 1M17 1L9 4M17 1L14 9" stroke="currentColor" stroke-opacity="0.8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+  </symbol>
+  <symbol fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" id="AddShape">
+    <path d="M3.73923 12.8022C2.08152 11.6243 1 9.68844 1 7.5C1 3.91015 3.91015 1 7.5 1C9.63768 1 11.5343 2.03192 12.719 3.6248M13.2678 10.5C12.6515 11.6824 11.6824 12.6515 10.5 13.2678M9 7H17C18.1046 7 19 7.89543 19 9V17C19 18.1046 18.1046 19 17 19H9C7.89543 19 7 18.1046 7 17V9C7 7.89543 7.89543 7 9 7Z" stroke="currentColor" stroke-opacity="0.8" stroke-width="1.6" stroke-linecap="round"></path>
+  </symbol>
+  <symbol fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 18" id="AddText">
+    <path d="M8 17V1M8 17H5.5M8 17H10.5M8 1H1V3.83426M8 1H15V3.83426" stroke="currentColor" stroke-opacity="0.8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+  </symbol>
+  <symbol fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" id="Sticker">
+    <path d="M17 11H11.5C10.6716 11 10 11.6716 10 12.5L10 17M17 11L17 3C17 2.01778 16.2629 1 15 1H3C1.73714 1 1 2.01778 1 3V15C1 15.9822 1.73714 17 3 17H10M17 11L17 12.7084C17 13.1796 16.7589 13.632 16.3303 13.9653L13.0983 16.4791C12.6697 16.8124 12.088 17 11.4823 17H10" stroke="currentColor" stroke-opacity="0.8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+  </symbol>
+  <symbol fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" id="Pointer">
+    <path d="M7.0971 17.9825L1.7171 2.99533C1.4315 2.19975 2.20057 1.43068 2.99616 1.71627L17.9833 7.09627C18.8539 7.4088 18.87 8.63421 18.0079 8.96947L12.321 11.181C11.7984 11.3843 11.3851 11.7976 11.1819 12.3202L8.9703 18.0071C8.63504 18.8692 7.40962 18.8531 7.0971 17.9825Z" stroke="currentColor" stroke-opacity="0.8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path>
+  </symbol>
+</svg>
