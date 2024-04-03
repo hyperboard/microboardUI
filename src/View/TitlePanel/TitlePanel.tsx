@@ -2,7 +2,7 @@ import * as React from "react";
 import { Link } from 'react-router-dom';
 import { Board } from "Board";
 import { SidePanelState } from "View/SidePanel/SidePanelState";
-import { Button } from "View/ContextPanel/Button";
+import { Button } from "View/ContextPanel";
 import { SidePanelOpenIcon } from "View/Icon/SidePanelOpenIcon";
 import { SidePanelCloseIcon } from "View/Icon/SidePanelCloseIcon";
 import { useStyle } from "View";

@@ -1,6 +1,6 @@
 import { Board } from "Board";
 import React, { PureComponent, ReactElement } from "react";
-import { Button } from "View/ContextPanel/Button";
+import { Button } from "View/ContextPanel";
 import { exportBoardSnapshot } from "./ExportBoardSnapshot";
 import { Quality } from "./types";
 import { Icon } from "View/Icon";

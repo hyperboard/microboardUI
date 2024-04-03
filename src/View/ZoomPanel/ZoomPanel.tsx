@@ -2,7 +2,7 @@ import * as React from "react";
 import { Icon } from "../Icon";
 import { App } from "App";
 import { Board } from "Board";
-import { Button } from "../ContextPanel/Button";
+import { Button } from "../ContextPanel";
 
 interface Props {
 	app: App;
