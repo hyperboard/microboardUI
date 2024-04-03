@@ -7,7 +7,7 @@ type Template = {
     template: "verify-email";
     context: {
         passcode: string;
-        userId: number;
+        userId: string;
         email: string;
     };
 };
@@ -17,8 +17,10 @@ export class Mailer {
 
     constructor(
         private readonly config: Config,
-        private readonly logger: winston.Logger
+        private readonly logger: winston.Logger,
+        private readonly baseUrl: string
     ) {
+        this.baseUrl = process.env.BASE_URL || "http://localhost:8000";
         this.transporter = nodemailer.createTransport(
             {
                 host: "smtp.yandex.com",
@@ -54,7 +56,7 @@ export class Mailer {
                 to: to,
                 subject: subject,
                 template: "dist/templates/" + template.template,
-                context: template.context,
+                context: {...template.context, baseUrl: this.baseUrl},
             };
 
             this.transporter.sendMail(mailOptions, (err) => {

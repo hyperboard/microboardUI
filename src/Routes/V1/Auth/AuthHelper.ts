@@ -25,7 +25,7 @@ export class AuthHelper {
 
         const token = await createToken(
             claims,
-            `${id}}`,
+            `${id}`,
             60 * 60, // 1 hour
             'Whiteboard',
             'Whiteboard'
@@ -46,7 +46,7 @@ export class AuthHelper {
 
         const token = await createToken(
             claims,
-            `${id}}`,
+            `${id}`,
             60 * 60 * 24 * 7, // 7 days
             'Whiteboard',
             'Whiteboard'

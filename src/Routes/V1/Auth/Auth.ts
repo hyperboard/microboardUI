@@ -70,7 +70,7 @@ export class Auth {
         );
 
         if (!user.rows[0]) {
-            throw new HttpException(HttpStatus.NOT_FOUND, "User not found");
+            throw new HttpException(HttpStatus.NOT_FOUND, "Invalid email or password");
         }
 
         if (!user.rows[0].activated) {
@@ -210,9 +210,9 @@ export class Auth {
                 {
                     template: "verify-email",
                     context: {
-                        passcode: passcode,
-                        userId: createdUser.rows[0].id,
-                        email: createdUser.rows[0].email,
+                        passcode: encodeURIComponent(passcode),
+                        userId: encodeURIComponent(createdUser.rows[0].id),
+                        email: encodeURIComponent(createdUser.rows[0].email),
                     },
                 }
             );
