@@ -9,7 +9,7 @@ import { ConnectorLineStylePicker } from "../Pickers/ConnectorLineStylePicker";
 import { ImageItem } from "Board/Items/Image";
 import { ColorPicker } from "View/Pickers/ColorPicker";
 import { SliderPicker } from "View/Pickers/SliderPicker";
-import { HorisontalSeparator } from "View/ContextPanel/HorisontalSeparator";
+import { HorisontalSeparator } from "View/ContextPanel/HorizontalSeparator.integration";
 import { UndoIcon } from "View/Icon/UndoIcon";
 import { RedoIcon } from "View/Icon/RedoIcon";
 import { PenIcon } from "View/Icon/PenIcon";
@@ -17,6 +17,8 @@ import { Button } from "View/ContextPanel";
 import { ConnectorLineStyle } from "Board/Items/Connector";
 import { SidePanelState } from "View/SidePanel/SidePanelState";
 import { stickerColors } from "Board/Items/Sticker";
+import { applyStyle } from "lib/applyStyle";
+import { IconIntegration } from "View/Icon/Integration";
 
 interface Props {
 	app: App;
@@ -161,7 +163,7 @@ export class ToolsPanel extends React.Component<Props, State> {
 
 							renderPage(1);
 						},
-						(reason) => {
+						reason => {
 							console.error(reason);
 						},
 					);
@@ -259,7 +261,6 @@ export class ToolsPanel extends React.Component<Props, State> {
 							finalScale,
 							finalScale,
 						);
-						
 
 						board.selection.removeAll();
 						board.selection.add(boardImage);
@@ -294,21 +295,21 @@ export class ToolsPanel extends React.Component<Props, State> {
 					board={board}
 					isOn={board.tools.getSelect() !== undefined}
 				/>
-				<AddShape
-					board={board}
-					isOn={board.tools.getAddShape() !== undefined}
-				/>
 				<AddText
 					board={board}
 					isOn={board.tools.getAddText() !== undefined}
 				/>
-				<AddConnector
-					board={board}
-					isOn={board.tools.getAddConnector() !== undefined}
-				/>
 				<AddStickerTool
 					board={board}
 					isOn={board.tools.getAddSticker() !== undefined}
+				/>
+				<AddShape
+					board={board}
+					isOn={board.tools.getAddShape() !== undefined}
+				/>
+				<AddConnector
+					board={board}
+					isOn={board.tools.getAddConnector() !== undefined}
 				/>
 				<AddDrawing
 					board={board}
@@ -317,7 +318,7 @@ export class ToolsPanel extends React.Component<Props, State> {
 				/>
 				<AddImage />
 
-				<HorisontalSeparator height={4}></HorisontalSeparator>
+				<HorisontalSeparator height={1}></HorisontalSeparator>
 
 				<Undo board={board} isOn={board.events.canUndo()} />
 				<Redo board={board} isOn={board.events.canRedo()} />
@@ -326,24 +327,20 @@ export class ToolsPanel extends React.Component<Props, State> {
 	}
 }
 
-const ToolsPanelStyle = document.createElement("style");
-
-ToolsPanelStyle.innerHTML = `
+applyStyle(`
 .ToolsPanel {
-	width: 44px;
+	width: 40px;
 	display: flex;
 	flex-wrap: wrap;
-	padding-left: 2px;
-	padding-right: 2px;
-	padding-top: 10px;
-	padding-bottom: 10px;
+	padding: 4px;
 	background-color: white;
-	border-radius: 4px;
-	box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.12);
+	border-radius: 8px;
+	box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.05), 0 1px 1px 0 rgba(0, 0, 0, 0.05);
 	position: absolute;
 	z-index: 90;
 	justify-content: center;
 	align-content: center;
+  gap: 4px;
 }
 
 .ToolsPanelMenuContainer {
@@ -359,19 +356,65 @@ ToolsPanelStyle.innerHTML = `
 	left: 110%;
 	z-index: 1;
 	position: absolute;
-	padding-left: 6px;
-	padding-right: 6px;
-	padding-top: 10px;
-	padding-bottom: 10px;
+	padding: 4px;
 	display: flex;
 	flex-wrap: wrap;
 	border-radius: 4px;
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
+
+	#AddStickerMenu {
+		width: 136px;
+	}
 }
 
-`;
+`);
 
-document.head.appendChild(ToolsPanelStyle);
+// const ToolsPanelStyle = document.createElement("style");
+
+// ToolsPanelStyle.innerHTML = `
+// .ToolsPanel {
+// 	width: 44px;
+// 	display: flex;
+// 	flex-wrap: wrap;
+// 	padding-left: 2px;
+// 	padding-right: 2px;
+// 	padding-top: 10px;
+// 	padding-bottom: 10px;
+// 	background-color: white;
+// 	border-radius: 4px;
+// 	box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.12);
+// 	position: absolute;
+// 	z-index: 90;
+// 	justify-content: center;
+// 	align-content: center;
+// }
+
+// .ToolsPanelMenuContainer {
+// 	position: relative;
+// 	display: inline-block;
+// }
+
+// .ToolsPanelMenu {
+// 	visibility: hidden;
+// 	background-color: white;
+// 	color: black;
+// 	text-align: center;
+// 	left: 110%;
+// 	z-index: 1;
+// 	position: absolute;
+// 	padding-left: 6px;
+// 	padding-right: 6px;
+// 	padding-top: 10px;
+// 	padding-bottom: 10px;
+// 	display: flex;
+// 	flex-wrap: wrap;
+// 	border-radius: 4px;
+// 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
+// }
+
+// `;
+
+// document.head.appendChild(ToolsPanelStyle);
 
 class Select extends React.PureComponent<{
 	board: Board;
@@ -393,7 +436,8 @@ class Select extends React.PureComponent<{
 				isOn={isOn}
 				tipOnLeft
 			>
-				<Icon name="Pointer" width={24} height={24} />
+				{/* <Icon name="Pointer" width={24} height={24} /> */}
+				<IconIntegration iconName="Pointer"/>
 			</Button>
 		);
 	}
@@ -426,12 +470,14 @@ class AddStickerTool extends React.PureComponent<{
 					isOn={this.props.isOn}
 					tipOnLeft
 				>
-					<Icon name="Sticker" width={28} height={28} />
+					{/* <Icon name="Sticker" width={24} height={24} /> */}
+				<IconIntegration iconName="Sticker"/>
 				</Button>
 				<div
 					id="AddStickerMenu"
 					className="ToolsPanelMenu"
 					style={{
+						width: "136px",
 						visibility: this.props.isOn ? "visible" : "hidden",
 						marginTop: "-194px",
 					}}
@@ -476,7 +522,8 @@ class AddShape extends React.PureComponent<{
 					isOn={isOn}
 					tipOnLeft
 				>
-					<Icon name="Rectangle" width={24} height={24} />
+					{/* <Icon name="Rectangle" width={24} height={24} /> */}
+				<IconIntegration iconName="AddShape"/>
 				</Button>
 				<div
 					id="AddShapeMenu"
@@ -512,7 +559,8 @@ class AddText extends React.PureComponent<{ board: Board; isOn: boolean }> {
 				isOn={isOn}
 				tipOnLeft
 			>
-				<Icon name="RichText" width={24} height={24} />
+				{/* <Icon name="RichText" width={24} height={24} /> */}
+				<IconIntegration iconName="AddText"/>
 			</Button>
 		);
 	}
@@ -549,12 +597,13 @@ class AddConnector extends React.PureComponent<{
 					isOn={isAddConnectorOn}
 					tipOnLeft
 				>
-					<Icon
+					{/* <Icon
 						name="Connector"
 						width={24}
 						height={24}
 						fill="rgb(0,0,0)"
-					/>
+					/> */}
+					<IconIntegration iconName="Arrow"/>
 				</Button>
 				<div
 					id="AddConnectorMenu"
@@ -617,12 +666,14 @@ class AddDrawing extends React.PureComponent<{
 					isOn={isOn}
 					tipOnLeft
 				>
-					<PenIcon
+					{/* <PenIcon
 						color={board.tools.getAddDrawing()?.strokeStyle}
 						width={24}
 						height={24}
-					></PenIcon>
+					></PenIcon> */}
 					{/* <Icon name="Pen" width={24} height={24}/> */}
+				<IconIntegration iconName="Pen"/>
+
 				</Button>
 				<div
 					id="AddDrawingMenu"
@@ -660,7 +711,8 @@ class AddImage extends React.PureComponent {
 				isOn={false}
 				tipOnLeft
 			>
-				<Icon name="Image" width={24} height={24} />
+				{/* <Icon name="Image" width={24} height={24} /> */}
+				<IconIntegration iconName="Image"/>
 			</Button>
 		);
 	}
@@ -683,8 +735,10 @@ class Undo extends React.PureComponent<{ board: Board; isOn: boolean }> {
 				hotkey="ctrl+z"
 				isOn={false}
 				tipOnLeft
+				margin={5}
 			>
-				<UndoIcon isOn={isOn} width={24} height={24} />
+				{/* <UndoIcon isOn={isOn} width={24} height={24} /> */}
+				<IconIntegration iconName="Undo"/>
 			</Button>
 		);
 	}
@@ -706,8 +760,9 @@ class Redo extends React.PureComponent<{ board: Board; isOn: boolean }> {
 				hotkey="ctrl+shift+z"
 				isOn={false}
 				tipOnLeft
+				margin={5}
 			>
-				<RedoIcon isOn={isOn} width={24} height={24} />
+				<IconIntegration iconName="Redo"/>
 			</Button>
 		);
 	}
