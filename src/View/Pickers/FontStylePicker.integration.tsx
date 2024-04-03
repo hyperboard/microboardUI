@@ -1,6 +1,7 @@
 import { TextStyle } from "Board/Items/RichText";
 import * as React from "react";
 import { Button } from "View/ContextPanel";
+import { IconIntegration } from "View/Icon/Integration";
 import { BoldIcon } from "View/Icon/TextStyle/BoldIcon";
 import { ItalicsIcon } from "View/Icon/TextStyle/ItalicsIcon";
 import { StrikethroughIcon } from "View/Icon/TextStyle/StrikethroughIcon";
@@ -22,7 +23,8 @@ export function FontStylePicker(props: Props): React.ReactElement {
 				}}
 				margin={0}
 			>
-				<BoldIcon isOn={true} width={24} height={24} />
+				{/* <BoldIcon isOn={true} width={24} height={24} /> */}
+        <IconIntegration iconName="TextBold"/>
 			</Button>
 			<Button
 				id="ChangeFontItalics"
@@ -33,18 +35,8 @@ export function FontStylePicker(props: Props): React.ReactElement {
 				}}
 				margin={0}
 			>
-				<ItalicsIcon width={24} height={24} />
-			</Button>
-			<Button
-				id="ChangeFontUnderline"
-				key="ChangeFontUnderline"
-				title="Underline"
-				onClick={() => {
-					props.onPick("underline");
-				}}
-				margin={0}
-			>
-				<UnderlineIcon width={24} height={24} />
+				{/* <ItalicsIcon width={24} height={24} /> */}
+        <IconIntegration iconName="TextItalic"/>
 			</Button>
 			<Button
 				id="ChangeFontStrikethrough"
@@ -55,7 +47,20 @@ export function FontStylePicker(props: Props): React.ReactElement {
 				}}
 				margin={0}
 			>
-				<StrikethroughIcon width={24} height={24} />
+				{/* <StrikethroughIcon width={24} height={24} /> */}
+        <IconIntegration iconName="TextStrike"/>
+			</Button>
+			<Button
+				id="ChangeFontUnderline"
+				key="ChangeFontUnderline"
+				title="Underline"
+				onClick={() => {
+					props.onPick("underline");
+				}}
+				margin={0}
+			>
+				{/* <UnderlineIcon width={24} height={24} /> */}
+        <IconIntegration width={26} iconName="TextUnderline"/>
 			</Button>
 		</>
 	);

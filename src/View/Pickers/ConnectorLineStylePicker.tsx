@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Icon } from "../Icon";
 import { ConnectorLineStyle } from "../../Board/Items/Connector";
-import { Button } from "View/ContextPanel/Button";
+import { Button } from "View/ContextPanel";
 
 interface Props {
 	onPick: (type: ConnectorLineStyle) => void;

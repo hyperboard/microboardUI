@@ -1,4 +1,4 @@
-import { Button } from "View/ContextPanel/Button";
+import { Button } from "View/ContextPanel";
 import { PointerIcon } from "View/Icon/PointerIcon";
 import * as React from "react";
 

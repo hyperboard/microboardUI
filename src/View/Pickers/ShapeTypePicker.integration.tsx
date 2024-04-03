@@ -33,7 +33,7 @@ export function ShapePicker(props: {
 	const buttons = [];
 	for (const shape of shapes) {
 		buttons.push(
-			<Button
+			<Button width={32} height={32}
 				id={`Pick${shape.id}`}
 				title={shape.label}
 				onClick={() => {

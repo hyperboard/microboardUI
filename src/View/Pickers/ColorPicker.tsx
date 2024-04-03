@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Icon } from "../Icon";
-import { Button } from "View/ContextPanel/Button";
+import { Button } from "View/ContextPanel";
 import { IconSize } from "View/ContextPanel/ContextPanel";
 import { CircleIcon } from "View/Icon/CircleIcon";
 
