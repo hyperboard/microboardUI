@@ -1,37 +1,38 @@
 import { Board } from "Board";
-import * as React from "react";
 import { Connector, Mbr } from "Board/Items";
-import { fitContextPanel } from "../fit";
+import { toggleEdit } from "Board/Items/RichText/RichText";
 import { ShapeType } from "Board/Items/Shape/Basic";
+import { stickerColors } from "Board/Items/Sticker";
 import { Icon } from "View/Icon";
 import { CircleIcon } from "View/Icon/CircleIcon";
-import { DeleteIcon } from "View/Icon/DeleteIcon";
-import { BoldUnderlineIcon } from "View/Icon/TextStyle/BoldUnderlineIcon";
-import { TextColorIcon } from "View/Icon/TextStyle/TextColorIcon";
+import { IconIntegration, TextColorIndicator } from "View/Icon/Integration";
+import { LockIcon } from "View/Icon/LockIcon";
+import { PointerIcon } from "View/Icon/PointerIcon";
+import { SwitchPointersIcon } from "View/Icon/SwitchPointersIcon";
 import { TextHighlightIcon } from "View/Icon/TextStyle/TextHighlightIcon";
+import { UnlockIcon } from "View/Icon/UnlockIcon";
 import { StrokeStylePicker } from "View/Pickers/BorderStylePicker";
 import { ColorPicker } from "View/Pickers/ColorPicker";
-import { FontSizePicker } from "View/Pickers/FontSizePicker";
-import { FontStylePicker } from "View/Pickers/FontStylePicker";
-import { HorisontalAlignmentPicker } from "View/Pickers/HorisontalAlignmentPicker";
-import { ShapePicker } from "View/Pickers/ShapeTypePicker";
-import { VerticalAlignmentPicker } from "View/Pickers/VerticalAlignmentPicker";
-import { Button } from "./Button.integration";
-import { HorisontalSeparator } from "./HorisontalSeparator";
-import { LockIcon } from "View/Icon/LockIcon";
-import { UnlockIcon } from "View/Icon/UnlockIcon";
-import { DuplicateIcon } from "View/Icon/DuplicateIcon";
-import { SwitchPointersIcon } from "View/Icon/SwitchPointersIcon";
+import { ConnectorLineStylePicker } from "View/Pickers/ConnectorLineStylePicker";
 import {
 	ConnectorEndPointerPicker,
 	ConnectorStartPointerPicker,
 } from "View/Pickers/ConnectorPointerPicker";
-import { PointerIcon } from "View/Icon/PointerIcon";
-import { ConnectorLineStylePicker } from "View/Pickers/ConnectorLineStylePicker";
+import { FontSizePicker } from "View/Pickers/FontSizePicker.integration";
+import { FontStylePicker } from "View/Pickers/FontStylePicker.integration";
+import { HorisontalAlignmentPicker } from "View/Pickers/HorizontalAlignmentPicker.integration";
+import { ShapePicker } from "View/Pickers/ShapeTypePicker";
 import { SliderPicker } from "View/Pickers/SliderPicker";
-import { toggleEdit } from "Board/Items/RichText/RichText";
+import { VerticalAlignmentPicker } from "View/Pickers/VerticalAlignmentPicker";
+import * as React from "react";
 import { toFiniteNumber } from "utils";
-import { stickerColors } from "Board/Items/Sticker";
+import { fitContextPanel } from "../fit";
+import { Button } from "./Button.integration";
+import { HorisontalSeparator } from "./HorisontalSeparator";
+import { VerticalSeparator } from "./VerticalSeparator.integration";
+
+import { applyStyle } from "lib/applyStyle";
+import { TextHighlightIndicator } from "View/Icon/Integration/TextHighlightIndicator";
 
 export const IconSize = 24;
 
@@ -143,7 +144,6 @@ export class ContextPanel extends React.Component<
 					left: `${this.state.panelRect.left}px`,
 					top: `${this.state.panelRect.top}px`,
 					userSelect: "none",
-					// overflow: "hidden",
 				}}
 			>
 				<Scroll board={board} panelRef={this.panelRef}>
@@ -186,6 +186,23 @@ export class ContextPanel extends React.Component<
 					<ConnectorStyleSeparator board={board} />
 
 					<ItemType
+						board={board}
+						toggleMenu={this.toggleMenu}
+						color={board.selection.getFillColor()}
+						menu={menu}
+						panelMbr={panelRect}
+						windowHeight={windowHeight}
+					/>
+					<StrokeStyle
+						board={board}
+						toggleMenu={this.toggleMenu}
+						color={board.selection.getStrokeColor()}
+						width={board.selection.getStrokeWidth()}
+						menu={this.state.menu}
+						windowHeight={windowHeight}
+						panelMbr={this.state.panelRect}
+					/>
+					<FillStyle
 						board={board}
 						toggleMenu={this.toggleMenu}
 						color={board.selection.getFillColor()}
@@ -257,6 +274,8 @@ export class ContextPanel extends React.Component<
 						windowHeight={windowHeight}
 						color={board.selection.getFontColor()}
 					/>
+					<VerticalSeparator />
+
 					<TextHighlight
 						board={board}
 						toggleMenu={this.toggleMenu}
@@ -265,25 +284,7 @@ export class ContextPanel extends React.Component<
 						windowHeight={windowHeight}
 						color={board.selection.getFontHighlight()}
 					/>
-					<TextColorSeparator board={board} />
 
-					<StrokeStyle
-						board={board}
-						toggleMenu={this.toggleMenu}
-						color={board.selection.getStrokeColor()}
-						width={board.selection.getStrokeWidth()}
-						menu={this.state.menu}
-						windowHeight={windowHeight}
-						panelMbr={this.state.panelRect}
-					/>
-					<FillStyle
-						board={board}
-						toggleMenu={this.toggleMenu}
-						color={board.selection.getFillColor()}
-						menu={menu}
-						panelMbr={panelRect}
-						windowHeight={windowHeight}
-					/>
 					<StickerFillStyle
 						board={board}
 						toggleMenu={this.toggleMenu}
@@ -292,13 +293,18 @@ export class ContextPanel extends React.Component<
 						panelMbr={panelRect}
 						windowHeight={windowHeight}
 					/>
-					<PathStyleSeparator board={board} />
 
-					<Duplicate board={board} />
-					<Delete board={board} />
 					<Lock board={board} />
 
 					<BringBackForward board={board} />
+					<VerticalSeparator />
+					<RestOptionsMenu
+						menu={menu}
+						panelMbr={panelRect}
+						windowHeight={windowHeight}
+						toggleMenu={this.toggleMenu}
+						board={board}
+					/>
 				</Scroll>
 			</div>
 		);
@@ -372,6 +378,7 @@ class Scroll extends React.PureComponent<
 			return;
 		}
 
+
 		const panelWidth = panel.getBoundingClientRect().width;
 		const scrollWidth = scroll.scrollWidth + 20;
 
@@ -400,6 +407,8 @@ class Scroll extends React.PureComponent<
 					display: "flex",
 					position: "relative",
 					left: `${left}px`,
+					height: "100%",
+					gap: '4px',
 				}}
 			>
 				{children}
@@ -413,18 +422,18 @@ const ContextPanelStyle = document.createElement("style");
 ContextPanelStyle.innerHTML = `
 .ContextPanelContainer {
 	position: absolute;
-	height: 44px;
+	height: 32px;
 	cursor: pointer;
 	background-color: white;
-	border-radius: 4px;
-	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
-	padding: 2px 10px;
-	max-width: 80%;
+	border-radius: 8px;
+	box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.05), 0 1px 1px 0 rgba(0, 0, 0, 0.05);
+	padding: 4px;
 }
 
 .ContextPanelMenuContainer {
 	position: relative;
 	display: inline-block;
+  height: 100%;
 }
   
 .ContextPanelMenu {
@@ -436,18 +445,117 @@ ContextPanelStyle.innerHTML = `
 	left: 50%;
 	z-index: 1;
 	position: absolute;
-	padding-left: 5px;
-	padding-right: 5px;
-	padding-top: 2px;
-	padding-bottom: 2px;
+  padding: 4px;
 	display: flex;
 	flex-wrap: wrap;
-	border-radius: 4px;
-	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+	box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.05), 0 1px 1px 0 rgba(0, 0, 0, 0.05);
+	background: #fff;
 }
 `;
 
 document.head.appendChild(ContextPanelStyle);
+
+export function RestOptionsMenu({
+	toggleMenu,
+	menu,
+	panelMbr,
+	windowHeight,
+	board,
+}: {
+	toggleMenu: (menu: string) => void;
+	menu: string;
+	panelMbr: Mbr;
+	windowHeight: number;
+	board: Board;
+}): React.ReactElement {
+	const menuRef = React.useRef<HTMLDivElement>(null);
+	return (
+		<ButtonWithMenu
+			panelMbr={panelMbr}
+			windowHeight={windowHeight}
+			menuRef={menuRef}
+		>
+			<Button
+				onClick={() => toggleMenu("RestMenu")}
+				className="RestOptionsIcon"
+				width={32}
+				height={32}
+				margin={0}
+			>
+				{/* <Icon name="Rectangle" width={IconSize} height={IconSize} /> */}
+				<IconIntegration iconName="Dots"/>
+			</Button>
+			<div
+				ref={menuRef}
+				className="ContextPanelMenu"
+				style={{
+					display: "flex",
+					flexDirection: "column",
+					width: "290px",
+					// height: "170px",
+					visibility: menu === "RestMenu" ? "visible" : "hidden",
+				}}
+			>
+				<Duplicate board={board} />
+				<Delete board={board} />
+			</div>
+		</ButtonWithMenu>
+	);
+}
+
+export function RestOptionsMenuItem({
+	children,
+	hotkey,
+	onClick,
+	id,
+}: React.PropsWithChildren<{
+	hotkey: string;
+	onClick: React.MouseEventHandler;
+	id: string;
+}>): React.ReactElement {
+	return (
+		<Button
+			style={{
+				fontSize: "16px",
+				display: "flex",
+				justifyContent: "space-between",
+				padding: "6px 12px",
+				color: "rgba(0, 0, 0, .8)",
+			}}
+			margin={0}
+			height={36}
+			width={"100%"}
+			id={id}
+			onClick={onClick}
+		>
+			<span>{children}</span>
+			<span style={{ color: "rgba(0, 0, 0, .25)" }}>{hotkey}</span>
+		</Button>
+	);
+}
+
+applyStyle(`
+  .RestOptions .RestOptionsList {
+    position: absolute;
+    left: -10%;
+    top: 120%;
+    box-shadow: 0 0px 2px 0 rgba(34, 34, 34, 0.02), 0 1px 4px 0 rgba(34, 34, 34, 0.03), 0 1px 8px 0 rgba(34, 34, 34, 0.03), 0 2px 15px 0 rgba(34, 34, 34, 0.04), 0 4px 28px 0 rgba(34, 34, 34, 0.04), 0 9px 67px 0 rgba(34, 34, 34, 0.07);
+    background: #fff;
+    border-radius: 8px;
+    padding: 4px;
+    margin: 0;
+    width: 270px;
+    list-style-type: none;
+  }
+
+  .RestOptionsList .RestOptionsItem {
+    width: 100%;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+  }
+`);
 
 class ButtonWithMenu extends React.PureComponent<{
 	panelMbr: Mbr;
@@ -508,6 +616,10 @@ function Edit({ board }: { board: Board }): React.ReactElement | null {
 				board.selection.editSelected();
 			}}
 			title="Edit"
+			width={32}
+				height={32}
+				margin={0}
+				tipOnTop
 		>
 			{"Edit"}
 		</Button>
@@ -550,6 +662,10 @@ function StartPointer({
 					toggleMenu("StartPointer");
 				}}
 				title="Change Start Pointer"
+				width={32}
+				height={32}
+				margin={0}
+				tipOnTop
 			>
 				<PointerIcon
 					type={pointer}
@@ -605,6 +721,10 @@ function SwitchPointers({
 				board.selection.setEndPointerStyle(start);
 			}}
 			title="Switch Pointers"
+			width={32}
+				height={32}
+				margin={0}
+				tipOnTop
 		>
 			<SwitchPointersIcon width={IconSize} height={IconSize} />
 		</Button>
@@ -647,6 +767,9 @@ function EndPointer({
 					toggleMenu("EndPointer");
 				}}
 				title="Change End Pointer"
+				width={32}
+				height={32}
+				margin={0}
 			>
 				<PointerIcon
 					type={pointer}
@@ -720,6 +843,10 @@ function ConnectorAddText({
 					board.items.subject.publish(board.items);
 				}}
 				title="Text"
+				width={32}
+				height={32}
+				margin={0}
+				tipOnTop
 			>
 				<Icon name="AddText" width={IconSize} height={IconSize} />
 			</Button>
@@ -761,6 +888,10 @@ function ConnectorType({
 					toggleMenu("ConnectorType");
 				}}
 				title="Connector type"
+				width={32}
+				height={32}
+				margin={0}
+				tipOnTop
 			>
 				<Icon name="curved" width={IconSize} height={IconSize} />
 			</Button>
@@ -845,6 +976,10 @@ function ItemType({
 					toggleMenu("ItemType");
 				}}
 				title="Change type"
+				tipOnTop
+				width={32}
+				height={32}
+				margin={0}
 			>
 				<Icon name={"Rectangle"} width={IconSize} height={IconSize} />
 			</Button>
@@ -1150,7 +1285,10 @@ class FontSize extends React.PureComponent<{
 				windowHeight={windowHeight}
 				menuRef={this.menuRef}
 			>
-				<div style={{ display: "flex" }}>
+				<div
+					className="FontSizeInputWrapper"
+					style={{ height: "100%" }}
+				>
 					<input
 						onClick={() => {
 							toggleMenu("FontSize");
@@ -1182,15 +1320,16 @@ class FontSize extends React.PureComponent<{
 							toggleEdit(false);
 						}}
 						style={{
-							height: "45px",
+							height: "100%",
 							display: "flex",
 							textAlign: "center",
-							maxWidth: "50px",
-							fontSize: "14px",
+							maxWidth: "45px",
+							fontSize: "16px",
+							fontWeight: 500,
 							justifyContent: "center",
 							alignItems: "center",
 							padding: "0px",
-							backgroundColor: "white",
+							outline: "none",
 							border: "none",
 						}}
 					/>
@@ -1254,15 +1393,23 @@ function FontStyle({
 					toggleMenu("FontStyle");
 				}}
 				title="Font Style"
+				tipOnTop
+				width={32}
+				height={32}
+				margin={0}
 			>
-				<BoldUnderlineIcon width={IconSize} height={IconSize} />
+				{/* <BoldUnderlineIcon width={IconSize} height={IconSize} /> */}
+				<IconIntegration iconName="TextFormat"/>
 			</Button>
 			<div
 				id="FillStyleMenu"
 				ref={menuRef}
 				className="ContextPanelMenu"
 				style={{
-					width: "160px",
+					padding: '4px',
+					display: 'flex',
+					gap: '4px',
+					width: "max-content",
 					marginLeft: "-80px",
 					visibility: menu === "FontStyle" ? "visible" : "hidden",
 				}}
@@ -1293,22 +1440,24 @@ function TextAlignment({
 }): React.ReactElement | null {
 	const connector = board.selection.items.getSingle();
 	const isConnector = connector instanceof Connector;
-
+	
+	
 	if (isConnector) {
 		return null;
 	}
-
+	
 	if (
 		board.selection.getContext() !== "EditTextUnderPointer" &&
 		!board.selection.canChangeText()
-	) {
-		return null;
-	}
-
-	const menuRef = React.useRef<HTMLDivElement>(null);
-
-	return (
-		<ButtonWithMenu
+		) {
+			return null;
+		}
+		
+		const menuRef = React.useRef<HTMLDivElement>(null);
+		
+		
+		return (
+			<ButtonWithMenu
 			panelMbr={panelMbr}
 			windowHeight={windowHeight}
 			menuRef={menuRef}
@@ -1319,19 +1468,28 @@ function TextAlignment({
 					toggleMenu("TextAlignment");
 				}}
 				title="Text Alignment"
+				tipOnTop
+				width={32}
+				height={32}
+				margin={0}
 			>
-				<Icon
-					name="HorisontalAlignCenter"
+				{/* <Icon
+					name={`HorisontalAlignCenter`}
 					width={IconSize}
 					height={IconSize}
-				/>
+				/> */}
+				<IconIntegration iconName="TextAlignCenter"/>
 			</Button>
 			<div
 				id="FillStyleMenu"
 				ref={menuRef}
 				className="ContextPanelMenu"
 				style={{
-					width: "120px",
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+					gap: '4px',
+					flexWrap: "nowrap",
 					marginLeft: "-60px",
 					visibility: menu === "TextAlignment" ? "visible" : "hidden",
 				}}
@@ -1342,13 +1500,13 @@ function TextAlignment({
 						toggleMenu("None");
 					}}
 				/>
-				<HorisontalSeparator />
-				<VerticalAlignmentPicker
+				{/* <HorisontalSeparator /> */}
+				{/* <VerticalAlignmentPicker
 					onPick={alignment => {
 						board.selection.setVerticalAlignment(alignment);
 						toggleMenu("None");
 					}}
-				/>
+				/> */}
 			</div>
 		</ButtonWithMenu>
 	);
@@ -1439,6 +1597,7 @@ function TextFeaturesSeparator({
 		return null;
 	}
 
+	return null;
 	return (
 		<div
 			style={{
@@ -1492,12 +1651,18 @@ function TextColor({
 					toggleMenu("TextColor");
 				}}
 				title="Text color"
+				tipOnTop
+				width={32}
+				height={32}
+				margin={0}
 			>
-				<TextColorIcon
+				{/* <TextColorIcon
 					color={color}
 					width={IconSize}
 					height={IconSize}
-				/>
+				/> */}
+				{/* <IconIntegration iconName="TextColorIndicator"/> */}
+				<TextColorIndicator color={color}/>
 			</Button>
 			<div
 				id="TextColorMenu"
@@ -1561,12 +1726,17 @@ function TextHighlight({
 					toggleMenu("TextHighlight");
 				}}
 				title="Text highlight"
+				tipOnTop
+				width={32}
+				height={32}
+				margin={0}
 			>
-				<TextHighlightIcon
+				{/* <TextHighlightIcon
 					color={color}
 					width={IconSize}
 					height={IconSize}
-				/>
+				/> */}
+				<TextHighlightIndicator color={color} />
 			</Button>
 			<div
 				id="TextColorMenu"
@@ -1601,6 +1771,7 @@ function TextColorSeparator({
 	) {
 		return null;
 	}
+	return null;
 	return (
 		<div
 			style={{
@@ -1654,6 +1825,10 @@ function StrokeStyle({
 					toggleMenu("StrokeStyle");
 				}}
 				title="Stroke Style"
+				tipOnTop
+				width={32}
+				height={32}
+				margin={0}
 			>
 				<CircleIcon
 					fill="white"
@@ -1703,7 +1878,6 @@ function FillStyle({
 	menu,
 	panelMbr,
 	windowHeight,
-
 	color,
 }: {
 	board: Board;
@@ -1732,6 +1906,10 @@ function FillStyle({
 					toggleMenu("FillStyle");
 				}}
 				title="Fill Style"
+				tipOnTop
+				width={32}
+				height={32}
+				margin={0}
 			>
 				<CircleIcon
 					strokeWidth={1}
@@ -1798,6 +1976,10 @@ function StickerFillStyle({
 					toggleMenu("StickerFillStyle");
 				}}
 				title="Sticker Fill Style"
+				width={32}
+				height={32}
+				margin={0}
+				tipOnTop
 			>
 				<CircleIcon
 					strokeWidth={1}
@@ -1864,36 +2046,30 @@ function PathStyleSeparator({
 }
 
 function Duplicate({ board }: { board: Board }): React.ReactElement | null {
-	if (board.selection.getContext() === "SelectUnderPointer") {
-		return null;
-	}
 	return (
-		<Button
+		<RestOptionsMenuItem
 			id="DuplicateSelection"
 			onClick={() => {
 				board.selection.duplicate();
 			}}
-			title="Duplicate"
+			hotkey="D"
 		>
-			<DuplicateIcon width={IconSize} height={IconSize} />
-		</Button>
+			Дублировать
+		</RestOptionsMenuItem>
 	);
 }
 
 function Delete({ board }: { board: Board }): React.ReactElement | null {
-	if (board.selection.getContext() === "SelectUnderPointer") {
-		return null;
-	}
 	return (
-		<Button
+		<RestOptionsMenuItem
 			id="DeleteSelection"
 			onClick={() => {
 				board.selection.removeFromBoard();
 			}}
-			title="Delete"
+			hotkey="Delete"
 		>
-			<DeleteIcon width={IconSize} height={IconSize} />
-		</Button>
+			Удалить
+		</RestOptionsMenuItem>
 	);
 }
 
