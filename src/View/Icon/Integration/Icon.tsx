@@ -1,9 +1,8 @@
 import React from "react";
 import sprite from "./sprite.svg";
 
-type IconId =
+export type IconId =
 	| "Dots"
-	| "ColoredCircle"
 	| "TextAlignRight"
 	| "TextAlignCenter"
 	| "TextAlignLeft"
@@ -12,25 +11,42 @@ type IconId =
 	| "TextItalic"
 	| "TextFormat"
 	| "UpDownArrow"
-	| "TextBold" 
-  | "Pointer"
-  | "Sticker"
-  | "AddText"
-  | "AddShape"
-  | "Arrow"
-  | "Pen"
-  | "Image"
-  | "Undo"
-  | "Redo";
+	| "TextBold"
+	| "Pointer"
+	| "Sticker"
+	| "AddText"
+	| "AddShape"
+	| "Arrow"
+	| "Pen"
+	| "Image"
+	| "Undo"
+	| "Redo"
+	| "Rectangle"
+	| "RoundedRectangle"
+	| "Circle"
+	| "Hexagon"
+	| "Rhombus"
+	| "Triangle"
+	| "Star" 
+	| "ArrowRight"
+	| "ArrowLeft"
+	| "ArrowBlockRight"
+	| "ArrowBlockLeft"
+	| "SpeachBubble"
+	| "ReversedParallelogram"
+	| "Parallelogram"
+	| "ReversedTriangle";
 
 type Props = {
 	iconName: IconId;
 	width?: number | string;
 	height?: number | string;
+	style?: React.CSSProperties;
 };
 
 export function Icon({
 	iconName,
+	style,
 	height = 24,
 	width = 24,
 }: Props): React.ReactElement {
@@ -38,10 +54,13 @@ export function Icon({
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			xmlnsXlink="http://www.w3.org/1999/xlink"
-			style={{ width, height }}
+			width={width}
+			height={height}
+			style={style}
 		>
 			<use
-				style={{ width, height }}
+				width={width}
+				height={height}
 				xlinkHref={`../${sprite}#${iconName}`}
 			/>
 		</svg>

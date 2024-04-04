@@ -6,18 +6,20 @@ import { IconIntegration } from "View/Icon/Integration";
 
 interface Props {
 	onPick: (alignment: HorisontalAlignment) => void;
+	alignment: 'center' | 'left' | 'right';
 }
 
-export function HorisontalAlignmentPicker(props: Props): React.ReactElement {
+export function HorisontalAlignmentPicker({alignment, onPick}: Props): React.ReactElement {
 	return (
 		<>
 			<Button
 				id="ChangeHorisontalAlignmentLeft"
 				key="ChangeHorisontalAlignmentLeft"
 				onClick={() => {
-					props.onPick("left");
+					onPick("left");
 				}}
 				margin={0}
+				isOn={alignment === 'left'}
 			>
 				{/* <Icon name={"HorisontalAlignLeft"} width={24} height={24} /> */}
 				<IconIntegration iconName="TextAlignLeft"/>
@@ -26,9 +28,10 @@ export function HorisontalAlignmentPicker(props: Props): React.ReactElement {
 				id="ChangeHorisontalAlignmentCenter"
 				key="ChangeHorisontalAlignmentCenter"
 				onClick={() => {
-					props.onPick("center");
+					onPick("center");
 				}}
 				margin={0}
+				isOn={alignment === 'center'}
 			>
 				{/* <Icon name={"HorisontalAlignCenter"} width={24} height={24} /> */}
 				<IconIntegration iconName="TextAlignCenter"/>
@@ -37,9 +40,10 @@ export function HorisontalAlignmentPicker(props: Props): React.ReactElement {
 				id="ChangeHorisontalAlignmentRight"
 				key="ChangeHorisontalAlignmentRight"
 				onClick={() => {
-					props.onPick("right");
+					onPick("right");
 				}}
 				margin={0}
+				isOn={alignment === 'right'}
 			>
 				{/* <Icon name={"HorisontalAlignRight"} width={24} height={24} /> */}
 				<IconIntegration iconName="TextAlignRight"/>

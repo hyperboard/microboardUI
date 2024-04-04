@@ -1,30 +1,52 @@
 import { ShapeType } from "Board/Items/Shape/Basic";
 import * as React from "react";
-import { Icon } from "../Icon";
 import { Button } from "View/ContextPanel";
+import { IconId } from "View/Icon/Integration/Icon";
+import { IconIntegration } from "View/Icon/Integration";
+
+// const shapes: {id: IconId, label: string}[] = [
+// 	{ id: "Rectangle", label: "Rectangle" },
+// 	{ id: "RoundedRectangle", label: "Rounded Rectangle" },
+// 	{ id: "Circle", label: "Circle" },
+// 	{ id: "Hexagon", label: "Hexagon" },
+// 	{ id: "Rhombus", label: "Rhombus" },
+// 	{ id: "Triangle", label: "Triangle" },
+// 	{ id: "ReversedTriangle", label: "ReversedTriangle"},
+// 	{ id: "Parallelogram", label: "Parallelogram" },
+// 	{ id: "ReversedParallelogram", label: "Parallelogram" },
+// 	{ id: "SpeachBubble", label: "Speach Bubble" },
+// 	{ id: "ArrowBlockLeft", label: "Arrow Left" },
+// 	{ id: "ArrowBlockRight", label: "Arrow Right" },
+// 	{ id: "ArrowLeft", label: "Arrow Left" },
+// 	{ id: "ArrowRight", label: "Arrow Right" },
+// 	{ id: "Star", label: "Star" },
+
+// { id: "Cross", label: "Cross" },
+// { id: "Cloud", label: "Cloud" },
+// { id: "Cylinder", label: "Cylinder" },
+// { id: "Trapezoid", label: "Trapezoid" },
+// { id: "PredefinedProcess", label: "Predefined Process" },
+// { id: "ArrowLeftRight", label: "Arrow Left And Right" },
+// { id: "BracesRight", label: "Braces Right" },
+// { id: "BracesLeft", label: "Braces Left" },
+// ];
 
 const shapes = [
-	{ id: "Rectangle", label: "Rectangle" },
-	{ id: "RoundedRectangle", label: "Rounded Rectangle" },
-	{ id: "Circle", label: "Circle" },
-	{ id: "Triangle", label: "Triangle" },
-	{ id: "Rhombus", label: "Rhombus" },
-	{ id: "Parallelogram", label: "Parallelogram" },
-	{ id: "Hexagon", label: "Hexagon" },
-	{ id: "Octagon", label: "Octagon" },
-	{ id: "Pentagon", label: "Pentagon" },
-	{ id: "Cross", label: "Cross" },
-	{ id: "Star", label: "Star" },
-	{ id: "Cloud", label: "Cloud" },
-	{ id: "Cylinder", label: "Cylinder" },
-	{ id: "Trapezoid", label: "Trapezoid" },
-	{ id: "PredefinedProcess", label: "Predefined Process" },
-	{ id: "ArrowLeft", label: "Arrow Left" },
-	{ id: "ArrowLeftRight", label: "Arrow Left And Right" },
-	{ id: "ArrowRight", label: "Arrow Right" },
-	{ id: "SpeachBubble", label: "Speach Bubble" },
-	{ id: "BracesRight", label: "Braces Right" },
-	{ id: "BracesLeft", label: "Braces Left" },
+	"Rectangle",
+	"RoundedRectangle",
+	"Circle",
+	"Hexagon",
+	"Rhombus",
+	"Triangle",
+	"ReversedTriangle",
+	"Parallelogram",
+	"ReversedParallelogram",
+	"SpeachBubble",
+	"ArrowBlockLeft",
+	"ArrowBlockRight",
+	"ArrowLeft",
+	"ArrowRight",
+	"Star",
 ] as const;
 
 export function ShapePicker(props: {
@@ -33,16 +55,17 @@ export function ShapePicker(props: {
 	const buttons = [];
 	for (const shape of shapes) {
 		buttons.push(
-			<Button width={32} height={32}
-				id={`Pick${shape.id}`}
-				title={shape.label}
+			<Button
+				width={32}
+				height={32}
+				id={`Pick${shape}`}
 				onClick={() => {
-					props.onPick(shape.id);
+					props.onPick(shape);
 				}}
 				margin={0}
-				key={shape.id}
+				key={shape}
 			>
-				<Icon name={shape.id} width={24} height={24} />
+				<IconIntegration iconName={shape} width={24} height={24} />
 			</Button>,
 		);
 	}

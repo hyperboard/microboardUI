@@ -5,14 +5,14 @@ export class VerticalSeparator extends React.PureComponent {
 		return (
 			<div
 				style={{
-					display: "flex",
 					width: "1px",
 					backgroundColor: "rgba(0, 0, 0, 0.08)",
-          height: '80%',
+          height: '26px',
+					alignSelf: 'center',
           borderRadius: '20px',
-          alignSelf: 'center'
+					content: ''
 				}}
-			></div>
+			/>
 		);
 	}
 }

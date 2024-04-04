@@ -38,14 +38,6 @@ export function FontSizePicker(props: Props): React.ReactElement {
 					onClick={() => {
 						props.onPick(size);
 					}}
-					onMouseEnter={event => {
-						if (isDisabled) {return;}
-						event.currentTarget.style.color = "blue";
-					}}
-					onMouseLeave={event => {
-						if (isDisabled) {return;}
-						event.currentTarget.style.color = "black";
-					}}
 					style={{...buttonStyle, ...additionalStyle}}
 					disabled={isDisabled}
 				>

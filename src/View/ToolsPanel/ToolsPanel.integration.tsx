@@ -2,17 +2,15 @@
 import * as React from "react";
 import { Board } from "Board";
 import { App } from "App";
-import { Icon } from "../Icon";
 import { Mbr } from "Board/Items";
-import { ShapePicker } from "../Pickers/ShapeTypePicker";
+import { ShapePicker } from "../Pickers/ShapeTypePicker.integration";
 import { ConnectorLineStylePicker } from "../Pickers/ConnectorLineStylePicker";
 import { ImageItem } from "Board/Items/Image";
 import { ColorPicker } from "View/Pickers/ColorPicker";
 import { SliderPicker } from "View/Pickers/SliderPicker";
 import { HorisontalSeparator } from "View/ContextPanel/HorizontalSeparator.integration";
-import { UndoIcon } from "View/Icon/UndoIcon";
-import { RedoIcon } from "View/Icon/RedoIcon";
-import { PenIcon } from "View/Icon/PenIcon";
+import { UndoIcon } from "View/Icon/Integration/UndoIcon";
+import { RedoIcon } from "View/Icon/Integration/RedoIcon";
 import { Button } from "View/ContextPanel";
 import { ConnectorLineStyle } from "Board/Items/Connector";
 import { SidePanelState } from "View/SidePanel/SidePanelState";
@@ -359,12 +357,9 @@ applyStyle(`
 	padding: 4px;
 	display: flex;
 	flex-wrap: wrap;
-	border-radius: 4px;
-	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
-
-	#AddStickerMenu {
-		width: 136px;
-	}
+	border-radius: 8px;
+	gap: 4px;
+	box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.05), 0 1px 1px 0 rgba(0, 0, 0, 0.05);
 }
 
 `);
@@ -431,8 +426,8 @@ class Select extends React.PureComponent<{
 			<Button
 				id="Select"
 				onClick={this.handleClick}
-				title="Select"
-				hotkey="V"
+				title="Выделение"
+				hotkey="S"
 				isOn={isOn}
 				tipOnLeft
 			>
@@ -517,21 +512,21 @@ class AddShape extends React.PureComponent<{
 				<Button
 					id="AddShape"
 					onClick={this.handleClick}
-					title="Add Shape"
+					title="Фигуры"
 					hotkey="S"
 					isOn={isOn}
 					tipOnLeft
 				>
 					{/* <Icon name="Rectangle" width={24} height={24} /> */}
-				<IconIntegration iconName="AddShape"/>
+					<IconIntegration iconName="AddShape"/>
 				</Button>
 				<div
 					id="AddShapeMenu"
 					className="ToolsPanelMenu"
 					style={{
-						width: "120px",
+						marginTop: '-32px',
+						width: "104px",
 						visibility: isOn ? "visible" : "hidden",
-						marginTop: "-194px",
 					}}
 				>
 					<ShapePicker onPick={this.handlePick} />
@@ -554,7 +549,7 @@ class AddText extends React.PureComponent<{ board: Board; isOn: boolean }> {
 			<Button
 				id="AddText"
 				onClick={this.handleClick}
-				title="Add Text"
+				title="Текст"
 				hotkey="T"
 				isOn={isOn}
 				tipOnLeft
@@ -731,14 +726,14 @@ class Undo extends React.PureComponent<{ board: Board; isOn: boolean }> {
 			<Button
 				id="Undo"
 				onClick={this.handleClick}
-				title="Undo"
-				hotkey="ctrl+z"
+				title="Шаг назад"
+				hotkey="⌘Z"
 				isOn={false}
 				tipOnLeft
 				margin={5}
 			>
-				{/* <UndoIcon isOn={isOn} width={24} height={24} /> */}
-				<IconIntegration iconName="Undo"/>
+				<UndoIcon isOn={isOn} width={24} height={24} />
+				{/* <IconIntegration iconName="Undo"/> */}
 			</Button>
 		);
 	}
@@ -756,13 +751,14 @@ class Redo extends React.PureComponent<{ board: Board; isOn: boolean }> {
 			<Button
 				id="Redo"
 				onClick={this.handleClick}
-				title="Redo"
-				hotkey="ctrl+shift+z"
+				title="Шаг вперед"
+				hotkey="⌘⇧Z"
 				isOn={false}
 				tipOnLeft
 				margin={5}
 			>
-				<IconIntegration iconName="Redo"/>
+				<RedoIcon isOn={isOn} width={24} height={24} />
+
 			</Button>
 		);
 	}
