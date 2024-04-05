@@ -99,7 +99,7 @@ applyStyle(`
 }
 
 .ButtonContainer .ButtonTipOnTop {
-	bottom: 120%;
+	bottom: 130%;
 }
   
 .ButtonContainer .ButtonTipOnTop::after {

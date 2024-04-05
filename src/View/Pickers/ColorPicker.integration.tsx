@@ -6,17 +6,17 @@ export function ColorPicker({
 	selectedColor,
 	allowNone = false,
 	colors,
-	isNoneLast = false,
+	isNotLast = false,
 }: {
 	onPick: (color: string) => void;
-	selectedColor: string;
+	selectedColor?: string;
 	allowNone?: boolean;
 	colors: string[];
-	isNoneLast?: boolean
+	isNotLast?: boolean;
 }): React.ReactElement {
 	return (
 		<>
-			{allowNone && !isNoneLast && (
+			{allowNone && !isNotLast && (
 				<button
 					key={"none"}
 					style={{
@@ -57,7 +57,7 @@ export function ColorPicker({
 					/>
 				</button>
 			))}
-			{allowNone && isNoneLast && (
+			{allowNone && isNotLast && (
 				<button
 					key={"none"}
 					style={{

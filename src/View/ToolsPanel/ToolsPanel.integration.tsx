@@ -4,17 +4,16 @@ import { Board } from "Board";
 import { App } from "App";
 import { Mbr } from "Board/Items";
 import { ShapePicker } from "../Pickers/ShapeTypePicker.integration";
-import { ConnectorLineStylePicker } from "../Pickers/ConnectorLineStylePicker";
+import { ConnectorLineStylePicker } from "../Pickers/ConnectorLineStylePicker.integration";
 import { ImageItem } from "Board/Items/Image";
-import { ColorPicker } from "View/Pickers/ColorPicker";
-import { SliderPicker } from "View/Pickers/SliderPicker";
+import { ColorPicker } from "View/Pickers/ColorPicker.integration";
+import { SliderPicker } from "View/Pickers/SliderPicker.integration";
 import { HorisontalSeparator } from "View/ContextPanel/HorizontalSeparator.integration";
 import { UndoIcon } from "View/Icon/Integration/UndoIcon";
 import { RedoIcon } from "View/Icon/Integration/RedoIcon";
 import { Button } from "View/ContextPanel";
 import { ConnectorLineStyle } from "Board/Items/Connector";
 import { SidePanelState } from "View/SidePanel/SidePanelState";
-import { stickerColors } from "Board/Items/Sticker";
 import { applyStyle } from "lib/applyStyle";
 import { IconIntegration } from "View/Icon/Integration";
 
@@ -432,11 +431,21 @@ class Select extends React.PureComponent<{
 				tipOnLeft
 			>
 				{/* <Icon name="Pointer" width={24} height={24} /> */}
-				<IconIntegration iconName="Pointer"/>
+				<IconIntegration iconName="Pointer" />
 			</Button>
 		);
 	}
 }
+
+const stickerColors = [
+	"#AED4FA",
+	"#FCF5AE",
+	"#AFD6A7",
+	"#E9BFE9",
+	"#ABDDDD",
+	"#F6A8A8",
+	"#E6E6E6",
+];
 
 class AddStickerTool extends React.PureComponent<{
 	board: Board;
@@ -460,27 +469,29 @@ class AddStickerTool extends React.PureComponent<{
 				<Button
 					id="AddSticker"
 					onClick={this.handleClick}
-					title="Add sticker"
-					hotkey="N"
+					title="Стикер"
+					hotkey="⌘N"
 					isOn={this.props.isOn}
 					tipOnLeft
 				>
 					{/* <Icon name="Sticker" width={24} height={24} /> */}
-				<IconIntegration iconName="Sticker"/>
+					<IconIntegration iconName="Sticker" />
 				</Button>
 				<div
 					id="AddStickerMenu"
 					className="ToolsPanelMenu"
 					style={{
-						width: "136px",
+						display: "grid",
+						gridTemplateColumns: "repeat(4, 1fr)",
+						gap: "4px",
+						top: 0,
 						visibility: this.props.isOn ? "visible" : "hidden",
-						marginTop: "-194px",
 					}}
 				>
 					<ColorPicker
 						allowNone={false}
 						onPick={this.handlePick}
-						list={stickerColors}
+						colors={stickerColors}
 					/>
 				</div>
 			</div>
@@ -518,13 +529,13 @@ class AddShape extends React.PureComponent<{
 					tipOnLeft
 				>
 					{/* <Icon name="Rectangle" width={24} height={24} /> */}
-					<IconIntegration iconName="AddShape"/>
+					<IconIntegration iconName="AddShape" />
 				</Button>
 				<div
 					id="AddShapeMenu"
 					className="ToolsPanelMenu"
 					style={{
-						marginTop: '-32px',
+						marginTop: "-32px",
 						width: "104px",
 						visibility: isOn ? "visible" : "hidden",
 					}}
@@ -555,7 +566,7 @@ class AddText extends React.PureComponent<{ board: Board; isOn: boolean }> {
 				tipOnLeft
 			>
 				{/* <Icon name="RichText" width={24} height={24} /> */}
-				<IconIntegration iconName="AddText"/>
+				<IconIntegration iconName="AddText" />
 			</Button>
 		);
 	}
@@ -587,7 +598,7 @@ class AddConnector extends React.PureComponent<{
 				<Button
 					id="AddConnector"
 					onClick={this.handleClick}
-					title="Add Connector"
+					title="Соединительная линия"
 					hotkey="L"
 					isOn={isAddConnectorOn}
 					tipOnLeft
@@ -598,17 +609,17 @@ class AddConnector extends React.PureComponent<{
 						height={24}
 						fill="rgb(0,0,0)"
 					/> */}
-					<IconIntegration iconName="Arrow"/>
+					<IconIntegration iconName="Arrow" />
 				</Button>
 				<div
 					id="AddConnectorMenu"
 					className="ToolsPanelMenu"
 					style={{
 						// width: "52px",
-						paddingLeft: "0px",
-						paddingRight: "0px",
+						display: "flex",
+						flexDirection: "column",
+						top: 0,
 						visibility: isOn ? "visible" : "hidden",
-						marginTop: "-80px",
 					}}
 				>
 					<ConnectorLineStylePicker
@@ -620,6 +631,17 @@ class AddConnector extends React.PureComponent<{
 	}
 }
 
+
+const drawingColors = [
+	'#2291FF',
+	'#FFBE00',
+	'#00CCAE',
+	'#3DBC5D',
+	'#B750D1',
+	'#F03B36',
+	'#000000',
+	'#FFFFFF'
+];
 class AddDrawing extends React.PureComponent<{
 	board: Board;
 	isOn: boolean;
@@ -656,8 +678,8 @@ class AddDrawing extends React.PureComponent<{
 				<Button
 					id="AddDrawing"
 					onClick={this.handleButtonClick}
-					title="Add Drawing"
-					hotkey="P"
+					title="Карандаш"
+					hotkey="B"
 					isOn={isOn}
 					tipOnLeft
 				>
@@ -667,23 +689,27 @@ class AddDrawing extends React.PureComponent<{
 						height={24}
 					></PenIcon> */}
 					{/* <Icon name="Pen" width={24} height={24}/> */}
-				<IconIntegration iconName="Pen"/>
-
+					<IconIntegration iconName="Pen" />
 				</Button>
 				<div
 					id="AddDrawingMenu"
 					className="ToolsPanelMenu"
 					style={{
-						width: "120px",
+						display: 'flex',
+						flexDirection: 'column',
+						gap: '16px',
+						top: 0,
 						visibility: isOn ? "visible" : "hidden",
-						marginTop: "-180px",
 					}}
 				>
 					<SliderPicker
+						style={{paddingTop: '10px'}}
 						onPick={this.handleSliderPick}
 						width={width}
 					/>
-					<ColorPicker onPick={this.handleColorPick} />
+					<div style={{display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '4px'}}>
+					<ColorPicker colors={drawingColors} onPick={this.handleColorPick} />
+					</div>
 				</div>
 			</div>
 		);
@@ -702,12 +728,12 @@ class AddImage extends React.PureComponent {
 			<Button
 				id="AddImage"
 				onClick={this.handleClick}
-				title="Add Image"
+				title="Добавить изображение"
 				isOn={false}
 				tipOnLeft
 			>
 				{/* <Icon name="Image" width={24} height={24} /> */}
-				<IconIntegration iconName="Image"/>
+				<IconIntegration iconName="Image" />
 			</Button>
 		);
 	}
@@ -758,7 +784,6 @@ class Redo extends React.PureComponent<{ board: Board; isOn: boolean }> {
 				margin={5}
 			>
 				<RedoIcon isOn={isOn} width={24} height={24} />
-
 			</Button>
 		);
 	}

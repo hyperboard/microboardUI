@@ -100,4 +100,35 @@
   <symbol fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 20" id="ReversedTriangle">
     <path d="M2.49073 1H19.5093C20.1865 1 20.6211 1.71985 20.3057 2.31917L11.7964 18.4868C11.459 19.1279 10.541 19.1279 10.2036 18.4868L1.6943 2.31917C1.37887 1.71985 1.81347 1 2.49073 1Z" stroke="black" stroke-opacity="0.8" stroke-width="1.6" stroke-linejoin="round"></path>
   </symbol>
+  <symbol viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" id="DiagonalLine">
+    <path d="M1 17L17 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" id="DiagonalDashedLine">
+    <path d="M1 17L5 13M13 5L17 1M7 11L11 7" stroke="currentColor" stroke-opacity="0.8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" id="DiagonalDottedLine">
+    <path d="M1 17L2 16M4 14L5 13M7 11L8 10M10 8L11 7M13 5L14 4M16 2L17 1" stroke="currentColor" stroke-opacity="0.8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" id="CurvedLine">
+    <path d="M1 17C1 5 17 13 17 1" stroke="currentColor" stroke-opacity="0.8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol viewBox="0 0 18 2" fill="none" xmlns="http://www.w3.org/2000/svg" id="PointerStart">
+    <path d="M17 1H1" stroke="currentColor" stroke-opacity="0.8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" id="PointerRoll">
+    <path d="M4.5128 5.79482H1.30762V2.58963M2.01358 5.79482C3.22984 3.14861 5.89741 1.30756 9.00003 1.30756C12.9099 1.30756 16.138 4.22372 16.6281 7.99994M13.4873 12.2052H16.6925V15.4104M15.9865 12.2052C14.7702 14.8514 12.1027 16.6924 9.00006 16.6924C4.97315 16.6924 1.66949 13.5991 1.33542 9.65869" stroke="currentColor" stroke-opacity="0.8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol viewBox="0 0 18 10" fill="none" xmlns="http://www.w3.org/2000/svg" id="PointerEnd">
+    <path d="M1 5H17M17 5L12 1M17 5L12 9" stroke="currentColor" stroke-opacity="0.8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol viewBox="0 0 18 6" fill="none" xmlns="http://www.w3.org/2000/svg" id="PointerEndCompact">
+    <path d="M1 3H17M17 3L13 5V1L17 3Z" stroke="currentColor" stroke-opacity="0.8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg" id="Trash">
+    <path d="M2.9977 6.99872V17.0029C2.9977 18.1079 3.8935 19.0037 4.99853 19.0037H13.0019C14.1069 19.0037 15.0027 18.1079 15.0027 17.0029V6.99872M11.001 7.99914V15.0021M6.99936 7.99914V15.0021M1.49707 3.99747H16.5033M4.99853 3.99747L5.54276 2.36479C5.81501 1.54736 6.57997 0.996011 7.44155 0.996217H10.5588C11.4212 0.995149 12.1871 1.54666 12.4596 2.36479L13.0019 3.99747" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" id="Copy">
+    <path d="M6.4 6.4V3.88C6.4 2.87191 6.4 2.36786 6.59619 1.98282C6.76876 1.64413 7.04413 1.36876 7.38282 1.19619C7.76786 1 8.27191 1 9.28 1H16.12C17.1281 1 17.6321 1 18.0172 1.19619C18.3559 1.36876 18.6312 1.64413 18.8038 1.98282C19 2.36786 19 2.87191 19 3.88V10.72C19 11.7281 19 12.2321 18.8038 12.6172C18.6312 12.9559 18.3559 13.2312 18.0172 13.4038C17.6321 13.6 17.1281 13.6 16.12 13.6H13.6M3.88 19H10.72C11.7281 19 12.2321 19 12.6172 18.8038C12.9559 18.6312 13.2312 18.3559 13.4038 18.0172C13.6 17.6321 13.6 17.1281 13.6 16.12V9.28C13.6 8.27191 13.6 7.76786 13.4038 7.38282C13.2312 7.04413 12.9559 6.76876 12.6172 6.59619C12.2321 6.4 11.7281 6.4 10.72 6.4H3.88C2.87191 6.4 2.36786 6.4 1.98282 6.59619C1.64413 6.76876 1.36876 7.04413 1.19619 7.38282C1 7.76786 1 8.27191 1 9.28V16.12C1 17.1281 1 17.6321 1.19619 18.0172C1.36876 18.3559 1.64413 18.6312 1.98282 18.8038C2.36786 19 2.87191 19 3.88 19Z" stroke="currentColor" stroke-opacity="0.8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+
 </svg>

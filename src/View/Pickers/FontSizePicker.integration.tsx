@@ -1,3 +1,4 @@
+import { applyStyle } from "lib/applyStyle";
 import * as React from "react";
 
 export const FontSizes = [10, 12, 14, 18, 24, 36, 48, 64, 80, 144, 288];
@@ -38,6 +39,7 @@ export function FontSizePicker(props: Props): React.ReactElement {
 					onClick={() => {
 						props.onPick(size);
 					}}
+					className={'FontSizeBtn'}
 					style={{...buttonStyle, ...additionalStyle}}
 					disabled={isDisabled}
 				>
@@ -49,3 +51,14 @@ export function FontSizePicker(props: Props): React.ReactElement {
 	}
 	return <>{fontButtons}</>;
 }
+
+applyStyle(`
+	@media (hover:hover) {
+		.FontSizeBtn:hover {
+			color: rgba(20, 129, 221, 1);
+		}
+	}
+	.FontSizeBtn {
+		transition: color .3s;
+	}
+`)

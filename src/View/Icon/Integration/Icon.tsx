@@ -35,7 +35,17 @@ export type IconId =
 	| "SpeachBubble"
 	| "ReversedParallelogram"
 	| "Parallelogram"
-	| "ReversedTriangle";
+	| "ReversedTriangle"
+	| "DiagonalLine"
+	| "DiagonalDashedLine"
+	| "DiagonalDottedLine"
+	| "CurvedLine"
+	| "PointerStart"
+	| "PointerRoll"
+	| "PointerEnd"
+	| "PointerEndCompact"
+	| "Trash"
+	| "Copy";
 
 type Props = {
 	iconName: IconId;

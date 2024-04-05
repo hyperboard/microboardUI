@@ -2,10 +2,6 @@ import { TextStyle } from "Board/Items/RichText";
 import * as React from "react";
 import { Button } from "View/ContextPanel";
 import { IconIntegration } from "View/Icon/Integration";
-import { BoldIcon } from "View/Icon/TextStyle/BoldIcon";
-import { ItalicsIcon } from "View/Icon/TextStyle/ItalicsIcon";
-import { StrikethroughIcon } from "View/Icon/TextStyle/StrikethroughIcon";
-import { UnderlineIcon } from "View/Icon/TextStyle/UnderlineIcon";
 
 interface Props {
 	onPick: (style: TextStyle) => void;
@@ -17,7 +13,6 @@ export function FontStylePicker(props: Props): React.ReactElement {
 			<Button
 				id="ChangeFontBold"
 				key="ChangeFontBold"
-				title="Bold"
 				onClick={() => {
 					props.onPick("bold");
 				}}
@@ -29,7 +24,6 @@ export function FontStylePicker(props: Props): React.ReactElement {
 			<Button
 				id="ChangeFontItalics"
 				key="ChangeFontItalics"
-				title="Italics"
 				onClick={() => {
 					props.onPick("italic");
 				}}
@@ -41,7 +35,6 @@ export function FontStylePicker(props: Props): React.ReactElement {
 			<Button
 				id="ChangeFontStrikethrough"
 				key="ChangeFontStrikethrough"
-				title="Strikethrough"
 				onClick={() => {
 					props.onPick("line-through");
 				}}
@@ -53,7 +46,6 @@ export function FontStylePicker(props: Props): React.ReactElement {
 			<Button
 				id="ChangeFontUnderline"
 				key="ChangeFontUnderline"
-				title="Underline"
 				onClick={() => {
 					props.onPick("underline");
 				}}
