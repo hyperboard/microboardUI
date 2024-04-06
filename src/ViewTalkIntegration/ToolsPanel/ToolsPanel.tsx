@@ -3,19 +3,19 @@ import * as React from "react";
 import { Board } from "Board";
 import { App } from "App";
 import { Mbr } from "Board/Items";
-import { ShapePicker } from "../Pickers/ShapeTypePicker.integration";
-import { ConnectorLineStylePicker } from "../Pickers/ConnectorLineStylePicker.integration";
+import { ShapePicker } from "../Pickers/ShapeTypePicker";
+import { ConnectorLineStylePicker } from "../Pickers/ConnectorLineStylePicker";
 import { ImageItem } from "Board/Items/Image";
-import { ColorPicker } from "View/Pickers/ColorPicker.integration";
-import { SliderPicker } from "View/Pickers/SliderPicker.integration";
-import { HorisontalSeparator } from "View/ContextPanel/HorizontalSeparator.integration";
-import { UndoIcon } from "View/Icon/Integration/UndoIcon";
-import { RedoIcon } from "View/Icon/Integration/RedoIcon";
-import { Button } from "View/ContextPanel";
+import { ColorPicker } from "../Pickers/ColorPicker";
+import { SliderPicker } from "../Pickers/SliderPicker";
+import { HorisontalSeparator } from "../ContextPanel/HorisontalSeparator";
+import { UndoIcon } from "../Icon/UndoIcon";
+import { RedoIcon } from "../Icon/RedoIcon";
+import { Button } from "../ContextPanel";
 import { ConnectorLineStyle } from "Board/Items/Connector";
 import { SidePanelState } from "View/SidePanel/SidePanelState";
 import { applyStyle } from "lib/applyStyle";
-import { IconIntegration } from "View/Icon/Integration";
+import { Icon } from "../Icon";
 
 interface Props {
 	app: App;
@@ -431,7 +431,7 @@ class Select extends React.PureComponent<{
 				tipOnLeft
 			>
 				{/* <Icon name="Pointer" width={24} height={24} /> */}
-				<IconIntegration iconName="Pointer" />
+				<Icon iconName="Pointer" />
 			</Button>
 		);
 	}
@@ -475,7 +475,7 @@ class AddStickerTool extends React.PureComponent<{
 					tipOnLeft
 				>
 					{/* <Icon name="Sticker" width={24} height={24} /> */}
-					<IconIntegration iconName="Sticker" />
+					<Icon iconName="Sticker" />
 				</Button>
 				<div
 					id="AddStickerMenu"
@@ -529,7 +529,7 @@ class AddShape extends React.PureComponent<{
 					tipOnLeft
 				>
 					{/* <Icon name="Rectangle" width={24} height={24} /> */}
-					<IconIntegration iconName="AddShape" />
+					<Icon iconName="AddShape" />
 				</Button>
 				<div
 					id="AddShapeMenu"
@@ -566,7 +566,7 @@ class AddText extends React.PureComponent<{ board: Board; isOn: boolean }> {
 				tipOnLeft
 			>
 				{/* <Icon name="RichText" width={24} height={24} /> */}
-				<IconIntegration iconName="AddText" />
+				<Icon iconName="AddText" />
 			</Button>
 		);
 	}
@@ -609,7 +609,7 @@ class AddConnector extends React.PureComponent<{
 						height={24}
 						fill="rgb(0,0,0)"
 					/> */}
-					<IconIntegration iconName="Arrow" />
+					<Icon iconName="Arrow" />
 				</Button>
 				<div
 					id="AddConnectorMenu"
@@ -689,7 +689,7 @@ class AddDrawing extends React.PureComponent<{
 						height={24}
 					></PenIcon> */}
 					{/* <Icon name="Pen" width={24} height={24}/> */}
-					<IconIntegration iconName="Pen" />
+					<Icon iconName="Pen" />
 				</Button>
 				<div
 					id="AddDrawingMenu"
@@ -733,7 +733,7 @@ class AddImage extends React.PureComponent {
 				tipOnLeft
 			>
 				{/* <Icon name="Image" width={24} height={24} /> */}
-				<IconIntegration iconName="Image" />
+				<Icon iconName="Image" />
 			</Button>
 		);
 	}
@@ -759,7 +759,7 @@ class Undo extends React.PureComponent<{ board: Board; isOn: boolean }> {
 				margin={5}
 			>
 				<UndoIcon isOn={isOn} width={24} height={24} />
-				{/* <IconIntegration iconName="Undo"/> */}
+				{/* <Icon iconName="Undo"/> */}
 			</Button>
 		);
 	}

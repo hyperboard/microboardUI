@@ -1,8 +1,7 @@
 import { ShapeType } from "Board/Items/Shape/Basic";
 import * as React from "react";
-import { Button } from "View/ContextPanel";
-import { IconId } from "View/Icon/Integration/Icon";
-import { IconIntegration } from "View/Icon/Integration";
+import { Button } from "../ContextPanel";
+import { Icon } from "../Icon";
 
 // const shapes: {id: IconId, label: string}[] = [
 // 	{ id: "Rectangle", label: "Rectangle" },
@@ -60,12 +59,12 @@ export function ShapePicker(props: {
 				height={32}
 				id={`Pick${shape}`}
 				onClick={() => {
-					props.onPick(shape);
+					props.onPick(shape as ShapeType);
 				}}
 				margin={0}
 				key={shape}
 			>
-				<IconIntegration iconName={shape} width={24} height={24} />
+				<Icon iconName={shape} width={24} height={24} />
 			</Button>,
 		);
 	}

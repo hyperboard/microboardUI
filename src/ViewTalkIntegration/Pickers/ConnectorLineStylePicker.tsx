@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ConnectorLineStyle } from "../../Board/Items/Connector";
-import { Button } from "View/ContextPanel";
-import { IconIntegration } from "View/Icon/Integration";
+import { Button } from "../ContextPanel";
+import { Icon } from "../Icon";
 
 interface Props {
 	onPick: (type: ConnectorLineStyle) => void;
@@ -62,7 +62,7 @@ export function ConnectorLineStylePicker(props: Props): React.ReactElement {
         margin={0}
         isOn={props.selected === 'straight'}
 			>
-				<IconIntegration iconName="DiagonalLine" width={24} height={24} />
+				<Icon iconName="DiagonalLine" width={24} height={24} />
 			</Button>
 			<Button
 				id="PickCurved"
@@ -73,7 +73,7 @@ export function ConnectorLineStylePicker(props: Props): React.ReactElement {
         isOn={props.selected === 'curved'}
 			>
 				{/* <Icon name="curved" width={24} height={24} /> */}
-				<IconIntegration iconName="CurvedLine" width={24} height={24} />
+				<Icon iconName="CurvedLine" width={24} height={24} />
 			</Button>
 		</>
 	);

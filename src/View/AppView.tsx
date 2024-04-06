@@ -1,14 +1,14 @@
 import * as React from "react";
 import { App } from "App";
-import { Canvas } from "./Canvas";
-import { TitlePanel } from "./TitlePanel";
-import { ToolsPanel } from "./ToolsPanel";
-import { ZoomPanel } from "./ZoomPanel";
-import { ContextPanel } from "./ContextPanel";
-import { TextEditors } from "./TextEditor/TextEditor";
-import { SidePanel } from "./SidePanel";
-import { SidePanelState } from "./SidePanel/SidePanelState";
-import { ContextMenuState, ContextMenu } from "./ContextMenu";
+import { Canvas } from "View/Canvas";
+import { TitlePanel } from "View/TitlePanel";
+import { ToolsPanel } from "View/ToolsPanel";
+import { ZoomPanel } from "View/ZoomPanel";
+import { ContextPanel } from "View/ContextPanel";
+import { TextEditors } from "View/TextEditor/TextEditor";
+import { SidePanel } from "View/SidePanel";
+import { SidePanelState } from "View/SidePanel/SidePanelState";
+import { ContextMenuState, ContextMenu } from "View/ContextMenu";
 import {
 	ExportSnapshotProvider,
 	ExportSelectionBox,

@@ -1,2 +1,2 @@
-export {Icon as IconIntegration} from './Icon';
+export {Icon} from './Icon';
 export {TextColorIndicator} from './TextColorIndicator'

@@ -1,7 +1,7 @@
-import { Button } from "View/ContextPanel";
+import { Button } from "../ContextPanel";
 import * as React from "react";
-import { IconIntegration } from "View/Icon/Integration";
-import { IconId } from "View/Icon/Integration/Icon";
+import { Icon } from "../Icon";
+import { IconId } from "../Icon/Icon";
 
 const pointerTypes = [
 	{ id: "None", icon: "PointerStart" },
@@ -41,7 +41,7 @@ export function ConnectorStartPointerPicker({
 				margin={0}
 				isOn={selected === type.id}
 			>
-				<IconIntegration iconName={type.icon as IconId} />
+				<Icon iconName={type.icon as IconId} />
 			</Button>,
 		);
 	}
@@ -67,7 +67,7 @@ export function ConnectorEndPointerPicker({
 				margin={0}
 				isOn={selected === type.id}
 			>
-				<IconIntegration iconName={type.icon as IconId} />
+				<Icon iconName={type.icon as IconId} />
 			</Button>,
 		);
 	}

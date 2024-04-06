@@ -1,36 +1,31 @@
 import { Board } from "Board";
 import { Connector, Mbr } from "Board/Items";
 import { ShapeType } from "Board/Items/Shape/Basic";
-import { Icon } from "View/Icon";
-import { CircleIcon } from "View/Icon/CircleIcon";
-import { IconIntegration, TextColorIndicator } from "View/Icon/Integration";
-import { LockIcon } from "View/Icon/LockIcon";
-import { UnlockIcon } from "View/Icon/UnlockIcon";
-import { StrokeStylePicker } from "View/Pickers/BorderStylePicker.integration";
-import { ColorPicker } from "View/Pickers/ColorPicker.integration";
-import { ConnectorLineStylePicker } from "View/Pickers/ConnectorLineStylePicker.integration";
+import { Icon, TextColorIndicator } from "../Icon";
+import { StrokeStylePicker } from "../Pickers/BorderStylePicker";
+import { ColorPicker } from "../Pickers/ColorPicker";
+import { ConnectorLineStylePicker } from "../Pickers/ConnectorLineStylePicker";
 import {
 	ConnectorEndPointerPicker,
 	ConnectorStartPointerPicker,
-} from "View/Pickers/ConnectorPointerPicker.integration";
-import { FontSizePicker } from "View/Pickers/FontSizePicker.integration";
-import { FontStylePicker } from "View/Pickers/FontStylePicker.integration";
-import { HorisontalAlignmentPicker } from "View/Pickers/HorizontalAlignmentPicker.integration";
-import { ShapePicker } from "View/Pickers/ShapeTypePicker.integration";
-import { SliderPicker } from "View/Pickers/SliderPicker.integration";
+} from "../Pickers/ConnectorPointerPicker";
+import { FontSizePicker } from "../Pickers/FontSizePicker";
+import { FontStylePicker } from "../Pickers/FontStylePicker";
+import { HorisontalAlignmentPicker } from "../Pickers/HorizontalAlignmentPicker";
+import { ShapePicker } from "../Pickers/ShapeTypePicker";
+import { SliderPicker } from "../Pickers/SliderPicker";
 import { VerticalAlignmentPicker } from "View/Pickers/VerticalAlignmentPicker";
 import * as React from "react";
-import { fitContextPanel } from "../fit";
-import { Button } from "./Button.integration";
+import { fitContextPanel } from "View/fit";
+import { Button } from "./Button";
 import { HorisontalSeparator } from "./HorisontalSeparator";
-import { VerticalSeparator } from "./VerticalSeparator.integration";
+import { VerticalSeparator } from "./VerticalSeparator";
 
 import { applyStyle } from "lib/applyStyle";
-import { TextHighlightIndicator } from "View/Icon/Integration/TextHighlightIndicator";
-import { StrokeColorIndicator } from "View/Icon/Integration/StrokeColorIndicator";
-import { CircleColorIndicator } from "View/Icon/Integration/CircleColorIndicator";
+import { TextHighlightIndicator } from "../Icon/TextHighlightIndicator";
+import { StrokeColorIndicator } from "../Icon/StrokeColorIndicator";
+import { CircleColorIndicator } from "../Icon/CircleColorIndicator";
 import { SelectionContext } from "Board/Selection/Selection";
-import { ColorCircle } from "View/Icon/Integration/ColorCircle";
 
 export const IconSize = 24;
 
@@ -398,7 +393,7 @@ function DeleteImg({ board }: { board: Board }) {
 				board.selection.removeFromBoard();
 			}}
 		>
-			<IconIntegration style={{ color: "#DF4E49" }} iconName="Trash" />
+			<Icon style={{ color: "#DF4E49" }} iconName="Trash" />
 		</Button>
 	);
 }
@@ -418,7 +413,7 @@ function DuplicateImg({ board }: { board: Board }) {
 				board.selection.duplicate();
 			}}
 		>
-			<IconIntegration iconName="Copy" />
+			<Icon iconName="Copy" />
 		</Button>
 	);
 }
@@ -452,7 +447,7 @@ export function RestOptionsMenu({
 					margin={0}
 				>
 					{/* <Icon name="Rectangle" width={IconSize} height={IconSize} /> */}
-					<IconIntegration iconName="Dots" />
+					<Icon iconName="Dots" />
 				</Button>
 				<div
 					ref={menuRef}
@@ -642,7 +637,7 @@ function StartPointer({
 				margin={0}
 				tipOnTop
 			>
-				<IconIntegration
+				<Icon
 					iconName={
 						pointerStartStyle === "ArrowBroad"
 							? "PointerEnd"
@@ -709,7 +704,7 @@ function SwitchPointers({
 			tipOnTop
 		>
 			{/* <SwitchPointersIcon width={IconSize} height={IconSize} /> */}
-			<IconIntegration iconName="PointerRoll" />
+			<Icon iconName="PointerRoll" />
 		</Button>
 	);
 }
@@ -756,7 +751,7 @@ function EndPointer({
 				margin={0}
 				tipOnTop
 			>
-				<IconIntegration
+				<Icon
 					iconName={
 						endPointerStyle === "ArrowBroad"
 							? "PointerEnd"
@@ -886,7 +881,7 @@ function ConnectorType({
 				tipOnTop
 			>
 				{/* <Icon name="curved" width={IconSize} height={IconSize} /> */}
-				<IconIntegration
+				<Icon
 					iconName={
 						connectorType === "curved"
 							? "CurvedLine"
@@ -958,7 +953,7 @@ function ItemType({
 				height={32}
 				margin={0}
 			>
-				<IconIntegration iconName="AddShape" />
+				<Icon iconName="AddShape" />
 			</Button>
 			<div
 				id="FillStyleMenu"
@@ -1044,7 +1039,7 @@ class FontSize extends React.PureComponent<{
 						}}
 					>
 						<span style={{ flex: "1 0" }}>{fontSize}</span>
-						<IconIntegration
+						<Icon
 							width={10}
 							height={16}
 							iconName="UpDownArrow"
@@ -1120,7 +1115,7 @@ function FontStyle({
 				margin={0}
 			>
 				{/* <BoldUnderlineIcon width={IconSize} height={IconSize} /> */}
-				<IconIntegration iconName="TextFormat" />
+				<Icon iconName="TextFormat" />
 			</Button>
 			<div
 				id="FillStyleMenu"
@@ -1199,7 +1194,7 @@ function TextAlignment({
 					width={IconSize}
 					height={IconSize}
 				/> */}
-				<IconIntegration
+				<Icon
 					iconName={`TextAlign${
 						alignment === "center"
 							? "Center"
@@ -1413,7 +1408,7 @@ function TextColor({
 					width={IconSize}
 					height={IconSize}
 				/> */}
-				{/* <IconIntegration iconName="TextColorIndicator"/> */}
+				{/* <Icon iconName="TextColorIndicator"/> */}
 				<TextColorIndicator color={color} />
 			</Button>
 			<div

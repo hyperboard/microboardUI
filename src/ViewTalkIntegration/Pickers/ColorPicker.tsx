@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ColorCircle } from "View/Icon/Integration/ColorCircle";
+import { ColorCircle } from "../Icon/ColorCircle";
 
 export function ColorPicker({
 	onPick,

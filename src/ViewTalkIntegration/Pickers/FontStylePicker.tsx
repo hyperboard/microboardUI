@@ -1,7 +1,7 @@
 import { TextStyle } from "Board/Items/RichText";
 import * as React from "react";
-import { Button } from "View/ContextPanel";
-import { IconIntegration } from "View/Icon/Integration";
+import { Button } from "../ContextPanel";
+import { Icon } from "../Icon";
 
 interface Props {
 	onPick: (style: TextStyle) => void;
@@ -19,7 +19,7 @@ export function FontStylePicker(props: Props): React.ReactElement {
 				margin={0}
 			>
 				{/* <BoldIcon isOn={true} width={24} height={24} /> */}
-        <IconIntegration iconName="TextBold"/>
+        <Icon iconName="TextBold"/>
 			</Button>
 			<Button
 				id="ChangeFontItalics"
@@ -30,7 +30,7 @@ export function FontStylePicker(props: Props): React.ReactElement {
 				margin={0}
 			>
 				{/* <ItalicsIcon width={24} height={24} /> */}
-        <IconIntegration iconName="TextItalic"/>
+        <Icon iconName="TextItalic"/>
 			</Button>
 			<Button
 				id="ChangeFontStrikethrough"
@@ -41,7 +41,7 @@ export function FontStylePicker(props: Props): React.ReactElement {
 				margin={0}
 			>
 				{/* <StrikethroughIcon width={24} height={24} /> */}
-        <IconIntegration iconName="TextStrike"/>
+        <Icon iconName="TextStrike"/>
 			</Button>
 			<Button
 				id="ChangeFontUnderline"
@@ -52,7 +52,7 @@ export function FontStylePicker(props: Props): React.ReactElement {
 				margin={0}
 			>
 				{/* <UnderlineIcon width={24} height={24} /> */}
-        <IconIntegration width={26} iconName="TextUnderline"/>
+        <Icon width={26} iconName="TextUnderline"/>
 			</Button>
 		</>
 	);

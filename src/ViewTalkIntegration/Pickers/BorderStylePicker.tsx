@@ -1,7 +1,7 @@
 import { BorderStyle } from "Board/Items/Path";
 import * as React from "react";
-import { Button } from "View/ContextPanel";
-import { IconIntegration } from "View/Icon/Integration";
+import { Button } from "../ContextPanel";
+import { Icon } from "../Icon";
 
 interface Props {
 	onPick: (style: BorderStyle) => void;
@@ -29,7 +29,7 @@ export function StrokeStylePicker(props: Props): React.ReactElement {
 				isOn={props.stroke === 'solid'}
 			>
 				{/* <Icon name={"LineSolid"} width={24} height={24} /> */}
-        <IconIntegration iconName="DiagonalLine"/>
+        <Icon iconName="DiagonalLine"/>
 			</Button>
 			<Button
 				id="ChangeBorderStyleDashed"
@@ -41,7 +41,7 @@ export function StrokeStylePicker(props: Props): React.ReactElement {
 				isOn={props.stroke === 'dash'}
 			>
 				{/* <Icon name={"LineDashed"} width={24} height={24} /> */}
-        <IconIntegration iconName="DiagonalDashedLine"/>
+        <Icon iconName="DiagonalDashedLine"/>
 			</Button>
 			<Button
 				id="ChangeBorderStyleDotted"
@@ -53,7 +53,7 @@ export function StrokeStylePicker(props: Props): React.ReactElement {
 				isOn={props.stroke === 'dot'}
 			>
 				{/* <Icon name={"LineDotted"} width={24} height={24} /> */}
-        <IconIntegration iconName="DiagonalDottedLine"/>
+        <Icon iconName="DiagonalDottedLine"/>
 			</Button>
 		</div>
 	);

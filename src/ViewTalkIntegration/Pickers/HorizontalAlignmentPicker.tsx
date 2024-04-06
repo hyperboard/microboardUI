@@ -1,8 +1,7 @@
 import { HorisontalAlignment } from "Board/Items/Alignment";
 import * as React from "react";
+import { Button } from "../ContextPanel";
 import { Icon } from "../Icon";
-import { Button } from "View/ContextPanel";
-import { IconIntegration } from "View/Icon/Integration";
 
 interface Props {
 	onPick: (alignment: HorisontalAlignment) => void;
@@ -22,7 +21,7 @@ export function HorisontalAlignmentPicker({alignment, onPick}: Props): React.Rea
 				isOn={alignment === 'left'}
 			>
 				{/* <Icon name={"HorisontalAlignLeft"} width={24} height={24} /> */}
-				<IconIntegration iconName="TextAlignLeft"/>
+				<Icon iconName="TextAlignLeft"/>
 			</Button>
 			<Button
 				id="ChangeHorisontalAlignmentCenter"
@@ -34,7 +33,7 @@ export function HorisontalAlignmentPicker({alignment, onPick}: Props): React.Rea
 				isOn={alignment === 'center'}
 			>
 				{/* <Icon name={"HorisontalAlignCenter"} width={24} height={24} /> */}
-				<IconIntegration iconName="TextAlignCenter"/>
+				<Icon iconName="TextAlignCenter"/>
 			</Button>
 			<Button
 				id="ChangeHorisontalAlignmentRight"
@@ -46,7 +45,7 @@ export function HorisontalAlignmentPicker({alignment, onPick}: Props): React.Rea
 				isOn={alignment === 'right'}
 			>
 				{/* <Icon name={"HorisontalAlignRight"} width={24} height={24} /> */}
-				<IconIntegration iconName="TextAlignRight"/>
+				<Icon iconName="TextAlignRight"/>
 			</Button>
 		</>
 	);

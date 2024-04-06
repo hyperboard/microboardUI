@@ -16,7 +16,7 @@ import { FontStylePicker } from "View/Pickers/FontStylePicker";
 import { HorisontalAlignmentPicker } from "View/Pickers/HorisontalAlignmentPicker";
 import { ShapePicker } from "View/Pickers/ShapeTypePicker";
 import { VerticalAlignmentPicker } from "View/Pickers/VerticalAlignmentPicker";
-import { Button } from "./Button.integration";
+import { Button } from "./Button";
 import { HorisontalSeparator } from "./HorisontalSeparator";
 import { LockIcon } from "View/Icon/LockIcon";
 import { UnlockIcon } from "View/Icon/UnlockIcon";

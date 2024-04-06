@@ -1,2 +1,2 @@
-export { ContextPanel } from "./ContextPanel.integration";
-export {Button} from './Button.integration'
+export { ContextPanel } from "./ContextPanel";
+export {Button} from './Button'
