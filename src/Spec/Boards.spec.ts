@@ -52,6 +52,40 @@ describe("Board routes", () => {
                 .send({ title: "Test Board" })
                 .expect(401);
         });
+
+        it("should create a new board with 'root' catalogId", async () => {
+            const token = await createTestToken(userId, {
+                owns: { catalogs: ["root"] },
+            });
+
+            await request(server)
+                .post("/api/v1/boards/")
+                .set("Authorization", `Bearer ${token}`)
+                .send({
+                    title: "Test Board with root catalog",
+                    catalogId: "root",
+                })
+                .expect(201)
+                .then((response) => {
+                    expect(response.body).toHaveProperty("boardId");
+                    expect(response.body).toHaveProperty("boardUrl");
+                });
+        });
+
+        it("should fail to create a new board with invalid catalogId", async () => {
+            const token = await createTestToken(userId, {
+                owns: { catalogs: ["root"] },
+            });
+
+            await request(server)
+                .post("/api/v1/boards/")
+                .set("Authorization", `Bearer ${token}`)
+                .send({
+                    title: "Test Board with invalid catalog",
+                    catalogId: "invalid-catalog-id",
+                })
+                .expect(400); // Expecting a 400 Bad Request due to invalid catalogId
+        });
     });
 
     describe("Create public board", () => {
