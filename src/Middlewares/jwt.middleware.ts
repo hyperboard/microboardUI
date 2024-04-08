@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import { verify } from "jsonwebtoken";
+// import { verify } from "jsonwebtoken";
 import winston from "winston";
 import { AccessToken } from "Interface";
-import { publicKey } from "shared/config/keys";
+// import { publicKey } from "shared/config/keys";
+import { verifyToken } from "Tokens";
 
 export function jwtMiddleware(logger: winston.Logger) {
     return (request: Request, response: Response, next: NextFunction): void => {
@@ -13,21 +14,21 @@ export function jwtMiddleware(logger: winston.Logger) {
             response.json({
                 status: 401,
                 message: "JWT token not found in Authorization header",
-            })
+            });
             response.end();
             return;
         }
-        const claims = verify(token, publicKey, { algorithms: ["ES256"] });
+        const claims = verifyToken(token);
         if (!claims) {
             response.status(401);
             response.json({
                 status: 401,
                 message: "Jwt token invalid or expired",
-            })
+            });
             response.end();
             return;
         }
-        request.token = claims as AccessToken;
+        request.token = claims as unknown as AccessToken;
         next();
     };
 }

@@ -9,7 +9,8 @@ import { AuthHelper } from "./AuthHelper";
 import { Pool } from "pg";
 import { AccessToken } from "Interface";
 import { Permissions } from "./types";
-import { publicKey } from "shared/config/keys";
+import { verifyToken } from "Tokens";
+// import { publicKey } from "shared/config/keys";
 
 type RegisterPayload = {
     email: string;
@@ -70,7 +71,10 @@ export class Auth {
         );
 
         if (!user.rows[0]) {
-            throw new HttpException(HttpStatus.NOT_FOUND, "Invalid email or password");
+            throw new HttpException(
+                HttpStatus.NOT_FOUND,
+                "Invalid email or password"
+            );
         }
 
         if (!user.rows[0].activated) {
@@ -95,12 +99,10 @@ export class Auth {
 
         const permissions = await this.getPermissions(user.rows[0].id);
 
-        const { accessToken, refreshToken } = await this.authHelper.generateTokens(
-            user.rows[0].id,
-            {
+        const { accessToken, refreshToken } =
+            await this.authHelper.generateTokens(user.rows[0].id, {
                 ...permissions,
-            }
-        );
+            });
 
         const salt = await bcrypt.genSalt(10);
         const refreshTokenHash = await bcrypt.hash(refreshToken, salt);
@@ -227,9 +229,7 @@ export class Auth {
         accessToken: string;
         refreshToken: string;
     } | null> {
-        const claims: AccessToken = decode(
-            payload.refreshToken
-        ) as AccessToken;
+        const claims: AccessToken = decode(payload.refreshToken) as AccessToken;
 
         const savedRefreshTokenHash = await this.database.query<{
             refresh_token: string;
@@ -265,11 +265,7 @@ export class Auth {
             );
         }
 
-        const verifiedUser = verify(
-            payload.refreshToken,
-            publicKey,
-            {algorithms: ['ES256']}
-        );
+        const verifiedUser = verifyToken(payload.refreshToken);
 
         if (!verifiedUser) {
             throw new HttpException(
@@ -280,14 +276,12 @@ export class Auth {
 
         const permissions = await this.getPermissions(+claims.sub);
 
-        const { accessToken, refreshToken } = await this.authHelper.generateTokens(
-            +claims.sub,
-            {
-                owns: {...claims.owns, ...permissions.owns},
-                edits: {...claims.edits, ...permissions.edits},
-                reads: {...claims.reads, ...permissions.reads},
-            }
-        );
+        const { accessToken, refreshToken } =
+            await this.authHelper.generateTokens(+claims.sub, {
+                owns: { ...claims.owns, ...permissions.owns },
+                edits: { ...claims.edits, ...permissions.edits },
+                reads: { ...claims.reads, ...permissions.reads },
+            });
 
         const salt = await bcrypt.genSalt(10);
         const refreshTokenHash = await bcrypt.hash(refreshToken, salt);
@@ -330,8 +324,8 @@ export class Auth {
             );
         }
 
-        const HOURS_24 = 24 * 60 * 60 * 1000
-        if (lastPasscode.rows[0].created < Date.now() - HOURS_24 ) {
+        const HOURS_24 = 24 * 60 * 60 * 1000;
+        if (lastPasscode.rows[0].created < Date.now() - HOURS_24) {
             throw new HttpException(
                 HttpStatus.UNAUTHORIZED,
                 "Passcode expired"
@@ -342,7 +336,6 @@ export class Auth {
                 HttpStatus.UNAUTHORIZED,
                 "PASSCODE_ATTEMPTS_EXCEEDED"
             );
-            
         }
 
         if (!checkPasscode.rows[0].check_passcode) {
@@ -376,9 +369,9 @@ export class Auth {
         const tokens = await this.authHelper.generateTokens(
             updateUser.rows[0].id,
             {
-                owns: {...permissions.owns},
-                edits: {...permissions.edits},
-                reads: {...permissions.reads},
+                owns: { ...permissions.owns },
+                edits: { ...permissions.edits },
+                reads: { ...permissions.reads },
             }
         );
 
@@ -439,8 +432,8 @@ export class Auth {
                     template: "verify-email",
                     context: {
                         passcode: passcode,
-                        userId: payload.userId,
-                        email: payload.email
+                        userId: "" + payload.userId,
+                        email: payload.email,
                     },
                 }
             );
@@ -456,15 +449,15 @@ export class Auth {
     private async getPermissions(user_id: number): Promise<Permissions> {
         const permissions: Permissions = {
             owns: {
-                boards: []
+                boards: [],
             },
             edits: {
-                boards: []
+                boards: [],
             },
             reads: {
-                boards: []
-            }
-        }
+                boards: [],
+            },
+        };
 
         const boardsOwnerships = await this.database.query<{
             board_id: number;

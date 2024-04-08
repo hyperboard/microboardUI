@@ -87,7 +87,11 @@ export async function getApp(): Promise<http.Server> {
     app.use(nocache);
 
     const config = new Config();
-    const mailer = new Mailer(config, logger);
+    const mailer = new Mailer(
+        config,
+        logger,
+        process.env.BASE_URL ?? "example"
+    );
     const database = await getDatabase(logger);
     const boards = new Boards(database, logger);
     withWebSocketApi(wss, boards);

@@ -16,6 +16,8 @@ create table if not exists boards (
 	boardname varchar(32)
 );
 
+ALTER TABLE boards ADD UNIQUE (uniq_id);
+
 -- Add a new event at the end of the log of events in a board table.
 -- Does not add the event if the event id is already in the table.
 -- Returns the offset of the new event.
