@@ -14,6 +14,7 @@ export function ColorPicker({
 	colors: string[];
 	isNotLast?: boolean;
 }): React.ReactElement {
+	console.log(selectedColor)
 	return (
 		<>
 			{allowNone && !isNotLast && (

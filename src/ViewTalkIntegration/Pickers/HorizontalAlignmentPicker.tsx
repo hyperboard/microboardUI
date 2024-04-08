@@ -21,7 +21,7 @@ export function HorisontalAlignmentPicker({alignment, onPick}: Props): React.Rea
 				isOn={alignment === 'left'}
 			>
 				{/* <Icon name={"HorisontalAlignLeft"} width={24} height={24} /> */}
-				<Icon iconName="TextAlignLeft"/>
+				<Icon iconName="TextAlignLeft" width={16} height={16}/>
 			</Button>
 			<Button
 				id="ChangeHorisontalAlignmentCenter"
@@ -33,7 +33,7 @@ export function HorisontalAlignmentPicker({alignment, onPick}: Props): React.Rea
 				isOn={alignment === 'center'}
 			>
 				{/* <Icon name={"HorisontalAlignCenter"} width={24} height={24} /> */}
-				<Icon iconName="TextAlignCenter"/>
+				<Icon iconName="TextAlignCenter" width={16} height={16}/>
 			</Button>
 			<Button
 				id="ChangeHorisontalAlignmentRight"
@@ -45,7 +45,7 @@ export function HorisontalAlignmentPicker({alignment, onPick}: Props): React.Rea
 				isOn={alignment === 'right'}
 			>
 				{/* <Icon name={"HorisontalAlignRight"} width={24} height={24} /> */}
-				<Icon iconName="TextAlignRight"/>
+				<Icon iconName="TextAlignRight" width={16} height={16}/>
 			</Button>
 		</>
 	);

@@ -50,9 +50,11 @@ document.head.appendChild(style);
 type Props = {
 	onPick: (width: number) => void;
 	width: number;
-	dots?: number;
 	style?: React.CSSProperties;
 	showLabel?: boolean;
+	min?: number;
+	max?: number;
+	step?: number;
 };
 
 function InputDot({ offset }: { offset: number }) {
@@ -77,9 +79,11 @@ function InputDot({ offset }: { offset: number }) {
 export const SliderPicker = React.memo(function SliderPicker({
 	onPick,
 	width,
-	dots = 6,
 	style,
 	showLabel = true,
+	min = 2,
+	max = 12,
+	step = 2,
 }: Props) {
 	const inputRef = React.useRef<HTMLInputElement>(null);
 	const [inputWidth, setInputWidth] = React.useState<null | number>(null);
@@ -97,13 +101,20 @@ export const SliderPicker = React.memo(function SliderPicker({
 
 	const dotsOffsets: number[] = [];
 
+	// if (inputWidth) {
+	// 	dotsOffsets.push(2);
+	// 	for (let i = 1; i < dots - 1; i++) {
+	// 		dotsOffsets.push((Math.ceil(inputWidth / (dots - 1)) * i) - 4);
+	// 	}
+	// 	dotsOffsets.push(inputWidth - 6);
+	// }
+	const dots = Math.floor((max - min) / step);
 	if (inputWidth) {
 		dotsOffsets.push(2);
-		for (let i = 1; i < dots - 1; i++) {
-			dotsOffsets.push((Math.ceil(inputWidth / (dots - 1)) * i) - 4);
+		for (let i = 1; i < dots; i++) {
+			dotsOffsets.push((Math.ceil(inputWidth / dots) * i) - 2);
 		}
 		dotsOffsets.push(inputWidth - 6);
-
 	}
 
 	return (
@@ -126,9 +137,9 @@ export const SliderPicker = React.memo(function SliderPicker({
 			<input
 				ref={inputRef}
 				type="range"
-				min="1"
-				max="10"
-				step="0.1"
+				min={min}
+				max={max}
+				step={step}
 				value={width}
 				className="slider"
 				onInput={handlePickWidth}

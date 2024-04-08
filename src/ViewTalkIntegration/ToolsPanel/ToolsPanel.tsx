@@ -284,6 +284,7 @@ export class ToolsPanel extends React.Component<Props, State> {
 				id="ToolsPanel"
 				className="ToolsPanel"
 				style={{
+					width: '32px',
 					top: `${top}px`,
 					left: `${left}px`,
 				}}
@@ -299,6 +300,7 @@ export class ToolsPanel extends React.Component<Props, State> {
 				<AddStickerTool
 					board={board}
 					isOn={board.tools.getAddSticker() !== undefined}
+					selectedColor={board.tools.getAddSticker()?.sticker.getBackgroundColor() ?? 'none'}
 				/>
 				<AddShape
 					board={board}
@@ -311,6 +313,7 @@ export class ToolsPanel extends React.Component<Props, State> {
 				<AddDrawing
 					board={board}
 					isOn={board.tools.getAddDrawing() !== undefined}
+					selectedColor={board.tools.getAddDrawing()?.strokeStyle ?? 'none'}
 					width={board.tools.getAddDrawing()?.strokeWidth ?? 1}
 				/>
 				<AddImage />
@@ -429,9 +432,11 @@ class Select extends React.PureComponent<{
 				hotkey="S"
 				isOn={isOn}
 				tipOnLeft
+				width={32}
+				height={32}
 			>
 				{/* <Icon name="Pointer" width={24} height={24} /> */}
-				<Icon iconName="Pointer" />
+				<Icon width={17} height={17} iconName="Pointer" />
 			</Button>
 		);
 	}
@@ -450,6 +455,7 @@ const stickerColors = [
 class AddStickerTool extends React.PureComponent<{
 	board: Board;
 	isOn: boolean;
+	selectedColor: string;
 }> {
 	handleClick = (): void => {
 		this.props.board.tools.addSticker();
@@ -462,7 +468,6 @@ class AddStickerTool extends React.PureComponent<{
 			add.setBackgroundColor(color);
 		}
 	};
-
 	render(): React.ReactElement {
 		return (
 			<div className="ToolsPanelMenuContainer">
@@ -473,9 +478,11 @@ class AddStickerTool extends React.PureComponent<{
 					hotkey="⌘N"
 					isOn={this.props.isOn}
 					tipOnLeft
+					width={32}
+				height={32}
 				>
 					{/* <Icon name="Sticker" width={24} height={24} /> */}
-					<Icon iconName="Sticker" />
+					<Icon width={16} height={16} iconName="Sticker" />
 				</Button>
 				<div
 					id="AddStickerMenu"
@@ -492,6 +499,7 @@ class AddStickerTool extends React.PureComponent<{
 						allowNone={false}
 						onPick={this.handlePick}
 						colors={stickerColors}
+						selectedColor={this.props.selectedColor}
 					/>
 				</div>
 			</div>
@@ -527,9 +535,11 @@ class AddShape extends React.PureComponent<{
 					hotkey="S"
 					isOn={isOn}
 					tipOnLeft
+					width={32}
+				height={32}
 				>
 					{/* <Icon name="Rectangle" width={24} height={24} /> */}
-					<Icon iconName="AddShape" />
+					<Icon width={18} height={18} iconName="AddShape" />
 				</Button>
 				<div
 					id="AddShapeMenu"
@@ -564,9 +574,11 @@ class AddText extends React.PureComponent<{ board: Board; isOn: boolean }> {
 				hotkey="T"
 				isOn={isOn}
 				tipOnLeft
+				width={32}
+				height={32}
 			>
 				{/* <Icon name="RichText" width={24} height={24} /> */}
-				<Icon iconName="AddText" />
+				<Icon width={14} height={16} iconName="AddText" />
 			</Button>
 		);
 	}
@@ -602,6 +614,8 @@ class AddConnector extends React.PureComponent<{
 					hotkey="L"
 					isOn={isAddConnectorOn}
 					tipOnLeft
+					width={32}
+				height={32}
 				>
 					{/* <Icon
 						name="Connector"
@@ -609,7 +623,7 @@ class AddConnector extends React.PureComponent<{
 						height={24}
 						fill="rgb(0,0,0)"
 					/> */}
-					<Icon iconName="Arrow" />
+					<Icon width={16} height={16} iconName="Arrow" />
 				</Button>
 				<div
 					id="AddConnectorMenu"
@@ -646,6 +660,7 @@ class AddDrawing extends React.PureComponent<{
 	board: Board;
 	isOn: boolean;
 	width: number;
+	selectedColor: string;
 }> {
 	handleButtonClick = (): void => {
 		const { board } = this.props;
@@ -682,6 +697,8 @@ class AddDrawing extends React.PureComponent<{
 					hotkey="B"
 					isOn={isOn}
 					tipOnLeft
+					width={32}
+				height={32}
 				>
 					{/* <PenIcon
 						color={board.tools.getAddDrawing()?.strokeStyle}
@@ -689,7 +706,7 @@ class AddDrawing extends React.PureComponent<{
 						height={24}
 					></PenIcon> */}
 					{/* <Icon name="Pen" width={24} height={24}/> */}
-					<Icon iconName="Pen" />
+					<Icon width={18} height={18} iconName="Pen" />
 				</Button>
 				<div
 					id="AddDrawingMenu"
@@ -708,7 +725,7 @@ class AddDrawing extends React.PureComponent<{
 						width={width}
 					/>
 					<div style={{display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '4px'}}>
-					<ColorPicker colors={drawingColors} onPick={this.handleColorPick} />
+					<ColorPicker selectedColor={this.props.selectedColor} colors={drawingColors} onPick={this.handleColorPick} />
 					</div>
 				</div>
 			</div>
@@ -731,9 +748,11 @@ class AddImage extends React.PureComponent {
 				title="Добавить изображение"
 				isOn={false}
 				tipOnLeft
+				width={32}
+				height={32}
 			>
 				{/* <Icon name="Image" width={24} height={24} /> */}
-				<Icon iconName="Image" />
+				<Icon width={20} height={18} iconName="Image" />
 			</Button>
 		);
 	}
@@ -756,9 +775,10 @@ class Undo extends React.PureComponent<{ board: Board; isOn: boolean }> {
 				hotkey="⌘Z"
 				isOn={false}
 				tipOnLeft
-				margin={5}
+				width={32}
+				height={32}
 			>
-				<UndoIcon isOn={isOn} width={24} height={24} />
+				<UndoIcon isOn={isOn} width={15} height={15} />
 				{/* <Icon iconName="Undo"/> */}
 			</Button>
 		);
@@ -781,9 +801,10 @@ class Redo extends React.PureComponent<{ board: Board; isOn: boolean }> {
 				hotkey="⌘⇧Z"
 				isOn={false}
 				tipOnLeft
-				margin={5}
+				width={32}
+				height={32}
 			>
-				<RedoIcon isOn={isOn} width={24} height={24} />
+				<RedoIcon isOn={isOn} width={15} height={15} />
 			</Button>
 		);
 	}

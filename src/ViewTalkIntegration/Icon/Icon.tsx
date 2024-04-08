@@ -45,7 +45,12 @@ export type IconId =
 	| "PointerEnd"
 	| "PointerEndCompact"
 	| "Trash"
-	| "Copy";
+	| "Copy"
+	| "VerticalAlignTop"
+	| "VerticalAlignCenter"
+	| "VerticalAlignBottom"
+	| "Minus"
+	| "Plus";
 
 type Props = {
 	iconName: IconId;

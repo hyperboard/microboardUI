@@ -14,7 +14,7 @@ import { FontStylePicker } from "../Pickers/FontStylePicker";
 import { HorisontalAlignmentPicker } from "../Pickers/HorizontalAlignmentPicker";
 import { ShapePicker } from "../Pickers/ShapeTypePicker";
 import { SliderPicker } from "../Pickers/SliderPicker";
-import { VerticalAlignmentPicker } from "View/Pickers/VerticalAlignmentPicker";
+import { VerticalAlignmentPicker } from "../Pickers/VerticalAlignmentPicker";
 import * as React from "react";
 import { fitContextPanel } from "View/fit";
 import { Button } from "./Button";
@@ -26,6 +26,7 @@ import { TextHighlightIndicator } from "../Icon/TextHighlightIndicator";
 import { StrokeColorIndicator } from "../Icon/StrokeColorIndicator";
 import { CircleColorIndicator } from "../Icon/CircleColorIndicator";
 import { SelectionContext } from "Board/Selection/Selection";
+import { Sticker } from "Board/Items/Sticker";
 
 export const IconSize = 24;
 
@@ -263,6 +264,17 @@ export class ContextPanel extends React.Component<
 						.getText()
 						?.getHorisontalAlignment()}
 				/>
+				<TextAlignmentSticker
+					board={board}
+					toggleMenu={this.toggleMenu}
+					menu={menu}
+					panelMbr={panelRect}
+					windowHeight={windowHeight}
+					horizontalAlignment={board.selection
+						.getText()
+						?.getHorisontalAlignment()}
+					verticalAlignment={board.selection.getText()?.getVerticalAlignment()}
+				/>
 				<AddList
 					board={board}
 					toggleMenu={this.toggleMenu}
@@ -389,6 +401,7 @@ function DeleteImg({ board }: { board: Board }) {
 
 	return (
 		<Button
+			margin={0}
 			onClick={() => {
 				board.selection.removeFromBoard();
 			}}
@@ -409,6 +422,7 @@ function DuplicateImg({ board }: { board: Board }) {
 
 	return (
 		<Button
+			margin={0}
 			onClick={() => {
 				board.selection.duplicate();
 			}}
@@ -1158,8 +1172,9 @@ function TextAlignment({
 }): React.ReactElement | null {
 	const connector = board.selection.items.getSingle();
 	const isConnector = connector instanceof Connector;
+	const isSticker = connector instanceof Sticker;
 
-	if (isConnector) {
+	if (isConnector || isSticker) {
 		return null;
 	}
 
@@ -1202,6 +1217,8 @@ function TextAlignment({
 							? "Left"
 							: "Right"
 					}`}
+					width={16}
+					height={16}
 				/>
 			</Button>
 			<div
@@ -1225,6 +1242,108 @@ function TextAlignment({
 						toggleMenu("None");
 					}}
 				/>
+				{/* <HorisontalSeparator /> */}
+				{/* <VerticalAlignmentPicker
+					onPick={alignment => {
+						board.selection.setVerticalAlignment(alignment);
+						toggleMenu("None");
+					}}
+				/> */}
+			</div>
+		</ButtonWithMenu>
+	);
+}
+
+function TextAlignmentSticker({
+	board,
+	toggleMenu,
+	menu,
+	panelMbr,
+	windowHeight,
+	horizontalAlignment = "center",
+	verticalAlignment = "center",
+}: {
+	board: Board;
+	toggleMenu: (menu: string) => void;
+	menu: string;
+	panelMbr: Mbr;
+	windowHeight: number;
+	horizontalAlignment?: "left" | "right" | "center";
+	verticalAlignment?: "top" | "bottom" | "center";
+}): React.ReactElement | null {
+	const connector = board.selection.items.getSingle();
+	const isSticker = connector instanceof Sticker;
+
+	if (!isSticker) {
+		return null;
+	}
+
+	if (
+		board.selection.getContext() !== "EditTextUnderPointer" &&
+		!board.selection.canChangeText()
+	) {
+		return null;
+	}
+	const menuRef = React.useRef<HTMLDivElement>(null);
+
+	return (
+		<ButtonWithMenu
+			panelMbr={panelMbr}
+			windowHeight={windowHeight}
+			menuRef={menuRef}
+		>
+			<Button
+				id="ChangeTextAlignment"
+				onClick={() => {
+					toggleMenu("TextAlignment");
+				}}
+				title="Выравнивание"
+				tipOnTop
+				width={32}
+				height={32}
+				margin={0}
+			>
+				{/* <Icon
+					name={`HorisontalAlignCenter`}
+					width={IconSize}
+					height={IconSize}
+				/> */}
+				<Icon
+					width={16}
+					height={16}
+					iconName={`TextAlign${
+						horizontalAlignment === "center"
+							? "Center"
+							: horizontalAlignment === "left"
+							? "Left"
+							: "Right"
+					}`}
+				/>
+			</Button>
+			<div
+				id="FillStyleMenu"
+				ref={menuRef}
+				className="ContextPanelMenu"
+				style={{
+					display: "grid",
+					gridTemplateRows: 'repeat(2, 1fr)',
+					gridTemplateColumns: 'repeat(3, 1fr)',
+					gap: "4px",
+					visibility: menu === "TextAlignment" ? "visible" : "hidden",
+				}}
+			>
+				<HorisontalAlignmentPicker
+					alignment={horizontalAlignment}
+					onPick={alignment => {
+						board.selection.setHorisontalAlignment(alignment);
+						toggleMenu("None");
+					}}
+				/>
+				<VerticalAlignmentPicker alignment={verticalAlignment} onPick={(alignment) => {
+					board.selection.setVerticalAlignment(alignment);
+					toggleMenu("None");
+				}}/>
+
 				{/* <HorisontalSeparator /> */}
 				{/* <VerticalAlignmentPicker
 					onPick={alignment => {

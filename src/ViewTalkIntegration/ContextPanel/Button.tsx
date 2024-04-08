@@ -35,6 +35,11 @@ applyStyle(`
     }
   }
 
+
+	.Button:active {
+		background-color: rgba(20, 129, 221, .1);
+		color: rgb(20, 129, 221);
+	}
 .ButtonContainer .ButtonTip {
 	visibility: hidden;
 	background-color: #222222;
@@ -98,6 +103,23 @@ applyStyle(`
 	pointer-events: none;
 }
 
+.ButtonContainer .ButtonTipOnTopRight {
+	bottom: 130%;
+	right: -10%;
+}
+  
+.ButtonContainer .ButtonTipOnTopRight::after {
+	content: "";
+	position: absolute;
+	top: 100%;
+	left: 85%;
+	margin-left: -5px;
+	border-width: 5px;
+	border-style: solid;
+	border-color: black transparent transparent transparent;
+	pointer-events: none;
+}
+
 .ButtonContainer .ButtonTipOnTop {
 	bottom: 130%;
 }
@@ -119,6 +141,14 @@ applyStyle(`
 }
 
 .ButtonContainer .ButtonTipOnBottom:hover {
+	visibility: hidden;
+}
+
+.ButtonContainer:hover .ButtonTipOnTopRight {
+	visibility: visible;
+}
+
+.ButtonContainer .ButtonTipOnTopRight:hover {
 	visibility: hidden;
 }
 
@@ -155,33 +185,55 @@ type Props = React.PropsWithChildren<{
 	tipOnLeft?: boolean;
 	tipOnBottomLeft?: boolean;
 	tipOnTop?: boolean;
+	tipOnTopRight?: boolean;
 	hotkey?: string;
 	width?: number | string;
 	height?: number | string;
-}> & React.ButtonHTMLAttributes<HTMLButtonElement>;
+}> &
+	React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export function Button(props: Props): React.ReactElement {
-	const {margin = 5, width = 32, height = 32, isOn, tipOnBottomLeft, style, className, tipOnLeft, tipOnTop, title, buttonRef, hotkey, children, ...restProps} = props;
+	const {
+		margin = 5,
+		width = 32,
+		height = 32,
+		isOn,
+		tipOnBottomLeft,
+		style,
+		className,
+		tipOnLeft,
+		tipOnTopRight,
+		tipOnTop,
+		title,
+		buttonRef,
+		hotkey,
+		children,
+		...restProps
+	} = props;
 	return (
-		<div className="ButtonContainer" style={{
-			justifyContent: tipOnBottomLeft ? 'stretch' : 'center',
-		}}>
+		<div
+			className="ButtonContainer"
+			style={{
+				justifyContent: tipOnBottomLeft ? "stretch" : "center",
+			}}
+		>
 			<button
 				ref={buttonRef}
-				className={`Button ${isOn ? "Active" : ""} ${className ?? ''}`}
+				className={`Button ${isOn ? "Active" : ""} ${className ?? ""}`}
 				style={{
 					marginLeft: `${margin}px`,
 					marginRight: `${margin}px`,
-					width: typeof width === 'number' ? `${width}px` : width,
-					height: typeof height === 'number' ? `${height}px` : height,
-					...style
+					width: typeof width === "number" ? `${width}px` : width,
+					height: typeof height === "number" ? `${height}px` : height,
+					...style,
 				}}
 				{...restProps}
 			>
 				{children}
 			</button>
-			{title && <span
-				className={`
+			{title && (
+				<span
+					className={`
 				ButtonTip
 				${
 					tipOnLeft
@@ -190,19 +242,16 @@ export function Button(props: Props): React.ReactElement {
 						? "ButtonTipOnBottomLeft"
 						: tipOnTop
 						? "ButtonTipOnTop"
+						: tipOnTopRight
+						? "ButtonTipOnTopRight"
 						: "ButtonTipOnBottom"
 				}
 				`}
-			>
-				<span style={{whiteSpace: 'nowrap'}}>{title}</span>
-				{hotkey && (
-					<span
-						style={{ opacity: '.48' }}
-					>
-						{hotkey}
-					</span>
-				)}
-			</span>}
+				>
+					<span style={{ whiteSpace: "nowrap" }}>{title}</span>
+					{hotkey && <span style={{ opacity: ".48" }}>{hotkey}</span>}
+				</span>
+			)}
 		</div>
 	);
 }
