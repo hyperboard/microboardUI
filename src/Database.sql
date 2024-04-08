@@ -614,6 +614,16 @@ create table if not exists board_snapshots (
 	snapshot jsonb
 );
 
+CREATE TABLE snapshots (
+  id SERIAL PRIMARY KEY,
+  board_id UUID NOT NULL REFERENCES boards(uniq_id),
+  snapshot JSON NOT NULL,
+  last_event_order INTEGER NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (board_id, last_event_order)
+);
+
+
 -- Function to create a board snapshot:
 create or replace function create_board_snapshot(
     board_uuid uuid,

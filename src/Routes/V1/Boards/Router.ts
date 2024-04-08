@@ -6,6 +6,7 @@ import { Boards } from "./Boards";
 import { authenticate } from "Middlewares";
 import { AccessToken } from "Interface";
 import { jwtMiddleware } from "Middlewares/jwt.middleware";
+import validator from "validator";
 
 function checkPermissions(
     jwt: AccessToken,
@@ -26,6 +27,16 @@ function forbidden(res: Response): void {
     });
 }
 
+function isUUIDOrRoot(value: unknown): boolean {
+    if (
+        typeof value === "string" &&
+        (value === "root" || validator.isUUID(value))
+    ) {
+        return true;
+    }
+    throw new Error('catalogId must be a valid UUID or "root"');
+}
+
 export function getBoardsRouter(
     boards: Boards,
     logger: winston.Logger
@@ -36,7 +47,7 @@ export function getBoardsRouter(
     router.post(
         "/boards",
         authenticate,
-        body("catalogId").optional().isUUID(),
+        body("catalogId").optional().custom(isUUIDOrRoot),
         body("title").optional().isString(),
         async (req: Request, res: Response) => {
             try {
@@ -366,23 +377,26 @@ export function getBoardsRouter(
     );
 
     // Get private boards
-    router.get("/boards/private", jwtMiddleware(logger) , async (request, response) => {
-        const user = request.token;
-        const privateBoards = await boards.getPrivateBoards(user);
-        if (!privateBoards) {
-            logger.info(
-                `get /api/v1/boards/private Exception: get private boards`,
-            );
-            response.status(404).end();
-            return;
+    router.get(
+        "/boards/private",
+        jwtMiddleware(logger),
+        async (request, response) => {
+            const user = request.token;
+            const privateBoards = await boards.getPrivateBoards(user);
+            if (!privateBoards) {
+                logger.info(
+                    `get /api/v1/boards/private Exception: get private boards`
+                );
+                response.status(404).end();
+                return;
+            }
+            const json = {
+                privateBoards,
+            };
+            response.json(json);
+            response.end();
         }
-        const json = {
-            privateBoards,
-        }
-        response.json(json);
-        response.end();
-    });
-
+    );
 
     return router;
 }

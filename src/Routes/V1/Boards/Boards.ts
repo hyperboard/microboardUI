@@ -7,15 +7,22 @@ export class Boards {
 
     onEventSave(boardId: string, boardEvent: any): void {}
 
-    async createBoard(boardId: string, title: string, ownerId?: string): Promise<any> {
+    async createBoard(
+        boardId: string,
+        title: string,
+        ownerId?: string
+    ): Promise<any> {
         try {
             const truncatedTitle = title.slice(0, 32);
 
             if (ownerId) {
-                const privateBoard = await this.database.query<{board_id: number}>(
-                    "select * from create_private_board($1, $2, $3)",
-                    [boardId, truncatedTitle, ownerId],
-                );
+                const privateBoard = await this.database.query<{
+                    board_id: number;
+                }>("select * from create_private_board($1, $2, $3)", [
+                    boardId,
+                    truncatedTitle,
+                    ownerId,
+                ]);
                 return privateBoard.rows[0].board_id;
             } else {
                 const result = await this.database.query(
@@ -179,17 +186,35 @@ export class Boards {
         }
     }
 
-    async getPrivateBoards(user: AccessToken): Promise<Array<{get_private_boards: string}> | undefined> {
+    async getPrivateBoards(
+        user: AccessToken
+    ): Promise<Array<{ get_private_boards: string }> | undefined> {
         try {
-            const privateBoards = await this.database.query<{get_private_boards: string}>(
-                "select * from get_private_boards($1) as board",
-                [user.sub]
-            );
+            const privateBoards = await this.database.query<{
+                get_private_boards: string;
+            }>("select * from get_private_boards($1) as board", [user.sub]);
             return privateBoards.rows;
-        } catch(e) {
+        } catch (e) {
             this.logger.error("Get private boards error");
             return undefined;
         }
     }
 
+    async saveBoardSnapshot(
+        boardId: string,
+        snapshot: any,
+        lastEventOrder: number
+    ) {
+        try {
+            await this.database.query(
+                "INSERT INTO snapshots (board_id, snapshot, last_event_order) VALUES ($1, $2, $3)",
+                [boardId, snapshot, lastEventOrder]
+            );
+        } catch (error) {
+            this.logger.error(
+                `Error saving snapshot for board ${boardId}: ${error}`
+            );
+            throw error;
+        }
+    }
 }

@@ -43,6 +43,8 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards): void {
                 return handleUnsubscribeMsg(msg, ws);
             case "BoardEvent":
                 return handleBoardEventMsg(msg, ws);
+            // case "Snapshot":
+            //    return handleSnapshotMsg(msg, ws);
         }
     }
 
@@ -207,6 +209,26 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards): void {
         const content = JSON.stringify(message);
         for (const client of clients) {
             client.send(content);
+        }
+    }
+
+    function sendSnapshotRequest(ws: WebSocket, boardId: string) {
+        const message = JSON.stringify({
+            type: "CreateSnapshotRequest",
+            boardId: boardId,
+        });
+        ws.send(message);
+    }
+
+    async function handleSnapshotMsg(snapshotMsg: any, ws: WebSocket) {
+        try {
+            const { boardId, snapshot, lastEventOrder } = snapshotMsg;
+
+            await boards.saveBoardSnapshot(boardId, snapshot, lastEventOrder);
+
+            // eventsManager.clearSnapshotTimer(boardId);
+        } catch (error) {
+            console.error(`Failed to process snapshot: ${error}`);
         }
     }
 
