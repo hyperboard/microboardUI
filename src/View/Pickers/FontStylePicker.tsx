@@ -17,6 +17,7 @@ export function FontStylePicker(props: Props): React.ReactElement {
 				id="ChangeFontBold"
 				key="ChangeFontBold"
 				title="Bold"
+				hotkey="Ctrl + B"
 				onClick={() => {
 					props.onPick("bold");
 				}}
@@ -28,6 +29,7 @@ export function FontStylePicker(props: Props): React.ReactElement {
 				id="ChangeFontItalics"
 				key="ChangeFontItalics"
 				title="Italics"
+				hotkey="Ctrl + I"
 				onClick={() => {
 					props.onPick("italic");
 				}}
@@ -39,10 +41,12 @@ export function FontStylePicker(props: Props): React.ReactElement {
 				id="ChangeFontUnderline"
 				key="ChangeFontUnderline"
 				title="Underline"
+				hotkey="Ctrl + U"
 				onClick={() => {
 					props.onPick("underline");
 				}}
 				margin={0}
+				tipWidth={140}
 			>
 				<UnderlineIcon width={24} height={24} />
 			</Button>
@@ -50,10 +54,12 @@ export function FontStylePicker(props: Props): React.ReactElement {
 				id="ChangeFontStrikethrough"
 				key="ChangeFontStrikethrough"
 				title="Strikethrough"
+				hotkey="Ctrl + S"
 				onClick={() => {
 					props.onPick("line-through");
 				}}
 				margin={0}
+				tipWidth={155}
 			>
 				<StrikethroughIcon width={24} height={24} />
 			</Button>
