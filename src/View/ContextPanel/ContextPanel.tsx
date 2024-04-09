@@ -31,7 +31,7 @@ import { ConnectorLineStylePicker } from "View/Pickers/ConnectorLineStylePicker"
 import { SliderPicker } from "View/Pickers/SliderPicker";
 import { toggleEdit } from "Board/Items/RichText/RichText";
 import { toFiniteNumber } from "utils";
-import { stickerColors } from "Board/Items/Sticker";
+import { Sticker, stickerColors } from "Board/Items/Sticker";
 
 export const IconSize = 24;
 
@@ -1116,21 +1116,39 @@ class FontSize extends React.PureComponent<{
 	menu: string;
 	panelMbr: Mbr;
 	windowHeight: number;
-	fontSize: number;
+	fontSize: number | string;
+	max?: number;
 }> {
 	menuRef = React.createRef<HTMLDivElement>();
-	state = { fontSize: this.props.fontSize };
+	state = { fontSize: this.props.fontSize, max: this.props.max, itemType: '', inputType: 'number' };
 	updateFontSize = (): void => {
 		this.setState({ fontSize: this.props.board.selection.getFontSize() });
 	};
+	updateAutosizeSettings = (): void => {
+		const singleItem = this.props.board.selection.items.getSingle();
+		if (singleItem && singleItem.itemType === "Sticker") {
+			const isAutosize = (singleItem as Sticker).text.getAutosize();
+			const innerTextFontSize = (singleItem as Sticker).text.getFontSize();
+			const maxFontSize = (singleItem as Sticker).text.getMaxFontSize();
+			this.setState({ max: maxFontSize, fontSize: isAutosize ? 'Auto' : innerTextFontSize, itemType: 'Sticker', inputType: isAutosize ? 'string' : 'number' });
+		}
+		if (singleItem && ["Shape"].indexOf(singleItem?.itemType) !== -1) {
+			const maxFontSize = (singleItem as Sticker).text.getMaxFontSize();
+			this.setState({ itemType: singleItem?.itemType, fontSize: singleItem?.text?.getFontSize(), inputType: 'number', max: maxFontSize });
+		}
+	}
 	componentDidMount(): void {
 		// this.props.board.selection.itemSubject.subscribe(this.updateFontSize);
+		this.updateAutosizeSettings();
 	}
 	componentWillUnmount(): void {
 		// this.props.board.selection.itemSubject.unsubscribe(this.updateFontSize);
 	}
+	componentDidUpdate(): void {
+		this.updateAutosizeSettings()
+	}
 	render(): React.ReactElement | null {
-		const { board, toggleMenu, menu, panelMbr, windowHeight, fontSize } =
+		const { board, toggleMenu, menu, panelMbr, windowHeight, fontSize, max = 288 } =
 			this.props;
 
 		if (board.selection.getContext() === "SelectUnderPointer") {
@@ -1155,9 +1173,9 @@ class FontSize extends React.PureComponent<{
 						onClick={() => {
 							toggleMenu("FontSize");
 						}}
-						type="number"
+						type={this.state.inputType}
 						min="10"
-						max="288"
+						max={this.state.max}
 						value={`${this.state.fontSize}`}
 						onInput={event => {
 							event.preventDefault();
@@ -1206,8 +1224,20 @@ class FontSize extends React.PureComponent<{
 					}}
 				>
 					<FontSizePicker
-						onPick={(size: number) => {
-							board.selection.setFontSize(size);
+						maxSize={this.state.max}
+						itemType={this.state.itemType || ''}
+						onPick={(size: number | 'Auto') => {
+							const single = board.selection.items.getSingle();
+							if (single && single.itemType === "Sticker" && size !== 'Auto') {
+								single.text?.autosizeDisable();
+							}
+							if (size === 'Auto' && single && single.itemType === "Sticker") {
+								single?.text?.autosizeEnable();
+								const maxFontSize = (single as Sticker).text.getMaxFontSize();
+								board.selection.setFontSize(maxFontSize);
+							} else if (size !== 'Auto') {
+								board.selection.setFontSize(size);
+							}
 							toggleMenu("None");
 						}}
 					/>

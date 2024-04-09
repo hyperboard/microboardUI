@@ -177,6 +177,7 @@ export class TextEditor extends React.Component<
 					fontSize: `${defaultTextStyle.fontSize}px`,
 					lineHeight: defaultTextStyle.lineHeight,
 					color: defaultTextStyle.fontColor,
+					pointerEvents: "none",
 
 					willChange: 'transform',
 					transform: "translate3d(0,0,0)",
@@ -191,6 +192,7 @@ export class TextEditor extends React.Component<
 						alignItems: verticalAlignmentToFlex(verticalAlignment),
 						transform: `translate(0px) scale(${editorScale})`,
 						transformOrigin: `left top`,
+						pointerEvents: "all",
 					}}
 				>
 					<Slate
