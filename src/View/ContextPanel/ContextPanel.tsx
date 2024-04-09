@@ -32,6 +32,7 @@ import { SliderPicker } from "View/Pickers/SliderPicker";
 import { toggleEdit } from "Board/Items/RichText/RichText";
 import { toFiniteNumber } from "utils";
 import { stickerColors } from "Board/Items/Sticker";
+import { RestMenuIcon } from "View/Icon/RestMenuIcon";
 
 export const IconSize = 24;
 
@@ -298,7 +299,12 @@ export class ContextPanel extends React.Component<
 					<Delete board={board} />
 					<Lock board={board} />
 
-					<BringBackForward board={board} />
+					{/* <BringBackForward board={board} /> */}
+					<RestOptionsMenu menu={menu}
+					panelMbr={panelRect}
+					windowHeight={windowHeight}
+					toggleMenu={this.toggleMenu}
+					board={board}/>
 				</Scroll>
 			</div>
 		);
@@ -1979,5 +1985,121 @@ function BringBackForward({
 				<Icon name={"Rectangle"} width={IconSize} height={IconSize} />
 			</Button>
 		</ButtonWithMenu>
+	);
+}
+
+function RestOptionsMenu({
+	toggleMenu,
+	menu,
+	panelMbr,
+	windowHeight,
+	board,
+}: {
+	toggleMenu: (menu: string) => void;
+	menu: string;
+	panelMbr: Mbr;
+	windowHeight: number;
+	board: Board;
+}): React.ReactElement {
+	const menuRef = React.useRef<HTMLDivElement>(null);
+	return (
+		<>
+			<ButtonWithMenu
+				panelMbr={panelMbr}
+				windowHeight={windowHeight}
+				menuRef={menuRef}
+			>
+				<Button
+					id="Options"
+					onClick={() => toggleMenu("RestMenu")}
+					width={32}
+					margin={0}
+					title={"Options"}
+				>
+					{/* <Icon name="Rectangle" width={IconSize} height={IconSize} /> */}
+					<RestMenuIcon fill="#505050" width={20} height={20}/>
+				</Button>
+				<div
+					ref={menuRef}
+					className="ContextPanelMenu"
+					style={{
+						position: 'absolute',
+						top: '100%',
+						left: 0,
+						display: 'flex',
+						flexDirection: 'column',
+						// height: "170px",
+						visibility: menu === "RestMenu" ? "visible" : "hidden",
+					}}
+				>
+					<BringToFront board={board} />
+					<BringToBack board={board} />
+				</div>
+			</ButtonWithMenu>
+		</>
+	);
+}
+
+function RestOptionsMenuItem({
+	children,
+	hotkey,
+	onClick,
+	id,
+}: React.PropsWithChildren<{
+	hotkey: string;
+	onClick: React.MouseEventHandler;
+	id: string;
+}>): React.ReactElement {
+	return (
+		<Button
+			style={{
+				fontSize: "16px",
+				display: "flex",
+				justifyContent: "space-between",
+				padding: "6px 12px",
+				color: "rgba(0, 0, 0, .8)",
+			}}
+			width={170}
+			margin={0}
+			id={id}
+			onClick={onClick}
+		>
+			<span>{children}</span>
+			<span style={{ color: "rgba(0, 0, 0, .25)" }}>{hotkey}</span>
+		</Button>
+	);
+}
+
+function BringToFront({ board }: { board: Board }): React.ReactElement | null {
+	const items = board.selection.items;
+	return (
+		<RestOptionsMenuItem
+			id="BringToFront"
+			onClick={() => {
+				for (const item of items.list()) {
+					board.items.index.bringToFront(item);
+				}
+			}}
+			hotkey="PgUp"
+		>
+			Bring to front
+		</RestOptionsMenuItem>
+	);
+}
+
+function BringToBack({ board }: { board: Board }): React.ReactElement | null {
+	const items = board.selection.items;
+	return (
+		<RestOptionsMenuItem
+			id="BringToBack"
+			onClick={() => {
+				for (const item of items.list()) {
+					board.items.index.sendToBack(item);
+				}
+			}}
+			hotkey="PgDn"
+		>
+			Send to back
+		</RestOptionsMenuItem>
 	);
 }

@@ -166,7 +166,7 @@ interface Props extends React.PropsWithChildren<{}> {
 	id: string;
 	buttonRef?: React.Ref<HTMLButtonElement>;
 	onClick: () => void;
-	title: string;
+	title?: string;
 	margin?: number;
 	isOn?: boolean;
 	tipOnLeft?: boolean;
@@ -174,6 +174,7 @@ interface Props extends React.PropsWithChildren<{}> {
 	tipOnTop?: boolean;
 	hotkey?: string;
 	width?: number;
+	style?: React.CSSProperties;
 }
 
 export function Button(props: Props): React.ReactElement {
@@ -199,30 +200,35 @@ export function Button(props: Props): React.ReactElement {
 					marginRight: `${margin}px`,
 					width: `${width}px`,
 					color: props.isOn ? "blue" : "black",
+					...props.style
 				}}
 			>
 				{props.children}
 			</button>
-			<span
-				className={
-					props.tipOnLeft
-						? "ButtonTipOnLeft"
-						: props.tipOnBottomLeft
-						? "ButtonTipOnBottomLeft"
-						: props.tipOnTop
-						? "ButtonTipOnTop"
-						: "ButtonTipOnBottom"
-				}
-			>
-				{props.title + " "}
-				{props.hotkey && (
-					<span
-						style={{ backgroundColor: "rgba(255, 255, 255, 0.3)" }}
-					>
-						{props.hotkey}
-					</span>
-				)}
-			</span>
+			{props.title && (
+				<span
+					className={
+						props.tipOnLeft
+							? "ButtonTipOnLeft"
+							: props.tipOnBottomLeft
+							? "ButtonTipOnBottomLeft"
+							: props.tipOnTop
+							? "ButtonTipOnTop"
+							: "ButtonTipOnBottom"
+					}
+				>
+					{props.title + " "}
+					{props.hotkey && (
+						<span
+							style={{
+								backgroundColor: "rgba(255, 255, 255, 0.3)",
+							}}
+						>
+							{props.hotkey}
+						</span>
+					)}
+				</span>
+			)}
 		</div>
 	);
 }
