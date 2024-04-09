@@ -175,11 +175,13 @@ interface Props extends React.PropsWithChildren<{}> {
 	hotkey?: string;
 	width?: number;
 	style?: React.CSSProperties;
+	tipWidth?: number;
 }
 
 export function Button(props: Props): React.ReactElement {
 	const margin = props.margin ?? 5;
 	const width = props.width ?? 40;
+	const tipWidth = props.tipWidth;
 
 	const handleMouseEnter: React.MouseEventHandler<
 		HTMLButtonElement
@@ -214,6 +216,7 @@ export function Button(props: Props): React.ReactElement {
 			</button>
 			{props.title && (
 				<span
+					style={{ width: tipWidth }}
 					className={
 						props.tipOnLeft
 							? "ButtonTipOnLeft"

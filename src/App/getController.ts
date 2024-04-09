@@ -78,6 +78,7 @@ export function getController(getBoard: () => Board) {
 		if (!board || !board.events) {
 			return;
 		}
+
 		if (isEditInProcess()) {
 			if ((event.ctrlKey || event.metaKey) && event.code === "KeyV") {
 				const data = clipboard.get();
@@ -174,8 +175,29 @@ export function getController(getBoard: () => Board) {
 		if (!board) {
 			return;
 		}
-
+		const key = event.code;
 		if (isEditInProcess()) {
+			if (event.ctrlKey) {
+				event.preventDefault();
+				switch (key) {
+					case "KeyB":
+						board.selection.setFontStyle(["bold"]);
+						console.log("ctrl + b");
+						break;
+					case "KeyI":
+						board.selection.setFontStyle(["italic"]);
+						console.log("ctrl + i");
+						break;
+					case "KeyS":
+						board.selection.setFontStyle(["line-through"]);
+						console.log("ctrl + s");
+						break;
+					case "KeyU":
+						board.selection.setFontStyle(["underline"]);
+						console.log("ctrl + u");
+						break;
+				}
+			}
 			return;
 		}
 
