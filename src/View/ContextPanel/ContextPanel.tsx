@@ -1943,7 +1943,6 @@ function BringBackForward({
 	color: string;
 	windowHeight: number;
 }): React.ReactElement | null {
-	return null;
 	const menuRef = React.useRef<HTMLDivElement>(null);
 	const context = board.selection.getContext();
 	if (context !== "SelectUnderPointer" && context !== "SelectByRect") {

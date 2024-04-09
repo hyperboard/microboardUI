@@ -478,6 +478,8 @@ export function RestOptionsMenu({
 					{!board.selection.items.isItemTypes(["Image"]) && (
 						<>
 							<Duplicate board={board} />
+							<BringToFront board={board}/>
+							<BringToBack board={board}/>
 							<Delete board={board} />
 						</>
 					)}
@@ -2078,6 +2080,40 @@ function Delete({ board }: { board: Board }): React.ReactElement | null {
 			hotkey="Delete"
 		>
 			Удалить
+		</RestOptionsMenuItem>
+	);
+}
+
+function BringToFront({ board }: { board: Board }): React.ReactElement | null {
+	const items = board.selection.items;
+	return (
+		<RestOptionsMenuItem
+			id="BringToFront"
+			onClick={() => {
+				for (const item of items.list()) {
+					board.items.index.bringToFront(item);
+				}
+			}}
+			hotkey="]"
+		>
+			Вынести на передний план
+		</RestOptionsMenuItem>
+	);
+}
+
+function BringToBack({ board }: { board: Board }): React.ReactElement | null {
+	const items = board.selection.items;
+	return (
+		<RestOptionsMenuItem
+			id="BringToBack"
+			onClick={() => {
+				for (const item of items.list()) {
+					board.items.index.sendToBack(item);
+				}
+			}}
+			hotkey="["
+		>
+			Вынести на задний план
 		</RestOptionsMenuItem>
 	);
 }
