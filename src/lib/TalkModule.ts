@@ -9,7 +9,6 @@ interface SetAuthTokenData {
 }
 
 type DataTypes = SetAuthTokenData;
-
 interface Message<T = unknown> {
 	pattern: MessagePattern;
 	payload: T;
@@ -34,10 +33,11 @@ export class TalkModule {
         // if (!this.allowOrigins(event, this.origins)) {
         //   return;
         // }
-        
-        if (event.data?.eventType === 'keydown' && isIframe()) {
-          const keydownEvent = new KeyboardEvent("keydown", { ...event.data.eventData, isTrusted: true });
-          window.dispatchEvent(keydownEvent);
+        if (event?.data?.pattern === 'iframeEvent') {
+          if (event.data?.event?.eventType === 'keydown' && isIframe()) {
+            const keydownEvent = new KeyboardEvent(event.data.event.eventType, { ...event.data.event.eventData, bubbles: false, isTrusted: true });
+            window.dispatchEvent(keydownEvent);
+          }
         }
 
 				this.handleCustomMessages(event.data);

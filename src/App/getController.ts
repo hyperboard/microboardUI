@@ -539,6 +539,7 @@ function serializeKeyboardEvent(event: KeyboardEvent) {
 			altKey: event.altKey,
 			metaKey: event.metaKey,
 			repeat: event.repeat,
+			bubbles: event.bubbles
 		},
 	};
 }
