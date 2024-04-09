@@ -129,9 +129,6 @@ export class ContextPanel extends React.Component<
 			return null;
 		}
 		const windowHeight = board.camera.window.height;
-		console.log(
-			`context ${context}, items ${board.selection.items.getItemTypes()}`,
-		);
 		return (
 			<div
 				id="ContextPanel"
@@ -273,7 +270,9 @@ export class ContextPanel extends React.Component<
 					horizontalAlignment={board.selection
 						.getText()
 						?.getHorisontalAlignment()}
-					verticalAlignment={board.selection.getText()?.getVerticalAlignment()}
+					verticalAlignment={board.selection
+						.getText()
+						?.getVerticalAlignment()}
 				/>
 				<AddList
 					board={board}
@@ -476,10 +475,12 @@ export function RestOptionsMenu({
 					}}
 				>
 					{!board.selection.items.isItemTypes(["Image"]) && (
+						<Duplicate board={board} />
+					)}
+					<BringToFront board={board} />
+					<BringToBack board={board} />
+					{!board.selection.items.isItemTypes(["Image"]) && (
 						<>
-							<Duplicate board={board} />
-							<BringToFront board={board}/>
-							<BringToBack board={board}/>
 							<Delete board={board} />
 						</>
 					)}
@@ -1055,11 +1056,7 @@ class FontSize extends React.PureComponent<{
 						}}
 					>
 						<span style={{ flex: "1 0" }}>{fontSize}</span>
-						<Icon
-							width={10}
-							height={16}
-							iconName="UpDownArrow"
-						/>
+						<Icon width={10} height={16} iconName="UpDownArrow" />
 					</Button>
 				</div>
 				<div
@@ -1186,7 +1183,7 @@ function TextAlignment({
 	) {
 		return null;
 	}
-	console.log(alignment);
+
 	const menuRef = React.useRef<HTMLDivElement>(null);
 
 	return (
@@ -1206,11 +1203,6 @@ function TextAlignment({
 				height={32}
 				margin={0}
 			>
-				{/* <Icon
-					name={`HorisontalAlignCenter`}
-					width={IconSize}
-					height={IconSize}
-				/> */}
 				<Icon
 					iconName={`TextAlign${
 						alignment === "center"
@@ -1244,13 +1236,6 @@ function TextAlignment({
 						toggleMenu("None");
 					}}
 				/>
-				{/* <HorisontalSeparator /> */}
-				{/* <VerticalAlignmentPicker
-					onPick={alignment => {
-						board.selection.setVerticalAlignment(alignment);
-						toggleMenu("None");
-					}}
-				/> */}
 			</div>
 		</ButtonWithMenu>
 	);
@@ -1328,8 +1313,8 @@ function TextAlignmentSticker({
 				className="ContextPanelMenu"
 				style={{
 					display: "grid",
-					gridTemplateRows: 'repeat(2, 1fr)',
-					gridTemplateColumns: 'repeat(3, 1fr)',
+					gridTemplateRows: "repeat(2, 1fr)",
+					gridTemplateColumns: "repeat(3, 1fr)",
 					gap: "4px",
 					visibility: menu === "TextAlignment" ? "visible" : "hidden",
 				}}
@@ -1341,10 +1326,13 @@ function TextAlignmentSticker({
 						toggleMenu("None");
 					}}
 				/>
-				<VerticalAlignmentPicker alignment={verticalAlignment} onPick={(alignment) => {
-					board.selection.setVerticalAlignment(alignment);
-					toggleMenu("None");
-				}}/>
+				<VerticalAlignmentPicker
+					alignment={verticalAlignment}
+					onPick={alignment => {
+						board.selection.setVerticalAlignment(alignment);
+						toggleMenu("None");
+					}}
+				/>
 
 				{/* <HorisontalSeparator /> */}
 				{/* <VerticalAlignmentPicker
@@ -2021,13 +2009,6 @@ function StickerFillStyle({
 				margin={0}
 				tipOnTop
 			>
-				{/* <CircleIcon
-					strokeWidth={1}
-					fill={color}
-					stroke="rgba(0,0,0,1)"
-					width={IconSize}
-					height={IconSize}
-				/> */}
 				<CircleColorIndicator color={color} />
 			</Button>
 			<div
@@ -2126,8 +2107,6 @@ function DrawStrokeWidth({ board, width }: { board: Board; width: number }) {
 		return null;
 	}
 
-	console.log(width);
-
 	const handleSliderPick = (width: number): void => {
 		board.selection.setStrokeWidth(width);
 	};
@@ -2138,58 +2117,5 @@ function DrawStrokeWidth({ board, width }: { board: Board; width: number }) {
 			onPick={handleSliderPick}
 			width={width}
 		/>
-	);
-}
-
-function BringBackForward({
-	board,
-	panelMbr,
-	windowHeight,
-}: {
-	board: Board;
-	toggleMenu: (menu: string) => void;
-
-	menu: string;
-	panelMbr: Mbr;
-	color: string;
-	windowHeight: number;
-}): React.ReactElement | null {
-	return null;
-	const menuRef = React.useRef<HTMLDivElement>(null);
-	const context = board.selection.getContext();
-	if (context !== "SelectUnderPointer" && context !== "SelectByRect") {
-		return null;
-	}
-	const items = board.selection.items;
-
-	return (
-		<ButtonWithMenu
-			panelMbr={panelMbr}
-			windowHeight={windowHeight}
-			menuRef={menuRef}
-		>
-			<Button
-				id="BringBack"
-				onClick={() => {
-					for (const item of items.list()) {
-						board.items.index.sendToBack(item);
-					}
-				}}
-				title="Send to back"
-			>
-				<Icon name={"Rectangle"} width={IconSize} height={IconSize} />
-			</Button>
-			<Button
-				id="BringToFront"
-				onClick={() => {
-					for (const item of items.list()) {
-						board.items.index.bringToFront(item);
-					}
-				}}
-				title="Bring to front"
-			>
-				<Icon name={"Rectangle"} width={IconSize} height={IconSize} />
-			</Button>
-		</ButtonWithMenu>
 	);
 }

@@ -1945,7 +1945,7 @@ function BringBackForward({
 }): React.ReactElement | null {
 	const menuRef = React.useRef<HTMLDivElement>(null);
 	const context = board.selection.getContext();
-	if (context !== "SelectUnderPointer" && context !== "SelectByRect") {
+	if (context !== "SelectUnderPointer") {
 		return null;
 	}
 	const items = board.selection.items;
