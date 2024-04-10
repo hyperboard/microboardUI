@@ -10,6 +10,7 @@ import { Mbr } from "Board/Items";
 import { ImageItem } from "Board/Items/Image";
 import { validateItemsMap } from "Board/Validators";
 import { isSafari } from "./isSafari";
+import { isFirefox } from "./isFirefox";
 
 export function getController(getBoard: () => Board) {
 	const isMouse = true;
@@ -74,16 +75,22 @@ export function getController(getBoard: () => Board) {
 		if (!board || !board.events) {
 			return;
 		}
-		
+
+		const key = event.code;
 		if (isEditInProcess()) {
-			if (event.ctrlKey) {
-				event.preventDefault()
+			if (
+				(event.ctrlKey || event.metaKey) &&
+				(key === "KeyS" ||
+					key === "KeyB" ||
+					key === "KeyU" ||
+					key === "KeyI")
+			) {
+				event.preventDefault();
 			}
-			console.log('edit in process');
+			console.log("edit in process");
 			return;
 		}
 		// const key = event.key.toLowerCase();
-		const key = event.code;
 		board.keyboard.keyDown(event);
 		if ((event.ctrlKey || event.metaKey) && key === "KeyZ") {
 			if (event.shiftKey) {
@@ -101,6 +108,12 @@ export function getController(getBoard: () => Board) {
 			(event.ctrlKey || event.metaKey) &&
 			(key === "KeyC" || key === "KeyV")
 		) {
+			if (isFirefox() && key === "KeyC") {
+				event.currentTarget?.dispatchEvent(new Event("copy", {bubbles: true}));
+			}
+			if (isFirefox() && key === "KeyV") {
+				event.currentTarget?.dispatchEvent(new Event("paste", {bubbles: true}));
+			}
 			return;
 		}
 		if (
@@ -162,23 +175,22 @@ export function getController(getBoard: () => Board) {
 		const key = event.code;
 		if (isEditInProcess()) {
 			if (event.ctrlKey || event.metaKey) {
-				event.preventDefault()
-				switch(key) {
-					case 'KeyB':
-						board.selection.setFontStyle(['bold']);
-						console.log('ctrl + b');
+				switch (key) {
+					case "KeyB":
+						board.selection.setFontStyle(["bold"]);
+						console.log("ctrl + b");
 						break;
-					case 'KeyI':
-						board.selection.setFontStyle(['italic']);
-						console.log('ctrl + i');
+					case "KeyI":
+						board.selection.setFontStyle(["italic"]);
+						console.log("ctrl + i");
 						break;
-					case 'KeyS':
-						board.selection.setFontStyle(['line-through']);
-						console.log('ctrl + s');
+					case "KeyS":
+						board.selection.setFontStyle(["line-through"]);
+						console.log("ctrl + s");
 						break;
-					case 'KeyU':
-						board.selection.setFontStyle(['underline']);
-						console.log('ctrl + u');
+					case "KeyU":
+						board.selection.setFontStyle(["underline"]);
+						console.log("ctrl + u");
 						break;
 				}
 			}
@@ -569,7 +581,7 @@ function serializeKeyboardEvent(event: KeyboardEvent) {
 			altKey: event.altKey,
 			metaKey: event.metaKey,
 			repeat: event.repeat,
-			bubbles: event.bubbles
+			bubbles: event.bubbles,
 		},
 	};
 }
