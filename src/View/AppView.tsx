@@ -14,8 +14,9 @@ import {
 	ExportSelectionBox,
 	ExportSnapshotMode,
 } from "App/ExportBoardSnapshot";
+import { withRouter } from "lib/withRouter";
 
-export class AppView extends React.Component<{
+export class AppViewBase extends React.Component<{
 	app: App;
 }> {
 	containerRef = React.createRef<HTMLDivElement>();
@@ -48,7 +49,8 @@ export class AppView extends React.Component<{
 		const { app } = this.props;
 		const board = app.getBoard();
 		const urlString = new URL(window.location.href).pathname;
-		const boardId = urlString.split("/").pop();
+		// const boardId = urlString.split("/").pop();
+		const boardId = this.props?.router?.params?.boardId || urlString.split("/").pop();
 
 		if (boardId) {
 			app.openBoard(boardId!);
@@ -177,3 +179,5 @@ export class AppView extends React.Component<{
 		}
 	}
 }
+
+export const AppView = withRouter(AppViewBase);

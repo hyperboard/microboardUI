@@ -86,7 +86,7 @@ export class TitlePanel extends React.Component<{
 								paddingRight: "4px",
 								fontWeight: 600,
 							}}>
-								{`${Cookies.get("accessToken_talk")}`}
+								{"Microboard"}
 							</span>
 					)}
 				</Button>

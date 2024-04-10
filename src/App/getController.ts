@@ -105,7 +105,7 @@ export function getController(getBoard: () => Board) {
 				return;
 			} else if (
 				item &&
-				["Shape", "Sticker"].indexOf(item.itemType) > -1 &&
+				["Shape", "Sticker", "Connector"].indexOf(item.itemType) > -1 &&
 				board.selection.getContext() === "EditUnderPointer"
 			) {
 				board.selection.editText();
