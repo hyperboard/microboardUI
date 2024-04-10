@@ -156,6 +156,18 @@ export function getController(getBoard: () => Board) {
 				break;
 		}
 		if (board.selection.getContext() !== "SelectUnderPointer") {
+			if (key === 'PageUp') {
+				const items = board.selection.list();
+				for (const item of items) {
+					board.items.index.bringToFront(item);
+				}
+			}
+			if (key === 'PageDown') {
+				const items = board.selection.list();
+				for (const item of items) {
+					board.items.index.sendToBack(item);
+				}
+			}
 			if (key === "Delete" || key === "Backspace") {
 				board.selection.removeFromBoard();
 				toggleEdit(false);
