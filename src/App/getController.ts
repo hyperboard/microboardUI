@@ -93,6 +93,10 @@ export function getController(getBoard: () => Board) {
 			}
 			return;
 		}
+		if ((event.ctrlKey || event.metaKey) && key === "KeyA") {
+			const items = board.items.listAll();
+			board.selection.add(items);
+		}
 		if (
 			(event.ctrlKey || event.metaKey) &&
 			(key === "KeyC" || key === "KeyV")
@@ -157,7 +161,7 @@ export function getController(getBoard: () => Board) {
 		}
 		const key = event.code;
 		if (isEditInProcess()) {
-			if (event.ctrlKey) {
+			if (event.ctrlKey || event.metaKey) {
 				event.preventDefault()
 				switch(key) {
 					case 'KeyB':
