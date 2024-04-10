@@ -10,6 +10,7 @@ import { Mbr } from "Board/Items";
 import { ImageItem } from "Board/Items/Image";
 import { validateItemsMap, validateRichTextData } from "Board/Validators";
 import { isSafari } from "./isSafari";
+import { isFirefox } from "./isFirefox";
 import { Clipboard } from "./Clipboard";
 import { isIframe } from "lib/isIframe";
 
@@ -79,6 +80,7 @@ export function getController(getBoard: () => Board) {
 			return;
 		}
 
+		const key = event.code;
 		if (isEditInProcess()) {
 			if ((event.ctrlKey || event.metaKey) && event.code === "KeyV") {
 				const data = clipboard.get();
@@ -103,7 +105,6 @@ export function getController(getBoard: () => Board) {
 			return;
 		}
 		// const key = event.key.toLowerCase();
-		const key = event.code;
 		board.keyboard.keyDown(event);
 		if ((event.ctrlKey || event.metaKey) && key === "KeyZ") {
 			if (event.shiftKey) {
@@ -121,6 +122,16 @@ export function getController(getBoard: () => Board) {
 			(event.ctrlKey || event.metaKey) &&
 			(key === "KeyC" || key === "KeyV")
 		) {
+			if (isFirefox() && key === "KeyC") {
+				event.currentTarget?.dispatchEvent(
+					new Event("copy", { bubbles: true }),
+				);
+			}
+			if (isFirefox() && key === "KeyV") {
+				event.currentTarget?.dispatchEvent(
+					new Event("paste", { bubbles: true }),
+				);
+			}
 			return;
 		}
 		if (
