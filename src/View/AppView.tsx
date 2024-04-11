@@ -15,6 +15,7 @@ import {
 	ExportSnapshotMode,
 } from "App/ExportBoardSnapshot";
 import { withRouter } from "lib/withRouter";
+import { isSafari } from "App/isSafari";
 
 export class AppViewBase extends React.Component<{
 	app: App;
@@ -133,6 +134,10 @@ export class AppViewBase extends React.Component<{
 			window.addEventListener("keyup", controller.onKeyUp);
 			container.addEventListener("copy", controller.onCopy);
 			container.addEventListener("paste", controller.onPaste);
+			if (isSafari()) {
+				window.addEventListener("copy", controller.onCopy);
+				window.addEventListener("paste", controller.onPaste);
+			}
 			window.addEventListener("drop", controller.onDrop);
 			window.addEventListener("dragover", event => {
 				event.preventDefault();
@@ -169,6 +174,10 @@ export class AppViewBase extends React.Component<{
 			window.removeEventListener("keyup", controller.onKeyUp);
 			container.removeEventListener("copy", controller.onCopy);
 			container.removeEventListener("paste", controller.onPaste);
+			if (isSafari()) {
+				window.removeEventListener("copy", controller.onCopy);
+				window.removeEventListener("paste", controller.onPaste);
+			}
 			window.removeEventListener("drop", controller.onDrop);
 
 			/*
