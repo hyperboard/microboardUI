@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { Board } from "Board";
 import { SidePanelState } from "View/SidePanel/SidePanelState";
 import { Button } from "View/ContextPanel/Button";
@@ -119,6 +119,17 @@ function SidePanelButton({
 }): React.ReactElement {
 	const isIframe = window.self !== window.top;
 	const IconComponent = isOpen ? SidePanelCloseIcon : SidePanelOpenIcon;
+	const params = useParams<{ boardId: string }>();
+
+
+	React.useEffect(() => {
+		if (params?.boardId) {
+			if (isOpen) {
+				toggle();
+			}
+		}
+	}, [params?.boardId]);
+
 	if (isIframe) {
 		return (<></>);
 	}

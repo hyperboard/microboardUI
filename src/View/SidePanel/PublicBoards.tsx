@@ -136,6 +136,7 @@ class PublicBoardsBase extends React.PureComponent<Props, PublicBoardsState> {
 				const app = this.props.app;
 				app.createPublicBoard().then((id: stirng) => {
 					app.openBoard(id);
+					this.props.router.navigate(`/boards/${id}`, {replace: true});
 				});
 			}
 		}}
