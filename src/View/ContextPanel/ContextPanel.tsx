@@ -702,22 +702,7 @@ function ConnectorAddText({
 			<Button
 				id="ChangeConnectorType"
 				onClick={() => {
-					if (
-						board.selection.getContext() === "EditTextUnderPointer"
-					) {
-						board.selection.setContext("EditUnderPointer");
-						board.items.subject.publish(board.items);
-						return;
-					}
-					const connector = board.selection.items.getItemsByItemTypes(
-						["Connector"],
-					)[0] as Connector;
-					if (!connector) {
-						return;
-					}
-					board.selection.setTextToEdit(connector);
-					board.selection.setContext("EditTextUnderPointer");
-					board.items.subject.publish(board.items);
+					board.selection.editText();
 				}}
 				title="Text"
 			>
@@ -1120,7 +1105,12 @@ class FontSize extends React.PureComponent<{
 	max?: number;
 }> {
 	menuRef = React.createRef<HTMLDivElement>();
-	state = { fontSize: this.props.fontSize, max: this.props.max, itemType: '', inputType: 'number' };
+	state = {
+		fontSize: this.props.fontSize,
+		max: this.props.max,
+		itemType: "",
+		inputType: "number",
+	};
 	updateFontSize = (): void => {
 		this.setState({ fontSize: this.props.board.selection.getFontSize() });
 	};
@@ -1128,15 +1118,27 @@ class FontSize extends React.PureComponent<{
 		const singleItem = this.props.board.selection.items.getSingle();
 		if (singleItem && singleItem.itemType === "Sticker") {
 			const isAutosize = (singleItem as Sticker).text.getAutosize();
-			const innerTextFontSize = (singleItem as Sticker).text.getFontSize();
+			const innerTextFontSize = (
+				singleItem as Sticker
+			).text.getFontSize();
 			const maxFontSize = (singleItem as Sticker).text.getMaxFontSize();
-			this.setState({ max: maxFontSize, fontSize: isAutosize ? 'Auto' : innerTextFontSize, itemType: 'Sticker', inputType: isAutosize ? 'string' : 'number' });
+			this.setState({
+				max: maxFontSize,
+				fontSize: isAutosize ? "Auto" : innerTextFontSize,
+				itemType: "Sticker",
+				inputType: isAutosize ? "string" : "number",
+			});
 		}
 		if (singleItem && ["Shape"].indexOf(singleItem?.itemType) !== -1) {
 			const maxFontSize = (singleItem as Sticker).text.getMaxFontSize();
-			this.setState({ itemType: singleItem?.itemType, fontSize: singleItem?.text?.getFontSize(), inputType: 'number', max: maxFontSize });
+			this.setState({
+				itemType: singleItem?.itemType,
+				fontSize: singleItem?.text?.getFontSize(),
+				inputType: "number",
+				max: maxFontSize,
+			});
 		}
-	}
+	};
 	componentDidMount(): void {
 		// this.props.board.selection.itemSubject.subscribe(this.updateFontSize);
 		this.updateAutosizeSettings();
@@ -1145,11 +1147,18 @@ class FontSize extends React.PureComponent<{
 		// this.props.board.selection.itemSubject.unsubscribe(this.updateFontSize);
 	}
 	componentDidUpdate(): void {
-		this.updateAutosizeSettings()
+		this.updateAutosizeSettings();
 	}
 	render(): React.ReactElement | null {
-		const { board, toggleMenu, menu, panelMbr, windowHeight, fontSize, max = 288 } =
-			this.props;
+		const {
+			board,
+			toggleMenu,
+			menu,
+			panelMbr,
+			windowHeight,
+			fontSize,
+			max = 288,
+		} = this.props;
 
 		if (board.selection.getContext() === "SelectUnderPointer") {
 			return null;
@@ -1225,17 +1234,27 @@ class FontSize extends React.PureComponent<{
 				>
 					<FontSizePicker
 						maxSize={this.state.max}
-						itemType={this.state.itemType || ''}
-						onPick={(size: number | 'Auto') => {
+						itemType={this.state.itemType || ""}
+						onPick={(size: number | "Auto") => {
 							const single = board.selection.items.getSingle();
-							if (single && single.itemType === "Sticker" && size !== 'Auto') {
+							if (
+								single &&
+								single.itemType === "Sticker" &&
+								size !== "Auto"
+							) {
 								single.text?.autosizeDisable();
 							}
-							if (size === 'Auto' && single && single.itemType === "Sticker") {
+							if (
+								size === "Auto" &&
+								single &&
+								single.itemType === "Sticker"
+							) {
 								single?.text?.autosizeEnable();
-								const maxFontSize = (single as Sticker).text.getMaxFontSize();
+								const maxFontSize = (
+									single as Sticker
+								).text.getMaxFontSize();
 								board.selection.setFontSize(maxFontSize);
-							} else if (size !== 'Auto') {
+							} else if (size !== "Auto") {
 								board.selection.setFontSize(size);
 							}
 							toggleMenu("None");
@@ -1325,6 +1344,10 @@ function TextAlignment({
 	const isConnector = connector instanceof Connector;
 
 	if (isConnector) {
+		return null;
+	}
+
+	if (board.selection.getContext() === "SelectUnderPointer") {
 		return null;
 	}
 

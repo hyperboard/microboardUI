@@ -105,7 +105,7 @@ export class TextEditor extends React.Component<
 
 						// transformOrigin: "left top",
 						// transform: `translate(0px) scale(${editorScale})`,
-						willChange: 'transform',
+						willChange: "transform",
 						transform: "translate3d(0,0,0)",
 
 						display: "flex",
@@ -179,7 +179,7 @@ export class TextEditor extends React.Component<
 					color: defaultTextStyle.fontColor,
 					pointerEvents: "none",
 
-					willChange: 'transform',
+					willChange: "transform",
 					transform: "translate3d(0,0,0)",
 				}}
 			>
@@ -199,6 +199,7 @@ export class TextEditor extends React.Component<
 						editor={text.editor.editor}
 						value={text.getText()}
 						selection={text.editor.editor.selection}
+						key={text.getId()}
 						onChange={() => {}}
 					>
 						<Editable
