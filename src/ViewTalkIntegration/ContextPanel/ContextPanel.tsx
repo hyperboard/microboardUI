@@ -27,6 +27,8 @@ import { StrokeColorIndicator } from "../Icon/StrokeColorIndicator";
 import { CircleColorIndicator } from "../Icon/CircleColorIndicator";
 import { SelectionContext } from "Board/Selection/Selection";
 import { Sticker } from "Board/Items/Sticker";
+import { ConnectorLineStyle } from "Board/Items/Connector";
+import { HorisontalAlignment, VerticalAlignment } from "Board/Items/Alignment";
 
 export const IconSize = 24;
 
@@ -50,18 +52,7 @@ export class ContextPanel extends React.Component<
 	animationFrameId: number | null = null;
 
 	update = (): void => {
-		// this.updateRects();
 		this.forceUpdate();
-		return;
-		if (this.animationFrameId) {
-			return; // Function already scheduled to run
-		}
-
-		this.animationFrameId = requestAnimationFrame(() => {
-			this.updateRects();
-			this.forceUpdate();
-			this.animationFrameId = null;
-		});
 	};
 
 	disableMenu = (): void => {
@@ -176,8 +167,6 @@ export class ContextPanel extends React.Component<
 				/>
 				<PanelSeparator board={board} items={["Connector"]} />
 
-				{/* <ConnectorStyleSeparator board={board} /> */}
-
 				<ItemType
 					board={board}
 					toggleMenu={this.toggleMenu}
@@ -281,7 +270,6 @@ export class ContextPanel extends React.Component<
 					panelMbr={panelRect}
 					windowHeight={windowHeight}
 				/>
-				{/* <TextFeaturesSeparator board={board} /> */}
 
 				<TextColor
 					board={board}
@@ -291,7 +279,6 @@ export class ContextPanel extends React.Component<
 					windowHeight={windowHeight}
 					color={board.selection.getFontColor()}
 				/>
-				{/* <VerticalSeparator /> */}
 				<PanelSeparator board={board} items={["RichText", "Shape"]} />
 				<TextHighlight
 					board={board}
@@ -302,9 +289,6 @@ export class ContextPanel extends React.Component<
 					color={board.selection.getFontHighlight()}
 				/>
 
-				{/* <Lock board={board} /> */}
-
-				{/* <BringBackForward board={board} /> */}
 				<PanelSeparator
 					board={board}
 					context={"SelectByRect"}
@@ -398,13 +382,12 @@ function DeleteImg({ board }: { board: Board }) {
 		return null;
 	}
 
+	const handleClick = () => {
+		board.selection.removeFromBoard();
+	};
+
 	return (
-		<Button
-			margin={0}
-			onClick={() => {
-				board.selection.removeFromBoard();
-			}}
-		>
+		<Button margin={0} onClick={handleClick}>
 			<Icon style={{ color: "#DF4E49" }} iconName="Trash" />
 		</Button>
 	);
@@ -418,14 +401,11 @@ function DuplicateImg({ board }: { board: Board }) {
 	) {
 		return null;
 	}
-
+	const handleClick = () => {
+		board.selection.duplicate();
+	};
 	return (
-		<Button
-			margin={0}
-			onClick={() => {
-				board.selection.duplicate();
-			}}
-		>
+		<Button margin={0} onClick={handleClick}>
 			<Icon iconName="Copy" />
 		</Button>
 	);
@@ -445,6 +425,10 @@ export function RestOptionsMenu({
 	board: Board;
 }): React.ReactElement {
 	const menuRef = React.useRef<HTMLDivElement>(null);
+
+	const handleClick = () => toggleMenu("RestMenu");
+	const isNotImage = !board.selection.items.isItemTypes(["Image"]);
+
 	return (
 		<>
 			<ButtonWithMenu
@@ -453,13 +437,12 @@ export function RestOptionsMenu({
 				menuRef={menuRef}
 			>
 				<Button
-					onClick={() => toggleMenu("RestMenu")}
+					onClick={handleClick}
 					className="RestOptionsIcon"
 					width={32}
 					height={32}
 					margin={0}
 				>
-					{/* <Icon name="Rectangle" width={IconSize} height={IconSize} /> */}
 					<Icon iconName="Dots" />
 				</Button>
 				<div
@@ -470,16 +453,13 @@ export function RestOptionsMenu({
 						flexDirection: "column",
 						width: "290px",
 						left: 0,
-						// height: "170px",
 						visibility: menu === "RestMenu" ? "visible" : "hidden",
 					}}
 				>
-					{!board.selection.items.isItemTypes(["Image"]) && (
-						<Duplicate board={board} />
-					)}
+					{isNotImage && <Duplicate board={board} />}
 					<BringToFront board={board} />
 					<BringToBack board={board} />
-					{!board.selection.items.isItemTypes(["Image"]) && (
+					{isNotImage && (
 						<>
 							<Delete board={board} />
 						</>
@@ -595,12 +575,13 @@ function Edit({ board }: { board: Board }): React.ReactElement | null {
 	if (board.selection.getContext() !== "SelectUnderPointer") {
 		return null;
 	}
+	const handleClick = () => {
+		board.selection.editSelected();
+	};
 	return (
 		<Button
 			id="ContextPanelEdit"
-			onClick={() => {
-				board.selection.editSelected();
-			}}
+			onClick={handleClick}
 			title="Edit"
 			width={32}
 			height={32}
@@ -618,7 +599,6 @@ function StartPointer({
 	menu,
 	panelMbr,
 	windowHeight,
-	pointer,
 }: {
 	board: Board;
 	toggleMenu: (menu: string) => void;
@@ -637,6 +617,13 @@ function StartPointer({
 	const menuRef = React.useRef<HTMLDivElement>(null);
 	const pointerStartStyle = board.selection.getStartPointerStyle();
 
+	const handleClick = () => {
+		toggleMenu("StartPointer");
+	};
+	const handlePick = (type: string) => {
+		board.selection.setStartPointerStyle(type);
+		toggleMenu("None");
+	};
 	return (
 		<ButtonWithMenu
 			panelMbr={panelMbr}
@@ -645,9 +632,7 @@ function StartPointer({
 		>
 			<Button
 				id="ChangeStartPointer"
-				onClick={() => {
-					toggleMenu("StartPointer");
-				}}
+				onClick={handleClick}
 				title="Начало линии"
 				width={32}
 				height={32}
@@ -678,10 +663,7 @@ function StartPointer({
 			>
 				<ConnectorStartPointerPicker
 					selected={pointerStartStyle}
-					onPick={type => {
-						board.selection.setStartPointerStyle(type);
-						toggleMenu("None");
-					}}
+					onPick={handlePick}
 				></ConnectorStartPointerPicker>
 			</div>
 		</ButtonWithMenu>
@@ -696,7 +678,6 @@ function SwitchPointers({
 	menu: string;
 	panelMbr: Mbr;
 }): React.ReactElement | null {
-	// return null;
 	const canChangePointer = board.selection.items.isItemTypes(["Connector"]);
 	if (
 		board.selection.getContext() === "SelectUnderPointer" ||
@@ -705,22 +686,23 @@ function SwitchPointers({
 		return null;
 	}
 
+	const handleClick = () => {
+		const start = board.selection.getStartPointerStyle();
+		const end = board.selection.getEndPointerStyle();
+		board.selection.setStartPointerStyle(end);
+		board.selection.setEndPointerStyle(start);
+	};
+
 	return (
 		<Button
 			id="SwitchPointers"
-			onClick={() => {
-				const start = board.selection.getStartPointerStyle();
-				const end = board.selection.getEndPointerStyle();
-				board.selection.setStartPointerStyle(end);
-				board.selection.setEndPointerStyle(start);
-			}}
+			onClick={handleClick}
 			title="Поменять местами"
 			width={32}
 			height={32}
 			margin={0}
 			tipOnTop
 		>
-			{/* <SwitchPointersIcon width={IconSize} height={IconSize} /> */}
 			<Icon iconName="PointerRoll" />
 		</Button>
 	);
@@ -732,7 +714,6 @@ function EndPointer({
 	menu,
 	panelMbr,
 	windowHeight,
-	pointer,
 }: {
 	board: Board;
 	toggleMenu: (menu: string) => void;
@@ -751,6 +732,14 @@ function EndPointer({
 	const menuRef = React.useRef<HTMLDivElement>(null);
 	const endPointerStyle = board.selection.getEndPointerStyle();
 
+	const handleClick = () => {
+		toggleMenu("EndPointer");
+	};
+
+	const handlePick = (type: string) => {
+		board.selection.setEndPointerStyle(type);
+		toggleMenu("None");
+	};
 	return (
 		<ButtonWithMenu
 			panelMbr={panelMbr}
@@ -759,9 +748,7 @@ function EndPointer({
 		>
 			<Button
 				id="ChangeEndPointer"
-				onClick={() => {
-					toggleMenu("EndPointer");
-				}}
+				onClick={handleClick}
 				title="Конец линии"
 				width={32}
 				height={32}
@@ -790,11 +777,8 @@ function EndPointer({
 			>
 				<ConnectorEndPointerPicker
 					selected={endPointerStyle}
-					onPick={type => {
-						board.selection.setEndPointerStyle(type);
-						toggleMenu("None");
-					}}
-				></ConnectorEndPointerPicker>{" "}
+					onPick={handlePick}
+				/>
 			</div>
 		</ButtonWithMenu>
 	);
@@ -819,7 +803,22 @@ function ConnectorAddText({
 		return null;
 	}
 	const menuRef = React.useRef<HTMLDivElement>(null);
-
+	const handleClick = () => {
+		if (board.selection.getContext() === "EditTextUnderPointer") {
+			board.selection.setContext("EditUnderPointer");
+			board.items.subject.publish(board.items);
+			return;
+		}
+		const connector = board.selection.items.getItemsByItemTypes([
+			"Connector",
+		])[0] as Connector;
+		if (!connector) {
+			return;
+		}
+		board.selection.setTextToEdit(connector);
+		board.selection.setContext("EditTextUnderPointer");
+		board.items.subject.publish(board.items);
+	};
 	return (
 		<ButtonWithMenu
 			panelMbr={panelMbr}
@@ -828,24 +827,7 @@ function ConnectorAddText({
 		>
 			<Button
 				id="ChangeConnectorType"
-				onClick={() => {
-					if (
-						board.selection.getContext() === "EditTextUnderPointer"
-					) {
-						board.selection.setContext("EditUnderPointer");
-						board.items.subject.publish(board.items);
-						return;
-					}
-					const connector = board.selection.items.getItemsByItemTypes(
-						["Connector"],
-					)[0] as Connector;
-					if (!connector) {
-						return;
-					}
-					board.selection.setTextToEdit(connector);
-					board.selection.setContext("EditTextUnderPointer");
-					board.items.subject.publish(board.items);
-				}}
+				onClick={handleClick}
 				title="Добавить текст"
 				width={32}
 				height={32}
@@ -880,6 +862,16 @@ function ConnectorType({
 	}
 	const menuRef = React.useRef<HTMLDivElement>(null);
 	const connectorType = board.selection.getConnectorLineStyle();
+
+	const handleClick = () => {
+		toggleMenu("ConnectorType");
+	};
+
+	const handlePick = (type: ConnectorLineStyle) => {
+		board.selection.setConnectorLineStyle(type);
+		toggleMenu("None");
+	};
+
 	return (
 		<ButtonWithMenu
 			panelMbr={panelMbr}
@@ -888,16 +880,13 @@ function ConnectorType({
 		>
 			<Button
 				id="ChangeConnectorType"
-				onClick={() => {
-					toggleMenu("ConnectorType");
-				}}
+				onClick={handleClick}
 				title="Стиль линии"
 				width={32}
 				height={32}
 				margin={0}
 				tipOnTop
 			>
-				{/* <Icon name="curved" width={IconSize} height={IconSize} /> */}
 				<Icon
 					iconName={
 						connectorType === "curved"
@@ -920,11 +909,8 @@ function ConnectorType({
 			>
 				<ConnectorLineStylePicker
 					selected={connectorType}
-					onPick={type => {
-						board.selection.setConnectorLineStyle(type);
-						toggleMenu("None");
-					}}
-				></ConnectorLineStylePicker>
+					onPick={handlePick}
+				/>
 			</div>
 		</ButtonWithMenu>
 	);
@@ -953,6 +939,13 @@ function ItemType({
 	}
 	const menuRef = React.useRef<HTMLDivElement>(null);
 
+	const handleClick = () => {
+		toggleMenu("ItemType");
+	};
+	const handlePick = (type: ShapeType) => {
+		board.selection.setShapeType(type);
+		toggleMenu("None");
+	};
 	return (
 		<ButtonWithMenu
 			panelMbr={panelMbr}
@@ -961,9 +954,7 @@ function ItemType({
 		>
 			<Button
 				id="ChangeItemType"
-				onClick={() => {
-					toggleMenu("ItemType");
-				}}
+				onClick={handleClick}
 				title="Изменить тип"
 				tipOnTop
 				width={32}
@@ -983,12 +974,7 @@ function ItemType({
 					visibility: menu === "ItemType" ? "visible" : "hidden",
 				}}
 			>
-				<ShapePicker
-					onPick={(type: ShapeType) => {
-						board.selection.setShapeType(type);
-						toggleMenu("None");
-					}}
-				/>
+				<ShapePicker onPick={handlePick} />
 			</div>
 		</ButtonWithMenu>
 	);
@@ -1003,12 +989,6 @@ class FontSize extends React.PureComponent<{
 	fontSize: number;
 }> {
 	menuRef = React.createRef<HTMLDivElement>();
-	componentDidMount(): void {
-		// this.props.board.selection.itemSubject.subscribe(this.updateFontSize);
-	}
-	componentWillUnmount(): void {
-		// this.props.board.selection.itemSubject.unsubscribe(this.updateFontSize);
-	}
 	render(): React.ReactElement | null {
 		const { board, toggleMenu, menu, panelMbr, windowHeight, fontSize } =
 			this.props;
@@ -1024,6 +1004,14 @@ class FontSize extends React.PureComponent<{
 			return null;
 		}
 
+		const handleClick = () => {
+			toggleMenu("FontSize");
+		};
+
+		const handlePick = (size: number) => {
+			board.selection.setFontSize(size);
+			toggleMenu("None");
+		};
 		return (
 			<ButtonWithMenu
 				panelMbr={panelMbr}
@@ -1036,13 +1024,7 @@ class FontSize extends React.PureComponent<{
 				>
 					<Button
 						margin={0}
-						onClick={() => {
-							toggleMenu("FontSize");
-						}}
-						onInput={event => {
-							event.preventDefault();
-							return;
-						}}
+						onClick={handleClick}
 						title={"Размер шрифта"}
 						tipOnTop
 						style={{
@@ -1069,12 +1051,7 @@ class FontSize extends React.PureComponent<{
 						visibility: menu === "FontSize" ? "visible" : "hidden",
 					}}
 				>
-					<FontSizePicker
-						onPick={(size: number) => {
-							board.selection.setFontSize(size);
-							toggleMenu("None");
-						}}
-					/>
+					<FontSizePicker onPick={handlePick} />
 				</div>
 			</ButtonWithMenu>
 		);
@@ -1110,6 +1087,15 @@ function FontStyle({
 	}
 	const menuRef = React.useRef<HTMLDivElement>(null);
 
+	const handleClick = () => {
+		toggleMenu("FontStyle");
+	};
+
+	const handlePick = (style: string) => {
+		board.selection.setFontStyle([style]);
+		toggleMenu("None");
+	};
+
 	return (
 		<ButtonWithMenu
 			panelMbr={panelMbr}
@@ -1118,16 +1104,13 @@ function FontStyle({
 		>
 			<Button
 				id="ChangeFontStyle"
-				onClick={() => {
-					toggleMenu("FontStyle");
-				}}
+				onClick={handleClick}
 				title="Стиль шрифта"
 				tipOnTop
 				width={32}
 				height={32}
 				margin={0}
 			>
-				{/* <BoldUnderlineIcon width={IconSize} height={IconSize} /> */}
 				<Icon iconName="TextFormat" />
 			</Button>
 			<div
@@ -1143,12 +1126,7 @@ function FontStyle({
 					visibility: menu === "FontStyle" ? "visible" : "hidden",
 				}}
 			>
-				<FontStylePicker
-					onPick={style => {
-						board.selection.setFontStyle([style]);
-						toggleMenu("None");
-					}}
-				/>
+				<FontStylePicker onPick={handlePick} />
 			</div>
 		</ButtonWithMenu>
 	);
@@ -1186,6 +1164,15 @@ function TextAlignment({
 
 	const menuRef = React.useRef<HTMLDivElement>(null);
 
+	const handleClick = () => {
+		toggleMenu("TextAlignment");
+	};
+
+	const handlePick = (alignment: HorisontalAlignment) => {
+		board.selection.setHorisontalAlignment(alignment);
+		toggleMenu("None");
+	};
+
 	return (
 		<ButtonWithMenu
 			panelMbr={panelMbr}
@@ -1194,9 +1181,7 @@ function TextAlignment({
 		>
 			<Button
 				id="ChangeTextAlignment"
-				onClick={() => {
-					toggleMenu("TextAlignment");
-				}}
+				onClick={handleClick}
 				title="Выравнивание"
 				tipOnTop
 				width={32}
@@ -1231,10 +1216,7 @@ function TextAlignment({
 			>
 				<HorisontalAlignmentPicker
 					alignment={alignment}
-					onPick={alignment => {
-						board.selection.setHorisontalAlignment(alignment);
-						toggleMenu("None");
-					}}
+					onPick={handlePick}
 				/>
 			</div>
 		</ButtonWithMenu>
@@ -1273,6 +1255,20 @@ function TextAlignmentSticker({
 	}
 	const menuRef = React.useRef<HTMLDivElement>(null);
 
+	const handleClick = () => {
+		toggleMenu("TextAlignment");
+	};
+
+	const handleHorisontalAlignmentPick = (alignment: HorisontalAlignment) => {
+		board.selection.setHorisontalAlignment(alignment);
+		toggleMenu("None");
+	};
+
+	const handleVerticalAlignmentPick = (alignment: VerticalAlignment) => {
+		board.selection.setVerticalAlignment(alignment);
+		toggleMenu("None");
+	};
+
 	return (
 		<ButtonWithMenu
 			panelMbr={panelMbr}
@@ -1281,20 +1277,13 @@ function TextAlignmentSticker({
 		>
 			<Button
 				id="ChangeTextAlignment"
-				onClick={() => {
-					toggleMenu("TextAlignment");
-				}}
+				onClick={handleClick}
 				title="Выравнивание"
 				tipOnTop
 				width={32}
 				height={32}
 				margin={0}
 			>
-				{/* <Icon
-					name={`HorisontalAlignCenter`}
-					width={IconSize}
-					height={IconSize}
-				/> */}
 				<Icon
 					width={16}
 					height={16}
@@ -1321,127 +1310,14 @@ function TextAlignmentSticker({
 			>
 				<HorisontalAlignmentPicker
 					alignment={horizontalAlignment}
-					onPick={alignment => {
-						board.selection.setHorisontalAlignment(alignment);
-						toggleMenu("None");
-					}}
+					onPick={handleHorisontalAlignmentPick}
 				/>
 				<VerticalAlignmentPicker
 					alignment={verticalAlignment}
-					onPick={alignment => {
-						board.selection.setVerticalAlignment(alignment);
-						toggleMenu("None");
-					}}
-				/>
-
-				{/* <HorisontalSeparator /> */}
-				{/* <VerticalAlignmentPicker
-					onPick={alignment => {
-						board.selection.setVerticalAlignment(alignment);
-						toggleMenu("None");
-					}}
-				/> */}
-			</div>
-		</ButtonWithMenu>
-	);
-}
-
-function AddList({
-	board,
-	toggleMenu,
-	menu,
-	panelMbr,
-	windowHeight,
-}: {
-	board: Board;
-	toggleMenu: (menu: string) => void;
-	menu: string;
-	panelMbr: Mbr;
-	windowHeight: number;
-}): React.ReactElement | null {
-	return null;
-	if (
-		board.selection.getContext() !== "EditTextUnderPointer" ||
-		!board.selection.canChangeText()
-	) {
-		return null;
-	}
-	const menuRef = React.useRef<HTMLDivElement>(null);
-
-	return (
-		<ButtonWithMenu
-			panelMbr={panelMbr}
-			windowHeight={windowHeight}
-			menuRef={menuRef}
-		>
-			<Button
-				id="ChangeTextAlignment"
-				onClick={() => {
-					toggleMenu("TextAlignment");
-				}}
-				title="Text Alignment"
-			>
-				<Icon
-					name="HorisontalAlignCenter"
-					width={IconSize}
-					height={IconSize}
-				/>
-			</Button>
-			<div
-				id="FillStyleMenu"
-				ref={menuRef}
-				className="ContextPanelMenu"
-				style={{
-					width: "120px",
-					marginLeft: "-60px",
-					visibility: menu === "TextAlignment" ? "visible" : "hidden",
-				}}
-			>
-				<HorisontalAlignmentPicker
-					onPick={alignment => {
-						board.selection.setHorisontalAlignment(alignment);
-						toggleMenu("None");
-					}}
-				/>
-				<HorisontalSeparator />
-				<VerticalAlignmentPicker
-					onPick={alignment => {
-						board.selection.setVerticalAlignment(alignment);
-						toggleMenu("None");
-					}}
+					onPick={handleVerticalAlignmentPick}
 				/>
 			</div>
 		</ButtonWithMenu>
-	);
-}
-
-function TextFeaturesSeparator({
-	board,
-}: {
-	board: Board;
-}): React.ReactElement | null {
-	if (board.selection.getContext() === "SelectUnderPointer") {
-		return null;
-	}
-
-	if (
-		board.selection.getContext() !== "EditTextUnderPointer" &&
-		!board.selection.canChangeText()
-	) {
-		return null;
-	}
-
-	return null;
-	return (
-		<div
-			style={{
-				display: "flex",
-				marginLeft: "5px",
-				marginRight: "5px",
-				width: "1px",
-				backgroundColor: "rgb(230, 230, 230)",
-			}}
-		></div>
 	);
 }
 
@@ -1495,6 +1371,15 @@ function TextColor({
 
 	const menuRef = React.useRef<HTMLDivElement>(null);
 
+	const handleClick = () => {
+		toggleMenu("TextColor");
+	};
+
+	const handlePick = (color: string) => {
+		board.selection.setFontColor(color);
+		toggleMenu("None");
+	};
+
 	return (
 		<ButtonWithMenu
 			panelMbr={panelMbr}
@@ -1503,21 +1388,13 @@ function TextColor({
 		>
 			<Button
 				id="ChangeTextColor"
-				onClick={() => {
-					toggleMenu("TextColor");
-				}}
+				onClick={handleClick}
 				title="Цвет текста"
 				tipOnTop
 				width={32}
 				height={32}
 				margin={0}
 			>
-				{/* <TextColorIcon
-					color={color}
-					width={IconSize}
-					height={IconSize}
-				/> */}
-				{/* <Icon iconName="TextColorIndicator"/> */}
 				<TextColorIndicator color={color} />
 			</Button>
 			<div
@@ -1538,10 +1415,7 @@ function TextColor({
 				<ColorPicker
 					colors={textColors}
 					selectedColor={color}
-					onPick={(color: string) => {
-						board.selection.setFontColor(color);
-						toggleMenu("None");
-					}}
+					onPick={handlePick}
 				/>
 			</div>
 		</ButtonWithMenu>
@@ -1595,6 +1469,15 @@ function TextHighlight({
 
 	const menuRef = React.useRef<HTMLDivElement>(null);
 
+	const handleClick = () => {
+		toggleMenu("TextHighlight");
+	};
+
+	const handlePick = (color: string) => {
+		board.selection.setFontHighlight(color);
+		toggleMenu("None");
+	};
+
 	return (
 		<>
 			<ButtonWithMenu
@@ -1604,20 +1487,13 @@ function TextHighlight({
 			>
 				<Button
 					id="ChangeTextHighlight"
-					onClick={() => {
-						toggleMenu("TextHighlight");
-					}}
+					onClick={handleClick}
 					title="Маркер"
 					tipOnTop
 					width={32}
 					height={32}
 					margin={0}
 				>
-					{/* <TextHighlightIcon
-					color={color}
-					width={IconSize}
-					height={IconSize}
-				/> */}
 					<TextHighlightIndicator color={color} />
 				</Button>
 				<div
@@ -1637,39 +1513,11 @@ function TextHighlight({
 						colors={highlightColors}
 						selectedColor={color}
 						allowNone={true}
-						onPick={(color: string) => {
-							board.selection.setFontHighlight(color);
-							toggleMenu("None");
-						}}
+						onPick={handlePick}
 					/>
 				</div>
 			</ButtonWithMenu>
 		</>
-	);
-}
-
-function TextColorSeparator({
-	board,
-}: {
-	board: Board;
-}): React.ReactElement | null {
-	if (
-		board.selection.getContext() !== "EditTextUnderPointer" &&
-		!board.selection.canChangeText()
-	) {
-		return null;
-	}
-	return null;
-	return (
-		<div
-			style={{
-				display: "flex",
-				marginLeft: "5px",
-				marginRight: "5px",
-				width: "1px",
-				backgroundColor: "rgb(230, 230, 230)",
-			}}
-		></div>
 	);
 }
 
@@ -1709,6 +1557,23 @@ function StrokeStyle({
 	}
 	const menuRef = React.useRef<HTMLDivElement>(null);
 
+	const handleClick = () => {
+		toggleMenu("StrokeStyle");
+	};
+
+	const handleStrokeWidthPick = (width: number) => {
+		board.selection.setStrokeWidth(width);
+	};
+
+	const handleStrokeStylePick = (style: BorderStyle) => {
+		board.selection.setStrokeStyle(style);
+		toggleMenu("None");
+	};
+
+	const handleStrokeColorPick = (color: string) => {
+		board.selection.setStrokeColor(color);
+		toggleMenu("None");
+	};
 	return (
 		<ButtonWithMenu
 			panelMbr={panelMbr}
@@ -1717,22 +1582,13 @@ function StrokeStyle({
 		>
 			<Button
 				id="ChangeStrokeStyle"
-				onClick={() => {
-					toggleMenu("StrokeStyle");
-				}}
+				onClick={handleClick}
 				title="Обводка"
 				tipOnTop
 				width={32}
 				height={32}
 				margin={0}
 			>
-				{/* <CircleIcon
-					fill="white"
-					stroke={color}
-					strokeWidth={12}
-					width={20}
-					height={20}
-				/> */}
 				<StrokeColorIndicator color={color} />
 			</Button>
 			<div
@@ -1751,17 +1607,9 @@ function StrokeStyle({
 			>
 				<StrokeStylePicker
 					stroke={board.selection.getBorderStyle()}
-					onPick={style => {
-						board.selection.setStrokeStyle(style);
-						toggleMenu("None");
-					}}
+					onPick={handleStrokeStylePick}
 				/>
-				<SliderPicker
-					onPick={width => {
-						board.selection.setStrokeWidth(width);
-					}}
-					width={width}
-				/>
+				<SliderPicker onPick={handleStrokeWidthPick} width={width} />
 				<div
 					style={{
 						display: "grid",
@@ -1773,11 +1621,7 @@ function StrokeStyle({
 						selectedColor={color}
 						colors={strokeColors}
 						allowNone={false}
-						// isNoneLast={true}
-						onPick={(color: string) => {
-							board.selection.setStrokeColor(color);
-							toggleMenu("None");
-						}}
+						onPick={handleStrokeColorPick}
 					/>
 				</div>
 			</div>
@@ -1823,6 +1667,15 @@ function FillStyle({
 	}
 	const menuRef = React.useRef<HTMLDivElement>(null);
 
+	const handleClick = () => {
+		toggleMenu("FillStyle");
+	};
+
+	const handlePick = (color: string) => {
+		board.selection.setFillColor(color);
+		toggleMenu("None");
+	};
+
 	return (
 		<ButtonWithMenu
 			panelMbr={panelMbr}
@@ -1831,22 +1684,13 @@ function FillStyle({
 		>
 			<Button
 				id="ChangeFillStyle"
-				onClick={() => {
-					toggleMenu("FillStyle");
-				}}
+				onClick={handleClick}
 				title="Заливка"
 				tipOnTop
 				width={32}
 				height={32}
 				margin={0}
 			>
-				{/* <CircleIcon
-					strokeWidth={1}
-					fill={color}
-					stroke="rgba(0,0,0,1)"
-					width={IconSize}
-					height={IconSize}
-				/> */}
 				<CircleColorIndicator width={24} height={24} color={color} />
 			</Button>
 			<div
@@ -1865,10 +1709,7 @@ function FillStyle({
 					selectedColor={color}
 					colors={fillColors}
 					allowNone={true}
-					onPick={(color: string) => {
-						board.selection.setFillColor(color);
-						toggleMenu("None");
-					}}
+					onPick={handlePick}
 				/>
 			</div>
 		</ButtonWithMenu>
@@ -1908,6 +1749,15 @@ function DrawFillStyle({
 	}
 	const menuRef = React.useRef<HTMLDivElement>(null);
 
+	const handleClick = () => {
+		toggleMenu("DrawFillStyle");
+	};
+
+	const handlePick = (color: string) => {
+		board.selection.setStrokeColor(color);
+		toggleMenu("None");
+	};
+
 	return (
 		<ButtonWithMenu
 			panelMbr={panelMbr}
@@ -1916,22 +1766,13 @@ function DrawFillStyle({
 		>
 			<Button
 				id="ChangeDrawFillStyle"
-				onClick={() => {
-					toggleMenu("DrawFillStyle");
-				}}
+				onClick={handleClick}
 				title="Заливка"
 				tipOnTop
 				width={32}
 				height={32}
 				margin={0}
 			>
-				{/* <CircleIcon
-					strokeWidth={1}
-					fill={color}
-					stroke="rgba(0,0,0,1)"
-					width={IconSize}
-					height={IconSize}
-				/> */}
 				<CircleColorIndicator width={24} height={24} color={color} />
 			</Button>
 			<div
@@ -1949,10 +1790,7 @@ function DrawFillStyle({
 				<ColorPicker
 					selectedColor={color}
 					colors={drawingColors}
-					onPick={(color: string) => {
-						board.selection.setStrokeColor(color);
-						toggleMenu("None");
-					}}
+					onPick={handlePick}
 				/>
 			</div>
 		</ButtonWithMenu>
@@ -1992,6 +1830,15 @@ function StickerFillStyle({
 	}
 	const menuRef = React.useRef<HTMLDivElement>(null);
 
+	const handleClick = () => {
+		toggleMenu("StickerFillStyle");
+	};
+
+	const handlePick = (color: string) => {
+		board.selection.setFillColor(color);
+		toggleMenu("None");
+	};
+
 	return (
 		<ButtonWithMenu
 			panelMbr={panelMbr}
@@ -2000,9 +1847,7 @@ function StickerFillStyle({
 		>
 			<Button
 				id="ChangeStickerFillStyle"
-				onClick={() => {
-					toggleMenu("StickerFillStyle");
-				}}
+				onClick={handleClick}
 				title="Цвет стикера"
 				width={32}
 				height={32}
@@ -2027,10 +1872,7 @@ function StickerFillStyle({
 				<ColorPicker
 					selectedColor={color}
 					colors={stickerColors}
-					onPick={(color: string) => {
-						board.selection.setFillColor(color);
-						toggleMenu("None");
-					}}
+					onPick={handlePick}
 				/>
 			</div>
 		</ButtonWithMenu>
@@ -2038,12 +1880,14 @@ function StickerFillStyle({
 }
 
 function Duplicate({ board }: { board: Board }): React.ReactElement | null {
+	const handleClick = () => {
+		board.selection.duplicate();
+	};
+
 	return (
 		<RestOptionsMenuItem
 			id="DuplicateSelection"
-			onClick={() => {
-				board.selection.duplicate();
-			}}
+			onClick={handleClick}
 			hotkey="D"
 		>
 			Дублировать
@@ -2052,12 +1896,14 @@ function Duplicate({ board }: { board: Board }): React.ReactElement | null {
 }
 
 function Delete({ board }: { board: Board }): React.ReactElement | null {
+	const handleClick = () => {
+		board.selection.removeFromBoard();
+	};
+
 	return (
 		<RestOptionsMenuItem
 			id="DeleteSelection"
-			onClick={() => {
-				board.selection.removeFromBoard();
-			}}
+			onClick={handleClick}
 			hotkey="Delete"
 		>
 			Удалить
@@ -2067,16 +1913,13 @@ function Delete({ board }: { board: Board }): React.ReactElement | null {
 
 function BringToFront({ board }: { board: Board }): React.ReactElement | null {
 	const items = board.selection.items;
+	const handleClick = () => {
+		for (const item of items.list()) {
+			board.items.index.bringToFront(item);
+		}
+	};
 	return (
-		<RestOptionsMenuItem
-			id="BringToFront"
-			onClick={() => {
-				for (const item of items.list()) {
-					board.items.index.bringToFront(item);
-				}
-			}}
-			hotkey="]"
-		>
+		<RestOptionsMenuItem id="BringToFront" onClick={handleClick} hotkey="]">
 			Вынести на передний план
 		</RestOptionsMenuItem>
 	);
@@ -2084,16 +1927,14 @@ function BringToFront({ board }: { board: Board }): React.ReactElement | null {
 
 function BringToBack({ board }: { board: Board }): React.ReactElement | null {
 	const items = board.selection.items;
+	const handleClick = () => {
+		for (const item of items.list()) {
+			board.items.index.sendToBack(item);
+		}
+	};
+
 	return (
-		<RestOptionsMenuItem
-			id="BringToBack"
-			onClick={() => {
-				for (const item of items.list()) {
-					board.items.index.sendToBack(item);
-				}
-			}}
-			hotkey="["
-		>
+		<RestOptionsMenuItem id="BringToBack" onClick={handleClick} hotkey="[">
 			Вынести на задний план
 		</RestOptionsMenuItem>
 	);

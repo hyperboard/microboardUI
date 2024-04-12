@@ -14,6 +14,8 @@ export function ColorPicker({
 	colors: string[];
 	isNotLast?: boolean;
 }): React.ReactElement {
+	const handleClearPick = () => onPick("none");
+
 	return (
 		<>
 			{allowNone && !isNotLast && (
@@ -28,7 +30,7 @@ export function ColorPicker({
 						padding: 0,
 						margin: 0,
 					}}
-					onClick={() => onPick("none")}
+					onClick={handleClearPick}
 				>
 					<ColorCircle
 						color={"none"}
@@ -69,7 +71,7 @@ export function ColorPicker({
 						padding: 0,
 						margin: 0,
 					}}
-					onClick={() => onPick("none")}
+					onClick={handleClearPick}
 				>
 					<ColorCircle
 						color={"none"}

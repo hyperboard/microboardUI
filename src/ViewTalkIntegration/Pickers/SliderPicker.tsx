@@ -10,6 +10,9 @@ const labelStyles = {
 	margin: 0,
 };
 
+const DOT_OFFSET = 2;
+const LAST_DOT_OFFSET = 6;
+
 const style = document.createElement("style");
 style.innerHTML = `
 .slider {
@@ -101,20 +104,13 @@ export const SliderPicker = React.memo(function SliderPicker({
 
 	const dotsOffsets: number[] = [];
 
-	// if (inputWidth) {
-	// 	dotsOffsets.push(2);
-	// 	for (let i = 1; i < dots - 1; i++) {
-	// 		dotsOffsets.push((Math.ceil(inputWidth / (dots - 1)) * i) - 4);
-	// 	}
-	// 	dotsOffsets.push(inputWidth - 6);
-	// }
 	const dots = Math.floor((max - min) / step);
 	if (inputWidth) {
 		dotsOffsets.push(2);
 		for (let i = 1; i < dots; i++) {
-			dotsOffsets.push((Math.ceil(inputWidth / dots) * i) - 2);
+			dotsOffsets.push(Math.ceil(inputWidth / dots) * i - DOT_OFFSET);
 		}
-		dotsOffsets.push(inputWidth - 6);
+		dotsOffsets.push(inputWidth - LAST_DOT_OFFSET);
 	}
 
 	return (

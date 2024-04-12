@@ -9,7 +9,18 @@ interface Props {
 }
 
 export function StrokeStylePicker(props: Props): React.ReactElement {
-	console.log(props.stroke)
+	const handleSolidPick = () => {
+		props.onPick("solid");
+	};
+
+	const handleDashPick = () => {
+		props.onPick("dash");
+	};
+
+	const handleDotPick = () => {
+		props.onPick("dot");
+	};
+
 	return (
 		<div
 			style={{
@@ -22,38 +33,29 @@ export function StrokeStylePicker(props: Props): React.ReactElement {
 			<Button
 				id="ChangeBorderStyleSolid"
 				key="ChangeBorderStyleSolid"
-				onClick={() => {
-					props.onPick("solid");
-				}}
-        margin={0}
-				isOn={props.stroke === 'solid'}
+				onClick={handleSolidPick}
+				margin={0}
+				isOn={props.stroke === "solid"}
 			>
-				{/* <Icon name={"LineSolid"} width={24} height={24} /> */}
-        <Icon iconName="DiagonalLine"/>
+				<Icon iconName="DiagonalLine" />
 			</Button>
 			<Button
 				id="ChangeBorderStyleDashed"
 				key="ChangeBorderStyleDashed"
-				onClick={() => {
-					props.onPick("dash");
-				}}
-        margin={0}
-				isOn={props.stroke === 'dash'}
+				onClick={handleDashPick}
+				margin={0}
+				isOn={props.stroke === "dash"}
 			>
-				{/* <Icon name={"LineDashed"} width={24} height={24} /> */}
-        <Icon iconName="DiagonalDashedLine"/>
+				<Icon iconName="DiagonalDashedLine" />
 			</Button>
 			<Button
 				id="ChangeBorderStyleDotted"
 				key="ChangeBorderStyleDotted"
-				onClick={() => {
-					props.onPick("dot");
-				}}
-        margin={0}
-				isOn={props.stroke === 'dot'}
+				onClick={handleDotPick}
+				margin={0}
+				isOn={props.stroke === "dot"}
 			>
-				{/* <Icon name={"LineDotted"} width={24} height={24} /> */}
-        <Icon iconName="DiagonalDottedLine"/>
+				<Icon iconName="DiagonalDottedLine" />
 			</Button>
 		</div>
 	);

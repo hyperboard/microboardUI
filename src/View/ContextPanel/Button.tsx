@@ -180,20 +180,27 @@ interface Props extends React.PropsWithChildren<{}> {
 export function Button(props: Props): React.ReactElement {
 	const margin = props.margin ?? 5;
 	const width = props.width ?? 40;
+
+	const handleMouseEnter: React.MouseEventHandler<
+		HTMLButtonElement
+	> = event => {
+		event.currentTarget.style.color = "blue";
+	};
+
+	const handleMouseLeave: React.MouseEventHandler<
+		HTMLButtonElement
+	> = event => {
+		event.currentTarget.style.color = props.isOn ? "blue" : "black";
+	};
+
 	return (
 		<div className="ButtonContainer" style={{}}>
 			<button
 				id={props.id}
 				ref={props.buttonRef}
 				onClick={props.onClick}
-				onMouseEnter={event => {
-					event.currentTarget.style.color = "blue";
-				}}
-				onMouseLeave={event => {
-					event.currentTarget.style.color = props.isOn
-						? "blue"
-						: "black";
-				}}
+				onMouseEnter={handleMouseEnter}
+				onMouseLeave={handleMouseLeave}
 				className="Button"
 				style={{
 					marginLeft: `${margin}px`,

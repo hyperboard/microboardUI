@@ -37,15 +37,6 @@ export class ToolsPanel extends React.Component<Props, State> {
 
 	update = (): void => {
 		this.forceUpdate();
-		return;
-		if (this.animationFrameId) {
-			return; // Function already scheduled to run
-		}
-
-		this.animationFrameId = requestAnimationFrame(() => {
-			this.forceUpdate();
-			this.animationFrameId = null;
-		});
 	};
 
 	subscription = {
@@ -81,7 +72,6 @@ export class ToolsPanel extends React.Component<Props, State> {
 					const typedarray = new Uint8Array(event.target.result);
 					pdfjsLib.getDocument({ data: typedarray }).promise.then(
 						pdf => {
-							// var maxPages = Math.min(pdf.numPages, 2);
 							const maxPages = pdf.numPages;
 							let pagesRendered = 0;
 							let viewportYOffset = 0;
@@ -166,51 +156,6 @@ export class ToolsPanel extends React.Component<Props, State> {
 					);
 				};
 				reader.readAsArrayBuffer(file);
-				/*
-				console.log("Pdf file is selected");
-		        reader.onload = (event) => {
-					console.log("Pdf file is loaded");
-		            var typedarray = new Uint8Array(event.target.result);
-		            pdfjsLib.getDocument({data: typedarray}).promise.then((pdf) => {
-						console.log("Pdf document is created");
-		                var maxPages = Math.min(pdf.numPages, 2);
-		                var renderPage = (pageNum) => {
-		                    pdf.getPage(pageNum).then((page) => {
-		                        var scale = 1.5;
-		                        var viewport = page.getViewport({scale: scale});
-		                        var canvas = document.createElement('canvas');
-		                        var context = canvas.getContext('2d');
-		                        canvas.height = viewport.height;
-		                        canvas.width = viewport.width;
-		
-		                        var renderContext = {
-		                            canvasContext: context,
-		                            viewport: viewport
-		                        };
-		                        var renderTask = page.render(renderContext);
-		                        renderTask.promise.then(() => {
-		                            var base64String = canvas.toDataURL('image/png');
-									const image = new ImageItem(base64String);
-									const boardImage = this.props.board.add(image);
-									console.log(image);
-		                            if (pageNum < maxPages) {
-		                                renderPage(pageNum + 1);
-		                            }
-		
-		                            canvas.remove();
-		                        });
-		                    });
-		                };
-		
-		                // Start the rendering loop
-		                renderPage(1);
-		
-		            }, function(reason) {
-		                console.error(reason);
-		            });
-		        };
-		        reader.readAsArrayBuffer(file);
-				*/
 			} else {
 				reader.onload = (event: any) => {
 					const base64String = event.target.result;
@@ -262,8 +207,6 @@ export class ToolsPanel extends React.Component<Props, State> {
 						board.selection.removeAll();
 						board.selection.add(boardImage);
 					});
-					// Reset the input after processing to ensure change event
-					// fires again even if the next selected file is the same.
 					uploadInput.value = "";
 				};
 				reader.readAsDataURL(file);
@@ -366,53 +309,6 @@ applyStyle(`
 
 `);
 
-// const ToolsPanelStyle = document.createElement("style");
-
-// ToolsPanelStyle.innerHTML = `
-// .ToolsPanel {
-// 	width: 44px;
-// 	display: flex;
-// 	flex-wrap: wrap;
-// 	padding-left: 2px;
-// 	padding-right: 2px;
-// 	padding-top: 10px;
-// 	padding-bottom: 10px;
-// 	background-color: white;
-// 	border-radius: 4px;
-// 	box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.12);
-// 	position: absolute;
-// 	z-index: 90;
-// 	justify-content: center;
-// 	align-content: center;
-// }
-
-// .ToolsPanelMenuContainer {
-// 	position: relative;
-// 	display: inline-block;
-// }
-
-// .ToolsPanelMenu {
-// 	visibility: hidden;
-// 	background-color: white;
-// 	color: black;
-// 	text-align: center;
-// 	left: 110%;
-// 	z-index: 1;
-// 	position: absolute;
-// 	padding-left: 6px;
-// 	padding-right: 6px;
-// 	padding-top: 10px;
-// 	padding-bottom: 10px;
-// 	display: flex;
-// 	flex-wrap: wrap;
-// 	border-radius: 4px;
-// 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
-// }
-
-// `;
-
-// document.head.appendChild(ToolsPanelStyle);
-
 class Select extends React.PureComponent<{
 	board: Board;
 	isOn: boolean;
@@ -435,7 +331,6 @@ class Select extends React.PureComponent<{
 				width={32}
 				height={32}
 			>
-				{/* <Icon name="Pointer" width={24} height={24} /> */}
 				<Icon width={17} height={17} iconName="Pointer" />
 			</Button>
 		);
@@ -481,7 +376,6 @@ class AddStickerTool extends React.PureComponent<{
 					width={32}
 				height={32}
 				>
-					{/* <Icon name="Sticker" width={24} height={24} /> */}
 					<Icon width={16} height={16} iconName="Sticker" />
 				</Button>
 				<div
@@ -538,7 +432,6 @@ class AddShape extends React.PureComponent<{
 					width={32}
 				height={32}
 				>
-					{/* <Icon name="Rectangle" width={24} height={24} /> */}
 					<Icon width={18} height={18} iconName="AddShape" />
 				</Button>
 				<div
@@ -577,7 +470,6 @@ class AddText extends React.PureComponent<{ board: Board; isOn: boolean }> {
 				width={32}
 				height={32}
 			>
-				{/* <Icon name="RichText" width={24} height={24} /> */}
 				<Icon width={14} height={16} iconName="AddText" />
 			</Button>
 		);
@@ -617,19 +509,12 @@ class AddConnector extends React.PureComponent<{
 					width={32}
 				height={32}
 				>
-					{/* <Icon
-						name="Connector"
-						width={24}
-						height={24}
-						fill="rgb(0,0,0)"
-					/> */}
 					<Icon width={16} height={16} iconName="Arrow" />
 				</Button>
 				<div
 					id="AddConnectorMenu"
 					className="ToolsPanelMenu"
 					style={{
-						// width: "52px",
 						display: "flex",
 						flexDirection: "column",
 						top: 0,
@@ -686,7 +571,7 @@ class AddDrawing extends React.PureComponent<{
 	};
 
 	render(): React.ReactElement {
-		const { isOn, board, width } = this.props;
+		const { isOn, width } = this.props;
 
 		return (
 			<div className="ToolsPanelMenuContainer">
@@ -700,12 +585,6 @@ class AddDrawing extends React.PureComponent<{
 					width={32}
 				height={32}
 				>
-					{/* <PenIcon
-						color={board.tools.getAddDrawing()?.strokeStyle}
-						width={24}
-						height={24}
-					></PenIcon> */}
-					{/* <Icon name="Pen" width={24} height={24}/> */}
 					<Icon width={18} height={18} iconName="Pen" />
 				</Button>
 				<div
@@ -737,7 +616,6 @@ class AddImage extends React.PureComponent {
 	handleClick = (): void => {
 		const uploadInput = document.getElementById("image-upload");
 		uploadInput.click();
-		// uploadInput.addEventListener("change", this.onUploadImage);
 	};
 
 	render(): React.ReactElement {
@@ -751,7 +629,6 @@ class AddImage extends React.PureComponent {
 				width={32}
 				height={32}
 			>
-				{/* <Icon name="Image" width={24} height={24} /> */}
 				<Icon width={20} height={18} iconName="Image" />
 			</Button>
 		);
@@ -779,7 +656,6 @@ class Undo extends React.PureComponent<{ board: Board; isOn: boolean }> {
 				height={32}
 			>
 				<UndoIcon isOn={isOn} width={15} height={15} />
-				{/* <Icon iconName="Undo"/> */}
 			</Button>
 		);
 	}

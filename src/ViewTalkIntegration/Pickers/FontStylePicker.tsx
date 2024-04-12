@@ -8,51 +8,51 @@ interface Props {
 }
 
 export function FontStylePicker(props: Props): React.ReactElement {
+	const handleBoldPick = () => {
+		props.onPick("bold");
+	};
+	const handleItalicsPick = () => {
+		props.onPick("italic");
+	};
+	const handleLineThroughPick = () => {
+		props.onPick("line-through");
+	};
+	const handleUnderlinePick = () => {
+		props.onPick("underline");
+	};
 	return (
 		<>
 			<Button
 				id="ChangeFontBold"
 				key="ChangeFontBold"
-				onClick={() => {
-					props.onPick("bold");
-				}}
+				onClick={handleBoldPick}
 				margin={0}
 			>
-				{/* <BoldIcon isOn={true} width={24} height={24} /> */}
-        <Icon iconName="TextBold"/>
+				<Icon iconName="TextBold" />
 			</Button>
 			<Button
 				id="ChangeFontItalics"
 				key="ChangeFontItalics"
-				onClick={() => {
-					props.onPick("italic");
-				}}
+				onClick={handleItalicsPick}
 				margin={0}
 			>
-				{/* <ItalicsIcon width={24} height={24} /> */}
-        <Icon iconName="TextItalic"/>
+				<Icon iconName="TextItalic" />
 			</Button>
 			<Button
 				id="ChangeFontStrikethrough"
 				key="ChangeFontStrikethrough"
-				onClick={() => {
-					props.onPick("line-through");
-				}}
+				onClick={handleLineThroughPick}
 				margin={0}
 			>
-				{/* <StrikethroughIcon width={24} height={24} /> */}
-        <Icon iconName="TextStrike"/>
+				<Icon iconName="TextStrike" />
 			</Button>
 			<Button
 				id="ChangeFontUnderline"
 				key="ChangeFontUnderline"
-				onClick={() => {
-					props.onPick("underline");
-				}}
+				onClick={handleUnderlinePick}
 				margin={0}
 			>
-				{/* <UnderlineIcon width={24} height={24} /> */}
-        <Icon width={26} iconName="TextUnderline"/>
+				<Icon width={26} iconName="TextUnderline" />
 			</Button>
 		</>
 	);

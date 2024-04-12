@@ -3,33 +3,6 @@ import * as React from "react";
 import { Button } from "../ContextPanel";
 import { Icon } from "../Icon";
 
-// const shapes: {id: IconId, label: string}[] = [
-// 	{ id: "Rectangle", label: "Rectangle" },
-// 	{ id: "RoundedRectangle", label: "Rounded Rectangle" },
-// 	{ id: "Circle", label: "Circle" },
-// 	{ id: "Hexagon", label: "Hexagon" },
-// 	{ id: "Rhombus", label: "Rhombus" },
-// 	{ id: "Triangle", label: "Triangle" },
-// 	{ id: "ReversedTriangle", label: "ReversedTriangle"},
-// 	{ id: "Parallelogram", label: "Parallelogram" },
-// 	{ id: "ReversedParallelogram", label: "Parallelogram" },
-// 	{ id: "SpeachBubble", label: "Speach Bubble" },
-// 	{ id: "ArrowBlockLeft", label: "Arrow Left" },
-// 	{ id: "ArrowBlockRight", label: "Arrow Right" },
-// 	{ id: "ArrowLeft", label: "Arrow Left" },
-// 	{ id: "ArrowRight", label: "Arrow Right" },
-// 	{ id: "Star", label: "Star" },
-
-// { id: "Cross", label: "Cross" },
-// { id: "Cloud", label: "Cloud" },
-// { id: "Cylinder", label: "Cylinder" },
-// { id: "Trapezoid", label: "Trapezoid" },
-// { id: "PredefinedProcess", label: "Predefined Process" },
-// { id: "ArrowLeftRight", label: "Arrow Left And Right" },
-// { id: "BracesRight", label: "Braces Right" },
-// { id: "BracesLeft", label: "Braces Left" },
-// ];
-
 const shapes = [
 	"Rectangle",
 	"RoundedRectangle",

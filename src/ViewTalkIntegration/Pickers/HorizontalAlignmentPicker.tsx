@@ -8,44 +8,41 @@ interface Props {
 	alignment: 'center' | 'left' | 'right';
 }
 
-export function HorisontalAlignmentPicker({alignment, onPick}: Props): React.ReactElement {
+export function HorisontalAlignmentPicker({
+	alignment,
+	onPick,
+}: Props): React.ReactElement {
+	const handlePick = (alignment: HorisontalAlignment) => () => {
+		onPick(alignment);
+	};
 	return (
 		<>
 			<Button
 				id="ChangeHorisontalAlignmentLeft"
 				key="ChangeHorisontalAlignmentLeft"
-				onClick={() => {
-					onPick("left");
-				}}
+				onClick={handlePick("left")}
 				margin={0}
 				isOn={alignment === 'left'}
 			>
-				{/* <Icon name={"HorisontalAlignLeft"} width={24} height={24} /> */}
-				<Icon iconName="TextAlignLeft" width={16} height={16}/>
+				<Icon iconName="TextAlignLeft" width={16} height={16} />
 			</Button>
 			<Button
 				id="ChangeHorisontalAlignmentCenter"
 				key="ChangeHorisontalAlignmentCenter"
-				onClick={() => {
-					onPick("center");
-				}}
+				onClick={handlePick("center")}
 				margin={0}
 				isOn={alignment === 'center'}
 			>
-				{/* <Icon name={"HorisontalAlignCenter"} width={24} height={24} /> */}
-				<Icon iconName="TextAlignCenter" width={16} height={16}/>
+				<Icon iconName="TextAlignCenter" width={16} height={16} />
 			</Button>
 			<Button
 				id="ChangeHorisontalAlignmentRight"
 				key="ChangeHorisontalAlignmentRight"
-				onClick={() => {
-					onPick("right");
-				}}
+				onClick={handlePick("right")}
 				margin={0}
 				isOn={alignment === 'right'}
 			>
-				{/* <Icon name={"HorisontalAlignRight"} width={24} height={24} /> */}
-				<Icon iconName="TextAlignRight" width={16} height={16}/>
+				<Icon iconName="TextAlignRight" width={16} height={16} />
 			</Button>
 		</>
 	);

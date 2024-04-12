@@ -9,15 +9,15 @@ interface Props {
 }
 
 export function VerticalAlignmentPicker(props: Props): React.ReactElement {
+	const handlePick = (alignment: VerticalAlignment) => () =>
+		props.onPick(alignment);
 	return (
 		<>
 			<Button
 				id="ChangeVerticalAlignmentTop"
 				key="ChangeVerticalAlignmentTop"
-				onClick={() => {
-					props.onPick("top");
-				}}
-				isOn={props.alignment === 'top'}
+				onClick={handlePick("top")}
+				isOn={props.alignment === "top"}
 				margin={0}
 			>
 				<Icon iconName={"VerticalAlignTop"} width={16} height={16} />
@@ -25,10 +25,8 @@ export function VerticalAlignmentPicker(props: Props): React.ReactElement {
 			<Button
 				id="ChangeVerticalAlignmentCenter"
 				key="ChangeVerticalAlignmentCenter"
-				onClick={() => {
-					props.onPick("center");
-				}}
-				isOn={props.alignment === 'center'}
+				onClick={handlePick("center")}
+				isOn={props.alignment === "center"}
 				margin={0}
 
 			>
@@ -37,10 +35,8 @@ export function VerticalAlignmentPicker(props: Props): React.ReactElement {
 			<Button
 				id="ChangeVerticalAlignmentBottom"
 				key="ChangeVerticalAlignmentBottom"
-				onClick={() => {
-					props.onPick("bottom");
-				}}
-				isOn={props.alignment === 'bottom'}
+				onClick={handlePick("bottom")}
+				isOn={props.alignment === "bottom"}
 				margin={0}
 			>
 				<Icon iconName={"VerticalAlignBottom"} width={16} height={16} />
