@@ -263,13 +263,6 @@ export class ContextPanel extends React.Component<
 						.getText()
 						?.getVerticalAlignment()}
 				/>
-				<AddList
-					board={board}
-					toggleMenu={this.toggleMenu}
-					menu={menu}
-					panelMbr={panelRect}
-					windowHeight={windowHeight}
-				/>
 
 				<TextColor
 					board={board}
