@@ -18,20 +18,20 @@ import { ConnectorLineStyle } from "Board/Items/Connector";
 import { SidePanelState } from "View/SidePanel/SidePanelState";
 import { stickerColors } from "Board/Items/Sticker";
 
-interface Props {
+type Props = {
 	app: App;
 	board: Board;
 	sidePanelState: SidePanelState;
-}
+};
 
-interface State {
+type State = {
 	addShapeRect: Mbr;
 	addShapeMenuRect: Mbr;
 	addConnectorRect: Mbr;
 	addConnectorMenuRect: Mbr;
 	addDrawingRect: Mbr;
 	addDrawingMenuRect: Mbr;
-}
+};
 
 export class ToolsPanel extends React.Component<Props, State> {
 	animationFrameId: number | null = null;
@@ -39,14 +39,6 @@ export class ToolsPanel extends React.Component<Props, State> {
 	update = (): void => {
 		this.forceUpdate();
 		return;
-		if (this.animationFrameId) {
-			return; // Function already scheduled to run
-		}
-
-		this.animationFrameId = requestAnimationFrame(() => {
-			this.forceUpdate();
-			this.animationFrameId = null;
-		});
 	};
 
 	subscription = {
@@ -161,7 +153,7 @@ export class ToolsPanel extends React.Component<Props, State> {
 
 							renderPage(1);
 						},
-						(reason) => {
+						reason => {
 							console.error(reason);
 						},
 					);
@@ -259,7 +251,6 @@ export class ToolsPanel extends React.Component<Props, State> {
 							finalScale,
 							finalScale,
 						);
-						
 
 						board.selection.removeAll();
 						board.selection.add(boardImage);

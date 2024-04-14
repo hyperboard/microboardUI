@@ -47,13 +47,14 @@ export class ZoomPanel extends React.Component<Props> {
 				style={{
 					display: "flex",
 					position: "absolute",
-					gap: '8px',
+					gap: "8px",
 					bottom: "8px",
 					right: "12px",
 					backgroundColor: "white",
 					borderRadius: "8px",
-					boxShadow: '0 1px 6px 0 rgba(0, 0, 0, 0.05), 0 1px 1px 0 rgba(0, 0, 0, 0.05)',
-					padding: '4px',
+					boxShadow:
+						"0 1px 6px 0 rgba(0, 0, 0, 0.05), 0 1px 1px 0 rgba(0, 0, 0, 0.05)",
+					padding: "4px",
 					userSelect: "none",
 				}}
 			>
@@ -74,7 +75,7 @@ export class ZoomPanel extends React.Component<Props> {
 					tipOnTop
 					margin={0}
 					hotkey="⌘0"
-					style={{fontSize: '16px', fontWeight: 500}}
+					style={{ fontSize: "16px", fontWeight: 500 }}
 					width={50}
 				>
 					{scale < 0.01 ? "<1%" : `${Math.round(scale * 100)}%`}

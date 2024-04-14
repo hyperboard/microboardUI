@@ -1,8 +1,9 @@
 import * as React from "react";
 
-export class HorisontalSeparator extends React.PureComponent<{
+type HorisontalSeparatorProps = {
 	height?: number;
-}> {
+};
+export class HorisontalSeparator extends React.PureComponent<HorisontalSeparatorProps> {
 	render(): React.ReactElement {
 		return (
 			<div

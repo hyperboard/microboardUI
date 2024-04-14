@@ -24,6 +24,10 @@ applyStyle(`
 	outline: none;
 }
 
+.Button:focus {
+	outline: rgba(128, 183, 255, 0.4) solid 3px;
+}
+
 .Button.Active {
   background-color: rgba(20, 129, 221, .1);
 	color: rgb(20, 129, 221);

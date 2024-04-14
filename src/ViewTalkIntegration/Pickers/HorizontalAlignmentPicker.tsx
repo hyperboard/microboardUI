@@ -5,7 +5,7 @@ import { Icon } from "../Icon";
 
 interface Props {
 	onPick: (alignment: HorisontalAlignment) => void;
-	alignment: 'center' | 'left' | 'right';
+	alignment: "center" | "left" | "right";
 }
 
 export function HorisontalAlignmentPicker({
@@ -22,7 +22,7 @@ export function HorisontalAlignmentPicker({
 				key="ChangeHorisontalAlignmentLeft"
 				onClick={handlePick("left")}
 				margin={0}
-				isOn={alignment === 'left'}
+				isOn={alignment === "left"}
 			>
 				<Icon iconName="TextAlignLeft" width={16} height={16} />
 			</Button>
@@ -31,7 +31,7 @@ export function HorisontalAlignmentPicker({
 				key="ChangeHorisontalAlignmentCenter"
 				onClick={handlePick("center")}
 				margin={0}
-				isOn={alignment === 'center'}
+				isOn={alignment === "center"}
 			>
 				<Icon iconName="TextAlignCenter" width={16} height={16} />
 			</Button>
@@ -40,7 +40,7 @@ export function HorisontalAlignmentPicker({
 				key="ChangeHorisontalAlignmentRight"
 				onClick={handlePick("right")}
 				margin={0}
-				isOn={alignment === 'right'}
+				isOn={alignment === "right"}
 			>
 				<Icon iconName="TextAlignRight" width={16} height={16} />
 			</Button>

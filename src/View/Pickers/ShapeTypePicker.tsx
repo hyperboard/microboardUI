@@ -27,9 +27,11 @@ const shapes = [
 	{ id: "BracesLeft", label: "Braces Left" },
 ] as const;
 
-export function ShapePicker(props: {
+type Props = {
 	onPick: (type: ShapeType) => void;
-}): React.ReactElement {
+};
+
+export function ShapePicker(props: Props): React.ReactElement {
 	const buttons = [];
 	for (const shape of shapes) {
 		buttons.push(

@@ -14,9 +14,9 @@ export function FontSizePicker(props: Props): React.ReactElement {
 		justifyContent: "center",
 		alignItems: "center",
 		width: "100%",
-    fontSize: '16px',
-    fontWeight: '500',
-    padding: '6px 0',
+		fontSize: "16px",
+		fontWeight: "500",
+		padding: "6px 0",
 		border: "none",
 		cursor: "pointer",
 		backgroundColor: "white",
@@ -28,7 +28,7 @@ export function FontSizePicker(props: Props): React.ReactElement {
 	for (let i = 0; i < FontSizes.length; i++) {
 		const size = FontSizes[i];
 		const isDisabled = max < size;
-		const additionalStyle: React.CSSProperties = {}
+		const additionalStyle: React.CSSProperties = {};
 		if (isDisabled) {
 			additionalStyle.color = "rgba(0, 0, 0, 0.4)";
 			additionalStyle.cursor = "default";
@@ -39,8 +39,8 @@ export function FontSizePicker(props: Props): React.ReactElement {
 					onClick={() => {
 						props.onPick(size);
 					}}
-					className={'FontSizeBtn'}
-					style={{...buttonStyle, ...additionalStyle}}
+					className={"FontSizeBtn"}
+					style={{ ...buttonStyle, ...additionalStyle }}
 					disabled={isDisabled}
 				>
 					{size}
@@ -61,4 +61,4 @@ applyStyle(`
 	.FontSizeBtn {
 		transition: color .3s;
 	}
-`)
+`);

@@ -2,9 +2,9 @@ import { VerticalAlignment } from "Board/Items/Alignment";
 import * as React from "react";
 import { Icon } from "../Icon";
 
-interface Props {
+type Props = {
 	onPick: (alignment: VerticalAlignment) => void;
-}
+};
 
 export function VerticalAlignmentPicker(props: Props): React.ReactElement {
 	const buttonStyle: React.CSSProperties = {

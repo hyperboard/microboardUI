@@ -27,7 +27,7 @@ export function StrokeStylePicker(props: Props): React.ReactElement {
 				display: "flex",
 				justifyContent: "space-between",
 				alignItems: "center",
-				padding: '0 4px',
+				padding: "0 4px",
 			}}
 		>
 			<Button

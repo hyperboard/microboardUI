@@ -3,14 +3,14 @@ import { Icon } from "../Icon";
 import { ConnectorLineStyle } from "../../Board/Items/Connector";
 import { Button } from "View/ContextPanel";
 
-interface Props {
+type Props = {
 	onPick: (type: ConnectorLineStyle) => void;
-}
+};
 
-interface LineStyleButtonProps {
+type LineStyleButtonProps = {
 	lineStyle: ConnectorLineStyle;
 	onPick: () => void;
-}
+};
 
 export function ConnectorLineStyleButton(
 	props: LineStyleButtonProps,

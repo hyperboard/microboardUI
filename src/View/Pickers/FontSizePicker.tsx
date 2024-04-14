@@ -2,10 +2,10 @@ import * as React from "react";
 
 export const FontSizes = [10, 12, 14, 18, 24, 36, 48, 64, 80, 144, 288];
 
-interface Props {
+type Props = {
 	onPick: (size: number) => void;
 	maxSize?: number;
-}
+};
 
 export function FontSizePicker(props: Props): React.ReactElement {
 	const max = props.maxSize || 288;

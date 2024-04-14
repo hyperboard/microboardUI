@@ -207,7 +207,7 @@ export function Button(props: Props): React.ReactElement {
 					marginRight: `${margin}px`,
 					width: `${width}px`,
 					color: props.isOn ? "blue" : "black",
-					...props.style
+					...props.style,
 				}}
 			>
 				{props.children}

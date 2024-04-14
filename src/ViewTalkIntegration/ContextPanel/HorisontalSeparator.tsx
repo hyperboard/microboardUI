@@ -9,9 +9,9 @@ export class HorisontalSeparator extends React.PureComponent<{
 				style={{
 					height: `${this.props.height ?? 1}px`,
 					background: "rgba(0, 0, 0, 0.08)",
-          content: '',
-          width: '80%',
-          borderRadius: '20px'
+					content: "",
+					width: "80%",
+					borderRadius: "20px",
 				}}
 			/>
 		);

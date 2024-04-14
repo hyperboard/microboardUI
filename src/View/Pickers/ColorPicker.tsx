@@ -24,15 +24,17 @@ export const colors = {
 	"Brick Red": "rgb(151, 83, 83)",
 } as const;
 
-export function ColorPicker({
-	onPick,
-	allowNone,
-	list
-}: {
+type ColorPickerProps = {
 	allowNone: boolean;
 	onPick: (color: string) => void;
 	list?: any;
-}): React.ReactElement {
+};
+
+export function ColorPicker({
+	onPick,
+	allowNone,
+	list,
+}: ColorPickerProps): React.ReactElement {
 	const buttons = [];
 	if (allowNone) {
 		buttons.push(

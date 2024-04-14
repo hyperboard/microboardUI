@@ -21,11 +21,13 @@ const pointerTypes = [
 	{ id: "OneOptional", label: "One (Optional)" },
 ];
 
+type Props = {
+	onPick: (pointer: string) => void;
+};
+
 export function ConnectorStartPointerPicker({
 	onPick,
-}: {
-	onPick: (pointer: string) => void;
-}): React.ReactElement {
+}: Props): React.ReactElement {
 	const buttons = [];
 	for (const type of pointerTypes) {
 		buttons.push(

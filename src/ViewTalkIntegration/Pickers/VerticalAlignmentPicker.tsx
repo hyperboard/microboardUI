@@ -28,7 +28,6 @@ export function VerticalAlignmentPicker(props: Props): React.ReactElement {
 				onClick={handlePick("center")}
 				isOn={props.alignment === "center"}
 				margin={0}
-
 			>
 				<Icon iconName={"VerticalAlignCenter"} width={16} height={16} />
 			</Button>

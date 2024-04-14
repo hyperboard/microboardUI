@@ -122,28 +122,37 @@ export const SliderPicker = React.memo(function SliderPicker({
 				flexDirection: "column",
 				padding: "0 4px",
 				gap: "8px",
-				...style
+				...style,
 			}}
 		>
-			<span style={{position: 'relative', display: 'flex', alignItems: 'center', width: '100%'}}>
-			{dotsOffsets.map(offset => (
-				<InputDot key={offset} offset={offset} />
-			))}
+			<span
+				style={{
+					position: "relative",
+					display: "flex",
+					alignItems: "center",
+					width: "100%",
+				}}
+			>
+				{dotsOffsets.map(offset => (
+					<InputDot key={offset} offset={offset} />
+				))}
 
-			<input
-				ref={inputRef}
-				type="range"
-				min={min}
-				max={max}
-				step={step}
-				value={width}
-				className="slider"
-				onInput={handlePickWidth}
-			/>
+				<input
+					ref={inputRef}
+					type="range"
+					min={min}
+					max={max}
+					step={step}
+					value={width}
+					className="slider"
+					onInput={handlePickWidth}
+				/>
 			</span>
-			{showLabel && <p className="label" style={labelStyles}>
-				Толщина линии
-			</p>}
+			{showLabel && (
+				<p className="label" style={labelStyles}>
+					Толщина линии
+				</p>
+			)}
 		</div>
 	);
 });

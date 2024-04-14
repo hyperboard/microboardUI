@@ -35,14 +35,18 @@ import { BorderStyle } from "Board/Items/Path";
 
 export const IconSize = 24;
 
+type ContextPanelProps = {
+	board: Board;
+};
+
+type ContextPanelState = {
+	menu: string;
+	panelRect: Mbr;
+};
+
 export class ContextPanel extends React.Component<
-	{
-		board: Board;
-	},
-	{
-		menu: string;
-		panelRect: Mbr;
-	}
+	ContextPanelProps,
+	ContextPanelState
 > {
 	state = {
 		menu: "None",
@@ -267,15 +271,16 @@ export class ContextPanel extends React.Component<
 	}
 }
 
-class Scroll extends React.PureComponent<
-	{
-		board: Board;
-		panelRef: React.RefObject<HTMLDivElement>;
-	},
-	{
-		left: number;
-	}
-> {
+type ScrollProps = {
+	board: Board;
+	panelRef: React.RefObject<HTMLDivElement>;
+};
+
+type ScrollState = {
+	left: number;
+};
+
+class Scroll extends React.PureComponent<ScrollProps, ScrollState> {
 	state = {
 		left: 0,
 	};
@@ -411,12 +416,14 @@ ContextPanelStyle.innerHTML = `
 
 document.head.appendChild(ContextPanelStyle);
 
-class ButtonWithMenu extends React.PureComponent<{
+type ButtonWithMenuProps = {
 	panelMbr: Mbr;
 	windowHeight: number;
 	menuRef: React.RefObject<HTMLDivElement>;
 	children: React.ReactNode;
-}> {
+};
+
+class ButtonWithMenu extends React.PureComponent<ButtonWithMenuProps> {
 	componentDidMount(): void {
 		this.fitMenuAroundPanel(
 			this.props.menuRef,
@@ -459,7 +466,9 @@ class ButtonWithMenu extends React.PureComponent<{
 	}
 }
 
-function Edit({ board }: { board: Board }): React.ReactElement | null {
+type EditProps = { board: Board };
+
+function Edit({ board }: EditProps): React.ReactElement | null {
 	if (board.selection.getContext() !== "SelectUnderPointer") {
 		return null;
 	}
@@ -475,6 +484,15 @@ function Edit({ board }: { board: Board }): React.ReactElement | null {
 	);
 }
 
+type StartPointerProps = {
+	board: Board;
+	toggleMenu: (menu: string) => void;
+	menu: string;
+	panelMbr: Mbr;
+	windowHeight: number;
+	pointer: string;
+};
+
 function StartPointer({
 	board,
 	toggleMenu,
@@ -482,14 +500,7 @@ function StartPointer({
 	panelMbr,
 	windowHeight,
 	pointer,
-}: {
-	board: Board;
-	toggleMenu: (menu: string) => void;
-	menu: string;
-	panelMbr: Mbr;
-	windowHeight: number;
-	pointer: string;
-}): React.ReactElement | null {
+}: StartPointerProps): React.ReactElement | null {
 	const canChangePointer = board.selection.items.isItemTypes(["Connector"]);
 	if (
 		board.selection.getContext() === "SelectUnderPointer" ||
@@ -543,14 +554,16 @@ function StartPointer({
 	);
 }
 
-function SwitchPointers({
-	board,
-}: {
+type SwitchPointersProps = {
 	board: Board;
 	toggleMenu: (menu: string) => void;
 	menu: string;
 	panelMbr: Mbr;
-}): React.ReactElement | null {
+};
+
+function SwitchPointers({
+	board,
+}: SwitchPointersProps): React.ReactElement | null {
 	const canChangePointer = board.selection.items.isItemTypes(["Connector"]);
 	if (
 		board.selection.getContext() === "SelectUnderPointer" ||
@@ -577,6 +590,15 @@ function SwitchPointers({
 	);
 }
 
+type EndPointerProps = {
+	board: Board;
+	toggleMenu: (menu: string) => void;
+	menu: string;
+	panelMbr: Mbr;
+	windowHeight: number;
+	pointer: string;
+};
+
 function EndPointer({
 	board,
 	toggleMenu,
@@ -584,14 +606,7 @@ function EndPointer({
 	panelMbr,
 	windowHeight,
 	pointer,
-}: {
-	board: Board;
-	toggleMenu: (menu: string) => void;
-	menu: string;
-	panelMbr: Mbr;
-	windowHeight: number;
-	pointer: string;
-}): React.ReactElement | null {
+}: EndPointerProps): React.ReactElement | null {
 	const canChangePointer = board.selection.items.isItemTypes(["Connector"]);
 	if (
 		board.selection.getContext() === "SelectUnderPointer" ||
@@ -645,15 +660,17 @@ function EndPointer({
 	);
 }
 
+type ConnectorAddTextProps = {
+	board: Board;
+	panelMbr: Mbr;
+	windowHeight: number;
+};
+
 function ConnectorAddText({
 	board,
 	panelMbr,
 	windowHeight,
-}: {
-	board: Board;
-	panelMbr: Mbr;
-	windowHeight: number;
-}): React.ReactElement | null {
+}: ConnectorAddTextProps): React.ReactElement | null {
 	const canChangePointer = board.selection.items.isItemTypes(["Connector"]);
 	if (
 		board.selection.getContext() === "SelectUnderPointer" ||
@@ -693,19 +710,21 @@ function ConnectorAddText({
 	);
 }
 
+type ConnectorTypeProps = {
+	board: Board;
+	toggleMenu: (menu: string) => void;
+	menu: string;
+	panelMbr: Mbr;
+	windowHeight: number;
+};
+
 function ConnectorType({
 	board,
 	toggleMenu,
 	menu,
 	panelMbr,
 	windowHeight,
-}: {
-	board: Board;
-	toggleMenu: (menu: string) => void;
-	menu: string;
-	panelMbr: Mbr;
-	windowHeight: number;
-}): React.ReactElement | null {
+}: ConnectorTypeProps): React.ReactElement | null {
 	const canChangePointer = board.selection.items.isItemTypes(["Connector"]);
 	if (
 		board.selection.getContext() === "SelectUnderPointer" ||
@@ -755,11 +774,13 @@ function ConnectorType({
 	);
 }
 
+type ConnectorStyleSeparatorProps = {
+	board: Board;
+};
+
 function ConnectorStyleSeparator({
 	board,
-}: {
-	board: Board;
-}): React.ReactElement | null {
+}: ConnectorStyleSeparatorProps): React.ReactElement | null {
 	const canChangePointer = board.selection.items.isItemTypes(["Connector"]);
 	if (
 		board.selection.getContext() === "SelectUnderPointer" ||
@@ -780,20 +801,22 @@ function ConnectorStyleSeparator({
 	);
 }
 
-function ItemType({
-	board,
-	toggleMenu,
-	menu,
-	panelMbr,
-	windowHeight,
-}: {
+type ItemTypeProps = {
 	board: Board;
 	toggleMenu: (menu: string) => void;
 	menu: string;
 	panelMbr: Mbr;
 	color: string;
 	windowHeight: number;
-}): React.ReactElement | null {
+};
+
+function ItemType({
+	board,
+	toggleMenu,
+	menu,
+	panelMbr,
+	windowHeight,
+}: ItemTypeProps): React.ReactElement | null {
 	const canChangeItemType = board.selection.items.isItemTypes(["Shape"]);
 	if (
 		board.selection.getContext() === "SelectUnderPointer" ||
@@ -841,11 +864,13 @@ function ItemType({
 	);
 }
 
+type ItemTypeSeparatorProps = {
+	board: Board;
+};
+
 function ItemTypeSeparator({
 	board,
-}: {
-	board: Board;
-}): React.ReactElement | null {
+}: ItemTypeSeparatorProps): React.ReactElement | null {
 	const canChangeItemType = board.selection.items.isItemTypes(["Shape"]);
 	if (
 		board.selection.getContext() === "SelectUnderPointer" ||
@@ -866,14 +891,16 @@ function ItemTypeSeparator({
 	);
 }
 
-class FontSize extends React.PureComponent<{
+type FontSizeProps = {
 	board: Board;
 	toggleMenu: (menu: string) => void;
 	menu: string;
 	panelMbr: Mbr;
 	windowHeight: number;
 	fontSize: number;
-}> {
+};
+
+class FontSize extends React.PureComponent<FontSizeProps> {
 	menuRef = React.createRef<HTMLDivElement>();
 	state = { fontSize: this.props.fontSize };
 	updateFontSize = (): void => {
@@ -976,19 +1003,21 @@ class FontSize extends React.PureComponent<{
 	}
 }
 
+type FontStyleProps = {
+	board: Board;
+	toggleMenu: (menu: string) => void;
+	menu: string;
+	panelMbr: Mbr;
+	windowHeight: number;
+};
+
 function FontStyle({
 	board,
 	toggleMenu,
 	menu,
 	panelMbr,
 	windowHeight,
-}: {
-	board: Board;
-	toggleMenu: (menu: string) => void;
-	menu: string;
-	panelMbr: Mbr;
-	windowHeight: number;
-}): React.ReactElement | null {
+}: FontStyleProps): React.ReactElement | null {
 	if (board.selection.getContext() === "SelectUnderPointer") {
 		return null;
 	}
@@ -1039,19 +1068,21 @@ function FontStyle({
 	);
 }
 
+type TextAlignmentProps = {
+	board: Board;
+	toggleMenu: (menu: string) => void;
+	menu: string;
+	panelMbr: Mbr;
+	windowHeight: number;
+};
+
 function TextAlignment({
 	board,
 	toggleMenu,
 	menu,
 	panelMbr,
 	windowHeight,
-}: {
-	board: Board;
-	toggleMenu: (menu: string) => void;
-	menu: string;
-	panelMbr: Mbr;
-	windowHeight: number;
-}): React.ReactElement | null {
+}: TextAlignmentProps): React.ReactElement | null {
 	const connector = board.selection.items.getSingle();
 	const isConnector = connector instanceof Connector;
 
@@ -1123,11 +1154,11 @@ function TextAlignment({
 	);
 }
 
+type TextFeaturesSeparatorProps = { board: Board };
+
 function TextFeaturesSeparator({
 	board,
-}: {
-	board: Board;
-}): React.ReactElement | null {
+}: TextFeaturesSeparatorProps): React.ReactElement | null {
 	if (board.selection.getContext() === "SelectUnderPointer") {
 		return null;
 	}
@@ -1152,6 +1183,15 @@ function TextFeaturesSeparator({
 	);
 }
 
+type TextColorProps = {
+	board: Board;
+	toggleMenu: (menu: string) => void;
+	menu: string;
+	panelMbr: Mbr;
+	color: string;
+	windowHeight: number;
+};
+
 function TextColor({
 	board,
 	toggleMenu,
@@ -1159,14 +1199,7 @@ function TextColor({
 	panelMbr,
 	color,
 	windowHeight,
-}: {
-	board: Board;
-	toggleMenu: (menu: string) => void;
-	menu: string;
-	panelMbr: Mbr;
-	color: string;
-	windowHeight: number;
-}): React.ReactElement | null {
+}: TextColorProps): React.ReactElement | null {
 	if (board.selection.getContext() === "SelectUnderPointer") {
 		return null;
 	}
@@ -1222,6 +1255,15 @@ function TextColor({
 	);
 }
 
+type TextHighlightProps = {
+	board: Board;
+	toggleMenu: (menu: string) => void;
+	menu: string;
+	panelMbr: Mbr;
+	windowHeight: number;
+	color: string;
+};
+
 function TextHighlight({
 	board,
 	toggleMenu,
@@ -1229,14 +1271,7 @@ function TextHighlight({
 	panelMbr,
 	windowHeight,
 	color,
-}: {
-	board: Board;
-	toggleMenu: (menu: string) => void;
-	menu: string;
-	panelMbr: Mbr;
-	windowHeight: number;
-	color: string;
-}): React.ReactElement | null {
+}: TextHighlightProps): React.ReactElement | null {
 	if (board.selection.getContext() === "SelectUnderPointer") {
 		return null;
 	}
@@ -1292,11 +1327,13 @@ function TextHighlight({
 	);
 }
 
+type TextColorSeparatorProps = {
+	board: Board;
+};
+
 function TextColorSeparator({
 	board,
-}: {
-	board: Board;
-}): React.ReactElement | null {
+}: TextColorSeparatorProps): React.ReactElement | null {
 	if (
 		board.selection.getContext() !== "EditTextUnderPointer" &&
 		!board.selection.canChangeText()
@@ -1316,6 +1353,16 @@ function TextColorSeparator({
 	);
 }
 
+type StrokeStyleProps = {
+	board: Board;
+	toggleMenu: (menu: string) => void;
+	menu: string;
+	panelMbr: Mbr;
+	windowHeight: number;
+	color: string;
+	width: number;
+};
+
 function StrokeStyle({
 	board,
 	toggleMenu,
@@ -1324,15 +1371,7 @@ function StrokeStyle({
 	windowHeight,
 	color,
 	width,
-}: {
-	board: Board;
-	toggleMenu: (menu: string) => void;
-	menu: string;
-	panelMbr: Mbr;
-	windowHeight: number;
-	color: string;
-	width: number;
-}): React.ReactElement | null {
+}: StrokeStyleProps): React.ReactElement | null {
 	const context = board.selection.getContext();
 
 	const canChangeBorderStyle = board.selection.items.isItemTypes([
@@ -1399,22 +1438,23 @@ function StrokeStyle({
 	);
 }
 
-function FillStyle({
-	board,
-	toggleMenu,
-	menu,
-	panelMbr,
-	windowHeight,
-
-	color,
-}: {
+type FillStyleProps = {
 	board: Board;
 	toggleMenu: (menu: string) => void;
 	menu: string;
 	panelMbr: Mbr;
 	color: string;
 	windowHeight: number;
-}): React.ReactElement | null {
+};
+
+function FillStyle({
+	board,
+	toggleMenu,
+	menu,
+	panelMbr,
+	windowHeight,
+	color,
+}: FillStyleProps): React.ReactElement | null {
 	const context = board.selection.getContext();
 	const canChangeFillStyle = board.selection.items.isItemTypes(["Shape"]);
 	if (context === "SelectUnderPointer" || !canChangeFillStyle) {
@@ -1466,22 +1506,23 @@ function FillStyle({
 	);
 }
 
-function StickerFillStyle({
-	board,
-	toggleMenu,
-	menu,
-	panelMbr,
-	windowHeight,
-
-	color,
-}: {
+type StickerFillStyleProps = {
 	board: Board;
 	toggleMenu: (menu: string) => void;
 	menu: string;
 	panelMbr: Mbr;
 	color: string;
 	windowHeight: number;
-}): React.ReactElement | null {
+};
+
+function StickerFillStyle({
+	board,
+	toggleMenu,
+	menu,
+	panelMbr,
+	windowHeight,
+	color,
+}: StickerFillStyleProps): React.ReactElement | null {
 	const context = board.selection.getContext();
 	const canChangeFillStyle = board.selection.items.isItemTypes(["Sticker"]);
 	if (context === "SelectUnderPointer" || !canChangeFillStyle) {
@@ -1538,11 +1579,13 @@ function StickerFillStyle({
 	);
 }
 
+type PathStyleSeparatorProps = {
+	board: Board;
+};
+
 function PathStyleSeparator({
 	board,
-}: {
-	board: Board;
-}): React.ReactElement | null {
+}: PathStyleSeparatorProps): React.ReactElement | null {
 	const canChangeBorderStyle = board.selection.items.isItemTypes([
 		"Shape",
 		"Drawing",
@@ -1571,7 +1614,9 @@ function PathStyleSeparator({
 	);
 }
 
-function Duplicate({ board }: { board: Board }): React.ReactElement | null {
+type DuplicateProps = { board: Board };
+
+function Duplicate({ board }: DuplicateProps): React.ReactElement | null {
 	if (board.selection.getContext() === "SelectUnderPointer") {
 		return null;
 	}
@@ -1587,7 +1632,9 @@ function Duplicate({ board }: { board: Board }): React.ReactElement | null {
 	);
 }
 
-function Delete({ board }: { board: Board }): React.ReactElement | null {
+type DeleteProps = { board: Board };
+
+function Delete({ board }: DeleteProps): React.ReactElement | null {
 	if (board.selection.getContext() === "SelectUnderPointer") {
 		return null;
 	}
@@ -1602,19 +1649,21 @@ function Delete({ board }: { board: Board }): React.ReactElement | null {
 	);
 }
 
+type RestOptionsMenuProps = {
+	toggleMenu: (menu: string) => void;
+	menu: string;
+	panelMbr: Mbr;
+	windowHeight: number;
+	board: Board;
+};
+
 function RestOptionsMenu({
 	toggleMenu,
 	menu,
 	panelMbr,
 	windowHeight,
 	board,
-}: {
-	toggleMenu: (menu: string) => void;
-	menu: string;
-	panelMbr: Mbr;
-	windowHeight: number;
-	board: Board;
-}): React.ReactElement {
+}: RestOptionsMenuProps): React.ReactElement {
 	const menuRef = React.useRef<HTMLDivElement>(null);
 	return (
 		<>
@@ -1652,16 +1701,18 @@ function RestOptionsMenu({
 	);
 }
 
+type RestOptionsMenuItemProps = React.PropsWithChildren<{
+	hotkey: string;
+	onClick: React.MouseEventHandler;
+	id: string;
+}>;
+
 function RestOptionsMenuItem({
 	children,
 	hotkey,
 	onClick,
 	id,
-}: React.PropsWithChildren<{
-	hotkey: string;
-	onClick: React.MouseEventHandler;
-	id: string;
-}>): React.ReactElement {
+}: RestOptionsMenuItemProps): React.ReactElement {
 	return (
 		<Button
 			style={{
@@ -1682,7 +1733,9 @@ function RestOptionsMenuItem({
 	);
 }
 
-function BringToFront({ board }: { board: Board }): React.ReactElement | null {
+type BringToFrontProps = { board: Board };
+
+function BringToFront({ board }: BringToFrontProps): React.ReactElement | null {
 	const items = board.selection.items;
 
 	const handleClick = () => {
@@ -1701,7 +1754,9 @@ function BringToFront({ board }: { board: Board }): React.ReactElement | null {
 	);
 }
 
-function BringToBack({ board }: { board: Board }): React.ReactElement | null {
+type BringToBackProps = { board: Board };
+
+function BringToBack({ board }: BringToBackProps): React.ReactElement | null {
 	const items = board.selection.items;
 
 	const handleClick = () => {

@@ -5,7 +5,7 @@ import { Icon } from "../Icon";
 
 interface Props {
 	onPick: (type: ConnectorLineStyle) => void;
-  selected?: string;
+	selected?: string;
 }
 
 export function ConnectorLineStylePicker(props: Props): React.ReactElement {

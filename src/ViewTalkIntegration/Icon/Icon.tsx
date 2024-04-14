@@ -27,7 +27,7 @@ export type IconId =
 	| "Hexagon"
 	| "Rhombus"
 	| "Triangle"
-	| "Star" 
+	| "Star"
 	| "ArrowRight"
 	| "ArrowLeft"
 	| "ArrowBlockRight"

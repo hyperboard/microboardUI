@@ -21,15 +21,17 @@ export function ColorCircle({
 			viewBox="0 0 30 30"
 			fill="none"
 		>
-			{selected && <rect
-				x="1.5"
-				y="1.5"
-				width="27"
-				height="27"
-				rx="13.5"
-				stroke={"#1481DD"}
-				strokeWidth="3"
-			/>}
+			{selected && (
+				<rect
+					x="1.5"
+					y="1.5"
+					width="27"
+					height="27"
+					rx="13.5"
+					stroke={"#1481DD"}
+					strokeWidth="3"
+				/>
+			)}
 			<rect
 				x="3.5"
 				y="3.5"
