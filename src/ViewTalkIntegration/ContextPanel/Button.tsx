@@ -24,7 +24,7 @@ applyStyle(`
 	outline: none;
 }
 
-.Button:focus {
+.Button:focus-visible {
 	outline: rgba(128, 183, 255, 0.4) solid 3px;
 }
 
@@ -34,13 +34,13 @@ applyStyle(`
 }
 
   @media(hover:hover) {
-    .Button:hover {
+    .Button:hover:not([disabled]) {
       background-color: rgba(0, 0, 0, .05);
     }
   }
 
 
-	.Button:active {
+	.Button:active:not([disabled]) {
 		background-color: rgba(20, 129, 221, .1);
 		color: rgb(20, 129, 221);
 	}
@@ -55,6 +55,7 @@ applyStyle(`
 	display: flex;
 	justify-content: center;
 	gap: 6px;
+	user-select: none;
 }
 
 .ButtonContainer .ButtonTipOnLeft::after {
@@ -179,6 +180,11 @@ applyStyle(`
 .ButtonContainer .ButtonTipOnTop:hover {
 	visibility: hidden;
 }
+.ButtonContainer:disabled {
+	border: none;
+	background: transparent;
+	color: rgba(0, 0, 0, 0.4);
+}
 `);
 
 type Props = React.PropsWithChildren<{
@@ -193,6 +199,9 @@ type Props = React.PropsWithChildren<{
 	hotkey?: string;
 	width?: number | string;
 	height?: number | string;
+	style?: React.CSSProperties;
+	className?: string;
+	disabled?: boolean;
 }> &
 	React.ButtonHTMLAttributes<HTMLButtonElement>;
 
@@ -212,6 +221,7 @@ export function Button(props: Props): React.ReactElement {
 		buttonRef,
 		hotkey,
 		children,
+		disabled = false,
 		...restProps
 	} = props;
 	return (
@@ -223,6 +233,7 @@ export function Button(props: Props): React.ReactElement {
 		>
 			<button
 				ref={buttonRef}
+				disabled={disabled}
 				className={`Button ${isOn ? "Active" : ""} ${className ?? ""}`}
 				style={{
 					marginLeft: `${margin}px`,

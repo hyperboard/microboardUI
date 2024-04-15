@@ -269,8 +269,8 @@ export class ToolsPanel extends React.Component<Props, State> {
 
 				<HorisontalSeparator height={1}></HorisontalSeparator>
 
-				<Undo board={board} isOn={board.events.canUndo()} />
-				<Redo board={board} isOn={board.events.canRedo()} />
+				<Undo board={board} canUndo={board.events.canUndo()} />
+				<Redo board={board} canRedo={board.events.canRedo()} />
 			</div>
 		);
 	}
@@ -650,14 +650,16 @@ class AddImage extends React.PureComponent {
 	}
 }
 
-class Undo extends React.PureComponent<{ board: Board; isOn: boolean }> {
+type UndoProps = { board: Board; canUndo: boolean };
+
+class Undo extends React.PureComponent<UndoProps> {
 	handleClick = (): void => {
 		const { board } = this.props;
 		board.events.undo();
 	};
 
 	render(): React.ReactElement {
-		const { isOn } = this.props;
+		const { canUndo } = this.props;
 
 		return (
 			<Button
@@ -669,20 +671,24 @@ class Undo extends React.PureComponent<{ board: Board; isOn: boolean }> {
 				tipOnLeft
 				width={32}
 				height={32}
+				disabled={!canUndo}
 			>
-				<UndoIcon isOn={isOn} width={15} height={15} />
+				<UndoIcon width={15} height={15} />
 			</Button>
 		);
 	}
 }
-class Redo extends React.PureComponent<{ board: Board; isOn: boolean }> {
+
+type RedoProps = { board: Board; canRedo: boolean };
+
+class Redo extends React.PureComponent<RedoProps> {
 	handleClick = (): void => {
 		const { board } = this.props;
 		board.events.redo();
 	};
 
 	render(): React.ReactElement {
-		const { isOn } = this.props;
+		const { canRedo } = this.props;
 
 		return (
 			<Button
@@ -694,8 +700,9 @@ class Redo extends React.PureComponent<{ board: Board; isOn: boolean }> {
 				tipOnLeft
 				width={32}
 				height={32}
+				disabled={!canRedo}
 			>
-				<RedoIcon isOn={isOn} width={15} height={15} />
+				<RedoIcon width={15} height={15} />
 			</Button>
 		);
 	}

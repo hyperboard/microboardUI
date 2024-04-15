@@ -18,7 +18,6 @@ import { VerticalAlignmentPicker } from "../Pickers/VerticalAlignmentPicker";
 import * as React from "react";
 import { fitContextPanel } from "View/fit";
 import { Button } from "./Button";
-import { HorisontalSeparator } from "./HorisontalSeparator";
 import { VerticalSeparator } from "./VerticalSeparator";
 
 import { applyStyle } from "lib/applyStyle";
