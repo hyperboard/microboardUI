@@ -616,7 +616,7 @@ create table if not exists board_snapshots (
 	snapshot jsonb
 );
 
-CREATE TABLE snapshots (
+CREATE TABLE if not exists snapshots (
   id SERIAL PRIMARY KEY,
   board_id UUID NOT NULL REFERENCES boards(uniq_id),
   snapshot JSON NOT NULL,

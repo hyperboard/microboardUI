@@ -12,6 +12,15 @@ type Template = {
     };
 };
 
+function getMailerConfig() {
+    return {
+        host: process.env.MAILER_HOST,
+        user: process.env.MAILER_USER,
+        pass: process.env.MAILER_PASS,
+        port: process.env.MAILER_PORT,
+    };
+}
+
 export class Mailer {
     private transporter;
 
@@ -20,20 +29,21 @@ export class Mailer {
         private readonly logger: winston.Logger,
         private readonly baseUrl: string
     ) {
+        const { host, user, pass, port } = getMailerConfig();
         this.baseUrl = process.env.BASE_URL || "http://localhost:8000";
         this.transporter = nodemailer.createTransport(
             {
-                host: "smtp.yandex.com",
-                port: 465,
+                host,
+                port, // 465
                 ignoreTLS: true,
                 secure: true,
                 auth: {
-                    user: this.config.environment.MAILER_USER!,
-                    pass: this.config.environment.MAILER_PASSWORD!,
+                    user,
+                    pass,
                 },
             } as nodemailer.TransportOptions,
             {
-                from: this.config.environment.MAILER_USER!,
+                from: user,
             } as nodemailer.SendMailOptions
         );
         this.transporter.use(
@@ -56,7 +66,7 @@ export class Mailer {
                 to: to,
                 subject: subject,
                 template: "dist/templates/" + template.template,
-                context: {...template.context, baseUrl: this.baseUrl},
+                context: { ...template.context, baseUrl: this.baseUrl },
             };
 
             this.transporter.sendMail(mailOptions, (err) => {

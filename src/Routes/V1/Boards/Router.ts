@@ -37,6 +37,10 @@ function isUUIDOrRoot(value: unknown): boolean {
     throw new Error('catalogId must be a valid UUID or "root"');
 }
 
+function hasRootCatalogPermission(token: AccessToken): boolean {
+    return checkPermissions(token, "owns", "catalogs", "root");
+}
+
 export function getBoardsRouter(
     boards: Boards,
     logger: winston.Logger
@@ -118,17 +122,28 @@ export function getBoardsRouter(
                     return res.status(400).json({ errors: errors.array() });
                 }
 
-                const catalogId = req.body.catalogId;
                 const boardId = req.params.boardId as string;
 
+                const hasBoardOwnership = checkPermissions(
+                    req.token,
+                    "owns",
+                    "boards",
+                    boardId
+                );
+
+                const catalogId = req.body.catalogId;
+
+                const hasCatalogPermission = checkPermissions(
+                    req.token,
+                    "owns",
+                    "catalogs",
+                    catalogId
+                );
+
                 if (
-                    !checkPermissions(
-                        req.token,
-                        "owns",
-                        "catalogs",
-                        catalogId
-                    ) &&
-                    !checkPermissions(req.token, "owns", "boards", boardId)
+                    !hasRootCatalogPermission(req.token) &&
+                    !hasBoardOwnership &&
+                    !hasCatalogPermission
                 ) {
                     return forbidden(res);
                 }
@@ -146,7 +161,7 @@ export function getBoardsRouter(
     router.post(
         "/boards/:boardId/duplicate",
         authenticate,
-        body("catalogId").optional().isUUID(),
+        body("catalogId").optional().custom(isUUIDOrRoot),
         param("boardId").isUUID(),
         async (req: Request, res: Response) => {
             try {
@@ -156,21 +171,27 @@ export function getBoardsRouter(
                 }
 
                 const catalogId = req.params.catalogId;
+
+                const hasCatalogPermission = checkPermissions(
+                    req.token,
+                    "owns",
+                    "catalogs",
+                    catalogId
+                );
+
                 const originalBoardId = req.params.boardId;
 
+                const hasBoardOwnership = checkPermissions(
+                    req.token,
+                    "owns",
+                    "boards",
+                    originalBoardId
+                );
+
                 if (
-                    !checkPermissions(
-                        req.token,
-                        "owns",
-                        "catalogs",
-                        catalogId
-                    ) &&
-                    !checkPermissions(
-                        req.token,
-                        "owns",
-                        "boards",
-                        originalBoardId
-                    )
+                    !hasRootCatalogPermission(req.token) &&
+                    !hasCatalogPermission &&
+                    !hasBoardOwnership
                 ) {
                     return forbidden(res);
                 }
@@ -189,7 +210,7 @@ export function getBoardsRouter(
     router.patch(
         "/boards/:boardId",
         authenticate,
-        body("catalogId").optional().isUUID(),
+        body("catalogId").optional().custom(isUUIDOrRoot),
         param("boardId").isUUID(),
         body("newTitle").isString(),
         async (req: Request, res: Response) => {
@@ -200,17 +221,29 @@ export function getBoardsRouter(
                 }
 
                 const boardId = req.params.boardId;
+
+                const hasBoardOwnership = checkPermissions(
+                    req.token,
+                    "owns",
+                    "boards",
+                    boardId
+                );
+
                 const catalogId = req.params.catalogId;
+
+                const hasCatalogPermission = checkPermissions(
+                    req.token,
+                    "owns",
+                    "catalogs",
+                    catalogId
+                );
+
                 const newTitle = req.body.newTitle;
 
                 if (
-                    !checkPermissions(
-                        req.token,
-                        "owns",
-                        "catalogs",
-                        catalogId
-                    ) &&
-                    !checkPermissions(req.token, "owns", "boards", boardId)
+                    !hasRootCatalogPermission(req.token) &&
+                    !hasCatalogPermission &&
+                    !hasBoardOwnership
                 ) {
                     return forbidden(res);
                 }
@@ -320,10 +353,21 @@ export function getBoardsRouter(
                 }
 
                 const boardId = req.params.boardId;
+
+                const hasBoardOwnership = checkPermissions(
+                    req.token,
+                    "owns",
+                    "boards",
+                    boardId
+                );
+
                 const type = req.body.type;
                 const linkId = uuidv4();
 
-                if (!checkPermissions(req.token, "owns", "boards", boardId)) {
+                if (
+                    !hasRootCatalogPermission(req.token) &&
+                    !hasBoardOwnership
+                ) {
                     return forbidden(res);
                 }
 
@@ -355,9 +399,20 @@ export function getBoardsRouter(
                 }
 
                 const boardId = req.params.boardId;
+
+                const hasBoardOwnership = checkPermissions(
+                    req.token,
+                    "owns",
+                    "boards",
+                    boardId
+                );
+
                 const linkId = req.params.linkId;
 
-                if (!checkPermissions(req.token, "owns", "boards", boardId)) {
+                if (
+                    !hasRootCatalogPermission(req.token) &&
+                    !hasBoardOwnership
+                ) {
                     return forbidden(res);
                 }
 
