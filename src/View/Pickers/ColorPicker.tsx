@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Icon } from "../Icon";
 import { Button } from "View/ContextPanel";
-// import { IconSize } from "View/ContextPanel/ContextPanel";
 import { CircleIcon } from "View/Icon/CircleIcon";
 
 export const colors = {
@@ -49,8 +48,6 @@ export function ColorPicker({
 			>
 				<Icon
 					name="Circle"
-					// width={IconSize}
-					// height={IconSize}
 					fill={"white"}
 					stroke={"black"}
 				/>
