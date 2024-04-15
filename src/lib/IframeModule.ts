@@ -90,10 +90,8 @@ export class IframeModule {
       if (data.payload?.event?.eventType === 'keydown' && isIframe()) {
         const keydownEvent = new KeyboardEvent(
           data.payload.event.eventType,
-          { ...data.payload.event.eventData,
-             isTrusted: true 
-          });
-        window.dispatchEvent(keydownEvent);
+          { ...data.payload.event.eventData});
+        window.self.dispatchEvent(keydownEvent);
       }
     }
   }
