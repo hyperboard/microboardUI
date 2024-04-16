@@ -16,6 +16,7 @@ import { ConnectorLineStyle } from "Board/Items/Connector";
 import { SidePanelState } from "View/SidePanel/SidePanelState";
 import { applyStyle } from "lib/applyStyle";
 import { Icon } from "../Icon";
+import "../labGrotesqueFont.css";
 
 interface Props {
 	app: App;
