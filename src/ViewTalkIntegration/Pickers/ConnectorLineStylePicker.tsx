@@ -23,7 +23,7 @@ export function ConnectorLineStylePicker(props: Props): React.ReactElement {
 				margin={0}
 				isOn={props.selected === "straight"}
 			>
-				<Icon iconName="DiagonalLine" width={24} height={24} />
+				<Icon iconName="DiagonalLine" width={18} height={18} />
 			</Button>
 			<Button
 				id="PickCurved"
@@ -31,7 +31,7 @@ export function ConnectorLineStylePicker(props: Props): React.ReactElement {
 				margin={0}
 				isOn={props.selected === "curved"}
 			>
-				<Icon iconName="CurvedLine" width={24} height={24} />
+				<Icon iconName="CurvedLine" width={18} height={18} />
 			</Button>
 		</>
 	);

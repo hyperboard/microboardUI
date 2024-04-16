@@ -26,6 +26,8 @@ export function TextColorIndicator({
 				strokeWidth="1.6"
 				strokeLinecap="round"
 				strokeLinejoin="round"
+				width={14}
+				height={16}
 			></path>
 			{color !== "none" ? (
 				<>

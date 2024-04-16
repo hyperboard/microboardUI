@@ -66,7 +66,7 @@ export class ZoomPanel extends React.Component<Props> {
 					margin={0}
 					hotkey="⌘-"
 				>
-					<Icon iconName="Minus" width={20} height={2} />
+					<Icon iconName="Minus" width={20} height={18} />
 				</Button>
 				<Button
 					id="ZoomPanelZoomTo100"
@@ -88,7 +88,7 @@ export class ZoomPanel extends React.Component<Props> {
 					margin={0}
 					hotkey="⌘+"
 				>
-					<Icon iconName="Plus" width={17} height={17} />
+					<Icon iconName="Plus" width={20} height={20} />
 				</Button>
 			</div>
 		);

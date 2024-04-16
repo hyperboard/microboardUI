@@ -37,7 +37,7 @@ export function ShapePicker(props: {
 				margin={0}
 				key={shape}
 			>
-				<Icon iconName={shape} width={24} height={24} />
+				<Icon iconName={shape} width={20} height={20} />
 			</Button>,
 		);
 	}

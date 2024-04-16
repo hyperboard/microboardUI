@@ -29,8 +29,6 @@ import { Sticker } from "Board/Items/Sticker";
 import { ConnectorLineStyle } from "Board/Items/Connector";
 import { HorisontalAlignment, VerticalAlignment } from "Board/Items/Alignment";
 
-export const IconSize = 24;
-
 export class ContextPanel extends React.Component<
 	{
 		board: Board;
@@ -380,7 +378,12 @@ function DeleteImg({ board }: { board: Board }) {
 
 	return (
 		<Button margin={0} onClick={handleClick}>
-			<Icon style={{ color: "#DF4E49" }} iconName="Trash" />
+			<Icon
+				width={15}
+				height={18}
+				style={{ color: "#DF4E49" }}
+				iconName="Trash"
+			/>
 		</Button>
 	);
 }
@@ -398,7 +401,7 @@ function DuplicateImg({ board }: { board: Board }) {
 	};
 	return (
 		<Button margin={0} onClick={handleClick}>
-			<Icon iconName="Copy" />
+			<Icon width={18} height={18} iconName="Copy" />
 		</Button>
 	);
 }
@@ -575,8 +578,8 @@ function Edit({ board }: { board: Board }): React.ReactElement | null {
 			id="ContextPanelEdit"
 			onClick={handleClick}
 			title="Edit"
-			width={32}
-			height={32}
+			width={24}
+			height={24}
 			margin={0}
 			tipOnTop
 		>
@@ -632,6 +635,8 @@ function StartPointer({
 				tipOnTop
 			>
 				<Icon
+					width={18}
+					height={18}
 					iconName={
 						pointerStartStyle === "ArrowBroad"
 							? "PointerEnd"
@@ -695,7 +700,7 @@ function SwitchPointers({
 			margin={0}
 			tipOnTop
 		>
-			<Icon iconName="PointerRoll" />
+			<Icon width={18} height={18} iconName="PointerRoll" />
 		</Button>
 	);
 }
@@ -748,6 +753,8 @@ function EndPointer({
 				tipOnTop
 			>
 				<Icon
+					width={18}
+					height={18}
 					iconName={
 						endPointerStyle === "ArrowBroad"
 							? "PointerEnd"
@@ -880,6 +887,8 @@ function ConnectorType({
 				tipOnTop
 			>
 				<Icon
+					width={18}
+					height={18}
 					iconName={
 						connectorType === "curved"
 							? "CurvedLine"
@@ -953,7 +962,7 @@ function ItemType({
 				height={32}
 				margin={0}
 			>
-				<Icon iconName="AddShape" />
+				<Icon width={18} height={18} iconName="AddShape" />
 			</Button>
 			<div
 				id="FillStyleMenu"
@@ -1387,7 +1396,7 @@ function TextColor({
 				height={32}
 				margin={0}
 			>
-				<TextColorIndicator color={color} />
+				<TextColorIndicator width={24} height={24} color={color} />
 			</Button>
 			<div
 				id="TextColorMenu"
@@ -1486,7 +1495,11 @@ function TextHighlight({
 					height={32}
 					margin={0}
 				>
-					<TextHighlightIndicator color={color} />
+					<TextHighlightIndicator
+						width={20}
+						height={21}
+						color={color}
+					/>
 				</Button>
 				<div
 					id="TextColorMenu"
