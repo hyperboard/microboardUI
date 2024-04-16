@@ -10,6 +10,7 @@ import { Mbr } from "Board/Items";
 import { ImageItem } from "Board/Items/Image";
 import { validateItemsMap } from "Board/Validators";
 import { isSafari } from "./isSafari";
+import { isIframe } from "lib/isIframe";
 
 export function getController(getBoard: () => Board) {
 	const isMouse = true;
@@ -539,7 +540,13 @@ function serializeKeyboardEvent(event: KeyboardEvent) {
 			altKey: event.altKey,
 			metaKey: event.metaKey,
 			repeat: event.repeat,
-			bubbles: event.bubbles
+			bubbles: event.bubbles,
+			target: 'whiteboard',
+			location: event.location,
+			isComposing: event.isComposing,
+			charCode: event.charCode,
+			keyCode: event.keyCode,
+			which: event.which,
 		},
 	};
 }
