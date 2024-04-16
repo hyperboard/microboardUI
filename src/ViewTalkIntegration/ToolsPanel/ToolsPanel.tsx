@@ -651,6 +651,17 @@ class AddImage extends React.PureComponent {
 	}
 }
 
+applyStyle(`
+	.UndoRedoIcon:active:not([disabled]),
+	.UndoRedoIcon.Active:not([disabled]) {
+		background-color: rgba(0, 0, 0, 0.08);
+		color: rgba(0, 0, 0, 0.8);
+	}
+	.UndoRedoIcon:not([disabled]) {
+		color: rgba(0, 0, 0, 0.8);
+	}
+`);
+
 type UndoProps = { board: Board; canUndo: boolean };
 
 class Undo extends React.PureComponent<UndoProps> {
@@ -673,6 +684,7 @@ class Undo extends React.PureComponent<UndoProps> {
 				width={32}
 				height={32}
 				disabled={!canUndo}
+				className="UndoRedoIcon"
 			>
 				<UndoIcon width={15} height={15} />
 			</Button>
@@ -702,6 +714,7 @@ class Redo extends React.PureComponent<RedoProps> {
 				width={32}
 				height={32}
 				disabled={!canRedo}
+				className="UndoRedoIcon"
 			>
 				<RedoIcon width={15} height={15} />
 			</Button>
