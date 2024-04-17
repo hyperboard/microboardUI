@@ -78,10 +78,7 @@ export function getController(getBoard: () => Board) {
 			return;
 		}
 		if (isEditInProcess()) {
-			if (
-				(event.ctrlKey || event.metaKey) &&
-				(event.code === "KeyV")
-			) {
+			if ((event.ctrlKey || event.metaKey) && event.code === "KeyV") {
 				const data = clipboard.get();
 				if (data) {
 					const isDataValid = validateItemsMap(data);
@@ -97,7 +94,6 @@ export function getController(getBoard: () => Board) {
 						board.paste(data);
 					}
 				}
-				
 			}
 			return;
 		}
@@ -431,8 +427,9 @@ export function getController(getBoard: () => Board) {
 		camera.removeDownEvent(event);
 	}
 
-	function onCopy(event): void {
+	function onCopy(event: ClipboardEvent): void {
 		if (isEditInProcess()) {
+			clipboard.set(event.clipboardData?.getData("text/plain"));
 			return;
 		}
 		const board = getBoard();
@@ -564,7 +561,7 @@ function serializeKeyboardEvent(event: KeyboardEvent) {
 			altKey: event.altKey,
 			metaKey: event.metaKey,
 			repeat: event.repeat,
-			bubbles: event.bubbles
+			bubbles: event.bubbles,
 		},
 	};
 }
