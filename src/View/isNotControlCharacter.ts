@@ -1,5 +1,6 @@
 const exclude = [
 	"Control",
+	"Meta",
 	"Alt",
 	"Shift",
 	"CapsLock",
