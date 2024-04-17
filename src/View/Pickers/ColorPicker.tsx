@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Icon } from "../Icon";
-import { Button } from "View/ContextPanel/Button";
-import { IconSize } from "View/ContextPanel/ContextPanel";
+import { Button } from "View/ContextPanel";
 import { CircleIcon } from "View/Icon/CircleIcon";
 
 export const colors = {
@@ -24,15 +23,17 @@ export const colors = {
 	"Brick Red": "rgb(151, 83, 83)",
 } as const;
 
-export function ColorPicker({
-	onPick,
-	allowNone,
-	list
-}: {
+type ColorPickerProps = {
 	allowNone: boolean;
 	onPick: (color: string) => void;
 	list?: any;
-}): React.ReactElement {
+};
+
+export function ColorPicker({
+	onPick,
+	allowNone,
+	list,
+}: ColorPickerProps): React.ReactElement {
 	const buttons = [];
 	if (allowNone) {
 		buttons.push(
@@ -47,10 +48,10 @@ export function ColorPicker({
 			>
 				<Icon
 					name="Circle"
-					width={IconSize}
-					height={IconSize}
 					fill={"white"}
 					stroke={"black"}
+					width={24}
+					height={24}
 				/>
 			</Button>,
 		);

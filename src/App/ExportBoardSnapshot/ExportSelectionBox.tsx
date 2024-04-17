@@ -1,5 +1,5 @@
 import React, { FC, useContext } from "react";
-import { Button } from "View/ContextPanel/Button";
+import { Button } from "View/ContextPanel";
 import { applyStyle } from "lib/applyStyle";
 
 import { Panel } from "ui/Panel";

@@ -1,0 +1,84 @@
+import * as React from "react";
+import { ColorCircle } from "../Icon/ColorCircle";
+
+export function ColorPicker({
+	onPick,
+	selectedColor,
+	allowNone = false,
+	colors,
+	isNotLast = false,
+}: {
+	onPick: (color: string) => void;
+	selectedColor?: string;
+	allowNone?: boolean;
+	colors: string[];
+	isNotLast?: boolean;
+}): React.ReactElement {
+	const handleClearPick = () => onPick("none");
+
+	return (
+		<>
+			{allowNone && !isNotLast && (
+				<button
+					key={"none"}
+					style={{
+						width: 30,
+						height: 30,
+						cursor: "pointer",
+						border: "none",
+						background: "none",
+						padding: 0,
+						margin: 0,
+					}}
+					onClick={handleClearPick}
+				>
+					<ColorCircle
+						color={"none"}
+						selected={selectedColor === "none"}
+					/>
+				</button>
+			)}
+			{colors.map(color => (
+				<button
+					key={color}
+					style={{
+						width: 30,
+						height: 30,
+						display: "block",
+						cursor: "pointer",
+						border: "none",
+						background: "none",
+						padding: 0,
+						margin: 0,
+					}}
+					onClick={() => onPick(color)}
+				>
+					<ColorCircle
+						color={color}
+						selected={color === selectedColor}
+					/>
+				</button>
+			))}
+			{allowNone && isNotLast && (
+				<button
+					key={"none"}
+					style={{
+						width: 30,
+						height: 30,
+						cursor: "pointer",
+						border: "none",
+						background: "none",
+						padding: 0,
+						margin: 0,
+					}}
+					onClick={handleClearPick}
+				>
+					<ColorCircle
+						color={"none"}
+						selected={selectedColor === "none"}
+					/>
+				</button>
+			)}
+		</>
+	);
+}

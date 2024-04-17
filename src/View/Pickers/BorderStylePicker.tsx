@@ -1,11 +1,11 @@
 import { BorderStyle } from "Board/Items/Path";
 import * as React from "react";
 import { Icon } from "../Icon";
-import { Button } from "View/ContextPanel/Button";
+import { Button } from "View/ContextPanel";
 
-interface Props {
+type Props = {
 	onPick: (style: BorderStyle) => void;
-}
+};
 
 export function StrokeStylePicker(props: Props): React.ReactElement {
 	return (

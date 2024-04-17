@@ -1,13 +1,13 @@
 import * as React from "react";
-import { Icon } from "../Icon";
+import { Icon } from "View/Icon";
 import { App } from "App";
 import { Board } from "Board";
-import { Button } from "../ContextPanel/Button";
+import { Button } from "View/ContextPanel";
 
-interface Props {
+type Props = {
 	app: App;
 	board: Board;
-}
+};
 
 export class ZoomPanel extends React.Component<Props> {
 	update = (): void => {

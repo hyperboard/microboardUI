@@ -13,25 +13,25 @@ import { HorisontalSeparator } from "View/ContextPanel/HorisontalSeparator";
 import { UndoIcon } from "View/Icon/UndoIcon";
 import { RedoIcon } from "View/Icon/RedoIcon";
 import { PenIcon } from "View/Icon/PenIcon";
-import { Button } from "View/ContextPanel/Button";
+import { Button } from "View/ContextPanel";
 import { ConnectorLineStyle } from "Board/Items/Connector";
 import { SidePanelState } from "View/SidePanel/SidePanelState";
 import { stickerColors } from "Board/Items/Sticker";
 
-interface Props {
+type Props = {
 	app: App;
 	board: Board;
 	sidePanelState: SidePanelState;
-}
+};
 
-interface State {
+type State = {
 	addShapeRect: Mbr;
 	addShapeMenuRect: Mbr;
 	addConnectorRect: Mbr;
 	addConnectorMenuRect: Mbr;
 	addDrawingRect: Mbr;
 	addDrawingMenuRect: Mbr;
-}
+};
 
 export class ToolsPanel extends React.Component<Props, State> {
 	animationFrameId: number | null = null;
@@ -39,14 +39,6 @@ export class ToolsPanel extends React.Component<Props, State> {
 	update = (): void => {
 		this.forceUpdate();
 		return;
-		if (this.animationFrameId) {
-			return; // Function already scheduled to run
-		}
-
-		this.animationFrameId = requestAnimationFrame(() => {
-			this.forceUpdate();
-			this.animationFrameId = null;
-		});
 	};
 
 	subscription = {
@@ -79,34 +71,34 @@ export class ToolsPanel extends React.Component<Props, State> {
 
 			if (file.type === "application/pdf") {
 				reader.onload = event => {
-					var typedarray = new Uint8Array(event.target.result);
+					const typedarray = new Uint8Array(event.target.result);
 					pdfjsLib.getDocument({ data: typedarray }).promise.then(
 						pdf => {
 							// var maxPages = Math.min(pdf.numPages, 2);
-							var maxPages = pdf.numPages;
-							var pagesRendered = 0;
-							var viewportYOffset = 0;
-							var pageHeight;
+							const maxPages = pdf.numPages;
+							let pagesRendered = 0;
+							let viewportYOffset = 0;
+							let pageHeight;
 							var renderPage = pageNum => {
 								pdf.getPage(pageNum).then(page => {
-									var viewport = page.getViewport({
+									const viewport = page.getViewport({
 										scale: 1,
 									});
 									pageHeight = viewport.height;
-									var canvas =
+									const canvas =
 										document.createElement("canvas");
-									var context = canvas.getContext("2d");
+									const context = canvas.getContext("2d");
 									canvas.height = viewport.height;
 									canvas.width = viewport.width;
 
-									var renderContext = {
+									const renderContext = {
 										canvasContext: context,
 										viewport: viewport,
 									};
 									page.render(renderContext).promise.then(
 										() => {
 											pagesRendered++;
-											var base64String =
+											const base64String =
 												canvas.toDataURL("image/png");
 											const image = new ImageItem(
 												base64String,
@@ -161,7 +153,7 @@ export class ToolsPanel extends React.Component<Props, State> {
 
 							renderPage(1);
 						},
-						function (reason) {
+						reason => {
 							console.error(reason);
 						},
 					);
@@ -273,7 +265,6 @@ export class ToolsPanel extends React.Component<Props, State> {
 			console.log("Image Upload: No image file selected.");
 		}
 	};
-
 	render(): React.ReactElement {
 		const board = this.props.board;
 		const height = this.props.board.camera.window.height / 3;
@@ -560,7 +551,7 @@ class AddConnector extends React.PureComponent<{
 					id="AddConnectorMenu"
 					className="ToolsPanelMenu"
 					style={{
-						//width: "52px",
+						// width: "52px",
 						paddingLeft: "0px",
 						paddingRight: "0px",
 						visibility: isOn ? "visible" : "hidden",
@@ -622,6 +613,7 @@ class AddDrawing extends React.PureComponent<{
 						width={24}
 						height={24}
 					></PenIcon>
+					{/* <Icon name="Pen" width={24} height={24}/> */}
 				</Button>
 				<div
 					id="AddDrawingMenu"

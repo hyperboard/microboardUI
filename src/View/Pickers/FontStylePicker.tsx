@@ -1,14 +1,14 @@
 import { TextStyle } from "Board/Items/RichText";
 import * as React from "react";
-import { Button } from "View/ContextPanel/Button";
+import { Button } from "View/ContextPanel";
 import { BoldIcon } from "View/Icon/TextStyle/BoldIcon";
 import { ItalicsIcon } from "View/Icon/TextStyle/ItalicsIcon";
 import { StrikethroughIcon } from "View/Icon/TextStyle/StrikethroughIcon";
 import { UnderlineIcon } from "View/Icon/TextStyle/UnderlineIcon";
 
-interface Props {
+type Props = {
 	onPick: (style: TextStyle) => void;
-}
+};
 
 export function FontStylePicker(props: Props): React.ReactElement {
 	return (

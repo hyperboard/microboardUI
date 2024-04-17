@@ -1,4 +1,4 @@
-import { Button } from "View/ContextPanel/Button";
+import { Button } from "View/ContextPanel";
 import { PointerIcon } from "View/Icon/PointerIcon";
 import * as React from "react";
 
@@ -21,11 +21,13 @@ const pointerTypes = [
 	{ id: "OneOptional", label: "One (Optional)" },
 ];
 
+type Props = {
+	onPick: (pointer: string) => void;
+};
+
 export function ConnectorStartPointerPicker({
 	onPick,
-}: {
-	onPick: (pointer: string) => void;
-}): React.ReactElement {
+}: Props): React.ReactElement {
 	const buttons = [];
 	for (const type of pointerTypes) {
 		buttons.push(

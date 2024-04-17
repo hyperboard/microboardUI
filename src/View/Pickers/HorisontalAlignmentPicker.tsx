@@ -2,9 +2,9 @@ import { HorisontalAlignment } from "Board/Items/Alignment";
 import * as React from "react";
 import { Icon } from "../Icon";
 
-interface Props {
+type Props = {
 	onPick: (alignment: HorisontalAlignment) => void;
-}
+};
 
 export function HorisontalAlignmentPicker(props: Props): React.ReactElement {
 	const buttonStyle: React.CSSProperties = {

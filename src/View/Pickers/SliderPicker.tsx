@@ -40,10 +40,11 @@ style.innerHTML = `
 
 document.head.appendChild(style);
 
-export class SliderPicker extends React.PureComponent<{
+type Props = {
 	onPick: (width: number) => void;
 	width: number;
-}> {
+};
+export class SliderPicker extends React.PureComponent<Props> {
 	handlePickWidth = (event: React.ChangeEvent<HTMLInputElement>): void => {
 		const width = toFiniteNumber(parseFloat(event.target.value), 1);
 		this.props.onPick(width);
