@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { Board } from "Board";
 import { SidePanelState } from "View/SidePanel/SidePanelState";
 import { Button } from "View/ContextPanel";
@@ -86,7 +86,7 @@ export class TitlePanel extends React.Component<{
 								paddingRight: "4px",
 								fontWeight: 600,
 							}}>
-								{`${Cookies.get("accessToken_talk")}`}
+								{"Microboard"}
 							</span>
 					)}
 				</Button>
@@ -119,6 +119,7 @@ function SidePanelButton({
 }): React.ReactElement {
 	const isIframe = window.self !== window.top;
 	const IconComponent = isOpen ? SidePanelCloseIcon : SidePanelOpenIcon;
+
 	if (isIframe) {
 		return (<></>);
 	}

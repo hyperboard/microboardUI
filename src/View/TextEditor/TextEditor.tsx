@@ -105,7 +105,7 @@ export class TextEditor extends React.Component<
 
 						// transformOrigin: "left top",
 						// transform: `translate(0px) scale(${editorScale})`,
-						willChange: 'transform',
+						willChange: "transform",
 						transform: "translate3d(0,0,0)",
 
 						display: "flex",
@@ -177,8 +177,9 @@ export class TextEditor extends React.Component<
 					fontSize: `${defaultTextStyle.fontSize}px`,
 					lineHeight: defaultTextStyle.lineHeight,
 					color: defaultTextStyle.fontColor,
+					pointerEvents: "none",
 
-					willChange: 'transform',
+					willChange: "transform",
 					transform: "translate3d(0,0,0)",
 				}}
 			>
@@ -191,12 +192,14 @@ export class TextEditor extends React.Component<
 						alignItems: verticalAlignmentToFlex(verticalAlignment),
 						transform: `translate(0px) scale(${editorScale})`,
 						transformOrigin: `left top`,
+						pointerEvents: "all",
 					}}
 				>
 					<Slate
 						editor={text.editor.editor}
 						value={text.getText()}
 						selection={text.editor.editor.selection}
+						key={text.getId()}
 						onChange={() => {}}
 					>
 						<Editable

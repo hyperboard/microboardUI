@@ -10,6 +10,7 @@ import { Mbr } from "Board/Items";
 import { ImageItem } from "Board/Items/Image";
 import { validateItemsMap } from "Board/Validators";
 import { isSafari } from "./isSafari";
+import { isIframe } from "lib/isIframe";
 
 export function getController(getBoard: () => Board) {
 	const isMouse = true;
@@ -105,7 +106,7 @@ export function getController(getBoard: () => Board) {
 				return;
 			} else if (
 				item &&
-				["Shape", "Sticker"].indexOf(item.itemType) > -1 &&
+				["Shape", "Sticker", "Connector"].indexOf(item.itemType) > -1 &&
 				board.selection.getContext() === "EditUnderPointer"
 			) {
 				board.selection.editText();
@@ -539,6 +540,13 @@ function serializeKeyboardEvent(event: KeyboardEvent) {
 			altKey: event.altKey,
 			metaKey: event.metaKey,
 			repeat: event.repeat,
+			bubbles: event.bubbles,
+			target: 'whiteboard',
+			location: event.location,
+			isComposing: event.isComposing,
+			charCode: event.charCode,
+			keyCode: event.keyCode,
+			which: event.which,
 		},
 	};
 }

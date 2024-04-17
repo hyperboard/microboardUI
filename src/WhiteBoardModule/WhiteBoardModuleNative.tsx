@@ -39,7 +39,7 @@ export class WhiteboardModuleView implements WhiteboardModule {
 
     setAuthToken(accessToken: string, refreshToken: string): void {
         const message = {
-            pattern: 'setTalkAuthToken',
+            pattern: 'updateUserToken',
             payload: {
                 accessToken,
                 refreshToken

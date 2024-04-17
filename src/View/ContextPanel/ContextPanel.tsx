@@ -29,7 +29,7 @@ import { ConnectorLineStylePicker } from "View/Pickers/ConnectorLineStylePicker"
 import { SliderPicker } from "View/Pickers/SliderPicker";
 import { toggleEdit } from "Board/Items/RichText/RichText";
 import { toFiniteNumber } from "utils";
-import { stickerColors } from "Board/Items/Sticker";
+import { Sticker, stickerColors } from "Board/Items/Sticker";
 import { RestMenuIcon } from "View/Icon/RestMenuIcon";
 import { BorderStyle } from "Board/Items/Path";
 
@@ -897,17 +897,66 @@ type FontSizeProps = {
 	menu: string;
 	panelMbr: Mbr;
 	windowHeight: number;
-	fontSize: number;
+	fontSize: number | string;
+	max?: number;
 };
 
 class FontSize extends React.PureComponent<FontSizeProps> {
 	menuRef = React.createRef<HTMLDivElement>();
-	state = { fontSize: this.props.fontSize };
+	state = {
+		fontSize: this.props.fontSize,
+		max: this.props.max,
+		itemType: "",
+		inputType: "number",
+	};
 	updateFontSize = (): void => {
 		this.setState({ fontSize: this.props.board.selection.getFontSize() });
 	};
+	updateAutosizeSettings = (): void => {
+		const singleItem = this.props.board.selection.items.getSingle();
+		if (singleItem && singleItem.itemType === "Sticker") {
+			const isAutosize = (singleItem as Sticker).text.getAutosize();
+			const innerTextFontSize = (
+				singleItem as Sticker
+			).text.getFontSize();
+			const maxFontSize = (singleItem as Sticker).text.getMaxFontSize();
+			this.setState({
+				max: maxFontSize,
+				fontSize: isAutosize ? "Auto" : innerTextFontSize,
+				itemType: "Sticker",
+				inputType: isAutosize ? "string" : "number",
+			});
+		}
+		if (singleItem && ["Shape"].indexOf(singleItem?.itemType) !== -1) {
+			const maxFontSize = (singleItem as Sticker).text.getMaxFontSize();
+			this.setState({
+				itemType: singleItem?.itemType,
+				fontSize: singleItem?.text?.getFontSize(),
+				inputType: "number",
+				max: maxFontSize,
+			});
+		}
+	};
+	componentDidMount(): void {
+		// this.props.board.selection.itemSubject.subscribe(this.updateFontSize);
+		this.updateAutosizeSettings();
+	}
+	componentWillUnmount(): void {
+		// this.props.board.selection.itemSubject.unsubscribe(this.updateFontSize);
+	}
+	componentDidUpdate(): void {
+		this.updateAutosizeSettings();
+	}
 	render(): React.ReactElement | null {
-		const { board, toggleMenu, menu, panelMbr, windowHeight } = this.props;
+		const {
+			board,
+			toggleMenu,
+			menu,
+			panelMbr,
+			windowHeight,
+			fontSize,
+			max = 288,
+		} = this.props;
 
 		if (board.selection.getContext() === "SelectUnderPointer") {
 			return null;
@@ -996,7 +1045,34 @@ class FontSize extends React.PureComponent<FontSizeProps> {
 						visibility: menu === "FontSize" ? "visible" : "hidden",
 					}}
 				>
-					<FontSizePicker onPick={handlePick} />
+					<FontSizePicker
+						maxSize={this.state.max}
+						itemType={this.state.itemType || ""}
+						onPick={(size: number | "Auto") => {
+							const single = board.selection.items.getSingle();
+							if (
+								single &&
+								single.itemType === "Sticker" &&
+								size !== "Auto"
+							) {
+								single.text?.autosizeDisable();
+							}
+							if (
+								size === "Auto" &&
+								single &&
+								single.itemType === "Sticker"
+							) {
+								single?.text?.autosizeEnable();
+								const maxFontSize = (
+									single as Sticker
+								).text.getMaxFontSize();
+								board.selection.setFontSize(maxFontSize);
+							} else if (size !== "Auto") {
+								board.selection.setFontSize(size);
+							}
+							toggleMenu("None");
+						}}
+					/>
 				</div>
 			</ButtonWithMenu>
 		);
@@ -1087,6 +1163,10 @@ function TextAlignment({
 	const isConnector = connector instanceof Connector;
 
 	if (isConnector) {
+		return null;
+	}
+
+	if (board.selection.getContext() === "SelectUnderPointer") {
 		return null;
 	}
 
@@ -1570,8 +1650,21 @@ function StickerFillStyle({
 				}}
 			>
 				<ColorPicker
-					allowNone={false}
-					onPick={handlePick}
+					onPick={(color: string) => {
+						board.selection.setFillColor(color);
+						// TODO: use Storage.ts instead
+						const stickerJSON =
+							sessionStorage.getItem("lastSticker");
+						if (stickerJSON) {
+							const sticker = JSON.parse(stickerJSON);
+							sticker.backgroundColor = color;
+							sessionStorage.setItem(
+								"lastSticker",
+								JSON.stringify(sticker),
+							);
+						}
+						toggleMenu("None");
+					}}
 					list={stickerColors}
 				/>
 			</div>
@@ -1685,8 +1778,8 @@ function RestOptionsMenu({
 					ref={menuRef}
 					className="ContextPanelMenu"
 					style={{
-						position: 'absolute',
-						top: '100%',
+						position: "absolute",
+						top: "100%",
 						left: 0,
 						display: "flex",
 						flexDirection: "column",

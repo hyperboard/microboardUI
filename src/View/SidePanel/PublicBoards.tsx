@@ -5,6 +5,7 @@ import { Menu } from "./Menu";
 import { BoardIcon } from "View/Icon/BoardIcon";
 import { Icon } from "View/Icon";
 import { ContextMenuState } from "View/ContextMenu";
+import { WithRouterProps, withRouter } from "lib/withRouter";
 
 class PublicBoardsState {
 	isOpen = true;
@@ -15,11 +16,12 @@ class PublicBoardsState {
   dragOverBoardId: string | undefined = undefined;
 }
 
-export class PublicBoards extends React.PureComponent<{
+interface Props extends WithRouterProps {
 	app: App;
 	contextMenuState: ContextMenuState;
-},
-PublicBoardsState> {
+}
+
+class PublicBoardsBase extends React.PureComponent<Props, PublicBoardsState> {
 	animationFrameId: number | null = null;
 
 	state = new PublicBoardsState();
@@ -134,6 +136,7 @@ PublicBoardsState> {
 				const app = this.props.app;
 				app.createPublicBoard().then((id: stirng) => {
 					app.openBoard(id);
+					this.props.router.navigate(`/boards/${id}`, {replace: true});
 				});
 			}
 		}}
@@ -153,7 +156,9 @@ PublicBoardsState> {
 					heading={board.name ? board.name : `${board.boardId.substring(0, 5)}...${board.boardId.substring(board.boardId.length - 5)}`}
 					offset={offset}
 				  	onClick={() => {
-				  		this.props.app.openBoard(board.boardId);
+							this.props.app.openBoard(board.boardId);
+							this.props.router.navigate(`/boards/${board.boardId}`, {replace: true});
+
 				  	}}
 					isRenaming={this.state.renamingItem === board.boardId}
 				  	onContextMenu={(x, y) => {
@@ -173,6 +178,9 @@ PublicBoardsState> {
 									label: "Delete",
 									action: () => {
 										this.handleRemove(board.boardId);
+										if (board.boardId === this.props?.router?.params.boardId) {
+											this.props?.router?.navigate('/');
+										}
 									}
 								}
 							]
@@ -189,4 +197,4 @@ PublicBoardsState> {
 	}
 }
 
-
+export const PublicBoards = withRouter(PublicBoardsBase);

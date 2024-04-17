@@ -20,6 +20,19 @@ export class Storage {
 		}
 	}
 
+	getLastSticker() {
+		const lastSticker = sessionStorage.getItem("lastSticker");
+		if (lastSticker) {
+			return JSON.parse(lastSticker);
+		} else {
+			return null;
+		}
+	}
+
+	setLastSticker(lastSticker) {
+		sessionStorage.setItem("lastSticker", JSON.stringify(lastSticker));
+	}
+
 	/* Adds an id of a visited public board to the local storage
     setPublicBoard(board: VisitedPublicBoard): void {
         let visitedBoards = this.listPublicBoards();
@@ -40,7 +53,7 @@ export class Storage {
 
 	/* Adds an id of a visited public board to the local storage */
 	setPublicBoard(board: VisitedPublicBoard): void {
-		let visitedBoards = this.listPublicBoards();
+		const visitedBoards = this.listPublicBoards();
 		const length = visitedBoards.length;
 		let boardExists = false;
 
@@ -68,7 +81,7 @@ export class Storage {
 
 	/* Removes an id of a visited public board from the local storage */
 	removePublicBoard(id: string): void {
-		let visitedBoards = this.listPublicBoards();
+		const visitedBoards = this.listPublicBoards();
 		const length = visitedBoards.length;
 		for (let i = 0; i < length; i++) {
 			if (visitedBoards[i].boardId === id) {
