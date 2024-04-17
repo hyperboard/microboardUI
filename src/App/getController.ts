@@ -8,12 +8,15 @@ import { Wheel } from "./Wheel/Wheel";
 import { Board } from "Board";
 import { Mbr } from "Board/Items";
 import { ImageItem } from "Board/Items/Image";
-import { validateItemsMap } from "Board/Validators";
+import { validateItemsMap, validateRichTextData } from "Board/Validators";
 import { isSafari } from "./isSafari";
+import { Clipboard } from "./Clipboard";
 
 export function getController(getBoard: () => Board) {
 	const isMouse = true;
 	const isTrackpad = true;
+
+	const clipboard = new Clipboard();
 
 	function onWheel(event: WheelEvent): void {
 		event.preventDefault();
@@ -75,6 +78,27 @@ export function getController(getBoard: () => Board) {
 			return;
 		}
 		if (isEditInProcess()) {
+			if (
+				(event.ctrlKey || event.metaKey) &&
+				(event.code === "KeyV")
+			) {
+				const data = clipboard.get();
+				if (data) {
+					const isDataValid = validateItemsMap(data);
+					if (isDataValid) {
+						const keys = Object.keys(data);
+						if (keys.length === 1) {
+							const itemData = data[keys[0]];
+							if (itemData.itemType === "RichText") {
+								return;
+							}
+						}
+						event.preventDefault();
+						board.paste(data);
+					}
+				}
+				
+			}
 			return;
 		}
 		// const key = event.key.toLowerCase();
@@ -418,6 +442,7 @@ export function getController(getBoard: () => Board) {
 		const data = board.selection.copy();
 		const text = JSON.stringify(data);
 		event.clipboardData.setData("text/plain", text);
+		clipboard.set(data);
 		event.preventDefault();
 	}
 
