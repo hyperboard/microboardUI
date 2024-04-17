@@ -50,6 +50,8 @@ export function ColorPicker({
 					name="Circle"
 					fill={"white"}
 					stroke={"black"}
+					width={24}
+					height={24}
 				/>
 			</Button>,
 		);
