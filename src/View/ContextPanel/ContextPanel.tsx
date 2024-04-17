@@ -1013,9 +1013,9 @@ class FontSize extends React.PureComponent<FontSizeProps> {
 				<div style={{ display: "flex" }}>
 					<input
 						onClick={handleClick}
-						type="number"
+						type={this.state.inputType}
 						min="10"
-						max="288"
+						max={this.state.max}
 						value={`${this.state.fontSize}`}
 						onInput={handleInput}
 						onChange={handleChange}
