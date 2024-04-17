@@ -428,8 +428,9 @@ export function getController(getBoard: () => Board) {
 		camera.removeDownEvent(event);
 	}
 
-	function onCopy(event): void {
+	function onCopy(event: ClipboardEvent): void {
 		if (isEditInProcess()) {
+			clipboard.set(event.clipboardData?.getData("text/plain"));
 			return;
 		}
 		const board = getBoard();
@@ -561,7 +562,7 @@ function serializeKeyboardEvent(event: KeyboardEvent) {
 			altKey: event.altKey,
 			metaKey: event.metaKey,
 			repeat: event.repeat,
-			bubbles: event.bubbles,
+			bubbles: event.bubbles,,
 			target: "whiteboard",
 			location: event.location,
 			isComposing: event.isComposing,
