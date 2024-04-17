@@ -84,13 +84,16 @@ export function getController(getBoard: () => Board) {
 				if (data) {
 					const isDataValid = validateItemsMap(data);
 					if (isDataValid) {
+						/*
 						const keys = Object.keys(data);
 						if (keys.length === 1) {
 							const itemData = data[keys[0]];
 							if (itemData.itemType === "RichText") {
+								clipboard.set(itemData.children);
 								return;
 							}
 						}
+						*/
 						event.preventDefault();
 						board.paste(data);
 					}
