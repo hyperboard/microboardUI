@@ -1,96 +1,65 @@
-import * as React from "react";
-import { Icon } from "../Icon";
 import { App } from "App";
 import { Board } from "Board";
-import { Button } from "../ContextPanel";
+import { useAppSubscription } from "Board/useBoardSubscription";
+import { useForceUpdate } from "lib/useForceUpdate";
+import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel";
+import React from "react";
+import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
+import { Icon } from "ViewTalkIntegration/Icon";
+import style from "./ZoomPanel.module.css";
 
-interface Props {
+type Props = {
 	app: App;
 	board: Board;
-}
+};
 
-export class ZoomPanel extends React.Component<Props> {
-	update = (): void => {
-		this.forceUpdate();
-	};
-
-	subscription = {
-		observer: this.update,
+export function ZoomPanel({ app, board }: Props) {
+	const forceUpdate = useForceUpdate();
+	useAppSubscription(app, {
 		subjects: ["camera"],
+		observer: forceUpdate,
+	});
+
+	const handleZoomIn = () => {
+		board.camera.zoomInToViewCenter();
+	};
+	const handleZoomOut = () => {
+		board.camera.zoomOutFromViewCenter();
+	};
+	const handleDefaultZoom = () => {
+		board.camera.zoomToViewCenter(1);
 	};
 
-	componentDidMount(): void {
-		this.props.app.subscriptions.add(this.subscription);
-	}
+	const scale = board.camera.getScale();
+	const currentScale = scale < 0.01 ? 1 : Math.round(scale * 100);
 
-	componentWillUnmount(): void {
-		this.props.app.subscriptions.remove(this.subscription);
-	}
-
-	zoomIn = (): void => {
-		this.props.board.camera.zoomInToViewCenter();
-	};
-
-	zoomOut = (): void => {
-		this.props.board.camera.zoomOutFromViewCenter();
-	};
-
-	defaultZoom = (): void => {
-		this.props.board.camera.zoomToViewCenter(1);
-	};
-
-	render(): React.ReactElement {
-		const scale = this.props.board.camera.getScale();
-		return (
-			<div
-				id="ZoomPanel"
-				style={{
-					display: "flex",
-					position: "absolute",
-					gap: "8px",
-					bottom: "8px",
-					right: "12px",
-					backgroundColor: "white",
-					borderRadius: "8px",
-					boxShadow:
-						"0 1px 6px 0 rgba(0, 0, 0, 0.05), 0 1px 1px 0 rgba(0, 0, 0, 0.05)",
-					padding: "4px",
-					userSelect: "none",
-				}}
+	return (
+		<UiPanel className={style.panel}>
+			<UiButton
+				tooltipPosition="top"
+				tooltip="Отдалить"
+				hotkey="⌘-"
+				onClick={handleZoomOut}
 			>
-				<Button
-					id="ZoomPanelZoomOut"
-					title="Отдалить"
-					onClick={this.zoomOut}
-					tipOnTop
-					margin={0}
-					hotkey="⌘-"
-				>
-					<Icon iconName="Minus" width={20} height={18} />
-				</Button>
-				<Button
-					id="ZoomPanelZoomTo100"
-					title="Масштаб 100"
-					onClick={this.defaultZoom}
-					tipOnTop
-					margin={0}
-					hotkey="⌘0"
-					style={{ fontSize: "16px", fontWeight: 500 }}
-					width={50}
-				>
-					{scale < 0.01 ? "<1%" : `${Math.round(scale * 100)}%`}
-				</Button>
-				<Button
-					id="ZoomPanelZoomIn"
-					title="Приблизить"
-					onClick={this.zoomIn}
-					tipOnTopRight
-					margin={0}
-					hotkey="⌘+"
-				>
-					<Icon iconName="Plus" width={20} height={20} />
-				</Button>
-			</div>
-		);
-	}
+				<Icon iconName="Minus" width={20} height={18} />
+			</UiButton>
+			<UiButton
+				tooltipPosition="top"
+				tooltip="Масштаб 100%"
+				hotkey="⌘0"
+				className={style.zoom}
+				onClick={handleDefaultZoom}
+			>
+				{currentScale}%
+			</UiButton>
+			<UiButton
+				tooltipPosition="top-right"
+				tooltip="Приблизить"
+				hotkey="⌘+"
+				onClick={handleZoomIn}
+			>
+				<Icon iconName="Plus" width={20} height={18} />
+			</UiButton>
+		</UiPanel>
+	);
 }

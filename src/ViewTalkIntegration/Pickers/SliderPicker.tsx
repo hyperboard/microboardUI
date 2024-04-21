@@ -10,8 +10,8 @@ const labelStyles = {
 	margin: 0,
 };
 
-const DOT_OFFSET = 2;
-const LAST_DOT_OFFSET = 6;
+const DOT_OFFSET = 8;
+const LAST_DOT_OFFSET = 8;
 
 const style = document.createElement("style");
 style.innerHTML = `
@@ -67,7 +67,7 @@ function InputDot({ offset }: { offset: number }) {
 				position: "absolute",
 				width: 8,
 				height: 8,
-				top: 0,
+				top: -2,
 				left: offset,
 				content: "",
 				backgroundColor: "#2291FF",

@@ -1,2 +1,2 @@
 export { ContextPanel } from "./ContextPanel";
-export { Button } from "./Button";
+export { UiButton as Button } from "ViewTalkIntegration/Ui/UiButton";

@@ -1,0 +1,54 @@
+import React from "react";
+import { Icon } from "ViewTalkIntegration/Icon";
+import { ColorPicker } from "ViewTalkIntegration/Pickers/ColorPicker";
+import { usePanelContext } from "ViewTalkIntegration/ToolsPanel/PanelContext";
+import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
+import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel";
+import { ButtonWithMenu } from "../ButtonWithMenu";
+
+const stickerColors = [
+	"#AED4FA",
+	"#FCF5AE",
+	"#AFD6A7",
+	"#E9BFE9",
+	"#ABDDDD",
+	"#F6A8A8",
+	"#E6E6E6",
+];
+
+export function AddSticker() {
+	const { board } = usePanelContext();
+
+	const handleClick = () => {
+		board.tools.addSticker();
+	};
+
+	const handlePick = (color: string) => {
+		const tool = board.tools.getAddSticker();
+		if (tool) {
+			tool.setBackgroundColor(color);
+		}
+	};
+
+	const isActive = Boolean(board.tools.getAddSticker());
+
+	return (
+		<ButtonWithMenu
+			button={
+				<UiButton
+					tooltip="Стикер"
+					hotkey="⌘N"
+					active={isActive}
+					onClick={handleClick}
+				>
+					<Icon width={16} height={16} iconName="Sticker" />
+				</UiButton>
+			}
+			isOpen={isActive}
+		>
+			<UiPanel grid columns={4}>
+				<ColorPicker colors={stickerColors} onPick={handlePick} />
+			</UiPanel>
+		</ButtonWithMenu>
+	);
+}

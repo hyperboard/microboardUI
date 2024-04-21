@@ -1,14 +1,16 @@
 import React from "react";
 
+type Props = {
+	color: string;
+	width?: number;
+	height?: number;
+};
+
 export function CircleColorIndicator({
 	color,
 	width = 24,
 	height = 24,
-}: {
-	color: string;
-	width?: number;
-	height?: number;
-}): React.ReactElement {
+}: Props): React.ReactElement {
 	return (
 		<svg
 			width={width}

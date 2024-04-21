@@ -122,3 +122,5 @@ export function createApp(isHistory = true) {
 
 	return app;
 }
+
+export type App = ReturnType<typeof createApp>;
