@@ -6,12 +6,15 @@ import { ConnectorLineStylePicker } from "ViewTalkIntegration/Pickers/ConnectorL
 import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
 import { UiButtonWithMenu } from "ViewTalkIntegration/ContextPanel/Buttons/ButtonWithMenu";
 import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel";
+import { useTranslation } from "react-i18next";
+import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
 
 const MENU_NAME = "ConnectorType";
 
 export function ConnectorType(): React.ReactElement | null {
 	const { board, toggleMenu, openedMenu, panelMbr, windowHeight } =
 		usePanelContext();
+	const { t } = useTalkTranslation();
 
 	const connectorType = board.selection.getConnectorLineStyle();
 	const handleClick = () => {
@@ -29,7 +32,11 @@ export function ConnectorType(): React.ReactElement | null {
 			windowHeight={windowHeight}
 			align="left"
 			button={
-				<UiButton onClick={handleClick}>
+				<UiButton
+					tooltip={t("contextPanel.connectorType.tooltip")}
+					tooltipPosition="top"
+					onClick={handleClick}
+				>
 					<Icon
 						width={18}
 						height={18}

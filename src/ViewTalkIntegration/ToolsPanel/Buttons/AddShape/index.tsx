@@ -5,10 +5,12 @@ import { ShapePicker } from "ViewTalkIntegration/Pickers/ShapeTypePicker";
 import { usePanelContext } from "ViewTalkIntegration/ToolsPanel/PanelContext";
 import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
 import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel";
+import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
 import { ButtonWithMenu } from "../ButtonWithMenu";
 
 export function AddShape() {
 	const { board } = usePanelContext();
+	const { t } = useTalkTranslation();
 
 	const handleClick = () => {
 		board.tools.addShape();
@@ -27,7 +29,7 @@ export function AddShape() {
 		<ButtonWithMenu
 			button={
 				<UiButton
-					tooltip="Фигуры"
+					tooltip={t("toolsPanel.addShape.tooltip")}
 					hotkey="S"
 					active={isActive}
 					onClick={handleClick}

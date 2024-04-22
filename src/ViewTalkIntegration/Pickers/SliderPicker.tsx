@@ -1,5 +1,6 @@
 import * as React from "react";
 import { toFiniteNumber } from "utils";
+import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
 
 const labelStyles = {
 	fontSize: "12px",
@@ -90,6 +91,7 @@ export const SliderPicker = React.memo(function SliderPicker({
 }: Props) {
 	const inputRef = React.useRef<HTMLInputElement>(null);
 	const [inputWidth, setInputWidth] = React.useState<null | number>(null);
+	const { t } = useTalkTranslation();
 
 	const handlePickWidth = (
 		event: React.ChangeEvent<HTMLInputElement>,
@@ -150,7 +152,7 @@ export const SliderPicker = React.memo(function SliderPicker({
 			</span>
 			{showLabel && (
 				<p className="label" style={labelStyles}>
-					Толщина линии
+					{t("toolsPanel.addDrawing.strokeWidth")}
 				</p>
 			)}
 		</div>

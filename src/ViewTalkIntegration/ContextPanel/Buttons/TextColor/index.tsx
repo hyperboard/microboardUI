@@ -5,6 +5,7 @@ import { ColorPicker } from "ViewTalkIntegration/Pickers/ColorPicker";
 import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
 import { UiButtonWithMenu } from "ViewTalkIntegration/ContextPanel/Buttons/ButtonWithMenu";
 import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel";
+import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
 
 const MENU_NAME = "TextColor";
 
@@ -22,7 +23,7 @@ const textColors = [
 export function TextColor(): React.ReactElement | null {
 	const { board, toggleMenu, openedMenu, panelMbr, windowHeight } =
 		usePanelContext();
-
+	const { t } = useTalkTranslation();
 	const fontColor = board.selection.getFontColor();
 
 	const handleClick = () => {
@@ -42,7 +43,11 @@ export function TextColor(): React.ReactElement | null {
 			windowHeight={windowHeight}
 			align="left"
 			button={
-				<UiButton onClick={handleClick}>
+				<UiButton
+					tooltip={t("contextPanel.textColor.tooltip")}
+					tooltipPosition="top"
+					onClick={handleClick}
+				>
 					<TextColorIndicator
 						width={24}
 						height={24}

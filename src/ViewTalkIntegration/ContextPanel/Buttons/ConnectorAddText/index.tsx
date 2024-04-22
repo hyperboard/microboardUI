@@ -1,11 +1,14 @@
 import { Connector } from "Board/Items";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { usePanelContext } from "ViewTalkIntegration/ContextPanel/PanelContext";
 import { TextColorIndicator } from "ViewTalkIntegration/Icon";
 import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
+import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
 
 export function ConnectorAddText(): React.ReactElement | null {
 	const { board } = usePanelContext();
+	const { t } = useTalkTranslation();
 
 	const context = board.selection.getContext();
 	if (context === "EditTextUnderPointer") {
@@ -30,7 +33,11 @@ export function ConnectorAddText(): React.ReactElement | null {
 	};
 
 	return (
-		<UiButton onClick={handleClick}>
+		<UiButton
+			tooltip={t("contextPanel.connectorAddText.tooltip")}
+			tooltipPosition="top"
+			onClick={handleClick}
+		>
 			<TextColorIndicator color="none" />
 		</UiButton>
 	);

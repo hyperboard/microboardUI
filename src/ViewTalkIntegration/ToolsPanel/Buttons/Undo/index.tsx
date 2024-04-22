@@ -2,10 +2,12 @@ import React from "react";
 import { UndoIcon } from "ViewTalkIntegration/Icon/UndoIcon";
 import { usePanelContext } from "ViewTalkIntegration/ToolsPanel/PanelContext";
 import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
+import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
 import style from "./Undo.module.css";
 
 export function Undo() {
 	const { board } = usePanelContext();
+	const { t } = useTalkTranslation();
 
 	const handleClick = () => {
 		board.events?.undo();
@@ -15,7 +17,7 @@ export function Undo() {
 
 	return (
 		<UiButton
-			tooltip="Шаг назад"
+			tooltip={t("toolsPanel.undo.tooltip")}
 			hotkey="⌘Z"
 			className={style.button}
 			onClick={handleClick}

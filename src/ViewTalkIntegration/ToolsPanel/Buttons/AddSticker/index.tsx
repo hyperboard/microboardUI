@@ -4,6 +4,7 @@ import { ColorPicker } from "ViewTalkIntegration/Pickers/ColorPicker";
 import { usePanelContext } from "ViewTalkIntegration/ToolsPanel/PanelContext";
 import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
 import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel";
+import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
 import { ButtonWithMenu } from "../ButtonWithMenu";
 
 const stickerColors = [
@@ -18,6 +19,7 @@ const stickerColors = [
 
 export function AddSticker() {
 	const { board } = usePanelContext();
+	const { t } = useTalkTranslation();
 
 	const handleClick = () => {
 		board.tools.addSticker();
@@ -36,7 +38,7 @@ export function AddSticker() {
 		<ButtonWithMenu
 			button={
 				<UiButton
-					tooltip="Стикер"
+					tooltip={t("toolsPanel.addSticker.tooltip")}
 					hotkey="⌘N"
 					active={isActive}
 					onClick={handleClick}

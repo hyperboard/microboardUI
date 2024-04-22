@@ -38,16 +38,11 @@ export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
 				{children}
 				{tooltip && (
 					<div
-						className={clsx(
-							style.tipContainer,
-							// style[tooltipPosition],
-							{
-								[style.right]: tooltipPosition === "right",
-								[style.top]: tooltipPosition === "top",
-								[style.topRight]:
-									tooltipPosition === "top-right",
-							},
-						)}
+						className={clsx(style.tipContainer, {
+							[style.right]: tooltipPosition === "right",
+							[style.top]: tooltipPosition === "top",
+							[style.topRight]: tooltipPosition === "top-right",
+						})}
 					>
 						<div className={clsx(style.tip)}>
 							<span className={style.tipText}>{tooltip}</span>

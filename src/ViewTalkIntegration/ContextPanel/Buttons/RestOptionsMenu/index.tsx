@@ -6,12 +6,15 @@ import { UiButtonWithMenu } from "ViewTalkIntegration/ContextPanel/Buttons/Butto
 import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel";
 import { Item } from "./Item";
 import style from "./RestOptionsMenu.module.css";
+import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
 
 const MENU_NAME = "RestOptions";
 
 export function RestOptionsMenu(): React.ReactElement | null {
 	const { toggleMenu, openedMenu, panelMbr, windowHeight, board } =
 		usePanelContext();
+
+	const { t } = useTalkTranslation();
 
 	const handleClick = () => toggleMenu(MENU_NAME);
 	const isNotImage = !board.selection.items.isItemTypes(["Image"]);
@@ -49,18 +52,18 @@ export function RestOptionsMenu(): React.ReactElement | null {
 			<UiPanel vertical className={style.menu}>
 				{isNotImage && (
 					<Item onClick={handleDuplicate} hotkey="⌘D">
-						Дублировать
+						{t("contextPanel.duplicate.text")}
 					</Item>
 				)}
 				<Item onClick={handleBringToFront} hotkey="fn↑ (PgUp)">
-					Вынести на передний план
+					{t("contextPanel.bringToFront.text")}
 				</Item>
 				<Item onClick={handleSendToBack} hotkey="fn↓ (PgDn)">
-					Вынести на задний план
+					{t("contextPanel.sendToBack.text")}
 				</Item>
 				{isNotImage && (
 					<Item onClick={handleDelete} hotkey="Delete">
-						Удалить
+						{t("contextPanel.delete.text")}
 					</Item>
 				)}
 			</UiPanel>

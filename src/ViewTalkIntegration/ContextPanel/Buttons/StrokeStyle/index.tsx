@@ -10,6 +10,8 @@ import { UiButtonWithMenu } from "ViewTalkIntegration/ContextPanel/Buttons/Butto
 import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel";
 import { UiSlider } from "ViewTalkIntegration/Ui/UiSlider";
 import style from "./StrokeStyle.module.css";
+import { useTranslation } from "react-i18next";
+import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
 
 const MENU_NAME = "StrokeStyle";
 
@@ -27,6 +29,7 @@ const strokeColors = [
 export function StrokeStyle(): React.ReactElement | null {
 	const { board, toggleMenu, openedMenu, panelMbr, windowHeight } =
 		usePanelContext();
+	const { t } = useTalkTranslation();
 
 	const borderColor = board.selection.getStrokeColor();
 	const borderStyle = board.selection.getBorderStyle();
@@ -57,7 +60,11 @@ export function StrokeStyle(): React.ReactElement | null {
 			windowHeight={windowHeight}
 			align="left"
 			button={
-				<UiButton onClick={handleClick}>
+				<UiButton
+					tooltip={t("contextPanel.strokeStyle.tooltip")}
+					tooltipPosition="top"
+					onClick={handleClick}
+				>
 					<StrokeColorIndicator color={borderColor} />
 				</UiButton>
 			}
@@ -74,7 +81,9 @@ export function StrokeStyle(): React.ReactElement | null {
 						onPick={handleStrokeWidthPick}
 						width={borderWidth}
 					/>
-					<p className={style.sliderLabel}>Толщина линии</p>
+					<p className={style.sliderLabel}>
+						{t("contextPanel.strokeStyle.strokeWidth")}
+					</p>
 				</div>
 				<div className={clsx(style.colors)}>
 					<ColorPicker

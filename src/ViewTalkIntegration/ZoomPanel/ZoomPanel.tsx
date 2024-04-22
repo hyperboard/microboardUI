@@ -7,6 +7,7 @@ import React from "react";
 import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
 import { Icon } from "ViewTalkIntegration/Icon";
 import style from "./ZoomPanel.module.css";
+import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
 
 type Props = {
 	app: App;
@@ -19,6 +20,7 @@ export function ZoomPanel({ app, board }: Props) {
 		subjects: ["camera"],
 		observer: forceUpdate,
 	});
+	const { t } = useTalkTranslation();
 
 	const handleZoomIn = () => {
 		board.camera.zoomInToViewCenter();
@@ -37,7 +39,7 @@ export function ZoomPanel({ app, board }: Props) {
 		<UiPanel className={style.panel}>
 			<UiButton
 				tooltipPosition="top"
-				tooltip="Отдалить"
+				tooltip={t("zoomPanel.zoomOut.tooltip")}
 				hotkey="⌘-"
 				onClick={handleZoomOut}
 			>
@@ -45,7 +47,7 @@ export function ZoomPanel({ app, board }: Props) {
 			</UiButton>
 			<UiButton
 				tooltipPosition="top"
-				tooltip="Масштаб 100%"
+				tooltip={t("zoomPanel.zoomDefault.tooltip")}
 				hotkey="⌘0"
 				className={style.zoom}
 				onClick={handleDefaultZoom}
@@ -54,7 +56,7 @@ export function ZoomPanel({ app, board }: Props) {
 			</UiButton>
 			<UiButton
 				tooltipPosition="top-right"
-				tooltip="Приблизить"
+				tooltip={t("zoomPanel.zoomIn.tooltip")}
 				hotkey="⌘+"
 				onClick={handleZoomIn}
 			>

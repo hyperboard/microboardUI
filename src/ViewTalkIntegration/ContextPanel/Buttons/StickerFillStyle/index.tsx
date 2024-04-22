@@ -5,6 +5,7 @@ import { ColorPicker } from "ViewTalkIntegration/Pickers/ColorPicker";
 import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
 import { UiButtonWithMenu } from "ViewTalkIntegration/ContextPanel/Buttons/ButtonWithMenu";
 import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel";
+import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
 
 const MENU_NAME = "StickerFillStyle";
 
@@ -21,6 +22,8 @@ const stickerColors = [
 export function StickerFillStyle(): React.ReactElement | null {
 	const { board, toggleMenu, openedMenu, panelMbr, windowHeight } =
 		usePanelContext();
+
+	const { t } = useTalkTranslation();
 
 	const color = board.selection.getFillColor();
 
@@ -39,7 +42,11 @@ export function StickerFillStyle(): React.ReactElement | null {
 			windowHeight={windowHeight}
 			align="left"
 			button={
-				<UiButton onClick={handleClick}>
+				<UiButton
+					tooltip={t("contextPanel.stickerColor.tooltip")}
+					tooltipPosition="top"
+					onClick={handleClick}
+				>
 					<CircleColorIndicator
 						width={24}
 						height={24}

@@ -1,0 +1,103 @@
+{
+	"contextPanel": {
+		"connectorAddText": {
+			"tooltip": "Add text"
+		},
+		"connectorType": {
+			"tooltip": "Line style"
+		},
+		"connectorEndPointer": {
+			"tooltip": "End pointer style"
+		},
+		"connectorStartPointer": {
+			"tooltip": "Start pointer style"
+		},
+		"connectorSwitchPointers": {
+			"tooltip": "Switch pointers"
+		},
+		"changeShape": {
+			"tooltip": "Change shape type"
+		},
+		"strokeStyle": {
+			"tooltip": "Stroke",
+			"strokeWidth": "Stroke width"
+		},
+		"fillStyle": {
+			"tooltip": "Fill"
+		},
+		"fontSize": {
+			"tooltip": "Font size"
+		},
+		"fontStyle": {
+			"tooltip": "Font style"
+		},
+		"textAlignment": {
+			"tooltip": "Text alignment"
+		},
+		"textColor": {
+			"tooltip": "Text color"
+		},
+		"textHighlight": {
+			"tooltip": "Marker"
+		},
+		"stickerColor": {
+			"tooltip": "Sticker color"
+		},
+		"penColor": {
+			"tooltip": "Color"
+		},
+    "duplicate": {
+      "text": "Duplicate"
+    },
+    "bringToFront": {
+      "text": "Bring to front"
+    },
+    "sendToBack" : {
+      "text": "Send to back"
+    },
+    "delete": {
+      "text": "Delete"
+    }
+	},
+	"toolsPanel": {
+		"select": {
+			"tooltip": "Select"
+		},
+		"undo": {
+			"tooltip": "Undo"
+		},
+		"redo": {
+			"tooltip": "Redo"
+		},
+		"addText": {
+			"tooltip": "Text"
+		},
+		"addSticker": {
+			"tooltip": "Sticker"
+		},
+		"addShape": {
+			"tooltip": "Shape"
+		},
+		"addConnector": {
+			"tooltip": "Connector"
+		},
+		"addDrawing": {
+			"tooltip": "Pen",
+			"strokeWidth": "Stroke width"
+		},
+		"addImage": {
+			"tooltip": "Add image"
+		}
+	},
+  "zoomPanel": {
+    "zoomOut": {
+      "tooltip": "Zoom out"
+    },
+    "zoomDefault": {
+      "tooltip": "Zoom 100%"
+    },
+    "zoomIn": {
+      "tooltip": "Zoom in"
+    }
+  }
+}

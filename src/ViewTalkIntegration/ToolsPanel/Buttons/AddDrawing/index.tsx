@@ -5,6 +5,7 @@ import { SliderPicker } from "ViewTalkIntegration/Pickers/SliderPicker";
 import { usePanelContext } from "ViewTalkIntegration/ToolsPanel/PanelContext";
 import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
 import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel";
+import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
 import { ButtonWithMenu } from "../ButtonWithMenu";
 import style from "./AddDrawing.module.css";
 
@@ -23,6 +24,7 @@ const sliderValues = [1, 2, 4, 6, 8, 12];
 
 export function AddDrawing() {
 	const { board } = usePanelContext();
+	const { t } = useTalkTranslation();
 
 	const handleClick = () => {
 		board.tools.addDrawing();
@@ -52,7 +54,7 @@ export function AddDrawing() {
 		<ButtonWithMenu
 			button={
 				<UiButton
-					tooltip="Карандаш"
+					tooltip={t("toolsPanel.addDrawing.tooltip")}
 					hotkey="B"
 					active={isActive}
 					onClick={handleClick}

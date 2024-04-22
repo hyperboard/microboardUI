@@ -3,10 +3,12 @@ import React, { ChangeEventHandler, useRef } from "react";
 import { Icon } from "ViewTalkIntegration/Icon";
 import { usePanelContext } from "ViewTalkIntegration/ToolsPanel/PanelContext";
 import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
+import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
 
 export function AddImage() {
 	const { board } = usePanelContext();
 	const inputRef = useRef<HTMLInputElement>(null);
+	const { t } = useTalkTranslation();
 
 	const handleClick = () => {
 		const input = inputRef.current;
@@ -28,7 +30,10 @@ export function AddImage() {
 	};
 
 	return (
-		<UiButton tooltip="Добавить изображение" onClick={handleClick}>
+		<UiButton
+			tooltip={t("toolsPanel.addImage.tooltip")}
+			onClick={handleClick}
+		>
 			<Icon width={20} height={18} iconName="Image" />
 			<input
 				onChange={handleChange}

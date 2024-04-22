@@ -1,3 +1,4 @@
+import "Lang";
 import { getRender } from "View";
 import { Clipboard } from "./Clipboard";
 import { Location } from "./Location";

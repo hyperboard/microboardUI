@@ -5,10 +5,12 @@ import { ConnectorLineStylePicker } from "ViewTalkIntegration/Pickers/ConnectorL
 import { usePanelContext } from "ViewTalkIntegration/ToolsPanel/PanelContext";
 import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
 import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel";
+import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
 import { ButtonWithMenu } from "../ButtonWithMenu";
 
 export function AddConnector() {
 	const { board } = usePanelContext();
+	const { t } = useTalkTranslation();
 
 	const handleClick = () => {
 		board.tools.addConnector();
@@ -27,7 +29,7 @@ export function AddConnector() {
 		<ButtonWithMenu
 			button={
 				<UiButton
-					tooltip="Соединительная линия"
+					tooltip={t("toolsPanel.addConnector.tooltip")}
 					hotkey="L"
 					active={isActive}
 					onClick={handleClick}

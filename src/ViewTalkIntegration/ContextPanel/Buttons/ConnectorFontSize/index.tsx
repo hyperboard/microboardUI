@@ -6,6 +6,8 @@ import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
 import { UiButtonWithMenu } from "ViewTalkIntegration/ContextPanel/Buttons/ButtonWithMenu";
 import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel";
 import style from "./FontSize.module.css";
+import { useTranslation } from "react-i18next";
+import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
 
 const MENU_NAME = "FontSize";
 
@@ -14,6 +16,8 @@ const fontSizes = [10, 12, 14, 18, 24, 36, 48, 64, 80, 144, 288];
 export function ConnectorFontSize() {
 	const { board, toggleMenu, openedMenu, panelMbr, windowHeight } =
 		usePanelContext();
+
+	const { t } = useTalkTranslation();
 
 	const context = board.selection.getContext();
 	if (context !== "EditTextUnderPointer") {
@@ -39,7 +43,12 @@ export function ConnectorFontSize() {
 			windowHeight={windowHeight}
 			align="left"
 			button={
-				<UiButton className={style.button} onClick={handleClick}>
+				<UiButton
+					tooltip={t("contextPanel.fontSize.tooltip")}
+					tooltipPosition="top"
+					className={style.button}
+					onClick={handleClick}
+				>
 					<span className={style.fontSize}>{fontSize}</span>
 					<Icon width={10} height={16} iconName="UpDownArrow" />
 				</UiButton>

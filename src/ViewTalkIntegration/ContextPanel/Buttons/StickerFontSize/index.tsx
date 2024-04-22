@@ -6,6 +6,7 @@ import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
 import { UiButtonWithMenu } from "ViewTalkIntegration/ContextPanel/Buttons/ButtonWithMenu";
 import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel";
 import style from "./FontSize.module.css";
+import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
 
 const MENU_NAME = "FontSize";
 
@@ -14,6 +15,8 @@ const fontSizes = [4, 8, 12, 16, 20, 24, 32, 40, 48, 64];
 export function StickerFontSize() {
 	const { board, toggleMenu, openedMenu, panelMbr, windowHeight } =
 		usePanelContext();
+
+	const { t } = useTalkTranslation();
 
 	const fontSize = board.selection.getFontSize();
 	const text = board.selection.getText();
@@ -37,7 +40,12 @@ export function StickerFontSize() {
 			windowHeight={windowHeight}
 			align="left"
 			button={
-				<UiButton className={style.button} onClick={handleClick}>
+				<UiButton
+					tooltip={t("contextPanel.fontSize.tooltip")}
+					tooltipPosition="top"
+					className={style.button}
+					onClick={handleClick}
+				>
 					<span className={style.fontSize}>
 						{isAuto ? "Авто" : fontSize}
 					</span>

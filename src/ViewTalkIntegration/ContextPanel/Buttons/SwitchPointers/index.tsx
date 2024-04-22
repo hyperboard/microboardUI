@@ -1,11 +1,13 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { usePanelContext } from "ViewTalkIntegration/ContextPanel/PanelContext";
 import { Icon } from "ViewTalkIntegration/Icon";
 import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
+import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
 
 export function SwitchPointers(): React.ReactElement | null {
 	const { board } = usePanelContext();
-
+	const { t } = useTalkTranslation();
 	const handleClick = () => {
 		const start = board.selection.getStartPointerStyle();
 		const end = board.selection.getEndPointerStyle();
@@ -14,7 +16,11 @@ export function SwitchPointers(): React.ReactElement | null {
 	};
 
 	return (
-		<UiButton onClick={handleClick}>
+		<UiButton
+			tooltip={t("contextPanel.connectorSwitchPointers.tooltip")}
+			tooltipPosition="top"
+			onClick={handleClick}
+		>
 			<Icon width={18} height={18} iconName="PointerRoll" />
 		</UiButton>
 	);

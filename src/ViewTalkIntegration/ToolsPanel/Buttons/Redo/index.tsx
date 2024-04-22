@@ -2,10 +2,12 @@ import React from "react";
 import { RedoIcon } from "ViewTalkIntegration/Icon/RedoIcon";
 import { usePanelContext } from "ViewTalkIntegration/ToolsPanel/PanelContext";
 import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
+import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
 import style from "./Redo.module.css";
 
 export function Redo() {
 	const { board } = usePanelContext();
+	const { t } = useTalkTranslation();
 
 	const handleClick = () => {
 		board.events?.redo();
@@ -15,7 +17,7 @@ export function Redo() {
 
 	return (
 		<UiButton
-			tooltip="Шаг вперед"
+			tooltip={t("toolsPanel.redo.tooltip")}
 			hotkey="⌘⇧Z"
 			className={style.button}
 			onClick={handleClick}
