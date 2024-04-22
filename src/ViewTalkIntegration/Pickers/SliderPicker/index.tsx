@@ -7,13 +7,18 @@ type Props = {
 	values: number[];
 	onPick: (val: number) => void;
 	showLabel?: boolean;
+	width?: number;
 };
 
-export function SliderPicker({ onPick, values, showLabel }: Props) {
+export function SliderPicker({ onPick, values, showLabel, width }: Props) {
 	const { t } = useTalkTranslation();
 	return (
 		<div className={style.container}>
-			<UiSegmentedSlider values={values} onChange={onPick} />
+			<UiSegmentedSlider
+				defaultValue={width}
+				values={values}
+				onChange={onPick}
+			/>
 			{showLabel && (
 				<label className={style.label}>
 					{t("toolsPanel.addDrawing.strokeWidth")}

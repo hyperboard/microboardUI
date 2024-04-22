@@ -34,6 +34,7 @@ export function StrokeStyle(): React.ReactElement | null {
 	const { t } = useTalkTranslation();
 
 	const borderColor = board.selection.getStrokeColor();
+	const borderWidth = board.selection.getStrokeWidth();
 	const borderStyle = board.selection.getBorderStyle();
 
 	const handleClick = () => {
@@ -78,6 +79,7 @@ export function StrokeStyle(): React.ReactElement | null {
 					/>
 				</div>
 				<SliderPicker
+					width={borderWidth}
 					values={sliderValues}
 					showLabel
 					onPick={handleStrokeWidthPick}

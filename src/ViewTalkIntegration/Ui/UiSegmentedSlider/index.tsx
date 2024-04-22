@@ -4,11 +4,14 @@ import style from "./UiSegmentedSlider.module.css";
 
 type Props = {
 	values: number[];
+	defaultValue?: number;
 	onChange: (val: number) => void;
 };
 
-export function UiSegmentedSlider({ values, onChange }: Props) {
-	const [selectedValue, setSelectedValue] = useState(values[0]);
+export function UiSegmentedSlider({ values, onChange, defaultValue }: Props) {
+	const [selectedValue, setSelectedValue] = useState(
+		defaultValue ?? values[0],
+	);
 
 	const handleSliderChange: ChangeEventHandler<HTMLInputElement> = e => {
 		const selectedIndex = parseInt(e.target.value);
