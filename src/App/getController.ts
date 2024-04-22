@@ -102,6 +102,16 @@ export function getController(getBoard: () => Board) {
 					}
 				}
 			}
+
+			if (
+				(event.ctrlKey || event.metaKey) &&
+				(event.code === "KeyS" ||
+					event.code === "KeyU" ||
+					event.code === "KeyB" ||
+					event.code === "KeyI")
+			) {
+				event.preventDefault();
+			}
 			return;
 		}
 		// const key = event.key.toLowerCase();
@@ -174,13 +184,13 @@ export function getController(getBoard: () => Board) {
 				break;
 		}
 		if (board.selection.getContext() !== "SelectUnderPointer") {
-			if (key === 'PageUp') {
+			if (key === "PageUp") {
 				const items = board.selection.list();
 				for (const item of items) {
 					board.items.index.bringToFront(item);
 				}
 			}
-			if (key === 'PageDown') {
+			if (key === "PageDown") {
 				const items = board.selection.list();
 				for (const item of items) {
 					board.items.index.sendToBack(item);

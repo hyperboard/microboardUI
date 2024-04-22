@@ -1105,7 +1105,7 @@ function FontStyle({
 		return null;
 	}
 	const menuRef = React.useRef<HTMLDivElement>(null);
-
+	const fontStyles = board.selection.getText()?.getFontStyles();
 	const handleClick = () => {
 		toggleMenu("FontStyle");
 	};
@@ -1138,7 +1138,7 @@ function FontStyle({
 					visibility: menu === "FontStyle" ? "visible" : "hidden",
 				}}
 			>
-				<FontStylePicker onPick={handlePick} />
+				<FontStylePicker fontStyles={fontStyles} onPick={handlePick} />
 			</div>
 		</ButtonWithMenu>
 	);
