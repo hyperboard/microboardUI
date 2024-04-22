@@ -55,6 +55,7 @@ export function StickerFontSize() {
 		>
 			<UiPanel vertical className={style.sizeList}>
 				<FontSizePicker
+					currentFontSize={fontSize}
 					fontSizes={fontSizes}
 					onPick={handlePick}
 					max={maxFontSize}

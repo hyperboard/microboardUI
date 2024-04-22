@@ -55,7 +55,11 @@ export function ConnectorFontSize() {
 			}
 		>
 			<UiPanel vertical className={style.sizeList}>
-				<FontSizePicker fontSizes={fontSizes} onPick={handlePick} />
+				<FontSizePicker
+					currentFontSize={fontSize}
+					fontSizes={fontSizes}
+					onPick={handlePick}
+				/>
 			</UiPanel>
 		</UiButtonWithMenu>
 	);
