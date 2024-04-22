@@ -1,19 +1,21 @@
 import { BorderStyle } from "Board/Items/Path";
 import clsx from "clsx";
 import React from "react";
+import { UiButtonWithMenu } from "ViewTalkIntegration/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "ViewTalkIntegration/ContextPanel/PanelContext";
 import { StrokeColorIndicator } from "ViewTalkIntegration/Icon/StrokeColorIndicator";
 import { StrokeStylePicker } from "ViewTalkIntegration/Pickers/BorderStylePicker";
 import { ColorPicker } from "ViewTalkIntegration/Pickers/ColorPicker";
+import { SliderPicker } from "ViewTalkIntegration/Pickers/SliderPicker";
 import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
-import { UiButtonWithMenu } from "ViewTalkIntegration/ContextPanel/Buttons/ButtonWithMenu";
 import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel";
 import { UiSlider } from "ViewTalkIntegration/Ui/UiSlider";
-import style from "./StrokeStyle.module.css";
-import { useTranslation } from "react-i18next";
 import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
+import style from "./StrokeStyle.module.css";
 
 const MENU_NAME = "StrokeStyle";
+
+const sliderValues = [1, 2, 4, 6, 8, 12];
 
 const strokeColors = [
 	"#000000",
@@ -33,7 +35,6 @@ export function StrokeStyle(): React.ReactElement | null {
 
 	const borderColor = board.selection.getStrokeColor();
 	const borderStyle = board.selection.getBorderStyle();
-	const borderWidth = board.selection.getStrokeWidth();
 
 	const handleClick = () => {
 		toggleMenu(MENU_NAME);
@@ -76,15 +77,11 @@ export function StrokeStyle(): React.ReactElement | null {
 						onPick={handleStrokeStylePick}
 					/>
 				</div>
-				<div className={style.slider}>
-					<UiSlider
-						onPick={handleStrokeWidthPick}
-						width={borderWidth}
-					/>
-					<p className={style.sliderLabel}>
-						{t("contextPanel.strokeStyle.strokeWidth")}
-					</p>
-				</div>
+				<SliderPicker
+					values={sliderValues}
+					showLabel
+					onPick={handleStrokeWidthPick}
+				/>
 				<div className={clsx(style.colors)}>
 					<ColorPicker
 						allowNone

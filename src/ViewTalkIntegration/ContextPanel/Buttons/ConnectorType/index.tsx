@@ -6,7 +6,6 @@ import { ConnectorLineStylePicker } from "ViewTalkIntegration/Pickers/ConnectorL
 import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
 import { UiButtonWithMenu } from "ViewTalkIntegration/ContextPanel/Buttons/ButtonWithMenu";
 import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel";
-import { useTranslation } from "react-i18next";
 import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
 
 const MENU_NAME = "ConnectorType";

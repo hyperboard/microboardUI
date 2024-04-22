@@ -1,88 +1,57 @@
-import React, {
-	DragEventHandler,
-	memo,
-	PointerEventHandler,
-	RefCallback,
-	useCallback,
-	useState,
-} from "react";
+import clsx from "clsx";
+import React, { ChangeEventHandler, useState } from "react";
 import style from "./UiSegmentedSlider.module.css";
 
-type Props<T> = {
-	values: T[];
-	onChange: (val: T) => void;
+type Props = {
+	values: number[];
+	onChange: (val: number) => void;
 };
 
-type Segment<T> = {
-	left: number;
-	value: T;
-	index: number;
-};
+export function UiSegmentedSlider({ values, onChange }: Props) {
+	const [selectedValue, setSelectedValue] = useState(values[0]);
 
-export const UiSegmentedSlider = memo(function UiSegmentedSlider<T>({
-	onChange,
-	values,
-}: Props<T>) {
-	const [segments, setSegments] = useState<Segment<T>[]>([]);
-	const [thumbLeft, setThumbLeft] = useState(0);
-	const [isDragging, setIsDragging] = useState(false);
-
-	const handleRef: RefCallback<HTMLDivElement> = useCallback(
-		node => {
-			const width = node?.getBoundingClientRect().width;
-			if (!width) {
-				return;
-			}
-
-			const segments: Segment<T>[] = values.map((value, index) => ({
-				left: (width / (values.length - 1)) * index,
-				value,
-				index,
-			}));
-
-			setSegments(segments);
-		},
-		[values],
-	);
-
-	const handleDragStart: PointerEventHandler<HTMLDivElement> = e => {
-		setIsDragging(true);
+	const handleSliderChange: ChangeEventHandler<HTMLInputElement> = e => {
+		const selectedIndex = parseInt(e.target.value);
+		const nearestValue = values[selectedIndex];
+		setSelectedValue(nearestValue);
+		onChange(nearestValue);
 	};
 
-	const handleDrag: PointerEventHandler<HTMLDivElement> = e => {
-		if (!isDragging) {
-			return;
-		}
-
-		const clientX = e.clientX;
-
-		const distances = segments.map(segment =>
-			Math.abs(clientX - segment.left),
-		);
-
-		const closestSegmentIndex = distances.indexOf(Math.min(...distances));
-
-		setThumbLeft(segments[closestSegmentIndex].left);
-		onChange(segments[closestSegmentIndex].value);
-	};
-
-	const handleDragEnd: PointerEventHandler<HTMLDivElement> = () => {
-		setIsDragging(false);
-	};
+	const numSegments = values.length - 1;
 
 	return (
 		<div className={style.container}>
-			<div className={style.line} ref={handleRef} />
-			<div
-				style={{ left: thumbLeft }}
-				className={style.thumb}
-				onPointerDown={handleDragStart}
-				onPointerMove={handleDrag}
-				onPointerUp={handleDragEnd}
+			<input
+				className={style.input}
+				type="range"
+				min={0}
+				max={numSegments}
+				step={1}
+				value={values.indexOf(selectedValue)}
+				onChange={handleSliderChange}
 			/>
-			{segments.map(({ index, left }) => (
-				<div className={style.segment} style={{ left }} key={index} />
+			<div
+				className={style.progress}
+				style={{
+					width: `${
+						(values.indexOf(selectedValue) / numSegments) * 100
+					}%`,
+				}}
+			/>
+			{values.map((value, index) => (
+				<span
+					key={index}
+					className={clsx(
+						style.dot,
+						selectedValue >= value && style.active,
+					)}
+					style={{
+						left: `calc(${(index / numSegments) * 100}% ${
+							index > numSegments / 2 ? "- .4rem" : "+ .4rem"
+						})`,
+					}}
+				/>
 			))}
 		</div>
 	);
-});
+}

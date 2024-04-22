@@ -47,7 +47,6 @@ export function AddDrawing() {
 	};
 
 	const isActive = Boolean(board.tools.getAddDrawing());
-	const strokeWidth = board.tools.getAddDrawing()?.strokeWidth ?? 0;
 	const selectedColor = board.tools.getAddDrawing()?.strokeStyle;
 
 	return (
@@ -67,14 +66,10 @@ export function AddDrawing() {
 			<UiPanel vertical className={style.panel}>
 				<div className={style.slider}>
 					<SliderPicker
-						width={strokeWidth}
 						onPick={handleSliderPick}
+						values={sliderValues}
 						showLabel
 					/>
-					{/* <UiSegmentedSlider
-						values={sliderValues}
-						onChange={console.log.bind(console)}
-					/> */}
 				</div>
 				<div className={style.colors}>
 					<ColorPicker
