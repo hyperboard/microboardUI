@@ -1,11 +1,10 @@
 import React from "react";
+import { UiButtonWithMenu } from "ViewTalkIntegration/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "ViewTalkIntegration/ContextPanel/PanelContext";
 import { Icon } from "ViewTalkIntegration/Icon";
-import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
-import { UiButtonWithMenu } from "ViewTalkIntegration/ContextPanel/Buttons/ButtonWithMenu";
-import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel";
 import { FontStylePicker } from "ViewTalkIntegration/Pickers/FontStylePicker";
-import { useTranslation } from "react-i18next";
+import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
+import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel";
 import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
 
 const MENU_NAME = "FontStyle";
@@ -14,6 +13,8 @@ export function FontStyle(): React.ReactElement | null {
 	const { board, toggleMenu, openedMenu, panelMbr, windowHeight } =
 		usePanelContext();
 	const { t } = useTalkTranslation();
+
+	const fontStyles = board.selection.getText()?.getFontStyles();
 
 	const handleClick = () => {
 		toggleMenu(MENU_NAME);
@@ -42,7 +43,7 @@ export function FontStyle(): React.ReactElement | null {
 			}
 		>
 			<UiPanel>
-				<FontStylePicker onPick={handlePick} />
+				<FontStylePicker fontStyles={fontStyles} onPick={handlePick} />
 			</UiPanel>
 		</UiButtonWithMenu>
 	);

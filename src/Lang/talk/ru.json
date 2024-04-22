@@ -29,7 +29,11 @@
 			"tooltip": "Размер шрифта"
 		},
 		"fontStyle": {
-			"tooltip": "Стиль шрифта"
+			"tooltip": "Стиль шрифта",
+			"bold": "Жирный",
+			"italic": "Курсив",
+			"strike": "Зачеркнутый",
+			"underline": "Подчеркивание"
 		},
 		"textAlignment": {
 			"tooltip": "Выравнивание"

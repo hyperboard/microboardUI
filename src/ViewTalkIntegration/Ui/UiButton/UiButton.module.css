@@ -105,3 +105,13 @@
 	bottom: calc(100% + 1.2rem);
 	right: -1rem;
 }
+
+.tip-container.bottom .tip::before {
+	left: 50%;
+	margin-left: -0.7rem;
+	top: -0.6rem;
+}
+
+.tip-container.bottom {
+	top: calc(100% + 1.2rem);
+}

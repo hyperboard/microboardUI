@@ -22,6 +22,9 @@ i18n.use(initReactI18next)
 	.use(LanguageDetector)
 	.init({
 		debug: process.env.NODE_ENV === "development",
+		detection: {
+			order: ["navigator"],
+		},
 		supportedLngs: ["en", "ru"],
 		defaultNS,
 		resources,

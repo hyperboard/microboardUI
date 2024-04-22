@@ -7,7 +7,7 @@ type UiButtonProps = HTMLAttributes<HTMLButtonElement> & {
 	disabled?: boolean;
 	tooltip?: string;
 	hotkey?: string;
-	tooltipPosition?: "right" | "top" | "top-left" | "top-right";
+	tooltipPosition?: "right" | "top" | "top-left" | "top-right" | "bottom";
 };
 
 export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
@@ -42,6 +42,7 @@ export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
 							[style.right]: tooltipPosition === "right",
 							[style.top]: tooltipPosition === "top",
 							[style.topRight]: tooltipPosition === "top-right",
+							[style.bottom]: tooltipPosition === "bottom",
 						})}
 					>
 						<div className={clsx(style.tip)}>

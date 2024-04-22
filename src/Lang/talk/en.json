@@ -29,7 +29,11 @@
 			"tooltip": "Font size"
 		},
 		"fontStyle": {
-			"tooltip": "Font style"
+			"tooltip": "Font style",
+			"bold": "Bold",
+			"italic": "Italic",
+			"strike": "Strike",
+			"underline": "Underline"
 		},
 		"textAlignment": {
 			"tooltip": "Text alignment"
