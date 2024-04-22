@@ -49,8 +49,10 @@ export function UiSegmentedSlider({ values, onChange, defaultValue }: Props) {
 						selectedValue >= value && style.active,
 					)}
 					style={{
-						left: `calc(${(index / numSegments) * 100}% ${
-							index > numSegments / 2 ? "- .4rem" : "+ .4rem"
+						left: `calc(${
+							Math.round((index / numSegments) * 10) * 10
+						}% ${index === 0 ? "+ .4rem" : ""} ${
+							index === values.length - 1 ? "- .4rem" : ""
 						})`,
 					}}
 				/>
