@@ -8,9 +8,14 @@ import { UnderlineIcon } from "View/Icon/TextStyle/UnderlineIcon";
 
 type Props = {
 	onPick: (style: TextStyle) => void;
+	fontStyles?: string[];
 };
 
 export function FontStylePicker(props: Props): React.ReactElement {
+	const isBold = props.fontStyles?.includes("bold");
+	const isItalic = props.fontStyles?.includes("italic");
+	const isLineThrough = props.fontStyles?.includes("line-through");
+	const isUnderline = props.fontStyles?.includes("underline");
 	return (
 		<>
 			<Button
@@ -22,6 +27,7 @@ export function FontStylePicker(props: Props): React.ReactElement {
 					props.onPick("bold");
 				}}
 				margin={0}
+				isOn={isBold}
 			>
 				<BoldIcon isOn={true} width={24} height={24} />
 			</Button>
@@ -34,6 +40,7 @@ export function FontStylePicker(props: Props): React.ReactElement {
 					props.onPick("italic");
 				}}
 				margin={0}
+				isOn={isItalic}
 			>
 				<ItalicsIcon width={24} height={24} />
 			</Button>
@@ -47,6 +54,7 @@ export function FontStylePicker(props: Props): React.ReactElement {
 				}}
 				margin={0}
 				tipWidth={140}
+				isOn={isUnderline}
 			>
 				<UnderlineIcon width={24} height={24} />
 			</Button>
@@ -60,6 +68,7 @@ export function FontStylePicker(props: Props): React.ReactElement {
 				}}
 				margin={0}
 				tipWidth={155}
+				isOn={isLineThrough}
 			>
 				<StrikethroughIcon width={24} height={24} />
 			</Button>
