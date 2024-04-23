@@ -84,6 +84,43 @@ export function getBoardsRouter(
         }
     );
 
+    // Getting board details
+    router.get(
+        "/boards/:boardId/details",
+        authenticate,
+        param("boardId").isUUID(),
+        async (req: Request, res: Response) => {
+            try {
+                const errors = validationResult(req);
+                if (!errors.isEmpty()) {
+                    return res.status(400).json({ errors: errors.array() });
+                }
+
+                const boardId = req.params.boardId;
+
+                if (
+                    !hasRootCatalogPermission(req.token) &&
+                    !checkPermissions(req.token, "owns", "boards", boardId) &&
+                    !checkPermissions(req.token, "edits", "boards", boardId) &&
+                    !checkPermissions(req.token, "reads", "boards", boardId)
+                ) {
+                    return forbidden(res);
+                }
+
+                const boardDetails = await boards.getBoardDetails(boardId);
+
+                if (!boardDetails) {
+                    return res.status(404).json({ message: "Board not found" });
+                }
+
+                return res.status(200).json(boardDetails);
+            } catch (err) {
+                logger.error(err);
+                return res.status(500).send("Server error");
+            }
+        }
+    );
+
     if (process.env.IS_PUBLIC_BOARDS_ENABLED) {
         // Creating a new public board
         router.post(
@@ -391,6 +428,43 @@ export function getBoardsRouter(
                     linkId: linkId,
                     linkUri: linkUri,
                 });
+            } catch (err) {
+                logger.error(err);
+                return res.status(500).send("Server error");
+            }
+        }
+    );
+
+    router.get(
+        "/boards/:boardId/link/:linkId/details",
+        authenticate,
+        param("boardId").isUUID(),
+        param("linkId").isUUID(),
+        async (req: Request, res: Response) => {
+            try {
+                const errors = validationResult(req);
+                if (!errors.isEmpty()) {
+                    return res.status(400).json({ errors: errors.array() });
+                }
+
+                const { boardId, linkId } = req.params;
+
+                if (
+                    !hasRootCatalogPermission(req.token) &&
+                    !checkPermissions(req.token, "owns", "boards", boardId) &&
+                    !checkPermissions(req.token, "edits", "boards", boardId) &&
+                    !checkPermissions(req.token, "reads", "boards", boardId)
+                ) {
+                    return forbidden(res);
+                }
+
+                const linkDetails = await boards.getLinkDetails(linkId);
+
+                if (!linkDetails) {
+                    return res.status(404).json({ message: "Link not found" });
+                }
+
+                return res.status(200).json(linkDetails);
             } catch (err) {
                 logger.error(err);
                 return res.status(500).send("Server error");

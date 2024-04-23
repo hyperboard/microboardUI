@@ -4,6 +4,7 @@ import { beforeAll, afterEach, describe, it, expect } from "@jest/globals";
 import dotenv from "dotenv";
 import { getApp } from "getApp";
 import { createToken } from "Tokens";
+import { token } from "morgan";
 
 let server: http.Server;
 
@@ -88,6 +89,70 @@ describe("Board routes", () => {
         });
     });
 
+    describe("Get board details", () => {
+        const userId = "user-123";
+        let boardId: any;
+        let token: string;
+
+        beforeAll(async () => {
+            // Create token with root catalog permissions
+            token = await createTestToken(userId, {
+                owns: { catalogs: ["root"] },
+            });
+
+            // Create a new board
+            const createResponse = await request(server)
+                .post("/api/v1/boards")
+                .set("Authorization", `Bearer ${token}`)
+                .send({ title: "Board for Detail Test" })
+                .expect(201);
+            expect(createResponse.body).toHaveProperty("boardId");
+            boardId = createResponse.body.boardId;
+        });
+
+        it("should return the details of an existing board", async () => {
+            const readToken = await createTestToken(userId, {
+                reads: { boards: [boardId] },
+            });
+
+            await request(server)
+                .get(`/api/v1/boards/${boardId}/details`)
+                .set("Authorization", `Bearer ${readToken}`)
+                .expect(200)
+                .then((response) => {
+                    expect(response.body).toHaveProperty("boardId");
+                    expect(response.body.boardId).toEqual(boardId);
+                    expect(response.body).toHaveProperty("title");
+                });
+        });
+
+        it("should return 401 if unauthorized", async () => {
+            await request(server)
+                .get(`/api/v1/boards/${boardId}/details`)
+                .expect(401); // Unauthorized
+        });
+
+        it("should return 403 if user does not have permission to read the board details", async () => {
+            const forbiddenToken = await createTestToken(userId, {
+                reads: { boards: [] }, // Empty permissions
+            });
+
+            await request(server)
+                .get(`/api/v1/boards/${boardId}/details`)
+                .set("Authorization", `Bearer ${forbiddenToken}`)
+                .expect(403); // Forbidden
+        });
+
+        it("should return 404 if board does not exist", async () => {
+            const nonExistentBoardId = "00000000-0000-0000-0000-000000000000";
+
+            await request(server)
+                .get(`/api/v1/boards/${nonExistentBoardId}/details`)
+                .set("Authorization", `Bearer ${token}`)
+                .expect(404); // Not found
+        });
+    });
+
     describe("Create public board", () => {
         it("should create a new public board", async () => {
             await request(server)
@@ -156,6 +221,35 @@ describe("Board routes", () => {
                 .delete(`/api/v1/boards/${boardId}`)
                 .set("Authorization", `Bearer ${tokenToDeleteBoard}`)
                 .expect(204); // Board deletion should be successful
+        });
+
+        it("should return 204 on successive deletes for the same board", async () => {
+            const tokenToCreate = await createTestToken(userId, {
+                owns: { catalogs: ["root"] },
+            });
+
+            const createResponse = await request(server)
+                .post("/api/v1/boards")
+                .set("Authorization", `Bearer ${tokenToCreate}`)
+                .send({ title: "Board to test delete idempotency" })
+                .expect(201);
+
+            const boardIdToDelete = createResponse.body.boardId;
+            const tokenToDelete = await createTestToken(userId, {
+                owns: { boards: [boardIdToDelete] },
+            });
+
+            // First DELETE request
+            await request(server)
+                .delete(`/api/v1/boards/${boardIdToDelete}`)
+                .set("Authorization", `Bearer ${tokenToDelete}`)
+                .expect(204);
+
+            // Subsequent DELETE request (should also return 204 ensuring idempotence)
+            await request(server)
+                .delete(`/api/v1/boards/${boardIdToDelete}`)
+                .set("Authorization", `Bearer ${tokenToDelete}`)
+                .expect(204);
         });
     });
 
@@ -384,6 +478,89 @@ describe("Board routes", () => {
         });
     });
 
+    describe("Get link details", () => {
+        const userId = "user-123";
+        let boardId: any;
+        let linkId: any;
+        let token: string;
+
+        beforeAll(async () => {
+            // Create token with root catalog permissions
+            token = await createTestToken(userId, {
+                owns: { catalogs: ["root"] },
+            });
+
+            // Create a new board
+            const boardResponse = await request(server)
+                .post("/api/v1/boards")
+                .set("Authorization", `Bearer ${token}`)
+                .send({ title: "Board for Link Details Test" })
+                .expect(201);
+            expect(boardResponse.body).toHaveProperty("boardId");
+            boardId = boardResponse.body.boardId;
+
+            // Create a new link for the board
+            const linkResponse = await request(server)
+                .post(`/api/v1/boards/${boardId}/links`)
+                .set("Authorization", `Bearer ${token}`)
+                .send({ type: "edit" })
+                .expect(201);
+            expect(linkResponse.body).toHaveProperty("linkId");
+            linkId = linkResponse.body.linkId;
+        });
+
+        it("should return the details of an existing link", async () => {
+            await request(server)
+                .get(`/api/v1/boards/${boardId}/link/${linkId}/details`)
+                .set("Authorization", `Bearer ${token}`)
+                .expect(200)
+                .then((response) => {
+                    expect(response.body).toHaveProperty("linkId");
+                    expect(response.body).toHaveProperty("type");
+                    expect(response.body.type).toBe("edit");
+                });
+        });
+
+        it("should return 401 if unauthorized", async () => {
+            await request(server)
+                .get(`/api/v1/boards/${boardId}/link/${linkId}/details`)
+                .expect(401); // Unauthorized
+        });
+
+        it("should return 403 if user does not have permission to read the link details", async () => {
+            const forbiddenToken = await createTestToken(userId, {
+                reads: { boards: [] }, // Empty permissions
+            });
+
+            await request(server)
+                .get(`/api/v1/boards/${boardId}/link/${linkId}/details`)
+                .set("Authorization", `Bearer ${forbiddenToken}`)
+                .expect(403); // Forbidden
+        });
+
+        it("should return 404 if link does not exist", async () => {
+            const nonExistentLinkId = "00000000-0000-0000-0000-000000000000";
+
+            await request(server)
+                .get(
+                    `/api/v1/boards/${boardId}/link/${nonExistentLinkId}/details`
+                )
+                .set("Authorization", `Bearer ${token}`)
+                .expect(404); // Not found
+        });
+
+        it("should return 404 if board does not exist", async () => {
+            const nonExistentBoardId = "00000000-0000-0000-0000-000000000000";
+
+            await request(server)
+                .get(
+                    `/api/v1/board/${nonExistentBoardId}/link/${linkId}/details`
+                )
+                .set("Authorization", `Bearer ${token}`)
+                .expect(404); // Not found
+        });
+    });
+
     describe("Delete a Link", () => {
         const userId = "user-123";
         let boardId: any;
@@ -459,6 +636,48 @@ describe("Board routes", () => {
                 )
                 .set("Authorization", `Bearer ${tokenWithRootCatalogToDelete}`)
                 .expect(204); // Link deletion should succeed.
+        });
+
+        it("should return 204 on successive deletes for the same link ensuring idempotency", async () => {
+            // Create token with permissions to create and delete a board
+            let token = await createTestToken(userId, {
+                owns: { catalogs: ["root"] },
+            });
+
+            // Create a new board
+            const boardResponse = await request(server)
+                .post("/api/v1/boards")
+                .set("Authorization", `Bearer ${token}`)
+                .send({ title: "Board for Link Deletion Test" })
+                .expect(201);
+            expect(boardResponse.body).toHaveProperty("boardId");
+            boardId = boardResponse.body.boardId;
+
+            // Create a new link for the board
+            const linkResponse = await request(server)
+                .post(`/api/v1/boards/${boardId}/links`)
+                .set("Authorization", `Bearer ${token}`)
+                .send({ type: "edit" })
+                .expect(201);
+            expect(linkResponse.body).toHaveProperty("linkId");
+            linkId = linkResponse.body.linkId;
+
+            // Create a token with permissions to delete the newly created link
+            const tokenWithRootCatalogToDelete = await createTestToken(userId, {
+                owns: { catalogs: ["root"], boards: [boardId] },
+            });
+
+            // First DELETE request
+            await request(server)
+                .delete(`/api/v1/boards/${boardId}/links/${linkId}`)
+                .set("Authorization", `Bearer ${tokenWithRootCatalogToDelete}`)
+                .expect(204);
+
+            // Subsequent DELETE request (should also return 204 ensuring idempotency)
+            await request(server)
+                .delete(`/api/v1/boards/${boardId}/links/${linkId}`)
+                .set("Authorization", `Bearer ${tokenWithRootCatalogToDelete}`)
+                .expect(204);
         });
     });
 });

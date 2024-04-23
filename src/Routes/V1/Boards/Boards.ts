@@ -37,6 +37,33 @@ export class Boards {
         }
     }
 
+    async getBoardDetails(
+        boardId: string
+    ): Promise<{ boardId: string; created: Date; title: string } | null> {
+        try {
+            const result = await this.database.query(
+                `SELECT uniq_id as boardId, created, boardname as title FROM boards WHERE uniq_id = $1 LIMIT 1`,
+                [boardId]
+            );
+
+            if (result.rows.length > 0) {
+                const row = result.rows[0];
+                return {
+                    boardId: row.boardid,
+                    created: row.created,
+                    title: row.title,
+                };
+            } else {
+                return null;
+            }
+        } catch (error) {
+            this.logger.error(
+                `Error fetching board details for board ID ${boardId}: ${error}`
+            );
+            throw error;
+        }
+    }
+
     async isBoardExists(boardId: string): Promise<boolean> {
         try {
             const result = await this.database.query(
@@ -187,6 +214,48 @@ export class Boards {
         }
     }
 
+    async getLinkDetails(
+        linkId: string
+    ): Promise<{
+        linkId: string;
+        boardId: string;
+        type: "edit" | "view";
+    } | null> {
+        try {
+            const queryText = `
+                SELECT board_id, link_uuid, type 
+                FROM get_link($1)
+            `;
+            const link = await this.database.query<LinkDetail>(queryText, [
+                linkId,
+            ]);
+
+            if (link.rows.length === 0) {
+                return null;
+            }
+
+            const board = await this.database.query(
+                `SELECT uniq_id from boards where id = $1`,
+                [link.rows[0].board_id]
+            );
+
+            if (board.rows.length === 0) {
+                throw new Error("Board Not Found");
+            }
+
+            const { link_uuid, type } = link.rows[0];
+
+            return {
+                linkId,
+                type,
+                boardId: board.rows[0].uniq_id,
+            };
+        } catch (error) {
+            this.logger.error(`Error getting link details: ${error}`);
+            throw error;
+        }
+    }
+
     async getPrivateBoards(
         user: AccessToken
     ): Promise<Array<{ get_private_boards: string }> | undefined> {
@@ -219,7 +288,7 @@ export class Boards {
         }
     }
 
-    async getLatestBoardSnapshot(): Promise<any> {}
+    async getLatestBoardSnapshot(boardId: string): Promise<any> {}
 
     async getEventCountSinceLastSnapshot(boardId: string): Promise<number> {
         return 0;
@@ -236,4 +305,10 @@ export class Boards {
             throw error;
         }
     }
+}
+
+interface LinkDetail {
+    board_id: number;
+    link_uuid: string;
+    type: "edit" | "view";
 }
