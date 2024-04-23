@@ -84,30 +84,32 @@ export function getBoardsRouter(
         }
     );
 
-    // Creating a new public board
-    router.post(
-        "/public-boards",
-        body("title").optional().isString(),
-        async (req: Request, res: Response) => {
-            try {
-                const boardId = uuidv4();
-                const editLink = uuidv4();
+    if (process.env.IS_PUBLIC_BOARDS_ENABLED) {
+        // Creating a new public board
+        router.post(
+            "/public-boards",
+            body("title").optional().isString(),
+            async (req: Request, res: Response) => {
+                try {
+                    const boardId = uuidv4();
+                    const editLink = uuidv4();
 
-                const title: string = req.body.title || `${editLink}`;
-                await boards.createBoard(boardId, title);
-                await boards.createLink(boardId, "edit", editLink);
+                    const title: string = req.body.title || `${editLink}`;
+                    await boards.createBoard(boardId, title);
+                    await boards.createLink(boardId, "edit", editLink);
 
-                return res.status(201).json({
-                    boardId: boardId,
-                    linkId: editLink,
-                    linkUri: `/boards/${editLink}`,
-                });
-            } catch (err) {
-                logger.error(err);
-                return res.status(500).send("Server error");
+                    return res.status(201).json({
+                        boardId: boardId,
+                        linkId: editLink,
+                        linkUri: `/boards/${editLink}`,
+                    });
+                } catch (err) {
+                    logger.error(err);
+                    return res.status(500).send("Server error");
+                }
             }
-        }
-    );
+        );
+    }
 
     // Deleting a board
     router.delete(
