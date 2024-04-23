@@ -113,6 +113,7 @@ export class Boards {
 
     async getBoardEvents(
         boardId: string,
+        offset = 0,
         page?: number,
         limit?: number
     ): Promise<any[]> {
@@ -127,7 +128,7 @@ export class Boards {
             */
             const table = await this.database.query(
                 "select logid as order, eventbody as body from listevents($1, $2)",
-                [boardId, 0]
+                [boardId, offset]
             );
             return table.rows;
         } catch (error) {
@@ -213,6 +214,24 @@ export class Boards {
         } catch (error) {
             this.logger.error(
                 `Error saving snapshot for board ${boardId}: ${error}`
+            );
+            throw error;
+        }
+    }
+
+    async getLatestBoardSnapshot(): Promise<any> {}
+
+    async getEventCountSinceLastSnapshot(boardId: string): Promise<number> {
+        return 0;
+        try {
+            const result = await this.database.query(
+                "SELECT count(*) FROM events WHERE board_id = $1 AND order > (SELECT last_event_order FROM snapshots WHERE board_id = $1 ORDER BY created_at DESC LIMIT 1)",
+                [boardId]
+            );
+            return parseInt(result.rows[0].count, 10);
+        } catch (error) {
+            this.logger.error(
+                `Error getting event count since last snapshot for board ${boardId}: ${error}`
             );
             throw error;
         }

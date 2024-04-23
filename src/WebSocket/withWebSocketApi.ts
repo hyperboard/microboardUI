@@ -3,9 +3,12 @@ import { Boards } from "Routes/V1/Boards";
 import { AccessToken } from "Interface";
 import { verifyToken } from "Tokens";
 
+const numberOfEventsToRequestSnapshot = 1000;
+
 export function withWebSocketApi(wss: WebSocketServer, boards: Boards): void {
     const boardClients = new Map<string, WebSocket.WebSocket[]>();
     const wsTokens = new Map<WebSocket, AccessToken[]>();
+    const snapshotRequestTimers = new Map<string, NodeJS.Timeout>();
 
     wss.on("connection", (ws) => {
         setupSocketErrorHandling(ws);
@@ -43,8 +46,8 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards): void {
                 return handleUnsubscribeMsg(msg, ws);
             case "BoardEvent":
                 return handleBoardEventMsg(msg, ws);
-            // case "Snapshot":
-            //    return handleSnapshotMsg(msg, ws);
+            case "BoardSnapshot":
+                return handleSnapshotMsg(msg, ws);
         }
     }
 
@@ -95,7 +98,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards): void {
                 );
             }
             subscribeClientToBoard(ws, msg.boardId);
-            await sendBoardEvents(ws, msg.boardId);
+            await sendInitialDataToClient(ws, msg.boardId);
         } catch (error) {
             return sendError(ws, "Access denied: Subscribe to board events.");
         }
@@ -145,8 +148,31 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards): void {
         boardClients.set(boardId, clients);
     }
 
-    async function sendBoardEvents(ws: WebSocket, boardId: string) {
-        const events = await boards.getBoardEvents(boardId);
+    async function sendInitialDataToClient(ws: WebSocket, boardId: string) {
+        const lastSnapshotEvent = await sendLatestSnapshot(ws, boardId);
+        await sendBoardEvents(ws, boardId, lastSnapshotEvent);
+    }
+
+    async function sendLatestSnapshot(
+        ws: WebSocket,
+        boardId: string
+    ): Promise<number> {
+        const snapshot = await boards.getLatestBoardSnapshot(boardId);
+        if (!snapshot) {
+            return 0;
+        }
+        ws.send(
+            JSON.stringify({
+                type: "BoardSnapshot",
+                boardId: boardId,
+                snapshot,
+            })
+        );
+        return snapshot.lastEventOrder;
+    }
+
+    async function sendBoardEvents(ws: WebSocket, boardId: string, offset = 0) {
+        const events = await boards.getBoardEvents(boardId, offset);
         ws.send(
             JSON.stringify({
                 type: "BoardEventList",
@@ -212,6 +238,20 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards): void {
         }
     }
 
+    function requestSnapshotFromClient(boardId: string): void {
+        const clients = boardClients.get(boardId);
+        if (clients && clients.length > 0) {
+            const randomIndex = Math.floor(Math.random() * clients.length);
+            const randomClient = clients[randomIndex];
+            if (randomClient) {
+                sendSnapshotRequest(randomClient, boardId);
+                setupSnapshotRequestTimeout(boardId, randomClient);
+            }
+        }
+    }
+
+    eventsManager.requestSnapshotCallback = requestSnapshotFromClient;
+
     function sendSnapshotRequest(ws: WebSocket, boardId: string) {
         const message = JSON.stringify({
             type: "CreateSnapshotRequest",
@@ -220,13 +260,23 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards): void {
         ws.send(message);
     }
 
+    function setupSnapshotRequestTimeout(
+        boardId: string,
+        client: WebSocket
+    ): void {
+        clearTimeout(snapshotRequestTimers.get(boardId));
+        const timer = setTimeout(() => {
+            requestSnapshotFromClient(boardId);
+        }, 10000);
+        snapshotRequestTimers.set(boardId, timer);
+    }
+
     async function handleSnapshotMsg(snapshotMsg: any, ws: WebSocket) {
         try {
             const { boardId, snapshot, lastEventOrder } = snapshotMsg;
-
             await boards.saveBoardSnapshot(boardId, snapshot, lastEventOrder);
-
-            // eventsManager.clearSnapshotTimer(boardId);
+            clearTimeout(snapshotRequestTimers.get(boardId));
+            snapshotRequestTimers.delete(boardId);
         } catch (error) {
             console.error(`Failed to process snapshot: ${error}`);
         }
@@ -279,13 +329,27 @@ interface Error {
     message: string;
 }
 
+interface SnapshotRequest {
+    type: "CreateSnapshotRequest";
+    boardId: string;
+}
+
+interface SnapshotResponse {
+    type: "BoardSnapshot";
+    boardId: string;
+    snapshot: any; // This could be strongly typed
+    lastEventOrder: number;
+}
+
 export type SocketMessage =
     | Auth
     | BoardEvent
     | BoardEventList
     | Subscribe
     | Unsubscribe
-    | Error;
+    | Error
+    | SnapshotRequest
+    | SnapshotResponse;
 
 type BoardEventBody = any;
 
@@ -330,6 +394,7 @@ export class EventsManager {
                 eventBody.eventId,
                 eventBody
             );
+            this.requestSnapshotIfNeeded(boardId);
         }
         const index = this.processing.indexOf(boardId);
         if (index > -1) {
@@ -337,16 +402,26 @@ export class EventsManager {
         }
     }
 
+    async requestSnapshotIfNeeded(boardId: string): Promise<void> {
+        try {
+            const count = await this.boards.getEventCountSinceLastSnapshot(
+                boardId
+            );
+            if (count >= numberOfEventsToRequestSnapshot) {
+                this.requestSnapshotCallback(boardId);
+            }
+        } catch (error) {}
+    }
+
+    requestSnapshotCallback(boardId: string): void {}
+
     isBoardReady(boardId: string): boolean {
         return !this.processing.includes(boardId);
     }
 
     enqueueEvent(boardId: string, eventBody: BoardEventBody): void {
-        const queue = this.queues[boardId];
-        if (queue) {
-            queue.events.push(eventBody);
-        } else {
-            this.queues[boardId] = { boardId, events: [eventBody] };
-        }
+        const queue = this.queues[boardId] || { boardId, events: [] };
+        queue.events.push(eventBody);
+        this.queues[boardId] = queue;
     }
 }
