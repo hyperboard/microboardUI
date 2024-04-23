@@ -114,7 +114,7 @@ export function getBoardsRouter(
         "/boards/:boardId",
         authenticate,
         param("boardId").isUUID(),
-        //        body("catalogId").optional().isUUID(),
+        body("catalogId").optional().custom(isUUIDOrRoot),
         async (req: Request, res: Response) => {
             try {
                 const errors = validationResult(req);
@@ -148,7 +148,12 @@ export function getBoardsRouter(
                     return forbidden(res);
                 }
 
-                await boards.deleteBoard(boardId);
+                const isBoardExist = await boards.isBoardExists(boardId);
+
+                if (isBoardExist) {
+                    await boards.deleteBoard(boardId);
+                }
+
                 return res.status(204).send();
             } catch (err) {
                 logger.error(err);
@@ -371,6 +376,12 @@ export function getBoardsRouter(
                     return forbidden(res);
                 }
 
+                const isBoardExist = await boards.isBoardExists(boardId);
+
+                if (!isBoardExist) {
+                    return res.status(404).json({ message: "Board not found" });
+                }
+
                 await boards.createLink(boardId, type, linkId);
 
                 const linkUri = `./boards/${linkId}`;
@@ -421,7 +432,13 @@ export function getBoardsRouter(
                     return res.status(404).json({ message: "Board not found" });
                 }
 
-                await boards.deleteLink(boardId, linkId);
+                const isLinkExists = await boards.isValidLink(linkId, [
+                    "edit",
+                    "view",
+                ]);
+                if (isLinkExists) {
+                    await boards.deleteLink(boardId, linkId);
+                }
 
                 return res.status(204).send();
             } catch (err) {
