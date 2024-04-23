@@ -32,6 +32,7 @@ import { toFiniteNumber } from "utils";
 import { Sticker, stickerColors } from "Board/Items/Sticker";
 import { RestMenuIcon } from "View/Icon/RestMenuIcon";
 import { BorderStyle } from "Board/Items/Path";
+import "./ContextPanel.css";
 
 export const IconSize = 24;
 
@@ -1004,13 +1005,35 @@ class FontSize extends React.PureComponent<FontSizeProps> {
 			toggleMenu("None");
 		};
 
+		const onIncrease = (): void => {
+			if (!parseInt(`${this.state.fontSize}`)) {
+				return;
+			}
+			this.setState(prevState => {
+				return {fontSize: +prevState.fontSize + 1}
+			});
+
+			board.selection.setFontSize(this.state.fontSize + 1);
+		}
+
+		const onDecrease = (): void => {
+			if (!parseInt(`${this.state.fontSize}`)) {
+				return;
+			}
+			this.setState(prevState => {
+				return {fontSize: +prevState.fontSize - 1}
+			});
+
+			board.selection.setFontSize(this.state.fontSize - 1);
+		}
+
 		return (
 			<ButtonWithMenu
 				panelMbr={panelMbr}
 				windowHeight={windowHeight}
 				menuRef={this.menuRef}
 			>
-				<div style={{ display: "flex" }}>
+				<div style={{ display: "flex", alignItems: "center" }}>
 					<input
 						onClick={handleClick}
 						type={this.state.inputType}
@@ -1032,8 +1055,23 @@ class FontSize extends React.PureComponent<FontSizeProps> {
 							padding: "0px",
 							backgroundColor: "white",
 							border: "none",
+							WebkitAppearance: "none",
+							MozAppearance: "none",
 						}}
 					/>
+					<div style={{ display: "flex", flexDirection: "column" }}>
+						<div 
+						style={{display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}
+						onClick={onIncrease}>
+							<Icon width={16} height={16} name="ChevronUp" />
+						</div>
+						<div 
+						style={{display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}
+						onClick={onDecrease}>
+							<Icon width={16} height={16} name="ChevronDown" />
+						</div>
+					
+					</div>
 				</div>
 				<div
 					id="FillStyleMenu"

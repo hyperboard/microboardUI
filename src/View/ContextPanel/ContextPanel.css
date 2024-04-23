@@ -1,0 +1,10 @@
+input.inputNumber::-webkit-outer-spin-button,
+input.inputNumber::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input.inputNumber[type=number] {
+  -moz-appearance: textfield;
+}
