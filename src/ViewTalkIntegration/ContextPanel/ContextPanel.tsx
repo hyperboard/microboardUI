@@ -2,7 +2,8 @@ import { App } from "App";
 import { Board } from "Board";
 import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
 import { useAppSubscription } from "Board/useBoardSubscription";
-import React, { useRef, useState } from "react";
+import { useForceUpdate } from "lib/useForceUpdate";
+import React, { useEffect, useRef, useState } from "react";
 import { ConnectorAddText } from "ViewTalkIntegration/ContextPanel/Buttons/ConnectorAddText";
 import { ConnectorType } from "ViewTalkIntegration/ContextPanel/Buttons/ConnectorType";
 import { DrawFillStyle } from "ViewTalkIntegration/ContextPanel/Buttons/DrawFillStyle";
@@ -40,20 +41,21 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 	const [openedMenu, setOpenedMenu] = useState("None");
 	const panelRef = useRef<HTMLDivElement>(null);
 	const mbr = useDomMbr({ app, board, ref: panelRef });
-
 	useAppSubscription(app, {
 		subjects: ["selectionItems"],
 		observer: () => {
 			setOpenedMenu("None");
 		},
 	});
-
 	const toggleMenu = (menu: string) =>
 		setOpenedMenu(prev => (prev === menu ? "None" : menu));
 
 	const windowHeight = board.camera.window.height;
 	const isVisible =
-		board.selection.getContext() === "None" || !board.selection.isOn;
+		board.selection.getContext() !== "None" || !board.selection.isOn;
+	if (!isVisible) {
+		return null;
+	}
 	const isSelectUnderPointer =
 		board.selection.getContext() === "SelectUnderPointer";
 	const isText = board.selection.items.isAllItemsType("RichText");
@@ -80,7 +82,6 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 					position: "absolute",
 					left: mbr.left,
 					top: mbr.top,
-					visibility: isVisible ? "hidden" : "visible",
 				}}
 				ref={panelRef}
 			>
