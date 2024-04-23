@@ -4,17 +4,17 @@ import { useAppSubscription } from "Board/useBoardSubscription";
 import { useForceUpdate } from "lib/useForceUpdate";
 import React, { useEffect, useState } from "react";
 import { SidePanelState } from "ViewTalkIntegration/SidePanelState";
-import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel";
-import { UiSeparator } from "ViewTalkIntegration/Ui/UiSeparator";
+import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel/UiPanel";
+import { UiSeparator } from "ViewTalkIntegration/Ui/UiSeparator/UiSeparator";
 import { AddConnector } from "./Buttons/AddConnector";
-import { AddDrawing } from "./Buttons/AddDrawing";
+import { AddDrawing } from "./Buttons/AddDrawing/AddDrawing";
 import { AddImage } from "./Buttons/AddImage";
 import { AddShape } from "./Buttons/AddShape";
 import { AddSticker } from "./Buttons/AddSticker";
 import { AddText } from "./Buttons/AddText";
-import { Redo } from "./Buttons/Redo";
+import { Redo } from "./Buttons/Redo/Redo";
 import { Select } from "./Buttons/Select";
-import { Undo } from "./Buttons/Undo";
+import { Undo } from "./Buttons/Undo/Undo";
 import { PanelContext } from "./PanelContext";
 
 type Props = {

@@ -26,7 +26,8 @@
 			"tooltip": "Fill"
 		},
 		"fontSize": {
-			"tooltip": "Font size"
+			"tooltip": "Font size",
+			"auto": "Auto"
 		},
 		"fontStyle": {
 			"tooltip": "Font style",

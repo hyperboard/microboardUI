@@ -1,0 +1,40 @@
+import React from "react";
+import { Icon } from "ViewTalkIntegration/Icon";
+import { IconId } from "ViewTalkIntegration/Icon/Icon";
+import { UiButton } from "ViewTalkIntegration/Ui/UiButton/UiButton";
+
+const pointerTypes = [
+	{ id: "None", icon: "PointerStart" },
+	{ id: "ArrowBroad", icon: "PointerEnd" },
+	{ id: "TriangleFilled", icon: "PointerEndCompact" },
+];
+
+type Props = {
+	onPick: (pointer: string) => void;
+	selected: string;
+};
+
+export function ConnectorPointerPicker({
+	onPick,
+	selected,
+}: Props): React.ReactElement {
+	return (
+		<>
+			{pointerTypes.map(type => (
+				<UiButton
+					key={type.id}
+					onClick={() => {
+						onPick(type.id);
+					}}
+					active={selected === type.id}
+				>
+					<Icon
+						width={18}
+						height={18}
+						iconName={type.icon as IconId}
+					/>
+				</UiButton>
+			))}
+		</>
+	);
+}

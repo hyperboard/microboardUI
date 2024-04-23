@@ -1,5 +1,5 @@
 import React, { MouseEventHandler, PropsWithChildren } from "react";
-import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
+import { UiButton } from "ViewTalkIntegration/Ui/UiButton/UiButton";
 import style from "./RestOptionsMenu.module.css";
 
 type Props = PropsWithChildren<{

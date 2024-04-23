@@ -26,7 +26,8 @@
 			"tooltip": "Заливка"
 		},
 		"fontSize": {
-			"tooltip": "Размер шрифта"
+			"tooltip": "Размер шрифта",
+			"auto": "Авто"
 		},
 		"fontStyle": {
 			"tooltip": "Стиль шрифта",
