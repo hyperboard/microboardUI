@@ -21,14 +21,14 @@ export const resources = {
 i18n.use(initReactI18next)
 	.use(LanguageDetector)
 	.init({
-		debug: process.env.NODE_ENV === "development",
+		debug: import.meta.env.NODE_ENV === "development",
 		detection: {
 			order: ["navigator"],
 		},
 		supportedLngs: ["en", "ru"],
 		defaultNS,
 		resources,
-		fallbackLng: "en",
+		fallbackLng: import.meta.env.FALLBACK_LNG ?? "en",
 		interpolation: {
 			escapeValue: false,
 		},
