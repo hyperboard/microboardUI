@@ -1039,6 +1039,7 @@ class FontSize extends React.PureComponent<FontSizeProps> {
 						type={this.state.inputType}
 						min="10"
 						max={this.state.max}
+						className="inputNumber"
 						value={`${this.state.fontSize}`}
 						onInput={handleInput}
 						onChange={handleChange}
