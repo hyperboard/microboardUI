@@ -1,30 +1,31 @@
 import { ShapeType } from "Board/Items/Shape/Basic";
 import * as React from "react";
 import { Icon } from "../Icon";
-import { Button } from "View/ContextPanel";
+import { UiButton } from "View/Ui/UiButton";
+import { useTranslation } from "react-i18next";
 
 const shapes = [
-	{ id: "Rectangle", label: "Rectangle" },
-	{ id: "RoundedRectangle", label: "Rounded Rectangle" },
-	{ id: "Circle", label: "Circle" },
-	{ id: "Triangle", label: "Triangle" },
-	{ id: "Rhombus", label: "Rhombus" },
-	{ id: "Parallelogram", label: "Parallelogram" },
-	{ id: "Hexagon", label: "Hexagon" },
-	{ id: "Octagon", label: "Octagon" },
-	{ id: "Pentagon", label: "Pentagon" },
-	{ id: "Cross", label: "Cross" },
-	{ id: "Star", label: "Star" },
-	{ id: "Cloud", label: "Cloud" },
-	{ id: "Cylinder", label: "Cylinder" },
-	{ id: "Trapezoid", label: "Trapezoid" },
-	{ id: "PredefinedProcess", label: "Predefined Process" },
-	{ id: "ArrowLeft", label: "Arrow Left" },
-	{ id: "ArrowLeftRight", label: "Arrow Left And Right" },
-	{ id: "ArrowRight", label: "Arrow Right" },
-	{ id: "SpeachBubble", label: "Speach Bubble" },
-	{ id: "BracesRight", label: "Braces Right" },
-	{ id: "BracesLeft", label: "Braces Left" },
+	"Rectangle",
+	"RoundedRectangle",
+	"Circle",
+	"Triangle",
+	"Rhombus",
+	"Parallelogram",
+	"Hexagon",
+	"Octagon",
+	"Pentagon",
+	"Cross",
+	"Star",
+	"Cloud",
+	"Cylinder",
+	"Trapezoid",
+	"PredefinedProcess",
+	"ArrowLeft",
+	"ArrowLeftRight",
+	"ArrowRight",
+	"SpeachBubble",
+	"BracesRight",
+	"BracesLeft",
 ] as const;
 
 type Props = {
@@ -32,20 +33,21 @@ type Props = {
 };
 
 export function ShapePicker(props: Props): React.ReactElement {
+	const { t } = useTranslation();
 	const buttons = [];
 	for (const shape of shapes) {
 		buttons.push(
-			<Button
-				id={`Pick${shape.id}`}
-				title={shape.label}
+			<UiButton
+				id={`Pick${shape}`}
+				title={t(`shapes.${shape}`)}
 				onClick={() => {
-					props.onPick(shape.id);
+					props.onPick(shape);
 				}}
 				margin={0}
-				key={shape.id}
+				key={shape}
 			>
-				<Icon name={shape.id} width={24} height={24} />
-			</Button>,
+				<Icon name={shape} width={24} height={24} />
+			</UiButton>,
 		);
 	}
 	return <>{buttons}</>;

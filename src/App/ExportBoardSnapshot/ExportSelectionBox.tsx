@@ -1,5 +1,5 @@
 import React, { FC, useContext } from "react";
-import { Button } from "View/ContextPanel";
+import { UiButton } from "View/Ui/UiButton";
 import { applyStyle } from "lib/applyStyle";
 
 import { Panel } from "ui/Panel";
@@ -26,9 +26,9 @@ export const ExportSelectionBox: FC = () => {
 	return (
 		<div className="SnapshotSelectionBox">
 			<Panel>
-				<Button onClick={handleConfirmSnapshot}>Submit</Button>
+				<UiButton onClick={handleConfirmSnapshot}>Submit</UiButton>
 				<VerticalSeparator />
-				<Button onClick={handleCancelSnapshot}>Cancel</Button>
+				<UiButton onClick={handleCancelSnapshot}>Cancel</UiButton>
 			</Panel>
 		</div>
 	);

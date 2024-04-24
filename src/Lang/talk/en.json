@@ -62,7 +62,10 @@
     },
     "delete": {
       "text": "Delete"
-    }
+    },
+		"edit": {
+			"text": "Edit"
+		}
 	},
 	"toolsPanel": {
 		"select": {

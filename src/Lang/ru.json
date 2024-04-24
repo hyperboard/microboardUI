@@ -1,1 +1,221 @@
-{"test":  "Тест"}
+{
+	"contextPanel": {
+		"connectorAddText": {
+			"tooltip": "Добавить текст"
+		},
+		"connectorType": {
+			"tooltip": "Стиль линии",
+			"straight": "Прямая",
+			"curved": "Кривая"
+		},
+		"connectorEndPointer": {
+			"tooltip": "Конец линии"
+		},
+		"connectorStartPointer": {
+			"tooltip": "Начало линии"
+		},
+		"connectorSwitchPointers": {
+			"tooltip": "Поменять местами"
+		},
+		"changeShape": {
+			"tooltip": "Тип фигуры"
+		},
+		"strokeStyle": {
+			"tooltip": "Обводка",
+			"strokeWidth": "Толщина линии"
+		},
+		"fillStyle": {
+			"tooltip": "Заливка"
+		},
+		"fontSize": {
+			"tooltip": "Размер шрифта",
+			"auto": "Авто"
+		},
+		"fontStyle": {
+			"tooltip": "Стиль текста",
+			"bold": "Жирный",
+			"italic": "Курсив",
+			"strike": "Перечеркнутый",
+			"underline": "Подчеркивание"
+		},
+		"textAlignment": {
+			"tooltip": "Выравнивание",
+			"left": "Лево",
+			"center": "Центр",
+			"right": "Право",
+			"top": "Верх",
+			"bottom": "Низ"
+		},
+		"textColor": {
+			"tooltip": "Цвет текста"
+		},
+		"textHighlight": {
+			"tooltip": "Маркер"
+		},
+		"stickerColor": {
+			"tooltip": "Цвет стикера"
+		},
+		"penColor": {
+			"tooltip": "Цвет"
+		},
+		"duplicate": {
+			"text": "Дублировать",
+			"tooltip": "Дублировать"
+		},
+		"bringToFront": {
+			"text": "Перенести вперед"
+		},
+		"sendToBack": {
+			"text": "Перенести назад"
+		},
+		"delete": {
+			"text": "Удалить",
+			"tooltip": "Удалить"
+		},
+		"edit": {
+			"text": "Редактировать"
+		},
+		"restMenu": {
+			"tooltip": "Опции"
+		}
+	},
+	"toolsPanel": {
+		"select": {
+			"tooltip": "Выбрать"
+		},
+		"undo": {
+			"tooltip": "Шаг назад"
+		},
+		"redo": {
+			"tooltip": "Шаг вперед"
+		},
+		"addText": {
+			"tooltip": "Текст"
+		},
+		"addSticker": {
+			"tooltip": "Стикер"
+		},
+		"addShape": {
+			"tooltip": "Фигура"
+		},
+		"addConnector": {
+			"tooltip": "Соединительная линия"
+		},
+		"addDrawing": {
+			"tooltip": "Карандаш",
+			"strokeWidth": "Толщина линии"
+		},
+		"addImage": {
+			"tooltip": "Добавить изображение"
+		}
+	},
+	"zoomPanel": {
+		"zoomOut": {
+			"tooltip": "Отдалить"
+		},
+		"zoomDefault": {
+			"tooltip": "Масштаб 100%"
+		},
+		"zoomIn": {
+			"tooltip": "Приблизить"
+		},
+		"zoomToFit": {
+			"tooltip": "Выровнять"
+		}
+	},
+	"titlePanel": {
+		"menu": {
+			"open": "Открыть меню",
+			"close": "Закрыть меню"
+		}
+	},
+	"dashboard": {
+		"title": "Dashboard",
+		"publicBoards": "Публичные доски",
+		"unnamed": "Без имени",
+		"privateBoards": "Приватные доски",
+		"noPrivateBoards": "Нет приватных досок"
+	},
+	"auth": {
+		"checkEmail": "Проверьте электронную почту с кодом доступа.",
+		"email": "Email",
+		"emailPlaceholder": "Ввуедите Email",
+		"passcode": "Код подтверждения",
+		"passcodePlaceholder": "Введите код подтверждения",
+		"signIn": "Вход",
+		"password": "Пароль",
+		"passwordPlaceholder": "Пароль",
+		"submit": "Отправить",
+		"signUp": "Регистрация",
+		"unknownError": "Неизвестная ошибка",
+		"resendCode": "Отправить код заново"
+	},
+	"modal": {
+		"canEdit": "Можно редактировать",
+		"canComment": "Можно комментировать",
+		"canView": "Можно просматривать",
+		"noAccess": "Нет доступа",
+		"copyLink": "Копировать ссылку"
+	},
+	"colors": {
+		"White": "Белый",
+		"MustardYellow": "Горчично-Желтый",
+		"Gold": "Золотой",
+		"ScarletRed": "Алый",
+		"LightGray": "Светло-серый",
+		"LimeGreen": "Лаймово-зеленый",
+		"MintGreen": "Мятно-зеленый",
+		"Magenta": "Пурпурный",
+		"DarkGray": "Темно-серый",
+		"Turquoise": "Бирюзовый",
+		"ForestGreen": "Зеленый лес",
+		"Violet": "Фиолетовый",
+		"JetBlack": "Черный",
+		"SkyBlue": "Небесно-голубой",
+		"RoyalBlue": "Королевский синий",
+		"Purple": "Фиолетовый",
+		"BrickRed": "Кирпично красный"
+	},
+	"shapes": {
+		"Rectangle": "Прямоугольник",
+		"RoundedRectangle": "Закругленный Прямоугольник",
+		"Circle": "Круг",
+		"Triangle": "Треугольник",
+		"Rhombus": "Ромб",
+		"Parallelogram": "Параллелограмм",
+		"Hexagon": "Шестиугольник",
+		"Octagon": "Восьмиугольник",
+		"Pentagon": "Пятиугольник",
+		"Cross": "Крест",
+		"Star": "Звезда",
+		"Cloud": "Облако",
+		"Cylinder": "Цилиндр",
+		"Trapezoid": "Трапеция",
+		"PredefinedProcess": "Предопределенный процесс",
+		"ArrowLeft": "Стрелка влево",
+		"ArrowLeftRight": "Двойная стрелка",
+		"ArrowRight": "Стрелка вправо",
+		"SpeachBubble": "Диалог",
+		"BracesRight": "Фигурные скобки (право)",
+		"BracesLeft": "Фигурные скобки (лево)"
+	},
+	"pointerTypes": {
+		"None": "Нет",
+		"ArrowBroad": "Стрелка (широкая)",
+		"ArrowThin": "Стрелка (Тонкая)",
+		"TriangleFilled": "Треугольник (Заполненный)",
+		"CircleFilled": "Круг (Заполненный)",
+		"Angle": "Угол",
+		"TriangleEmpty": "Треугольник (пустой)",
+		"DiamondFilled": "Алмаз (заполненный)",
+		"DiamondEmpty": "Алмаз (пустой)",
+		"Zero": "Ноль",
+		"One": "Один",
+		"Many": "Много",
+		"ManyMandatory": "Много (Обязательный)",
+		"OneMandatory": "Один (Обязательный)",
+		"ManyOptional": "Много (Необязательный)",
+		"OneOptional": "Один (Необязательный)"
+	},
+	"thickness": "Толщина"
+}

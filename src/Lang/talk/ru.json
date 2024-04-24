@@ -4,7 +4,9 @@
 			"tooltip": "Добавить текст"
 		},
 		"connectorType": {
-			"tooltip": "Стиль линии"
+			"tooltip": "Стиль линии",
+			"straight": "Прямая",
+			"curved": "Кривая"
 		},
 		"connectorEndPointer": {
 			"tooltip": "Конец линии"
@@ -52,7 +54,8 @@
 			"tooltip": "Цвет"
 		},
     "duplicate": {
-      "text": "Дублировать"
+      "text": "Дублировать",
+			"tooltip": "Дублировать"
     },
     "bringToFront": {
       "text": "Вынести на передний план"
@@ -61,8 +64,12 @@
       "text": "Вынести на задний план"
     },
     "delete": {
-      "text": "Удалить"
-    }
+      "text": "Удалить",
+			"tooltip": "Удалить"
+    },
+		"edit": {
+			"text": "Редактировать"
+		}
 	},
 	"toolsPanel": {
 		"select": {
