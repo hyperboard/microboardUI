@@ -1218,20 +1218,20 @@ function TextAlignment({
 
 	const menuRef = React.useRef<HTMLDivElement>(null);
 
-	const handleClick = () => {
+	const handleClick = (): void => {
 		toggleMenu("TextAlignment");
 	};
 
 	const handleHorisontalAlignmentPick = (
 		alignment: "left" | "center" | "right",
-	) => {
+	): void => {
 		board.selection.setHorisontalAlignment(alignment);
 		toggleMenu("None");
 	};
 
 	const handleVerticalAlignmentPick = (
 		alignment: "top" | "bottom" | "center",
-	) => {
+	): void => {
 		board.selection.setVerticalAlignment(alignment);
 		toggleMenu("None");
 	};

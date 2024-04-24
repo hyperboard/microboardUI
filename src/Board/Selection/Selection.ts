@@ -18,6 +18,7 @@ import {
 	ControlPoint,
 } from "Board/Items/Connector";
 import { toFiniteNumber } from "utils";
+import { Sticker } from "Board/Items/Sticker";
 
 const defaultShapeData = new ShapeData();
 
@@ -664,17 +665,12 @@ export class Selection {
 	}
 
 	setFontColor(fontColor: string): void {
-		if (this.items.isSingle()) {
-			const item = this.items.list()[0];
-			if (item) {
-				if (
-					["Shape", "Sticker", "Connector"].indexOf(item.itemType) !==
-					-1
-				) {
-					item.text.setSelectionFontColor(fontColor);
-				} else if (item.itemType === "RichText") {
-					item.setSelectionFontColor(fontColor);
-				}
+		const single = this.items.getSingle();
+		if (single) {
+			if (single instanceof RichText) {
+				single.setSelectionFontColor(fontColor, this.context);
+			} else if (single instanceof Shape || single instanceof Sticker || single instanceof Connector) {
+				single.text.setSelectionFontColor(fontColor, this.context);
 			}
 		} else {
 			this.emit({
@@ -687,17 +683,12 @@ export class Selection {
 	}
 
 	setFontHighlight(fontHighlight: string): void {
-		if (this.items.isSingle()) {
-			const item = this.items.list()[0];
-			if (item) {
-				if (
-					["Shape", "Sticker", "Connector"].indexOf(item.itemType) !==
-					-1
-				) {
-					item.text.setSelectionFontHighlight(fontHighlight);
-				} else if (item.itemType === "RichText") {
-					item.setSelectionFontHighlight(fontHighlight);
-				}
+		const single = this.items.getSingle();
+		if (single) {
+			if (single instanceof RichText) {
+				single.setSelectionFontHighlight(fontHighlight, this.context);
+			} else if (single instanceof Shape || single instanceof Sticker || single instanceof Connector) {
+				single.text.setSelectionFontHighlight(fontHighlight, this.context);
 			}
 		} else {
 			{
@@ -712,26 +703,20 @@ export class Selection {
 	}
 
 	setHorisontalAlignment(horisontalAlignment: HorisontalAlignment): void {
-		if (this.items.isSingle()) {
-			const item = this.items.list()[0];
-			if (item) {
-				if (
-					["Shape", "Sticker", "Connector"].indexOf(item.itemType) !==
-					-1
-				) {
-					item.text.setSelectionHorisontalAlignment(
-						horisontalAlignment,
-					);
-				} else if (item.itemType === "RichText") {
-					item.setSelectionHorisontalAlignment(horisontalAlignment);
+		const single = this.items.getSingle();
+		if (single) {
+			if (single instanceof Shape
+				|| single instanceof Sticker
+				|| single instanceof Connector) {
+					single.text.setSelectionHorisontalAlignment(horisontalAlignment);
 				}
+			else if (single instanceof RichText) {
+				single.setSelectionHorisontalAlignment(horisontalAlignment);
 			}
 		} else if (this.items.isItemTypes(["Sticker"])) {
 			this.items
 				.list()
-				.forEach(x =>
-					x.text.setSelectionHorisontalAlignment(horisontalAlignment),
-				);
+				.forEach(x => x.text.setSelectionHorisontalAlignment(horisontalAlignment));
 		} else {
 			this.emit({
 				class: "RichText",
