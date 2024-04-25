@@ -218,6 +218,8 @@ export class TextEditor extends React.Component<
 										top: 10,
 										whiteSpace: "nowrap",
 										opacity: 0.5,
+										userSelect: "none",
+										pointerEvents: "none",
 									}}
 									>{children}</span>
 							)}
