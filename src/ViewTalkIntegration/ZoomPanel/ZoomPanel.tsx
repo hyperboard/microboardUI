@@ -8,6 +8,7 @@ import { UiButton } from "ViewTalkIntegration/Ui/UiButton/UiButton";
 import { Icon } from "ViewTalkIntegration/Icon";
 import style from "./ZoomPanel.module.css";
 import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
+import { getHotkeyLabel } from "Board/Keyboard/hotkey";
 
 type Props = {
 	app: App;
@@ -40,7 +41,7 @@ export function ZoomPanel({ app, board }: Props) {
 			<UiButton
 				tooltipPosition="top"
 				tooltip={t("zoomPanel.zoomOut.tooltip")}
-				hotkey="⌘-"
+				hotkey={getHotkeyLabel("zoomOut")}
 				onClick={handleZoomOut}
 			>
 				<Icon iconName="Minus" width={20} height={18} />
@@ -48,7 +49,7 @@ export function ZoomPanel({ app, board }: Props) {
 			<UiButton
 				tooltipPosition="top"
 				tooltip={t("zoomPanel.zoomDefault.tooltip")}
-				hotkey="⌘0"
+				hotkey={getHotkeyLabel("zoomDefault")}
 				className={style.zoom}
 				onClick={handleDefaultZoom}
 			>
@@ -57,7 +58,7 @@ export function ZoomPanel({ app, board }: Props) {
 			<UiButton
 				tooltipPosition="top-right"
 				tooltip={t("zoomPanel.zoomIn.tooltip")}
-				hotkey="⌘+"
+				hotkey={getHotkeyLabel("zoomIn")}
 				onClick={handleZoomIn}
 			>
 				<Icon iconName="Plus" width={20} height={18} />

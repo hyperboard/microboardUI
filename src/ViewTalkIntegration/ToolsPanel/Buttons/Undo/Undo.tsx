@@ -1,3 +1,4 @@
+import { getHotkeyLabel } from "Board/Keyboard/hotkey";
 import React from "react";
 import { UndoIcon } from "ViewTalkIntegration/Icon";
 import { usePanelContext } from "ViewTalkIntegration/ToolsPanel/PanelContext";
@@ -18,7 +19,7 @@ export function Undo() {
 	return (
 		<UiButton
 			tooltip={t("toolsPanel.undo.tooltip")}
-			hotkey="⌘Z"
+			hotkey={getHotkeyLabel("undo")}
 			className={style.button}
 			onClick={handleClick}
 			disabled={!canUndo}

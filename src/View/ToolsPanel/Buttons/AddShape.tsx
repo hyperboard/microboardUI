@@ -1,4 +1,5 @@
 import { Board } from "Board";
+import { getHotkeyLabel } from "Board/Keyboard/hotkey";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Icon } from "View/Icon";
@@ -29,7 +30,7 @@ export function AddShape({ board, isOn }: Props) {
 				id="AddShape"
 				onClick={handleClick}
 				title={t("toolsPanel.addShape.tooltip")}
-				hotkey="S"
+				hotkey={getHotkeyLabel("shape")}
 				isOn={isOn}
 				tipOnLeft
 			>

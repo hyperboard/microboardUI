@@ -13,6 +13,7 @@ import { isSafari } from "./isSafari";
 import { isFirefox } from "./isFirefox";
 import { Clipboard } from "./Clipboard";
 import { isIframe } from "lib/isIframe";
+import { isHotkeyPushed } from "Board/Keyboard/hotkey";
 
 export function getController(getBoard: () => Board) {
 	const isMouse = true;
@@ -101,29 +102,27 @@ export function getController(getBoard: () => Board) {
 						board.paste(data);
 					}
 				}
+				isHotkeyPushed("textBold", event);
+				isHotkeyPushed("textItalic", event);
+				isHotkeyPushed("textStrike", event);
+				isHotkeyPushed("textUnderline", event);
 			}
 
-			if (
-				(event.ctrlKey || event.metaKey) &&
-				(event.code === "KeyS" ||
-					event.code === "KeyU" ||
-					event.code === "KeyB" ||
-					event.code === "KeyI")
-			) {
-				event.preventDefault();
-			}
 			return;
 		}
-		// const key = event.key.toLowerCase();
 		board.keyboard.keyDown(event);
-		if ((event.ctrlKey || event.metaKey) && key === "KeyZ") {
-			if (event.shiftKey) {
-				board.events.redo();
-			} else {
-				board.events.undo();
-			}
-			return;
+
+		if (isHotkeyPushed("zoomIn", event)) {
+			board.camera.zoomInToViewCenter();
 		}
+
+		if (isHotkeyPushed("zoomOut", event)) {
+			board.camera.zoomOutFromViewCenter();
+		}
+		if (isHotkeyPushed("zoomDefault", event)) {
+			board.camera.zoomToViewCenter(1);
+		}
+
 		if ((event.ctrlKey || event.metaKey) && key === "KeyA") {
 			const items = board.items.listAll();
 			board.selection.add(items);
@@ -163,40 +162,49 @@ export function getController(getBoard: () => Board) {
 			}
 		}
 
-		switch (key) {
-			case "KeyV":
-				board.tools.select();
-				break;
-			case "KeyS":
-				board.tools.addShape();
-				break;
-			case "KeyN":
-				board.tools.addSticker();
-				break;
-			case "KeyT":
-				board.tools.addText();
-				break;
-			case "KeyL":
-				board.tools.addConnector();
-				break;
-			case "KeyP":
-				board.tools.addDrawing();
-				break;
+		if (isHotkeyPushed("select", event)) {
+			board.tools.select();
 		}
-		if (board.selection.getContext() !== "SelectUnderPointer") {
-			if (key === "PageUp") {
+		if (isHotkeyPushed("text", event)) {
+			board.tools.addText();
+		}
+		if (isHotkeyPushed("sticker", event)) {
+			board.tools.addSticker();
+		}
+		if (isHotkeyPushed("shape", event)) {
+			board.tools.addShape();
+		}
+		if (isHotkeyPushed("connector", event)) {
+			board.tools.addConnector();
+		}
+		if (isHotkeyPushed("pen", event)) {
+			board.tools.addDrawing();
+		}
+		if (isHotkeyPushed("undo", event)) {
+			board.events.undo();
+		}
+		if (isHotkeyPushed("redo", event)) {
+			console.log(isHotkeyPushed("redo", event));
+			board.events.redo();
+		}
+		console.log(board.selection.items.isEmpty());
+		if (!board.selection.items.isEmpty()) {
+			if (isHotkeyPushed("duplicate", event)) {
+				board.selection.duplicate();
+			}
+			if (isHotkeyPushed("bringToFront", event)) {
 				const items = board.selection.list();
 				for (const item of items) {
 					board.items.index.bringToFront(item);
 				}
 			}
-			if (key === "PageDown") {
+			if (isHotkeyPushed("sendToBack", event)) {
 				const items = board.selection.list();
 				for (const item of items) {
 					board.items.index.sendToBack(item);
 				}
 			}
-			if (key === "Delete" || key === "Backspace") {
+			if (isHotkeyPushed("delete", event)) {
 				board.selection.removeFromBoard();
 				toggleEdit(false);
 			}
@@ -212,24 +220,21 @@ export function getController(getBoard: () => Board) {
 		if (!board) {
 			return;
 		}
-		const key = event.code;
+		isHotkeyPushed("undo", event);
+		isHotkeyPushed("redo", event);
 		if (isEditInProcess()) {
-			if (event.ctrlKey || event.metaKey) {
-				event.preventDefault();
-				switch (key) {
-					case "KeyB":
-						board.selection.setFontStyle(["bold"]);
-						break;
-					case "KeyI":
-						board.selection.setFontStyle(["italic"]);
-						break;
-					case "KeyS":
-						board.selection.setFontStyle(["line-through"]);
-						break;
-					case "KeyU":
-						board.selection.setFontStyle(["underline"]);
-						break;
-				}
+			event.preventDefault();
+			if (isHotkeyPushed("textBold", event)) {
+				board.selection.setFontStyle(["bold"]);
+			}
+			if (isHotkeyPushed("textItalic", event)) {
+				board.selection.setFontStyle(["italic"]);
+			}
+			if (isHotkeyPushed("textStrike", event)) {
+				board.selection.setFontStyle(["line-through"]);
+			}
+			if (isHotkeyPushed("textUnderline", event)) {
+				board.selection.setFontStyle(["underline"]);
 			}
 			return;
 		}

@@ -6,6 +6,7 @@ import { UiButton } from "View/Ui/UiButton";
 import { useForceUpdate } from "lib/useForceUpdate";
 import { useAppSubscription } from "Board/useBoardSubscription";
 import { useTranslation } from "react-i18next";
+import { getHotkeyLabel } from "Board/Keyboard/hotkey";
 
 type Props = {
 	app: App;
@@ -67,6 +68,7 @@ export function ZoomPanel({ app, board }: Props) {
 			<UiButton
 				id="ZoomPanelZoomOut"
 				title={t("zoomPanel.zoomOut.tooltip")}
+				hotkey={getHotkeyLabel("zoomOut")}
 				onClick={zoomOut}
 				tipOnTop
 				margin={0}
@@ -77,6 +79,7 @@ export function ZoomPanel({ app, board }: Props) {
 				id="ZoomPanelZoomTo100"
 				title={t("zoomPanel.zoomDefault.tooltip")}
 				onClick={defaultZoom}
+				hotkey={getHotkeyLabel("zoomDefault")}
 				tipOnTop
 				margin={0}
 			>
@@ -85,6 +88,7 @@ export function ZoomPanel({ app, board }: Props) {
 			<UiButton
 				id="ZoomPanelZoomIn"
 				title={t("zoomPanel.zoomIn.tooltip")}
+				hotkey={getHotkeyLabel("zoomIn")}
 				onClick={zoomIn}
 				tipOnTop
 				margin={0}

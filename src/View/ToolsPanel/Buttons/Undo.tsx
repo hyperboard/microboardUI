@@ -1,4 +1,5 @@
 import { Board } from "Board";
+import { getHotkeyLabel } from "Board/Keyboard/hotkey";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { UndoIcon } from "View/Icon/UndoIcon";
@@ -17,7 +18,7 @@ export function Undo({ board, isOn }: Props) {
 			id="Undo"
 			onClick={handleClick}
 			title={t("toolsPanel.undo.tooltip")}
-			hotkey="ctrl+z"
+			hotkey={getHotkeyLabel("undo")}
 			isOn={false}
 			tipOnLeft
 		>

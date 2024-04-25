@@ -1,4 +1,5 @@
 import { Board } from "Board";
+import { getHotkeyLabel } from "Board/Keyboard/hotkey";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { PenIcon } from "View/Icon/PenIcon";
@@ -40,7 +41,7 @@ export function AddDrawing({ board, isOn, width }: Props) {
 				id="AddDrawing"
 				onClick={handleButtonClick}
 				title={t("toolsPanel.addDrawing.tooltip")}
-				hotkey="P"
+				hotkey={getHotkeyLabel("pen")}
 				isOn={isOn}
 				tipOnLeft
 			>

@@ -1,4 +1,5 @@
 import { ConnectorLineStyle } from "Board/Items/Connector";
+import { getHotkeyLabel } from "Board/Keyboard/hotkey";
 import React from "react";
 import { Icon } from "ViewTalkIntegration/Icon";
 import { ConnectorLineStylePicker } from "ViewTalkIntegration/Pickers/ConnectorLineStylePicker";
@@ -30,7 +31,7 @@ export function AddConnector() {
 			button={
 				<UiButton
 					tooltip={t("toolsPanel.addConnector.tooltip")}
-					hotkey="L"
+					hotkey={getHotkeyLabel("connector")}
 					active={isActive}
 					onClick={handleClick}
 				>

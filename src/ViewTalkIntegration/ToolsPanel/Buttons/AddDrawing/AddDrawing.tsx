@@ -1,3 +1,4 @@
+import { getHotkeyLabel } from "Board/Keyboard/hotkey";
 import React from "react";
 import { Icon } from "ViewTalkIntegration/Icon";
 import { ColorPicker } from "ViewTalkIntegration/Pickers/ColorPicker/ColorPicker";
@@ -54,7 +55,7 @@ export function AddDrawing() {
 			button={
 				<UiButton
 					tooltip={t("toolsPanel.addDrawing.tooltip")}
-					hotkey="B"
+					hotkey={getHotkeyLabel("pen")}
 					active={isActive}
 					onClick={handleClick}
 				>

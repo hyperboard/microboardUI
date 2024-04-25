@@ -1,5 +1,6 @@
 import { Board } from "Board";
 import { stickerColors } from "Board/Items/Sticker";
+import { getHotkeyLabel } from "Board/Keyboard/hotkey";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Icon } from "View/Icon";
@@ -31,7 +32,7 @@ export function AddStickerTool({ board, isOn }: Props) {
 				id="AddSticker"
 				onClick={handleClick}
 				title={t("toolsPanel.addSticker.tooltip")}
-				hotkey="N"
+				hotkey={getHotkeyLabel("sticker")}
 				isOn={isOn}
 				tipOnLeft
 			>

@@ -32,6 +32,8 @@
 
 .hotkey {
 	color: rgba(246, 246, 246, 0.48);
+	flex: 1 0;
+	white-space: nowrap;
 }
 
 .tip-container {

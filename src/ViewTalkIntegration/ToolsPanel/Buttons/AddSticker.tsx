@@ -1,3 +1,4 @@
+import { getHotkeyLabel } from "Board/Keyboard/hotkey";
 import React from "react";
 import { Icon } from "ViewTalkIntegration/Icon";
 import { ColorPicker } from "ViewTalkIntegration/Pickers/ColorPicker/ColorPicker";
@@ -39,7 +40,7 @@ export function AddSticker() {
 			button={
 				<UiButton
 					tooltip={t("toolsPanel.addSticker.tooltip")}
-					hotkey="⌘N"
+					hotkey={getHotkeyLabel("sticker")}
 					active={isActive}
 					onClick={handleClick}
 				>

@@ -1,4 +1,5 @@
 import { Board } from "Board";
+import { getHotkeyLabel } from "Board/Keyboard/hotkey";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { RedoIcon } from "View/Icon/RedoIcon";
@@ -15,10 +16,10 @@ export function Redo({ board, isOn }: Props) {
 
 	return (
 		<UiButton
-			id="Undo"
+			id="Redo"
 			onClick={handleClick}
 			title={t("toolsPanel.redo.tooltip")}
-			hotkey="ctrl+shift+z"
+			hotkey={getHotkeyLabel("redo")}
 			isOn={false}
 			tipOnLeft
 		>

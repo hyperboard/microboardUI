@@ -1,4 +1,5 @@
 import { Board } from "Board";
+import { getHotkeyLabel } from "Board/Keyboard/hotkey";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Icon } from "View/Icon";
@@ -17,7 +18,7 @@ export function AddText({ board, isOn }: Props) {
 			id="AddText"
 			onClick={handleClick}
 			title={t("toolsPanel.addText.tooltip")}
-			hotkey="T"
+			hotkey={getHotkeyLabel("text")}
 			isOn={isOn}
 			tipOnLeft
 		>

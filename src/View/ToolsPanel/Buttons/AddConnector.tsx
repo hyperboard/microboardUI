@@ -1,5 +1,6 @@
 import { Board } from "Board";
 import { ConnectorLineStyle } from "Board/Items/Connector";
+import { getHotkeyLabel } from "Board/Keyboard/hotkey";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Icon } from "View/Icon";
@@ -33,7 +34,7 @@ export function AddConnector({ board, isOn }: Props) {
 				id="AddConnector"
 				onClick={handleClick}
 				title={t("toolsPanel.addConnector.tooltip")}
-				hotkey="L"
+				hotkey={getHotkeyLabel("connector")}
 				isOn={isAddConnectorOn}
 				tipOnLeft
 			>

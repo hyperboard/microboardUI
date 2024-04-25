@@ -1,5 +1,6 @@
 import { Board } from "Board";
 import { Mbr } from "Board/Items";
+import { getHotkeyLabel } from "Board/Keyboard/hotkey";
 import { t } from "i18next";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -106,7 +107,7 @@ function BringToFront({ board }: BringToFrontProps): React.ReactElement | null {
 		<RestOptionsMenuItem
 			id="BringToFront"
 			onClick={handleClick}
-			hotkey="PgUp"
+			hotkey={getHotkeyLabel("bringToFront")}
 		>
 			{t("contextPanel.bringToFront.text")}
 		</RestOptionsMenuItem>
@@ -128,7 +129,7 @@ function BringToBack({ board }: BringToBackProps): React.ReactElement | null {
 		<RestOptionsMenuItem
 			id="BringToBack"
 			onClick={handleClick}
-			hotkey="PgDn"
+			hotkey={getHotkeyLabel("sendToBack")}
 		>
 			{t("contextPanel.sendToBack.text")}
 		</RestOptionsMenuItem>

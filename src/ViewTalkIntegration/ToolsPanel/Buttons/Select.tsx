@@ -1,3 +1,4 @@
+import { getHotkeyLabel } from "Board/Keyboard/hotkey";
 import React from "react";
 import { Icon } from "ViewTalkIntegration/Icon";
 import { usePanelContext } from "ViewTalkIntegration/ToolsPanel/PanelContext";
@@ -17,7 +18,7 @@ export function Select() {
 	return (
 		<UiButton
 			tooltip={t("toolsPanel.select.tooltip")}
-			hotkey="S"
+			hotkey={getHotkeyLabel("select")}
 			onClick={handleClick}
 			active={isActive}
 		>

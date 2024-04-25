@@ -3,6 +3,7 @@ import React from "react";
 import { UiButton } from "ViewTalkIntegration/Ui/UiButton/UiButton";
 import { Icon } from "ViewTalkIntegration/Icon";
 import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
+import { getHotkeyLabel } from "Board/Keyboard/hotkey";
 
 type Props = {
 	onPick: (style: TextStyle) => void;
@@ -37,7 +38,7 @@ export function FontStylePicker({
 		<>
 			<UiButton
 				tooltip={t("contextPanel.fontStyle.bold")}
-				hotkey="⌘B"
+				hotkey={getHotkeyLabel("textBold")}
 				tooltipPosition="bottom"
 				active={isBold}
 				onClick={handleBoldPick}
@@ -46,7 +47,7 @@ export function FontStylePicker({
 			</UiButton>
 			<UiButton
 				tooltip={t("contextPanel.fontStyle.italic")}
-				hotkey="⌘I"
+				hotkey={getHotkeyLabel("textItalic")}
 				tooltipPosition="bottom"
 				active={isItalic}
 				onClick={handleItalicsPick}
@@ -55,7 +56,7 @@ export function FontStylePicker({
 			</UiButton>
 			<UiButton
 				tooltip={t("contextPanel.fontStyle.strike")}
-				hotkey="⌘S"
+				hotkey={getHotkeyLabel("textStrike")}
 				tooltipPosition="bottom"
 				active={isLineThrough}
 				onClick={handleLineThroughPick}
@@ -64,7 +65,7 @@ export function FontStylePicker({
 			</UiButton>
 			<UiButton
 				tooltip={t("contextPanel.fontStyle.underline")}
-				hotkey="⌘U"
+				hotkey={getHotkeyLabel("textUnderline")}
 				tooltipPosition="bottom"
 				active={isUnderline}
 				onClick={handleUnderlinePick}

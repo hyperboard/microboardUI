@@ -1,3 +1,4 @@
+import { getHotkeyLabel } from "Board/Keyboard/hotkey";
 import React from "react";
 import { RedoIcon } from "ViewTalkIntegration/Icon";
 import { usePanelContext } from "ViewTalkIntegration/ToolsPanel/PanelContext";
@@ -18,7 +19,7 @@ export function Redo() {
 	return (
 		<UiButton
 			tooltip={t("toolsPanel.redo.tooltip")}
-			hotkey="⌘⇧Z"
+			hotkey={getHotkeyLabel("redo")}
 			className={style.button}
 			onClick={handleClick}
 			disabled={!canUndo}

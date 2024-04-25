@@ -7,6 +7,7 @@ import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel/UiPanel";
 import { Item } from "./Item";
 import style from "./RestOptionsMenu.module.css";
 import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
+import { getHotkeyLabel } from "Board/Keyboard/hotkey";
 
 const MENU_NAME = "RestOptions";
 
@@ -51,18 +52,30 @@ export function RestOptionsMenu(): React.ReactElement | null {
 		>
 			<UiPanel vertical className={style.menu}>
 				{isNotImage && (
-					<Item onClick={handleDuplicate} hotkey="⌘D">
+					<Item
+						onClick={handleDuplicate}
+						hotkey={getHotkeyLabel("duplicate")}
+					>
 						{t("contextPanel.duplicate.text")}
 					</Item>
 				)}
-				<Item onClick={handleBringToFront} hotkey="fn↑ (PgUp)">
+				<Item
+					onClick={handleBringToFront}
+					hotkey={getHotkeyLabel("bringToFront")}
+				>
 					{t("contextPanel.bringToFront.text")}
 				</Item>
-				<Item onClick={handleSendToBack} hotkey="fn↓ (PgDn)">
+				<Item
+					onClick={handleSendToBack}
+					hotkey={getHotkeyLabel("sendToBack")}
+				>
 					{t("contextPanel.sendToBack.text")}
 				</Item>
 				{isNotImage && (
-					<Item onClick={handleDelete} hotkey="Delete">
+					<Item
+						onClick={handleDelete}
+						hotkey={getHotkeyLabel("delete")}
+					>
 						{t("contextPanel.delete.text")}
 					</Item>
 				)}
