@@ -46,6 +46,10 @@
 	display: flex;
 }
 
+.button:hover.active .tip-container {
+	display: none;
+}
+
 .tip {
 	padding: 0.8rem 1rem;
 	border-radius: 8px;
