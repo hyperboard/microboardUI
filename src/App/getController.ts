@@ -13,7 +13,7 @@ import { isSafari } from "./isSafari";
 import { isFirefox } from "./isFirefox";
 import { Clipboard } from "./Clipboard";
 import { isIframe } from "lib/isIframe";
-import { isHotkeyPushed } from "Board/Keyboard/hotkey";
+import { isHotkeyPushed } from "Board/Keyboard/hotkeys";
 
 export function getController(getBoard: () => Board) {
 	const isMouse = true;
@@ -81,6 +81,79 @@ export function getController(getBoard: () => Board) {
 			return;
 		}
 
+		const context = board.selection.getContext();
+
+		if (context === "EditTextUnderPointer") {
+			isHotkeyPushed("textBold", event);
+			isHotkeyPushed("textItalic", event);
+			isHotkeyPushed("textStrike", event);
+			isHotkeyPushed("textUnderline", event);
+		}
+
+		if (isHotkeyPushed("zoomIn", event)) {
+			board.camera.zoomInToViewCenter();
+		}
+
+		if (isHotkeyPushed("zoomOut", event)) {
+			board.camera.zoomOutFromViewCenter();
+		}
+		if (isHotkeyPushed("zoomDefault", event)) {
+			board.camera.zoomToViewCenter(1);
+		}
+
+		if (
+			context !== "EditUnderPointer" &&
+			context !== "SelectByRect" &&
+			context !== "EditTextUnderPointer"
+		) {
+			if (isHotkeyPushed("select", event)) {
+				board.tools.select();
+			}
+			if (isHotkeyPushed("text", event)) {
+				board.tools.addText();
+			}
+			if (isHotkeyPushed("sticker", event)) {
+				board.tools.addSticker();
+			}
+			if (isHotkeyPushed("shape", event)) {
+				board.tools.addShape();
+			}
+			if (isHotkeyPushed("connector", event)) {
+				board.tools.addConnector();
+			}
+			if (isHotkeyPushed("pen", event)) {
+				board.tools.addDrawing();
+			}
+			if (isHotkeyPushed("undo", event)) {
+				board.events.undo();
+			}
+			if (isHotkeyPushed("redo", event)) {
+				board.events.redo();
+			}
+		}
+
+		if (context === "EditUnderPointer" || context === "SelectByRect") {
+			if (isHotkeyPushed("duplicate", event)) {
+				board.selection.duplicate();
+			}
+			if (isHotkeyPushed("bringToFront", event)) {
+				const items = board.selection.list();
+				for (const item of items) {
+					board.items.index.bringToFront(item);
+				}
+			}
+			if (isHotkeyPushed("sendToBack", event)) {
+				const items = board.selection.list();
+				for (const item of items) {
+					board.items.index.sendToBack(item);
+				}
+			}
+			if (isHotkeyPushed("delete", event)) {
+				board.selection.removeFromBoard();
+				toggleEdit(false);
+			}
+		}
+
 		const key = event.code;
 		if (isEditInProcess()) {
 			if ((event.ctrlKey || event.metaKey) && event.code === "KeyV") {
@@ -102,26 +175,11 @@ export function getController(getBoard: () => Board) {
 						board.paste(data);
 					}
 				}
-				isHotkeyPushed("textBold", event);
-				isHotkeyPushed("textItalic", event);
-				isHotkeyPushed("textStrike", event);
-				isHotkeyPushed("textUnderline", event);
 			}
 
 			return;
 		}
 		board.keyboard.keyDown(event);
-
-		if (isHotkeyPushed("zoomIn", event)) {
-			board.camera.zoomInToViewCenter();
-		}
-
-		if (isHotkeyPushed("zoomOut", event)) {
-			board.camera.zoomOutFromViewCenter();
-		}
-		if (isHotkeyPushed("zoomDefault", event)) {
-			board.camera.zoomToViewCenter(1);
-		}
 
 		if ((event.ctrlKey || event.metaKey) && key === "KeyA") {
 			const items = board.items.listAll();
@@ -149,64 +207,16 @@ export function getController(getBoard: () => Board) {
 		) {
 			const item = board.selection.items.getSingle();
 
-			if (board.selection.getContext() === "EditTextUnderPointer") {
+			if (context === "EditTextUnderPointer") {
 				board.selection.editText();
 				return;
 			} else if (
 				item &&
 				["Shape", "Sticker", "Connector"].indexOf(item.itemType) > -1 &&
-				board.selection.getContext() === "EditUnderPointer"
+				context === "EditUnderPointer"
 			) {
 				board.selection.editText();
 				return;
-			}
-		}
-
-		if (isHotkeyPushed("select", event)) {
-			board.tools.select();
-		}
-		if (isHotkeyPushed("text", event)) {
-			board.tools.addText();
-		}
-		if (isHotkeyPushed("sticker", event)) {
-			board.tools.addSticker();
-		}
-		if (isHotkeyPushed("shape", event)) {
-			board.tools.addShape();
-		}
-		if (isHotkeyPushed("connector", event)) {
-			board.tools.addConnector();
-		}
-		if (isHotkeyPushed("pen", event)) {
-			board.tools.addDrawing();
-		}
-		if (isHotkeyPushed("undo", event)) {
-			board.events.undo();
-		}
-		if (isHotkeyPushed("redo", event)) {
-			console.log(isHotkeyPushed("redo", event));
-			board.events.redo();
-		}
-		console.log(board.selection.items.isEmpty());
-		if (!board.selection.items.isEmpty()) {
-			if (isHotkeyPushed("duplicate", event)) {
-				board.selection.duplicate();
-			}
-			if (isHotkeyPushed("bringToFront", event)) {
-				const items = board.selection.list();
-				for (const item of items) {
-					board.items.index.bringToFront(item);
-				}
-			}
-			if (isHotkeyPushed("sendToBack", event)) {
-				const items = board.selection.list();
-				for (const item of items) {
-					board.items.index.sendToBack(item);
-				}
-			}
-			if (isHotkeyPushed("delete", event)) {
-				board.selection.removeFromBoard();
-				toggleEdit(false);
 			}
 		}
 		if (!board.selection.tool.keyDown(board.keyboard.down)) {
@@ -222,7 +232,7 @@ export function getController(getBoard: () => Board) {
 		}
 		isHotkeyPushed("undo", event);
 		isHotkeyPushed("redo", event);
-		if (isEditInProcess()) {
+		if (board.selection.getContext() === "EditTextUnderPointer") {
 			event.preventDefault();
 			if (isHotkeyPushed("textBold", event)) {
 				board.selection.setFontStyle(["bold"]);
