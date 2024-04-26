@@ -1,7 +1,8 @@
 import * as React from "react";
 import { Icon } from "../Icon";
 import { ConnectorLineStyle } from "../../Board/Items/Connector";
-import { Button } from "View/ContextPanel";
+import { UiButton } from "View/Ui/UiButton";
+import { useTranslation } from "react-i18next";
 
 type Props = {
 	onPick: (type: ConnectorLineStyle) => void;
@@ -52,26 +53,27 @@ export function ConnectorLineStyleButton(
 }
 
 export function ConnectorLineStylePicker(props: Props): React.ReactElement {
+	const { t } = useTranslation();
 	return (
 		<div>
-			<Button
+			<UiButton
 				id="PickStraight"
 				onClick={() => {
 					props.onPick("straight");
 				}}
-				title="Straight"
+				title={t("contextPanel.connectorType.straight")}
 			>
 				<Icon name="straight" width={24} height={24} />
-			</Button>
-			<Button
+			</UiButton>
+			<UiButton
 				id="PickCurved"
 				onClick={() => {
 					props.onPick("curved");
 				}}
-				title="Curved"
+				title={t("contextPanel.connectorType.curved")}
 			>
 				<Icon name="curved" width={24} height={24} />
-			</Button>
+			</UiButton>
 		</div>
 	);
 }

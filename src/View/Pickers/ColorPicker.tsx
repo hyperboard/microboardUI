@@ -1,7 +1,8 @@
 import * as React from "react";
 import { Icon } from "../Icon";
-import { Button } from "View/ContextPanel";
+import { UiButton } from "View/Ui/UiButton";
 import { CircleIcon } from "View/Icon/CircleIcon";
+import { useTranslation } from "react-i18next";
 
 export const colors = {
 	White: "rgb(255, 255, 255)",
@@ -26,20 +27,24 @@ export const colors = {
 type ColorPickerProps = {
 	allowNone: boolean;
 	onPick: (color: string) => void;
+	noneTitle?: string;
 	list?: any;
 };
 
 export function ColorPicker({
 	onPick,
 	allowNone,
+	noneTitle,
 	list,
 }: ColorPickerProps): React.ReactElement {
+	const { t } = useTranslation();
+
 	const buttons = [];
 	if (allowNone) {
 		buttons.push(
-			<Button
+			<UiButton
 				id={"none"}
-				title={"none"}
+				title={noneTitle}
 				key={"none"}
 				onClick={() => {
 					onPick("none");
@@ -53,16 +58,16 @@ export function ColorPicker({
 					width={24}
 					height={24}
 				/>
-			</Button>,
+			</UiButton>,
 		);
 	}
 	const a = list ?? colors;
 	for (const key in a) {
 		const color = a[key];
 		buttons.push(
-			<Button
+			<UiButton
 				id={color}
-				title={key}
+				title={t(`colors.${key}`)}
 				key={color}
 				onClick={() => {
 					onPick(color);
@@ -78,7 +83,7 @@ export function ColorPicker({
 						strokeWidth={1}
 					/>
 				</div>
-			</Button>,
+			</UiButton>,
 		);
 	}
 	return <>{buttons}</>;

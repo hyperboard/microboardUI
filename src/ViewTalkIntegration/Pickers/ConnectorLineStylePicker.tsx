@@ -1,38 +1,34 @@
-import * as React from "react";
-import { ConnectorLineStyle } from "../../Board/Items/Connector";
-import { Button } from "../ContextPanel";
-import { Icon } from "../Icon";
+import React from "react";
+import { ConnectorLineStyle } from "Board/Items/Connector";
+import { Icon } from "ViewTalkIntegration/Icon";
+import { UiButton } from "ViewTalkIntegration/Ui/UiButton/UiButton";
 
-interface Props {
+type Props = {
 	onPick: (type: ConnectorLineStyle) => void;
 	selected?: string;
-}
+};
 
-export function ConnectorLineStylePicker(props: Props): React.ReactElement {
+export function ConnectorLineStylePicker({
+	onPick,
+	selected,
+}: Props): React.ReactElement {
 	const handleStraightPick = () => {
-		props.onPick("straight");
+		onPick("straight");
 	};
 	const handleCurvedPick = () => {
-		props.onPick("curved");
+		onPick("curved");
 	};
 	return (
 		<>
-			<Button
-				id="PickStraight"
+			<UiButton
 				onClick={handleStraightPick}
-				margin={0}
-				isOn={props.selected === "straight"}
+				active={selected === "straight"}
 			>
 				<Icon iconName="DiagonalLine" width={18} height={18} />
-			</Button>
-			<Button
-				id="PickCurved"
-				onClick={handleCurvedPick}
-				margin={0}
-				isOn={props.selected === "curved"}
-			>
+			</UiButton>
+			<UiButton onClick={handleCurvedPick} active={selected === "curved"}>
 				<Icon iconName="CurvedLine" width={18} height={18} />
-			</Button>
+			</UiButton>
 		</>
 	);
 }

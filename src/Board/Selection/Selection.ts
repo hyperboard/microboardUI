@@ -19,6 +19,7 @@ import {
 } from "Board/Items/Connector";
 import { toFiniteNumber } from "utils";
 import { Sticker } from "Board/Items/Sticker";
+import { SELECTION_COLOR } from "View/Tools/Selection";
 
 const defaultShapeData = new ShapeData();
 
@@ -199,7 +200,11 @@ export class Selection {
 		if (!item) {
 			return;
 		}
-		if (["Shape", "Sticker", "RichText", "Connector"].indexOf(item.itemType) > -1) {
+		if (
+			["Shape", "Sticker", "RichText", "Connector"].indexOf(
+				item.itemType,
+			) > -1
+		) {
 			this.setTextToEdit(item);
 			this.setContext("EditTextUnderPointer");
 			this.board.items.subject.publish(this.board.items);
@@ -240,7 +245,9 @@ export class Selection {
 		}
 		if (
 			!item ||
-			(["RichText", "Shape", "Sticker", "Connector"].indexOf(item.itemType) === -1) 
+			["RichText", "Shape", "Sticker", "Connector"].indexOf(
+				item.itemType,
+			) === -1
 		) {
 			this.textToEdit = undefined;
 			return;
@@ -669,7 +676,11 @@ export class Selection {
 		if (single) {
 			if (single instanceof RichText) {
 				single.setSelectionFontColor(fontColor, this.context);
-			} else if (single instanceof Shape || single instanceof Sticker || single instanceof Connector) {
+			} else if (
+				single instanceof Shape ||
+				single instanceof Sticker ||
+				single instanceof Connector
+			) {
 				single.text.setSelectionFontColor(fontColor, this.context);
 			}
 		} else {
@@ -687,8 +698,15 @@ export class Selection {
 		if (single) {
 			if (single instanceof RichText) {
 				single.setSelectionFontHighlight(fontHighlight, this.context);
-			} else if (single instanceof Shape || single instanceof Sticker || single instanceof Connector) {
-				single.text.setSelectionFontHighlight(fontHighlight, this.context);
+			} else if (
+				single instanceof Shape ||
+				single instanceof Sticker ||
+				single instanceof Connector
+			) {
+				single.text.setSelectionFontHighlight(
+					fontHighlight,
+					this.context,
+				);
 			}
 		} else {
 			{
@@ -705,18 +723,23 @@ export class Selection {
 	setHorisontalAlignment(horisontalAlignment: HorisontalAlignment): void {
 		const single = this.items.getSingle();
 		if (single) {
-			if (single instanceof Shape
-				|| single instanceof Sticker
-				|| single instanceof Connector) {
-					single.text.setSelectionHorisontalAlignment(horisontalAlignment);
-				}
-			else if (single instanceof RichText) {
+			if (
+				single instanceof Shape ||
+				single instanceof Sticker ||
+				single instanceof Connector
+			) {
+				single.text.setSelectionHorisontalAlignment(
+					horisontalAlignment,
+				);
+			} else if (single instanceof RichText) {
 				single.setSelectionHorisontalAlignment(horisontalAlignment);
 			}
 		} else if (this.items.isItemTypes(["Sticker"])) {
 			this.items
 				.list()
-				.forEach(x => x.text.setSelectionHorisontalAlignment(horisontalAlignment));
+				.forEach(x =>
+					x.text.setSelectionHorisontalAlignment(horisontalAlignment),
+				);
 		} else {
 			this.emit({
 				class: "RichText",
@@ -765,6 +788,18 @@ export class Selection {
 		});
 	}
 
+	bringToFront(): void {
+		this.items.list().forEach(item => {
+			this.board.items.index.bringToFront(item);
+		});
+	}
+
+	sendToBack(): void {
+		this.items.list().forEach(item => {
+			this.board.items.index.sendToBack(item);
+		});
+	}
+
 	duplicate(): void {
 		this.board.duplicate(this.copy());
 	}
@@ -777,7 +812,7 @@ export class Selection {
 			for (const item of this.items.list()) {
 				const mbr = item.getMbr();
 				mbr.strokeWidth = 1 / context.matrix.scaleX;
-				mbr.borderColor = "rgba(0, 0, 255, 0.4)";
+				mbr.borderColor = SELECTION_COLOR;
 				mbr.render(context);
 			}
 		}

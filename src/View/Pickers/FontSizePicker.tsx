@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 export const FontSizes = [10, 12, 14, 18, 24, 36, 48, 64, 80, 144, 288, "Auto"];
 
@@ -9,6 +10,7 @@ type Props = {
 };
 
 export function FontSizePicker(props: Props): React.ReactElement {
+	const { t } = useTranslation();
 	const max = props.maxSize || 288;
 	const buttonStyle: React.CSSProperties = {
 		justifyContent: "center",
@@ -53,7 +55,7 @@ export function FontSizePicker(props: Props): React.ReactElement {
 					style={{ ...buttonStyle, ...additionalStyle }}
 					disabled={isDisabled}
 				>
-					{size}
+					{size === "Auto" ? t("contextPanel.fontSize.auto") : size}
 				</button>
 				<br></br>
 			</React.Fragment>,

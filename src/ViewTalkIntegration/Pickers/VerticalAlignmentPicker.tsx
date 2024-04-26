@@ -1,45 +1,36 @@
 import { VerticalAlignment } from "Board/Items/Alignment";
-import * as React from "react";
-import { Button } from "../ContextPanel";
-import { Icon } from "../Icon";
+import React from "react";
+import { Icon } from "ViewTalkIntegration/Icon";
+import { UiButton } from "ViewTalkIntegration/Ui/UiButton/UiButton";
 
-interface Props {
+type Props = {
 	onPick: (alignment: VerticalAlignment) => void;
 	alignment?: "top" | "bottom" | "center";
-}
+};
 
-export function VerticalAlignmentPicker(props: Props): React.ReactElement {
+export function VerticalAlignmentPicker({
+	onPick,
+	alignment,
+}: Props): React.ReactElement {
 	const handlePick = (alignment: VerticalAlignment) => () =>
-		props.onPick(alignment);
+		onPick(alignment);
 	return (
 		<>
-			<Button
-				id="ChangeVerticalAlignmentTop"
-				key="ChangeVerticalAlignmentTop"
-				onClick={handlePick("top")}
-				isOn={props.alignment === "top"}
-				margin={0}
-			>
+			<UiButton onClick={handlePick("top")} active={alignment === "top"}>
 				<Icon iconName={"VerticalAlignTop"} width={16} height={16} />
-			</Button>
-			<Button
-				id="ChangeVerticalAlignmentCenter"
-				key="ChangeVerticalAlignmentCenter"
+			</UiButton>
+			<UiButton
 				onClick={handlePick("center")}
-				isOn={props.alignment === "center"}
-				margin={0}
+				active={alignment === "center"}
 			>
 				<Icon iconName={"VerticalAlignCenter"} width={16} height={16} />
-			</Button>
-			<Button
-				id="ChangeVerticalAlignmentBottom"
-				key="ChangeVerticalAlignmentBottom"
+			</UiButton>
+			<UiButton
 				onClick={handlePick("bottom")}
-				isOn={props.alignment === "bottom"}
-				margin={0}
+				active={alignment === "bottom"}
 			>
 				<Icon iconName={"VerticalAlignBottom"} width={16} height={16} />
-			</Button>
+			</UiButton>
 		</>
 	);
 }

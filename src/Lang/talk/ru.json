@@ -1,0 +1,115 @@
+{
+	"contextPanel": {
+		"connectorAddText": {
+			"tooltip": "Добавить текст"
+		},
+		"connectorType": {
+			"tooltip": "Стиль линии",
+			"straight": "Прямая",
+			"curved": "Кривая"
+		},
+		"connectorEndPointer": {
+			"tooltip": "Конец линии"
+		},
+		"connectorStartPointer": {
+			"tooltip": "Начало линии"
+		},
+		"connectorSwitchPointers": {
+			"tooltip": "Поменять местами"
+		},
+		"changeShape": {
+			"tooltip": "Изменить фигуру"
+		},
+		"strokeStyle": {
+			"tooltip": "Обводка",
+			"strokeWidth": "Толщина линии"
+		},
+		"fillStyle": {
+			"tooltip": "Заливка"
+		},
+		"fontSize": {
+			"tooltip": "Размер шрифта",
+			"auto": "Авто"
+		},
+		"fontStyle": {
+			"tooltip": "Стиль шрифта",
+			"bold": "Жирный",
+			"italic": "Курсив",
+			"strike": "Зачеркнутый",
+			"underline": "Подчеркивание"
+		},
+		"textAlignment": {
+			"tooltip": "Выравнивание"
+		},
+		"textColor": {
+			"tooltip": "Цвет текста"
+		},
+		"textHighlight": {
+			"tooltip": "Маркер"
+		},
+		"stickerColor": {
+			"tooltip": "Цвет стикера"
+		},
+		"penColor": {
+			"tooltip": "Цвет"
+		},
+    "duplicate": {
+      "text": "Дублировать",
+			"tooltip": "Дублировать"
+    },
+    "bringToFront": {
+      "text": "Вынести на передний план"
+    },
+    "sendToBack" : {
+      "text": "Вынести на задний план"
+    },
+    "delete": {
+      "text": "Удалить",
+			"tooltip": "Удалить"
+    },
+		"edit": {
+			"text": "Редактировать"
+		}
+	},
+	"toolsPanel": {
+		"select": {
+			"tooltip": "Выделение"
+		},
+		"undo": {
+			"tooltip": "Шаг назад"
+		},
+		"redo": {
+			"tooltip": "Шаг вперед"
+		},
+		"addText": {
+			"tooltip": "Текст"
+		},
+		"addSticker": {
+			"tooltip": "Стикер"
+		},
+		"addShape": {
+			"tooltip": "Фигуры"
+		},
+		"addConnector": {
+			"tooltip": "Соединительная линия"
+		},
+		"addDrawing": {
+			"tooltip": "Карандаш",
+			"strokeWidth": "Толщина линии"
+		},
+		"addImage": {
+			"tooltip": "Добавить изображение"
+		}
+	},
+  "zoomPanel": {
+    "zoomOut": {
+      "tooltip": "Отдалить"
+    },
+    "zoomDefault": {
+      "tooltip": "Масштаб 100%"
+    },
+    "zoomIn": {
+      "tooltip": "Приблизить"
+    }
+  }
+}

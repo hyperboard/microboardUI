@@ -1,3 +1,4 @@
+import "Lang";
 import { getRender } from "View";
 import { Clipboard } from "./Clipboard";
 import { Location } from "./Location";
@@ -122,3 +123,5 @@ export function createApp(isHistory = true) {
 
 	return app;
 }
+
+export type App = ReturnType<typeof createApp>;

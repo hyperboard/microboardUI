@@ -1,78 +1,77 @@
 import { TextStyle } from "Board/Items/RichText";
-import * as React from "react";
-import { Button } from "../ContextPanel";
-import { Icon } from "../Icon";
+import React from "react";
+import { UiButton } from "ViewTalkIntegration/Ui/UiButton/UiButton";
+import { Icon } from "ViewTalkIntegration/Icon";
+import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
+import { getHotkeyLabel } from "Board/Keyboard/hotkeys";
 
-interface Props {
+type Props = {
 	onPick: (style: TextStyle) => void;
 	fontStyles?: string[];
-}
+};
 
-export function FontStylePicker(props: Props): React.ReactElement {
+export function FontStylePicker({
+	onPick,
+	fontStyles,
+}: Props): React.ReactElement {
+	const { t } = useTalkTranslation();
+
 	const handleBoldPick = () => {
-		props.onPick("bold");
+		onPick("bold");
 	};
 	const handleItalicsPick = () => {
-		props.onPick("italic");
+		onPick("italic");
 	};
 	const handleLineThroughPick = () => {
-		props.onPick("line-through");
+		onPick("line-through");
 	};
 	const handleUnderlinePick = () => {
-		props.onPick("underline");
+		onPick("underline");
 	};
 
-	const isBold = props.fontStyles?.includes("bold");
-	const isItalic = props.fontStyles?.includes("italic");
-	const isLineThrough = props.fontStyles?.includes("line-through");
-	const isUnderline = props.fontStyles?.includes("underline");
+	const isBold = fontStyles?.includes("bold");
+	const isItalic = fontStyles?.includes("italic");
+	const isLineThrough = fontStyles?.includes("line-through");
+	const isUnderline = fontStyles?.includes("underline");
 
 	return (
 		<>
-			<Button
-				id="ChangeFontBold"
-				key="ChangeFontBold"
+			<UiButton
+				tooltip={t("contextPanel.fontStyle.bold")}
+				hotkey={getHotkeyLabel("textBold")}
+				tooltipPosition="bottom"
+				active={isBold}
 				onClick={handleBoldPick}
-				margin={0}
-				title="Жирный"
-				hotkey="⌘B"
-				isOn={isBold}
 			>
 				<Icon iconName="TextBold" />
-			</Button>
-			<Button
-				id="ChangeFontItalics"
-				key="ChangeFontItalics"
+			</UiButton>
+			<UiButton
+				tooltip={t("contextPanel.fontStyle.italic")}
+				hotkey={getHotkeyLabel("textItalic")}
+				tooltipPosition="bottom"
+				active={isItalic}
 				onClick={handleItalicsPick}
-				margin={0}
-				title="Курсив"
-				hotkey="⌘I"
-				isOn={isItalic}
 			>
 				<Icon iconName="TextItalic" />
-			</Button>
-			<Button
-				id="ChangeFontStrikethrough"
-				key="ChangeFontStrikethrough"
+			</UiButton>
+			<UiButton
+				tooltip={t("contextPanel.fontStyle.strike")}
+				hotkey={getHotkeyLabel("textStrike")}
+				tooltipPosition="bottom"
+				active={isLineThrough}
 				onClick={handleLineThroughPick}
-				margin={0}
-				title="Зачеркнутый"
-				hotkey="⌘S"
-				isOn={isLineThrough}
 			>
 				<Icon iconName="TextStrike" />
-			</Button>
-			<Button
-				id="ChangeFontUnderline"
-				key="ChangeFontUnderline"
+			</UiButton>
+			<UiButton
+				tooltip={t("contextPanel.fontStyle.underline")}
+				hotkey={getHotkeyLabel("textUnderline")}
+				tooltipPosition="bottom"
+				active={isUnderline}
 				onClick={handleUnderlinePick}
-				margin={0}
-				title="Подчеркнутый"
-				hotkey="⌘U"
-				isOn={isUnderline}
 			>
-				<Icon width={26} iconName="TextUnderline" />
-			</Button>
+				<Icon width={28} height={28} iconName="TextUnderline" />
+			</UiButton>
 		</>
 	);
 }

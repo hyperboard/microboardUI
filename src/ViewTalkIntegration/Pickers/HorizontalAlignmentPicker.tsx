@@ -1,14 +1,14 @@
 import { HorisontalAlignment } from "Board/Items/Alignment";
-import * as React from "react";
-import { Button } from "../ContextPanel";
-import { Icon } from "../Icon";
+import React from "react";
+import { Icon } from "ViewTalkIntegration/Icon";
+import { UiButton } from "ViewTalkIntegration/Ui/UiButton/UiButton";
 
-interface Props {
+type Props = {
 	onPick: (alignment: HorisontalAlignment) => void;
 	alignment: "center" | "left" | "right";
-}
+};
 
-export function HorisontalAlignmentPicker({
+export function HorizontalAlignmentPicker({
 	alignment,
 	onPick,
 }: Props): React.ReactElement {
@@ -17,33 +17,24 @@ export function HorisontalAlignmentPicker({
 	};
 	return (
 		<>
-			<Button
-				id="ChangeHorisontalAlignmentLeft"
-				key="ChangeHorisontalAlignmentLeft"
+			<UiButton
 				onClick={handlePick("left")}
-				margin={0}
-				isOn={alignment === "left"}
+				active={alignment === "left"}
 			>
 				<Icon iconName="TextAlignLeft" width={16} height={16} />
-			</Button>
-			<Button
-				id="ChangeHorisontalAlignmentCenter"
-				key="ChangeHorisontalAlignmentCenter"
+			</UiButton>
+			<UiButton
 				onClick={handlePick("center")}
-				margin={0}
-				isOn={alignment === "center"}
+				active={alignment === "center"}
 			>
 				<Icon iconName="TextAlignCenter" width={16} height={16} />
-			</Button>
-			<Button
-				id="ChangeHorisontalAlignmentRight"
-				key="ChangeHorisontalAlignmentRight"
+			</UiButton>
+			<UiButton
 				onClick={handlePick("right")}
-				margin={0}
-				isOn={alignment === "right"}
+				active={alignment === "right"}
 			>
 				<Icon iconName="TextAlignRight" width={16} height={16} />
-			</Button>
+			</UiButton>
 		</>
 	);
 }

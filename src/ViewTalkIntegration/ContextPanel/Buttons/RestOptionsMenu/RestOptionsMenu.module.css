@@ -1,0 +1,21 @@
+.menu {
+	align-items: stretch;
+}
+
+.item {
+	font-size: 1.6rem;
+	justify-content: space-between;
+	padding: 0.6rem 1.2rem;
+	color: rgba(0, 0, 0, 0.8);
+	line-height: 2.4rem;
+	gap: 1.6rem;
+}
+
+.text {
+	text-wrap: nowrap;
+}
+
+.hotkey {
+	text-wrap: nowrap;
+	color: rgba(0, 0, 0, 0.24);
+}

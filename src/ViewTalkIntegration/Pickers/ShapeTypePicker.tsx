@@ -1,7 +1,7 @@
 import { ShapeType } from "Board/Items/Shape/Basic";
-import * as React from "react";
-import { Button } from "../ContextPanel";
-import { Icon } from "../Icon";
+import React from "react";
+import { Icon } from "ViewTalkIntegration/Icon";
+import { UiButton } from "ViewTalkIntegration/Ui/UiButton/UiButton";
 
 const shapes = [
 	"Rectangle",
@@ -21,25 +21,18 @@ const shapes = [
 	"Star",
 ] as const;
 
-export function ShapePicker(props: {
+type Props = {
 	onPick: (type: ShapeType) => void;
-}): React.ReactElement {
-	const buttons = [];
-	for (const shape of shapes) {
-		buttons.push(
-			<Button
-				width={32}
-				height={32}
-				id={`Pick${shape}`}
-				onClick={() => {
-					props.onPick(shape as ShapeType);
-				}}
-				margin={0}
-				key={shape}
-			>
-				<Icon iconName={shape} width={20} height={20} />
-			</Button>,
-		);
-	}
-	return <>{buttons}</>;
+};
+
+export function ShapePicker({ onPick }: Props): React.ReactElement {
+	return (
+		<>
+			{shapes.map(shape => (
+				<UiButton onClick={() => onPick(shape)} key={shape}>
+					<Icon iconName={shape} width={20} height={20} />
+				</UiButton>
+			))}
+		</>
+	);
 }

@@ -1,25 +1,26 @@
-import { Button } from "View/ContextPanel";
+import { UiButton } from "View/Ui/UiButton";
 import { PointerIcon } from "View/Icon/PointerIcon";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
 const pointerTypes = [
-	{ id: "None", label: "None" },
-	{ id: "ArrowBroad", label: "Arrow (Broad)" },
-	{ id: "ArrowThin", label: "Arrow (Thin)" },
-	{ id: "TriangleFilled", label: "Triangle (Filled)" },
-	{ id: "CircleFilled", label: "Circle (Filled)" },
-	{ id: "Angle", label: "Angle" },
-	{ id: "TriangleEmpty", label: "Triangle (Empty)" },
-	{ id: "DiamondFilled", label: "Diamond (Filled)" },
-	{ id: "DiamondEmpty", label: "Diamond (Empty)" },
-	{ id: "Zero", label: "Zero" },
-	{ id: "One", label: "One" },
-	{ id: "Many", label: "Many" },
-	{ id: "ManyMandatory", label: "Many (Mandatory)" },
-	{ id: "OneMandatory", label: "One (Mandatory)" },
-	{ id: "ManyOptional", label: "Many (Optional)" },
-	{ id: "OneOptional", label: "One (Optional)" },
-];
+	"None",
+	"ArrowBroad",
+	"ArrowThin",
+	"TriangleFilled",
+	"CircleFilled",
+	"Angle",
+	"TriangleEmpty",
+	"DiamondFilled",
+	"DiamondEmpty",
+	"Zero",
+	"One",
+	"Many",
+	"ManyMandatory",
+	"OneMandatory",
+	"ManyOptional",
+	"OneOptional",
+] as const;
 
 type Props = {
 	onPick: (pointer: string) => void;
@@ -28,19 +29,20 @@ type Props = {
 export function ConnectorStartPointerPicker({
 	onPick,
 }: Props): React.ReactElement {
+	const { t } = useTranslation();
 	const buttons = [];
 	for (const type of pointerTypes) {
 		buttons.push(
-			<Button
-				id={type.id}
-				key={type.id}
+			<UiButton
+				id={type}
+				key={type}
 				onClick={() => {
-					onPick(type.id);
+					onPick(type);
 				}}
-				title={type.label}
+				title={t(`pointerTypes.${type}`)}
 			>
-				<PointerIcon type={type.id} width={24} height={24} />
-			</Button>,
+				<PointerIcon type={type} width={24} height={24} />
+			</UiButton>,
 		);
 	}
 	return <div>{buttons}</div>;
@@ -51,19 +53,20 @@ export function ConnectorEndPointerPicker({
 }: {
 	onPick: (pointer: string) => void;
 }): React.ReactElement {
+	const { t } = useTranslation();
 	const buttons = [];
 	for (const pointerType of pointerTypes) {
 		buttons.push(
-			<Button
-				id={pointerType.id}
-				key={pointerType.id}
+			<UiButton
+				id={pointerType}
+				key={pointerType}
 				onClick={() => {
-					onPick(pointerType.id);
+					onPick(pointerType);
 				}}
-				title={pointerType.label}
+				title={t(`pointerTypes.${pointerType}`)}
 			>
-				<PointerIcon type={pointerType.id} width={24} height={24} />
-			</Button>,
+				<PointerIcon type={pointerType} width={24} height={24} />
+			</UiButton>,
 		);
 	}
 	return <div>{buttons}</div>;
