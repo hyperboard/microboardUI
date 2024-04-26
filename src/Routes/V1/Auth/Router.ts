@@ -1,205 +1,128 @@
 import express from "express";
 import { Auth } from "./Auth";
-import validator from "validator";
+import { body, validationResult } from "express-validator";
 import { HttpException } from "shared/exceptions/http-exception";
 import { HttpStatus } from "shared/enums/http-status.enum";
 
 export function getAuthRouter(authService: Auth): express.Router {
     const router = express.Router();
 
-    router.post("/auth/login", async (request, response) => {
-        const { email, password } = request.body;
-        if (!email || !password) {
-            response
-                .status(HttpStatus.BAD_REQUEST)
-                .json({
-                    status: HttpStatus.BAD_REQUEST,
-                    message: "Email and password are required.",
-                })
-                .end();
+    router.post(
+        "/auth/login",
+        body("email").isEmail(),
+        body("password").not().isEmpty(),
+        validateRequest,
+        async (req, res) => {
+            try {
+                const { email, password } = req.body;
+                const jwts = await authService.login({ email, password });
+                return res.json(jwts);
+            } catch (err: HttpException | any) {
+                return handleError(res, err);
+            }
         }
-        const validationMessages = {
-            email: "email field must be a valid email",
-        };
-        const messages: string[] = [];
-        const isValidEmail = validator.isEmail(email);
-        if (!isValidEmail) {
-            messages.push(validationMessages.email);
-        }
+    );
 
-        if (messages.length > 0) {
-            response
-                .status(HttpStatus.BAD_REQUEST)
-                .json({
-                    status: HttpStatus.BAD_REQUEST,
-                    message: messages,
-                })
-                .end();
+    router.post(
+        "/auth/register",
+        body("email").isEmail(),
+        body("password").isLength({ min: 6 }),
+        validateRequest,
+        async (req, res) => {
+            try {
+                const { email, password } = req.body;
+                const user = await authService.register({
+                    email,
+                    password,
+                });
+                return res.json(user);
+            } catch (err: HttpException | any) {
+                return handleError(res, err);
+            }
         }
-        let jwtTokens: Awaited<ReturnType<typeof authService.login>> = null;
+    );
+
+    router.post("/auth/refresh", async (req, res) => {
         try {
-            jwtTokens = await authService.login({ email, password });
-            response.json(jwtTokens).end();
-        } catch (e: HttpException | any) {
-            response
-                .status(e.status || HttpStatus.INTERNAL_SERVER_ERROR)
-                .json({
-                    status: e.status || HttpStatus.INTERNAL_SERVER_ERROR,
-                    message: e.message,
-                })
-                .end();
-        }
-
-        response.end();
-    });
-
-    router.post("/auth/register", async (request, response) => {
-        const { email, password } = request.body;
-        if (!email || !password) {
-            response
-                .status(HttpStatus.BAD_REQUEST)
-                .json({
-                    status: HttpStatus.BAD_REQUEST,
-                    message: "Email and password are required.",
-                })
-                .end();
-        }
-
-        const validationMessages = {
-            email: "email field must be a valid email",
-            password:
-                "password field must be at least 6 characters and at most 20 characters",
-        };
-        const messages: string[] = [];
-        const isValidEmail = validator.isEmail(email);
-        if (!isValidEmail) {
-            messages.push(validationMessages.email);
-        }
-        // TODO: Уточнить требования к паролю
-        const isValidPassword = validator.isLength(password, {
-            min: 6,
-            max: 20,
-        });
-        if (!isValidPassword) {
-            messages.push(validationMessages.password);
-        }
-
-        if (messages.length > 0) {
-            response
-                .status(HttpStatus.BAD_REQUEST)
-                .json({
-                    status: HttpStatus.BAD_REQUEST,
-                    message: messages,
-                })
-                .end();
-        }
-
-        let user: Awaited<ReturnType<typeof authService["register"]>> = null;
-        try {
-            user = await authService.register({
-                email,
-                password,
-            });
-            response.json(user);
-        } catch (e: HttpException | any) {
-            response.status(e.status || HttpStatus.INTERNAL_SERVER_ERROR).json({
-                status: e.status || HttpStatus.INTERNAL_SERVER_ERROR,
-                message: e.message,
-            });
-        }
-
-        response.end();
-    });
-
-    router.post("/auth/refresh", async (request, response) => {
-        const refreshToken = request.headers["authorization"]?.split(" ")?.[1];
-        if (!refreshToken) {
-            response
-                .status(HttpStatus.UNAUTHORIZED)
-                .json({
+            const refreshToken = req.headers["authorization"]?.split(" ")?.[1];
+            if (!refreshToken) {
+                return res.status(HttpStatus.UNAUTHORIZED).json({
                     status: HttpStatus.UNAUTHORIZED,
                     message: "Unauthorized",
-                })
-                .end();
-        }
-        let jwtTokens: Awaited<ReturnType<typeof authService.refresh>> = null;
-        try {
-            jwtTokens = await authService.refresh({
-                refreshToken: refreshToken!,
+                });
+            }
+
+            const jwtTokens = await authService.refresh({
+                refreshToken,
             });
-            response.json(jwtTokens).end();
-        } catch (e: HttpException | any) {
-            response
-                .status(e.status || HttpStatus.INTERNAL_SERVER_ERROR)
-                .json({
-                    status: e.status || HttpStatus.INTERNAL_SERVER_ERROR,
-                    message: e.message,
-                })
-                .end();
+            return res.json(jwtTokens);
+        } catch (err) {
+            return handleError(res, err);
         }
-
-        response.end();
     });
 
-    router.post("/auth/verify", async (request, response) => {
-        const { userId, passcode } = request.body;
-        if (!userId || !passcode) {
-            response
-                .status(HttpStatus.BAD_REQUEST)
-                .json({
-                    status: HttpStatus.BAD_REQUEST,
-                    message: "userId and passcode are required.",
-                })
-                .end();
+    router.post(
+        "/auth/verify",
+        body("userId").not().isEmpty(),
+        body("passcode").not().isEmpty(),
+        validateRequest,
+        async (req, res) => {
+            const { userId, passcode } = req.body;
+            try {
+                const tokens = await authService.verifyEmail({
+                    userId,
+                    passcode,
+                });
+                res.json(tokens);
+            } catch (err) {
+                return handleError(res, err);
+            }
         }
+    );
 
-        try {
-            const tokens = await authService.verifyEmail({ userId, passcode });
-            response.json(tokens).end();
-        } catch (e: HttpException | any) {
-            response
-                .status(e.status || HttpStatus.INTERNAL_SERVER_ERROR)
-                .json({
-                    status: e.status || HttpStatus.INTERNAL_SERVER_ERROR,
-                    message: e.message,
-                })
-                .end();
+    router.post(
+        "/auth/resendEmail",
+        body("email").isEmail(),
+        body("userId").not().isEmpty(),
+        validateRequest,
+        async (req, res) => {
+            const { email, userId } = req.body;
+            try {
+                await authService.resendEmail({ email, userId });
+                res.json({ message: "Email sent" });
+            } catch (err) {
+                return handleError(res, err);
+            }
         }
-
-        response.end();
-    });
-
-    router.post("/auth/resendEmail", async (request, response) => {
-        const { email, userId } = request.body;
-        if (!email || !userId) {
-            response
-                .status(HttpStatus.BAD_REQUEST)
-                .json({
-                    status: HttpStatus.BAD_REQUEST,
-                    message: "email and userId are required.",
-                })
-                .end();
-        }
-
-        try {
-            await authService.resendEmail({ email, userId });
-            response
-                .json({
-                    message: "Email sent",
-                })
-                .end();
-        } catch (e: HttpException | any) {
-            response
-                .status(e.status || HttpStatus.INTERNAL_SERVER_ERROR)
-                .json({
-                    status: e.status || HttpStatus.INTERNAL_SERVER_ERROR,
-                    message: e.message,
-                })
-                .end();
-        }
-
-        response.end();
-    });
+    );
 
     return router;
+}
+
+function validateRequest(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+            status: HttpStatus.BAD_REQUEST,
+            message: errors.array().map((e) => e.msg),
+        });
+    }
+    next();
+}
+
+function handleError(
+    res: express.Response,
+    error: any,
+    defaultStatus = HttpStatus.INTERNAL_SERVER_ERROR
+) {
+    const status = error.status || defaultStatus;
+
+    return res.status(status).json({
+        status,
+        message: error.message,
+    });
 }
