@@ -5,7 +5,7 @@ import { UiButton } from "ViewTalkIntegration/Ui/UiButton/UiButton";
 
 const pointerTypes = [
 	{ id: "None", icon: "PointerStart" },
-	{ id: "ArrowBroad", icon: "PointerEnd" },
+	{ id: "AngleTalk", icon: "PointerEnd" },
 	{ id: "TriangleFilled", icon: "PointerEndCompact" },
 ];
 
