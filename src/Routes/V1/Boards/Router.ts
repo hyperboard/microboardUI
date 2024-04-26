@@ -436,7 +436,7 @@ export function getBoardsRouter(
     );
 
     router.get(
-        "/boards/:boardId/link/:linkId/details",
+        "/boards/:boardId/links/:linkId/details",
         authenticate,
         param("boardId").isUUID(),
         param("linkId").isUUID(),

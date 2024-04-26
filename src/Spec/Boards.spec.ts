@@ -511,7 +511,7 @@ describe("Board routes", () => {
 
         it("should return the details of an existing link", async () => {
             await request(server)
-                .get(`/api/v1/boards/${boardId}/link/${linkId}/details`)
+                .get(`/api/v1/boards/${boardId}/links/${linkId}/details`)
                 .set("Authorization", `Bearer ${token}`)
                 .expect(200)
                 .then((response) => {
@@ -523,7 +523,7 @@ describe("Board routes", () => {
 
         it("should return 401 if unauthorized", async () => {
             await request(server)
-                .get(`/api/v1/boards/${boardId}/link/${linkId}/details`)
+                .get(`/api/v1/boards/${boardId}/links/${linkId}/details`)
                 .expect(401); // Unauthorized
         });
 
@@ -533,7 +533,7 @@ describe("Board routes", () => {
             });
 
             await request(server)
-                .get(`/api/v1/boards/${boardId}/link/${linkId}/details`)
+                .get(`/api/v1/boards/${boardId}/links/${linkId}/details`)
                 .set("Authorization", `Bearer ${forbiddenToken}`)
                 .expect(403); // Forbidden
         });
@@ -543,7 +543,7 @@ describe("Board routes", () => {
 
             await request(server)
                 .get(
-                    `/api/v1/boards/${boardId}/link/${nonExistentLinkId}/details`
+                    `/api/v1/boards/${boardId}/links/${nonExistentLinkId}/details`
                 )
                 .set("Authorization", `Bearer ${token}`)
                 .expect(404); // Not found
@@ -554,7 +554,7 @@ describe("Board routes", () => {
 
             await request(server)
                 .get(
-                    `/api/v1/board/${nonExistentBoardId}/link/${linkId}/details`
+                    `/api/v1/board/${nonExistentBoardId}/links/${linkId}/details`
                 )
                 .set("Authorization", `Bearer ${token}`)
                 .expect(404); // Not found
