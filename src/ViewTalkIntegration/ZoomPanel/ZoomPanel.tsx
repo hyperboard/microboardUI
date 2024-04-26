@@ -8,7 +8,7 @@ import { UiButton } from "ViewTalkIntegration/Ui/UiButton/UiButton";
 import { Icon } from "ViewTalkIntegration/Icon";
 import style from "./ZoomPanel.module.css";
 import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
-import { getHotkeyLabel } from "Board/Keyboard/hotkey";
+import { getHotkeyLabel } from "Board/Keyboard/hotkeys";
 
 type Props = {
 	app: App;

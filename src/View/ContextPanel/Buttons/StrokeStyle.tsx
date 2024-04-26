@@ -31,6 +31,7 @@ export function StrokeStyle({
 }: StrokeStyleProps): React.ReactElement | null {
 	const { t } = useTranslation();
 	const context = board.selection.getContext();
+	const menuRef = React.useRef<HTMLDivElement>(null);
 
 	const canChangeBorderStyle = board.selection.items.isItemTypes([
 		"Shape",
@@ -39,7 +40,6 @@ export function StrokeStyle({
 	if (context === "SelectUnderPointer" || !canChangeBorderStyle) {
 		return null;
 	}
-	const menuRef = React.useRef<HTMLDivElement>(null);
 
 	const handleClick = () => {
 		toggleMenu("StrokeStyle");

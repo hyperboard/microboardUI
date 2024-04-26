@@ -7,7 +7,7 @@ import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel/UiPanel";
 import { Item } from "./Item";
 import style from "./RestOptionsMenu.module.css";
 import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
-import { getHotkeyLabel } from "Board/Keyboard/hotkey";
+import { getHotkeyLabel } from "Board/Keyboard/hotkeys";
 
 const MENU_NAME = "RestOptions";
 

@@ -25,6 +25,7 @@ export function FontStyle({
 	windowHeight,
 }: FontStyleProps): React.ReactElement | null {
 	const { t } = useTranslation();
+	const menuRef = React.useRef<HTMLDivElement>(null);
 	if (board.selection.getContext() === "SelectUnderPointer") {
 		return null;
 	}
@@ -35,7 +36,6 @@ export function FontStyle({
 	) {
 		return null;
 	}
-	const menuRef = React.useRef<HTMLDivElement>(null);
 	const fontStyles = board.selection.getText()?.getFontStyles();
 	const handleClick = () => {
 		toggleMenu("FontStyle");

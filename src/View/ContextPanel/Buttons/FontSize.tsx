@@ -28,7 +28,7 @@ export function FontSize({
 	windowHeight,
 	max: maxInit,
 }: FontSizeProps) {
-	const menuRef = React.createRef<HTMLDivElement>();
+	const menuRef = React.useRef<HTMLDivElement>();
 	const [fontSize, setFontSize] = useState(fontSizeInit);
 	const [max, setMax] = useState(maxInit);
 	const [itemType, setItemType] = useState("");

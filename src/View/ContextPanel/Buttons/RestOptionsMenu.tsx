@@ -1,6 +1,6 @@
 import { Board } from "Board";
 import { Mbr } from "Board/Items";
-import { getHotkeyLabel } from "Board/Keyboard/hotkey";
+import { getHotkeyLabel } from "Board/Keyboard/hotkeys";
 import { t } from "i18next";
 import React from "react";
 import { useTranslation } from "react-i18next";

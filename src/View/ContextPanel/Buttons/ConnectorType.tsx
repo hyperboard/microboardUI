@@ -25,6 +25,7 @@ export function ConnectorType({
 	windowHeight,
 }: ConnectorTypeProps): React.ReactElement | null {
 	const { t } = useTranslation();
+	const menuRef = React.useRef<HTMLDivElement>(null);
 	const canChangePointer = board.selection.items.isItemTypes(["Connector"]);
 	if (
 		board.selection.getContext() === "SelectUnderPointer" ||
@@ -32,7 +33,6 @@ export function ConnectorType({
 	) {
 		return null;
 	}
-	const menuRef = React.useRef<HTMLDivElement>(null);
 
 	const handleClick = () => {
 		toggleMenu("ConnectorType");

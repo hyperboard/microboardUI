@@ -27,6 +27,7 @@ export function EndPointer({
 	pointer,
 }: EndPointerProps): React.ReactElement | null {
 	const { t } = useTranslation();
+	const menuRef = React.useRef<HTMLDivElement>(null);
 
 	const canChangePointer = board.selection.items.isItemTypes(["Connector"]);
 	if (
@@ -35,7 +36,6 @@ export function EndPointer({
 	) {
 		return null;
 	}
-	const menuRef = React.useRef<HTMLDivElement>(null);
 
 	const handleClick = () => {
 		toggleMenu("EndPointer");

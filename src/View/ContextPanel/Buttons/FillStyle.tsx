@@ -27,13 +27,13 @@ export function FillStyle({
 	color,
 }: FillStyleProps): React.ReactElement | null {
 	const { t } = useTranslation();
+	const menuRef = React.useRef<HTMLDivElement>(null);
 
 	const context = board.selection.getContext();
 	const canChangeFillStyle = board.selection.items.isItemTypes(["Shape"]);
 	if (context === "SelectUnderPointer" || !canChangeFillStyle) {
 		return null;
 	}
-	const menuRef = React.useRef<HTMLDivElement>(null);
 
 	const handleClick = () => {
 		toggleMenu("FillStyle");

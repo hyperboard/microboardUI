@@ -27,6 +27,7 @@ export function TextAlignment({
 	windowHeight,
 }: TextAlignmentProps): React.ReactElement | null {
 	const { t } = useTranslation();
+	const menuRef = React.useRef<HTMLDivElement>(null);
 	const connector = board.selection.items.getSingle();
 	const isConnector = connector instanceof Connector;
 
@@ -44,8 +45,6 @@ export function TextAlignment({
 	) {
 		return null;
 	}
-
-	const menuRef = React.useRef<HTMLDivElement>(null);
 
 	const handleClick = () => {
 		toggleMenu("TextAlignment");

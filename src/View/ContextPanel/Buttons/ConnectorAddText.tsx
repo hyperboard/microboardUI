@@ -20,6 +20,7 @@ export function ConnectorAddText({
 	windowHeight,
 }: ConnectorAddTextProps): React.ReactElement | null {
 	const { t } = useTranslation();
+	const menuRef = React.useRef<HTMLDivElement>(null);
 
 	const canChangePointer = board.selection.items.isItemTypes(["Connector"]);
 	if (
@@ -28,7 +29,6 @@ export function ConnectorAddText({
 	) {
 		return null;
 	}
-	const menuRef = React.useRef<HTMLDivElement>(null);
 
 	const handleClick = () => {
 		if (board.selection.getContext() === "EditTextUnderPointer") {

@@ -27,6 +27,7 @@ export function TextHighlight({
 	color,
 }: TextHighlightProps): React.ReactElement | null {
 	const { t } = useTranslation();
+	const menuRef = React.useRef<HTMLDivElement>(null);
 	if (board.selection.getContext() === "SelectUnderPointer") {
 		return null;
 	}
@@ -37,8 +38,6 @@ export function TextHighlight({
 	) {
 		return null;
 	}
-
-	const menuRef = React.useRef<HTMLDivElement>(null);
 
 	const handleClick = () => {
 		toggleMenu("TextHighlight");

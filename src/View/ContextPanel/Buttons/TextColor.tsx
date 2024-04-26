@@ -27,6 +27,7 @@ export function TextColor({
 	windowHeight,
 }: TextColorProps): React.ReactElement | null {
 	const { t } = useTranslation();
+	const menuRef = React.useRef<HTMLDivElement>(null);
 	if (board.selection.getContext() === "SelectUnderPointer") {
 		return null;
 	}
@@ -37,8 +38,6 @@ export function TextColor({
 	) {
 		return null;
 	}
-
-	const menuRef = React.useRef<HTMLDivElement>(null);
 
 	const handleClick = () => {
 		toggleMenu("TextColor");

@@ -27,6 +27,7 @@ export function ItemType({
 	windowHeight,
 }: ItemTypeProps): React.ReactElement | null {
 	const { t } = useTranslation();
+	const menuRef = React.useRef<HTMLDivElement>(null);
 	const canChangeItemType = board.selection.items.isItemTypes(["Shape"]);
 	if (
 		board.selection.getContext() === "SelectUnderPointer" ||
@@ -34,7 +35,6 @@ export function ItemType({
 	) {
 		return null;
 	}
-	const menuRef = React.useRef<HTMLDivElement>(null);
 
 	const handleClick = () => {
 		toggleMenu("ItemType");

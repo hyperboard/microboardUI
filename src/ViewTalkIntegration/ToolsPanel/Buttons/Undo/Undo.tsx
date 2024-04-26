@@ -1,4 +1,4 @@
-import { getHotkeyLabel } from "Board/Keyboard/hotkey";
+import { getHotkeyLabel } from "Board/Keyboard/hotkeys";
 import React from "react";
 import { UndoIcon } from "ViewTalkIntegration/Icon";
 import { usePanelContext } from "ViewTalkIntegration/ToolsPanel/PanelContext";

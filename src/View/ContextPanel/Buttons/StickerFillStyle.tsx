@@ -29,11 +29,11 @@ export function StickerFillStyle({
 }: StickerFillStyleProps): React.ReactElement | null {
 	const { t } = useTranslation();
 	const context = board.selection.getContext();
+	const menuRef = React.useRef<HTMLDivElement>(null);
 	const canChangeFillStyle = board.selection.items.isItemTypes(["Sticker"]);
 	if (context === "SelectUnderPointer" || !canChangeFillStyle) {
 		return null;
 	}
-	const menuRef = React.useRef<HTMLDivElement>(null);
 
 	const handleClick = () => {
 		toggleMenu("StickerFillStyle");

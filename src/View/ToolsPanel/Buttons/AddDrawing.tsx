@@ -1,5 +1,5 @@
 import { Board } from "Board";
-import { getHotkeyLabel } from "Board/Keyboard/hotkey";
+import { getHotkeyLabel } from "Board/Keyboard/hotkeys";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { PenIcon } from "View/Icon/PenIcon";
