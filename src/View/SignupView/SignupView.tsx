@@ -1,5 +1,5 @@
 import { getApiUrl } from "Config";
-import React, { useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { Link, createSearchParams, useNavigate } from "react-router-dom";
 import styles from "./SignupView.module.css";
@@ -11,7 +11,7 @@ type RegisterOkResponse = {
 
 export const SignupView = (): React.ReactElement => {
 	const { t } = useTranslation();
-	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 	const navigate = useNavigate();
 	const onSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,

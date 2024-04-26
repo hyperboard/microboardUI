@@ -25,7 +25,8 @@
 			"strokeWidth": "Stroke width"
 		},
 		"fillStyle": {
-			"tooltip": "Fill"
+			"tooltip": "Fill",
+			"none": "None"
 		},
 		"fontSize": {
 			"tooltip": "Font size",
@@ -50,7 +51,8 @@
 			"tooltip": "Text color"
 		},
 		"textHighlight": {
-			"tooltip": "Marker"
+			"tooltip": "Marker",
+			"none": "None"
 		},
 		"stickerColor": {
 			"tooltip": "Sticker color"
@@ -159,22 +161,27 @@
 	},
 	"colors": {
 		"White": "White",
-		"MustardYellow": "Mustard Yellow",
+		"Mustard Yellow": "Mustard Yellow",
 		"Gold": "Gold",
-		"ScarletRed": "Scarlet Red",
-		"LightGray": "Light Gray",
-		"LimeGreen": "Lime Green",
-		"MintGreen": "Mint Green",
+		"Scarlet Red": "Scarlet Red",
+		"Light Gray": "Light Gray",
+		"Lime Green": "Lime Green",
+		"Mint Green": "Mint Green",
 		"Magenta": "Magenta",
-		"DarkGray": "Dark Gray",
+		"Dark Gray": "Dark Gray",
 		"Turquoise": "Turquoise",
-		"ForestGreen": "Forest Green",
+		"Forest Green": "Forest Green",
 		"Violet": "Violet",
-		"JetBlack": "Jet Black",
-		"SkyBlue": "Sky Blue",
-		"RoyalBlue": "Royal Blue",
+		"Jet Black": "Jet Black",
+		"Sky Blue": "Sky Blue",
+		"Royal Blue": "Royal Blue",
 		"Purple": "Purple",
-		"BrickRed": "Brick Red"
+		"Brick Red": "Brick Red",
+		"Pale Yellow": "Pale Yellow",
+		"Sage Green": "Sage Green",
+		"Lavender": "Lavender",
+		"Aqua Cyan": "Aqua Cyan",
+		"Pastel Red": "Pastel Red"
 	},
 	"shapes": {
 		"Rectangle": "Rectangle",
@@ -212,10 +219,11 @@
 		"Zero": "Zero",
 		"One": "One",
 		"Many": "Many",
-		"ManyMandatory": "Many (Mandatory)",
-		"OneMandatory": "One (Mandatory)",
-		"ManyOptional": "Many (Optional)",
-		"OneOptional": "One (Optional)"
+		"ManyMandatory": "One or many",
+		"OneMandatory": "One (and only one)",
+		"ManyOptional": "Zero or many",
+		"OneOptional": "Zero or one"
 	},
-	"thickness": "Thickness"
+	"thickness": "Thickness",
+	"appTitle": "Microboard"
 }

@@ -1,6 +1,6 @@
 import { getApiUrl } from "Config";
 import Cookies from "js-cookie";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import styles from "./VerifyMailView.module.css";
@@ -54,10 +54,10 @@ const verifyEmail = async (userId: number, passcode: string): Promise<any> => {
 export const VerifyMailView: React.FC = () => {
 	const { t } = useTranslation();
 	const [searchParams, _setSearchParams] = useSearchParams();
-	const [retryCount, setRetryCount] = useState(0);
+	const [retryCount, setRetryCount] = React.useState(0);
 	const navigate = useNavigate();
-	const [passcode, setPasscode] = useState<string>("");
-	const [error, setError] = useState<string>("");
+	const [passcode, setPasscode] = React.useState<string>("");
+	const [error, setError] = React.useState<string>("");
 
 	const onSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,

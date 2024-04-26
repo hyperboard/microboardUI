@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import styles from "./SigninView.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import { getApiUrl } from "Config";
@@ -12,7 +12,7 @@ type RegisterOkResponse = {
 
 export const SigninView = (): React.ReactElement => {
 	const { t } = useTranslation();
-	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 	const navigate = useNavigate();
 	const onSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,

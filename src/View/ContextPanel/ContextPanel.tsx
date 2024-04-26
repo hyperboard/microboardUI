@@ -2,7 +2,7 @@ import { App } from "App";
 import { Board } from "Board";
 import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
 import { useAppSubscription } from "Board/useBoardSubscription";
-import React, { useRef, useState } from "react";
+import React from "react";
 import { ConnectorAddText } from "./Buttons/ConnectorAddText";
 import { ConnectorStyleSeparator } from "./Buttons/ConnectorStyleSeparator";
 import { ConnectorType } from "./Buttons/ConnectorType";
@@ -35,8 +35,8 @@ type ContextPanelProps = {
 };
 
 export function ContextPanel({ board, app }: ContextPanelProps) {
-	const [menu, setOpenedMenu] = useState("None");
-	const panelRef = useRef<HTMLDivElement>(null);
+	const [menu, setOpenedMenu] = React.useState("None");
+	const panelRef = React.useRef<HTMLDivElement>(null);
 	const mbr = useDomMbr({ app, board, ref: panelRef });
 	useAppSubscription(app, {
 		subjects: ["selectionItems"],

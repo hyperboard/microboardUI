@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Sticker } from "Board/Items/Sticker";
 import { FontSizePicker } from "View/Pickers/FontSizePicker";
 import { Board } from "Board";
@@ -29,10 +29,10 @@ export function FontSize({
 	max: maxInit,
 }: FontSizeProps) {
 	const menuRef = React.useRef<HTMLDivElement>();
-	const [fontSize, setFontSize] = useState(fontSizeInit);
-	const [max, setMax] = useState(maxInit);
-	const [itemType, setItemType] = useState("");
-	const [inputType, setInputType] = useState("number");
+	const [fontSize, setFontSize] = React.useState(fontSizeInit);
+	const [max, setMax] = React.useState(maxInit);
+	const [itemType, setItemType] = React.useState("");
+	const [inputType, setInputType] = React.useState("number");
 	const { t } = useTranslation();
 
 	const updateFontSize = () => {
@@ -61,7 +61,7 @@ export function FontSize({
 		}
 	};
 
-	useEffect(() => {
+	React.useEffect(() => {
 		updateAutosizeSettings();
 	});
 

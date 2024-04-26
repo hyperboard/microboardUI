@@ -1,16 +1,16 @@
 import { Board } from "Board";
-import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
+import React from "react";
 
-type ScrollProps = PropsWithChildren<{
+type ScrollProps = React.PropsWithChildren<{
 	board: Board;
 	panelRef: React.RefObject<HTMLDivElement>;
 }>;
 
 export function Scroll({ board, panelRef, children }: ScrollProps) {
-	const [left, setLeft] = useState(0);
-	const [isSubscribed, setIsSubscribed] = useState(false);
-	const [isDown, setIsDown] = useState(false);
-	const scrollRef = useRef<HTMLDivElement>(null);
+	const [left, setLeft] = React.useState(0);
+	const [isSubscribed, setIsSubscribed] = React.useState(false);
+	const [isDown, setIsDown] = React.useState(false);
+	const scrollRef = React.useRef<HTMLDivElement>(null);
 
 	const pointerDown = () => {
 		setIsDown(true);
@@ -54,7 +54,7 @@ export function Scroll({ board, panelRef, children }: ScrollProps) {
 		}
 	};
 
-	useEffect(() => {
+	React.useEffect(() => {
 		subscribeToScroll();
 
 		return () => {
@@ -71,7 +71,7 @@ export function Scroll({ board, panelRef, children }: ScrollProps) {
 	return (
 		<div
 			id="ContextPanelScroll"
-			ref={scrollRef}
+			// ref={scrollRef}
 			style={{
 				display: "flex",
 				position: "relative",
@@ -82,98 +82,3 @@ export function Scroll({ board, panelRef, children }: ScrollProps) {
 		</div>
 	);
 }
-
-// class Scroll extends React.PureComponent<ScrollProps, ScrollState> {
-// 	state = {
-// 		left: 0,
-// 	};
-
-// 	scrollRef = React.createRef<HTMLDivElement>();
-
-// 	isDown = false;
-// 	isSubscribed = false;
-
-// 	componentDidMount(): void {
-// 		this.subscribeToScroll();
-// 	}
-
-// 	componentDidUpdate(): void {
-// 		this.subscribeToScroll();
-// 	}
-
-// 	subscribeToScroll(): void {
-// 		const panel = this.props.panelRef.current;
-// 		if (panel && !this.isSubscribed) {
-// 			this.isSubscribed = true;
-// 			panel.addEventListener("pointerdown", this.pointerDown);
-// 			window.addEventListener("pointerup", this.pointerUp);
-// 			window.addEventListener("pointermove", this.pointerMove);
-// 		}
-// 	}
-
-// 	componentWillUnmount(): void {
-// 		const scroll = this.scrollRef.current;
-// 		if (scroll) {
-// 			this.isSubscribed = false;
-// 			scroll.removeEventListener("pointerdown", this.pointerDown);
-// 			window.removeEventListener("pointerup", this.pointerUp);
-// 			window.removeEventListener("pointermove", this.pointerMove);
-// 		}
-// 	}
-
-// 	pointerDown = (): void => {
-// 		this.isDown = true;
-// 	};
-
-// 	pointerUp = (): void => {
-// 		this.isDown = false;
-// 	};
-
-// 	pointerMove = (): void => {
-// 		if (!this.isDown) {
-// 			return;
-// 		}
-
-// 		const newLeft = this.state.left + this.props.board.pointer.delta.x;
-// 		const panel = this.props.panelRef.current;
-// 		const scroll = this.scrollRef.current;
-
-// 		if (!panel || !scroll) {
-// 			return;
-// 		}
-
-// 		const panelWidth = panel.getBoundingClientRect().width;
-// 		const scrollWidth = scroll.scrollWidth + 20;
-
-// 		let left = newLeft;
-
-// 		if (newLeft + scrollWidth < panelWidth) {
-// 			left = panelWidth - scrollWidth;
-// 		} else if (newLeft > 0) {
-// 			left = 0;
-// 		}
-
-// 		this.setState({
-// 			left,
-// 		});
-// 	};
-
-// 	render(): React.ReactNode {
-// 		const { left } = this.state;
-// 		const { children } = this.props;
-
-// 		return (
-// 			<div
-// 				id="ContextPanelScroll"
-// 				ref={this.scrollRef}
-// 				style={{
-// 					display: "flex",
-// 					position: "relative",
-// 					left: `${left}px`,
-// 				}}
-// 			>
-// 				{children}
-// 			</div>
-// 		);
-// 	}
-// }

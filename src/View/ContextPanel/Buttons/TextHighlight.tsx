@@ -70,12 +70,16 @@ export function TextHighlight({
 				ref={menuRef}
 				className="ContextPanelMenu"
 				style={{
-					width: "160px",
+					width: "170px",
 					marginLeft: "-80px",
 					visibility: menu === "TextHighlight" ? "visible" : "hidden",
 				}}
 			>
-				<ColorPicker allowNone={true} onPick={handlePick} />
+				<ColorPicker
+					noneTitle={t("contextPanel.textHighlight.none")}
+					allowNone={true}
+					onPick={handlePick}
+				/>
 			</div>
 		</ButtonWithMenu>
 	);

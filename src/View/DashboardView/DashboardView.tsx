@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import styles from "./DashboardView.module.css";
 import { useNavigate } from "react-router-dom";
 import { App } from "App";
@@ -74,7 +74,7 @@ export const DashboardView: React.FC<{ app: App }> = props => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const boards = props.app.storage.listPublicBoards();
-	const [privateBoards, setPrivateBoards] = useState<
+	const [privateBoards, setPrivateBoards] = React.useState<
 		PrivateBoards | undefined
 	>();
 

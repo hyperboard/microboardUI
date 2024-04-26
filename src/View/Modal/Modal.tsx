@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import { createPortal } from "react-dom";
 import styles from "./Modal.module.css";
 import { useClickOutside } from "../../lib/useClickOutside";
@@ -10,7 +10,7 @@ type TModal = {
 };
 
 const ModalView = ({ boardLink, closeModal }: TModal): React.ReactElement => {
-	const textToCopyRef = useRef(null);
+	const textToCopyRef = React.useRef(null);
 	const { t } = useTranslation();
 
 	function copyText() {

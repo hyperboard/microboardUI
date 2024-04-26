@@ -40,7 +40,7 @@ export function AddShape({ board, isOn }: Props) {
 				id="AddShapeMenu"
 				className="ToolsPanelMenu"
 				style={{
-					width: "120px",
+					width: "140px",
 					visibility: isOn ? "visible" : "hidden",
 					marginTop: "-194px",
 				}}

@@ -22,6 +22,7 @@ type Props = {
 export function TitlePanel({ sidePanelState, board }: Props) {
 	const [isModalVisible, setIsModalVisible] = React.useState(false);
 	const forceUpdate = useForceUpdate();
+	const { t } = useTranslation();
 	const isSidePanelOpen = sidePanelState.isOn;
 	const toggleSidePanel = () => {
 		sidePanelState.toggle();
@@ -48,7 +49,7 @@ export function TitlePanel({ sidePanelState, board }: Props) {
 			/>
 			<UiButton
 				id="Microboard"
-				title="Microboard"
+				title={t("appTitle")}
 				onClick={() => {}}
 				width={80}
 			>
@@ -64,7 +65,7 @@ export function TitlePanel({ sidePanelState, board }: Props) {
 							fontWeight: 600,
 						}}
 					>
-						{"Microboard"}
+						{t("appTitle")}
 					</Link>
 				) : (
 					<span
@@ -77,7 +78,7 @@ export function TitlePanel({ sidePanelState, board }: Props) {
 							fontWeight: 600,
 						}}
 					>
-						{"Microboard"}
+						{t("appTitle")}
 					</span>
 				)}
 			</UiButton>

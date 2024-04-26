@@ -81,12 +81,12 @@ function RestOptionsMenuItem({
 				padding: "6px 12px",
 				color: "rgba(0, 0, 0, .8)",
 			}}
-			width={170}
+			width={210}
 			margin={0}
 			id={id}
 			onClick={onClick}
 		>
-			<span>{children}</span>
+			<span style={{ whiteSpace: "nowrap" }}>{children}</span>
 			<span style={{ color: "rgba(0, 0, 0, .25)" }}>{hotkey}</span>
 		</UiButton>
 	);

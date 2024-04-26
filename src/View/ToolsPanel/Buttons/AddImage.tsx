@@ -1,6 +1,6 @@
 import { Board } from "Board";
 import { uploadImage } from "Board/Items/Image/uploadImage";
-import React, { ChangeEventHandler, useRef } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { Icon } from "View/Icon";
 import { UiButton } from "View/Ui/UiButton/UiButton";
@@ -11,7 +11,7 @@ type Props = {
 
 export function AddImage({ board }: Props) {
 	const { t } = useTranslation();
-	const inputRef = useRef<HTMLInputElement>(null);
+	const inputRef = React.useRef<HTMLInputElement>(null);
 
 	const handleClick = () => {
 		const input = inputRef.current;
@@ -21,7 +21,7 @@ export function AddImage({ board }: Props) {
 		input.click();
 	};
 
-	const handleChange: ChangeEventHandler<HTMLInputElement> = e => {
+	const handleChange: React.ChangeEventHandler<HTMLInputElement> = e => {
 		const input = e.target;
 		const file = input.files?.[0];
 		if (!file) {

@@ -30,8 +30,8 @@ export function StrokeStyle({
 	width,
 }: StrokeStyleProps): React.ReactElement | null {
 	const { t } = useTranslation();
-	const context = board.selection.getContext();
 	const menuRef = React.useRef<HTMLDivElement>(null);
+	const context = board.selection.getContext();
 
 	const canChangeBorderStyle = board.selection.items.isItemTypes([
 		"Shape",
@@ -83,7 +83,7 @@ export function StrokeStyle({
 				ref={menuRef}
 				className="ContextPanelMenu"
 				style={{
-					width: "160px",
+					width: "170px",
 					marginLeft: "-80px",
 					visibility: menu === "StrokeStyle" ? "visible" : "hidden",
 				}}

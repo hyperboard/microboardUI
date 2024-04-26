@@ -25,7 +25,8 @@
 			"strokeWidth": "Толщина линии"
 		},
 		"fillStyle": {
-			"tooltip": "Заливка"
+			"tooltip": "Заливка",
+			"none": "Без заливки"
 		},
 		"fontSize": {
 			"tooltip": "Размер шрифта",
@@ -34,9 +35,9 @@
 		"fontStyle": {
 			"tooltip": "Стиль текста",
 			"bold": "Жирный",
-			"italic": "Курсив",
-			"strike": "Перечеркнутый",
-			"underline": "Подчеркивание"
+			"italic": "Курсивный",
+			"strike": "Зачеркнутый",
+			"underline": "Подчеркнутый"
 		},
 		"textAlignment": {
 			"tooltip": "Выравнивание",
@@ -50,7 +51,8 @@
 			"tooltip": "Цвет текста"
 		},
 		"textHighlight": {
-			"tooltip": "Маркер"
+			"tooltip": "Маркер",
+			"none": "Без выделения"
 		},
 		"stickerColor": {
 			"tooltip": "Цвет стикера"
@@ -120,7 +122,7 @@
 			"tooltip": "Приблизить"
 		},
 		"zoomToFit": {
-			"tooltip": "Выровнять"
+			"tooltip": "По размеру экрана"
 		}
 	},
 	"titlePanel": {
@@ -159,22 +161,27 @@
 	},
 	"colors": {
 		"White": "Белый",
-		"MustardYellow": "Горчично-Желтый",
+		"Mustard Yellow": "Горчично-Желтый",
 		"Gold": "Золотой",
-		"ScarletRed": "Алый",
-		"LightGray": "Светло-серый",
-		"LimeGreen": "Лаймово-зеленый",
-		"MintGreen": "Мятно-зеленый",
+		"Scarlet Red": "Алый",
+		"Light Gray": "Светло-серый",
+		"Lime Green": "Лаймово-зеленый",
+		"Mint Green": "Мятно-зеленый",
 		"Magenta": "Пурпурный",
-		"DarkGray": "Темно-серый",
+		"Dark Gray": "Темно-серый",
 		"Turquoise": "Бирюзовый",
-		"ForestGreen": "Зеленый лес",
-		"Violet": "Фиолетовый",
-		"JetBlack": "Черный",
-		"SkyBlue": "Небесно-голубой",
-		"RoyalBlue": "Королевский синий",
+		"Forest Green": "Зеленый лес",
+		"Violet": "Сиреневый",
+		"Jet Black": "Черный",
+		"Sky Blue": "Небесно-голубой",
+		"Royal Blue": "Королевский синий",
 		"Purple": "Фиолетовый",
-		"BrickRed": "Кирпично красный"
+		"Brick Red": "Кирпично-красный",
+		"Pale Yellow": "Бледно-желтый",
+		"Sage Green": "Зеленый шалфей",
+		"Lavender": "Лаванда",
+		"Aqua Cyan": "Аква голубой",
+		"Pastel Red": "Пастельный красный"
 	},
 	"shapes": {
 		"Rectangle": "Прямоугольник",
@@ -200,22 +207,23 @@
 		"BracesLeft": "Фигурные скобки (лево)"
 	},
 	"pointerTypes": {
-		"None": "Нет",
-		"ArrowBroad": "Стрелка (широкая)",
+		"None": "Отсутствует",
+		"ArrowBroad": "Стрелка (Широкая)",
 		"ArrowThin": "Стрелка (Тонкая)",
 		"TriangleFilled": "Треугольник (Заполненный)",
 		"CircleFilled": "Круг (Заполненный)",
-		"Angle": "Угол",
-		"TriangleEmpty": "Треугольник (пустой)",
-		"DiamondFilled": "Алмаз (заполненный)",
+		"Angle": "Угловая стрелка",
+		"TriangleEmpty": "Треугольник (Пустой)",
+		"DiamondFilled": "Алмаз (Заполненный)",
 		"DiamondEmpty": "Алмаз (пустой)",
 		"Zero": "Ноль",
 		"One": "Один",
 		"Many": "Много",
-		"ManyMandatory": "Много (Обязательный)",
-		"OneMandatory": "Один (Обязательный)",
-		"ManyOptional": "Много (Необязательный)",
-		"OneOptional": "Один (Необязательный)"
+		"ManyMandatory": "Один или много",
+		"OneMandatory": "Один и только один",
+		"ManyOptional": "Ноль или много",
+		"OneOptional": "Ноль или один"
 	},
-	"thickness": "Толщина"
+	"thickness": "Толщина",
+	"appTitle": "Microboard"
 }
