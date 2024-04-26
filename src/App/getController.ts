@@ -13,7 +13,7 @@ import { isSafari } from "./isSafari";
 import { isFirefox } from "./isFirefox";
 import { Clipboard } from "./Clipboard";
 import { isIframe } from "lib/isIframe";
-import { isHotkeyPushed } from "Board/Keyboard/hotkeys";
+import { checkHotkeys, isHotkeyPushed } from "Board/Keyboard/hotkeys";
 
 export function getController(getBoard: () => Board) {
 	const isMouse = true;
@@ -90,68 +90,49 @@ export function getController(getBoard: () => Board) {
 			isHotkeyPushed("textUnderline", event);
 		}
 
-		if (isHotkeyPushed("zoomIn", event)) {
-			board.camera.zoomInToViewCenter();
-		}
-
-		if (isHotkeyPushed("zoomOut", event)) {
-			board.camera.zoomOutFromViewCenter();
-		}
-		if (isHotkeyPushed("zoomDefault", event)) {
-			board.camera.zoomToViewCenter(1);
-		}
+		checkHotkeys(
+			{
+				zoomIn: () => board.camera.zoomInToViewCenter(),
+				zoomOut: () => board.camera.zoomOutFromViewCenter(),
+				zoomDefault: () => board.camera.zoomToViewCenter(1),
+			},
+			event,
+		);
 
 		if (
 			context !== "EditUnderPointer" &&
 			context !== "SelectByRect" &&
 			context !== "EditTextUnderPointer"
 		) {
-			if (isHotkeyPushed("select", event)) {
-				board.tools.select();
-			}
-			if (isHotkeyPushed("text", event)) {
-				board.tools.addText();
-			}
-			if (isHotkeyPushed("sticker", event)) {
-				board.tools.addSticker();
-			}
-			if (isHotkeyPushed("shape", event)) {
-				board.tools.addShape();
-			}
-			if (isHotkeyPushed("connector", event)) {
-				board.tools.addConnector();
-			}
-			if (isHotkeyPushed("pen", event)) {
-				board.tools.addDrawing();
-			}
-			if (isHotkeyPushed("undo", event)) {
-				board.events.undo();
-			}
-			if (isHotkeyPushed("redo", event)) {
-				board.events.redo();
-			}
+			checkHotkeys(
+				{
+					select: () => board.tools.select(),
+					text: () => board.tools.addText(),
+					sticker: () => board.tools.addSticker(),
+					shape: () => board.tools.addShape(),
+					connector: () => board.tools.addConnector(),
+					pen: () => board.tools.addDrawing(),
+					undo: () => board.events?.undo(),
+					redo: () => board.events?.redo(),
+				},
+				event,
+			);
 		}
 
-		if (context === "EditUnderPointer" || context === "SelectByRect") {
-			if (isHotkeyPushed("duplicate", event)) {
-				board.selection.duplicate();
-			}
-			if (isHotkeyPushed("bringToFront", event)) {
-				const items = board.selection.list();
-				for (const item of items) {
-					board.items.index.bringToFront(item);
-				}
-			}
-			if (isHotkeyPushed("sendToBack", event)) {
-				const items = board.selection.list();
-				for (const item of items) {
-					board.items.index.sendToBack(item);
-				}
-			}
-			if (isHotkeyPushed("delete", event)) {
-				board.selection.removeFromBoard();
-				toggleEdit(false);
-			}
+		if (
+			context === "EditUnderPointer" ||
+			context === "SelectByRect" ||
+			context === "EditTextUnderPointer"
+		) {
+			checkHotkeys(
+				{
+					duplicate: () => board.selection.duplicate(),
+					bringToFront: () => board.selection.bringToFront(),
+					sendToBack: () => board.selection.sendToBack(),
+					delete: () => board.selection.removeFromBoard(),
+				},
+				event,
+			);
 		}
 
 		const key = event.code;
@@ -233,19 +214,17 @@ export function getController(getBoard: () => Board) {
 		isHotkeyPushed("undo", event);
 		isHotkeyPushed("redo", event);
 		if (board.selection.getContext() === "EditTextUnderPointer") {
-			event.preventDefault();
-			if (isHotkeyPushed("textBold", event)) {
-				board.selection.setFontStyle(["bold"]);
-			}
-			if (isHotkeyPushed("textItalic", event)) {
-				board.selection.setFontStyle(["italic"]);
-			}
-			if (isHotkeyPushed("textStrike", event)) {
-				board.selection.setFontStyle(["line-through"]);
-			}
-			if (isHotkeyPushed("textUnderline", event)) {
-				board.selection.setFontStyle(["underline"]);
-			}
+			checkHotkeys(
+				{
+					textBold: () => board.selection.setFontStyle(["bold"]),
+					textItalic: () => board.selection.setFontStyle(["italic"]),
+					textStrike: () =>
+						board.selection.setFontStyle(["line-through"]),
+					textUnderline: () =>
+						board.selection.setFontStyle(["underline"]),
+				},
+				event,
+			);
 			return;
 		}
 

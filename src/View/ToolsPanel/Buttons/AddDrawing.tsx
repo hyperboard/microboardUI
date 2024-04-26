@@ -50,7 +50,6 @@ export function AddDrawing({ board, isOn, width }: Props) {
 					width={24}
 					height={24}
 				></PenIcon>
-				{/* <Icon name="Pen" width={24} height={24}/> */}
 			</UiButton>
 			<div
 				id="AddDrawingMenu"
