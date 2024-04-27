@@ -225,7 +225,7 @@
 		"OneOptional": "Ноль или один"
 	},
 	"board": {
-		"textPlaceholder": "Введите что-нибудь"
+		"textPlaceholder": "Напишите что-нибудь"
 	},
 	"thickness": "Толщина",
 	"appTitle": "Microboard"

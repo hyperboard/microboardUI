@@ -51,18 +51,18 @@
 		"penColor": {
 			"tooltip": "Color"
 		},
-    "duplicate": {
-      "text": "Duplicate"
-    },
-    "bringToFront": {
-      "text": "Bring to front"
-    },
-    "sendToBack" : {
-      "text": "Send to back"
-    },
-    "delete": {
-      "text": "Delete"
-    },
+		"duplicate": {
+			"text": "Duplicate"
+		},
+		"bringToFront": {
+			"text": "Bring to front"
+		},
+		"sendToBack": {
+			"text": "Send to back"
+		},
+		"delete": {
+			"text": "Delete"
+		},
 		"edit": {
 			"text": "Edit"
 		}
@@ -97,15 +97,18 @@
 			"tooltip": "Add image"
 		}
 	},
-  "zoomPanel": {
-    "zoomOut": {
-      "tooltip": "Zoom out"
-    },
-    "zoomDefault": {
-      "tooltip": "Zoom 100%"
-    },
-    "zoomIn": {
-      "tooltip": "Zoom in"
-    }
-  }
+	"zoomPanel": {
+		"zoomOut": {
+			"tooltip": "Zoom out"
+		},
+		"zoomDefault": {
+			"tooltip": "Zoom 100%"
+		},
+		"zoomIn": {
+			"tooltip": "Zoom in"
+		}
+	},
+	"board": {
+		"textPlaceholder": "Type something"
+	}
 }

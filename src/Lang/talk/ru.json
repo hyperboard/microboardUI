@@ -53,20 +53,20 @@
 		"penColor": {
 			"tooltip": "Цвет"
 		},
-    "duplicate": {
-      "text": "Дублировать",
+		"duplicate": {
+			"text": "Дублировать",
 			"tooltip": "Дублировать"
-    },
-    "bringToFront": {
-      "text": "Вынести на передний план"
-    },
-    "sendToBack" : {
-      "text": "Вынести на задний план"
-    },
-    "delete": {
-      "text": "Удалить",
+		},
+		"bringToFront": {
+			"text": "Вынести на передний план"
+		},
+		"sendToBack": {
+			"text": "Вынести на задний план"
+		},
+		"delete": {
+			"text": "Удалить",
 			"tooltip": "Удалить"
-    },
+		},
 		"edit": {
 			"text": "Редактировать"
 		}
@@ -101,15 +101,18 @@
 			"tooltip": "Добавить изображение"
 		}
 	},
-  "zoomPanel": {
-    "zoomOut": {
-      "tooltip": "Отдалить"
-    },
-    "zoomDefault": {
-      "tooltip": "Масштаб 100%"
-    },
-    "zoomIn": {
-      "tooltip": "Приблизить"
-    }
-  }
+	"zoomPanel": {
+		"zoomOut": {
+			"tooltip": "Отдалить"
+		},
+		"zoomDefault": {
+			"tooltip": "Масштаб 100%"
+		},
+		"zoomIn": {
+			"tooltip": "Приблизить"
+		}
+	},
+	"board": {
+		"textPlaceholder": "Напишите что-нибудь"
+	}
 }
