@@ -208,14 +208,14 @@
 	},
 	"pointerTypes": {
 		"None": "None",
-		"ArrowBroad": "Arrow (Broad)",
-		"ArrowThin": "Arrow (Thin)",
-		"TriangleFilled": "Triangle (Filled)",
-		"CircleFilled": "Circle (Filled)",
+		"ArrowBroad": "Arrow (broad)",
+		"ArrowThin": "Arrow (thin)",
+		"TriangleFilled": "Triangle (filled)",
+		"CircleFilled": "Circle (filled)",
 		"Angle": "Angle",
-		"TriangleEmpty": "Triangle (Empty)",
-		"DiamondFilled": "Diamond (Filled)",
-		"DiamondEmpty": "Diamond (Empty)",
+		"TriangleEmpty": "Triangle (empty)",
+		"DiamondFilled": "Diamond (filled)",
+		"DiamondEmpty": "Diamond (empty)",
 		"Zero": "Zero",
 		"One": "One",
 		"Many": "Many",
@@ -223,6 +223,9 @@
 		"OneMandatory": "One (and only one)",
 		"ManyOptional": "Zero or many",
 		"OneOptional": "Zero or one"
+	},
+	"board": {
+		"textPlaceholder": "Type something"
 	},
 	"thickness": "Thickness",
 	"appTitle": "Microboard"

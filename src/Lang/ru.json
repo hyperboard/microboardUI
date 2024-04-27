@@ -208,13 +208,13 @@
 	},
 	"pointerTypes": {
 		"None": "Отсутствует",
-		"ArrowBroad": "Стрелка (Широкая)",
-		"ArrowThin": "Стрелка (Тонкая)",
-		"TriangleFilled": "Треугольник (Заполненный)",
-		"CircleFilled": "Круг (Заполненный)",
+		"ArrowBroad": "Стрелка (широкая)",
+		"ArrowThin": "Стрелка (тонкая)",
+		"TriangleFilled": "Треугольник (заполненный)",
+		"CircleFilled": "Круг (заполненный)",
 		"Angle": "Угловая стрелка",
-		"TriangleEmpty": "Треугольник (Пустой)",
-		"DiamondFilled": "Алмаз (Заполненный)",
+		"TriangleEmpty": "Треугольник (пустой)",
+		"DiamondFilled": "Алмаз (заполненный)",
 		"DiamondEmpty": "Алмаз (пустой)",
 		"Zero": "Ноль",
 		"One": "Один",
@@ -223,6 +223,9 @@
 		"OneMandatory": "Один и только один",
 		"ManyOptional": "Ноль или много",
 		"OneOptional": "Ноль или один"
+	},
+	"board": {
+		"textPlaceholder": "Введите что-нибудь"
 	},
 	"thickness": "Толщина",
 	"appTitle": "Microboard"
