@@ -30,7 +30,7 @@ export class AppViewBase extends React.Component<{
 		click: {},
 	};
 
-	sidePanelState = new SidePanelState();
+sidePanelState = new SidePanelState();
 	contextMenuState = new ContextMenuState();
 
 	animationFrameId: number | null = null;
