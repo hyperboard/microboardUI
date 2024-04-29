@@ -59,16 +59,19 @@ export class SidePanel extends React.Component<{
 					height: "calc(100% - 70px)",
 				}}
 			>
-					<div className="SidePanelMenuContainer">
+				<div className="SidePanelMenuContainer">
 					<ul className="SidePanelMenu">
 						<Login app={app} />
-						<PublicBoards app={app} contextMenuState={this.props.contextMenuState}/>
+						<PublicBoards
+							app={app}
+							contextMenuState={this.props.contextMenuState}
+						/>
 					</ul>
-					</div>
-					<ResizableEdge
-						panelWidth={this.props.sidePanelState.width}
-						setWidth={this.setWidth}
-					/>
+				</div>
+				<ResizableEdge
+					panelWidth={this.props.sidePanelState.width}
+					setWidth={this.setWidth}
+				/>
 			</div>
 		);
 	}

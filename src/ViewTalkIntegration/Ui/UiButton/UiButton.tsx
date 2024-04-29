@@ -11,7 +11,7 @@ type UiButtonProps = HTMLAttributes<HTMLButtonElement> & {
 };
 
 export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
-	function UiButton(
+	(
 		{
 			children,
 			className,
@@ -23,7 +23,7 @@ export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
 			...props
 		},
 		ref,
-	) {
+	) => {
 		return (
 			<button
 				className={clsx(

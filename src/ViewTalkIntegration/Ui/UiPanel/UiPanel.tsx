@@ -10,7 +10,7 @@ type UiPanelProps = HTMLAttributes<HTMLDivElement> & {
 };
 
 export const UiPanel = forwardRef<HTMLDivElement, UiPanelProps>(
-	function UiPanel(
+	(
 		{
 			children,
 			className,
@@ -22,7 +22,7 @@ export const UiPanel = forwardRef<HTMLDivElement, UiPanelProps>(
 			...props
 		},
 		ref,
-	) {
+	) => {
 		return (
 			<div
 				ref={ref}

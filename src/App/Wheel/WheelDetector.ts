@@ -14,7 +14,9 @@ export class WheelDetector {
 
 	constructor() {
 		if (maxLogSize < detectionFrequency) {
-			throw new Error(`WheelDetector: bad settings, maxLogSize (${maxLogSize}) most be > detectionFrequency (${detectionFrequency})`)
+			throw new Error(
+				`WheelDetector: bad settings, maxLogSize (${maxLogSize}) most be > detectionFrequency (${detectionFrequency})`,
+			);
 		}
 	}
 
@@ -40,7 +42,7 @@ export class WheelDetector {
 			}
 
 			if (frequency >= detectionFrequency) {
-				this.wheelDeltaConstant = absWheelDelta
+				this.wheelDeltaConstant = absWheelDelta;
 				this.clearHighDeltaPrevious();
 
 				if (debugEnabled) {
@@ -54,12 +56,16 @@ export class WheelDetector {
 			if (this.isMouseDelta(absWheelDelta, this.wheelDeltaConstant)) {
 				isMouseWheel = true;
 				if (debugEnabled && !this.isMouseWheel) {
-					console.info("TOUCHPAD -> WHEEL: EQUAL with wheelFrequencyConstant")
+					console.info(
+						"TOUCHPAD -> WHEEL: EQUAL with wheelFrequencyConstant",
+					);
 				}
 			} else {
 				isMouseWheel = false;
 				if (debugEnabled && this.isMouseWheel) {
-					console.info("WHEEL -> TOUCHPAD: NOT EQUAL with wheelFrequencyConstant")
+					console.info(
+						"WHEEL -> TOUCHPAD: NOT EQUAL with wheelFrequencyConstant",
+					);
 				}
 			}
 		} else {
@@ -68,18 +74,26 @@ export class WheelDetector {
 					this.highDeltaPrevious = absWheelDelta;
 					this.isIgnore = true;
 					if (debugEnabled) {
-						console.info(`WheelDetector: IGNORED, set highDeltaPrevious = ${absWheelDelta}`)
+						console.info(
+							`WheelDetector: IGNORED, set highDeltaPrevious = ${absWheelDelta}`,
+						);
 					}
 				} else {
-					if (this.isMouseDelta(absWheelDelta, this.highDeltaPrevious)) {
+					if (
+						this.isMouseDelta(absWheelDelta, this.highDeltaPrevious)
+					) {
 						isMouseWheel = true;
 						if (debugEnabled && !this.isMouseWheel) {
-							console.info("TOUCHPAD -> WHEEL: EQUAL with highDeltaPrevious");
+							console.info(
+								"TOUCHPAD -> WHEEL: EQUAL with highDeltaPrevious",
+							);
 						}
 					} else {
 						isMouseWheel = false;
 						if (debugEnabled && this.isMouseWheel) {
-							console.info("WHEEL -> TOUCHPAD: NOT EQUAL with highDeltaPrevious")
+							console.info(
+								"WHEEL -> TOUCHPAD: NOT EQUAL with highDeltaPrevious",
+							);
 						}
 					}
 					this.clearHighDeltaPrevious();
@@ -87,7 +101,9 @@ export class WheelDetector {
 			} else {
 				isMouseWheel = false;
 				if (debugEnabled && this.isMouseWheel) {
-					console.info(`WHEEL -> TOUCHPAD: incoming delta (${absWheelDelta}) < highDeltaMouseWheel (${highDeltaMouseWheel})`)
+					console.info(
+						`WHEEL -> TOUCHPAD: incoming delta (${absWheelDelta}) < highDeltaMouseWheel (${highDeltaMouseWheel})`,
+					);
 				}
 				this.clearHighDeltaPrevious();
 			}
@@ -97,12 +113,14 @@ export class WheelDetector {
 	}
 
 	isMouseDelta(absWheelDelta: number, wheelConstant: number): boolean {
-		return absWheelDelta === wheelConstant || absWheelDelta % wheelConstant === 0
+		return (
+			absWheelDelta === wheelConstant ||
+			absWheelDelta % wheelConstant === 0
+		);
 	}
 
 	private clearHighDeltaPrevious(): void {
 		this.isIgnore = false;
 		this.highDeltaPrevious = undefined;
 	}
-
 }

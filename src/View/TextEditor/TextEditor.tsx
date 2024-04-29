@@ -221,7 +221,9 @@ export class TextEditor extends React.Component<
 										userSelect: "none",
 										pointerEvents: "none",
 									}}
-									>{children}</span>
+								>
+									{children}
+								</span>
 							)}
 							style={{
 								whiteSpace: "pre-wrap",

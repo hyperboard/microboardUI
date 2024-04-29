@@ -3,11 +3,11 @@ import * as React from "react";
 export function RestMenuIcon({
 	width,
 	height,
-  fill,
+	fill,
 }: {
 	width: number;
 	height: number;
-  fill: string;
+	fill: string;
 }): React.ReactElement {
 	return (
 		<svg

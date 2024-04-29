@@ -50,10 +50,13 @@ export class CanvasBase extends React.Component<Props> {
 		this.drawingContextSubscription.observer = this.renderToContext;
 		this.props.app.subscriptions.add(this.drawingContextSubscription);
 		this.props.app.subscriptions.add(this.cursorSubsctiption);
-	}
+	};
 
 	componentDidUpdate(prevProps: Readonly<Props>): void {
-		if (prevProps.router.params?.boardId !== this.props.router.params?.boardId) {
+		if (
+			prevProps.router.params?.boardId !==
+			this.props.router.params?.boardId
+		) {
 			this.initCanvasRendering();
 		}
 	}
