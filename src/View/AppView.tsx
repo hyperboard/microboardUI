@@ -51,7 +51,8 @@ export class AppViewBase extends React.Component<{
 		const board = app.getBoard();
 		const urlString = new URL(window.location.href).pathname;
 		// const boardId = urlString.split("/").pop();
-		const boardId = this.props?.router?.params?.boardId || urlString.split("/").pop();
+		const boardId =
+			this.props?.router?.params?.boardId || urlString.split("/").pop();
 
 		if (boardId) {
 			app.openBoard(boardId!);
@@ -132,12 +133,8 @@ export class AppViewBase extends React.Component<{
 			container.addEventListener("pointermove", controller.onPointerMove);
 			window.addEventListener("keydown", controller.onKeyDown);
 			window.addEventListener("keyup", controller.onKeyUp);
-			container.addEventListener("copy", controller.onCopy);
-			container.addEventListener("paste", controller.onPaste);
-			if (isSafari()) {
-				window.addEventListener("copy", controller.onCopy);
-				window.addEventListener("paste", controller.onPaste);
-			}
+			window.addEventListener("copy", controller.onCopy);
+			window.addEventListener("paste", controller.onPaste);
 			window.addEventListener("drop", controller.onDrop);
 			window.addEventListener("dragover", event => {
 				event.preventDefault();
@@ -172,12 +169,8 @@ export class AppViewBase extends React.Component<{
 			);
 			window.removeEventListener("keydown", controller.onKeyDown);
 			window.removeEventListener("keyup", controller.onKeyUp);
-			container.removeEventListener("copy", controller.onCopy);
-			container.removeEventListener("paste", controller.onPaste);
-			if (isSafari()) {
-				window.removeEventListener("copy", controller.onCopy);
-				window.removeEventListener("paste", controller.onPaste);
-			}
+			window.removeEventListener("copy", controller.onCopy);
+			window.removeEventListener("paste", controller.onPaste);
 			window.removeEventListener("drop", controller.onDrop);
 
 			/*
