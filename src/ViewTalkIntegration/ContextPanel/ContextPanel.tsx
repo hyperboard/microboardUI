@@ -66,6 +66,8 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 	const isDifferentItems =
 		!isText && !isSticker && !isShape && !isConnector && !isPen && !isImage;
 
+	console.log(board.selection.getContext());
+
 	return (
 		<PanelContext.Provider
 			value={{

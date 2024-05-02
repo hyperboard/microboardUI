@@ -180,5 +180,35 @@
 			"mac": "Delete",
 			"windows": "Delete"
 		}
+	},
+	"selectAll": {
+		"key": {
+			"button": "KeyA",
+			"ctrl": true
+		},
+		"label": {
+			"mac": "⌘A",
+			"windows": "Ctrl + A"
+		}
+	},
+	"copy": {
+		"key": {
+			"button": "KeyC",
+			"ctrl": true
+		},
+		"label": {
+			"mac": "⌘C",
+			"windows": "Ctrl + C"
+		}
+	},
+	"paste": {
+		"key": {
+			"button": "KeyV",
+			"ctrl": true
+		},
+		"label": {
+			"mac": "⌘V",
+			"windows": "Ctrl + V"
+		}
 	}
 }
