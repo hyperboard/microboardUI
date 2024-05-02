@@ -1,19 +1,14 @@
-import {
-	RichText,
-	isEditInProcess,
-	toggleEdit,
-} from "Board/Items/RichText/RichText";
-import { isNotControlCharacter } from "View/isNotControlCharacter";
-import { Wheel } from "./Wheel/Wheel";
 import { Board } from "Board";
 import { Mbr } from "Board/Items";
 import { ImageItem } from "Board/Items/Image";
-import { validateItemsMap, validateRichTextData } from "Board/Validators";
-import { isSafari } from "./isSafari";
-import { isFirefox } from "./isFirefox";
-import { Clipboard } from "./Clipboard";
-import { isIframe } from "lib/isIframe";
+import { isEditInProcess, RichText } from "Board/Items/RichText/RichText";
 import { checkHotkeys, isHotkeyPushed } from "Board/Keyboard/hotkeys";
+import { validateItemsMap } from "Board/Validators";
+import { isNotControlCharacter } from "View/isNotControlCharacter";
+import { Clipboard } from "./Clipboard";
+import { isFirefox } from "./isFirefox";
+import { isSafari } from "./isSafari";
+import { Wheel } from "./Wheel/Wheel";
 
 export function getController(getBoard: () => Board) {
 	const isMouse = true;
@@ -83,7 +78,11 @@ export function getController(getBoard: () => Board) {
 
 		const context = board.selection.getContext();
 
-		if (context === "EditTextUnderPointer") {
+		if (
+			context === "EditTextUnderPointer" ||
+			context === "SelectByRect" ||
+			context === "SelectUnderPointer"
+		) {
 			isHotkeyPushed("textBold", event);
 			isHotkeyPushed("textItalic", event);
 			isHotkeyPushed("textStrike", event);
@@ -223,9 +222,14 @@ export function getController(getBoard: () => Board) {
 		if (!board) {
 			return;
 		}
+		const context = board.selection.getContext();
 		isHotkeyPushed("undo", event);
 		isHotkeyPushed("redo", event);
-		if (board.selection.getContext() === "EditTextUnderPointer") {
+		if (
+			context === "EditTextUnderPointer" ||
+			context === "SelectByRect" ||
+			context === "SelectUnderPointer"
+		) {
 			checkHotkeys(
 				{
 					textBold: () => board.selection.setFontStyle(["bold"]),
