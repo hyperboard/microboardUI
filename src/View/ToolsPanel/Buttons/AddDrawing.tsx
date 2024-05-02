@@ -55,7 +55,7 @@ export function AddDrawing({ board, isOn, width }: Props) {
 				id="AddDrawingMenu"
 				className="ToolsPanelMenu"
 				style={{
-					width: "120px",
+					width: "140px",
 					visibility: isOn ? "visible" : "hidden",
 					marginTop: "-180px",
 				}}
