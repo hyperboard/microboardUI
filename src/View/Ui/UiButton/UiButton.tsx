@@ -46,7 +46,7 @@ export function UiButton(props: Props): React.ReactElement {
 				style={{
 					marginLeft: `${margin}px`,
 					marginRight: `${margin}px`,
-					width: `${width}px`,
+					minWidth: `${width}px`,
 					color: props.isOn ? "blue" : "black",
 					...props.style,
 				}}
