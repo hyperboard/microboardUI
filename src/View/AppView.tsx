@@ -9,13 +9,8 @@ import { TextEditors } from "View/TextEditor/TextEditor";
 import { SidePanel } from "View/SidePanel";
 import { SidePanelState } from "View/SidePanel/SidePanelState";
 import { ContextMenuState, ContextMenu } from "View/ContextMenu";
-import {
-	ExportSnapshotProvider,
-	ExportSelectionBox,
-	ExportSnapshotMode,
-} from "App/ExportBoardSnapshot";
 import { withRouter } from "lib/withRouter";
-import { isSafari } from "App/isSafari";
+import { ExportPanel } from "View/ExportPanel";
 
 export class AppViewBase extends React.Component<{
 	app: App;
@@ -63,51 +58,45 @@ export class AppViewBase extends React.Component<{
 		}
 
 		return (
-			<ExportSnapshotProvider board={board}>
-				<div
-					style={{
-						width: "100%",
-						height: "100%",
-						backgroundColor: "rgba(200,200,200,0.2)",
-						overflow: "hidden",
-					}}
-				>
-					<div ref={this.containerRef}>
-						<Canvas
-							app={app}
-							board={board}
-							contextMenuState={this.contextMenuState}
-						/>
-						<ExportSnapshotMode>
-							<TextEditors app={app} board={board} />
-							<ToolsPanel
-								app={app}
-								board={board}
-								sidePanelState={this.sidePanelState}
-							/>
-							<ZoomPanel app={app} board={board} />
-							<ContextPanel app={app} board={board} />
-							<TitlePanel
-								board={board}
-								sidePanelState={this.sidePanelState}
-							/>
-						</ExportSnapshotMode>
-					</div>
-					<ExportSnapshotMode>
-						<SidePanel
-							app={app}
-							sidePanelState={this.sidePanelState}
-							contextMenuState={this.contextMenuState}
-						/>
-						<ContextMenu
-							app={app}
-							contextMenuState={this.contextMenuState}
-						/>
-					</ExportSnapshotMode>
-
-					<ExportSelectionBox />
+			<div
+				style={{
+					width: "100%",
+					height: "100%",
+					backgroundColor: "rgba(200,200,200,0.2)",
+					overflow: "hidden",
+				}}
+			>
+				<div ref={this.containerRef}>
+					<Canvas
+						app={app}
+						board={board}
+						contextMenuState={this.contextMenuState}
+					/>
+					<TextEditors app={app} board={board} />
+					<ToolsPanel
+						app={app}
+						board={board}
+						sidePanelState={this.sidePanelState}
+					/>
+					<ZoomPanel app={app} board={board} />
+					<ContextPanel app={app} board={board} />
+					<TitlePanel
+						app={app}
+						board={board}
+						sidePanelState={this.sidePanelState}
+					/>
+					<ExportPanel app={app} board={board} />
 				</div>
-			</ExportSnapshotProvider>
+				<SidePanel
+					app={app}
+					sidePanelState={this.sidePanelState}
+					contextMenuState={this.contextMenuState}
+				/>
+				<ContextMenu
+					app={app}
+					contextMenuState={this.contextMenuState}
+				/>
+			</div>
 		);
 	}
 

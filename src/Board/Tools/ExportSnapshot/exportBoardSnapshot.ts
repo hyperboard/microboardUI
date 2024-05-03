@@ -2,13 +2,13 @@ import { Board } from "Board";
 import { Quality, Resolution } from "./types";
 import { DrawingContext } from "Board/Items/DrawingContext";
 import { Camera } from "Board/Camera";
-import { CANVAS_EXPORT_BACKGROUND } from "./const";
 import { Matrix, Mbr } from "Board/Items";
 
 export function exportBoardSnapshot(
 	board: Board,
 	quality: Quality,
 	selection?: Mbr,
+	nameToExport?: string,
 ): void {
 	const boardId = board.getBoardId();
 	const resolution = Resolution[quality];
@@ -31,7 +31,7 @@ export function exportBoardSnapshot(
 	}
 
 	ctx.rect(0, 0, canvas.width, canvas.height);
-	ctx.fillStyle = CANVAS_EXPORT_BACKGROUND;
+	ctx.fillStyle = "white";
 	ctx.fill();
 
 	const camera = new Camera();
@@ -91,6 +91,8 @@ export function exportBoardSnapshot(
 
 	const link = document.createElement("a");
 	link.href = dataURL;
-	link.download = `board-${boardId}.png`;
+	link.download = nameToExport
+		? `${nameToExport}.png`
+		: `board-${boardId}.png`;
 	link.click();
 }
