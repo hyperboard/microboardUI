@@ -176,8 +176,8 @@ export function getController(getBoard: () => Board) {
 		isHotkeyPushed("redo", event);
 		if (
 			context === "EditTextUnderPointer" ||
-			context === "SelectByRect" ||
-			context === "SelectUnderPointer"
+			context === "EditUnderPointer" ||
+			context === "SelectByRect"
 		) {
 			checkHotkeys(
 				{
