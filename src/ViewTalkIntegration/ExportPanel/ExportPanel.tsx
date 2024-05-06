@@ -6,6 +6,7 @@ import { useForceUpdate } from "lib/useForceUpdate";
 import React from "react";
 import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
 import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel";
+import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
 import style from "./ExportPanel.module.css";
 
 type Props = { board: Board; app: App };
@@ -13,6 +14,7 @@ type Props = { board: Board; app: App };
 export function ExportPanel({ board, app }: Props) {
 	const forceUpdate = useForceUpdate();
 	useAppSubscription(app, { observer: forceUpdate, subjects: ["tools"] });
+	const { t } = useTalkTranslation();
 
 	const handleConfirm = () => {
 		const exportTool = board.tools.getExport();
@@ -35,13 +37,13 @@ export function ExportPanel({ board, app }: Props) {
 				className={clsx(style.button, style.confirm)}
 				onClick={handleConfirm}
 			>
-				Экспортировать
+				{t("export.confirm")}
 			</UiButton>
 			<UiButton
 				className={clsx(style.button, style.cancel)}
 				onClick={handleCancel}
 			>
-				Отменить
+				{t("export.cancel")}
 			</UiButton>
 		</UiPanel>
 	);

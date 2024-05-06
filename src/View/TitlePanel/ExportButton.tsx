@@ -1,6 +1,6 @@
 import { Board } from "Board";
 import React from "react";
-import { Icon } from "View/Icon";
+import { Icon } from "../Icon";
 import { UiButton } from "View/Ui/UiButton";
 
 type Props = { board: Board };
