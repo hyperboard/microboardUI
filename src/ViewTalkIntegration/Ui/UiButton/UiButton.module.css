@@ -5,6 +5,8 @@
 	--hover-content-color: rgba(0, 0, 0, 0.8);
 	--active-bg-color: rgba(20, 129, 221, 0.1);
 	--active-content-color: rgb(20, 129, 221);
+	--disabled-bg-color: "transparent";
+	--disabled-content-color: rgba(0, 0, 0, 0.4);
 	--outline-color: rgba(128, 183, 255, 0.4);
 }
 
@@ -15,6 +17,8 @@
 	--hover-content-color: rgba(223, 78, 73, 1);
 	--active-bg-color: rgba(223, 78, 73, 0.16);
 	--active-content-color: rgba(223, 78, 73, 1);
+	--disabled-bg-color: "transparent";
+	--disabled-content-color: rgba(223, 78, 73, 0.4);
 	--outline-color: rgba(128, 183, 255, 0.4);
 }
 
@@ -25,6 +29,8 @@
 	--hover-content-color: rgba(20, 129, 221, 1);
 	--active-bg-color: rgba(20, 129, 221, 0.16);
 	--active-content-color: rgba(20, 129, 221, 1);
+	--disabled-bg-color: "transparent";
+	--disabled-content-color: rgba(20, 129, 221, 0.4);
 	--outline-color: rgba(128, 183, 255, 0.4);
 }
 
@@ -61,6 +67,11 @@
 .button:active:not([disabled]) {
 	background-color: var(--active-bg-color);
 	color: var(--active-content-color);
+}
+
+.button:disabled {
+	background-color: var(--disabled-bg-color);
+	color: var(--disabled-content-color);
 }
 
 .hotkey {
