@@ -34,14 +34,16 @@ export function ExportPanel({ board, app }: Props) {
 	return (
 		<UiPanel className={style.panel}>
 			<UiButton
-				className={clsx(style.button, style.confirm)}
+				className={clsx(style.button)}
 				onClick={handleConfirm}
+				variant="confirm"
 			>
 				{t("export.confirm")}
 			</UiButton>
 			<UiButton
-				className={clsx(style.button, style.cancel)}
+				className={clsx(style.button)}
 				onClick={handleCancel}
+				variant="danger"
 			>
 				{t("export.cancel")}
 			</UiButton>

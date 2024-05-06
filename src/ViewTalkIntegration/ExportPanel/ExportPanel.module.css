@@ -10,13 +10,3 @@
 	font-size: 1.6rem;
 	padding: 0.4rem 1.2rem;
 }
-
-.confirm {
-	background-color: rgba(20, 129, 221, 1);
-	color: rgba(246, 246, 246, 1);
-}
-
-.cancel {
-	background-color: rgba(159, 161, 163, 0.2);
-	color: rgba(0, 0, 0, 0.8);
-}
