@@ -134,8 +134,23 @@ export function getController(getBoard: () => Board) {
 				event,
 			);
 		}
-
 		const key = event.code;
+
+		if (board.selection.getContext() !== "SelectUnderPointer") {
+			if (key === "PageUp") {
+				const items = board.selection.list();
+				for (const item of items) {
+					board.items.index.bringToFront(item);
+				}
+			}
+			if (key === "PageDown") {
+				const items = board.selection.list();
+				for (const item of items) {
+					board.items.index.sendToBack(item);
+				}
+			}
+		}
+
 		if (isEditInProcess()) {
 			if ((event.ctrlKey || event.metaKey) && event.code === "KeyV") {
 				const data = clipboard.get();
@@ -196,6 +211,7 @@ export function getController(getBoard: () => Board) {
 				return;
 			}
 		}
+
 		if (!board.selection.tool.keyDown(board.keyboard.down)) {
 			board.tools.keyDown(board.keyboard.down);
 		}
