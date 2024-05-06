@@ -20,7 +20,7 @@ type Props = {
 	app: App;
 };
 
-export function TitlePanel({ sidePanelState, board }: Props) {
+export function TitlePanel({ sidePanelState, board, app }: Props) {
 	const [isModalVisible, setIsModalVisible] = React.useState(false);
 	const forceUpdate = useForceUpdate();
 	const { t } = useTranslation();
