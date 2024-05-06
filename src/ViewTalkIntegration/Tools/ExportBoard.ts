@@ -1,6 +1,7 @@
 import { ExportFrameDecorationRecord } from "Board/Tools/ExportSnapshot/types";
 
 export const BLUR_BACKGROUND_COLOR = "rgba(0, 0, 0, 0.2)";
+export const BACKGROUND_BLUR = 3;
 export const SELECTION_BOX_WIDTH = 440;
 export const SELECTION_BOX_HEIGHT = 440;
 const LINE_WIDTH = 6;
