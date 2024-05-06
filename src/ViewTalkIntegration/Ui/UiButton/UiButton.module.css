@@ -1,3 +1,33 @@
+.default {
+	--bg-color: "transparent";
+	--content-color: rgba(0, 0, 0, 0.8);
+	--hover-bg-color: rgba(0, 0, 0, 0.05);
+	--hover-content-color: rgba(0, 0, 0, 0.8);
+	--active-bg-color: rgba(20, 129, 221, 0.1);
+	--active-content-color: rgb(20, 129, 221);
+	--outline-color: rgba(128, 183, 255, 0.4);
+}
+
+.danger {
+	--bg-color: rgba(159, 161, 163, 0.2);
+	--content-color: rgba(0, 0, 0, 0.8);
+	--hover-bg-color: rgba(223, 78, 73, 0.08);
+	--hover-content-color: rgba(223, 78, 73, 1);
+	--active-bg-color: rgba(223, 78, 73, 0.16);
+	--active-content-color: rgba(223, 78, 73, 1);
+	--outline-color: rgba(128, 183, 255, 0.4);
+}
+
+.confirm {
+	--bg-color: rgba(20, 129, 221, 1);
+	--content-color: rgba(246, 246, 246, 1);
+	--hover-bg-color: rgba(20, 129, 221, 0.08);
+	--hover-content-color: rgba(20, 129, 221, 1);
+	--active-bg-color: rgba(20, 129, 221, 0.16);
+	--active-content-color: rgba(20, 129, 221, 1);
+	--outline-color: rgba(128, 183, 255, 0.4);
+}
+
 .button {
 	position: relative;
 	display: flex;
@@ -12,22 +42,25 @@
 	border-radius: 6px;
 	transition: background ease-in 0.2s;
 	outline: none;
+	color: var(--content-color);
+	background-color: var(--bg-color);
 }
 
 .button:focus-visible {
-	outline: rgba(128, 183, 255, 0.4) solid 3px;
+	outline: var(--outline-color) solid 3px;
 }
 
 @media (hover: hover) {
 	.button:hover:not([disabled]) {
-		background-color: rgba(0, 0, 0, 0.05);
+		background-color: var(--hover-bg-color);
+		color: var(--hover-content-color);
 	}
 }
 
 .button.active:not([disabled]),
 .button:active:not([disabled]) {
-	background-color: rgba(20, 129, 221, 0.1);
-	color: rgb(20, 129, 221);
+	background-color: var(--active-bg-color);
+	color: var(--active-content-color);
 }
 
 .hotkey {
