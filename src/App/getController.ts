@@ -77,7 +77,6 @@ export function getController(getBoard: () => Board) {
 		}
 
 		const context = board.selection.getContext();
-
 		if (
 			(context === "EditTextUnderPointer" ||
 				context === "SelectByRect" ||
@@ -101,6 +100,7 @@ export function getController(getBoard: () => Board) {
 
 		if (
 			context !== "EditTextUnderPointer" &&
+			!isEditInProcess() &&
 			checkHotkeys(
 				{
 					select: () => board.tools.select(),
