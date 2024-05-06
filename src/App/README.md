@@ -1,4 +1,5 @@
 # App
+
 # Connection
 
 To have the same list of board events on all the clients as on the server.

@@ -10,7 +10,10 @@ import { Mbr } from "Board/Items";
 import { ImageItem } from "Board/Items/Image";
 import { validateItemsMap, validateRichTextData } from "Board/Validators";
 import { isSafari } from "./isSafari";
+import { isFirefox } from "./isFirefox";
 import { Clipboard } from "./Clipboard";
+import { isIframe } from "lib/isIframe";
+import { checkHotkeys, isHotkeyPushed } from "Board/Keyboard/hotkeys";
 
 export function getController(getBoard: () => Board) {
 	const isMouse = true;
@@ -77,6 +80,62 @@ export function getController(getBoard: () => Board) {
 		if (!board || !board.events) {
 			return;
 		}
+
+		const context = board.selection.getContext();
+
+		if (context === "EditTextUnderPointer") {
+			isHotkeyPushed("textBold", event);
+			isHotkeyPushed("textItalic", event);
+			isHotkeyPushed("textStrike", event);
+			isHotkeyPushed("textUnderline", event);
+		}
+
+		checkHotkeys(
+			{
+				zoomIn: () => board.camera.zoomInToViewCenter(),
+				zoomOut: () => board.camera.zoomOutFromViewCenter(),
+				zoomDefault: () => board.camera.zoomToViewCenter(1),
+			},
+			event,
+		);
+
+		if (
+			context !== "EditUnderPointer" &&
+			context !== "SelectByRect" &&
+			context !== "EditTextUnderPointer"
+		) {
+			checkHotkeys(
+				{
+					select: () => board.tools.select(),
+					text: () => board.tools.addText(),
+					sticker: () => board.tools.addSticker(),
+					shape: () => board.tools.addShape(),
+					connector: () => board.tools.addConnector(),
+					pen: () => board.tools.addDrawing(),
+					undo: () => board.events?.undo(),
+					redo: () => board.events?.redo(),
+				},
+				event,
+			);
+		}
+
+		if (
+			context === "EditUnderPointer" ||
+			context === "SelectByRect" ||
+			context === "EditTextUnderPointer"
+		) {
+			checkHotkeys(
+				{
+					duplicate: () => board.selection.duplicate(),
+					bringToFront: () => board.selection.bringToFront(),
+					sendToBack: () => board.selection.sendToBack(),
+					delete: () => board.selection.removeFromBoard(),
+				},
+				event,
+			);
+		}
+
+		const key = event.code;
 		if (isEditInProcess()) {
 			if ((event.ctrlKey || event.metaKey) && event.code === "KeyV") {
 				const data = clipboard.get();
@@ -97,21 +156,26 @@ export function getController(getBoard: () => Board) {
 			}
 			return;
 		}
-		// const key = event.key.toLowerCase();
-		const key = event.code;
 		board.keyboard.keyDown(event);
-		if ((event.ctrlKey || event.metaKey) && key === "KeyZ") {
-			if (event.shiftKey) {
-				board.events.redo();
-			} else {
-				board.events.undo();
-			}
-			return;
+
+		if ((event.ctrlKey || event.metaKey) && key === "KeyA") {
+			const items = board.items.listAll();
+			board.selection.add(items);
 		}
 		if (
 			(event.ctrlKey || event.metaKey) &&
 			(key === "KeyC" || key === "KeyV")
 		) {
+			if (isFirefox() && key === "KeyC") {
+				event.currentTarget?.dispatchEvent(
+					new Event("copy", { bubbles: true }),
+				);
+			}
+			if (isFirefox() && key === "KeyV") {
+				event.currentTarget?.dispatchEvent(
+					new Event("paste", { bubbles: true }),
+				);
+			}
 			return;
 		}
 		if (
@@ -120,43 +184,16 @@ export function getController(getBoard: () => Board) {
 		) {
 			const item = board.selection.items.getSingle();
 
-			if (board.selection.getContext() === "EditTextUnderPointer") {
+			if (context === "EditTextUnderPointer") {
 				board.selection.editText();
 				return;
 			} else if (
 				item &&
 				["Shape", "Sticker", "Connector"].indexOf(item.itemType) > -1 &&
-				board.selection.getContext() === "EditUnderPointer"
+				context === "EditUnderPointer"
 			) {
 				board.selection.editText();
 				return;
-			}
-		}
-
-		switch (key) {
-			case "KeyV":
-				board.tools.select();
-				break;
-			case "KeyS":
-				board.tools.addShape();
-				break;
-			case "KeyN":
-				board.tools.addSticker();
-				break;
-			case "KeyT":
-				board.tools.addText();
-				break;
-			case "KeyL":
-				board.tools.addConnector();
-				break;
-			case "KeyP":
-				board.tools.addDrawing();
-				break;
-		}
-		if (board.selection.getContext() !== "SelectUnderPointer") {
-			if (key === "Delete" || key === "Backspace") {
-				board.selection.removeFromBoard();
-				toggleEdit(false);
 			}
 		}
 		if (!board.selection.tool.keyDown(board.keyboard.down)) {
@@ -170,8 +207,20 @@ export function getController(getBoard: () => Board) {
 		if (!board) {
 			return;
 		}
-
-		if (isEditInProcess()) {
+		isHotkeyPushed("undo", event);
+		isHotkeyPushed("redo", event);
+		if (board.selection.getContext() === "EditTextUnderPointer") {
+			checkHotkeys(
+				{
+					textBold: () => board.selection.setFontStyle(["bold"]),
+					textItalic: () => board.selection.setFontStyle(["italic"]),
+					textStrike: () =>
+						board.selection.setFontStyle(["line-through"]),
+					textUnderline: () =>
+						board.selection.setFontStyle(["underline"]),
+				},
+				event,
+			);
 			return;
 		}
 
@@ -562,6 +611,12 @@ function serializeKeyboardEvent(event: KeyboardEvent) {
 			metaKey: event.metaKey,
 			repeat: event.repeat,
 			bubbles: event.bubbles,
+			target: "whiteboard",
+			location: event.location,
+			isComposing: event.isComposing,
+			charCode: event.charCode,
+			keyCode: event.keyCode,
+			which: event.which,
 		},
 	};
 }

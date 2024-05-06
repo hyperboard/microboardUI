@@ -1,6 +1,6 @@
 import { Board } from "Board";
 import React, { PureComponent, ReactElement } from "react";
-import { Button } from "View/ContextPanel/Button";
+import { UiButton } from "View/Ui/UiButton";
 import { exportBoardSnapshot } from "./ExportBoardSnapshot";
 import { Quality } from "./types";
 import { Icon } from "View/Icon";
@@ -24,7 +24,7 @@ export class ExportBoardSnapshotButton extends PureComponent<
 	render(): ReactElement {
 		return (
 			<>
-				<Button
+				<UiButton
 					id="ExportBoardSnapshot"
 					onClick={this.handleClick}
 					title="Export this board"
@@ -36,7 +36,7 @@ export class ExportBoardSnapshotButton extends PureComponent<
 						width={24}
 						height={24}
 					/>
-				</Button>
+				</UiButton>
 			</>
 		);
 	}

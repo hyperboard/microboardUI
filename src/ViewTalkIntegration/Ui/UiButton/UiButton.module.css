@@ -1,0 +1,123 @@
+.button {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-width: 3.2rem;
+	min-height: 3.2rem;
+	padding: 0.4rem;
+	border: none;
+	background-color: white;
+	cursor: pointer;
+	border-radius: 6px;
+	transition: background ease-in 0.2s;
+	outline: none;
+}
+
+.button:focus-visible {
+	outline: rgba(128, 183, 255, 0.4) solid 3px;
+}
+
+@media (hover: hover) {
+	.button:hover:not([disabled]) {
+		background-color: rgba(0, 0, 0, 0.05);
+	}
+}
+
+.button.active:not([disabled]),
+.button:active:not([disabled]) {
+	background-color: rgba(20, 129, 221, 0.1);
+	color: rgb(20, 129, 221);
+}
+
+.hotkey {
+	color: rgba(246, 246, 246, 0.48);
+	flex: 1 0;
+	white-space: nowrap;
+}
+
+.tip-container {
+	display: none;
+	position: absolute;
+	user-select: none;
+	pointer-events: none;
+	justify-items: center;
+}
+
+.button:hover .tip-container {
+	display: flex;
+}
+
+.button:hover.active .tip-container {
+	display: none;
+}
+
+.tip {
+	padding: 0.8rem 1rem;
+	border-radius: 8px;
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	font-size: 1.4rem;
+	font-weight: 400;
+	background-color: rgba(34, 34, 34, 1);
+	color: rgba(246, 246, 246, 1);
+}
+
+.tip-text {
+	flex: 1 0;
+	white-space: nowrap;
+}
+
+.tip::before {
+	content: "";
+	position: absolute;
+	width: 0;
+	height: 0;
+	border-left: 0.7rem solid transparent;
+	border-right: 0.7rem solid transparent;
+	border-bottom: 0.8rem solid rgba(34, 34, 34, 1);
+	border-radius: 8px;
+}
+
+.tip-container.right .tip::before {
+	left: -0.8rem;
+	transform: rotate(-90deg);
+}
+
+.tip-container.right {
+	left: calc(100% + 1.2rem);
+}
+
+.tip-container.top .tip::before {
+	left: 50%;
+	margin-left: -0.7rem;
+	bottom: -0.6rem;
+	transform: rotate(180deg);
+}
+
+.tip-container.top {
+	bottom: calc(100% + 1.2rem);
+}
+
+.tip-container.top-right .tip::before {
+	right: 2.5rem;
+	margin-right: -0.7rem;
+	bottom: -0.6rem;
+	transform: rotate(180deg);
+}
+
+.tip-container.top-right {
+	bottom: calc(100% + 1.2rem);
+	right: -1rem;
+}
+
+.tip-container.bottom .tip::before {
+	left: 50%;
+	margin-left: -0.7rem;
+	top: -0.6rem;
+}
+
+.tip-container.bottom {
+	top: calc(100% + 1.2rem);
+}

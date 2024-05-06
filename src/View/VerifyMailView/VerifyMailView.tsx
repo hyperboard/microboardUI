@@ -1,6 +1,7 @@
 import { getApiUrl } from "Config";
 import Cookies from "js-cookie";
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import styles from "./VerifyMailView.module.css";
 
@@ -51,11 +52,12 @@ const verifyEmail = async (userId: number, passcode: string): Promise<any> => {
 };
 
 export const VerifyMailView: React.FC = () => {
+	const { t } = useTranslation();
 	const [searchParams, _setSearchParams] = useSearchParams();
-	const [retryCount, setRetryCount] = useState(0);
+	const [retryCount, setRetryCount] = React.useState(0);
 	const navigate = useNavigate();
-	const [passcode, setPasscode] = useState<string>("");
-	const [error, setError] = useState<string>("");
+	const [passcode, setPasscode] = React.useState<string>("");
+	const [error, setError] = React.useState<string>("");
 
 	const onSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
@@ -71,7 +73,7 @@ export const VerifyMailView: React.FC = () => {
 					navigate("/dashboard");
 				})
 				.catch(error => {
-					setError(error?.message || "Unknown error");
+					setError(error?.message || t("auth.unknownError"));
 					console.log("verifyEmail error:", error);
 				});
 		}
@@ -85,7 +87,7 @@ export const VerifyMailView: React.FC = () => {
 			searchParams.get("email") || "",
 			parseInt(searchParams.get("userId") || ""),
 		).catch(error => {
-			setError(error?.message || "Unknown error");
+			setError(error?.message || t("auth.unknownError"));
 		});
 		setRetryCount(60);
 	};
@@ -94,9 +96,9 @@ export const VerifyMailView: React.FC = () => {
 		if (!searchParams.get("userId") || !searchParams.get("email")) {
 			return;
 		}
-    if (!searchParams.get("passcode")) {
-      return;
-    }
+		if (!searchParams.get("passcode")) {
+			return;
+		}
 		verifyEmail(
 			parseInt(searchParams.get("userId") || "0"),
 			searchParams.get("passcode") || "",
@@ -109,7 +111,7 @@ export const VerifyMailView: React.FC = () => {
 				navigate("/dashboard");
 			})
 			.catch(error => {
-				setError(error?.message || "Unknown error");
+				setError(error?.message || t("auth.unknownError"));
 			});
 	}, []);
 
@@ -131,7 +133,7 @@ export const VerifyMailView: React.FC = () => {
 		<div className={styles.wrapper}>
 			<form onSubmit={onSubmit} className={styles.form}>
 				<label htmlFor="code" className={styles.title}>
-					Passcode
+					{t("auth.passcode")}
 				</label>
 				<input
 					className={styles.input}
@@ -148,13 +150,13 @@ export const VerifyMailView: React.FC = () => {
 					onClick={onResend}
 					className={styles.retryButton}
 				>
-					Resend Code{" "}
+					{t("auth.resendCode")}{" "}
 					{retryCount > 0
 						? `(${secondsToHumanReadable(retryCount)})`
 						: null}
 				</button>
 				<button type="submit" className={styles.submit}>
-					Submit
+					{t("auth.submit")}
 				</button>
 				{error && <p className={styles.error}>{error}</p>}
 			</form>

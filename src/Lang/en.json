@@ -1,0 +1,232 @@
+{
+	"contextPanel": {
+		"connectorAddText": {
+			"tooltip": "Add text"
+		},
+		"connectorType": {
+			"tooltip": "Line style",
+			"straight": "Straight",
+			"curved": "Curved"
+		},
+		"connectorEndPointer": {
+			"tooltip": "End pointer style"
+		},
+		"connectorStartPointer": {
+			"tooltip": "Start pointer style"
+		},
+		"connectorSwitchPointers": {
+			"tooltip": "Switch pointers"
+		},
+		"changeShape": {
+			"tooltip": "Change shape type"
+		},
+		"strokeStyle": {
+			"tooltip": "Stroke",
+			"strokeWidth": "Stroke width"
+		},
+		"fillStyle": {
+			"tooltip": "Fill",
+			"none": "None"
+		},
+		"fontSize": {
+			"tooltip": "Font size",
+			"auto": "Auto"
+		},
+		"fontStyle": {
+			"tooltip": "Font style",
+			"bold": "Bold",
+			"italic": "Italic",
+			"strike": "Strike",
+			"underline": "Underline"
+		},
+		"textAlignment": {
+			"tooltip": "Text alignment",
+			"left": "Left",
+			"center": "Center",
+			"right": "Right",
+			"top": "Top",
+			"bottom": "Bottom"
+		},
+		"textColor": {
+			"tooltip": "Text color"
+		},
+		"textHighlight": {
+			"tooltip": "Marker",
+			"none": "None"
+		},
+		"stickerColor": {
+			"tooltip": "Sticker color"
+		},
+		"penColor": {
+			"tooltip": "Color"
+		},
+		"duplicate": {
+			"text": "Duplicate",
+			"tooltip": "Duplicate"
+		},
+		"bringToFront": {
+			"text": "Bring to front"
+		},
+		"sendToBack": {
+			"text": "Send to back"
+		},
+		"delete": {
+			"text": "Delete",
+			"tooltip": "Delete"
+		},
+		"edit": {
+			"text": "Edit"
+		},
+		"restMenu": {
+			"tooltip": "Options"
+		}
+	},
+	"toolsPanel": {
+		"select": {
+			"tooltip": "Select"
+		},
+		"undo": {
+			"tooltip": "Undo"
+		},
+		"redo": {
+			"tooltip": "Redo"
+		},
+		"addText": {
+			"tooltip": "Text"
+		},
+		"addSticker": {
+			"tooltip": "Sticker"
+		},
+		"addShape": {
+			"tooltip": "Shape"
+		},
+		"addConnector": {
+			"tooltip": "Connector"
+		},
+		"addDrawing": {
+			"tooltip": "Pen",
+			"strokeWidth": "Stroke width"
+		},
+		"addImage": {
+			"tooltip": "Add image"
+		}
+	},
+	"zoomPanel": {
+		"zoomOut": {
+			"tooltip": "Zoom out"
+		},
+		"zoomDefault": {
+			"tooltip": "Zoom 100%"
+		},
+		"zoomIn": {
+			"tooltip": "Zoom in"
+		},
+		"zoomToFit": {
+			"tooltip": "Zoom to fit"
+		}
+	},
+	"titlePanel": {
+		"menu": {
+			"open": "Open Menu",
+			"close": "Close Menu"
+		}
+	},
+	"dashboard": {
+		"title": "Dashboard",
+		"publicBoards": "Public boards",
+		"unnamed": "Unnamed",
+		"privateBoards": "Private boards",
+		"noPrivateBoards": "No private boards"
+	},
+	"auth": {
+		"checkEmail": "Check for an email with a pass code.",
+		"email": "Email",
+		"emailPlaceholder": "Enter Email",
+		"passcode": "Passcode",
+		"passcodePlaceholder": "Enter Passcode",
+		"signIn": "Sign In",
+		"password": "Password",
+		"passwordPlaceholder": "Password",
+		"submit": "Submit",
+		"signUp": "Sign Up",
+		"unknownError": "Unknown error",
+		"resendCode": "Resend Code"
+	},
+	"modal": {
+		"canEdit": "Can edit",
+		"canComment": "Can comment",
+		"canView": "Can view",
+		"noAccess": "No access",
+		"copyLink": "Copy link"
+	},
+	"colors": {
+		"White": "White",
+		"Mustard Yellow": "Mustard Yellow",
+		"Gold": "Gold",
+		"Scarlet Red": "Scarlet Red",
+		"Light Gray": "Light Gray",
+		"Lime Green": "Lime Green",
+		"Mint Green": "Mint Green",
+		"Magenta": "Magenta",
+		"Dark Gray": "Dark Gray",
+		"Turquoise": "Turquoise",
+		"Forest Green": "Forest Green",
+		"Violet": "Violet",
+		"Jet Black": "Jet Black",
+		"Sky Blue": "Sky Blue",
+		"Royal Blue": "Royal Blue",
+		"Purple": "Purple",
+		"Brick Red": "Brick Red",
+		"Pale Yellow": "Pale Yellow",
+		"Sage Green": "Sage Green",
+		"Lavender": "Lavender",
+		"Aqua Cyan": "Aqua Cyan",
+		"Pastel Red": "Pastel Red"
+	},
+	"shapes": {
+		"Rectangle": "Rectangle",
+		"RoundedRectangle": "Rounded Rectangle",
+		"Circle": "Circle",
+		"Triangle": "Triangle",
+		"Rhombus": "Rhombus",
+		"Parallelogram": "Parallelogram",
+		"Hexagon": "Hexagon",
+		"Octagon": "Octagon",
+		"Pentagon": "Pentagon",
+		"Cross": "Cross",
+		"Star": "Star",
+		"Cloud": "Cloud",
+		"Cylinder": "Cylinder",
+		"Trapezoid": "Trapezoid",
+		"PredefinedProcess": "Predefined Process",
+		"ArrowLeft": "Arrow Left",
+		"ArrowLeftRight": "Arrow Left and Right",
+		"ArrowRight": "Arrow Right",
+		"SpeachBubble": "Speach Bubble",
+		"BracesRight": "Braces Right",
+		"BracesLeft": "Braces Left"
+	},
+	"pointerTypes": {
+		"None": "None",
+		"ArrowBroad": "Arrow (broad)",
+		"ArrowThin": "Arrow (thin)",
+		"TriangleFilled": "Triangle (filled)",
+		"CircleFilled": "Circle (filled)",
+		"Angle": "Angle",
+		"TriangleEmpty": "Triangle (empty)",
+		"DiamondFilled": "Diamond (filled)",
+		"DiamondEmpty": "Diamond (empty)",
+		"Zero": "Zero",
+		"One": "One",
+		"Many": "Many",
+		"ManyMandatory": "One or many",
+		"OneMandatory": "One (and only one)",
+		"ManyOptional": "Zero or many",
+		"OneOptional": "Zero or one"
+	},
+	"board": {
+		"textPlaceholder": "Type something"
+	},
+	"thickness": "Thickness",
+	"appTitle": "Microboard"
+}

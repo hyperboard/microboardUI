@@ -1,14 +1,16 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 
-export const FontSizes = [10, 12, 14, 18, 24, 36, 48, 64, 80, 144, 288, 'Auto'];
+export const FontSizes = [10, 12, 14, 18, 24, 36, 48, 64, 80, 144, 288, "Auto"];
 
-interface Props {
+type Props = {
 	onPick: (size: number) => void;
 	maxSize?: number;
 	itemType?: string;
-}
+};
 
 export function FontSizePicker(props: Props): React.ReactElement {
+	const { t } = useTranslation();
 	const max = props.maxSize || 288;
 	const buttonStyle: React.CSSProperties = {
 		justifyContent: "center",
@@ -25,8 +27,9 @@ export function FontSizePicker(props: Props): React.ReactElement {
 	const fontButtons = [];
 	for (let i = 0; i < FontSizes.length; i++) {
 		const size = FontSizes[i];
-		const isDisabled = size === 'Auto' ? !(props.itemType === 'Sticker') : max < +size;
-		const additionalStyle: React.CSSProperties = {}
+		const isDisabled =
+			size === "Auto" ? !(props.itemType === "Sticker") : max < +size;
+		const additionalStyle: React.CSSProperties = {};
 		if (isDisabled) {
 			additionalStyle.color = "rgba(0, 0, 0, 0.4)";
 			additionalStyle.cursor = "default";
@@ -38,17 +41,21 @@ export function FontSizePicker(props: Props): React.ReactElement {
 						props.onPick(size);
 					}}
 					onMouseEnter={event => {
-						if (isDisabled) {return;}
+						if (isDisabled) {
+							return;
+						}
 						event.currentTarget.style.color = "blue";
 					}}
 					onMouseLeave={event => {
-						if (isDisabled) {return;}
+						if (isDisabled) {
+							return;
+						}
 						event.currentTarget.style.color = "black";
 					}}
-					style={{...buttonStyle, ...additionalStyle}}
+					style={{ ...buttonStyle, ...additionalStyle }}
 					disabled={isDisabled}
 				>
-					{size}
+					{size === "Auto" ? t("contextPanel.fontSize.auto") : size}
 				</button>
 				<br></br>
 			</React.Fragment>,

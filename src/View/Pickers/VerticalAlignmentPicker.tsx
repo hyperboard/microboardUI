@@ -1,12 +1,15 @@
 import { VerticalAlignment } from "Board/Items/Alignment";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import { Icon } from "../Icon";
 
-interface Props {
+type Props = {
 	onPick: (alignment: VerticalAlignment) => void;
-}
+};
 
 export function VerticalAlignmentPicker(props: Props): React.ReactElement {
+	const { t } = useTranslation();
+
 	const buttonStyle: React.CSSProperties = {
 		justifyContent: "center",
 		alignItems: "center",
@@ -23,7 +26,7 @@ export function VerticalAlignmentPicker(props: Props): React.ReactElement {
 			<button
 				id="ChangeVerticalAlignmentTop"
 				key="ChangeVerticalAlignmentTop"
-				title="Top"
+				title={t("contextPanel.textAlignment.top")}
 				onClick={() => {
 					props.onPick("top");
 				}}
@@ -40,7 +43,7 @@ export function VerticalAlignmentPicker(props: Props): React.ReactElement {
 			<button
 				id="ChangeVerticalAlignmentCenter"
 				key="ChangeVerticalAlignmentCenter"
-				title="Center"
+				title={t("contextPanel.textAlignment.center")}
 				onClick={() => {
 					props.onPick("center");
 				}}
@@ -57,7 +60,7 @@ export function VerticalAlignmentPicker(props: Props): React.ReactElement {
 			<button
 				id="ChangeVerticalAlignmentBottom"
 				key="ChangeVerticalAlignmentBottom"
-				title="Center"
+				title={t("contextPanel.textAlignment.bottom")}
 				onClick={() => {
 					props.onPick("bottom");
 				}}

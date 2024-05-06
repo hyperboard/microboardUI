@@ -4,38 +4,39 @@ import { Subject } from "Subject";
 import { useStyle } from "View/useStyle";
 
 export class ContextMenuState {
-    subject = new Subject<SidePanelState>();
-    isOn = false;
-	position = {x:0, y:0};
+	subject = new Subject<SidePanelState>();
+	isOn = false;
+	position = { x: 0, y: 0 };
 	options = [];
 	targetId: string;
 
-    toggle({
-		targetId, position, options
+	toggle({
+		targetId,
+		position,
+		options,
 	}: {
-		targetId: string,
-		position: {x: number, y: number},
-		options: { label: string; action: () => {}}[]
-	} 
-	): void {
+		targetId: string;
+		position: { x: number; y: number };
+		options: { label: string; action: () => {} }[];
+	}): void {
 		if (this.targetId === targetId) {
-	        this.isOn = !this.isOn;			
+			this.isOn = !this.isOn;
 		} else {
 			this.isOn = true;
 		}
 		this.targetId = targetId;
 		this.position = position;
 		this.options = options;
-        this.subject.publish(this);
-    }
+		this.subject.publish(this);
+	}
 
 	toggleOff(): void {
 		this.isOn = false;
-        this.subject.publish(this);
+		this.subject.publish(this);
 	}
 
 	setPosition(x, y): void {
-		this.position = {x, y};
+		this.position = { x, y };
 		this.subject.publish(this);
 	}
 }
@@ -44,8 +45,7 @@ export class ContextMenu extends React.Component<{
 	app: App;
 	contextMenuState: ContextMenuState;
 }> {
-
-    menuRef = React.createRef();
+	menuRef = React.createRef();
 
 	animationFrameId: number | null = null;
 
@@ -62,11 +62,11 @@ export class ContextMenu extends React.Component<{
 
 	componentDidMount(): void {
 		this.props.contextMenuState.subject.subscribe(this.update);
-        this.ensureMenuFitsInScreen();
+		this.ensureMenuFitsInScreen();
 	}
 
 	componentDidUpdate(): void {
-        this.ensureMenuFitsInScreen();
+		this.ensureMenuFitsInScreen();
 	}
 
 	componentWillUnmount(): void {
@@ -74,27 +74,29 @@ export class ContextMenu extends React.Component<{
 	}
 
 	ensureMenuFitsInScreen = () => {
-	  if (!this.menuRef.current) return;
-	
-	  const { innerWidth, innerHeight } = window;
-	  const { offsetWidth, offsetHeight } = this.menuRef.current;
-	  let { x, y } = this.props.contextMenuState.position;
-	  let newX, newY;
-	  if (x + offsetWidth > innerWidth) {
-	    newX = x - offsetWidth;
-	  }
-	  if (y + offsetHeight > innerHeight) {
-	    newY = y - offsetHeight;
-	  }
-	  if (newX !== x || newY !== y) {
-		this.props.contextMenuState.setPosition(x, y);
-	  }
+		if (!this.menuRef.current) {
+			return;
+		}
+
+		const { innerWidth, innerHeight } = window;
+		const { offsetWidth, offsetHeight } = this.menuRef.current;
+		const { x, y } = this.props.contextMenuState.position;
+		let newX, newY;
+		if (x + offsetWidth > innerWidth) {
+			newX = x - offsetWidth;
+		}
+		if (y + offsetHeight > innerHeight) {
+			newY = y - offsetHeight;
+		}
+		if (newX !== x || newY !== y) {
+			this.props.contextMenuState.setPosition(x, y);
+		}
 	};
 
 	onSelect = (action: () => {}): void => {
 		action();
 		this.props.contextMenuState.toggleOff();
-	}
+	};
 
 	render(): React.ReactElement | null {
 		const app = this.props.app;
@@ -104,25 +106,27 @@ export class ContextMenu extends React.Component<{
 		}
 
 		return (
-		  <ul 
-			ref={this.menuRef}
-			 style={{
-				  top: `${position.y}px`,
-				  left: `${position.x}px`,
-				  position: 'absolute',
-			}}
-			className="ContextMenu"
-		  >
-		    {options.map((option) => (
-		      <li
-		        key={option.label}
-		        onClick={() => {this.onSelect(option.action);}}
-		        className="ContextMenuItem"
-		      >
-		        {option.label}
-		      </li>
-		    ))}
-		  </ul>
+			<ul
+				ref={this.menuRef}
+				style={{
+					top: `${position.y}px`,
+					left: `${position.x}px`,
+					position: "absolute",
+				}}
+				className="ContextMenu"
+			>
+				{options.map(option => (
+					<li
+						key={option.label}
+						onClick={() => {
+							this.onSelect(option.action);
+						}}
+						className="ContextMenuItem"
+					>
+						{option.label}
+					</li>
+				))}
+			</ul>
 		);
 	}
 }
@@ -152,4 +156,4 @@ useStyle(`
 	color: blue;
     border: 1px solid blue;
 }
-`)
+`);

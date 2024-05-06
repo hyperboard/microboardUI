@@ -1,0 +1,13 @@
+.panel {
+	gap: 1.6rem;
+}
+
+.slider {
+	padding-top: 1.2rem;
+}
+
+.colors {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	gap: 0.4rem;
+}
