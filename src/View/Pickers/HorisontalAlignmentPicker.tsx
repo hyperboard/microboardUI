@@ -1,12 +1,14 @@
 import { HorisontalAlignment } from "Board/Items/Alignment";
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import { Icon } from "../Icon";
 
-interface Props {
+type Props = {
 	onPick: (alignment: HorisontalAlignment) => void;
-}
+};
 
 export function HorisontalAlignmentPicker(props: Props): React.ReactElement {
+	const { t } = useTranslation();
 	const buttonStyle: React.CSSProperties = {
 		justifyContent: "center",
 		alignItems: "center",
@@ -23,7 +25,7 @@ export function HorisontalAlignmentPicker(props: Props): React.ReactElement {
 			<button
 				id="ChangeHorisontalAlignmentLeft"
 				key="ChangeHorisontalAlignmentLeft"
-				title="Left"
+				title={t("contextPanel.textAlignment.left")}
 				onClick={() => {
 					props.onPick("left");
 				}}
@@ -40,7 +42,7 @@ export function HorisontalAlignmentPicker(props: Props): React.ReactElement {
 			<button
 				id="ChangeHorisontalAlignmentCenter"
 				key="ChangeHorisontalAlignmentCenter"
-				title="Center"
+				title={t("contextPanel.textAlignment.center")}
 				onClick={() => {
 					props.onPick("center");
 				}}
@@ -57,7 +59,7 @@ export function HorisontalAlignmentPicker(props: Props): React.ReactElement {
 			<button
 				id="ChangeHorisontalAlignmentRight"
 				key="ChangeHorisontalAlignmentRight"
-				title="Right"
+				title={t("contextPanel.textAlignment.right")}
 				onClick={() => {
 					props.onPick("right");
 				}}

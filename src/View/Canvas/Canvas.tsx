@@ -2,12 +2,13 @@ import { Board } from "Board";
 import { DrawingContext } from "Board/Items/DrawingContext";
 import * as React from "react";
 import { App } from "App";
-export interface Props {
+import { WithRouterProps, withRouter } from "lib/withRouter";
+export interface Props extends WithRouterProps {
 	app: App;
 	board: Board;
 }
 
-export class Canvas extends React.Component<Props> {
+export class CanvasBase extends React.Component<Props> {
 	stageRef = React.createRef<HTMLDivElement>();
 	canvasRef = React.createRef<HTMLCanvasElement>();
 	options = {
@@ -27,18 +28,7 @@ export class Canvas extends React.Component<Props> {
 		this.forceUpdate();
 	};
 
-	componentDidMount(): void {
-		const stage = this.stageRef.current;
-		const controller = this.props.app.controller;
-		if (stage) {
-			stage.addEventListener("pointerdown", controller.onPointerDown);
-			stage.addEventListener("pointerup", controller.onPointerUp);
-			stage.addEventListener("dblclick", controller.onClick);
-			stage.addEventListener("pointerleave", controller.onPointerLeave);
-			stage.addEventListener("pointerout", controller.onPointerOut);
-			stage.addEventListener("pointercancel", controller.onPointerCancel);
-		}
-
+	initCanvasRendering = (): void => {
 		const canvas = this.canvasRef.current;
 		if (!canvas) {
 			return;
@@ -60,6 +50,30 @@ export class Canvas extends React.Component<Props> {
 		this.drawingContextSubscription.observer = this.renderToContext;
 		this.props.app.subscriptions.add(this.drawingContextSubscription);
 		this.props.app.subscriptions.add(this.cursorSubsctiption);
+	};
+
+	componentDidUpdate(prevProps: Readonly<Props>): void {
+		if (
+			prevProps.router.params?.boardId !==
+			this.props.router.params?.boardId
+		) {
+			this.initCanvasRendering();
+		}
+	}
+
+	componentDidMount(): void {
+		const stage = this.stageRef.current;
+		const controller = this.props.app.controller;
+		if (stage) {
+			stage.addEventListener("pointerdown", controller.onPointerDown);
+			stage.addEventListener("pointerup", controller.onPointerUp);
+			stage.addEventListener("dblclick", controller.onClick);
+			stage.addEventListener("pointerleave", controller.onPointerLeave);
+			stage.addEventListener("pointerout", controller.onPointerOut);
+			stage.addEventListener("pointercancel", controller.onPointerCancel);
+		}
+
+		this.initCanvasRendering();
 	}
 
 	componentWillUnmount(): void {
@@ -138,3 +152,5 @@ export class Canvas extends React.Component<Props> {
 		);
 	}
 }
+
+export const Canvas = withRouter(CanvasBase);

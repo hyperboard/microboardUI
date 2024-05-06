@@ -1,3 +1,3 @@
 export const isIframe = (): boolean => {
-  return window.self !== window.top
-}
+	return window.self !== window.top;
+};

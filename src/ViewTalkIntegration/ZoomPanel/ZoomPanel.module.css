@@ -1,0 +1,10 @@
+.panel {
+	position: absolute;
+	bottom: 1.2rem;
+	right: 1.2rem;
+}
+
+.zoom {
+	font-weight: 500;
+	font-size: 1.6rem;
+}

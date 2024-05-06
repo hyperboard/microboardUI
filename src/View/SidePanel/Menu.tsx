@@ -2,152 +2,177 @@ import * as React from "react";
 import { useStyle } from "View/useStyle";
 
 export class Menu extends React.Component<{
-  isOpen: boolean;
-  onToggle: () => void;
-  heading: string;
-  offset?: number;
-  children?: React.ReactNode;
-  onContextMenu?: (x: number, y: number) => void;
-  onClick?: () => void;
-  onRename?: (newHeading: string) => void;
-  isRenaming: boolean;
-  icon?: React.ReactNode;
-  additionalAction?: { label: string; icon: React.ReactNode; action: () => void };
-  onDoubleClick?: () => void;
+	isOpen: boolean;
+	onToggle: () => void;
+	heading: string;
+	offset?: number;
+	children?: React.ReactNode;
+	onContextMenu?: (x: number, y: number) => void;
+	onClick?: () => void;
+	onRename?: (newHeading: string) => void;
+	isRenaming: boolean;
+	icon?: React.ReactNode;
+	additionalAction?: {
+		label: string;
+		icon: React.ReactNode;
+		action: () => void;
+	};
+	onDoubleClick?: () => void;
 }> {
-  state = {
-    isRenaming: false,
-    renameInput: this.props.heading, // Added to keep track of input value
-  };
+	state = {
+		isRenaming: false,
+		renameInput: this.props.heading, // Added to keep track of input value
+	};
 
-  handleRightClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (this.props.onContextMenu) {
-      this.props.onContextMenu();
-    }
-  };
+	handleRightClick = (e: React.MouseEvent) => {
+		e.preventDefault();
+		if (this.props.onContextMenu) {
+			this.props.onContextMenu();
+		}
+	};
 
-  handleDoubleClick = () => {
-    if (this.props.onRename) {
-      this.setState({ isRenaming: !this.state.isRenaming });
-    }
-  };
+	handleDoubleClick = () => {
+		if (this.props.onRename) {
+			this.setState({ isRenaming: !this.state.isRenaming });
+		}
+	};
 
-  handleRenameChange = (e) => {
-    this.setState({ renameInput: e.target.value });
-  };
+	handleRenameChange = e => {
+		this.setState({ renameInput: e.target.value });
+	};
 
-  handleRenameConfirm = () => {
-    if (this.props.onRename) {
-      this.props.onRename(this.state.renameInput);
-    }
-    this.setState({ isRenaming: false });
-  };
+	handleRenameConfirm = () => {
+		if (this.props.onRename) {
+			this.props.onRename(this.state.renameInput);
+		}
+		this.setState({ isRenaming: false });
+	};
 
-  handleRenameCancel = () => {
-    this.setState({ isRenaming: false, renameInput: this.props.heading });
-  };
+	handleRenameCancel = () => {
+		this.setState({ isRenaming: false, renameInput: this.props.heading });
+	};
 
-  handleToggle = (e) => {
-    e.stopPropagation();
-    this.props.onToggle();
-  }
+	handleToggle = e => {
+		e.stopPropagation();
+		this.props.onToggle();
+	};
 
-  render(): React.ReactElement | null {
-    const {
-      isOpen,
-      onToggle,
-      heading,
-      offset,
-      children,
-      onContextMenu,
-      onClick,
-      icon,
-      additionalAction,
-    } = this.props;
-    const { renameInput } = this.state;
-    const hasChildren = Boolean(children);
-	const isRenaming = this.state.isRenaming || this.props.isRenaming;
+	render(): React.ReactElement | null {
+		const {
+			isOpen,
+			onToggle,
+			heading,
+			offset,
+			children,
+			onContextMenu,
+			onClick,
+			icon,
+			additionalAction,
+		} = this.props;
+		const { renameInput } = this.state;
+		const hasChildren = Boolean(children);
+		const isRenaming = this.state.isRenaming || this.props.isRenaming;
 
-    const handleDoubleClick = this.props.onRename ? this.handleDoubleClick : undefined;
+		const handleDoubleClick = this.props.onRename
+			? this.handleDoubleClick
+			: undefined;
 
-    return (
-      <li className="SidePanelListElement" onContextMenu={this.handleRightClick}>
-        <div 
-          className="SidePanelMenuToggle"
-          onClick={onClick ? onClick : hasChildren ? onToggle : undefined}
-          onDoubleClick={handleDoubleClick}
-        >
-          <div
-            className="SidePanelMenuToggleContent"
-            style={{
-              marginLeft: offset ? offset * 1 : 0,
-            }}
-          >
-           <div>
-            {hasChildren && (
-              <button className="ToggleExpandButton" onClick={this.handleToggle}>
-                {isOpen ? "▼" : "►"}
-              </button>
-            )}
-            {icon && <button className="MenuIcon">{icon}</button>}
-            {!isRenaming && !this.props.isRenaming ? (
-              <span className="MenuHeading" onDoubleClick={handleDoubleClick}>{heading}</span> // Applied double click handler to span
-            ) : (
-              <span className="RenamingInputContainer">
-                <input 
-                  type="text"
-                  value={renameInput} // Controlled component, use value from state
-                  onChange={this.handleRenameChange} // Added onChange handler to update state
-                  className="RenamingInput"
-                  autoFocus // Focus the input when it appears
-                />
-                <button onClick={this.handleRenameConfirm}>✓</button>
-                <button onClick={this.handleRenameCancel}>✕</button>
-              </span>
-            )}
-           </div>
-            {additionalAction && !isRenaming && (
-              <button
-                className="AdditionalActionButton"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  additionalAction.action();
-                }}
-              >
-                {additionalAction.icon}
-              </button>
-            )}
-            {onContextMenu && !isRenaming && (
-              <button
-                className="SidePanelContextMenuButton"
-                onClick={(e) => {
-                  e.stopPropagation();
-				  const target = e.currentTarget;
-				  const rect = target.getBoundingClientRect();
-			      const bottomRightX = rect.right;
-			      const bottomRightY = rect.bottom;
-			      onContextMenu(bottomRightX, bottomRightY);
-                }}
-              >
-                &nbsp;...&nbsp;
-              </button>
-            )}
-          </div>
-        </div>
-        {hasChildren && (
-          <ul
-            className="SidePanelMenuList"
-            style={{
-              display: isOpen ? "block" : "none",
-            }}
-          >
-            {children}
-          </ul>
-        )}
-      </li>
-    );
-  }
+		return (
+			<li
+				className="SidePanelListElement"
+				onContextMenu={this.handleRightClick}
+			>
+				<div
+					className="SidePanelMenuToggle"
+					onClick={
+						onClick ? onClick : hasChildren ? onToggle : undefined
+					}
+					onDoubleClick={handleDoubleClick}
+				>
+					<div
+						className="SidePanelMenuToggleContent"
+						style={{
+							marginLeft: offset ? offset * 1 : 0,
+						}}
+					>
+						<div>
+							{hasChildren && (
+								<button
+									className="ToggleExpandButton"
+									onClick={this.handleToggle}
+								>
+									{isOpen ? "▼" : "►"}
+								</button>
+							)}
+							{icon && (
+								<button className="MenuIcon">{icon}</button>
+							)}
+							{!isRenaming && !this.props.isRenaming ? (
+								<span
+									className="MenuHeading"
+									onDoubleClick={handleDoubleClick}
+								>
+									{heading}
+								</span> // Applied double click handler to span
+							) : (
+								<span className="RenamingInputContainer">
+									<input
+										type="text"
+										value={renameInput} // Controlled component, use value from state
+										onChange={this.handleRenameChange} // Added onChange handler to update state
+										className="RenamingInput"
+										autoFocus // Focus the input when it appears
+									/>
+									<button onClick={this.handleRenameConfirm}>
+										✓
+									</button>
+									<button onClick={this.handleRenameCancel}>
+										✕
+									</button>
+								</span>
+							)}
+						</div>
+						{additionalAction && !isRenaming && (
+							<button
+								className="AdditionalActionButton"
+								onClick={e => {
+									e.stopPropagation();
+									additionalAction.action();
+								}}
+							>
+								{additionalAction.icon}
+							</button>
+						)}
+						{onContextMenu && !isRenaming && (
+							<button
+								className="SidePanelContextMenuButton"
+								onClick={e => {
+									e.stopPropagation();
+									const target = e.currentTarget;
+									const rect = target.getBoundingClientRect();
+									const bottomRightX = rect.right;
+									const bottomRightY = rect.bottom;
+									onContextMenu(bottomRightX, bottomRightY);
+								}}
+							>
+								&nbsp;...&nbsp;
+							</button>
+						)}
+					</div>
+				</div>
+				{hasChildren && (
+					<ul
+						className="SidePanelMenuList"
+						style={{
+							display: isOpen ? "block" : "none",
+						}}
+					>
+						{children}
+					</ul>
+				)}
+			</li>
+		);
+	}
 }
 useStyle(`
 .SidePanelMenuToggle {

@@ -1,3 +1,3 @@
 export function isFirefox(): boolean {
-  return navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+	return navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
 }

@@ -198,8 +198,8 @@ export class TextEditor extends React.Component<
 					<Slate
 						editor={text.editor.editor}
 						value={text.getText()}
-						key={JSON.stringify(text.getText())}
 						selection={text.editor.editor.selection}
+						key={text.getId()}
 						onChange={() => {}}
 					>
 						<Editable
@@ -210,7 +210,20 @@ export class TextEditor extends React.Component<
 							onFocus={text.handleFocus}
 							placeholder={text.placeholderText}
 							renderPlaceholder={({ children, attributes }) => (
-								<span {...attributes}>{children}</span>
+								<span
+									{...attributes}
+									style={{
+										position: "relative",
+										left: 0,
+										top: 10,
+										whiteSpace: "nowrap",
+										opacity: 0.5,
+										userSelect: "none",
+										pointerEvents: "none",
+									}}
+								>
+									{children}
+								</span>
 							)}
 							style={{
 								whiteSpace: "pre-wrap",

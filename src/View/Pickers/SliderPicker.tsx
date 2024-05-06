@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import { toFiniteNumber } from "utils";
 
 const labelStyles = {
@@ -40,43 +41,46 @@ style.innerHTML = `
 
 document.head.appendChild(style);
 
-export class SliderPicker extends React.PureComponent<{
+type Props = {
 	onPick: (width: number) => void;
 	width: number;
-}> {
-	handlePickWidth = (event: React.ChangeEvent<HTMLInputElement>): void => {
+};
+
+export function SliderPicker({ onPick, width }: Props) {
+	const { t } = useTranslation();
+	const handlePickWidth = (
+		event: React.ChangeEvent<HTMLInputElement>,
+	): void => {
 		const width = toFiniteNumber(parseFloat(event.target.value), 1);
-		this.props.onPick(width);
+		onPick(width);
 	};
 
-	render(): React.ReactElement {
-		return (
-			<div
+	return (
+		<div
+			style={{
+				display: "flex",
+				flexWrap: "wrap",
+				justifyContent: "center",
+				alignItems: "center",
+				width: "100%",
+			}}
+		>
+			<input
+				type="range"
+				min="1"
+				max="10"
+				step="0.1"
+				value={width}
+				className="slider"
+				onInput={handlePickWidth}
 				style={{
-					display: "flex",
-					flexWrap: "wrap",
-					justifyContent: "center",
-					alignItems: "center",
 					width: "100%",
+					marginTop: "20px",
 				}}
-			>
-				<input
-					type="range"
-					min="1"
-					max="10"
-					step="0.1"
-					value={this.props.width}
-					className="slider"
-					onInput={this.handlePickWidth}
-					style={{
-						width: "100%",
-						marginTop: "20px",
-					}}
-				/>
-				<p className="label" style={labelStyles}>
-					Thickness
-				</p>
-			</div>
-		);
-	}
+			/>
+			<p className="label" style={labelStyles}>
+				{t("thickness")}
+			</p>
+		</div>
+	);
 }

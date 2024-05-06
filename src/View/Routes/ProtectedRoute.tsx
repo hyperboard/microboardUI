@@ -1,6 +1,6 @@
 import { getApiUrl } from "Config";
 import Cookies from "js-cookie";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
 type Tokens = {
@@ -22,7 +22,7 @@ export enum EUserRole {
 	editor = "Editor",
 	visitor = "Visitor",
 	guest = "Guest",
-};
+}
 
 async function refreshTokens(refreshToken: string): Promise<void> {
 	fetch(getApiUrl("/auth/refresh"), {
@@ -59,9 +59,12 @@ async function getUser() {
 	});
 }
 
-export const ProtectedRoute: React.FC<TProtectedRoute> = ({ allowRoles, isPublic = false }) => {
-	const [isLoggedIn, setIsLoggedIn] = useState(true);
-	useEffect(() => {
+export const ProtectedRoute: React.FC<TProtectedRoute> = ({
+	allowRoles,
+	isPublic = false,
+}) => {
+	const [isLoggedIn, setIsLoggedIn] = React.useState(true);
+	React.useEffect(() => {
 		const accessToken = Cookies.get("accessToken");
 		const refreshToken = Cookies.get("refreshToken");
 
@@ -80,6 +83,8 @@ export const ProtectedRoute: React.FC<TProtectedRoute> = ({ allowRoles, isPublic
 	// if (!allowRoles.includes(user.role as EUserRole)) {
 	// 	return <Navigate to='/unauthorized' replace />;
 	// }
-	if(isPublic) {return <Outlet />;}
+	if (isPublic) {
+		return <Outlet />;
+	}
 	return isLoggedIn ? <Outlet /> : <Navigate to="/sign-in" />;
 };

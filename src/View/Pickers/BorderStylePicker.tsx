@@ -1,11 +1,11 @@
 import { BorderStyle } from "Board/Items/Path";
 import * as React from "react";
 import { Icon } from "../Icon";
-import { Button } from "View/ContextPanel/Button";
+import { UiButton } from "View/Ui/UiButton";
 
-interface Props {
+type Props = {
 	onPick: (style: BorderStyle) => void;
-}
+};
 
 export function StrokeStylePicker(props: Props): React.ReactElement {
 	return (
@@ -18,7 +18,7 @@ export function StrokeStylePicker(props: Props): React.ReactElement {
 				width: "100%",
 			}}
 		>
-			<Button
+			<UiButton
 				id="ChangeBorderStyleSolid"
 				key="ChangeBorderStyleSolid"
 				onClick={() => {
@@ -27,8 +27,8 @@ export function StrokeStylePicker(props: Props): React.ReactElement {
 				title="Solid"
 			>
 				<Icon name={"LineSolid"} width={24} height={24} />
-			</Button>
-			<Button
+			</UiButton>
+			<UiButton
 				id="ChangeBorderStyleDashed"
 				key="ChangeBorderStyleDashed"
 				onClick={() => {
@@ -37,8 +37,8 @@ export function StrokeStylePicker(props: Props): React.ReactElement {
 				title="Dashed"
 			>
 				<Icon name={"LineDashed"} width={24} height={24} />
-			</Button>
-			<Button
+			</UiButton>
+			<UiButton
 				id="ChangeBorderStyleDotted"
 				key="ChangeBorderStyleDotted"
 				onClick={() => {
@@ -47,7 +47,7 @@ export function StrokeStylePicker(props: Props): React.ReactElement {
 				title="Dotted"
 			>
 				<Icon name={"LineDotted"} width={24} height={24} />
-			</Button>
+			</UiButton>
 		</div>
 	);
 }

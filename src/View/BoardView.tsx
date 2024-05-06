@@ -8,7 +8,6 @@ import { AppView } from "./AppView";
 export const BoardView: React.FC<{ app: App }> = props => {
 	const board = props.app.getBoard();
 	const params = useParams<{ boardId: string }>();
-
 	useLayoutEffect(() => {
 		if (params.boardId) {
 			props.app.openBoard(params.boardId);

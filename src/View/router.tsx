@@ -9,11 +9,11 @@ import { BoardView } from "./BoardView";
 import "../index.css";
 import { ProtectedRoute } from "./Routes/ProtectedRoute";
 import RootView from "./RootView/RootView";
-import { TalkModule } from "lib/TalkModule";
+import { IframeModule } from "lib/IframeModule";
 import { VerifyMailView } from "./VerifyMailView/VerifyMailView";
 
 export function getRender(app: App): () => void {
-	new TalkModule(); 
+	new IframeModule();
 
 	const router = createBrowserRouter([
 		{

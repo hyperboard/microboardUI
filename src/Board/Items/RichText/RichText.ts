@@ -8,7 +8,7 @@ import {
 	Transformation,
 	TransformationOperation,
 } from "..";
-import { Descendant, Transforms } from "slate";
+import { Descendant, Transforms, Editor } from "slate";
 import { HorisontalAlignment, VerticalAlignment } from "../Alignment";
 import { Events, Operation } from "Board/Events";
 import { TextStyle } from "./Editor/TextNode";
@@ -23,6 +23,8 @@ import { operationsRichTextDebugEnabled } from "./RichTextDebugSettings";
 import { getBlockNodes } from "./RichTextCanvasRenderer";
 import { isTextEmpty } from "./isTextEmpty";
 import { Board } from "Board/Board";
+import { SelectionContext } from "Board/Selection/Selection";
+import i18next from "i18next";
 
 export const defaultTextStyle = {
 	fontFamily: "Arial",
@@ -69,7 +71,7 @@ export class RichText extends Mbr implements Geometry {
 		private id = "",
 		private events?: Events,
 		readonly transformation = new Transformation(id, events),
-		public placeholderText = "Type something",
+		public placeholderText = i18next.t("board.textPlaceholder"),
 		public isInShape = false,
 		private autoSize = false,
 	) {
@@ -497,12 +499,30 @@ export class RichText extends Mbr implements Geometry {
     }
     */
 
-	setSelectionFontColor(format: string): void {
+	setSelectionFontColor(
+		format: string,
+		selectionContext?: SelectionContext,
+	): void {
+		if (selectionContext === "EditUnderPointer") {
+			const start = Editor.start(this.editor.editor, []);
+			const end = Editor.end(this.editor.editor, []);
+			const range = { anchor: start, focus: end };
+			this.editorTransforms.select(this.editor.editor, range);
+		}
 		this.editor.setSelectionFontColor(format);
 		this.updateElement();
 	}
 
-	setSelectionFontStyle(style: TextStyle | TextStyle[]): void {
+	setSelectionFontStyle(
+		style: TextStyle | TextStyle[],
+		selectionContext?: SelectionContext,
+	): void {
+		if (selectionContext === "EditUnderPointer") {
+			const start = Editor.start(this.editor.editor, []);
+			const end = Editor.end(this.editor.editor, []);
+			const range = { anchor: start, focus: end };
+			this.editorTransforms.select(this.editor.editor, range);
+		}
 		this.editor.setSelectionFontStyle(style);
 		this.updateElement();
 	}
@@ -522,7 +542,16 @@ export class RichText extends Mbr implements Geometry {
 		this.updateElement();
 	}
 
-	setSelectionFontHighlight(format: string): void {
+	setSelectionFontHighlight(
+		format: string,
+		selectionContext?: SelectionContext,
+	): void {
+		if (selectionContext === "EditUnderPointer") {
+			const start = Editor.start(this.editor.editor, []);
+			const end = Editor.end(this.editor.editor, []);
+			const range = { anchor: start, focus: end };
+			this.editorTransforms.select(this.editor.editor, range);
+		}
 		this.editor.setSelectionFontHighlight(format);
 		this.updateElement();
 	}
@@ -651,20 +680,7 @@ export class RichText extends Mbr implements Geometry {
 			const { ctx } = context;
 			ctx.save();
 			ctx.translate(this.left, this.top);
-			if (this.clipPath) {
-				ctx.clip(this.clipPath);
-			}
-			// if (this.clipPath && this.connectorId) {
-			//     const PADDING = 5;
-			//     ctx.fillStyle = '#f4f4f4';
-			//     console.log(this);
-			//     ctx.fillRect(
-			//         this.getWidth()/2 - this.blockNodes?.width/2 - PADDING,
-			//         this.getHeight()/2 - this.blockNodes?.height/2 - PADDING,
-			//         (this.blockNodes?.width || 0) + PADDING*2,
-			//         (this.blockNodes?.height || 0) + PADDING*2
-			//         );
-			// }
+
 			if (this.autoSize) {
 				ctx.scale(this.autoSizeScale, this.autoSizeScale);
 			} else if (!this.isInShape) {
@@ -673,7 +689,11 @@ export class RichText extends Mbr implements Geometry {
 					this.transformation.matrix.scaleY,
 				);
 			}
+			if (this.clipPath) {
+				ctx.clip(this.clipPath);
+			}
 			this.blockNodes.render(ctx);
+
 			ctx.restore();
 		}
 	}
