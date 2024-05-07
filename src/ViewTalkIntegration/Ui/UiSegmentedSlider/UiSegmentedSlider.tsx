@@ -25,10 +25,12 @@ export function UiSegmentedSlider({ values, onChange, defaultValue }: Props) {
 		onChange(nearestValue);
 	};
 
-	const handleDotClick = (value: number) => (e: MouseEvent) => {
-		setSelectedValue(value);
-		console.log(`click ${value}`);
-	};
+	const handleDotClick =
+		(value: number, index: number) => (e: MouseEvent) => {
+			setSelectedValue(value);
+			const nearestValue = values[index];
+			onChange(nearestValue);
+		};
 
 	const numSegments = values.length - 1;
 
@@ -53,7 +55,7 @@ export function UiSegmentedSlider({ values, onChange, defaultValue }: Props) {
 			/>
 			{values.map((value, index) => (
 				<span
-					onClick={handleDotClick(value)}
+					onClick={handleDotClick(value, index)}
 					key={index}
 					className={clsx(
 						style.dot,
