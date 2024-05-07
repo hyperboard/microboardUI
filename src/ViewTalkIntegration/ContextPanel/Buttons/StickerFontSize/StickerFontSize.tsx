@@ -28,8 +28,12 @@ export function StickerFontSize() {
 	};
 
 	const handlePick = (size: number) => {
+		text?.autosizeDisable();
 		board.selection.setFontSize(size);
 		toggleMenu("None");
+	};
+	const handleAutoSizePick = () => {
+		text?.autosizeEnable();
 	};
 
 	return (
@@ -59,6 +63,7 @@ export function StickerFontSize() {
 					fontSizes={fontSizes}
 					onPick={handlePick}
 					max={maxFontSize}
+					onAutoSizePick={handleAutoSizePick}
 				/>
 			</UiPanel>
 		</ButtonWithMenu>
