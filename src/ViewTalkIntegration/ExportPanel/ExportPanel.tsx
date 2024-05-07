@@ -36,14 +36,14 @@ export function ExportPanel({ board, app }: Props) {
 			<UiButton
 				className={clsx(style.button)}
 				onClick={handleConfirm}
-				variant="confirm"
+				variant="action"
 			>
 				{t("export.confirm")}
 			</UiButton>
 			<UiButton
 				className={clsx(style.button)}
 				onClick={handleCancel}
-				variant="danger"
+				variant="secondary"
 			>
 				{t("export.cancel")}
 			</UiButton>

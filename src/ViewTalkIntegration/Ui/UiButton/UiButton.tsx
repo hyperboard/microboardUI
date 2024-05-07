@@ -8,7 +8,7 @@ type UiButtonProps = HTMLAttributes<HTMLButtonElement> & {
 	tooltip?: string;
 	hotkey?: string;
 	tooltipPosition?: "right" | "top" | "top-left" | "top-right" | "bottom";
-	variant?: "default" | "danger" | "confirm";
+	variant?: "default" | "danger" | "action" | "secondary";
 };
 
 export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
