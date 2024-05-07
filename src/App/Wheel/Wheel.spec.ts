@@ -1,8 +1,7 @@
-import { assert } from "chai";
 import { Wheel } from "./Wheel";
 
 describe("to diagram, a user", () => {
-	it("pans by sliding 2 fingers on a trackpad", () => {
+	test("pans by sliding 2 fingers on a trackpad", () => {
 		let wheel = new Wheel({} as WheelEvent);
 		wheel.isWheelDelta = true;
 		wheel.isWheelDeltaX = true;
@@ -32,9 +31,10 @@ describe("to diagram, a user", () => {
 		wheel.deltaX = 0;
 		wheel.deltaY = 1.5;
 		wheel.deltaMode = "pixel";
-		debugger;
-		assert.equal(wheel.isProbablyMouseWheel(), false);
+		expect(wheel.isProbablyMouseWheel()).toBe(false);
 	});
 
-	it("zooms the board by pinching the trackpad", () => {});
+	test("zooms the board by pinching the trackpad", () => {
+		// Implementation for zooming test
+	});
 });
