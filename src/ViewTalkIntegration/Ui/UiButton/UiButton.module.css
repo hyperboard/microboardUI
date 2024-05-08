@@ -10,7 +10,7 @@
 	background-color: white;
 	cursor: pointer;
 	border-radius: 6px;
-	transition: background ease-in 0.2s;
+	transition: background ease-in 0.2s, color ease-in 0.2s;
 	outline: none;
 }
 

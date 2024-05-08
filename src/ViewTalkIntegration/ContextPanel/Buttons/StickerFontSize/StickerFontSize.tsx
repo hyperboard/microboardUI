@@ -1,4 +1,4 @@
-import React from "react";
+import React, { MouseEventHandler, useRef } from "react";
 import { usePanelContext } from "ViewTalkIntegration/ContextPanel/PanelContext";
 import { Icon } from "ViewTalkIntegration/Icon";
 import { FontSizePicker } from "ViewTalkIntegration/Pickers/FontSizePicker/FontSizePicker";
@@ -17,6 +17,7 @@ export function StickerFontSize() {
 		usePanelContext();
 
 	const { t } = useTalkTranslation();
+	const chevronRef = useRef<HTMLSpanElement>(null);
 
 	const fontSize = board.selection.getFontSize();
 	const text = board.selection.getText();
@@ -36,6 +37,31 @@ export function StickerFontSize() {
 		text?.autosizeEnable();
 	};
 
+	const handleChevronClick: MouseEventHandler = e => {
+		e.stopPropagation();
+
+		if (!chevronRef.current || !maxFontSize) {
+			return;
+		}
+
+		text?.autosizeDisable();
+
+		const rect = chevronRef.current.getBoundingClientRect();
+		const midpoint = rect.top + rect.height / 2;
+
+		if (e.clientY < midpoint) {
+			if (fontSize >= maxFontSize) {
+				return;
+			}
+			board.selection.setFontSize(fontSize + 1);
+		} else {
+			if (fontSize <= fontSizes[0]) {
+				return;
+			}
+			board.selection.setFontSize(fontSize - 1);
+		}
+	};
+
 	return (
 		<ButtonWithMenu
 			menuName={MENU_NAME}
@@ -53,7 +79,13 @@ export function StickerFontSize() {
 					<span className={style.fontSize}>
 						{isAuto ? t("contextPanel.fontSize.auto") : fontSize}
 					</span>
-					<Icon width={10} height={16} iconName="UpDownArrow" />
+					<span
+						ref={chevronRef}
+						onClick={handleChevronClick}
+						className={style.chevron}
+					>
+						<Icon width={10} height={16} iconName="UpDownArrow" />
+					</span>
 				</UiButton>
 			}
 		>

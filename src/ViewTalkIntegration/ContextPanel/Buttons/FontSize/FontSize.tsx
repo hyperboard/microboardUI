@@ -1,4 +1,4 @@
-import React from "react";
+import React, { MouseEventHandler, useRef } from "react";
 import { ButtonWithMenu } from "ViewTalkIntegration/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "ViewTalkIntegration/ContextPanel/PanelContext";
 import { Icon } from "ViewTalkIntegration/Icon";
@@ -16,6 +16,7 @@ export function FontSize() {
 	const { board, toggleMenu, openedMenu, panelMbr, windowHeight } =
 		usePanelContext();
 	const { t } = useTalkTranslation();
+	const chevronRef = useRef<HTMLSpanElement>(null);
 
 	const fontSize = board.selection.getFontSize();
 
@@ -26,6 +27,29 @@ export function FontSize() {
 	const handlePick = (size: number) => {
 		board.selection.setFontSize(size);
 		toggleMenu("None");
+	};
+
+	const handleChevronClick: MouseEventHandler = e => {
+		e.stopPropagation();
+
+		if (!chevronRef.current) {
+			return;
+		}
+
+		const rect = chevronRef.current.getBoundingClientRect();
+		const midpoint = rect.top + rect.height / 2;
+
+		if (e.clientY < midpoint) {
+			if (fontSize >= fontSizes[fontSizes.length - 1]) {
+				return;
+			}
+			board.selection.setFontSize(fontSize + 1);
+		} else {
+			if (fontSize <= fontSizes[0]) {
+				return;
+			}
+			board.selection.setFontSize(fontSize - 1);
+		}
 	};
 
 	return (
@@ -43,7 +67,13 @@ export function FontSize() {
 					onClick={handleClick}
 				>
 					<span className={style.fontSize}>{fontSize}</span>
-					<Icon width={10} height={16} iconName="UpDownArrow" />
+					<span
+						ref={chevronRef}
+						onClick={handleChevronClick}
+						className={style.chevron}
+					>
+						<Icon width={10} height={16} iconName="UpDownArrow" />
+					</span>
 				</UiButton>
 			}
 		>
