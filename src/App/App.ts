@@ -21,7 +21,7 @@ export function createApp(isHistory = true) {
 	const storage = new Storage();
 	const accounts = new Accounts(connection);
 
-	let board = undefined;
+	let board: Board;
 
 	function getBoard() {
 		return board;
