@@ -99,6 +99,28 @@ export function getController(getBoard: () => Board) {
 		}
 
 		if (
+			!isEditInProcess() &&
+			checkHotkeys(
+				{
+					selectAll: () => board.selection.addAll(),
+				},
+				event,
+			)
+		) {
+			return;
+		}
+		if (
+			checkHotkeys(
+				{
+					undo: () => board.events?.undo(),
+					redo: () => board.events?.redo(),
+				},
+				event,
+			)
+		) {
+			return;
+		}
+		if (
 			context !== "EditTextUnderPointer" &&
 			!isEditInProcess() &&
 			checkHotkeys(
@@ -109,12 +131,9 @@ export function getController(getBoard: () => Board) {
 					shape: () => board.tools.addShape(),
 					connector: () => board.tools.addConnector(),
 					pen: () => board.tools.addDrawing(),
-					undo: () => board.events?.undo(),
-					redo: () => board.events?.redo(),
 					zoomIn: () => board.camera.zoomInToViewCenter(),
 					zoomOut: () => board.camera.zoomOutFromViewCenter(),
 					zoomDefault: () => board.camera.zoomToViewCenter(1),
-					selectAll: () => board.selection.addAll(),
 				},
 				event,
 			)
@@ -175,10 +194,9 @@ export function getController(getBoard: () => Board) {
 		isHotkeyPushed("undo", event);
 		isHotkeyPushed("redo", event);
 		if (
-			context === "EditTextUnderPointer" ||
-			context === "EditUnderPointer" ||
-			context === "SelectByRect"
-		) {
+			(context === "EditTextUnderPointer" ||
+				context === "EditUnderPointer" ||
+				context === "SelectByRect") &&
 			checkHotkeys(
 				{
 					textBold: () => board.selection.setFontStyle(["bold"]),
@@ -189,7 +207,8 @@ export function getController(getBoard: () => Board) {
 						board.selection.setFontStyle(["underline"]),
 				},
 				event,
-			);
+			)
+		) {
 			return;
 		}
 
@@ -446,6 +465,7 @@ export function getController(getBoard: () => Board) {
 	}
 
 	function onCopy(event: ClipboardEvent): void {
+		console.log("copy");
 		if (isEditInProcess()) {
 			clipboard.set(event.clipboardData?.getData("text/plain"));
 			return;
