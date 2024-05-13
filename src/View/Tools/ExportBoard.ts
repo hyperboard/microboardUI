@@ -5,3 +5,5 @@ export const BACKGROUND_BLUR = 3;
 export const SELECTION_BOX_WIDTH = 500;
 export const SELECTION_BOX_HEIGHT = 350;
 export const FRAME_DECORATIONS: ExportFrameDecorationRecord | null = null;
+export const MIN_EXPORT_WIDTH = 200;
+export const MIN_EXPORT_HEIGHT = 200;
