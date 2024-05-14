@@ -10,6 +10,7 @@ import { getApiUrl } from "Config";
 import { Connection } from "./Connection";
 import { getSubscriptions } from "./getSubscriptions";
 import { getController } from "./getController";
+import { createTester } from "./testRecorder";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc =
 	"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js";
@@ -20,6 +21,7 @@ export function createApp(isHistory = true) {
 	const location = new Location();
 	const storage = new Storage();
 	const accounts = new Accounts(connection);
+	const test = createTester(getBoard);
 
 	let board: Board;
 
@@ -115,6 +117,7 @@ export function createApp(isHistory = true) {
 		openBoard,
 		getBoard,
 		render,
+		test,
 	};
 
 	function render() {
