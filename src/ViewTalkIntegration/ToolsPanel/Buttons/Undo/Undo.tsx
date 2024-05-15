@@ -18,6 +18,7 @@ export function Undo() {
 
 	return (
 		<UiButton
+			id={"undo"}
 			tooltip={t("toolsPanel.undo.tooltip")}
 			hotkey={getHotkeyLabel("undo")}
 			className={style.button}

@@ -29,6 +29,7 @@ type ColorPickerProps = {
 	onPick: (color: string) => void;
 	noneTitle?: string;
 	list?: any;
+	id?: string;
 };
 
 export function ColorPicker({
@@ -36,14 +37,15 @@ export function ColorPicker({
 	allowNone,
 	noneTitle,
 	list,
+	id = "",
 }: ColorPickerProps): React.ReactElement {
 	const { t } = useTranslation();
 
-	const buttons = [];
+	const buttons: React.ReactNode = [];
 	if (allowNone) {
 		buttons.push(
 			<UiButton
-				id={"none"}
+				id={`${id}None`}
 				title={noneTitle}
 				key={"none"}
 				onClick={() => {
@@ -66,7 +68,7 @@ export function ColorPicker({
 		const color = a[key];
 		buttons.push(
 			<UiButton
-				id={color}
+				id={`${id}${color}`}
 				title={t(`colors.${key}`)}
 				key={color}
 				onClick={() => {

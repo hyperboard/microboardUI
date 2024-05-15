@@ -47,6 +47,7 @@ export function AddStickerTool({ board, isOn }: Props) {
 				}}
 			>
 				<ColorPicker
+					id={"Sticker"}
 					allowNone={false}
 					onPick={handlePick}
 					list={stickerColors}

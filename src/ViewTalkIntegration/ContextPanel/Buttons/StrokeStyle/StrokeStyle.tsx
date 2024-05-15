@@ -62,6 +62,7 @@ export function StrokeStyle(): React.ReactElement | null {
 			align="left"
 			button={
 				<UiButton
+					id={"stroke-style"}
 					tooltip={t("contextPanel.strokeStyle.tooltip")}
 					tooltipPosition="top"
 					onClick={handleClick}
@@ -78,6 +79,7 @@ export function StrokeStyle(): React.ReactElement | null {
 					/>
 				</div>
 				<SliderPicker
+					id={"stroke-style-slider"}
 					width={borderWidth}
 					values={sliderValues}
 					showLabel
@@ -85,6 +87,7 @@ export function StrokeStyle(): React.ReactElement | null {
 				/>
 				<div className={clsx(style.colors)}>
 					<ColorPicker
+						id={"stroke-style"}
 						allowNone
 						isNotLast
 						colors={strokeColors}

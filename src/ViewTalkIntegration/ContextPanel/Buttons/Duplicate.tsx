@@ -11,7 +11,7 @@ export function Duplicate() {
 	};
 
 	return (
-		<UiButton onClick={handleClick}>
+		<UiButton id={"duplicate"} onClick={handleClick}>
 			<Icon width={18} height={18} iconName="Copy" />
 		</UiButton>
 	);

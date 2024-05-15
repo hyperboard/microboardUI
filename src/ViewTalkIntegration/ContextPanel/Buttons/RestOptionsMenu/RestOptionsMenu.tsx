@@ -45,7 +45,7 @@ export function RestOptionsMenu(): React.ReactElement | null {
 			menuName={MENU_NAME}
 			align="left"
 			button={
-				<UiButton onClick={handleClick}>
+				<UiButton id={"options-menu"} onClick={handleClick}>
 					<Icon iconName="Dots" />
 				</UiButton>
 			}
@@ -53,6 +53,7 @@ export function RestOptionsMenu(): React.ReactElement | null {
 			<UiPanel vertical className={style.menu}>
 				{isNotImage && (
 					<Item
+						id="options-menu-duplicate"
 						onClick={handleDuplicate}
 						hotkey={getHotkeyLabel("duplicate")}
 					>
@@ -60,12 +61,14 @@ export function RestOptionsMenu(): React.ReactElement | null {
 					</Item>
 				)}
 				<Item
+					id="options-menu-bring-to-front"
 					onClick={handleBringToFront}
 					hotkey={getHotkeyLabel("bringToFront")}
 				>
 					{t("contextPanel.bringToFront.text")}
 				</Item>
 				<Item
+					id="options-menu-send-to-back"
 					onClick={handleSendToBack}
 					hotkey={getHotkeyLabel("sendToBack")}
 				>
@@ -73,6 +76,7 @@ export function RestOptionsMenu(): React.ReactElement | null {
 				</Item>
 				{isNotImage && (
 					<Item
+						id="options-menu-delete"
 						onClick={handleDelete}
 						hotkey={getHotkeyLabel("delete")}
 					>

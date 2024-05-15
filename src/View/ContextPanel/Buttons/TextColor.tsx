@@ -75,7 +75,11 @@ export function TextColor({
 					visibility: menu === "TextColor" ? "visible" : "hidden",
 				}}
 			>
-				<ColorPicker allowNone={false} onPick={handlePick} />
+				<ColorPicker
+					id={"TextColor"}
+					allowNone={false}
+					onPick={handlePick}
+				/>
 			</div>
 		</ButtonWithMenu>
 	);

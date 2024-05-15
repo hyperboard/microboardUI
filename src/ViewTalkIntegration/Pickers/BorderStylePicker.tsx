@@ -26,13 +26,25 @@ export function StrokeStylePicker({
 
 	return (
 		<>
-			<UiButton onClick={handleSolidPick} active={stroke === "solid"}>
+			<UiButton
+				id={"stroke-solid"}
+				onClick={handleSolidPick}
+				active={stroke === "solid"}
+			>
 				<Icon width={16} height={16} iconName="DiagonalLine" />
 			</UiButton>
-			<UiButton onClick={handleDashPick} active={stroke === "dash"}>
+			<UiButton
+				id={"stroke-dash"}
+				onClick={handleDashPick}
+				active={stroke === "dash"}
+			>
 				<Icon width={16} height={16} iconName="DiagonalDashedLine" />
 			</UiButton>
-			<UiButton onClick={handleDotPick} active={stroke === "dot"}>
+			<UiButton
+				id={"stroke-dot"}
+				onClick={handleDotPick}
+				active={stroke === "dot"}
+			>
 				<Icon width={16} height={16} iconName="DiagonalDottedLine" />
 			</UiButton>
 		</>

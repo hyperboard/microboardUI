@@ -54,7 +54,7 @@ export function ConnectorAddText({
 			menuRef={menuRef}
 		>
 			<UiButton
-				id="ChangeConnectorType"
+				id="ConnectorAddText"
 				onClick={handleClick}
 				title={t("contextPanel.connectorAddText.tooltip")}
 			>

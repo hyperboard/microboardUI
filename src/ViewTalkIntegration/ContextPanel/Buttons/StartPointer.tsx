@@ -32,6 +32,7 @@ export function StartPointer(): React.ReactElement | null {
 			align="left"
 			button={
 				<UiButton
+					id={"start-pointer"}
 					tooltip={t("contextPanel.connectorStartPointer.tooltip")}
 					tooltipPosition="top"
 					onClick={handleClick}

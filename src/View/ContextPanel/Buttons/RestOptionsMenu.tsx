@@ -41,6 +41,7 @@ export function RestOptionsMenu({
 					<RestMenuIcon fill="#505050" width={20} height={20} />
 				</UiButton>
 				<div
+					id={"OptionsMenu"}
 					ref={menuRef}
 					className="ContextPanelMenu"
 					style={{

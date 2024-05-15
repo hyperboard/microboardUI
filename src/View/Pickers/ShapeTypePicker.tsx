@@ -34,11 +34,11 @@ type Props = {
 
 export function ShapePicker(props: Props): React.ReactElement {
 	const { t } = useTranslation();
-	const buttons = [];
+	const buttons: React.ReactNode = [];
 	for (const shape of shapes) {
 		buttons.push(
 			<UiButton
-				id={`Pick${shape}`}
+				id={`PickShape${shape}`}
 				title={t(`shapes.${shape}`)}
 				onClick={() => {
 					props.onPick(shape);

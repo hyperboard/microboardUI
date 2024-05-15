@@ -33,6 +33,7 @@ export function EndPointer(): React.ReactElement | null {
 			align="left"
 			button={
 				<UiButton
+					id={"end-pointer"}
 					tooltip={t("contextPanel.connectorEndPointer.tooltip")}
 					tooltipPosition="top"
 					onClick={handleClick}

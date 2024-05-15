@@ -24,7 +24,7 @@ export function FontSizePicker(props: Props): React.ReactElement {
 		position: "relative",
 	};
 
-	const fontButtons = [];
+	const fontButtons: React.ReactNode = [];
 	for (let i = 0; i < FontSizes.length; i++) {
 		const size = FontSizes[i];
 		const isDisabled =
@@ -37,6 +37,7 @@ export function FontSizePicker(props: Props): React.ReactElement {
 		fontButtons.push(
 			<React.Fragment key={i}>
 				<button
+					id={`FontSize${size}`}
 					onClick={() => {
 						props.onPick(size);
 					}}

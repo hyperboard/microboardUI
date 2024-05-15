@@ -82,7 +82,7 @@ export function TextAlignment({
 				/>
 			</UiButton>
 			<div
-				id="FillStyleMenu"
+				id="TextAlignmentMenu"
 				ref={menuRef}
 				className="ContextPanelMenu"
 				style={{

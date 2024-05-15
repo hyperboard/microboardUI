@@ -10,7 +10,7 @@ export function Delete() {
 	};
 
 	return (
-		<UiButton onClick={handleClick}>
+		<UiButton id={"delete"} onClick={handleClick}>
 			<Icon
 				width={15}
 				height={18}

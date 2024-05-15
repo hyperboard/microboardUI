@@ -79,7 +79,7 @@ export function StrokeStyle({
 				/>
 			</UiButton>
 			<div
-				id="FillStyleMenu"
+				id="StrokeStyleMenu"
 				ref={menuRef}
 				className="ContextPanelMenu"
 				style={{
@@ -88,9 +88,17 @@ export function StrokeStyle({
 					visibility: menu === "StrokeStyle" ? "visible" : "hidden",
 				}}
 			>
-				<SliderPicker onPick={handleStrokeWidthPick} width={width} />
+				<SliderPicker
+					id={"StrokeWidth"}
+					onPick={handleStrokeWidthPick}
+					width={width}
+				/>
 				<StrokeStylePicker onPick={handleStrokeStylePick} />
-				<ColorPicker allowNone={false} onPick={handleStrokeColorPick} />
+				<ColorPicker
+					id={"StrokeColor"}
+					allowNone={false}
+					onPick={handleStrokeColorPick}
+				/>
 			</div>
 		</ButtonWithMenu>
 	);

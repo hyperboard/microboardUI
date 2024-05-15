@@ -32,6 +32,7 @@ export function ItemType(): React.ReactElement | null {
 			align="left"
 			button={
 				<UiButton
+					id="item-type"
 					tooltip={t("contextPanel.changeShape.tooltip")}
 					tooltipPosition="top"
 					onClick={handleClick}

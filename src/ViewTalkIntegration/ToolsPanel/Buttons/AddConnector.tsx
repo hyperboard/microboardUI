@@ -30,6 +30,7 @@ export function AddConnector() {
 		<ButtonWithMenu
 			button={
 				<UiButton
+					id={"tool-add-connector"}
 					tooltip={t("toolsPanel.addConnector.tooltip")}
 					hotkey={getHotkeyLabel("connector")}
 					active={isActive}

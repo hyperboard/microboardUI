@@ -43,6 +43,7 @@ export function ConnectorFontSize() {
 			align="left"
 			button={
 				<UiButton
+					id={"connector-font-size"}
 					tooltip={t("contextPanel.fontSize.tooltip")}
 					tooltipPosition="top"
 					className={style.button}
@@ -55,6 +56,7 @@ export function ConnectorFontSize() {
 		>
 			<UiPanel vertical className={style.sizeList}>
 				<FontSizePicker
+					id="connector-font"
 					currentFontSize={fontSize}
 					fontSizes={fontSizes}
 					onPick={handlePick}

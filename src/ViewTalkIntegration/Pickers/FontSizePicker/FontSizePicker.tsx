@@ -8,6 +8,7 @@ type Props = {
 	max?: number;
 	fontSizes: number[];
 	currentFontSize: number;
+	id?: string;
 };
 
 export function FontSizePicker({
@@ -15,11 +16,13 @@ export function FontSizePicker({
 	max,
 	fontSizes,
 	currentFontSize,
+	id = "",
 }: Props): React.ReactElement {
 	return (
 		<>
 			{fontSizes.map(size => (
 				<UiButton
+					id={id ? `size-${size}` : `${id}-size-${size}`}
 					key={size}
 					onClick={() => onPick(size)}
 					className={clsx(

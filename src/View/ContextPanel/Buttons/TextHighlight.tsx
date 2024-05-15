@@ -76,6 +76,7 @@ export function TextHighlight({
 				}}
 			>
 				<ColorPicker
+					id={"TextHighlight"}
 					noneTitle={t("contextPanel.textHighlight.none")}
 					allowNone={true}
 					onPick={handlePick}

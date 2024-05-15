@@ -44,6 +44,7 @@ export function TextAlignmentSticker(): React.ReactElement | null {
 			align="center"
 			button={
 				<UiButton
+					id={"sticker-text-alignment"}
 					tooltip={t("contextPanel.textAlignment.tooltip")}
 					tooltipPosition="top"
 					onClick={handleClick}
