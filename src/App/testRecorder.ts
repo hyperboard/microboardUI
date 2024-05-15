@@ -2,13 +2,13 @@ import { Board } from "Board";
 // import { Selection } from "Board/Selection";
 
 interface Tester {
-	given: () => void;
-	when: () => void;
-	then: () => void;
+	start: () => void;
+	stop: () => void;
 }
 
 export function createTester(getBoard: () => Board): Tester {
-	let events: EventData[] = [];
+	const events: EventData[] = [];
+	let boardData = {};
 
 	const eventsToListenFor = [
 		"click",
@@ -20,16 +20,31 @@ export function createTester(getBoard: () => Board): Tester {
 		"keyup",
 	];
 
-	function startRecording(): void {
+	function start(): void {
+		const board = getBoard();
 		eventsToListenFor.forEach(event =>
 			document.addEventListener(event, recordEvent),
 		);
+		boardData = getBoardData(board);
 	}
 
-	function stopRecording(): void {
+	function stop(): void {
+		const board = getBoard();
 		eventsToListenFor.forEach(event =>
 			document.removeEventListener(event, recordEvent),
 		);
+		const compressedEvents = compressEvents(events);
+		const givenScript = generateDeserializePlaywrightCode(boardData);
+		const whenScript = generateEventsPlaywrightCode(compressedEvents);
+		const thenScript = generateComparisonPlaywrightCode(
+			getBoardData(board),
+		);
+		const cucumberScript = generateCucumberScript(
+			givenScript,
+			whenScript,
+			thenScript,
+		);
+		console.log("Recorded Playwright Script:\n", cucumberScript);
 	}
 
 	function recordEvent(event: Event): void {
@@ -39,23 +54,17 @@ export function createTester(getBoard: () => Board): Tester {
 		}
 	}
 
-	function given(): void {}
-
-	function when(): void {
-		startRecording();
-	}
-
-	function then(): void {
-		stopRecording();
-		const compressedEvents = compressEvents(events);
-		const script = generatePlaywrightCode(compressedEvents);
-		console.log("Recorded Playwright Script:\n", script.join("\n"));
-	}
-
 	return {
-		given,
-		when,
-		then,
+		start,
+		stop,
+	};
+}
+
+function getBoardData(board: Board) {
+	return {
+		itemsData: board.serialize(),
+		eventsData: board.events?.serialize(),
+		selectionData: board.selection.serialize(),
 	};
 }
 
@@ -149,7 +158,7 @@ interface KeyboardEventData {
 	timestamp: number;
 	type: "keydown" | "keyup";
 	key: string;
-	keyCode: number;
+	code: string;
 	altKey: boolean;
 	ctrlKey: boolean;
 	shiftKey: boolean;
@@ -162,7 +171,7 @@ function createKeyboardEventData(event: KeyboardEvent): KeyboardEventData {
 		timestamp: event.timeStamp,
 		type: event.type,
 		key: event.key,
-		keyCode: event.keyCode,
+		code: event.code,
 		altKey: event.altKey,
 		ctrlKey: event.ctrlKey,
 		shiftKey: event.shiftKey,
@@ -215,6 +224,11 @@ function compressEvents(eventList: EventData[]): CompressedEventData[] {
 	const compressed: CompressedEventData[] = [];
 	let pointerMoves: PointerEventData<"pointermove">[] = [];
 	let wheelEvents: WheelEventData[] = [];
+	let lastPointerMove: PointerEventData<"pointermove"> | null = null;
+	let lastWheelEvent: WheelEventData | null = null;
+
+	const POINTER_MOVE_INTERVAL = 200; // 5 times a second (1000ms / 5)
+	const WHEEL_EVENT_INTERVAL = 200; // 5 times a second (1000ms / 5)
 
 	function addNonBufferedEvent(event: CompressedEventData): void {
 		flushBuffers();
@@ -235,10 +249,28 @@ function compressEvents(eventList: EventData[]): CompressedEventData[] {
 	eventList.forEach(event => {
 		switch (event.type) {
 			case "pointermove":
-				pointerMoves.push(event);
+				if (
+					!lastPointerMove ||
+					event.timestamp - lastPointerMove.timestamp >
+						POINTER_MOVE_INTERVAL
+				) {
+					pointerMoves.push(event);
+					lastPointerMove = event;
+				} else {
+					pointerMoves[pointerMoves.length - 1] = event;
+				}
 				break;
 			case "wheel":
-				wheelEvents.push(event);
+				if (
+					!lastWheelEvent ||
+					event.timestamp - lastWheelEvent.timestamp >
+						WHEEL_EVENT_INTERVAL
+				) {
+					wheelEvents.push(event);
+					lastWheelEvent = event;
+				} else {
+					wheelEvents[wheelEvents.length - 1] = event;
+				}
 				break;
 			default:
 				addNonBufferedEvent(event);
@@ -250,14 +282,63 @@ function compressEvents(eventList: EventData[]): CompressedEventData[] {
 	return compressed;
 }
 
-function generatePlaywrightCode(events: CompressedEventData[]): string[] {
+function generateCucumberScript(
+	givenScript: string,
+	whenScript: string,
+	thenScript: string,
+): string {
+	return `
+import { BeforeAll, AfterAll, Given, When, Then } from "@cucumber/cucumber";
+import { chromium, Page, Browser } from "playwright";
+import { expect } from "chai";
+
+let browser: Browser;
+let page: Page;
+
+BeforeAll(async () => {
+	browser = await chromium.launch();
+});
+
+AfterAll(async () => {
+	await browser.close();
+});
+
+Given("The board is set to initial state", async () => {
+	page = await browser.newPage();
+	${givenScript}
+});
+
+When("The recorded events are replayed", async () => {
+	${whenScript}
+});
+
+Then("The board state should match the expected state", async () => {
+	${thenScript}
+});
+`;
+}
+
+function generateDeserializePlaywrightCode(boardData: any): string {
+	const { itemsData, eventsData, selectionData } = boardData;
+	return `
+		// Deserialize Board Data
+		await page.evaluate(() => {
+			const board = window.app.getBoard();
+			board.deserialize(\`${itemsData}\`);
+			board.events.deserialize(\`${eventsData}\`);
+			board.selection.deserialize(\`${selectionData}\`);
+		});
+	`;
+}
+
+function generateEventsPlaywrightCode(events: CompressedEventData[]): string {
 	const scriptLines: string[] = [];
 
 	for (const event of events) {
 		scriptLines.push(getPlaywrightLine(event));
 	}
 
-	return scriptLines;
+	return scriptLines.join("\n");
 }
 
 function getPlaywrightLine(event: CompressedEventData): string {
@@ -266,7 +347,11 @@ function getPlaywrightLine(event: CompressedEventData): string {
 			const moves = event.events
 				.map(event => `{ x: ${event.x}, y: ${event.y} }`)
 				.join(", ");
-			return `[${moves}].forEach(async ({x, y}) => { await page.mouse.move(x, y); }`;
+			return (
+				`for (const { x, y } of [${moves}]) {` +
+				`	await page.mouse.move(x, y);` +
+				`}`
+			);
 		case "wheel":
 			const wheelDeltas = event.events
 				.map(
@@ -274,13 +359,23 @@ function getPlaywrightLine(event: CompressedEventData): string {
 						`{ deltaX: ${event.deltaX}, deltaY: ${event.deltaY} }`,
 				)
 				.join(", ");
-			return `[${wheelDeltas}].forEach(async ({x, y}) => { await page.mouse.wheel(x, y); }`;
+			return (
+				`for (const { x, y } of [${wheelDeltas}]) {` +
+				`	await page.mouse.wheel(x, y);` +
+				`}`
+			);
 		case "click":
 			return `await page.click('${event.selector}');`;
 		case "pointerdown":
-			return `await page.mouse.down({ x: ${event.x}, y: ${event.y} });`;
+			return (
+				`await page.mouse.move(${event.x}, ${event.y});` +
+				`await page.mouse.down()`
+			);
 		case "pointerup":
-			return `await page.mouse.up();`;
+			return (
+				`await page.mouse.move(${event.x}, ${event.y});` +
+				`await page.mouse.up()`
+			);
 		case "keydown":
 			return `await page.keyboard.down('${event.key}');`;
 		case "keyup":
@@ -288,4 +383,22 @@ function getPlaywrightLine(event: CompressedEventData): string {
 		default:
 			return "";
 	}
+}
+
+function generateComparisonPlaywrightCode(currentBoardData): string {
+	const { itemsData, eventsData, selectionData } = currentBoardData;
+	return `
+		// Compare Board Data
+		const compareData = await page.evaluate(() => {
+			const board = window.app.getBoard();
+			return {
+				itemsData: board.serialize(),
+				eventsData: board.events.serialize(),
+				selectionData: board.selection.serialize(),
+			};
+		});
+		expect(compareData.itemsData).to.equal(\`${itemsData}\`);
+		expect(compareData.eventsData).to.equal(\`${eventsData}\`);
+		expect(compareData.selectionData).to.equal(\`${selectionData}\`);
+	`;
 }
