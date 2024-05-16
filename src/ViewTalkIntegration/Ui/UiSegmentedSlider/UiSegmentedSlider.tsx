@@ -1,10 +1,5 @@
 import clsx from "clsx";
-import React, {
-	ChangeEventHandler,
-	MouseEvent,
-	MouseEventHandler,
-	useState,
-} from "react";
+import React, { ChangeEventHandler, MouseEvent, useState } from "react";
 import style from "./UiSegmentedSlider.module.css";
 
 type Props = {
@@ -62,6 +57,7 @@ export function UiSegmentedSlider({ values, onChange, defaultValue }: Props) {
 						selectedValue >= value && style.active,
 					)}
 					style={{
+						display: selectedValue === value ? "none" : "block",
 						left: `calc(${
 							Math.round((index / numSegments) * 10) * 10
 						}% ${index === 0 ? "+ .4rem" : ""} ${
