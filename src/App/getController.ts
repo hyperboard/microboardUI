@@ -439,30 +439,15 @@ export function getController(getBoard: () => Board) {
 	}
 
 	function onPointerLeave(event: PointerEvent): void {
-		const board = getBoard();
-		if (!board) {
-			return;
-		}
-		const { camera } = board;
-		camera.removeDownEvent(event);
+		onPointerUp(event);
 	}
 
 	function onPointerCancel(event: PointerEvent): void {
-		const board = getBoard();
-		if (!board) {
-			return;
-		}
-		const { camera } = board;
-		camera.removeDownEvent(event);
+		onPointerUp(event);
 	}
 
 	function onPointerOut(event: PointerEvent): void {
-		const board = getBoard();
-		if (!board) {
-			return;
-		}
-		const { camera } = board;
-		camera.removeDownEvent(event);
+		onPointerUp(event);
 	}
 
 	function onCopy(event: ClipboardEvent): void {
