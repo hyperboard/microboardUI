@@ -28,7 +28,7 @@ export class CanvasBase extends React.Component<Props> {
 		this.forceUpdate();
 	};
 
-	initCanvasRendering = (): void => {
+	renderToContext = (): void => {
 		const canvas = this.canvasRef.current;
 		if (!canvas) {
 			return;
@@ -39,15 +39,17 @@ export class CanvasBase extends React.Component<Props> {
 		}
 		const context = new DrawingContext(this.props.board.camera, ctx);
 		const { board } = this.props;
-		this.renderToContext = (): void => {
-			context.setCamera(board.camera);
-			context.clear();
-			board.items.render(context);
-			board.selection.render(context);
-			board.tools.render(context);
-		};
+
+		context.setCamera(board.camera);
+		context.clear();
+		board.items.render(context);
+		board.selection.render(context);
+		board.tools.render(context);
+	};
+
+	initCanvasRendering = (): void => {
 		this.renderToContext();
-		this.drawingContextSubscription.observer = this.renderToContext;
+		// this.drawingContextSubscription.observer = this.renderToContext;
 		this.props.app.subscriptions.add(this.drawingContextSubscription);
 		this.props.app.subscriptions.add(this.cursorSubsctiption);
 	};
@@ -59,6 +61,7 @@ export class CanvasBase extends React.Component<Props> {
 		) {
 			this.initCanvasRendering();
 		}
+		this.renderToContext();
 	}
 
 	componentDidMount(): void {
@@ -97,10 +100,10 @@ export class CanvasBase extends React.Component<Props> {
 		this.props.app.subscriptions.remove(this.cursorSubsctiption);
 	}
 
-	renderToContext = (): void => {};
+	// renderToContext = (): void => {};
 
 	drawingContextSubscription = {
-		observer: () => {},
+		observer: () => this.forceUpdate(),
 		subjects: ["camera", "items", "tools", "selection"],
 	};
 
