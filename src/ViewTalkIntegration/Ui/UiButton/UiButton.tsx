@@ -8,6 +8,7 @@ type UiButtonProps = HTMLAttributes<HTMLButtonElement> & {
 	tooltip?: string;
 	hotkey?: string;
 	tooltipPosition?: "right" | "top" | "top-left" | "top-right" | "bottom";
+	variant?: "default" | "danger" | "action" | "secondary";
 };
 
 export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
@@ -20,6 +21,7 @@ export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
 			tooltip,
 			tooltipPosition = "right",
 			hotkey,
+			variant = "default",
 			...props
 		},
 		ref,
@@ -29,6 +31,7 @@ export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
 				className={clsx(
 					style.button,
 					active && style.active,
+					style[variant],
 					className,
 				)}
 				ref={ref}

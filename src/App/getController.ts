@@ -134,6 +134,7 @@ export function getController(getBoard: () => Board) {
 					zoomIn: () => board.camera.zoomInToViewCenter(),
 					zoomOut: () => board.camera.zoomOutFromViewCenter(),
 					zoomDefault: () => board.camera.zoomToViewCenter(1),
+					cancel: () => board.tools.cancel(),
 				},
 				event,
 			)

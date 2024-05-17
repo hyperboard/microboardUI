@@ -48,6 +48,11 @@ export function ToolsPanel({ app, board, sidePanelState }: Props) {
 
 	const toggleMenu = (menu: string) =>
 		setOpenedMenu(prev => (prev === menu ? "None" : menu));
+	const isExport = board.tools.getExport();
+
+	if (isExport) {
+		return null;
+	}
 
 	return (
 		<PanelContext.Provider value={{ board, toggleMenu, openedMenu }}>

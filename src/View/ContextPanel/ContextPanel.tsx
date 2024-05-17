@@ -48,8 +48,8 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 		setOpenedMenu(prev => (prev === menu ? "None" : menu));
 
 	const windowHeight = board.camera.window.height;
-	const isVisible =
-		board.selection.getContext() !== "None" || !board.selection.isOn;
+	const isVisible = board.selection.getContext() !== "None";
+
 	if (!isVisible) {
 		return null;
 	}

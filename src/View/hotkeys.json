@@ -181,6 +181,15 @@
 			"windows": "Delete"
 		}
 	},
+	"cancel": {
+		"key": {
+			"button": "Escape"
+		},
+		"label": {
+			"mac": "Esc",
+			"windows": "Esc"
+		}
+	},
 	"selectAll": {
 		"key": {
 			"button": "KeyA",
