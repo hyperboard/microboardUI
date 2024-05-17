@@ -228,5 +228,9 @@
 		"textPlaceholder": "Type something"
 	},
 	"thickness": "Thickness",
-	"appTitle": "Microboard"
+	"appTitle": "Microboard",
+	"export": {
+		"confirm": "Export",
+		"cancel": "Cancel"
+	}
 }

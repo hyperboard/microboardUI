@@ -180,5 +180,14 @@
 			"mac": "Delete",
 			"windows": "Delete"
 		}
+	},
+	"cancel": {
+		"key": {
+			"button": "Escape"
+		},
+		"label": {
+			"mac": "Esc",
+			"windows": "Esc"
+		}
 	}
 }

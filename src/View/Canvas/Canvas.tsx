@@ -148,6 +148,23 @@ export class CanvasBase extends React.Component<Props> {
 						height: `${height}px`,
 					}}
 				/>
+				<canvas
+					width={Math.floor(width * window.devicePixelRatio)}
+					height={Math.floor(height * window.devicePixelRatio)}
+					className="NoContextMenu"
+					id="ExportLayer"
+					style={{
+						padding: "0px",
+						margin: "0px",
+						border: "0px",
+						background: "transparent",
+						top: "0px",
+						left: "0px",
+						position: "absolute",
+						width: `${width}px`,
+						height: `${height}px`,
+					}}
+				/>
 			</div>
 		);
 	}

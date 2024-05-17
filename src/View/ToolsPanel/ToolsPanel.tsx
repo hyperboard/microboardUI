@@ -45,6 +45,12 @@ export function ToolsPanel({ app, board, sidePanelState }: Props) {
 	const sidePanelWidth = sidePanelState.width;
 	const left = isSidePanelOn ? sidePanelWidth + 24 : 8;
 
+	const isExport = board.tools.getExport();
+
+	if (isExport) {
+		return null;
+	}
+
 	return (
 		<div
 			id="ToolsPanel"
