@@ -53,8 +53,8 @@ export function RestOptionsMenu({
 						visibility: menu === "RestMenu" ? "visible" : "hidden",
 					}}
 				>
-					<BringToFront board={board} />
-					<BringToBack board={board} />
+					<BringToFront board={board} toggleMenu={toggleMenu} />
+					<BringToBack board={board} toggleMenu={toggleMenu} />
 				</div>
 			</ButtonWithMenu>
 		</>
@@ -93,16 +93,17 @@ function RestOptionsMenuItem({
 	);
 }
 
-type BringToFrontProps = { board: Board };
+type BringToFrontProps = { board: Board; toggleMenu: (menu: string) => void };
 
-function BringToFront({ board }: BringToFrontProps): React.ReactElement | null {
+function BringToFront({
+	board,
+	toggleMenu,
+}: BringToFrontProps): React.ReactElement | null {
 	const { t } = useTranslation();
-	const items = board.selection.items;
 
 	const handleClick = () => {
-		for (const item of items.list()) {
-			board.items.index.bringToFront(item);
-		}
+		board.selection.bringToFront();
+		toggleMenu("None");
 	};
 	return (
 		<RestOptionsMenuItem
@@ -115,16 +116,17 @@ function BringToFront({ board }: BringToFrontProps): React.ReactElement | null {
 	);
 }
 
-type BringToBackProps = { board: Board };
+type BringToBackProps = { board: Board; toggleMenu: (menu: string) => void };
 
-function BringToBack({ board }: BringToBackProps): React.ReactElement | null {
-	const items = board.selection.items;
+function BringToBack({
+	board,
+	toggleMenu,
+}: BringToBackProps): React.ReactElement | null {
 	const { t } = useTranslation();
 
 	const handleClick = () => {
-		for (const item of items.list()) {
-			board.items.index.sendToBack(item);
-		}
+		board.selection.sendToBack();
+		toggleMenu("None");
 	};
 	return (
 		<RestOptionsMenuItem

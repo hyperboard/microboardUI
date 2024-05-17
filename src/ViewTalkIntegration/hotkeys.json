@@ -19,11 +19,12 @@
 	},
 	"sticker": {
 		"key": {
-			"button": "KeyN"
+			"button": "KeyN",
+			"shift": true
 		},
 		"label": {
-			"mac": "N",
-			"windows": "N"
+			"mac": "⇧N",
+			"windows": "Shift + N"
 		}
 	},
 	"shape": {
@@ -188,6 +189,36 @@
 		"label": {
 			"mac": "Esc",
 			"windows": "Esc"
+		}
+	},
+	"selectAll": {
+		"key": {
+			"button": "KeyA",
+			"ctrl": true
+		},
+		"label": {
+			"mac": "⌘A",
+			"windows": "Ctrl + A"
+		}
+	},
+	"copy": {
+		"key": {
+			"button": "KeyC",
+			"ctrl": true
+		},
+		"label": {
+			"mac": "⌘C",
+			"windows": "Ctrl + C"
+		}
+	},
+	"paste": {
+		"key": {
+			"button": "KeyV",
+			"ctrl": true
+		},
+		"label": {
+			"mac": "⌘V",
+			"windows": "Ctrl + V"
 		}
 	}
 }

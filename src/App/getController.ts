@@ -1,19 +1,14 @@
-import {
-	RichText,
-	isEditInProcess,
-	toggleEdit,
-} from "Board/Items/RichText/RichText";
-import { isNotControlCharacter } from "View/isNotControlCharacter";
-import { Wheel } from "./Wheel/Wheel";
 import { Board } from "Board";
 import { Mbr } from "Board/Items";
 import { ImageItem } from "Board/Items/Image";
-import { validateItemsMap, validateRichTextData } from "Board/Validators";
-import { isSafari } from "./isSafari";
-import { isFirefox } from "./isFirefox";
-import { Clipboard } from "./Clipboard";
-import { isIframe } from "lib/isIframe";
+import { isEditInProcess, RichText } from "Board/Items/RichText/RichText";
 import { checkHotkeys, isHotkeyPushed } from "Board/Keyboard/hotkeys";
+import { validateItemsMap } from "Board/Validators";
+import { isNotControlCharacter } from "View/isNotControlCharacter";
+import { Clipboard } from "./Clipboard";
+import { isFirefox } from "./isFirefox";
+import { isSafari } from "./isSafari";
+import { Wheel } from "./Wheel/Wheel";
 
 export function getController(getBoard: () => Board) {
 	const isMouse = true;
@@ -82,29 +77,52 @@ export function getController(getBoard: () => Board) {
 		}
 
 		const context = board.selection.getContext();
-
-		if (context === "EditTextUnderPointer") {
-			isHotkeyPushed("textBold", event);
-			isHotkeyPushed("textItalic", event);
-			isHotkeyPushed("textStrike", event);
-			isHotkeyPushed("textUnderline", event);
+		if (
+			(context === "EditTextUnderPointer" ||
+				context === "SelectByRect" ||
+				context === "EditUnderPointer") &&
+			checkHotkeys(
+				{
+					duplicate: () => board.selection.duplicate(),
+					bringToFront: () => board.selection.bringToFront(),
+					sendToBack: () => board.selection.sendToBack(),
+					delete: () => board.selection.removeFromBoard(),
+					textBold: () => event.preventDefault(),
+					textItalic: () => event.preventDefault(),
+					textStrike: () => event.preventDefault(),
+					textUnderline: () => event.preventDefault(),
+				},
+				event,
+			)
+		) {
+			return;
 		}
 
-		checkHotkeys(
-			{
-				zoomIn: () => board.camera.zoomInToViewCenter(),
-				zoomOut: () => board.camera.zoomOutFromViewCenter(),
-				zoomDefault: () => board.camera.zoomToViewCenter(1),
-				cancel: () => board.tools.cancel(),
-			},
-			event,
-		);
-
 		if (
-			context !== "EditUnderPointer" &&
-			context !== "SelectByRect" &&
-			context !== "EditTextUnderPointer"
+			!isEditInProcess() &&
+			checkHotkeys(
+				{
+					selectAll: () => board.selection.addAll(),
+				},
+				event,
+			)
 		) {
+			return;
+		}
+		if (
+			checkHotkeys(
+				{
+					undo: () => board.events?.undo(),
+					redo: () => board.events?.redo(),
+				},
+				event,
+			)
+		) {
+			return;
+		}
+		if (
+			context !== "EditTextUnderPointer" &&
+			!isEditInProcess() &&
 			checkHotkeys(
 				{
 					select: () => board.tools.select(),
@@ -113,88 +131,16 @@ export function getController(getBoard: () => Board) {
 					shape: () => board.tools.addShape(),
 					connector: () => board.tools.addConnector(),
 					pen: () => board.tools.addDrawing(),
-					undo: () => board.events?.undo(),
-					redo: () => board.events?.redo(),
+					zoomIn: () => board.camera.zoomInToViewCenter(),
+					zoomOut: () => board.camera.zoomOutFromViewCenter(),
+					zoomDefault: () => board.camera.zoomToViewCenter(1),
+					cancel: () => board.tools.cancel(),
 				},
 				event,
-			);
-		}
-
-		if (
-			context === "EditUnderPointer" ||
-			context === "SelectByRect" ||
-			context === "EditTextUnderPointer"
+			)
 		) {
-			checkHotkeys(
-				{
-					duplicate: () => board.selection.duplicate(),
-					bringToFront: () => board.selection.bringToFront(),
-					sendToBack: () => board.selection.sendToBack(),
-					delete: () => board.selection.removeFromBoard(),
-				},
-				event,
-			);
-		}
-		const key = event.code;
-
-		if (board.selection.getContext() !== "SelectUnderPointer") {
-			if (key === "PageUp") {
-				const items = board.selection.list();
-				for (const item of items) {
-					board.items.index.bringToFront(item);
-				}
-			}
-			if (key === "PageDown") {
-				const items = board.selection.list();
-				for (const item of items) {
-					board.items.index.sendToBack(item);
-				}
-			}
-		}
-
-		if (isEditInProcess()) {
-			if ((event.ctrlKey || event.metaKey) && event.code === "KeyV") {
-				const data = clipboard.get();
-				if (data) {
-					const isDataValid = validateItemsMap(data);
-					if (isDataValid) {
-						const keys = Object.keys(data);
-						if (keys.length === 1) {
-							const itemData = data[keys[0]];
-							if (itemData.itemType === "RichText") {
-								return;
-							}
-						}
-						event.preventDefault();
-						board.paste(data);
-					}
-				}
-			}
 			return;
-		}
-		board.keyboard.keyDown(event);
-
-		if ((event.ctrlKey || event.metaKey) && key === "KeyA") {
-			const items = board.items.listAll();
-			board.selection.add(items);
-		}
-		if (
-			(event.ctrlKey || event.metaKey) &&
-			(key === "KeyC" || key === "KeyV")
-		) {
-			if (isFirefox() && key === "KeyC") {
-				event.currentTarget?.dispatchEvent(
-					new Event("copy", { bubbles: true }),
-				);
-			}
-			if (isFirefox() && key === "KeyV") {
-				event.currentTarget?.dispatchEvent(
-					new Event("paste", { bubbles: true }),
-				);
-			}
-			return;
-		}
-		if (
+		} else if (
 			isNotControlCharacter(event.key) &&
 			board.selection.items.isSingle()
 		) {
@@ -213,6 +159,27 @@ export function getController(getBoard: () => Board) {
 			}
 		}
 
+		if (isFirefox()) {
+			console.log("copy/paste");
+			checkHotkeys(
+				{
+					copy: e =>
+						e?.currentTarget?.dispatchEvent(
+							new ClipboardEvent("copy", {
+								bubbles: true,
+								clipboardData: new DataTransfer(),
+							}),
+						),
+					paste: e =>
+						e?.currentTarget?.dispatchEvent(
+							new ClipboardEvent("paste", { bubbles: true }),
+						),
+				},
+				event,
+			);
+		}
+
+		board.keyboard.keyDown(event);
 		if (!board.selection.tool.keyDown(board.keyboard.down)) {
 			board.tools.keyDown(board.keyboard.down);
 		}
@@ -224,9 +191,13 @@ export function getController(getBoard: () => Board) {
 		if (!board) {
 			return;
 		}
+		const context = board.selection.getContext();
 		isHotkeyPushed("undo", event);
 		isHotkeyPushed("redo", event);
-		if (board.selection.getContext() === "EditTextUnderPointer") {
+		if (
+			(context === "EditTextUnderPointer" ||
+				context === "EditUnderPointer" ||
+				context === "SelectByRect") &&
 			checkHotkeys(
 				{
 					textBold: () => board.selection.setFontStyle(["bold"]),
@@ -237,7 +208,8 @@ export function getController(getBoard: () => Board) {
 						board.selection.setFontStyle(["underline"]),
 				},
 				event,
-			);
+			)
+		) {
 			return;
 		}
 
@@ -494,6 +466,7 @@ export function getController(getBoard: () => Board) {
 	}
 
 	function onCopy(event: ClipboardEvent): void {
+		console.log("copy");
 		if (isEditInProcess()) {
 			clipboard.set(event.clipboardData?.getData("text/plain"));
 			return;

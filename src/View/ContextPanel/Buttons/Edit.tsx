@@ -16,7 +16,11 @@ export function Edit({ board }: EditProps): React.ReactElement | null {
 	};
 
 	return (
-		<UiButton id="ContextPanelEdit" onClick={handleClick} title="Edit">
+		<UiButton
+			id="ContextPanelEdit"
+			onClick={handleClick}
+			title={t("contextPanel.edit.text")}
+		>
 			{t("contextPanel.edit.text")}
 		</UiButton>
 	);
