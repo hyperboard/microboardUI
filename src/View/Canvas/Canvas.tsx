@@ -24,11 +24,7 @@ export class CanvasBase extends React.Component<Props> {
 		}
 	};
 
-	update = (): void => {
-		this.forceUpdate();
-	};
-
-	initCanvasRendering = (): void => {
+	renderToContext = (): void => {
 		const canvas = this.canvasRef.current;
 		if (!canvas) {
 			return;
@@ -39,17 +35,19 @@ export class CanvasBase extends React.Component<Props> {
 		}
 		const context = new DrawingContext(this.props.board.camera, ctx);
 		const { board } = this.props;
-		this.renderToContext = (): void => {
-			context.setCamera(board.camera);
-			context.clear();
-			board.items.render(context);
-			board.selection.render(context);
-			board.tools.render(context);
-		};
+
+		context.setCamera(board.camera);
+		context.clear();
+		board.items.render(context);
+		board.selection.render(context);
+		board.tools.render(context);
+	};
+
+	initCanvasRendering = (): void => {
 		this.renderToContext();
-		this.drawingContextSubscription.observer = this.renderToContext;
 		this.props.app.subscriptions.add(this.drawingContextSubscription);
-		this.props.app.subscriptions.add(this.cursorSubsctiption);
+		this.props.app.subscriptions.add(this.cursorSubscription);
+		this.props.app.subscriptions.add(this.resizeSubscription);
 	};
 
 	componentDidUpdate(prevProps: Readonly<Props>): void {
@@ -94,19 +92,27 @@ export class CanvasBase extends React.Component<Props> {
 			);
 		}
 		this.props.app.subscriptions.remove(this.drawingContextSubscription);
-		this.props.app.subscriptions.remove(this.cursorSubsctiption);
+		this.props.app.subscriptions.remove(this.cursorSubscription);
+		this.props.app.subscriptions.remove(this.resizeSubscription);
 	}
 
-	renderToContext = (): void => {};
-
 	drawingContextSubscription = {
-		observer: () => {},
+		observer: () => {
+			this.renderToContext();
+		},
 		subjects: ["camera", "items", "tools", "selection"],
 	};
 
-	cursorSubsctiption = {
+	cursorSubscription = {
 		observer: this.updateCursor,
 		subjects: ["pointer"],
+	};
+
+	resizeSubscription = {
+		observer: () => {
+			this.forceUpdate();
+		},
+		subjects: ["cameraResize"],
 	};
 
 	render(): React.ReactElement {
