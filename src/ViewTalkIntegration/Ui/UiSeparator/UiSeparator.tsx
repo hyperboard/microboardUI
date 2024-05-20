@@ -9,10 +9,17 @@ type Props = {
 export function UiSeparator({ vertical = false }: Props) {
 	return (
 		<div
-			className={clsx([
-				style.separator,
+			className={clsx(
+				style.container,
 				vertical ? style.vertical : style.horizontal,
-			])}
-		/>
+			)}
+		>
+			<div
+				className={clsx([
+					style.separator,
+					vertical ? style.vertical : style.horizontal,
+				])}
+			/>
+		</div>
 	);
 }

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { ChangeEventHandler, useState } from "react";
+import React, { ChangeEventHandler, MouseEvent, useState } from "react";
 import style from "./UiSegmentedSlider.module.css";
 
 type Props = {
@@ -26,6 +26,13 @@ export function UiSegmentedSlider({
 		onChange(nearestValue);
 	};
 
+	const handleDotClick =
+		(value: number, index: number) => (e: MouseEvent) => {
+			setSelectedValue(value);
+			const nearestValue = values[index];
+			onChange(nearestValue);
+		};
+
 	const numSegments = values.length - 1;
 
 	return (
@@ -50,12 +57,14 @@ export function UiSegmentedSlider({
 			/>
 			{values.map((value, index) => (
 				<span
+					onClick={handleDotClick(value, index)}
 					key={index}
 					className={clsx(
 						style.dot,
 						selectedValue >= value && style.active,
 					)}
 					style={{
+						display: selectedValue === value ? "none" : "block",
 						left: `calc(${
 							Math.round((index / numSegments) * 10) * 10
 						}% ${index === 0 ? "+ .4rem" : ""} ${
