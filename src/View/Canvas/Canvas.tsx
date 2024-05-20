@@ -24,10 +24,6 @@ export class CanvasBase extends React.Component<Props> {
 		}
 	};
 
-	update = (): void => {
-		this.forceUpdate();
-	};
-
 	renderToContext = (): void => {
 		const canvas = this.canvasRef.current;
 		if (!canvas) {
@@ -49,9 +45,9 @@ export class CanvasBase extends React.Component<Props> {
 
 	initCanvasRendering = (): void => {
 		this.renderToContext();
-		// this.drawingContextSubscription.observer = this.renderToContext;
 		this.props.app.subscriptions.add(this.drawingContextSubscription);
-		this.props.app.subscriptions.add(this.cursorSubsctiption);
+		this.props.app.subscriptions.add(this.cursorSubscription);
+		this.props.app.subscriptions.add(this.resizeSubscription);
 	};
 
 	componentDidUpdate(prevProps: Readonly<Props>): void {
@@ -61,7 +57,6 @@ export class CanvasBase extends React.Component<Props> {
 		) {
 			this.initCanvasRendering();
 		}
-		this.renderToContext();
 	}
 
 	componentDidMount(): void {
@@ -97,19 +92,27 @@ export class CanvasBase extends React.Component<Props> {
 			);
 		}
 		this.props.app.subscriptions.remove(this.drawingContextSubscription);
-		this.props.app.subscriptions.remove(this.cursorSubsctiption);
+		this.props.app.subscriptions.remove(this.cursorSubscription);
+		this.props.app.subscriptions.remove(this.resizeSubscription);
 	}
 
-	// renderToContext = (): void => {};
-
 	drawingContextSubscription = {
-		observer: () => this.forceUpdate(),
+		observer: () => {
+			this.renderToContext();
+		},
 		subjects: ["camera", "items", "tools", "selection"],
 	};
 
-	cursorSubsctiption = {
+	cursorSubscription = {
 		observer: this.updateCursor,
 		subjects: ["pointer"],
+	};
+
+	resizeSubscription = {
+		observer: () => {
+			this.forceUpdate();
+		},
+		subjects: ["cameraResize"],
 	};
 
 	render(): React.ReactElement {

@@ -17,6 +17,7 @@ export function getSubscriptions(getBoard: () => Board): Subscriptions {
 
 	const subjects: Map<string, () => Subject<any>> = new Map([
 		["camera", () => board.camera.subject],
+		["cameraResize", () => board.camera.resizeSubject],
 		["selection", () => board.selection.subject],
 		["selectionItem", () => board.selection.itemSubject],
 		["selectionItems", () => board.selection.itemsSubject],
