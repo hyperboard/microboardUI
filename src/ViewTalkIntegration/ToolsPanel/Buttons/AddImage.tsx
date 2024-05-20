@@ -31,6 +31,7 @@ export function AddImage() {
 
 	return (
 		<UiButton
+			id={"tool-add-image"}
 			tooltip={t("toolsPanel.addImage.tooltip")}
 			onClick={handleClick}
 		>

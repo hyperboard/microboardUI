@@ -30,11 +30,11 @@ export function ConnectorStartPointerPicker({
 	onPick,
 }: Props): React.ReactElement {
 	const { t } = useTranslation();
-	const buttons = [];
+	const buttons: React.ReactNode = [];
 	for (const type of pointerTypes) {
 		buttons.push(
 			<UiButton
-				id={type}
+				id={`StartPointer${type}`}
 				key={type}
 				onClick={() => {
 					onPick(type);
@@ -54,11 +54,11 @@ export function ConnectorEndPointerPicker({
 	onPick: (pointer: string) => void;
 }): React.ReactElement {
 	const { t } = useTranslation();
-	const buttons = [];
+	const buttons: React.ReactNode = [];
 	for (const pointerType of pointerTypes) {
 		buttons.push(
 			<UiButton
-				id={pointerType}
+				id={`EndPointer${pointerType}`}
 				key={pointerType}
 				onClick={() => {
 					onPick(pointerType);

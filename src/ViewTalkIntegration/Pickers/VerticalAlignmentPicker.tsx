@@ -16,16 +16,22 @@ export function VerticalAlignmentPicker({
 		onPick(alignment);
 	return (
 		<>
-			<UiButton onClick={handlePick("top")} active={alignment === "top"}>
+			<UiButton
+				id="vertical-alignment-top"
+				onClick={handlePick("top")}
+				active={alignment === "top"}
+			>
 				<Icon iconName={"VerticalAlignTop"} width={16} height={16} />
 			</UiButton>
 			<UiButton
+				id="vertical-alignment-center"
 				onClick={handlePick("center")}
 				active={alignment === "center"}
 			>
 				<Icon iconName={"VerticalAlignCenter"} width={16} height={16} />
 			</UiButton>
 			<UiButton
+				id="vertical-alignment-bottom"
 				onClick={handlePick("bottom")}
 				active={alignment === "bottom"}
 			>

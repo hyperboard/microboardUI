@@ -44,6 +44,7 @@ export function DrawFillStyle(): React.ReactElement | null {
 			align="center"
 			button={
 				<UiButton
+					id={"drawing-fill-style"}
 					tooltip={t("contextPanel.penColor.tooltip")}
 					tooltipPosition="top"
 					onClick={handleClick}
@@ -58,6 +59,7 @@ export function DrawFillStyle(): React.ReactElement | null {
 		>
 			<UiPanel grid columns={4}>
 				<ColorPicker
+					id={"drawing"}
 					selectedColor={color}
 					colors={drawingColors}
 					onPick={handlePick}

@@ -75,6 +75,7 @@ export function StickerFillStyle({
 				}}
 			>
 				<ColorPicker
+					id={"StickerFillStyle"}
 					onPick={(color: string) => {
 						board.selection.setFillColor(color);
 						// TODO: use Storage.ts instead

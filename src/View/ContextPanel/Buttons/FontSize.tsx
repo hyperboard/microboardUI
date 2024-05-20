@@ -138,6 +138,7 @@ export function FontSize({
 		>
 			<div style={{ display: "flex", alignItems: "center" }}>
 				<input
+					id={"FontSizeInput"}
 					onClick={handleClick}
 					type={inputType}
 					min="10"
@@ -168,6 +169,7 @@ export function FontSize({
 				/>
 				<div style={{ display: "flex", flexDirection: "column" }}>
 					<div
+						id={"FontSizeChevronUp"}
 						style={{
 							display: "flex",
 							flexDirection: "column",
@@ -179,6 +181,7 @@ export function FontSize({
 						<Icon width={16} height={16} name="ChevronUp" />
 					</div>
 					<div
+						id={"FontSizeChevronDown"}
 						style={{
 							display: "flex",
 							flexDirection: "column",
@@ -192,7 +195,7 @@ export function FontSize({
 				</div>
 			</div>
 			<div
-				id="FillStyleMenu"
+				id="FontSizeMenu"
 				ref={menuRef}
 				className="ContextPanelMenu"
 				style={{

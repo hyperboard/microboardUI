@@ -15,6 +15,7 @@ export function DrawStrokeWidth() {
 
 	return (
 		<SliderPicker
+			id={"drawing-stroke-width"}
 			width={width}
 			onPick={handleSliderPick}
 			values={sliderValues}

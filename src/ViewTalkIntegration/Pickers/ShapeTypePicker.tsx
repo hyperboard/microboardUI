@@ -29,7 +29,11 @@ export function ShapePicker({ onPick }: Props): React.ReactElement {
 	return (
 		<>
 			{shapes.map(shape => (
-				<UiButton onClick={() => onPick(shape)} key={shape}>
+				<UiButton
+					id={`shape-${shape}`}
+					onClick={() => onPick(shape)}
+					key={shape}
+				>
 					<Icon iconName={shape} width={20} height={20} />
 				</UiButton>
 			))}

@@ -10,6 +10,7 @@ type Props = {
 	fontSizes: number[];
 	currentFontSize: number | "auto";
 	onAutoSizePick?: () => void;
+	id?: string;
 };
 
 export function FontSizePicker({
@@ -18,6 +19,7 @@ export function FontSizePicker({
 	fontSizes,
 	currentFontSize,
 	onAutoSizePick,
+	id = "",
 }: Props): React.ReactElement {
 	const { t } = useTalkTranslation();
 
@@ -37,6 +39,7 @@ export function FontSizePicker({
 			)}
 			{fontSizes.map(size => (
 				<UiButton
+					id={id ? `size-${size}` : `${id}-size-${size}`}
 					key={size}
 					onClick={() => onPick(size)}
 					className={clsx(

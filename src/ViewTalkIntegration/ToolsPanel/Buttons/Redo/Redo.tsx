@@ -18,6 +18,7 @@ export function Redo() {
 
 	return (
 		<UiButton
+			id={"redo"}
 			tooltip={t("toolsPanel.redo.tooltip")}
 			hotkey={getHotkeyLabel("redo")}
 			className={style.button}

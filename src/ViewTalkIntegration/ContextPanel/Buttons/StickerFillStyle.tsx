@@ -43,6 +43,7 @@ export function StickerFillStyle(): React.ReactElement | null {
 			align="left"
 			button={
 				<UiButton
+					id="sticker-fill-style"
 					tooltip={t("contextPanel.stickerColor.tooltip")}
 					tooltipPosition="top"
 					onClick={handleClick}
@@ -57,6 +58,7 @@ export function StickerFillStyle(): React.ReactElement | null {
 		>
 			<UiPanel grid columns={4}>
 				<ColorPicker
+					id="sticker-fill"
 					selectedColor={color}
 					colors={stickerColors}
 					onPick={handlePick}

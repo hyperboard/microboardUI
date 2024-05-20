@@ -8,6 +8,7 @@ type Props = {
 	allowNone?: boolean;
 	colors: string[];
 	isNotLast?: boolean;
+	id?: string;
 };
 
 export function ColorPicker({
@@ -16,6 +17,7 @@ export function ColorPicker({
 	allowNone = false,
 	colors,
 	isNotLast = false,
+	id = "",
 }: Props): React.ReactElement {
 	const handleClearPick = () => onPick("none");
 
@@ -23,6 +25,7 @@ export function ColorPicker({
 		<>
 			{allowNone && !isNotLast && (
 				<button
+					id={id ? `${id}-color-none` : "color-none"}
 					key={"none"}
 					className={style.button}
 					onClick={handleClearPick}
@@ -35,6 +38,7 @@ export function ColorPicker({
 			)}
 			{colors.map(color => (
 				<button
+					id={id ? `${id}-color-${color}` : `color-${color}`}
 					key={color}
 					className={style.button}
 					onClick={() => onPick(color)}
@@ -47,6 +51,7 @@ export function ColorPicker({
 			))}
 			{allowNone && isNotLast && (
 				<button
+					id={id ? `${id}-color-none` : "color-none"}
 					key={"none"}
 					className={style.button}
 					onClick={handleClearPick}

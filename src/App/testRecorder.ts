@@ -325,8 +325,8 @@ function generateDeserializePlaywrightCode(boardData: any): string {
 		await page.evaluate(() => {
 			const board = window.app.getBoard();
 			board.deserialize(\`${itemsData}\`);
-			board.events.deserialize(\`${eventsData}\`);
-			board.selection.deserialize(\`${selectionData}\`);
+			// board.events.deserialize(\`${eventsData}\`);
+			// board.selection.deserialize(\`${selectionData}\`);
 		});
 	`;
 }

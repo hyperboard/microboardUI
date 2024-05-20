@@ -51,6 +51,7 @@ export function FillStyle(): React.ReactElement | null {
 			align="left"
 			button={
 				<UiButton
+					id={"fill-style"}
 					tooltip={t("contextPanel.fillStyle.tooltip")}
 					tooltipPosition="top"
 					onClick={handleClick}
@@ -65,6 +66,7 @@ export function FillStyle(): React.ReactElement | null {
 		>
 			<UiPanel grid columns={7}>
 				<ColorPicker
+					id={"fill-style"}
 					allowNone
 					selectedColor={fillColor}
 					colors={fillColors}

@@ -54,6 +54,7 @@ export function AddDrawing() {
 		<ButtonWithMenu
 			button={
 				<UiButton
+					id={"tool-add-drawing"}
 					tooltip={t("toolsPanel.addDrawing.tooltip")}
 					hotkey={getHotkeyLabel("pen")}
 					active={isActive}

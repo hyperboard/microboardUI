@@ -71,6 +71,7 @@ export function StickerFontSize() {
 			align="left"
 			button={
 				<UiButton
+					id={"sticker-font-size"}
 					tooltip={t("contextPanel.fontSize.tooltip")}
 					tooltipPosition="top"
 					className={style.button}
@@ -91,6 +92,7 @@ export function StickerFontSize() {
 		>
 			<UiPanel vertical className={style.sizeList}>
 				<FontSizePicker
+					id="sticker-font"
 					currentFontSize={fontSize}
 					fontSizes={fontSizes}
 					onPick={handlePick}

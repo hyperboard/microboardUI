@@ -145,4 +145,7 @@
   <symbol viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" id="Plus">
     <path d="M10.0001 1.51465V18.4852M1.51477 9.99993H18.4853" stroke="currentColor" stroke-opacity="0.8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
   </symbol>
+  <symbol viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg" id="Export">
+    <path d="M5 8H3C1.895 8 1 8.895 1 10V17C1 18.105 1.895 19 3 19H15C16.105 19 17 18.105 17 17V10C17 8.895 16.105 8 15 8H13M9 1V12M9 1L6.001 4M9 1L12 4" stroke="currentColor" stroke-opacity="0.8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
 </svg>

@@ -61,6 +61,7 @@ export function FontSize() {
 			align="left"
 			button={
 				<UiButton
+					id="pick-font-size"
 					tooltip={t("contextPanel.fontSize.tooltip")}
 					tooltipPosition="top"
 					className={style.button}
@@ -79,6 +80,7 @@ export function FontSize() {
 		>
 			<UiPanel vertical className={style.sizeList}>
 				<FontSizePicker
+					id={"context-panel"}
 					currentFontSize={fontSize}
 					fontSizes={fontSizes}
 					onPick={handlePick}

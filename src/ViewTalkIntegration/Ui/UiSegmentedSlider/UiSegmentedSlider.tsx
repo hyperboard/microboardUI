@@ -6,9 +6,15 @@ type Props = {
 	values: number[];
 	defaultValue?: number;
 	onChange: (val: number) => void;
+	id?: string;
 };
 
-export function UiSegmentedSlider({ values, onChange, defaultValue }: Props) {
+export function UiSegmentedSlider({
+	values,
+	onChange,
+	defaultValue,
+	id,
+}: Props) {
 	const [selectedValue, setSelectedValue] = useState(
 		defaultValue ?? values[0],
 	);
@@ -32,6 +38,7 @@ export function UiSegmentedSlider({ values, onChange, defaultValue }: Props) {
 	return (
 		<div className={style.container}>
 			<input
+				id={id}
 				className={style.input}
 				type="range"
 				min={0}

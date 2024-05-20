@@ -50,7 +50,8 @@ export type IconId =
 	| "VerticalAlignCenter"
 	| "VerticalAlignBottom"
 	| "Minus"
-	| "Plus";
+	| "Plus"
+	| "Export";
 
 type Props = {
 	iconName: IconId;

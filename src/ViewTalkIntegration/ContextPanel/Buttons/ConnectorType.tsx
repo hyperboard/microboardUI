@@ -32,6 +32,7 @@ export function ConnectorType(): React.ReactElement | null {
 			align="left"
 			button={
 				<UiButton
+					id={"connector-type"}
 					tooltip={t("contextPanel.connectorType.tooltip")}
 					tooltipPosition="top"
 					onClick={handleClick}

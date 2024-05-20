@@ -33,6 +33,7 @@ export function ConnectorAddText(): React.ReactElement | null {
 
 	return (
 		<UiButton
+			id={"connector-add-text"}
 			tooltip={t("contextPanel.connectorAddText.tooltip")}
 			tooltipPosition="top"
 			onClick={handleClick}

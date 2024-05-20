@@ -18,18 +18,21 @@ export function HorizontalAlignmentPicker({
 	return (
 		<>
 			<UiButton
+				id={"horizontal-alignment-left"}
 				onClick={handlePick("left")}
 				active={alignment === "left"}
 			>
 				<Icon iconName="TextAlignLeft" width={16} height={16} />
 			</UiButton>
 			<UiButton
+				id={"horizontal-alignment-center"}
 				onClick={handlePick("center")}
 				active={alignment === "center"}
 			>
 				<Icon iconName="TextAlignCenter" width={16} height={16} />
 			</UiButton>
 			<UiButton
+				id={"horizontal-alignment-right"}
 				onClick={handlePick("right")}
 				active={alignment === "right"}
 			>

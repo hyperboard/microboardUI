@@ -42,6 +42,7 @@ export function TextHighlight(): React.ReactElement | null {
 			align="left"
 			button={
 				<UiButton
+					id="text-highlight"
 					tooltip={t("contextPanel.textHighlight.tooltip")}
 					tooltipPosition="top"
 					onClick={handleClick}
@@ -56,6 +57,7 @@ export function TextHighlight(): React.ReactElement | null {
 		>
 			<UiPanel grid columns={5}>
 				<ColorPicker
+					id={"text-highlight"}
 					colors={highlightColors}
 					selectedColor={highlightColor}
 					allowNone

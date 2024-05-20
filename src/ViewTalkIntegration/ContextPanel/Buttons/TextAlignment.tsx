@@ -37,6 +37,7 @@ export function TextAlignment(): React.ReactElement | null {
 			align="left"
 			button={
 				<UiButton
+					id="text-alignment"
 					tooltip={t("contextPanel.textAlignment.tooltip")}
 					tooltipPosition="top"
 					onClick={handleClick}

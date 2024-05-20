@@ -22,6 +22,7 @@ export function ConnectorPointerPicker({
 		<>
 			{pointerTypes.map(type => (
 				<UiButton
+					id={`pointer-${type}`}
 					key={type.id}
 					onClick={() => {
 						onPick(type.id);

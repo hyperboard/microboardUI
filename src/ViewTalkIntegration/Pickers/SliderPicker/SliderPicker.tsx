@@ -8,13 +8,15 @@ type Props = {
 	onPick: (val: number) => void;
 	showLabel?: boolean;
 	width?: number;
+	id?: string;
 };
 
-export function SliderPicker({ onPick, values, showLabel, width }: Props) {
+export function SliderPicker({ onPick, values, showLabel, width, id }: Props) {
 	const { t } = useTalkTranslation();
 	return (
 		<div className={style.container}>
 			<UiSegmentedSlider
+				id={id}
 				defaultValue={width}
 				values={values}
 				onChange={onPick}

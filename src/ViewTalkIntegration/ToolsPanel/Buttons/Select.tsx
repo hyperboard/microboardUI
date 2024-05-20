@@ -17,6 +17,7 @@ export function Select() {
 
 	return (
 		<UiButton
+			id={"tool-select"}
 			tooltip={t("toolsPanel.select.tooltip")}
 			hotkey={getHotkeyLabel("select")}
 			onClick={handleClick}

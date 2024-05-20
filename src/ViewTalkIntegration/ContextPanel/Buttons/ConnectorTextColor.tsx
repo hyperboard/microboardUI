@@ -51,6 +51,7 @@ export function ConnectorTextColor(): React.ReactElement | null {
 			align="left"
 			button={
 				<UiButton
+					id={"connector-text-color"}
 					tooltip={t("contextPanel.textColor.tooltip")}
 					tooltipPosition="top"
 					onClick={handleClick}
@@ -65,6 +66,7 @@ export function ConnectorTextColor(): React.ReactElement | null {
 		>
 			<UiPanel grid columns={4}>
 				<ColorPicker
+					id={"connector-text"}
 					colors={textColors}
 					selectedColor={fontColor}
 					onPick={handlePick}

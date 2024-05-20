@@ -44,9 +44,10 @@ document.head.appendChild(style);
 type Props = {
 	onPick: (width: number) => void;
 	width: number;
+	id?: string;
 };
 
-export function SliderPicker({ onPick, width }: Props) {
+export function SliderPicker({ onPick, width, id = "" }: Props) {
 	const { t } = useTranslation();
 	const handlePickWidth = (
 		event: React.ChangeEvent<HTMLInputElement>,
@@ -66,6 +67,7 @@ export function SliderPicker({ onPick, width }: Props) {
 			}}
 		>
 			<input
+				id={id}
 				type="range"
 				min="1"
 				max="10"

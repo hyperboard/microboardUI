@@ -1,25 +1,26 @@
-import * as React from "react";
-import { Link, useParams } from "react-router-dom";
+import { App } from "App";
 import { Board } from "Board";
+import { useAppSubscription } from "Board/useBoardSubscription";
+import { isIframe } from "lib/isIframe";
+import { useForceUpdate } from "lib/useForceUpdate";
+import * as React from "react";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import { SidePanelCloseIcon } from "View/Icon/SidePanelCloseIcon";
+import { SidePanelOpenIcon } from "View/Icon/SidePanelOpenIcon";
+import { Modal } from "View/Modal/Modal";
 import { SidePanelState } from "View/SidePanel/SidePanelState";
 import { UiButton } from "View/Ui/UiButton";
-import { SidePanelOpenIcon } from "View/Icon/SidePanelOpenIcon";
-import { SidePanelCloseIcon } from "View/Icon/SidePanelCloseIcon";
-import { useStyle } from "View";
-import { ExportBoardSnapshotButton } from "App/ExportBoardSnapshot";
-import { Modal } from "View/Modal/Modal";
-import { isIframe } from "lib/isIframe";
-import Cookies from "js-cookie";
-import { useForceUpdate } from "lib/useForceUpdate";
-import { useTranslation } from "react-i18next";
+import { ExportButton } from "./ExportButton";
 import "./TitlePanel.css";
 
 type Props = {
 	board: Board;
 	sidePanelState: SidePanelState;
+	app: App;
 };
 
-export function TitlePanel({ sidePanelState, board }: Props) {
+export function TitlePanel({ sidePanelState, board, app }: Props) {
 	const [isModalVisible, setIsModalVisible] = React.useState(false);
 	const forceUpdate = useForceUpdate();
 	const { t } = useTranslation();
@@ -34,6 +35,8 @@ export function TitlePanel({ sidePanelState, board }: Props) {
 		setIsModalVisible(false);
 	};
 
+	useAppSubscription(app, { observer: forceUpdate, subjects: ["tools"] });
+
 	React.useEffect(() => {
 		sidePanelState.subject.subscribe(forceUpdate);
 
@@ -41,6 +44,13 @@ export function TitlePanel({ sidePanelState, board }: Props) {
 			sidePanelState.subject.unsubscribe(forceUpdate);
 		};
 	}, [forceUpdate]);
+
+	const isExport = board.tools.getExport();
+	console.log(board.selection.getContext());
+	if (isExport) {
+		return null;
+	}
+
 	return (
 		<div id="TitlePanel" className="TitlePanel">
 			<SidePanelButton
@@ -98,7 +108,7 @@ export function TitlePanel({ sidePanelState, board }: Props) {
 					<Modal boardLink={location.href} closeModal={closeModal} />
 				)}
 			</span>
-			<ExportBoardSnapshotButton board={board} />
+			<ExportButton board={board} />
 		</div>
 	);
 }

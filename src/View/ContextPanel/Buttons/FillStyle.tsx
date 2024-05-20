@@ -74,6 +74,7 @@ export function FillStyle({
 				}}
 			>
 				<ColorPicker
+					id={"FillStyle"}
 					noneTitle={t("contextPanel.fillStyle.none")}
 					allowNone={true}
 					onPick={handlePick}

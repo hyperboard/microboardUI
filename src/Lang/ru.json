@@ -228,5 +228,9 @@
 		"textPlaceholder": "Напишите что-нибудь"
 	},
 	"thickness": "Толщина",
-	"appTitle": "Microboard"
+	"appTitle": "Microboard",
+	"export": {
+		"confirm": "Экспортировать",
+		"cancel": "Отменить"
+	}
 }

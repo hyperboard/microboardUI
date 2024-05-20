@@ -16,6 +16,7 @@ export function SwitchPointers(): React.ReactElement | null {
 
 	return (
 		<UiButton
+			id={"switch-pointers"}
 			tooltip={t("contextPanel.connectorSwitchPointers.tooltip")}
 			tooltipPosition="top"
 			onClick={handleClick}

@@ -30,6 +30,7 @@ export function AddShape() {
 		<ButtonWithMenu
 			button={
 				<UiButton
+					id={"tool-add-shape"}
 					tooltip={t("toolsPanel.addShape.tooltip")}
 					hotkey={getHotkeyLabel("shape")}
 					active={isActive}

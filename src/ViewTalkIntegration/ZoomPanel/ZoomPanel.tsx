@@ -39,6 +39,7 @@ export function ZoomPanel({ app, board }: Props) {
 	return (
 		<UiPanel className={style.panel}>
 			<UiButton
+				id={"zoom-out"}
 				tooltipPosition="top"
 				tooltip={t("zoomPanel.zoomOut.tooltip")}
 				hotkey={getHotkeyLabel("zoomOut")}
@@ -47,6 +48,7 @@ export function ZoomPanel({ app, board }: Props) {
 				<Icon iconName="Minus" width={20} height={18} />
 			</UiButton>
 			<UiButton
+				id={"zoom-default"}
 				tooltipPosition="top"
 				tooltip={t("zoomPanel.zoomDefault.tooltip")}
 				hotkey={getHotkeyLabel("zoomDefault")}
@@ -56,6 +58,7 @@ export function ZoomPanel({ app, board }: Props) {
 				{currentScale}%
 			</UiButton>
 			<UiButton
+				id={"zoom-in"}
 				tooltipPosition="top-right"
 				tooltip={t("zoomPanel.zoomIn.tooltip")}
 				hotkey={getHotkeyLabel("zoomIn")}

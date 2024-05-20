@@ -59,7 +59,7 @@ export function ItemType({
 				<Icon name={"Rectangle"} width={IconSize} height={IconSize} />
 			</UiButton>
 			<div
-				id="FillStyleMenu"
+				id="ItemTypeMenu"
 				ref={menuRef}
 				className="ContextPanelMenu"
 				style={{

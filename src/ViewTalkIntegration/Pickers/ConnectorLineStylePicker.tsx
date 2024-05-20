@@ -21,12 +21,17 @@ export function ConnectorLineStylePicker({
 	return (
 		<>
 			<UiButton
+				id={"connector-straight"}
 				onClick={handleStraightPick}
 				active={selected === "straight"}
 			>
 				<Icon iconName="DiagonalLine" width={18} height={18} />
 			</UiButton>
-			<UiButton onClick={handleCurvedPick} active={selected === "curved"}>
+			<UiButton
+				id={"connector-curved"}
+				onClick={handleCurvedPick}
+				active={selected === "curved"}
+			>
 				<Icon iconName="CurvedLine" width={18} height={18} />
 			</UiButton>
 		</>

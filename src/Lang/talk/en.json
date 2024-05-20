@@ -110,5 +110,9 @@
 	},
 	"board": {
 		"textPlaceholder": "Type something"
+	},
+	"export": {
+		"confirm": "Export",
+		"cancel": "Cancel"
 	}
 }

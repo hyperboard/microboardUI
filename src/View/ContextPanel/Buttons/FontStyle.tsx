@@ -60,7 +60,7 @@ export function FontStyle({
 				<BoldUnderlineIcon width={IconSize} height={IconSize} />
 			</UiButton>
 			<div
-				id="FillStyleMenu"
+				id="ChangeFontStyleMenu"
 				ref={menuRef}
 				className="ContextPanelMenu"
 				style={{
