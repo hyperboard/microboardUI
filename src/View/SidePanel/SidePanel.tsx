@@ -6,6 +6,7 @@ import { PublicBoards } from "./PublicBoards";
 import { useStyle } from "View/useStyle";
 import { Menu } from "./Menu";
 import { ContextMenuState } from "View/ContextMenu";
+import { ImportFromMiro } from "./ImportFromMiro";
 
 export const SidePanelMenuOffset = 10;
 
@@ -67,6 +68,7 @@ export class SidePanel extends React.Component<{
 							contextMenuState={this.props.contextMenuState}
 						/>
 					</ul>
+					<ImportFromMiro />
 				</div>
 				<ResizableEdge
 					panelWidth={this.props.sidePanelState.width}
