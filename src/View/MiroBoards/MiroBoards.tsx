@@ -37,12 +37,27 @@ export function MiroBoards({ isOpen = false }: IMiroBoardsProps) {
 		}
 	};
 
+	const fetchBoardsItem = async (id: string) => {
+		try {
+			const response = await fetch(
+				"https://api.miro.com/v2/boards/" + id + "/items",
+				{ headers },
+			);
+			const data = await response.json();
+			console.log("data", data);
+			return data;
+		} catch (error) {
+			console.error(error as Error);
+		}
+	};
+
 	useEffect(() => {
 		if (isOpen) {
 			fetchBoards();
 		}
 	}, []);
 
+	const onClickBoard = (id: string) => fetchBoardsItem(id);
 	const onCloseModal = () => setOpen(false);
 
 	return (
@@ -58,6 +73,7 @@ export function MiroBoards({ isOpen = false }: IMiroBoardsProps) {
 						return (
 							<MiroBoardItem
 								key={id}
+								onClick={() => onClickBoard(id)}
 								name={name}
 								picture={picture}
 							/>
