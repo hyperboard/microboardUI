@@ -118,5 +118,6 @@
 	"export": {
 		"confirm": "Экспортировать",
 		"cancel": "Отменить"
-	}
+	},
+	"appTitle": "Microboard X Контур"
 }

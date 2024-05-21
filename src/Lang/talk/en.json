@@ -114,5 +114,6 @@
 	"export": {
 		"confirm": "Export",
 		"cancel": "Cancel"
-	}
+	},
+	"appTitle": "Microboard X Kontur"
 }
