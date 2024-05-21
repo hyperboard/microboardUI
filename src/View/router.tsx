@@ -11,6 +11,9 @@ import { ProtectedRoute } from "./Routes/ProtectedRoute";
 import RootView from "./RootView/RootView";
 import { IframeModule } from "lib/IframeModule";
 import { VerifyMailView } from "./VerifyMailView/VerifyMailView";
+import AuthView from "./AuthView/AuthView";
+import { RestorePassword } from "./RestorePassword/RestorePassword";
+import { ForgotPassword } from "./ForgotPassword/ForgotPassword";
 
 export function getRender(app: App): () => void {
 	new IframeModule();
@@ -21,16 +24,30 @@ export function getRender(app: App): () => void {
 			element: <RootView app={app} />,
 		},
 		{
-			path: "/sign-up",
-			element: <SignupView />,
-		},
-		{
-			path: "/sign-in",
-			element: <SigninView />,
-		},
-		{
-			path: "/verify",
-			element: <VerifyMailView />,
+			path: "/auth",
+			element: <AuthView />,
+			children: [
+				{
+					path: "sign-up",
+					element: <SignupView />,
+				},
+				{
+					path: "sign-in",
+					element: <SigninView />,
+				},
+				{
+					path: "verify",
+					element: <VerifyMailView />,
+				},
+				{
+					path: "restore-password",
+					element: <RestorePassword />,
+				},
+				{
+					path: "forgot-password",
+					element: <ForgotPassword />,
+				},
+			],
 		},
 		{
 			path: "/dashboard",
