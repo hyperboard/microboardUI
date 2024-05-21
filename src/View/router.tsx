@@ -13,7 +13,7 @@ import { IframeModule } from "lib/IframeModule";
 import { VerifyMailView } from "./VerifyMailView/VerifyMailView";
 
 export function getRender(app: App): () => void {
-	new IframeModule();
+	new IframeModule(app);
 
 	const router = createBrowserRouter([
 		{
