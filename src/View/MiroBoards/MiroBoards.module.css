@@ -24,8 +24,15 @@
 .wr {
 	background-color: white;
 	border-radius: 20px;
-	max-width: 600px;
+	max-width: 1000px;
 	width: 100%;
-	padding: 10px 20px;
+	padding: 40px 20px;
 	text-align: center;
+}
+
+.boards {
+	margin-top: 20px;
+	display: grid;
+	gap: 20px;
+	grid-template-columns: repeat(3, 33%);
 }

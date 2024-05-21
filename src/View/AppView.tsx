@@ -28,6 +28,7 @@ export class AppViewBase extends React.Component<{
 
 	sidePanelState = new SidePanelState();
 	contextMenuState = new ContextMenuState();
+	isOpenMiroBoards: boolean | null = false;
 
 	animationFrameId: number | null = null;
 
@@ -49,7 +50,7 @@ export class AppViewBase extends React.Component<{
 		const query = new URLSearchParams(this.props?.router?.location?.search);
 		const codeSearch = query.get("code");
 		const teamIdSearch = query.get("team_id");
-		const isOpenMiroBoards = codeSearch && teamIdSearch;
+		this.isOpenMiroBoards = codeSearch && teamIdSearch;
 
 		// const boardId = urlString.split("/").pop();
 		const boardId =
@@ -98,7 +99,7 @@ export class AppViewBase extends React.Component<{
 					sidePanelState={this.sidePanelState}
 					contextMenuState={this.contextMenuState}
 				/>
-				<MiroBoards isOpen={isOpenMiroBoards} />
+				<MiroBoards isOpen={this.isOpenMiroBoards} />
 				<ContextMenu
 					app={app}
 					contextMenuState={this.contextMenuState}
