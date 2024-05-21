@@ -234,6 +234,7 @@
 		"cancel": "Cancel"
 	},
 	"miro": {
-		"boardsTitle": "Select a board to import"
+		"boardsTitle": "Select a board to import",
+		"importMiro": "Import from Miro"
 	}
 }

@@ -7,44 +7,36 @@ import { MiroBoardItem } from "./MiroBoardItem";
 
 interface IMiroBoardsProps {
 	isOpen: boolean | null;
+	setIsOpen: (isOpen: boolean) => void;
+	setStage: (stage: number) => void;
+	setBoardId: (id: string) => void;
 }
 
-export function MiroBoards({ isOpen = false }: IMiroBoardsProps) {
+export function MiroBoards({
+	isOpen,
+	setIsOpen,
+	setStage,
+	setBoardId,
+}: IMiroBoardsProps) {
 	const { t } = useTranslation();
 	const location = useLocation();
 	const teamId = new URLSearchParams(location.search).get("team_id");
 	const [boards, setBoards] = useState<IMiroBoards | null>(null);
-	const [open, setOpen] = useState<boolean | null>(isOpen);
-
-	const headers = {
-		Authorization:
-			"Bearer eyJtaXJvLm9yaWdpbiI6ImV1MDEifQ_Znh2g1pAoIdiAkV-lmHhZST83Ik",
-		Accept: "application/json",
-	};
 
 	const fetchBoards = async () => {
 		try {
 			const response = await fetch(
 				"https://api.miro.com/v2/boards?team_id=" + teamId,
-				{ headers },
+				{
+					headers: {
+						Authorization:
+							"Bearer eyJtaXJvLm9yaWdpbiI6ImV1MDEifQ_Znh2g1pAoIdiAkV-lmHhZST83Ik",
+						Accept: "application/json",
+					},
+				},
 			);
 			const data = await response.json();
-			console.log(data);
 			setBoards(data);
-			return data;
-		} catch (error) {
-			console.error(error as Error);
-		}
-	};
-
-	const fetchBoardsItem = async (id: string) => {
-		try {
-			const response = await fetch(
-				"https://api.miro.com/v2/boards/" + id + "/items",
-				{ headers },
-			);
-			const data = await response.json();
-			console.log("data", data);
 			return data;
 		} catch (error) {
 			console.error(error as Error);
@@ -57,12 +49,15 @@ export function MiroBoards({ isOpen = false }: IMiroBoardsProps) {
 		}
 	}, []);
 
-	const onClickBoard = (id: string) => fetchBoardsItem(id);
-	const onCloseModal = () => setOpen(false);
+	const onClickBoard = (id: string) => {
+		setBoardId(id);
+		setStage(2);
+	};
+	const onCloseModal = () => setIsOpen(false);
 
 	return (
 		<div
-			className={`${styles.modal} ${open ? styles.open : null}`}
+			className={`${styles.modal} ${isOpen ? styles.open : null}`}
 			onClick={onCloseModal}
 		>
 			<div className={styles.wr} onClick={e => e.stopPropagation()}>

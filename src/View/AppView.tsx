@@ -11,7 +11,7 @@ import { SidePanelState } from "View/SidePanel/SidePanelState";
 import { ContextMenuState, ContextMenu } from "View/ContextMenu";
 import { withRouter } from "lib/withRouter";
 import { ExportPanel } from "View/ExportPanel";
-import { MiroBoards } from "./MiroBoards/MiroBoards";
+import { ImportMiroBoards } from "./ImportMiroBoards";
 
 export class AppViewBase extends React.Component<{
 	app: App;
@@ -28,7 +28,6 @@ export class AppViewBase extends React.Component<{
 
 	sidePanelState = new SidePanelState();
 	contextMenuState = new ContextMenuState();
-	isOpenMiroBoards: boolean | null = false;
 
 	animationFrameId: number | null = null;
 
@@ -50,7 +49,7 @@ export class AppViewBase extends React.Component<{
 		const query = new URLSearchParams(this.props?.router?.location?.search);
 		const codeSearch = query.get("code");
 		const teamIdSearch = query.get("team_id");
-		this.isOpenMiroBoards = codeSearch && teamIdSearch;
+		const isOpenMiroBoards = codeSearch && teamIdSearch;
 
 		// const boardId = urlString.split("/").pop();
 		const boardId =
@@ -99,7 +98,7 @@ export class AppViewBase extends React.Component<{
 					sidePanelState={this.sidePanelState}
 					contextMenuState={this.contextMenuState}
 				/>
-				<MiroBoards isOpen={this.isOpenMiroBoards} />
+				<ImportMiroBoards isOpen={isOpenMiroBoards} />
 				<ContextMenu
 					app={app}
 					contextMenuState={this.contextMenuState}
