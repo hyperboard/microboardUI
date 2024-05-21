@@ -232,5 +232,8 @@
 	"export": {
 		"confirm": "Export",
 		"cancel": "Cancel"
+	},
+	"miro": {
+		"boardsTitle": "Select a board to import"
 	}
 }

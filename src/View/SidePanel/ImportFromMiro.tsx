@@ -4,7 +4,7 @@ import React from "react";
 export function ImportFromMiro() {
 	const onClickButtonImport = () => {
 		const clientId = "3458764589599848573";
-		const redirectUrl = import.meta.env.BASE_URL + "/miro/boards";
+		const redirectUrl = import.meta.env.BASE_URL + "/boards/:boardId";
 
 		window.location.href =
 			"https://miro.com/oauth/authorize?response_type=code&client_id=" +

@@ -11,6 +11,7 @@ import { SidePanelState } from "View/SidePanel/SidePanelState";
 import { ContextMenuState, ContextMenu } from "View/ContextMenu";
 import { withRouter } from "lib/withRouter";
 import { ExportPanel } from "View/ExportPanel";
+import { MiroBoards } from "./MiroBoards/MiroBoards";
 
 export class AppViewBase extends React.Component<{
 	app: App;
@@ -45,6 +46,11 @@ export class AppViewBase extends React.Component<{
 		const { app } = this.props;
 		const board = app.getBoard();
 		const urlString = new URL(window.location.href).pathname;
+		const query = new URLSearchParams(this.props?.router?.location?.search);
+		const codeSearch = query.get("code");
+		const teamIdSearch = query.get("team_id");
+		const isOpenMiroBoards = codeSearch && teamIdSearch;
+
 		// const boardId = urlString.split("/").pop();
 		const boardId =
 			this.props?.router?.params?.boardId || urlString.split("/").pop();
@@ -92,6 +98,7 @@ export class AppViewBase extends React.Component<{
 					sidePanelState={this.sidePanelState}
 					contextMenuState={this.contextMenuState}
 				/>
+				<MiroBoards isOpen={isOpenMiroBoards} />
 				<ContextMenu
 					app={app}
 					contextMenuState={this.contextMenuState}
