@@ -1,5 +1,3 @@
-import { BorderStyle } from "Board/Items/Path";
-
 export interface IMiroBoards {
 	data: IMiroBoard[];
 }
@@ -33,7 +31,7 @@ export interface IMiroBoardItem {
 	style?: {
 		borderColor?: string;
 		borderOpacity?: string;
-		borderStyle?: BorderStyle;
+		borderStyle?: string;
 		borderWidth?: string;
 		color: string;
 		fillColor: string;

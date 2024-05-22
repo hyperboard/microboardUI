@@ -2,6 +2,7 @@ import { Board } from "Board";
 import { IMiroBoardItem } from "../MiroBoards/MiroBoardsModels";
 import { Shape } from "Board/Items";
 import { ShapeType } from "Board/Items/Shape/Basic";
+import { BorderStyle } from "Board/Items/Path";
 
 export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 	const getShapeType = (miroShapeType: string): ShapeType => {
@@ -26,8 +27,22 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 		return "Rectangle";
 	};
 
+	const getBorderStyle = (
+		borderStyle: string,
+	): Omit<BorderStyle, "solid" | "dot" | "dash"> => {
+		switch (borderStyle) {
+			case "normal":
+				return "solid";
+			case "dotted":
+				return "dot";
+			case "dashed":
+				return "dash";
+		}
+		return "solid";
+	};
+
 	const copyShape = (item: IMiroBoardItem) => {
-		const { id, style, position, data, geometry } = item;
+		const { style, position, data, geometry } = item;
 		if (style && data) {
 			const {
 				fillColor,
@@ -42,6 +57,7 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 			const miroShapeType = data.shape ?? "";
 			const shapeType = getShapeType(miroShapeType);
 			if (borderOpacity && borderWidth && borderColor && borderStyle) {
+				const newBorderStyle = getBorderStyle(borderStyle);
 				const newShape = new Shape(
 					undefined,
 					"",
@@ -50,7 +66,7 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 					+fillOpacity,
 					borderColor,
 					+borderOpacity,
-					"solid",
+					newBorderStyle as BorderStyle,
 					+borderWidth,
 				);
 				newShape.transformation.translateTo(x, y);
