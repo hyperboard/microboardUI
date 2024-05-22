@@ -235,6 +235,7 @@
 	},
 	"miro": {
 		"boardsTitle": "Выберите доску для импорта",
-		"importMiro": "Импорт из Miro"
+		"importMiro": "Импорт из Miro",
+		"importMiroBtn": "Импортировать доску из Miro"
 	}
 }

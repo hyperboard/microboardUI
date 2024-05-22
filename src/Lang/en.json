@@ -235,6 +235,7 @@
 	},
 	"miro": {
 		"boardsTitle": "Select a board to import",
-		"importMiro": "Import from Miro"
+		"importMiro": "Import from Miro",
+		"importMiroBtn": "Import board from Miro"
 	}
 }

@@ -1,7 +1,10 @@
 import { UiButton } from "View/Ui/UiButton";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 export function ImportFromMiro() {
+	const { t } = useTranslation();
+
 	const onClickButtonImport = () => {
 		const clientId = "3458764589599848573";
 		const redirectUrl = import.meta.env.BASE_URL + "/boards/:boardId/";
@@ -15,7 +18,7 @@ export function ImportFromMiro() {
 
 	return (
 		<UiButton id={"miro"} onClick={onClickButtonImport}>
-			Импортировать доску из Miro
+			{t("miro.importMiroBtn")}
 		</UiButton>
 	);
 }
