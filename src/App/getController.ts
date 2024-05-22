@@ -493,15 +493,30 @@ export function getController(getBoard: () => Board) {
 	}
 
 	function onPointerLeave(event: PointerEvent): void {
-		onPointerUp(event);
+		if (isPointerOutsideWindow(event)) {
+			onPointerUp(event);
+		}
 	}
 
 	function onPointerCancel(event: PointerEvent): void {
-		onPointerUp(event);
+		if (isPointerOutsideWindow(event)) {
+			onPointerUp(event);
+		}
 	}
 
 	function onPointerOut(event: PointerEvent): void {
-		onPointerUp(event);
+		if (isPointerOutsideWindow(event)) {
+			onPointerUp(event);
+		}
+	}
+
+	function isPointerOutsideWindow(event: PointerEvent): boolean {
+		return (
+			event.clientX <= 0 ||
+			event.clientY <= 0 ||
+			event.clientX >= window.innerWidth ||
+			event.clientY >= window.innerHeight
+		);
 	}
 
 	function onCopy(event: ClipboardEvent): void {

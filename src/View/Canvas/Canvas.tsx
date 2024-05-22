@@ -66,9 +66,12 @@ export class CanvasBase extends React.Component<Props> {
 			stage.addEventListener("pointerdown", controller.onPointerDown);
 			stage.addEventListener("pointerup", controller.onPointerUp);
 			stage.addEventListener("dblclick", controller.onClick);
-			stage.addEventListener("pointerleave", controller.onPointerLeave);
-			stage.addEventListener("pointerout", controller.onPointerOut);
-			stage.addEventListener("pointercancel", controller.onPointerCancel);
+			window.addEventListener("pointerleave", controller.onPointerLeave);
+			window.addEventListener("pointerout", controller.onPointerOut);
+			window.addEventListener(
+				"pointercancel",
+				controller.onPointerCancel,
+			);
 		}
 
 		this.initCanvasRendering();
@@ -81,12 +84,12 @@ export class CanvasBase extends React.Component<Props> {
 			stage.removeEventListener("pointerdown", controller.onPointerDown);
 			stage.removeEventListener("pointerup", controller.onPointerUp);
 			stage.removeEventListener("dblclick", controller.onClick);
-			stage.removeEventListener(
+			window.removeEventListener(
 				"pointerleave",
 				controller.onPointerLeave,
 			);
-			stage.removeEventListener("pointerout", controller.onPointerOut);
-			stage.removeEventListener(
+			window.removeEventListener("pointerout", controller.onPointerOut);
+			window.removeEventListener(
 				"pointercancel",
 				controller.onPointerCancel,
 			);
