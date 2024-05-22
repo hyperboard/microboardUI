@@ -16,7 +16,7 @@ export function ImportBoardItem({
 	const { t } = useTranslation();
 	const onCloseModal = () => setIsOpen(false);
 
-	const fetchBoardsItem = async () => {
+	const fetchBoardsItems = async () => {
 		try {
 			const response = await fetch(
 				"https://api.miro.com/v2/boards/" + boardId + "/items",
@@ -37,7 +37,7 @@ export function ImportBoardItem({
 	};
 
 	useEffect(() => {
-		fetchBoardsItem();
+		fetchBoardsItems();
 	}, []);
 
 	return (

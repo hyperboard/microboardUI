@@ -4,6 +4,7 @@ import styles from "./MiroBoards.module.css";
 import { useLocation } from "react-router-dom";
 import { IMiroBoards } from "./MiroBoardsModels";
 import { MiroBoardItem } from "./MiroBoardItem";
+import Cookies from "js-cookie";
 
 interface IMiroBoardsProps {
 	isOpen: boolean | null;
@@ -21,31 +22,55 @@ export function MiroBoards({
 	const { t } = useTranslation();
 	const location = useLocation();
 	const teamId = new URLSearchParams(location.search).get("team_id");
+	const authCode = new URLSearchParams(location.search).get("code");
 	const [boards, setBoards] = useState<IMiroBoards | null>(null);
 
-	const fetchBoards = async () => {
+	const fetchData = async () => {
 		try {
+			const clientId = "3458764589599848573";
+			const clientSecret = "ufmdVcxamXfkjHHeS8Bv1QPCxrUN63PB";
+			const redirectUrl = import.meta.env.BASE_URL + "/boards/:boardId/";
+
 			const response = await fetch(
-				"https://api.miro.com/v2/boards?team_id=" + teamId,
+				"https://api.miro.com/v1/oauth/token?grant_type=authorization_code&client_id=" +
+					clientId +
+					"&client_secret=" +
+					clientSecret +
+					"&code=" +
+					authCode +
+					"&redirect_uri=" +
+					redirectUrl,
 				{
+					method: "POST",
 					headers: {
-						Authorization:
-							"Bearer eyJtaXJvLm9yaWdpbiI6ImV1MDEifQ_Znh2g1pAoIdiAkV-lmHhZST83Ik",
-						Accept: "application/json",
+						Accept: "application/json, application/*+json, application/x-jackson-smile, application/cbor",
 					},
 				},
 			);
+
 			const data = await response.json();
-			setBoards(data);
-			return data;
-		} catch (error) {
-			console.error(error as Error);
+			if (data) {
+				Cookies.set("miro_accessToken", data.access_token);
+				const response = await fetch(
+					"https://api.miro.com/v2/boards?team_id=" + teamId,
+					{
+						headers: {
+							Authorization: "Bearer " + data.access_token,
+							Accept: "application/json",
+						},
+					},
+				);
+				const dataBoards = await response.json();
+				setBoards(dataBoards);
+			}
+		} catch (e) {
+			console.error(e);
 		}
 	};
 
 	useEffect(() => {
 		if (isOpen) {
-			fetchBoards();
+			fetchData();
 		}
 	}, []);
 
@@ -63,17 +88,19 @@ export function MiroBoards({
 			<div className={styles.wr} onClick={e => e.stopPropagation()}>
 				<h2>{t("miro.boardsTitle")}</h2>
 				<div className={styles.boards}>
-					{boards?.data.map(board => {
-						const { id, name, picture } = board;
-						return (
-							<MiroBoardItem
-								key={id}
-								onClick={() => onClickBoard(id)}
-								name={name}
-								picture={picture}
-							/>
-						);
-					})}
+					{boards
+						? boards?.data.map(board => {
+								const { id, name, picture } = board;
+								return (
+									<MiroBoardItem
+										key={id}
+										onClick={() => onClickBoard(id)}
+										name={name}
+										picture={picture}
+									/>
+								);
+						  })
+						: "Loading..."}
 				</div>
 			</div>
 		</div>
