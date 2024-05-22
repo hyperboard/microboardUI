@@ -51,26 +51,36 @@ export function MiroBoards({
 			const data = await response.json();
 			if (data) {
 				Cookies.set("miro_accessToken", data.access_token);
-				const response = await fetch(
-					"https://api.miro.com/v2/boards?team_id=" + teamId,
-					{
-						headers: {
-							Authorization: "Bearer " + data.access_token,
-							Accept: "application/json",
-						},
-					},
-				);
-				const dataBoards = await response.json();
-				setBoards(dataBoards);
+				await fetchBoards();
 			}
 		} catch (e) {
 			console.error(e);
 		}
 	};
 
+	const fetchBoards = async () => {
+		const token = Cookies.get("miro_accessToken");
+		const response = await fetch(
+			"https://api.miro.com/v2/boards?team_id=" + teamId,
+			{
+				headers: {
+					Authorization: "Bearer " + token,
+					Accept: "application/json",
+				},
+			},
+		);
+		const dataBoards = await response.json();
+		setBoards(dataBoards);
+	};
+
 	useEffect(() => {
+		const token = Cookies.get("miro_accessToken");
 		if (isOpen) {
-			fetchData();
+			if (!token) {
+				fetchData();
+			} else {
+				fetchBoards();
+			}
 		}
 	}, []);
 

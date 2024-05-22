@@ -2,9 +2,11 @@ import { useState } from "react";
 import { MiroBoards } from "./MiroBoards/MiroBoards";
 import React from "react";
 import { ImportBoardItem } from "./ImportBoardItem";
+import { App } from "App";
 
 interface IImportMiroBoards {
 	isOpen: boolean | null;
+	app: App;
 }
 
 export function ImportMiroBoards({ isOpen }: IImportMiroBoards) {
@@ -19,7 +21,12 @@ export function ImportMiroBoards({ isOpen }: IImportMiroBoards) {
 			setStage={setStage}
 			setBoardId={setBoardId}
 		/>
-	) : (
-		<ImportBoardItem isOpen={open} setIsOpen={setOpen} boardId={boardId} />
-	);
+	) : stage === 2 ? (
+		<ImportBoardItem
+			isOpen={open}
+			setIsOpen={setOpen}
+			boardId={boardId}
+			app={app}
+		/>
+	) : null;
 }

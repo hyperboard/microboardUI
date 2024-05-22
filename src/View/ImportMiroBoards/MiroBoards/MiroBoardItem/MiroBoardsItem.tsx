@@ -11,9 +11,9 @@ export function MiroBoardItem({ name, picture, onClick }: IMiroBoardItemProps) {
 	const imgBoard = picture?.imageURL;
 	return (
 		<div className={styles.board} onClick={onClick}>
-			<div className={styles.board_img}>
+			<div>
 				{picture && picture?.imageURL ? (
-					<img src={imgBoard} alt={name} />
+					<img src={imgBoard} alt={name} className={styles.img} />
 				) : (
 					<div className={styles.stubImg}></div>
 				)}
