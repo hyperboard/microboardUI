@@ -24,6 +24,9 @@
 		"changeShape": {
 			"tooltip": "Тип фигуры"
 		},
+		"changeFrameType": {
+			"tooltip": "Пропорции"
+		},
 		"strokeStyle": {
 			"tooltip": "Обводка",
 			"strokeWidth": "Толщина линии"
@@ -113,6 +116,9 @@
 		},
 		"addImage": {
 			"tooltip": "Добавить изображение"
+		},
+		"addFrame": {
+			"tooltip": "Добавить фрейм"
 		}
 	},
 	"zoomPanel": {

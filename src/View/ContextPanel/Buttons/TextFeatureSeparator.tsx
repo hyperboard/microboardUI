@@ -1,4 +1,5 @@
 import { Board } from "Board";
+import { Frame } from "Board/Items";
 import React from "react";
 
 type TextFeaturesSeparatorProps = { board: Board };
@@ -11,8 +12,9 @@ export function TextFeaturesSeparator({
 	}
 
 	if (
-		board.selection.getContext() !== "EditTextUnderPointer" &&
-		!board.selection.canChangeText()
+		(board.selection.getContext() !== "EditTextUnderPointer" &&
+			!board.selection.canChangeText()) ||
+		board.selection.items.getSingle() instanceof Frame
 	) {
 		return null;
 	}

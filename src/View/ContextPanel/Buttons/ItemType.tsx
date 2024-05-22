@@ -1,12 +1,14 @@
 import { Board } from "Board";
-import { Mbr } from "Board/Items";
-import { ShapeType } from "Board/Items/Shape/Basic";
+import { Frame, Mbr } from "Board/Items";
+import { Shapes, ShapeType } from "Board/Items/Shape/Basic";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Icon } from "View/Icon";
 import { ShapePicker } from "View/Pickers/ShapeTypePicker";
 import { UiButton } from "View/Ui/UiButton";
 import { ButtonWithMenu } from "./ButtonWithMenu";
+import { FramePicker } from "View/Pickers/FramePicker";
+import { Frames, FrameType } from "Board/Items/Frame/Basic";
 
 const IconSize = 24;
 
@@ -28,10 +30,15 @@ export function ItemType({
 }: ItemTypeProps): React.ReactElement | null {
 	const { t } = useTranslation();
 	const menuRef = React.useRef<HTMLDivElement>(null);
-	const canChangeItemType = board.selection.items.isItemTypes(["Shape"]);
+	const canChangeItemType = board.selection.items.isItemTypes([
+		"Shape",
+		"Frame",
+	]);
+	const single = board.selection.items.getSingle();
 	if (
 		board.selection.getContext() === "SelectUnderPointer" ||
-		!canChangeItemType
+		!canChangeItemType ||
+		!single
 	) {
 		return null;
 	}
@@ -40,8 +47,16 @@ export function ItemType({
 		toggleMenu("ItemType");
 	};
 
-	const handlePick = (type: ShapeType) => {
-		board.selection.setShapeType(type);
+	const handlePick = (type: ShapeType | FrameType) => {
+		if (type in Shapes) {
+			const realType = type as ShapeType; // REFACTOR typecast
+			board.selection.setShapeType(realType);
+		} else {
+			const realType = type as FrameType; // typecast
+			if (single instanceof Frame) {
+				single.setFrameType(realType, board);
+			}
+		}
 		toggleMenu("None");
 	};
 
@@ -52,9 +67,17 @@ export function ItemType({
 			menuRef={menuRef}
 		>
 			<UiButton
-				id="ChangeItemType"
+				id={
+					single instanceof Frame
+						? "ChangeFrameType"
+						: "ChangeItemType"
+				}
 				onClick={handleClick}
-				title={t("contextPanel.changeShape.tooltip")}
+				title={
+					single instanceof Frame
+						? t("contextPanel.changeFrameType.tooltip")
+						: t("contextPanel.changeShape.tooltip")
+				}
 			>
 				<Icon name={"Rectangle"} width={IconSize} height={IconSize} />
 			</UiButton>
@@ -68,7 +91,15 @@ export function ItemType({
 					visibility: menu === "ItemType" ? "visible" : "hidden",
 				}}
 			>
-				<ShapePicker onPick={handlePick} />
+				{single instanceof Frame ? (
+					<FramePicker
+						onPick={handlePick}
+						isChanging={true}
+						frame={single}
+					/>
+				) : (
+					<ShapePicker onPick={handlePick} />
+				)}
 			</div>
 		</ButtonWithMenu>
 	);

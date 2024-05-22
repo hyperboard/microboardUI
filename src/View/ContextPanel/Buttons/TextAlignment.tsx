@@ -1,5 +1,5 @@
 import { Board } from "Board";
-import { Connector, Mbr } from "Board/Items";
+import { Connector, Frame, Mbr } from "Board/Items";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Icon } from "View/Icon";
@@ -40,8 +40,9 @@ export function TextAlignment({
 	}
 
 	if (
-		board.selection.getContext() !== "EditTextUnderPointer" &&
-		!board.selection.canChangeText()
+		(board.selection.getContext() !== "EditTextUnderPointer" &&
+			!board.selection.canChangeText()) ||
+		board.selection.items.getSingle() instanceof Frame
 	) {
 		return null;
 	}

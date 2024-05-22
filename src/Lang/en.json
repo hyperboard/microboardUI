@@ -24,6 +24,9 @@
 		"changeShape": {
 			"tooltip": "Change shape type"
 		},
+		"changeFrameType": {
+			"tooltip": "Ratio"
+		},
 		"strokeStyle": {
 			"tooltip": "Stroke",
 			"strokeWidth": "Stroke width"
@@ -113,6 +116,9 @@
 		},
 		"addImage": {
 			"tooltip": "Add image"
+		},
+		"addFrame": {
+			"tooltip": "Add Frame"
 		}
 	},
 	"zoomPanel": {

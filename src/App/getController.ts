@@ -1,5 +1,5 @@
 import { Board } from "Board";
-import { Connector, Mbr, RichTextData, Shape } from "Board/Items";
+import { Connector, Frame, Mbr, RichTextData, Shape } from "Board/Items";
 import { ImageItem } from "Board/Items/Image";
 import { isEditInProcess, RichText } from "Board/Items/RichText/RichText";
 import { checkHotkeys, isHotkeyPushed } from "Board/Keyboard/hotkeys";
@@ -163,10 +163,13 @@ export function getController(getBoard: () => Board) {
 					shape: () => board.tools.addShape(),
 					connector: () => board.tools.addConnector(),
 					pen: () => board.tools.addDrawing(),
+					frame: () => board.tools.addFrame(),
 					zoomIn: () => board.camera.zoomInToViewCenter(),
 					zoomOut: () => board.camera.zoomOutFromViewCenter(),
 					zoomDefault: () => board.camera.zoomToViewCenter(1),
 					cancel: () => board.tools.cancel(),
+					undo: () => board.events?.undo(),
+					redo: () => board.events?.redo(),
 				},
 				event,
 			)
@@ -186,7 +189,8 @@ export function getController(getBoard: () => Board) {
 				(item instanceof Shape ||
 					item instanceof Sticker ||
 					item instanceof Connector ||
-					item instanceof RichText) &&
+					item instanceof RichText ||
+					item instanceof Frame) &&
 				board.selection.getContext() === "EditUnderPointer"
 			) {
 				if (
@@ -563,7 +567,7 @@ export function getController(getBoard: () => Board) {
 				const file = item.getAsFile();
 				const reader = new FileReader();
 				reader.onload = event => {
-					const image = new ImageItem(event.target?.resut);
+					const image = new ImageItem(event.target?.result);
 					image.transformation.translateTo(
 						board.pointer.point.x,
 						board.pointer.point.y,

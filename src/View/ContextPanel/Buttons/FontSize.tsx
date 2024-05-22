@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Sticker } from "Board/Items/Sticker";
 import { FontSizePicker } from "View/Pickers/FontSizePicker";
 import { Board } from "Board";
-import { Item, Mbr, Shape } from "Board/Items";
+import { Item, Frame, Mbr, Shape } from "Board/Items";
 import { toFiniteNumber } from "utils";
 import { toggleEdit } from "Board/Items/RichText/RichText";
 import { ButtonWithMenu } from "./ButtonWithMenu";
@@ -72,8 +72,9 @@ export function FontSize({
 	}
 
 	if (
-		board.selection.getContext() !== "EditTextUnderPointer" &&
-		!board.selection.canChangeText()
+		(board.selection.getContext() !== "EditTextUnderPointer" &&
+			!board.selection.canChangeText()) ||
+		board.selection.items.getSingle() instanceof Frame
 	) {
 		return null;
 	}
