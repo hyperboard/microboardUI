@@ -36,8 +36,14 @@ export class ButtonWithMenu extends React.PureComponent<ButtonWithMenuProps> {
 		}
 		const menuHeight = menu.getBoundingClientRect().height;
 		let top = panelMbr.bottom;
-		if (top + menuHeight > windowHeight) {
+		if (panelMbr.bottom + menuHeight > windowHeight) {
 			top = panelMbr.top - menuHeight;
+		}
+		if (
+			panelMbr.bottom + menuHeight > windowHeight &&
+			panelMbr.top - menuHeight < 0
+		) {
+			top = panelMbr.bottom - menuHeight / 2;
 		}
 		menu.style.top = `${top - panelMbr.top}px`;
 	}
