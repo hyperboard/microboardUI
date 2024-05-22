@@ -86,5 +86,5 @@ export const ProtectedRoute: React.FC<TProtectedRoute> = ({
 	if (isPublic) {
 		return <Outlet />;
 	}
-	return isLoggedIn ? <Outlet /> : <Navigate to="/sign-in" />;
+	return isLoggedIn ? <Outlet /> : <Navigate to="/auth/sign-in" />;
 };

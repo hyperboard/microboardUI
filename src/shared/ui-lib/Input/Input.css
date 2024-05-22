@@ -1,0 +1,95 @@
+.InputWrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+
+	font-family: "Manrope", Arial;
+	font-size: 14px;
+	font-weight: 400;
+
+	width: 100%;
+}
+
+.InputTabWrapper {
+	display: flex;
+	width: 100%;
+}
+
+.InputWrapper .Input {
+	outline: none;
+}
+
+/* .InputWrapper .InputLabel {
+} */
+
+.InputWrapper .InputHelperText {
+	color: rgba(13, 17, 38, 0.4);
+}
+
+.InputWrapper .InputErrorText {
+	font-size: 14px;
+	color: #e6483d;
+}
+
+.InputWrapper .InputHelperText {
+	font-size: 14px;
+	color: black;
+}
+
+/* .InputWrapper .InputKeyHint {
+} */
+
+.InputContainer {
+	display: flex;
+	border: 1px solid #dee0e3;
+	width: 100%;
+
+	padding: 10px 12px;
+	border-radius: 12px;
+}
+
+.InputContainer input {
+	font-family: "Manrope", Arial;
+	outline: none;
+
+	width: 100%;
+}
+
+.InputContainer:focus-within {
+	outline: 2px solid rgba(200, 178, 255, 0.5);
+	border: 1px solid #b78af0;
+}
+
+.InputContainer input::placeholder {
+	font-family: "Manrope", Arial;
+}
+
+.InputContainer input:focus {
+	border-color: #b78af0;
+}
+
+.InputContainer.InputError {
+	outline: none;
+	border: 1px solid #f7c3c0;
+}
+
+.InputContainer.InputError:focus-within {
+	outline: 1px solid rgba(255, 178, 178, 0.6);
+	border: 1px solid #f7c3c0;
+}
+
+.InputPrefix {
+	width: 20px;
+	height: 20px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	margin-right: 8px;
+}
+
+.InputWrapper .Eye {
+	cursor: pointer;
+	width: 20px;
+	height: 20px;
+}

@@ -1,8 +1,19 @@
 import { getApiUrl } from "Config";
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, createSearchParams, useNavigate } from "react-router-dom";
+import {
+	Link as RRDLink,
+	createSearchParams,
+	useNavigate,
+} from "react-router-dom";
 import styles from "./SignupView.module.css";
+import { Input } from "shared/ui-lib/Input/Input";
+import { Tail } from "View/AuthView/Tail";
+import { EmailIcon } from "./EmailIcon";
+import { LockIcon } from "./LockIcon";
+import { useDebounce } from "shared/hooks/useDebounce";
+import { Link } from "shared/ui-lib/Link";
+import { Button } from "shared/ui-lib/Button";
 
 type RegisterOkResponse = {
 	id: number;
@@ -11,8 +22,11 @@ type RegisterOkResponse = {
 
 export const SignupView = (): React.ReactElement => {
 	const { t } = useTranslation();
-	const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 	const navigate = useNavigate();
+	const formRef = React.useRef<HTMLFormElement>(null);
+	const [isDisabled, setIsDisabled] = useState(true);
+	const [error, setError] = useState<string>("");
+
 	const onSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
 	): Promise<void> => {
@@ -38,7 +52,7 @@ export const SignupView = (): React.ReactElement => {
 			})
 			.then((data: RegisterOkResponse) => {
 				navigate({
-					pathname: "/verify",
+					pathname: "/auth/verify",
 					search: createSearchParams({
 						userId: `${data.id}`,
 						email: data.email,
@@ -46,45 +60,87 @@ export const SignupView = (): React.ReactElement => {
 				});
 			})
 			.catch(error => {
-				setErrorMessage(error.message);
+				// setErrorMessage(error.message);
 			});
 	};
+
+	const checkForm = (): void => {
+		const form = formRef.current;
+		if (!form) {
+			setIsDisabled(true);
+			return;
+		}
+		const email = form?.email?.value;
+		const password = form?.password?.value;
+		if (!email || !password) {
+			setIsDisabled(true);
+			return;
+		}
+		const MIN_PASSWORD_LENGTH = 8;
+		const MAX_PASSWORD_LENGTH = 14;
+		if (
+			password.length < MIN_PASSWORD_LENGTH ||
+			password.length > MAX_PASSWORD_LENGTH
+		) {
+			setIsDisabled(true);
+			setError(t("auth.passwordLengthError"));
+			return;
+		}
+		setError("");
+		setIsDisabled(false);
+	};
+
+	const dbCheckForm = useDebounce(checkForm, 500);
+
 	return (
 		<div className={styles.wrapper}>
-			<form className={styles.form} onSubmit={onSubmit}>
-				<h1 className={styles.title}>{t("auth.signUp")}</h1>
-				<label htmlFor="email" className="label">
-					{t("auth.email")}
-				</label>
-				<input
-					name="email"
+			<form className={styles.form} onSubmit={onSubmit} ref={formRef}>
+				<h1 className={styles.title}>{t("auth.signUpForFree")}</h1>
+				<Input
+					prefixIcon={<EmailIcon />}
 					id="email"
 					type="text"
 					placeholder={t("auth.emailPlaceholder")}
-					className="input"
+					onInput={dbCheckForm}
 				/>
-				<label htmlFor="password" className="label">
-					{t("auth.password")}
-				</label>
-				<input
-					name="password"
+				<Input
+					prefixIcon={<LockIcon />}
 					id="password"
-					type="password"
+					helperText={error}
+					password
 					placeholder={t("auth.passwordPlaceholder")}
-					className="input"
+					onInput={dbCheckForm}
 				/>
-				{errorMessage && <p className={styles.error}>{errorMessage}</p>}
-				<button
-					type="submit"
-					style={{ marginTop: "8px" }}
-					className="button"
-				>
-					{t("auth.submit")}
-				</button>
-				<Link to={"/sign-in"} className={styles.link}>
-					{t("auth.signIn")}
-				</Link>
+				<div className={styles.btns}>
+					<Button
+						type="submit"
+						style={{ marginTop: "8px" }}
+						disabled={isDisabled}
+					>
+						{t("auth.submit")}
+						<Tail />
+					</Button>
+					<Button
+						pattern="ghost"
+						onClick={() => {
+							navigate("/auth/sign-in");
+						}}
+						className={styles.login}
+					>
+						{t("auth.signIn")}
+					</Button>
+				</div>
 			</form>
+			<div className={styles.policy}>
+				{t("auth.policyWith")}{" "}
+				<Link to="#" className={styles.policyLink}>
+					{t("auth.termsAndConditions")}
+				</Link>{" "}
+				{t("common.and")}{" "}
+				<Link to="#" className={styles.policyLink}>
+					{t("auth.privacyPolicy")}
+				</Link>
+			</div>
 		</div>
 	);
 };
