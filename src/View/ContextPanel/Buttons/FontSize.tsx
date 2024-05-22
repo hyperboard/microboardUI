@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Sticker } from "Board/Items/Sticker";
 import { FontSizePicker } from "View/Pickers/FontSizePicker";
 import { Board } from "Board";
-import { Mbr } from "Board/Items";
+import { Item, Mbr, Shape } from "Board/Items";
 import { toFiniteNumber } from "utils";
 import { toggleEdit } from "Board/Items/RichText/RichText";
 import { ButtonWithMenu } from "./ButtonWithMenu";
@@ -32,7 +32,10 @@ export function FontSize({
 	const [fontSize, setFontSize] = React.useState(fontSizeInit);
 	const [max, setMax] = React.useState(maxInit);
 	const [itemType, setItemType] = React.useState("");
-	const [inputType, setInputType] = React.useState("number");
+	const [inputType, setInputType] = React.useState<"number" | "Auto">(
+		"number",
+	);
+	const [currItem, setCurrItem] = React.useState<undefined | Item>();
 	const { t } = useTranslation();
 
 	const updateFontSize = () => {
@@ -40,30 +43,29 @@ export function FontSize({
 	};
 
 	const updateAutosizeSettings = (): void => {
-		const singleItem = board.selection.items.getSingle();
-		if (singleItem && singleItem.itemType === "Sticker") {
-			const isAutosize = (singleItem as Sticker).text.getAutosize();
-			const innerTextFontSize = (
-				singleItem as Sticker
-			).text.getFontSize();
-			const maxFontSize = (singleItem as Sticker).text.getMaxFontSize();
+		const single = board.selection.items.getSingle();
+		setCurrItem(single);
+		if (single instanceof Sticker) {
+			const isAutosize = single.text.getAutosize();
+			const innerTextFontSize = single.text.getFontSize();
+			const maxFontSize = single.text.getMaxFontSize();
 			setMax(maxFontSize);
 			setFontSize(isAutosize ? "Auto" : innerTextFontSize);
 			setItemType("Sticker");
-			setInputType(isAutosize ? "string" : "number");
+			setInputType(isAutosize ? "Auto" : "number");
 		}
-		if (singleItem && ["Shape"].indexOf(singleItem?.itemType) !== -1) {
-			const maxFontSize = (singleItem as Sticker).text.getMaxFontSize();
-			setItemType(singleItem?.itemType);
-			setFontSize(singleItem?.text?.getFontSize());
+		if (single instanceof Shape) {
+			const maxFontSize = single.text.getMaxFontSize();
+			setItemType(single?.itemType);
+			setFontSize(single?.text?.getFontSize());
 			setInputType("number");
 			setMax(maxFontSize);
 		}
 	};
 
-	React.useEffect(() => {
+	useEffect(() => {
 		updateAutosizeSettings();
-	});
+	}, []);
 
 	if (board.selection.getContext() === "SelectUnderPointer") {
 		return null;
@@ -76,7 +78,7 @@ export function FontSize({
 		return null;
 	}
 
-	const handleClick = () => {
+	const handleClick = (): void => {
 		toggleMenu("FontSize");
 	};
 
@@ -88,20 +90,23 @@ export function FontSize({
 	const handleChange: React.ChangeEventHandler<HTMLInputElement> = (
 		event: React.ChangeEvent<HTMLInputElement>,
 	): void => {
+		if (currItem instanceof Sticker) {
+			currItem.text.autosizeDisable();
+			setInputType("number");
+		}
 		const size = toFiniteNumber(parseInt(event.target.value));
-		setFontSize(size);
-		if (size < 10 || size > 288) {
+		setFontSize(size > 288 ? 288 : size);
+		if (size < 10) {
 			return;
 		}
-		board.selection.setFontSize(size);
-		setFontSize(size);
+		board.selection.setFontSize(size > 288 ? 288 : size);
 	};
 
-	const handleFocus = () => {
+	const handleFocus = (): void => {
 		toggleEdit(true);
 	};
 
-	const handleBlur = () => {
+	const handleBlur = (): void => {
 		toggleEdit(false);
 	};
 
@@ -111,22 +116,35 @@ export function FontSize({
 		toggleMenu("None");
 	};
 
+	const handleStickerShevrone = (type: "inc" | "dec"): void => {
+		if (currItem instanceof Sticker) {
+			const currSize = Math.floor(currItem.text.getFontSize());
+			currItem.text.autosizeDisable();
+			setInputType("number");
+			setFontSize(type === "inc" ? currSize + 1 : currSize - 1);
+			board.selection.setFontSize(
+				type === "inc" ? currSize + 1 : currSize - 1,
+			);
+		}
+	};
+
 	const onIncrease = (): void => {
 		if (!parseInt(`${fontSize}`)) {
+			handleStickerShevrone("inc");
 			return;
 		}
 
 		setFontSize(prev => +prev + 1);
-
 		board.selection.setFontSize(+fontSize + 1);
 	};
 
 	const onDecrease = (): void => {
 		if (!parseInt(`${fontSize}`)) {
+			handleStickerShevrone("dec");
 			return;
 		}
-		board.selection.setFontSize(+fontSize - 1);
 
+		setFontSize(prev => +prev - 1);
 		board.selection.setFontSize(+fontSize - 1);
 	};
 
@@ -144,7 +162,7 @@ export function FontSize({
 					min="10"
 					max={max}
 					value={`${
-						fontSize === "Auto"
+						inputType === "Auto"
 							? t("contextPanel.fontSize.auto")
 							: fontSize
 					}`}
