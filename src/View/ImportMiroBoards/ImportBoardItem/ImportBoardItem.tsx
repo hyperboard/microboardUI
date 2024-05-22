@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import React, { useEffect } from "react";
 import styles from "../MiroBoards/MiroBoards.module.css";
+import Cookies from "js-cookie";
 
 interface IImportBoardItem {
 	isOpen: boolean | null;
@@ -18,12 +19,12 @@ export function ImportBoardItem({
 
 	const fetchBoardsItems = async () => {
 		try {
+			const token = Cookies.get("miro_accessToken");
 			const response = await fetch(
 				"https://api.miro.com/v2/boards/" + boardId + "/items",
 				{
 					headers: {
-						Authorization:
-							"Bearer eyJtaXJvLm9yaWdpbiI6ImV1MDEifQ_Znh2g1pAoIdiAkV-lmHhZST83Ik",
+						Authorization: "Bearer" + token,
 						Accept: "application/json",
 					},
 				},
