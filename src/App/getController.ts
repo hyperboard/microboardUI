@@ -1,8 +1,9 @@
 import { Board } from "Board";
-import { Mbr } from "Board/Items";
+import { Connector, Mbr, RichTextData, Shape } from "Board/Items";
 import { ImageItem } from "Board/Items/Image";
 import { isEditInProcess, RichText } from "Board/Items/RichText/RichText";
 import { checkHotkeys, isHotkeyPushed } from "Board/Keyboard/hotkeys";
+import { Sticker } from "Board/Items/Sticker";
 import { validateItemsMap } from "Board/Validators";
 import { isNotControlCharacter } from "View/isNotControlCharacter";
 import { Clipboard } from "./Clipboard";
@@ -73,6 +74,36 @@ export function getController(getBoard: () => Board) {
 	function onKeyDown(event: KeyboardEvent): void {
 		const board = getBoard();
 		if (!board || !board.events) {
+			return;
+		}
+
+		if (isEditInProcess()) {
+			if ((event.ctrlKey || event.metaKey) && event.code === "KeyV") {
+				event.preventDefault();
+				navigator.clipboard.readText().then(clipboardText => {
+					try {
+						const data = JSON.parse(clipboardText);
+						const isDataValid = validateItemsMap(data);
+						if (isDataValid) {
+							board.paste(data);
+						} else {
+							throw new Error();
+						}
+					} catch (error) {
+						const originalClipboardData = new DataTransfer();
+						originalClipboardData.setData(
+							"text/plain",
+							clipboardText,
+						);
+						const pasteEvent = new ClipboardEvent("paste", {
+							bubbles: true,
+							cancelable: true,
+							clipboardData: originalClipboardData,
+						});
+						event.target?.dispatchEvent(pasteEvent);
+					}
+				});
+			}
 			return;
 		}
 
@@ -151,10 +182,33 @@ export function getController(getBoard: () => Board) {
 				return;
 			} else if (
 				item &&
-				["Shape", "Sticker", "Connector"].indexOf(item.itemType) > -1 &&
-				context === "EditUnderPointer"
+				(item instanceof Shape ||
+					item instanceof Sticker ||
+					item instanceof Connector ||
+					item instanceof RichText) &&
+				board.selection.getContext() === "EditUnderPointer"
 			) {
-				board.selection.editText();
+				if (
+					!(
+						event.ctrlKey ||
+						event.metaKey ||
+						event.altKey ||
+						event.shiftKey
+					) &&
+					event.key !== "Tab" && // All non-printable keys
+					!event.key.startsWith("Arrow") &&
+					event.key !== "Enter" &&
+					event.key !== "Escape" &&
+					event.key !== "Backspace" &&
+					event.key !== "Delete" &&
+					event.key !== "Home" &&
+					event.key !== "End" &&
+					event.key !== "PageUp" &&
+					event.key !== "PageDown"
+				) {
+					board.selection.editText(event.key);
+				}
+
 				return;
 			}
 		}
@@ -503,28 +557,39 @@ export function getController(getBoard: () => Board) {
 				throw new Error();
 			}
 		} catch (error) {
-			const richtext = new RichText(new Mbr());
-			richtext.transformation.translateTo(
+			const richText = board.add(new RichText(new Mbr()));
+			richText.transformation.translateTo(
 				board.pointer.point.x,
 				board.pointer.point.y,
 			);
-			richtext.editor.editor.children = [
-				{
-					type: "paragraph",
-					children: [
-						{
-							type: "text",
-							text: text,
-						},
-					],
-				},
-			];
-			const dimensions = richtext.getDimensions();
-			if (dimensions.width > board.camera.window.width) {
-				richtext.editor.setMaxWidth(board.camera.window.width);
-			}
-			board.add(richtext);
+			richText.transformation.scaleBy(1, 1);
+			richText.editor.setMaxWidth(600);
+			richText.editor.setSelectionHorisontalAlignment("left");
+			richText.insideOf = richText.itemType;
+			const lines = text.split("\n");
+			lines.forEach((line: string, index: number) => {
+				const endPath = richText.editorEditor.end(
+					richText.editor.editor,
+					[],
+				);
+				richText.editorTransforms.insertText(
+					richText.editor.editor,
+					line,
+					{ at: endPath },
+				);
+				if (index < lines.length - 1) {
+					const splitPath = richText.editorEditor.end(
+						richText.editor.editor,
+						[],
+					);
+					richText.editorTransforms.splitNodes(
+						richText.editor.editor,
+						{ at: splitPath, always: true },
+					);
+				}
+			});
 		}
+
 		event.preventDefault();
 	}
 
