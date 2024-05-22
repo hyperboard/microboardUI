@@ -17,7 +17,6 @@ type PrivateBoards = {
 
 const fetchPrivateBoards = async (): Promise<PrivateBoards | undefined> => {
 	try {
-		console.log("fetchPrivateBoards");
 		const privateBoards = await fetch(getApiUrl("/boards/private"), {
 			method: "GET",
 			headers: {
@@ -26,7 +25,6 @@ const fetchPrivateBoards = async (): Promise<PrivateBoards | undefined> => {
 			},
 		});
 		const data = await privateBoards.json();
-		console.log("data: ", data);
 		return data;
 	} catch (error) {
 		console.log("error: ", error);

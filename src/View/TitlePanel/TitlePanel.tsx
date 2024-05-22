@@ -46,7 +46,6 @@ export function TitlePanel({ sidePanelState, board, app }: Props) {
 	}, [forceUpdate]);
 
 	const isExport = board.tools.getExport();
-	console.log(board.selection.getContext());
 	if (isExport) {
 		return null;
 	}

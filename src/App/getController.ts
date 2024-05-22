@@ -76,7 +76,7 @@ export function getController(getBoard: () => Board) {
 		if (!board || !board.events) {
 			return;
 		}
-
+		/*
 		if (isEditInProcess()) {
 			if ((event.ctrlKey || event.metaKey) && event.code === "KeyV") {
 				event.preventDefault();
@@ -106,6 +106,7 @@ export function getController(getBoard: () => Board) {
 			}
 			return;
 		}
+		*/
 
 		const context = board.selection.getContext();
 		if (
@@ -214,7 +215,6 @@ export function getController(getBoard: () => Board) {
 		}
 
 		if (isFirefox()) {
-			console.log("copy/paste");
 			checkHotkeys(
 				{
 					copy: e =>
@@ -520,7 +520,6 @@ export function getController(getBoard: () => Board) {
 	}
 
 	function onCopy(event: ClipboardEvent): void {
-		console.log("copy");
 		if (isEditInProcess()) {
 			clipboard.set(event.clipboardData?.getData("text/plain"));
 			return;
@@ -536,14 +535,28 @@ export function getController(getBoard: () => Board) {
 		event.preventDefault();
 	}
 
-	function onPaste(event): void {
-		if (isEditInProcess()) {
-			return;
-		}
+	function onPaste(event: ClipboardEvent): void {
 		const board = getBoard();
 		if (!board) {
 			return;
 		}
+		if (isEditInProcess()) {
+			const text = event.clipboardData.getData("text/plain");
+			try {
+				const data = JSON.parse(text);
+				const isDataValid = validateItemsMap(data);
+				if (isDataValid) {
+					board.paste(data);
+					event.preventDefault();
+					event.stopPropagation();
+					return;
+				} else {
+					throw new Error();
+				}
+			} catch (error) {}
+			return;
+		}
+
 		const items = event.clipboardData.items;
 		for (const item of items) {
 			if (item.type.indexOf("image") !== -1) {
