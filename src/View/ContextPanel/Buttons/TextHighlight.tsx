@@ -1,6 +1,6 @@
 import React from "react";
 import { Board } from "Board";
-import { Mbr } from "Board/Items";
+import { Frame, Mbr } from "Board/Items";
 import { ButtonWithMenu } from "./ButtonWithMenu";
 import { UiButton } from "View/Ui/UiButton";
 import { TextHighlightIcon } from "View/Icon/TextStyle/TextHighlightIcon";
@@ -33,8 +33,9 @@ export function TextHighlight({
 	}
 
 	if (
-		board.selection.getContext() !== "EditTextUnderPointer" &&
-		!board.selection.canChangeText()
+		(board.selection.getContext() !== "EditTextUnderPointer" &&
+			!board.selection.canChangeText()) ||
+		board.selection.items.getSingle() instanceof Frame
 	) {
 		return null;
 	}

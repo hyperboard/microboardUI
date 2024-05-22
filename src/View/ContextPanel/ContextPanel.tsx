@@ -27,6 +27,13 @@ import { TextColor } from "./Buttons/TextColor";
 import { TextColorSeparator } from "./Buttons/TextColorSeparator";
 import { TextFeaturesSeparator } from "./Buttons/TextFeatureSeparator";
 import { TextHighlight } from "./Buttons/TextHighlight";
+import { VerticalSeparator } from "./VerticalSeparator";
+import {
+	CopyLinkFrame,
+	SaveFrameAsImage,
+	ToggleFrameRatio,
+	canShowFrameSetting,
+} from "./Buttons/FrameButtons";
 import "./ContextPanel.css";
 
 type ContextPanelProps = {
@@ -191,6 +198,11 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 
 				<PathStyleSeparator board={board} />
 
+				<CopyLinkFrame board={board} toggleMenu={toggleMenu} />
+				<SaveFrameAsImage board={board} toggleMenu={toggleMenu} />
+				<ToggleFrameRatio board={board} toggleMenu={toggleMenu} />
+				{canShowFrameSetting(board) && <VerticalSeparator />}
+
 				<Duplicate board={board} />
 				<Delete board={board} />
 
@@ -205,3 +217,5 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 		</div>
 	);
 }
+
+export const IconSize = 24;

@@ -15,6 +15,8 @@ interface Props extends React.PropsWithChildren<{}> {
 	width?: number;
 	style?: React.CSSProperties;
 	tipWidth?: number;
+	onMouseEnter?: React.MouseEventHandler<HTMLButtonElement>;
+	onMouseLeave?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 export function UiButton(props: Props): React.ReactElement {
@@ -26,12 +28,18 @@ export function UiButton(props: Props): React.ReactElement {
 		HTMLButtonElement
 	> = event => {
 		event.currentTarget.style.color = "blue";
+		if (props.onMouseEnter) {
+			props.onMouseEnter(event);
+		}
 	};
 
 	const handleMouseLeave: React.MouseEventHandler<
 		HTMLButtonElement
 	> = event => {
 		event.currentTarget.style.color = props.isOn ? "blue" : "black";
+		if (props.onMouseLeave) {
+			props.onMouseLeave(event);
+		}
 	};
 
 	return (

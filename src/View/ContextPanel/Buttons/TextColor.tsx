@@ -1,5 +1,5 @@
 import { Board } from "Board";
-import { Mbr } from "Board/Items";
+import { Frame, Mbr } from "Board/Items";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { TextColorIcon } from "View/Icon/TextStyle/TextColorIcon";
@@ -33,8 +33,9 @@ export function TextColor({
 	}
 
 	if (
-		board.selection.getContext() !== "EditTextUnderPointer" &&
-		!board.selection.canChangeText()
+		(board.selection.getContext() !== "EditTextUnderPointer" &&
+			!board.selection.canChangeText()) ||
+		board.selection.items.getSingle() instanceof Frame
 	) {
 		return null;
 	}
