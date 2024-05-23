@@ -4,7 +4,6 @@ import styles from "../MiroBoards/MiroBoards.module.css";
 import Cookies from "js-cookie";
 import { IMiroBoardItem } from "../MiroBoards/MiroBoardsModels";
 import { App } from "App";
-import { Board } from "Board";
 import { useNavigate } from "react-router-dom";
 import { useCopyBoardItems } from "./useCopyBoardItems";
 
@@ -25,30 +24,72 @@ export function ImportBoardItem({
 	const navigate = useNavigate();
 	const [boardItems, setBoardItems] = useState<IMiroBoardItem[]>([]);
 	const [itemsInfo, setItemsInfo] = useState<{
-		cursor: string;
-		total: number;
-	}>({ cursor: "", total: -1 });
+		cursor: { items: string; connectors: string };
+		total: { items: number; connectors: number };
+	}>({
+		cursor: { items: "", connectors: "" },
+		total: { items: -1, connectors: -1 },
+	});
+	const token = Cookies.get("miro_accessToken");
+	const options = {
+		headers: {
+			Authorization: "Bearer " + token,
+			Accept: "application/json",
+		},
+	};
 
 	const fetchBoardsItems = async () => {
 		try {
-			const token = Cookies.get("miro_accessToken");
 			const cursor =
-				itemsInfo.cursor !== "" ? "cursor=" + itemsInfo.cursor : "";
+				itemsInfo.cursor.items !== ""
+					? "cursor=" + itemsInfo.cursor.items
+					: "";
 			const response = await fetch(
 				"https://api.miro.com/v2/boards/" +
 					boardId +
 					"/items?limit=50&" +
 					cursor,
-				{
-					headers: {
-						Authorization: "Bearer " + token,
-						Accept: "application/json",
-					},
-				},
+				options,
 			);
 			const data = await response.json();
-			boardItems && setBoardItems([...boardItems, ...data.data]);
-			setItemsInfo({ cursor: data.cursor ?? "", total: data.total });
+			setBoardItems(items => [...items, ...data.data]);
+			setItemsInfo(info => {
+				return {
+					cursor: {
+						items: data.cursor ?? "",
+						connectors: info.cursor.connectors,
+					},
+					total: {
+						items: data.total,
+						connectors: info.total.connectors,
+					},
+				};
+			});
+		} catch (error) {
+			console.error(error as Error);
+		}
+	};
+
+	const fetchBoardsItemsConnectors = async () => {
+		try {
+			const response = await fetch(
+				"https://api.miro.com/v2/boards/" + boardId + "/connectors",
+				options,
+			);
+			const data = await response.json();
+			setBoardItems(items => [...items, ...data.data]);
+			setItemsInfo(info => {
+				return {
+					cursor: {
+						items: info.cursor.items,
+						connectors: data.cursor ?? "",
+					},
+					total: {
+						items: info.total.items,
+						connectors: data.total,
+					},
+				};
+			});
 		} catch (error) {
 			console.error(error as Error);
 		}
@@ -56,14 +97,23 @@ export function ImportBoardItem({
 
 	useEffect(() => {
 		fetchBoardsItems();
+		fetchBoardsItemsConnectors();
 	}, []);
 
 	useEffect(() => {
-		itemsInfo.cursor !== "" && fetchBoardsItems();
-	}, [itemsInfo.cursor]);
+		itemsInfo.cursor.items !== "" && fetchBoardsItems();
+	}, [itemsInfo.cursor.items]);
 
 	useEffect(() => {
-		if (boardItems && itemsInfo.total === boardItems.length) {
+		itemsInfo.cursor.connectors !== "" && fetchBoardsItemsConnectors();
+	}, [itemsInfo.cursor.connectors]);
+
+	useEffect(() => {
+		if (
+			boardItems &&
+			itemsInfo.total.items + itemsInfo.total.connectors ===
+				boardItems.length
+		) {
 			onCloseModal();
 			app.createPublicBoard().then((id: string) => {
 				app.openBoard(id);
@@ -71,10 +121,10 @@ export function ImportBoardItem({
 					replace: true,
 				});
 				const board = app.getBoard();
-				useCopyBoardItems(board, boardItems);
+				useCopyBoardItems(app, board, boardItems);
 			});
 		}
-	}, [boardItems, itemsInfo]);
+	}, [boardItems, itemsInfo.total]);
 
 	const onCloseModal = () => setIsOpen(false);
 

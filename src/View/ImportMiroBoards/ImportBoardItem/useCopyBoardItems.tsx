@@ -6,8 +6,13 @@ import { BorderStyle } from "Board/Items/Path";
 import { Sticker, stickerColors } from "Board/Items/Sticker";
 import { ImageItem } from "Board/Items/Image";
 import Cookies from "js-cookie";
+import { App } from "App";
 
-export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
+export function useCopyBoardItems(
+	app: App,
+	board: Board,
+	miroItems: IMiroBoardItem[],
+) {
 	// const setText = (content: string, x: number, y: number, style: IMiroBoardItemStyle) => {
 	// 	const {fontFamily, fontSize, textAlign, textAlignVertical} = style
 	// 	const richtext = new RichText(new Mbr());
@@ -32,6 +37,18 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 	// 	}
 	// 	board.add(richtext);
 	// };
+
+	const setItemText = (
+		item: Shape | Sticker,
+		text: string,
+		fontSize: string,
+		fontFamily: string,
+	) => {
+		const textWithoutTag = text.replace(/<[^>]*>/g, "");
+		item.text.addText(textWithoutTag);
+		item.text.setSelectionFontSize(+fontSize);
+		item.text.setSelectionFontFamily(fontFamily);
+	};
 
 	const getShapeType = (miroShapeType: string): ShapeType => {
 		switch (miroShapeType) {
@@ -69,7 +86,7 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 		return "solid";
 	};
 
-	const getStikerColor = (color: string): string => {
+	const getStickerColor = (color: string): string => {
 		switch (color) {
 			case "dark_blue":
 			case "blue":
@@ -105,7 +122,7 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 	};
 
 	const copyShape = (item: IMiroBoardItem) => {
-		const { style, position, data, geometry } = item;
+		const { id, style, position, data, geometry } = item;
 		const { x, y } = position;
 		const { height, width } = geometry;
 		if (style && data) {
@@ -116,15 +133,17 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 				borderOpacity,
 				borderStyle,
 				borderWidth,
+				fontSize,
+				fontFamily,
 			} = style;
-			const { shape } = data;
+			const { shape, content } = data;
 			const miroShapeType = shape ?? "";
 			const shapeType = getShapeType(miroShapeType);
 			if (borderOpacity && borderWidth && borderColor && borderStyle) {
 				const newBorderStyle = getBorderStyle(borderStyle);
 				const newShape = new Shape(
 					undefined,
-					"",
+					id,
 					shapeType,
 					fillColor,
 					+fillOpacity,
@@ -137,31 +156,36 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 				newShape.transformation.translateTo(x, y);
 				newShape.transformation.scaleTo(width / 100, height / 100);
 
+				content && setItemText(newShape, content, fontSize, fontFamily);
+
 				board.add(newShape);
 			}
 		}
 	};
 
 	const copySticker = (item: IMiroBoardItem) => {
-		const { style, position, data, geometry } = item;
+		const { id, style, position, data, geometry } = item;
 		const { x, y } = position;
 		const { height, width } = geometry;
 		if (style && data) {
-			const { fillColor } = style;
+			const { fillColor, fontSize, fontFamily } = style;
 			if (fillColor) {
-				const color = getStikerColor(fillColor);
-				const stiker = new Sticker(undefined, "", color);
+				const color = getStickerColor(fillColor);
+				const sticker = new Sticker(undefined, id, color);
 
-				stiker.transformation.translateTo(x, y);
-				stiker.transformation.scaleTo(width / 200, height / 200);
+				sticker.transformation.translateTo(x, y);
+				sticker.transformation.scaleTo(width / 200, height / 200);
 
-				board.add(stiker);
+				data.content &&
+					setItemText(sticker, data.content, fontSize, fontFamily);
+
+				board.add(sticker);
 			}
 		}
 	};
 
 	const copyImage = async (item: IMiroBoardItem) => {
-		const { position, data, geometry } = item;
+		const { id, position, data, geometry } = item;
 		if (data && data.imageUrl) {
 			const { x, y } = position;
 			const { height, width } = geometry;
@@ -172,17 +196,33 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 				},
 			});
 			const dataImg = await response.json();
-			const img = new ImageItem(dataImg.url);
+			const img = new ImageItem(dataImg.url, undefined, id);
 
 			img.transformation.translateTo(x, y);
-			img.transformation.scaleTo(width / 100, height / 100);
+			img.transformation.scaleTo(width / 150, height / 150);
 
 			board.add(img);
 		}
 	};
 
+	// const copyConnector = async (item: IMiroBoardItem) => {
+	// 	const { startItem, endItem } = item;
+	// 	if (startItem && endItem) {
+
+	// 		debugger;
+	// 		const boardId = board.getBoardId();
+	// 		const getStartItem = app.boards.get(boardId).items.getById(startItem?.id)
+	// 		const getEndItem = app.boards.get(boardId).items.getById(endItem?.id)
+	// 		console.log('getStartItem', getStartItem)
+	// 		console.log('getEndItem', getEndItem)
+	// 		// const connector = new Connector(board, undefined, )
+
+	// 		// board.add(img);
+	// 	}
+	// };
+
 	const copyBoardItems = () => {
-		miroItems.forEach(item => {
+		miroItems.forEach((item, index) => {
 			if (item.type === "shape") {
 				copyShape(item);
 			} else if (item.type === "sticky_note") {

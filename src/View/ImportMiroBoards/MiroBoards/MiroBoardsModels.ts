@@ -28,6 +28,8 @@ export interface IMiroBoardItem {
 		x: number;
 		y: number;
 	};
+	startItem?: IMiroBoardConnectionsPoints;
+	endItem?: IMiroBoardConnectionsPoints;
 	style?: IMiroBoardItemStyle;
 }
 
@@ -43,4 +45,12 @@ export interface IMiroBoardItemStyle {
 	fontSize: string;
 	textAlign: string;
 	textAlignVertical: string;
+}
+
+interface IMiroBoardConnectionsPoints {
+	id: number;
+	position: {
+		x: string;
+		y: string;
+	};
 }
