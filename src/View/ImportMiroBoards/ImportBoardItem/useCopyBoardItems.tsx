@@ -20,8 +20,8 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 		item.text.addText(textWithoutTag);
 		item.text.setSelectionFontSize(+fontSize);
 		item.text.setSelectionFontFamily(fontFamily);
-		//const isBold = text.includes("<strong>") ? "bold" : null;
-		//isBold && item.text.setSelectionFontStyle(isBold);
+		// const isBold = text.includes("<strong>") ? "bold" : null;
+		// isBold && item.text.setSelectionFontStyle(isBold);
 	};
 
 	const getShapeType = (miroShapeType: string): ShapeType => {
@@ -224,7 +224,7 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 				strokeColor && connector.setLineColor(strokeColor);
 				strokeColor && connector.setLineColor(strokeColor);
 				connector.setLineStyle(shape as ConnectorLineStyle);
-				//strokeWidth && connector.setLineWidth(+strokeWidth);
+				// strokeWidth && connector.setLineWidth(+strokeWidth);
 
 				board.add(connector);
 			}
