@@ -13,6 +13,7 @@ export interface IMiroBoard {
 export interface IMiroBoardItem {
 	id: string;
 	type: string;
+	shape?: string;
 	data: {
 		content?: string;
 		shape?: string;
@@ -45,10 +46,13 @@ export interface IMiroBoardItemStyle {
 	fontSize: string;
 	textAlign: string;
 	textAlignVertical: string;
+	strokeColor?: string;
+	strokeStyle?: string;
+	strokeWidth?: string;
 }
 
 interface IMiroBoardConnectionsPoints {
-	id: number;
+	id: string;
 	position: {
 		x: string;
 		y: string;

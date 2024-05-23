@@ -121,7 +121,7 @@ export function ImportBoardItem({
 					replace: true,
 				});
 				const board = app.getBoard();
-				useCopyBoardItems(app, board, boardItems);
+				useCopyBoardItems(board, boardItems);
 			});
 		}
 	}, [boardItems, itemsInfo.total]);
