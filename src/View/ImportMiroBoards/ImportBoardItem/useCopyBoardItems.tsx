@@ -4,6 +4,8 @@ import { Shape } from "Board/Items";
 import { ShapeType } from "Board/Items/Shape/Basic";
 import { BorderStyle } from "Board/Items/Path";
 import { Sticker, stickerColors } from "Board/Items/Sticker";
+import { ImageItem } from "Board/Items/Image";
+import Cookies from "js-cookie";
 
 export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 	// const setText = (content: string, x: number, y: number, style: IMiroBoardItemStyle) => {
@@ -104,6 +106,8 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 
 	const copyShape = (item: IMiroBoardItem) => {
 		const { style, position, data, geometry } = item;
+		const { x, y } = position;
+		const { height, width } = geometry;
 		if (style && data) {
 			const {
 				fillColor,
@@ -113,8 +117,6 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 				borderStyle,
 				borderWidth,
 			} = style;
-			const { x, y } = position;
-			const { height, width } = geometry;
 			const { shape } = data;
 			const miroShapeType = shape ?? "";
 			const shapeType = getShapeType(miroShapeType);
@@ -142,10 +144,10 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 
 	const copySticker = (item: IMiroBoardItem) => {
 		const { style, position, data, geometry } = item;
+		const { x, y } = position;
+		const { height, width } = geometry;
 		if (style && data) {
 			const { fillColor } = style;
-			const { x, y } = position;
-			const { height, width } = geometry;
 			if (fillColor) {
 				const color = getStikerColor(fillColor);
 				const stiker = new Sticker(undefined, "", color);
@@ -158,12 +160,35 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 		}
 	};
 
+	const copyImage = async (item: IMiroBoardItem) => {
+		const { position, data, geometry } = item;
+		if (data && data.imageUrl) {
+			const { x, y } = position;
+			const { height, width } = geometry;
+			const token = Cookies.get("miro_accessToken");
+			const response = await fetch(data.imageUrl, {
+				headers: {
+					Authorization: "Bearer " + token,
+				},
+			});
+			const dataImg = await response.json();
+			const img = new ImageItem(dataImg.url);
+
+			img.transformation.translateTo(x, y);
+			img.transformation.scaleTo(width / 100, height / 100);
+
+			board.add(img);
+		}
+	};
+
 	const copyBoardItems = () => {
 		miroItems.forEach(item => {
 			if (item.type === "shape") {
 				copyShape(item);
 			} else if (item.type === "sticky_note") {
 				copySticker(item);
+			} else if (item.type === "image") {
+				copyImage(item);
 			}
 		});
 	};
