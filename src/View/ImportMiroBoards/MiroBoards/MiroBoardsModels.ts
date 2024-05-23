@@ -28,17 +28,19 @@ export interface IMiroBoardItem {
 		x: number;
 		y: number;
 	};
-	style?: {
-		borderColor?: string;
-		borderOpacity?: string;
-		borderStyle?: string;
-		borderWidth?: string;
-		color: string;
-		fillColor: string;
-		fillOpacity: string;
-		fontFamily: string;
-		fontSize: string;
-		textAlign: string;
-		textAlignVertical: string;
-	};
+	style?: IMiroBoardItemStyle;
+}
+
+export interface IMiroBoardItemStyle {
+	borderColor?: string;
+	borderOpacity?: string;
+	borderStyle?: string;
+	borderWidth?: string;
+	color: string;
+	fillColor: string;
+	fillOpacity: string;
+	fontFamily: string;
+	fontSize: string;
+	textAlign: string;
+	textAlignVertical: string;
 }

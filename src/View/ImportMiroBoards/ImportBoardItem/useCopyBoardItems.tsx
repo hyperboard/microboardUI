@@ -3,8 +3,34 @@ import { IMiroBoardItem } from "../MiroBoards/MiroBoardsModels";
 import { Shape } from "Board/Items";
 import { ShapeType } from "Board/Items/Shape/Basic";
 import { BorderStyle } from "Board/Items/Path";
+import { Sticker, stickerColors } from "Board/Items/Sticker";
 
 export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
+	// const setText = (content: string, x: number, y: number, style: IMiroBoardItemStyle) => {
+	// 	const {fontFamily, fontSize, textAlign, textAlignVertical} = style
+	// 	const richtext = new RichText(new Mbr());
+	// 	richtext.transformation.translateTo(x, y);
+	// 	richtext.setSelectionFontFamily(fontFamily)
+	// 	richtext.setSelectionFontSize(+fontSize)
+	// 	richtext.setSelectionHorisontalAlignment(textAlign as HorisontalAlignment)
+	// 	richtext.editor.editor.children = [
+	// 		{
+	// 			type: "paragraph",
+	// 			children: [
+	// 				{
+	// 					type: "text",
+	// 					text: content,
+	// 				},
+	// 			],
+	// 		},
+	// 	];
+	// 	const dimensions = richtext.getDimensions();
+	// 	if (dimensions.width > board.camera.window.width) {
+	// 		richtext.editor.setMaxWidth(board.camera.window.width);
+	// 	}
+	// 	board.add(richtext);
+	// };
+
 	const getShapeType = (miroShapeType: string): ShapeType => {
 		switch (miroShapeType) {
 			case "round_rectangle":
@@ -41,6 +67,41 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 		return "solid";
 	};
 
+	const getStikerColor = (color: string): string => {
+		switch (color) {
+			case "dark_blue":
+			case "blue":
+			case "light_blue":
+				return stickerColors["Sky Blue"];
+			case "red":
+			case "orange":
+				return stickerColors["Pastel Red"];
+			case "violet":
+			case "pink":
+			case "light_pink":
+				return stickerColors["Lavender"];
+			case "cyan":
+				return stickerColors["Aqua Cyan"];
+			case "dark_green":
+			case "green":
+			case "light_green":
+				return stickerColors["Sage Green"];
+			case "dark_green":
+			case "green":
+				return stickerColors["Sage Green"];
+			case "yellow":
+			case "light_yellow":
+				return stickerColors["Pale Yellow"];
+			case "yellow":
+			case "light_yellow":
+				return stickerColors["Pale Yellow"];
+			case "gray":
+			case "light_yellow":
+				return stickerColors["Light Gray"];
+		}
+		return stickerColors["Sky Blue"];
+	};
+
 	const copyShape = (item: IMiroBoardItem) => {
 		const { style, position, data, geometry } = item;
 		if (style && data) {
@@ -54,7 +115,8 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 			} = style;
 			const { x, y } = position;
 			const { height, width } = geometry;
-			const miroShapeType = data.shape ?? "";
+			const { shape } = data;
+			const miroShapeType = shape ?? "";
 			const shapeType = getShapeType(miroShapeType);
 			if (borderOpacity && borderWidth && borderColor && borderStyle) {
 				const newBorderStyle = getBorderStyle(borderStyle);
@@ -69,9 +131,29 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 					newBorderStyle as BorderStyle,
 					+borderWidth,
 				);
+
 				newShape.transformation.translateTo(x, y);
 				newShape.transformation.scaleTo(width / 100, height / 100);
+
 				board.add(newShape);
+			}
+		}
+	};
+
+	const copySticker = (item: IMiroBoardItem) => {
+		const { style, position, data, geometry } = item;
+		if (style && data) {
+			const { fillColor } = style;
+			const { x, y } = position;
+			const { height, width } = geometry;
+			if (fillColor) {
+				const color = getStikerColor(fillColor);
+				const stiker = new Sticker(undefined, "", color);
+
+				stiker.transformation.translateTo(x, y);
+				stiker.transformation.scaleTo(width / 200, height / 200);
+
+				board.add(stiker);
 			}
 		}
 	};
@@ -80,6 +162,8 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 		miroItems.forEach(item => {
 			if (item.type === "shape") {
 				copyShape(item);
+			} else if (item.type === "sticky_note") {
+				copySticker(item);
 			}
 		});
 	};

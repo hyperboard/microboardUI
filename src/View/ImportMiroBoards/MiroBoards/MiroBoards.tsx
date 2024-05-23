@@ -27,8 +27,8 @@ export function MiroBoards({
 
 	const fetchData = async () => {
 		try {
-			const clientId = "3458764589599848573";
-			const clientSecret = "ufmdVcxamXfkjHHeS8Bv1QPCxrUN63PB";
+			const clientId = import.meta.env.MIRO_CLIENT_ID;
+			const clientSecret = import.meta.env.MIRO_CLIENT_SECRET;
 			const redirectUrl = import.meta.env.BASE_URL + "/boards/:boardId/";
 
 			const response = await fetch(
