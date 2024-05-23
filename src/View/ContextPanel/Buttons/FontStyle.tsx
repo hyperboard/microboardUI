@@ -1,5 +1,5 @@
 import { Board } from "Board";
-import { Mbr } from "Board/Items";
+import { Frame, Mbr } from "Board/Items";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { BoldUnderlineIcon } from "View/Icon/TextStyle/BoldUnderlineIcon";
@@ -31,8 +31,9 @@ export function FontStyle({
 	}
 
 	if (
-		board.selection.getContext() !== "EditTextUnderPointer" &&
-		!board.selection.canChangeText()
+		(board.selection.getContext() !== "EditTextUnderPointer" &&
+			!board.selection.canChangeText()) ||
+		board.selection.items.getSingle() instanceof Frame
 	) {
 		return null;
 	}

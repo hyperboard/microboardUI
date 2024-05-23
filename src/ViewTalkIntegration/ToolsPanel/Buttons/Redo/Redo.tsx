@@ -25,7 +25,7 @@ export function Redo() {
 			onClick={handleClick}
 			disabled={!canUndo}
 		>
-			<RedoIcon width={15} height={15} />
+			<RedoIcon width={16} height={16} />
 		</UiButton>
 	);
 }

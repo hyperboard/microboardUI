@@ -6,15 +6,18 @@ import { useForceUpdate } from "lib/useForceUpdate";
 import * as React from "react";
 import { HorisontalSeparator } from "View/ContextPanel/HorisontalSeparator";
 import { SidePanelState } from "View/SidePanel/SidePanelState";
-import { AddConnector } from "./Buttons/AddConnector";
-import { AddDrawing } from "./Buttons/AddDrawing";
-import { AddImage } from "./Buttons/AddImage";
-import { AddShape } from "./Buttons/AddShape";
-import { AddStickerTool } from "./Buttons/AddStickerTool";
-import { AddText } from "./Buttons/AddText";
-import { Redo } from "./Buttons/Redo";
-import { Select } from "./Buttons/Select";
-import { Undo } from "./Buttons/Undo";
+import {
+	AddConnector,
+	AddDrawing,
+	AddImage,
+	AddShape,
+	AddStickerTool,
+	AddText,
+	Redo,
+	Select,
+	Undo,
+	AddFrame,
+} from "./Buttons";
 import "./ToolsPanel.css";
 
 type Props = {
@@ -86,7 +89,10 @@ export function ToolsPanel({ app, board, sidePanelState }: Props) {
 				width={board.tools.getAddDrawing()?.strokeWidth ?? 1}
 			/>
 			<AddImage board={board} />
-
+			<AddFrame
+				board={board}
+				isOn={board.tools.getAddFrame() !== undefined}
+			/>
 			<HorisontalSeparator height={4}></HorisontalSeparator>
 
 			<Undo board={board} isOn={board.events.canUndo()} />

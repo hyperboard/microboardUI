@@ -1,26 +1,27 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta
-			name="viewport"
-			content="
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="
 			width=device-width,
 			initial-scale=1,
 			shrink-to-fit=no
 			minimum-scale=1.0, 
 			maximum-scale=1.0, 
 			user-scalable=no
-		 "
-		/>
-		<title>Microboard</title>
-		<link rel="icon" type="image/svg" href="/favicon.svg">
-		<link rel="stylesheet" type="text/css" href="/bundle.css">
-	    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js"></script>
-	    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js"></script>
-	</head>
-	<body
-		style="
+		 " />
+	<title>Microboard</title>
+	<link rel="icon" type="image/svg" href="/favicon.svg">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="/bundle.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js"></script>
+</head>
+
+<body style="
 			margin: 0;
 			height: 100%;
 			width: 100%;
@@ -29,11 +30,8 @@
 			padding: 0;
 			touch-action: none;
 			-ms-touch-action: none;
-		"
-	>
-		<div
-			id="root"
-			style="
+		">
+	<div id="root" style="
 				height: 100%;
 				width: 100%;
 				resize: none;
@@ -43,31 +41,31 @@
 				padding: 0px;
 				margin: 0px;
 				overflow: auto;
-			"
-		>
-			<div
-				style="
+			">
+		<div style="
 					display: flex;
   					justify-content: center;
   					align-items: center;
-				"
-			>
-				<label for="loading"><h1>Loading...</h1></label>
-			</div>
+				">
+			<label for="loading">
+				<h1>Loading...</h1>
+			</label>
 		</div>
-		<input type="file" accept="image/*,application/pdf" id="image-upload" style="display: none;">
-		<script type="module">
-			import {Stattrack} from "https://unpkg.com/stattrack-test-modules@0.0.3/dist/index.js";
+	</div>
+	<input type="file" accept="image/*,application/pdf" id="image-upload" style="display: none;">
+	<script type="module">
+		import { Stattrack } from "https://unpkg.com/stattrack-test-modules@0.0.3/dist/index.js";
 
-			if(window.self === window.top) {
-				const stattrack = new Stattrack({
-					application: {
-						name: "Microboard"
-					},
-					apiKey: "e3cc53ec-a0a5-4dd5-b7d1-d2d51c01c18c"
-				});
-			}
-		</script>
-		<script src="/bundle.js"></script>
-	</body>
+		if (window.self === window.top) {
+			const stattrack = new Stattrack({
+				application: {
+					name: "Microboard"
+				},
+				apiKey: "e3cc53ec-a0a5-4dd5-b7d1-d2d51c01c18c"
+			});
+		}
+	</script>
+	<script src="/bundle.js"></script>
+</body>
+
 </html>

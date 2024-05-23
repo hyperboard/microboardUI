@@ -6,7 +6,6 @@ import { App } from "App";
 import { Board } from "Board";
 import { verticalAlignmentToFlex } from "./verticalAlignmentToFlex";
 import { defaultTextStyle, RichText } from "Board/Items/RichText/RichText";
-// import {placeholderText} from "../../Board/Items/RichText/renderElement/Placeholder";
 
 export class TextEditors extends React.Component<
 	{
@@ -213,11 +212,11 @@ export class TextEditor extends React.Component<
 								<span
 									{...attributes}
 									style={{
-										position: "relative",
-										left: 0,
-										top: 10,
+										position: "absolute",
 										whiteSpace: "nowrap",
-										opacity: 0.5,
+										opacity: 0.33,
+										maxWidth: "100%",
+										textDecoration: "none",
 										userSelect: "none",
 										pointerEvents: "none",
 									}}
@@ -230,6 +229,12 @@ export class TextEditor extends React.Component<
 								overflowWrap: "break-word",
 								wordBreak: "normal",
 								width: "100%",
+								maxHeight: !text.getAutosize()
+									? `${maxHeight + 1}px`
+									: "none",
+								overflowY: !text.getAutosize()
+									? "auto"
+									: "visible",
 								// transform: `scale(${editorScale})`,
 								// transformOrigin: `left top`,
 							}}

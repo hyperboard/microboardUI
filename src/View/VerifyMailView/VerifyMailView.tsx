@@ -1,9 +1,13 @@
 import { getApiUrl } from "Config";
 import Cookies from "js-cookie";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import styles from "./VerifyMailView.module.css";
+import { Input } from "shared/ui-lib/Input/Input";
+import { LockIcon } from "View/SignupView/LockIcon";
+import { Button } from "shared/ui-lib/Button";
+import { useDebounce } from "shared/hooks/useDebounce";
 
 const secondsToHumanReadable = (seconds: number): string => {
 	const minutes = Math.floor(seconds / 60);
@@ -56,8 +60,10 @@ export const VerifyMailView: React.FC = () => {
 	const [searchParams, _setSearchParams] = useSearchParams();
 	const [retryCount, setRetryCount] = React.useState(0);
 	const navigate = useNavigate();
-	const [passcode, setPasscode] = React.useState<string>("");
-	const [error, setError] = React.useState<string>("");
+	// const [passcode, setPasscode] = useState<string>("");
+	const [error, setError] = useState<string>("");
+	const [submitDisabled, setSubmitDisabled] = useState<boolean>(true);
+	const formRef = useRef<HTMLFormElement>(null);
 
 	const onSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
@@ -67,6 +73,7 @@ export const VerifyMailView: React.FC = () => {
 			return;
 		}
 		if (searchParams.get("userId")) {
+			const passcode = formRef.current?.code.value;
 			verifyEmail(parseInt(searchParams.get("userId") || "0"), passcode)
 				.then(() => {
 					console.log("verifyEmail ok");
@@ -91,6 +98,27 @@ export const VerifyMailView: React.FC = () => {
 		});
 		setRetryCount(60);
 	};
+
+	const checkForm = (): void => {
+		if (!formRef.current) {
+			return;
+		}
+		const passcode: string = formRef.current.code.value;
+
+		if (!passcode) {
+			setSubmitDisabled(true);
+			return;
+		}
+
+		if (passcode.length !== 6 || isNaN(parseInt(passcode))) {
+			setSubmitDisabled(true);
+			return;
+		}
+
+		setSubmitDisabled(false);
+	};
+
+	const dbCheckForm = useDebounce(checkForm, 500);
 
 	useEffect(() => {
 		if (!searchParams.get("userId") || !searchParams.get("email")) {
@@ -131,34 +159,44 @@ export const VerifyMailView: React.FC = () => {
 
 	return (
 		<div className={styles.wrapper}>
-			<form onSubmit={onSubmit} className={styles.form}>
-				<label htmlFor="code" className={styles.title}>
-					{t("auth.passcode")}
-				</label>
-				<input
-					className={styles.input}
+			<form onSubmit={onSubmit} className={styles.form} ref={formRef}>
+				<p className={styles.ifNotFind}>{t("auth.emailIfNotFind")}</p>
+				<h1 className={styles.title}>{t("auth.checkInbox")}</h1>
+				<p className={styles.checkEmail}>
+					{t("auth.weSentCode")}{" "}
+					<span className={styles.email}>
+						{searchParams.get("email")}
+					</span>
+					<br />
+					{t("auth.enterCodeBelow")}
+				</p>
+				<Input
+					prefixIcon={<LockIcon />}
 					type="text"
 					id="code"
 					name="code"
 					maxLength={6}
-					onInput={ev => setPasscode(ev.currentTarget.value)}
-					value={passcode}
+					placeholder="Verification code"
+					hasError={!!error.length}
+					errorText={error}
+					onInput={dbCheckForm}
 				/>
-				<button
-					disabled={retryCount > 0}
-					type="button"
-					onClick={onResend}
-					className={styles.retryButton}
-				>
-					{t("auth.resendCode")}{" "}
-					{retryCount > 0
-						? `(${secondsToHumanReadable(retryCount)})`
-						: null}
-				</button>
-				<button type="submit" className={styles.submit}>
-					{t("auth.submit")}
-				</button>
-				{error && <p className={styles.error}>{error}</p>}
+				<div className={styles.btns}>
+					<Button disabled={submitDisabled} type="submit">
+						{t("auth.submit")}
+					</Button>
+					<Button
+						pattern="ghost"
+						disabled={retryCount > 0}
+						type="button"
+						onClick={onResend}
+					>
+						{t("auth.resendCode")}{" "}
+						{retryCount > 0
+							? `(${secondsToHumanReadable(retryCount)})`
+							: null}
+					</Button>
+				</div>
 			</form>
 		</div>
 	);

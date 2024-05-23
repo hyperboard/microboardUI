@@ -53,6 +53,15 @@
 			"windows": "P"
 		}
 	},
+	"frame": {
+		"key": {
+			"button": "KeyF"
+		},
+		"label": {
+			"mac": "F",
+			"windows": "F"
+		}
+	},
 	"undo": {
 		"key": {
 			"button": "KeyZ",

@@ -118,31 +118,31 @@
 	"zoomOut": {
 		"key": {
 			"button": "Minus",
-			"ctrl": true
+			"alt": true
 		},
 		"label": {
-			"mac": "⌘-",
-			"windows": "Ctrl + -"
+			"mac": "Option + -",
+			"windows": "Alt + -"
 		}
 	},
 	"zoomIn": {
 		"key": {
 			"button": "Equal",
-			"ctrl": true
+			"alt": true
 		},
 		"label": {
-			"mac": "⌘+",
-			"windows": "Ctrl + +"
+			"mac": "Option + +",
+			"windows": "Alt + +"
 		}
 	},
 	"zoomDefault": {
 		"key": {
 			"button": "Digit0",
-			"ctrl": true
+			"alt": true
 		},
 		"label": {
-			"mac": "⌘0",
-			"windows": "Ctrl + 0"
+			"mac": "Option + 0",
+			"windows": "Alt + 0"
 		}
 	},
 	"duplicate": {

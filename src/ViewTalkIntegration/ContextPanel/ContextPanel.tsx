@@ -13,7 +13,6 @@ import { Delete } from "./Buttons/Delete";
 import { DrawFillStyle } from "./Buttons/DrawFillStyle";
 import { DrawStrokeWidth } from "./Buttons/DrawStrokeWidth";
 import { Duplicate } from "./Buttons/Duplicate";
-import { Edit } from "./Buttons/Edit";
 import { EndPointer } from "./Buttons/EndPointer";
 import { FillStyle } from "./Buttons/FillStyle";
 import { FontSize } from "./Buttons/FontSize";
@@ -50,12 +49,15 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 		setOpenedMenu(prev => (prev === menu ? "None" : menu));
 
 	const windowHeight = board.camera.window.height;
-	const isVisible = board.selection.getContext() !== "None";
-	if (!isVisible) {
+
+	const isInvisible =
+		board.selection.getContext() === "None" ||
+		board.selection.getContext() === "SelectUnderPointer";
+
+	if (isInvisible) {
 		return null;
 	}
-	const isSelectUnderPointer =
-		board.selection.getContext() === "SelectUnderPointer";
+
 	const isText = board.selection.items.isAllItemsType("RichText");
 	const isSticker = board.selection.items.isAllItemsType("Sticker");
 	const isShape = board.selection.items.isAllItemsType("Shape");
@@ -64,7 +66,6 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 	const isImage = board.selection.items.isAllItemsType("Image");
 	const isDifferentItems =
 		!isText && !isSticker && !isShape && !isConnector && !isPen && !isImage;
-
 	return (
 		<PanelContext.Provider
 			value={{
@@ -83,8 +84,7 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 				}}
 				ref={panelRef}
 			>
-				{isSelectUnderPointer && <Edit />}
-				{!isSelectUnderPointer && isText && (
+				{isText && (
 					<>
 						<FontSize />
 						<FontStyle />
@@ -96,7 +96,7 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 						<RestOptionsMenu />
 					</>
 				)}
-				{!isSelectUnderPointer && isSticker && (
+				{isSticker && (
 					<>
 						<StickerFillStyle />
 						<UiSeparator vertical />
@@ -107,7 +107,7 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 						<RestOptionsMenu />
 					</>
 				)}
-				{!isSelectUnderPointer && isShape && (
+				{isShape && (
 					<>
 						<ItemType />
 						<StrokeStyle />
@@ -123,7 +123,7 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 						<RestOptionsMenu />
 					</>
 				)}
-				{!isSelectUnderPointer && isConnector && (
+				{isConnector && (
 					<>
 						<StartPointer />
 						<SwitchPointers />
@@ -138,7 +138,7 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 						<RestOptionsMenu />
 					</>
 				)}
-				{!isSelectUnderPointer && isPen && (
+				{isPen && (
 					<>
 						<DrawStrokeWidth />
 						<UiSeparator vertical />
@@ -147,7 +147,7 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 						<RestOptionsMenu />
 					</>
 				)}
-				{!isSelectUnderPointer && isImage && (
+				{isImage && (
 					<>
 						<Duplicate />
 						<RestOptionsMenu />
@@ -155,9 +155,7 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 						<Delete />
 					</>
 				)}
-				{!isSelectUnderPointer && isDifferentItems && (
-					<RestOptionsMenu />
-				)}
+				{isDifferentItems && <RestOptionsMenu />}
 			</UiPanel>
 		</PanelContext.Provider>
 	);

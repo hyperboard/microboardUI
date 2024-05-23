@@ -30,16 +30,20 @@ export function FillStyle({
 	const menuRef = React.useRef<HTMLDivElement>(null);
 
 	const context = board.selection.getContext();
-	const canChangeFillStyle = board.selection.items.isItemTypes(["Shape"]);
-	if (context === "SelectUnderPointer" || !canChangeFillStyle) {
+	const single = board.selection.items.getSingle();
+	const canChangeFillStyle = board.selection.items.isItemTypes([
+		"Shape",
+		"Frame",
+	]);
+	if (context === "SelectUnderPointer" || !canChangeFillStyle || !single) {
 		return null;
 	}
 
-	const handleClick = () => {
+	const handleClick = (): void => {
 		toggleMenu("FillStyle");
 	};
 
-	const handlePick = (color: string) => {
+	const handlePick = (color: string): void => {
 		board.selection.setFillColor(color);
 		toggleMenu("None");
 	};

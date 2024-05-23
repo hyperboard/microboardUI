@@ -25,7 +25,7 @@ export function Undo() {
 			onClick={handleClick}
 			disabled={!canUndo}
 		>
-			<UndoIcon width={15} height={15} />
+			<UndoIcon width={16} height={16} />
 		</UiButton>
 	);
 }

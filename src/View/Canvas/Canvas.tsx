@@ -24,11 +24,7 @@ export class CanvasBase extends React.Component<Props> {
 		}
 	};
 
-	update = (): void => {
-		this.forceUpdate();
-	};
-
-	initCanvasRendering = (): void => {
+	renderToContext = (): void => {
 		const canvas = this.canvasRef.current;
 		if (!canvas) {
 			return;
@@ -39,17 +35,19 @@ export class CanvasBase extends React.Component<Props> {
 		}
 		const context = new DrawingContext(this.props.board.camera, ctx);
 		const { board } = this.props;
-		this.renderToContext = (): void => {
-			context.setCamera(board.camera);
-			context.clear();
-			board.items.render(context);
-			board.selection.render(context);
-			board.tools.render(context);
-		};
+
+		context.setCamera(board.camera);
+		context.clear();
+		board.items.render(context);
+		board.selection.render(context);
+		board.tools.render(context);
+	};
+
+	initCanvasRendering = (): void => {
 		this.renderToContext();
-		this.drawingContextSubscription.observer = this.renderToContext;
 		this.props.app.subscriptions.add(this.drawingContextSubscription);
-		this.props.app.subscriptions.add(this.cursorSubsctiption);
+		this.props.app.subscriptions.add(this.cursorSubscription);
+		this.props.app.subscriptions.add(this.resizeSubscription);
 	};
 
 	componentDidUpdate(prevProps: Readonly<Props>): void {
@@ -68,9 +66,12 @@ export class CanvasBase extends React.Component<Props> {
 			stage.addEventListener("pointerdown", controller.onPointerDown);
 			stage.addEventListener("pointerup", controller.onPointerUp);
 			stage.addEventListener("dblclick", controller.onClick);
-			stage.addEventListener("pointerleave", controller.onPointerLeave);
-			stage.addEventListener("pointerout", controller.onPointerOut);
-			stage.addEventListener("pointercancel", controller.onPointerCancel);
+			window.addEventListener("pointerleave", controller.onPointerLeave);
+			window.addEventListener("pointerout", controller.onPointerOut);
+			window.addEventListener(
+				"pointercancel",
+				controller.onPointerCancel,
+			);
 		}
 
 		this.initCanvasRendering();
@@ -83,30 +84,38 @@ export class CanvasBase extends React.Component<Props> {
 			stage.removeEventListener("pointerdown", controller.onPointerDown);
 			stage.removeEventListener("pointerup", controller.onPointerUp);
 			stage.removeEventListener("dblclick", controller.onClick);
-			stage.removeEventListener(
+			window.removeEventListener(
 				"pointerleave",
 				controller.onPointerLeave,
 			);
-			stage.removeEventListener("pointerout", controller.onPointerOut);
-			stage.removeEventListener(
+			window.removeEventListener("pointerout", controller.onPointerOut);
+			window.removeEventListener(
 				"pointercancel",
 				controller.onPointerCancel,
 			);
 		}
 		this.props.app.subscriptions.remove(this.drawingContextSubscription);
-		this.props.app.subscriptions.remove(this.cursorSubsctiption);
+		this.props.app.subscriptions.remove(this.cursorSubscription);
+		this.props.app.subscriptions.remove(this.resizeSubscription);
 	}
 
-	renderToContext = (): void => {};
-
 	drawingContextSubscription = {
-		observer: () => {},
+		observer: () => {
+			this.renderToContext();
+		},
 		subjects: ["camera", "items", "tools", "selection"],
 	};
 
-	cursorSubsctiption = {
+	cursorSubscription = {
 		observer: this.updateCursor,
 		subjects: ["pointer"],
+	};
+
+	resizeSubscription = {
+		observer: () => {
+			this.forceUpdate();
+		},
+		subjects: ["cameraResize"],
 	};
 
 	render(): React.ReactElement {

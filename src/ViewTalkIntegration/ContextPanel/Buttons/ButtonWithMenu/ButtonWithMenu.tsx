@@ -3,7 +3,7 @@ import clsx from "clsx";
 import React, {
 	PropsWithChildren,
 	ReactNode,
-	useLayoutEffect,
+	useEffect,
 	useRef,
 	useState,
 } from "react";
@@ -29,23 +29,28 @@ export function ButtonWithMenu({
 	align = "center",
 }: Props) {
 	const menuRef = useRef<HTMLDivElement>(null);
-	const [verticalAlign, setVerticalAlign] = useState<"bottom" | "top">(
-		"bottom",
-	);
+	const [verticalAlign, setVerticalAlign] = useState<
+		"bottom" | "top" | "center"
+	>("center");
 
-	useLayoutEffect(() => {
+	useEffect(() => {
 		const menu = menuRef.current;
 		if (!menu) {
 			return;
 		}
 		const menuHeight = menu.getBoundingClientRect().height;
 
-		if (panelMbr.bottom + menuHeight >= windowHeight) {
-			setVerticalAlign("top");
-		} else {
+		if (panelMbr.bottom + menuHeight < windowHeight) {
 			setVerticalAlign("bottom");
+			return;
 		}
-	}, [panelMbr, windowHeight]);
+		if (panelMbr.top - menuHeight >= 0) {
+			setVerticalAlign("top");
+			return;
+		}
+		setVerticalAlign("center");
+	}, [panelMbr.top, windowHeight]);
+
 	return (
 		<div className={style.container}>
 			{button}

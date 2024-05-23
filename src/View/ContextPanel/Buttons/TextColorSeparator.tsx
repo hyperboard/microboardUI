@@ -1,4 +1,5 @@
 import { Board } from "Board";
+import { Frame } from "Board/Items";
 import React from "react";
 
 type TextColorSeparatorProps = {
@@ -9,8 +10,9 @@ export function TextColorSeparator({
 	board,
 }: TextColorSeparatorProps): React.ReactElement | null {
 	if (
-		board.selection.getContext() !== "EditTextUnderPointer" &&
-		!board.selection.canChangeText()
+		(board.selection.getContext() !== "EditTextUnderPointer" &&
+			!board.selection.canChangeText()) ||
+		board.selection.items.getSingle() instanceof Frame
 	) {
 		return null;
 	}

@@ -1,0 +1,19 @@
+.AuthView {
+	width: 100%;
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	height: 100vh;
+}
+
+.AuthView .Navbar {
+	width: 1280px;
+}
+
+.AuthView .Content {
+	margin-top: 230px;
+	width: 500px;
+	height: 100%;
+}

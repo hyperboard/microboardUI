@@ -4,25 +4,31 @@
 	justify-content: center;
 	align-items: center;
 	width: 100%;
-	height: 100%;
 	background-color: white;
 }
 
 .form {
-	border: 1px solid black;
-	border-radius: 8px;
-	padding: 20px;
 	box-sizing: border-box;
+	border-radius: 8px;
 	display: flex;
 	flex-direction: column;
-	gap: 10px;
-	width: 300px;
+	gap: 16px;
+	width: 100%;
 }
 
 .link {
+	font-family: "Manrope", "Arial";
+	font-weight: 600;
+	font-size: 14px;
+
 	text-decoration: none;
 	color: #6c7173;
 	align-self: flex-start;
+
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	margin-top: 10px;
 }
 
 .link:hover {
@@ -34,11 +40,69 @@
 }
 
 .title {
-	font-family: "Arial";
-	font-weight: 700;
+	font-family: "Manrope", "Arial";
+	font-weight: 600;
 	text-align: center;
+	margin-bottom: 32px;
 }
 
 .error {
 	color: red;
+}
+
+.button {
+	margin-top: 32px;
+	font-family: "Manrope", "Arial";
+	font-size: 14px;
+	font-weight: 500;
+	width: 100%;
+	height: 40px;
+	border: 1px solid #14151a;
+	border-radius: 12px;
+	background-color: #14151a;
+	color: white;
+	cursor: pointer;
+	outline-color: transparent;
+	box-sizing: border-box;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	gap: 8px;
+}
+
+.button:disabled {
+	border-color: #e9eaec;
+	background-color: #e9eaec;
+	color: rgba(10, 15, 41, 0.25);
+}
+
+.button:disabled:hover {
+	cursor: not-allowed;
+	border-color: #e9eaec;
+	background-color: #e9eaec;
+	color: rgba(10, 15, 41, 0.25);
+}
+
+.button:focus {
+	outline: 2px solid rgba(200, 178, 255, 0.5);
+}
+
+.button:hover {
+	background-color: #1f2228;
+}
+
+.forgot {
+	font-weight: 600 !important;
+}
+
+.btns {
+	width: 100%;
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	gap: 12px;
 }

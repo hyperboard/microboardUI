@@ -1,4 +1,8 @@
 {
+	"common": {
+		"and": "и",
+		"backToMain": "Вернуться в главное меню"
+	},
 	"contextPanel": {
 		"connectorAddText": {
 			"tooltip": "Добавить текст"
@@ -19,6 +23,9 @@
 		},
 		"changeShape": {
 			"tooltip": "Тип фигуры"
+		},
+		"changeFrameType": {
+			"tooltip": "Пропорции"
 		},
 		"strokeStyle": {
 			"tooltip": "Обводка",
@@ -109,6 +116,9 @@
 		},
 		"addImage": {
 			"tooltip": "Добавить изображение"
+		},
+		"addFrame": {
+			"tooltip": "Добавить фрейм"
 		}
 	},
 	"zoomPanel": {
@@ -150,7 +160,31 @@
 		"submit": "Отправить",
 		"signUp": "Регистрация",
 		"unknownError": "Неизвестная ошибка",
-		"resendCode": "Отправить код заново"
+		"resendCode": "Отправить код заново",
+		"privacyPolicy": "Политика конфиденциальности",
+		"termsAndConditions": "Пользовательское соглашение",
+		"policyWith": "Продолжая, вы соглашаетесь с",
+		"signUpForFree": "Регистрация",
+		"weSentACodeToYourInbox": "Мы отправили код на вашу почту",
+		"restorationTokenIsNotProvided": "Токен восстановления не предоставлен",
+		"newPassword": "Новый пароль",
+		"repeatNewPassword": "Повторите новый пароль",
+		"forgotPassword": "Забыли пароль?",
+		"checkEmailForFurther": "Проверьте вашу почту для дальнейших инструкций",
+		"notValidEmail": "Неправильный адрес электронной почты",
+		"rememberPassword": "Помните свой пароль?",
+		"loginHere": "Войдите здесь",
+		"restorePassword": "Восстановления пароля",
+		"checkInbox": "Проверьте свой email",
+		"weSentCode": "Мы выслали код верификации по адресу",
+		"enterCodeBelow": "Пожалуйста, введите его ниже, чтобы подтвердить свой адрес электронной почты.",
+		"emailIfNotFind": "Если не можете найти, посмотрите в спаме или подождите 1 минуту",
+		"passwordLengthError": "Пароль должен содержать не менее 8 и не более 14 символов",
+		"backToLogIn": "Обратно ко входу",
+		"passwordDontAMatch": "Пароли не совпадают",
+		"requestReceivedSuccessfully": "Запрос успешно получен! Мы отправили вам электронное письмо со ссылкой для сброса вашего пароля.",
+		"resetPassword": "Восстановление пароля",
+		"enterEmailForLink": "Введите email и мы вышлем вам ссылку для восстановления вашего пароля"
 	},
 	"modal": {
 		"canEdit": "Можно редактировать",

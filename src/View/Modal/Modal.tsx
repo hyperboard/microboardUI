@@ -20,7 +20,6 @@ const ModalView = ({ boardLink, closeModal }: TModal): React.ReactElement => {
 
 		window.getSelection().removeAllRanges();
 		window.getSelection().addRange(range);
-		console.log(range);
 		document.execCommand("copy");
 
 		window.getSelection().removeAllRanges();

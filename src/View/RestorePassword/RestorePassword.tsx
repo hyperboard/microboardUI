@@ -1,0 +1,163 @@
+import { Input } from "shared/ui-lib/Input";
+import React, { useRef, useState } from "react";
+import styles from "./RestorePassword.module.css";
+import { useDebounce } from "shared/hooks/useDebounce";
+import { Button } from "shared/ui-lib/Button";
+import {
+	Link as RRDLink,
+	useNavigate,
+	useSearchParams,
+} from "react-router-dom";
+import { getApiUrl } from "Config";
+import { useTranslation } from "react-i18next";
+import { Link } from "shared/ui-lib/Link";
+
+const restorePassword = async (
+	token: string,
+	password: string,
+): Promise<Response> => {
+	const request = fetch(getApiUrl("/auth/password/restore"), {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({ token, newPassword: password }),
+	});
+
+	return request;
+};
+
+export const RestorePassword: React.FC = () => {
+	const { t } = useTranslation();
+	const [isDisabled, setIsDisabled] = useState(true);
+	const [newPassError, setNewPassError] = useState<string>("");
+	const [error, setError] = useState<string>("");
+	const formRef = useRef<HTMLFormElement>(null);
+	const [searchParams, _] = useSearchParams();
+	const navigate = useNavigate();
+
+	const checkForm = (): void => {
+		const form = formRef.current;
+		if (!form) {
+			setIsDisabled(true);
+			return;
+		}
+		const newPassword = form?.newPassword?.value;
+		const repeatedPassword = form?.repeatedPassword?.value;
+		if (!newPassword || !repeatedPassword) {
+			setIsDisabled(true);
+			return;
+		}
+
+		if (newPassword !== repeatedPassword) {
+			setIsDisabled(true);
+			setError(t("auth.passwordDontAMatch"));
+			return;
+		}
+		setError("");
+		setIsDisabled(false);
+	};
+
+	const checkNewPassword = (): void => {
+		const form = formRef.current;
+		if (!form) {
+			setIsDisabled(true);
+			return;
+		}
+		const newPassword = form?.newPassword?.value;
+
+		const MIN_PASSWORD_LENGTH = 8;
+		const MAX_PASSWORD_LENGTH = 14;
+
+		if (
+			newPassword.length < MIN_PASSWORD_LENGTH ||
+			newPassword.length > MAX_PASSWORD_LENGTH
+		) {
+			setIsDisabled(true);
+			setNewPassError(t("auth.passwordLengthError"));
+			return;
+		}
+
+		setNewPassError("");
+	};
+
+	const dbCheckForm = useDebounce(checkForm, 500);
+
+	const onSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+		event.preventDefault();
+		const form = formRef.current;
+
+		if (!form) {
+			return;
+		}
+
+		if (!searchParams.get("token")) {
+			return;
+		}
+
+		restorePassword(searchParams.get("token")!, form.newPassword.value)
+			.then(() => {
+				navigate("/auth/sign-in");
+			})
+			.catch(error => {
+				setError(error?.message || "Unhandled error");
+			});
+	};
+
+	if (!searchParams.get("token")) {
+		console.log("token not provided", searchParams);
+
+		return (
+			<div>
+				<p className={styles.error}>
+					{t("auth.restorationTokenIsNotProvided")}
+				</p>
+				<Link to="/auth/forgot-password">
+					{t("auth.restorePassword")}
+				</Link>
+				<Button>
+					<RRDLink to="/auth/sign-in" className={styles.link}>
+						{t("common.backToMain")}
+					</RRDLink>
+				</Button>
+			</div>
+		);
+	}
+
+	return (
+		<div>
+			<form ref={formRef} className={styles.form} onSubmit={onSubmit}>
+				<h1 className={styles.title}>{t("auth.checkInbox")}</h1>
+				<div className={styles.inputs}>
+					<Input
+						password
+						label={t("auth.newPassword")}
+						id="newPassword"
+						errorText={newPassError}
+						hasError={!!newPassError.length}
+						onInput={useDebounce(() => {
+							checkForm();
+							checkNewPassword();
+						}, 500)}
+					/>
+					<Input
+						password
+						label={t("auth.repeatNewPassword")}
+						id="repeatedPassword"
+						onInput={dbCheckForm}
+						errorText={error}
+						hasError={!!error.length}
+					/>
+				</div>
+
+				<Button
+					disabled={isDisabled}
+					type="submit"
+					className={styles.submit}
+				>
+					{t("auth.submit")}
+				</Button>
+			</form>
+		</div>
+	);
+};
