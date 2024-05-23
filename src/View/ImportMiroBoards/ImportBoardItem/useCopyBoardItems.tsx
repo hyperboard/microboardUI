@@ -1,6 +1,6 @@
 import { Board } from "Board";
 import { IMiroBoardItem } from "../MiroBoards/MiroBoardsModels";
-import { Shape } from "Board/Items";
+import { Mbr, RichText, Shape } from "Board/Items";
 import { ShapeType } from "Board/Items/Shape/Basic";
 import { BorderStyle } from "Board/Items/Path";
 import { Sticker, stickerColors } from "Board/Items/Sticker";
@@ -13,31 +13,6 @@ export function useCopyBoardItems(
 	board: Board,
 	miroItems: IMiroBoardItem[],
 ) {
-	// const setText = (content: string, x: number, y: number, style: IMiroBoardItemStyle) => {
-	// 	const {fontFamily, fontSize, textAlign, textAlignVertical} = style
-	// 	const richtext = new RichText(new Mbr());
-	// 	richtext.transformation.translateTo(x, y);
-	// 	richtext.setSelectionFontFamily(fontFamily)
-	// 	richtext.setSelectionFontSize(+fontSize)
-	// 	richtext.setSelectionHorisontalAlignment(textAlign as HorisontalAlignment)
-	// 	richtext.editor.editor.children = [
-	// 		{
-	// 			type: "paragraph",
-	// 			children: [
-	// 				{
-	// 					type: "text",
-	// 					text: content,
-	// 				},
-	// 			],
-	// 		},
-	// 	];
-	// 	const dimensions = richtext.getDimensions();
-	// 	if (dimensions.width > board.camera.window.width) {
-	// 		richtext.editor.setMaxWidth(board.camera.window.width);
-	// 	}
-	// 	board.add(richtext);
-	// };
-
 	const setItemText = (
 		item: Shape | Sticker,
 		text: string,
@@ -125,7 +100,7 @@ export function useCopyBoardItems(
 		const { id, style, position, data, geometry } = item;
 		const { x, y } = position;
 		const { height, width } = geometry;
-		if (style && data) {
+		if (data) {
 			const {
 				fillColor,
 				fillOpacity,
@@ -167,7 +142,7 @@ export function useCopyBoardItems(
 		const { id, style, position, data, geometry } = item;
 		const { x, y } = position;
 		const { height, width } = geometry;
-		if (style && data) {
+		if (data) {
 			const { fillColor, fontSize, fontFamily } = style;
 			if (fillColor) {
 				const color = getStickerColor(fillColor);
@@ -209,17 +184,46 @@ export function useCopyBoardItems(
 	// 	const { startItem, endItem } = item;
 	// 	if (startItem && endItem) {
 
-	// 		debugger;
 	// 		const boardId = board.getBoardId();
 	// 		const getStartItem = app.boards.get(boardId).items.getById(startItem?.id)
 	// 		const getEndItem = app.boards.get(boardId).items.getById(endItem?.id)
 	// 		console.log('getStartItem', getStartItem)
 	// 		console.log('getEndItem', getEndItem)
-	// 		// const connector = new Connector(board, undefined, )
+	// 		const connector = new Connector(board, undefined, new BoardPoint(), new BoardPoint())
 
 	// 		// board.add(img);
 	// 	}
 	// };
+
+	const copyText = (item: IMiroBoardItem) => {
+		const { style, position, data, geometry } = item;
+		if (data && data.content) {
+			const { fontSize, fontFamily } = style;
+			const { x, y } = position;
+			const { width } = geometry;
+
+			const richtext = new RichText(new Mbr());
+			richtext.transformation.translateTo(x, y);
+			richtext.transformation.scaleTo(width / 250, width / 250);
+
+			richtext.setSelectionFontFamily(fontFamily);
+			richtext.setSelectionFontSize(+fontSize);
+
+			richtext.editor.editor.children = [
+				{
+					type: "paragraph",
+					children: [
+						{
+							type: "text",
+							text: data.content.replace(/<[^>]*>/g, ""),
+						},
+					],
+				},
+			];
+
+			board.add(richtext);
+		}
+	};
 
 	const copyBoardItems = () => {
 		miroItems.forEach((item, index) => {
@@ -229,6 +233,8 @@ export function useCopyBoardItems(
 				copySticker(item);
 			} else if (item.type === "image") {
 				copyImage(item);
+			} else if (item.type === "text") {
+				copyText(item);
 			}
 		});
 	};

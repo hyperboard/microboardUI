@@ -30,7 +30,7 @@ export interface IMiroBoardItem {
 	};
 	startItem?: IMiroBoardConnectionsPoints;
 	endItem?: IMiroBoardConnectionsPoints;
-	style?: IMiroBoardItemStyle;
+	style: IMiroBoardItemStyle;
 }
 
 export interface IMiroBoardItemStyle {
