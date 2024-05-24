@@ -79,17 +79,10 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 			case "green":
 			case "light_green":
 				return stickerColors["Sage Green"];
-			case "dark_green":
-			case "green":
-				return stickerColors["Sage Green"];
-			case "yellow":
-			case "light_yellow":
-				return stickerColors["Pale Yellow"];
 			case "yellow":
 			case "light_yellow":
 				return stickerColors["Pale Yellow"];
 			case "gray":
-			case "light_yellow":
 				return stickerColors["Light Gray"];
 		}
 		return stickerColors["Sky Blue"];
