@@ -1,5 +1,5 @@
 import { ConnectorLineStyle } from "Board/Items/Connector";
-import { getHotkeyLabel } from "Board/Keyboard/hotkeys";
+import { getHotkeyLabel } from "Board/Keyboard";
 import React from "react";
 import { Icon } from "ViewTalkIntegration/Icon";
 import { ConnectorLineStylePicker } from "ViewTalkIntegration/Pickers/ConnectorLineStylePicker";

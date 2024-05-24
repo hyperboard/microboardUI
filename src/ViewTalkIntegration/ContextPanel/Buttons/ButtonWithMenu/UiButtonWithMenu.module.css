@@ -6,6 +6,7 @@
 
 .menu {
 	position: absolute;
+	z-index: 5;
 }
 
 .center {

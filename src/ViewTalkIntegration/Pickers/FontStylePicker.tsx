@@ -3,7 +3,7 @@ import React from "react";
 import { UiButton } from "ViewTalkIntegration/Ui/UiButton/UiButton";
 import { Icon } from "ViewTalkIntegration/Icon";
 import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
-import { getHotkeyLabel } from "Board/Keyboard/hotkeys";
+import { getHotkeyLabel } from "Board/Keyboard";
 
 type Props = {
 	onPick: (style: TextStyle) => void;

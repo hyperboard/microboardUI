@@ -6,7 +6,7 @@ import { UiButton } from "View/Ui/UiButton";
 import { useForceUpdate } from "lib/useForceUpdate";
 import { useAppSubscription } from "Board/useBoardSubscription";
 import { useTranslation } from "react-i18next";
-import { getHotkeyLabel } from "Board/Keyboard/hotkeys";
+import { getHotkeyLabel } from "Board/Keyboard";
 
 type Props = {
 	app: App;
