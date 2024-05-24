@@ -70,7 +70,11 @@ export function MiroBoards({
 			},
 		);
 		const dataBoards = await response.json();
-		setBoards(dataBoards);
+		if (dataBoards.status === 401) {
+			fetchData();
+		} else {
+			setBoards(dataBoards);
+		}
 	};
 
 	useEffect(() => {
