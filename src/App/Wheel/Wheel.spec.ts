@@ -1,8 +1,8 @@
-import { Wheel } from "./Wheel";
+import { createWheel } from "./Wheel";
 
 describe("to diagram, a user", () => {
 	test("pans by sliding 2 fingers on a trackpad", () => {
-		let wheel = new Wheel({} as WheelEvent);
+		let wheel = createWheel({} as WheelEvent);
 		wheel.isWheelDelta = true;
 		wheel.isWheelDeltaX = true;
 		wheel.isWheelDeltaY = true;
@@ -17,7 +17,7 @@ describe("to diagram, a user", () => {
 		wheel.deltaY = 4.5;
 		wheel.deltaMode = "pixel";
 
-		wheel = new Wheel({} as WheelEvent);
+		wheel = createWheel({} as WheelEvent);
 		wheel.isWheelDelta = true;
 		wheel.isWheelDeltaX = true;
 		wheel.isWheelDeltaY = true;

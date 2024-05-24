@@ -1,7 +1,8 @@
+import { RichText, isEditInProcess } from "Board/Items/RichText/RichText";
+import { createWheel } from "./Wheel/Wheel";
 import { Board } from "Board";
-import { Connector, Frame, Mbr, RichTextData, Shape } from "Board/Items";
+import { Connector, Frame, Mbr, Shape } from "Board/Items";
 import { ImageItem } from "Board/Items/Image";
-import { isEditInProcess, RichText } from "Board/Items/RichText/RichText";
 import { checkHotkeys, isHotkeyPushed } from "Board/Keyboard/hotkeys";
 import { Sticker } from "Board/Items/Sticker";
 import { validateItemsMap } from "Board/Validators";
@@ -9,65 +10,53 @@ import { isNotControlCharacter } from "View/isNotControlCharacter";
 import { Clipboard } from "./Clipboard";
 import { isFirefox } from "./isFirefox";
 import { isSafari } from "./isSafari";
-import { Wheel } from "./Wheel/Wheel";
 
-export function getController(getBoard: () => Board) {
-	const isMouse = true;
-	const isTrackpad = true;
+export interface Controller {
+	onWheel: (event: WheelEvent) => void;
+	onPointerDown: (event: PointerEvent) => boolean;
+	onPointerMove: (event: PointerEvent) => boolean;
+	onPointerUp: (event: PointerEvent) => boolean;
+	onPointerLeave: (event: PointerEvent) => void;
+	onPointerCancel: (event: PointerEvent) => void;
+	onPointerOut: (event: PointerEvent) => void;
+	onKeyDown: (event: KeyboardEvent) => void;
+	onKeyUp: (event: KeyboardEvent) => void;
+	onClick: (event: MouseEvent) => boolean;
+	onResize: () => void;
+	onContextMenu: (event: MouseEvent) => void;
+	onCopy: (event: ClipboardEvent) => void;
+	onPaste: (event: ClipboardEvent) => void;
+	onDrop: (event: DragEvent) => void;
+}
 
+export function getController(getBoard: () => Board): Controller {
 	const clipboard = new Clipboard();
 
 	function onWheel(event: WheelEvent): void {
 		event.preventDefault();
 		event.stopPropagation();
 		const board = getBoard();
-		const wheel = new Wheel(event);
+		const wheel = createWheel(event);
 		if (!board) {
 			return;
 		}
-		if (isMouse && isTrackpad) {
-			if (wheel.isProbablyMouseWheel()) {
-				if (!wheel.isIgnore()) {
-					board.camera.zoomRelativeToPointerBy(
-						wheel.getWheelScaleMultiplier(),
-					);
-				}
-			} else if (wheel.isTouchpadPinch()) {
-				if (!wheel.isIgnore()) {
-					board.camera.zoomRelativeToPointerBy(
-						wheel.getTouchpadPinchMultiplier(),
-					);
-				}
-			} else {
-				if (!wheel.isIgnore()) {
-					const scale = board.camera.getScale();
-					board.camera.translateBy(
-						wheel.getTouchpadPanDeltaX() / scale,
-						wheel.getTouchpadPanDeltaY() / scale,
-					);
-				}
-			}
-		} else if (isMouse) {
-			if (!wheel.isIgnore()) {
-				board.camera.zoomRelativeToPointerBy(
-					wheel.getWheelScaleMultiplier(),
-				);
-			}
-		} else if (isTrackpad) {
-			if (wheel.isTouchpadPinch()) {
-				if (!wheel.isIgnore()) {
-					board.camera.zoomRelativeToPointerBy(
-						wheel.getTouchpadPinchMultiplier(),
-					);
-				}
-			} else {
-				if (!wheel.isIgnore()) {
-					board.camera.translateBy(
-						wheel.getTouchpadPanDeltaX(),
-						wheel.getTouchpadPanDeltaY(),
-					);
-				}
-			}
+		if (wheel.isIgnore()) {
+			return;
+		}
+		if (wheel.isProbablyMouseWheel()) {
+			board.camera.zoomRelativeToPointerBy(
+				wheel.getWheelScaleMultiplier(),
+			);
+		} else if (wheel.isTouchpadPinch()) {
+			board.camera.zoomRelativeToPointerBy(
+				wheel.getTouchpadPinchMultiplier(),
+			);
+		} else {
+			const scale = board.camera.getScale();
+			board.camera.translateBy(
+				wheel.getTouchpadPanDeltaX() / scale,
+				wheel.getTouchpadPanDeltaY() / scale,
+			);
 		}
 	}
 
@@ -76,37 +65,6 @@ export function getController(getBoard: () => Board) {
 		if (!board || !board.events) {
 			return;
 		}
-		/*
-		if (isEditInProcess()) {
-			if ((event.ctrlKey || event.metaKey) && event.code === "KeyV") {
-				event.preventDefault();
-				navigator.clipboard.readText().then(clipboardText => {
-					try {
-						const data = JSON.parse(clipboardText);
-						const isDataValid = validateItemsMap(data);
-						if (isDataValid) {
-							board.paste(data);
-						} else {
-							throw new Error();
-						}
-					} catch (error) {
-						const originalClipboardData = new DataTransfer();
-						originalClipboardData.setData(
-							"text/plain",
-							clipboardText,
-						);
-						const pasteEvent = new ClipboardEvent("paste", {
-							bubbles: true,
-							cancelable: true,
-							clipboardData: originalClipboardData,
-						});
-						event.target?.dispatchEvent(pasteEvent);
-					}
-				});
-			}
-			return;
-		}
-		*/
 
 		const context = board.selection.getContext();
 		if (
@@ -364,26 +322,6 @@ export function getController(getBoard: () => Board) {
 			camera.updateDistance();
 			tools.leftButtonUp();
 			return false;
-			/*
-			if (camera.isPinch()) {
-				const pinchCenter = camera.getPinchCenter();
-				const scale = camera.getPinchScale();
-				camera.updateDistance();
-				camera.zoomRelativeToPointBy(
-					scale,
-					pinchCenter.x,
-					pinchCenter.y,
-				);
-				tools.leftButtonUp();
-				return false;
-			} else {
-				const delta = camera.getPanDelta();
-				camera.updatePositions();
-				camera.translateBy(delta.x, delta.y);
-				tools.leftButtonUp();
-				return false;
-			}
-			*/
 		}
 
 		const selection = board.selection;
@@ -666,11 +604,32 @@ export function getController(getBoard: () => Board) {
 	};
 }
 
-function postKeyboardEvent(event: KeyboardEvent) {
+function postKeyboardEvent(event: KeyboardEvent): void {
 	window.parent.postMessage(serializeKeyboardEvent(event), "*");
 }
 
-function serializeKeyboardEvent(event: KeyboardEvent) {
+interface SerializedKeyboardEvent {
+	type: string;
+	eventType: string;
+	eventData: {
+		key: string;
+		code: string;
+		ctrlKey: boolean;
+		shiftKey: boolean;
+		altKey: boolean;
+		metaKey: boolean;
+		repeat: boolean;
+		bubbles: boolean;
+		target: string;
+		location: number;
+		isComposing: boolean;
+		charCode: number;
+		keyCode: number;
+		which: number;
+	};
+}
+
+function serializeKeyboardEvent(event: KeyboardEvent): SerializedKeyboardEvent {
 	return {
 		type: "keyboardEvent",
 		eventType: event.type,
