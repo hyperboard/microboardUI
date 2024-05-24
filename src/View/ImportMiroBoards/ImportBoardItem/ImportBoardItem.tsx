@@ -72,8 +72,15 @@ export function ImportBoardItem({
 
 	const fetchBoardsItemsConnectors = async () => {
 		try {
+			const cursor =
+				itemsInfo.cursor.connectors !== ""
+					? "cursor=" + itemsInfo.cursor.connectors
+					: "";
 			const response = await fetch(
-				"https://api.miro.com/v2/boards/" + boardId + "/connectors",
+				"https://api.miro.com/v2/boards/" +
+					boardId +
+					"/connectors?limit=50&" +
+					cursor,
 				options,
 			);
 			const data = await response.json();
