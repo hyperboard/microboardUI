@@ -1,14 +1,14 @@
 import { Board } from "Board";
-// import { Selection } from "Board/Selection";
+import { BoardSnapshot } from "Board/Board";
 
-interface Tester {
+export interface TestRecorder {
 	start: () => void;
 	stop: () => void;
 }
 
-export function createTester(getBoard: () => Board): Tester {
+export function createTester(getBoard: () => Board): TestRecorder {
 	const events: EventData[] = [];
-	let boardData = {};
+	let snapshot: BoardSnapshot | null = null;
 
 	const eventsToListenFor = [
 		"click",
@@ -25,19 +25,22 @@ export function createTester(getBoard: () => Board): Tester {
 		eventsToListenFor.forEach(event =>
 			document.addEventListener(event, recordEvent),
 		);
-		boardData = getBoardData(board);
+		snapshot = board.getSnapshot();
 	}
 
 	function stop(): void {
+		if (!snapshot) {
+			return;
+		}
 		const board = getBoard();
 		eventsToListenFor.forEach(event =>
 			document.removeEventListener(event, recordEvent),
 		);
 		const compressedEvents = compressEvents(events);
-		const givenScript = generateDeserializePlaywrightCode(boardData);
+		const givenScript = generateDeserializePlaywrightCode(snapshot);
 		const whenScript = generateEventsPlaywrightCode(compressedEvents);
 		const thenScript = generateComparisonPlaywrightCode(
-			getBoardData(board),
+			board.getSnapshot(),
 		);
 		const cucumberScript = generateCucumberScript(
 			givenScript,
@@ -57,14 +60,6 @@ export function createTester(getBoard: () => Board): Tester {
 	return {
 		start,
 		stop,
-	};
-}
-
-function getBoardData(board: Board) {
-	return {
-		itemsData: board.serialize(),
-		eventsData: board.events?.serialize(),
-		selectionData: board.selection.serialize(),
 	};
 }
 
@@ -318,15 +313,12 @@ Then("The board state should match the expected state", async () => {
 `;
 }
 
-function generateDeserializePlaywrightCode(boardData: any): string {
-	const { itemsData, eventsData, selectionData } = boardData;
+function generateDeserializePlaywrightCode(snapshot: BoardSnapshot): string {
 	return `
 		// Deserialize Board Data
 		await page.evaluate(() => {
 			const board = window.app.getBoard();
-			board.deserialize(\`${itemsData}\`);
-			// board.events.deserialize(\`${eventsData}\`);
-			// board.selection.deserialize(\`${selectionData}\`);
+			board.deserialize(\`${snapshot}\`);
 		});
 	`;
 }
@@ -385,20 +377,13 @@ function getPlaywrightLine(event: CompressedEventData): string {
 	}
 }
 
-function generateComparisonPlaywrightCode(currentBoardData): string {
-	const { itemsData, eventsData, selectionData } = currentBoardData;
+function generateComparisonPlaywrightCode(oldSnapshot: BoardSnapshot): string {
 	return `
 		// Compare Board Data
-		const compareData = await page.evaluate(() => {
+		const newSnapshot = await page.evaluate(() => {
 			const board = window.app.getBoard();
-			return {
-				itemsData: board.serialize(),
-				eventsData: board.events.serialize(),
-				selectionData: board.selection.serialize(),
-			};
+			return board.getSnapshot();
 		});
-		expect(compareData.itemsData).to.equal(\`${itemsData}\`);
-		expect(compareData.eventsData).to.equal(\`${eventsData}\`);
-		expect(compareData.selectionData).to.equal(\`${selectionData}\`);
+		expect(newSnapshot.itemsData).to.equal(\`${oldSnapshot}\`);
 	`;
 }

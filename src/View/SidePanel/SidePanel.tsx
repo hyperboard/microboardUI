@@ -1,11 +1,8 @@
 import * as React from "react";
 import { App } from "App";
-import { SidePanelState } from "./SidePanelState";
 import { Login } from "./Login";
 import { PublicBoards } from "./PublicBoards";
 import { useStyle } from "View/useStyle";
-import { Menu } from "./Menu";
-import { ContextMenuState } from "View/ContextMenu";
 
 export const SidePanelMenuOffset = 10;
 
