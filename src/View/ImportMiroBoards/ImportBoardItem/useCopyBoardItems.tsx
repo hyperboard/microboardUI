@@ -7,7 +7,10 @@ import { Sticker, stickerColors } from "Board/Items/Sticker";
 import { ImageItem } from "Board/Items/Image";
 import Cookies from "js-cookie";
 import { BoardPoint } from "Board/Items/Connector";
-import { ConnectorLineStyle } from "Board/Items/Connector/Connector";
+import {
+	ConnectorLineStyle,
+	ConnectionLineWidth,
+} from "Board/Items/Connector/Connector";
 
 export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 	const setItemText = (
@@ -20,8 +23,6 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 		item.text.addText(textWithoutTag);
 		item.text.setSelectionFontSize(+fontSize);
 		item.text.setSelectionFontFamily(fontFamily);
-		// const isBold = text.includes("<strong>") ? "bold" : null;
-		// isBold && item.text.setSelectionFontStyle(isBold);
 	};
 
 	const getShapeType = (miroShapeType: string): ShapeType => {
@@ -217,7 +218,8 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 				strokeColor && connector.setLineColor(strokeColor);
 				strokeColor && connector.setLineColor(strokeColor);
 				connector.setLineStyle(shape as ConnectorLineStyle);
-				// strokeWidth && connector.setLineWidth(+strokeWidth);
+				strokeWidth &&
+					connector.setLineWidth(+strokeWidth as ConnectionLineWidth);
 
 				board.add(connector);
 			}
