@@ -129,7 +129,7 @@ export function getController(getBoard: () => Board): Controller {
 						"EditUnderPointer",
 						"SelectByRect",
 					],
-					singleItemOnly: true,
+					allItemsType: ["Sticker", "Shape", "RichText"],
 				},
 				textItalic: {
 					cb: () => board.selection.setFontStyle(["italic"]),
@@ -138,7 +138,7 @@ export function getController(getBoard: () => Board): Controller {
 						"EditUnderPointer",
 						"SelectByRect",
 					],
-					singleItemOnly: true,
+					allItemsType: ["Sticker", "Shape", "RichText"],
 				},
 				textStrike: {
 					cb: () => board.selection.setFontStyle(["line-through"]),
@@ -147,7 +147,7 @@ export function getController(getBoard: () => Board): Controller {
 						"EditUnderPointer",
 						"SelectByRect",
 					],
-					singleItemOnly: true,
+					allItemsType: ["Sticker", "Shape", "RichText"],
 				},
 				textUnderline: {
 					cb: () => board.selection.setFontStyle(["underline"]),
@@ -156,7 +156,7 @@ export function getController(getBoard: () => Board): Controller {
 						"EditUnderPointer",
 						"SelectByRect",
 					],
-					singleItemOnly: true,
+					allItemsType: ["Sticker", "Shape", "RichText"],
 				},
 				selectAll: {
 					cb: () => board.selection.addAll(),
@@ -286,7 +286,6 @@ export function getController(getBoard: () => Board): Controller {
 		const { camera, tools } = board;
 
 		camera.updateDownEvent(event);
-
 		if (camera.isTwoPointers()) {
 			const pinchCenter = camera.getPinchCenter();
 			const scale = camera.getPinchScale();
