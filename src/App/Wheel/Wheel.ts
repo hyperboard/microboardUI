@@ -51,6 +51,7 @@ export function createWheel(event: ChromeWheelEvent): Wheel {
 	const deltaX = toFiniteNumber(event.deltaX);
 	const deltaY = toFiniteNumber(event.deltaY);
 	const deltaMode = getDeltaMode(event);
+	detector.handle(wheelDelta);
 
 	function getDeltaMode(event): "pixel" | "line" | "page" {
 		switch (event.deltaMode) {
@@ -100,7 +101,6 @@ export function createWheel(event: ChromeWheelEvent): Wheel {
 	}
 
 	function isProbablyMouseWheel(): boolean {
-		detector.handle(wheelDelta);
 		const isChromeMouseWheel = !isCtrlKey && detector.isMouseWheel;
 		const isSafariMouseWheel = isSafari() && wheelDelta !== -deltaY * 3;
 		return isWheelDelta
