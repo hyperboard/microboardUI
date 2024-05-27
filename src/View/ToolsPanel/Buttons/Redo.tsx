@@ -11,7 +11,7 @@ export function Redo({ board, isOn }: Props) {
 	const { t } = useTranslation();
 
 	const handleClick = (): void => {
-		board.events.undo();
+		board.events?.redo();
 	};
 
 	return (
