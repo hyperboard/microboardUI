@@ -185,7 +185,9 @@ export function createConnection(): Connection {
 	const userId = 0;
 
 	return {
-		connectionId,
+		get connectionId() {
+			return connectionId;
+		},
 		userId,
 		connect,
 		subscribe,
