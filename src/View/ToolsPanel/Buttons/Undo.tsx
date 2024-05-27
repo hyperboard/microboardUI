@@ -10,7 +10,7 @@ type Props = { board: Board; isOn: boolean };
 export function Undo({ board, isOn }: Props) {
 	const { t } = useTranslation();
 	const handleClick = (): void => {
-		board.events.undo();
+		board.events?.undo();
 	};
 
 	return (
