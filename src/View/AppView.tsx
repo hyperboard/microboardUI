@@ -104,8 +104,13 @@ export class AppViewBase extends React.Component<{
 		this.props.app.boardSubject.subscribe(this.update);
 		const container = this.containerRef.current;
 		const controller = this.props.app.controller;
-		// updateFPS();
 		if (container) {
+			// Pointer events are canceled even when scrolling is disabled by touch-action
+			// calling preventDefault on touchmove fixes this problem
+			// see https://issues.chromium.org/issues/41227705
+			document.addEventListener("touchmove", preventDefault, {
+				passive: false,
+			});
 			container.addEventListener("wheel", controller.onWheel, {
 				capture: true,
 				passive: false,
@@ -152,6 +157,7 @@ export class AppViewBase extends React.Component<{
 		const container = this.containerRef.current;
 		const controller = this.props.app.controller;
 		if (container) {
+			document.removeEventListener("touchmove", preventDefault);
 			container.removeEventListener("wheel", controller.onWheel);
 			window.removeEventListener("resize", controller.onResize);
 			container.removeEventListener(
@@ -178,3 +184,7 @@ export class AppViewBase extends React.Component<{
 }
 
 export const AppView = withRouter(AppViewBase);
+
+function preventDefault(event: TouchEvent): void {
+	event.preventDefault();
+}
