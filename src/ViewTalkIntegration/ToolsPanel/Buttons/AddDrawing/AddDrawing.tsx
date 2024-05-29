@@ -1,4 +1,4 @@
-import { getHotkeyLabel } from "Board/Keyboard/hotkeys";
+import { getHotkeyLabel } from "Board/Keyboard";
 import React from "react";
 import { Icon } from "ViewTalkIntegration/Icon";
 import { ColorPicker } from "ViewTalkIntegration/Pickers/ColorPicker/ColorPicker";

@@ -1,5 +1,5 @@
 import { Board } from "Board";
-import { getHotkeyLabel } from "Board/Keyboard/hotkeys";
+import { getHotkeyLabel } from "Board/Keyboard";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { UndoIcon } from "View/Icon/UndoIcon";
@@ -10,7 +10,7 @@ type Props = { board: Board; isOn: boolean };
 export function Undo({ board, isOn }: Props) {
 	const { t } = useTranslation();
 	const handleClick = (): void => {
-		board.events.undo();
+		board.events?.undo();
 	};
 
 	return (

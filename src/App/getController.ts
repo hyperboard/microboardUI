@@ -1,14 +1,11 @@
-import { RichText, isEditInProcess } from "Board/Items/RichText/RichText";
-import { createWheel } from "./Wheel/Wheel";
 import { Board } from "Board";
-import { Connector, Frame, Mbr, Shape } from "Board/Items";
+import { Mbr } from "Board/Items";
 import { ImageItem } from "Board/Items/Image";
-import { checkHotkeys, isHotkeyPushed } from "Board/Keyboard/hotkeys";
-import { Sticker } from "Board/Items/Sticker";
+import { RichText, isEditInProcess } from "Board/Items/RichText/RichText";
+import { checkHotkeys, isControlCharacter } from "Board/Keyboard";
 import { validateItemsMap } from "Board/Validators";
-import { isNotControlCharacter } from "View/isNotControlCharacter";
 import { Clipboard } from "./Clipboard";
-import { isFirefox } from "./isFirefox";
+import { createWheel } from "./Wheel/Wheel";
 import { isSafari } from "./isSafari";
 
 export interface Controller {
@@ -67,132 +64,131 @@ export function getController(getBoard: () => Board): Controller {
 		}
 
 		const context = board.selection.getContext();
-		if (
-			(context === "EditTextUnderPointer" ||
-				context === "SelectByRect" ||
-				context === "EditUnderPointer") &&
-			checkHotkeys(
-				{
-					duplicate: () => board.selection.duplicate(),
-					bringToFront: () => board.selection.bringToFront(),
-					sendToBack: () => board.selection.sendToBack(),
-					delete: () => board.selection.removeFromBoard(),
-					textBold: () => event.preventDefault(),
-					textItalic: () => event.preventDefault(),
-					textStrike: () => event.preventDefault(),
-					textUnderline: () => event.preventDefault(),
+		const isHotkeyTriggered = checkHotkeys(
+			{
+				select: {
+					cb: () => board.tools.select(),
+					selectionContext: ["SelectUnderPointer", "None"],
 				},
-				event,
-			)
-		) {
-			return;
-		}
+				text: {
+					cb: () => board.tools.addText(),
+					selectionContext: ["SelectUnderPointer", "None"],
+				},
+				sticker: {
+					cb: () => board.tools.addSticker(),
+					selectionContext: ["SelectUnderPointer", "None"],
+				},
+				shape: {
+					cb: () => board.tools.addShape(),
+					selectionContext: ["SelectUnderPointer", "None"],
+				},
+				connector: {
+					cb: () => board.tools.addConnector(),
+					selectionContext: ["SelectUnderPointer", "None"],
+				},
+				pen: {
+					cb: () => board.tools.addDrawing(),
+					selectionContext: ["SelectUnderPointer", "None"],
+				},
+				frame: {
+					cb: () => board.tools.addFrame(),
+					selectionContext: ["SelectUnderPointer", "None"],
+				},
+				duplicate: {
+					cb: () => board.selection.duplicate(),
+					selectionContext: [
+						"EditUnderPointer",
+						"SelectByRect",
+						"EditTextUnderPointer",
+					],
+				},
+				bringToFront: {
+					cb: () => board.selection.bringToFront(),
+					selectionContext: [
+						"EditUnderPointer",
+						"SelectByRect",
+						"EditTextUnderPointer",
+					],
+				},
+				sendToBack: {
+					cb: () => board.selection.sendToBack(),
+					selectionContext: [
+						"EditUnderPointer",
+						"SelectByRect",
+						"EditTextUnderPointer",
+					],
+				},
+				delete: {
+					cb: () => board.selection.removeFromBoard(),
+					selectionContext: ["EditUnderPointer", "SelectByRect"],
+				},
+				textBold: {
+					cb: () => board.selection.setFontStyle(["bold"]),
+					selectionContext: [
+						"EditTextUnderPointer",
+						"EditUnderPointer",
+						"SelectByRect",
+					],
+					allItemsType: ["Sticker", "Shape", "RichText"],
+				},
+				textItalic: {
+					cb: () => board.selection.setFontStyle(["italic"]),
+					selectionContext: [
+						"EditTextUnderPointer",
+						"EditUnderPointer",
+						"SelectByRect",
+					],
+					allItemsType: ["Sticker", "Shape", "RichText"],
+				},
+				textStrike: {
+					cb: () => board.selection.setFontStyle(["line-through"]),
+					selectionContext: [
+						"EditTextUnderPointer",
+						"EditUnderPointer",
+						"SelectByRect",
+					],
+					allItemsType: ["Sticker", "Shape", "RichText"],
+				},
+				textUnderline: {
+					cb: () => board.selection.setFontStyle(["underline"]),
+					selectionContext: [
+						"EditTextUnderPointer",
+						"EditUnderPointer",
+						"SelectByRect",
+					],
+					allItemsType: ["Sticker", "Shape", "RichText"],
+				},
+				selectAll: {
+					cb: () => board.selection.addAll(),
+					selectionContext: [
+						"None",
+						"EditUnderPointer",
+						"SelectByRect",
+					],
+				},
+				undo: () => board.events?.undo(),
+				redo: () => board.events?.redo(),
+				cancel: () => board.tools.cancel(),
+				zoomIn: () => board.camera.zoomInToViewCenter(),
+				zoomOut: () => board.camera.zoomOutFromViewCenter(),
+				zoomDefault: () => board.camera.zoomToViewCenter(1),
+			},
+			event,
+			board,
+		);
 
 		if (
-			!isEditInProcess() &&
-			checkHotkeys(
-				{
-					selectAll: () => board.selection.addAll(),
-				},
-				event,
-			)
-		) {
-			return;
-		}
-		if (
-			checkHotkeys(
-				{
-					undo: () => board.events?.undo(),
-					redo: () => board.events?.redo(),
-				},
-				event,
-			)
-		) {
-			return;
-		}
-		if (
+			!isHotkeyTriggered &&
 			context !== "EditTextUnderPointer" &&
-			!isEditInProcess() &&
-			checkHotkeys(
-				{
-					select: () => board.tools.select(),
-					text: () => board.tools.addText(),
-					sticker: () => board.tools.addSticker(),
-					shape: () => board.tools.addShape(),
-					connector: () => board.tools.addConnector(),
-					pen: () => board.tools.addDrawing(),
-					frame: () => board.tools.addFrame(),
-					zoomIn: () => board.camera.zoomInToViewCenter(),
-					zoomOut: () => board.camera.zoomOutFromViewCenter(),
-					zoomDefault: () => board.camera.zoomToViewCenter(1),
-					cancel: () => board.tools.cancel(),
-					undo: () => board.events?.undo(),
-					redo: () => board.events?.redo(),
-				},
-				event,
-			)
-		) {
-			return;
-		} else if (
-			isNotControlCharacter(event.key) &&
-			board.selection.items.isSingle()
+			!(event.ctrlKey || event.metaKey || event.altKey) &&
+			!isControlCharacter(event.key)
 		) {
 			const item = board.selection.items.getSingle();
-
-			if (context === "EditTextUnderPointer") {
-				board.selection.editText();
-				return;
-			} else if (
-				item &&
-				(item instanceof Shape ||
-					item instanceof Sticker ||
-					item instanceof Connector ||
-					item instanceof RichText ||
-					item instanceof Frame) &&
-				board.selection.getContext() === "EditUnderPointer"
-			) {
-				if (
-					!(
-						event.ctrlKey ||
-						event.metaKey ||
-						event.altKey ||
-						event.shiftKey
-					) &&
-					event.key !== "Tab" && // All non-printable keys
-					!event.key.startsWith("Arrow") &&
-					event.key !== "Enter" &&
-					event.key !== "Escape" &&
-					event.key !== "Backspace" &&
-					event.key !== "Delete" &&
-					event.key !== "Home" &&
-					event.key !== "End" &&
-					event.key !== "PageUp" &&
-					event.key !== "PageDown"
-				) {
-					board.selection.editText(event.key);
-				}
-
-				return;
+			if (item?.itemType === "Connector" || item?.itemType === "Frame") {
+				board.selection.editText(event.key);
+			} else {
+				board.selection.appendText(event.key);
 			}
-		}
-
-		if (isFirefox()) {
-			checkHotkeys(
-				{
-					copy: e =>
-						e?.currentTarget?.dispatchEvent(
-							new ClipboardEvent("copy", {
-								bubbles: true,
-								clipboardData: new DataTransfer(),
-							}),
-						),
-					paste: e =>
-						e?.currentTarget?.dispatchEvent(
-							new ClipboardEvent("paste", { bubbles: true }),
-						),
-				},
-				event,
-			);
 		}
 
 		board.keyboard.keyDown(event);
@@ -205,27 +201,6 @@ export function getController(getBoard: () => Board): Controller {
 	function onKeyUp(event: KeyboardEvent): void {
 		const board = getBoard();
 		if (!board) {
-			return;
-		}
-		const context = board.selection.getContext();
-		isHotkeyPushed("undo", event);
-		isHotkeyPushed("redo", event);
-		if (
-			(context === "EditTextUnderPointer" ||
-				context === "EditUnderPointer" ||
-				context === "SelectByRect") &&
-			checkHotkeys(
-				{
-					textBold: () => board.selection.setFontStyle(["bold"]),
-					textItalic: () => board.selection.setFontStyle(["italic"]),
-					textStrike: () =>
-						board.selection.setFontStyle(["line-through"]),
-					textUnderline: () =>
-						board.selection.setFontStyle(["underline"]),
-				},
-				event,
-			)
-		) {
 			return;
 		}
 
@@ -311,7 +286,6 @@ export function getController(getBoard: () => Board): Controller {
 		const { camera, tools } = board;
 
 		camera.updateDownEvent(event);
-
 		if (camera.isTwoPointers()) {
 			const pinchCenter = camera.getPinchCenter();
 			const scale = camera.getPinchScale();

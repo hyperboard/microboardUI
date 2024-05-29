@@ -31,7 +31,7 @@ export function ButtonWithMenu({
 	const menuRef = useRef<HTMLDivElement>(null);
 	const [verticalAlign, setVerticalAlign] = useState<
 		"bottom" | "top" | "center"
-	>("center");
+	>("bottom");
 
 	useEffect(() => {
 		const menu = menuRef.current;

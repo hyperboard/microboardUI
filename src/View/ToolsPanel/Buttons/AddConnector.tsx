@@ -1,6 +1,6 @@
 import { Board } from "Board";
 import { ConnectorLineStyle } from "Board/Items/Connector";
-import { getHotkeyLabel } from "Board/Keyboard/hotkeys";
+import { getHotkeyLabel } from "Board/Keyboard";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Icon } from "View/Icon";

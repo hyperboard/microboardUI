@@ -1,5 +1,5 @@
 import { Board } from "Board";
-import { getHotkeyLabel } from "Board/Keyboard/hotkeys";
+import { getHotkeyLabel } from "Board/Keyboard";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { RedoIcon } from "View/Icon/RedoIcon";
@@ -11,7 +11,7 @@ export function Redo({ board, isOn }: Props) {
 	const { t } = useTranslation();
 
 	const handleClick = (): void => {
-		board.events.undo();
+		board.events?.redo();
 	};
 
 	return (
