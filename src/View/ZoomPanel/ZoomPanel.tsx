@@ -22,8 +22,11 @@ export function ZoomPanel({ app, board }: Props) {
 	const { t } = useTranslation();
 
 	const zoomToFit = (): void => {
-		const rect = board.items.getMbr();
-		board.camera.zoomToFit(rect);
+		const items = board.items.listAll();
+		if (items.length > 0) {
+			const rect = board.items.getMbr();
+			board.camera.zoomToFit(rect);
+		}
 	};
 
 	const zoomIn = (): void => {
