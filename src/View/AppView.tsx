@@ -119,7 +119,13 @@ export class AppViewBase extends React.Component<{
 					passive: false,
 				},
 			);
-			container.addEventListener("pointermove", controller.onPointerMove);
+			container.addEventListener(
+				"pointermove",
+				controller.onPointerMove,
+				{
+					capture: true,
+				},
+			);
 			window.addEventListener("keydown", controller.onKeyDown);
 			window.addEventListener("keyup", controller.onKeyUp);
 			window.addEventListener("copy", controller.onCopy);
