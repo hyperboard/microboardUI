@@ -3,7 +3,12 @@ import { Boards } from "Routes/V1/Boards";
 import { AccessToken } from "Interface";
 import { verifyToken } from "Tokens";
 
-const numberOfEventsToRequestSnapshot = 1000;
+const EVENTS_TO_REQUEST_SNAPSHOT = 1000;
+const MINUTE = 60 * 1000;
+const TEN_MINUTES = 10 * MINUTE;
+const WS_TOKENS_CLEANUP_INTERVAL = TEN_MINUTES;
+const SAVE_EVENTS_INTERVAL = 10;
+const SNAPSHOT_REQUEST_TIMEOUT = 2 * MINUTE;
 
 export function withWebSocketApi(wss: WebSocketServer, boards: Boards): void {
     const boardClients = new Map<string, WebSocket.WebSocket[]>();
@@ -118,7 +123,11 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards): void {
         boardId: string,
         linkTypes: ("view" | "edit")[]
     ): Promise<boolean> {
-        return boards.isValidLink(boardId, linkTypes);
+        try {
+            return boards.isValidLink(boardId, linkTypes);
+        } catch (error) {
+            return false;
+        }
     }
 
     function hasAnyRightInTokens(
@@ -168,7 +177,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards): void {
                 snapshot,
             })
         );
-        return snapshot.lastEventOrder;
+        return snapshot.lastIndex;
     }
 
     async function sendBoardEvents(ws: WebSocket, boardId: string, offset = 0) {
@@ -238,43 +247,52 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards): void {
         }
     }
 
-    function requestSnapshotFromClient(boardId: string): void {
+    function requestSnapshotFromClient(boardId: string, sinceLast): void {
+        if (snapshotRequestTimers.has(boardId)) {
+            return;
+        }
         const clients = boardClients.get(boardId);
         if (clients && clients.length > 0) {
             const randomIndex = Math.floor(Math.random() * clients.length);
             const randomClient = clients[randomIndex];
             if (randomClient) {
-                sendSnapshotRequest(randomClient, boardId);
-                setupSnapshotRequestTimeout(boardId, randomClient);
+                sendSnapshotRequest(randomClient, boardId, sinceLast);
+                setupSnapshotRequestTimeout(boardId, randomClient, sinceLast);
             }
         }
     }
 
     eventsManager.requestSnapshotCallback = requestSnapshotFromClient;
 
-    function sendSnapshotRequest(ws: WebSocket, boardId: string) {
+    function sendSnapshotRequest(
+        ws: WebSocket,
+        boardId: string,
+        sinceLast: number
+    ) {
         const message = JSON.stringify({
             type: "CreateSnapshotRequest",
             boardId: boardId,
+            sinceLast,
         });
         ws.send(message);
     }
 
     function setupSnapshotRequestTimeout(
         boardId: string,
-        client: WebSocket
+        client: WebSocket,
+        sinceLast: number
     ): void {
         clearTimeout(snapshotRequestTimers.get(boardId));
         const timer = setTimeout(() => {
-            requestSnapshotFromClient(boardId);
-        }, 10000);
+            requestSnapshotFromClient(boardId, sinceLast);
+        }, SNAPSHOT_REQUEST_TIMEOUT);
         snapshotRequestTimers.set(boardId, timer);
     }
 
     async function handleSnapshotMsg(snapshotMsg: any, ws: WebSocket) {
         try {
-            const { boardId, snapshot, lastEventOrder } = snapshotMsg;
-            await boards.saveBoardSnapshot(boardId, snapshot, lastEventOrder);
+            const { boardId, snapshot } = snapshotMsg;
+            await boards.saveBoardSnapshot(boardId, snapshot);
             clearTimeout(snapshotRequestTimers.get(boardId));
             snapshotRequestTimers.delete(boardId);
         } catch (error) {
@@ -293,7 +311,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards): void {
             }
             wsTokens.set(ws, validTokens);
         }
-    }, 600000); // Clean up every 10 minutes
+    }, WS_TOKENS_CLEANUP_INTERVAL);
 }
 
 interface Auth {
@@ -366,7 +384,7 @@ export class EventsManager {
     constructor(private boards: Boards) {
         setInterval(() => {
             this.tryToSaveEvents();
-        }, 10);
+        }, SAVE_EVENTS_INTERVAL);
     }
 
     tryToSaveEvents = (): void => {
@@ -407,13 +425,13 @@ export class EventsManager {
             const count = await this.boards.getEventCountSinceLastSnapshot(
                 boardId
             );
-            if (count >= numberOfEventsToRequestSnapshot) {
-                this.requestSnapshotCallback(boardId);
+            if (count >= EVENTS_TO_REQUEST_SNAPSHOT) {
+                this.requestSnapshotCallback(boardId, count);
             }
         } catch (error) {}
     }
 
-    requestSnapshotCallback(boardId: string): void {}
+    requestSnapshotCallback(boardId: string, sinceLast: number): void {}
 
     isBoardReady(boardId: string): boolean {
         return !this.processing.includes(boardId);

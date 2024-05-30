@@ -1,6 +1,13 @@
 import { AccessToken } from "Interface";
 import { Pool } from "pg";
+import validator from "validator";
 import winston from "winston";
+
+function validateUUID(id: string, idName: string): void {
+    if (!validator.isUUID(id)) {
+        throw new Error(`Invalid ${idName}: ${id}`);
+    }
+}
 
 export class Boards {
     constructor(private database: Pool, private logger: winston.Logger) {}
@@ -13,21 +20,20 @@ export class Boards {
         ownerId?: string
     ): Promise<any> {
         try {
-            const truncatedTitle = title.slice(0, 32);
-
+            validateUUID(boardId, "boardId");
             if (ownerId) {
                 const privateBoard = await this.database.query<{
                     board_id: number;
                 }>("select * from create_private_board($1, $2, $3)", [
                     boardId,
-                    truncatedTitle,
+                    title,
                     ownerId,
                 ]);
                 return privateBoard.rows[0].board_id;
             } else {
                 const result = await this.database.query(
                     "SELECT * FROM create_board($1, $2)",
-                    [boardId, truncatedTitle]
+                    [boardId, title]
                 );
                 return result.rows[0].boardId;
             }
@@ -41,6 +47,7 @@ export class Boards {
         boardId: string
     ): Promise<{ boardId: string; created: Date; title: string } | null> {
         try {
+            validateUUID(boardId, "boardId");
             const result = await this.database.query(
                 `SELECT uniq_id as boardId, created, boardname as title FROM boards WHERE uniq_id = $1 LIMIT 1`,
                 [boardId]
@@ -66,6 +73,7 @@ export class Boards {
 
     async isBoardExists(boardId: string): Promise<boolean> {
         try {
+            validateUUID(boardId, "boardId");
             const result = await this.database.query(
                 "SELECT id FROM boards WHERE uniq_id = $1 LIMIT 1",
                 [boardId]
@@ -79,6 +87,7 @@ export class Boards {
 
     async deleteBoard(boardId: string): Promise<void> {
         try {
+            validateUUID(boardId, "boardId");
             await this.database.query("SELECT delete_board($1)", [boardId]);
         } catch (error) {
             this.logger.error(`Error deleting board: ${error}`);
@@ -91,6 +100,8 @@ export class Boards {
         newBoardId: string
     ): Promise<any> {
         try {
+            validateUUID(originalBoardId, "originalBoardId");
+            validateUUID(newBoardId, "newBoardId");
             const result = await this.database.query(
                 "SELECT * FROM duplicate_board($1, $2)",
                 [originalBoardId, newBoardId]
@@ -104,6 +115,7 @@ export class Boards {
 
     async renameBoard(boardId: string, newTitle: string): Promise<void> {
         try {
+            validateUUID(boardId, "boardId");
             const result = await this.database.query(
                 "SELECT rename_board($1, $2)",
                 [boardId, newTitle]
@@ -120,6 +132,8 @@ export class Boards {
         eventBody: object
     ): Promise<{ order: number; body: any }> {
         try {
+            validateUUID(boardId, "boardId");
+            validateUUID(eventId, "eventId");
             const result = await this.database.query<{ order: number }>(
                 "select add_event_using_uuid($1, $2, $3) as order",
                 [boardId, eventId, eventBody]
@@ -145,6 +159,7 @@ export class Boards {
         limit?: number
     ): Promise<any[]> {
         try {
+            validateUUID(boardId, "boardId");
             /*
             const offset = (page - 1) * limit;
             const result = await this.database.query(
@@ -170,6 +185,8 @@ export class Boards {
         linkId: string
     ): Promise<any> {
         try {
+            validateUUID(boardId, "boardId");
+            validateUUID(linkId, "linkId");
             const table = await this.database.query(
                 "select create_link($1, $2, $3)",
                 [boardId, type, linkId]
@@ -183,6 +200,8 @@ export class Boards {
 
     async deleteLink(boardId: string, linkId: string): Promise<any> {
         try {
+            validateUUID(boardId, "boardId");
+            validateUUID(linkId, "linkId");
             const table = await this.database.query(
                 "select delete_link($1, $2)",
                 [boardId, linkId]
@@ -199,6 +218,7 @@ export class Boards {
         linkTypes: ("view" | "edit")[]
     ): Promise<boolean> {
         try {
+            validateUUID(linkId, "linkId");
             const result = await this.database.query(
                 "SELECT * FROM get_link($1)",
                 [linkId]
@@ -210,18 +230,17 @@ export class Boards {
             return linkTypes.includes(link.type);
         } catch (error) {
             this.logger.error(`Error checking valid link: ${error}`);
-            throw error;
+            return false;
         }
     }
 
-    async getLinkDetails(
-        linkId: string
-    ): Promise<{
+    async getLinkDetails(linkId: string): Promise<{
         linkId: string;
         boardId: string;
         type: "edit" | "view";
     } | null> {
         try {
+            validateUUID(linkId, "linkId");
             const queryText = `
                 SELECT board_id, link_uuid, type 
                 FROM get_link($1)
@@ -252,7 +271,7 @@ export class Boards {
             };
         } catch (error) {
             this.logger.error(`Error getting link details: ${error}`);
-            throw error;
+            return null;
         }
     }
 
@@ -270,34 +289,52 @@ export class Boards {
         }
     }
 
-    async saveBoardSnapshot(
-        boardId: string,
-        snapshot: any,
-        lastEventOrder: number
-    ) {
+    async saveBoardSnapshot(boardUuidOrEditLink: string, snapshot: any) {
         try {
+            validateUUID(boardUuidOrEditLink, "boardUuidOrEditLink");
             await this.database.query(
-                "INSERT INTO snapshots (board_id, snapshot, last_event_order) VALUES ($1, $2, $3)",
-                [boardId, snapshot, lastEventOrder]
+                "SELECT save_board_snapshot($1, $2, $3)",
+                [boardUuidOrEditLink, snapshot, snapshot.lastIndex]
             );
         } catch (error) {
             this.logger.error(
-                `Error saving snapshot for board ${boardId}: ${error}`
+                `Error saving snapshot for board ${boardUuidOrEditLink}: ${error}`
             );
             throw error;
         }
     }
 
-    async getLatestBoardSnapshot(boardId: string): Promise<any> {}
+    async getLatestBoardSnapshot(boardUuidOrEditLink: string): Promise<any> {
+        try {
+            validateUUID(boardUuidOrEditLink, "boardUuidOrEditLink");
+            const result = await this.database.query<{ snapshot: any }>(
+                "SELECT get_latest_board_snapshot($1) AS snapshot",
+                [boardUuidOrEditLink]
+            );
+
+            if (result.rows.length === 0) {
+                throw new Error(
+                    `No snapshot found for board or link UUID ${boardUuidOrEditLink}`
+                );
+            }
+
+            return result.rows[0].snapshot;
+        } catch (error) {
+            this.logger.error(
+                `Error retrieving latest snapshot for board ${boardUuidOrEditLink}: ${error}`
+            );
+            throw error;
+        }
+    }
 
     async getEventCountSinceLastSnapshot(boardId: string): Promise<number> {
-        return 0;
         try {
-            const result = await this.database.query(
-                "SELECT count(*) FROM events WHERE board_id = $1 AND order > (SELECT last_event_order FROM snapshots WHERE board_id = $1 ORDER BY created_at DESC LIMIT 1)",
+            validateUUID(boardId, "boardId");
+            const result = await this.database.query<{ count: number }>(
+                "SELECT get_event_count_since_last_snapshot($1) AS count",
                 [boardId]
             );
-            return parseInt(result.rows[0].count, 10);
+            return result.rows[0].count;
         } catch (error) {
             this.logger.error(
                 `Error getting event count since last snapshot for board ${boardId}: ${error}`

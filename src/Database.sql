@@ -101,24 +101,19 @@ declare
 	selectevents text;
 	link_result record;
 begin
-    -- First, try to find the board_id using the direct board UUID
     select id into board_identifier from boards where uniq_id = board_uuid;
 
-    -- If not found, use the get_link function to retrieve the board_id using edit or view link UUID
     if board_identifier is null then
         select * into link_result from get_link(board_uuid);
-        board_identifier := link_result.board_id; -- Explicitly assign the value from returned record
+        board_identifier := link_result.board_id;
     end if;
 
-    -- If no board_id was found by now, raise an error
     if board_identifier is null then
         raise exception 'Board UUID or Link UUID does not exist';
     end if;
 
-    -- Prepare the SQL query to select events
-    selectevents := format('select * from board%s where logid>=%s order by logid asc', board_identifier, afterlogid);
+    selectevents := format('select * from board%s where logid>%s order by logid asc', board_identifier, afterlogid);
 
-    -- Execute the prepared SQL query and return the result
     return query execute selectevents;
 end;
 $body$;
@@ -140,59 +135,6 @@ begin
 	return boardId;
 end;
 $body$;
-
-create or replace function create_board(
-    board_id uuid,
-    title varchar(32)
-)
-returns uuid
-language plpgsql
-as $$
-declare
-    new_board_id uuid := board_id; 
-    created_board_id integer;
-begin
-    if (new_board_id is null) then
-        new_board_id := uuid_generate_v4();
-    end if;
-
-    INSERT INTO boards (uniq_id, boardname)
-    VALUES (new_board_id, title)
-    RETURNING id INTO created_board_id;
-
-    PERFORM addboardtable(created_board_id);
-
-    return new_board_id;
-end;
-$$;
-
-create or replace function create_private_board(
-    board_id uuid,
-    title varchar(32),
-    owner_id integer
-)
-returns uuid
-language plpgsql
-as $$
-declare
-	board_uuid uuid := board_id;
-	created_board_id integer;
-begin
-	if (board_uuid is null) then
-        board_uuid := uuid_generate_v4();
-    end if;
-   	perform create_board(board_uuid, title);
-    select id into created_board_id from boards where uniq_id = board_uuid;
-    
-    insert into board_owner ("board_id", owner_id)
-    values (created_board_id, owner_id);
-    
-    insert into board_permissions ("board_id", user_id, can_view, can_edit)
-    values (created_board_id, owner_id, true, true);
-   
-    return board_uuid;
-end;
-$$;
 
 -- A function to add a new board to the database.
 -- Calls addboardrecord to create a new board record and get its id to call addboardtable.
@@ -518,28 +460,6 @@ begin
 end;
 $$;
 
--- Function to create a new private board 
-create or replace function create_private_board(
-    boardname varchar(32),
-    owner_id integer,
-    out board_id integer
-)
-returns integer
-language plpgsql
-as $$
-begin
-    insert into boards (uniq_id, boardname)
-    values (uuid_generate_v4(), boardname)
-    returning id into board_id;
-    
-    insert into board_owner (board_id, owner_id)
-    values (board_id, owner_id);
-    
-    insert into board_permissions (board_id, user_id, can_view, can_edit)
-    values (board_id, owner_id, true, true);
-end;
-$$;
-
 -- Table to store board edit link
 create table if not exists board_edit_link (
 	board_id integer references boards(id) on delete cascade,
@@ -616,6 +536,14 @@ create table if not exists board_snapshots (
 	snapshot jsonb
 );
 
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='board_snapshots' AND column_name='last_event_order') THEN
+        ALTER TABLE board_snapshots
+        ADD last_event_order INTEGER NOT NULL DEFAULT 0;
+    END IF;
+END $$;
+
 CREATE TABLE if not exists snapshots (
   id SERIAL PRIMARY KEY,
   board_id UUID NOT NULL REFERENCES boards(uniq_id),
@@ -627,59 +555,110 @@ CREATE TABLE if not exists snapshots (
 
 
 -- Function to create a board snapshot:
-create or replace function create_board_snapshot(
+DROP FUNCTION IF EXISTS create_board_snapshot(uuid, jsonb);
+
+CREATE OR REPLACE FUNCTION create_board_snapshot(
     board_uuid uuid,
-    snapshot jsonb
-)
-returns void
-language plpgsql
-as $$
-begin
-    insert into board_snapshots (board_id, snapshot)
-    values ((select id from boards where uniq_id = board_uuid), snapshot);
-end;
+    snapshot jsonb,
+    last_event integer
+) RETURNS void
+LANGUAGE plpgsql AS $$
+DECLARE
+    found_board_id integer;
+BEGIN
+    SELECT id INTO found_board_id FROM boards WHERE uniq_id = board_uuid;
+    IF found_board_id IS NULL THEN
+        RAISE EXCEPTION 'Board not found with UUID %', board_uuid;
+    END IF;
+
+    INSERT INTO board_snapshots (board_id, snapshot, last_event_order)
+    VALUES (found_board_id, snapshot, last_event);
+END;
 $$;
 
 -- Function to retrieve the latest board snapshot:
-create or replace function get_latest_board_snapshot(
-    board_uuid uuid
+CREATE OR REPLACE FUNCTION get_latest_board_snapshot(
+    board_uuid UUID -- or link
 )
-returns jsonb
-language plpgsql
-as $$
-begin
-    return (
-        select snapshot
-        from board_snapshots
-        where board_id = (select id from boards where uniq_id = board_uuid)
-        order by board_id desc
-        limit 1
+RETURNS JSONB
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    found_board_id INTEGER;
+BEGIN
+    -- First, try to find the board_id using the board UUID
+    SELECT id INTO found_board_id FROM boards WHERE uniq_id = board_uuid;
+
+    -- If not found, try finding the board_id using the edit link UUID
+    IF found_board_id IS NULL THEN
+        SELECT board_id INTO found_board_id
+        FROM board_edit_link
+        WHERE edit_link_uuid = board_uuid;
+    END IF;
+
+    -- If still not found, try finding the board_id using the view link UUID
+    IF found_board_id IS NULL THEN
+        SELECT board_id INTO found_board_id
+        FROM board_view_link
+        WHERE view_link_uuid = board_uuid;
+    END IF;
+
+    -- If no board_id was found by now, raise an error
+    IF found_board_id IS NULL THEN
+        RAISE EXCEPTION 'Board UUID, Edit Link UUID, or View Link UUID does not exist';
+    END IF;
+
+    -- Retrieve the latest snapshot for the found board_id
+    RETURN (
+        SELECT snapshot
+        FROM board_snapshots
+        WHERE board_id = found_board_id
+        ORDER BY board_id DESC
+        LIMIT 1
     );
-end;
+END;
 $$;
 
+DROP FUNCTION IF EXISTS save_board_snapshot(uuid, jsonb);
 -- Add a new table and function to store board snapshots
-create or replace function save_board_snapshot(
-	board_uuid uuid,
-	snapshot jsonb
+CREATE OR REPLACE FUNCTION save_board_snapshot(
+    board_uuid UUID, -- or edit link 
+    new_snapshot JSONB,
+    last_event integer
 )
-returns void
-language plpgsql
-as $$
-begin
-	-- Replace the existing snapshot with the new one
-	update board_snapshots
-	set snapshot = snapshot
-	where board_id = (select id from boards where uniq_id = board_uuid);
-	
-	-- If the snapshot record doesn't exist, insert a new one
-	if not exists (select 1 from board_snapshots where board_id = (select id from boards where uniq_id = board_uuid)) then
-		insert into board_snapshots (board_id, snapshot)
-		values ((select id from boards where uniq_id = board_uuid), snapshot);
-	end if;
-end;
-$$;
+RETURNS VOID
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    found_board_id INTEGER;
+BEGIN
+    -- First, try to find the board_id using the board UUID
+    SELECT id INTO found_board_id FROM boards WHERE uniq_id = board_uuid;
 
+    -- If not found, try finding the board_id using the edit link UUID
+    IF found_board_id IS NULL THEN
+        SELECT board_id INTO found_board_id
+        FROM board_edit_link
+        WHERE edit_link_uuid = board_uuid;
+    END IF;
+
+    -- If no board_id was found by now, raise an error
+    IF found_board_id IS NULL THEN
+        RAISE EXCEPTION 'Board UUID or Edit Link UUID does not exist';
+    END IF;
+
+    -- Replace the existing snapshot with the new one
+    UPDATE board_snapshots
+    SET snapshot = snapshot, last_event_order = last_event
+    WHERE board_id = found_board_id;
+
+    -- If the snapshot record doesn't exist, insert a new one
+    IF NOT FOUND THEN
+        INSERT INTO board_snapshots (board_id, snapshot, last_event_order)
+        VALUES (found_board_id, new_snapshot, last_event);
+    END IF;
+END;
+$$;
 
 -- Function to add new user
 create or replace function add_user(
@@ -827,3 +806,118 @@ begin
 	and (p.can_view = true or p.can_edit = true);
 end;
 $$ language plpgsql;
+
+ALTER TABLE boards ALTER COLUMN boardname TYPE text;
+
+DROP FUNCTION IF EXISTS create_board(uuid, varchar(32));
+DROP FUNCTION IF EXISTS create_private_board(uuid, varchar(32), integer);
+DROP FUNCTION IF EXISTS rename_board(uuid, varchar);
+
+CREATE OR REPLACE FUNCTION create_board(
+    board_id uuid,
+    title text  -- or varchar(255)
+)
+RETURNS uuid
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    new_board_id uuid := board_id; 
+    created_board_id integer;
+BEGIN
+    IF (new_board_id IS NULL) THEN
+        new_board_id := uuid_generate_v4();
+    END IF;
+
+    INSERT INTO boards (uniq_id, boardname)
+    VALUES (new_board_id, title)
+    RETURNING id INTO created_board_id;
+
+    PERFORM addboardtable(created_board_id);
+
+    RETURN new_board_id;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION create_private_board(
+    board_id uuid,
+    title text,  -- or varchar(255)
+    owner_id integer
+)
+RETURNS uuid
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    board_uuid uuid := board_id;
+    created_board_id integer;
+BEGIN
+    IF (board_uuid IS NULL) THEN
+        board_uuid := uuid_generate_v4();
+    END IF;
+    PERFORM create_board(board_uuid, title);
+    SELECT id INTO created_board_id FROM boards WHERE uniq_id = board_uuid;
+
+    INSERT INTO board_owner ("board_id", owner_id)
+    VALUES (created_board_id, owner_id);
+
+    INSERT INTO board_permissions ("board_id", user_id, can_view, can_edit)
+    VALUES (created_board_id, owner_id, TRUE, TRUE);
+
+    RETURN board_uuid;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION rename_board(
+    board_uuid uuid,
+    new_boardname text  -- or varchar(255)
+)
+RETURNS void
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    board_id integer;
+BEGIN
+    SELECT id INTO board_id FROM boards WHERE uniq_id = board_uuid;
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Board not found with UUID %', board_uuid USING errcode = 'XXXXX';
+    END IF;
+    UPDATE boards SET boardname = new_boardname WHERE id = board_id;
+END;
+$$;
+DROP FUNCTION IF EXISTS get_event_count_since_last_snapshot(uuid);
+CREATE OR REPLACE FUNCTION get_event_count_since_last_snapshot(
+    board_or_link_uuid UUID
+)
+RETURNS INTEGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    board_id INTEGER;
+    event_count INTEGER;
+    board_uuid UUID;
+BEGIN
+    SELECT id, uniq_id INTO board_id, board_uuid FROM boards WHERE uniq_id = board_or_link_uuid;
+
+    IF board_id IS NULL THEN
+        SELECT gl.board_id, b.uniq_id INTO board_id, board_uuid
+        FROM get_link(board_or_link_uuid) gl
+        JOIN boards b ON gl.board_id = b.id;
+    END IF;
+
+    IF board_id IS NULL THEN
+        RAISE EXCEPTION 'Board UUID or Link UUID does not exist';
+    END IF;
+
+    EXECUTE format(
+        'SELECT COUNT(*)
+         FROM board%s 
+         WHERE logid > (SELECT COALESCE(MAX(last_event_order), 0) 
+                        FROM board_snapshots 
+                        WHERE board_id = %L)',
+         board_id,
+         board_id
+     )
+     INTO event_count;
+
+    RETURN event_count;
+END;
+$$;

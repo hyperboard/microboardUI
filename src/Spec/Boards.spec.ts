@@ -300,7 +300,9 @@ describe("Board routes", () => {
             const createResponse = await request(server)
                 .post("/api/v1/boards")
                 .set("Authorization", `Bearer ${token}`)
-                .send({ title: "Board To Rename" })
+                .send({
+                    title: "Board To Rename. Very long title. Like a poem. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.",
+                })
                 .expect(201);
             boardId = createResponse.body.boardId;
 
@@ -310,7 +312,8 @@ describe("Board routes", () => {
         });
 
         it("should rename an existing board", async () => {
-            const newTitle = "Renamed Board";
+            const newTitle =
+                "Renamed Board. . Very long title. Like a poem. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.";
             await request(server)
                 .patch(`/api/v1/boards/${boardId}`)
                 .set("Authorization", `Bearer ${token}`)
