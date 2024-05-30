@@ -1,8 +1,22 @@
 <html>
-  UNDER DEVELOPMENT
-  <body>
-    <p>Hello, user!</p>
-    <p>Please verify your email test: {{baseUrl}}/verify?passcode={{passcode}}&userId={{userId}}&email={{email}}</p>
-    <a href="{{baseUrl}}/verify?passcode={{passcode}}&userId={{userId}}&email={{email}}">Verify</a>
-  </body>
+
+<body>
+  <p>Thank you for registering with Microboard! To complete the sign-up process and verify your email address, please
+    use the
+    verification code provided below:</p>
+  <p>
+    Verification Code: <b>{{passcode}}</b>
+  </p>
+  <p>
+    Please enter this code in the required field to confirm your email address. Verification code will be valid for 24
+    hours.
+  </p>
+  <p>
+    If you did not create an account using this email address, please ignore this message.
+  </p>
+  {{!-- <p>Please verify your email test: localhost:8000/verify?passcode={{passcode}}?userId={{userId}}?email={{email}}
+  </p>
+  <a href="{{baseUrl}}/auth/verify?passcode={{passcode}}?userId={{userId}}?email={{email}}">Verify</a> --}}
+</body>
+
 </html>

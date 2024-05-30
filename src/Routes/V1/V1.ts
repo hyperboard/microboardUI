@@ -18,7 +18,7 @@ export function getV1Router(
 ): express.Router {
     const router = express.Router();
     const authMiddleware = jwtMiddleware(logger);
-    router.use("/api/v1", getAuthRouter(auth));
+    router.use("/api/v1", getAuthRouter(auth, logger));
     router.use("/api/v1", getBoardsRouter(boards, logger));
     // BUG: Миддлвар блокирует запрос GET boards/:id без токена по edit/view ссылке
     // router.use(authMiddleware);

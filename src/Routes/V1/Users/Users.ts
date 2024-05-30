@@ -10,6 +10,7 @@ export class Users {
     async getMe(
         reqUser: AccessToken
     ): Promise<{ id: number; email: string } | null> {
+        const userReq = await reqUser;
         const user = await this.database.query<{ id: number; email: string }>(
             `
                 SELECT id, email
@@ -17,7 +18,7 @@ export class Users {
                 LEFT JOIN user_name ON users.id = user_name.user_id
                 WHERE id = $1;
             `,
-            [+reqUser.sub]
+            [+userReq.sub]
         );
 
         if (!user.rows[0]) {

@@ -3,7 +3,7 @@ import { Config } from "../../config/config";
 import winston from "winston";
 import hbs from "nodemailer-express-handlebars";
 
-type Template = {
+type VerifyEmailTemplate = {
     template: "verify-email";
     context: {
         passcode: string;
@@ -11,6 +11,15 @@ type Template = {
         email: string;
     };
 };
+
+type RestorePasswordTemplate = {
+    template: "restore-password";
+    context: {
+        token: string;
+    };
+};
+
+type Template = VerifyEmailTemplate | RestorePasswordTemplate;
 
 function getMailerConfig() {
     return {
