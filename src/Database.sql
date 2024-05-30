@@ -771,6 +771,14 @@ create table if not exists user_password (
 	password varchar(100)
 );
 
+-- Table to store user's password restore requests
+create table if not exists password_reset_requests (
+    id serial primary key,
+    user_id integer references users(id) on delete cascade,
+    token varchar(100) unique,
+    expiration_time timestamp
+);
+
 -- Function to add password to a user
 create or replace function add_password(
     user_id integer,

@@ -10,6 +10,7 @@ import { Pool } from "pg";
 import { AccessToken } from "Interface";
 import { Permissions } from "./types";
 import { verifyToken } from "Tokens";
+import * as crypto from "crypto";
 // import { publicKey } from "shared/config/keys";
 
 type RegisterPayload = {
@@ -28,12 +29,11 @@ type RefreshPayload = {
 
 type VerifyEmailPayload = {
     passcode: string;
-    userId: number;
+    email: string;
 };
 
 type ResendEmailPayload = {
     email: string;
-    userId: number;
 };
 
 export class Auth {
@@ -205,10 +205,9 @@ export class Auth {
         }
 
         try {
-            console.log("user: ", createdUser.rows[0]);
             await this.mailer.sendMail(
                 createdUser.rows[0].email,
-                "Microboard: Verify your email",
+                "Confirm Your Email Address",
                 {
                     template: "verify-email",
                     context: {
@@ -308,14 +307,24 @@ export class Auth {
     }
 
     async verifyEmail(payload: VerifyEmailPayload): Promise<any> {
+        const user = await this.database.query(
+            `select id from users where email = $1`,
+            [payload.email]
+        );
+
+        const userId = user?.rows[0]?.id;
+        if (!userId) {
+            throw new HttpException(HttpStatus.NOT_FOUND, "User not found");
+        }
+
         const checkPasscode = await this.database.query(
             `select check_passcode($1, $2)`,
-            [payload.passcode, payload.userId]
+            [payload.passcode, userId]
         );
 
         const lastPasscode = await this.database.query(
             `select * from user_passcode where user_id = $1 order by created desc limit 1`,
-            [payload.userId]
+            [userId]
         );
         if (lastPasscode.rows.length === 0) {
             throw new HttpException(
@@ -354,7 +363,7 @@ export class Auth {
             set activated = true
             where id = $1 returning id, email
         `,
-            [payload.userId]
+            [userId]
         );
 
         if (!updateUser) {
@@ -397,10 +406,18 @@ export class Auth {
     }
 
     async resendEmail(payload: ResendEmailPayload): Promise<any> {
+        const user = await this.database.query(
+            `select id from users where email = $1`,
+            [payload.email]
+        );
+        const userId = user?.rows[0].id;
+        if (!userId) {
+            throw new HttpException(HttpStatus.NOT_FOUND, "User not found");
+        }
         const passcode = this.authHelper.generatePasscode();
         const lastPasscode = await this.database.query(
             `select * from user_passcode where user_id = $1 order by created desc limit 1`,
-            [payload.userId]
+            [userId]
         );
 
         if (lastPasscode.rows[0].created > Date.now() - 3 * 60 * 1000) {
@@ -414,7 +431,7 @@ export class Auth {
                 `
                 select add_passcode($1, $2)
                 `,
-                [payload.userId, passcode]
+                [userId, passcode]
             );
         } catch (e) {
             this.logger.error(`add_user_passcode error: ${e}`);
@@ -427,12 +444,12 @@ export class Auth {
         try {
             await this.mailer.sendMail(
                 payload.email,
-                "Microboard: Verify your email",
+                "Confirm Your Email Address",
                 {
                     template: "verify-email",
                     context: {
                         passcode: passcode,
-                        userId: "" + payload.userId,
+                        userId: "" + userId,
                         email: payload.email,
                     },
                 }
@@ -487,5 +504,196 @@ export class Auth {
         }
 
         return permissions;
+    }
+
+    async logout(userId: number) {
+        try {
+            await this.database.query(
+                `
+            UPDATE users
+            SET refresh_token = ''
+            WHERE id = $1
+            `,
+                [userId]
+            );
+        } catch (err) {
+            throw new HttpException(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Error occurred when logging out"
+            );
+        }
+
+        return true;
+    }
+
+    async requestPasswordRestoration(email: string): Promise<void> {
+        const user = await this.database.query(
+            `SELECT id from users where email = $1`,
+            [email]
+        );
+
+        if (!user.rows[0]) {
+            throw new HttpException(HttpStatus.NOT_FOUND, "User not found");
+        }
+
+        const token = crypto.randomBytes(32).toString("hex");
+        const expirationTime = new Date(
+            Date.now() + 24 * 60 * 60 * 1000
+        ).toISOString(); // 24 hours from now
+
+        try {
+            await this.database.query(
+                `
+            INSERT INTO password_reset_requests (user_id, token, expiration_time) VALUES ($1, $2, $3)
+            `,
+                [user.rows[0].id, `${token}`, new Date(expirationTime)]
+            );
+        } catch (err) {
+            throw new HttpException(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Error occurred when requesting password restoration"
+            );
+        }
+
+        try {
+            await this.mailer.sendMail(email, "Password Reset Request", {
+                template: "restore-password",
+                context: {
+                    token: token,
+                },
+            });
+        } catch (e) {
+            this.logger.error(`sendMail error: ${e}`);
+        }
+
+        return;
+    }
+
+    async restorePassword(token: string, newPassword: string) {
+        const request = await this.database.query(
+            `
+            SELECT * FROM password_reset_requests WHERE expiration_time >= NOW() AND token = $1
+            `,
+            [token]
+        );
+
+        if (!request.rows[0]) {
+            throw new HttpException(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Error occurred when restoring password: invalid token or expired"
+            );
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = bcrypt.hashSync(newPassword, salt);
+        const userId = request.rows[0].user_id;
+
+        const oldPassword = await this.database.query(
+            `
+            SELECT password FROM user_password WHERE user_id = $1
+            `,
+            [userId]
+        );
+
+        const isSamePassword = await bcrypt.compare(
+            newPassword,
+            oldPassword.rows[0].password
+        );
+
+        if (isSamePassword) {
+            throw new HttpException(
+                HttpStatus.CONFLICT,
+                "New password is the same as the old one"
+            );
+        }
+
+        try {
+            await this.database.query(
+                `
+                DELETE FROM user_password WHERE user_id = $1
+            `,
+                [userId]
+            );
+            await this.database.query(
+                `
+                SELECT add_password($1, $2)
+                `,
+                [userId, hashedPassword]
+            );
+        } catch (e) {
+            throw new HttpException(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Error occurred when restoring password"
+            );
+        }
+
+        try {
+            await this.database.query(
+                `
+                DELETE FROM password_reset_requests WHERE user_id = $1
+            `,
+                [userId]
+            );
+        } catch (error) {
+            this.logger.error(
+                `Error deleting password reset request: ${error}`
+            );
+            // throw new HttpException(
+            //     HttpStatus.INTERNAL_SERVER_ERROR,
+            //     "Error occurred when restoring password"
+            // );
+        }
+    }
+
+    async changePassword(
+        userId: number,
+        oldPassword: string,
+        newPassword: string
+    ): Promise<void> {
+        const hashedPassword = await this.database.query(
+            `
+            SELECT password FROM user_password WHERE user_id = $1
+            `,
+            [userId]
+        );
+
+        if (!hashedPassword.rows[0]) {
+            throw new HttpException(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Error occurred when changing password: user not found"
+            );
+        }
+
+        const isSamePassword = await bcrypt.compare(
+            oldPassword,
+            hashedPassword.rows[0].password
+        );
+
+        if (!isSamePassword) {
+            throw new HttpException(HttpStatus.UNAUTHORIZED, "Wrong password");
+        }
+
+        const isNewSameAsOld = await bcrypt.compare(
+            newPassword,
+            hashedPassword.rows[0].password
+        );
+
+        if (isNewSameAsOld) {
+            throw new HttpException(HttpStatus.CONFLICT, "ERROR_SAME_PASSWORD");
+        }
+
+        const newHash = await bcrypt.hash(newPassword, 10);
+
+        try {
+            await this.database.query(`SELECT add_password($1, $2)`, [
+                userId,
+                newHash,
+            ]);
+        } catch (err) {
+            throw new HttpException(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Error occurred when changing password"
+            );
+        }
     }
 }

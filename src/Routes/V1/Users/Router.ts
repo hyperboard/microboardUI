@@ -11,7 +11,8 @@ export function getUsersRouter(
 ): express.Router {
     const router = express.Router();
 
-    router.get("/users/me",
+    router.get(
+        "/users/me",
         jwtMiddleware(logger),
         async (request, response) => {
             const { token: reqUser } = request;
@@ -40,7 +41,8 @@ export function getUsersRouter(
             }
 
             response.end();
-        });
+        }
+    );
 
     return router;
 }

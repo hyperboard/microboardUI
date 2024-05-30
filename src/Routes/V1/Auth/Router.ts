@@ -1,10 +1,15 @@
 import express from "express";
+import winston from "winston";
 import { Auth } from "./Auth";
 import { body, validationResult } from "express-validator";
 import { HttpException } from "shared/exceptions/http-exception";
 import { HttpStatus } from "shared/enums/http-status.enum";
+import { jwtMiddleware } from "Middlewares/jwt.middleware";
 
-export function getAuthRouter(authService: Auth): express.Router {
+export function getAuthRouter(
+    authService: Auth,
+    logger: winston.Logger
+): express.Router {
     const router = express.Router();
 
     router.post(
@@ -63,14 +68,14 @@ export function getAuthRouter(authService: Auth): express.Router {
 
     router.post(
         "/auth/verify",
-        body("userId").not().isEmpty(),
+        body("email").not().isEmpty(),
         body("passcode").not().isEmpty(),
         validateRequest,
         async (req, res) => {
-            const { userId, passcode } = req.body;
+            const { email, passcode } = req.body;
             try {
                 const tokens = await authService.verifyEmail({
-                    userId,
+                    email,
                     passcode,
                 });
                 res.json(tokens);
@@ -83,13 +88,100 @@ export function getAuthRouter(authService: Auth): express.Router {
     router.post(
         "/auth/resendEmail",
         body("email").isEmail(),
-        body("userId").not().isEmpty(),
+        // body("userId").not().isEmpty(),
         validateRequest,
         async (req, res) => {
-            const { email, userId } = req.body;
+            const { email } = req.body;
             try {
-                await authService.resendEmail({ email, userId });
+                await authService.resendEmail({ email });
                 res.json({ message: "Email sent" });
+            } catch (err) {
+                return handleError(res, err);
+            }
+        }
+    );
+
+    router.put(
+        "/auth/logout",
+        jwtMiddleware(logger),
+        validateRequest,
+        async (req, res) => {
+            const userId = parseInt(req.token?.sub);
+
+            try {
+                await authService.logout(userId);
+                res.json({ message: "User logged out" });
+            } catch (err) {
+                return handleError(res, err);
+            }
+        }
+    );
+
+    router.post(
+        "/auth/password/restore",
+        body("token").not().isEmpty(),
+        body("newPassword").not().isEmpty(),
+        validateRequest,
+        async (req, res) => {
+            const { newPassword, token } = req.body;
+
+            console.log("token: ", token);
+
+            try {
+                await authService.restorePassword(token, newPassword);
+                res.json({ message: "Password restored" });
+            } catch (err) {
+                return handleError(res, err);
+            }
+        }
+    );
+
+    router.post(
+        "/auth/password/restore/request",
+        body("email").isEmail(),
+        validateRequest,
+        async (req, res) => {
+            const { email } = req.body;
+
+            try {
+                await authService.requestPasswordRestoration(email);
+                res.json({ message: "Email sent" });
+            } catch (err) {
+                return handleError(res, err);
+            }
+        }
+    );
+
+    router.patch(
+        "/auth/password/change",
+        jwtMiddleware(logger),
+        body("oldPassword").not().isEmpty(),
+        body("newPassword").not().isEmpty(),
+        validateRequest,
+        async (req, res) => {
+            const { newPassword, oldPassword } = req.body;
+            const { token } = req;
+            const userToken = await token;
+            const userId = parseInt(userToken?.sub);
+
+            if (!userId) {
+                return res.status(HttpStatus.UNAUTHORIZED).json({
+                    status: HttpStatus.UNAUTHORIZED,
+                    message: "Unauthorized",
+                });
+            }
+
+            try {
+                const result = await authService.changePassword(
+                    userId,
+                    oldPassword,
+                    newPassword
+                );
+
+                return res.status(HttpStatus.OK).json({
+                    status: HttpStatus.OK,
+                    message: "Password changed",
+                });
             } catch (err) {
                 return handleError(res, err);
             }
