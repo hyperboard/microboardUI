@@ -133,7 +133,6 @@ export class Boards {
     ): Promise<{ order: number; body: any }> {
         try {
             validateUUID(boardId, "boardId");
-            validateUUID(eventId, "eventId");
             const result = await this.database.query<{ order: number }>(
                 "select add_event_using_uuid($1, $2, $3) as order",
                 [boardId, eventId, eventBody]

@@ -401,23 +401,25 @@ export class EventsManager {
         boardId: string,
         eventBodyQueue: BoardEventBody[]
     ): Promise<void> {
-        this.processing.push(boardId);
-        let eventBody: BoardEventBody | undefined;
-        while (
-            eventBodyQueue.length > 0 &&
-            (eventBody = eventBodyQueue.shift())
-        ) {
-            const boardEvent = await this.boards.addEventToBoard(
-                boardId,
-                eventBody.eventId,
-                eventBody
-            );
-            this.requestSnapshotIfNeeded(boardId);
-        }
-        const index = this.processing.indexOf(boardId);
-        if (index > -1) {
-            this.processing.splice(index, 1);
-        }
+        try {
+            this.processing.push(boardId);
+            let eventBody: BoardEventBody | undefined;
+            while (
+                eventBodyQueue.length > 0 &&
+                (eventBody = eventBodyQueue.shift())
+            ) {
+                const boardEvent = await this.boards.addEventToBoard(
+                    boardId,
+                    eventBody.eventId,
+                    eventBody
+                );
+                this.requestSnapshotIfNeeded(boardId);
+            }
+            const index = this.processing.indexOf(boardId);
+            if (index > -1) {
+                this.processing.splice(index, 1);
+            }
+        } catch (error) {}
     }
 
     async requestSnapshotIfNeeded(boardId: string): Promise<void> {
