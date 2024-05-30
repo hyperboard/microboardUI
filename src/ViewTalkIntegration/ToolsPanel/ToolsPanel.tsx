@@ -1,11 +1,11 @@
 import { App } from "App";
 import { Board } from "Board";
 import { useAppSubscription } from "Board/useBoardSubscription";
-import { useForceUpdate } from "lib/useForceUpdate";
-import React, { useEffect, useState } from "react";
 import { SidePanelState } from "ViewTalkIntegration/SidePanelState";
 import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel/UiPanel";
 import { UiSeparator } from "ViewTalkIntegration/Ui/UiSeparator/UiSeparator";
+import { useForceUpdate } from "lib/useForceUpdate";
+import React, { useEffect, useState } from "react";
 import { AddConnector } from "./Buttons/AddConnector";
 import { AddDrawing } from "./Buttons/AddDrawing/AddDrawing";
 import { AddImage } from "./Buttons/AddImage";

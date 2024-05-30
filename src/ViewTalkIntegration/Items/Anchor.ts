@@ -6,7 +6,7 @@ type Center = {
 export const ANCHOR_BORDER_COLOR = "rgba(34, 145, 255, 1)";
 export const ANCHOR_BACKGROUND_COLOR = "none";
 export const ANCHOR_STROKE_WIDTH = 1;
-
+export const ANCHOR_RADIUS = 50;
 export function renderAnchor(
 	ctx: CanvasRenderingContext2D,
 	center: Center,
@@ -16,14 +16,17 @@ export function renderAnchor(
 	strokeWidth: number,
 	scale: number,
 ) {
+	const sizeFactor = 0.7; // Adjust this factor to decrease the size
+	const adjustedWidth = width * sizeFactor;
+
 	ctx.strokeStyle = borderColor;
 	ctx.lineWidth = strokeWidth / scale;
 	ctx.beginPath();
 	ctx.roundRect(
-		center.x - width / scale / 2,
-		center.y - width / scale / 2,
-		width / scale,
-		width / scale,
+		center.x - adjustedWidth / scale / 2,
+		center.y - adjustedWidth / scale / 2,
+		adjustedWidth / scale,
+		adjustedWidth / scale,
 		1 / scale,
 	);
 	if (backgroundColor !== "none") {

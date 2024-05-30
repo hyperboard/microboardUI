@@ -1,0 +1,21 @@
+@import url("https://s.kontur.ru/common-v2/fonts/LabGrotesque/LabGrotesque.css");
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+
+html {
+	font-size: 62.5%;
+}
+
+body {
+	font-size: 1.6rem;
+	font-family: "Lab Grotesque", sans-serif;
+}
+
+span {
+	caret-color: #1481dd;
+}

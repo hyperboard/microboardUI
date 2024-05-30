@@ -1,17 +1,19 @@
+import clsx from "clsx";
 import React, { forwardRef, type HTMLAttributes } from "react";
 import style from "./UiPanel.module.css";
-import clsx from "clsx";
 
 type UiPanelProps = HTMLAttributes<HTMLDivElement> & {
 	vertical?: boolean;
 	grid?: boolean;
 	rows?: number;
 	columns?: number;
+	zIndex?: number;
 };
 
 export const UiPanel = forwardRef<HTMLDivElement, UiPanelProps>(
 	(
 		{
+			zIndex = 1,
 			children,
 			className,
 			grid = false,
@@ -42,8 +44,9 @@ export const UiPanel = forwardRef<HTMLDivElement, UiPanelProps>(
 									? `repeat(${rows}, 1fr)`
 									: "auto",
 								...inlineStyle,
+								zIndex,
 						  }
-						: inlineStyle
+						: { ...inlineStyle, zIndex }
 				}
 				{...props}
 			>

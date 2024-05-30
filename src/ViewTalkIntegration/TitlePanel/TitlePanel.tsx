@@ -1,19 +1,19 @@
 import type { App } from "App";
 import type { Board } from "Board";
-import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
-import type { SidePanelState } from "ViewTalkIntegration/SidePanelState";
-import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel";
-import React, { useEffect, useState } from "react";
-import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
+import { useAppSubscription } from "Board/useBoardSubscription";
 import { SidePanelCloseIcon } from "View/Icon/SidePanelCloseIcon";
 import { SidePanelOpenIcon } from "View/Icon/SidePanelOpenIcon";
-import { useTranslation } from "react-i18next";
-import { useForceUpdate } from "lib/useForceUpdate";
-import { useAppSubscription } from "Board/useBoardSubscription";
-import style from "./TitlePanel.module.css";
-import { Link } from "react-router-dom";
-import { isIframe } from "lib/isIframe";
 import { Modal } from "View/Modal/Modal";
+import type { SidePanelState } from "ViewTalkIntegration/SidePanelState";
+import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
+import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel";
+import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
+import { isIframe } from "lib/isIframe";
+import { useForceUpdate } from "lib/useForceUpdate";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import style from "./TitlePanel.module.css";
 
 type Props = {
 	board: Board;
