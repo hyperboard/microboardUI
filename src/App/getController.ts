@@ -183,12 +183,7 @@ export function getController(getBoard: () => Board): Controller {
 			!(event.ctrlKey || event.metaKey || event.altKey) &&
 			!isControlCharacter(event.key)
 		) {
-			const item = board.selection.items.getSingle();
-			if (item?.itemType === "Connector" || item?.itemType === "Frame") {
-				board.selection.editText(event.key);
-			} else {
-				board.selection.appendText(event.key);
-			}
+			board.selection.editText(event.key);
 		}
 
 		board.keyboard.keyDown(event);
