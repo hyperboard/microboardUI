@@ -410,7 +410,7 @@ export class Auth {
             `select id from users where email = $1`,
             [payload.email]
         );
-        const userId = user?.rows[0].id;
+        const userId = user?.rows[0]?.id;
         if (!userId) {
             throw new HttpException(HttpStatus.NOT_FOUND, "User not found");
         }
@@ -420,10 +420,19 @@ export class Auth {
             [userId]
         );
 
+        if (!lastPasscode.rows[0]) {
+            throw new HttpException(
+                HttpStatus.UNAUTHORIZED,
+                "Passcode not found"
+            );
+        }
+
         if (lastPasscode.rows[0].created > Date.now() - 3 * 60 * 1000) {
             throw new HttpException(
                 HttpStatus.UNAUTHORIZED,
-                "Can retry after 3 minutes"
+                `Can retry after 3 minutes: ${
+                    lastPasscode.rows[0].created - (Date.now() - 3 * 60 * 1000)
+                }`
             );
         }
         try {
@@ -685,6 +694,10 @@ export class Auth {
         const newHash = await bcrypt.hash(newPassword, 10);
 
         try {
+            await this.database.query(
+                `DELETE FROM user_password WHERE user_id = $1`,
+                [userId]
+            );
             await this.database.query(`SELECT add_password($1, $2)`, [
                 userId,
                 newHash,
