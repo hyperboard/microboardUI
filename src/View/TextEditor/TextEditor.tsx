@@ -78,7 +78,7 @@ export class TextEditor extends React.Component<
 
 		const container = text.getTransformedContainer();
 		container.transform(camera.getMatrix());
-
+		text.moveCursorToTheEnd();
 		if (this.state.hasError) {
 			return (
 				<div
@@ -197,14 +197,14 @@ export class TextEditor extends React.Component<
 					<Slate
 						editor={text.editor.editor}
 						value={text.getText()}
-						selection={text.editor.editor.selection}
+						// selection={text.editor.editor.selection}
 						key={text.getId()}
 						onChange={() => {}}
 					>
 						<Editable
 							renderElement={Element}
 							renderLeaf={Leaf}
-							selection={text.editor.editor.selection}
+							// selection={text.editor.editor.selection}
 							onBlur={text.handleBlur}
 							onFocus={text.handleFocus}
 							placeholder={text.placeholderText}

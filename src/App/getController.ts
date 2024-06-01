@@ -450,6 +450,9 @@ export function getController(getBoard: () => Board): Controller {
 		if (!board) {
 			return;
 		}
+		if (!event.clipboardData) {
+			return;
+		}
 		if (isEditInProcess()) {
 			const text = event.clipboardData.getData("text/plain");
 			try {
@@ -495,37 +498,7 @@ export function getController(getBoard: () => Board): Controller {
 				throw new Error();
 			}
 		} catch (error) {
-			const richText = board.add(new RichText(new Mbr()));
-			richText.transformation.translateTo(
-				board.pointer.point.x,
-				board.pointer.point.y,
-			);
-			richText.transformation.scaleBy(1, 1);
-			richText.editor.setMaxWidth(600);
-			richText.editor.setSelectionHorisontalAlignment("left");
-			richText.insideOf = richText.itemType;
-			const lines = text.split("\n");
-			lines.forEach((line: string, index: number) => {
-				const endPath = richText.editorEditor.end(
-					richText.editor.editor,
-					[],
-				);
-				richText.editorTransforms.insertText(
-					richText.editor.editor,
-					line,
-					{ at: endPath },
-				);
-				if (index < lines.length - 1) {
-					const splitPath = richText.editorEditor.end(
-						richText.editor.editor,
-						[],
-					);
-					richText.editorTransforms.splitNodes(
-						richText.editor.editor,
-						{ at: splitPath, always: true },
-					);
-				}
-			});
+			pasteTextToTheBoard(board, text);
 		}
 
 		event.preventDefault();
@@ -570,6 +543,20 @@ export function getController(getBoard: () => Board): Controller {
 		onPaste,
 		onDrop,
 	};
+}
+
+function pasteTextToTheBoard(board: Board, text: string): void {
+	const richText = new RichText(new Mbr());
+	richText.transformation.translateTo(
+		board.pointer.point.x,
+		board.pointer.point.y,
+	);
+	richText.transformation.scaleBy(1, 1);
+	richText.editor.setMaxWidth(600);
+	richText.editor.setSelectionHorisontalAlignment("left");
+	richText.insideOf = richText.itemType;
+	richText.editor.insertText(text);
+	board.add(richText);
 }
 
 function postKeyboardEvent(event: KeyboardEvent): void {
