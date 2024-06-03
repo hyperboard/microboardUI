@@ -10,18 +10,6 @@ import { useNavigate } from "react-router-dom";
 import { Tail } from "View/AuthView/Tail";
 import { SuccessIcon } from "./SuccessIcon";
 
-const requestPasswordRestoration = (email: string): Promise<any> => {
-	const request = fetch(getApiUrl("/auth/password/restore/request"), {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({ email }),
-	});
-
-	return request;
-};
-
 export const ForgotPassword: React.FC = () => {
 	const { t } = useTranslation();
 	const formRef = useRef<HTMLFormElement>(null);
@@ -48,7 +36,7 @@ export const ForgotPassword: React.FC = () => {
 		return;
 	};
 
-	const dbCheckForm = useDebounce(checkForm, 500);
+	const dbCheckForm = checkForm;
 
 	const onSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
 		event.preventDefault();
@@ -56,10 +44,30 @@ export const ForgotPassword: React.FC = () => {
 		if (!formRef.current) {
 			return;
 		}
-
-		requestPasswordRestoration(formRef.current.email.value).then(() => {
-			setRequested(true);
-		});
+		fetch(getApiUrl("/auth/password/restore/request"), {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ email: formRef.current.email.value || "" }),
+		})
+			.then(async response => {
+				if (response.ok) {
+					return response.json();
+				} else {
+					const data = await response.json();
+					return Promise.reject(data);
+				}
+			})
+			.then(() => {
+				setRequested(true);
+			})
+			.catch(error => {
+				if (error?.message === "User not found") {
+					setError(t("auth.userNotFound"));
+					return;
+				}
+			});
 	};
 
 	if (requested) {

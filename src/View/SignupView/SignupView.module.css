@@ -140,3 +140,10 @@
 .login {
 	font-weight: 600 !important;
 }
+
+@media screen and (max-width: 360px) {
+	.policy {
+		font-size: 12px;
+		text-align: center;
+	}
+}

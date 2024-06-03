@@ -14,6 +14,7 @@ import { LockIcon } from "./LockIcon";
 import { useDebounce } from "shared/hooks/useDebounce";
 import { Link } from "shared/ui-lib/Link";
 import { Button } from "shared/ui-lib/Button";
+import isEmail from "validator/lib/isEmail";
 
 type RegisterOkResponse = {
 	id: number;
@@ -50,6 +51,11 @@ export const SignupView = (): React.ReactElement => {
 					return Promise.reject(data);
 				}
 			})
+			.catch(error => {
+				if (`${error?.status}` === "409") {
+					setError(t("auth.userAlreadyExists"));
+				}
+			})
 			.then((data: RegisterOkResponse) => {
 				navigate({
 					pathname: "/auth/verify",
@@ -73,9 +79,17 @@ export const SignupView = (): React.ReactElement => {
 		const email = form?.email?.value;
 		const password = form?.password?.value;
 		if (!email || !password) {
+			setError("");
 			setIsDisabled(true);
 			return;
 		}
+
+		if (!isEmail(email)) {
+			setIsDisabled(true);
+			setError(t("auth.notValidEmail"));
+			return;
+		}
+
 		const MIN_PASSWORD_LENGTH = 8;
 		const MAX_PASSWORD_LENGTH = 14;
 		if (
@@ -90,7 +104,7 @@ export const SignupView = (): React.ReactElement => {
 		setIsDisabled(false);
 	};
 
-	const dbCheckForm = useDebounce(checkForm, 500);
+	const dbCheckForm = checkForm;
 
 	return (
 		<div className={styles.wrapper}>
@@ -102,13 +116,16 @@ export const SignupView = (): React.ReactElement => {
 					type="text"
 					placeholder={t("auth.emailPlaceholder")}
 					onInput={dbCheckForm}
+					hasError={!!error}
 				/>
 				<Input
 					prefixIcon={<LockIcon />}
 					id="password"
-					helperText={error}
+					errorText={error}
 					password
+					hasError={!!error}
 					placeholder={t("auth.passwordPlaceholder")}
+					helperText={t("auth.passwordAtLeast")}
 					onInput={dbCheckForm}
 				/>
 				<div className={styles.btns}>

@@ -4,6 +4,7 @@
 	justify-content: center;
 	align-items: center;
 	width: 100%;
+	height: 100%;
 	background-color: white;
 }
 
@@ -97,6 +98,30 @@
 	font-weight: 600 !important;
 }
 
+.policy {
+	margin-top: auto;
+	margin-bottom: 40px;
+	font-family: "Manrope", "Arial";
+	font-size: 14px;
+	color: rgba(15, 19, 36, 0.6);
+}
+
+.policyLink {
+	position: relative;
+	color: rgba(15, 19, 36, 0.6);
+	text-decoration: none;
+}
+
+.policyLink::after {
+	content: "";
+	position: absolute;
+	bottom: -3px;
+	left: 0;
+	width: 100%;
+	height: 2px;
+	background-color: rgba(10, 15, 41, 0.08);
+}
+
 .btns {
 	width: 100%;
 
@@ -105,4 +130,15 @@
 	align-items: center;
 
 	gap: 12px;
+}
+
+@media screen and (max-width: 640px) {
+	.wrapper {
+		padding: 0 12px;
+	}
+
+	.policy {
+		font-size: 12px;
+		text-align: center;
+	}
 }
