@@ -96,7 +96,7 @@ export class TextEditor extends React.Component<
 					border: "none",
 					padding: "0px",
 					margin: "0px",
-					overflow: "hidden",
+					// overflow: "hidden",
 					background: "none",
 					outline: "none",
 					resize: "none",

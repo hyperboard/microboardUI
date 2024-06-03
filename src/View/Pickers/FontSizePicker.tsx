@@ -6,7 +6,7 @@ export const FontSizes = [10, 12, 14, 18, 24, 36, 48, 64, 80, 144, 288, "Auto"];
 type Props = {
 	onPick: (size: number) => void;
 	maxSize?: number;
-	itemType?: string;
+	inputType: "number" | "Auto";
 };
 
 export function FontSizePicker(props: Props): React.ReactElement {
@@ -27,8 +27,7 @@ export function FontSizePicker(props: Props): React.ReactElement {
 	const fontButtons: React.ReactNode = [];
 	for (let i = 0; i < FontSizes.length; i++) {
 		const size = FontSizes[i];
-		const isDisabled =
-			size === "Auto" ? !(props.itemType === "Sticker") : max < +size;
+		const isDisabled = props.inputType === "Auto" ? max < +size : false;
 		const additionalStyle: React.CSSProperties = {};
 		if (isDisabled) {
 			additionalStyle.color = "rgba(0, 0, 0, 0.4)";
