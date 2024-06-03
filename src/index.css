@@ -3,6 +3,8 @@
 	margin: 0;
 	padding: 0;
 	border: none;
+
+	font-family: "Manrope", "Arial";
 }
 
 html {
@@ -40,4 +42,11 @@ body {
 	outline-color: transparent;
 	outline-width: 0;
 	padding: 0 8px;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+	-webkit-box-shadow: 0 0 0 30px white inset !important;
 }

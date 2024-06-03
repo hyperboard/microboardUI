@@ -17,3 +17,27 @@
 	width: 500px;
 	height: 100%;
 }
+
+@media (max-width: 640px) {
+	.AuthView .Navbar {
+		width: 100%;
+	}
+
+	.AuthView .Content {
+		width: 100%;
+		padding: 0 12px;
+		margin-top: 150px;
+	}
+}
+
+@media screen and (max-width: 1280px) {
+	.AuthView .Content {
+		width: 500px;
+		padding: 0 12px;
+		margin-top: 150px;
+	}
+
+	.AuthView .Navbar {
+		width: 100%;
+	}
+}

@@ -10,6 +10,7 @@ export const BoardView: React.FC<{ app: App }> = props => {
 	const params = useParams<{ boardId: string }>();
 	useLayoutEffect(() => {
 		if (params.boardId) {
+			localStorage.setItem("lastSeenBoard", params.boardId);
 			props.app.openBoard(params.boardId);
 			props.app.render();
 		}

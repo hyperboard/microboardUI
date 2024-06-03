@@ -1,6 +1,10 @@
 import React, { useRef, useState } from "react";
 import styles from "./SigninView.module.css";
-import { Link as RRDLink, useNavigate } from "react-router-dom";
+import {
+	Link as RRDLink,
+	createSearchParams,
+	useNavigate,
+} from "react-router-dom";
 import { getApiUrl } from "Config";
 import Cookies from "js-cookie";
 import { useTranslation } from "react-i18next";
@@ -11,6 +15,7 @@ import { LockIcon } from "View/SignupView/LockIcon";
 import { Button } from "shared/ui-lib/Button";
 import { useDebounce } from "shared/hooks/useDebounce";
 import { isEmail } from "lib/regex";
+import { Link } from "shared/ui-lib/Link";
 
 type RegisterOkResponse = {
 	accessToken: string;
@@ -19,16 +24,21 @@ type RegisterOkResponse = {
 
 export const SigninView = (): React.ReactElement => {
 	const { t } = useTranslation();
-	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	// const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [submitDisabled, setSubmitDisabled] = useState(true);
 	const navigate = useNavigate();
 	const formRef = useRef<HTMLFormElement>(null);
 	const [emailError, setEmailError] = useState<string>("");
+	const [errorText, setErrorText] = useState<string>("");
 
 	const onSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
 	): Promise<void> => {
 		event.preventDefault();
+
+		const form = formRef.current;
+		const email = form?.email.value;
+		const password = form?.password.value;
 
 		fetch(getApiUrl("/auth/login"), {
 			method: "POST",
@@ -36,8 +46,8 @@ export const SigninView = (): React.ReactElement => {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
-				email: event.currentTarget.email.value,
-				password: event.currentTarget.password.value,
+				email: email,
+				password: password,
 			}),
 		})
 			.then(async response => {
@@ -53,19 +63,44 @@ export const SigninView = (): React.ReactElement => {
 				Cookies.set("refreshToken", data.refreshToken, {
 					secure: true,
 				});
-				navigate("/dashboard");
+				setErrorText("");
+				if (localStorage.getItem("lastSeenBoard")) {
+					navigate(
+						`/boards/${localStorage.getItem("lastSeenBoard")}`,
+					);
+				} else {
+					navigate("/dashboard");
+				}
 			})
 			.catch(error => {
-				setErrorMessage(error.message);
+				// setErrorMessage(error.message);
+				console.log(
+					"sign in error:",
+					error?.message === "User not activated",
+				);
+				if (error?.message === "User not activated") {
+					const form = formRef.current;
+					const email = form?.email.value;
+					navigate({
+						pathname: "/auth/verify",
+						search: createSearchParams({
+							email: email,
+						}).toString(),
+					});
+				} else {
+					setErrorText(t("auth.incorrectEmailOrPassword"));
+				}
 			});
 	};
 
-	const checkForm = () => {
+	const checkForm = (): void => {
 		const form = formRef.current;
 		const email = form?.email.value;
 		const password = form?.password.value;
 
 		if (!email || !password) {
+			setErrorText("");
+			setEmailError("");
 			setSubmitDisabled(true);
 			return;
 		}
@@ -80,7 +115,16 @@ export const SigninView = (): React.ReactElement => {
 		setSubmitDisabled(false);
 	};
 
-	const dbCheckForm = useDebounce(checkForm, 500);
+	const checkEmail = (): void => {
+		const email = formRef.current?.email.value;
+		if (!isEmail(email)) {
+			setEmailError(t("auth.notValidEmail"));
+			return;
+		}
+		setEmailError("");
+	};
+
+	const dbCheckForm = checkForm;
 
 	return (
 		<div className={styles.wrapper}>
@@ -97,7 +141,10 @@ export const SigninView = (): React.ReactElement => {
 					placeholder="Your email"
 					hasError={!!emailError.length}
 					errorText={emailError}
-					onInput={dbCheckForm}
+					onInput={() => {
+						checkEmail();
+						dbCheckForm();
+					}}
 				/>
 				<Input
 					id="password"
@@ -105,9 +152,11 @@ export const SigninView = (): React.ReactElement => {
 					placeholder="Password"
 					password
 					onInput={dbCheckForm}
+					errorText={errorText}
+					hasError={!!errorText}
 				/>
 
-				{errorMessage && <p className={styles.error}>{errorMessage}</p>}
+				{/* {errorMessage && <p className={styles.error}>{errorMessage}</p>} */}
 				<div className={styles.btns}>
 					<Button
 						type="submit"
@@ -134,6 +183,17 @@ export const SigninView = (): React.ReactElement => {
 					</Button>
 				</div>
 			</form>
+
+			<div className={styles.policy}>
+				{t("auth.policyWith")}{" "}
+				<Link to="#" className={styles.policyLink}>
+					{t("auth.termsAndConditions")}
+				</Link>{" "}
+				{t("common.and")}{" "}
+				<Link to="#" className={styles.policyLink}>
+					{t("auth.privacyPolicy")}
+				</Link>
+			</div>
 		</div>
 	);
 };

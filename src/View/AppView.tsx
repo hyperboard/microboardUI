@@ -11,6 +11,7 @@ import { SidePanelState } from "View/SidePanel/SidePanelState";
 import { ContextMenuState, ContextMenu } from "View/ContextMenu";
 import { withRouter } from "lib/withRouter";
 import { ExportPanel } from "View/ExportPanel";
+import { UserPanel } from "./UserPanel/UserPanel";
 
 export class AppViewBase extends React.Component<{
 	app: App;
@@ -85,6 +86,7 @@ export class AppViewBase extends React.Component<{
 						board={board}
 						sidePanelState={this.sidePanelState}
 					/>
+					<UserPanel />
 					<ExportPanel app={app} board={board} />
 				</div>
 				<SidePanel
