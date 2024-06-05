@@ -43,8 +43,9 @@ type ContextPanelProps = {
 
 export function ContextPanel({ board, app }: ContextPanelProps) {
 	const [menu, setOpenedMenu] = React.useState("None");
+	const [shouldUpd, setShouldUpd] = React.useState<boolean>(true);
 	const panelRef = React.useRef<HTMLDivElement>(null);
-	const mbr = useDomMbr({ app, board, ref: panelRef });
+	const mbr = useDomMbr({ app, board, ref: panelRef, shouldUpd });
 	useAppSubscription(app, {
 		subjects: ["selectionItems"],
 		observer: () => {
@@ -127,6 +128,7 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 				<FontSize
 					board={board}
 					toggleMenu={toggleMenu}
+					setShouldUpd={setShouldUpd}
 					menu={menu}
 					panelMbr={mbr}
 					windowHeight={windowHeight}

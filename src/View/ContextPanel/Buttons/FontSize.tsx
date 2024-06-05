@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 type FontSizeProps = {
 	board: Board;
 	toggleMenu: (menu: string) => void;
+	setShouldUpd: React.Dispatch<React.SetStateAction<boolean>>;
 	menu: string;
 	panelMbr: Mbr;
 	windowHeight: number;
@@ -22,6 +23,7 @@ type FontSizeProps = {
 export function FontSize({
 	board,
 	fontSize: fontSizeInit,
+	setShouldUpd,
 	menu,
 	panelMbr,
 	toggleMenu,
@@ -36,10 +38,6 @@ export function FontSize({
 	);
 	const [currItem, setCurrItem] = React.useState<undefined | Item>();
 	const { t } = useTranslation();
-
-	const updateFontSize = () => {
-		setFontSize(board.selection.getFontSize());
-	};
 
 	const updateAutosizeSettings = (): void => {
 		const single = board.selection.items.getSingle();
@@ -127,21 +125,27 @@ export function FontSize({
 	};
 
 	const onIncrease = (): void => {
+		setShouldUpd(false);
 		if (!parseInt(`${fontSize}`)) {
 			handleStickerShevrone("inc");
 			return;
 		}
-
+		if (parseInt(`${fontSize}`) >= 288) {
+			return;
+		}
 		setFontSize(prev => +prev + 1);
 		board.selection.setFontSize(+fontSize + 1);
 	};
 
 	const onDecrease = (): void => {
+		setShouldUpd(false);
 		if (!parseInt(`${fontSize}`)) {
 			handleStickerShevrone("dec");
 			return;
 		}
-
+		if (parseInt(`${fontSize}`) <= 1) {
+			return;
+		}
 		setFontSize(prev => +prev - 1);
 		board.selection.setFontSize(+fontSize - 1);
 	};
