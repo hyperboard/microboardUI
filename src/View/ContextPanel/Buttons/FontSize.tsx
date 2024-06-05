@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Sticker } from "Board/Items/Sticker";
-import { FontSizePicker } from "View/Pickers/FontSizePicker";
+import { FontSizePicker, FontSizes } from "View/Pickers/FontSizePicker";
 import { Board } from "Board";
 import { Item, Frame, Mbr, Shape } from "Board/Items";
 import { toFiniteNumber } from "utils";
@@ -117,9 +117,23 @@ export function FontSize({
 			const currSize = Math.floor(currItem.text.getFontSize());
 			currItem.text.autosizeDisable();
 			setInputType("number");
-			setFontSize(type === "inc" ? currSize + 1 : currSize - 1);
+			setFontSize(
+				type === "inc"
+					? currSize > 288
+						? 288
+						: currSize + 1
+					: currSize < 10
+					? 10
+					: currSize - 1,
+			);
 			board.selection.setFontSize(
-				type === "inc" ? currSize + 1 : currSize - 1,
+				type === "inc"
+					? currSize > 288
+						? 288
+						: currSize + 1
+					: currSize < 10
+					? 10
+					: currSize - 1,
 			);
 		}
 	};
@@ -130,11 +144,15 @@ export function FontSize({
 			handleStickerShevrone("inc");
 			return;
 		}
-		if (parseInt(`${fontSize}`) >= 288) {
+		const currIdx =
+			FontSizes.indexOf(fontSize) !== -1
+				? FontSizes.indexOf(fontSize)
+				: FontSizes.findIndex(size => size > fontSize) - 1;
+		if (FontSizes[currIdx] === 288) {
 			return;
 		}
-		setFontSize(prev => +prev + 1);
-		board.selection.setFontSize(+fontSize + 1);
+		setFontSize(FontSizes[currIdx + 1]);
+		board.selection.setFontSize(+FontSizes[currIdx + 1]);
 	};
 
 	const onDecrease = (): void => {
@@ -143,11 +161,15 @@ export function FontSize({
 			handleStickerShevrone("dec");
 			return;
 		}
-		if (parseInt(`${fontSize}`) <= 1) {
+		const currIdx =
+			FontSizes.indexOf(fontSize) !== -1
+				? FontSizes.indexOf(fontSize)
+				: FontSizes.findIndex(size => size > fontSize) - 1;
+		if (FontSizes[currIdx] === 10) {
 			return;
 		}
-		setFontSize(prev => +prev - 1);
-		board.selection.setFontSize(+fontSize - 1);
+		setFontSize(FontSizes[currIdx - 1]);
+		board.selection.setFontSize(+FontSizes[currIdx - 1]);
 	};
 
 	return (
