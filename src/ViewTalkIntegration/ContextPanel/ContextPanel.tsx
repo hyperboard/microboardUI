@@ -29,6 +29,7 @@ import { TextAlignmentSticker } from "./Buttons/TextAlignmentSticker";
 import { TextColor } from "./Buttons/TextColor";
 import { TextHighlight } from "./Buttons/TextHighlight";
 import { PanelContext } from "./PanelContext";
+import { Mbr } from "Board/Items";
 
 type ContextPanelProps = {
 	board: Board;
@@ -39,6 +40,22 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 	const [openedMenu, setOpenedMenu] = useState("None");
 	const panelRef = useRef<HTMLDivElement>(null);
 	const mbr = useDomMbr({ app, board, ref: panelRef });
+
+	const [updatedMbr, setUpdatedMbr] = React.useState<Mbr>(new Mbr());
+	const [shouldUpd, setShouldUpd] = React.useState<boolean>(true);
+	const [counter, setCounter] = React.useState(0);
+	// mbr changes twice(?) by clicking shevrone, so skip 2 changes to not move Panel on clicking shevrone
+	React.useEffect(() => {
+		if (shouldUpd) {
+			setUpdatedMbr(mbr);
+		} else {
+			if (counter % 2 === 0) {
+				setShouldUpd(true);
+			}
+			setCounter(counter + 1);
+		}
+	}, [mbr]);
+
 	useAppSubscription(app, {
 		subjects: ["selectionItems"],
 		observer: () => {
@@ -71,7 +88,7 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 			value={{
 				openedMenu,
 				board,
-				panelMbr: mbr,
+				panelMbr: updatedMbr,
 				toggleMenu,
 				windowHeight,
 			}}
@@ -79,8 +96,8 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 			<UiPanel
 				style={{
 					position: "absolute",
-					left: mbr.left,
-					top: mbr.top,
+					left: updatedMbr.left,
+					top: updatedMbr.top,
 				}}
 				ref={panelRef}
 			>
