@@ -35,6 +35,7 @@ import {
 	canShowFrameSetting,
 } from "./Buttons/FrameButtons";
 import "./ContextPanel.css";
+import { Mbr } from "Board/Items";
 
 type ContextPanelProps = {
 	board: Board;
@@ -43,9 +44,24 @@ type ContextPanelProps = {
 
 export function ContextPanel({ board, app }: ContextPanelProps) {
 	const [menu, setOpenedMenu] = React.useState("None");
-	const [shouldUpd, setShouldUpd] = React.useState<boolean>(true);
 	const panelRef = React.useRef<HTMLDivElement>(null);
-	const mbr = useDomMbr({ app, board, ref: panelRef, shouldUpd });
+	const mbr = useDomMbr({ app, board, ref: panelRef });
+
+	const [updatedMbr, setUpdatedMbr] = React.useState<Mbr>(new Mbr());
+	const [shouldUpd, setShouldUpd] = React.useState<boolean>(true);
+	const [counter, setCounter] = React.useState(0);
+	// mbr changes twice(?) by clicking shevrone, so skip 2 changes to not move Panel on clicking shevrone
+	React.useEffect(() => {
+		if (shouldUpd) {
+			setUpdatedMbr(mbr);
+		} else {
+			if (counter % 2 === 0) {
+				setShouldUpd(true);
+			}
+			setCounter(counter + 1);
+		}
+	}, [mbr]);
+
 	useAppSubscription(app, {
 		subjects: ["selectionItems"],
 		observer: () => {
@@ -67,8 +83,8 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 			className="ContextPanelContainer"
 			ref={panelRef}
 			style={{
-				left: `${mbr.left}px`,
-				top: `${mbr.top}px`,
+				left: `${updatedMbr.left}px`,
+				top: `${updatedMbr.top}px`,
 				userSelect: "none",
 			}}
 		>
@@ -79,7 +95,7 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 					board={board}
 					toggleMenu={toggleMenu}
 					menu={menu}
-					panelMbr={mbr}
+					panelMbr={updatedMbr}
 					windowHeight={windowHeight}
 					pointer={board.selection.getStartPointerStyle()}
 				/>
@@ -87,14 +103,14 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 					board={board}
 					toggleMenu={toggleMenu}
 					menu={menu}
-					panelMbr={mbr}
+					panelMbr={updatedMbr}
 				/>
 
 				<EndPointer
 					board={board}
 					toggleMenu={toggleMenu}
 					menu={menu}
-					panelMbr={mbr}
+					panelMbr={updatedMbr}
 					windowHeight={windowHeight}
 					pointer={board.selection.getEndPointerStyle()}
 				/>
@@ -103,12 +119,12 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 					board={board}
 					toggleMenu={toggleMenu}
 					menu={menu}
-					panelMbr={mbr}
+					panelMbr={updatedMbr}
 					windowHeight={windowHeight}
 				/>
 				<ConnectorAddText
 					board={board}
-					panelMbr={mbr}
+					panelMbr={updatedMbr}
 					windowHeight={windowHeight}
 				/>
 
@@ -119,7 +135,7 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 					toggleMenu={toggleMenu}
 					color={board.selection.getFillColor()}
 					menu={menu}
-					panelMbr={mbr}
+					panelMbr={updatedMbr}
 					windowHeight={windowHeight}
 				/>
 
@@ -130,7 +146,7 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 					toggleMenu={toggleMenu}
 					setShouldUpd={setShouldUpd}
 					menu={menu}
-					panelMbr={mbr}
+					panelMbr={updatedMbr}
 					windowHeight={windowHeight}
 					fontSize={board.selection.getFontSize()}
 				/>
@@ -139,14 +155,14 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 					board={board}
 					toggleMenu={toggleMenu}
 					menu={menu}
-					panelMbr={mbr}
+					panelMbr={updatedMbr}
 					windowHeight={windowHeight}
 				/>
 				<TextAlignment
 					board={board}
 					toggleMenu={toggleMenu}
 					menu={menu}
-					panelMbr={mbr}
+					panelMbr={updatedMbr}
 					windowHeight={windowHeight}
 				/>
 				<TextFeaturesSeparator board={board} />
@@ -154,7 +170,7 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 					board={board}
 					toggleMenu={toggleMenu}
 					menu={menu}
-					panelMbr={mbr}
+					panelMbr={updatedMbr}
 					windowHeight={windowHeight}
 					color={board.selection.getFontColor()}
 				/>
@@ -163,7 +179,7 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 					board={board}
 					toggleMenu={toggleMenu}
 					menu={menu}
-					panelMbr={mbr}
+					panelMbr={updatedMbr}
 					windowHeight={windowHeight}
 					color={board.selection.getFontHighlight()}
 				/>
@@ -177,7 +193,7 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 					width={board.selection.getStrokeWidth()}
 					menu={menu}
 					windowHeight={windowHeight}
-					panelMbr={mbr}
+					panelMbr={updatedMbr}
 				/>
 
 				<FillStyle
@@ -185,7 +201,7 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 					toggleMenu={toggleMenu}
 					color={board.selection.getFillColor()}
 					menu={menu}
-					panelMbr={mbr}
+					panelMbr={updatedMbr}
 					windowHeight={windowHeight}
 				/>
 
@@ -194,7 +210,7 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 					toggleMenu={toggleMenu}
 					color={board.selection.getFillColor()}
 					menu={menu}
-					panelMbr={mbr}
+					panelMbr={updatedMbr}
 					windowHeight={windowHeight}
 				/>
 
@@ -210,7 +226,7 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 
 				<RestOptionsMenu
 					menu={menu}
-					panelMbr={mbr}
+					panelMbr={updatedMbr}
 					windowHeight={windowHeight}
 					toggleMenu={toggleMenu}
 					board={board}
