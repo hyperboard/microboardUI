@@ -1,11 +1,12 @@
 import React from "react";
-import { Editable, Slate } from "slate-react";
+import { Slate, Editable, ReactEditor } from "slate-react";
 import { Leaf } from "./Leaf";
 import { Element } from "./Element";
 import { App } from "App";
 import { Board } from "Board";
 import { verticalAlignmentToFlex } from "./verticalAlignmentToFlex";
 import { defaultTextStyle, RichText } from "Board/Items/RichText/RichText";
+import { Mbr, Point } from "Board/Items";
 
 export class TextEditors extends React.Component<
 	{
@@ -56,11 +57,16 @@ export class TextEditor extends React.Component<
 		return { hasError: true };
 	}
 
+	componentDidMount(): void {
+		this.props.text.setCursorUnderLastClick(this.editableRef.current);
+	}
+
 	state = {
 		hasError: false,
 	};
 
 	containerRef = React.createRef<HTMLDivElement>();
+	editableRef = React.createRef<HTMLDivElement>();
 
 	render(): React.ReactElement | null {
 		const text = this.props.text;
@@ -130,6 +136,7 @@ export class TextEditor extends React.Component<
 				}}
 			>
 				<div
+					ref={this.editableRef}
 					style={{
 						width: "100%",
 						height: "100%",
@@ -183,7 +190,11 @@ export class TextEditor extends React.Component<
 								// transform: `scale(${editorScale})`,
 								// transformOrigin: `left top`,
 							}}
-							autoFocus
+							autoFocus={
+								this.props.text.getLastClickPoint()
+									? false
+									: true
+							}
 						/>
 					</Slate>
 				</div>
