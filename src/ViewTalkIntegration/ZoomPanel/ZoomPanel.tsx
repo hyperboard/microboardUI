@@ -1,14 +1,14 @@
 import { App } from "App";
 import { Board } from "Board";
-import { useAppSubscription } from "Board/useBoardSubscription";
-import { useForceUpdate } from "lib/useForceUpdate";
-import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel/UiPanel";
-import React from "react";
-import { UiButton } from "ViewTalkIntegration/Ui/UiButton/UiButton";
-import { Icon } from "ViewTalkIntegration/Icon";
-import style from "./ZoomPanel.module.css";
-import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
 import { getHotkeyLabel } from "Board/Keyboard";
+import { useAppSubscription } from "Board/useBoardSubscription";
+import { Icon } from "ViewTalkIntegration/Icon";
+import { UiButton } from "ViewTalkIntegration/Ui/UiButton/UiButton";
+import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel/UiPanel";
+import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
+import { useForceUpdate } from "lib/useForceUpdate";
+import React from "react";
+import style from "./ZoomPanel.module.css";
 
 type Props = {
 	app: App;
@@ -49,7 +49,7 @@ export function ZoomPanel({ app, board }: Props) {
 			</UiButton>
 			<UiButton
 				id={"zoom-default"}
-				tooltipPosition="top"
+				tooltipPosition="top-right"
 				tooltip={t("zoomPanel.zoomDefault.tooltip")}
 				hotkey={getHotkeyLabel("zoomDefault")}
 				className={style.zoom}

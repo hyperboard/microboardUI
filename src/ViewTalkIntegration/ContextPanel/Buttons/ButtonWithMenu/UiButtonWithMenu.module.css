@@ -29,7 +29,7 @@
 	top: calc(100% + 0.8rem);
 }
 
-.center {
+.middle {
 	top: 50%;
 	transform: translateY(-50%);
 }
