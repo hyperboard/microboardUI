@@ -106,7 +106,9 @@ export function getAuthRouter(
         jwtMiddleware(logger),
         validateRequest,
         async (req, res) => {
-            const userId = parseInt(req.token?.sub);
+            const { token } = req;
+            const userToken = await token;
+            const userId = parseInt(userToken?.sub);
 
             try {
                 await authService.logout(userId);
