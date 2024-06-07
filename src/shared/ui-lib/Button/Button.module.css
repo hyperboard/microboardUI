@@ -40,7 +40,7 @@
 	background-color: #1f2228;
 }
 
-.primary:focus {
+.primary:active {
 	outline: 2px solid rgba(200, 178, 255, 0.5);
 }
 
@@ -67,7 +67,7 @@
 	background-color: rgba(10, 15, 41, 0.08);
 }
 
-.secondary:focus {
+.secondary:active {
 	border: 1px solid #b78af0;
 	outline: 2px solid rgba(200, 178, 255, 0.5);
 }
@@ -91,7 +91,7 @@
 	background-color: rgba(10, 15, 41, 0.04);
 }
 
-.ghost:focus {
+.ghost:active {
 	border: 1px solid #b78af0;
 	outline: 2px solid rgba(200, 178, 255, 0.5);
 }

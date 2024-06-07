@@ -6,6 +6,8 @@
 	align-items: center;
 
 	height: 100vh;
+
+	font-family: "Manrope", "Arial";
 }
 
 .AuthView .Navbar {
@@ -13,7 +15,7 @@
 }
 
 .AuthView .Content {
-	margin-top: 230px;
+	margin-top: 216px;
 	width: 500px;
 	height: 100%;
 }

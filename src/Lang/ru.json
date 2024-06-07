@@ -151,7 +151,7 @@
 	"auth": {
 		"checkEmail": "Проверьте электронную почту с кодом доступа.",
 		"email": "Email",
-		"emailPlaceholder": "Ввуедите Email",
+		"emailPlaceholder": "Введите Email",
 		"passcode": "Код подтверждения",
 		"passcodePlaceholder": "Введите код подтверждения",
 		"signIn": "Вход",
@@ -195,7 +195,8 @@
 		"passwordAtLeast": "Пароль должен содержать не менее 8 символов",
 		"passwordMustBeDifferent": "Ваш пароль должен отличаться от предыдущих паролей",
 		"skip": "Пропустить",
-		"passwordDoNotMatch": "Введенные пароли не совпадают"
+		"passwordDoNotMatch": "Введенные пароли не совпадают",
+		"enterAValidEmailAddress": "Введите корректный email"
 	},
 	"modal": {
 		"canEdit": "Можно редактировать",

@@ -27,11 +27,62 @@ export const SignupView = (): React.ReactElement => {
 	const formRef = React.useRef<HTMLFormElement>(null);
 	const [isDisabled, setIsDisabled] = useState(true);
 	const [error, setError] = useState<string>("");
+	const [emailError, setEmailError] = useState<string>("");
+
+	const checkEmail = (): boolean => {
+		const email = formRef.current?.email.value;
+		if (!isEmail(email)) {
+			setEmailError(t("auth.enterAValidEmailAddress"));
+			return false;
+		}
+		setEmailError("");
+		return true;
+	};
+
+	const checkForm = (): boolean => {
+		const form = formRef.current;
+		if (!form) {
+			setIsDisabled(true);
+			return false;
+		}
+		const email = form?.email?.value;
+		const password = form?.password?.value;
+		if (!email || !password) {
+			setError("");
+			setIsDisabled(true);
+			if (email && !checkEmail()) {
+				return false;
+			}
+			return false;
+		}
+
+		if (!isEmail(email)) {
+			setIsDisabled(true);
+			setEmailError(t("auth.enterAValidEmailAddress"));
+			return false;
+		}
+
+		const MIN_PASSWORD_LENGTH = 8;
+		// const MAX_PASSWORD_LENGTH = 14;
+		if (password.length < MIN_PASSWORD_LENGTH) {
+			setIsDisabled(true);
+			// setError(t("auth.passwordLengthError"));
+			return false;
+		}
+		setError("");
+		setEmailError("");
+		setIsDisabled(false);
+		return true;
+	};
 
 	const onSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
 	): Promise<void> => {
 		event.preventDefault();
+
+		if (!checkForm()) {
+			return;
+		}
 
 		fetch(getApiUrl("/auth/register"), {
 			method: "POST",
@@ -70,41 +121,7 @@ export const SignupView = (): React.ReactElement => {
 			});
 	};
 
-	const checkForm = (): void => {
-		const form = formRef.current;
-		if (!form) {
-			setIsDisabled(true);
-			return;
-		}
-		const email = form?.email?.value;
-		const password = form?.password?.value;
-		if (!email || !password) {
-			setError("");
-			setIsDisabled(true);
-			return;
-		}
-
-		if (!isEmail(email)) {
-			setIsDisabled(true);
-			setError(t("auth.notValidEmail"));
-			return;
-		}
-
-		const MIN_PASSWORD_LENGTH = 8;
-		const MAX_PASSWORD_LENGTH = 14;
-		if (
-			password.length < MIN_PASSWORD_LENGTH ||
-			password.length > MAX_PASSWORD_LENGTH
-		) {
-			setIsDisabled(true);
-			setError(t("auth.passwordLengthError"));
-			return;
-		}
-		setError("");
-		setIsDisabled(false);
-	};
-
-	const dbCheckForm = checkForm;
+	// const dbCheckForm = checkForm;
 
 	return (
 		<div className={styles.wrapper}>
@@ -115,8 +132,9 @@ export const SignupView = (): React.ReactElement => {
 					id="email"
 					type="text"
 					placeholder={t("auth.emailPlaceholder")}
-					onInput={dbCheckForm}
-					hasError={!!error}
+					onBlur={checkForm}
+					hasError={!!emailError}
+					errorText={emailError}
 				/>
 				<Input
 					prefixIcon={<LockIcon />}
@@ -126,7 +144,7 @@ export const SignupView = (): React.ReactElement => {
 					hasError={!!error}
 					placeholder={t("auth.passwordPlaceholder")}
 					helperText={t("auth.passwordAtLeast")}
-					onInput={dbCheckForm}
+					onInput={checkForm}
 				/>
 				<div className={styles.btns}>
 					<Button
