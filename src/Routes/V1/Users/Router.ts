@@ -15,8 +15,10 @@ export function getUsersRouter(
         "/users/me",
         jwtMiddleware(logger),
         async (request, response) => {
-            const { token: reqUser } = request;
-            if (!reqUser) {
+            const { token } = request;
+            const userToken = await token;
+            const userId = parseInt(userToken?.sub);
+            if (!token) {
                 response
                     .status(HttpStatus.UNAUTHORIZED)
                     .json({
@@ -28,7 +30,7 @@ export function getUsersRouter(
             }
             let user = null;
             try {
-                user = await usersService.getMe(reqUser);
+                user = await usersService.getMe(token);
                 response.json(user).end();
             } catch (e: HttpException | any) {
                 response

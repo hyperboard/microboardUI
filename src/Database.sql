@@ -714,7 +714,7 @@ create table if not exists user_passcode (
 	user_id integer references users(id) on delete cascade,
 	passcode VARCHAR(10),
 	created timestamp default now(),
-	remaining_attempts integer default 3
+	remaining_attempts integer default 5
 );
 
 -- Function to add passcode to a user
