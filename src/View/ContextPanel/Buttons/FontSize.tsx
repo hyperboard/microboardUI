@@ -249,6 +249,7 @@ export function FontSize({
 				<FontSizePicker
 					maxSize={max}
 					inputType={inputType}
+					itemType={currItem?.itemType || ""}
 					onPick={(size: number | "Auto") => {
 						const single = board.selection.items.getSingle();
 						if (
