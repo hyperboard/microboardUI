@@ -576,6 +576,7 @@ BEGIN
 END;
 $$;
 
+DROP FUNCTION get_latest_board_snapshot(uuid);
 -- Function to retrieve the latest board snapshot:
 CREATE OR REPLACE FUNCTION get_latest_board_snapshot(
     board_uuid UUID -- or link
@@ -649,7 +650,7 @@ BEGIN
 
     -- Replace the existing snapshot with the new one
     UPDATE board_snapshots
-    SET snapshot = snapshot, last_event_order = last_event
+    SET snapshot = new_snapshot, last_event_order = last_event
     WHERE board_id = found_board_id;
 
     -- If the snapshot record doesn't exist, insert a new one
