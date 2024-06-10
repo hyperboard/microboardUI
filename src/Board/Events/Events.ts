@@ -1,11 +1,11 @@
-import { Connection, SocketMessage } from "App/Connection";
 import { Board } from "Board";
-import { BoardSnapshot } from "Board/Board";
-import { Subject } from "Subject";
-import { Command } from "./Command";
-import { EventsCommand } from "./EventsCommand";
-import { createEventsLog } from "./EventsLog";
 import { EventsOperation, Operation } from "./EventsOperations";
+import { EventsCommand } from "./EventsCommand";
+import { Command } from "./Command";
+import { createEventsLog } from "./EventsLog";
+import { Subject } from "Subject";
+import { Connection, SocketMessage } from "App/Connection";
+import { BoardSnapshot } from "Board/Board";
 
 const EVENTS_REPUBLISH_INTERVAL = 5000;
 
@@ -179,7 +179,6 @@ export function createEvents(board: Board, connection: Connection): Events {
 	function undo(apply = true): void {
 		const currentUserId = getUserId();
 		const record = log.getUndoRecord(currentUserId);
-
 		if (!record) {
 			return;
 		}
@@ -218,7 +217,6 @@ export function createEvents(board: Board, connection: Connection): Events {
 	function redo(apply = true): void {
 		const userId = getUserId();
 		const record = log.getRedoRecord(userId);
-		console.log(record, "redo");
 		if (!record) {
 			return;
 		}

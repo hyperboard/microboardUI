@@ -6,7 +6,6 @@ type Center = {
 export const ANCHOR_BORDER_COLOR = "black";
 export const ANCHOR_BACKGROUND_COLOR = "none";
 export const ANCHOR_STROKE_WIDTH = 1;
-export const ANCHOR_RADIUS = 50;
 
 export function renderAnchor(
 	ctx: CanvasRenderingContext2D,

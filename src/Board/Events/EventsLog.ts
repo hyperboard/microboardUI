@@ -1,8 +1,8 @@
 import { Board, BoardSnapshot } from "Board/Board";
 import { Command, createCommand } from "./Command";
 import { BoardEvent } from "./Events";
-import { Operation } from "./EventsOperations";
 import { mergeOperations } from "./Merge";
+import { Operation } from "./EventsOperations";
 
 export interface HistoryRecord {
 	event: BoardEvent;
@@ -254,10 +254,6 @@ export function createEventsLog(board: Board): EventsLog {
 			}
 
 			const { method } = record.event.body.operation;
-
-			if (method !== "undo" && method !== "redo") {
-				return null;
-			}
 
 			if (method === "redo") {
 				counter++;

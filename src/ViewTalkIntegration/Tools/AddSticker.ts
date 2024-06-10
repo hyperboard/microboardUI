@@ -1,1 +1,0 @@
-export const DEFAULT_STICKER_COLOR = "#AED4FA";

@@ -8,7 +8,8 @@ export const MIN_EXPORT_WIDTH = 200;
 export const MIN_EXPORT_HEIGHT = 200;
 const LINE_WIDTH = 6;
 const DECORATION_COLOR = "#2291FF";
-const DECORATION_SIZE = 62;
+const DECORATION_SIZE = 66;
+const DECORATION_OFFSET = 6;
 
 export const FRAME_DECORATIONS: ExportFrameDecorationRecord = {
 	"top-left": {
@@ -17,8 +18,7 @@ export const FRAME_DECORATIONS: ExportFrameDecorationRecord = {
 		color: DECORATION_COLOR,
 		width: DECORATION_SIZE,
 		height: DECORATION_SIZE,
-		offsetX: 0,
-		offsetY: 0,
+		offset: DECORATION_OFFSET,
 	},
 	"top-right": {
 		path: new Path2D("M70 70V22C70 10.9543 61.0457 2 50 2L2 2"),
@@ -26,8 +26,7 @@ export const FRAME_DECORATIONS: ExportFrameDecorationRecord = {
 		color: DECORATION_COLOR,
 		width: DECORATION_SIZE,
 		height: DECORATION_SIZE,
-		offsetX: -4,
-		offsetY: 0,
+		offset: DECORATION_OFFSET,
 	},
 	"bottom-left": {
 		path: new Path2D("M2 2L2 50C2 61.0457 10.9543 70 22 70H70"),
@@ -35,8 +34,7 @@ export const FRAME_DECORATIONS: ExportFrameDecorationRecord = {
 		color: DECORATION_COLOR,
 		width: DECORATION_SIZE,
 		height: DECORATION_SIZE,
-		offsetX: 0,
-		offsetY: -4,
+		offset: DECORATION_OFFSET,
 	},
 	"bottom-right": {
 		path: new Path2D("M2 70L50 70C61.0457 70 70 61.0457 70 50L70 2"),
@@ -44,7 +42,6 @@ export const FRAME_DECORATIONS: ExportFrameDecorationRecord = {
 		color: DECORATION_COLOR,
 		width: DECORATION_SIZE,
 		height: DECORATION_SIZE,
-		offsetX: -4,
-		offsetY: -4,
+		offset: DECORATION_OFFSET,
 	},
 };

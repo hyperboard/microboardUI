@@ -1,10 +1,11 @@
 import { Board } from "Board";
 import { Mbr } from "Board/Items";
+import { stickerColors } from "Board/Items/Sticker";
+import React from "react";
+import { useTranslation } from "react-i18next";
 import { CircleIcon } from "View/Icon/CircleIcon";
 import { ColorPicker } from "View/Pickers/ColorPicker";
 import { UiButton } from "View/Ui/UiButton";
-import React from "react";
-import { useTranslation } from "react-i18next";
 import { ButtonWithMenu } from "./ButtonWithMenu";
 
 const IconSize = 24;
@@ -17,16 +18,6 @@ type StickerFillStyleProps = {
 	color: string;
 	windowHeight: number;
 };
-
-export const stickerColors = {
-	"Sky Blue": "rgb(174, 212, 250)",
-	"Pale Yellow": "rgb(252, 245, 174)",
-	"Sage Green": "rgb(175, 214, 167)",
-	Lavender: "rgb(233, 191, 233)",
-	"Aqua Cyan": "rgb(171, 221, 221)",
-	"Pastel Red": "rgb(246, 168, 168)",
-	"Light Gray": "rgb(230, 230, 230)",
-} as { [color: string]: string };
 
 export function StickerFillStyle({
 	board,

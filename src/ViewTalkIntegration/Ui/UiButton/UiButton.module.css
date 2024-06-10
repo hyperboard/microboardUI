@@ -62,7 +62,6 @@
 	outline: none;
 	color: var(--content-color);
 	background-color: var(--bg-color);
-	cursor: url("../../Cursors/pointer.svg") 13 9, auto;
 }
 
 .button:focus-visible {

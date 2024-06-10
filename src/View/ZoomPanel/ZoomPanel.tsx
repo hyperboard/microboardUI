@@ -49,6 +49,7 @@ export function ZoomPanel({ app, board }: Props) {
 			style={{
 				display: "flex",
 				position: "absolute",
+				zIndex: "90",
 				bottom: "8px",
 				right: "8px",
 				backgroundColor: "white",

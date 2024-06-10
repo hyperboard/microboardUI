@@ -1,4 +1,4 @@
-import { Frame, Item, ItemData, ConnectorData } from "./Items";
+import { Frame, Item, ItemData, Matrix, Mbr } from "./Items";
 import { Keyboard } from "./Keyboard";
 import { Pointer } from "./Pointer";
 import { Selection } from "./Selection";
@@ -15,6 +15,7 @@ import { Connection } from "App/Connection";
 import { BoardEvent, createEvents } from "./Events/Events";
 import { v4 as uuidv4 } from "uuid";
 import { itemFactories } from "./itemFactories";
+import { TransformManyItems } from "./Items/Transformation/TransformationOperations";
 
 export class Board {
 	events: Events | undefined;
@@ -186,7 +187,6 @@ export class Board {
 
 	/** Nest item to the frame which is seen on the screen and covers the most volume of the item
 	 */
-	// Should rename?
 	handleNesting(item: Item): void {
 		const itemCenter = item.getMbr().getCenter();
 		const frame = this.items
@@ -205,6 +205,63 @@ export class Board {
 		if (frame) {
 			frame.handleNesting(item);
 		}
+	}
+
+	/**
+	 * Creates new canvas and returns it.
+	 * Renders all items from translation on new canvas.
+	 * @param mbr - width and height for resulting canvas
+	 * @param translation - in which mbr we should find items
+	 */
+	drawMbrOnCanvas(
+		mbr: Mbr,
+		translation: TransformManyItems,
+	): HTMLCanvasElement | undefined {
+		const canvas = document.createElement("canvas");
+		const width = mbr.getWidth();
+		const height = mbr.getHeight();
+		canvas.width = width * this.camera.getMatrix().scaleX;
+		canvas.height = height * this.camera.getMatrix().scaleY;
+
+		const ctx = canvas.getContext("2d");
+		if (!ctx) {
+			console.error(
+				"drawMbrOnCanvas: Unable to get 2D context from canvasElemnt",
+				canvas,
+			);
+			return;
+		}
+
+		ctx.rect(0, 0, canvas.width, canvas.height);
+		ctx.fillStyle = "transparent";
+		ctx.fill();
+
+		const camera = new Camera();
+		const newCameraMatix = new Matrix(-mbr.left, -mbr.top, 1, 1);
+		camera.matrix = newCameraMatix;
+
+		const context = new DrawingContext(camera, ctx);
+
+		context.setCamera(camera);
+		context.ctx.setTransform(
+			this.camera.getMatrix().scaleX,
+			0,
+			0,
+			this.camera.getMatrix().scaleY,
+			0,
+			0,
+		);
+		context.matrix.applyToContext(context.ctx);
+
+		Object.keys(translation).forEach(id => {
+			const item = this.items.getById(id);
+			if (item) {
+				item.render(context);
+				this.selection.renderItemMbr(context, item);
+			}
+		});
+
+		return canvas;
 	}
 
 	createItem(id: string, data: ItemData): Item {
@@ -374,11 +431,14 @@ export class Board {
 		}
 
 		// Replace connector
-		function replaceConnectorItem(point: ControlPointData): void {
+		function replaceConnectorItem(
+			id: string,
+			point: ControlPointData,
+		): void {
 			switch (point.pointType) {
 				case "Floating":
 				case "Fixed":
-					const newItemId = newItemIdMap[point.itemId];
+					const newItemId = newItemIdMap[id];
 					if (newItemId) {
 						point.itemId = newItemId;
 					}
@@ -390,8 +450,8 @@ export class Board {
 			const itemData = itemsMap[itemId];
 
 			if (itemData.itemType === "Connector") {
-				replaceConnectorItem(itemData.startPoint);
-				replaceConnectorItem(itemData.endPoint);
+				replaceConnectorItem(itemId, itemData.startPoint);
+				replaceConnectorItem(itemId, itemData.endPoint);
 			}
 		}
 
@@ -484,6 +544,13 @@ export class Board {
 		};
 
 		for (const itemId in itemsMap) {
+			const itemData = itemsMap[itemId];
+
+			if (itemData.itemType === "Connector") {
+				replaceConnectorHeadItemId(itemData.startPoint);
+				replaceConnectorHeadItemId(itemData.endPoint);
+			}
+
 			const newItemId = this.getNewItemId();
 			newItemIdMap[itemId] = newItemId;
 			if (itemsMap[itemId].itemType === "Frame") {
@@ -495,15 +562,6 @@ export class Board {
 						newItemIdMap[childId] = newChildId;
 					}
 				});
-			}
-		}
-
-		for (const itemId in itemsMap) {
-			const itemData = itemsMap[itemId];
-
-			if (itemData.itemType === "Connector") {
-				replaceConnectorHeadItemId(itemData.startPoint);
-				replaceConnectorHeadItemId(itemData.endPoint);
 			}
 		}
 
@@ -587,11 +645,8 @@ export class Board {
 		const context = this.selection.getContext();
 		const items: Item[] = [];
 
-		const pasteItem = (itemId: string): void => {
+		for (const itemId in itemsMap) {
 			const itemData = itemsMap[itemId];
-			if (!itemData) {
-				throw new Error("Pasting itemId doesn't exist in itemsMap");
-			}
 			const item = this.createItem(itemId, itemData);
 			this.index.insert(item);
 			if (
@@ -601,19 +656,6 @@ export class Board {
 				item.setNameSerial(this.items.listFrames());
 			}
 			items.push(item);
-		};
-
-		for (const itemId in itemsMap) {
-			if (itemsMap[itemId].itemType === "Connector") {
-				continue;
-			}
-			pasteItem(itemId);
-		}
-
-		for (const itemId in itemsMap) {
-			if (itemsMap[itemId].itemType === "Connector") {
-				pasteItem(itemId);
-			}
 		}
 
 		this.selection.removeAll();

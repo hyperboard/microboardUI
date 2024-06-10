@@ -16,8 +16,8 @@ import {
 import { HorisontalAlignment, VerticalAlignment } from "../Alignment";
 import { DrawingContext } from "../DrawingContext";
 import { Geometry } from "../Geometry";
-import { BlockType, ParagraphNode } from "./Editor/BlockNode";
-import { TextNode, TextStyle } from "./Editor/TextNode";
+import { BlockType } from "./Editor/BlockNode";
+import { TextStyle } from "./Editor/TextNode";
 import { EditorContainer } from "./EditorContainer";
 import { getBlockNodes } from "./RichTextCanvasRenderer";
 import { RichTextCommand } from "./RichTextCommand";
@@ -64,6 +64,7 @@ export class RichText extends Mbr implements Geometry {
 	private autoSizeScale = 1;
 	private containerMaxWidth?: number;
 	maxHeight: number;
+	transformationRenderBlock?: boolean = undefined;
 
 	constructor(
 		public container: Mbr,
@@ -95,8 +96,6 @@ export class RichText extends Mbr implements Geometry {
 				}
 			},
 			this.getScale,
-			// this, // TODO bd-695
-			this.getDefaultHorizontalAlignment(),
 		);
 		this.editor.subject.subscribe((_editor: EditorContainer) => {
 			this.subject.publish(this);
@@ -124,7 +123,7 @@ export class RichText extends Mbr implements Geometry {
 					this.updateElement();
 					// this.transformCanvas();
 				}
-				this.updateElement();
+				this.enableRender();
 			},
 		);
 		this.editorTransforms.select(this.editor.editor, {
@@ -150,8 +149,9 @@ export class RichText extends Mbr implements Geometry {
 							fontHighlight: "",
 							fontSize: this.getFontSize(),
 							fontFamily: this.getFontFamily(),
-							horisontalAlignment:
-								this.getDefaultHorizontalAlignment(),
+							horisontalAlignment: this.isInShape
+								? "center"
+								: "left",
 							text: this.placeholderText,
 						},
 					],
@@ -159,17 +159,6 @@ export class RichText extends Mbr implements Geometry {
 			];
 		} else {
 			return children;
-		}
-	}
-
-	getDefaultHorizontalAlignment(): HorisontalAlignment {
-		switch (this.insideOf) {
-			case "Sticker":
-				return "center";
-			case "Shape":
-				return "center";
-			default:
-				return "left";
 		}
 	}
 
@@ -500,14 +489,6 @@ export class RichText extends Mbr implements Geometry {
 		}
 	}
 
-	selectAllText(): void {
-		const { editor } = this.editor;
-		Transforms.select(editor, {
-			anchor: Editor.start(editor, []),
-			focus: Editor.end(editor, []),
-		});
-	}
-
 	/** Moves cursor to the end of first line */
 	moveCursorToEOL(delay = 10): void {
 		setTimeout(() => {
@@ -518,13 +499,17 @@ export class RichText extends Mbr implements Geometry {
 		}, delay);
 	}
 
-	moveCursorToTheEnd(): void {
-		// Update of text react component causes set_selection to start
-		// until the issue is resolved here is a unstable workaround
-		setTimeout(() => {
-			this.selectAllText();
-			Transforms.collapse(this.editor.editor, { edge: "end" });
-		}, 20);
+	/** Moves cursor to the end of a text */
+	moveCursorToEnd(delay = 10) {
+		return new Promise<void>(resolve => {
+			setTimeout(() => {
+				this.editorTransforms.move(this.editor.editor, {
+					distance: this.getTextString().length,
+					unit: "character",
+				});
+			}, delay);
+			resolve();
+		});
 	}
 
 	getId(): string {
@@ -556,12 +541,19 @@ export class RichText extends Mbr implements Geometry {
 		return this.transformation.getScale().x;
 	};
 
+	private selectWholeText(): void {
+		const start = Editor.start(this.editor.editor, []);
+		const end = Editor.end(this.editor.editor, []);
+		const range = { anchor: start, focus: end };
+		this.editorTransforms.select(this.editor.editor, range);
+	}
+
 	setSelectionFontColor(
 		format: string,
 		selectionContext?: SelectionContext,
 	): void {
 		if (selectionContext === "EditUnderPointer") {
-			this.selectAllText();
+			this.selectWholeText();
 		}
 		this.editor.setSelectionFontColor(format);
 		this.updateElement();
@@ -571,11 +563,8 @@ export class RichText extends Mbr implements Geometry {
 		style: TextStyle | TextStyle[],
 		selectionContext?: SelectionContext,
 	): void {
-		if (
-			selectionContext === "EditUnderPointer" ||
-			selectionContext === "SelectByRect"
-		) {
-			this.selectAllText();
+		if (selectionContext === "EditUnderPointer") {
+			this.selectWholeText();
 		}
 		this.editor.setSelectionFontStyle(style);
 		this.updateElement();
@@ -591,7 +580,7 @@ export class RichText extends Mbr implements Geometry {
 		selectionContext?: SelectionContext,
 	): void {
 		if (selectionContext === "EditUnderPointer") {
-			this.selectAllText();
+			this.selectWholeText();
 		}
 		if (this.isInShape) {
 			this.editor.setSelectionFontSize(fontSize);
@@ -607,7 +596,7 @@ export class RichText extends Mbr implements Geometry {
 		selectionContext?: SelectionContext,
 	): void {
 		if (selectionContext === "EditUnderPointer") {
-			this.selectAllText();
+			this.selectWholeText();
 		}
 		this.editor.setSelectionFontHighlight(format);
 		this.updateElement();
@@ -618,7 +607,7 @@ export class RichText extends Mbr implements Geometry {
 		selectionContext?: SelectionContext,
 	): void {
 		if (selectionContext === "EditUnderPointer") {
-			this.selectAllText();
+			this.selectWholeText();
 		}
 		this.editor.setSelectionHorisontalAlignment(horisontalAlignment);
 		this.updateElement();
@@ -720,8 +709,8 @@ export class RichText extends Mbr implements Geometry {
 			this.editor.verticalAlignment = data.verticalAlignment;
 		}
 		if (data.maxWidth) {
-			this.editor.maxWidth = data.maxWidth;
-			// this.editor.setMaxWidth(data.maxWidth);
+			// this.editor.maxWidth = data.maxWidth;
+			this.editor.setMaxWidth(data.maxWidth);
 		}
 		if (data.transformation) {
 			this.transformation.deserialize(data.transformation);
@@ -736,6 +725,9 @@ export class RichText extends Mbr implements Geometry {
 	}
 
 	render(context: DrawingContext): void {
+		if (this.transformationRenderBlock) {
+			return;
+		}
 		if (this.isRenderEnabled) {
 			const { ctx } = context;
 			ctx.save();
@@ -810,6 +802,24 @@ export class RichText extends Mbr implements Geometry {
 
 	isClosed(): boolean {
 		return true;
+	}
+
+	selectText(): void {
+		this.editor.editor.apply({
+			type: "set_selection",
+
+			newProperties: {
+				anchor: {
+					offset: this.editor.textLength,
+					path: [0, this.editor.textLength],
+				},
+				focus: {
+					offset: 0,
+					path: [0, 0],
+				},
+			},
+			properties: null,
+		});
 	}
 
 	autosizeEnable(): void {
