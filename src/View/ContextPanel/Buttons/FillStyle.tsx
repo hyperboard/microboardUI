@@ -1,5 +1,5 @@
 import { Board } from "Board";
-import { Mbr } from "Board/Items";
+import { Frame, Mbr, Shape } from "Board/Items";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { CircleIcon } from "View/Icon/CircleIcon";
@@ -30,12 +30,9 @@ export function FillStyle({
 	const menuRef = React.useRef<HTMLDivElement>(null);
 
 	const context = board.selection.getContext();
-	const single = board.selection.items.getSingle();
-	const canChangeFillStyle = board.selection.items.isItemTypes([
-		"Shape",
-		"Frame",
-	]);
-	if (context === "SelectUnderPointer" || !canChangeFillStyle || !single) {
+	const onlyFrames = board.selection.items.isItemTypes(["Frame"]);
+	const onlyShapes = board.selection.items.isItemTypes(["Shape"]);
+	if (context === "SelectUnderPointer" || !(onlyFrames || onlyShapes)) {
 		return null;
 	}
 
