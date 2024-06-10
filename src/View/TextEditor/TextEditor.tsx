@@ -32,7 +32,7 @@ export class TextEditors extends React.Component<
 	}
 
 	render(): React.ReactElement | null {
-		let Editors = null;
+		let Editors: React.ReactElement | null = null;
 		for (const text of this.props.board.selection.getTextToEdit()) {
 			Editors = <TextEditor board={this.props.board} text={text} />;
 		}

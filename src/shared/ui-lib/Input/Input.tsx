@@ -74,7 +74,9 @@ export const Input: React.FC<Props> = ({
 				<span className="InputPostTab">{props.postTab}</span>
 			</div>
 			{errorText && <span className="InputErrorText">{errorText}</span>}
-			{helperText && <span className="InputHelperText">{errorText}</span>}
+			{helperText && (
+				<span className="InputHelperText">{helperText}</span>
+			)}
 		</div>
 	);
 };

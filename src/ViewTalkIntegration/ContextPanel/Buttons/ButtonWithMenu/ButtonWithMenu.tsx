@@ -30,7 +30,7 @@ export function ButtonWithMenu({
 }: Props) {
 	const menuRef = useRef<HTMLDivElement>(null);
 	const [verticalAlign, setVerticalAlign] = useState<
-		"bottom" | "top" | "center"
+		"bottom" | "top" | "middle"
 	>("bottom");
 
 	useEffect(() => {
@@ -48,7 +48,7 @@ export function ButtonWithMenu({
 			setVerticalAlign("top");
 			return;
 		}
-		setVerticalAlign("center");
+		setVerticalAlign("middle");
 	}, [panelMbr.top, windowHeight]);
 
 	return (

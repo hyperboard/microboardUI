@@ -23,29 +23,83 @@
 	font-weight: 500;
 }
 
-.NavbarWrapper .LinkInactive {
+.NavbarWrapper .Link {
 	padding: 6px 10px;
 
 	height: 32px;
 
 	font-size: 14px;
 	font-weight: 500;
+	background-color: #924fe8;
 
-	color: rgba(15, 19, 36, 0.6);
+	border-radius: 10px;
+
+	color: white;
 	text-decoration: none;
 }
 
+.NavbarWrapper .Link:hover {
+	background-color: #1f2228;
+	color: white;
+}
+
+.NavbarWrapper .Link:active {
+	background-color: #1f2228;
+	color: white;
+
+	outline: 2px solid rgba(200, 178, 255, 0.5);
+}
+
 .NavbarWrapper .LinkActive {
+	display: none;
 	padding: 6px 10px;
+	box-sizing: border-box;
 
 	height: 32px;
+	border: 1px solid transparent;
 	border-radius: 10px;
 
 	font-size: 14px;
 	font-weight: 500;
 
-	background-color: rgb(10, 15, 41, 0.04);
+	background-color: rgba(10, 15, 41, 0.04);
 
 	color: #14151a;
 	text-decoration: none;
+}
+
+.NavbarWrapper .LinkActive:hover {
+	background-color: rgba(10, 15, 41, 0.08);
+	border: 1px solid transparent;
+}
+
+.NavbarWrapper .LinkActive:active {
+	background-color: rgba(10, 15, 41, 0.08);
+	border: 1px solid rgb(183, 138, 240);
+	outline: 2px solid rgba(200, 178, 255, 0.5);
+}
+
+@media (max-width: 640px) {
+	.NavbarWrapper {
+		max-width: 100%;
+		padding: 8px 20px;
+	}
+
+	.NavbarWrapper .Logo {
+		margin-bottom: 10px; /* Adds space between logo and links */
+	}
+
+	.NavbarWrapper .Link,
+	.NavbarWrapper .LinkActive {
+		width: 100%; /* Makes links full width */
+		box-sizing: border-box; /* Includes padding in width calculation */
+		margin-bottom: 5px; /* Adds space between links */
+	}
+}
+
+@media screen and (max-width: 1280px) {
+	.NavbarWrapper {
+		padding: 8px 16px;
+		max-width: 100%;
+	}
 }

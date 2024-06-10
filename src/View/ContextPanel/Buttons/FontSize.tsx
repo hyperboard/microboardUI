@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Sticker } from "Board/Items/Sticker";
-import { FontSizePicker } from "View/Pickers/FontSizePicker";
+import { FontSizePicker, FontSizes } from "View/Pickers/FontSizePicker";
 import { Board } from "Board";
 import { Item, Frame, Mbr, Shape } from "Board/Items";
 import { toFiniteNumber } from "utils";
@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 type FontSizeProps = {
 	board: Board;
 	toggleMenu: (menu: string) => void;
+	setShouldUpd: React.Dispatch<React.SetStateAction<boolean>>;
 	menu: string;
 	panelMbr: Mbr;
 	windowHeight: number;
@@ -22,6 +23,7 @@ type FontSizeProps = {
 export function FontSize({
 	board,
 	fontSize: fontSizeInit,
+	setShouldUpd,
 	menu,
 	panelMbr,
 	toggleMenu,
@@ -37,10 +39,6 @@ export function FontSize({
 	);
 	const [currItem, setCurrItem] = React.useState<undefined | Item>();
 	const { t } = useTranslation();
-
-	const updateFontSize = () => {
-		setFontSize(board.selection.getFontSize());
-	};
 
 	const updateAutosizeSettings = (): void => {
 		const single = board.selection.items.getSingle();
@@ -122,31 +120,59 @@ export function FontSize({
 			const currSize = Math.floor(currItem.text.getFontSize());
 			currItem.text.autosizeDisable();
 			setInputType("number");
-			setFontSize(type === "inc" ? currSize + 1 : currSize - 1);
+			setFontSize(
+				type === "inc"
+					? currSize > 288
+						? 288
+						: currSize + 1
+					: currSize < 10
+					? 10
+					: currSize - 1,
+			);
 			board.selection.setFontSize(
-				type === "inc" ? currSize + 1 : currSize - 1,
+				type === "inc"
+					? currSize > 288
+						? 288
+						: currSize + 1
+					: currSize < 10
+					? 10
+					: currSize - 1,
 			);
 		}
 	};
 
 	const onIncrease = (): void => {
+		setShouldUpd(false);
 		if (!parseInt(`${fontSize}`)) {
 			handleStickerShevrone("inc");
 			return;
 		}
-
-		setFontSize(prev => +prev + 1);
-		board.selection.setFontSize(+fontSize + 1);
+		const currIdx =
+			FontSizes.indexOf(fontSize) !== -1
+				? FontSizes.indexOf(fontSize)
+				: FontSizes.findIndex(size => size > fontSize) - 1;
+		if (FontSizes[currIdx] === 288) {
+			return;
+		}
+		setFontSize(FontSizes[currIdx + 1]);
+		board.selection.setFontSize(+FontSizes[currIdx + 1]);
 	};
 
 	const onDecrease = (): void => {
+		setShouldUpd(false);
 		if (!parseInt(`${fontSize}`)) {
 			handleStickerShevrone("dec");
 			return;
 		}
-
-		setFontSize(prev => +prev - 1);
-		board.selection.setFontSize(+fontSize - 1);
+		const currIdx =
+			FontSizes.indexOf(fontSize) !== -1
+				? FontSizes.indexOf(fontSize)
+				: FontSizes.findIndex(size => size > fontSize) - 1;
+		if (FontSizes[currIdx] === 10) {
+			return;
+		}
+		setFontSize(FontSizes[currIdx - 1]);
+		board.selection.setFontSize(+FontSizes[currIdx - 1]);
 	};
 
 	return (
@@ -225,7 +251,8 @@ export function FontSize({
 			>
 				<FontSizePicker
 					maxSize={max}
-					itemType={itemType || ""}
+					inputType={inputType}
+					itemType={currItem?.itemType || ""}
 					onPick={(size: number | "Auto") => {
 						const single = board.selection.items.getSingle();
 						if (

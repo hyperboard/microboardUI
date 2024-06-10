@@ -23,6 +23,7 @@
 } */
 
 .InputWrapper .InputHelperText {
+	font-size: 14px;
 	color: rgba(13, 17, 38, 0.4);
 }
 
@@ -33,7 +34,7 @@
 
 .InputWrapper .InputHelperText {
 	font-size: 14px;
-	color: black;
+	color: rgba(15, 19, 36, 0.6);
 }
 
 /* .InputWrapper .InputKeyHint {
@@ -46,11 +47,14 @@
 
 	padding: 10px 12px;
 	border-radius: 12px;
+
+	box-shadow: 0 1px 2px rgba(20, 21, 26, 0.05);
 }
 
 .InputContainer input {
 	font-family: "Manrope", Arial;
 	outline: none;
+	font-size: 14px;
 
 	width: 100%;
 }

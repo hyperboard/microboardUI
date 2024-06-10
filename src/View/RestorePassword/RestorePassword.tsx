@@ -11,21 +11,7 @@ import {
 import { getApiUrl } from "Config";
 import { useTranslation } from "react-i18next";
 import { Link } from "shared/ui-lib/Link";
-
-const restorePassword = async (
-	token: string,
-	password: string,
-): Promise<Response> => {
-	const request = fetch(getApiUrl("/auth/password/restore"), {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({ token, newPassword: password }),
-	});
-
-	return request;
-};
+import { Tail } from "View/AuthView/Tail";
 
 export const RestorePassword: React.FC = () => {
 	const { t } = useTranslation();
@@ -67,21 +53,17 @@ export const RestorePassword: React.FC = () => {
 		const newPassword = form?.newPassword?.value;
 
 		const MIN_PASSWORD_LENGTH = 8;
-		const MAX_PASSWORD_LENGTH = 14;
 
-		if (
-			newPassword.length < MIN_PASSWORD_LENGTH ||
-			newPassword.length > MAX_PASSWORD_LENGTH
-		) {
+		if (newPassword.length < MIN_PASSWORD_LENGTH) {
 			setIsDisabled(true);
-			setNewPassError(t("auth.passwordLengthError"));
+			// setNewPassError(t("auth.passwordLengthError"));
 			return;
 		}
 
 		setNewPassError("");
 	};
 
-	const dbCheckForm = useDebounce(checkForm, 500);
+	const dbCheckForm = checkForm;
 
 	const onSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
 		event.preventDefault();
@@ -95,11 +77,32 @@ export const RestorePassword: React.FC = () => {
 			return;
 		}
 
-		restorePassword(searchParams.get("token")!, form.newPassword.value)
+		fetch(getApiUrl("/auth/password/restore"), {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				token: searchParams.get("token")!,
+				newPassword: form.newPassword.value,
+			}),
+		})
+			.then(async response => {
+				if (response.ok) {
+					return response.json();
+				} else {
+					const data = await response.json();
+					return Promise.reject(data);
+				}
+			})
 			.then(() => {
 				navigate("/auth/sign-in");
 			})
 			.catch(error => {
+				if (`${error?.status}` === "409") {
+					setError(t("auth.passwordMustBeDifferent"));
+					return;
+				}
 				setError(error?.message || "Unhandled error");
 			});
 	};
@@ -131,21 +134,23 @@ export const RestorePassword: React.FC = () => {
 				<div className={styles.inputs}>
 					<Input
 						password
-						label={t("auth.newPassword")}
+						label={t("auth.passwordMustBeDifferent")}
+						placeholder={t("auth.newPassword")}
 						id="newPassword"
 						errorText={newPassError}
 						hasError={!!newPassError.length}
-						onInput={useDebounce(() => {
+						onBlur={() => {
 							checkForm();
 							checkNewPassword();
-						}, 500)}
+						}}
 					/>
 					<Input
 						password
-						label={t("auth.repeatNewPassword")}
+						placeholder={t("auth.newPassword")}
 						id="repeatedPassword"
-						onInput={dbCheckForm}
+						onBlur={checkForm}
 						errorText={error}
+						helperText={t("auth.passwordAtLeast")}
 						hasError={!!error.length}
 					/>
 				</div>
@@ -156,6 +161,7 @@ export const RestorePassword: React.FC = () => {
 					className={styles.submit}
 				>
 					{t("auth.submit")}
+					<Tail />
 				</Button>
 			</form>
 		</div>
