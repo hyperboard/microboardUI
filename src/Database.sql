@@ -576,7 +576,7 @@ BEGIN
 END;
 $$;
 
-DROP FUNCTION get_latest_board_snapshot(uuid);
+DROP FUNCTION IF EXISTS get_latest_board_snapshot(uuid);
 -- Function to retrieve the latest board snapshot:
 CREATE OR REPLACE FUNCTION get_latest_board_snapshot(
     board_uuid UUID -- or link
