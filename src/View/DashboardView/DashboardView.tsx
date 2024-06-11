@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 
 interface BoardCardProps extends React.HTMLAttributes<HTMLDivElement> {
 	name: string;
+	boardId: string;
 }
 
 type PrivateBoards = {
@@ -32,10 +33,10 @@ const fetchPrivateBoards = async (): Promise<PrivateBoards | undefined> => {
 	}
 };
 
-const BoardCard: React.FC<BoardCardProps> = ({ name }) => {
+const BoardCard: React.FC<BoardCardProps> = ({ name, boardId }) => {
 	const navigate = useNavigate();
 	const onClick = () => {
-		navigate(`/boards/${name}`);
+		navigate(`/boards/${boardId}`);
 	};
 
 	return (
@@ -72,6 +73,7 @@ export const DashboardView: React.FC<{ app: App }> = props => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const boards = props.app.storage.listPublicBoards();
+
 	const [privateBoards, setPrivateBoards] = React.useState<
 		PrivateBoards | undefined
 	>();
@@ -101,6 +103,7 @@ export const DashboardView: React.FC<{ app: App }> = props => {
 						{boards.map(board => (
 							<BoardCard
 								key={board.boardId}
+								boardId={board.boardId}
 								name={
 									board.name ||
 									board.boardId ||

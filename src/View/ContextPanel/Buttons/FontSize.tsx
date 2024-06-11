@@ -33,6 +33,7 @@ export function FontSize({
 	const menuRef = React.useRef<HTMLDivElement>();
 	const [fontSize, setFontSize] = React.useState(fontSizeInit);
 	const [max, setMax] = React.useState(maxInit);
+	const [itemType, setItemType] = React.useState("");
 	const [inputType, setInputType] = React.useState<"number" | "Auto">(
 		"number",
 	);
@@ -48,10 +49,12 @@ export function FontSize({
 			const maxFontSize = single.text.getMaxFontSize();
 			setMax(maxFontSize);
 			setFontSize(isAutosize ? "Auto" : innerTextFontSize);
+			setItemType("Sticker");
 			setInputType(isAutosize ? "Auto" : "number");
 		}
 		if (single instanceof Shape) {
 			const maxFontSize = single.text.getMaxFontSize();
+			setItemType(single?.itemType);
 			setFontSize(single?.text?.getFontSize());
 			setInputType("number");
 			setMax(maxFontSize);
@@ -60,7 +63,7 @@ export function FontSize({
 
 	useEffect(() => {
 		updateAutosizeSettings();
-	}, [inputType, fontSize]);
+	}, []);
 
 	if (board.selection.getContext() === "SelectUnderPointer") {
 		return null;
@@ -249,6 +252,7 @@ export function FontSize({
 				<FontSizePicker
 					maxSize={max}
 					inputType={inputType}
+					itemType={currItem?.itemType || ""}
 					onPick={(size: number | "Auto") => {
 						const single = board.selection.items.getSingle();
 						if (

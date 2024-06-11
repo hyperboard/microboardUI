@@ -38,7 +38,11 @@ export function ColorCircle({
 				width="23"
 				height="23"
 				rx="11.5"
-				stroke="rgb(237, 237, 237)"
+				stroke={
+					color === "#FFFFFF" || color === "rgb(255, 255, 255)"
+						? "#D3D5D7"
+						: "rgb(237, 237, 237)"
+				}
 			/>
 			{color !== "none" ? (
 				<>

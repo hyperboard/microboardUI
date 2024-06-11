@@ -184,18 +184,19 @@
 		"passwordLengthError": "The password must be at least 8 and no more than 14 characters long",
 		"backToLogIn": "Back to Log in",
 		"passwordDontAMatch": "Passwords do not match",
-		"requestReceivedSuccessfully": "Request receivesid successfully! We have sent you an email with a link to reset your password.",
+		"requestReceivedSuccessfully": "Request received successfully! We have sent you an email with a link to reset your password.",
 		"resetPassword": "Reset password",
 		"enterEmailForLink": "Enter your email and we will send you a link to reset your password",
 		"errorVerificationCode": "Verification code was incorrect. Please try again.",
-		"errorVerificationCodeAttempts": "Too many attempts. Please try again later.",
+		"errorVerificationCodeAttempts": "Too many login attempts. Please try again later.",
 		"incorrectEmailOrPassword": "Incorrect email or password. Please try again.",
 		"userAlreadyExists": "A user with this email address already exists. Please use a different email address for registration.",
 		"userNotFound": "User with this email not found",
 		"passwordAtLeast": "The password must be at least 8 characters long",
 		"passwordMustBeDifferent": "Your password must be different to previous passwords",
 		"skip": "Skip",
-		"passwordDoNotMatch": "The entered password do not match"
+		"passwordDoNotMatch": "The entered password do not match",
+		"enterAValidEmailAddress": "Enter a valid email address"
 	},
 	"modal": {
 		"canEdit": "Can edit",

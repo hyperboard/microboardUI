@@ -53,14 +53,10 @@ export const RestorePassword: React.FC = () => {
 		const newPassword = form?.newPassword?.value;
 
 		const MIN_PASSWORD_LENGTH = 8;
-		const MAX_PASSWORD_LENGTH = 14;
 
-		if (
-			newPassword.length < MIN_PASSWORD_LENGTH ||
-			newPassword.length > MAX_PASSWORD_LENGTH
-		) {
+		if (newPassword.length < MIN_PASSWORD_LENGTH) {
 			setIsDisabled(true);
-			setNewPassError(t("auth.passwordLengthError"));
+			// setNewPassError(t("auth.passwordLengthError"));
 			return;
 		}
 
@@ -143,16 +139,16 @@ export const RestorePassword: React.FC = () => {
 						id="newPassword"
 						errorText={newPassError}
 						hasError={!!newPassError.length}
-						onInput={useDebounce(() => {
+						onBlur={() => {
 							checkForm();
 							checkNewPassword();
-						}, 500)}
+						}}
 					/>
 					<Input
 						password
 						placeholder={t("auth.newPassword")}
 						id="repeatedPassword"
-						onInput={dbCheckForm}
+						onBlur={checkForm}
 						errorText={error}
 						helperText={t("auth.passwordAtLeast")}
 						hasError={!!error.length}

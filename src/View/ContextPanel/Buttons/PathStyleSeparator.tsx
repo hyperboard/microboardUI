@@ -13,13 +13,11 @@ export function PathStyleSeparator({
 		"Drawing",
 	]);
 	const context = board.selection.getContext();
-	const canChangeFillStyle = board.selection.items.isItemTypes([
-		"Shape",
-		"Sticker",
-	]);
+	const onlyFrames = board.selection.items.isItemTypes(["Frame"]);
+	const onlyShapes = board.selection.items.isItemTypes(["Shape"]);
 	if (
 		context === "SelectUnderPointer" ||
-		(!canChangeFillStyle && !canChangeBorderStyle)
+		(!(onlyFrames || onlyShapes) && !canChangeBorderStyle)
 	) {
 		return null;
 	}

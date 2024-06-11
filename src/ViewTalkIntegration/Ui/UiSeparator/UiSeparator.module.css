@@ -1,7 +1,3 @@
-.container {
-	cursor: url("../../Cursors/default.svg") 10 7, auto;
-}
-
 .container.horizontal {
 	padding: 0.4rem 0.3rem;
 }

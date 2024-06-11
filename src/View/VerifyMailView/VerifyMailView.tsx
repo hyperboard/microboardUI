@@ -152,6 +152,10 @@ export const VerifyMailView: React.FC = () => {
 				setError("");
 				setCodeTip("auth.enterNewCodeBelow");
 				checkForm(false);
+				const form = formRef.current;
+				if (form) {
+					form.code.value = "";
+				}
 				setIsNewCode(true);
 			})
 			.catch(error => {

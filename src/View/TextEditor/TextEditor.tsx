@@ -40,7 +40,6 @@ export class TextEditors extends React.Component<
 		return Editors;
 	}
 }
-
 export class TextEditor extends React.Component<
 	{
 		board: Board;
@@ -85,16 +84,64 @@ export class TextEditor extends React.Component<
 
 		const container = text.getTransformedContainer();
 		container.transform(camera.getMatrix());
+
 		if (this.state.hasError) {
-			return this.renderError(
-				left,
-				top,
-				maxWidth,
-				maxHeight,
-				verticalAlignment,
+			return (
+				<div
+					id="TextEditor"
+					ref={this.containerRef}
+					style={{
+						border: "none",
+						padding: "0px",
+						margin: "0px",
+						overflow: "hidden",
+						background: "none",
+						outline: "none",
+						resize: "none",
+
+						position: "absolute",
+						left: `${left}px`,
+						top: `${top}px`,
+
+						maxWidth: `${maxWidth}px`,
+						maxHeight: `${maxHeight}px`,
+						width: `${maxWidth}px`,
+						height: `${maxHeight}px`,
+
+						// transformOrigin: "left top",
+						// transform: `translate(0px) scale(${editorScale})`,
+						willChange: "transform",
+						transform: "translate3d(0,0,0)",
+
+						display: "flex",
+						alignItems: verticalAlignmentToFlex(verticalAlignment), // vertical
+						justifyContent: "center", // horisontal
+
+						fontFamily: defaultTextStyle.fontFamily,
+						fontSize: `${defaultTextStyle.fontSize}px`,
+						lineHeight: defaultTextStyle.lineHeight,
+						color: defaultTextStyle.fontColor,
+					}}
+				>
+					{"An editor error has occured"}
+				</div>
 			);
 		}
+
 		return (
+			/* <div 
+				style={{
+					position: 'absolute',
+					left: `${container.left}px`, 
+					top: `${container.top}px`, 
+					width: `${container.getWidth()/editorScale}px`, 
+					height: `${container.getHeight()/editorScale}px`,
+					overflow: 'hidden', // This will cut off any overflowing content
+					transformOrigin: "left top",
+					transform: `scale(${editorScale})`,
+				}}
+			>*/
+
 			<div
 				id="TextEditor"
 				ref={this.containerRef}
@@ -102,10 +149,14 @@ export class TextEditor extends React.Component<
 					border: "none",
 					padding: "0px",
 					margin: "0px",
-					// overflow: "hidden", DO NOT UNCOMMENT THIS, IT BREAKS THE EDITOR
+					// overflow: "hidden",
 					background: "none",
 					outline: "none",
 					resize: "none",
+
+					// position: "relative",
+					// left: `${left - container.left}px`,
+					// top: `${top - container.top}px`,
 
 					position: "absolute",
 					left: `${left}px`,
@@ -113,6 +164,8 @@ export class TextEditor extends React.Component<
 
 					maxWidth: `${maxWidth + 1}px`,
 					maxHeight: `${maxHeight + 1}px`,
+					// width: `${maxWidth}px`,
+					// height: `${maxHeight}px`,
 					width: `${container.getWidth() / editorScale}px`,
 					height: `${container.getHeight() / editorScale}px`,
 
@@ -151,12 +204,14 @@ export class TextEditor extends React.Component<
 					<Slate
 						editor={text.editor.editor}
 						value={text.getText()}
+						selection={text.editor.editor.selection}
 						key={text.getId()}
 						onChange={() => {}}
 					>
 						<Editable
 							renderElement={Element}
 							renderLeaf={Leaf}
+							selection={text.editor.editor.selection}
 							onBlur={text.handleBlur}
 							onFocus={text.handleFocus}
 							placeholder={text.placeholderText}
@@ -199,58 +254,7 @@ export class TextEditor extends React.Component<
 					</Slate>
 				</div>
 			</div>
-		);
-	}
-
-	private renderError(
-		left: number,
-		top: number,
-		maxWidth: number | undefined,
-		maxHeight: number | undefined,
-		verticalAlignment: string,
-	): React.ReactElement<
-		any,
-		string | React.JSXElementConstructor<any>
-	> | null {
-		return (
-			<div
-				id="TextEditor"
-				ref={this.containerRef}
-				style={{
-					border: "none",
-					padding: "0px",
-					margin: "0px",
-					overflow: "hidden",
-					background: "none",
-					outline: "none",
-					resize: "none",
-
-					position: "absolute",
-					left: `${left}px`,
-					top: `${top}px`,
-
-					maxWidth: `${maxWidth}px`,
-					maxHeight: `${maxHeight}px`,
-					width: `${maxWidth}px`,
-					height: `${maxHeight}px`,
-
-					// transformOrigin: "left top",
-					// transform: `translate(0px) scale(${editorScale})`,
-					willChange: "transform",
-					transform: "translate3d(0,0,0)",
-
-					display: "flex",
-					alignItems: verticalAlignmentToFlex(verticalAlignment), // vertical
-					justifyContent: "center", // horisontal
-
-					fontFamily: defaultTextStyle.fontFamily,
-					fontSize: `${defaultTextStyle.fontSize}px`,
-					lineHeight: defaultTextStyle.lineHeight,
-					color: defaultTextStyle.fontColor,
-				}}
-			>
-				{"An editor error has occured"}
-			</div>
+			// </div>
 		);
 	}
 }

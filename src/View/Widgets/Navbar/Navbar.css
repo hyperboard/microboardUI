@@ -43,7 +43,7 @@
 	color: white;
 }
 
-.NavbarWrapper .Link:focus {
+.NavbarWrapper .Link:active {
 	background-color: #1f2228;
 	color: white;
 
@@ -73,7 +73,7 @@
 	border: 1px solid transparent;
 }
 
-.NavbarWrapper .LinkActive:focus {
+.NavbarWrapper .LinkActive:active {
 	background-color: rgba(10, 15, 41, 0.08);
 	border: 1px solid rgb(183, 138, 240);
 	outline: 2px solid rgba(200, 178, 255, 0.5);

@@ -26,7 +26,7 @@ export const ForgotPassword: React.FC = () => {
 		const email = formRef.current.email.value;
 
 		if (!isEmail(email)) {
-			setError(t("auth.notValidEmail"));
+			setError(t("auth.enterAValidEmailAddress"));
 			setDisabled(true);
 			return;
 		}
@@ -101,7 +101,7 @@ export const ForgotPassword: React.FC = () => {
 				placeholder={t("auth.emailPlaceholder")}
 				hasError={!!error.length}
 				errorText={error}
-				onInput={dbCheckForm}
+				onBlur={dbCheckForm}
 			/>
 			<div className={styles.btns}>
 				<Button

@@ -1,4 +1,5 @@
 import { Board } from "Board";
+import { stickerColors } from "Board/Items/Sticker";
 import { getHotkeyLabel } from "Board/Keyboard";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -10,16 +11,6 @@ type Props = {
 	board: Board;
 	isOn: boolean;
 };
-
-const stickerColors = {
-	"Sky Blue": "rgb(174, 212, 250)",
-	"Pale Yellow": "rgb(252, 245, 174)",
-	"Sage Green": "rgb(175, 214, 167)",
-	Lavender: "rgb(233, 191, 233)",
-	"Aqua Cyan": "rgb(171, 221, 221)",
-	"Pastel Red": "rgb(246, 168, 168)",
-	"Light Gray": "rgb(230, 230, 230)",
-} as { [color: string]: string };
 
 export function AddStickerTool({ board, isOn }: Props) {
 	const { t } = useTranslation();

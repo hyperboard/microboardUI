@@ -19,6 +19,7 @@ import { useDebounce } from "shared/hooks/useDebounce";
 import { EyeOpen } from "shared/ui-lib/Input/EyeOpen";
 import { Link, useNavigate } from "react-router-dom";
 import { Dropdown } from "shared/ui-lib/Dropdown/Dropdown";
+import { SuccessIcon } from "View/ForgotPassword/SuccessIcon";
 
 interface UserPicProps extends React.HTMLAttributes<HTMLDivElement> {
 	avatar?: string;
@@ -56,6 +57,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 	const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
 	const [error, setError] = useState("");
 	const { t } = useTranslation();
+	const [isPasswordChanged, setIsPasswordChanged] = useState(false);
+	const navigate = useNavigate();
 
 	const [currentPassword, setCurrentPassword] = useState("");
 	const [newPassword, setNewPassword] = useState("");
@@ -86,6 +89,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 			.then(async response => {
 				if (response.ok) {
 					setIsOpen(false);
+					setIsPasswordChanged(true);
 					return response.json();
 				} else {
 					const data = await response.json();
@@ -137,14 +141,14 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 		}
 
 		function checkLength(str: string): boolean {
-			if (str.length < 8 || str.length > 20) {
+			if (str.length < 8) {
 				return false;
 			}
 			return true;
 		}
 
 		if (!checkLength(newPassword) || !checkLength(confirmPassword)) {
-			setError(t("auth.passwordLengthError"));
+			setError("");
 			return;
 		}
 
@@ -158,6 +162,29 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 
 	if (!isOpen) {
 		return null;
+	}
+
+	if (isPasswordChanged) {
+		return (
+			<div className={styles.modalWrapper}>
+				<div ref={modalRef} className={styles.modal}>
+					<div className={styles.requested}>
+						<div>
+							<SuccessIcon />
+						</div>
+						<h1 className={styles.resetPassword}>
+							Password changed successfully
+						</h1>
+						<Button
+							onClick={() => navigate("/auth/sign-in")}
+							className={styles.backToLogin}
+						>
+							{t("auth.backToLogIn")}
+						</Button>
+					</div>
+				</div>
+			</div>
+		);
 	}
 
 	return (
@@ -185,8 +212,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 							}}
 							onInput={event => {
 								setCurrentPassword(event.target.value);
-								dbCheckForm();
 							}}
+							onBlur={dbCheckForm}
 						/>
 						<Input
 							prefixIcon={<LockIcon />}
@@ -201,8 +228,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 							}}
 							onInput={event => {
 								setNewPassword(event.target.value);
-								dbCheckForm();
 							}}
+							onBlur={dbCheckForm}
 						/>
 						<Input
 							prefixIcon={<LockIcon />}
@@ -219,8 +246,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 							}}
 							onInput={event => {
 								setConfirmPassword(event.target.value);
-								dbCheckForm();
 							}}
+							onBlur={dbCheckForm}
 						/>
 					</div>
 
@@ -242,26 +269,30 @@ interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	email: string;
 	ref: React.RefObject<HTMLDivElement>;
 	setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+	setIsAuth: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const UserDropDown: React.FC<UserDropDownProps> = ({
 	email,
 	setIsModalOpen,
+	setIsAuth,
 }) => {
 	const logout = (): void => {
-		fetch(`${getApiUrl}/auth/logout`, {
+		fetch(`${getApiUrl()}/auth/logout`, {
 			method: "PUT",
 			headers: {
 				"Content-Type": "application/json",
+				Authorization: `Bearer ${Cookies.get("accessToken")}`,
 			},
 		});
+		setIsAuth(false);
 		Cookies.remove("refreshToken");
 		Cookies.remove("accessToken");
 	};
 	return (
 		<div className={styles.dropdownWrapper}>
 			<div className={styles.userInfo}>
-				<p className={styles.userName}>John Doe</p>
+				{/* <p className={styles.userName}>John Doe</p> */}
 				<p className={styles.userEmail}>{email}</p>
 			</div>
 			<div className={styles.dropdownBtns}>
@@ -411,6 +442,7 @@ export const UserPanel: React.FC = () => {
 					ref={dropdownRef}
 					email={email}
 					setIsModalOpen={setIsModalOpen}
+					setIsAuth={setIsAuth}
 				/>
 			) : null}
 			<Modal isOpen={isModalOpen} setIsOpen={setIsModalOpen} />

@@ -93,6 +93,16 @@ export const SigninView = (): React.ReactElement => {
 			});
 	};
 
+	const checkEmail = (): boolean => {
+		const email = formRef.current?.email.value;
+		if (!isEmail(email)) {
+			setEmailError(t("auth.enterAValidEmailAddress"));
+			return false;
+		}
+		setEmailError("");
+		return true;
+	};
+
 	const checkForm = (): void => {
 		const form = formRef.current;
 		const email = form?.email.value;
@@ -102,26 +112,20 @@ export const SigninView = (): React.ReactElement => {
 			setErrorText("");
 			setEmailError("");
 			setSubmitDisabled(true);
+			if (email && !checkEmail()) {
+				return;
+			}
 			return;
 		}
 
 		if (!isEmail(email)) {
 			setSubmitDisabled(true);
-			setEmailError(t("auth.notValidEmail"));
+			setEmailError(t("auth.enterAValidEmailAddress"));
 			return;
 		}
 
 		setEmailError("");
 		setSubmitDisabled(false);
-	};
-
-	const checkEmail = (): void => {
-		const email = formRef.current?.email.value;
-		if (!isEmail(email)) {
-			setEmailError(t("auth.notValidEmail"));
-			return;
-		}
-		setEmailError("");
 	};
 
 	const dbCheckForm = checkForm;
@@ -141,9 +145,8 @@ export const SigninView = (): React.ReactElement => {
 					placeholder="Your email"
 					hasError={!!emailError.length}
 					errorText={emailError}
-					onInput={() => {
+					onBlur={() => {
 						checkEmail();
-						dbCheckForm();
 					}}
 				/>
 				<Input
