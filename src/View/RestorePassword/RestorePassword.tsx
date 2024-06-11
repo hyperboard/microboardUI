@@ -1,7 +1,6 @@
 import { Input } from "shared/ui-lib/Input";
 import React, { useRef, useState } from "react";
 import styles from "./RestorePassword.module.css";
-import { useDebounce } from "shared/hooks/useDebounce";
 import { Button } from "shared/ui-lib/Button";
 import {
 	Link as RRDLink,
@@ -26,12 +25,22 @@ export const RestorePassword: React.FC = () => {
 		const form = formRef.current;
 		if (!form) {
 			setIsDisabled(true);
+			setError("");
 			return;
 		}
 		const newPassword = form?.newPassword?.value;
 		const repeatedPassword = form?.repeatedPassword?.value;
 		if (!newPassword || !repeatedPassword) {
 			setIsDisabled(true);
+			setError("");
+			return;
+		}
+
+		const MIN_PASSWORD_LENGTH = 8;
+
+		if (repeatedPassword.length < MIN_PASSWORD_LENGTH) {
+			setIsDisabled(true);
+			setError("");
 			return;
 		}
 
@@ -56,14 +65,11 @@ export const RestorePassword: React.FC = () => {
 
 		if (newPassword.length < MIN_PASSWORD_LENGTH) {
 			setIsDisabled(true);
-			// setNewPassError(t("auth.passwordLengthError"));
 			return;
 		}
 
 		setNewPassError("");
 	};
-
-	const dbCheckForm = checkForm;
 
 	const onSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
 		event.preventDefault();
@@ -130,7 +136,7 @@ export const RestorePassword: React.FC = () => {
 	return (
 		<div>
 			<form ref={formRef} className={styles.form} onSubmit={onSubmit}>
-				<h1 className={styles.title}>{t("auth.checkInbox")}</h1>
+				<h1 className={styles.title}>{t("auth.resetPassword")}</h1>
 				<div className={styles.inputs}>
 					<Input
 						password
@@ -148,21 +154,29 @@ export const RestorePassword: React.FC = () => {
 						password
 						placeholder={t("auth.newPassword")}
 						id="repeatedPassword"
-						onBlur={checkForm}
+						onInput={checkForm}
 						errorText={error}
 						helperText={t("auth.passwordAtLeast")}
 						hasError={!!error.length}
 					/>
 				</div>
 
-				<Button
-					disabled={isDisabled}
-					type="submit"
-					className={styles.submit}
-				>
-					{t("auth.submit")}
-					<Tail />
-				</Button>
+				<div className={styles.btns}>
+					<Button
+						disabled={isDisabled}
+						type="submit"
+						className={styles.submit}
+					>
+						{t("auth.submit")}
+						<Tail />
+					</Button>
+					<Button
+						pattern="ghost"
+						onClick={() => navigate("/auth/sign-in")}
+					>
+						{t("auth.backToLogIn")}
+					</Button>
+				</div>
 			</form>
 		</div>
 	);

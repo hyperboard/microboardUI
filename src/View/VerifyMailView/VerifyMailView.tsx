@@ -7,7 +7,6 @@ import styles from "./VerifyMailView.module.css";
 import { Input } from "shared/ui-lib/Input/Input";
 import { LockIcon } from "View/SignupView/LockIcon";
 import { Button } from "shared/ui-lib/Button";
-import { useDebounce } from "shared/hooks/useDebounce";
 import { Tail } from "View/AuthView/Tail";
 
 const secondsToHumanReadable = (seconds: number): string => {
@@ -186,6 +185,19 @@ export const VerifyMailView: React.FC = () => {
 		if (!searchParams.get("email")) {
 			return;
 		}
+		fetch(getApiUrl("/auth/checkVerificationCodes"), {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				email: searchParams.get("email"),
+			}),
+		}).then(response => {
+			if (response.ok) {
+				setRetryCount(60 * 3);
+			}
+		});
 		if (!searchParams.get("passcode")) {
 			return;
 		}

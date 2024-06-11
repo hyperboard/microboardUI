@@ -24,21 +24,13 @@
 
 .InputWrapper .InputHelperText {
 	font-size: 14px;
-	color: rgba(13, 17, 38, 0.4);
+	color: rgba(15, 19, 36, 0.6);
 }
 
 .InputWrapper .InputErrorText {
 	font-size: 14px;
 	color: #e6483d;
 }
-
-.InputWrapper .InputHelperText {
-	font-size: 14px;
-	color: rgba(15, 19, 36, 0.6);
-}
-
-/* .InputWrapper .InputKeyHint {
-} */
 
 .InputContainer {
 	display: flex;

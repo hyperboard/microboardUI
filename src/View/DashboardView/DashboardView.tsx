@@ -58,7 +58,6 @@ const AddBoard: React.FC<{ app: App }> = ({ app }) => {
 			className={styles["addBoard"]}
 			onClick={async () => {
 				const boardId = await app.createPublicBoard();
-				console.log(boardId);
 				if (boardId) {
 					navigate(`/boards/${boardId}`);
 				}

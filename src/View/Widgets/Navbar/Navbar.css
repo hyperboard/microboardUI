@@ -6,7 +6,7 @@
 
 	max-width: 1280px;
 
-	padding: 16px 120px;
+	padding: 0 120px;
 
 	font-family: "Manrope", Arial;
 }
@@ -21,6 +21,8 @@
 
 	font-size: 16px;
 	font-weight: 500;
+
+	margin: 0;
 }
 
 .NavbarWrapper .Link {
@@ -82,24 +84,32 @@
 @media (max-width: 640px) {
 	.NavbarWrapper {
 		max-width: 100%;
-		padding: 8px 20px;
-	}
-
-	.NavbarWrapper .Logo {
-		margin-bottom: 10px; /* Adds space between logo and links */
+		padding: 0 30px;
+		height: auto;
 	}
 
 	.NavbarWrapper .Link,
 	.NavbarWrapper .LinkActive {
-		width: 100%; /* Makes links full width */
-		box-sizing: border-box; /* Includes padding in width calculation */
-		margin-bottom: 5px; /* Adds space between links */
+		width: 100%;
+		box-sizing: border-box;
+		margin-bottom: 5px;
 	}
 }
 
 @media screen and (max-width: 1280px) {
 	.NavbarWrapper {
-		padding: 8px 16px;
+		padding: 0 16px;
 		max-width: 100%;
+	}
+}
+
+@media screen and (max-width: 640px) {
+	.NavbarWrapper .Link,
+	.NavbarWrapper .LinkActive {
+		display: none;
+	}
+
+	.NavbarWrapper {
+		border-bottom: 1px solid #dee0e3;
 	}
 }
