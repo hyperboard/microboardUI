@@ -405,6 +405,61 @@ export class Auth {
         return tokens;
     }
 
+    async checkVerificationCodes({ email }: { email: string }): Promise<void> {
+        const user = await this.database.query(
+            `select id from users where email = $1`,
+            [email]
+        );
+        const userId = user?.rows[0]?.id;
+        if (!userId) {
+            throw new HttpException(HttpStatus.NOT_FOUND, "User not found");
+        }
+
+        if (user.rows[0].activated) {
+            return;
+        }
+
+        const lastPasscode = await this.database.query(
+            `select * from user_passcode where user_id = $1 order by created desc limit 1`,
+            [userId]
+        );
+
+        const HOURS_24 = 24 * 60 * 60 * 1000;
+        const passcode = this.authHelper.generatePasscode();
+        if (
+            lastPasscode.rows.length > 0 &&
+            lastPasscode.rows[0].created < Date.now() - HOURS_24
+        ) {
+            await this.database.query(
+                `
+            select add_passcode($1, $2)
+            `,
+                [userId, passcode]
+            );
+
+            try {
+                await this.mailer.sendMail(
+                    email,
+                    "Confirm Your Email Address",
+                    {
+                        template: "verify-email",
+                        context: {
+                            passcode: passcode,
+                            userId: "" + userId,
+                            email: email,
+                        },
+                    }
+                );
+            } catch (e) {
+                this.logger.error(`sendMail error: ${e}`);
+                throw new HttpException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Error occurred when sending verification email"
+                );
+            }
+        }
+    }
+
     async resendEmail(payload: ResendEmailPayload): Promise<any> {
         const user = await this.database.query(
             `select id from users where email = $1`,
@@ -427,7 +482,10 @@ export class Auth {
             );
         }
 
-        if (lastPasscode.rows[0].created > Date.now() - 3 * 60 * 1000) {
+        if (
+            lastPasscode.rows.length > 1 &&
+            lastPasscode.rows[0].created > Date.now() - 3 * 60 * 1000
+        ) {
             throw new HttpException(
                 HttpStatus.UNAUTHORIZED,
                 `Can retry after 3 minutes: ${
@@ -435,6 +493,7 @@ export class Auth {
                 }`
             );
         }
+
         try {
             await this.database.query(
                 `
