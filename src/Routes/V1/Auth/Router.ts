@@ -86,6 +86,23 @@ export function getAuthRouter(
     );
 
     router.post(
+        "/auth/checkVerificationCodes",
+        body("email").not().isEmpty(),
+        validateRequest,
+        async (req, res) => {
+            const { email } = req.body;
+            try {
+                await authService.checkVerificationCodes({
+                    email,
+                });
+                res.json({ message: "Email sent" });
+            } catch (err) {
+                return handleError(res, err);
+            }
+        }
+    );
+
+    router.post(
         "/auth/resendEmail",
         body("email").isEmail(),
         // body("userId").not().isEmpty(),
