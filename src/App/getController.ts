@@ -578,8 +578,24 @@ export function getController(getBoard: () => Board): Controller {
 	};
 }
 
+function isTextInput(element): boolean {
+	try {
+		const tagName = element.tagName.toLowerCase();
+
+		return (
+			tagName === "input" ||
+			tagName === "textarea" ||
+			element.isContentEditable
+		);
+	} catch (_) {
+		return false;
+	}
+}
+
 function postKeyboardEvent(event: KeyboardEvent): void {
-	window.parent.postMessage(serializeKeyboardEvent(event), "*");
+	if (!isTextInput(event.target)) {
+		window.parent.postMessage(serializeKeyboardEvent(event), "*");
+	}
 }
 
 interface SerializedKeyboardEvent {
