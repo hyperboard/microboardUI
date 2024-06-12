@@ -7,6 +7,8 @@ import { jwtMiddleware } from "Middlewares/jwt.middleware";
 import { getUsersRouter } from "./Users";
 import { Config } from "shared/config/config";
 import { Mailer } from "shared/modules/mailer/mailer";
+import { createMediaRouter } from "./Media";
+import { MediaDAL } from "./Media/MediaDAL";
 
 export function getV1Router(
     config: Config,
@@ -14,12 +16,14 @@ export function getV1Router(
     boards: Boards,
     logger: winston.Logger,
     auth: Auth,
-    users: Users
+    users: Users,
+    media: MediaDAL
 ): express.Router {
     const router = express.Router();
     const authMiddleware = jwtMiddleware(logger);
     router.use("/api/v1", getAuthRouter(auth, logger));
     router.use("/api/v1", getBoardsRouter(boards, logger));
+    router.use("/api/vi", createMediaRouter(media, logger));
     // BUG: Миддлвар блокирует запрос GET boards/:id без токена по edit/view ссылке
     // router.use(authMiddleware);
     router.use("/api/v1", getUsersRouter(users, logger));

@@ -17,6 +17,7 @@ import { Mailer } from "./shared/modules/mailer/mailer";
 import http from "http";
 import { WebSocketServer } from "ws";
 import morgan from "morgan";
+import { createMinioMediaDAL } from "Routes/V1/Media";
 
 export async function getApp(): Promise<http.Server> {
     const app = express();
@@ -107,7 +108,12 @@ export async function getApp(): Promise<http.Server> {
         response.status(200).json({ connection: timestamp });
     });
 
-    app.use("/", getV1Router(config, mailer, boards, logger, auth, users));
+    const media = createMinioMediaDAL(logger); // replace with konturMediaDAL for their version
+
+    app.use(
+        "/",
+        getV1Router(config, mailer, boards, logger, auth, users, media)
+    );
 
     app.use((req, res, next) => {
         if (req.path.includes("favicon.svg")) {
