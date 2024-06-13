@@ -18,15 +18,15 @@ export const useOutsideClickHandler = (
 			}
 		};
 
-		document.addEventListener("mousedown", handleClickOutside);
+		window.addEventListener("mousedown", handleClickOutside);
 		if (isEscHandler) {
-			document.addEventListener("keydown", handleEscKey);
+			window.addEventListener("keydown", handleEscKey);
 		}
 
 		return () => {
-			document.removeEventListener("mousedown", handleClickOutside);
+			window.removeEventListener("mousedown", handleClickOutside);
 			if (isEscHandler) {
-				document.removeEventListener("keydown", handleEscKey);
+				window.removeEventListener("keydown", handleEscKey);
 			}
 		};
 	}, [ref, onOutsideClick, isEscHandler]);

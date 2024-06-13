@@ -33,7 +33,7 @@ export function getRender(app: App): () => void {
 				},
 				{
 					path: "sign-in",
-					element: <SigninView />,
+					element: <SigninView app={app} />,
 				},
 				{
 					path: "verify",

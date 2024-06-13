@@ -93,7 +93,7 @@
 }
 
 .dropdownWrapper {
-	position: absolute;
+	position: fixed;
 	top: 70px;
 	right: 8px;
 	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
@@ -108,6 +108,10 @@
 	-webkit-user-select: none; /* Safari */
 	-ms-user-select: none; /* IE 10 and IE 11 */
 	user-select: none; /* Standard syntax */
+}
+
+.dropdownWrapper_closed {
+	display: none;
 }
 
 .userInfo {
@@ -226,6 +230,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	font-family: "Manrope", "Arial", sans-serif;
 }
 
 .modal {
@@ -271,6 +276,12 @@
 	flex-direction: column;
 	align-items: center;
 	gap: 12px;
+
+	padding-bottom: 40px;
+}
+
+.requestedIcon {
+	padding-top: 40px;
 }
 
 .backToLogin {
@@ -283,6 +294,8 @@
 	font-size: 48px;
 	margin: 0;
 	padding: 0;
+
+	line-height: 56px;
 }
 
 @media screen and (max-width: 640px) {
@@ -302,5 +315,14 @@
 
 	.modalTitle {
 		font-size: 24px;
+	}
+
+	.requested {
+		width: 100%;
+		padding-bottom: 12px;
+	}
+
+	.requestedIcon {
+		padding-top: 12px;
 	}
 }

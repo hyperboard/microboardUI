@@ -1,10 +1,6 @@
 import React, { useRef, useState } from "react";
 import styles from "./SigninView.module.css";
-import {
-	Link as RRDLink,
-	createSearchParams,
-	useNavigate,
-} from "react-router-dom";
+import { createSearchParams, useNavigate } from "react-router-dom";
 import { getApiUrl } from "Config";
 import Cookies from "js-cookie";
 import { useTranslation } from "react-i18next";
@@ -13,16 +9,20 @@ import { Tail } from "View/AuthView/Tail";
 import { EmailIcon } from "View/SignupView/EmailIcon";
 import { LockIcon } from "View/SignupView/LockIcon";
 import { Button } from "shared/ui-lib/Button";
-import { useDebounce } from "shared/hooks/useDebounce";
 import { isEmail } from "lib/regex";
 import { Link } from "shared/ui-lib/Link";
+import { App } from "App";
 
 type RegisterOkResponse = {
 	accessToken: string;
 	refreshToken: string;
 };
 
-export const SigninView = (): React.ReactElement => {
+interface Props {
+	app: App;
+}
+
+export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 	const { t } = useTranslation();
 	// const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [submitDisabled, setSubmitDisabled] = useState(true);
@@ -58,7 +58,7 @@ export const SigninView = (): React.ReactElement => {
 					return Promise.reject(data);
 				}
 			})
-			.then((data: RegisterOkResponse) => {
+			.then(async (data: RegisterOkResponse) => {
 				Cookies.set("accessToken", data.accessToken, { secure: true });
 				Cookies.set("refreshToken", data.refreshToken, {
 					secure: true,
@@ -69,7 +69,10 @@ export const SigninView = (): React.ReactElement => {
 						`/boards/${localStorage.getItem("lastSeenBoard")}`,
 					);
 				} else {
-					navigate("/dashboard");
+					const boardId = await app.createPublicBoard();
+					if (boardId) {
+						navigate(`/boards/${boardId}`);
+					}
 				}
 			})
 			.catch(error => {

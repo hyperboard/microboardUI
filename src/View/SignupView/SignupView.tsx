@@ -1,17 +1,12 @@
 import { getApiUrl } from "Config";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-	Link as RRDLink,
-	createSearchParams,
-	useNavigate,
-} from "react-router-dom";
+import { createSearchParams, useNavigate } from "react-router-dom";
 import styles from "./SignupView.module.css";
 import { Input } from "shared/ui-lib/Input/Input";
 import { Tail } from "View/AuthView/Tail";
 import { EmailIcon } from "./EmailIcon";
 import { LockIcon } from "./LockIcon";
-import { useDebounce } from "shared/hooks/useDebounce";
 import { Link } from "shared/ui-lib/Link";
 import { Button } from "shared/ui-lib/Button";
 import isEmail from "validator/lib/isEmail";
