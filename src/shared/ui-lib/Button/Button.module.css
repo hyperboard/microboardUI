@@ -55,6 +55,12 @@
 	color: rgba(10, 15, 41, 0.25);
 }
 
+.primary.loading {
+	border-color: #14151a;
+	background-color: #14151a;
+	color: white;
+}
+
 /* SECONDARY */
 
 .secondary {

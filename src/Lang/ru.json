@@ -196,6 +196,7 @@
 		"passwordMustBeDifferent": "Ваш пароль должен отличаться от предыдущих паролей",
 		"skip": "Пропустить",
 		"passwordDoNotMatch": "Введенные пароли не совпадают",
+		"currentPasswordIsIncorrect": "Текущий пароль введен неправильно. Попробуйте еще раз",
 		"enterAValidEmailAddress": "Введите корректный email"
 	},
 	"modal": {

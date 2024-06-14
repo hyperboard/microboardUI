@@ -63,6 +63,7 @@ export const VerifyMailView: React.FC = () => {
 	// const [passcode, setPasscode] = useState<string>("");
 	const [error, setError] = useState<string>("");
 	const [submitDisabled, setSubmitDisabled] = useState<boolean>(true);
+	const [retryDisabled, setRetryDisabled] = useState<boolean>(false);
 	const formRef = useRef<HTMLFormElement>(null);
 	const [codeTip, setCodeTip] = useState<
 		"auth.enterCodeBelow" | "auth.enterNewCodeBelow" | ""
@@ -144,7 +145,23 @@ export const VerifyMailView: React.FC = () => {
 		if (!searchParams.get("email")) {
 			return;
 		}
-		resendEmail(searchParams.get("email") || "")
+		setRetryDisabled(true);
+		fetch(getApiUrl("/auth/resendEmail"), {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ email: searchParams.get("email") }),
+		})
+			.then(data => {
+				return data.json();
+			})
+			.then(data => {
+				if (data?.status >= 300) {
+					return Promise.reject(data);
+				}
+				return data;
+			})
 			.then(() => {
 				setRetryCount(60 * 3);
 				setIsAttemptsExceeded(false);
@@ -176,6 +193,9 @@ export const VerifyMailView: React.FC = () => {
 					navigate("/auth/sign-up");
 					return;
 				}
+			})
+			.finally(() => {
+				setRetryDisabled(false);
 			});
 	};
 
@@ -185,6 +205,7 @@ export const VerifyMailView: React.FC = () => {
 		if (!searchParams.get("email")) {
 			return;
 		}
+		setRetryDisabled(true);
 		fetch(getApiUrl("/auth/checkVerificationCodes"), {
 			method: "POST",
 			headers: {
@@ -193,11 +214,32 @@ export const VerifyMailView: React.FC = () => {
 			body: JSON.stringify({
 				email: searchParams.get("email"),
 			}),
-		}).then(response => {
-			if (response.ok) {
-				setRetryCount(60 * 3);
-			}
-		});
+		})
+			.then(response => {
+				if (!response.ok) {
+					return Promise.reject(response);
+				}
+				return response.json();
+			})
+			.then(data => {
+				if (data?.message === "PASSCODE_SENDED") {
+					setRetryCount(60 * 3);
+				}
+				if (data?.message.startsWith("PASSCODE_NOT_SENDED")) {
+					console.log("here");
+
+					try {
+						const timeToResend = data?.message.split(":")[1] / 1000;
+						setRetryCount(parseInt(timeToResend.toFixed(0)));
+					} catch (_) {
+						setRetryCount(60 * 3);
+					}
+				}
+			})
+			.finally(() => {
+				setRetryDisabled(false);
+			});
+
 		if (!searchParams.get("passcode")) {
 			return;
 		}
@@ -269,7 +311,7 @@ export const VerifyMailView: React.FC = () => {
 					</Button>
 					<Button
 						pattern="ghost"
-						disabled={retryCount > 0}
+						disabled={retryDisabled || retryCount > 0}
 						type="button"
 						onClick={onResend}
 					>

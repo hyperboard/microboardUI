@@ -4,6 +4,7 @@ import clsx from "clsx";
 
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	pattern?: "primary" | "secondary" | "tertiary" | "ghost";
+	loading?: boolean;
 }
 
 export const Button: React.FC<Props> = ({
@@ -14,7 +15,12 @@ export const Button: React.FC<Props> = ({
 }) => {
 	return (
 		<button
-			className={clsx(styles.button, styles[pattern], className)}
+			className={clsx(
+				styles.button,
+				styles[pattern],
+				className,
+				props.loading && styles.loading,
+			)}
 			{...props}
 		>
 			{children}

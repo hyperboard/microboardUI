@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Button } from "shared/ui-lib/Button";
 import styles from "./UserPanel.module.css";
 import { Click } from "./icons/Click";
@@ -74,9 +74,9 @@ const UserDropDown: React.FC<UserDropDownProps> = ({
 				>
 					<ChangePassword /> Change password
 				</Button>
-				<Button className={styles.dropdownBtn} pattern="ghost">
+				{/* <Button className={styles.dropdownBtn} pattern="ghost">
 					<Upgrade /> Upgrade
-				</Button>
+				</Button> */}
 				<Button
 					className={styles.dropdownBtn}
 					pattern="ghost"
@@ -199,7 +199,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 			})
 			.catch(error => {
 				if (error?.message === "Wrong password") {
-					setError(t("auth.passwordDoNotMatch"));
+					setError(t("auth.currentPasswordIsIncorrect"));
 					return;
 				}
 				if (error?.message === "ERROR_SAME_PASSWORD") {
@@ -253,7 +253,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 		}
 
 		if (newPassword !== confirmPassword) {
-			setError(t("auth.passwordDoNotMatch"));
+			setError(t("auth.currentPasswordIsIncorrect"));
 			setIsSubmitDisabled(true);
 			return;
 		}
@@ -277,6 +277,10 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 	const dbCheckForm = checkForm;
 
 	useOutsideClickHandler(modalRef, closeModal);
+
+	useEffect(() => {
+		setIsPasswordChanged(false);
+	}, [isOpen]);
 
 	if (!isOpen) {
 		return null;
@@ -467,7 +471,7 @@ export const UserPanel: React.FC = () => {
 	return (
 		<>
 			<div className={styles.wrapper}>
-				<div className={styles.icons}>
+				{/* <div className={styles.icons}>
 					<button className={styles.icon}>
 						<Click />
 					</button>
@@ -481,12 +485,16 @@ export const UserPanel: React.FC = () => {
 				<Button className={styles.btn} pattern="primary">
 					<UserShare />
 					Share
-				</Button>
-				<UserPic
-					email={email}
-					setIsModalOpen={setIsModalOpen}
-					setIsAuth={setIsAuth}
-				/>
+				</Button> */}
+
+				{/* TODO: remove temporarily inline style */}
+				<div style={{ padding: "6px" }}>
+					<UserPic
+						email={email}
+						setIsModalOpen={setIsModalOpen}
+						setIsAuth={setIsAuth}
+					/>
+				</div>
 			</div>
 
 			<Modal isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
