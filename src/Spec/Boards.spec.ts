@@ -4,7 +4,6 @@ import { beforeAll, afterEach, describe, it, expect } from "@jest/globals";
 import dotenv from "dotenv";
 import { getApp } from "getApp";
 import { createToken } from "Tokens";
-import { token } from "morgan";
 
 let server: http.Server;
 

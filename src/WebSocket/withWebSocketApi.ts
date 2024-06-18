@@ -3,12 +3,14 @@ import { Boards } from "Routes/V1/Boards";
 import { AccessToken } from "Interface";
 import { verifyToken } from "Tokens";
 
-const EVENTS_TO_REQUEST_SNAPSHOT = 1000;
-const MINUTE = 60 * 1000;
+const SECOND = 1000;
+const MINUTE = 60 * SECOND;
 const TEN_MINUTES = 10 * MINUTE;
 const WS_TOKENS_CLEANUP_INTERVAL = TEN_MINUTES;
 const SAVE_EVENTS_INTERVAL = 10;
-const SNAPSHOT_REQUEST_TIMEOUT = 2 * MINUTE;
+const SNAPSHOT_EVENTS_TO_REQUEST = 100;
+const SNAPSHOT_RETRY_TIMEOUT = 2 * MINUTE;
+const SNAPSHOT_REQUEST_TIMEOUT = 10 * SECOND;
 
 export function withWebSocketApi(wss: WebSocketServer, boards: Boards): void {
     const boardClients = new Map<string, WebSocket.WebSocket[]>();
@@ -247,7 +249,10 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards): void {
         }
     }
 
-    function requestSnapshotFromClient(boardId: string, sinceLast): void {
+    function requestSnapshotFromClient(
+        boardId: string,
+        sinceLast: number
+    ): void {
         if (snapshotRequestTimers.has(boardId)) {
             return;
         }
@@ -285,7 +290,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards): void {
         clearTimeout(snapshotRequestTimers.get(boardId));
         const timer = setTimeout(() => {
             requestSnapshotFromClient(boardId, sinceLast);
-        }, SNAPSHOT_REQUEST_TIMEOUT);
+        }, SNAPSHOT_RETRY_TIMEOUT);
         snapshotRequestTimers.set(boardId, timer);
     }
 
@@ -422,15 +427,33 @@ export class EventsManager {
         } catch (error) {}
     }
 
+    private snapshotTimers: Map<string, NodeJS.Timeout> = new Map<
+        string,
+        NodeJS.Timeout
+    >();
+
     async requestSnapshotIfNeeded(boardId: string): Promise<void> {
         try {
             const count = await this.boards.getEventCountSinceLastSnapshot(
                 boardId
             );
-            if (count >= EVENTS_TO_REQUEST_SNAPSHOT) {
-                this.requestSnapshotCallback(boardId, count);
+            if (count >= SNAPSHOT_EVENTS_TO_REQUEST) {
+                if (this.snapshotTimers.has(boardId)) {
+                    clearTimeout(this.snapshotTimers.get(boardId)!);
+                }
+
+                const timer = setTimeout(() => {
+                    this.requestSnapshotCallback(boardId, count);
+                    this.snapshotTimers.delete(boardId);
+                }, SNAPSHOT_REQUEST_TIMEOUT);
+
+                this.snapshotTimers.set(boardId, timer);
             }
-        } catch (error) {}
+        } catch (error) {
+            console.error(
+                `Failed to request snapshot for board ${boardId}: ${error}`
+            );
+        }
     }
 
     requestSnapshotCallback(boardId: string, sinceLast: number): void {}

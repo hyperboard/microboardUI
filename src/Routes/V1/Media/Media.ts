@@ -2,8 +2,7 @@ import { minioClient } from "./MinioClient";
 import * as stream from "stream";
 import { Logger } from "winston";
 import { MediaDAL } from "./MediaDAL";
-
-const BUCKET_NAME = process.env.MINIO_BUCKET_NAME;
+import { BUCKET_NAME } from "./MinioClient";
 
 /**
  * Save an image to MinIO using its hash as the ID.
@@ -19,9 +18,7 @@ async function saveImage(
     const readableStream = new stream.PassThrough();
     readableStream.end(imageBuffer);
 
-    await minioClient.putObject(BUCKET_NAME, id, readableStream, {
-        "Content-Type": "application/octet-stream",
-    });
+    await minioClient.putObject(BUCKET_NAME, id, readableStream);
     logger.info(`Image with ID ${id} successfully saved.`);
 }
 
