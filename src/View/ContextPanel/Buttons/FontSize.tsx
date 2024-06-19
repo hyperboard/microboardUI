@@ -63,7 +63,7 @@ export function FontSize({
 
 	useEffect(() => {
 		updateAutosizeSettings();
-	}, []);
+	}, [fontSize, inputType, itemType]);
 
 	if (board.selection.getContext() === "SelectUnderPointer") {
 		return null;
