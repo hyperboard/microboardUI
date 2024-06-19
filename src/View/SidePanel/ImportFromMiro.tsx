@@ -7,7 +7,7 @@ export function ImportFromMiro() {
 
 	const onClickButtonImport = () => {
 		const clientId = "3458764589599848573";
-		const redirectUrl = import.meta.env.BASE_URL + "/boards/:boardId/";
+		const redirectUrl = window.location.origin + "/boards/:boardId/";
 
 		window.location.href =
 			"https://miro.com/oauth/authorize?response_type=code&client_id=" +
