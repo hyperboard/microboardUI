@@ -29,7 +29,8 @@ export function MiroBoards({
 		try {
 			const clientId = import.meta.env.MIRO_CLIENT_ID;
 			const clientSecret = import.meta.env.MIRO_CLIENT_SECRET;
-			const redirectUrl = window.location.origin + "/boards/:boardId/";
+			const url = window.location.origin;
+			const redirectUrl = url + "/boards/:boardId/";
 
 			const response = await fetch(
 				"https://api.miro.com/v1/oauth/token?grant_type=authorization_code&client_id=" +
