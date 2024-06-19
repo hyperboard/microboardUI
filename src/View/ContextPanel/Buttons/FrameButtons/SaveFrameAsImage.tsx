@@ -1,13 +1,12 @@
-import React from "react";
 import { Board } from "Board";
+import { Frame } from "Board/Items";
+import { exportBoardSnapshot } from "Board/Tools/ExportSnapshot/exportBoardSnapshot";
+import { Quality } from "Board/Tools/ExportSnapshot/types";
+import React from "react";
+import { IconSize } from "View/ContextPanel/ContextPanel";
 import { Icon } from "View/Icon";
 import { UiButton } from "View/Ui/UiButton";
 import { canShowFrameSetting } from ".";
-import { IconSize } from "View/ContextPanel/ContextPanel";
-// import { exportBoardSnapshot, Quality } from "Board/Tools/ExportSnapshot";
-import { Quality } from "Board/Tools/ExportSnapshot/types";
-import { exportBoardSnapshot } from "Board/Tools/ExportSnapshot/exportBoardSnapshot";
-import { Frame } from "Board/Items";
 
 export default function SaveFrameAsImage({
 	board,
@@ -37,12 +36,13 @@ export default function SaveFrameAsImage({
 				return "";
 			})
 			.join(" ");
-		exportBoardSnapshot(
+		exportBoardSnapshot({
 			board,
-			Quality.HIGH,
-			frame.getMbr(),
-			`frame-${frameName}`,
-		);
+			bgColor: frame.getBackgroundColor(),
+			selection: frame.getMbr(),
+			nameToExport: `frame-${frameName}`,
+			upscaleTo: 4000,
+		});
 	};
 
 	return (
