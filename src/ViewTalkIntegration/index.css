@@ -3,3 +3,7 @@
 body {
 	font-family: "Lab Grotesque", sans-serif;
 }
+
+span {
+	caret-color: rgba(20, 129, 221, 1);
+}

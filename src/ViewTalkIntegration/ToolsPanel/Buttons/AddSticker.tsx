@@ -34,6 +34,7 @@ export function AddSticker() {
 	};
 
 	const isActive = Boolean(board.tools.getAddSticker());
+	const stickerColor = board.tools.getAddSticker()?.getBackgroundColor();
 
 	return (
 		<ButtonWithMenu
@@ -51,7 +52,11 @@ export function AddSticker() {
 			isOpen={isActive}
 		>
 			<UiPanel grid columns={4}>
-				<ColorPicker colors={stickerColors} onPick={handlePick} />
+				<ColorPicker
+					selectedColor={stickerColor}
+					colors={stickerColors}
+					onPick={handlePick}
+				/>
 			</UiPanel>
 		</ButtonWithMenu>
 	);

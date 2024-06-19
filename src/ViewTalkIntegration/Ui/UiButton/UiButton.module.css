@@ -1,10 +1,10 @@
 .default {
 	--bg-color: "transparent";
-	--content-color: rgba(0, 0, 0, 0.8);
-	--hover-bg-color: rgba(0, 0, 0, 0.05);
-	--hover-content-color: rgba(0, 0, 0, 0.8);
+	--content-color: rgb(51, 51, 51);
+	--hover-bg-color: rgb(242, 242, 242);
+	--hover-content-color: rgb(51, 51, 51);
 	--active-bg-color: rgb(232, 242, 252);
-	--active-content-color: rgba(34, 145, 255, 1);
+	--active-content-color: rgb(34, 145, 255);
 	--disabled-bg-color: "transparent";
 	--disabled-content-color: rgba(0, 0, 0, 0.4);
 	--outline-color: rgba(128, 183, 255, 0.4);
