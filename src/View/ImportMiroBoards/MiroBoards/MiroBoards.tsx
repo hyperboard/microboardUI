@@ -47,6 +47,7 @@ export function MiroBoards({
 					method: "POST",
 					headers: {
 						Accept: "application/json, application/*+json, application/x-jackson-smile, application/cbor",
+						mode: "no-cors",
 					},
 				},
 			);
@@ -69,6 +70,7 @@ export function MiroBoards({
 				headers: {
 					Authorization: "Bearer " + token,
 					Accept: "application/json",
+					mode: "no-cors",
 				},
 			},
 		);
