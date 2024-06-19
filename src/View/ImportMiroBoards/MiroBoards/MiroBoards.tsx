@@ -27,8 +27,10 @@ export function MiroBoards({
 
 	const fetchData = async () => {
 		try {
-			const clientId = import.meta.env.MIRO_CLIENT_ID;
-			const clientSecret = import.meta.env.MIRO_CLIENT_SECRET;
+			// const clientId = import.meta.env.MIRO_CLIENT_ID;
+			// const clientSecret = import.meta.env.MIRO_CLIENT_SECRET;
+			const clientId = "3458764589599848573";
+			const clientSecret = "ufmdVcxamXfkjHHeS8Bv1QPCxrUN63PB";
 			const url = window.location.origin;
 			const redirectUrl = url + "/boards/:boardId/";
 
