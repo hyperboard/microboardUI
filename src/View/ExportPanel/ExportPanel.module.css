@@ -5,3 +5,19 @@
 	display: flex;
 	width: 250px;
 }
+
+.loader {
+	position: absolute;
+	top: 0;
+	left: 0;
+	font-size: 24px;
+	font-weight: 700;
+	width: 100dvw;
+	height: 100dvh;
+	z-index: 1000;
+	display: grid;
+	place-items: center;
+	color: red;
+	background-color: rgba(0, 0, 0, 0.2);
+	backdrop-filter: blur(3px);
+}
