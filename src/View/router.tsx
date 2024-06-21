@@ -37,7 +37,7 @@ export function getRender(app: App): () => void {
 				},
 				{
 					path: "verify",
-					element: <VerifyMailView />,
+					element: <VerifyMailView app={app} />,
 				},
 				{
 					path: "restore-password",

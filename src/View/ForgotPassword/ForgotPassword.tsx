@@ -1,7 +1,6 @@
 import { getApiUrl } from "Config";
 import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useDebounce } from "shared/hooks/useDebounce";
 import { Button } from "shared/ui-lib/Button";
 import { Input } from "shared/ui-lib/Input";
 import styles from "./ForgotPassword.module.css";
@@ -18,22 +17,32 @@ export const ForgotPassword: React.FC = () => {
 	const [error, setError] = useState<string>("");
 	const navigate = useNavigate();
 
-	const checkForm = (): void => {
+	const checkForm = (): boolean => {
 		if (!formRef.current) {
-			return;
+			return false;
 		}
 
 		const email = formRef.current.email.value;
 
 		if (!isEmail(email)) {
-			setError(t("auth.enterAValidEmailAddress"));
+			// setError(t("auth.enterAValidEmailAddress"));
 			setDisabled(true);
-			return;
+			return false;
 		}
 
 		setDisabled(false);
 		setError("");
-		return;
+		return true;
+	};
+
+	const checkFormWithError = (): void => {
+		const isFormError = checkForm();
+
+		if (!isFormError) {
+			setError(t("auth.enterAValidEmailAddress"));
+		} else {
+			setError("");
+		}
 	};
 
 	const dbCheckForm = checkForm;
@@ -101,7 +110,8 @@ export const ForgotPassword: React.FC = () => {
 				placeholder={t("auth.emailPlaceholder")}
 				hasError={!!error.length}
 				errorText={error}
-				onBlur={dbCheckForm}
+				onBlur={checkFormWithError}
+				onInput={dbCheckForm}
 			/>
 			<div className={styles.btns}>
 				<Button

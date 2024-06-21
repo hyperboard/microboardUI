@@ -195,6 +195,7 @@
 		"passwordAtLeast": "The password must be at least 8 characters long",
 		"passwordMustBeDifferent": "Your password must be different to previous passwords",
 		"skip": "Skip",
+		"cancel": "Cancel",
 		"passwordDoNotMatch": "The entered passwords do not match",
 		"currentPasswordIsIncorrect": "The current password you entered is incorrect. Pleas try again",
 		"enterAValidEmailAddress": "Enter a valid email address"

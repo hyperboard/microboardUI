@@ -17,6 +17,7 @@ import { LockIcon } from "View/SignupView/LockIcon";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { SuccessIcon } from "View/ForgotPassword/SuccessIcon";
+import { PasswordChanged } from "View/Widgets/form-notifications/password-changed";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	email: string;
@@ -290,14 +291,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 		return (
 			<div className={styles.modalWrapper}>
 				<div ref={modalRef} className={styles.modal}>
-					<div className={styles.requested}>
-						<div className={styles.requestedIcon}>
-							<SuccessIcon />
-						</div>
-						<h1 className={styles.resetPassword}>
-							Password changed successfully
-						</h1>
-					</div>
+					<PasswordChanged />
 				</div>
 			</div>
 		);
@@ -372,7 +366,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 							{t("auth.submit")} <Tail />
 						</Button>
 						<Button pattern="ghost" onClick={closeModal}>
-							{t("auth.skip")}
+							{t("auth.cancel")}
 						</Button>
 					</div>
 				</form>

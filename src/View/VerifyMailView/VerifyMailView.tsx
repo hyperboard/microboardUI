@@ -8,6 +8,7 @@ import { Input } from "shared/ui-lib/Input/Input";
 import { LockIcon } from "View/SignupView/LockIcon";
 import { Button } from "shared/ui-lib/Button";
 import { Tail } from "View/AuthView/Tail";
+import { App } from "App";
 
 const secondsToHumanReadable = (seconds: number): string => {
 	const minutes = Math.floor(seconds / 60);
@@ -55,7 +56,7 @@ const verifyEmail = async (email: string, passcode: string): Promise<any> => {
 		});
 };
 
-export const VerifyMailView: React.FC = () => {
+export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 	const { t } = useTranslation();
 	const [searchParams, _setSearchParams] = useSearchParams();
 	const [retryCount, setRetryCount] = React.useState(0);
@@ -102,8 +103,17 @@ export const VerifyMailView: React.FC = () => {
 					Cookies.set("refreshToken", data.refreshToken);
 					return data;
 				})
-				.then(() => {
-					navigate("/dashboard");
+				.then(async () => {
+					if (localStorage.getItem("lastSeenBoard")) {
+						navigate(
+							`/boards/${localStorage.getItem("lastSeenBoard")}`,
+						);
+					} else {
+						const boardId = await app.createPublicBoard();
+						if (boardId) {
+							navigate(`/boards/${boardId}`);
+						}
+					}
 				})
 				.catch(error => {
 					if (error?.message === "PASSCODE_ATTEMPTS_EXCEEDED") {

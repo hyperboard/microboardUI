@@ -11,6 +11,7 @@ import { getApiUrl } from "Config";
 import { useTranslation } from "react-i18next";
 import { Link } from "shared/ui-lib/Link";
 import { Tail } from "View/AuthView/Tail";
+import { PasswordChanged } from "View/Widgets/form-notifications/password-changed";
 
 export const RestorePassword: React.FC = () => {
 	const { t } = useTranslation();
@@ -19,6 +20,7 @@ export const RestorePassword: React.FC = () => {
 	const [error, setError] = useState<string>("");
 	const formRef = useRef<HTMLFormElement>(null);
 	const [searchParams, _] = useSearchParams();
+	const [isPasswordChanged, setIsPasswordChanged] = useState<boolean>(false);
 	const navigate = useNavigate();
 
 	const checkForm = (): void => {
@@ -102,7 +104,7 @@ export const RestorePassword: React.FC = () => {
 				}
 			})
 			.then(() => {
-				navigate("/auth/sign-in");
+				setIsPasswordChanged(true);
 			})
 			.catch(error => {
 				if (`${error?.status}` === "409") {
@@ -112,6 +114,15 @@ export const RestorePassword: React.FC = () => {
 				setError(error?.message || "Unhandled error");
 			});
 	};
+
+	if (isPasswordChanged) {
+		return (
+			<div className={styles.passwordChanged}>
+				<PasswordChanged />
+				<Button>{t("auth.backToLogIn")}</Button>
+			</div>
+		);
+	}
 
 	if (!searchParams.get("token")) {
 		console.log("token not provided", searchParams);
