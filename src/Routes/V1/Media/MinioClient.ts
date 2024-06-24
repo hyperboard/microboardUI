@@ -95,4 +95,4 @@ const ensureBucketExists = async (retries: number = 0) => {
 };
 
 // Initialize MinIO setup
-ensureBucketExists();
+// ensureBucketExists();
