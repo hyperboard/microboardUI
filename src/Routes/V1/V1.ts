@@ -9,6 +9,7 @@ import { Config } from "shared/config/config";
 import { Mailer } from "shared/modules/mailer/mailer";
 import { createMediaRouter } from "./Media";
 import { MediaDAL } from "./Media/MediaDAL";
+import { getMiroRouter } from "./Miro";
 
 export function getV1Router(
     config: Config,
@@ -27,6 +28,8 @@ export function getV1Router(
     // BUG: Миддлвар блокирует запрос GET boards/:id без токена по edit/view ссылке
     // router.use(authMiddleware);
     router.use("/api/v1", getUsersRouter(users, logger));
+
+    router.use("/api/v1/miro", getMiroRouter());
 
     return router;
 }
