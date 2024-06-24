@@ -92,10 +92,11 @@ export function getAuthRouter(
         async (req, res) => {
             const { email } = req.body;
             try {
-                await authService.checkVerificationCodes({
+                const answer = await authService.checkVerificationCodes({
                     email,
                 });
-                res.json({ message: "Email sent" });
+
+                res.json({ message: answer });
             } catch (err) {
                 return handleError(res, err);
             }

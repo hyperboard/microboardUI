@@ -405,7 +405,11 @@ export class Auth {
         return tokens;
     }
 
-    async checkVerificationCodes({ email }: { email: string }): Promise<void> {
+    async checkVerificationCodes({
+        email,
+    }: {
+        email: string;
+    }): Promise<string> {
         const user = await this.database.query(
             `select id from users where email = $1`,
             [email]
@@ -416,7 +420,7 @@ export class Auth {
         }
 
         if (user.rows[0].activated) {
-            return;
+            return "USER_ALREADY_ACTIVATED";
         }
 
         const lastPasscode = await this.database.query(
@@ -450,6 +454,8 @@ export class Auth {
                         },
                     }
                 );
+
+                return "PASSCODE_SENDED";
             } catch (e) {
                 this.logger.error(`sendMail error: ${e}`);
                 throw new HttpException(
@@ -458,6 +464,9 @@ export class Auth {
                 );
             }
         }
+        return `PASSCODE_NOT_SENDED: ${
+            lastPasscode.rows[0].created - (Date.now() - 3 * 60 * 1000)
+        }`;
     }
 
     async resendEmail(payload: ResendEmailPayload): Promise<any> {

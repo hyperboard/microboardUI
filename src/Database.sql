@@ -729,19 +729,34 @@ begin
 end;
 $$ language plpgsql;
 
+
+drop function if exists check_passcode(varchar, integer);
 -- Function to check passcode
 create or replace function check_passcode(
-		pass_code varchar,
-		userid integer
+    pass_code varchar,
+    userid integer
 )
 returns boolean as $$
 declare
-		valid_passcode record;
+    last_passcode record;
 begin
-		with last_passcode as (select * from user_passcode where user_id = userid order by created desc limit 1)
-		update user_passcode set remaining_attempts = remaining_attempts - 1 where user_id = userid and id = (select id from last_passcode);
-		select * into valid_passcode from user_passcode where passcode = pass_code and remaining_attempts > 0 limit 1;
-		return found;
+    select * into last_passcode
+    from user_passcode
+    where user_id = userid
+    order by created desc
+    limit 1;
+    
+    if last_passcode is not null then
+        update user_passcode
+        set remaining_attempts = remaining_attempts - 1
+        where id = last_passcode.id;
+    end if;
+
+    if last_passcode is not null and last_passcode.passcode = pass_code and last_passcode.remaining_attempts > 0 then
+        return true;
+    else
+        return false;
+    end if;
 end;
 $$ language plpgsql;
 
