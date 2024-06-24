@@ -135,6 +135,8 @@
 	display: flex;
 	flex-direction: column;
 	gap: 12px;
+
+	margin-top: 8px;
 }
 
 .login {
@@ -142,6 +144,10 @@
 }
 
 @media screen and (max-width: 640px) {
+	.btns {
+		margin-top: 16px;
+	}
+
 	.policy {
 		font-size: 14px;
 		text-align: center;

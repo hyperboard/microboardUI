@@ -48,7 +48,7 @@ export const RestorePassword: React.FC = () => {
 
 		if (newPassword !== repeatedPassword) {
 			setIsDisabled(true);
-			setError(t("auth.passwordDontAMatch"));
+			setError(t("auth.passwordDoNotMatch"));
 			return;
 		}
 		setError("");

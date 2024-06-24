@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { LeadIcon } from "./lead-icon";
 import { useTranslation } from "react-i18next";
 import { NavLink, useLocation } from "react-router-dom";
@@ -24,17 +24,24 @@ export const Navbar: React.FC = () => {
 				<LeadIcon width={20} height={20} />
 				<span>Microboard</span>
 			</div>
-			<div>
-				{isLoginVisible && (
-					<NavLink to="/auth/sign-in" className={"Link"}>
-						{t("auth.signIn")}
-					</NavLink>
-				)}
-				{isSignUpVisible && (
-					<NavLink to="/auth/sign-up" className={"Link"}>
-						{t("auth.signUpForFree")}
-					</NavLink>
-				)}
+			<div className="Links">
+				<NavLink
+					to="/auth/sign-in"
+					className={({ isActive }) => {
+						return isSignUpVisible ? "Link LinkActive" : "Link";
+					}}
+				>
+					{t("auth.signIn")}
+				</NavLink>
+
+				<NavLink
+					to="/auth/sign-up"
+					className={({ isActive }) => {
+						return isLoginVisible ? "Link LinkActive" : "Link";
+					}}
+				>
+					{t("auth.signUpForFree")}
+				</NavLink>
 			</div>
 		</header>
 	);

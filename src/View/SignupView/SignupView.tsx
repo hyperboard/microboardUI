@@ -142,11 +142,7 @@ export const SignupView = (): React.ReactElement => {
 					onInput={checkForm}
 				/>
 				<div className={styles.btns}>
-					<Button
-						type="submit"
-						style={{ marginTop: "8px" }}
-						disabled={isDisabled}
-					>
+					<Button type="submit" disabled={isDisabled}>
 						{t("auth.submit")}
 						<Tail />
 					</Button>

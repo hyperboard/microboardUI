@@ -130,6 +130,8 @@
 	align-items: center;
 
 	gap: 12px;
+
+	margin-top: 16px;
 }
 
 @media screen and (max-width: 640px) {
@@ -156,5 +158,9 @@
 		width: 100%;
 		height: 2px;
 		background-color: transparent;
+	}
+
+	.btns {
+		margin-top: 8px;
 	}
 }

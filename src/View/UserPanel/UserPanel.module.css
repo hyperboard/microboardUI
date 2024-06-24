@@ -298,6 +298,10 @@
 	line-height: 56px;
 }
 
+.passwordChangedGap {
+	height: 32px;
+}
+
 @media screen and (max-width: 640px) {
 	.modalWrapper {
 		padding: 0 16px;

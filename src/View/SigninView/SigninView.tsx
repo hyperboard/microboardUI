@@ -164,11 +164,7 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 
 				{/* {errorMessage && <p className={styles.error}>{errorMessage}</p>} */}
 				<div className={styles.btns}>
-					<Button
-						type="submit"
-						style={{ marginTop: "8px" }}
-						disabled={submitDisabled}
-					>
+					<Button type="submit" disabled={submitDisabled}>
 						{t("auth.submit")}
 						<Tail />
 					</Button>

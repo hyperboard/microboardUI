@@ -254,7 +254,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 		}
 
 		if (newPassword !== confirmPassword) {
-			setError(t("auth.currentPasswordIsIncorrect"));
+			setError(t("auth.passwordDoNotMatch"));
 			setIsSubmitDisabled(true);
 			return;
 		}
@@ -280,6 +280,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 	useOutsideClickHandler(modalRef, closeModal);
 
 	useEffect(() => {
+		setError("");
 		setIsPasswordChanged(false);
 	}, [isOpen]);
 
@@ -292,6 +293,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 			<div className={styles.modalWrapper}>
 				<div ref={modalRef} className={styles.modal}>
 					<PasswordChanged />
+					<div className={styles.passwordChangedGap}></div>
 				</div>
 			</div>
 		);

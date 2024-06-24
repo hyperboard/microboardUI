@@ -53,7 +53,7 @@
 }
 
 .NavbarWrapper .LinkActive {
-	display: none;
+	/* display: none; */
 	padding: 6px 10px;
 	box-sizing: border-box;
 
@@ -64,19 +64,25 @@
 	font-size: 14px;
 	font-weight: 500;
 
-	background-color: rgba(10, 15, 41, 0.04);
+	/* background-color: rgba(10, 15, 41, 0.04); */
+	background-color: white;
+
+	border: 1px solid #dee0e3;
 
 	color: #14151a;
 	text-decoration: none;
 }
 
 .NavbarWrapper .LinkActive:hover {
-	background-color: rgba(10, 15, 41, 0.08);
-	border: 1px solid transparent;
+	/* background-color: rgba(10, 15, 41, 0.08); */
+	background-color: #f7f7f8;
+	color: #14151a;
+	/* border: 1px solid transparent; */
 }
 
 .NavbarWrapper .LinkActive:active {
-	background-color: rgba(10, 15, 41, 0.08);
+	/* background-color: rgba(10, 15, 41, 0.08); */
+	background-color: white;
 	border: 1px solid rgb(183, 138, 240);
 	outline: 2px solid rgba(200, 178, 255, 0.5);
 }
@@ -96,6 +102,11 @@
 	}
 }
 
+.Links {
+	display: flex;
+	gap: 16px;
+}
+
 @media screen and (max-width: 1280px) {
 	.NavbarWrapper {
 		padding: 0 16px;
@@ -106,10 +117,14 @@
 @media screen and (max-width: 640px) {
 	.NavbarWrapper .Link,
 	.NavbarWrapper .LinkActive {
-		display: none;
+		/* display: none; */
 	}
 
 	.NavbarWrapper {
 		border-bottom: 1px solid #dee0e3;
+	}
+
+	.NavbarWrapper .Links {
+		display: none;
 	}
 }

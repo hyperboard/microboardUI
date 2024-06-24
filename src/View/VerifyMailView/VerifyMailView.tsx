@@ -65,6 +65,7 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 	const [error, setError] = useState<string>("");
 	const [submitDisabled, setSubmitDisabled] = useState<boolean>(true);
 	const [retryDisabled, setRetryDisabled] = useState<boolean>(false);
+	const [isRetryLoading, setIsRetryLoading] = useState<boolean>(false);
 	const formRef = useRef<HTMLFormElement>(null);
 	const [codeTip, setCodeTip] = useState<
 		"auth.enterCodeBelow" | "auth.enterNewCodeBelow" | ""
@@ -156,6 +157,7 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 			return;
 		}
 		setRetryDisabled(true);
+		setIsRetryLoading(true);
 		fetch(getApiUrl("/auth/resendEmail"), {
 			method: "POST",
 			headers: {
@@ -176,13 +178,13 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 				setRetryCount(60 * 3);
 				setIsAttemptsExceeded(false);
 				setError("");
-				setCodeTip("auth.enterNewCodeBelow");
+				// setCodeTip("auth.enterNewCodeBelow");
 				checkForm(false);
 				const form = formRef.current;
 				if (form) {
 					form.code.value = "";
 				}
-				setIsNewCode(true);
+				// setIsNewCode(true);
 			})
 			.catch(error => {
 				if (error?.message?.startsWith("Can retry after")) {
@@ -206,6 +208,7 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 			})
 			.finally(() => {
 				setRetryDisabled(false);
+				setIsRetryLoading(false);
 			});
 	};
 
@@ -216,6 +219,7 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 			return;
 		}
 		setRetryDisabled(true);
+		setIsRetryLoading(true);
 		fetch(getApiUrl("/auth/checkVerificationCodes"), {
 			method: "POST",
 			headers: {
@@ -248,6 +252,7 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 			})
 			.finally(() => {
 				setRetryDisabled(false);
+				setIsRetryLoading(false);
 			});
 
 		if (!searchParams.get("passcode")) {
@@ -257,12 +262,21 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 			searchParams.get("email") || "",
 			searchParams.get("passcode") || "",
 		)
-			.then((data): void => {
+			.then(async (data): Promise<void> => {
 				Cookies.set("accessToken", data.accessToken, { secure: true });
 				Cookies.set("refreshToken", data.refreshToken, {
 					secure: true,
 				});
-				navigate("/dashboard");
+				if (localStorage.getItem("lastSeenBoard")) {
+					navigate(
+						`/boards/${localStorage.getItem("lastSeenBoard")}`,
+					);
+				} else {
+					const boardId = await app.createPublicBoard();
+					if (boardId) {
+						navigate(`/boards/${boardId}`);
+					}
+				}
 			})
 			.catch(_ => {
 				setError(t("auth.errorVerificationCode"));
@@ -322,6 +336,7 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 					<Button
 						pattern="ghost"
 						disabled={retryDisabled || retryCount > 0}
+						loading={isRetryLoading}
 						type="button"
 						onClick={onResend}
 					>

@@ -197,7 +197,7 @@
 		"skip": "Skip",
 		"cancel": "Cancel",
 		"passwordDoNotMatch": "The entered passwords do not match",
-		"currentPasswordIsIncorrect": "The current password you entered is incorrect. Pleas try again",
+		"currentPasswordIsIncorrect": "The current password you entered is incorrect. Please try again",
 		"enterAValidEmailAddress": "Enter a valid email address"
 	},
 	"modal": {
