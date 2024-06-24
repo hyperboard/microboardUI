@@ -120,6 +120,9 @@ export class Menu extends React.Component<{
 										type="text"
 										value={renameInput} // Controlled component, use value from state
 										onChange={this.handleRenameChange} // Added onChange handler to update state
+										onKeyDown={event => {
+											event.stopPropagation();
+										}}
 										className="RenamingInput"
 										autoFocus // Focus the input when it appears
 									/>
