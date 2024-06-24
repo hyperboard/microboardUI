@@ -9,7 +9,7 @@ interface IImportMiroBoards {
 	app: App;
 }
 
-export function ImportMiroBoards({ isOpen }: IImportMiroBoards) {
+export function ImportMiroBoards({ isOpen, app }: IImportMiroBoards) {
 	const [stage, setStage] = useState<number>(1);
 	const [open, setOpen] = useState<boolean | null>(isOpen);
 	const [boardId, setBoardId] = useState<string>("");

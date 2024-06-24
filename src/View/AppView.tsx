@@ -98,7 +98,7 @@ export class AppViewBase extends React.Component<{
 					sidePanelState={this.sidePanelState}
 					contextMenuState={this.contextMenuState}
 				/>
-				<ImportMiroBoards isOpen={isOpenMiroBoards} />
+				<ImportMiroBoards isOpen={isOpenMiroBoards} app={app} />
 				<ContextMenu
 					app={app}
 					contextMenuState={this.contextMenuState}
