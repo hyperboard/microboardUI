@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 import { IMiroBoards } from "./MiroBoardsModels";
 import { MiroBoardItem } from "./MiroBoardItem";
 import Cookies from "js-cookie";
+import { getApiUrl } from "Config";
 
 interface IMiroBoardsProps {
 	isOpen: boolean | null;
@@ -25,24 +26,27 @@ export function MiroBoards({
 	const authCode = new URLSearchParams(location.search).get("code");
 	const [boards, setBoards] = useState<IMiroBoards | null>(null);
 
-	const fetchData = async () => {
+	const fetchToken = async () => {
 		try {
 			// const clientId = import.meta.env.MIRO_CLIENT_ID;
 			// const clientSecret = import.meta.env.MIRO_CLIENT_SECRET;
 			const clientId = "3458764589599848573";
-			const clientSecret = "ufmdVcxamXfkjHHeS8Bv1QPCxrUN63PB";
+			const clientSecret = "RWatK9uBMqwxXlCKRpBhwxivQXmP12Je";
 			const url = window.location.origin;
 			const redirectUrl = url + "/boards/:boardId/";
 
 			const response = await fetch(
-				"https://api.miro.com/v1/oauth/token?grant_type=authorization_code&client_id=" +
-					clientId +
-					"&client_secret=" +
-					clientSecret +
-					"&code=" +
-					authCode +
-					"&redirect_uri=" +
-					redirectUrl,
+				getApiUrl(
+					"/miro/token" +
+						"?grant_type=authorization_code&client_id=" +
+						clientId +
+						"&client_secret=" +
+						clientSecret +
+						"&code=" +
+						authCode +
+						"&redirect_uri=" +
+						redirectUrl,
+				),
 				{
 					method: "POST",
 					headers: {
@@ -74,7 +78,7 @@ export function MiroBoards({
 		);
 		const dataBoards = await response.json();
 		if (dataBoards.status === 401) {
-			fetchData();
+			fetchToken();
 		} else {
 			setBoards(dataBoards);
 		}
@@ -84,7 +88,7 @@ export function MiroBoards({
 		const token = Cookies.get("miro_accessToken");
 		if (isOpen) {
 			if (!token) {
-				fetchData();
+				fetchToken();
 			} else {
 				fetchBoards();
 			}

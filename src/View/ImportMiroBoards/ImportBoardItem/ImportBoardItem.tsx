@@ -6,6 +6,7 @@ import { IMiroBoardItem } from "../MiroBoards/MiroBoardsModels";
 import { App } from "App";
 import { useNavigate } from "react-router-dom";
 import { useCopyBoardItems } from "./useCopyBoardItems";
+import { getApiUrl } from "Config";
 
 interface IImportBoardItem {
 	isOpen: boolean | null;
@@ -38,17 +39,16 @@ export function ImportBoardItem({
 		},
 	};
 
+	const getCursor = (): string =>
+		itemsInfo.cursor.items !== "" ? "cursor=" + itemsInfo.cursor.items : "";
+
 	const fetchBoardsItems = async () => {
 		try {
-			const cursor =
-				itemsInfo.cursor.items !== ""
-					? "cursor=" + itemsInfo.cursor.items
-					: "";
+			const cursor = getCursor();
 			const response = await fetch(
-				"https://api.miro.com/v2/boards/" +
-					boardId +
-					"/items?limit=50&" +
-					cursor,
+				getApiUrl(
+					"/miro/boards/" + boardId + "/items?limit=50&" + cursor,
+				),
 				options,
 			);
 			const data = await response.json();
@@ -72,15 +72,14 @@ export function ImportBoardItem({
 
 	const fetchBoardsItemsConnectors = async () => {
 		try {
-			const cursor =
-				itemsInfo.cursor.connectors !== ""
-					? "cursor=" + itemsInfo.cursor.connectors
-					: "";
+			const cursor = getCursor();
 			const response = await fetch(
-				"https://api.miro.com/v2/boards/" +
-					boardId +
-					"/connectors?limit=50&" +
-					cursor,
+				getApiUrl(
+					"/miro/boards/" +
+						boardId +
+						"/connectors?limit=50&" +
+						cursor,
+				),
 				options,
 			);
 			const data = await response.json();
