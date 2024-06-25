@@ -32,6 +32,13 @@ export function StickerFillStyle(): React.ReactElement | null {
 	};
 	const handlePick = (color: string) => {
 		board.selection.setFillColor(color);
+		// TODO: use Storage.ts instead
+		const stickerJSON = sessionStorage.getItem("lastSticker");
+		if (stickerJSON) {
+			const sticker = JSON.parse(stickerJSON);
+			sticker.backgroundColor = color;
+			sessionStorage.setItem("lastSticker", JSON.stringify(sticker));
+		}
 		toggleMenu("None");
 	};
 	return (
