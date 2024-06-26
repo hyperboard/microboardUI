@@ -157,7 +157,7 @@
 }
 
 .tip-container.top-right .tip::before {
-	right: 2.5rem;
+	right: 3.4rem;
 	margin-right: -0.7rem;
 	bottom: -0.6rem;
 	transform: rotate(180deg);

@@ -1,0 +1,39 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
+
+:root {
+	--background-surface-default: rgb(255, 255, 255);
+	--background-button-secondary: rgb(255, 255, 255);
+	--background-button-secondary-hover: rgb(247, 247, 248);
+	--background-badge-purple-disabled: rgb(247, 241, 253);
+	--background-badge-gray: rgb(233, 234, 236);
+	--background-accent-purple: rgb(146, 79, 232);
+
+	--border-action-normal: rgb(222, 223, 227);
+	--border-action-focus: rgb(146, 79, 232);
+	--border-select-primary: rgb(146, 79, 232);
+
+	--text-base-primary: rgb(20, 21, 26);
+	--text-base-quaternary: rgb(10, 15, 41, 0.25);
+	--text-accent-purple: rgb(152, 89, 233);
+
+	--icon-base-primary: rgb(20, 21, 26);
+	--icon-accent-purple: rgb(146, 79, 232);
+}
+
+* {
+	box-sizing: border-box;
+	padding: 0;
+	margin: 0;
+}
+
+html {
+	font-size: 62.5%;
+}
+
+body {
+	color: var(--text-base-primary);
+	font-size: 1.6rem;
+	font-family: "Manrope", sans-serif;
+	font-optical-sizing: auto;
+	font-style: normal;
+}

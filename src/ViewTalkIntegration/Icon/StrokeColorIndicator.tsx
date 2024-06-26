@@ -30,7 +30,7 @@ export function StrokeColorIndicator({
 				stroke={color}
 				strokeWidth="4"
 			/>
-			{(color === "rgb(0, 0, 0)" || color === "#FFFFFF") && (
+			{(color === "rgb(255, 255, 255)" || color === "#FFFFFF") && (
 				<>
 					<rect
 						x="4"
@@ -42,11 +42,11 @@ export function StrokeColorIndicator({
 						strokeWidth="1"
 					/>
 					<rect
-						x="0"
-						y="0"
-						width="24"
-						height="24"
-						rx="12"
+						x="1"
+						y="1"
+						width="22"
+						height="22"
+						rx="11"
 						stroke={"#D3D5D7"}
 						strokeWidth="1"
 					/>

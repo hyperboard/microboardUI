@@ -23,7 +23,7 @@ export function AddFrame({ board, isOn }: Props) {
 	};
 
 	const handleButtonClick = (): void => {
-		board.tools.addFrame();
+		board.tools.addFrame(true);
 	};
 
 	return (

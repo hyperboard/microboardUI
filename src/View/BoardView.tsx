@@ -3,7 +3,7 @@ import React from "react";
 import { App } from "App";
 import { useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
-import { AppView } from "./AppView";
+import { AppView } from "View/AppView";
 
 export const BoardView: React.FC<{ app: App }> = props => {
 	const board = props.app.getBoard();

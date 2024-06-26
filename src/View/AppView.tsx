@@ -1,16 +1,18 @@
-import * as React from "react";
 import { App } from "App";
+import { withRouter } from "lib/withRouter";
+import React from "react";
 import { Canvas } from "View/Canvas";
+// import { ContextMenu, ContextMenuState } from "View/ContextMenu";
+import { ContextPanel } from "View/ContextPanel";
+import { ExportPanel } from "View/ExportPanel";
+import { SidePanel } from "View/SidePanel";
+import { SidePanelState } from "View/SidePanel/SidePanelState";
+import { TextEditors } from "View/TextEditor/TextEditor";
 import { TitlePanel } from "View/TitlePanel";
 import { ToolsPanel } from "View/ToolsPanel";
 import { ZoomPanel } from "View/ZoomPanel";
-import { ContextPanel } from "View/ContextPanel";
-import { TextEditors } from "View/TextEditor/TextEditor";
-import { SidePanel } from "View/SidePanel";
-import { SidePanelState } from "View/SidePanel/SidePanelState";
-import { ContextMenuState, ContextMenu } from "View/ContextMenu";
-import { withRouter } from "lib/withRouter";
-import { ExportPanel } from "View/ExportPanel";
+import { ContextMenu, ContextMenuState } from "./ContextMenu";
+import { ToastProvider } from "View/ToastProvider";
 import { UserPanel } from "./UserPanel/UserPanel";
 
 export class AppViewBase extends React.Component<{
@@ -49,7 +51,7 @@ export class AppViewBase extends React.Component<{
 		// const boardId = urlString.split("/").pop();
 		const boardId =
 			this.props?.router?.params?.boardId || urlString.split("/").pop();
-
+		console.log("original view");
 		if (boardId) {
 			app.openBoard(boardId!);
 		}
@@ -98,6 +100,7 @@ export class AppViewBase extends React.Component<{
 					app={app}
 					contextMenuState={this.contextMenuState}
 				/>
+				<ToastProvider />
 			</div>
 		);
 	}

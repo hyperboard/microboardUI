@@ -14,7 +14,7 @@ type Props = {
 export function AddShape({ board, isOn }: Props) {
 	const { t } = useTranslation();
 	const handleClick = (): void => {
-		board.tools.addShape();
+		board.tools.addShape(true);
 	};
 
 	const handlePick = (type: string): void => {

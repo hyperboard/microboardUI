@@ -1,0 +1,26 @@
+.panel {
+	gap: 0.8rem;
+	padding-top: 0.1rem;
+	padding-bottom: 0.3rem;
+}
+
+.slider {
+	padding-top: 4px;
+	align-self: stretch;
+}
+
+.colors {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 8px;
+}
+
+.indicator {
+	position: absolute;
+	right: 8px;
+	top: 8px;
+	border: 1px solid rgba(31, 31, 31, 0.25);
+	border-radius: 50%;
+	width: 8px;
+	height: 8px;
+}

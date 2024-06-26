@@ -16,7 +16,7 @@ export function AddStickerTool({ board, isOn }: Props) {
 	const { t } = useTranslation();
 
 	const handleClick = (): void => {
-		board.tools.addSticker();
+		board.tools.addSticker(true);
 	};
 
 	const handlePick = (color: string): void => {

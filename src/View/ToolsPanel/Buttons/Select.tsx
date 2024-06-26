@@ -14,7 +14,7 @@ export function Select({ board, isOn }: Props) {
 	const { t } = useTranslation();
 
 	const handleClick = (): void => {
-		board.tools.select();
+		board.tools.select(true);
 	};
 
 	return (

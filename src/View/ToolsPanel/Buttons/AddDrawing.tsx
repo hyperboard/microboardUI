@@ -16,7 +16,7 @@ type Props = {
 export function AddDrawing({ board, isOn, width }: Props) {
 	const { t } = useTranslation();
 	const handleButtonClick = (): void => {
-		board.tools.addDrawing();
+		board.tools.addDrawing(true);
 	};
 
 	const handleSliderPick = (width: number): void => {

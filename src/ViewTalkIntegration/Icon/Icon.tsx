@@ -51,7 +51,8 @@ export type IconId =
 	| "VerticalAlignBottom"
 	| "Minus"
 	| "Plus"
-	| "Export";
+	| "Export"
+	| "ErrorIcon";
 
 type Props = {
 	iconName: IconId;
