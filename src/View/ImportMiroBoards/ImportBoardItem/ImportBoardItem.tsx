@@ -39,12 +39,12 @@ export function ImportBoardItem({
 		},
 	};
 
-	const getCursor = (): string =>
-		itemsInfo.cursor.items !== "" ? "cursor=" + itemsInfo.cursor.items : "";
+	const getCursor = (cursor: string): string =>
+		cursor !== "" ? "cursor=" + cursor : "";
 
 	const fetchBoardsItems = async () => {
 		try {
-			const cursor = getCursor();
+			const cursor = getCursor(itemsInfo.cursor.items);
 			const response = await fetch(
 				getApiUrl(
 					"/miro/boards/" + boardId + "/items?limit=50&" + cursor,
@@ -72,7 +72,7 @@ export function ImportBoardItem({
 
 	const fetchBoardsItemsConnectors = async () => {
 		try {
-			const cursor = getCursor();
+			const cursor = getCursor(itemsInfo.cursor.connectors);
 			const response = await fetch(
 				getApiUrl(
 					"/miro/boards/" +
@@ -107,12 +107,9 @@ export function ImportBoardItem({
 	}, []);
 
 	useEffect(() => {
-		itemsInfo.cursor.items !== "" && fetchBoardsItems();
-	}, [itemsInfo.cursor.items]);
-
-	useEffect(() => {
 		itemsInfo.cursor.connectors !== "" && fetchBoardsItemsConnectors();
-	}, [itemsInfo.cursor.connectors]);
+		itemsInfo.cursor.items !== "" && fetchBoardsItems();
+	}, [itemsInfo]);
 
 	useEffect(() => {
 		if (
