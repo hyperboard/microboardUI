@@ -1,0 +1,28 @@
+.panel {
+	position: absolute;
+	top: -60px;
+	left: 12px;
+}
+
+.logo {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 8px;
+	/* padding: 12px 14px; */
+	text-decoration: none;
+	color: var(--text-base-primary);
+	font-size: 16px;
+	font-weight: 400;
+}
+
+.name {
+	max-width: 100px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	margin: auto;
+	overflow: hidden;
+	color: var(--text-base-primary);
+	font-size: 16px;
+	font-weight: 400;
+}

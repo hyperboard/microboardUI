@@ -1,0 +1,18 @@
+export const CONNECTOR_POINTER_TYPES = [
+	"None",
+	"ArrowBroad",
+	"ArrowThin",
+	"TriangleFilled",
+	"CircleFilled",
+	"Angle",
+	"TriangleEmpty",
+	"DiamondFilled",
+	"DiamondEmpty",
+	"Zero",
+	"One",
+	"Many",
+	"ManyMandatory",
+	"OneMandatory",
+	"ManyOptional",
+	"OneOptional",
+] as const;

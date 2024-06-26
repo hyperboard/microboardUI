@@ -1,0 +1,21 @@
+.menu {
+	position: absolute;
+}
+
+.item {
+	background: none;
+	display: flex;
+	align-items: center;
+	border-radius: 6px;
+	gap: 8px;
+	padding: 6px;
+	width: 220px;
+	cursor: pointer;
+	transition: 0.3s;
+}
+
+@media (hover: hover) {
+	.item:hover {
+		background-color: rgba(10, 15, 41, 0.04);
+	}
+}

@@ -8,31 +8,31 @@
 			"tooltip": "Add text"
 		},
 		"connectorType": {
-			"tooltip": "Line style",
+			"tooltip": "Type",
 			"straight": "Straight",
 			"curved": "Curved"
 		},
 		"connectorEndPointer": {
-			"tooltip": "End pointer style"
+			"tooltip": "End style"
 		},
 		"connectorStartPointer": {
-			"tooltip": "Start pointer style"
+			"tooltip": "Start style"
 		},
 		"connectorSwitchPointers": {
 			"tooltip": "Switch pointers"
 		},
 		"changeShape": {
-			"tooltip": "Change shape type"
+			"tooltip": "Shape"
 		},
 		"changeFrameType": {
 			"tooltip": "Ratio"
 		},
 		"strokeStyle": {
-			"tooltip": "Stroke",
+			"tooltip": "Border",
 			"strokeWidth": "Stroke width"
 		},
 		"fillStyle": {
-			"tooltip": "Fill",
+			"tooltip": "Shape color",
 			"none": "None"
 		},
 		"fontSize": {
@@ -58,7 +58,7 @@
 			"tooltip": "Text color"
 		},
 		"textHighlight": {
-			"tooltip": "Marker",
+			"tooltip": "Highlight color",
 			"none": "None"
 		},
 		"stickerColor": {
@@ -76,6 +76,19 @@
 		},
 		"sendToBack": {
 			"text": "Send to back"
+		},
+		"exportFrame": {
+			"text": "Save as image"
+		},
+		"copyFrameLink": {
+			"text": "Copy link",
+			"error": {
+				"title": "Copy link error",
+				"description": "An error occurred while copying the frame link"
+			},
+			"success": {
+				"description": "Link copied to clipboard"
+			}
 		},
 		"delete": {
 			"text": "Delete",
@@ -99,7 +112,9 @@
 			"tooltip": "Redo"
 		},
 		"addText": {
-			"tooltip": "Text"
+			"tooltip": "Text",
+			"showAll": "All",
+			"showBasic": "Basic"
 		},
 		"addSticker": {
 			"tooltip": "Sticker"
@@ -108,7 +123,7 @@
 			"tooltip": "Shape"
 		},
 		"addConnector": {
-			"tooltip": "Connector"
+			"tooltip": "Connection line"
 		},
 		"addDrawing": {
 			"tooltip": "Pen",
@@ -118,7 +133,7 @@
 			"tooltip": "Add image"
 		},
 		"addFrame": {
-			"tooltip": "Add Frame"
+			"tooltip": "Frame"
 		}
 	},
 	"zoomPanel": {
@@ -271,7 +286,12 @@
 	"thickness": "Thickness",
 	"appTitle": "Microboard",
 	"export": {
+		"tooltip": "Export this board",
 		"confirm": "Export",
-		"cancel": "Cancel"
+		"cancel": "Cancel",
+		"error": {
+			"title": "Export error",
+			"description": "An error occurred while exporting the selected area"
+		}
 	}
 }

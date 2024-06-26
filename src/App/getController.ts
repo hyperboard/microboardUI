@@ -67,31 +67,31 @@ export function getController(getBoard: () => Board): Controller {
 		const isHotkeyTriggered = checkHotkeys(
 			{
 				select: {
-					cb: () => board.tools.select(),
+					cb: () => board.tools.select(true),
 					selectionContext: ["SelectUnderPointer", "None"],
 				},
 				text: {
-					cb: () => board.tools.addText(),
+					cb: () => board.tools.addText(true),
 					selectionContext: ["SelectUnderPointer", "None"],
 				},
 				sticker: {
-					cb: () => board.tools.addSticker(),
+					cb: () => board.tools.addSticker(true),
 					selectionContext: ["SelectUnderPointer", "None"],
 				},
 				shape: {
-					cb: () => board.tools.addShape(),
+					cb: () => board.tools.addShape(true),
 					selectionContext: ["SelectUnderPointer", "None"],
 				},
 				connector: {
-					cb: () => board.tools.addConnector(),
+					cb: () => board.tools.addConnector(true),
 					selectionContext: ["SelectUnderPointer", "None"],
 				},
 				pen: {
-					cb: () => board.tools.addDrawing(),
+					cb: () => board.tools.addDrawing(true),
 					selectionContext: ["SelectUnderPointer", "None"],
 				},
 				frame: {
-					cb: () => board.tools.addFrame(),
+					cb: () => board.tools.addFrame(true),
 					selectionContext: ["SelectUnderPointer", "None"],
 				},
 				duplicate: {
@@ -224,6 +224,7 @@ export function getController(getBoard: () => Board): Controller {
 		if (!board) {
 			return false;
 		}
+
 		const { tools, camera, selection } = board;
 		const transformerTool = selection.tool;
 		camera.saveDownEvent(event);
@@ -274,6 +275,7 @@ export function getController(getBoard: () => Board): Controller {
 		if (!board) {
 			return false;
 		}
+
 		const { camera, tools } = board;
 
 		camera.updateDownEvent(event);

@@ -1,8 +1,8 @@
-import * as React from "react";
 import { App } from "App";
+import { useStyle } from "View/useStyle";
+import * as React from "react";
 import { Login } from "./Login";
 import { PublicBoards } from "./PublicBoards";
-import { useStyle } from "View/useStyle";
 
 export const SidePanelMenuOffset = 10;
 
@@ -74,7 +74,7 @@ export class SidePanel extends React.Component<{
 	}
 }
 
-class ResizableEdge extends React.Component {
+export class ResizableEdge extends React.Component {
 	resizableRef = React.createRef<HTMLDivElement>();
 
 	isDown = false;

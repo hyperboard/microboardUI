@@ -2,6 +2,7 @@ import * as React from "react";
 import { App } from "App";
 import { Subject } from "Subject";
 import { useStyle } from "View/useStyle";
+import { SidePanelState } from "View/SidePanel/SidePanelState";
 
 export class ContextMenuState {
 	subject = new Subject<SidePanelState>();

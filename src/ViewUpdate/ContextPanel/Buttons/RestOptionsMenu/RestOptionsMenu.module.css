@@ -1,0 +1,42 @@
+.menu {
+	align-items: stretch;
+}
+
+.item {
+	background: none;
+	display: flex;
+	align-items: center;
+	border-radius: 6px;
+	gap: 4px;
+	padding: 6px;
+	width: 220px;
+	cursor: pointer;
+	transition: 0.3s;
+	font-size: 1.4rem;
+}
+
+@media (hover: hover) {
+	.item:hover {
+		background: rgba(233, 234, 236, 1);
+	}
+}
+
+.menuBottom {
+	border-bottom-right-radius: 0;
+}
+
+.hotkey {
+	font-size: 1.4rem;
+	color: rgba(13, 17, 38, 0.4);
+	margin-left: auto;
+	padding: 0 4px;
+}
+
+.text {
+	text-wrap: nowrap;
+}
+
+.hotkey {
+	text-wrap: nowrap;
+	color: rgba(0, 0, 0, 0.24);
+}

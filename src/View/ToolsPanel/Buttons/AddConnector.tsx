@@ -16,7 +16,7 @@ export function AddConnector({ board, isOn }: Props) {
 	const { t } = useTranslation();
 
 	const handleClick = (): void => {
-		board.tools.addConnector();
+		board.tools.addConnector(true);
 	};
 
 	const handlePickLineStyle = (lineStyle: ConnectorLineStyle): void => {

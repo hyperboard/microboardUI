@@ -1,18 +1,17 @@
+import { App } from "App";
+import { BoardView } from "View/BoardView";
+import { IframeModule } from "lib/IframeModule";
 import React from "react";
+import ReactDOM from "react-dom";
 import { SigninView } from "./SigninView/SigninView";
 import { SignupView } from "./SignupView/SignupView";
-import { App } from "App";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import ReactDOM from "react-dom";
-import { BoardView } from "./BoardView";
-import "../index.css";
-import { ProtectedRoute } from "./Routes/ProtectedRoute";
-import RootView from "./RootView/RootView";
-import { IframeModule } from "lib/IframeModule";
 import { VerifyMailView } from "./VerifyMailView/VerifyMailView";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import RootView from "./RootView/RootView";
 import AuthView from "./AuthView/AuthView";
 import { RestorePassword } from "./RestorePassword/RestorePassword";
 import { ForgotPassword } from "./ForgotPassword/ForgotPassword";
+import { ProtectedRoute } from "./Routes/ProtectedRoute";
 
 export function getRender(app: App): () => void {
 	new IframeModule(app);

@@ -1,0 +1,1 @@
+export { UiAccordion } from "./UiAccordion";
