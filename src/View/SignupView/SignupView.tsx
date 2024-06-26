@@ -21,6 +21,7 @@ export const SignupView = (): React.ReactElement => {
 	const navigate = useNavigate();
 	const formRef = React.useRef<HTMLFormElement>(null);
 	const [isDisabled, setIsDisabled] = useState(true);
+	const [isSubmitLoading, setIsSubmitLoading] = useState(false);
 	const [error, setError] = useState<string>("");
 	const [emailError, setEmailError] = useState<string>("");
 
@@ -79,6 +80,8 @@ export const SignupView = (): React.ReactElement => {
 			return;
 		}
 
+		setIsDisabled(true);
+		setIsSubmitLoading(true);
 		fetch(getApiUrl("/auth/register"), {
 			method: "POST",
 			headers: {
@@ -113,6 +116,10 @@ export const SignupView = (): React.ReactElement => {
 			})
 			.catch(error => {
 				// setErrorMessage(error.message);
+			})
+			.finally(() => {
+				setIsDisabled(false);
+				setIsSubmitLoading(false);
 			});
 	};
 
@@ -142,7 +149,11 @@ export const SignupView = (): React.ReactElement => {
 					onInput={checkForm}
 				/>
 				<div className={styles.btns}>
-					<Button type="submit" disabled={isDisabled}>
+					<Button
+						type="submit"
+						disabled={isDisabled}
+						loading={isSubmitLoading}
+					>
 						{t("auth.submit")}
 						<Tail />
 					</Button>

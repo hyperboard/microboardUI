@@ -16,6 +16,7 @@ import { PasswordChanged } from "View/Widgets/form-notifications/password-change
 export const RestorePassword: React.FC = () => {
 	const { t } = useTranslation();
 	const [isDisabled, setIsDisabled] = useState(true);
+	const [isSubmitLoading, setIsSubmitLoading] = useState(false);
 	const [newPassError, setNewPassError] = useState<string>("");
 	const [error, setError] = useState<string>("");
 	const formRef = useRef<HTMLFormElement>(null);
@@ -85,6 +86,8 @@ export const RestorePassword: React.FC = () => {
 			return;
 		}
 
+		setIsDisabled(true);
+		setIsSubmitLoading(true);
 		fetch(getApiUrl("/auth/password/restore"), {
 			method: "POST",
 			headers: {
@@ -112,6 +115,10 @@ export const RestorePassword: React.FC = () => {
 					return;
 				}
 				setError(error?.message || "Unhandled error");
+			})
+			.finally(() => {
+				setIsDisabled(false);
+				setIsSubmitLoading(false);
 			});
 	};
 
@@ -119,7 +126,9 @@ export const RestorePassword: React.FC = () => {
 		return (
 			<div className={styles.passwordChanged}>
 				<PasswordChanged />
-				<Button>{t("auth.backToLogIn")}</Button>
+				<Button onClick={() => navigate("/auth/sign-in")}>
+					{t("auth.backToLogIn")}
+				</Button>
 			</div>
 		);
 	}
@@ -177,6 +186,7 @@ export const RestorePassword: React.FC = () => {
 						disabled={isDisabled}
 						type="submit"
 						className={styles.submit}
+						loading={isSubmitLoading}
 					>
 						{t("auth.submit")}
 						<Tail />

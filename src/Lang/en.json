@@ -141,13 +141,6 @@
 			"close": "Close Menu"
 		}
 	},
-	"dashboard": {
-		"title": "Dashboard",
-		"publicBoards": "Public boards",
-		"unnamed": "Unnamed",
-		"privateBoards": "Private boards",
-		"noPrivateBoards": "No private boards"
-	},
 	"auth": {
 		"checkEmail": "Check for an email with a pass code.",
 		"email": "Email",

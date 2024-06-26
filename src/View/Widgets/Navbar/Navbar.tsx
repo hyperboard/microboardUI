@@ -24,7 +24,7 @@ export const Navbar: React.FC = () => {
 				<LeadIcon width={20} height={20} />
 				<span>Microboard</span>
 			</div>
-			<div className="Links">
+			{/* <div className="Links">
 				<NavLink
 					to="/auth/sign-in"
 					className={({ isActive }) => {
@@ -42,7 +42,7 @@ export const Navbar: React.FC = () => {
 				>
 					{t("auth.signUpForFree")}
 				</NavLink>
-			</div>
+			</div> */}
 		</header>
 	);
 };

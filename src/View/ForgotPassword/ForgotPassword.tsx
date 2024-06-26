@@ -14,6 +14,7 @@ export const ForgotPassword: React.FC = () => {
 	const formRef = useRef<HTMLFormElement>(null);
 	const [requested, setRequested] = useState<boolean>(false);
 	const [disabled, setDisabled] = useState<boolean>(true);
+	const [isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
 	const [error, setError] = useState<string>("");
 	const navigate = useNavigate();
 
@@ -53,6 +54,8 @@ export const ForgotPassword: React.FC = () => {
 		if (!formRef.current) {
 			return;
 		}
+		setDisabled(true);
+		setIsSubmitLoading(true);
 		fetch(getApiUrl("/auth/password/restore/request"), {
 			method: "POST",
 			headers: {
@@ -76,6 +79,10 @@ export const ForgotPassword: React.FC = () => {
 					setError(t("auth.userNotFound"));
 					return;
 				}
+			})
+			.finally(() => {
+				setDisabled(false);
+				setIsSubmitLoading(false);
 			});
 	};
 
@@ -118,6 +125,7 @@ export const ForgotPassword: React.FC = () => {
 					type="submit"
 					disabled={disabled}
 					className={styles.submitBtn}
+					loading={isSubmitLoading}
 				>
 					{t("auth.submit")} <Tail />
 				</Button>

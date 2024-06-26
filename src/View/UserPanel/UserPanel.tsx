@@ -149,6 +149,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 	const modalRef = useRef<HTMLDivElement>(null);
 	const formRef = useRef<HTMLFormElement>(null);
 	const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
+	const [isSubmitLoading, setIsSubmitLoading] = useState(false);
 	const [error, setError] = useState("");
 	const { t } = useTranslation();
 	const [isPasswordChanged, setIsPasswordChanged] = useState(false);
@@ -177,6 +178,8 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 			return;
 		}
 
+		setIsSubmitDisabled(true);
+		setIsSubmitLoading(true);
 		fetch(`${getApiUrl()}/auth/password/change`, {
 			method: "PATCH",
 			headers: {
@@ -209,6 +212,10 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 				}
 				// different error?
 				setError(t("auth.passwordDoNotMatch"));
+			})
+			.finally(() => {
+				setIsSubmitDisabled(false);
+				setIsSubmitLoading(false);
 			});
 	};
 
@@ -364,7 +371,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 					</div>
 
 					<div className={styles.modalBtns}>
-						<Button type="submit" disabled={isSubmitDisabled}>
+						<Button
+							type="submit"
+							disabled={isSubmitDisabled}
+							loading={isSubmitLoading}
+						>
 							{t("auth.submit")} <Tail />
 						</Button>
 						<Button pattern="ghost" onClick={closeModal}>

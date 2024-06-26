@@ -1,5 +1,4 @@
 import { App } from "App";
-import Cookies from "js-cookie";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -17,15 +16,9 @@ const RootView: React.FC<RootViewProps> = ({ app }) => {
 	};
 
 	React.useEffect(() => {
-		const accessToken = Cookies.get("accessToken");
-		const refreshToken = Cookies.get("refreshToken");
-		if (!accessToken || !refreshToken) {
-			createPublicBoard(app).then(boardId => {
-				navigate(`/boards/${boardId}`);
-			});
-		} else {
-			navigate("dashboard");
-		}
+		createPublicBoard(app).then(boardId => {
+			navigate(`/boards/${boardId}`);
+		});
 	});
 
 	return <div>RootView</div>;

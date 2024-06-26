@@ -26,6 +26,7 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 	const { t } = useTranslation();
 	// const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [submitDisabled, setSubmitDisabled] = useState(true);
+	const [isSubmitLoading, setIsSubmitLoading] = useState(false);
 	const navigate = useNavigate();
 	const formRef = useRef<HTMLFormElement>(null);
 	const [emailError, setEmailError] = useState<string>("");
@@ -40,6 +41,8 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 		const email = form?.email.value;
 		const password = form?.password.value;
 
+		setIsSubmitLoading(true);
+		setSubmitDisabled(true);
 		fetch(getApiUrl("/auth/login"), {
 			method: "POST",
 			headers: {
@@ -93,6 +96,10 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 				} else {
 					setErrorText(t("auth.incorrectEmailOrPassword"));
 				}
+			})
+			.finally(() => {
+				setIsSubmitLoading(false);
+				setSubmitDisabled(false);
 			});
 	};
 
@@ -164,7 +171,11 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 
 				{/* {errorMessage && <p className={styles.error}>{errorMessage}</p>} */}
 				<div className={styles.btns}>
-					<Button type="submit" disabled={submitDisabled}>
+					<Button
+						type="submit"
+						disabled={submitDisabled}
+						loading={isSubmitLoading}
+					>
 						{t("auth.submit")}
 						<Tail />
 					</Button>

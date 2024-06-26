@@ -64,6 +64,7 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 	// const [passcode, setPasscode] = useState<string>("");
 	const [error, setError] = useState<string>("");
 	const [submitDisabled, setSubmitDisabled] = useState<boolean>(true);
+	const [isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
 	const [retryDisabled, setRetryDisabled] = useState<boolean>(false);
 	const [isRetryLoading, setIsRetryLoading] = useState<boolean>(false);
 	const formRef = useRef<HTMLFormElement>(null);
@@ -83,6 +84,8 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 		}
 		if (searchParams.get("email")) {
 			const passcode = formRef.current?.code.value;
+			setSubmitDisabled(true);
+			setIsSubmitLoading(true);
 			fetch(getApiUrl("/auth/verify"), {
 				method: "POST",
 				headers: {
@@ -124,6 +127,10 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 						return;
 					}
 					setError(t("auth.errorVerificationCode"));
+				})
+				.finally(() => {
+					setIsSubmitLoading(false);
+					setSubmitDisabled(false);
 				});
 		}
 	};
@@ -178,13 +185,13 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 				setRetryCount(60 * 3);
 				setIsAttemptsExceeded(false);
 				setError("");
-				// setCodeTip("auth.enterNewCodeBelow");
+				setCodeTip("auth.enterNewCodeBelow");
 				checkForm(false);
 				const form = formRef.current;
 				if (form) {
 					form.code.value = "";
 				}
-				// setIsNewCode(true);
+				setIsNewCode(true);
 			})
 			.catch(error => {
 				if (error?.message?.startsWith("Can retry after")) {
@@ -258,6 +265,7 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 		if (!searchParams.get("passcode")) {
 			return;
 		}
+		setIsSubmitLoading(true);
 		verifyEmail(
 			searchParams.get("email") || "",
 			searchParams.get("passcode") || "",
@@ -280,6 +288,9 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 			})
 			.catch(_ => {
 				setError(t("auth.errorVerificationCode"));
+			})
+			.finally(() => {
+				setIsSubmitLoading(false);
 			});
 	}, []);
 
@@ -329,6 +340,7 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 					<Button
 						disabled={isAttemptsExceeded || submitDisabled}
 						type="submit"
+						loading={isSubmitLoading}
 					>
 						{t("auth.submit")}
 						<Tail />

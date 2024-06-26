@@ -141,13 +141,6 @@
 			"close": "Закрыть меню"
 		}
 	},
-	"dashboard": {
-		"title": "Dashboard",
-		"publicBoards": "Публичные доски",
-		"unnamed": "Без имени",
-		"privateBoards": "Приватные доски",
-		"noPrivateBoards": "Нет приватных досок"
-	},
 	"auth": {
 		"checkEmail": "Проверьте электронную почту с кодом доступа.",
 		"email": "Email",

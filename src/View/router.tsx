@@ -1,5 +1,4 @@
 import React from "react";
-import { DashboardView } from "./DashboardView/DashboardView";
 import { SigninView } from "./SigninView/SigninView";
 import { SignupView } from "./SignupView/SignupView";
 import { App } from "App";
@@ -46,16 +45,6 @@ export function getRender(app: App): () => void {
 				{
 					path: "forgot-password",
 					element: <ForgotPassword />,
-				},
-			],
-		},
-		{
-			path: "/dashboard",
-			element: <ProtectedRoute />,
-			children: [
-				{
-					path: "",
-					element: <DashboardView app={app} />,
 				},
 			],
 		},

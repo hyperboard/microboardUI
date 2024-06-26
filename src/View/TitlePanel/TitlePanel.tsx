@@ -1,11 +1,9 @@
 import { App } from "App";
 import { Board } from "Board";
 import { useAppSubscription } from "Board/useBoardSubscription";
-import { isIframe } from "lib/isIframe";
 import { useForceUpdate } from "lib/useForceUpdate";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
 import { SidePanelCloseIcon } from "View/Icon/SidePanelCloseIcon";
 import { SidePanelOpenIcon } from "View/Icon/SidePanelOpenIcon";
 import { Modal } from "View/Modal/Modal";
@@ -62,34 +60,18 @@ export function TitlePanel({ sidePanelState, board, app }: Props) {
 				onClick={() => {}}
 				width={80}
 			>
-				{!isIframe() ? (
-					<Link
-						to={"/dashboard"}
-						style={{
-							display: "inline-block",
-							color: "black",
-							textDecoration: "none",
-							paddingLeft: "4px",
-							paddingRight: "4px",
-							fontWeight: 600,
-						}}
-					>
-						{t("appTitle")}
-					</Link>
-				) : (
-					<span
-						style={{
-							display: "inline-block",
-							color: "black",
-							textDecoration: "none",
-							paddingLeft: "4px",
-							paddingRight: "4px",
-							fontWeight: 600,
-						}}
-					>
-						{t("appTitle")}
-					</span>
-				)}
+				<span
+					style={{
+						display: "inline-block",
+						color: "black",
+						textDecoration: "none",
+						paddingLeft: "4px",
+						paddingRight: "4px",
+						fontWeight: 600,
+					}}
+				>
+					{t("appTitle")}
+				</span>
 			</UiButton>
 			<span
 				onClick={openModal}
