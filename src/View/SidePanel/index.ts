@@ -1,1 +1,2 @@
-export * from "./SidePanel";
+export { SidePanel } from "./SidePanel";
+export { useSidePanelContext } from "./SidePanelContext";

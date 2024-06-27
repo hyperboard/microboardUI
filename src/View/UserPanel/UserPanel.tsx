@@ -18,6 +18,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { SuccessIcon } from "View/ForgotPassword/SuccessIcon";
 import { PasswordChanged } from "View/Widgets/form-notifications/password-changed";
+import { UiPanel } from "View/Ui/UiPanel";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	email: string;
@@ -420,7 +421,7 @@ export const UserPanel: React.FC = () => {
 
 	if (!isAuth) {
 		return (
-			<div className={styles.wrapper}>
+			<UiPanel padding={0} className={styles.wrapper}>
 				<div className={styles.unauthWrapper}>
 					{/* <span className={styles.unauthText}> */}
 					{/* 	Save&nbsp;this&nbsp;board&nbsp;to&nbsp;favorite. */}
@@ -471,13 +472,13 @@ export const UserPanel: React.FC = () => {
 						</Button>
 					</div>
 				</div>
-			</div>
+			</UiPanel>
 		);
 	}
 
 	return (
 		<>
-			<div className={styles.wrapper}>
+			<UiPanel padding={0} className={styles.wrapper}>
 				{/* <div className={styles.icons}>
 					<button className={styles.icon}>
 						<Click />
@@ -502,7 +503,7 @@ export const UserPanel: React.FC = () => {
 						setIsAuth={setIsAuth}
 					/>
 				</div>
-			</div>
+			</UiPanel>
 
 			<Modal isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
 		</>

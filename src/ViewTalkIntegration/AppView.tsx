@@ -1,25 +1,18 @@
-import { App } from "App";
 import { withRouter } from "lib/withRouter";
 import React, { useEffect, useRef, useState } from "react";
-import { Canvas } from "View/Canvas";
-import { ContextMenu, ContextMenuState } from "View/ContextMenu";
-import { ContextPanel } from "View/ContextPanel";
-import { ExportPanel } from "View/ExportPanel";
-import { SidePanel } from "View/SidePanel";
-import { SidePanelState } from "View/SidePanel/SidePanelState";
+import { Canvas } from "./Canvas";
+import { ContextPanel } from "./ContextPanel";
+import { ExportPanel } from "./ExportPanel";
 import { TextEditors } from "View/TextEditor/TextEditor";
-import { TitlePanel } from "View/TitlePanel";
-import { ToolsPanel } from "View/ToolsPanel";
-import { UserPanel } from "View/UserPanel/UserPanel";
-import { ZoomPanel } from "View/ZoomPanel";
+import { TitlePanel } from "./TitlePanel";
+import { ToolsPanel } from "./ToolsPanel";
+import { ZoomPanel } from "./ZoomPanel";
 
 const AppViewBase = ({ app, router }) => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [animationFrameId, setAnimationFrameId] = useState<number | null>(
 		null,
 	);
-	const sidePanelState = useRef(new SidePanelState()).current;
-	const contextMenuState = useRef(new ContextMenuState()).current;
 
 	const update = () => {
 		if (animationFrameId) {
@@ -114,6 +107,8 @@ const AppViewBase = ({ app, router }) => {
 		return <div></div>;
 	}
 
+	console.log("talkView");
+
 	return (
 		<div
 			style={{
@@ -124,33 +119,14 @@ const AppViewBase = ({ app, router }) => {
 			}}
 		>
 			<div ref={containerRef}>
-				<Canvas
-					app={app}
-					board={board}
-					contextMenuState={contextMenuState}
-				/>
+				<Canvas app={app} board={board} />
 				<TextEditors app={app} board={board} />
-				<ToolsPanel
-					app={app}
-					board={board}
-					sidePanelState={sidePanelState}
-				/>
+				<ToolsPanel app={app} board={board} />
 				<ZoomPanel app={app} board={board} />
 				<ContextPanel app={app} board={board} />
-				<TitlePanel
-					app={app}
-					board={board}
-					sidePanelState={sidePanelState}
-				/>
-				<UserPanel />
+				<TitlePanel app={app} board={board} />
 				<ExportPanel app={app} board={board} />
 			</div>
-			<SidePanel
-				app={app}
-				sidePanelState={sidePanelState}
-				contextMenuState={contextMenuState}
-			/>
-			<ContextMenu app={app} contextMenuState={contextMenuState} />
 		</div>
 	);
 };

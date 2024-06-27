@@ -1,102 +1,52 @@
-/* eslint-disable max-classes-per-file */
-import { App } from "App";
-import { Board } from "Board";
 import { useAppSubscription } from "Board/useBoardSubscription";
-import { HorisontalSeparator } from "View/ContextPanel/HorisontalSeparator";
-import { SidePanelState } from "View/SidePanel/SidePanelState";
 import { useForceUpdate } from "lib/useForceUpdate";
-import * as React from "react";
-import {
-	AddConnector,
-	AddDrawing,
-	AddFrame,
-	AddImage,
-	AddShape,
-	AddStickerTool,
-	AddText,
-	Redo,
-	Select,
-	Undo,
-} from "./Buttons";
-import "./ToolsPanel.css";
+import React, { useState } from "react";
+import { useAppContext } from "View/AppContext";
+import { UiPanel } from "View/Ui/UiPanel/UiPanel";
+import { AddConnector } from "./Buttons/AddConnector";
+import { AddDrawing } from "./Buttons/AddDrawing/AddDrawing";
+import { AddFrame } from "./Buttons/AddFrame";
+import { AddImage } from "./Buttons/AddImage";
+import { AddShape } from "./Buttons/AddShape/AddShape";
+import { AddSticker } from "./Buttons/AddSticker";
+import { AddText } from "./Buttons/AddText";
+import { Redo } from "./Buttons/Redo";
+import { Select } from "./Buttons/Select";
+import { Undo } from "./Buttons/Undo";
+import { PanelContext } from "./PanelContext";
+import style from "./ToolsPanel.module.css";
 
-type Props = {
-	app: App;
-	board: Board;
-	sidePanelState: SidePanelState;
-};
+export function ToolsPanel() {
+	const [openedMenu, setOpenedMenu] = useState("None");
 
-export function ToolsPanel({ app, board, sidePanelState }: Props) {
+	const toggleMenu = (menu: string) =>
+		setOpenedMenu(prev => (prev === menu ? "None" : menu));
+
+	const { app } = useAppContext();
 	const forceUpdate = useForceUpdate();
-
 	useAppSubscription(app, {
-		subjects: ["tools", "camera", "events"],
+		subjects: ["tools"],
 		observer: forceUpdate,
 	});
 
-	React.useEffect(() => {
-		sidePanelState.subject.subscribe(forceUpdate);
-
-		return () => {
-			sidePanelState.subject.unsubscribe(forceUpdate);
-		};
-	}, [forceUpdate, sidePanelState]);
-
-	const height = board.camera.window.height / 3;
-	const top = height > 48 ? height - 48 : height;
-	const isSidePanelOn = sidePanelState.isOn;
-	const sidePanelWidth = sidePanelState.width;
-	const left = isSidePanelOn ? sidePanelWidth + 24 : 8;
-
-	const isExport = board.tools.getExport();
-
-	if (isExport) {
-		return null;
-	}
-
 	return (
-		<div
-			id="ToolsPanel"
-			className="ToolsPanel"
-			style={{
-				top: `${top}px`,
-				left: `${left}px`,
-			}}
-		>
-			<Select
-				board={board}
-				isOn={board.tools.getSelect() !== undefined}
-			/>
-			<AddShape
-				board={board}
-				isOn={board.tools.getAddShape() !== undefined}
-			/>
-			<AddText
-				board={board}
-				isOn={board.tools.getAddText() !== undefined}
-			/>
-			<AddConnector
-				board={board}
-				isOn={board.tools.getAddConnector() !== undefined}
-			/>
-			<AddStickerTool
-				board={board}
-				isOn={board.tools.getAddSticker() !== undefined}
-			/>
-			<AddDrawing
-				board={board}
-				isOn={board.tools.getAddDrawing() !== undefined}
-				width={board.tools.getAddDrawing()?.strokeWidth ?? 1}
-			/>
-			<AddImage board={board} />
-			<AddFrame
-				board={board}
-				isOn={board.tools.getAddFrame() !== undefined}
-			/>
-			<HorisontalSeparator height={4}></HorisontalSeparator>
-
-			<Undo board={board} isOn={board.events?.canUndo() ?? false} />
-			<Redo board={board} isOn={board.events?.canRedo() ?? false} />
-		</div>
+		<PanelContext.Provider value={{ toggleMenu, openedMenu }}>
+			<div className={style.wrapper}>
+				<UiPanel vertical padding={0} zIndex={20}>
+					<Select />
+					<AddDrawing />
+					<AddText />
+					<AddShape />
+					<AddConnector />
+					<AddSticker />
+					<AddFrame />
+					<AddImage />
+				</UiPanel>
+				<UiPanel vertical padding={0}>
+					<Undo />
+					<Redo />
+				</UiPanel>
+			</div>
+		</PanelContext.Provider>
 	);
 }

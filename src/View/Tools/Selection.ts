@@ -1,3 +1,3 @@
-export const SELECTION_COLOR = "blue";
-export const SELECTION_BACKGROUND = "transparent";
-export const SELECTION_ANCHOR_COLOR = "rgba(255,255,255,0.8)";
+export const SELECTION_COLOR = "rgb(71, 120, 245)";
+export const SELECTION_BACKGROUND = "none";
+export const SELECTION_ANCHOR_COLOR = "rgb(255, 255, 255)";

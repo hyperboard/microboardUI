@@ -1,86 +1,85 @@
-import { Board } from "Board";
-import { Frame, Mbr, Shape } from "Board/Items";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { CircleIcon } from "View/Icon/CircleIcon";
-import { ColorPicker } from "View/Pickers/ColorPicker";
-import { UiButton } from "View/Ui/UiButton";
-import { ButtonWithMenu } from "./ButtonWithMenu";
+import { useAppContext } from "View/AppContext";
+import { ButtonWithMenu } from "View/ContextPanel/Buttons/ButtonWithMenu";
+import { usePanelContext } from "View/ContextPanel/PanelContext";
+import { FillColorIndicator } from "View/Icon/FillColorIndicator";
+import { ColorPicker } from "View/Pickers/ColorPicker/ColorPicker";
+import { FILL_COLORS } from "View/Tools/AddShape";
+import { UiButton } from "View/Ui/UiButton/UiButton";
+import { UiColorInput } from "View/Ui/UiColorInput";
+import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 
-const IconSize = 24;
+const MENU_NAME = "FillStyle";
 
-type FillStyleProps = {
-	board: Board;
-	toggleMenu: (menu: string) => void;
-	menu: string;
-	panelMbr: Mbr;
-	color: string;
-	windowHeight: number;
-};
+export function FillStyle(): React.ReactElement | null {
+	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
+		usePanelContext();
+	const { board } = useAppContext();
 
-export function FillStyle({
-	board,
-	toggleMenu,
-	menu,
-	panelMbr,
-	windowHeight,
-	color,
-}: FillStyleProps): React.ReactElement | null {
 	const { t } = useTranslation();
-	const menuRef = React.useRef<HTMLDivElement>(null);
 
-	const context = board.selection.getContext();
-	const onlyFrames = board.selection.items.isItemTypes(["Frame"]);
-	const onlyShapes = board.selection.items.isItemTypes(["Shape"]);
-	if (context === "SelectUnderPointer" || !(onlyFrames || onlyShapes)) {
-		return null;
-	}
+	const fillColor = board.selection.getFillColor();
 
-	const handleClick = (): void => {
-		toggleMenu("FillStyle");
+	const handleClick = () => {
+		toggleMenu(MENU_NAME);
 	};
 
-	const handlePick = (color: string): void => {
+	const handlePick = (color: string) => {
 		board.selection.setFillColor(color);
 		toggleMenu("None");
 	};
 
+	const handleCustomPick = (color: string) => {
+		board.selection.setFillColor(color);
+	};
+
+	const isPredefinedColor = FILL_COLORS.some(color => color === fillColor);
 	return (
 		<ButtonWithMenu
+			menuName={MENU_NAME}
+			openedMenu={openedMenu}
 			panelMbr={panelMbr}
 			windowHeight={windowHeight}
-			menuRef={menuRef}
+			align="left"
+			button={
+				<UiButton
+					id={"fill-style"}
+					tooltip={t("contextPanel.fillStyle.tooltip")}
+					tooltipPosition="top"
+					onClick={handleClick}
+					variant="secondary"
+					active={openedMenu === MENU_NAME}
+					rounded="none"
+				>
+					<FillColorIndicator
+						width={24}
+						height={24}
+						color={fillColor}
+					/>
+				</UiButton>
+			}
 		>
-			<UiButton
-				id="ChangeFillStyle"
-				onClick={handleClick}
-				title={t(`contextPanel.fillStyle.tooltip`)}
-			>
-				<CircleIcon
-					strokeWidth={1}
-					fill={color}
-					stroke="rgba(0,0,0,1)"
-					width={IconSize}
-					height={IconSize}
-				/>
-			</UiButton>
-			<div
-				id="FillStyleMenu"
-				ref={menuRef}
-				className="ContextPanelMenu"
-				style={{
-					width: "170px",
-					marginLeft: "-80px",
-					visibility: menu === "FillStyle" ? "visible" : "hidden",
-				}}
-			>
-				<ColorPicker
-					id={"FillStyle"}
-					noneTitle={t("contextPanel.fillStyle.none")}
-					allowNone={true}
-					onPick={handlePick}
-				/>
-			</div>
+			{verticalAlign => (
+				<UiPanel
+					rounded={verticalAlign === "bottom" ? "bottom" : "full"}
+					grid
+					columns={4}
+					gap={8}
+				>
+					<ColorPicker
+						id={"fill-style"}
+						selectedColor={fillColor}
+						colors={FILL_COLORS}
+						onPick={handlePick}
+					/>
+					<UiColorInput
+						onChange={handleCustomPick}
+						color={isPredefinedColor ? "none" : fillColor}
+						isActive={fillColor !== "none" && !isPredefinedColor}
+					/>
+				</UiPanel>
+			)}
 		</ButtonWithMenu>
 	);
 }

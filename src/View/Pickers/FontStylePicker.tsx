@@ -1,10 +1,8 @@
 import { TextStyle } from "Board/Items/RichText";
-import * as React from "react";
-import { UiButton } from "View/Ui/UiButton";
-import { BoldIcon } from "View/Icon/TextStyle/BoldIcon";
-import { ItalicsIcon } from "View/Icon/TextStyle/ItalicsIcon";
-import { StrikethroughIcon } from "View/Icon/TextStyle/StrikethroughIcon";
-import { UnderlineIcon } from "View/Icon/TextStyle/UnderlineIcon";
+import { getHotkeyLabel } from "Board/Keyboard";
+import { Icon } from "View/Icon";
+import { UiButton } from "View/Ui/UiButton/UiButton";
+import React from "react";
 import { useTranslation } from "react-i18next";
 
 type Props = {
@@ -12,67 +10,79 @@ type Props = {
 	fontStyles?: string[];
 };
 
-export function FontStylePicker(props: Props): React.ReactElement {
+export function FontStylePicker({
+	onPick,
+	fontStyles,
+}: Props): React.ReactElement {
 	const { t } = useTranslation();
-	const isBold = props.fontStyles?.includes("bold");
-	const isItalic = props.fontStyles?.includes("italic");
-	const isLineThrough = props.fontStyles?.includes("line-through");
-	const isUnderline = props.fontStyles?.includes("underline");
+
+	const handleBoldPick = () => {
+		onPick("bold");
+	};
+	const handleItalicsPick = () => {
+		onPick("italic");
+	};
+	const handleLineThroughPick = () => {
+		onPick("line-through");
+	};
+	const handleUnderlinePick = () => {
+		onPick("underline");
+	};
+
+	const isBold = fontStyles?.includes("bold");
+	const isItalic = fontStyles?.includes("italic");
+	const isLineThrough = fontStyles?.includes("line-through");
+	const isUnderline = fontStyles?.includes("underline");
+
 	return (
 		<>
 			<UiButton
-				id="ChangeFontBold"
-				key="ChangeFontBold"
-				title={t("contextPanel.fontStyle.bold")}
-				hotkey="Ctrl + B"
-				onClick={() => {
-					props.onPick("bold");
-				}}
-				margin={0}
-				isOn={isBold}
+				id="font-style-bold"
+				tooltip={t("contextPanel.fontStyle.bold")}
+				hotkey={getHotkeyLabel("textBold")}
+				tooltipPosition="bottom"
+				active={isBold}
+				onClick={handleBoldPick}
+				variant="secondary"
+				size="sm"
 			>
-				<BoldIcon isOn={true} width={24} height={24} />
+				<Icon width={24} height={24} iconName="TextBold" />
 			</UiButton>
 			<UiButton
-				id="ChangeFontItalics"
-				key="ChangeFontItalics"
-				title={t("contextPanel.fontStyle.italic")}
-				hotkey="Ctrl + I"
-				onClick={() => {
-					props.onPick("italic");
-				}}
-				margin={0}
-				isOn={isItalic}
+				id="font-style-italic"
+				tooltip={t("contextPanel.fontStyle.italic")}
+				hotkey={getHotkeyLabel("textItalic")}
+				tooltipPosition="bottom"
+				active={isItalic}
+				onClick={handleItalicsPick}
+				size="sm"
+				variant="secondary"
 			>
-				<ItalicsIcon width={24} height={24} />
+				<Icon width={24} height={24} iconName="TextItalic" />
 			</UiButton>
 			<UiButton
-				id="ChangeFontUnderline"
-				key="ChangeFontUnderline"
-				title={t("contextPanel.fontStyle.underline")}
-				hotkey="Ctrl + U"
-				onClick={() => {
-					props.onPick("underline");
-				}}
-				margin={0}
-				tipWidth={140}
-				isOn={isUnderline}
+				id="font-style-underline"
+				tooltip={t("contextPanel.fontStyle.underline")}
+				hotkey={getHotkeyLabel("textUnderline")}
+				tooltipPosition="bottom"
+				active={isUnderline}
+				onClick={handleUnderlinePick}
+				size="sm"
+				variant="secondary"
 			>
-				<UnderlineIcon width={24} height={24} />
+				<Icon width={24} height={24} iconName="TextUnderline" />
 			</UiButton>
 			<UiButton
-				id="ChangeFontStrikethrough"
-				key="ChangeFontStrikethrough"
-				title={t("contextPanel.fontStyle.strike")}
-				hotkey="Ctrl + S"
-				onClick={() => {
-					props.onPick("line-through");
-				}}
-				margin={0}
-				tipWidth={155}
-				isOn={isLineThrough}
+				id="font-style-strike"
+				tooltip={t("contextPanel.fontStyle.strike")}
+				hotkey={getHotkeyLabel("textStrike")}
+				tooltipPosition="bottom"
+				active={isLineThrough}
+				onClick={handleLineThroughPick}
+				size="sm"
+				variant="secondary"
 			>
-				<StrikethroughIcon width={24} height={24} />
+				<Icon width={24} height={24} iconName="TextStrike" />
 			</UiButton>
 		</>
 	);

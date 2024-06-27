@@ -1,63 +1,56 @@
-import { Board } from "Board";
 import { ConnectorLineStyle } from "Board/Items/Connector";
 import { getHotkeyLabel } from "Board/Keyboard";
-import React from "react";
-import { useTranslation } from "react-i18next";
+import { useAppContext } from "View/AppContext";
 import { Icon } from "View/Icon";
 import { ConnectorLineStylePicker } from "View/Pickers/ConnectorLineStylePicker";
 import { UiButton } from "View/Ui/UiButton";
+import { UiPanel } from "View/Ui/UiPanel/UiPanel";
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { ButtonWithMenu } from "./ButtonWithMenu/ButtonWithMenu";
 
-type Props = {
-	board: Board;
-	isOn: boolean;
-};
-
-export function AddConnector({ board, isOn }: Props) {
+export function AddConnector() {
+	const { board } = useAppContext();
 	const { t } = useTranslation();
 
-	const handleClick = (): void => {
+	const handleClick = () => {
 		board.tools.addConnector(true);
 	};
 
-	const handlePickLineStyle = (lineStyle: ConnectorLineStyle): void => {
-		const addConnector = board.tools.getAddConnector();
-		if (addConnector) {
-			addConnector.setLineStyle(lineStyle);
+	const handlePick = (shape: ConnectorLineStyle) => {
+		const tool = board.tools.getAddConnector();
+		if (tool) {
+			tool.setLineStyle(shape);
 		}
 	};
 
-	const isAddConnectorOn = board.tools.getAddConnector() !== undefined;
+	const selectedConnector = board.tools.getAddConnector()?.lineStyle;
+
+	const isActive = Boolean(board.tools.getAddConnector());
 
 	return (
-		<div className="ToolsPanelMenuContainer">
-			<UiButton
-				id="AddConnector"
-				onClick={handleClick}
-				title={t("toolsPanel.addConnector.tooltip")}
-				hotkey={getHotkeyLabel("connector")}
-				isOn={isAddConnectorOn}
-				tipOnLeft
-			>
-				<Icon
-					name="Connector"
-					width={24}
-					height={24}
-					fill="rgb(0,0,0)"
+		<ButtonWithMenu
+			button={
+				<UiButton
+					id={"tool-add-connector"}
+					tooltip={t("toolsPanel.addConnector.tooltip")}
+					hotkey={getHotkeyLabel("connector")}
+					active={isActive}
+					onClick={handleClick}
+					variant="secondary"
+					rounded="none"
+				>
+					<Icon iconName="Connector" />
+				</UiButton>
+			}
+			isOpen={isActive}
+		>
+			<UiPanel vertical padding={0}>
+				<ConnectorLineStylePicker
+					selected={selectedConnector}
+					onPick={handlePick}
 				/>
-			</UiButton>
-			<div
-				id="AddConnectorMenu"
-				className="ToolsPanelMenu"
-				style={{
-					// width: "52px",
-					paddingLeft: "0px",
-					paddingRight: "0px",
-					visibility: isOn ? "visible" : "hidden",
-					marginTop: "-80px",
-				}}
-			>
-				<ConnectorLineStylePicker onPick={handlePickLineStyle} />
-			</div>
-		</div>
+			</UiPanel>
+		</ButtonWithMenu>
 	);
 }

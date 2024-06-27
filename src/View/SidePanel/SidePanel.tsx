@@ -1,221 +1,135 @@
-import { App } from "App";
-import { useStyle } from "View/useStyle";
-import * as React from "react";
-import { Login } from "./Login";
-import { PublicBoards } from "./PublicBoards";
+import clsx from "clsx";
+import { useClickOutside } from "lib/useClickOutside";
+import { useForceUpdate } from "lib/useForceUpdate";
+import React, {
+	useEffect,
+	useRef,
+	useState,
+	type MouseEventHandler,
+} from "react";
+import { useNavigate } from "react-router-dom";
+import { useAppContext } from "View/AppContext";
+import { useContextMenuContext } from "View/ContextMenu";
+import { Folder } from "View/Folder/Folder";
+import { FolderItem } from "View/Folder/FolderItem";
+import { Icon } from "View/Icon";
+import { UiButton } from "View/Ui/UiButton";
+import { UiPanel } from "View/Ui/UiPanel";
+import { ResizableEdge } from "./ResizableEdge";
+import style from "./SidePanel.module.css";
+import { useSidePanelContext } from "./SidePanelContext";
 
-export const SidePanelMenuOffset = 10;
+export function SidePanel() {
+	const { isOpen, toggleSideMenu } = useSidePanelContext();
+	const [width, setWidth] = useState(300);
+	const animationId = useRef<number | null>(null);
+	const forceUpdate = useForceUpdate();
+	const { app, board } = useAppContext();
+	const navigate = useNavigate();
+	const { open, close } = useContextMenuContext();
 
-export class SidePanel extends React.Component<{
-	app: App;
-	contextMenuState: contextMenuState;
-}> {
-	panelRef = React.createRef<HTMLDivElement>();
-
-	animationFrameId: number | null = null;
-
-	update = (): void => {
-		if (this.animationFrameId) {
+	const update = () => {
+		if (animationId.current) {
 			return; // Function already scheduled to run
 		}
 
-		this.animationFrameId = requestAnimationFrame(() => {
-			this.forceUpdate();
-			this.animationFrameId = null;
+		animationId.current = requestAnimationFrame(() => {
+			forceUpdate();
+			animationId.current = null;
 		});
 	};
 
-	componentDidMount(): void {
-		this.props.sidePanelState.subject.subscribe(this.update);
-	}
+	useEffect(() => {
+		app.storage.subject.subscribe(update);
 
-	componentDidUpdate(): void {}
+		return () => {
+			app.storage.subject.unsubscribe(update);
+		};
+	}, []);
 
-	componentWillUnmount(): void {
-		this.props.sidePanelState.subject.unsubscribe(this.update);
-	}
+	const panelRef = useClickOutside(() => {
+		close();
+	});
 
-	setWidth = newWidth => {
-		this.props.sidePanelState.setWidth(newWidth);
+	const handleBoardClick = (boardId: string) => {
+		app.openBoard(boardId);
+		navigate(`/boards/${boardId}`, { replace: true });
 	};
 
-	render(): React.ReactElement | null {
-		const app = this.props.app;
-		const { isOn, width } = this.props.sidePanelState;
-		if (!isOn) {
-			return null;
-		}
-		return (
-			<div
-				id="SidePanel"
-				className="SidePanel"
-				style={{
-					top: "60px",
-					left: "8px",
-					width: `${width}px`,
-					height: "calc(100% - 70px)",
-				}}
-			>
-				<div className="SidePanelMenuContainer">
-					<ul className="SidePanelMenu">
-						<Login app={app} />
-						<PublicBoards
-							app={app}
-							contextMenuState={this.props.contextMenuState}
-						/>
-					</ul>
+	const handleContextMenuOpen: MouseEventHandler = e => {
+		e.preventDefault();
+		open(e.clientX, e.clientY);
+	};
+
+	const handleContextMenuClose: MouseEventHandler = e => {
+		e.preventDefault();
+		close();
+	};
+
+	const handleBoardContextMenu =
+		(boardId: string): MouseEventHandler =>
+		e => {
+			e.preventDefault();
+			e.stopPropagation();
+			open(e.clientX, e.clientY, boardId);
+		};
+
+	const handleAddNew: MouseEventHandler = async () => {
+		const boardId = await app.createPublicBoard();
+		app.openBoard(boardId);
+		navigate(`/boards/${boardId}`, {
+			replace: true,
+		});
+	};
+
+	const publicBoards = app.storage.listPublicBoards();
+	const isFolderOpen = publicBoards.some(
+		({ boardId }) => boardId === board.getBoardId(),
+	);
+	return (
+		<UiPanel
+			ref={panelRef}
+			onContextMenu={handleContextMenuOpen}
+			onClick={handleContextMenuClose}
+			padding={0}
+			className={clsx(style.sidePanel, { [style.open]: isOpen })}
+		>
+			<div style={{ width }} className={style.content}>
+				<div className={style.header}>
+					<h3 className={style.title}>Boards</h3>
+					<UiButton
+						onClick={toggleSideMenu}
+						variant="secondary"
+						className={style.close}
+					>
+						<Icon iconName="Close" />
+					</UiButton>
 				</div>
-				<ResizableEdge
-					panelWidth={this.props.sidePanelState.width}
-					setWidth={this.setWidth}
-				/>
+				<div className={style.folders}>
+					<Folder
+						title="Public boards"
+						icon={<Icon iconName="Folder" width={20} height={20} />}
+						isOpened={isFolderOpen}
+					>
+						{publicBoards.map(({ boardId }) => (
+							<FolderItem
+								active={boardId === board.getBoardId()}
+								key={boardId}
+								onClick={() => handleBoardClick(boardId)}
+								onClickContext={handleBoardContextMenu(boardId)}
+								text={boardId}
+							/>
+						))}
+					</Folder>
+				</div>
 			</div>
-		);
-	}
+			<div className={style.bottom}>
+				<button className={style.add} onClick={handleAddNew}>
+					<Icon iconName="Plus" width={16} height={16} />
+					<span>Add new</span>
+				</button>
+			</div>
+			<ResizableEdge panelWidth={width} setWidth={setWidth} />
+		</UiPanel>
+	);
 }
-
-export class ResizableEdge extends React.Component {
-	resizableRef = React.createRef<HTMLDivElement>();
-
-	isDown = false;
-
-	pointerDown = (event: PointerEvent) => {
-		event.currentTarget.setPointerCapture(event.pointerId);
-		this.isDown = true;
-	};
-
-	pointerMove = (event: PointerEvent) => {
-		if (!this.isDown) {
-			return;
-		}
-		const currentX = event.clientX;
-		const panelWidth = this.props.panelWidth;
-		const newWidth = panelWidth + (currentX - panelWidth) - 14;
-
-		this.props.setWidth(newWidth);
-	};
-
-	pointerUp = (event: PointerEvent) => {
-		event.currentTarget.releasePointerCapture(event.pointerId);
-		this.isDown = false;
-	};
-
-	pointerCancel = (event: PointerEvent) => {
-		event.currentTarget.releasePointerCapture(event.pointerId);
-		this.isDown = false;
-	};
-
-	componentDidMount() {
-		const resizable = this.resizableRef.current;
-
-		if (resizable) {
-			resizable.addEventListener("pointerdown", this.pointerDown);
-			resizable.addEventListener("pointermove", this.pointerMove);
-			resizable.addEventListener("pointerup", this.pointerUp);
-			resizable.addEventListener("pointercancel", this.pointerCancel);
-		}
-	}
-
-	componentWillUnmount() {
-		const resizable = this.resizableRef.current;
-
-		if (resizable) {
-			resizable.removeEventListener("pointerdown", this.pointerDown);
-			resizable.removeEventListener("pointermove", this.pointerMove);
-			resizable.removeEventListener("pointerup", this.pointerUp);
-			resizable.removeEventListener("pointercancel", this.pointerCancel);
-		}
-	}
-
-	render() {
-		return (
-			<div className="SidePanelResizableEdge" ref={this.resizableRef} />
-		);
-	}
-}
-
-useStyle(`
-.SidePanel {
-	padding-left: 4px;
-	background-color: white;
-	border-radius: 4px;
-	box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.12);
-	position: absolute;
-	z-index: 90;
-    background: rgba(255,255,255,0.5);
-    backdrop-filter: blur(14px);
-}
-
-.SidePanelList {
-	list-style-type: none;
-	padding-left: 0;
-	pointer: finger;
-}
-
-.SidePanelMenu {
-	list-style-type: none;
-	padding-left: 0;
-	overflow-y: auto;
-}
-
-.SidePanelMenuContainer {
-	white-space: nowrap;
-	overflow-x: hidden;
-	overflow-y: auto;
-	height: 100%;
-}
-
-.SidePanelInput {
-	display: inline-block;
-	font-size: 16px;
-	line-height: 16px;
-	border: none;
-	margin: 0px;
-	padding: 0px;
-	background-color: rgba(100,150,255,0.3);
-}
-
-.SidePanelInput:focus {
-	outline: none;
-}
-
-.SidePanelResizableEdge {
-	position: absolute;
-	top: 0;
-	right: -4px;
-	width: 4px;
-	height: 100%;
-	cursor: ew-resize;
-	touch-action: none;
-	border-right: black;
-	background-color: rgba(100,100,100,0.2);
-}
-
-.SidePanelListElement {
-	cursor: pointer;
-	-webkit-user-select: none; /* Safari */
-	-ms-user-select: none; /* IE 10 and IE 11 */
-	user-select: none; /* Standard syntax */
-}
-
-.SidePanelMenuLine {
-	padding-top: 4px;
-	padding-bottom: 4px;
-	cursor: pointer;
-	border: 1px solid rgba(100,150,255,0);
-	-webkit-user-select: none; /* Safari */
-	-ms-user-select: none; /* IE 10 and IE 11 */
-	user-select: none; /* Standard syntax */
-}
-
-.SidePanelMenuLine:hover {
-	color: blue;
-	border: 1px solid rgba(100,150,255,1);
-}
-
-.SidePanelMenuList {
-	list-style-type: none;
-	padding-left: 0;
-}
-
-`);

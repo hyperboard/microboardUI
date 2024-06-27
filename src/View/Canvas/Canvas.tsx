@@ -1,9 +1,8 @@
 import { App } from "App";
 import { Board } from "Board";
 import { DrawingContext } from "Board/Items/DrawingContext";
-import { withRouter, WithRouterProps } from "lib/withRouter";
+import { WithRouterProps, withRouter } from "lib/withRouter";
 import * as React from "react";
-import { CANVAS_BG_COLOR } from "View/consts";
 export interface Props extends WithRouterProps {
 	app: App;
 	board: Board;
@@ -148,7 +147,7 @@ export class CanvasBase extends React.Component<Props> {
 					padding: "0px",
 					margin: "0px",
 					border: "0px",
-					background: CANVAS_BG_COLOR,
+					background: "rgb(246, 246, 246)",
 					cursor: board.pointer.getCursor(),
 					top: "0px",
 					left: "0px",
@@ -166,7 +165,7 @@ export class CanvasBase extends React.Component<Props> {
 						padding: "0px",
 						margin: "0px",
 						border: "0px",
-						background: CANVAS_BG_COLOR,
+						background: "rgb(246, 246, 246)",
 						top: "0px",
 						left: "0px",
 						display: "block",

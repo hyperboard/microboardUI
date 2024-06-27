@@ -1,29 +1,31 @@
-import { Board } from "Board";
 import { getHotkeyLabel } from "Board/Keyboard";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { RedoIcon } from "View/Icon/RedoIcon";
+import { useAppContext } from "View/AppContext";
+import { Icon } from "View/Icon";
 import { UiButton } from "View/Ui/UiButton";
 
-type Props = { board: Board; isOn: boolean };
-
-export function Redo({ board, isOn }: Props) {
+export function Redo() {
+	const { board } = useAppContext();
 	const { t } = useTranslation();
 
-	const handleClick = (): void => {
+	const handleClick = () => {
 		board.events?.redo();
 	};
 
+	const canRedo = board.events?.canRedo();
+
 	return (
 		<UiButton
-			id="Redo"
-			onClick={handleClick}
-			title={t("toolsPanel.redo.tooltip")}
+			id={"redo"}
+			tooltip={t("toolsPanel.redo.tooltip")}
 			hotkey={getHotkeyLabel("redo")}
-			isOn={false}
-			tipOnLeft
+			onClick={handleClick}
+			disabled={!canRedo}
+			rounded="bottom"
+			variant="secondary"
 		>
-			<RedoIcon isOn={isOn} width={24} height={24} />
+			<Icon iconName="Redo" />
 		</UiButton>
 	);
 }

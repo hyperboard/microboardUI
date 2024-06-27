@@ -1,75 +1,64 @@
-import { Board } from "Board";
-import { Mbr } from "Board/Items";
-import React from "react";
-import { useTranslation } from "react-i18next";
+import { ConnectorLineStyle } from "Board/Items/Connector";
+import { ButtonWithMenu } from "View/ContextPanel/Buttons/ButtonWithMenu";
+import { usePanelContext } from "View/ContextPanel/PanelContext";
 import { Icon } from "View/Icon";
 import { ConnectorLineStylePicker } from "View/Pickers/ConnectorLineStylePicker";
-import { UiButton } from "View/Ui/UiButton";
-import { ButtonWithMenu } from "./ButtonWithMenu";
+import { UiButton } from "View/Ui/UiButton/UiButton";
+import { UiPanel } from "View/Ui/UiPanel/UiPanel";
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { useAppContext } from "View/AppContext";
 
-const IconSize = 24;
+const MENU_NAME = "ConnectorType";
 
-type ConnectorTypeProps = {
-	board: Board;
-	toggleMenu: (menu: string) => void;
-	menu: string;
-	panelMbr: Mbr;
-	windowHeight: number;
-};
+export function ConnectorType(): React.ReactElement | null {
+	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
+		usePanelContext();
 
-export function ConnectorType({
-	board,
-	toggleMenu,
-	menu,
-	panelMbr,
-	windowHeight,
-}: ConnectorTypeProps): React.ReactElement | null {
+	const { board } = useAppContext();
 	const { t } = useTranslation();
-	const menuRef = React.useRef<HTMLDivElement>(null);
-	const canChangePointer = board.selection.items.isItemTypes(["Connector"]);
-	if (
-		board.selection.getContext() === "SelectUnderPointer" ||
-		!canChangePointer
-	) {
-		return null;
-	}
 
+	const connectorType = board.selection.getConnectorLineStyle();
 	const handleClick = () => {
-		toggleMenu("ConnectorType");
+		toggleMenu(MENU_NAME);
 	};
-
-	const handlePick = (type: string) => {
+	const handlePick = (type: ConnectorLineStyle) => {
 		board.selection.setConnectorLineStyle(type);
 		toggleMenu("None");
 	};
-
 	return (
 		<ButtonWithMenu
+			menuName={MENU_NAME}
+			openedMenu={openedMenu}
 			panelMbr={panelMbr}
 			windowHeight={windowHeight}
-			menuRef={menuRef}
+			align="left"
+			button={
+				<UiButton
+					id={"connector-type"}
+					tooltip={t("contextPanel.connectorType.tooltip")}
+					tooltipPosition="top"
+					onClick={handleClick}
+					variant="secondary"
+					rounded="none"
+					active={openedMenu === MENU_NAME}
+				>
+					<Icon
+						iconName={
+							connectorType === "curved"
+								? "CurvedLine"
+								: "DiagonalLine"
+						}
+					/>
+				</UiButton>
+			}
 		>
-			<UiButton
-				id="ChangeConnectorType"
-				onClick={handleClick}
-				title={t("contextPanel.connectorType.tooltip")}
-			>
-				<Icon name="curved" width={IconSize} height={IconSize} />
-			</UiButton>
-			<div
-				id="ConnectorTypeMenu"
-				ref={menuRef}
-				className="ContextPanelMenu"
-				style={{
-					width: "100px",
-					marginLeft: "-50px",
-					visibility: menu === "ConnectorType" ? "visible" : "hidden",
-				}}
-			>
+			<UiPanel rounded="bottom" gap={2} padding={2} vertical>
 				<ConnectorLineStylePicker
 					onPick={handlePick}
-				></ConnectorLineStylePicker>
-			</div>
+					selected={connectorType}
+				/>
+			</UiPanel>
 		</ButtonWithMenu>
 	);
 }

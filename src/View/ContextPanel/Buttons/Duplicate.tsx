@@ -1,20 +1,16 @@
-import { Board } from "Board";
+import { Icon } from "View/Icon";
+import { UiButton } from "View/Ui/UiButton/UiButton";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { DuplicateIcon } from "View/Icon/DuplicateIcon";
-import { UiButton } from "View/Ui/UiButton";
+import { useAppContext } from "View/AppContext";
 
-type DuplicateProps = { board: Board };
+type Props = {
+	rounded?: "none" | "left";
+};
 
-const IconSize = 24;
-
-export function Duplicate({
-	board,
-}: DuplicateProps): React.ReactElement | null {
+export function Duplicate({ rounded = "none" }: Props) {
+	const { board } = useAppContext();
 	const { t } = useTranslation();
-	if (board.selection.getContext() === "SelectUnderPointer") {
-		return null;
-	}
 
 	const handleClick = () => {
 		board.selection.duplicate();
@@ -22,11 +18,14 @@ export function Duplicate({
 
 	return (
 		<UiButton
-			id="DuplicateSelection"
+			id={"duplicate"}
 			onClick={handleClick}
-			title={t("contextPanel.duplicate.tooltip")}
+			variant="secondary"
+			rounded={rounded}
+			tooltip={t("contextPanel.duplicate.tooltip")}
+			tooltipPosition="top"
 		>
-			<DuplicateIcon width={IconSize} height={IconSize} />
+			<Icon iconName="Duplicate" />
 		</UiButton>
 	);
 }

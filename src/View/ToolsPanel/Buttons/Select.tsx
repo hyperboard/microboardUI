@@ -1,32 +1,31 @@
-import { Board } from "Board";
 import { getHotkeyLabel } from "Board/Keyboard";
-import React from "react";
-import { useTranslation } from "react-i18next";
+import { useAppContext } from "View/AppContext";
 import { Icon } from "View/Icon";
 import { UiButton } from "View/Ui/UiButton";
+import React from "react";
+import { useTranslation } from "react-i18next";
 
-type Props = {
-	board: Board;
-	isOn: boolean;
-};
-
-export function Select({ board, isOn }: Props) {
+export function Select() {
+	const { board } = useAppContext();
 	const { t } = useTranslation();
 
-	const handleClick = (): void => {
+	const handleClick = () => {
 		board.tools.select(true);
 	};
 
+	const isActive = Boolean(board.tools.getSelect());
+
 	return (
 		<UiButton
-			id="Select"
-			onClick={handleClick}
-			title={t("toolsPanel.select.tooltip")}
+			id={"tool-select"}
+			tooltip={t("toolsPanel.select.tooltip")}
 			hotkey={getHotkeyLabel("select")}
-			isOn={isOn}
-			tipOnLeft
+			onClick={handleClick}
+			active={isActive}
+			variant="secondary"
+			rounded="top"
 		>
-			<Icon name="Pointer" width={24} height={24} />
+			<Icon iconName="Select" />
 		</UiButton>
 	);
 }

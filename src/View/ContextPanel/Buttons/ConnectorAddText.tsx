@@ -1,32 +1,15 @@
+import { Connector } from "Board/Items";
 import React from "react";
-import { Board } from "Board";
-import { Connector, Mbr } from "Board/Items";
-import { Icon } from "View/Icon";
-import { UiButton } from "View/Ui/UiButton";
-import { ButtonWithMenu } from "./ButtonWithMenu";
 import { useTranslation } from "react-i18next";
+import { useAppContext } from "View/AppContext";
+import { UiButton } from "View/Ui/UiButton/UiButton";
 
-const IconSize = 24;
-
-type ConnectorAddTextProps = {
-	board: Board;
-	panelMbr: Mbr;
-	windowHeight: number;
-};
-
-export function ConnectorAddText({
-	board,
-	panelMbr,
-	windowHeight,
-}: ConnectorAddTextProps): React.ReactElement | null {
+export function ConnectorAddText(): React.ReactElement | null {
+	const { board } = useAppContext();
 	const { t } = useTranslation();
-	const menuRef = React.useRef<HTMLDivElement>(null);
 
-	const canChangePointer = board.selection.items.isItemTypes(["Connector"]);
-	if (
-		board.selection.getContext() === "SelectUnderPointer" ||
-		!canChangePointer
-	) {
+	const context = board.selection.getContext();
+	if (context === "EditTextUnderPointer") {
 		return null;
 	}
 
@@ -48,18 +31,13 @@ export function ConnectorAddText({
 	};
 
 	return (
-		<ButtonWithMenu
-			panelMbr={panelMbr}
-			windowHeight={windowHeight}
-			menuRef={menuRef}
+		<UiButton
+			id={"connector-add-text"}
+			tooltip={t("contextPanel.connectorAddText.tooltip")}
+			tooltipPosition="top"
+			onClick={handleClick}
 		>
-			<UiButton
-				id="ConnectorAddText"
-				onClick={handleClick}
-				title={t("contextPanel.connectorAddText.tooltip")}
-			>
-				<Icon name="AddText" width={IconSize} height={IconSize} />
-			</UiButton>
-		</ButtonWithMenu>
+			{/* <TextColorIndicator color="none" /> */}
+		</UiButton>
 	);
 }

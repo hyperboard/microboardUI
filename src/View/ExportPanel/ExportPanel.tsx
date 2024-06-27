@@ -1,38 +1,47 @@
-import { App } from "App";
-import { Board } from "Board";
 import { useAppSubscription } from "Board/useBoardSubscription";
+import clsx from "clsx";
 import { useForceUpdate } from "lib/useForceUpdate";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useAppContext } from "View/AppContext";
+import { notify } from "View/Ui/Toast";
 import { UiButton } from "View/Ui/UiButton";
 import style from "./ExportPanel.module.css";
 
-type Props = { board: Board; app: App };
-
-export function ExportPanel({ board, app }: Props) {
+export function ExportPanel() {
 	const [isLoading, setIsLoading] = useState(false);
+	const { board, app } = useAppContext();
 	const { t } = useTranslation();
 	const forceUpdate = useForceUpdate();
 	useAppSubscription(app, { observer: forceUpdate, subjects: ["tools"] });
 	const exportTool = board.tools.getExport();
-	const handleConfirm = () => {
-		setIsLoading(true);
-	};
 
 	useEffect(() => {
-		(async () => {
-			if (isLoading && exportTool) {
-				try {
-					await exportTool.takeSnapshot();
-				} catch (err) {
-					console.error(err);
-				} finally {
+		if (isLoading) {
+			exportTool
+				?.takeSnapshot()
+				?.then(() => {
 					setIsLoading(false);
 					board.tools.cancel();
-				}
-			}
-		})();
-	}, [isLoading, exportTool]);
+				})
+				.catch(() => {
+					notify({
+						header: t("export.error.title"),
+						body: t("export.error.description"),
+						variant: "error",
+					});
+					setIsLoading(false);
+					board.tools.cancel();
+				});
+		}
+	}, [isLoading]);
+
+	const handleConfirm = () => {
+		if (isLoading) {
+			return;
+		}
+		setIsLoading(true);
+	};
 
 	const handleCancel = () => {
 		board.tools.cancel();
@@ -43,24 +52,25 @@ export function ExportPanel({ board, app }: Props) {
 	}
 
 	return (
-		<>
-			<div className={style.panel}>
-				<UiButton
-					id="ExportConfirm"
-					onClick={handleConfirm}
-					width={130}
-				>
-					{t("export.confirm")}
-				</UiButton>
-				<UiButton id="ExportCancel" onClick={handleCancel} width={130}>
-					{t("export.cancel")}
-				</UiButton>
-			</div>
-			{isLoading && (
-				<div className={style.loader}>
-					<span>Загрузка...</span>
-				</div>
-			)}
-		</>
+		<div className={style.container}>
+			<UiButton
+				className={clsx(style.button)}
+				onClick={handleConfirm}
+				disabled={isLoading}
+			>
+				{isLoading ? (
+					<div className={style.loader} />
+				) : (
+					t("export.confirm")
+				)}
+			</UiButton>
+			<UiButton
+				className={clsx(style.button)}
+				onClick={handleCancel}
+				variant="secondary"
+			>
+				{t("export.cancel")}
+			</UiButton>
+		</div>
 	);
 }

@@ -1,45 +1,87 @@
-import * as React from "react";
-import { Icons } from "./Icons";
+import React from "react";
+import sprite from "./sprite.svg";
 
-interface Props {
-	name: keyof typeof Icons;
-	width: number;
-	height: number;
-	className?: string;
-	fill?: string;
-	stroke?: string;
+export type IconId =
+	| "Select"
+	| "Pen"
+	| "Text"
+	| "Shape"
+	| "Connector"
+	| "Sticker"
+	| "Frame"
+	| "Image"
+	| "Undo"
+	| "Redo"
+	| "SidePanelOpen"
+	| "SidePanelClose"
+	| "Export"
+	| "ZoomToFit"
+	| "Minus"
+	| "Plus"
+	| "Close"
+	| "Folder"
+	| "Chevron"
+	| "ContextMenu"
+	| "Delete"
+	| "Board"
+	| "TextStyle"
+	| "TextBold"
+	| "TextItalic"
+	| "TextUnderline"
+	| "TextStrike"
+	| "TextAlignCenter"
+	| "TextAlignLeft"
+	| "TextAlignRight"
+	| "TextColor"
+	| "TextHighlight"
+	| "SolidLine"
+	| "DashedLine"
+	| "DottedLine"
+	| "Duplicate"
+	| "Dots"
+	| "Switch"
+	| "DiagonalLine"
+	| "CurvedLine"
+	| "LockFrameLocked"
+	| "LockFrameUnlocked"
+	| "Notification"
+	| "BringToFront"
+	| "SendToBack"
+	| "CopyLink"
+	| "SaveAsImage"
+	| "VerticalAlignTop"
+	| "VerticalAlignCenter"
+	| "VerticalAlignBottom";
+
+type Props = {
+	iconName: IconId;
+	width?: number | string;
+	height?: number | string;
 	style?: React.CSSProperties;
-	scale?: string;
-}
+	className?: string;
+};
 
-export function Icon(props: Props): React.ReactElement {
-	const icon = Icons[props.name];
-	const pathElements = [];
-	const scale = props.scale || (props.width - 2) / icon.width;
-	const strokeWidth = (icon.width / props.width) * 1.2;
-	for (const path of icon.paths) {
-		pathElements.push(
-			<path
-				key={path}
-				d={path}
-				transform={`translate(1,1) scale(${scale})`}
-			/>,
-		);
-	}
+export function Icon({
+	iconName,
+	style,
+	className,
+	height = 24,
+	width = 24,
+}: Props): React.ReactElement {
 	return (
 		<svg
-			width={`${props.width}.0px`}
-			height={`${props.height}.0px`}
-			viewBox={`0 0 ${props.width}.0 ${props.height}.0`}
-			style={{
-				...props.style,
-				fill: props.fill ?? "none",
-				stroke: props.stroke ?? "currentColor",
-				strokeWidth,
-			}}
-			className={props.className ?? ""}
+			xmlns="http://www.w3.org/2000/svg"
+			xmlnsXlink="http://www.w3.org/1999/xlink"
+			width={width}
+			height={height}
+			style={style}
+			className={className}
 		>
-			<g>{pathElements}</g>
+			<use
+				width={width}
+				height={height}
+				xlinkHref={`../${sprite}#${iconName}`}
+			/>
 		</svg>
 	);
 }

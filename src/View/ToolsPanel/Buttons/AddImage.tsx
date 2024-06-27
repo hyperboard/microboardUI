@@ -1,27 +1,25 @@
-import { Board } from "Board";
 import { uploadImage } from "Board/Items/Image/uploadImage";
-import React from "react";
-import { useTranslation } from "react-i18next";
+import { useAppContext } from "View/AppContext";
 import { Icon } from "View/Icon";
-import { UiButton } from "View/Ui/UiButton/UiButton";
+import { UiButton } from "View/Ui/UiButton";
+import React, { ChangeEventHandler, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
-type Props = {
-	board: Board;
-};
-
-export function AddImage({ board }: Props) {
+export function AddImage() {
+	const { board } = useAppContext();
+	const inputRef = useRef<HTMLInputElement>(null);
 	const { t } = useTranslation();
-	const inputRef = React.useRef<HTMLInputElement>(null);
 
 	const handleClick = () => {
 		const input = inputRef.current;
 		if (!input) {
 			return;
 		}
+		board.tools.cancel();
 		input.click();
 	};
 
-	const handleChange: React.ChangeEventHandler<HTMLInputElement> = e => {
+	const handleChange: ChangeEventHandler<HTMLInputElement> = e => {
 		const input = e.target;
 		const file = input.files?.[0];
 		if (!file) {
@@ -34,12 +32,13 @@ export function AddImage({ board }: Props) {
 
 	return (
 		<UiButton
-			id="AddImage"
-			title={t("toolsPanel.addImage.tooltip")}
+			id={"tool-add-image"}
+			tooltip={t("toolsPanel.addImage.tooltip")}
 			onClick={handleClick}
-			tipOnLeft
+			rounded="bottom"
+			variant="secondary"
 		>
-			<Icon name="Image" width={24} height={24} />
+			<Icon iconName="Image" />
 			<input
 				onChange={handleChange}
 				ref={inputRef}

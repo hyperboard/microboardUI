@@ -1,31 +1,12 @@
-import { Board } from "Board";
-import { Mbr } from "Board/Items";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { SwitchPointersIcon } from "View/Icon/SwitchPointersIcon";
-import { UiButton } from "View/Ui/UiButton";
+import { useAppContext } from "View/AppContext";
+import { Icon } from "View/Icon";
+import { UiButton } from "View/Ui/UiButton/UiButton";
 
-const IconSize = 24;
-
-type SwitchPointersProps = {
-	board: Board;
-	toggleMenu: (menu: string) => void;
-	menu: string;
-	panelMbr: Mbr;
-};
-
-export function SwitchPointers({
-	board,
-}: SwitchPointersProps): React.ReactElement | null {
+export function SwitchPointers(): React.ReactElement | null {
+	const { board } = useAppContext();
 	const { t } = useTranslation();
-	const canChangePointer = board.selection.items.isItemTypes(["Connector"]);
-	if (
-		board.selection.getContext() === "SelectUnderPointer" ||
-		!canChangePointer
-	) {
-		return null;
-	}
-
 	const handleClick = () => {
 		const start = board.selection.getStartPointerStyle();
 		const end = board.selection.getEndPointerStyle();
@@ -35,11 +16,14 @@ export function SwitchPointers({
 
 	return (
 		<UiButton
-			id="SwitchPointers"
+			id={"switch-pointers"}
+			tooltip={t("contextPanel.connectorSwitchPointers.tooltip")}
+			tooltipPosition="top"
 			onClick={handleClick}
-			title={t("contextPanel.connectorSwitchPointers.tooltip")}
+			variant="secondary"
+			rounded="none"
 		>
-			<SwitchPointersIcon width={IconSize} height={IconSize} />
+			<Icon iconName="Switch" />
 		</UiButton>
 	);
 }

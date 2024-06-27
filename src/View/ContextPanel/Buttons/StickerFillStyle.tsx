@@ -1,99 +1,67 @@
-import { Board } from "Board";
-import { Mbr } from "Board/Items";
-import { stickerColors } from "Board/Items/Sticker";
+import { ButtonWithMenu } from "View/ContextPanel/Buttons/ButtonWithMenu";
+import { usePanelContext } from "View/ContextPanel/PanelContext";
+import { FillColorIndicator } from "View/Icon/FillColorIndicator";
+import { ColorPicker } from "View/Pickers/ColorPicker/ColorPicker";
+import { STICKER_COLORS } from "View/Tools/AddSticker";
+import { UiButton } from "View/Ui/UiButton/UiButton";
+import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { CircleIcon } from "View/Icon/CircleIcon";
-import { ColorPicker } from "View/Pickers/ColorPicker";
-import { UiButton } from "View/Ui/UiButton";
-import { ButtonWithMenu } from "./ButtonWithMenu";
+import { useAppContext } from "View/AppContext";
 
-const IconSize = 24;
+const MENU_NAME = "StickerFillStyle";
 
-type StickerFillStyleProps = {
-	board: Board;
-	toggleMenu: (menu: string) => void;
-	menu: string;
-	panelMbr: Mbr;
-	color: string;
-	windowHeight: number;
-};
-
-export function StickerFillStyle({
-	board,
-	toggleMenu,
-	menu,
-	panelMbr,
-	windowHeight,
-	color,
-}: StickerFillStyleProps): React.ReactElement | null {
+export function StickerFillStyle(): React.ReactElement | null {
+	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
+		usePanelContext();
+	const { board } = useAppContext();
 	const { t } = useTranslation();
-	const context = board.selection.getContext();
-	const menuRef = React.useRef<HTMLDivElement>(null);
-	const canChangeFillStyle = board.selection.items.isItemTypes(["Sticker"]);
-	if (context === "SelectUnderPointer" || !canChangeFillStyle) {
-		return null;
-	}
+
+	const color = board.selection.getFillColor();
 
 	const handleClick = () => {
-		toggleMenu("StickerFillStyle");
+		toggleMenu(MENU_NAME);
 	};
-
 	const handlePick = (color: string) => {
 		board.selection.setFillColor(color);
 		toggleMenu("None");
 	};
-
 	return (
 		<ButtonWithMenu
+			menuName={MENU_NAME}
+			openedMenu={openedMenu}
 			panelMbr={panelMbr}
 			windowHeight={windowHeight}
-			menuRef={menuRef}
+			align="left"
+			button={
+				<UiButton
+					id="sticker-fill-style"
+					tooltip={t("contextPanel.stickerColor.tooltip")}
+					tooltipPosition="top"
+					onClick={handleClick}
+					variant="secondary"
+					rounded="none"
+					active={openedMenu === MENU_NAME}
+				>
+					<FillColorIndicator color={color} />
+				</UiButton>
+			}
 		>
-			<UiButton
-				id="ChangeStickerFillStyle"
-				onClick={handleClick}
-				title={t("contextPanel.stickerColor.tooltip")}
-			>
-				<CircleIcon
-					strokeWidth={1}
-					fill={color}
-					stroke="rgba(0,0,0,1)"
-					width={IconSize}
-					height={IconSize}
-				/>
-			</UiButton>
-			<div
-				id="StickerFillStyleMenu"
-				ref={menuRef}
-				className="ContextPanelMenu"
-				style={{
-					width: "170px",
-					marginLeft: "-80px",
-					visibility:
-						menu === "StickerFillStyle" ? "visible" : "hidden",
-				}}
-			>
-				<ColorPicker
-					id={"StickerFillStyle"}
-					onPick={(color: string) => {
-						board.selection.setFillColor(color);
-						// TODO: use Storage.ts instead
-						const stickerJSON =
-							sessionStorage.getItem("lastSticker");
-						if (stickerJSON) {
-							const sticker = JSON.parse(stickerJSON);
-							sticker.backgroundColor = color;
-							sessionStorage.setItem(
-								"lastSticker",
-								JSON.stringify(sticker),
-							);
-						}
-						toggleMenu("None");
-					}}
-					list={stickerColors}
-				/>
-			</div>
+			{verticalAlign => (
+				<UiPanel
+					rounded={verticalAlign === "bottom" ? "bottom" : "full"}
+					grid
+					columns={4}
+					gap={8}
+				>
+					<ColorPicker
+						id="sticker-fill"
+						selectedColor={color}
+						colors={STICKER_COLORS}
+						onPick={handlePick}
+					/>
+				</UiPanel>
+			)}
 		</ButtonWithMenu>
 	);
 }

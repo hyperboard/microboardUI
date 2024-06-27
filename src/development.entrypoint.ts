@@ -1,5 +1,6 @@
 import { App } from "App";
 import { createApp } from "App/App";
+import "./index.css";
 
 declare global {
 	interface Window {

@@ -1,79 +1,41 @@
-import * as React from "react";
-import { Icon } from "../Icon";
-import { ConnectorLineStyle } from "../../Board/Items/Connector";
-import { UiButton } from "View/Ui/UiButton";
-import { useTranslation } from "react-i18next";
+import { ConnectorLineStyle } from "Board/Items/Connector";
+import { ConnectorIcon } from "View/Icon";
+import { UiButton } from "View/Ui/UiButton/UiButton";
+import React from "react";
 
 type Props = {
 	onPick: (type: ConnectorLineStyle) => void;
+	selected?: string;
 };
 
-type LineStyleButtonProps = {
-	lineStyle: ConnectorLineStyle;
-	onPick: () => void;
-};
-
-export function ConnectorLineStyleButton(
-	props: LineStyleButtonProps,
-): React.ReactElement {
-	const buttonStyle: React.CSSProperties = {
-		width: "24px",
-		height: "24px",
-		margin: "8px",
-		padding: "0px",
-		border: "none",
-		cursor: "pointer",
-		backgroundColor: "white",
+export function ConnectorLineStylePicker({
+	onPick,
+	selected,
+}: Props): React.ReactElement {
+	const handleStraightPick = () => {
+		onPick("straight");
 	};
-	const iconStyle: React.CSSProperties = {
-		display: "block",
-		overflow: "hidden",
+	const handleCurvedPick = () => {
+		onPick("curved");
 	};
 	return (
-		<button
-			id={`Pick${props.lineStyle}`}
-			title={props.lineStyle}
-			onMouseEnter={event => {
-				event.currentTarget.style.color = "blue";
-			}}
-			onMouseLeave={event => {
-				event.currentTarget.style.color = "black";
-			}}
-			onClick={props.onPick}
-			style={buttonStyle}
-		>
-			<Icon
-				name={props.lineStyle}
-				width={24}
-				height={24}
-				style={iconStyle}
-			/>
-		</button>
-	);
-}
-
-export function ConnectorLineStylePicker(props: Props): React.ReactElement {
-	const { t } = useTranslation();
-	return (
-		<div>
+		<>
 			<UiButton
-				id="PickStraight"
-				onClick={() => {
-					props.onPick("straight");
-				}}
-				title={t("contextPanel.connectorType.straight")}
+				id={"connector-straight"}
+				onClick={handleStraightPick}
+				active={selected === "straight"}
+				variant="secondary"
 			>
-				<Icon name="straight" width={24} height={24} />
+				<ConnectorIcon iconName="straight" />
 			</UiButton>
 			<UiButton
-				id="PickCurved"
-				onClick={() => {
-					props.onPick("curved");
-				}}
-				title={t("contextPanel.connectorType.curved")}
+				id={"connector-curved"}
+				onClick={handleCurvedPick}
+				active={selected === "curved"}
+				variant="secondary"
 			>
-				<Icon name="curved" width={24} height={24} />
+				<ConnectorIcon iconName="curved" />
 			</UiButton>
-		</div>
+		</>
 	);
 }
