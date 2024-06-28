@@ -12,6 +12,11 @@ import {
 	ConnectionLineWidth,
 } from "Board/Items/Connector/Connector";
 
+interface MiroImage {
+	type: string;
+	url: string;
+}
+
 export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 	const setItemText = (
 		item: Shape | Sticker,
@@ -150,19 +155,29 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 		}
 	};
 
+	const getImage = async (imageUrl: string): Promise<MiroImage | null> => {
+		const token = Cookies.get("miro_accessToken");
+		try {
+			const response = await fetch(imageUrl, {
+				headers: {
+					Authorization: "Bearer " + token,
+				},
+			});
+			return await response.json();
+		} catch (error) {
+			console.log(error);
+		}
+		return null;
+	};
+
 	const copyImage = async (item: IMiroBoardItem) => {
 		const { id, position, data, geometry } = item;
 		if (data && data.imageUrl) {
 			const { x, y } = position;
 			const { height, width } = geometry;
-			const token = Cookies.get("miro_accessToken");
-			const response = await fetch(data.imageUrl, {
-				headers: {
-					Authorization: "Bearer " + token,
-				},
-			});
-			const dataImg = await response.json();
-			const img = new ImageItem(dataImg.url, undefined, id);
+
+			const imgUrl = await getImage(data.imageUrl);
+			const img = new ImageItem(imgUrl?.url ?? "", undefined, id);
 
 			img.transformation.translateTo(x, y);
 			img.transformation.scaleTo(width / 150, height / 150);
@@ -173,6 +188,7 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 
 	const getMiroItemById = (id: string) =>
 		miroItems.find((item: IMiroBoardItem) => item.id === id) || undefined;
+
 	const getConnectorPoint = (start: number, end: number, percent: string) => {
 		const percentInt = +percent.replace("%", "");
 		return start + (end * percentInt) / 100;

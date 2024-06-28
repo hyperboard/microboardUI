@@ -31,6 +31,7 @@ export function ImportBoardItem({
 		cursor: { items: "", connectors: "" },
 		total: { items: -1, connectors: -1 },
 	});
+
 	const token = Cookies.get("miro_accessToken");
 	const options = {
 		headers: {
@@ -65,7 +66,7 @@ export function ImportBoardItem({
 					},
 				};
 			});
-		} catch (error) {
+		} catch (error: Error) {
 			console.error(error as Error);
 		}
 	};
@@ -107,9 +108,12 @@ export function ImportBoardItem({
 	}, []);
 
 	useEffect(() => {
-		itemsInfo.cursor.connectors !== "" && fetchBoardsItemsConnectors();
 		itemsInfo.cursor.items !== "" && fetchBoardsItems();
-	}, [itemsInfo]);
+	}, [itemsInfo.cursor.items]);
+
+	useEffect(() => {
+		itemsInfo.cursor.connectors !== "" && fetchBoardsItemsConnectors();
+	}, [itemsInfo.cursor.connectors]);
 
 	useEffect(() => {
 		if (
