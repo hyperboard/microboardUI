@@ -89,6 +89,7 @@ export function ContextPanel() {
 				}}
 				ref={panelRef}
 				padding={0}
+				id="ContextPanel"
 			>
 				{isText && (
 					<>
@@ -212,7 +213,12 @@ export function ContextPanel() {
 						</RestOptionsMenu>
 					</>
 				)}
-				{isDifferentItems && <RestOptionsMenu rounded="full" />}
+				{isDifferentItems && (
+					<RestOptionsMenu rounded="full">
+						<BringToFront />
+						<SendToBack />
+					</RestOptionsMenu>
+				)}
 			</UiPanel>
 		</PanelContext.Provider>
 	);

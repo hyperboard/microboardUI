@@ -23,7 +23,7 @@ export function ColorPicker({
 				variant === "circle" ? (
 					<ColorItem
 						key={color}
-						id={id ? `${id}-color-${color}` : `color-${color}`}
+						id={id ? `${id}${color}` : ""}
 						color={color}
 						active={color === selectedColor}
 						onPick={onPick}
@@ -31,7 +31,7 @@ export function ColorPicker({
 				) : (
 					<SquareColorItem
 						key={color}
-						id={id ? `${id}-color-${color}` : `color-${color}`}
+						id={id ? `${id}${color}` : ""}
 						color={color}
 						selected={color === selectedColor}
 						onPick={onPick}

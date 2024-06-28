@@ -42,7 +42,7 @@ export function TextColor(): React.ReactElement | null {
 			align="left"
 			button={
 				<UiButton
-					id="text-color"
+					id="ChangeTextColor"
 					tooltip={t("contextPanel.textColor.tooltip")}
 					tooltipPosition="top"
 					onClick={handleClick}
@@ -62,7 +62,7 @@ export function TextColor(): React.ReactElement | null {
 					gap={8}
 				>
 					<ColorPicker
-						id={"text"}
+						id={"TextColor"}
 						colors={TEXT_COLORS}
 						selectedColor={fontColor}
 						onPick={handlePick}

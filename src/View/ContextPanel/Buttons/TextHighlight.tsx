@@ -34,7 +34,7 @@ export function TextHighlight(): React.ReactElement | null {
 			align="left"
 			button={
 				<UiButton
-					id="text-highlight"
+					id="ChangeTextHighlight"
 					tooltip={t("contextPanel.textHighlight.tooltip")}
 					tooltipPosition="top"
 					onClick={handleClick}
@@ -54,7 +54,7 @@ export function TextHighlight(): React.ReactElement | null {
 					gap={8}
 				>
 					<ColorPicker
-						id={"text-highlight"}
+						id={"TextHighlight"}
 						colors={TEXT_HIGHLIGHT_COLORS}
 						selectedColor={highlightColor}
 						onPick={handlePick}

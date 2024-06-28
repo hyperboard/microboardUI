@@ -36,7 +36,7 @@ export function FontStyle(): React.ReactElement | null {
 			align="left"
 			button={
 				<UiButton
-					id={"font-style"}
+					id={"ChangeFontStyle"}
 					tooltip={t("contextPanel.fontStyle.tooltip")}
 					tooltipPosition="top"
 					onClick={handleClick}

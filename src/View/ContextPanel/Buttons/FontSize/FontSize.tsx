@@ -87,6 +87,7 @@ export function FontSize({ rounded = "none" }: Props) {
 						ref={chevronRef}
 						onClick={handleChevronClick}
 						className={style.chevron}
+						id="FontSizeChevron"
 					>
 						<Icon width={20} height={20} iconName="Chevron" />
 					</span>
@@ -101,7 +102,7 @@ export function FontSize({ rounded = "none" }: Props) {
 					rounded={verticalAlign === "bottom" ? "bottom" : "full"}
 				>
 					<FontSizePicker
-						id={"context-panel"}
+						id={"FontSize"}
 						currentFontSize={fontSize}
 						fontSizes={fontSizes}
 						onPick={handlePick}

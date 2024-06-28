@@ -39,7 +39,7 @@ export function FontSizePicker({
 			)}
 			{fontSizes.map((size, i) => (
 				<UiButton
-					id={id ? `size-${size}` : `${id}-size-${size}`}
+					id={id ? `${id}${size}` : ""}
 					key={size}
 					onClick={() => onPick(size)}
 					className={clsx(
@@ -48,13 +48,7 @@ export function FontSizePicker({
 					)}
 					disabled={Boolean(max && size > max)}
 					variant="secondary"
-					rounded={
-						i === 0
-							? "top"
-							: i === fontSizes.length - 1
-							? "bottom"
-							: "none"
-					}
+					rounded={"none"}
 					active={size === currentFontSize}
 				>
 					{size}

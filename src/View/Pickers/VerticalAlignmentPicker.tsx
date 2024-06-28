@@ -17,7 +17,7 @@ export function VerticalAlignmentPicker({
 	return (
 		<>
 			<UiButton
-				id="vertical-alignment-top"
+				id="ChangeVerticalAlignmentTop"
 				onClick={handlePick("top")}
 				active={alignment === "top"}
 				variant="secondary"
@@ -26,7 +26,7 @@ export function VerticalAlignmentPicker({
 				<Icon iconName={"VerticalAlignTop"} width={24} height={24} />
 			</UiButton>
 			<UiButton
-				id="vertical-alignment-center"
+				id="ChangeVerticalAlignmentCenter"
 				onClick={handlePick("center")}
 				active={alignment === "center"}
 				variant="secondary"
@@ -35,7 +35,7 @@ export function VerticalAlignmentPicker({
 				<Icon iconName={"VerticalAlignCenter"} width={24} height={24} />
 			</UiButton>
 			<UiButton
-				id="vertical-alignment-bottom"
+				id="ChangeVerticalAlignmentBottom"
 				onClick={handlePick("bottom")}
 				active={alignment === "bottom"}
 				variant="secondary"

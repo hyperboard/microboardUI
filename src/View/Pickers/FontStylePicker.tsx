@@ -37,7 +37,7 @@ export function FontStylePicker({
 	return (
 		<>
 			<UiButton
-				id="font-style-bold"
+				id="ChangeFontBold"
 				tooltip={t("contextPanel.fontStyle.bold")}
 				hotkey={getHotkeyLabel("textBold")}
 				tooltipPosition="bottom"
@@ -49,7 +49,7 @@ export function FontStylePicker({
 				<Icon width={24} height={24} iconName="TextBold" />
 			</UiButton>
 			<UiButton
-				id="font-style-italic"
+				id="ChangeFontItalics"
 				tooltip={t("contextPanel.fontStyle.italic")}
 				hotkey={getHotkeyLabel("textItalic")}
 				tooltipPosition="bottom"
@@ -61,7 +61,7 @@ export function FontStylePicker({
 				<Icon width={24} height={24} iconName="TextItalic" />
 			</UiButton>
 			<UiButton
-				id="font-style-underline"
+				id="ChangeFontUnderline"
 				tooltip={t("contextPanel.fontStyle.underline")}
 				hotkey={getHotkeyLabel("textUnderline")}
 				tooltipPosition="bottom"
@@ -73,7 +73,7 @@ export function FontStylePicker({
 				<Icon width={24} height={24} iconName="TextUnderline" />
 			</UiButton>
 			<UiButton
-				id="font-style-strike"
+				id="ChangeFontStrikethrough"
 				tooltip={t("contextPanel.fontStyle.strike")}
 				hotkey={getHotkeyLabel("textStrike")}
 				tooltipPosition="bottom"
