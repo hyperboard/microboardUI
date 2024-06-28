@@ -7,6 +7,7 @@ import { TextEditors } from "View/TextEditor/TextEditor";
 import { TitlePanel } from "./TitlePanel";
 import { ToolsPanel } from "./ToolsPanel";
 import { ZoomPanel } from "./ZoomPanel";
+import { ToastProvider } from "./ToastProvider";
 
 const AppViewBase = ({ app, router }) => {
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -107,8 +108,6 @@ const AppViewBase = ({ app, router }) => {
 		return <div></div>;
 	}
 
-	console.log("talkView");
-
 	return (
 		<div
 			style={{
@@ -126,6 +125,7 @@ const AppViewBase = ({ app, router }) => {
 				<ContextPanel app={app} board={board} />
 				<TitlePanel app={app} board={board} />
 				<ExportPanel app={app} board={board} />
+				<ToastProvider />
 			</div>
 		</div>
 	);
