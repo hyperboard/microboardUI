@@ -32,10 +32,9 @@ export function EndPointer(): React.ReactElement | null {
 			panelMbr={panelMbr}
 			windowHeight={windowHeight}
 			align="left"
-			offset={false}
 			button={
 				<UiButton
-					id={"start-pointer"}
+					id={"end-pointer"}
 					tooltip={t("contextPanel.connectorEndPointer.tooltip")}
 					tooltipPosition="top"
 					onClick={handleClick}
