@@ -17,7 +17,10 @@ interface MiroImage {
 	url: string;
 }
 
-export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
+export function useCopyBoardItems(
+	board: Board,
+	miroItems: IMiroBoardItem[],
+): void {
 	const setItemText = (
 		item: Shape | Sticker,
 		text: string,

@@ -1,5 +1,5 @@
 import React, { MouseEventHandler } from "react";
-import styles from "./MiroBoardsItem.module.css";
+import styles from "../../ImportMiroBoards.module.css";
 
 interface IMiroBoardItemProps {
 	name: string;
@@ -7,7 +7,11 @@ interface IMiroBoardItemProps {
 	onClick: MouseEventHandler<HTMLDivElement>;
 }
 
-export function MiroBoardItem({ name, picture, onClick }: IMiroBoardItemProps) {
+export function MiroBoardItem({
+	name,
+	picture,
+	onClick,
+}: IMiroBoardItemProps): React.ReactElement {
 	const imgBoard = picture?.imageURL;
 	return (
 		<div className={styles.board} onClick={onClick}>

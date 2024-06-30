@@ -1,11 +1,12 @@
 import { useTranslation } from "react-i18next";
 import React, { useEffect, useState } from "react";
-import styles from "./MiroBoards.module.css";
+import styles from "../ImportMiroBoards.module.css";
 import { useLocation } from "react-router-dom";
 import { IMiroBoards } from "./MiroBoardsModels";
 import { MiroBoardItem } from "./MiroBoardItem";
 import Cookies from "js-cookie";
 import { getApiUrl } from "Config";
+import { ImportMiroModal } from "../ImportMiroModal";
 
 interface IMiroBoardsProps {
 	isOpen: boolean | null;
@@ -19,7 +20,7 @@ export function MiroBoards({
 	setIsOpen,
 	setStage,
 	setBoardId,
-}: IMiroBoardsProps) {
+}: IMiroBoardsProps): React.ReactElement {
 	const { t } = useTranslation();
 	const location = useLocation();
 	const teamId = new URLSearchParams(location.search).get("team_id");
@@ -99,31 +100,25 @@ export function MiroBoards({
 		setBoardId(id);
 		setStage(2);
 	};
-	const onCloseModal = () => setIsOpen(false);
 
 	return (
-		<div
-			className={`${styles.modal} ${isOpen ? styles.open : null}`}
-			onClick={onCloseModal}
-		>
-			<div className={styles.wr} onClick={e => e.stopPropagation()}>
-				<h2>{t("miro.boardsTitle")}</h2>
-				<div className={styles.boards}>
-					{boards
-						? boards?.data.map(board => {
-								const { id, name, picture } = board;
-								return (
-									<MiroBoardItem
-										key={id}
-										onClick={() => onClickBoard(id)}
-										name={name}
-										picture={picture}
-									/>
-								);
-						  })
-						: "Loading..."}
-				</div>
+		<ImportMiroModal isOpen={isOpen} setIsOpen={setIsOpen}>
+			<h2>{t("miro.boardsTitle")}</h2>
+			<div className={styles.boards}>
+				{boards
+					? boards?.data.map(board => {
+							const { id, name, picture } = board;
+							return (
+								<MiroBoardItem
+									key={id}
+									onClick={() => onClickBoard(id)}
+									name={name}
+									picture={picture}
+								/>
+							);
+					  })
+					: "Loading..."}
 			</div>
-		</div>
+		</ImportMiroModal>
 	);
 }

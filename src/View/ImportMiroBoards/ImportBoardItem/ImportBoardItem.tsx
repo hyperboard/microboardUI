@@ -1,12 +1,12 @@
 import { useTranslation } from "react-i18next";
 import React, { useEffect, useState } from "react";
-import styles from "../MiroBoards/MiroBoards.module.css";
 import Cookies from "js-cookie";
 import { IMiroBoardItem } from "../MiroBoards/MiroBoardsModels";
 import { App } from "App";
 import { useNavigate } from "react-router-dom";
 import { useCopyBoardItems } from "./useCopyBoardItems";
 import { getApiUrl } from "Config";
+import { ImportMiroModal } from "../ImportMiroModal";
 
 interface IImportBoardItem {
 	isOpen: boolean | null;
@@ -140,14 +140,9 @@ export function ImportBoardItem({
 	const onCloseModal = () => setIsOpen(false);
 
 	return (
-		<div
-			className={`${styles.modal} ${isOpen ? styles.open : null}`}
-			onClick={onCloseModal}
-		>
-			<div className={styles.wr} onClick={e => e.stopPropagation()}>
-				<h2>{t("miro.importMiro")}</h2>
-				{error ? <p>{error}</p> : <p>Loading...</p>}
-			</div>
-		</div>
+		<ImportMiroModal isOpen={isOpen} setIsOpen={setIsOpen}>
+			<h2>{t("miro.importMiro")}</h2>
+			{error ? <p>{error}</p> : <p>Loading...</p>}
+		</ImportMiroModal>
 	);
 }

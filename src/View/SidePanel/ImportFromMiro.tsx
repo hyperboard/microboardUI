@@ -1,6 +1,6 @@
-import { UiButton } from "View/Ui/UiButton";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { Button } from "shared/ui-lib/Button";
 
 export function ImportFromMiro() {
 	const { t } = useTranslation();
@@ -17,8 +17,8 @@ export function ImportFromMiro() {
 	};
 
 	return (
-		<UiButton id={"miro"} onClick={onClickButtonImport}>
+		<Button id={"miro"} onClick={onClickButtonImport} pattern="secondary">
 			{t("miro.importMiroBtn")}
-		</UiButton>
+		</Button>
 	);
 }
