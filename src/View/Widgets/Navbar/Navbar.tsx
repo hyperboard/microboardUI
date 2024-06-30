@@ -1,11 +1,22 @@
 import React from "react";
 import { LeadIcon } from "./lead-icon";
 import { useTranslation } from "react-i18next";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import "./Navbar.css";
+
+const loginVisibleRoutes = ["/auth/verify", "/auth/sign-up"];
+const signUpVisibleRoutes = [
+	"/auth/sign-in",
+	"/auth/forgot-password",
+	"/auth/restore-password",
+];
 
 export const Navbar: React.FC = () => {
 	const { t } = useTranslation();
+	const location = useLocation();
+
+	const isLoginVisible = loginVisibleRoutes.includes(location.pathname);
+	const isSignUpVisible = signUpVisibleRoutes.includes(location.pathname);
 
 	return (
 		<header className="NavbarWrapper">
@@ -14,22 +25,16 @@ export const Navbar: React.FC = () => {
 				<span>Microboard</span>
 			</div>
 			<div>
-				<NavLink
-					to="/auth/sign-in"
-					className={({ isActive }) =>
-						isActive ? "LinkActive" : "LinkInactive"
-					}
-				>
-					{t("auth.signIn")}
-				</NavLink>
-				<NavLink
-					to="/auth/sign-up"
-					className={({ isActive }) =>
-						isActive ? "LinkActive" : "LinkInactive"
-					}
-				>
-					{t("auth.signUp")}
-				</NavLink>
+				{isLoginVisible && (
+					<NavLink to="/auth/sign-in" className={"Link"}>
+						{t("auth.signIn")}
+					</NavLink>
+				)}
+				{isSignUpVisible && (
+					<NavLink to="/auth/sign-up" className={"Link"}>
+						{t("auth.signUpForFree")}
+					</NavLink>
+				)}
 			</div>
 		</header>
 	);

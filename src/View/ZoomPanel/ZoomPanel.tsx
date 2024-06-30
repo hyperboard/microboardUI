@@ -1,19 +1,17 @@
-import * as React from "react";
-import { Icon } from "View/Icon";
-import { App } from "App";
-import { Board } from "Board";
-import { UiButton } from "View/Ui/UiButton";
-import { useForceUpdate } from "lib/useForceUpdate";
+import { getHotkeyLabel } from "Board/Keyboard";
 import { useAppSubscription } from "Board/useBoardSubscription";
+import { useAppContext } from "View/AppContext";
+import { Icon } from "View/Icon";
+import { UiButton } from "View/Ui/UiButton/UiButton";
+import { UiPanel } from "View/Ui/UiPanel/UiPanel";
+import { UiSeparator } from "View/Ui/UiSeparator";
+import { useForceUpdate } from "lib/useForceUpdate";
+import React from "react";
 import { useTranslation } from "react-i18next";
-import { getHotkeyLabel } from "Board/Keyboard/hotkeys";
+import style from "./ZoomPanel.module.css";
 
-type Props = {
-	app: App;
-	board: Board;
-};
-
-export function ZoomPanel({ app, board }: Props) {
+export function ZoomPanel() {
+	const { app, board } = useAppContext();
 	const forceUpdate = useForceUpdate();
 	useAppSubscription(app, {
 		subjects: ["camera"],
@@ -22,79 +20,73 @@ export function ZoomPanel({ app, board }: Props) {
 	const { t } = useTranslation();
 
 	const zoomToFit = (): void => {
-		const rect = board.items.getMbr();
-		board.camera.zoomToFit(rect);
+		const items = board.items.listAll();
+		if (items.length > 0) {
+			const rect = board.items.getMbr();
+			board.camera.zoomToFit(rect);
+		}
 	};
 
-	const zoomIn = (): void => {
+	const handleZoomIn = () => {
 		board.camera.zoomInToViewCenter();
 	};
-
-	const zoomOut = (): void => {
+	const handleZoomOut = () => {
 		board.camera.zoomOutFromViewCenter();
 	};
-
-	const defaultZoom = (): void => {
+	const handleDefaultZoom = () => {
 		board.camera.zoomToViewCenter(1);
 	};
 
 	const scale = board.camera.getScale();
+	const currentScale = scale < 0.01 ? 1 : Math.round(scale * 100);
 
 	return (
-		<div
-			id="ZoomPanel"
-			style={{
-				display: "flex",
-				position: "absolute",
-				bottom: "8px",
-				right: "8px",
-				backgroundColor: "white",
-				borderRadius: "4px",
-				boxShadow: "0 8px 16px 0 rgba(0, 0, 0, 0.12)",
-				paddingLeft: "4px",
-				paddingRight: "4px",
-				userSelect: "none",
-			}}
-		>
+		<UiPanel className={style.panel} padding={0}>
 			<UiButton
-				id="ZoomPanelZoomToFit"
-				title={t("zoomPanel.zoomToFit.tooltip")}
+				id="zoom-to-fit"
+				tooltip={t("zoomPanel.zoomToFit.tooltip")}
+				tooltipPosition="top"
 				onClick={zoomToFit}
-				tipOnTop
-				margin={0}
+				variant="secondary"
+				rounded="left"
 			>
-				<Icon name="ZoomToFit" width={24} height={24} />
+				<Icon iconName="ZoomToFit" />
 			</UiButton>
+			<UiSeparator vertical />
 			<UiButton
-				id="ZoomPanelZoomOut"
-				title={t("zoomPanel.zoomOut.tooltip")}
+				id={"zoom-out"}
+				tooltipPosition="top"
+				tooltip={t("zoomPanel.zoomOut.tooltip")}
 				hotkey={getHotkeyLabel("zoomOut")}
-				onClick={zoomOut}
-				tipOnTop
-				margin={0}
+				onClick={handleZoomOut}
+				variant="secondary"
+				rounded="none"
 			>
-				<Icon name="ZoomOut" width={24} height={24} />
+				<Icon iconName="Minus" />
 			</UiButton>
 			<UiButton
-				id="ZoomPanelZoomTo100"
-				title={t("zoomPanel.zoomDefault.tooltip")}
-				onClick={defaultZoom}
+				id={"zoom-default"}
+				tooltipPosition="top"
+				tooltip={t("zoomPanel.zoomDefault.tooltip")}
 				hotkey={getHotkeyLabel("zoomDefault")}
-				tipOnTop
-				margin={0}
+				className={style.zoom}
+				onClick={handleDefaultZoom}
+				variant="secondary"
+				rounded="none"
 			>
-				{scale < 0.01 ? "<1%" : `${Math.round(scale * 100)}%`}
+				{currentScale}%
 			</UiButton>
 			<UiButton
-				id="ZoomPanelZoomIn"
-				title={t("zoomPanel.zoomIn.tooltip")}
+				id={"zoom-in"}
+				tooltipPosition="top-right"
+				tooltip={t("zoomPanel.zoomIn.tooltip")}
 				hotkey={getHotkeyLabel("zoomIn")}
-				onClick={zoomIn}
-				tipOnTop
-				margin={0}
+				onClick={handleZoomIn}
+				variant="secondary"
+				rounded="right"
 			>
-				<Icon name="ZoomIn" width={24} height={24} />
+				<Icon iconName="Plus" />
 			</UiButton>
-		</div>
+		</UiPanel>
 	);
 }

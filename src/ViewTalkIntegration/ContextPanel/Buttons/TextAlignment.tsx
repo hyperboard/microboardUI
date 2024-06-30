@@ -1,4 +1,7 @@
+import { RichText } from "Board/Items";
 import { HorisontalAlignment } from "Board/Items/Alignment";
+import { Drawing } from "Board/Items/Drawing";
+import { ImageItem } from "Board/Items/Image";
 import React from "react";
 import { ButtonWithMenu } from "ViewTalkIntegration/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "ViewTalkIntegration/ContextPanel/PanelContext";
@@ -13,11 +16,14 @@ const MENU_NAME = "TextAlignment";
 export function TextAlignment(): React.ReactElement | null {
 	const { board, toggleMenu, openedMenu, panelMbr, windowHeight } =
 		usePanelContext();
+	const [alignment, setAlignment] = React.useState<
+		"left" | "center" | "right" | undefined
+	>(undefined);
+	React.useEffect(() => {
+		setAlignment(board.selection.getText()?.getHorisontalAlignment());
+	}, [board.selection.getText()?.getHorisontalAlignment()]);
 
 	const { t } = useTalkTranslation();
-
-	const alignment =
-		board.selection.getText()?.getHorisontalAlignment() ?? "center";
 
 	const handleClick = () => {
 		toggleMenu(MENU_NAME);
@@ -58,7 +64,7 @@ export function TextAlignment(): React.ReactElement | null {
 		>
 			<UiPanel>
 				<HorizontalAlignmentPicker
-					alignment={alignment}
+					alignment={alignment || "left"}
 					onPick={handlePick}
 				/>
 			</UiPanel>

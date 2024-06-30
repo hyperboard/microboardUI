@@ -1,91 +1,94 @@
-import * as React from "react";
-import "./UiButton.css";
+import clsx from "clsx";
+import React, { forwardRef, HTMLAttributes } from "react";
+import style from "./UiButton.module.css";
 
-interface Props extends React.PropsWithChildren<{}> {
-	id: string;
-	buttonRef?: React.Ref<HTMLButtonElement>;
-	onClick: () => void;
-	title?: string;
-	margin?: number;
-	isOn?: boolean;
-	tipOnLeft?: boolean;
-	tipOnBottomLeft?: boolean;
-	tipOnTop?: boolean;
+type UiButtonProps = HTMLAttributes<HTMLButtonElement> & {
+	active?: boolean;
+	disabled?: boolean;
+	tooltip?: string;
 	hotkey?: string;
-	width?: number;
-	style?: React.CSSProperties;
-	tipWidth?: number;
-	onMouseEnter?: React.MouseEventHandler<HTMLButtonElement>;
-	onMouseLeave?: React.MouseEventHandler<HTMLButtonElement>;
-}
+	tooltipPosition?:
+		| "right"
+		| "top"
+		| "top-left"
+		| "top-right"
+		| "bottom"
+		| "bottom-right"
+		| "bottom-left";
+	variant?: "default" | "secondary" | "tertiary";
+	size?: "lg" | "md" | "sm";
+	rounded?:
+		| "top"
+		| "bottom"
+		| "left"
+		| "right"
+		| "full"
+		| "none"
+		| "bottom-left"
+		| "bottom-right";
+};
 
-export function UiButton(props: Props): React.ReactElement {
-	const margin = props.margin ?? 5;
-	const width = props.width ?? 40;
-	const tipWidth = props.tipWidth;
-
-	const handleMouseEnter: React.MouseEventHandler<
-		HTMLButtonElement
-	> = event => {
-		event.currentTarget.style.color = "blue";
-		if (props.onMouseEnter) {
-			props.onMouseEnter(event);
-		}
-	};
-
-	const handleMouseLeave: React.MouseEventHandler<
-		HTMLButtonElement
-	> = event => {
-		event.currentTarget.style.color = props.isOn ? "blue" : "black";
-		if (props.onMouseLeave) {
-			props.onMouseLeave(event);
-		}
-	};
-
-	return (
-		<div className="ButtonContainer" style={{}}>
+export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
+	(
+		{
+			children,
+			className,
+			active = false,
+			disabled = false,
+			tooltip,
+			tooltipPosition = "right",
+			hotkey,
+			variant = "default",
+			size = "lg",
+			rounded = "full",
+			...props
+		},
+		ref,
+	) => {
+		return (
 			<button
-				id={props.id}
-				ref={props.buttonRef}
-				onClick={props.onClick}
-				onMouseEnter={handleMouseEnter}
-				onMouseLeave={handleMouseLeave}
-				className="Button"
-				style={{
-					marginLeft: `${margin}px`,
-					marginRight: `${margin}px`,
-					minWidth: `${width}px`,
-					color: props.isOn ? "blue" : "black",
-					...props.style,
-				}}
+				className={clsx(
+					style.button,
+					active && style.active,
+					style[variant],
+					style[size],
+					{
+						[style.topRounded]: rounded === "top",
+						[style.bottomRounded]: rounded === "bottom",
+						[style.fullRounded]: rounded === "full",
+						[style.leftRounded]: rounded === "left",
+						[style.rightRounded]: rounded === "right",
+						[style.fullRounded]: rounded === "full",
+					},
+					className,
+				)}
+				ref={ref}
+				disabled={disabled}
+				{...props}
 			>
-				{props.children}
+				{children}
+				{tooltip && (
+					<div
+						className={clsx(style.tipContainer, {
+							[style.right]: tooltipPosition === "right",
+							[style.top]: tooltipPosition === "top",
+							[style.topRight]: tooltipPosition === "top-right",
+							[style.bottom]: tooltipPosition === "bottom",
+							[style.bottomRight]:
+								tooltipPosition === "bottom-right",
+							[style.bottomLeft]:
+								tooltipPosition === "bottom-left",
+						})}
+					>
+						<div className={clsx(style.tip)}>
+							<span className={style.tipText}>{tooltip}</span>
+							{hotkey && (
+								<span className={style.hotkey}>{hotkey}</span>
+							)}
+						</div>
+					</div>
+				)}
 			</button>
-			{props.title && (
-				<span
-					style={{ width: tipWidth }}
-					className={
-						props.tipOnLeft
-							? "ButtonTipOnLeft"
-							: props.tipOnBottomLeft
-							? "ButtonTipOnBottomLeft"
-							: props.tipOnTop
-							? "ButtonTipOnTop"
-							: "ButtonTipOnBottom"
-					}
-				>
-					{props.title + " "}
-					{props.hotkey && (
-						<span
-							style={{
-								backgroundColor: "rgba(255, 255, 255, 0.3)",
-							}}
-						>
-							{props.hotkey}
-						</span>
-					)}
-				</span>
-			)}
-		</div>
-	);
-}
+		);
+	},
+);

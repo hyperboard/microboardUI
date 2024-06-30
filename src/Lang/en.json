@@ -8,31 +8,31 @@
 			"tooltip": "Add text"
 		},
 		"connectorType": {
-			"tooltip": "Line style",
+			"tooltip": "Type",
 			"straight": "Straight",
 			"curved": "Curved"
 		},
 		"connectorEndPointer": {
-			"tooltip": "End pointer style"
+			"tooltip": "End style"
 		},
 		"connectorStartPointer": {
-			"tooltip": "Start pointer style"
+			"tooltip": "Start style"
 		},
 		"connectorSwitchPointers": {
 			"tooltip": "Switch pointers"
 		},
 		"changeShape": {
-			"tooltip": "Change shape type"
+			"tooltip": "Shape"
 		},
 		"changeFrameType": {
 			"tooltip": "Ratio"
 		},
 		"strokeStyle": {
-			"tooltip": "Stroke",
+			"tooltip": "Border",
 			"strokeWidth": "Stroke width"
 		},
 		"fillStyle": {
-			"tooltip": "Fill",
+			"tooltip": "Shape color",
 			"none": "None"
 		},
 		"fontSize": {
@@ -58,7 +58,7 @@
 			"tooltip": "Text color"
 		},
 		"textHighlight": {
-			"tooltip": "Marker",
+			"tooltip": "Highlight color",
 			"none": "None"
 		},
 		"stickerColor": {
@@ -76,6 +76,19 @@
 		},
 		"sendToBack": {
 			"text": "Send to back"
+		},
+		"exportFrame": {
+			"text": "Save as image"
+		},
+		"copyFrameLink": {
+			"text": "Copy link",
+			"error": {
+				"title": "Copy link error",
+				"description": "An error occurred while copying the frame link"
+			},
+			"success": {
+				"description": "Link copied to clipboard"
+			}
 		},
 		"delete": {
 			"text": "Delete",
@@ -99,7 +112,9 @@
 			"tooltip": "Redo"
 		},
 		"addText": {
-			"tooltip": "Text"
+			"tooltip": "Text",
+			"showAll": "All",
+			"showBasic": "Basic"
 		},
 		"addSticker": {
 			"tooltip": "Sticker"
@@ -108,7 +123,7 @@
 			"tooltip": "Shape"
 		},
 		"addConnector": {
-			"tooltip": "Connector"
+			"tooltip": "Connection line"
 		},
 		"addDrawing": {
 			"tooltip": "Pen",
@@ -118,7 +133,7 @@
 			"tooltip": "Add image"
 		},
 		"addFrame": {
-			"tooltip": "Add Frame"
+			"tooltip": "Frame"
 		}
 	},
 	"zoomPanel": {
@@ -141,33 +156,27 @@
 			"close": "Close Menu"
 		}
 	},
-	"dashboard": {
-		"title": "Dashboard",
-		"publicBoards": "Public boards",
-		"unnamed": "Unnamed",
-		"privateBoards": "Private boards",
-		"noPrivateBoards": "No private boards"
-	},
 	"auth": {
 		"checkEmail": "Check for an email with a pass code.",
 		"email": "Email",
-		"emailPlaceholder": "Enter Email",
+		"emailPlaceholder": "Your email",
 		"passcode": "Passcode",
 		"passcodePlaceholder": "Enter Passcode",
-		"signIn": "Log In",
+		"signIn": "Log in",
 		"password": "Password",
 		"passwordPlaceholder": "Password",
 		"submit": "Submit",
-		"signUp": "Sign Up",
+		"signUp": "Sign up",
 		"unknownError": "Unknown error",
 		"resendCode": "Resend Code",
 		"privacyPolicy": "Privacy Policy",
 		"termsAndConditions": "Terms & Conditions",
 		"policyWith": "By continuing, you agree to the",
-		"signUpForFree": "Sign Up for free",
+		"signUpForFree": "Sign up for free",
 		"weSentACodeToYourInbox": "We sent a code to your inbox",
 		"restorationTokenIsNotProvided": "Restoration token is not provided",
 		"newPassword": "New password",
+		"confirmNewPassword": "Confirm new password",
 		"repeatNewPassword": "Repeat new password",
 		"forgotPassword": "Forgot password?",
 		"checkEmailForFurther": "Check your email for further instructions",
@@ -177,14 +186,27 @@
 		"restorePassword": "Restore password",
 		"checkInbox": "Check your inbox",
 		"weSentCode": "We have sent a verification code to",
-		"enterCodeBelow": "Please enter it below to confirm your email address.",
-		"emailIfNotFind": "If you can't find it, check your spam or wait 1 minute",
+		"enterCodeBelow": "Please enter it below to confirm your email address. Make sure to check your Spam or Junk folder.",
+		"enterNewCodeBelow": "We have sent you a new code, please enter it below",
+		"emailIfNotFind": "If you haven’t received it, make sure to check your Spam or Junk folder",
 		"passwordLengthError": "The password must be at least 8 and no more than 14 characters long",
 		"backToLogIn": "Back to Log in",
 		"passwordDontAMatch": "Passwords do not match",
 		"requestReceivedSuccessfully": "Request received successfully! We have sent you an email with a link to reset your password.",
 		"resetPassword": "Reset password",
-		"enterEmailForLink": "Enter your email and we will send you a link to reset your password"
+		"enterEmailForLink": "Enter your email and we will send you a link to reset your password",
+		"errorVerificationCode": "Verification code was incorrect. Please try again.",
+		"errorVerificationCodeAttempts": "Too many login attempts. Please try again later.",
+		"incorrectEmailOrPassword": "Incorrect email or password. Please try again.",
+		"userAlreadyExists": "A user with this email address already exists. Please use a different email address for registration.",
+		"userNotFound": "User with this email not found",
+		"passwordAtLeast": "The password must be at least 8 characters long",
+		"passwordMustBeDifferent": "Your password must be different to previous passwords",
+		"skip": "Skip",
+		"cancel": "Cancel",
+		"passwordDoNotMatch": "The entered passwords do not match",
+		"currentPasswordIsIncorrect": "The current password you entered is incorrect. Please try again",
+		"enterAValidEmailAddress": "Enter a valid email address"
 	},
 	"modal": {
 		"canEdit": "Can edit",
@@ -264,6 +286,7 @@
 	"thickness": "Thickness",
 	"appTitle": "Microboard",
 	"export": {
+		"tooltip": "Export this board",
 		"confirm": "Export",
 		"cancel": "Cancel"
 	},
@@ -271,5 +294,10 @@
 		"boardsTitle": "Select a board to import",
 		"importMiro": "Import from Miro",
 		"importMiroBtn": "Import board from Miro"
+	},
+	"cancel": "Cancel",
+	"error": {
+		"title": "Export error",
+		"description": "An error occurred while exporting the selected area"
 	}
 }

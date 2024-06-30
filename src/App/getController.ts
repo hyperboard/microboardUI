@@ -1,73 +1,59 @@
 import { Board } from "Board";
-import { Connector, Frame, Mbr, RichTextData, Shape } from "Board/Items";
+import { Mbr } from "Board/Items";
 import { ImageItem } from "Board/Items/Image";
-import { isEditInProcess, RichText } from "Board/Items/RichText/RichText";
-import { checkHotkeys, isHotkeyPushed } from "Board/Keyboard/hotkeys";
-import { Sticker } from "Board/Items/Sticker";
+import { RichText, isEditInProcess } from "Board/Items/RichText/RichText";
+import { checkHotkeys, isControlCharacter } from "Board/Keyboard";
 import { validateItemsMap } from "Board/Validators";
-import { isNotControlCharacter } from "View/isNotControlCharacter";
 import { Clipboard } from "./Clipboard";
-import { isFirefox } from "./isFirefox";
+import { createWheel } from "./Wheel/Wheel";
 import { isSafari } from "./isSafari";
-import { Wheel } from "./Wheel/Wheel";
 
-export function getController(getBoard: () => Board) {
-	const isMouse = true;
-	const isTrackpad = true;
+export interface Controller {
+	onWheel: (event: WheelEvent) => void;
+	onPointerDown: (event: PointerEvent) => boolean;
+	onPointerMove: (event: PointerEvent) => boolean;
+	onPointerUp: (event: PointerEvent) => boolean;
+	onPointerLeave: (event: PointerEvent) => void;
+	onPointerCancel: (event: PointerEvent) => void;
+	onPointerOut: (event: PointerEvent) => void;
+	onKeyDown: (event: KeyboardEvent) => void;
+	onKeyUp: (event: KeyboardEvent) => void;
+	onClick: (event: MouseEvent) => boolean;
+	onResize: () => void;
+	onContextMenu: (event: MouseEvent) => void;
+	onCopy: (event: ClipboardEvent) => void;
+	onPaste: (event: ClipboardEvent) => void;
+	onDrop: (event: DragEvent) => void;
+}
 
+export function getController(getBoard: () => Board): Controller {
 	const clipboard = new Clipboard();
 
 	function onWheel(event: WheelEvent): void {
 		event.preventDefault();
 		event.stopPropagation();
 		const board = getBoard();
-		const wheel = new Wheel(event);
+		const wheel = createWheel(event);
 		if (!board) {
 			return;
 		}
-		if (isMouse && isTrackpad) {
-			if (wheel.isProbablyMouseWheel()) {
-				if (!wheel.isIgnore()) {
-					board.camera.zoomRelativeToPointerBy(
-						wheel.getWheelScaleMultiplier(),
-					);
-				}
-			} else if (wheel.isTouchpadPinch()) {
-				if (!wheel.isIgnore()) {
-					board.camera.zoomRelativeToPointerBy(
-						wheel.getTouchpadPinchMultiplier(),
-					);
-				}
-			} else {
-				if (!wheel.isIgnore()) {
-					const scale = board.camera.getScale();
-					board.camera.translateBy(
-						wheel.getTouchpadPanDeltaX() / scale,
-						wheel.getTouchpadPanDeltaY() / scale,
-					);
-				}
-			}
-		} else if (isMouse) {
-			if (!wheel.isIgnore()) {
-				board.camera.zoomRelativeToPointerBy(
-					wheel.getWheelScaleMultiplier(),
-				);
-			}
-		} else if (isTrackpad) {
-			if (wheel.isTouchpadPinch()) {
-				if (!wheel.isIgnore()) {
-					board.camera.zoomRelativeToPointerBy(
-						wheel.getTouchpadPinchMultiplier(),
-					);
-				}
-			} else {
-				if (!wheel.isIgnore()) {
-					board.camera.translateBy(
-						wheel.getTouchpadPanDeltaX(),
-						wheel.getTouchpadPanDeltaY(),
-					);
-				}
-			}
+		if (wheel.isIgnore()) {
+			return;
+		}
+		if (wheel.isProbablyMouseWheel()) {
+			board.camera.zoomRelativeToPointerBy(
+				wheel.getWheelScaleMultiplier(),
+			);
+		} else if (wheel.isTouchpadPinch()) {
+			board.camera.zoomRelativeToPointerBy(
+				wheel.getTouchpadPinchMultiplier(),
+			);
+		} else {
+			const scale = board.camera.getScale();
+			board.camera.translateBy(
+				wheel.getTouchpadPanDeltaX() / scale,
+				wheel.getTouchpadPanDeltaY() / scale,
+			);
 		}
 	}
 
@@ -76,165 +62,124 @@ export function getController(getBoard: () => Board) {
 		if (!board || !board.events) {
 			return;
 		}
-		/*
-		if (isEditInProcess()) {
-			if ((event.ctrlKey || event.metaKey) && event.code === "KeyV") {
-				event.preventDefault();
-				navigator.clipboard.readText().then(clipboardText => {
-					try {
-						const data = JSON.parse(clipboardText);
-						const isDataValid = validateItemsMap(data);
-						if (isDataValid) {
-							board.paste(data);
-						} else {
-							throw new Error();
-						}
-					} catch (error) {
-						const originalClipboardData = new DataTransfer();
-						originalClipboardData.setData(
-							"text/plain",
-							clipboardText,
-						);
-						const pasteEvent = new ClipboardEvent("paste", {
-							bubbles: true,
-							cancelable: true,
-							clipboardData: originalClipboardData,
-						});
-						event.target?.dispatchEvent(pasteEvent);
-					}
-				});
-			}
-			return;
-		}
-		*/
 
 		const context = board.selection.getContext();
-		if (
-			(context === "EditTextUnderPointer" ||
-				context === "SelectByRect" ||
-				context === "EditUnderPointer") &&
-			checkHotkeys(
-				{
-					duplicate: () => board.selection.duplicate(),
-					bringToFront: () => board.selection.bringToFront(),
-					sendToBack: () => board.selection.sendToBack(),
-					delete: () => board.selection.removeFromBoard(),
-					textBold: () => event.preventDefault(),
-					textItalic: () => event.preventDefault(),
-					textStrike: () => event.preventDefault(),
-					textUnderline: () => event.preventDefault(),
+		const isHotkeyTriggered = checkHotkeys(
+			{
+				select: {
+					cb: () => board.tools.select(true),
+					selectionContext: ["SelectUnderPointer", "None"],
 				},
-				event,
-			)
-		) {
-			return;
-		}
+				text: {
+					cb: () => board.tools.addText(true),
+					selectionContext: ["SelectUnderPointer", "None"],
+				},
+				sticker: {
+					cb: () => board.tools.addSticker(true),
+					selectionContext: ["SelectUnderPointer", "None"],
+				},
+				shape: {
+					cb: () => board.tools.addShape(true),
+					selectionContext: ["SelectUnderPointer", "None"],
+				},
+				connector: {
+					cb: () => board.tools.addConnector(true),
+					selectionContext: ["SelectUnderPointer", "None"],
+				},
+				pen: {
+					cb: () => board.tools.addDrawing(true),
+					selectionContext: ["SelectUnderPointer", "None"],
+				},
+				frame: {
+					cb: () => board.tools.addFrame(true),
+					selectionContext: ["SelectUnderPointer", "None"],
+				},
+				duplicate: {
+					cb: () => board.selection.duplicate(),
+					selectionContext: [
+						"EditUnderPointer",
+						"SelectByRect",
+						"EditTextUnderPointer",
+					],
+				},
+				bringToFront: {
+					cb: () => board.selection.bringToFront(),
+					selectionContext: [
+						"EditUnderPointer",
+						"SelectByRect",
+						"EditTextUnderPointer",
+					],
+				},
+				sendToBack: {
+					cb: () => board.selection.sendToBack(),
+					selectionContext: [
+						"EditUnderPointer",
+						"SelectByRect",
+						"EditTextUnderPointer",
+					],
+				},
+				delete: {
+					cb: () => board.selection.removeFromBoard(),
+					selectionContext: ["EditUnderPointer", "SelectByRect"],
+				},
+				textBold: {
+					cb: () => board.selection.setFontStyle(["bold"]),
+					selectionContext: [
+						"EditTextUnderPointer",
+						"EditUnderPointer",
+						"SelectByRect",
+					],
+				},
+				textItalic: {
+					cb: () => board.selection.setFontStyle(["italic"]),
+					selectionContext: [
+						"EditTextUnderPointer",
+						"EditUnderPointer",
+						"SelectByRect",
+					],
+				},
+				textStrike: {
+					cb: () => board.selection.setFontStyle(["line-through"]),
+					selectionContext: [
+						"EditTextUnderPointer",
+						"EditUnderPointer",
+						"SelectByRect",
+					],
+				},
+				textUnderline: {
+					cb: () => board.selection.setFontStyle(["underline"]),
+					selectionContext: [
+						"EditTextUnderPointer",
+						"EditUnderPointer",
+						"SelectByRect",
+					],
+				},
+				selectAll: {
+					cb: () => board.selection.addAll(),
+					selectionContext: [
+						"None",
+						"EditUnderPointer",
+						"SelectByRect",
+					],
+				},
+				undo: () => board.events?.undo(),
+				redo: () => board.events?.redo(),
+				cancel: () => board.tools.cancel(),
+				zoomIn: () => board.camera.zoomInToViewCenter(),
+				zoomOut: () => board.camera.zoomOutFromViewCenter(),
+				zoomDefault: () => board.camera.zoomToViewCenter(1),
+			},
+			event,
+			board,
+		);
 
 		if (
-			!isEditInProcess() &&
-			checkHotkeys(
-				{
-					selectAll: () => board.selection.addAll(),
-				},
-				event,
-			)
-		) {
-			return;
-		}
-		if (
-			checkHotkeys(
-				{
-					undo: () => board.events?.undo(),
-					redo: () => board.events?.redo(),
-				},
-				event,
-			)
-		) {
-			return;
-		}
-		if (
+			!isHotkeyTriggered &&
 			context !== "EditTextUnderPointer" &&
-			!isEditInProcess() &&
-			checkHotkeys(
-				{
-					select: () => board.tools.select(),
-					text: () => board.tools.addText(),
-					sticker: () => board.tools.addSticker(),
-					shape: () => board.tools.addShape(),
-					connector: () => board.tools.addConnector(),
-					pen: () => board.tools.addDrawing(),
-					frame: () => board.tools.addFrame(),
-					zoomIn: () => board.camera.zoomInToViewCenter(),
-					zoomOut: () => board.camera.zoomOutFromViewCenter(),
-					zoomDefault: () => board.camera.zoomToViewCenter(1),
-					cancel: () => board.tools.cancel(),
-					undo: () => board.events?.undo(),
-					redo: () => board.events?.redo(),
-				},
-				event,
-			)
+			!(event.ctrlKey || event.metaKey || event.altKey) &&
+			!isControlCharacter(event.key)
 		) {
-			return;
-		} else if (
-			isNotControlCharacter(event.key) &&
-			board.selection.items.isSingle()
-		) {
-			const item = board.selection.items.getSingle();
-
-			if (context === "EditTextUnderPointer") {
-				board.selection.editText();
-				return;
-			} else if (
-				item &&
-				(item instanceof Shape ||
-					item instanceof Sticker ||
-					item instanceof Connector ||
-					item instanceof RichText ||
-					item instanceof Frame) &&
-				board.selection.getContext() === "EditUnderPointer"
-			) {
-				if (
-					!(
-						event.ctrlKey ||
-						event.metaKey ||
-						event.altKey ||
-						event.shiftKey
-					) &&
-					event.key !== "Tab" && // All non-printable keys
-					!event.key.startsWith("Arrow") &&
-					event.key !== "Enter" &&
-					event.key !== "Escape" &&
-					event.key !== "Backspace" &&
-					event.key !== "Delete" &&
-					event.key !== "Home" &&
-					event.key !== "End" &&
-					event.key !== "PageUp" &&
-					event.key !== "PageDown"
-				) {
-					board.selection.editText(event.key);
-				}
-
-				return;
-			}
-		}
-
-		if (isFirefox()) {
-			checkHotkeys(
-				{
-					copy: e =>
-						e?.currentTarget?.dispatchEvent(
-							new ClipboardEvent("copy", {
-								bubbles: true,
-								clipboardData: new DataTransfer(),
-							}),
-						),
-					paste: e =>
-						e?.currentTarget?.dispatchEvent(
-							new ClipboardEvent("paste", { bubbles: true }),
-						),
-				},
-				event,
-			);
+			board.selection.editText(event.key);
 		}
 
 		board.keyboard.keyDown(event);
@@ -247,27 +192,6 @@ export function getController(getBoard: () => Board) {
 	function onKeyUp(event: KeyboardEvent): void {
 		const board = getBoard();
 		if (!board) {
-			return;
-		}
-		const context = board.selection.getContext();
-		isHotkeyPushed("undo", event);
-		isHotkeyPushed("redo", event);
-		if (
-			(context === "EditTextUnderPointer" ||
-				context === "EditUnderPointer" ||
-				context === "SelectByRect") &&
-			checkHotkeys(
-				{
-					textBold: () => board.selection.setFontStyle(["bold"]),
-					textItalic: () => board.selection.setFontStyle(["italic"]),
-					textStrike: () =>
-						board.selection.setFontStyle(["line-through"]),
-					textUnderline: () =>
-						board.selection.setFontStyle(["underline"]),
-				},
-				event,
-			)
-		) {
 			return;
 		}
 
@@ -300,6 +224,7 @@ export function getController(getBoard: () => Board) {
 		if (!board) {
 			return false;
 		}
+
 		const { tools, camera, selection } = board;
 		const transformerTool = selection.tool;
 		camera.saveDownEvent(event);
@@ -350,10 +275,10 @@ export function getController(getBoard: () => Board) {
 		if (!board) {
 			return false;
 		}
+
 		const { camera, tools } = board;
 
 		camera.updateDownEvent(event);
-
 		if (camera.isTwoPointers()) {
 			const pinchCenter = camera.getPinchCenter();
 			const scale = camera.getPinchScale();
@@ -364,26 +289,6 @@ export function getController(getBoard: () => Board) {
 			camera.updateDistance();
 			tools.leftButtonUp();
 			return false;
-			/*
-			if (camera.isPinch()) {
-				const pinchCenter = camera.getPinchCenter();
-				const scale = camera.getPinchScale();
-				camera.updateDistance();
-				camera.zoomRelativeToPointBy(
-					scale,
-					pinchCenter.x,
-					pinchCenter.y,
-				);
-				tools.leftButtonUp();
-				return false;
-			} else {
-				const delta = camera.getPanDelta();
-				camera.updatePositions();
-				camera.translateBy(delta.x, delta.y);
-				tools.leftButtonUp();
-				return false;
-			}
-			*/
 		}
 
 		const selection = board.selection;
@@ -589,37 +494,7 @@ export function getController(getBoard: () => Board) {
 				throw new Error();
 			}
 		} catch (error) {
-			const richText = board.add(new RichText(new Mbr()));
-			richText.transformation.translateTo(
-				board.pointer.point.x,
-				board.pointer.point.y,
-			);
-			richText.transformation.scaleBy(1, 1);
-			richText.editor.setMaxWidth(600);
-			richText.editor.setSelectionHorisontalAlignment("left");
-			richText.insideOf = richText.itemType;
-			const lines = text.split("\n");
-			lines.forEach((line: string, index: number) => {
-				const endPath = richText.editorEditor.end(
-					richText.editor.editor,
-					[],
-				);
-				richText.editorTransforms.insertText(
-					richText.editor.editor,
-					line,
-					{ at: endPath },
-				);
-				if (index < lines.length - 1) {
-					const splitPath = richText.editorEditor.end(
-						richText.editor.editor,
-						[],
-					);
-					richText.editorTransforms.splitNodes(
-						richText.editor.editor,
-						{ at: splitPath, always: true },
-					);
-				}
-			});
+			pasteTextToTheBoard(board, text);
 		}
 
 		event.preventDefault();
@@ -667,11 +542,62 @@ export function getController(getBoard: () => Board) {
 	};
 }
 
-function postKeyboardEvent(event: KeyboardEvent) {
-	window.parent.postMessage(serializeKeyboardEvent(event), "*");
+function isTextInput(element): boolean {
+	try {
+		const tagName = element.tagName.toLowerCase();
+
+		return (
+			tagName === "input" ||
+			tagName === "textarea" ||
+			element.isContentEditable
+		);
+	} catch (_) {
+		return false;
+	}
 }
 
-function serializeKeyboardEvent(event: KeyboardEvent) {
+function pasteTextToTheBoard(board: Board, text: string): void {
+	const richText = new RichText(new Mbr());
+	richText.transformation.translateTo(
+		board.pointer.point.x,
+		board.pointer.point.y,
+	);
+	richText.transformation.scaleBy(1, 1);
+	richText.editor.setMaxWidth(600);
+	richText.editor.setSelectionHorisontalAlignment("left");
+	richText.insideOf = richText.itemType;
+	richText.editor.insertText(text);
+	board.add(richText);
+}
+
+function postKeyboardEvent(event: KeyboardEvent): void {
+	if (!isTextInput(event.target)) {
+		window.parent.postMessage(serializeKeyboardEvent(event), "*");
+	}
+}
+
+interface SerializedKeyboardEvent {
+	type: string;
+	eventType: string;
+	eventData: {
+		key: string;
+		code: string;
+		ctrlKey: boolean;
+		shiftKey: boolean;
+		altKey: boolean;
+		metaKey: boolean;
+		repeat: boolean;
+		bubbles: boolean;
+		target: string;
+		location: number;
+		isComposing: boolean;
+		charCode: number;
+		keyCode: number;
+		which: number;
+	};
+}
+
+function serializeKeyboardEvent(event: KeyboardEvent): SerializedKeyboardEvent {
 	return {
 		type: "keyboardEvent",
 		eventType: event.type,

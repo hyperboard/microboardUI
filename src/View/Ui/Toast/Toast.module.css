@@ -1,0 +1,80 @@
+.container {
+	background-color: #ffffff;
+	border: 1px solid var(--border-action-normal, rgba(222, 224, 227, 1));
+	border-radius: 12px;
+	box-shadow: 0px 3px 10px -2px #14151a0d, 0px 10px 16px -3px #14151a0d;
+	padding: 16px;
+	gap: 12px;
+	display: grid;
+	grid-template-columns: 20px 1fr 20px;
+	align-items: center;
+}
+
+.container.info .icon {
+	color: rgb(71, 120, 245);
+}
+
+.container.warning .icon {
+	color: rgba(244, 142, 47, 1);
+}
+
+.container.success .icon {
+	color: rgba(38, 189, 108, 1);
+}
+
+.container.error .icon {
+	color: rgb(230, 72, 61);
+}
+
+.content {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	flex: 1 1 290px;
+	width: 290px;
+}
+
+.icon {
+	margin-top: 3px;
+	align-self: flex-start;
+}
+
+.closeButton {
+	--padding: 4px;
+	--radius: 0;
+	--min-width: 28px;
+	--min-height: 28px;
+	color: var(--text-base-primary);
+	align-self: flex-start;
+}
+
+.title {
+	font-size: 16px;
+	font-weight: 500;
+	line-height: 24px;
+	color: var(--text-base-primary);
+}
+
+.description {
+	font-size: 14px;
+	line-height: 20px;
+	color: var(--text-base-secondary);
+}
+
+@keyframes fadeIn {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+@keyframes fadeOut {
+	0% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}

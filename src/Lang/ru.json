@@ -77,6 +77,19 @@
 		"sendToBack": {
 			"text": "Перенести назад"
 		},
+		"exportFrame": {
+			"text": "Сохранить как изображение"
+		},
+		"copyFrameLink": {
+			"text": "Копировать ссылку",
+			"error": {
+				"title": "Ошибка копирования ссылки",
+				"description": "При копировании ссылки произошла ошибка"
+			},
+			"success": {
+				"description": "Ссылка скопирована в буфер обмена"
+			}
+		},
 		"delete": {
 			"text": "Удалить",
 			"tooltip": "Удалить"
@@ -141,17 +154,10 @@
 			"close": "Закрыть меню"
 		}
 	},
-	"dashboard": {
-		"title": "Dashboard",
-		"publicBoards": "Публичные доски",
-		"unnamed": "Без имени",
-		"privateBoards": "Приватные доски",
-		"noPrivateBoards": "Нет приватных досок"
-	},
 	"auth": {
 		"checkEmail": "Проверьте электронную почту с кодом доступа.",
 		"email": "Email",
-		"emailPlaceholder": "Ввуедите Email",
+		"emailPlaceholder": "Введите Email",
 		"passcode": "Код подтверждения",
 		"passcodePlaceholder": "Введите код подтверждения",
 		"signIn": "Вход",
@@ -168,6 +174,7 @@
 		"weSentACodeToYourInbox": "Мы отправили код на вашу почту",
 		"restorationTokenIsNotProvided": "Токен восстановления не предоставлен",
 		"newPassword": "Новый пароль",
+		"confirmNewPassword": "Подтвердите новый пароль",
 		"repeatNewPassword": "Повторите новый пароль",
 		"forgotPassword": "Забыли пароль?",
 		"checkEmailForFurther": "Проверьте вашу почту для дальнейших инструкций",
@@ -177,14 +184,27 @@
 		"restorePassword": "Восстановления пароля",
 		"checkInbox": "Проверьте свой email",
 		"weSentCode": "Мы выслали код верификации по адресу",
-		"enterCodeBelow": "Пожалуйста, введите его ниже, чтобы подтвердить свой адрес электронной почты.",
+		"enterCodeBelow": "Пожалуйста, введите его ниже, чтобы подтвердить свой адрес электронной почты. Обязательно проверьте свою папку 'Спам' или 'нежелательная почта'.",
+		"enterNewCodeBelow": "Мы отправили вам новый код, пожалуйста, введите его ниже",
 		"emailIfNotFind": "Если не можете найти, посмотрите в спаме или подождите 1 минуту",
 		"passwordLengthError": "Пароль должен содержать не менее 8 и не более 14 символов",
 		"backToLogIn": "Обратно ко входу",
 		"passwordDontAMatch": "Пароли не совпадают",
 		"requestReceivedSuccessfully": "Запрос успешно получен! Мы отправили вам электронное письмо со ссылкой для сброса вашего пароля.",
 		"resetPassword": "Восстановление пароля",
-		"enterEmailForLink": "Введите email и мы вышлем вам ссылку для восстановления вашего пароля"
+		"enterEmailForLink": "Введите email и мы вышлем вам ссылку для восстановления вашего пароля",
+		"errorVerificationCode": "Неверный код верификации. Попробуйте еще раз.",
+		"errorVerificationCodeAttempts": "Слишком много попыток. Попробуйте еще раз позже.",
+		"incorrectEmailOrPassword": "Неверный email или пароль. Попробуйте еще раз.",
+		"userAlreadyExists": "Пользователь с таким email уже существует. Пожалуйста, используйте другой email для регистрации.",
+		"userNotFound": "Пользователь с таким email не найден.",
+		"passwordAtLeast": "Пароль должен содержать не менее 8 символов",
+		"passwordMustBeDifferent": "Ваш пароль должен отличаться от предыдущих паролей",
+		"skip": "Пропустить",
+		"cancel": "Отменить",
+		"passwordDoNotMatch": "Введенные пароли не совпадают",
+		"currentPasswordIsIncorrect": "Текущий пароль введен неправильно. Попробуйте еще раз",
+		"enterAValidEmailAddress": "Введите корректный email"
 	},
 	"modal": {
 		"canEdit": "Можно редактировать",
@@ -264,6 +284,7 @@
 	"thickness": "Толщина",
 	"appTitle": "Microboard",
 	"export": {
+		"tooltip": "Экспорт",
 		"confirm": "Экспортировать",
 		"cancel": "Отменить"
 	},
@@ -271,5 +292,10 @@
 		"boardsTitle": "Выберите доску для импорта",
 		"importMiro": "Импорт из Miro",
 		"importMiroBtn": "Импортировать доску из Miro"
+	},
+	"cancel": "Отменить",
+	"error": {
+		"title": "Ошибка при экспорте",
+		"description": "При экспорте выбранной области произошла ошибка"
 	}
 }

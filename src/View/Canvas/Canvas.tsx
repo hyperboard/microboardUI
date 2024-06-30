@@ -1,8 +1,8 @@
+import { App } from "App";
 import { Board } from "Board";
 import { DrawingContext } from "Board/Items/DrawingContext";
-import * as React from "react";
-import { App } from "App";
 import { WithRouterProps, withRouter } from "lib/withRouter";
+import * as React from "react";
 export interface Props extends WithRouterProps {
 	app: App;
 	board: Board;
@@ -63,15 +63,36 @@ export class CanvasBase extends React.Component<Props> {
 		const stage = this.stageRef.current;
 		const controller = this.props.app.controller;
 		if (stage) {
-			stage.addEventListener("pointerdown", controller.onPointerDown);
-			stage.addEventListener("pointerup", controller.onPointerUp);
-			stage.addEventListener("dblclick", controller.onClick);
-			window.addEventListener("pointerleave", controller.onPointerLeave);
-			window.addEventListener("pointerout", controller.onPointerOut);
-			window.addEventListener(
-				"pointercancel",
-				controller.onPointerCancel,
+			stage.addEventListener(
+				"pointerdown",
+				event => {
+					controller.onPointerDown(event);
+					if (event.target) {
+						(event.target as HTMLElement).setPointerCapture(
+							event.pointerId,
+						);
+					}
+				},
+				{ capture: true },
 			);
+
+			stage.addEventListener(
+				"pointerup",
+				event => {
+					controller.onPointerUp(event);
+					if (event.target) {
+						(event.target as HTMLElement).releasePointerCapture(
+							event.pointerId,
+						);
+					}
+				},
+				{ capture: true },
+			);
+
+			stage.addEventListener("pointermove", controller.onPointerMove, {
+				capture: true,
+			});
+			stage.addEventListener("dblclick", controller.onClick);
 		}
 
 		this.initCanvasRendering();
@@ -81,18 +102,13 @@ export class CanvasBase extends React.Component<Props> {
 		const stage = this.stageRef.current;
 		const controller = this.props.app.controller;
 		if (stage) {
-			stage.removeEventListener("pointerdown", controller.onPointerDown);
-			stage.removeEventListener("pointerup", controller.onPointerUp);
+			stage.removeEventListener("pointerdown", controller.onPointerDown, {
+				capture: true,
+			});
+			stage.removeEventListener("pointerup", controller.onPointerUp, {
+				capture: true,
+			});
 			stage.removeEventListener("dblclick", controller.onClick);
-			window.removeEventListener(
-				"pointerleave",
-				controller.onPointerLeave,
-			);
-			window.removeEventListener("pointerout", controller.onPointerOut);
-			window.removeEventListener(
-				"pointercancel",
-				controller.onPointerCancel,
-			);
 		}
 		this.props.app.subscriptions.remove(this.drawingContextSubscription);
 		this.props.app.subscriptions.remove(this.cursorSubscription);
@@ -131,7 +147,7 @@ export class CanvasBase extends React.Component<Props> {
 					padding: "0px",
 					margin: "0px",
 					border: "0px",
-					background: "rgba(200,200,200,0.2)",
+					background: "rgb(246, 246, 246)",
 					cursor: board.pointer.getCursor(),
 					top: "0px",
 					left: "0px",
@@ -149,7 +165,7 @@ export class CanvasBase extends React.Component<Props> {
 						padding: "0px",
 						margin: "0px",
 						border: "0px",
-						background: "rgba(200,200,200,0.2)",
+						background: "rgb(246, 246, 246)",
 						top: "0px",
 						left: "0px",
 						display: "block",

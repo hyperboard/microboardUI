@@ -1,20 +1,23 @@
-import { Board } from "Board";
-import { FrameType } from "Board/Items/Frame/Basic";
+import type { FrameType } from "Board/Items/Frame/Basic";
+import { getHotkeyLabel } from "Board/Keyboard";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { useAppContext } from "View/AppContext";
 import { Icon } from "View/Icon";
 import { FramePicker } from "View/Pickers/FramePicker";
 import { UiButton } from "View/Ui/UiButton";
+import { UiPanel } from "View/Ui/UiPanel";
+import { ButtonWithMenu } from "./ButtonWithMenu";
 
-type Props = {
-	board: Board;
-	isOn: boolean;
-};
-
-export function AddFrame({ board, isOn }: Props) {
+export function AddFrame() {
+	const { board } = useAppContext();
 	const { t } = useTranslation();
 
-	const handlePick = (type: FrameType): void => {
+	const handleClick = () => {
+		board.tools.addFrame(true);
+	};
+
+	const handlePick = (type: FrameType) => {
 		const addFrame = board.tools.getAddFrame();
 		if (addFrame) {
 			addFrame.setShapeType(type);
@@ -22,33 +25,28 @@ export function AddFrame({ board, isOn }: Props) {
 		}
 	};
 
-	const handleButtonClick = (): void => {
-		board.tools.addFrame();
-	};
-
+	const isActive = Boolean(board.tools.getAddFrame());
+	const selected = board.tools.getAddFrame()?.shape;
 	return (
-		<div className="ToolsPanelMenuContainer">
-			<UiButton
-				id="AddFrame"
-				onClick={handleButtonClick}
-				title={t("toolsPanel.addFrame.tooltip")}
-				hotkey="F"
-				isOn={isOn}
-				tipOnLeft
-			>
-				<Icon name="AddFrame" width={24} height={24} />
-			</UiButton>
-			<div
-				id="AddFrameMenu"
-				className="ToolsPanelMenu"
-				style={{
-					width: "120px",
-					visibility: isOn ? "visible" : "hidden",
-					marginTop: "-77px",
-				}}
-			>
-				<FramePicker onPick={handlePick} />
-			</div>
-		</div>
+		<ButtonWithMenu
+			isOpen={isActive}
+			button={
+				<UiButton
+					id={"tool-select"}
+					tooltip={t("toolsPanel.addFrame.tooltip")}
+					hotkey={getHotkeyLabel("frame")}
+					onClick={handleClick}
+					active={isActive}
+					variant="secondary"
+					rounded="none"
+				>
+					<Icon iconName="Frame" />
+				</UiButton>
+			}
+		>
+			<UiPanel gap={4} grid columns={3}>
+				<FramePicker onPick={handlePick} selected={selected} />
+			</UiPanel>
+		</ButtonWithMenu>
 	);
 }

@@ -1,45 +1,25 @@
-import { Board } from "Board";
-import { Frame, Mbr } from "Board/Items";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { BoldUnderlineIcon } from "View/Icon/TextStyle/BoldUnderlineIcon";
+import { useAppContext } from "View/AppContext";
+import { ButtonWithMenu } from "View/ContextPanel/Buttons/ButtonWithMenu";
+import { usePanelContext } from "View/ContextPanel/PanelContext";
+import { Icon } from "View/Icon";
 import { FontStylePicker } from "View/Pickers/FontStylePicker";
-import { UiButton } from "View/Ui/UiButton";
-import { ButtonWithMenu } from "./ButtonWithMenu";
+import { UiButton } from "View/Ui/UiButton/UiButton";
+import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 
-const IconSize = 24;
+const MENU_NAME = "FontStyle";
 
-type FontStyleProps = {
-	board: Board;
-	toggleMenu: (menu: string) => void;
-	menu: string;
-	panelMbr: Mbr;
-	windowHeight: number;
-};
-
-export function FontStyle({
-	board,
-	toggleMenu,
-	menu,
-	panelMbr,
-	windowHeight,
-}: FontStyleProps): React.ReactElement | null {
+export function FontStyle(): React.ReactElement | null {
+	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
+		usePanelContext();
 	const { t } = useTranslation();
-	const menuRef = React.useRef<HTMLDivElement>(null);
-	if (board.selection.getContext() === "SelectUnderPointer") {
-		return null;
-	}
+	const { board } = useAppContext();
 
-	if (
-		(board.selection.getContext() !== "EditTextUnderPointer" &&
-			!board.selection.canChangeText()) ||
-		board.selection.items.getSingle() instanceof Frame
-	) {
-		return null;
-	}
 	const fontStyles = board.selection.getText()?.getFontStyles();
+
 	const handleClick = () => {
-		toggleMenu("FontStyle");
+		toggleMenu(MENU_NAME);
 	};
 
 	const handlePick = (style: string) => {
@@ -49,29 +29,28 @@ export function FontStyle({
 
 	return (
 		<ButtonWithMenu
+			menuName={MENU_NAME}
+			openedMenu={openedMenu}
 			panelMbr={panelMbr}
 			windowHeight={windowHeight}
-			menuRef={menuRef}
+			align="left"
+			button={
+				<UiButton
+					id={"ChangeFontStyle"}
+					tooltip={t("contextPanel.fontStyle.tooltip")}
+					tooltipPosition="top"
+					onClick={handleClick}
+					variant="secondary"
+					rounded="none"
+					active={openedMenu === MENU_NAME}
+				>
+					<Icon iconName="TextStyle" />
+				</UiButton>
+			}
 		>
-			<UiButton
-				id="ChangeFontStyle"
-				onClick={handleClick}
-				title={t("contextPanel.fontStyle.tooltip")}
-			>
-				<BoldUnderlineIcon width={IconSize} height={IconSize} />
-			</UiButton>
-			<div
-				id="ChangeFontStyleMenu"
-				ref={menuRef}
-				className="ContextPanelMenu"
-				style={{
-					width: "170px",
-					marginLeft: "-80px",
-					visibility: menu === "FontStyle" ? "visible" : "hidden",
-				}}
-			>
+			<UiPanel padding={12} gap={8} rounded="bottom">
 				<FontStylePicker fontStyles={fontStyles} onPick={handlePick} />
-			</div>
+			</UiPanel>
 		</ButtonWithMenu>
 	);
 }

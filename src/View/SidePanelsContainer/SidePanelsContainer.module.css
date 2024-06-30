@@ -1,0 +1,9 @@
+.sidePanels {
+	display: grid;
+	grid-template-columns: auto 48px;
+	gap: 8px;
+	position: absolute;
+	height: calc(100% - 84px);
+	top: 72px;
+	left: 0;
+}

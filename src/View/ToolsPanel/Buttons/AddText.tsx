@@ -1,28 +1,31 @@
-import { Board } from "Board";
-import { getHotkeyLabel } from "Board/Keyboard/hotkeys";
-import React from "react";
-import { useTranslation } from "react-i18next";
+import { getHotkeyLabel } from "Board/Keyboard";
+import { useAppContext } from "View/AppContext";
 import { Icon } from "View/Icon";
 import { UiButton } from "View/Ui/UiButton";
+import React from "react";
+import { useTranslation } from "react-i18next";
 
-type Props = { board: Board; isOn: boolean };
-
-export function AddText({ board, isOn }: Props) {
+export function AddText() {
+	const { board } = useAppContext();
 	const { t } = useTranslation();
-	const handleClick = (): void => {
-		board.tools.addText();
+
+	const handleClick = () => {
+		board.tools.addText(true);
 	};
+
+	const isActive = Boolean(board.tools.getAddText());
 
 	return (
 		<UiButton
-			id="AddText"
-			onClick={handleClick}
-			title={t("toolsPanel.addText.tooltip")}
+			id={"tool-add-text"}
+			tooltip={t("toolsPanel.addText.tooltip")}
 			hotkey={getHotkeyLabel("text")}
-			isOn={isOn}
-			tipOnLeft
+			onClick={handleClick}
+			active={isActive}
+			variant="secondary"
+			rounded="none"
 		>
-			<Icon name="RichText" width={24} height={24} />
+			<Icon iconName="Text" />
 		</UiButton>
 	);
 }

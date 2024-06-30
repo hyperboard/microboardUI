@@ -1,7 +1,6 @@
 import { getApiUrl } from "Config";
 import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useDebounce } from "shared/hooks/useDebounce";
 import { Button } from "shared/ui-lib/Button";
 import { Input } from "shared/ui-lib/Input";
 import styles from "./ForgotPassword.module.css";
@@ -10,45 +9,44 @@ import { useNavigate } from "react-router-dom";
 import { Tail } from "View/AuthView/Tail";
 import { SuccessIcon } from "./SuccessIcon";
 
-const requestPasswordRestoration = (email: string): Promise<any> => {
-	const request = fetch(getApiUrl("/auth/password/restore/request"), {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({ email }),
-	});
-
-	return request;
-};
-
 export const ForgotPassword: React.FC = () => {
 	const { t } = useTranslation();
 	const formRef = useRef<HTMLFormElement>(null);
 	const [requested, setRequested] = useState<boolean>(false);
 	const [disabled, setDisabled] = useState<boolean>(true);
+	const [isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
 	const [error, setError] = useState<string>("");
 	const navigate = useNavigate();
 
-	const checkForm = (): void => {
+	const checkForm = (): boolean => {
 		if (!formRef.current) {
-			return;
+			return false;
 		}
 
 		const email = formRef.current.email.value;
 
 		if (!isEmail(email)) {
-			setError(t("auth.notValidEmail"));
+			// setError(t("auth.enterAValidEmailAddress"));
 			setDisabled(true);
-			return;
+			return false;
 		}
 
 		setDisabled(false);
 		setError("");
-		return;
+		return true;
 	};
 
-	const dbCheckForm = useDebounce(checkForm, 500);
+	const checkFormWithError = (): void => {
+		const isFormError = checkForm();
+
+		if (!isFormError) {
+			setError(t("auth.enterAValidEmailAddress"));
+		} else {
+			setError("");
+		}
+	};
+
+	const dbCheckForm = checkForm;
 
 	const onSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
 		event.preventDefault();
@@ -56,10 +54,36 @@ export const ForgotPassword: React.FC = () => {
 		if (!formRef.current) {
 			return;
 		}
-
-		requestPasswordRestoration(formRef.current.email.value).then(() => {
-			setRequested(true);
-		});
+		setDisabled(true);
+		setIsSubmitLoading(true);
+		fetch(getApiUrl("/auth/password/restore/request"), {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ email: formRef.current.email.value || "" }),
+		})
+			.then(async response => {
+				if (response.ok) {
+					return response.json();
+				} else {
+					const data = await response.json();
+					return Promise.reject(data);
+				}
+			})
+			.then(() => {
+				setRequested(true);
+			})
+			.catch(error => {
+				if (error?.message === "User not found") {
+					setError(t("auth.userNotFound"));
+					return;
+				}
+			})
+			.finally(() => {
+				setDisabled(false);
+				setIsSubmitLoading(false);
+			});
 	};
 
 	if (requested) {
@@ -93,6 +117,7 @@ export const ForgotPassword: React.FC = () => {
 				placeholder={t("auth.emailPlaceholder")}
 				hasError={!!error.length}
 				errorText={error}
+				onBlur={checkFormWithError}
 				onInput={dbCheckForm}
 			/>
 			<div className={styles.btns}>
@@ -100,6 +125,7 @@ export const ForgotPassword: React.FC = () => {
 					type="submit"
 					disabled={disabled}
 					className={styles.submitBtn}
+					loading={isSubmitLoading}
 				>
 					{t("auth.submit")} <Tail />
 				</Button>

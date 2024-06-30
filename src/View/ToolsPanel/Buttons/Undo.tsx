@@ -1,28 +1,31 @@
-import { Board } from "Board";
-import { getHotkeyLabel } from "Board/Keyboard/hotkeys";
+import { getHotkeyLabel } from "Board/Keyboard";
+import { useAppContext } from "View/AppContext";
+import { Icon } from "View/Icon";
+import { UiButton } from "View/Ui/UiButton";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { UndoIcon } from "View/Icon/UndoIcon";
-import { UiButton } from "View/Ui/UiButton";
 
-type Props = { board: Board; isOn: boolean };
-
-export function Undo({ board, isOn }: Props) {
+export function Undo() {
+	const { board } = useAppContext();
 	const { t } = useTranslation();
-	const handleClick = (): void => {
-		board.events.undo();
+
+	const handleClick = () => {
+		board.events?.undo();
 	};
+
+	const canUndo = board.events?.canUndo();
 
 	return (
 		<UiButton
-			id="Undo"
-			onClick={handleClick}
-			title={t("toolsPanel.undo.tooltip")}
+			id={"undo"}
+			tooltip={t("toolsPanel.undo.tooltip")}
 			hotkey={getHotkeyLabel("undo")}
-			isOn={false}
-			tipOnLeft
+			onClick={handleClick}
+			disabled={!canUndo}
+			rounded="top"
+			variant="secondary"
 		>
-			<UndoIcon isOn={isOn} width={24} height={24} />
+			<Icon iconName="Undo" />
 		</UiButton>
 	);
 }

@@ -1,6 +1,5 @@
 import { isFiniteNumber, toFiniteNumber } from "utils";
 import { isSafari } from "../isSafari";
-import { WheelDetector } from "./WheelDetector";
 
 export const DeltaModes = ["pixel", "line", "page"] as const;
 
@@ -12,26 +11,49 @@ interface ChromeWheelEvent extends WheelEvent {
 	wheelDeltaY?: number;
 }
 
-const detector = new WheelDetector();
+const detector = createWheelDetector();
 
-export class Wheel {
-	isWheelDelta = isFiniteNumber(this.event.wheelDelta);
-	isWheelDeltaX = isFiniteNumber(this.event.wheelDeltaX);
-	isWheelDeltaY = isFiniteNumber(this.event.wheelDeltaY);
-	isDeltaX = isFiniteNumber(this.event.deltaX);
-	isDeltaY = isFiniteNumber(this.event.deltaY);
-	isShiftKey = this.event.shiftKey;
-	isCtrlKey = this.event.ctrlKey;
-	wheelDelta = toFiniteNumber(this.event.wheelDelta);
-	wheelDeltaX = toFiniteNumber(this.event.wheelDeltaX);
-	wheelDeltaY = toFiniteNumber(this.event.wheelDeltaY);
-	deltaX = toFiniteNumber(this.event.deltaX);
-	deltaY = toFiniteNumber(this.event.deltaY);
-	deltaMode = this.getDeltaMode(this.event);
+interface Wheel {
+	isWheelDelta: boolean;
+	isWheelDeltaX: boolean;
+	isWheelDeltaY: boolean;
+	isDeltaX: boolean;
+	isDeltaY: boolean;
+	isShiftKey: boolean;
+	isCtrlKey: boolean;
+	wheelDelta: number;
+	wheelDeltaX: number;
+	wheelDeltaY: number;
+	deltaX: number;
+	deltaY: number;
+	deltaMode: "pixel" | "line" | "page";
+	getTouchpadPanDeltaX: () => number;
+	getTouchpadPanDeltaY: () => number;
+	getTouchpadPinchMultiplier: () => number;
+	getWheelScaleMultiplier: () => number;
+	isProbablyTouchpadPanHorisontal: () => boolean;
+	isTouchpadPinch: () => boolean;
+	isProbablyMouseWheel: () => boolean;
+	isIgnore: () => boolean;
+}
 
-	constructor(public event: ChromeWheelEvent) {}
+export function createWheel(event: ChromeWheelEvent): Wheel {
+	const isWheelDelta = isFiniteNumber(event.wheelDelta);
+	const isWheelDeltaX = isFiniteNumber(event.wheelDeltaX);
+	const isWheelDeltaY = isFiniteNumber(event.wheelDeltaY);
+	const isDeltaX = isFiniteNumber(event.deltaX);
+	const isDeltaY = isFiniteNumber(event.deltaY);
+	const isShiftKey = event.shiftKey;
+	const isCtrlKey = event.ctrlKey;
+	const wheelDelta = toFiniteNumber(event.wheelDelta);
+	const wheelDeltaX = toFiniteNumber(event.wheelDeltaX);
+	const wheelDeltaY = toFiniteNumber(event.wheelDeltaY);
+	const deltaX = toFiniteNumber(event.deltaX);
+	const deltaY = toFiniteNumber(event.deltaY);
+	const deltaMode = getDeltaMode(event);
+	detector.handle(wheelDelta);
 
-	private getDeltaMode(event: WheelEvent): DeltaMode {
+	function getDeltaMode(event): "pixel" | "line" | "page" {
 		switch (event.deltaMode) {
 			case 0:
 				return "pixel";
@@ -44,14 +66,11 @@ export class Wheel {
 		}
 	}
 
-	getTouchpadPanDeltaX(): number {
-		const { isWheelDeltaX, wheelDeltaX, isDeltaX, deltaX } = this;
+	function getTouchpadPanDeltaX(): number {
 		return isDeltaX ? -deltaX : isWheelDeltaX ? wheelDeltaX / 3 : 0;
 	}
 
-	getTouchpadPanDeltaY(): number {
-		const { isWheelDeltaY, wheelDelta, wheelDeltaY, isDeltaY, deltaY } =
-			this;
+	function getTouchpadPanDeltaY(): number {
 		return isDeltaY
 			? -deltaY
 			: isWheelDeltaY
@@ -59,12 +78,11 @@ export class Wheel {
 			: wheelDelta / 3;
 	}
 
-	getTouchpadPinchMultiplier(): number {
-		return Math.exp(this.getTouchpadPanDeltaY() / 100);
+	function getTouchpadPinchMultiplier(): number {
+		return Math.exp(getTouchpadPanDeltaY() / 100);
 	}
 
-	getWheelScaleMultiplier(): number {
-		const { isWheelDelta, wheelDelta, isDeltaY, deltaX, deltaY } = this;
+	function getWheelScaleMultiplier(): number {
 		const delta = isWheelDelta
 			? Math.abs(wheelDelta) * 0.001 + 1
 			: isDeltaY
@@ -74,17 +92,15 @@ export class Wheel {
 		return isIn ? delta : 1 / delta;
 	}
 
-	isProbablyTouchpadPanHorisontal(): boolean {
-		return this.isShiftKey && this.getTouchpadPanDeltaY() !== 0;
+	function isProbablyTouchpadPanHorisontal(): boolean {
+		return isShiftKey && getTouchpadPanDeltaY() !== 0;
 	}
 
-	isTouchpadPinch(): boolean {
-		return this.isCtrlKey;
+	function isTouchpadPinch(): boolean {
+		return isCtrlKey;
 	}
 
-	isProbablyMouseWheel(): boolean {
-		const { isWheelDelta, wheelDelta, deltaMode, isCtrlKey, deltaY } = this;
-		detector.handle(wheelDelta);
+	function isProbablyMouseWheel(): boolean {
 		const isChromeMouseWheel = !isCtrlKey && detector.isMouseWheel;
 		const isSafariMouseWheel = isSafari() && wheelDelta !== -deltaY * 3;
 		return isWheelDelta
@@ -92,7 +108,129 @@ export class Wheel {
 			: deltaMode !== "pixel";
 	}
 
-	isIgnore(): boolean {
+	function isIgnore(): boolean {
 		return detector.isIgnore;
 	}
+
+	return {
+		isWheelDelta,
+		isWheelDeltaX,
+		isWheelDeltaY,
+		isDeltaX,
+		isDeltaY,
+		isShiftKey,
+		isCtrlKey,
+		wheelDelta,
+		wheelDeltaX,
+		wheelDeltaY,
+		deltaX,
+		deltaY,
+		deltaMode,
+		getTouchpadPanDeltaX,
+		getTouchpadPanDeltaY,
+		getTouchpadPinchMultiplier,
+		getWheelScaleMultiplier,
+		isProbablyTouchpadPanHorisontal,
+		isTouchpadPinch,
+		isProbablyMouseWheel,
+		isIgnore,
+	};
+}
+
+interface WheelDetector {
+	handle: (wheelDelta: number) => void;
+	readonly isMouseWheel: boolean;
+	readonly isIgnore: boolean;
+}
+
+export function createWheelDetector(): WheelDetector {
+	const logSize = 10;
+	const detectionFrequency = 8;
+	const maxWheelDelta = 50;
+	const log: number[] = [];
+
+	let isMouseWheel = true;
+	let isIgnore = false;
+
+	let wheelDeltaConstant: number;
+	let highDeltaPrevious: number | undefined;
+
+	function handle(wheelDelta: number): void {
+		const absWheelDelta = Math.abs(wheelDelta);
+
+		log.push(absWheelDelta);
+
+		if (log.length > logSize) {
+			log.shift();
+		}
+
+		let localIsMouseWheel = true;
+
+		if (absWheelDelta >= maxWheelDelta) {
+			let frequency = 0;
+
+			for (const value of log) {
+				if (value === absWheelDelta) {
+					frequency++;
+				}
+			}
+
+			if (frequency >= detectionFrequency) {
+				wheelDeltaConstant = absWheelDelta;
+				clearHighDeltaPrevious();
+			}
+		}
+
+		if (wheelDeltaConstant) {
+			if (isMouseDelta(absWheelDelta, wheelDeltaConstant)) {
+				localIsMouseWheel = true;
+			} else {
+				localIsMouseWheel = false;
+			}
+		} else {
+			if (absWheelDelta > maxWheelDelta) {
+				if (!highDeltaPrevious) {
+					highDeltaPrevious = absWheelDelta;
+					isIgnore = true;
+				} else {
+					if (isMouseDelta(absWheelDelta, highDeltaPrevious)) {
+						localIsMouseWheel = true;
+					} else {
+						localIsMouseWheel = false;
+					}
+					clearHighDeltaPrevious();
+				}
+			} else {
+				localIsMouseWheel = false;
+				clearHighDeltaPrevious();
+			}
+		}
+
+		isMouseWheel = localIsMouseWheel;
+	}
+
+	function isMouseDelta(
+		absWheelDelta: number,
+		wheelConstant: number,
+	): boolean {
+		return (
+			absWheelDelta === wheelConstant ||
+			absWheelDelta % wheelConstant === 0
+		);
+	}
+
+	function clearHighDeltaPrevious(): void {
+		isIgnore = false;
+		highDeltaPrevious = undefined;
+	}
+
+	return {
+		handle,
+		get isMouseWheel() {
+			return isMouseWheel;
+		},
+		get isIgnore() {
+			return isIgnore;
+		},
+	};
 }

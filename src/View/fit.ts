@@ -1,20 +1,24 @@
 import { Mbr } from "Board/Items";
 
-export function fitContextPanel(selection: Mbr, view: Mbr, panel: Mbr): Mbr {
+export function fitContextPanel(
+	selection: Mbr,
+	view: Mbr,
+	panel: Mbr,
+	offset = 40,
+): Mbr {
 	const topSpace = selection.top - view.top;
 	const bottomSpace = view.bottom - selection.bottom;
 	const panelHeight = panel.getHeight();
-	const panelOffset = panelHeight * 1.3;
 	const newPanel = new Mbr();
 	if (topSpace > bottomSpace - panelHeight) {
-		newPanel.top = selection.top - panelOffset - panelHeight;
+		newPanel.top = selection.top - panelHeight - offset;
 		if (newPanel.top < view.top) {
-			newPanel.top = view.top + panelOffset;
+			newPanel.top = view.top + offset;
 		}
 	} else {
-		newPanel.top = selection.bottom + panelOffset;
+		newPanel.top = selection.bottom + offset;
 		if (newPanel.top + panelHeight > view.bottom) {
-			newPanel.top = view.bottom - (panelHeight + panelOffset);
+			newPanel.top = view.bottom - (panelHeight + offset);
 		}
 	}
 	newPanel.bottom = newPanel.top + panelHeight;
@@ -22,12 +26,12 @@ export function fitContextPanel(selection: Mbr, view: Mbr, panel: Mbr): Mbr {
 	const panelWidth = panel.getWidth();
 	newPanel.left = itemCenter.x - panelWidth / 2;
 	newPanel.right = newPanel.left + panelWidth;
-	if (newPanel.left < view.left + panelOffset) {
-		newPanel.left = view.left + panelOffset;
+	if (newPanel.left < view.left + offset) {
+		newPanel.left = view.left + offset;
 		newPanel.right = newPanel.left + panelWidth;
-	} else if (newPanel.right + panelOffset > view.right) {
-		newPanel.right = view.right - panelOffset;
-		newPanel.left = view.right - (panelOffset + panelWidth);
+	} else if (newPanel.right + offset > view.right) {
+		newPanel.right = view.right - offset;
+		newPanel.left = view.right - (panelWidth + offset);
 	}
 	return newPanel;
 }

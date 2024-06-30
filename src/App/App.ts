@@ -7,16 +7,36 @@ import { Accounts } from "./Accounts";
 import { Storage } from "./Storage";
 import { Subject } from "../Subject";
 import { getApiUrl } from "Config";
-import { Connection } from "./Connection";
-import { getSubscriptions } from "./getSubscriptions";
-import { getController } from "./getController";
-import { createTester } from "./testRecorder";
+import { Connection, createConnection } from "./Connection";
+import { Subscriptions, getSubscriptions } from "./getSubscriptions";
+import { Controller, getController } from "./getController";
+import { TestRecorder, createTester } from "./testRecorder";
+import { BoardSnapshot } from "Board/Board";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc =
 	"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js";
 
-export function createApp(isHistory = true) {
-	const connection = new Connection();
+interface App {
+	connection: Connection;
+	clipboard: Clipboard;
+	location: Location;
+	storage: Storage;
+	controller: Controller;
+	accounts: Accounts;
+	boardSubject: Subject<unknown>;
+	subscriptions: Subscriptions;
+	openStartingBoard: () => Promise<void>;
+	getStartingBoardId: () => string | null;
+	createPublicBoard: () => Promise<string>;
+	openBoard: (id: string) => void;
+	getBoard: () => Board;
+	render: () => void;
+	test: TestRecorder;
+	getSnapshot(boardId: string): BoardSnapshot | null;
+}
+
+export function createApp(isHistory = true): App {
+	const connection = createConnection();
 	const clipboard = new Clipboard();
 	const location = new Location();
 	const storage = new Storage();
@@ -25,7 +45,7 @@ export function createApp(isHistory = true) {
 
 	let board: Board;
 
-	function getBoard() {
+	function getBoard(): Board {
 		return board;
 	}
 
@@ -35,7 +55,7 @@ export function createApp(isHistory = true) {
 	const boards = new Map();
 	const boardSubject = new Subject();
 
-	async function openStartingBoard() {
+	async function openStartingBoard(): Promise<void> {
 		let id = getStartingBoardId();
 		if (!id) {
 			id = await createPublicBoard();
@@ -43,7 +63,7 @@ export function createApp(isHistory = true) {
 		openBoard(id);
 	}
 
-	function getStartingBoardId() {
+	function getStartingBoardId(): string | null {
 		if (accounts.isLoggedIn()) {
 			return null;
 		}
@@ -54,15 +74,9 @@ export function createApp(isHistory = true) {
 			return locationId;
 		}
 		return null;
-		const visited = storage.listPublicBoards();
-		const lastVisited = visited[visited.length - 1];
-		if (lastVisited) {
-			return lastVisited;
-		}
-		return null;
 	}
 
-	async function createPublicBoard() {
+	async function createPublicBoard(): Promise<string> {
 		try {
 			const response = await fetch(`${getApiUrl()}/public-boards`, {
 				method: "POST",
@@ -81,13 +95,13 @@ export function createApp(isHistory = true) {
 			const data = await response.json();
 			const { boardId, linkId, linkUri } = data;
 			storage.setPublicBoard({ boardId: linkId, ownerId: boardId });
-			return linkId;
+			return linkId as string;
 		} catch (error) {
 			console.error("Failed to create a new public board.", error);
 		}
 	}
 
-	function openBoard(id) {
+	function openBoard(id): void {
 		let currentBoard = boards.get(id);
 		if (!currentBoard) {
 			currentBoard = new Board(id);
@@ -100,6 +114,14 @@ export function createApp(isHistory = true) {
 		board = currentBoard;
 	}
 
+	function getSnapshot(id: string): BoardSnapshot | null {
+		const board = boards.get(id);
+		if (!board) {
+			return null;
+		}
+		return board.getSnapshot();
+	}
+
 	const app = {
 		connection,
 		clipboard,
@@ -107,9 +129,7 @@ export function createApp(isHistory = true) {
 		storage,
 		controller,
 		accounts,
-		boards,
 		boardSubject,
-		board,
 		subscriptions,
 		openStartingBoard,
 		getStartingBoardId,
@@ -118,13 +138,12 @@ export function createApp(isHistory = true) {
 		getBoard,
 		render,
 		test,
+		getSnapshot,
 	};
 
-	function render() {
+	function render(): void {
 		getRender(app)();
 	}
 
 	return app;
 }
-
-export type App = ReturnType<typeof createApp>;

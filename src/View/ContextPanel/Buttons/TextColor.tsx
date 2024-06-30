@@ -1,47 +1,26 @@
-import { Board } from "Board";
-import { Frame, Mbr } from "Board/Items";
+import { ButtonWithMenu } from "View/ContextPanel/Buttons/ButtonWithMenu";
+import { usePanelContext } from "View/ContextPanel/PanelContext";
+import { TextColorIndicator } from "View/Icon";
+import { ColorPicker } from "View/Pickers/ColorPicker/ColorPicker";
+import { TEXT_COLORS } from "View/Tools/AddText";
+import { UiButton } from "View/Ui/UiButton/UiButton";
+import { UiColorInput } from "View/Ui/UiColorInput";
+import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { TextColorIcon } from "View/Icon/TextStyle/TextColorIcon";
-import { ColorPicker } from "View/Pickers/ColorPicker";
-import { UiButton } from "View/Ui/UiButton";
-import { ButtonWithMenu } from "./ButtonWithMenu";
+import { useAppContext } from "View/AppContext";
 
-const IconSize = 24;
+const MENU_NAME = "TextColor";
 
-type TextColorProps = {
-	board: Board;
-	toggleMenu: (menu: string) => void;
-	menu: string;
-	panelMbr: Mbr;
-	color: string;
-	windowHeight: number;
-};
-
-export function TextColor({
-	board,
-	toggleMenu,
-	menu,
-	panelMbr,
-	color,
-	windowHeight,
-}: TextColorProps): React.ReactElement | null {
+export function TextColor(): React.ReactElement | null {
+	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
+		usePanelContext();
+	const { board } = useAppContext();
 	const { t } = useTranslation();
-	const menuRef = React.useRef<HTMLDivElement>(null);
-	if (board.selection.getContext() === "SelectUnderPointer") {
-		return null;
-	}
-
-	if (
-		(board.selection.getContext() !== "EditTextUnderPointer" &&
-			!board.selection.canChangeText()) ||
-		board.selection.items.getSingle() instanceof Frame
-	) {
-		return null;
-	}
+	const fontColor = board.selection.getFontColor();
 
 	const handleClick = () => {
-		toggleMenu("TextColor");
+		toggleMenu(MENU_NAME);
 	};
 
 	const handlePick = (color: string) => {
@@ -49,39 +28,52 @@ export function TextColor({
 		toggleMenu("None");
 	};
 
+	const handleCustomPick = (color: string) => {
+		board.selection.setFontColor(color);
+	};
+
+	const isPredefinedColor = TEXT_COLORS.some(color => color === fontColor);
 	return (
 		<ButtonWithMenu
+			menuName={MENU_NAME}
+			openedMenu={openedMenu}
 			panelMbr={panelMbr}
 			windowHeight={windowHeight}
-			menuRef={menuRef}
+			align="left"
+			button={
+				<UiButton
+					id="ChangeTextColor"
+					tooltip={t("contextPanel.textColor.tooltip")}
+					tooltipPosition="top"
+					onClick={handleClick}
+					variant="secondary"
+					active={openedMenu === MENU_NAME}
+					rounded="none"
+				>
+					<TextColorIndicator color={fontColor} />
+				</UiButton>
+			}
 		>
-			<UiButton
-				id="ChangeTextColor"
-				onClick={handleClick}
-				title={t("contextPanel.textColor.tooltip")}
-			>
-				<TextColorIcon
-					color={color}
-					width={IconSize}
-					height={IconSize}
-				/>
-			</UiButton>
-			<div
-				id="TextColorMenu"
-				ref={menuRef}
-				className="ContextPanelMenu"
-				style={{
-					width: "170px",
-					marginLeft: "-80px",
-					visibility: menu === "TextColor" ? "visible" : "hidden",
-				}}
-			>
-				<ColorPicker
-					id={"TextColor"}
-					allowNone={false}
-					onPick={handlePick}
-				/>
-			</div>
+			{verticalAlign => (
+				<UiPanel
+					rounded={verticalAlign === "bottom" ? "bottom" : "full"}
+					grid
+					columns={4}
+					gap={8}
+				>
+					<ColorPicker
+						id={"TextColor"}
+						colors={TEXT_COLORS}
+						selectedColor={fontColor}
+						onPick={handlePick}
+					/>
+					<UiColorInput
+						onChange={handleCustomPick}
+						color={isPredefinedColor ? "none" : fontColor}
+						isActive={fontColor !== "none" && !isPredefinedColor}
+					/>
+				</UiPanel>
+			)}
 		</ButtonWithMenu>
 	);
 }

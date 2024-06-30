@@ -1,11 +1,11 @@
-import React from "react";
+import { ButtonWithMenu } from "ViewTalkIntegration/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "ViewTalkIntegration/ContextPanel/PanelContext";
 import { CircleColorIndicator } from "ViewTalkIntegration/Icon";
 import { ColorPicker } from "ViewTalkIntegration/Pickers/ColorPicker/ColorPicker";
 import { UiButton } from "ViewTalkIntegration/Ui/UiButton/UiButton";
-import { ButtonWithMenu } from "ViewTalkIntegration/ContextPanel/Buttons/ButtonWithMenu";
 import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel/UiPanel";
 import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
+import React from "react";
 
 const MENU_NAME = "DrawFillStyle";
 

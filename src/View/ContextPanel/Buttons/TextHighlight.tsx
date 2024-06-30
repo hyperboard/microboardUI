@@ -1,88 +1,66 @@
+import { ButtonWithMenu } from "View/ContextPanel/Buttons/ButtonWithMenu";
+import { usePanelContext } from "View/ContextPanel/PanelContext";
+import { TextHighlightIndicator } from "View/Icon";
+import { ColorPicker } from "View/Pickers/ColorPicker/ColorPicker";
+import { TEXT_HIGHLIGHT_COLORS } from "View/Tools/AddText";
+import { UiButton } from "View/Ui/UiButton/UiButton";
+import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import React from "react";
-import { Board } from "Board";
-import { Frame, Mbr } from "Board/Items";
-import { ButtonWithMenu } from "./ButtonWithMenu";
-import { UiButton } from "View/Ui/UiButton";
-import { TextHighlightIcon } from "View/Icon/TextStyle/TextHighlightIcon";
-import { ColorPicker } from "View/Pickers/ColorPicker";
 import { useTranslation } from "react-i18next";
+import { useAppContext } from "View/AppContext";
 
-const IconSize = 24;
+const MENU_NAME = "TextHighlight";
 
-type TextHighlightProps = {
-	board: Board;
-	toggleMenu: (menu: string) => void;
-	menu: string;
-	panelMbr: Mbr;
-	windowHeight: number;
-	color: string;
-};
-
-export function TextHighlight({
-	board,
-	toggleMenu,
-	menu,
-	panelMbr,
-	windowHeight,
-	color,
-}: TextHighlightProps): React.ReactElement | null {
+export function TextHighlight(): React.ReactElement | null {
+	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
+		usePanelContext();
+	const { board } = useAppContext();
 	const { t } = useTranslation();
-	const menuRef = React.useRef<HTMLDivElement>(null);
-	if (board.selection.getContext() === "SelectUnderPointer") {
-		return null;
-	}
 
-	if (
-		(board.selection.getContext() !== "EditTextUnderPointer" &&
-			!board.selection.canChangeText()) ||
-		board.selection.items.getSingle() instanceof Frame
-	) {
-		return null;
-	}
-
+	const highlightColor = board.selection.getFontHighlight();
 	const handleClick = () => {
-		toggleMenu("TextHighlight");
+		toggleMenu(MENU_NAME);
 	};
-
 	const handlePick = (color: string) => {
 		board.selection.setFontHighlight(color);
 		toggleMenu("None");
 	};
-
 	return (
 		<ButtonWithMenu
+			menuName={MENU_NAME}
+			openedMenu={openedMenu}
 			panelMbr={panelMbr}
 			windowHeight={windowHeight}
-			menuRef={menuRef}
+			align="left"
+			button={
+				<UiButton
+					id="ChangeTextHighlight"
+					tooltip={t("contextPanel.textHighlight.tooltip")}
+					tooltipPosition="top"
+					onClick={handleClick}
+					variant="secondary"
+					active={openedMenu === MENU_NAME}
+					rounded="none"
+				>
+					<TextHighlightIndicator color={highlightColor} />
+				</UiButton>
+			}
 		>
-			<UiButton
-				id="ChangeTextHighlight"
-				onClick={handleClick}
-				title={t("contextPanel.textHighlight.tooltip")}
-			>
-				<TextHighlightIcon
-					color={color}
-					width={IconSize}
-					height={IconSize}
-				/>
-			</UiButton>
-			<div
-				id="TextColorMenu"
-				ref={menuRef}
-				className="ContextPanelMenu"
-				style={{
-					width: "170px",
-					marginLeft: "-80px",
-					visibility: menu === "TextHighlight" ? "visible" : "hidden",
-				}}
-			>
-				<ColorPicker
-					id={"TextHighlight"}
-					noneTitle={t("contextPanel.textHighlight.none")}
-					allowNone={true}
-					onPick={handlePick}
-				/>
-			</div>
+			{verticalAlign => (
+				<UiPanel
+					rounded={verticalAlign === "bottom" ? "bottom" : "full"}
+					grid
+					columns={4}
+					gap={8}
+				>
+					<ColorPicker
+						id={"TextHighlight"}
+						colors={TEXT_HIGHLIGHT_COLORS}
+						selectedColor={highlightColor}
+						onPick={handlePick}
+					/>
+				</UiPanel>
+			)}
 		</ButtonWithMenu>
 	);
 }

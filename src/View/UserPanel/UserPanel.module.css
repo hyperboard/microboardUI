@@ -1,0 +1,315 @@
+.wrapper {
+	top: 12px;
+	right: 12px;
+	position: absolute;
+}
+
+.unauthWrapper {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	padding: 8px 16px;
+}
+
+.unauthText {
+	font-size: 14px;
+	font-weight: 600;
+	align-self: center;
+	white-space: nowrap;
+}
+
+.unauthRights {
+	color: black !important;
+	padding: 8px 10px;
+}
+
+.unauthBtns {
+	display: flex;
+	gap: 8px;
+}
+
+.unauthLink {
+	text-decoration: none;
+	color: #4778f5;
+}
+
+.unauthLink:visited {
+	text-decoration: none;
+	color: #4778f5;
+}
+
+.unauthLink:hover {
+	color: rgba(71, 120, 245, 0.8);
+}
+
+.unauthDescriptionTitle {
+	max-width: 200px;
+	color: #14151a;
+	margin-bottom: 4px;
+	font-size: 12px;
+	font-weight: 500;
+}
+
+.unauthDescription {
+	max-width: 200px;
+	color: rgba(15, 19, 36, 0.6);
+	font-size: 12px;
+	margin: 0;
+}
+
+.signUpBtn {
+	height: 32px;
+	padding: 6px 16px;
+	background-color: #924fe8;
+	border: 1px solid transparent;
+	color: white;
+	white-space: nowrap;
+}
+
+.signUpBtn:hover {
+	background-color: #1f2228;
+	color: white;
+}
+
+.signUpBtn:active {
+	outline: 2px solid rgba(200, 178, 255, 0.5);
+}
+
+.dropdownWrapper {
+	position: fixed;
+	top: 70px;
+	right: 8px;
+	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+	border: 1px solid #dee0e3;
+	padding: 4px 6px;
+	background-color: white;
+	border-radius: 12px;
+	min-width: 240px;
+
+	font-family: "Manrope", "Arial", sans-serif;
+
+	-webkit-user-select: none; /* Safari */
+	-ms-user-select: none; /* IE 10 and IE 11 */
+	user-select: none; /* Standard syntax */
+}
+
+.dropdownWrapper_closed {
+	display: none;
+}
+
+.userInfo {
+	font-size: 14px;
+	padding: 6px 10px;
+}
+
+.userName {
+	font-weight: 700;
+	margin: 0;
+}
+
+.userEmail {
+	font-family: "Manrope", "Arial", sans-serif;
+	margin: 0;
+}
+
+.dropdownBtns {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.dropdownBtn {
+	display: flex;
+	gap: 8px;
+	justify-content: flex-start;
+	padding-left: 8px;
+}
+
+.icons {
+	display: flex;
+}
+
+.icon {
+	width: 48px;
+	height: 48px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	background-color: white;
+
+	transition: all 0.3s ease;
+}
+
+.icon:first-child {
+	border-radius: 12px 0 0 12px;
+}
+
+.icon:hover {
+	cursor: pointer;
+	background-color: #f7f7f8;
+}
+
+.icon svg {
+	transition: all 0.3s ease;
+}
+
+.icon:hover svg {
+	transform: scale(0.9);
+}
+
+.icon:focus {
+	box-shadow: inset 0px 0px 0px 2px #b78af0;
+}
+
+.icon:not(:last-child) {
+	border-right: 1px solid #e9eaec; /* Adjust color and width as needed */
+}
+
+.userPicWrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+
+	border-radius: 50%;
+	width: 32px !important;
+	height: 32px !important;
+	background-color: #e9eaec;
+
+	margin: 0 8px;
+
+	cursor: pointer;
+}
+
+.userPic {
+	width: 32px;
+	height: 32px;
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.btn {
+	padding: 0 8px;
+	height: 32px;
+	margin-left: 8px;
+}
+
+.modalWrapper {
+	z-index: 110;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+
+	width: 100%;
+	height: 100%;
+
+	background-color: rgba(0, 0, 0, 0.2);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-family: "Manrope", "Arial", sans-serif;
+}
+
+.modal {
+	background-color: white;
+	padding: 32px 64px;
+	border-radius: 24px;
+
+	display: flex;
+	flex-direction: column;
+	gap: 32px;
+}
+
+.modalTitle {
+	text-align: center;
+	font-size: 48px;
+	font-weight: 600;
+}
+
+.modalForm {
+	width: 500px;
+	display: flex;
+	flex-direction: column;
+	gap: 32px;
+}
+
+.modalInputs {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.modalBtns {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.requested {
+	width: 500px;
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 12px;
+
+	padding-bottom: 40px;
+}
+
+.requestedIcon {
+	padding-top: 40px;
+}
+
+.backToLogin {
+	margin-top: 32px;
+}
+
+.resetPassword {
+	text-align: center;
+	font-weight: 600;
+	font-size: 48px;
+	margin: 0;
+	padding: 0;
+
+	line-height: 56px;
+}
+
+.passwordChangedGap {
+	height: 32px;
+}
+
+@media screen and (max-width: 640px) {
+	.modalWrapper {
+		padding: 0 16px;
+	}
+
+	.modal {
+		padding: 32px 16px;
+		gap: 16px;
+	}
+
+	.modalForm {
+		width: 100%;
+		gap: 16px;
+	}
+
+	.modalTitle {
+		font-size: 24px;
+	}
+
+	.requested {
+		width: 100%;
+		padding-bottom: 12px;
+	}
+
+	.requestedIcon {
+		padding-top: 12px;
+	}
+}

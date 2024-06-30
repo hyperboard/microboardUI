@@ -1,0 +1,33 @@
+.button {
+	cursor: pointer;
+	margin: 0;
+	padding: 0;
+	position: relative;
+	border-radius: 50%;
+	border: 1px solid rgba(31, 31, 31, 0.25);
+	width: 32px;
+	height: 32px;
+}
+
+.button.active::before {
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	position: absolute;
+	content: "";
+	width: 36px;
+	height: 36px;
+	border: 2px solid var(--border-select-primary);
+	border-radius: 50%;
+}
+
+.none::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%) rotate(45deg);
+	height: 100%;
+	width: 1px;
+	background-color: rgb(219, 219, 219);
+}

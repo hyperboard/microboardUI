@@ -1,8 +1,31 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
+
+:root {
+	--background-surface-default: rgb(255, 255, 255);
+	--background-button-secondary: rgb(255, 255, 255);
+	--background-button-secondary-hover: rgb(247, 247, 248);
+	--background-badge-purple-disabled: rgb(247, 241, 253);
+	--background-badge-gray: rgb(233, 234, 236);
+	--background-accent-purple: rgb(146, 79, 232);
+
+	--border-action-normal: rgb(222, 223, 227);
+	--border-action-focus: rgb(146, 79, 232);
+	--border-select-primary: rgb(146, 79, 232);
+
+	--text-base-primary: rgb(20, 21, 26);
+	--text-base-quaternary: rgb(10, 15, 41, 0.25);
+	--text-accent-purple: rgb(152, 89, 233);
+
+	--icon-base-primary: rgb(20, 21, 26);
+	--icon-accent-purple: rgb(146, 79, 232);
+}
+
 * {
 	box-sizing: border-box;
-	margin: 0;
 	padding: 0;
+	margin: 0;
 	border: none;
+	background: none;
 }
 
 html {
@@ -10,34 +33,16 @@ html {
 }
 
 body {
+	color: var(--text-base-primary);
 	font-size: 1.6rem;
+	font-family: "Manrope", sans-serif;
+	font-optical-sizing: auto;
+	font-style: normal;
 }
 
-.button {
-	font-size: 16px;
-	width: 100%;
-	height: 40px;
-	border: 1px solid black;
-	border-radius: 4px;
-	background-color: black;
-	color: white;
-	cursor: pointer;
-	outline-color: transparent;
-	box-sizing: border-box;
-}
-
-.label {
-	font-size: 16px;
-}
-
-.input {
-	font-size: 16px;
-	width: 100%;
-	height: 40px;
-	border: 1px solid black;
-	border-radius: 4px;
-	box-sizing: border-box;
-	outline-color: transparent;
-	outline-width: 0;
-	padding: 0 8px;
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+	-webkit-box-shadow: 0 0 0 30px white inset !important;
 }

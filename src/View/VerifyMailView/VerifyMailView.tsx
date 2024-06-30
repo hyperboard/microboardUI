@@ -7,7 +7,8 @@ import styles from "./VerifyMailView.module.css";
 import { Input } from "shared/ui-lib/Input/Input";
 import { LockIcon } from "View/SignupView/LockIcon";
 import { Button } from "shared/ui-lib/Button";
-import { useDebounce } from "shared/hooks/useDebounce";
+import { Tail } from "View/AuthView/Tail";
+import { App } from "App";
 
 const secondsToHumanReadable = (seconds: number): string => {
 	const minutes = Math.floor(seconds / 60);
@@ -15,13 +16,13 @@ const secondsToHumanReadable = (seconds: number): string => {
 	return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 };
 
-const resendEmail = async (email: string, userId: number): Promise<any> => {
+const resendEmail = async (email: string): Promise<any> => {
 	return fetch(getApiUrl("/auth/resendEmail"), {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
 		},
-		body: JSON.stringify({ email, userId }),
+		body: JSON.stringify({ email }),
 	})
 		.then(data => {
 			return data.json();
@@ -34,13 +35,13 @@ const resendEmail = async (email: string, userId: number): Promise<any> => {
 		});
 };
 
-const verifyEmail = async (userId: number, passcode: string): Promise<any> => {
+const verifyEmail = async (email: string, passcode: string): Promise<any> => {
 	return fetch(getApiUrl("/auth/verify"), {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
 		},
-		body: JSON.stringify({ userId, passcode }),
+		body: JSON.stringify({ email, passcode }),
 	})
 		.then(data => {
 			return data.json();
@@ -55,7 +56,7 @@ const verifyEmail = async (userId: number, passcode: string): Promise<any> => {
 		});
 };
 
-export const VerifyMailView: React.FC = () => {
+export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 	const { t } = useTranslation();
 	const [searchParams, _setSearchParams] = useSearchParams();
 	const [retryCount, setRetryCount] = React.useState(0);
@@ -63,43 +64,83 @@ export const VerifyMailView: React.FC = () => {
 	// const [passcode, setPasscode] = useState<string>("");
 	const [error, setError] = useState<string>("");
 	const [submitDisabled, setSubmitDisabled] = useState<boolean>(true);
+	const [isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
+	const [retryDisabled, setRetryDisabled] = useState<boolean>(false);
+	const [isRetryLoading, setIsRetryLoading] = useState<boolean>(false);
 	const formRef = useRef<HTMLFormElement>(null);
+	const [codeTip, setCodeTip] = useState<
+		"auth.enterCodeBelow" | "auth.enterNewCodeBelow" | ""
+	>("");
+	const [isNewCode, setIsNewCode] = useState<boolean>(false);
+	const [isAttemptsExceeded, setIsAttemptsExceeded] =
+		useState<boolean>(false);
 
 	const onSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
 	): Promise<void> => {
 		event.preventDefault();
-		if (!searchParams.get("userId")) {
+		if (!searchParams.get("email")) {
 			return;
 		}
-		if (searchParams.get("userId")) {
+		if (searchParams.get("email")) {
 			const passcode = formRef.current?.code.value;
-			verifyEmail(parseInt(searchParams.get("userId") || "0"), passcode)
-				.then(() => {
-					console.log("verifyEmail ok");
-					navigate("/dashboard");
+			setSubmitDisabled(true);
+			setIsSubmitLoading(true);
+			fetch(getApiUrl("/auth/verify"), {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					email: searchParams.get("email"),
+					passcode: passcode,
+				}),
+			})
+				.then(data => {
+					return data.json();
+				})
+				.then(data => {
+					if (data?.status >= 300) {
+						return Promise.reject(data);
+					}
+					Cookies.set("accessToken", data.accessToken);
+					Cookies.set("refreshToken", data.refreshToken);
+					return data;
+				})
+				.then(async () => {
+					if (localStorage.getItem("lastSeenBoard")) {
+						navigate(
+							`/boards/${localStorage.getItem("lastSeenBoard")}`,
+						);
+					} else {
+						const boardId = await app.createPublicBoard();
+						if (boardId) {
+							navigate(`/boards/${boardId}`);
+						}
+					}
 				})
 				.catch(error => {
-					setError(error?.message || t("auth.unknownError"));
-					console.log("verifyEmail error:", error);
+					if (error?.message === "PASSCODE_ATTEMPTS_EXCEEDED") {
+						setIsAttemptsExceeded(true);
+						setError(t("auth.errorVerificationCodeAttempts"));
+						setSubmitDisabled(true);
+						return;
+					}
+					setError(t("auth.errorVerificationCode"));
+				})
+				.finally(() => {
+					setIsSubmitLoading(false);
+					setSubmitDisabled(false);
 				});
 		}
 	};
 
-	const onResend = async (): Promise<void> => {
-		if (!searchParams.get("userId") || !searchParams.get("email")) {
+	const checkForm = (checkAttempts = true): void => {
+		if (checkAttempts && isAttemptsExceeded) {
+			setError(t("auth.errorVerificationCodeAttempts"));
 			return;
 		}
-		resendEmail(
-			searchParams.get("email") || "",
-			parseInt(searchParams.get("userId") || ""),
-		).catch(error => {
-			setError(error?.message || t("auth.unknownError"));
-		});
-		setRetryCount(60);
-	};
 
-	const checkForm = (): void => {
 		if (!formRef.current) {
 			return;
 		}
@@ -118,28 +159,138 @@ export const VerifyMailView: React.FC = () => {
 		setSubmitDisabled(false);
 	};
 
-	const dbCheckForm = useDebounce(checkForm, 500);
-
-	useEffect(() => {
-		if (!searchParams.get("userId") || !searchParams.get("email")) {
+	const onResend = async (): Promise<void> => {
+		if (!searchParams.get("email")) {
 			return;
 		}
+		setRetryDisabled(true);
+		setIsRetryLoading(true);
+		fetch(getApiUrl("/auth/resendEmail"), {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ email: searchParams.get("email") }),
+		})
+			.then(data => {
+				return data.json();
+			})
+			.then(data => {
+				if (data?.status >= 300) {
+					return Promise.reject(data);
+				}
+				return data;
+			})
+			.then(() => {
+				setRetryCount(60 * 3);
+				setIsAttemptsExceeded(false);
+				setError("");
+				setCodeTip("auth.enterNewCodeBelow");
+				checkForm(false);
+				const form = formRef.current;
+				if (form) {
+					form.code.value = "";
+				}
+				setIsNewCode(true);
+			})
+			.catch(error => {
+				if (error?.message?.startsWith("Can retry after")) {
+					try {
+						const timeToResend =
+							error?.message.split(":")[1] / 1000;
+						setRetryCount(parseInt(timeToResend.toFixed(0)));
+					} catch (err) {
+						console.log("no timer");
+					}
+
+					return;
+				}
+				if (
+					error?.message === "Passcode not found" ||
+					error?.message === "User not found"
+				) {
+					navigate("/auth/sign-up");
+					return;
+				}
+			})
+			.finally(() => {
+				setRetryDisabled(false);
+				setIsRetryLoading(false);
+			});
+	};
+
+	const dbCheckForm = checkForm;
+
+	useEffect(() => {
+		if (!searchParams.get("email")) {
+			return;
+		}
+		setRetryDisabled(true);
+		setIsRetryLoading(true);
+		fetch(getApiUrl("/auth/checkVerificationCodes"), {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				email: searchParams.get("email"),
+			}),
+		})
+			.then(response => {
+				if (!response.ok) {
+					return Promise.reject(response);
+				}
+				return response.json();
+			})
+			.then(data => {
+				if (data?.message === "PASSCODE_SENDED") {
+					setRetryCount(60 * 3);
+				}
+				if (data?.message.startsWith("PASSCODE_NOT_SENDED")) {
+					console.log("here");
+
+					try {
+						const timeToResend = data?.message.split(":")[1] / 1000;
+						setRetryCount(parseInt(timeToResend.toFixed(0)));
+					} catch (_) {
+						setRetryCount(60 * 3);
+					}
+				}
+			})
+			.finally(() => {
+				setRetryDisabled(false);
+				setIsRetryLoading(false);
+			});
+
 		if (!searchParams.get("passcode")) {
 			return;
 		}
+		setIsSubmitLoading(true);
 		verifyEmail(
-			parseInt(searchParams.get("userId") || "0"),
+			searchParams.get("email") || "",
 			searchParams.get("passcode") || "",
 		)
-			.then((data): void => {
+			.then(async (data): Promise<void> => {
 				Cookies.set("accessToken", data.accessToken, { secure: true });
 				Cookies.set("refreshToken", data.refreshToken, {
 					secure: true,
 				});
-				navigate("/dashboard");
+				if (localStorage.getItem("lastSeenBoard")) {
+					navigate(
+						`/boards/${localStorage.getItem("lastSeenBoard")}`,
+					);
+				} else {
+					const boardId = await app.createPublicBoard();
+					if (boardId) {
+						navigate(`/boards/${boardId}`);
+					}
+				}
 			})
-			.catch(error => {
-				setError(error?.message || t("auth.unknownError"));
+			.catch(_ => {
+				setError(t("auth.errorVerificationCode"));
+			})
+			.finally(() => {
+				setIsSubmitLoading(false);
 			});
 	}, []);
 
@@ -160,16 +311,19 @@ export const VerifyMailView: React.FC = () => {
 	return (
 		<div className={styles.wrapper}>
 			<form onSubmit={onSubmit} className={styles.form} ref={formRef}>
-				<p className={styles.ifNotFind}>{t("auth.emailIfNotFind")}</p>
 				<h1 className={styles.title}>{t("auth.checkInbox")}</h1>
-				<p className={styles.checkEmail}>
-					{t("auth.weSentCode")}{" "}
-					<span className={styles.email}>
-						{searchParams.get("email")}
-					</span>
-					<br />
-					{t("auth.enterCodeBelow")}
-				</p>
+
+				{!isNewCode && (
+					<p className={styles.checkEmail}>
+						{t("auth.weSentCode")}{" "}
+						<span className={styles.email}>
+							{searchParams.get("email")}
+						</span>
+						<br />
+						{t("auth.enterCodeBelow")}
+					</p>
+				)}
+
 				<Input
 					prefixIcon={<LockIcon />}
 					type="text"
@@ -177,17 +331,24 @@ export const VerifyMailView: React.FC = () => {
 					name="code"
 					maxLength={6}
 					placeholder="Verification code"
+					label={codeTip ? t(codeTip) : ""}
 					hasError={!!error.length}
 					errorText={error}
 					onInput={dbCheckForm}
 				/>
 				<div className={styles.btns}>
-					<Button disabled={submitDisabled} type="submit">
+					<Button
+						disabled={isAttemptsExceeded || submitDisabled}
+						type="submit"
+						loading={isSubmitLoading}
+					>
 						{t("auth.submit")}
+						<Tail />
 					</Button>
 					<Button
 						pattern="ghost"
-						disabled={retryCount > 0}
+						disabled={retryDisabled || retryCount > 0}
+						loading={isRetryLoading}
 						type="button"
 						onClick={onResend}
 					>

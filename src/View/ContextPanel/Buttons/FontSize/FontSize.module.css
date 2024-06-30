@@ -1,0 +1,35 @@
+.button {
+	gap: 0.8rem;
+	padding: 0;
+	padding-left: 0.6rem;
+	padding-right: 0;
+	min-width: 76px;
+}
+
+.font-size {
+	font-size: 1.6rem;
+	font-weight: 500;
+	flex: 1 0;
+}
+
+.size-list {
+	min-width: 52px;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	overflow: hidden;
+}
+
+.menuBottom {
+	border-bottom-left-radius: 0;
+}
+
+.chevron {
+	width: 2rem;
+	align-self: stretch;
+	min-height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	flex: 1 0;
+}

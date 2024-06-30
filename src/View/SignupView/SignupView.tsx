@@ -1,19 +1,15 @@
 import { getApiUrl } from "Config";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-	Link as RRDLink,
-	createSearchParams,
-	useNavigate,
-} from "react-router-dom";
+import { createSearchParams, useNavigate } from "react-router-dom";
 import styles from "./SignupView.module.css";
 import { Input } from "shared/ui-lib/Input/Input";
 import { Tail } from "View/AuthView/Tail";
 import { EmailIcon } from "./EmailIcon";
 import { LockIcon } from "./LockIcon";
-import { useDebounce } from "shared/hooks/useDebounce";
 import { Link } from "shared/ui-lib/Link";
 import { Button } from "shared/ui-lib/Button";
+import isEmail from "validator/lib/isEmail";
 
 type RegisterOkResponse = {
 	id: number;
@@ -25,13 +21,67 @@ export const SignupView = (): React.ReactElement => {
 	const navigate = useNavigate();
 	const formRef = React.useRef<HTMLFormElement>(null);
 	const [isDisabled, setIsDisabled] = useState(true);
+	const [isSubmitLoading, setIsSubmitLoading] = useState(false);
 	const [error, setError] = useState<string>("");
+	const [emailError, setEmailError] = useState<string>("");
+
+	const checkEmail = (): boolean => {
+		const email = formRef.current?.email.value;
+		if (!isEmail(email)) {
+			setEmailError(t("auth.enterAValidEmailAddress"));
+			return false;
+		}
+		setEmailError("");
+		return true;
+	};
+
+	const checkForm = (): boolean => {
+		const form = formRef.current;
+		if (!form) {
+			setIsDisabled(true);
+			return false;
+		}
+		const email = form?.email?.value;
+		const password = form?.password?.value;
+		if (!email || !password) {
+			setError("");
+			setIsDisabled(true);
+			if (email && !checkEmail()) {
+				return false;
+			}
+			return false;
+		}
+
+		if (!isEmail(email)) {
+			setIsDisabled(true);
+			setEmailError(t("auth.enterAValidEmailAddress"));
+			return false;
+		}
+
+		const MIN_PASSWORD_LENGTH = 8;
+		// const MAX_PASSWORD_LENGTH = 14;
+		if (password.length < MIN_PASSWORD_LENGTH) {
+			setIsDisabled(true);
+			// setError(t("auth.passwordLengthError"));
+			return false;
+		}
+		setError("");
+		setEmailError("");
+		setIsDisabled(false);
+		return true;
+	};
 
 	const onSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
 	): Promise<void> => {
 		event.preventDefault();
 
+		if (!checkForm()) {
+			return;
+		}
+
+		setIsDisabled(true);
+		setIsSubmitLoading(true);
 		fetch(getApiUrl("/auth/register"), {
 			method: "POST",
 			headers: {
@@ -50,6 +100,11 @@ export const SignupView = (): React.ReactElement => {
 					return Promise.reject(data);
 				}
 			})
+			.catch(error => {
+				if (`${error?.status}` === "409") {
+					setError(t("auth.userAlreadyExists"));
+				}
+			})
 			.then((data: RegisterOkResponse) => {
 				navigate({
 					pathname: "/auth/verify",
@@ -61,36 +116,14 @@ export const SignupView = (): React.ReactElement => {
 			})
 			.catch(error => {
 				// setErrorMessage(error.message);
+			})
+			.finally(() => {
+				setIsDisabled(false);
+				setIsSubmitLoading(false);
 			});
 	};
 
-	const checkForm = (): void => {
-		const form = formRef.current;
-		if (!form) {
-			setIsDisabled(true);
-			return;
-		}
-		const email = form?.email?.value;
-		const password = form?.password?.value;
-		if (!email || !password) {
-			setIsDisabled(true);
-			return;
-		}
-		const MIN_PASSWORD_LENGTH = 8;
-		const MAX_PASSWORD_LENGTH = 14;
-		if (
-			password.length < MIN_PASSWORD_LENGTH ||
-			password.length > MAX_PASSWORD_LENGTH
-		) {
-			setIsDisabled(true);
-			setError(t("auth.passwordLengthError"));
-			return;
-		}
-		setError("");
-		setIsDisabled(false);
-	};
-
-	const dbCheckForm = useDebounce(checkForm, 500);
+	// const dbCheckForm = checkForm;
 
 	return (
 		<div className={styles.wrapper}>
@@ -101,21 +134,25 @@ export const SignupView = (): React.ReactElement => {
 					id="email"
 					type="text"
 					placeholder={t("auth.emailPlaceholder")}
-					onInput={dbCheckForm}
+					onBlur={checkForm}
+					hasError={!!emailError}
+					errorText={emailError}
 				/>
 				<Input
 					prefixIcon={<LockIcon />}
 					id="password"
-					helperText={error}
+					errorText={error}
 					password
+					hasError={!!error}
 					placeholder={t("auth.passwordPlaceholder")}
-					onInput={dbCheckForm}
+					helperText={t("auth.passwordAtLeast")}
+					onInput={checkForm}
 				/>
 				<div className={styles.btns}>
 					<Button
 						type="submit"
-						style={{ marginTop: "8px" }}
 						disabled={isDisabled}
+						loading={isSubmitLoading}
 					>
 						{t("auth.submit")}
 						<Tail />

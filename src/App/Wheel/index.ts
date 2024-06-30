@@ -1,1 +1,1 @@
-export { Wheel } from "./Wheel";
+export * from "./Wheel";

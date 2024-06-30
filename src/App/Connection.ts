@@ -1,23 +1,101 @@
 import { BoardEvent } from "../Board/Events/Events";
 import { getApiUrl } from "Config";
-import { Stream, Streams } from "../Stream";
 import { getWebsocketUrl } from "../Config";
 import { Subject } from "Subject";
+import { BoardSnapshot } from "Board/Board";
 
-export class Connection {
-	/** Unique identifier for this connection */
-	connectionId = 0;
-	/** Unique identifier for the user */
-	userId = 0;
+const WS_RECONNECT_TIMEOUT = 5000;
+const WS_PING_INTERVAL = 30000;
 
-	private subjects = new Map<string, Stream<any>>();
-	private ws = createWebsocketClient();
+interface Auth {
+	type: "Auth";
+	jwt: string;
+}
 
-	/**
-	 * Establish a connection with the server.
-	 * This will set the connectionId and userId properties.
-	 */
-	async connect(): Promise<void> {
+interface BoardEvent {
+	type: "BoardEvent";
+	boardId: string;
+	event: any;
+}
+
+interface BoardEventList {
+	type: "BoardEventList";
+	boardId: string;
+	events: any[];
+}
+
+interface Subscribe {
+	type: "Subscribe";
+	boardId: string;
+	index: number;
+}
+
+interface Unsubscribe {
+	type: "Unsubscribe";
+	boardId: string;
+}
+
+interface Error {
+	type: "Error";
+	message: string;
+}
+
+interface SnapshotRequest {
+	type: "CreateSnapshotRequest";
+	boardId: string;
+}
+
+interface SnapshotResponse {
+	type: "BoardSnapshot";
+	boardId: string;
+	snapshot: BoardSnapshot; // This could be strongly typed
+	lastEventOrder: number;
+}
+
+export type SocketMessage =
+	| Auth
+	| BoardEvent
+	| BoardEventList
+	| Subscribe
+	| Unsubscribe
+	| Error
+	| SnapshotRequest
+	| SnapshotResponse;
+
+export interface Connection {
+	connectionId: number;
+	userId: number;
+	connect(): Promise<void>;
+	subscribe(
+		boardId: string,
+		callback: (serverMessage: SocketMessage) => void,
+	): void;
+	unsubscribe(
+		boardId: string,
+		callback: (serverMessage: SocketMessage) => void,
+	): void;
+	publishBoardEvent(boardId: string, event: BoardEvent): void;
+	publishSnapshot(boardId: string, snapshot: BoardSnapshot): void;
+}
+
+interface Subscription {
+	publish: (message: SocketMessage) => void;
+	subscribe: () => void;
+	unsubscribe: () => void;
+}
+
+export function createConnection(): Connection {
+	const subscriptions = new Map<string, Subscription>();
+	function onMessage(msg: SocketMessage): void {
+		const subscription = subscriptions.get(msg.boardId);
+		if (!subscription) {
+			return;
+		}
+		subscription.publish(msg);
+	}
+	const ws = createWsClient(onMessage);
+
+	async function connect(): Promise<void> {
 		try {
 			const response = await fetch(`${getApiUrl()}/connection`, {
 				method: "GET",
@@ -34,166 +112,169 @@ export class Connection {
 				throw new Error("response not OK");
 			}
 			const data = await response.json();
-			this.connectionId = data.connection;
+			connectionId = data.connection;
 		} catch (error) {
 			console.error("Error Establishing Connection:", error);
 		}
 	}
 
-	private getSubject(boardId: string): Stream<any> {
-		let subject = this.subjects.get(boardId);
-		if (!subject) {
-			subject = new Stream<any>();
-			this.subjects.set(boardId, subject);
+	function subscribe(
+		boardId: string,
+		callback: (serverMessage: any) => void,
+	): void {
+		const subject = subscriptions.get(boardId);
+		if (subject) {
+			return;
 		}
-		const subscription = getSubscription(this.ws, boardId, 0, subject);
-		subscription.subscribe();
-		return subject;
+
+		const offset = 0;
+		const onOpen = (): void => {
+			ws.send({
+				type: "Subscribe",
+				boardId,
+				index: offset,
+			});
+		};
+
+		const subscribe = (): void => {
+			ws.onOpenSubject.subscribe(onOpen);
+			onOpen();
+		};
+
+		const unsubscribe = (): void => {
+			ws.onOpenSubject.unsubscribe(onOpen);
+			ws.send({ type: "Unsubscribe", boardId: boardId });
+		};
+
+		subscribe();
+
+		subscriptions.set(boardId, {
+			publish: callback,
+			subscribe,
+			unsubscribe,
+		});
 	}
 
-	/** Subscribe to recive all events for a board strarting from the 1 based index */
-	subscribe(boardId: string, callback: (serverMessage: any) => void): void {
-		const subject = this.getSubject(boardId);
-		subject.subscribe(callback);
+	function unsubscribe(boardId: string): void {
+		const subscription = subscriptions.get(boardId);
+		if (!subscription) {
+			return;
+		}
+		subscription.unsubscribe();
+		subscriptions.delete(boardId);
 	}
 
-	/** Unsubscribe to stop reciving events */
-	unsubscribe(boardId: string, callback: (serverMessage: any) => void): void {
-		const subject = this.getSubject(boardId);
-		subject.unsubscribe(callback);
-	}
-
-	/** Publish a board event */
-	publishBoardEvent(boardId: string, event: BoardEvent): void {
-		this.ws.send({
+	function publishBoardEvent(boardId: string, event: BoardEvent): void {
+		ws.send({
 			type: "BoardEvent",
 			boardId,
 			event,
 		});
 	}
+
+	function publishSnapshot(boardId: string, snapshot: BoardSnapshot): void {
+		ws.send({
+			type: "BoardSnapshot",
+			boardId,
+			snapshot,
+			lastEventOrder: snapshot.lastIndex,
+		});
+	}
+
+	let connectionId = 0;
+	const userId = 0;
+
+	return {
+		get connectionId() {
+			return connectionId;
+		},
+		userId,
+		connect,
+		subscribe,
+		unsubscribe,
+		publishBoardEvent,
+		publishSnapshot,
+	};
 }
 
-export function createWebsocketClient(timeoutReconnect = 5000) {
-	let socket;
-	const streams = new Streams();
+interface WsClient {
+	onOpenSubject: Subject<unknown>;
+	onCloseSubject: Subject<unknown>;
+	connect: () => void;
+	send: (message: SocketMessage) => void;
+	isConnected: () => boolean;
+}
+
+type SocketMsgHandler = (message: SocketMessage) => void;
+
+export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
+	let socket: WebSocket | null;
 	const onOpenSubject = new Subject();
 	const onCloseSubject = new Subject();
+	const socketUrl = getWebsocketUrl();
 
-	// Establish and manage the WebSocket connection
-	const connect = () => {
-		socket = new WebSocket(getWebsocketUrl());
+	function connect(): void {
+		socket = new WebSocket(socketUrl);
 		socket.onmessage = onMessage;
 		socket.onopen = onOpen;
 		socket.onclose = onClose;
 		socket.onerror = onError;
-	};
+	}
 
-	// Send a message over the WebSocket
-	const send = message => {
+	function onMessage(event: MessageEvent<SocketMessage>): void {
+		try {
+			const json = JSON.parse(event.data);
+			if (json && json.type === "Error") {
+				throw new Error("Error received: " + json.message);
+			}
+			msgHandler(json);
+		} catch (error) {
+			console.warn(error);
+		}
+	}
+
+	function send(message): void {
 		if (socket && isConnected()) {
 			socket.send(JSON.stringify(message));
 		}
-	};
+	}
 
-	// Check if the WebSocket is connected
-	const isConnected = () => {
+	function isConnected(): boolean {
 		return socket && socket.readyState === WebSocket.OPEN;
-	};
+	}
 
-	// Handler for incoming WebSocket messages
-	const onMessage = event => {
-		const message = JSON.parse(event.data);
-		streams.publish(message.boardId, message);
-	};
+	function onOpen(): void {
+		onOpenSubject.publish({});
+	}
 
-	// Handler for a successful WebSocket connection
-	const onOpen = () => {
-		onOpenSubject.publish();
-	};
-
-	// Handler for WebSocket disconnections
-	const onClose = () => {
-		onCloseSubject.publish();
+	function onClose(): void {
+		onCloseSubject.publish({});
 		setTimeout(() => {
 			connect();
-		}, timeoutReconnect);
-	};
+		}, WS_RECONNECT_TIMEOUT);
+	}
 
-	// Handler for WebSocket errors
-	const onError = event => {
+	function onError(event): void {
 		console.error("WebsocketClient: error", event);
-	};
+	}
 
-	// Set up a ping interval to keep the connection alive
-	setInterval(() => {
+	const pingMsg = JSON.stringify({ type: "ping" });
+
+	function keepAlivePing(): void {
 		if (isConnected()) {
-			socket?.send(JSON.stringify({ type: "ping" }));
+			socket?.send(pingMsg);
 		}
-	}, 30000);
+	}
 
-	// Start the connection upon creation
+	setInterval(keepAlivePing, WS_PING_INTERVAL);
+
 	connect();
 
-	// Expose the necessary properties and methods
 	return {
-		streams,
 		onOpenSubject,
 		onCloseSubject,
 		connect,
 		send,
 		isConnected,
-	};
-}
-
-export function getSubscription(
-	ws,
-	boardId: string,
-	offset: number,
-	stream: Stream<any>,
-) {
-	// Function to handle messages received from the WebSocket
-	const onMessage = (event: any): void => {
-		try {
-			const parsedEvent = event; // JSON.parse(event.data);
-			if (parsedEvent && parsedEvent.type === "Error") {
-				throw new Error("Error received: " + parsedEvent.message);
-			}
-			stream.publish(parsedEvent);
-		} catch (error) {
-			if (error instanceof SyntaxError) {
-				throw new Error("Invalid JSON:", event.data);
-			} else {
-				throw error;
-			}
-		}
-	};
-
-	// Function to handle when the WebSocket connection opens
-	const onOpen = (): void => {
-		ws.send({
-			type: "Subscribe",
-			boardId,
-			index: offset,
-		});
-	};
-
-	// Function to start the subscription
-	const subscribe = (): void => {
-		ws.streams.subscribe(boardId, onMessage);
-		ws.onOpenSubject.subscribe(onOpen);
-		onOpen();
-	};
-
-	// Function to end the subscription
-	const unsubscribe = (): void => {
-		ws.streams.unsubscribe(boardId, onMessage);
-		ws.onOpenSubject.unsubscribe(onOpen);
-		ws.send({ type: "Unsubscribe", boardId: boardId });
-	};
-
-	// Return an object with the subscription methods
-	return {
-		subscribe,
-		unsubscribe,
 	};
 }

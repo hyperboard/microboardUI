@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import styles from "./SigninView.module.css";
-import { Link as RRDLink, useNavigate } from "react-router-dom";
+import { createSearchParams, useNavigate } from "react-router-dom";
 import { getApiUrl } from "Config";
 import Cookies from "js-cookie";
 import { useTranslation } from "react-i18next";
@@ -9,35 +9,48 @@ import { Tail } from "View/AuthView/Tail";
 import { EmailIcon } from "View/SignupView/EmailIcon";
 import { LockIcon } from "View/SignupView/LockIcon";
 import { Button } from "shared/ui-lib/Button";
-import { useDebounce } from "shared/hooks/useDebounce";
 import { isEmail } from "lib/regex";
+import { Link } from "shared/ui-lib/Link";
+import { App } from "App";
 
 type RegisterOkResponse = {
 	accessToken: string;
 	refreshToken: string;
 };
 
-export const SigninView = (): React.ReactElement => {
+interface Props {
+	app: App;
+}
+
+export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 	const { t } = useTranslation();
-	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	// const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [submitDisabled, setSubmitDisabled] = useState(true);
+	const [isSubmitLoading, setIsSubmitLoading] = useState(false);
 	const navigate = useNavigate();
 	const formRef = useRef<HTMLFormElement>(null);
 	const [emailError, setEmailError] = useState<string>("");
+	const [errorText, setErrorText] = useState<string>("");
 
 	const onSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
 	): Promise<void> => {
 		event.preventDefault();
 
+		const form = formRef.current;
+		const email = form?.email.value;
+		const password = form?.password.value;
+
+		setIsSubmitLoading(true);
+		setSubmitDisabled(true);
 		fetch(getApiUrl("/auth/login"), {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
-				email: event.currentTarget.email.value,
-				password: event.currentTarget.password.value,
+				email: email,
+				password: password,
 			}),
 		})
 			.then(async response => {
@@ -48,31 +61,76 @@ export const SigninView = (): React.ReactElement => {
 					return Promise.reject(data);
 				}
 			})
-			.then((data: RegisterOkResponse) => {
+			.then(async (data: RegisterOkResponse) => {
 				Cookies.set("accessToken", data.accessToken, { secure: true });
 				Cookies.set("refreshToken", data.refreshToken, {
 					secure: true,
 				});
-				navigate("/dashboard");
+				setErrorText("");
+				if (localStorage.getItem("lastSeenBoard")) {
+					navigate(
+						`/boards/${localStorage.getItem("lastSeenBoard")}`,
+					);
+				} else {
+					const boardId = await app.createPublicBoard();
+					if (boardId) {
+						navigate(`/boards/${boardId}`);
+					}
+				}
 			})
 			.catch(error => {
-				setErrorMessage(error.message);
+				// setErrorMessage(error.message);
+				console.log(
+					"sign in error:",
+					error?.message === "User not activated",
+				);
+				if (error?.message === "User not activated") {
+					const form = formRef.current;
+					const email = form?.email.value;
+					navigate({
+						pathname: "/auth/verify",
+						search: createSearchParams({
+							email: email,
+						}).toString(),
+					});
+				} else {
+					setErrorText(t("auth.incorrectEmailOrPassword"));
+				}
+			})
+			.finally(() => {
+				setIsSubmitLoading(false);
+				setSubmitDisabled(false);
 			});
 	};
 
-	const checkForm = () => {
+	const checkEmail = (): boolean => {
+		const email = formRef.current?.email.value;
+		if (!isEmail(email)) {
+			setEmailError(t("auth.enterAValidEmailAddress"));
+			return false;
+		}
+		setEmailError("");
+		return true;
+	};
+
+	const checkForm = (): void => {
 		const form = formRef.current;
 		const email = form?.email.value;
 		const password = form?.password.value;
 
 		if (!email || !password) {
+			setErrorText("");
+			setEmailError("");
 			setSubmitDisabled(true);
+			if (email && !checkEmail()) {
+				return;
+			}
 			return;
 		}
 
 		if (!isEmail(email)) {
 			setSubmitDisabled(true);
-			setEmailError(t("auth.notValidEmail"));
+			setEmailError(t("auth.enterAValidEmailAddress"));
 			return;
 		}
 
@@ -80,7 +138,7 @@ export const SigninView = (): React.ReactElement => {
 		setSubmitDisabled(false);
 	};
 
-	const dbCheckForm = useDebounce(checkForm, 500);
+	const dbCheckForm = checkForm;
 
 	return (
 		<div className={styles.wrapper}>
@@ -97,7 +155,9 @@ export const SigninView = (): React.ReactElement => {
 					placeholder="Your email"
 					hasError={!!emailError.length}
 					errorText={emailError}
-					onInput={dbCheckForm}
+					onBlur={() => {
+						checkEmail();
+					}}
 				/>
 				<Input
 					id="password"
@@ -105,14 +165,16 @@ export const SigninView = (): React.ReactElement => {
 					placeholder="Password"
 					password
 					onInput={dbCheckForm}
+					errorText={errorText}
+					hasError={!!errorText}
 				/>
 
-				{errorMessage && <p className={styles.error}>{errorMessage}</p>}
+				{/* {errorMessage && <p className={styles.error}>{errorMessage}</p>} */}
 				<div className={styles.btns}>
 					<Button
 						type="submit"
-						style={{ marginTop: "8px" }}
 						disabled={submitDisabled}
+						loading={isSubmitLoading}
 					>
 						{t("auth.submit")}
 						<Tail />
@@ -134,6 +196,17 @@ export const SigninView = (): React.ReactElement => {
 					</Button>
 				</div>
 			</form>
+
+			<div className={styles.policy}>
+				{t("auth.policyWith")}{" "}
+				<Link to="#" className={styles.policyLink}>
+					{t("auth.termsAndConditions")}
+				</Link>{" "}
+				{t("common.and")}{" "}
+				<Link to="#" className={styles.policyLink}>
+					{t("auth.privacyPolicy")}
+				</Link>
+			</div>
 		</div>
 	);
 };

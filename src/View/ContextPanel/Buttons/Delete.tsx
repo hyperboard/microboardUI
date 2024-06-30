@@ -1,29 +1,26 @@
-import { Board } from "Board";
+import { Icon } from "View/Icon";
+import { UiButton } from "View/Ui/UiButton/UiButton";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { DeleteIcon } from "View/Icon/DeleteIcon";
-import { UiButton } from "View/Ui/UiButton";
+import { useAppContext } from "View/AppContext";
 
-type DeleteProps = { board: Board };
-
-const IconSize = 24;
-
-export function Delete({ board }: DeleteProps): React.ReactElement | null {
+export function Delete() {
+	const { board } = useAppContext();
 	const { t } = useTranslation();
-	if (board.selection.getContext() === "SelectUnderPointer") {
-		return null;
-	}
-
 	const handleClick = () => {
 		board.selection.removeFromBoard();
 	};
+
 	return (
 		<UiButton
-			id="DeleteSelection"
+			id={"delete"}
 			onClick={handleClick}
-			title={t("contextPanel.delete.tooltip")}
+			variant="secondary"
+			rounded="none"
+			tooltip={t("contextPanel.delete.tooltip")}
+			tooltipPosition="top"
 		>
-			<DeleteIcon width={IconSize} height={IconSize} />
+			<Icon iconName="Delete" />
 		</UiButton>
 	);
 }

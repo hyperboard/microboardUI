@@ -2,8 +2,7 @@ import { App } from "App";
 import { Board } from "Board";
 import { useAppSubscription } from "Board/useBoardSubscription";
 import { useForceUpdate } from "lib/useForceUpdate";
-import React, { useEffect, useState } from "react";
-import { SidePanelState } from "ViewTalkIntegration/SidePanelState";
+import React, { useState } from "react";
 import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel/UiPanel";
 import { UiSeparator } from "ViewTalkIntegration/Ui/UiSeparator/UiSeparator";
 import { AddConnector } from "./Buttons/AddConnector";
@@ -20,10 +19,9 @@ import { PanelContext } from "./PanelContext";
 type Props = {
 	app: App;
 	board: Board;
-	sidePanelState: SidePanelState;
 };
 
-export function ToolsPanel({ app, board, sidePanelState }: Props) {
+export function ToolsPanel({ app, board }: Props) {
 	const [openedMenu, setOpenedMenu] = useState("None");
 	const forceUpdate = useForceUpdate();
 
@@ -31,20 +29,6 @@ export function ToolsPanel({ app, board, sidePanelState }: Props) {
 		subjects: ["tools", "camera", "events"],
 		observer: forceUpdate,
 	});
-
-	useEffect(() => {
-		sidePanelState.subject.subscribe(forceUpdate);
-
-		return () => {
-			sidePanelState.subject.unsubscribe(forceUpdate);
-		};
-	}, [forceUpdate, sidePanelState]);
-
-	const height = board.camera.window.height / 3;
-	const top = height > 48 ? height - 48 : height;
-	const isSidePanelOn = sidePanelState.isOn;
-	const sidePanelWidth = sidePanelState.width;
-	const left = isSidePanelOn ? sidePanelWidth + 24 : 8;
 
 	const toggleMenu = (menu: string) =>
 		setOpenedMenu(prev => (prev === menu ? "None" : menu));
@@ -59,8 +43,9 @@ export function ToolsPanel({ app, board, sidePanelState }: Props) {
 			<UiPanel
 				style={{
 					position: "absolute",
-					top,
-					left,
+					top: "50%",
+					transform: "translateY(-50%)",
+					left: 8,
 				}}
 				vertical
 			>

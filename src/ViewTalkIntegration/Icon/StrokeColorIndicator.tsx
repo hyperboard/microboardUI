@@ -11,6 +11,7 @@ export function StrokeColorIndicator({
 	width = 24,
 	height = 24,
 }: Props) {
+	console.log(color);
 	return (
 		<svg
 			width={width}
@@ -29,6 +30,28 @@ export function StrokeColorIndicator({
 				stroke={color}
 				strokeWidth="4"
 			/>
+			{(color === "rgb(255, 255, 255)" || color === "#FFFFFF") && (
+				<>
+					<rect
+						x="4"
+						y="4"
+						width="16"
+						height="16"
+						rx="8"
+						stroke={"#D3D5D7"}
+						strokeWidth="1"
+					/>
+					<rect
+						x="1"
+						y="1"
+						width="22"
+						height="22"
+						rx="11"
+						stroke={"#D3D5D7"}
+						strokeWidth="1"
+					/>
+				</>
+			)}
 		</svg>
 	);
 }

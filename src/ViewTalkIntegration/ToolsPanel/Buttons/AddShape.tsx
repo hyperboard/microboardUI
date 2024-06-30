@@ -1,5 +1,5 @@
 import { ShapeType } from "Board/Items/Shape/Basic";
-import { getHotkeyLabel } from "Board/Keyboard/hotkeys";
+import { getHotkeyLabel } from "Board/Keyboard";
 import React from "react";
 import { Icon } from "ViewTalkIntegration/Icon";
 import { ShapePicker } from "ViewTalkIntegration/Pickers/ShapeTypePicker";

@@ -30,3 +30,9 @@
 	height: 2px;
 	background-color: rgba(200, 178, 255, 0.5);
 }
+
+@media screen and (max-width: 640px) {
+	.link::after {
+		content: none;
+	}
+}

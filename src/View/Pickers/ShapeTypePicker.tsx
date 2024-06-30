@@ -1,54 +1,29 @@
 import { ShapeType } from "Board/Items/Shape/Basic";
-import * as React from "react";
-import { Icon } from "../Icon";
-import { UiButton } from "View/Ui/UiButton";
-import { useTranslation } from "react-i18next";
-
-const shapes = [
-	"Rectangle",
-	"RoundedRectangle",
-	"Circle",
-	"Triangle",
-	"Rhombus",
-	"Parallelogram",
-	"Hexagon",
-	"Octagon",
-	"Pentagon",
-	"Cross",
-	"Star",
-	"Cloud",
-	"Cylinder",
-	"Trapezoid",
-	"PredefinedProcess",
-	"ArrowLeft",
-	"ArrowLeftRight",
-	"ArrowRight",
-	"SpeachBubble",
-	"BracesRight",
-	"BracesLeft",
-] as const;
+import React from "react";
+import { ShapeIcon } from "View/Icon";
+import { SHAPE_TYPES } from "View/Tools/AddShape";
+import { UiButton } from "View/Ui/UiButton/UiButton";
 
 type Props = {
 	onPick: (type: ShapeType) => void;
+	selected?: ShapeType | "None";
 };
 
-export function ShapePicker(props: Props): React.ReactElement {
-	const { t } = useTranslation();
-	const buttons: React.ReactNode = [];
-	for (const shape of shapes) {
-		buttons.push(
-			<UiButton
-				id={`PickShape${shape}`}
-				title={t(`shapes.${shape}`)}
-				onClick={() => {
-					props.onPick(shape);
-				}}
-				margin={0}
-				key={shape}
-			>
-				<Icon name={shape} width={24} height={24} />
-			</UiButton>,
-		);
-	}
-	return <>{buttons}</>;
+export function ShapePicker({ onPick, selected }: Props): React.ReactElement {
+	return (
+		<>
+			{SHAPE_TYPES.map(shape => (
+				<UiButton
+					id={`shape-${shape}`}
+					onClick={() => onPick(shape)}
+					key={shape}
+					size="md"
+					variant="secondary"
+					active={selected === shape}
+				>
+					<ShapeIcon iconName={shape} width={24} height={24} />
+				</UiButton>
+			))}
+		</>
+	);
 }
