@@ -24,6 +24,8 @@ export function ImportBoardItem({
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const [boardItems, setBoardItems] = useState<IMiroBoardItem[]>([]);
+	const [error, setError] = useState<string | null>(null);
+	const errorMessage = "Произошла ошибка. Попробуйте еще раз импортировать";
 	const [itemsInfo, setItemsInfo] = useState<{
 		cursor: { items: string; connectors: string };
 		total: { items: number; connectors: number };
@@ -68,6 +70,7 @@ export function ImportBoardItem({
 			});
 		} catch (error: Error) {
 			console.error(error as Error);
+			setError(errorMessage);
 		}
 	};
 
@@ -84,7 +87,7 @@ export function ImportBoardItem({
 				options,
 			);
 			const data = await response.json();
-			setBoardItems(items => [...items, ...data.data]);
+			setBoardItems(items => [...items, ...data?.data]);
 			setItemsInfo(info => {
 				return {
 					cursor: {
@@ -97,8 +100,9 @@ export function ImportBoardItem({
 					},
 				};
 			});
-		} catch (error) {
+		} catch (error: Error) {
 			console.error(error as Error);
+			setError(errorMessage);
 		}
 	};
 
@@ -142,7 +146,7 @@ export function ImportBoardItem({
 		>
 			<div className={styles.wr} onClick={e => e.stopPropagation()}>
 				<h2>{t("miro.importMiro")}</h2>
-				<p>Loading...</p>
+				{error ? <p>{error}</p> : <p>Loading...</p>}
 			</div>
 		</div>
 	);

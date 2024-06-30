@@ -163,7 +163,8 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 					Authorization: "Bearer " + token,
 				},
 			});
-			return await response.json();
+			const data = await response.json();
+			return data;
 		} catch (error) {
 			console.log(error);
 		}
@@ -273,13 +274,13 @@ export function useCopyBoardItems(board: Board, miroItems: IMiroBoardItem[]) {
 	};
 
 	const copyBoardItems = () => {
-		miroItems.forEach(item => {
+		miroItems.forEach(async item => {
 			if (item.type === "shape") {
 				copyShape(item);
 			} else if (item.type === "sticky_note") {
 				copySticker(item);
 			} else if (item.type === "image") {
-				copyImage(item);
+				await copyImage(item);
 			} else if (item.type === "text") {
 				copyText(item);
 			} else if (item.type === "connector") {
