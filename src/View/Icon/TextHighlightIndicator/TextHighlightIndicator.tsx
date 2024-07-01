@@ -14,6 +14,7 @@ export function TextHighlightIndicator({ color }: Props): React.ReactElement {
 				<span
 					className={style.indicator}
 					style={{ backgroundColor: color }}
+					id="TextHighlightHighlight"
 				/>
 			)}
 		</div>
