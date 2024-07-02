@@ -80,6 +80,15 @@
 		"exportFrame": {
 			"text": "Сохранить как изображение"
 		},
+		"lockFrameRatio": {
+			"tooltip": {
+				"lock": "Заблокировать пропорции",
+				"unlock": "Разблокировать пропорции"
+			}
+		},
+		"frameColor": {
+			"tooltip": "Цвет фрейма"
+		},
 		"copyFrameLink": {
 			"text": "Копировать ссылку",
 			"error": {

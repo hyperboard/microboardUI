@@ -1,5 +1,6 @@
 import type { Frame } from "Board/Items";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
 import { ButtonWithMenu } from "View/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "View/ContextPanel/PanelContext";
@@ -16,6 +17,7 @@ export function FrameFill(): React.ReactElement | null {
 	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
 		usePanelContext();
 	const { board } = useAppContext();
+	const { t } = useTranslation();
 
 	const frame = board.selection.items.getSingle() as Frame;
 	const fillColor = frame.getBackgroundColor();
@@ -48,6 +50,8 @@ export function FrameFill(): React.ReactElement | null {
 				<UiButton
 					id={"fill-style"}
 					onClick={handleClick}
+					tooltip={t("contextPanel.frameColor.tooltip")}
+					tooltipPosition="top"
 					variant="secondary"
 					active={openedMenu === MENU_NAME}
 					rounded="none"

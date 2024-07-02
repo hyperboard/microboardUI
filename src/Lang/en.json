@@ -80,6 +80,15 @@
 		"exportFrame": {
 			"text": "Save as image"
 		},
+		"lockFrameRatio": {
+			"tooltip": {
+				"lock": "Lock frame ratio",
+				"unlock": "Unlock frame ratio"
+			}
+		},
+		"frameColor": {
+			"tooltip": "Frame color"
+		},
 		"copyFrameLink": {
 			"text": "Copy link",
 			"error": {
