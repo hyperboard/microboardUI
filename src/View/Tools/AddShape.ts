@@ -5,6 +5,7 @@ export const DEFAULT_SHAPE: ShapeType | "None" = "Rectangle";
 export const MIN_STROKE_WIDTH = 1;
 export const MAX_STROKE_WIDTH = 12;
 export const STEP_STROKE_WIDTH = 1;
+export const SHAPE_LAST_TYPE_KEY = "lastShapeType";
 
 export const SHAPE_TYPES = [
 	"Rectangle",
