@@ -122,8 +122,8 @@
 		},
 		"addText": {
 			"tooltip": "Text",
-			"showAll": "All",
-			"showBasic": "Basic"
+			"showAll": "All shapes",
+			"showBasic": "Basic shapes"
 		},
 		"addSticker": {
 			"tooltip": "Sticker"
