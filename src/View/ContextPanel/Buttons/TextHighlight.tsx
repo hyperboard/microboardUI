@@ -8,6 +8,7 @@ import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
+import { UiColorInput } from "View/Ui/UiColorInput";
 
 const MENU_NAME = "TextHighlight";
 
@@ -25,6 +26,11 @@ export function TextHighlight(): React.ReactElement | null {
 		board.selection.setFontHighlight(color);
 		toggleMenu("None");
 	};
+	const handleCustomPick = (color: string) => {
+		board.selection.setFontHighlight(color);
+	};
+
+	const isPredefinedColor = TEXT_HIGHLIGHT_COLORS.includes(highlightColor);
 	return (
 		<ButtonWithMenu
 			menuName={MENU_NAME}
@@ -58,6 +64,13 @@ export function TextHighlight(): React.ReactElement | null {
 						colors={TEXT_HIGHLIGHT_COLORS}
 						selectedColor={highlightColor}
 						onPick={handlePick}
+					/>
+					<UiColorInput
+						onChange={handleCustomPick}
+						color={isPredefinedColor ? "none" : highlightColor}
+						isActive={
+							highlightColor !== "none" && !isPredefinedColor
+						}
 					/>
 				</UiPanel>
 			)}
