@@ -511,7 +511,6 @@ export function getController(getBoard: () => Board): Controller {
 		const reader = new FileReader();
 
 		reader.onload = function (event) {
-			console.log("event.target?.result", event.target?.result);
 			const image = new ImageItem(event.target?.result);
 			image.transformation.translateTo(
 				board.pointer.point.x,
