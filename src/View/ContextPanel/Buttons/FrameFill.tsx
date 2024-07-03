@@ -1,4 +1,3 @@
-import type { Frame } from "Board/Items";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
@@ -19,20 +18,19 @@ export function FrameFill(): React.ReactElement | null {
 	const { board } = useAppContext();
 	const { t } = useTranslation();
 
-	const frame = board.selection.items.getSingle() as Frame;
-	const fillColor = frame.getBackgroundColor();
+	const fillColor = board.selection.getFillColor();
 
 	const handleClick = () => {
 		toggleMenu(MENU_NAME);
 	};
 
 	const handlePick = (color: string) => {
-		frame.setBackgroundColor(color);
+		board.selection.setFillColor(color);
 		toggleMenu("None");
 	};
 
 	const handleCustomPick = (color: string) => {
-		frame.setBackgroundColor(color);
+		board.selection.setFillColor(color);
 	};
 
 	const isPredefinedColor = FRAME_FILL_COLORS.some(

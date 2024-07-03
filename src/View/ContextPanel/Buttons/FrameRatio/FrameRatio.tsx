@@ -20,31 +20,28 @@ export function FrameRatio(): React.ReactElement | null {
 	const { board } = useAppContext();
 	const { t } = useTranslation();
 
+	const frameType = board.selection.getFrameType();
+
 	const handleClick = () => {
 		toggleMenu(MENU_NAME);
 	};
 
-	const item = board.selection.items.getSingle();
-	const frame = item instanceof Frame ? item : null;
-
 	const handlePick = (type: FrameType) => {
-		if (frame) {
-			frame.setFrameType(type);
-		}
+		board.selection.setFrameType(type);
 		toggleMenu("None");
 	};
+	const selectedFrames = board.selection.list() as Frame[];
 	const handlePointerEnter = (type: FrameType) => {
-		if (frame) {
+		selectedFrames.forEach(frame => {
 			frame.setNewShape(type);
-		}
+		});
 	};
 	const handlePointerLeave = () => {
-		if (frame) {
+		selectedFrames.forEach(frame => {
 			frame.setNewShape(null);
-		}
+		});
 	};
 
-	const selectedShapes = board.selection.list();
 	return (
 		<ButtonWithMenu
 			menuName={MENU_NAME}
@@ -67,10 +64,10 @@ export function FrameRatio(): React.ReactElement | null {
 							style.menuOpened,
 					)}
 				>
-					{selectedShapes.length > 1 ? (
-						<Icon iconName="Shape" />
+					{selectedFrames.length > 1 ? (
+						<Icon iconName="Frame" />
 					) : (
-						<FrameIcon iconName={frame?.getFrameType()} />
+						<FrameIcon iconName={frameType} />
 					)}
 				</UiButton>
 			)}
@@ -83,7 +80,7 @@ export function FrameRatio(): React.ReactElement | null {
 					gap={4}
 				>
 					<FramePicker
-						selected={frame?.getFrameType()}
+						selected={frameType}
 						onPick={handlePick}
 						onPointerEnter={handlePointerEnter}
 						onPointerLeave={handlePointerLeave}

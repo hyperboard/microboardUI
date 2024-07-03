@@ -1,4 +1,3 @@
-import type { Frame } from "Board/Items";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
@@ -9,11 +8,10 @@ export function ToggleFrameRatio(): React.ReactElement | null {
 	const { board } = useAppContext();
 	const { t } = useTranslation();
 
-	const frame = board.selection.items.getSingle() as Frame;
-	const canChange = frame.getCanChangeRatio();
+	const canChange = board.selection.getCanChangeRatio();
 
 	const handleClick = (): void => {
-		frame.setCanChangeRatio(!canChange);
+		board.selection.setCanChangeRatio(!canChange);
 	};
 
 	return (
