@@ -14,6 +14,15 @@ import style from "./FrameRatio.module.css";
 
 const MENU_NAME = "FrameType";
 
+const frameTypeTitle: Record<FrameType, string> = {
+	A4: "A4",
+	Letter: "Letter",
+	Frame16x9: "16 : 9",
+	Frame4x3: "4 : 3",
+	Frame1x1: "1 : 1",
+	Custom: "Custom",
+};
+
 export function FrameRatio(): React.ReactElement | null {
 	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
 		usePanelContext();
@@ -62,12 +71,18 @@ export function FrameRatio(): React.ReactElement | null {
 						verticalAlign === "bottom" &&
 							openedMenu === MENU_NAME &&
 							style.menuOpened,
+						style.button,
+						{
+							[style.word]:
+								frameType === "Custom" ||
+								frameType === "Letter",
+						},
 					)}
 				>
 					{selectedFrames.length > 1 ? (
 						<Icon iconName="Frame" />
 					) : (
-						<FrameIcon iconName={frameType} />
+						frameTypeTitle[frameType]
 					)}
 				</UiButton>
 			)}
