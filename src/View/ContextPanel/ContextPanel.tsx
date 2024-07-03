@@ -97,7 +97,7 @@ export function ContextPanel() {
 				{isSelectUnderPointer && (
 					<>
 						<Edit />
-						<RestOptionsMenu rounded="full">
+						<RestOptionsMenu rounded="right">
 							<BringToFront />
 							<SendToBack />
 						</RestOptionsMenu>
