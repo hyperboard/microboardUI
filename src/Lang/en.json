@@ -302,5 +302,17 @@
 			"title": "Export error",
 			"description": "An error occurred while exporting the selected area"
 		}
+	},
+	"sidePanel": {
+		"title": "Boards",
+		"folders": {
+			"publicBoards": "Public boards",
+			"privateBoards": "Private boards"
+		},
+		"addNew": "Add new"
+	},
+	"contextMenu": {
+		"delete": "Delete",
+		"addNew": "Add new"
 	}
 }

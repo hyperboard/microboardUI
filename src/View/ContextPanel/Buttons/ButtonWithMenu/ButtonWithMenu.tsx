@@ -41,23 +41,17 @@ export function ButtonWithMenu({
 			return;
 		}
 		const menuHeight = menu.getBoundingClientRect().height;
-		console.log(panelMbr.bottom + menuHeight < windowHeight);
-		console.log(panelMbr.bottom, menuHeight, windowHeight);
 		if (panelMbr.bottom + menuHeight < windowHeight) {
 			setVerticalAlign("bottom");
 			return;
 		}
-		// if (panelMbr.top - menuHeight >= 0) {
-		// 	setVerticalAlign("top");
-		// 	return;
-		// }
+
 		setVerticalAlign("middle");
 	}, [panelMbr, windowHeight]);
 
 	return (
 		<div className={style.container}>
 			{typeof button === "function" ? button(verticalAlign) : button}
-			{/* {openedMenu === menuName && ( */}
 			<div
 				ref={menuRef}
 				className={clsx([

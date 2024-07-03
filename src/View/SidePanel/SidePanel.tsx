@@ -7,6 +7,7 @@ import React, {
 	useState,
 	type MouseEventHandler,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "View/AppContext";
 import { useContextMenuContext } from "View/ContextMenu";
@@ -27,6 +28,7 @@ export function SidePanel() {
 	const { app, board } = useAppContext();
 	const navigate = useNavigate();
 	const { open, close } = useContextMenuContext();
+	const { t } = useTranslation();
 
 	const update = () => {
 		if (animationId.current) {
@@ -96,7 +98,7 @@ export function SidePanel() {
 		>
 			<div style={{ width }} className={style.content}>
 				<div className={style.header}>
-					<h3 className={style.title}>Boards</h3>
+					<h3 className={style.title}>{t("sidePanel.title")}</h3>
 					<UiButton
 						onClick={toggleSideMenu}
 						variant="secondary"
@@ -107,7 +109,7 @@ export function SidePanel() {
 				</div>
 				<div className={style.folders}>
 					<Folder
-						title="Public boards"
+						title={t("sidePanel.folders.publicBoards")}
 						icon={<Icon iconName="Folder" width={20} height={20} />}
 						isOpened={isFolderOpen}
 					>
@@ -126,7 +128,7 @@ export function SidePanel() {
 			<div className={style.bottom}>
 				<button className={style.add} onClick={handleAddNew}>
 					<Icon iconName="Plus" width={16} height={16} />
-					<span>Add new</span>
+					<span>{t("sidePanel.addNew")}</span>
 				</button>
 			</div>
 			<ResizableEdge panelWidth={width} setWidth={setWidth} />

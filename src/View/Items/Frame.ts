@@ -1,5 +1,5 @@
 export const FRAME_BORDER_COLOR = "transparent";
-export const FRAME_TITLE_COLOR = "rgba(15, 19, 36, 0.6)";
+export const FRAME_TITLE_COLOR = "rgb(107, 110, 120)";
 export const FRAME_TYPES = [
 	{ id: "Custom", label: "Custom" },
 	{ id: "Frame16x9", label: "16:9" },

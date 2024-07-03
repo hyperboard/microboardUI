@@ -26,6 +26,7 @@ type UiButtonProps = HTMLAttributes<HTMLButtonElement> & {
 		| "none"
 		| "bottom-left"
 		| "bottom-right";
+	radius?: "xl" | "md" | "sm";
 };
 
 export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
@@ -40,6 +41,7 @@ export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
 			hotkey,
 			variant = "default",
 			size = "lg",
+			radius = "xl",
 			rounded = "full",
 			...props
 		},
@@ -59,6 +61,11 @@ export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
 						[style.leftRounded]: rounded === "left",
 						[style.rightRounded]: rounded === "right",
 						[style.fullRounded]: rounded === "full",
+					},
+					{
+						[style.radiusXl]: radius === "xl",
+						[style.radiusMd]: radius === "md",
+						[style.radiusSm]: radius === "sm",
 					},
 					className,
 				)}

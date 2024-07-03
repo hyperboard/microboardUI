@@ -2,23 +2,28 @@
 	--background-color: rgba(146, 79, 232, 1);
 	--background-hover-color: rgb(115, 29, 226);
 	--background-active-color: rgb(115, 29, 226);
+	--background-disabled-color: rgb(233, 234, 236);
 
 	--content-color: rgba(255, 255, 255, 1);
 	--content-hover-color: rgba(255, 255, 255, 1);
 	--content-active-color: rgba(255, 255, 255, 1);
+	--content-disabled-color: rgb(177, 179, 187);
+
+	--focus-outline-color: rgb(227, 217, 255);
 }
 
 .secondary {
-	--background-color: var(--background-button-secondary);
-	--background-hover-color: var(--background-button-secondary-hover);
-	--background-active-color: var(--background-button-secondary-hover);
+	--background-color: rgb(255, 255, 255);
+	--background-hover-color: rgb(247, 247, 248);
+	--background-active-color: rgb(247, 247, 248);
+	--background-disabled-color: rgb(255, 255, 255);
 
-	--content-color: var(--text-base-primary);
-	--content-hover-color: var(--text-base-primary);
-	--content-active-color: var(--icon-accent-purple);
-	--content-disabled-color: var(--text-base-quaternary);
+	--content-color: rgb(20, 21, 26);
+	--content-hover-color: rgb(20, 21, 26);
+	--content-active-color: rgb(146, 79, 232);
+	--content-disabled-color: rgb(177, 179, 187);
 
-	--focus-outline-color: var(--border-action-focus);
+	--focus-outline-color: rgb(227, 217, 255);
 }
 
 .tertiary {
@@ -31,28 +36,51 @@
 	--content-active-color: var(--text-base-primary);
 	--content-disabled-color: var(--text-base-quaternary);
 
-	--focus-outline-color: var(--border-action-focus);
+	--focus-outline-color: rgb(227, 217, 255);
+}
+
+.black {
+	--background-color: rgb(20, 21, 26);
+	--background-hover-color: rgb(31, 34, 40);
+	--background-active-color: rgb(236, 236, 238);
+	--background-disabled-color: rgb(233, 234, 236);
+
+	--content-color: rgb(255, 255, 255);
+	--content-hover-color: var(--text-base-primary);
+	--content-active-color: var(--text-base-primary);
+	--content-disabled-color: var(--text-base-quaternary);
+
+	--focus-outline-color: rgb(227, 217, 255);
+}
+
+.radius-xl {
+	--radius: 12px;
+}
+
+.radius-md {
+	--radius: 8px;
+}
+
+.radius-sm {
+	--radius: 4px;
 }
 
 .lg {
 	--min-width: 48px;
 	--min-height: 48px;
-	--radius: 12px;
 	--padding: 0 12px;
 }
 
 .md {
 	--min-width: 32px;
 	--min-height: 32px;
-	--radius: 4px;
 	--padding: 0 4px;
 }
 
 .sm {
 	--min-width: 32px;
 	--min-height: 32px;
-	--radius: 10px;
-	--padding: 4px;
+	--padding: 6px 14px;
 	font-size: 14px;
 }
 
@@ -94,10 +122,11 @@
 	outline: none;
 	background-color: var(--background-color);
 	color: var(--content-color);
+	gap: 8px;
 }
 
 .button:focus-visible {
-	outline: var(--focus-outline-color) solid 3px;
+	outline: 2px solid var(--focus-outline-color);
 	z-index: 30;
 }
 
@@ -116,6 +145,8 @@
 
 .button:disabled {
 	color: var(--content-disabled-color);
+	background-color: var(--background-disabled-color);
+	cursor: not-allowed;
 }
 
 .hotkey {

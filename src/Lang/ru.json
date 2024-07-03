@@ -300,5 +300,17 @@
 			"title": "Ошибка при экспорте",
 			"description": "При экспорте выбранной области произошла ошибка"
 		}
+	},
+	"sidePanel": {
+		"title": "Доски",
+		"folders": {
+			"publicBoards": "Публичные доски",
+			"privateBoards": "Приватные доски"
+		},
+		"addNew": "Добавить"
+	},
+	"contextMenu": {
+		"delete": "Удалить",
+		"addNew": "Добавить"
 	}
 }
