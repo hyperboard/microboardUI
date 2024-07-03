@@ -4,6 +4,7 @@ import React, { useRef, useState } from "react";
 import { useAppContext } from "View/AppContext";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import { UiSeparator } from "View/Ui/UiSeparator/UiSeparator";
+import { ConnectorAddText } from "./Buttons/ConnectorAddText";
 import { ConnectorType } from "./Buttons/ConnectorType";
 import { Delete } from "./Buttons/Delete";
 import { DrawFillStyle } from "./Buttons/DrawFillStyle";
@@ -157,6 +158,7 @@ export function ContextPanel() {
 						<UiSeparator vertical />
 						<ConnectorType />
 						<UiSeparator vertical />
+						<ConnectorAddText />
 						<FontSize />
 						<FontStyle />
 						<UiSeparator vertical />

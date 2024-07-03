@@ -1,7 +1,8 @@
 import { Connector } from "Board/Items";
-import React from "react";
+import React, { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
+import { Icon } from "View/Icon";
 import { UiButton } from "View/Ui/UiButton/UiButton";
 
 export function ConnectorAddText(): React.ReactElement | null {
@@ -36,8 +37,10 @@ export function ConnectorAddText(): React.ReactElement | null {
 			tooltip={t("contextPanel.connectorAddText.tooltip")}
 			tooltipPosition="top"
 			onClick={handleClick}
+			variant="secondary"
+			rounded="none"
 		>
-			{/* <TextColorIndicator color="none" /> */}
+			<Icon iconName="AddText" />
 		</UiButton>
 	);
 }
