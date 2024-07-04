@@ -22,7 +22,7 @@ export function ConnectorAddText(): React.ReactElement | null {
 		}
 		const connector = board.selection.items.getItemsByItemTypes([
 			"Connector",
-		])[0] as Connector;
+		])[0];
 		if (!connector) {
 			return;
 		}

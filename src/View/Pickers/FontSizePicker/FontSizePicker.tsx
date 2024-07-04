@@ -5,11 +5,11 @@ import { useTranslation } from "react-i18next";
 import style from "./FontSizePicker.module.css";
 
 type Props = {
-	onPick: (size: number) => void;
+	onPick: (size: number | "auto") => void;
 	max?: number;
 	fontSizes: number[];
 	currentFontSize: number | "auto";
-	onAutoSizePick?: () => void;
+	showAuto: boolean;
 	id?: string;
 };
 
@@ -18,21 +18,23 @@ export function FontSizePicker({
 	max,
 	fontSizes,
 	currentFontSize,
-	onAutoSizePick,
+	showAuto,
 	id = "",
 }: Props): React.ReactElement {
 	const { t } = useTranslation();
 
 	return (
 		<>
-			{onAutoSizePick && (
+			{showAuto && (
 				<UiButton
-					key={"auto"}
-					onClick={onAutoSizePick}
+					onClick={() => onPick("auto")}
 					className={clsx(
 						style.button,
 						currentFontSize === "auto" && style.active,
 					)}
+					variant="secondary"
+					rounded={"none"}
+					active={currentFontSize === "auto"}
 				>
 					{t("contextPanel.fontSize.auto")}
 				</UiButton>
@@ -40,7 +42,7 @@ export function FontSizePicker({
 			{fontSizes.map((size, i) => (
 				<UiButton
 					id={id ? `${id}${size}` : ""}
-					key={size}
+					key={`fontSize_${size}_button`}
 					onClick={() => onPick(size)}
 					className={clsx(
 						style.button,

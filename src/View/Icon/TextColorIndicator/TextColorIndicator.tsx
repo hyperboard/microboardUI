@@ -14,6 +14,7 @@ export function TextColorIndicator({ color }: Props): React.ReactElement {
 				<span
 					className={style.indicator}
 					style={{ backgroundColor: color }}
+					id="TextColorBar"
 				/>
 			)}
 		</div>
