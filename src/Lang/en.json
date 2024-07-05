@@ -80,6 +80,15 @@
 		"exportFrame": {
 			"text": "Save as image"
 		},
+		"lockFrameRatio": {
+			"tooltip": {
+				"lock": "Lock frame ratio",
+				"unlock": "Unlock frame ratio"
+			}
+		},
+		"frameColor": {
+			"tooltip": "Frame color"
+		},
 		"copyFrameLink": {
 			"text": "Copy link",
 			"error": {
@@ -113,8 +122,8 @@
 		},
 		"addText": {
 			"tooltip": "Text",
-			"showAll": "All",
-			"showBasic": "Basic"
+			"showAll": "All shapes",
+			"showBasic": "Basic shapes"
 		},
 		"addSticker": {
 			"tooltip": "Sticker"
@@ -288,6 +297,7 @@
 	"export": {
 		"tooltip": "Export this board",
 		"confirm": "Export",
+<<<<<<< src/Lang/en.json
 		"cancel": "Cancel"
 	},
 	"miro": {
@@ -301,5 +311,31 @@
 	"error": {
 		"title": "Export error",
 		"description": "An error occurred while exporting the selected area"
+=======
+		"cancel": "Cancel",
+		"error": {
+			"title": "Export error",
+			"description": "An error occurred while exporting the selected area"
+		}
+	},
+	"sidePanel": {
+		"title": "Boards",
+		"folders": {
+			"publicBoards": "Public boards",
+			"privateBoards": "Private boards"
+		},
+		"addNew": "Add new"
+	},
+	"contextMenu": {
+		"delete": "Delete",
+		"addNew": "Add new"
+>>>>>>> src/Lang/en.json
+	},
+	"miro": {
+		"boardsTitle": "Select a board to import",
+		"importMiro": "Import from Miro",
+		"importMiroBtn": "Import board from Miro",
+		"miroError": "An error has occurred. Try importing again",
+		"loading": "Loading..."
 	}
 }

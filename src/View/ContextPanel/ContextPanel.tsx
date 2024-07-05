@@ -4,11 +4,13 @@ import React, { useRef, useState } from "react";
 import { useAppContext } from "View/AppContext";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import { UiSeparator } from "View/Ui/UiSeparator/UiSeparator";
+import { ConnectorAddText } from "./Buttons/ConnectorAddText";
 import { ConnectorType } from "./Buttons/ConnectorType";
 import { Delete } from "./Buttons/Delete";
 import { DrawFillStyle } from "./Buttons/DrawFillStyle";
 import { DrawStrokeWidth } from "./Buttons/DrawStrokeWidth/DrawStrokeWidth";
 import { Duplicate } from "./Buttons/Duplicate";
+import { Edit } from "./Buttons/Edit";
 import { EndPointer } from "./Buttons/EndPointer";
 import { FillStyle } from "./Buttons/FillStyle";
 import { FontSize } from "./Buttons/FontSize";
@@ -49,13 +51,14 @@ export function ContextPanel() {
 
 	const windowHeight = board.camera.window.height;
 
-	const isInvisible =
-		board.selection.getContext() === "None" ||
-		board.selection.getContext() === "SelectUnderPointer";
+	const isInvisible = board.selection.getContext() === "None";
 
 	if (isInvisible) {
 		return null;
 	}
+
+	const isSelectUnderPointer =
+		board.selection.getContext() === "SelectUnderPointer";
 
 	const isText = board.selection.items.isAllItemsType("RichText");
 	const isSticker = board.selection.items.isAllItemsType("Sticker");
@@ -91,7 +94,16 @@ export function ContextPanel() {
 				padding={0}
 				id="ContextPanel"
 			>
-				{isText && (
+				{isSelectUnderPointer && (
+					<>
+						<Edit />
+						<RestOptionsMenu rounded="right">
+							<BringToFront />
+							<SendToBack />
+						</RestOptionsMenu>
+					</>
+				)}
+				{isText && !isSelectUnderPointer && (
 					<>
 						<FontSize rounded="left" />
 						<FontStyle />
@@ -108,7 +120,7 @@ export function ContextPanel() {
 						</RestOptionsMenu>
 					</>
 				)}
-				{isSticker && (
+				{isSticker && !isSelectUnderPointer && (
 					<>
 						<FontSize rounded="left" />
 						<UiSeparator vertical />
@@ -126,7 +138,7 @@ export function ContextPanel() {
 						</RestOptionsMenu>
 					</>
 				)}
-				{isShape && (
+				{isShape && !isSelectUnderPointer && (
 					<>
 						<ItemType />
 						<UiSeparator vertical />
@@ -149,7 +161,7 @@ export function ContextPanel() {
 						</RestOptionsMenu>
 					</>
 				)}
-				{isConnector && (
+				{isConnector && !isSelectUnderPointer && (
 					<>
 						<StartPointer />
 						<SwitchPointers />
@@ -157,6 +169,7 @@ export function ContextPanel() {
 						<UiSeparator vertical />
 						<ConnectorType />
 						<UiSeparator vertical />
+						<ConnectorAddText />
 						<FontSize />
 						<FontStyle />
 						<UiSeparator vertical />
@@ -171,7 +184,7 @@ export function ContextPanel() {
 						</RestOptionsMenu>
 					</>
 				)}
-				{isPen && (
+				{isPen && !isSelectUnderPointer && (
 					<>
 						<DrawStrokeWidth />
 						<UiSeparator vertical />
@@ -185,7 +198,7 @@ export function ContextPanel() {
 						</RestOptionsMenu>
 					</>
 				)}
-				{isImage && (
+				{isImage && !isSelectUnderPointer && (
 					<>
 						<Duplicate rounded="left" />
 						<Delete />
@@ -196,7 +209,7 @@ export function ContextPanel() {
 						</RestOptionsMenu>
 					</>
 				)}
-				{isFrame && (
+				{isFrame && !isSelectUnderPointer && (
 					<>
 						<FrameRatio />
 						<ToggleFrameRatio />
@@ -213,7 +226,7 @@ export function ContextPanel() {
 						</RestOptionsMenu>
 					</>
 				)}
-				{isDifferentItems && (
+				{isDifferentItems && !isSelectUnderPointer && (
 					<RestOptionsMenu rounded="full">
 						<BringToFront />
 						<SendToBack />

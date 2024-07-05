@@ -80,6 +80,15 @@
 		"exportFrame": {
 			"text": "Сохранить как изображение"
 		},
+		"lockFrameRatio": {
+			"tooltip": {
+				"lock": "Заблокировать пропорции",
+				"unlock": "Разблокировать пропорции"
+			}
+		},
+		"frameColor": {
+			"tooltip": "Цвет фрейма"
+		},
 		"copyFrameLink": {
 			"text": "Копировать ссылку",
 			"error": {
@@ -286,6 +295,7 @@
 	"export": {
 		"tooltip": "Экспорт",
 		"confirm": "Экспортировать",
+<<<<<<< src/Lang/ru.json
 		"cancel": "Отменить"
 	},
 	"miro": {
@@ -299,5 +309,31 @@
 	"error": {
 		"title": "Ошибка при экспорте",
 		"description": "При экспорте выбранной области произошла ошибка"
+=======
+		"cancel": "Отменить",
+		"error": {
+			"title": "Ошибка при экспорте",
+			"description": "При экспорте выбранной области произошла ошибка"
+		}
+	},
+	"sidePanel": {
+		"title": "Доски",
+		"folders": {
+			"publicBoards": "Публичные доски",
+			"privateBoards": "Приватные доски"
+		},
+		"addNew": "Добавить"
+	},
+	"contextMenu": {
+		"delete": "Удалить",
+		"addNew": "Добавить"
+>>>>>>> src/Lang/ru.json
+	},
+	"miro": {
+		"boardsTitle": "Выберите доску для импорта",
+		"importMiro": "Импорт из Miro",
+		"importMiroBtn": "Импортировать доску из Miro",
+		"miroError": "Произошла ошибка. Попробуйте импортировать еще раз",
+		"loading": "Загрузка..."
 	}
 }

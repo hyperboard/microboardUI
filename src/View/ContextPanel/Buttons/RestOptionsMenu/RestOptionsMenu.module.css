@@ -23,6 +23,7 @@
 
 .menuBottom {
 	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0;
 }
 
 .hotkey {

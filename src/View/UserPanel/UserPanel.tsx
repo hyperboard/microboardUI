@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { SuccessIcon } from "View/ForgotPassword/SuccessIcon";
 import { PasswordChanged } from "View/Widgets/form-notifications/password-changed";
 import { UiPanel } from "View/Ui/UiPanel";
+import { UiButton } from "View/Ui/UiButton";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	email: string;
@@ -464,12 +465,14 @@ export const UserPanel: React.FC = () => {
 						{/* 		</> */}
 						{/* 	} */}
 						{/* /> */}
-						<Button
+						<UiButton
+							size="sm"
+							radius="md"
 							className={styles.signUpBtn}
 							onClick={() => navigate("/auth/sign-up")}
 						>
 							{t("auth.signUpForFree")}
-						</Button>
+						</UiButton>
 					</div>
 				</div>
 			</UiPanel>

@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
 import { notify } from "View/Ui/Toast";
 import { UiButton } from "View/Ui/UiButton";
+import { UiLoader } from "View/Ui/UiLoader";
 import style from "./ExportPanel.module.css";
 
 export function ExportPanel() {
@@ -58,11 +59,7 @@ export function ExportPanel() {
 				onClick={handleConfirm}
 				disabled={isLoading}
 			>
-				{isLoading ? (
-					<div className={style.loader} />
-				) : (
-					t("export.confirm")
-				)}
+				{isLoading ? <UiLoader /> : t("export.confirm")}
 			</UiButton>
 			<UiButton
 				className={clsx(style.button)}

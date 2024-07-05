@@ -59,6 +59,12 @@ export function AddDrawing() {
 		}
 	};
 
+	const handleCustomColorPick = (color: string): void => {
+		if (addDrawing) {
+			addDrawing.setStrokeColor(color);
+		}
+	};
+
 	const isPredefinedColor = PEN_COLORS.some(color => color === selectedColor);
 
 	return (
@@ -106,7 +112,7 @@ export function AddDrawing() {
 						isActive={
 							selectedColor !== "none" && !isPredefinedColor
 						}
-						onChange={handleColorPick}
+						onChange={handleCustomColorPick}
 					/>
 				</div>
 			</UiPanel>

@@ -12,6 +12,7 @@ import AuthView from "./AuthView/AuthView";
 import { RestorePassword } from "./RestorePassword/RestorePassword";
 import { ForgotPassword } from "./ForgotPassword/ForgotPassword";
 import { ProtectedRoute } from "./Routes/ProtectedRoute";
+import { WelcomeBoard } from "./WelcomeBoard";
 
 export function getRender(app: App): () => void {
 	new IframeModule(app);
@@ -44,6 +45,16 @@ export function getRender(app: App): () => void {
 				{
 					path: "forgot-password",
 					element: <ForgotPassword />,
+				},
+			],
+		},
+		{
+			path: "/welcome",
+			element: <ProtectedRoute isPublic={true} />,
+			children: [
+				{
+					path: "",
+					element: <WelcomeBoard app={app} />,
 				},
 			],
 		},

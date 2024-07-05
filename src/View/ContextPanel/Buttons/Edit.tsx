@@ -9,7 +9,12 @@ export function Edit(): React.ReactElement | null {
 		board.selection.editSelected();
 	};
 	return (
-		<UiButton id="ContextPanelEdit" onClick={handleClick} title="Edit">
+		<UiButton
+			id="ContextPanelEdit"
+			onClick={handleClick}
+			rounded="left"
+			variant="secondary"
+		>
 			Edit
 		</UiButton>
 	);

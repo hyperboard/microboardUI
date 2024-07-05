@@ -1,6 +1,12 @@
 import { Mbr } from "Board/Items";
 import clsx from "clsx";
-import React, { ReactNode, useEffect, useRef, useState } from "react";
+import React, {
+	ReactNode,
+	useEffect,
+	useLayoutEffect,
+	useRef,
+	useState,
+} from "react";
 import style from "./UiButtonWithMenu.module.css";
 
 type RenderNode = (verticalAlign: "middle" | "top" | "bottom") => ReactNode;
@@ -35,35 +41,31 @@ export function ButtonWithMenu({
 			return;
 		}
 		const menuHeight = menu.getBoundingClientRect().height;
-
 		if (panelMbr.bottom + menuHeight < windowHeight) {
 			setVerticalAlign("bottom");
 			return;
 		}
-		// if (panelMbr.top - menuHeight >= 0) {
-		// 	setVerticalAlign("top");
-		// 	return;
-		// }
+
 		setVerticalAlign("middle");
-	}, [panelMbr.top, windowHeight]);
+	}, [panelMbr, windowHeight]);
 
 	return (
 		<div className={style.container}>
 			{typeof button === "function" ? button(verticalAlign) : button}
-			{openedMenu === menuName && (
-				<div
-					ref={menuRef}
-					className={clsx([
-						style.menu,
-						style[verticalAlign],
-						style[align],
-					])}
-				>
-					{typeof children === "function"
-						? children(verticalAlign)
-						: children}
-				</div>
-			)}
+			<div
+				ref={menuRef}
+				className={clsx([
+					style.menu,
+					style[verticalAlign],
+					style[align],
+					style[openedMenu === menuName ? "opened" : "closed"],
+				])}
+			>
+				{typeof children === "function"
+					? children(verticalAlign)
+					: children}
+			</div>
+			{/* )} */}
 		</div>
 	);
 }

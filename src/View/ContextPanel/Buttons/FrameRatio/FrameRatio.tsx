@@ -14,37 +14,43 @@ import style from "./FrameRatio.module.css";
 
 const MENU_NAME = "FrameType";
 
+const frameTypeTitle: Record<FrameType, string> = {
+	A4: "A4",
+	Letter: "Letter",
+	Frame16x9: "16 : 9",
+	Frame4x3: "4 : 3",
+	Frame1x1: "1 : 1",
+	Custom: "Custom",
+};
+
 export function FrameRatio(): React.ReactElement | null {
 	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
 		usePanelContext();
 	const { board } = useAppContext();
 	const { t } = useTranslation();
 
+	const frameType = board.selection.getFrameType();
+
 	const handleClick = () => {
 		toggleMenu(MENU_NAME);
 	};
 
-	const item = board.selection.items.getSingle();
-	const frame = item instanceof Frame ? item : null;
-
 	const handlePick = (type: FrameType) => {
-		if (frame) {
-			frame.setFrameType(type);
-		}
+		board.selection.setFrameType(type);
 		toggleMenu("None");
 	};
+	const selectedFrames = board.selection.list() as Frame[];
 	const handlePointerEnter = (type: FrameType) => {
-		if (frame) {
+		selectedFrames.forEach(frame => {
 			frame.setNewShape(type);
-		}
+		});
 	};
 	const handlePointerLeave = () => {
-		if (frame) {
+		selectedFrames.forEach(frame => {
 			frame.setNewShape(null);
-		}
+		});
 	};
 
-	const selectedShapes = board.selection.list();
 	return (
 		<ButtonWithMenu
 			menuName={MENU_NAME}
@@ -65,12 +71,18 @@ export function FrameRatio(): React.ReactElement | null {
 						verticalAlign === "bottom" &&
 							openedMenu === MENU_NAME &&
 							style.menuOpened,
+						style.button,
+						{
+							[style.word]:
+								frameType === "Custom" ||
+								frameType === "Letter",
+						},
 					)}
 				>
-					{selectedShapes.length > 1 ? (
-						<Icon iconName="Shape" />
+					{selectedFrames.length > 1 ? (
+						<Icon iconName="Frame" />
 					) : (
-						<FrameIcon iconName={frame?.getFrameType()} />
+						frameTypeTitle[frameType]
 					)}
 				</UiButton>
 			)}
@@ -83,7 +95,7 @@ export function FrameRatio(): React.ReactElement | null {
 					gap={4}
 				>
 					<FramePicker
-						selected={frame?.getFrameType()}
+						selected={frameType}
 						onPick={handlePick}
 						onPointerEnter={handlePointerEnter}
 						onPointerLeave={handlePointerLeave}
