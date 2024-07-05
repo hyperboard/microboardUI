@@ -76,6 +76,10 @@
 	color: var(--text-base-primary);
 }
 
+.importMiroBtn {
+	padding: 0 16px 16px;
+}
+
 .bottom {
 	padding: 14px 16px;
 	display: flex;

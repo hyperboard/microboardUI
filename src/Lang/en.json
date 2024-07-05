@@ -297,6 +297,21 @@
 	"export": {
 		"tooltip": "Export this board",
 		"confirm": "Export",
+<<<<<<< src/Lang/en.json
+		"cancel": "Cancel"
+	},
+	"miro": {
+		"boardsTitle": "Select a board to import",
+		"importMiro": "Import from Miro",
+		"importMiroBtn": "Import board from Miro",
+		"miroError": "An error has occurred. Try importing again",
+		"loading": "Loading..."
+	},
+	"cancel": "Cancel",
+	"error": {
+		"title": "Export error",
+		"description": "An error occurred while exporting the selected area"
+=======
 		"cancel": "Cancel",
 		"error": {
 			"title": "Export error",
@@ -314,5 +329,13 @@
 	"contextMenu": {
 		"delete": "Delete",
 		"addNew": "Add new"
+>>>>>>> src/Lang/en.json
+	},
+	"miro": {
+		"boardsTitle": "Select a board to import",
+		"importMiro": "Import from Miro",
+		"importMiroBtn": "Import board from Miro",
+		"miroError": "An error has occurred. Try importing again",
+		"loading": "Loading..."
 	}
 }

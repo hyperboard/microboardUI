@@ -14,6 +14,7 @@ import { SidePanelsContainer } from "View/SidePanelsContainer";
 import { ToastProvider } from "View/ToastProvider";
 import { ZoomPanel } from "View/ZoomPanel";
 import style from "./AppView.module.css";
+import { ImportMiroBoards } from "../ImportMiroBoards";
 
 export function AppView() {
 	const { app, board } = useAppContext();
@@ -99,6 +100,10 @@ export function AppView() {
 
 	const urlString = new URL(window.location.href).pathname;
 	const boardId = params?.boardId || urlString.split("/").pop();
+	const query = new URLSearchParams(location?.search);
+	const codeSearch = query.get("code");
+	const teamIdSearch = query.get("team_id");
+	const isOpenMiroBoards = codeSearch && teamIdSearch;
 
 	if (boardId) {
 		app.openBoard(boardId!);
@@ -133,6 +138,7 @@ export function AppView() {
 			<ContextPanel />
 			<ExportPanel />
 			<ToastProvider />
+			<ImportMiroBoards isOpen={isOpenMiroBoards} app={app} />
 		</div>
 	);
 }

@@ -1,0 +1,1 @@
+export { MiroBoardItem } from "./MiroBoardsItem";

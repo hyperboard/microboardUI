@@ -19,6 +19,7 @@ import { UiPanel } from "View/Ui/UiPanel";
 import { ResizableEdge } from "./ResizableEdge";
 import style from "./SidePanel.module.css";
 import { useSidePanelContext } from "./SidePanelContext";
+import { ImportFromMiro } from "./ImportFromMiro";
 
 export function SidePanel() {
 	const { isOpen, toggleSideMenu } = useSidePanelContext();
@@ -130,6 +131,9 @@ export function SidePanel() {
 					<Icon iconName="Plus" width={16} height={16} />
 					<span>{t("sidePanel.addNew")}</span>
 				</button>
+			</div>
+			<div className={style.importMiroBtn}>
+				<ImportFromMiro />
 			</div>
 			<ResizableEdge panelWidth={width} setWidth={setWidth} />
 		</UiPanel>
