@@ -13,10 +13,12 @@ import { Controller, getController } from "./getController";
 import { TestRecorder, createTester } from "./testRecorder";
 import { BoardSnapshot } from "Board/Board";
 
+const LAST_BOARD_KEY = "lastSeenBoard";
+
 pdfjsLib.GlobalWorkerOptions.workerSrc =
 	"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js";
 
-interface App {
+export interface App {
 	connection: Connection;
 	clipboard: Clipboard;
 	location: Location;
@@ -30,6 +32,7 @@ interface App {
 	createPublicBoard: () => Promise<string>;
 	openBoard: (id: string) => void;
 	getBoard: () => Board;
+	getLastBoardId: () => string | null;
 	render: () => void;
 	test: TestRecorder;
 	getSnapshot(boardId: string): BoardSnapshot | null;
@@ -101,17 +104,22 @@ export function createApp(isHistory = true): App {
 		}
 	}
 
-	function openBoard(id): void {
+	function openBoard(id: string): void {
 		let currentBoard = boards.get(id);
 		if (!currentBoard) {
 			currentBoard = new Board(id);
 			currentBoard.connect(connection);
 			boards.set(id, currentBoard);
 		}
+		localStorage.setItem(LAST_BOARD_KEY, id);
 
 		subscriptions.setBoard(currentBoard);
 		boardSubject.publish(currentBoard);
 		board = currentBoard;
+	}
+
+	function getLastBoardId(): string | null {
+		return localStorage.getItem(LAST_BOARD_KEY) || null;
 	}
 
 	function getSnapshot(id: string): BoardSnapshot | null {
@@ -136,6 +144,7 @@ export function createApp(isHistory = true): App {
 		createPublicBoard,
 		openBoard,
 		getBoard,
+		getLastBoardId,
 		render,
 		test,
 		getSnapshot,
