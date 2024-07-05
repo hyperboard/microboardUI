@@ -291,7 +291,9 @@
 	"miro": {
 		"boardsTitle": "Выберите доску для импорта",
 		"importMiro": "Импорт из Miro",
-		"importMiroBtn": "Импортировать доску из Miro"
+		"importMiroBtn": "Импортировать доску из Miro",
+		"miroError": "Произошла ошибка. Попробуйте импортировать еще раз",
+		"loading": "Загрузка..."
 	},
 	"cancel": "Отменить",
 	"error": {

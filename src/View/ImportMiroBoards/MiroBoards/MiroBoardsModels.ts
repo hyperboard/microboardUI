@@ -49,6 +49,8 @@ export interface IMiroBoardItemStyle {
 	strokeColor?: string;
 	strokeStyle?: string;
 	strokeWidth?: string;
+	startStrokeCap?: string;
+	endStrokeCap?: string;
 }
 
 interface IMiroBoardConnectionsPoints {

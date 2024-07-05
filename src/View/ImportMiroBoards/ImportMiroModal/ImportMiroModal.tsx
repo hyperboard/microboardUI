@@ -9,12 +9,13 @@ interface IImportMiroModalViewProps {
 	children: ReactNode;
 }
 
+// TODO refactor with design layout
 export function ImportMiroModalView({
 	isOpen,
 	setIsOpen,
 	children,
 }: IImportMiroModalViewProps): React.ReactElement {
-	const onCloseModal = () => setIsOpen(false);
+	const onCloseModal = (): void => setIsOpen(false);
 
 	return (
 		<div

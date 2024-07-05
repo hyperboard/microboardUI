@@ -20,12 +20,13 @@ export function ImportBoardItem({
 	setIsOpen,
 	boardId,
 	app,
-}: IImportBoardItem) {
+}: IImportBoardItem): React.ReactElement {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const [boardItems, setBoardItems] = useState<IMiroBoardItem[]>([]);
 	const [error, setError] = useState<string | null>(null);
-	const errorMessage = "Произошла ошибка. Попробуйте еще раз импортировать";
+	const errorMessage = t("miro.miroError");
+	const LIMIT_MIRO_ITEMS = 20;
 	const [itemsInfo, setItemsInfo] = useState<{
 		cursor: { items: string; connectors: string };
 		total: { items: number; connectors: number };
@@ -50,26 +51,37 @@ export function ImportBoardItem({
 			const cursor = getCursor(itemsInfo.cursor.items);
 			const response = await fetch(
 				getApiUrl(
-					"/miro/boards/" + boardId + "/items?limit=50&" + cursor,
+					"/miro/boards/" +
+						boardId +
+						"/items?limit=" +
+						LIMIT_MIRO_ITEMS +
+						"&" +
+						cursor,
 				),
 				options,
 			);
-			const data = await response.json();
-			setBoardItems(items => [...items, ...data.data]);
+			const boardItems = await response.json();
+			const {
+				data: boardItemsData,
+				cursor: currentboardItemsCursor,
+				total,
+			} = boardItems;
+
+			setBoardItems(items => [...items, ...boardItemsData]);
 			setItemsInfo(info => {
 				return {
 					cursor: {
-						items: data.cursor ?? "",
+						items: currentboardItemsCursor ?? "",
 						connectors: info.cursor.connectors,
 					},
 					total: {
-						items: data.total,
+						items: total,
 						connectors: info.total.connectors,
 					},
 				};
 			});
 		} catch (error: Error) {
-			console.error(error as Error);
+			console.error(error);
 			setError(errorMessage);
 		}
 	};
@@ -81,27 +93,35 @@ export function ImportBoardItem({
 				getApiUrl(
 					"/miro/boards/" +
 						boardId +
-						"/connectors?limit=50&" +
+						"/connectors?limit=" +
+						LIMIT_MIRO_ITEMS +
+						"&" +
 						cursor,
 				),
 				options,
 			);
-			const data = await response.json();
-			setBoardItems(items => [...items, ...data?.data]);
+			const connectors = await response.json();
+			const {
+				data: connectorsItems,
+				cursor: currentConnectorsCursor,
+				total,
+			} = connectors;
+
+			setBoardItems(items => [...items, ...connectorsItems]);
 			setItemsInfo(info => {
 				return {
 					cursor: {
 						items: info.cursor.items,
-						connectors: data.cursor ?? "",
+						connectors: currentConnectorsCursor ?? "",
 					},
 					total: {
 						items: info.total.items,
-						connectors: data.total,
+						connectors: total,
 					},
 				};
 			});
 		} catch (error: Error) {
-			console.error(error as Error);
+			console.error(error);
 			setError(errorMessage);
 		}
 	};
@@ -137,12 +157,12 @@ export function ImportBoardItem({
 		}
 	}, [boardItems, itemsInfo.total]);
 
-	const onCloseModal = () => setIsOpen(false);
+	const onCloseModal = (): void => setIsOpen(false);
 
 	return (
 		<ImportMiroModal isOpen={isOpen} setIsOpen={setIsOpen}>
 			<h2>{t("miro.importMiro")}</h2>
-			{error ? <p>{error}</p> : <p>Loading...</p>}
+			{error ? <p>{error}</p> : <p>{t("miro.loading")}</p>}
 		</ImportMiroModal>
 	);
 }
