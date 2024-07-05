@@ -3,6 +3,7 @@ import { UiButton } from "View/Ui/UiButton/UiButton";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
+import { getHotkeyLabel } from "Board/Keyboard";
 
 type Props = {
 	rounded?: "none" | "left";
@@ -22,6 +23,7 @@ export function Duplicate({ rounded = "none" }: Props) {
 			onClick={handleClick}
 			variant="secondary"
 			rounded={rounded}
+			hotkey={getHotkeyLabel("duplicate")}
 			tooltip={t("contextPanel.duplicate.tooltip")}
 			tooltipPosition="top"
 		>

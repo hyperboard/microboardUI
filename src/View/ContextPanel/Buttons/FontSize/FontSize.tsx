@@ -27,7 +27,7 @@ type Props = {
 	rounded?: "none" | "left";
 };
 
-export function FontSize({ rounded = "none" }: Props): React.ReactNode {
+export function FontSize({ rounded = "none" }: Props) {
 	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
 		usePanelContext();
 	const { board } = useAppContext();
