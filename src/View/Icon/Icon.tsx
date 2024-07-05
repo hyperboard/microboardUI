@@ -51,7 +51,8 @@ export type IconId =
 	| "SaveAsImage"
 	| "VerticalAlignTop"
 	| "VerticalAlignCenter"
-	| "VerticalAlignBottom";
+	| "VerticalAlignBottom"
+	| "AddText";
 
 type Props = {
 	iconName: IconId;

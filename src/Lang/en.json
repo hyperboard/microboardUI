@@ -80,6 +80,15 @@
 		"exportFrame": {
 			"text": "Save as image"
 		},
+		"lockFrameRatio": {
+			"tooltip": {
+				"lock": "Lock frame ratio",
+				"unlock": "Unlock frame ratio"
+			}
+		},
+		"frameColor": {
+			"tooltip": "Frame color"
+		},
 		"copyFrameLink": {
 			"text": "Copy link",
 			"error": {
@@ -113,8 +122,8 @@
 		},
 		"addText": {
 			"tooltip": "Text",
-			"showAll": "All",
-			"showBasic": "Basic"
+			"showAll": "All shapes",
+			"showBasic": "Basic shapes"
 		},
 		"addSticker": {
 			"tooltip": "Sticker"
@@ -293,5 +302,17 @@
 			"title": "Export error",
 			"description": "An error occurred while exporting the selected area"
 		}
+	},
+	"sidePanel": {
+		"title": "Boards",
+		"folders": {
+			"publicBoards": "Public boards",
+			"privateBoards": "Private boards"
+		},
+		"addNew": "Add new"
+	},
+	"contextMenu": {
+		"delete": "Delete",
+		"addNew": "Add new"
 	}
 }

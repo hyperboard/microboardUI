@@ -3,6 +3,7 @@ import React, {
 	type PropsWithChildren,
 	type ReactNode,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "View/AppContext";
 import { Icon } from "View/Icon";
@@ -14,6 +15,7 @@ export function ContextMenu() {
 	const { isOpen, boardId, x, y, close } = useContextMenuContext();
 	const { app, board } = useAppContext();
 	const navigate = useNavigate();
+	const { t } = useTranslation();
 
 	if (!isOpen) {
 		return null;
@@ -44,14 +46,14 @@ export function ContextMenu() {
 					onClick={handleDeleteBoard}
 					icon={<Icon iconName="Delete" width={20} height={20} />}
 				>
-					Delete
+					{t("contextMenu.delete")}
 				</ContextMenuItem>
 			) : (
 				<ContextMenuItem
 					onClick={handleCreateBoard}
 					icon={<Icon iconName="Board" width={20} height={20} />}
 				>
-					New board
+					{t("contextMenu.addNew")}
 				</ContextMenuItem>
 			)}
 		</UiPanel>
