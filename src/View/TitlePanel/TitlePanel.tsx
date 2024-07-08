@@ -1,16 +1,14 @@
 import { useAppSubscription } from "Board/useBoardSubscription";
-import { isIframe } from "lib/isIframe";
-import { useForceUpdate } from "lib/useForceUpdate";
-import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
-import { Modal } from "View/Modal/Modal";
 import { useAppContext } from "View/AppContext";
-import { Icon, Logo } from "../Icon";
 import { useSidePanelContext } from "View/SidePanel/SidePanelContext";
 import { UiButton } from "View/Ui/UiButton";
 import { UiPanel } from "View/Ui/UiPanel";
 import { UiSeparator } from "View/Ui/UiSeparator";
+import { isIframe } from "lib/isIframe";
+import { useForceUpdate } from "lib/useForceUpdate";
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { Icon, Logo } from "../Icon";
 import style from "./TitlePanel.module.css";
 
 export function TitlePanel() {

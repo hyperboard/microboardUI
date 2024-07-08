@@ -12,5 +12,5 @@ export function ExportVisible({ children }: PropsWithChildren<{}>) {
 	if (isExport) {
 		return null;
 	}
-	return <>{children};</>;
+	return <>{children}</>;
 }

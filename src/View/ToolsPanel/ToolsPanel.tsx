@@ -1,8 +1,8 @@
 import { useAppSubscription } from "Board/useBoardSubscription";
-import { useForceUpdate } from "lib/useForceUpdate";
-import React, { useState } from "react";
 import { useAppContext } from "View/AppContext";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
+import { useForceUpdate } from "lib/useForceUpdate";
+import React, { useState } from "react";
 import { AddConnector } from "./Buttons/AddConnector";
 import { AddDrawing } from "./Buttons/AddDrawing/AddDrawing";
 import { AddFrame } from "./Buttons/AddFrame";
