@@ -42,7 +42,7 @@ export function WelcomeBoard({ app }: Props) {
 		createPublicBoard(app).then(boardId => {
 			navigate(`/boards/${boardId}`);
 		});
-	});
+	}, [app]);
 
 	return <div>WelcomeBoard</div>;
 }
