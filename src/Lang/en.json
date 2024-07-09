@@ -82,8 +82,8 @@
 		},
 		"lockFrameRatio": {
 			"tooltip": {
-				"lock": "Lock frame ratio",
-				"unlock": "Unlock frame ratio"
+				"lock": "Freeze ratio",
+				"unlock": "Unfreeze ratio"
 			}
 		},
 		"frameColor": {

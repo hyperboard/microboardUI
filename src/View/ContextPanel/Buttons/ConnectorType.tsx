@@ -53,12 +53,19 @@ export function ConnectorType(): React.ReactElement | null {
 				</UiButton>
 			}
 		>
-			<UiPanel rounded="bottom" gap={2} padding={2} vertical>
-				<ConnectorLineStylePicker
-					onPick={handlePick}
-					selected={connectorType}
-				/>
-			</UiPanel>
+			{verticalAlign => (
+				<UiPanel
+					rounded={verticalAlign === "bottom" ? "bottom" : "full"}
+					gap={2}
+					padding={2}
+					vertical
+				>
+					<ConnectorLineStylePicker
+						onPick={handlePick}
+						selected={connectorType}
+					/>
+				</UiPanel>
+			)}
 		</ButtonWithMenu>
 	);
 }

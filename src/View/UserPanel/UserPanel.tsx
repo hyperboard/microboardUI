@@ -463,12 +463,14 @@ export const UserPanel: React.FC = () => {
 							variant="secondary"
 							className={styles.logInBtn}
 							onClick={() => navigate("/auth/sign-in")}
+							size="sm"
 						>
 							{t("auth.login")}
 						</UiButton>
 						<UiButton
 							className={styles.signUpBtn}
 							onClick={() => navigate("/auth/sign-up")}
+							size="sm"
 						>
 							{t("auth.signUpForFree")}
 						</UiButton>
@@ -498,7 +500,7 @@ export const UserPanel: React.FC = () => {
 				</Button> */}
 
 				{/* TODO: remove temporarily inline style */}
-				<div style={{ padding: "6px" }}>
+				<div style={{ padding: "8px 6px" }}>
 					<UserPic
 						email={email}
 						setIsModalOpen={setIsModalOpen}

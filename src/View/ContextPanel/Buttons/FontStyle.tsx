@@ -48,9 +48,18 @@ export function FontStyle(): React.ReactElement | null {
 				</UiButton>
 			}
 		>
-			<UiPanel padding={12} gap={8} rounded="bottom">
-				<FontStylePicker fontStyles={fontStyles} onPick={handlePick} />
-			</UiPanel>
+			{verticalAlign => (
+				<UiPanel
+					padding={12}
+					gap={8}
+					rounded={verticalAlign === "bottom" ? "bottom" : "full"}
+				>
+					<FontStylePicker
+						fontStyles={fontStyles}
+						onPick={handlePick}
+					/>
+				</UiPanel>
+			)}
 		</ButtonWithMenu>
 	);
 }
