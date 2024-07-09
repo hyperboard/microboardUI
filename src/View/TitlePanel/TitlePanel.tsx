@@ -68,9 +68,8 @@ function SidePanelButton({
 	toggle: () => void;
 }): React.ReactElement {
 	const { t } = useTranslation();
-	const isIframe = window.self !== window.top;
 
-	if (isIframe) {
+	if (isIframe() && import.meta.env.INTEGRATION_UI !== "microboard") {
 		return <></>;
 	}
 	return (
