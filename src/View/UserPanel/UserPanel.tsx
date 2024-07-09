@@ -1,12 +1,7 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Button } from "shared/ui-lib/Button";
 import styles from "./UserPanel.module.css";
-import { Click } from "./icons/Click";
-import { Thumb } from "./icons/Thumb";
-import { Ring } from "./icons/Ring";
-import { UserShare } from "./icons/UserShare";
 import { ChangePassword } from "./icons/ChangePassword";
-import { Upgrade } from "./icons/Upgrade";
 import { Logout } from "./icons/Logout";
 import { getApiUrl } from "Config";
 import Cookies from "js-cookie";
@@ -16,7 +11,6 @@ import { useOutsideClickHandler } from "shared/hooks/useOutsideClickHandler";
 import { LockIcon } from "View/SignupView/LockIcon";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { SuccessIcon } from "View/ForgotPassword/SuccessIcon";
 import { PasswordChanged } from "View/Widgets/form-notifications/password-changed";
 import { UiPanel } from "View/Ui/UiPanel";
 import { UiButton } from "View/Ui/UiButton";
@@ -466,8 +460,13 @@ export const UserPanel: React.FC = () => {
 						{/* 	} */}
 						{/* /> */}
 						<UiButton
-							size="sm"
-							radius="md"
+							variant="secondary"
+							className={styles.logInBtn}
+							onClick={() => navigate("/auth/sign-in")}
+						>
+							{t("auth.login")}
+						</UiButton>
+						<UiButton
 							className={styles.signUpBtn}
 							onClick={() => navigate("/auth/sign-up")}
 						>

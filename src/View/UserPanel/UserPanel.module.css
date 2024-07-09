@@ -66,12 +66,34 @@
 	white-space: nowrap;
 }
 
-.signUpBtn:hover {
-	background-color: #1f2228;
-	color: white;
+.signUpBtn:active {
+	outline: 2px solid rgba(200, 178, 255, 0.5);
 }
 
-.signUpBtn:active {
+@media screen and (hover: hover) {
+	.signUpBtn:hover {
+		background-color: #1f2228;
+		color: white;
+	}
+}
+
+.logInBtn {
+	height: 32px;
+	padding: 6px 16px;
+	background-color: white;
+	border: 1px solid #dee0e3;
+	color: #14151a;
+	white-space: nowrap;
+}
+
+@media screen and (hover: hover) {
+	.logInBtn:hover {
+		background-color: #1f2228;
+		color: white;
+	}
+}
+
+.logInBtn:active {
 	outline: 2px solid rgba(200, 178, 255, 0.5);
 }
 

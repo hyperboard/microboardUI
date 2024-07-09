@@ -19,7 +19,7 @@ const RootView: React.FC<RootViewProps> = ({ app }) => {
 		createPublicBoard(app).then(boardId => {
 			navigate(`/boards/${boardId}`);
 		});
-	});
+	}, []);
 
 	return <div>RootView</div>;
 };

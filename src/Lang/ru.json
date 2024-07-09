@@ -190,6 +190,7 @@
 		"notValidEmail": "Неправильный адрес электронной почты",
 		"rememberPassword": "Помните свой пароль?",
 		"loginHere": "Войдите здесь",
+		"login": "Войти",
 		"restorePassword": "Восстановления пароля",
 		"checkInbox": "Проверьте свой email",
 		"weSentCode": "Мы выслали код верификации по адресу",

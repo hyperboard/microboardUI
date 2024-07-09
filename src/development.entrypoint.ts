@@ -10,16 +10,8 @@ declare global {
 }
 
 window.app = createApp();
-window.app.connection
-	.connect()
-	.then(() => {
-		const boards = window.app.storage.listPublicBoards();
-		return boards.length === 0
-			? window.app.openStartingBoard()
-			: Promise.resolve();
-	})
-	.then(() => {
-		window.app.render();
-	});
+window.app.connection.connect().then(() => {
+	window.app.render();
+});
 
 window.useHTTPSubscription = false;
