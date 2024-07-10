@@ -19,6 +19,8 @@ export function TitlePanel() {
 
 	useAppSubscription(app, { observer: forceUpdate, subjects: ["tools"] });
 
+	const isMicroboardIframe =
+		isIframe() && import.meta.env.INTEGRATION_UI !== "microboard";
 	const isExport = board.tools.getExport();
 	if (isExport) {
 		return null;
@@ -33,13 +35,15 @@ export function TitlePanel() {
 			<SidePanelButton isOpen={isOpen} toggle={toggleSideMenu} />
 			<UiSeparator vertical />
 			<UiButton rounded="none" variant="secondary">
-				{!isIframe() ? (
+				{isMicroboardIframe ? (
+					<span className={style.logo} translate="no">
+						{t("appTitle")}
+					</span>
+				) : (
 					<div className={style.logo}>
 						<Logo />
-						<span>{t("appTitle")}</span>
+						<span translate="no">{t("appTitle")}</span>
 					</div>
-				) : (
-					<span className={style.logo}>{t("appTitle")}</span>
 				)}
 			</UiButton>
 			<UiSeparator vertical />

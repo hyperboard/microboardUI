@@ -8,9 +8,9 @@ type Props = { app: App };
 
 const INITIAL_FIT_AREA = {
 	left: 0,
-	top: 140,
-	right: 550,
-	bottom: 730,
+	top: -150,
+	right: 1550,
+	bottom: 850,
 };
 
 export function WelcomeBoard({ app }: Props) {

@@ -20,10 +20,10 @@ export const Navbar: React.FC = () => {
 
 	return (
 		<header className="NavbarWrapper">
-			<div className="Logo">
+			<a className="Logo" href="https://microboard.ru">
 				<LeadIcon width={20} height={20} />
 				<span>Microboard</span>
-			</div>
+			</a>
 			<div>
 				{isLoginVisible && (
 					<NavLink to="/auth/sign-in" className={"Link"}>

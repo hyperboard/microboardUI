@@ -27,6 +27,7 @@ type UiButtonProps = HTMLAttributes<HTMLButtonElement> & {
 		| "bottom-left"
 		| "bottom-right";
 	radius?: "xl" | "md" | "sm";
+	className?: string;
 };
 
 export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(

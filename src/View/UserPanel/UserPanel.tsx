@@ -14,6 +14,8 @@ import { useNavigate } from "react-router-dom";
 import { PasswordChanged } from "View/Widgets/form-notifications/password-changed";
 import { UiPanel } from "View/Ui/UiPanel";
 import { UiButton } from "View/Ui/UiButton";
+import { isIframe } from "lib/isIframe";
+import { UiLink } from "View/Ui/UiLink";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	email: string;
@@ -391,6 +393,9 @@ export const UserPanel: React.FC = () => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 
+	const isMicroboardIframe =
+		isIframe() && import.meta.env.INTEGRATION_UI === "microboard";
+
 	useLayoutEffect(() => {
 		fetch(`${getApiUrl()}/users/me`, {
 			method: "GET",
@@ -459,21 +464,49 @@ export const UserPanel: React.FC = () => {
 						{/* 		</> */}
 						{/* 	} */}
 						{/* /> */}
-						<UiButton
-							variant="secondary"
-							className={styles.logInBtn}
-							onClick={() => navigate("/auth/sign-in")}
-							size="sm"
-						>
-							{t("auth.login")}
-						</UiButton>
-						<UiButton
-							className={styles.signUpBtn}
-							onClick={() => navigate("/auth/sign-up")}
-							size="sm"
-						>
-							{t("auth.signUpForFree")}
-						</UiButton>
+						{isMicroboardIframe ? (
+							<>
+								<UiLink
+									variant="secondary"
+									className={styles.logInBtn}
+									href={`${
+										import.meta.env.BASE_URL
+									}/auth/sign-in`}
+									target="_parent"
+									size="sm"
+								>
+									{t("auth.login")}
+								</UiLink>
+								<UiLink
+									className={styles.signUpBtn}
+									href={`${
+										import.meta.env.BASE_URL
+									}/auth/sign-up`}
+									size="sm"
+									target="_parent"
+								>
+									{t("auth.signUpForFree")}
+								</UiLink>
+							</>
+						) : (
+							<>
+								<UiButton
+									variant="secondary"
+									className={styles.logInBtn}
+									onClick={() => navigate("/auth/sign-in")}
+									size="sm"
+								>
+									{t("auth.login")}
+								</UiButton>
+								<UiButton
+									className={styles.signUpBtn}
+									onClick={() => navigate("/auth/sign-up")}
+									size="sm"
+								>
+									{t("auth.signUpForFree")}
+								</UiButton>
+							</>
+						)}
 					</div>
 				</div>
 			</UiPanel>
