@@ -51,7 +51,9 @@ export function ContextPanel() {
 
 	const windowHeight = board.camera.window.height;
 
-	const isInvisible = board.selection.getContext() === "None";
+	const isInvisible =
+		board.selection.getContext() === "None" ||
+		board.selection.transformationRenderBlock;
 
 	if (isInvisible) {
 		return null;
