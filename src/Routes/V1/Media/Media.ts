@@ -7,18 +7,15 @@ import { BUCKET_NAME } from "./MinioClient";
 /**
  * Save an image to MinIO using its hash as the ID.
  * @param id - The unique hash ID for the image.
- * @param imageBuffer - The image buffer to be saved.
+ * @param imageStream - The image stream to be saved.
  * @param logger - A winston logger instance for logging.
  */
-async function saveImage(
+async function saveImageStream(
     id: string,
-    imageBuffer: Buffer,
+    imageStream: stream.Readable,
     logger: Logger
 ): Promise<void> {
-    const readableStream = new stream.PassThrough();
-    readableStream.end(imageBuffer);
-
-    await minioClient.putObject(BUCKET_NAME, id, readableStream);
+    await minioClient.putObject(BUCKET_NAME, id, imageStream);
     logger.info(`Image with ID ${id} successfully saved.`);
 }
 
@@ -26,26 +23,26 @@ async function saveImage(
  * Get an image from MinIO using its ID.
  * @param id - The unique hash ID for the image.
  * @param logger - A winston logger instance for logging.
- * @returns - The image buffer.
+ * @returns ReadableStream.
  */
-async function getImage(id: string, logger: Logger): Promise<Buffer> {
+async function getImageStream(id: string, logger: Logger): Promise<stream.Readable> {
     const dataStream = await minioClient.getObject(BUCKET_NAME, id);
-    const chunks: Buffer[] = [];
+    logger.info(`Stream of image with ID ${id} successfully retrieved.`);
+    return dataStream;
+}
 
-    return new Promise<Buffer>((resolve, reject) => {
-        dataStream.on("data", (chunk: Buffer) => {
-            chunks.push(chunk);
-        });
-
-        dataStream.on("end", () => {
-            logger.info(`Image with ID ${id} successfully retrieved.`);
-            resolve(Buffer.concat(chunks));
-        });
-
-        dataStream.on("error", (error: any) => {
-            reject(error);
-        });
-    });
+/**
+ * Check if an image with the given ID already exists in MinIO.
+ * @param id - The unique hash ID for the image.
+ * @returns - A promise that resolves to true if the image exists, false otherwise.
+ */
+export async function doesImageExist(id: string, logger: Logger): Promise<boolean> {
+	try {
+		await minioClient.statObject(BUCKET_NAME, id);
+		return true;
+	} catch (error) {
+        return false;
+	}
 }
 
 /**
@@ -55,8 +52,9 @@ async function getImage(id: string, logger: Logger): Promise<Buffer> {
  */
 export function createMinioMediaDAL(logger: Logger): MediaDAL {
     return {
-        saveImage: (id: string, imageBuffer: Buffer) =>
-            saveImage(id, imageBuffer, logger),
-        getImage: (id: string) => getImage(id, logger),
+        saveImageStream: (id: string, imageStream: stream.Readable) => 
+            saveImageStream(id, imageStream, logger),
+        getImageStream: (id: string) => getImageStream(id, logger),
+        doesImageExist: (id: string) => doesImageExist(id, logger),
     };
 }
