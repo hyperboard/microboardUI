@@ -235,7 +235,7 @@ export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
 
 	function send(message): void {
 		if (socket && isConnected()) {
-			socket.send(JSON.stringify(message));
+			socket.send(JSON.stringify(message, getCircularReplacer()));
 		}
 	}
 
@@ -276,5 +276,18 @@ export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
 		connect,
 		send,
 		isConnected,
+	};
+}
+
+function getCircularReplacer() {
+	const seen = new WeakSet();
+	return (key, value) => {
+		if (typeof value === "object" && value !== null) {
+			if (seen.has(value)) {
+				return;
+			}
+			seen.add(value);
+		}
+		return value;
 	};
 }

@@ -17,8 +17,6 @@ export const TEXT_COLORS = [
 	"rgb(115, 29, 226)",
 ];
 
-export const DEFAULT_TEXT_COLOR = TEXT_COLORS[12];
-
 export const TEXT_HIGHLIGHT_COLORS = [
 	"none",
 	"rgb(255, 255, 255)",

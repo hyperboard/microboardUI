@@ -124,7 +124,7 @@ export function getController(getBoard: () => Board): Controller {
 					selectionContext: ["EditUnderPointer", "SelectByRect"],
 				},
 				textBold: {
-					cb: () => board.selection.setFontStyle(["bold"]),
+					cb: () => board.selection.setFontStyle("bold"),
 					selectionContext: [
 						"EditTextUnderPointer",
 						"EditUnderPointer",
@@ -132,7 +132,7 @@ export function getController(getBoard: () => Board): Controller {
 					],
 				},
 				textItalic: {
-					cb: () => board.selection.setFontStyle(["italic"]),
+					cb: () => board.selection.setFontStyle("italic"),
 					selectionContext: [
 						"EditTextUnderPointer",
 						"EditUnderPointer",
@@ -140,7 +140,7 @@ export function getController(getBoard: () => Board): Controller {
 					],
 				},
 				textStrike: {
-					cb: () => board.selection.setFontStyle(["line-through"]),
+					cb: () => board.selection.setFontStyle("line-through"),
 					selectionContext: [
 						"EditTextUnderPointer",
 						"EditUnderPointer",
@@ -148,7 +148,7 @@ export function getController(getBoard: () => Board): Controller {
 					],
 				},
 				textUnderline: {
-					cb: () => board.selection.setFontStyle(["underline"]),
+					cb: () => board.selection.setFontStyle("underline"),
 					selectionContext: [
 						"EditTextUnderPointer",
 						"EditUnderPointer",

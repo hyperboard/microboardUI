@@ -21,7 +21,7 @@ export function DrawStrokeWidth() {
 		<div className={style.container}>
 			<SliderPicker
 				id={"drawing-stroke-width"}
-				initialValue={width}
+				value={width}
 				onPick={handleSliderPick}
 				min={MIN_DRAWING_STROKE_WIDTH}
 				max={MAX_DRAWING_STROKE_WIDTH}

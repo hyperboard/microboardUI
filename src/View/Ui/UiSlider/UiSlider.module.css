@@ -40,6 +40,7 @@
 	transform: translateY(-50%);
 	z-index: 1;
 	flex: 1;
+	pointer-events: none;
 }
 
 .slider::-webkit-slider-runnable-track,

@@ -97,7 +97,7 @@ export function AddDrawing() {
 						min={MIN_DRAWING_STROKE_WIDTH}
 						max={MAX_DRAWING_STROKE_WIDTH}
 						step={STEP_DRAWING_STROKE_WIDTH}
-						initialValue={strokeWidth}
+						value={strokeWidth}
 						showLabel
 					/>
 				</div>

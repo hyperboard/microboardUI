@@ -29,6 +29,7 @@ export function FramePicker({
 					onPointerEnter={() => onPointerEnter && onPointerEnter(id)}
 					onPointerLeave={() => onPointerLeave && onPointerLeave(id)}
 					key={id}
+					id={`frame-picker-${id}`}
 				>
 					<FrameIcon iconName={id} />
 					<span>{label}</span>

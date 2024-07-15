@@ -6,11 +6,10 @@ import style from "./SliderPicker.module.css";
 type Props = {
 	min: number;
 	max: number;
-	initialValue?: number;
+	value?: number;
 	step: number;
 	onPick: (val: number) => void;
 	showLabel?: boolean;
-	// width?: number;
 	id?: string;
 };
 
@@ -18,9 +17,8 @@ export function SliderPicker({
 	onPick,
 	min,
 	max,
-	initialValue,
+	value,
 	showLabel,
-	// width,
 	id,
 	step,
 }: Props) {
@@ -31,7 +29,7 @@ export function SliderPicker({
 				min={min}
 				max={max}
 				step={step}
-				initialValue={initialValue}
+				value={value}
 				id={id}
 				onChange={onPick}
 			/>
