@@ -5,6 +5,9 @@ import cookieParser from "cookie-parser";
 import winston from "winston";
 import path from "path";
 import helmet from "helmet";
+import http from "http";
+import { WebSocketServer } from "ws";
+import morgan from "morgan";
 import { nocache } from "./nocache";
 import { Boards } from "./Routes/V1/Boards";
 import { Auth } from "./Routes/V1/Auth";
@@ -14,9 +17,6 @@ import { getV1Router } from "./Routes";
 import { withWebSocketApi } from "./WebSocket";
 import { Config } from "./shared/config/config";
 import { Mailer } from "./shared/modules/mailer/mailer";
-import http from "http";
-import { WebSocketServer } from "ws";
-import morgan from "morgan";
 import { createMinioMediaDAL } from "Routes/V1/Media";
 
 export async function getApp(): Promise<http.Server> {
@@ -27,8 +27,8 @@ export async function getApp(): Promise<http.Server> {
     const wss = new WebSocketServer({
         server,
     });
-    app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(bodyParser.json({ limit: '10mb' }));
+    app.use(bodyParser.urlencoded({ extended: false, limit: '10mb' }));
     app.use(cookieParser());
     app.use(compression());
 
