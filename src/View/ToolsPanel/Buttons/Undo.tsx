@@ -4,10 +4,18 @@ import { Icon } from "View/Icon";
 import { UiButton } from "View/Ui/UiButton";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { useAppSubscription } from "Board/useBoardSubscription";
+import { useForceUpdate } from "lib/useForceUpdate";
 
 export function Undo() {
-	const { board } = useAppContext();
+	const { board, app } = useAppContext();
 	const { t } = useTranslation();
+	const forceUpdate = useForceUpdate();
+
+	useAppSubscription(app, {
+		subjects: ["events"],
+		observer: forceUpdate,
+	});
 
 	const handleClick = () => {
 		board.events?.undo();

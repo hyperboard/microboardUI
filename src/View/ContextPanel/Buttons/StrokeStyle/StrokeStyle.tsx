@@ -91,12 +91,13 @@ export function StrokeStyle(): React.ReactElement | null {
 						/>
 					</div>
 					<SliderPicker
-						initialValue={borderWidth}
+						value={borderWidth}
 						onPick={handleStrokeWidthPick}
 						min={MIN_STROKE_WIDTH}
 						max={MAX_STROKE_WIDTH}
 						step={STEP_STROKE_WIDTH}
 						showLabel
+						id="shape-stroke-width"
 					/>
 					<div className={style.colors}>
 						<ColorPicker

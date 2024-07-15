@@ -5,8 +5,9 @@ import { Element } from "./Element";
 import { App } from "App";
 import { Board } from "Board";
 import { verticalAlignmentToFlex } from "./verticalAlignmentToFlex";
-import { defaultTextStyle, RichText } from "Board/Items/RichText/RichText";
+import { RichText } from "Board/Items/RichText/RichText";
 import { Mbr, Point } from "Board/Items";
+import { DEFAULT_TEXT_STYLES } from "View/Items/RichText";
 
 export class TextEditors extends React.Component<
 	{
@@ -117,10 +118,10 @@ export class TextEditor extends React.Component<
 						alignItems: verticalAlignmentToFlex(verticalAlignment), // vertical
 						justifyContent: "center", // horisontal
 
-						fontFamily: defaultTextStyle.fontFamily,
-						fontSize: `${defaultTextStyle.fontSize}px`,
-						lineHeight: defaultTextStyle.lineHeight,
-						color: defaultTextStyle.fontColor,
+						fontFamily: DEFAULT_TEXT_STYLES.fontFamily,
+						fontSize: `${DEFAULT_TEXT_STYLES.fontSize}px`,
+						lineHeight: DEFAULT_TEXT_STYLES.lineHeight,
+						color: DEFAULT_TEXT_STYLES.fontColor,
 					}}
 				>
 					{"An editor error has occured"}
@@ -171,17 +172,17 @@ export class TextEditor extends React.Component<
 
 					transformOrigin: "left top",
 					// transform: `scale(${editorScale})`,
-					"--webkit-font-smoothing": "antialiased",
+					WebkitFontSmoothing: "antialiased",
 					fontKerning: "auto",
 
 					display: "flex",
 					alignItems: verticalAlignmentToFlex(verticalAlignment), // vertical
 					justifyContent: "center", // horisontal
 
-					fontFamily: defaultTextStyle.fontFamily,
-					fontSize: `${defaultTextStyle.fontSize}px`,
-					lineHeight: defaultTextStyle.lineHeight,
-					color: defaultTextStyle.fontColor,
+					fontFamily: DEFAULT_TEXT_STYLES.fontFamily,
+					fontSize: `${DEFAULT_TEXT_STYLES.fontSize}px`,
+					lineHeight: DEFAULT_TEXT_STYLES.lineHeight,
+					color: DEFAULT_TEXT_STYLES.fontColor,
 					pointerEvents: "none",
 
 					willChange: "transform",

@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
 import { ButtonWithMenu } from "View/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "View/ContextPanel/PanelContext";
-import { FrameIcon, Icon } from "View/Icon";
+import { Icon } from "View/Icon";
 import { FramePicker } from "View/Pickers/FramePicker";
 import { UiButton } from "View/Ui/UiButton/UiButton";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";

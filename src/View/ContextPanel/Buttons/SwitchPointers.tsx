@@ -8,10 +8,7 @@ export function SwitchPointers(): React.ReactElement | null {
 	const { board } = useAppContext();
 	const { t } = useTranslation();
 	const handleClick = () => {
-		const start = board.selection.getStartPointerStyle();
-		const end = board.selection.getEndPointerStyle();
-		board.selection.setStartPointerStyle(end);
-		board.selection.setEndPointerStyle(start);
+		board.selection.switchPointers();
 	};
 
 	return (
