@@ -7,6 +7,7 @@ import { validateItemsMap } from "Board/Validators";
 import { Clipboard } from "./Clipboard";
 import { createWheel } from "./Wheel/Wheel";
 import { isSafari } from "./isSafari";
+import { prepareImage } from "Board/Items/Image/ImageHelpers";
 
 export interface Controller {
 	onWheel: (event: WheelEvent) => void;
@@ -472,12 +473,19 @@ export function getController(getBoard: () => Board): Controller {
 				const file = item.getAsFile();
 				const reader = new FileReader();
 				reader.onload = event => {
-					const image = new ImageItem(event.target?.result);
-					image.transformation.translateTo(
-						board.pointer.point.x,
-						board.pointer.point.y,
-					);
-					board.add(image);
+					prepareImage(event.target?.result)
+						.then(imageData => {
+							const image = new ImageItem(imageData);
+							image.transformation.translateTo(
+								board.pointer.point.x,
+								board.pointer.point.y,
+							);
+							board.add(image);
+						})
+						.catch(er => {
+							console.error("Could not create image:", er);
+							// TODO notification
+						});
 				};
 
 				reader.readAsDataURL(file);
@@ -511,12 +519,19 @@ export function getController(getBoard: () => Board): Controller {
 		const reader = new FileReader();
 
 		reader.onload = function (event) {
-			const image = new ImageItem(event.target?.result);
-			image.transformation.translateTo(
-				board.pointer.point.x,
-				board.pointer.point.y,
-			);
-			board.add(image);
+			prepareImage(event.target?.result)
+				.then(imageData => {
+					const image = new ImageItem(imageData);
+					image.transformation.translateTo(
+						board.pointer.point.x,
+						board.pointer.point.y,
+					);
+					board.add(image);
+				})
+				.catch(er => {
+					console.error("Could not create image:", er);
+					// TODO notification
+				});
 		};
 
 		reader.readAsDataURL(file);
