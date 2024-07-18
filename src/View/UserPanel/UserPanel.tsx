@@ -469,9 +469,7 @@ export const UserPanel: React.FC = () => {
 								<UiLink
 									variant="secondary"
 									className={styles.logInBtn}
-									href={`${
-										import.meta.env.BASE_URL
-									}/auth/sign-in`}
+									href={`/auth/sign-in`}
 									target="_parent"
 									size="sm"
 								>
@@ -479,9 +477,7 @@ export const UserPanel: React.FC = () => {
 								</UiLink>
 								<UiLink
 									className={styles.signUpBtn}
-									href={`${
-										import.meta.env.BASE_URL
-									}/auth/sign-up`}
+									href={`/auth/sign-up`}
 									size="sm"
 									target="_parent"
 								>
