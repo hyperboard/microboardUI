@@ -9,3 +9,13 @@ export const STICKER_COLORS = [
 	"rgb(20, 21, 26)",
 ];
 export const DEFAULT_STICKER_COLOR = STICKER_COLORS[0];
+export const STICKER_COLOR_NAMES = [
+	"blue",
+	"yellow",
+	"green",
+	"purple",
+	"light-blue",
+	"red",
+	"gray",
+	"black",
+];
