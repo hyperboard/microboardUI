@@ -132,8 +132,9 @@ export function ContextPanel() {
 						<TextColor />
 						<TextHighlight />
 						<UiSeparator vertical />
-						<Duplicate />
 						<StickerFillStyle />
+						<Duplicate />
+						<Delete />
 						<UiSeparator vertical />
 						<RestOptionsMenu>
 							<BringToFront />
