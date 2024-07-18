@@ -26,7 +26,7 @@ export function ShapeIcon({
 			<use
 				width={width}
 				height={height}
-				xlinkHref={`../${sprite}#${iconName}`}
+				xlinkHref={`${sprite}#${iconName}`}
 			/>
 		</svg>
 	);

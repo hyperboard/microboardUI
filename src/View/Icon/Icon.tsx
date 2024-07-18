@@ -81,7 +81,7 @@ export function Icon({
 			<use
 				width={width}
 				height={height}
-				xlinkHref={`../${sprite}#${iconName}`}
+				xlinkHref={`${sprite}#${iconName}`}
 			/>
 		</svg>
 	);

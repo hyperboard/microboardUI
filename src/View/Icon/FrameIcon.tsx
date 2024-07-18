@@ -26,7 +26,7 @@ export function FrameIcon({
 			<use
 				width={width}
 				height={height}
-				xlinkHref={`../${sprite}#${"Frame" + iconName}`}
+				xlinkHref={`${sprite}#${"Frame" + iconName}`}
 			/>
 		</svg>
 	);
