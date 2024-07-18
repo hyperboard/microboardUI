@@ -34,21 +34,19 @@ export function AddDrawing() {
 	const handleSliderPick = (width: number): void => {
 		const addDrawing = board.tools.getAddDrawing();
 		if (addDrawing) {
-			addDrawing.strokeWidth = width;
-			board.tools.publish();
+			addDrawing.setStrokeWidth(width);
 		}
 	};
 
 	const handleColorPick = (color: string): void => {
 		const addDrawing = board.tools.getAddDrawing();
 		if (addDrawing) {
-			addDrawing.strokeStyle = color;
-			board.tools.publish();
+			addDrawing.setStrokeColor(color);
 		}
 	};
 
 	const isActive = Boolean(board.tools.getAddDrawing());
-	const selectedColor = board.tools.getAddDrawing()?.strokeStyle;
+	const selectedColor = board.tools.getAddDrawing()?.getStrokeColor();
 
 	return (
 		<ButtonWithMenu
