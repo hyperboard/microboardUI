@@ -1,0 +1,2428 @@
+{
+	"f338182a-ca15-4841-b48c-7948a5db15d7": {
+		"itemType": "Drawing",
+		"points": [
+			{ "x": 127.20890469646315, "y": 0 },
+			{ "x": 135.1594612399922, "y": 1.5901113087057865 },
+			{ "x": 391.1673819416244, "y": 1.5901113087057865 },
+			{ "x": 400.7080497938591, "y": 4.770333926117388 },
+			{ "x": 415.0190515722111, "y": 14.311001778352136 },
+			{ "x": 424.5597194244458, "y": 23.851669630586883 },
+			{ "x": 422.96960811574013, "y": 25.44178093929267 },
+			{ "x": 403.8882724112707, "y": 23.851669630586883 },
+			{ "x": 367.3157123110377, "y": 12.72089046964635 },
+			{ "x": 325.97281828468704, "y": 4.770333926117388 },
+			{ "x": 273.49914509739597, "y": 0 },
+			{ "x": 176.50235526634265, "y": 0 },
+			{ "x": 155.83090825316754, "y": 1.5901113087057865 },
+			{ "x": 122.4385707703459, "y": 9.540667852234748 },
+			{ "x": 89.04623328752427, "y": 19.081335704469495 },
+			{ "x": 82.68578805270113, "y": 22.26155832188107 },
+			{ "x": 127.20890469646315, "y": 20.671447013175282 },
+			{ "x": 321.20248435856956, "y": 20.671447013175282 },
+			{ "x": 349.82448791527395, "y": 23.851669630586883 },
+			{ "x": 378.4464914719781, "y": 31.802226174115816 },
+			{ "x": 383.2168253980956, "y": 34.98244879152742 },
+			{ "x": 340.28382006303923, "y": 36.572560100233204 },
+			{ "x": 236.92658499716276, "y": 36.572560100233204 },
+			{ "x": 155.83090825316754, "y": 39.75278271764478 },
+			{ "x": 96.99678983105309, "y": 44.523116643762165 },
+			{ "x": 79.50556543528955, "y": 47.70333926117374 },
+			{ "x": 69.96489758305484, "y": 47.70333926117374 },
+			{ "x": 66.78467496564326, "y": 49.293450569879525 },
+			{ "x": 233.7463623797512, "y": 46.11322795246795 },
+			{ "x": 357.77504445880277, "y": 38.16267140893899 },
+			{ "x": 292.5804808018654, "y": 31.802226174115816 },
+			{ "x": 252.82769808422063, "y": 30.21211486541003 },
+			{ "x": 135.1594612399922, "y": 30.21211486541003 },
+			{ "x": 151.06057432705006, "y": 25.44178093929267 },
+			{ "x": 230.56613976233962, "y": 12.72089046964635 },
+			{ "x": 329.1530409020986, "y": 3.1802226174116015 },
+			{ "x": 208.3045814404586, "y": 3.1802226174116015 },
+			{ "x": 157.4210195618732, "y": 6.360445234823175 },
+			{ "x": 116.07812553552276, "y": 6.360445234823175 },
+			{ "x": 128.79901600516905, "y": 6.360445234823175 },
+			{ "x": 127.20890469646315, "y": 3.1802226174116015 },
+			{ "x": 108.12756899199371, "y": 0 },
+			{ "x": 90.63634459622995, "y": 0 },
+			{ "x": 100.17701244846467, "y": 6.360445234823175 },
+			{ "x": 125.61879338775748, "y": 11.130779160940534 },
+			{ "x": 124.02868207905158, "y": 9.540667852234748 },
+			{ "x": 96.99678983105309, "y": 9.540667852234748 },
+			{ "x": 69.96489758305484, "y": 12.72089046964635 },
+			{ "x": 62.01434103952579, "y": 17.49122439576371 },
+			{ "x": 66.78467496564326, "y": 19.081335704469495 },
+			{ "x": 85.8660106701127, "y": 19.081335704469495 },
+			{ "x": 96.99678983105309, "y": 17.49122439576371 },
+			{ "x": 108.12756899199371, "y": 12.72089046964635 },
+			{ "x": 85.8660106701127, "y": 14.311001778352136 },
+			{ "x": 77.91545412658365, "y": 17.49122439576371 },
+			{ "x": 82.68578805270113, "y": 20.671447013175282 },
+			{ "x": 89.04623328752427, "y": 22.26155832188107 },
+			{ "x": 106.53745768328781, "y": 23.851669630586883 },
+			{ "x": 90.63634459622995, "y": 23.851669630586883 },
+			{ "x": 69.96489758305484, "y": 27.031892247998456 },
+			{ "x": 68.37478627434893, "y": 28.622003556704243 },
+			{ "x": 131.97923862258062, "y": 27.031892247998456 },
+			{ "x": 128.79901600516905, "y": 27.031892247998456 },
+			{ "x": 135.1594612399922, "y": 25.44178093929267 },
+			{ "x": 189.22324573598894, "y": 17.49122439576371 },
+			{ "x": 268.7288111712785, "y": 7.950556543528961 },
+			{ "x": 346.6442652978624, "y": 6.360445234823175 },
+			{ "x": 357.77504445880277, "y": 7.950556543528961 },
+			{ "x": 365.7256010023318, "y": 12.72089046964635 },
+			{ "x": 364.1354896936259, "y": 14.311001778352136 },
+			{ "x": 359.36515576750867, "y": 15.901113087057922 },
+			{ "x": 310.07170519762917, "y": 19.081335704469495 },
+			{ "x": 213.07491536657585, "y": 31.802226174115816 },
+			{ "x": 149.47046301834416, "y": 36.572560100233204 },
+			{ "x": 131.97923862258062, "y": 36.572560100233204 },
+			{ "x": 101.76712375717057, "y": 39.75278271764478 },
+			{ "x": 77.91545412658365, "y": 47.70333926117374 },
+			{ "x": 52.47367318729107, "y": 58.83411842211427 },
+			{ "x": 49.2934505698795, "y": 58.83411842211427 },
+			{ "x": 55.65389580470264, "y": 60.42422973082006 },
+			{ "x": 122.4385707703459, "y": 60.42422973082006 },
+			{ "x": 77.91545412658365, "y": 60.42422973082006 },
+			{ "x": 62.01434103952579, "y": 62.014341039525846 },
+			{ "x": 41.34289402635045, "y": 68.37478627434905 },
+			{ "x": 36.572560100233204, "y": 73.14512020046641 },
+			{ "x": 39.75278271764478, "y": 74.7352315091722 },
+			{ "x": 6.360445234823146, "y": 74.7352315091722 },
+			{ "x": 23.851669630586912, "y": 69.96489758305484 },
+			{ "x": 25.441780939292585, "y": 68.37478627434905 },
+			{ "x": 19.08133570446944, "y": 66.78467496564323 },
+			{ "x": 60.42422973081989, "y": 66.78467496564323 },
+			{ "x": 116.07812553552276, "y": 55.6538958047027 },
+			{ "x": 165.37157610540226, "y": 49.293450569879525 },
+			{ "x": 256.0079207016322, "y": 42.93300533505635 },
+			{ "x": 335.51348613692176, "y": 42.93300533505635 },
+			{ "x": 354.5948218413912, "y": 47.70333926117374 },
+			{ "x": 356.1849331500971, "y": 49.293450569879525 },
+			{ "x": 351.4145992239796, "y": 52.4736731872911 },
+			{ "x": 333.9233748282161, "y": 54.063784495996885 },
+			{ "x": 267.1386998625728, "y": 57.244007113408486 },
+			{ "x": 176.50235526634265, "y": 57.244007113408486 },
+			{ "x": 213.07491536657585, "y": 57.244007113408486 },
+			{ "x": 310.07170519762917, "y": 63.60445234823163 },
+			{ "x": 176.50235526634265, "y": 76.32534281787798 },
+			{ "x": 139.92979516610944, "y": 82.68578805270116 },
+			{ "x": 131.97923862258062, "y": 82.68578805270116 },
+			{ "x": 130.38912731387472, "y": 84.27589936140694 },
+			{ "x": 141.51990647481534, "y": 85.86601067011273 },
+			{ "x": 205.12435882304703, "y": 84.27589936140694 },
+			{ "x": 335.51348613692176, "y": 66.78467496564323 },
+			{ "x": 351.4145992239796, "y": 66.78467496564323 },
+			{ "x": 330.7431522108045, "y": 73.14512020046641 },
+			{ "x": 211.48480405787018, "y": 90.63634459623012 },
+			{ "x": 139.92979516610944, "y": 96.99678983105326 },
+			{ "x": 103.35723506587624, "y": 98.58690113975905 },
+			{ "x": 259.1881433190438, "y": 98.58690113975905 },
+			{ "x": 298.94092603668855, "y": 101.76712375717065 },
+			{ "x": 310.07170519762917, "y": 106.53745768328801 },
+			{ "x": 310.07170519762917, "y": 111.3077916094054 },
+			{ "x": 290.99036949315973, "y": 117.66823684422857 },
+			{ "x": 268.7288111712785, "y": 120.84845946164015 },
+			{ "x": 311.66181650633484, "y": 120.84845946164015 },
+			{ "x": 373.67615754586086, "y": 111.3077916094054 },
+			{ "x": 394.347604559036, "y": 109.71768030069958 },
+			{ "x": 402.298161102565, "y": 109.71768030069958 },
+			{ "x": 400.7080497938591, "y": 111.3077916094054 },
+			{ "x": 354.5948218413912, "y": 111.3077916094054 },
+			{ "x": 353.0047105326855, "y": 109.71768030069958 },
+			{ "x": 375.26626885456653, "y": 101.76712375717065 },
+			{ "x": 408.65860633738794, "y": 95.40667852234748 },
+			{ "x": 432.51027596797485, "y": 93.81656721364169 },
+			{ "x": 373.67615754586086, "y": 93.81656721364169 },
+			{ "x": 424.5597194244458, "y": 93.81656721364169 },
+			{ "x": 440.4608325115039, "y": 95.40667852234748 },
+			{ "x": 443.64105512891547, "y": 96.99678983105326 },
+			{ "x": 440.4608325115039, "y": 98.58690113975905 },
+			{ "x": 411.8388289547995, "y": 100.17701244846486 },
+			{ "x": 353.0047105326855, "y": 101.76712375717065 },
+			{ "x": 170.1419100315195, "y": 101.76712375717065 },
+			{ "x": 163.78146479669635, "y": 103.35723506587644 },
+			{ "x": 152.65068563575596, "y": 109.71768030069958 },
+			{ "x": 154.24079694446164, "y": 111.3077916094054 },
+			{ "x": 168.55179872281383, "y": 111.3077916094054 },
+			{ "x": 181.27268919246012, "y": 108.1275689919938 },
+			{ "x": 170.1419100315195, "y": 104.94734637458222 },
+			{ "x": 106.53745768328781, "y": 104.94734637458222 },
+			{ "x": 98.586901139759, "y": 108.1275689919938 },
+			{ "x": 111.30779160940529, "y": 111.3077916094054 },
+			{ "x": 124.02868207905158, "y": 111.3077916094054 },
+			{ "x": 93.81656721364152, "y": 109.71768030069958 },
+			{ "x": 60.42422973081989, "y": 111.3077916094054 },
+			{ "x": 50.88356187858517, "y": 114.48801422681697 },
+			{ "x": 38.16267140893888, "y": 122.43857077034593 },
+			{ "x": 63.60445234823146, "y": 122.43857077034593 },
+			{ "x": 73.14512020046641, "y": 120.84845946164015 },
+			{ "x": 79.50556543528955, "y": 117.66823684422857 },
+			{ "x": 73.14512020046641, "y": 114.48801422681697 },
+			{ "x": 58.834118422114216, "y": 112.89790291811119 },
+			{ "x": 41.34289402635045, "y": 112.89790291811119 },
+			{ "x": 11.130779160940392, "y": 117.66823684422857 },
+			{ "x": 4.770333926117246, "y": 120.84845946164015 },
+			{ "x": 3.180222617411573, "y": 122.43857077034593 },
+			{ "x": 4.770333926117246, "y": 124.02868207905172 },
+			{ "x": 34.982448791527304, "y": 124.02868207905172 },
+			{ "x": 77.91545412658365, "y": 112.89790291811119 },
+			{ "x": 111.30779160940529, "y": 98.58690113975905 },
+			{ "x": 109.71768030069961, "y": 96.99678983105326 },
+			{ "x": 58.834118422114216, "y": 98.58690113975905 },
+			{ "x": 36.572560100233204, "y": 104.94734637458222 },
+			{ "x": 0, "y": 119.25834815293436 },
+			{ "x": 23.851669630586912, "y": 119.25834815293436 },
+			{ "x": 122.4385707703459, "y": 111.3077916094054 },
+			{ "x": 143.11001778352102, "y": 111.3077916094054 },
+			{ "x": 106.53745768328781, "y": 120.84845946164015 },
+			{ "x": 89.04623328752427, "y": 127.20890469646329 },
+			{ "x": 182.8628005011658, "y": 127.20890469646329 },
+			{ "x": 182.8628005011658, "y": 127.20890469646329 }
+		],
+		"transformation": {
+			"translateX": 33.96441900587122,
+			"translateY": 64.11868689822188,
+			"scaleX": 1.2760829135430176,
+			"scaleY": 1.2760829135430183,
+			"rotate": 0
+		},
+		"strokeStyle": "#83b7fb",
+		"strokeWidth": 10,
+		"zIndex": 0
+	},
+	"eea3eaf5-2fa1-438d-a328-dcf86f60dd20": {
+		"itemType": "Drawing",
+		"points": [
+			{ "x": 0, "y": 0 },
+			{ "x": 8.173908803445556, "y": 3.5760851015074167 },
+			{ "x": 23.49998780990586, "y": 16.347817606891013 },
+			{ "x": 32.695635213782, "y": 26.565203611197873 },
+			{ "x": 49.043452820673, "y": 50.576060721319024 },
+			{ "x": 49.043452820673, "y": 50.576060721319024 }
+		],
+		"transformation": {
+			"translateX": 34.31810322282827,
+			"translateY": 2.554346501076708,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"strokeStyle": "rgb(128, 128, 128)",
+		"strokeWidth": 8.4,
+		"zIndex": 1
+	},
+	"b01f7e4f-3020-4e58-9e74-0f29ff5212b6": {
+		"itemType": "Drawing",
+		"points": [
+			{ "x": 0, "y": 5.135598961250878 },
+			{ "x": 27.14530879518361, "y": 5.869255955715346 },
+			{ "x": 34.48187873982761, "y": 7.336569944644168 },
+			{ "x": 42.55210567893619, "y": 13.205825900359457 },
+			{ "x": 22.009709833932675, "y": 0 },
+			{ "x": 22.009709833932675, "y": 0 }
+		],
+		"transformation": {
+			"translateX": 586.7248294669731,
+			"translateY": 210.9975979038818,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"strokeStyle": "rgb(128, 128, 128)",
+		"strokeWidth": 8,
+		"zIndex": 6
+	},
+	"bfe898c5-c2d6-407a-9655-5843bb6fd50a": {
+		"itemType": "Drawing",
+		"points": [
+			{ "x": 13.205825900359514, "y": 14.673139889288336 },
+			{ "x": 16.874110872681513, "y": 17.60776786714598 },
+			{ "x": 22.743366828396802, "y": 27.14530879518344 },
+			{ "x": 27.145308795183382, "y": 41.818448684471775 },
+			{ "x": 27.878965789647737, "y": 57.225245568224466 },
+			{ "x": 24.210680817325738, "y": 46.95404764572265 },
+			{ "x": 0, "y": 0 },
+			{ "x": 0, "y": 0 }
+		],
+		"transformation": {
+			"translateX": 522.691358898355,
+			"translateY": 222.36570243384284,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"strokeStyle": "rgb(128, 128, 128)",
+		"strokeWidth": 8.4,
+		"zIndex": 35
+	},
+	"2a56387e-d5da-48a8-b9ae-749b2a4c33cc": {
+		"itemType": "Drawing",
+		"points": [
+			{ "x": 5.135598961250935, "y": 16.14045387821716 },
+			{ "x": 24.210680817325738, "y": 42.55210567893613 },
+			{ "x": 27.878965789647964, "y": 52.823303601438 },
+			{ "x": 27.14530879518361, "y": 48.421361634651475 },
+			{ "x": 0, "y": 0 },
+			{ "x": 0, "y": 0 }
+		],
+		"transformation": {
+			"translateX": 557.1732376381824,
+			"translateY": 220.89838844491402,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"strokeStyle": "rgb(128, 128, 128)",
+		"strokeWidth": 8.4,
+		"zIndex": 36
+	},
+	"41ec2c4d-fe37-443d-b37d-6c24e6b6e691": {
+		"itemType": "Drawing",
+		"points": [
+			{ "x": 2.1446312628618216, "y": 5.004139613344137 },
+			{ "x": 3.574385438103036, "y": 9.29340213906778 },
+			{ "x": 9.293402139067894, "y": 15.012418840032524 },
+			{ "x": 11.438033401929715, "y": 15.012418840032524 },
+			{ "x": 10.723156314309108, "y": 7.8636479638265655 },
+			{ "x": 7.148770876206072, "y": 4.289262525723643 },
+			{ "x": 2.859508350482429, "y": 2.859508350482429 },
+			{ "x": 2.859508350482429, "y": 7.148770876205958 },
+			{ "x": 4.289262525723643, "y": 8.578525051447173 },
+			{ "x": 0, "y": 0 },
+			{ "x": 0, "y": 0 }
+		],
+		"transformation": {
+			"translateX": 1709.8269084266476,
+			"translateY": 416.2619550815442,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"strokeStyle": "rgb(26, 26, 26)",
+		"strokeWidth": 6.2,
+		"zIndex": 12
+	},
+	"587d9673-23b3-451e-987c-7afe47ddcca1": {
+		"itemType": "Drawing",
+		"points": [
+			{ "x": 0, "y": 0.7148770876206072 },
+			{ "x": 2.1446312628618216, "y": 0 },
+			{ "x": 2.859508350482429, "y": 2.144631262861708 },
+			{ "x": 2.859508350482429, "y": 2.144631262861708 }
+		],
+		"transformation": {
+			"translateX": 1759.8683045600892,
+			"translateY": 436.9933906225415,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"strokeStyle": "rgb(26, 26, 26)",
+		"strokeWidth": 6.2,
+		"zIndex": 13
+	},
+	"c0a0e688-cfa6-4e47-9cb2-fbe58bd09e98": {
+		"itemType": "RichText",
+		"verticalAlignment": "center",
+		"children": [
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "You can upload images and PDF files, by the way",
+						"type": "text",
+						"styles": ["bold"],
+						"fontSize": 36
+					}
+				],
+				"horisontalAlignment": "center"
+			}
+		],
+		"maxWidth": 600,
+		"containerMaxWidth": 600,
+		"placeholderText": "Type something",
+		"transformation": {
+			"translateX": 2937.1840535482784,
+			"translateY": 508.9322863856794,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"insideOf": "RichText",
+		"zIndex": 24
+	},
+	"052bf5bc-18a9-454c-960c-5dc732782a77": {
+		"itemType": "Shape",
+		"shapeType": "RoundedRectangle",
+		"backgroundColor": "rgb(255, 255, 255)",
+		"backgroundOpacity": 1,
+		"borderColor": "rgb(255, 255, 255)",
+		"borderOpacity": 1,
+		"borderStyle": "solid",
+		"borderWidth": 1,
+		"transformation": {
+			"translateX": 2072.872019294632,
+			"translateY": 563.6059556282562,
+			"scaleX": 4.472619976444899,
+			"scaleY": 1.5543792295413423,
+			"rotate": 0
+		},
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"children": [
+						{
+							"text": "Explain your ideas",
+							"type": "text",
+							"styles": ["bold"],
+							"fontSize": 16
+						}
+					],
+					"horisontalAlignment": "left"
+				},
+				{
+					"type": "paragraph",
+					"children": [
+						{
+							"text": "",
+							"type": "text",
+							"styles": ["bold"],
+							"fontSize": 16
+						}
+					],
+					"horisontalAlignment": "center"
+				},
+				{
+					"type": "paragraph",
+					"children": [
+						{
+							"text": "With the help of",
+							"type": "text",
+							"fontSize": 16
+						}
+					],
+					"horisontalAlignment": "left"
+				},
+				{
+					"type": "paragraph",
+					"children": [
+						{
+							"text": "advanced formated text",
+							"type": "text",
+							"styles": ["italic"],
+							"fontSize": 16,
+							"fontColor": "rgb(71, 120, 245)"
+						}
+					],
+					"horisontalAlignment": "left"
+				},
+				{
+					"type": "paragraph",
+					"children": [
+						{
+							"text": "of any length ",
+							"type": "text",
+							"styles": ["underline"],
+							"fontSize": 16
+						}
+					],
+					"horisontalAlignment": "left"
+				}
+			],
+			"containerMaxWidth": 402.5357978800407,
+			"placeholderText": " ",
+			"insideOf": "Shape"
+		},
+		"zIndex": 28
+	},
+	"271599fc-21f2-4f8c-9d05-ce4e0b684183": {
+		"itemType": "Connector",
+		"transformation": {
+			"translateX": 1342.0118667232098,
+			"translateY": 398.7954191502729,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"startPoint": {
+			"pointType": "Fixed",
+			"itemId": "0e3d539e-06ad-4619-9f56-204c3534fba2",
+			"relativeX": 50,
+			"relativeY": 100.61027100521903
+		},
+		"endPoint": {
+			"pointType": "Fixed",
+			"itemId": "7f11836b-52e9-4540-96ba-524b1ae9bbd1",
+			"relativeX": 49.999999999999886,
+			"relativeY": 0.2542907061487938
+		},
+		"startPointerStyle": "None",
+		"endPointerStyle": "ArrowBroad",
+		"lineStyle": "curved",
+		"lineColor": "black",
+		"lineWidth": 1,
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"children": [
+						{ "text": "", "type": "text", "fontSize": 14 }
+					],
+					"horisontalAlignment": "left"
+				}
+			],
+			"maxWidth": 300,
+			"containerMaxWidth": 300,
+			"placeholderText": " ",
+			"insideOf": "Connector"
+		},
+		"zIndex": 43
+	},
+	"69087694-6851-44cd-a6f4-aba5783e9672": {
+		"itemType": "RichText",
+		"verticalAlignment": "center",
+		"children": [
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "1. Documenting workflows and procedures",
+						"type": "text",
+						"fontSize": 18
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "2. Designing complex, interconnected concepts",
+						"type": "text",
+						"fontSize": 18
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "3. Sketching design ideas and layouts",
+						"type": "text",
+						"fontSize": 18
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "4. Creating diagrams",
+						"type": "text",
+						"fontSize": 18
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "5. Collaboratively brainstorming ideas",
+						"type": "text",
+						"fontSize": 18
+					}
+				],
+				"horisontalAlignment": "left"
+			}
+		],
+		"maxWidth": 600,
+		"containerMaxWidth": 600,
+		"placeholderText": "Type something",
+		"transformation": {
+			"translateX": 119.00394621927667,
+			"translateY": 328.9074993823576,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"insideOf": "RichText",
+		"zIndex": 3
+	},
+	"d30e5922-f9f5-4ce8-a422-722ad3c5610d": {
+		"itemType": "RichText",
+		"verticalAlignment": "center",
+		"children": [
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "Teams use our boar for:",
+						"type": "text",
+						"styles": ["bold"],
+						"fontSize": 18
+					}
+				],
+				"horisontalAlignment": "left"
+			}
+		],
+		"maxWidth": 600,
+		"containerMaxWidth": 600,
+		"placeholderText": "Type something",
+		"transformation": {
+			"translateX": 139.02769884337326,
+			"translateY": 297.4697194200475,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"insideOf": "RichText",
+		"zIndex": 8
+	},
+	"40de5c38-cfc9-4b93-98c0-75c56ff5318c": {
+		"itemType": "Sticker",
+		"backgroundColor": "rgb(177, 211, 252)",
+		"transformation": {
+			"translateX": 139.74470253440134,
+			"translateY": 587.1394915711253,
+			"scaleX": 0.6445628197704835,
+			"scaleY": 0.6445628197704835,
+			"rotate": 0
+		},
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"children": [
+						{
+							"text": "Make",
+							"type": "text",
+							"fontSize": 18.920389368110772
+						},
+						{
+							"text": " sketches and refine them with colleagues",
+							"type": "text",
+							"fontSize": 14
+						}
+					],
+					"horisontalAlignment": "center"
+				}
+			],
+			"placeholderText": " ",
+			"insideOf": "Sticker"
+		},
+		"zIndex": 4
+	},
+	"fc213d7d-7bc2-4c99-adda-d66d4d0909cd": {
+		"itemType": "RichText",
+		"verticalAlignment": "center",
+		"children": [
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "Microboard is your space ",
+						"type": "text",
+						"styles": ["bold"],
+						"fontSize": 24
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "for drafts and thoughts",
+						"type": "text",
+						"styles": ["bold"],
+						"fontSize": 24
+					}
+				],
+				"horisontalAlignment": "left"
+			}
+		],
+		"maxWidth": 561.1083557597161,
+		"containerMaxWidth": 600,
+		"placeholderText": "Type something",
+		"transformation": {
+			"translateX": 93.0683861680911,
+			"translateY": 491.06204180130965,
+			"scaleX": 1.0500278224250992,
+			"scaleY": 1.050027822425099,
+			"rotate": 0
+		},
+		"insideOf": "RichText",
+		"zIndex": 7
+	},
+	"2215b26b-4586-43e4-a5da-e3216e62ac79": {
+		"itemType": "Sticker",
+		"backgroundColor": "rgb(169, 229, 187)",
+		"transformation": {
+			"translateX": 289.68698396698534,
+			"translateY": 615.8760551861208,
+			"scaleX": 0.6726394009570829,
+			"scaleY": 0.672639400957083,
+			"rotate": 0
+		},
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"children": [
+						{
+							"text": "Document the  results",
+							"type": "text",
+							"fontSize": 18
+						}
+					],
+					"horisontalAlignment": "center"
+				}
+			],
+			"placeholderText": " ",
+			"insideOf": "Sticker"
+		},
+		"zIndex": 9
+	},
+	"bbb31d4b-e1bc-4b5f-a83f-026b01b6e060": {
+		"itemType": "Shape",
+		"shapeType": "RoundedRectangle",
+		"backgroundColor": "",
+		"backgroundOpacity": 1,
+		"borderColor": "black",
+		"borderOpacity": 1,
+		"borderStyle": "dash",
+		"borderWidth": 1,
+		"transformation": {
+			"translateX": 1024.188072127648,
+			"translateY": 879.5057152660693,
+			"scaleX": 1.8910624531288476,
+			"scaleY": 0.8773584917097196,
+			"rotate": 0
+		},
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"children": [
+						{
+							"text": "???",
+							"type": "text",
+							"styles": ["bold"],
+							"fontSize": 24
+						}
+					],
+					"horisontalAlignment": "center"
+				}
+			],
+			"containerMaxWidth": 170.19562078159606,
+			"placeholderText": " ",
+			"insideOf": "Shape"
+		},
+		"zIndex": 19
+	},
+	"06a5f203-be6a-4eb3-8a51-3dc26c9e4685": {
+		"itemType": "Drawing",
+		"points": [
+			{ "x": 0, "y": 7.532656099996302 },
+			{ "x": 0, "y": 10.545718539994823 },
+			{ "x": 10.545718539994823, "y": 15.065312199992377 },
+			{ "x": 15.81857780999212, "y": 20.338171469989675 },
+			{ "x": 6.026124879997042, "y": 3.7663280499982648 },
+			{ "x": 2.2597968299990043, "y": 0 },
+			{ "x": 0.7532656099997439, "y": 2.2597968299990043 },
+			{ "x": 1.5065312199992604, "y": 11.29898414999434 },
+			{ "x": 9.039187319995563, "y": 18.078374639990898 },
+			{ "x": 9.039187319995563, "y": 18.078374639990898 }
+		],
+		"transformation": {
+			"translateX": 1266.8947743110689,
+			"translateY": 935.9511367881883,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"strokeStyle": "rgb(26, 26, 26)",
+		"strokeWidth": 6.8,
+		"zIndex": 20
+	},
+	"7f658739-0028-4a42-bc30-ef6594d1802d": {
+		"itemType": "Shape",
+		"shapeType": "RoundedRectangle",
+		"backgroundColor": "rgb(45, 155, 240)",
+		"backgroundOpacity": 1,
+		"borderColor": "rgb(45, 155, 240)",
+		"borderOpacity": 1,
+		"borderStyle": "solid",
+		"borderWidth": 1,
+		"transformation": {
+			"translateX": 995.2302506649689,
+			"translateY": 430.9580444328569,
+			"scaleX": 1.8549931420337498,
+			"scaleY": 1.0524943922918701,
+			"rotate": 0
+		},
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"children": [
+						{
+							"text": "Feeling hungry",
+							"type": "text",
+							"fontSize": 24,
+							"fontColor": "rgb(255, 255, 255)"
+						}
+					],
+					"horisontalAlignment": "center"
+				}
+			],
+			"containerMaxWidth": 166.94938278303744,
+			"placeholderText": " ",
+			"insideOf": "Shape"
+		},
+		"zIndex": 23
+	},
+	"4c03f8c7-5b47-4edb-aff7-1806c62b17d0": {
+		"itemType": "Connector",
+		"transformation": {
+			"translateX": 1118.7411947840903,
+			"translateY": 819.0247526639272,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"startPoint": {
+			"pointType": "Fixed",
+			"itemId": "7f11836b-52e9-4540-96ba-524b1ae9bbd1",
+			"relativeX": 49.999999999999886,
+			"relativeY": 99.7457092938512
+		},
+		"endPoint": {
+			"pointType": "Fixed",
+			"itemId": "bbb31d4b-e1bc-4b5f-a83f-026b01b6e060",
+			"relativeX": 50,
+			"relativeY": 0.6191194265970807
+		},
+		"startPointerStyle": "None",
+		"endPointerStyle": "ArrowBroad",
+		"lineStyle": "curved",
+		"lineColor": "black",
+		"lineWidth": 1,
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"children": [
+						{ "text": "No", "type": "text", "fontSize": 24 }
+					],
+					"horisontalAlignment": "left"
+				}
+			],
+			"maxWidth": 300,
+			"containerMaxWidth": 300,
+			"placeholderText": " ",
+			"insideOf": "Connector"
+		},
+		"zIndex": 44
+	},
+	"3f70610d-2638-4ce1-9e5d-730a34e88787": {
+		"itemType": "RichText",
+		"verticalAlignment": "center",
+		"children": [
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "Create flowcharts of any complexity",
+						"type": "text",
+						"styles": ["bold"],
+						"fontSize": 36
+					}
+				],
+				"horisontalAlignment": "left"
+			}
+		],
+		"maxWidth": 600,
+		"containerMaxWidth": 600,
+		"placeholderText": "Type something",
+		"transformation": {
+			"translateX": 1232.278245008119,
+			"translateY": 87.83268671525315,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"insideOf": "RichText",
+		"zIndex": 10
+	},
+	"0e3d539e-06ad-4619-9f56-204c3534fba2": {
+		"itemType": "Shape",
+		"shapeType": "Circle",
+		"backgroundColor": "",
+		"backgroundOpacity": 1,
+		"borderColor": "black",
+		"borderOpacity": 1,
+		"borderStyle": "solid",
+		"borderWidth": 1,
+		"transformation": {
+			"translateX": 1357.8650415475608,
+			"translateY": 253.05567655393315,
+			"scaleX": 2.3162518924264734,
+			"scaleY": 1.3405857117288218,
+			"rotate": 0
+		},
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"children": [
+						{
+							"text": "Open the fridge",
+							"type": "text",
+							"fontSize": 24
+						}
+					],
+					"horisontalAlignment": "center"
+				}
+			],
+			"containerMaxWidth": 185.30015139411785,
+			"placeholderText": " ",
+			"insideOf": "Shape"
+		},
+		"zIndex": 11
+	},
+	"7f11836b-52e9-4540-96ba-524b1ae9bbd1": {
+		"itemType": "Shape",
+		"shapeType": "Rhombus",
+		"backgroundColor": "rgb(254, 244, 69)",
+		"backgroundOpacity": 1,
+		"borderColor": "rgb(254, 244, 69)",
+		"borderOpacity": 1,
+		"borderStyle": "solid",
+		"borderWidth": 1,
+		"transformation": {
+			"translateX": 1233.31901551269,
+			"translateY": 618.4014281470329,
+			"scaleX": 2.6918243179062777,
+			"scaleY": 1.9562535354612465,
+			"rotate": 0
+		},
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"children": [
+						{
+							"text": "Is there any cheese?",
+							"type": "text",
+							"fontSize": 24
+						}
+					],
+					"horisontalAlignment": "center"
+				}
+			],
+			"containerMaxWidth": 134.591215895314,
+			"placeholderText": " ",
+			"insideOf": "Shape"
+		},
+		"zIndex": 15
+	},
+	"44c8fa70-ac76-457c-9bb7-ebe9d29c0c67": {
+		"itemType": "Drawing",
+		"points": [
+			{ "x": 6.779390489996558, "y": 6.779390489996558 },
+			{ "x": 6.779390489996558, "y": 18.078374639990898 },
+			{ "x": 9.039187319995335, "y": 23.351233909988196 },
+			{ "x": 13.558780979993116, "y": 24.857765129987456 },
+			{ "x": 14.312046589992633, "y": 21.844702689988935 },
+			{ "x": 10.545718539994596, "y": 11.29898414999434 },
+			{ "x": 3.7663280499980374, "y": 0.7532656099997439 },
+			{ "x": 1.5065312199992604, "y": 0 },
+			{ "x": 0, "y": 2.2597968299990043 },
+			{ "x": 0.7532656099995165, "y": 7.532656099996302 },
+			{ "x": 4.519593659997781, "y": 13.558780979993116 },
+			{ "x": 11.29898414999434, "y": 18.078374639990898 },
+			{ "x": 12.805515369993373, "y": 15.81857780999212 },
+			{ "x": 9.792452929995079, "y": 12.052249759994083 },
+			{ "x": 9.792452929995079, "y": 12.052249759994083 }
+		],
+		"transformation": {
+			"translateX": 1251.076196501077,
+			"translateY": 949.5099177681814,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"strokeStyle": "rgb(26, 26, 26)",
+		"strokeWidth": 6.8,
+		"zIndex": 21
+	},
+	"f00b2f77-fba8-4a11-84e4-39a27ea4716f": {
+		"itemType": "Drawing",
+		"points": [
+			{ "x": 0, "y": 15.818577809991893 },
+			{ "x": 0.7532656099997439, "y": 7.532656099996302 },
+			{ "x": 6.026124879997042, "y": 2.259796829998777 },
+			{ "x": 13.558780979993116, "y": 0 },
+			{ "x": 24.10449951998794, "y": 0.7532656099995165 },
+			{ "x": 39.169811719980316, "y": 10.545718539994596 },
+			{ "x": 42.936139769978354, "y": 15.065312199992377 },
+			{ "x": 40.67634293997935, "y": 15.065312199992377 },
+			{ "x": 32.39042122998376, "y": 10.545718539994596 },
+			{ "x": 17.32510902999138, "y": 6.026124879997042 },
+			{ "x": 14.31204658999286, "y": 6.779390489996558 },
+			{ "x": 9.792452929995079, "y": 12.052249759993856 },
+			{ "x": 1.5065312199992604, "y": 17.325109029991154 },
+			{ "x": 1.5065312199992604, "y": 17.325109029991154 }
+		],
+		"transformation": {
+			"translateX": 1266.8947743110689,
+			"translateY": 975.8742141181683,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"strokeStyle": "rgb(26, 26, 26)",
+		"strokeWidth": 6.8,
+		"zIndex": 22
+	},
+	"f7687e20-d67a-4d0d-9b30-0099b941d873": {
+		"itemType": "Connector",
+		"transformation": {
+			"translateX": 1507.7924504308858,
+			"translateY": 545.3026878746952,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"startPoint": {
+			"pointType": "Fixed",
+			"itemId": "7f11836b-52e9-4540-96ba-524b1ae9bbd1",
+			"relativeX": 99.81493985501334,
+			"relativeY": 50
+		},
+		"endPoint": {
+			"pointType": "Fixed",
+			"itemId": "7a6474b2-c16c-45ee-95ab-33a2e025b006",
+			"relativeX": 0.228676954601724,
+			"relativeY": 50.00000000000003
+		},
+		"startPointerStyle": "None",
+		"endPointerStyle": "ArrowBroad",
+		"lineStyle": "curved",
+		"lineColor": "black",
+		"lineWidth": 1,
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"children": [
+						{ "text": "Yes", "type": "text", "fontSize": 24 }
+					],
+					"horisontalAlignment": "left"
+				}
+			],
+			"maxWidth": 300,
+			"containerMaxWidth": 300,
+			"placeholderText": " ",
+			"insideOf": "Connector"
+		},
+		"zIndex": 42
+	},
+	"7a6474b2-c16c-45ee-95ab-33a2e025b006": {
+		"itemType": "Shape",
+		"shapeType": "RoundedRectangle",
+		"backgroundColor": "rgb(143, 209, 79)",
+		"backgroundOpacity": 1,
+		"borderColor": "rgb(143, 209, 79)",
+		"borderOpacity": 1,
+		"borderStyle": "solid",
+		"borderWidth": 1,
+		"transformation": {
+			"translateX": 1625.5098208279992,
+			"translateY": 497.44282267924575,
+			"scaleX": 2.176490548953641,
+			"scaleY": 0.957197303908988,
+			"rotate": 0
+		},
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"children": [
+						{
+							"text": "Yay!",
+							"type": "text",
+							"fontSize": 24,
+							"fontColor": "rgb(255, 255, 255)"
+						}
+					],
+					"horisontalAlignment": "center"
+				}
+			],
+			"containerMaxWidth": 195.88414940582766,
+			"placeholderText": " ",
+			"insideOf": "Shape"
+		},
+		"zIndex": 14
+	},
+	"10cd95e5-f4fb-4857-a8df-305d09d08191": {
+		"itemType": "RichText",
+		"verticalAlignment": "center",
+		"children": [
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "And edit texts of any ",
+						"type": "text",
+						"styles": ["bold"],
+						"fontSize": 36
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "content",
+						"type": "text",
+						"styles": ["bold"],
+						"fontSize": 36
+					}
+				],
+				"horisontalAlignment": "left"
+			}
+		],
+		"maxWidth": 492.0542460233164,
+		"containerMaxWidth": 600,
+		"placeholderText": "Type something",
+		"transformation": {
+			"translateX": 2115.925810872977,
+			"translateY": 433.14098797580243,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"insideOf": "RichText",
+		"zIndex": 17
+	},
+	"09ee9323-4d1b-4a3f-a372-d7fae346f993": {
+		"itemType": "RichText",
+		"verticalAlignment": "center",
+		"children": [
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "Unlimited number of boards",
+						"type": "text",
+						"styles": ["bold"],
+						"fontSize": 36,
+						"fontColor": "rgb(20, 21, 26)"
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "Unlimited number of shapes",
+						"type": "text",
+						"styles": ["bold"],
+						"fontSize": 36,
+						"fontColor": "rgb(20, 21, 26)"
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "",
+						"type": "text",
+						"styles": ["underline"],
+						"fontSize": 36,
+						"fontColor": "rgb(65, 75, 178)"
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "Try it now!",
+						"type": "text",
+						"styles": ["underline"],
+						"fontSize": 36,
+						"fontColor": "rgb(65, 75, 178)"
+					}
+				],
+				"horisontalAlignment": "center"
+			}
+		],
+		"maxWidth": 533.3031824840336,
+		"containerMaxWidth": 600,
+		"placeholderText": "Type something",
+		"transformation": {
+			"translateX": 3885.6776598033803,
+			"translateY": 530.7126899077714,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"insideOf": "RichText",
+		"zIndex": 25
+	},
+	"3b186fe8-7671-4f5e-baf6-6b0a30a58a4f": {
+		"itemType": "Shape",
+		"shapeType": "RoundedRectangle",
+		"backgroundColor": "rgb(206, 231, 65)",
+		"backgroundOpacity": 1,
+		"borderColor": "rgb(26, 26, 26)",
+		"borderOpacity": 1,
+		"borderStyle": "dash",
+		"borderWidth": 1,
+		"transformation": {
+			"translateX": 3983.930843020423,
+			"translateY": 422.74328011077455,
+			"scaleX": 2.4706544717785164,
+			"scaleY": 0.6468416616490923,
+			"rotate": 0
+		},
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"children": [
+						{
+							"text": "FREE!",
+							"type": "text",
+							"styles": ["bold"],
+							"fontSize": 24
+						}
+					],
+					"horisontalAlignment": "center"
+				}
+			],
+			"containerMaxWidth": 222.35890246006693,
+			"placeholderText": " ",
+			"insideOf": "Shape"
+		},
+		"zIndex": 26
+	},
+	"14fd61e7-56f1-4d5a-a0d5-3d1ee409e50c": {
+		"itemType": "Connector",
+		"transformation": {
+			"translateX": 2529.134016939122,
+			"translateY": 634.2561221086055,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"startPoint": {
+			"pointType": "Fixed",
+			"itemId": "052bf5bc-18a9-454c-960c-5dc732782a77",
+			"relativeX": 99.88845808865631,
+			"relativeY": 50
+		},
+		"endPoint": {
+			"pointType": "Board",
+			"x": 2947.5816856814363,
+			"y": 634.2561221086055
+		},
+		"startPointerStyle": "None",
+		"endPointerStyle": "TriangleFilled",
+		"lineStyle": "curved",
+		"lineColor": "black",
+		"lineWidth": 1,
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"children": [
+						{ "text": "", "type": "text", "fontSize": 14 }
+					],
+					"horisontalAlignment": "left"
+				}
+			],
+			"maxWidth": 300,
+			"containerMaxWidth": 300,
+			"placeholderText": " ",
+			"insideOf": "Connector"
+		},
+		"zIndex": 50
+	},
+	"31dcb363-9943-476e-9bc1-636270a9a3a7": {
+		"itemType": "RichText",
+		"verticalAlignment": "center",
+		"children": [
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "However little known the feelings or views of such a man may be on his first entering a neighbourhood, this truth is so well fixed in the minds of the surrounding families, that he is considered the rightful property of some one or other of their daughters.",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "“My dear Mr. Bennet,” said his lady to him one day, “have you heard that Netherfield Park is let at last?”",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "Mr. Bennet replied that he had not.",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "“But it is,” returned she; “for Mrs. Long has just been here, and she told me all about it.”",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "Mr. Bennet made no answer.",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "“Do you not want to know who has taken it?” cried his wife impatiently.",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "“YOU want to tell me, and I have no objection to hearing it.”",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "This was invitation enough.",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "“Why, my dear, you must know, Mrs. Long says that Netherfield is taken by a young man of large fortune from the north of England; that he came down on Monday in a chaise and four to see the place, and was so much delighted with it, that he agreed with Mr. Morris immediately; that he is to take possession before Michaelmas, and some of his servants are to be in the house by the end of next week.”",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "“What is his name?”",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{ "text": "“Bingley.”", "type": "text", "fontSize": 14 }
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "“Is he married or single?”",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "“Oh! Single, my dear, to be sure! A single man of large fortune; four or five thousand a year. What a fine thing for our girls!”",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "“How so? How can it affect them?”",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "“My dear Mr. Bennet,” replied his wife, “how can you be so tiresome! You must know that I am thinking of his marrying one of them.”",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "“Is that his design in settling here?”",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "“Design! Nonsense, how can you talk so! But it is very likely that he MAY fall in love with one of them, and therefore you must visit him as soon as he comes.”",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "“I see no occasion for that. You and the girls may go, or you may send them by themselves, which perhaps will be still better, for as you are as handsome as any of them, Mr. Bingley may like you the best of the party.”",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "“My dear, you flatter me. I certainly HAVE had my share of beauty, but I do not pretend to be anything extraordinary now. When a woman has five grown-up daughters, she ought to give over thinking of her own beauty.”",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "“In such cases, a woman has not often much beauty to think of.”",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "“But, my dear, you must indeed go and see Mr. Bingley when he comes into the neighbourhood.”",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "“It is more than I engage for, I assure you.”",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "“But consider your daughters. Only think what an establishment it would be for one of them. Sir William and Lady Lucas are determined to go, merely on that account, for in general, you know, they visit no newcomers. Indeed you must go, for it will be impossible for US to visit him if you do not.”",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "“You are over-scrupulous, surely. I dare say Mr. Bingley will be very glad to see you; and I will send a few lines by you to assure him of my hearty consent to his marrying whichever he chooses of the girls; though I must throw in a good word for my little Lizzy.”",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "“I desire you will do no such thing. Lizzy is not a bit better than the others; and I am sure she is not half so handsome as Jane, nor half so good-humoured as Lydia. But you are always giving HER the preference.”",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "“They have none of them much to recommend them,” replied he; “they are all silly and ignorant like other girls; but Lizzy has something more of quickness than her sisters.”",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "“Mr. Bennet, how CAN you abuse your own children in such a way? You take delight in vexing me. You have no compassion for my poor nerves.”",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "“You mistake me, my dear. I have a high respect for your nerves. They are my old friends. I have heard you mention them with consideration these last twenty years at least.”",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "left"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "Mr. Bennet was so odd a mixture of quick parts, sarcastic humour, reserve, and caprice, that the experience of three-and-twenty years had been insufficient to make his wife understand his character. HER mind was less difficult to develop. She was a woman of mean understanding, little information, and uncertain temper. When she was discontented, she fancied herself nervous. The business of her life was to get her daughters married; its solace was visiting and news.",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "left"
+			}
+		],
+		"maxWidth": 600,
+		"containerMaxWidth": 600,
+		"placeholderText": "Type something",
+		"transformation": {
+			"translateX": 1997.3102265896896,
+			"translateY": 913.3305205262318,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"insideOf": "RichText",
+		"zIndex": 16
+	},
+	"7cefd497-063e-461d-b6fe-4f6ede4fb250": {
+		"itemType": "RichText",
+		"verticalAlignment": "center",
+		"children": [
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "Pride and Prejudice",
+						"type": "text",
+						"styles": ["bold"],
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "center"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": " by Jane Austen",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "center"
+			},
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "Chapter 1 (abstract)",
+						"type": "text",
+						"fontSize": 14
+					}
+				],
+				"horisontalAlignment": "center"
+			},
+			{
+				"type": "paragraph",
+				"children": [{ "text": "", "type": "text", "fontSize": 14 }],
+				"horisontalAlignment": "center"
+			}
+		],
+		"maxWidth": 600,
+		"containerMaxWidth": 600,
+		"placeholderText": "Type something",
+		"transformation": {
+			"translateX": 2198.000188007095,
+			"translateY": 834.7714272296612,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"insideOf": "RichText",
+		"zIndex": 18
+	},
+	"b9cf73f1-efc0-45d0-bf1f-2de486e7cc17": {
+		"itemType": "Drawing",
+		"points": [
+			{ "x": 0, "y": 1.5901113087057865 },
+			{ "x": 1.5901113087057865, "y": 0 },
+			{ "x": 9.54066785223472, "y": 3.180222617411573 },
+			{ "x": 19.08133570446944, "y": 9.540667852234748 },
+			{ "x": 19.08133570446944, "y": 12.72089046964632 },
+			{ "x": 19.08133570446944, "y": 12.72089046964632 }
+		],
+		"transformation": {
+			"translateX": 36.993201247113646,
+			"translateY": 54.691917353500514,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"strokeStyle": "rgb(128, 128, 128)",
+		"strokeWidth": 8.4,
+		"zIndex": 5
+	},
+	"05b96a18-c0c8-4b19-8686-ff7399397871": {
+		"itemType": "Drawing",
+		"points": [
+			{ "x": 3.0652158012920836, "y": 0 },
+			{ "x": 7.152170203014862, "y": 2.554346501076708 },
+			{ "x": 11.74999390495293, "y": 9.19564740387618 },
+			{ "x": 14.815209706245014, "y": 16.858686907106332 },
+			{ "x": 15.836948306675708, "y": 27.58694221162854 },
+			{ "x": 0, "y": 5.619562302368777 },
+			{ "x": 0, "y": 5.619562302368777 }
+		],
+		"transformation": {
+			"translateX": 71.10069283833305,
+			"translateY": 0,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"strokeStyle": "rgb(128, 128, 128)",
+		"strokeWidth": 8,
+		"zIndex": 29
+	},
+	"d7ecc852-18a0-4002-8bee-61fc0aa7cdd1": {
+		"itemType": "RichText",
+		"verticalAlignment": "center",
+		"children": [
+			{
+				"type": "paragraph",
+				"children": [
+					{
+						"text": "Microboard helps to quickly visualize and share ideas",
+						"type": "text",
+						"styles": ["bold"],
+						"fontSize": 39
+					}
+				],
+				"horisontalAlignment": "left"
+			}
+		],
+		"maxWidth": 600,
+		"containerMaxWidth": 600,
+		"placeholderText": "Type something",
+		"transformation": {
+			"translateX": 95.63454343852341,
+			"translateY": 69.85605117152096,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"insideOf": "RichText",
+		"zIndex": 2
+	},
+	"2cd2ab3c-0d60-456a-8592-0df054e792ee": {
+		"itemType": "Drawing",
+		"points": [
+			{ "x": 5.00413961334425, "y": 6.433893788585351 },
+			{ "x": 0, "y": 0 },
+			{ "x": 7.148770876206072, "y": 2.859508350482429 },
+			{ "x": 13.582664664791537, "y": 2.859508350482429 },
+			{ "x": 2.859508350482429, "y": 2.1446312628618216 },
+			{ "x": 12.152910489550322, "y": 3.5743854381029223 },
+			{ "x": 7.863647963826679, "y": 3.5743854381029223 },
+			{ "x": 7.863647963826679, "y": 3.5743854381029223 }
+		],
+		"transformation": {
+			"translateX": 1748.4302711581595,
+			"translateY": 434.84875935967966,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"strokeStyle": "rgb(26, 26, 26)",
+		"strokeWidth": 6.2,
+		"zIndex": 27
+	},
+	"fb29d52e-16df-4e7b-880d-10e4152509ff": {
+		"itemType": "Sticker",
+		"backgroundColor": "rgb(205, 158, 246)",
+		"transformation": {
+			"translateX": 2316.2389299329457,
+			"translateY": 713.973492837297,
+			"scaleX": 0.34564258346369886,
+			"scaleY": 0.34564258346369914,
+			"rotate": 0
+		},
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"children": [
+						{
+							"text": "Rewrite this part!",
+							"type": "text",
+							"fontSize": 79.77267248114781
+						}
+					],
+					"horisontalAlignment": "center"
+				}
+			],
+			"placeholderText": " ",
+			"insideOf": "Sticker"
+		},
+		"zIndex": 51
+	},
+	"5f82080b-b5a4-4c71-bdda-63a9561bfbf5": {
+		"itemType": "Sticker",
+		"backgroundColor": "rgb(169, 229, 187)",
+		"transformation": {
+			"translateX": 2397.394352683223,
+			"translateY": 702.882660486652,
+			"scaleX": 0.34564258346369797,
+			"scaleY": 0.34564258346369797,
+			"rotate": 0
+		},
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"children": [
+						{ "text": "OMG!!!", "type": "text", "fontSize": 14 }
+					],
+					"horisontalAlignment": "center"
+				}
+			],
+			"placeholderText": " ",
+			"insideOf": "Sticker"
+		},
+		"zIndex": 52
+	},
+	"82719472-5731-4a7b-bd24-bf6e734da678": {
+		"itemType": "Drawing",
+		"points": [
+			{ "x": 0, "y": 6.6901573138885055 },
+			{ "x": 31.75471536297482, "y": 18.9054219820396 },
+			{ "x": 46.7156617957321, "y": 21.118306509012 },
+			{ "x": 57.58827742504627, "y": 16.91098432249703 },
+			{ "x": 70.08592462914294, "y": 8.205077459560641 },
+			{ "x": 78.2252904293955, "y": 0 },
+			{ "x": 78.2252904293955, "y": 0 }
+		],
+		"transformation": {
+			"translateX": 2448.6355451941536,
+			"translateY": 669.1077492864769,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"strokeStyle": "rgb(45, 155, 240)",
+		"strokeWidth": 9.1,
+		"zIndex": 31
+	},
+	"0057f087-18dd-4170-8e9e-6c7d0b35570e": {
+		"itemType": "Drawing",
+		"points": [
+			{ "x": 0, "y": 0 },
+			{ "x": 0.22377483980608304, "y": 29.46546323194164 },
+			{ "x": 4.859110807220077, "y": 50.00124476114067 },
+			{ "x": 4.859110807220077, "y": 50.00124476114067 }
+		],
+		"transformation": {
+			"translateX": 2473.8139398132653,
+			"translateY": 638.3977562694305,
+			"scaleX": 0.9473069608568645,
+			"scaleY": 0.5186488861533198,
+			"rotate": 0
+		},
+		"strokeStyle": "rgb(45, 155, 240)",
+		"strokeWidth": 9.1,
+		"zIndex": 33
+	},
+	"52a82123-a798-4a88-b87e-bd528ef206ca": {
+		"itemType": "Drawing",
+		"points": [
+			{ "x": 0, "y": 0 },
+			{ "x": 0.24331073851953988, "y": 18.89831801887115 },
+			{ "x": 1.891430193600172, "y": 26.627429946145554 },
+			{ "x": 1.891430193600172, "y": 26.627429946145554 }
+		],
+		"transformation": {
+			"translateX": 2487.8620961473725,
+			"translateY": 643.9465014013833,
+			"scaleX": 1.0224483056226257,
+			"scaleY": 0.6038092852682279,
+			"rotate": 0
+		},
+		"strokeStyle": "rgb(45, 155, 240)",
+		"strokeWidth": 9.1,
+		"zIndex": 32
+	},
+	"b043fb23-0cdc-4dc4-803b-22de140747f1": {
+		"itemType": "Connector",
+		"transformation": {
+			"translateX": 2996.260536270323,
+			"translateY": 584.7920896237745,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"startPoint": {
+			"pointType": "Board",
+			"x": 2987.260536270323,
+			"y": 633.3228412885271
+		},
+		"endPoint": {
+			"pointType": "Fixed",
+			"itemId": "09ee9323-4d1b-4a3f-a372-d7fae346f993",
+			"relativeX": 0,
+			"relativeY": 26.82509906547773
+		},
+		"startPointerStyle": "None",
+		"endPointerStyle": "TriangleFilled",
+		"lineStyle": "curved",
+		"lineColor": "black",
+		"lineWidth": 1,
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"children": [
+						{ "text": "", "type": "text", "fontSize": 14 }
+					],
+					"horisontalAlignment": "left"
+				}
+			],
+			"maxWidth": 300,
+			"containerMaxWidth": 300,
+			"placeholderText": " ",
+			"insideOf": "Connector"
+		},
+		"zIndex": 45
+	},
+	"59777c28-e586-404b-875c-f0f636fb840a": {
+		"itemType": "Drawing",
+		"points": [
+			{ "x": 2.1446312628618216, "y": 0 },
+			{ "x": 21.44631262861776, "y": 0 },
+			{ "x": 23.590943891479583, "y": 2.1446312628618216 },
+			{ "x": 24.30582097910019, "y": 7.148770876205958 },
+			{ "x": 20.016558453376547, "y": 10.008279226688273 },
+			{ "x": 10.008279226688046, "y": 10.008279226688273 },
+			{ "x": 0, "y": 2.1446312628618216 },
+			{ "x": 0, "y": 2.1446312628618216 }
+		],
+		"transformation": {
+			"translateX": 1742.7112544571946,
+			"translateY": 434.13388227205905,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"strokeStyle": "rgb(26, 26, 26)",
+		"strokeWidth": 6.2,
+		"zIndex": 30
+	},
+	"735d40f5-6d7f-4e10-8523-50fd808b0d1a": {
+		"itemType": "Drawing",
+		"points": [
+			{ "x": 0, "y": 22.453851584680734 },
+			{ "x": 31.37110135187868, "y": 32.22535292288475 },
+			{ "x": 54.794643909052866, "y": 33.62660965786165 },
+			{ "x": 60.54175011232928, "y": 30.625185219191223 },
+			{ "x": 64.01914008328595, "y": 26.69491759624583 },
+			{ "x": 77.26270342007047, "y": 0 },
+			{ "x": 77.26270342007047, "y": 0 }
+		],
+		"transformation": {
+			"translateX": 2331.564008168877,
+			"translateY": 640.2194830619719,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"strokeStyle": "rgb(206, 231, 65)",
+		"strokeWidth": 10,
+		"zIndex": 34
+	},
+	"3cffa8fa-4787-4477-bd19-f02de4d27509": {
+		"itemType": "Connector",
+		"transformation": {
+			"translateX": 1.7763568394002505e-15,
+			"translateY": 122.92136674133295,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"startPoint": {
+			"pointType": "Fixed",
+			"itemId": "d7ecc852-18a0-4002-8bee-61fc0aa7cdd1",
+			"relativeX": 0,
+			"relativeY": 48.594611327666655
+		},
+		"endPoint": {
+			"pointType": "Fixed",
+			"itemId": "d30e5922-f9f5-4ce8-a422-722ad3c5610d",
+			"relativeX": -2.842170943040401e-14,
+			"relativeY": 50
+		},
+		"startPointerStyle": "None",
+		"endPointerStyle": "TriangleFilled",
+		"lineStyle": "curved",
+		"lineColor": "black",
+		"lineWidth": 1,
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"children": [
+						{ "text": "", "type": "text", "fontSize": 14 }
+					],
+					"horisontalAlignment": "left"
+				}
+			],
+			"maxWidth": 300,
+			"containerMaxWidth": 300,
+			"placeholderText": " ",
+			"insideOf": "Connector"
+		},
+		"zIndex": 46
+	},
+	"ca3f161e-a8d9-4e15-9980-2d41d62ba0ca": {
+		"itemType": "Connector",
+		"transformation": {
+			"translateX": 505.2217196567767,
+			"translateY": 138.2326867152531,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"startPoint": {
+			"pointType": "Fixed",
+			"itemId": "69087694-6851-44cd-a6f4-aba5783e9672",
+			"relativeX": 100,
+			"relativeY": 32.92109675505901
+		},
+		"endPoint": {
+			"pointType": "Fixed",
+			"itemId": "3f70610d-2638-4ce1-9e5d-730a34e88787",
+			"relativeX": 0,
+			"relativeY": 49.99999999999994
+		},
+		"startPointerStyle": "None",
+		"endPointerStyle": "TriangleFilled",
+		"lineStyle": "curved",
+		"lineColor": "black",
+		"lineWidth": 1,
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"children": [
+						{ "text": "", "type": "text", "fontSize": 14 }
+					],
+					"horisontalAlignment": "left"
+				}
+			],
+			"maxWidth": 300,
+			"containerMaxWidth": 300,
+			"placeholderText": " ",
+			"insideOf": "Connector"
+		},
+		"zIndex": 47
+	},
+	"a824435c-b8c7-4ae2-b093-f5db1ba2b273": {
+		"itemType": "Drawing",
+		"points": [
+			{ "x": 0, "y": 33.599223118167856 },
+			{ "x": 27.16532932958262, "y": 37.888485643891386 },
+			{ "x": 46.46701069533856, "y": 37.17360855627078 },
+			{ "x": 51.47115030868281, "y": 32.16946894292664 },
+			{ "x": 56.47528992202706, "y": 12.867787577170589 },
+			{ "x": 65.05381497347389, "y": 0 },
+			{ "x": 65.05381497347389, "y": 0 }
+		],
+		"transformation": {
+			"translateX": 1704.1078917256827,
+			"translateY": 409.11318420533837,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"strokeStyle": "rgb(26, 26, 26)",
+		"strokeWidth": 6.2,
+		"zIndex": 37
+	},
+	"70a31634-590c-4266-95b7-c8f6ad76b29e": {
+		"itemType": "Drawing",
+		"points": [
+			{ "x": 0.06393566851602372, "y": 0 },
+			{ "x": 2.5254589063843014, "y": 11.41606881170037 },
+			{ "x": 16.104684502877717, "y": 35.83594220324986 },
+			{ "x": 16.104684502877717, "y": 35.83594220324986 }
+		],
+		"transformation": {
+			"translateX": 2346.986712207584,
+			"translateY": 610.2016866936832,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"strokeStyle": "rgb(206, 231, 65)",
+		"strokeWidth": 10,
+		"zIndex": 38
+	},
+	"49dddc02-1aa3-4933-b4de-ced6c44cd6bc": {
+		"itemType": "Drawing",
+		"points": [
+			{ "x": 0, "y": 0 },
+			{ "x": 0.04439976980256688, "y": 5.937137218032717 },
+			{ "x": 3.287358956200478, "y": 15.049745972362928 },
+			{ "x": 8.594019443033176, "y": 25.20841330324751 },
+			{ "x": 13.485098084511264, "y": 30.007140423535986 },
+			{ "x": 13.485098084511264, "y": 30.007140423535986 }
+		],
+		"transformation": {
+			"translateX": 2372.4899399823216,
+			"translateY": 613.8282598911774,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"strokeStyle": "rgb(206, 231, 65)",
+		"strokeWidth": 10,
+		"zIndex": 39
+	},
+	"ae095075-782d-472c-9cd8-df6c7f1510a1": {
+		"itemType": "Connector",
+		"transformation": {
+			"translateX": 1189.729564868344,
+			"translateY": 320.0849621403743,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"startPoint": {
+			"pointType": "Fixed",
+			"itemId": "7f658739-0028-4a42-bc30-ef6594d1802d",
+			"relativeX": 99.73190249940819,
+			"relativeY": 49.99999999999999
+		},
+		"endPoint": {
+			"pointType": "Fixed",
+			"itemId": "0e3d539e-06ad-4619-9f56-204c3534fba2",
+			"relativeX": -1.776464448371712,
+			"relativeY": 50
+		},
+		"startPointerStyle": "None",
+		"endPointerStyle": "ArrowBroad",
+		"lineStyle": "curved",
+		"lineColor": "black",
+		"lineWidth": 1,
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"children": [
+						{ "text": "", "type": "text", "fontSize": 14 }
+					],
+					"horisontalAlignment": "left"
+				}
+			],
+			"maxWidth": 300,
+			"containerMaxWidth": 300,
+			"placeholderText": " ",
+			"insideOf": "Connector"
+		},
+		"zIndex": 48
+	},
+	"67015717-921e-489c-8705-22e77720f775": {
+		"itemType": "Drawing",
+		"points": [
+			{ "x": 4.289262525723643, "y": 7.1487708762059015 },
+			{ "x": 3.574385438103036, "y": 11.438033401929431 },
+			{ "x": 5.00413961334425, "y": 13.582664664791253 },
+			{ "x": 10.0082792266885, "y": 15.012418840032467 },
+			{ "x": 11.438033401929715, "y": 12.152910489550038 },
+			{ "x": 8.578525051447286, "y": 6.433893788585294 },
+			{ "x": 3.574385438103036, "y": 0.7148770876206072 },
+			{ "x": 1.4297541752412144, "y": 0 },
+			{ "x": 0, "y": 1.4297541752411576 },
+			{ "x": 8.578525051447286, "y": 14.29754175241186 },
+			{ "x": 8.578525051447286, "y": 14.29754175241186 }
+		],
+		"transformation": {
+			"translateX": 1730.5583439676448,
+			"translateY": 399.10490497865,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"strokeStyle": "rgb(26, 26, 26)",
+		"strokeWidth": 6.2,
+		"zIndex": 40
+	},
+	"e398d848-99e2-40ce-8b44-e41339a0ca03": {
+		"itemType": "Drawing",
+		"points": [
+			{ "x": 0, "y": 19.30168136575594 },
+			{ "x": 16.44217301527351, "y": 18.586804278135332 },
+			{ "x": 40.033116906753094, "y": 5.004139613344137 },
+			{ "x": 44.32237943247674, "y": 0 },
+			{ "x": 44.32237943247674, "y": 0 }
+		],
+		"transformation": {
+			"translateX": 1716.2608022152326,
+			"translateY": 420.55121760726786,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"strokeStyle": "rgb(26, 26, 26)",
+		"strokeWidth": 6.2,
+		"zIndex": 41
+	},
+	"63782734-72ca-4834-a503-883ab73d1b5b": {
+		"itemType": "Connector",
+		"transformation": {
+			"translateX": 1669.393479383119,
+			"translateY": 120.91556357916255,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0
+		},
+		"startPoint": {
+			"pointType": "Fixed",
+			"itemId": "3f70610d-2638-4ce1-9e5d-730a34e88787",
+			"relativeX": 100,
+			"relativeY": 32.82031434911647
+		},
+		"endPoint": {
+			"pointType": "Fixed",
+			"itemId": "10cd95e5-f4fb-4857-a8df-305d09d08191",
+			"relativeX": 1.1368683772161603e-13,
+			"relativeY": 36.14905445877412
+		},
+		"startPointerStyle": "None",
+		"endPointerStyle": "TriangleFilled",
+		"lineStyle": "curved",
+		"lineColor": "black",
+		"lineWidth": 1,
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"children": [
+						{ "text": "", "type": "text", "fontSize": 14 }
+					],
+					"horisontalAlignment": "left"
+				}
+			],
+			"maxWidth": 300,
+			"containerMaxWidth": 300,
+			"placeholderText": " ",
+			"insideOf": "Connector"
+		},
+		"zIndex": 49
+	}
+}
