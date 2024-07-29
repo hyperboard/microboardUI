@@ -1,12 +1,11 @@
 import React from "react";
-import { Slate, Editable, ReactEditor } from "slate-react";
+import { Slate, Editable } from "slate-react";
 import { Leaf } from "./Leaf";
 import { Element } from "./Element";
 import { App } from "App";
 import { Board } from "Board";
 import { verticalAlignmentToFlex } from "./verticalAlignmentToFlex";
 import { RichText } from "Board/Items/RichText/RichText";
-import { Mbr, Point } from "Board/Items";
 import { DEFAULT_TEXT_STYLES } from "View/Items/RichText";
 
 export class TextEditors extends React.Component<
@@ -220,7 +219,7 @@ export class TextEditor extends React.Component<
 								<span
 									{...attributes}
 									style={{
-										position: "absolute",
+										// position: "absolute",
 										whiteSpace: "nowrap",
 										opacity: 0.33,
 										maxWidth: "100%",
