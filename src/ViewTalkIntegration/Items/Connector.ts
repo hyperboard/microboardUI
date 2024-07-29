@@ -15,3 +15,6 @@ export const CONNECTOR_ANCHOR_COLOR: ConnectorAnchorColors = {
 	pointBorder: "rgba(34, 145, 255, 1)",
 	pointBackground: "rgba(255, 255, 255, 1)",
 };
+
+export const CONNECTOR_ANCHOR_TYPE = "circle";
+export const CONNECTOR_LINE_CAP = "round";

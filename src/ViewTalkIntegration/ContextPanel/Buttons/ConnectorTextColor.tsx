@@ -27,7 +27,12 @@ export function ConnectorTextColor(): React.ReactElement | null {
 	const { t } = useTalkTranslation();
 
 	const context = board.selection.getContext();
-	if (context !== "EditTextUnderPointer") {
+	const showBtn =
+		context === "EditTextUnderPointer" ||
+		((context === "EditUnderPointer" || context === "SelectByRect") &&
+			!board.selection.isTextEmpty());
+
+	if (!showBtn) {
 		return null;
 	}
 
