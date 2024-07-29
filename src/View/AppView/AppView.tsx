@@ -132,7 +132,7 @@ export function AppView() {
 				</SidePanelContextProvider>
 			</ContextMenuContextProvider>
 			<ExportVisible>
-				<UserPanel />
+				<UserPanel app={app} />
 			</ExportVisible>
 			<ZoomPanel />
 			<ContextPanel />

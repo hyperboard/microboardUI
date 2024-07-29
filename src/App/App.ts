@@ -96,8 +96,8 @@ export function createApp(isHistory = true): App {
 				throw new Error("response not OK");
 			}
 			const data = await response.json();
-			const { boardId, linkId, linkUri } = data;
-			storage.setPublicBoard({ boardId: linkId, ownerId: boardId });
+			const { boardId, linkId, linkUri, authorKey } = data;
+			storage.setPublicBoard({ boardId: linkId, authorKey });
 			return linkId as string;
 		} catch (error) {
 			console.error("Failed to create a new public board.", error);
@@ -112,6 +112,15 @@ export function createApp(isHistory = true): App {
 			boards.set(id, currentBoard);
 		}
 		localStorage.setItem(LAST_BOARD_KEY, id);
+		if (
+			!storage.listPublicBoards().some(board => board.boardId === id) &&
+			!storage.listSharedBoards().some(board => board.boardId === id)
+		) {
+			storage.setPublicBoard({ boardId: id }, false);
+			if (storage.isAuth) {
+				storage.visitBoard({ boardId: id });
+			}
+		}
 
 		subscriptions.setBoard(currentBoard);
 		boardSubject.publish(currentBoard);

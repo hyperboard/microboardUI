@@ -306,7 +306,9 @@
 		"title": "Доски",
 		"folders": {
 			"publicBoards": "Публичные доски",
-			"privateBoards": "Приватные доски"
+			"privateBoards": "Приватные доски",
+			"sharedBoards": "Доступные доски",
+			"myBoards": "Мои доски"
 		},
 		"addNew": "Добавить"
 	},

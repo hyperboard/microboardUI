@@ -86,7 +86,11 @@ export function SidePanel() {
 	};
 
 	const publicBoards = app.storage.listPublicBoards();
-	const isFolderOpen = publicBoards.some(
+	const sharedBoards = app.storage.listSharedBoards();
+	const isShared = sharedBoards.some(
+		({ boardId }) => boardId === board.getBoardId(),
+	);
+	const isPublic = publicBoards.some(
 		({ boardId }) => boardId === board.getBoardId(),
 	);
 	return (
@@ -109,12 +113,76 @@ export function SidePanel() {
 					</UiButton>
 				</div>
 				<div className={style.folders}>
+					{app.storage.isAuth && (
+						<Folder
+							title={t("sidePanel.folders.myBoards")}
+							icon={
+								<Icon
+									iconName="Folder"
+									width={20}
+									height={20}
+								/>
+							}
+							isOpened={isPublic}
+						>
+							<Folder
+								title={t("sidePanel.folders.publicBoards")}
+								icon={
+									<Icon
+										iconName="Folder"
+										width={20}
+										height={20}
+									/>
+								}
+								isOpened={isPublic}
+							>
+								{publicBoards.map(({ boardId }) => (
+									<FolderItem
+										active={boardId === board.getBoardId()}
+										key={boardId}
+										onClick={() =>
+											handleBoardClick(boardId)
+										}
+										onClickContext={handleBoardContextMenu(
+											boardId,
+										)}
+										text={boardId}
+									/>
+								))}
+							</Folder>
+						</Folder>
+					)}
+					{!app.storage.isAuth && (
+						<Folder
+							title={t("sidePanel.folders.publicBoards")}
+							icon={
+								<Icon
+									iconName="Folder"
+									width={20}
+									height={20}
+								/>
+							}
+							isOpened={isPublic}
+						>
+							{publicBoards.map(({ boardId }) => (
+								<FolderItem
+									active={boardId === board.getBoardId()}
+									key={boardId}
+									onClick={() => handleBoardClick(boardId)}
+									onClickContext={handleBoardContextMenu(
+										boardId,
+									)}
+									text={boardId}
+								/>
+							))}
+						</Folder>
+					)}
 					<Folder
-						title={t("sidePanel.folders.publicBoards")}
+						title={t("sidePanel.folders.sharedBoards")}
 						icon={<Icon iconName="Folder" width={20} height={20} />}
-						isOpened={isFolderOpen}
+						isOpened={isShared}
 					>
-						{publicBoards.map(({ boardId }) => (
+						{sharedBoards.map(({ boardId }) => (
 							<FolderItem
 								active={boardId === board.getBoardId()}
 								key={boardId}

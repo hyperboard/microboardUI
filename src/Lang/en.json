@@ -308,7 +308,9 @@
 		"title": "Boards",
 		"folders": {
 			"publicBoards": "Public boards",
-			"privateBoards": "Private boards"
+			"privateBoards": "Private boards",
+			"sharedBoards": "Shared boards",
+			"myBoards": "My boards"
 		},
 		"addNew": "Add new"
 	},

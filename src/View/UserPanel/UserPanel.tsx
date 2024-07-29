@@ -16,6 +16,7 @@ import { UiPanel } from "View/Ui/UiPanel";
 import { UiButton } from "View/Ui/UiButton";
 import { isIframe } from "lib/isIframe";
 import { UiLink } from "View/Ui/UiLink";
+import { App } from "App";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	email: string;
@@ -23,6 +24,7 @@ interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 	setIsAuth: React.Dispatch<React.SetStateAction<boolean>>;
 	setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
+	app: App;
 }
 
 const UserDropDown: React.FC<UserDropDownProps> = ({
@@ -31,8 +33,10 @@ const UserDropDown: React.FC<UserDropDownProps> = ({
 	setIsAuth,
 	setIsDropdownOpen,
 	isOpen,
+	app,
 }) => {
 	const dropdownRef = useRef<HTMLDivElement>(null);
+	const nav = useNavigate();
 
 	const closeDropdown = (): void => {
 		setIsDropdownOpen(false);
@@ -50,6 +54,8 @@ const UserDropDown: React.FC<UserDropDownProps> = ({
 		setIsAuth(false);
 		Cookies.remove("refreshToken");
 		Cookies.remove("accessToken");
+		app.storage.clean();
+		nav(0);
 	};
 
 	if (!isOpen) {
@@ -133,6 +139,7 @@ const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 				email={props.email}
 				setIsModalOpen={props.setIsModalOpen}
 				setIsAuth={props.setIsAuth}
+				app={props.app}
 			/>
 		</>
 	);
@@ -386,12 +393,19 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 	);
 };
 
-export const UserPanel: React.FC = () => {
+export const UserPanel: React.FC<{ app: App }> = ({ app }) => {
 	const [email, setEmail] = useState("example@mail.com");
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [isAuth, setIsAuth] = useState(false);
 	const { t } = useTranslation();
 	const navigate = useNavigate();
+
+	useEffect(() => {
+		app.storage.setIsAuth(isAuth);
+		if (isAuth) {
+			app.storage.visitBoard({ boardId: app.getBoard().getBoardId() });
+		}
+	}, [isAuth]);
 
 	const isMicroboardIframe =
 		isIframe() && import.meta.env.INTEGRATION_UI === "microboard";
@@ -534,6 +548,7 @@ export const UserPanel: React.FC = () => {
 						email={email}
 						setIsModalOpen={setIsModalOpen}
 						setIsAuth={setIsAuth}
+						app={app}
 					/>
 				</div>
 			</UiPanel>

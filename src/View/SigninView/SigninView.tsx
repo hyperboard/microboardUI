@@ -78,6 +78,9 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 					}
 				}
 			})
+			.then(() => {
+				app.storage.claimBoards();
+			})
 			.catch(error => {
 				// setErrorMessage(error.message);
 				console.log(
