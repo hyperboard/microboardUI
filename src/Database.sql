@@ -13,7 +13,8 @@ create table if not exists boards (
 	id serial primary key,
 	uniq_id uuid,
 	created timestamp default now(),
-	boardname varchar(32)
+	boardname varchar(32),
+    author_key uuid
 );
 
 ALTER TABLE boards ADD UNIQUE (uniq_id);
@@ -328,6 +329,28 @@ create table if not exists board_owner (
 	primary key (board_id, owner_id)
 );
 
+-- Function to add an owner to a board
+create or replace function add_board_owner(
+    author_key uuid,
+    owner_id integer
+)
+returns void
+language plpgsql
+as $$
+declare
+    board_id integer;
+begin
+    -- Get the board ID from the author_key
+    select id into board_id from boards b where b.author_key = add_board_owner.author_key;
+    if board_id is null then
+        raise exception 'Board with author_key % does not exist', author_key;
+    end if;
+
+    insert into board_owner (board_id, owner_id)
+    values (board_id, owner_id);
+end;
+$$;
+
 -- Table to store board permissions
 create table if not exists board_permissions (
 	board_id integer references boards(id) on delete cascade,
@@ -459,6 +482,119 @@ begin
 	return exists (select 1 from board_permissions where board_id = (select id from boards where uniq_id = board_uuid) and user_id = user_id and can_edit = true);
 end;
 $$;
+
+-- Table to store user visited edit links
+create table if not exists user_edit_link (
+	user_id integer references users(id) on delete cascade,
+	edit_link_uuid UUID
+);
+
+-- Table to store user visited view links
+create table if not exists user_view_link (
+	user_id integer references users(id) on delete cascade,
+	view_link_uuid UUID
+);
+
+-- Function to record a user visiting an edit link
+create or replace function user_visited_edit(
+    p_user_id integer,
+    p_edit_link_uuid uuid
+) returns void as $$
+declare
+    link_exists boolean;
+    is_author boolean;
+begin
+    -- Check if the edit link exists
+    select exists (select 1 from board_edit_link where edit_link_uuid = p_edit_link_uuid) into link_exists;
+    
+    if not link_exists then
+        raise exception 'Edit link % does not exist', p_edit_link_uuid;
+    end if;
+
+    -- Check if the user is the owner of the board
+    select exists (
+        select 1 
+        from boards b
+        join board_edit_link bel on b.id = bel.board_id
+        join board_owner bo on b.id = bo.board_id
+        where bel.edit_link_uuid = p_edit_link_uuid and bo.owner_id = p_user_id
+    ) into is_author;
+
+    if is_author then
+        return;
+    end if;
+
+    insert into user_edit_link (user_id, edit_link_uuid)
+    values (p_user_id, p_edit_link_uuid);
+end;
+$$ language plpgsql;
+
+-- Function to record a user visiting a view link
+create or replace function user_visited_view(
+    p_user_id integer,
+    p_view_link_uuid uuid
+) returns void as $$
+declare
+    link_exists boolean;
+    is_author boolean;
+begin
+    -- Check if the view link exists
+    select exists (select 1 from board_view_link where view_link_uuid = p_view_link_uuid) into link_exists;
+    
+    if not link_exists then
+        raise exception 'View link % does not exist', p_view_link_uuid;
+    end if;
+
+    -- Check if the user is the owner of the board
+    select exists (
+        select 1 
+        from boards b
+        join board_edit_link bel on b.id = bel.board_id
+        join board_owner bo on b.id = bo.board_id
+        where bel.edit_link_uuid = p_edit_link_uuid and bo.owner_id = p_user_id
+    ) into is_author;
+
+    if is_author then
+        return;
+    end if;
+
+    insert into user_view_link (user_id, view_link_uuid)
+    values (p_user_id, p_view_link_uuid);
+end;
+$$ language plpgsql;
+
+-- Function to record a user visiting a link (edit or view)
+create or replace function user_visited(
+    p_user_id integer,
+    p_link_uuid uuid
+) returns void as $$
+declare
+    link_type varchar;
+begin
+    -- Check if the link exists in the edit link table
+    select 'edit' into link_type
+    from board_edit_link
+    where edit_link_uuid = p_link_uuid;
+
+    if found then
+        perform user_visited_edit(p_user_id, p_link_uuid);
+        return;
+    end if;
+
+    -- Check if the link exists in the view link table
+    select 'view' into link_type
+    from board_view_link
+    where view_link_uuid = p_link_uuid;
+
+    if found then
+        perform user_visited_view(p_user_id, p_link_uuid);
+        return;
+    end if;
+
+    -- If the link does not exist in either table, raise an exception
+    raise exception 'Link % does not exist', p_link_uuid;
+end;
+$$ language plpgsql;
 
 -- Table to store board edit link
 create table if not exists board_edit_link (
@@ -823,6 +959,97 @@ begin
 end;
 $$ language plpgsql;
 
+-- Function to get the edit link for a board
+create or replace function get_board_edit_link(
+    board_uuid uuid
+)
+returns uuid
+language plpgsql
+as $$
+declare
+    edit_link uuid;
+begin
+    select edit_link_uuid into edit_link 
+    from board_edit_link bel
+    join boards b on bel.board_id = b.id
+    where b.uniq_id = board_uuid;
+    return edit_link;
+end;
+$$;
+
+-- Function to get the view link for a board
+create or replace function get_board_view_link(
+    board_uuid uuid
+)
+returns uuid
+language plpgsql
+as $$
+declare
+    view_link uuid;
+begin
+    select view_link_uuid into view_link 
+    from board_view_link bvl
+    join boards b on bvl.board_id = b.id
+    where b.uniq_id = board_uuid;
+    return view_link;
+end;
+$$;
+
+create or replace function get_boards_user_authored(
+	userId integer
+)
+returns setof uuid as $$
+begin
+	return query
+	select b.uniq_id
+	from boards b
+	inner join board_owner o ON b.id = o.board_id
+	where o.owner_id = userId;
+end;
+$$ language plpgsql;
+
+create or replace function get_boards_user_can_view(
+	userId integer
+)
+returns setof uuid as $$
+begin
+	return query
+	select b.uniq_id
+	from boards b
+	inner join board_permissions p ON b.id = p.board_id
+	where p.user_id = userId
+	and p.can_view = true;
+end;
+$$ language plpgsql;
+
+create or replace function get_boards_user_can_edit(
+	userId integer
+)
+returns setof uuid as $$
+begin
+	return query
+	select b.uniq_id
+	from boards b
+	inner join board_permissions p ON b.id = p.board_id
+	where p.user_id = userId
+	and p.can_edit = true;
+end;
+$$ language plpgsql;
+
+create or replace function get_boards_by_user(
+	userId integer
+)
+returns setof uuid as $$
+begin
+	return query
+	select * from get_boards_user_authored(userId)
+	union
+	select * from get_boards_user_can_view(userId)
+	union
+	select * from get_boards_user_can_edit(userId);
+end;
+$$ language plpgsql;
+
 ALTER TABLE boards ALTER COLUMN boardname TYPE text;
 
 DROP FUNCTION IF EXISTS create_board(uuid, varchar(32));
@@ -831,7 +1058,8 @@ DROP FUNCTION IF EXISTS rename_board(uuid, varchar);
 
 CREATE OR REPLACE FUNCTION create_board(
     board_id uuid,
-    title text  -- or varchar(255)
+    title text,  -- or varchar(255)
+    author_key uuid
 )
 RETURNS uuid
 LANGUAGE plpgsql
@@ -844,8 +1072,8 @@ BEGIN
         new_board_id := uuid_generate_v4();
     END IF;
 
-    INSERT INTO boards (uniq_id, boardname)
-    VALUES (new_board_id, title)
+    INSERT INTO boards (uniq_id, boardname, author_key)
+    VALUES (new_board_id, title, author_key)
     RETURNING id INTO created_board_id;
 
     PERFORM addboardtable(created_board_id);

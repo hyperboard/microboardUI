@@ -71,14 +71,43 @@ export function getBoardsRouter(
                     return forbidden(res);
                 }
 
-                await boards.createBoard(boardId, title, ownerId);
+                const { authorKey } = await boards.createBoard(boardId, title, ownerId);
                 return res.status(201).json({
                     boardId: boardId,
                     boardUrl: `/boards/${boardId}`,
                     board: `/boards/${boardId}`,
+                    authorKey,
                 });
             } catch (err) {
                 logger.error(err);
+                return res.status(500).send("Server error");
+            }
+        }
+    );
+
+    router.get(
+        "/boards",
+        authenticate,
+        async (req: Request, res: Response) => {
+            try {
+                const boardsData = await boards.getBoards(req.token);
+                return res.status(200).json(boardsData);
+            } catch (err) {
+                logger.error(`Error fetching boards: ${err}`);
+                return res.status(500).send("Server error");
+            }
+        }
+    );
+
+    router.get(
+        "/boards/private",
+        authenticate,
+        async (req: Request, res: Response) => {
+            try {
+                const boardsData = await boards.getPrivateBoards(req.token);
+                return res.status(200).json(boardsData);
+            } catch (err) {
+                logger.error(`Error fetching boards: ${err}`);
                 return res.status(500).send("Server error");
             }
         }
@@ -132,13 +161,14 @@ export function getBoardsRouter(
                     const editLink = uuidv4();
 
                     const title: string = req.body.title || `${editLink}`;
-                    await boards.createBoard(boardId, title);
+                    const { authorKey } = await boards.createBoard(boardId, title);
                     await boards.createLink(boardId, "edit", editLink);
 
                     return res.status(201).json({
                         boardId: boardId,
                         linkId: editLink,
                         linkUri: `/boards/${editLink}`,
+                        authorKey,
                     });
                 } catch (err) {
                     logger.error(err);
@@ -147,6 +177,35 @@ export function getBoardsRouter(
             }
         );
     }
+    
+    router.post(
+        "/boards/claim",
+        authenticate,
+        async (req, res) => {
+            const { authorKeys, visited } = req.body;
+            if (authorKeys && authorKeys.length < 0 || visited && visited.length < 0) {
+                return res.status(400).json({ error: "wrong format, cant claim / nothing to claim" });
+            }
+        
+            try {
+                if (authorKeys) {
+                    await Promise.all(authorKeys.map(
+                        async (authorKey: string) => await boards.setOwner(req.token, authorKey)
+                    ));
+                }
+                if (visited) {
+                    await Promise.all(visited.map(
+                        async (linkId: string) => 
+                            await boards.userVisited(req.token, linkId)
+                    ));
+                }
+                res.status(200).json({ message: "Boards claimed successfully" });
+            } catch (error) {
+                logger.error(`Error claiming boards: ${error}`);
+                res.status(500).json({ error: "Internal Server Error" });
+            }
+        }
+    )
 
     // Deleting a board
     router.delete(

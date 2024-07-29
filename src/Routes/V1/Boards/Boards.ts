@@ -1,5 +1,6 @@
 import { AccessToken } from "Interface";
 import { Pool } from "pg";
+import { v4 as uuidv4 } from "uuid";
 import validator from "validator";
 import winston from "winston";
 
@@ -31,14 +32,108 @@ export class Boards {
                 ]);
                 return privateBoard.rows[0].board_id;
             } else {
+                const authorKey = uuidv4();
                 const result = await this.database.query(
-                    "SELECT * FROM create_board($1, $2)",
-                    [boardId, title]
+                    "SELECT * FROM create_board($1, $2, $3)",
+                    [boardId, title, authorKey]
                 );
-                return result.rows[0].boardId;
+                return { ...result.rows[0].boardId, authorKey };
             }
         } catch (error) {
             this.logger.error(`Error creating board: ${error}`);
+            throw error;
+        }
+    }
+
+    async setOwner(user: AccessToken, authorKey: string): Promise<void> {
+        try {
+            validateUUID(authorKey, "boardId");
+            await this.database.query(
+                `SELECT add_board_owner($1, $2)`,
+                [authorKey, user.sub]
+            );
+            this.logger.info(`Succesfully Set owner ${user.sub}`);
+        } catch (error) {
+            this.logger.error(`Error setting owner for ${user.sub}: ${error}`);
+            throw error;
+        }
+    }
+    
+    async userVisited(user: AccessToken, linkId: string): Promise<void> {
+        try {
+            validateUUID(linkId, "linkId");
+            await this.database.query(
+                "SELECT user_visited($1, $2)",
+                [user.sub, linkId]
+            );
+            this.logger.info(`Succesfully set visited ${user.sub} ${linkId}`);
+        } catch (error) {
+            this.logger.error(`Error recording user visit for link ${linkId}: ${error}`);
+            throw error;
+        }
+    }
+
+    async getBoards(user: AccessToken) {
+        try {
+            const authorQuery = await this.database.query<{ get_boards_user_authored: string }>(
+                "SELECT * FROM get_boards_user_authored($1)",
+                [user.sub]
+            );
+            const canEditQuery = await this.database.query<{ get_boards_user_can_edit: string }>(
+                "SELECT * FROM get_boards_user_can_edit($1)",
+                [user.sub]
+            );
+            const canViewQuery = await this.database.query<{ get_boards_user_can_view: string }>(
+                "SELECT * FROM get_boards_user_can_view($1)",
+                [user.sub]
+            );
+
+            const getLinks = async (boardIds: string[], type: "edit" | "view") => {
+                const query = type === "edit"
+                    ? "SELECT * FROM get_board_edit_link($1::uuid)"
+                    : "SELECT * FROM get_board_view_link($1::uuid)";
+                const links = await Promise.all(
+                    boardIds.map(async (boardId) => {
+                        const result = await this.database.query<{
+                            get_board_edit_link?: string;
+                            get_board_view_link?: string
+                        }>(query, [boardId]);
+                        return result.rows[0].get_board_edit_link ?? result.rows[0].get_board_view_link;
+                    })
+                );
+                return links;
+            };
+
+            const ids = {
+                author: authorQuery.rows.map(row => row.get_boards_user_authored),
+                canEdit: canEditQuery.rows.map(row => row.get_boards_user_can_edit),
+                canView: canViewQuery.rows.map(row => row.get_boards_user_can_view),
+            };
+            const links = {
+                author: await getLinks(ids.author, "edit"),
+                canEdit: await getLinks(ids.canEdit, "edit"),
+                canView: await getLinks(ids.canView, "view"),
+            };
+
+             // Fetch shared links
+             const sharedEditLinksQuery = await this.database.query<{ edit_link_uuid: string }>(
+                "SELECT edit_link_uuid FROM user_edit_link WHERE user_id = $1",
+                [user.sub]
+            );
+            const sharedViewLinksQuery = await this.database.query<{ view_link_uuid: string }>(
+                "SELECT view_link_uuid FROM user_view_link WHERE user_id = $1",
+                [user.sub]
+            );
+
+            return {
+                ...links,
+                shared: [
+                    ...sharedEditLinksQuery.rows.map(row => row.edit_link_uuid),
+                    ...sharedViewLinksQuery.rows.map(row => row.view_link_uuid),
+                ]
+            };
+        } catch (error) {
+            this.logger.error(`Error fetching boards for user ${user.sub}: ${error}`);
             throw error;
         }
     }
