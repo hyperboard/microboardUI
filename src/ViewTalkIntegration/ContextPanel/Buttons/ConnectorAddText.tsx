@@ -1,4 +1,3 @@
-import { Connector } from "Board/Items";
 import React from "react";
 import { usePanelContext } from "ViewTalkIntegration/ContextPanel/PanelContext";
 import { TextColorIndicator } from "ViewTalkIntegration/Icon";
@@ -10,7 +9,11 @@ export function ConnectorAddText(): React.ReactElement | null {
 	const { t } = useTalkTranslation();
 
 	const context = board.selection.getContext();
-	if (context === "EditTextUnderPointer") {
+	const showBtn =
+		(context === "EditUnderPointer" || context === "SelectByRect") &&
+		board.selection.isTextEmpty();
+
+	if (!showBtn) {
 		return null;
 	}
 

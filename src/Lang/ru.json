@@ -320,5 +320,8 @@
 		"importMiroBtn": "Импортировать доску из Miro",
 		"miroError": "Произошла ошибка. Попробуйте импортировать еще раз",
 		"loading": "Загрузка..."
+	},
+	"connector": {
+		"textPlaceholder": "Текст"
 	}
 }

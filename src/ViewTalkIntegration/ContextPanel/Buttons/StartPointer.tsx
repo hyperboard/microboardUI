@@ -41,9 +41,9 @@ export function StartPointer(): React.ReactElement | null {
 						width={18}
 						height={18}
 						iconName={
-							pointerStartStyle === "ArrowBroad"
+							pointerStartStyle === "AngleTalk"
 								? "PointerEnd"
-								: pointerStartStyle === "TriangleFilled"
+								: pointerStartStyle === "TriangleFilledTalk"
 								? "PointerEndCompact"
 								: "PointerStart"
 						}

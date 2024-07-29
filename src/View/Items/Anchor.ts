@@ -36,3 +36,23 @@ export function renderAnchor(
 	ctx.stroke();
 	ctx.closePath();
 }
+
+export function renderCircleAnchor(
+	ctx: CanvasRenderingContext2D,
+	center: Center,
+	radius: number,
+	borderColor: string,
+	backgroundColor: string,
+	strokeWidth: number,
+	scale: number,
+) {
+	renderAnchor(
+		ctx,
+		center,
+		radius,
+		borderColor,
+		backgroundColor,
+		strokeWidth,
+		scale,
+	);
+}

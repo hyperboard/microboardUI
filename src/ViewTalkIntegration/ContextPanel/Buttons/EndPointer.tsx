@@ -44,7 +44,7 @@ export function EndPointer(): React.ReactElement | null {
 						iconName={
 							pointerStartStyle === "AngleTalk"
 								? "PointerEnd"
-								: pointerStartStyle === "TriangleFilled"
+								: pointerStartStyle === "TriangleFilledTalk"
 								? "PointerEndCompact"
 								: "PointerStart"
 						}
