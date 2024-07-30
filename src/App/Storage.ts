@@ -8,6 +8,8 @@ interface VisitedPublicBoard {
 	authorKey?: string;
 }
 
+export type AuthorKeys = { [boardId: string]: string };
+
 export class Storage {
 	visitedPublicBoards = `${location.host}/VisitedPublicBoards`;
 	sharedBoards = `${location.host}/sharedBoards`;
@@ -208,7 +210,11 @@ export class Storage {
 		}
 	}
 
-	getAuthorKeys(): { [boardId: string]: string } {
+	/**
+	 *
+	 * @type AuthorKeys = { [boardId: string]: string }
+	 */
+	getAuthorKeys(): AuthorKeys {
 		return (Array.from({ length: localStorage.length }) as string[]).reduce(
 			(acc, _, i) => {
 				const key = localStorage.key(i);
@@ -218,7 +224,7 @@ export class Storage {
 				}
 				return acc;
 			},
-			{} as { [boardId: string]: string },
+			{} as AuthorKeys,
 		);
 	}
 
