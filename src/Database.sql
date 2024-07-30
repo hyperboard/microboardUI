@@ -570,7 +570,25 @@ create or replace function user_visited(
 ) returns void as $$
 declare
     link_type varchar;
+    already_visited boolean;
 begin
+    -- Check if the user has already visited the edit link
+    select true into already_visited
+    from user_edit_link
+    where user_id = p_user_id and edit_link_uuid = p_link_uuid;
+
+    if already_visited then
+        return;
+    end if;
+    -- Check if the user has already visited the view link
+    select true into already_visited
+    from user_view_link
+    where user_id = p_user_id and view_link_uuid = p_link_uuid;
+
+    if already_visited then
+        return;
+    end if;
+
     -- Check if the link exists in the edit link table
     select 'edit' into link_type
     from board_edit_link
