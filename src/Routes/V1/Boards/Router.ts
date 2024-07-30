@@ -94,21 +94,7 @@ export function getBoardsRouter(
                 return res.status(200).json(boardsData);
             } catch (err) {
                 logger.error(`Error fetching boards: ${err}`);
-                return res.status(500).send("Server error");
-            }
-        }
-    );
-
-    router.get(
-        "/boards/private",
-        authenticate,
-        async (req: Request, res: Response) => {
-            try {
-                const boardsData = await boards.getPrivateBoards(req.token);
-                return res.status(200).json(boardsData);
-            } catch (err) {
-                logger.error(`Error fetching boards: ${err}`);
-                return res.status(500).send("Server error");
+                return res.status(500).json({ error: `Error fetching boards: ${err}` });
             }
         }
     );
@@ -202,7 +188,7 @@ export function getBoardsRouter(
                 res.status(200).json({ message: "Boards claimed successfully" });
             } catch (error) {
                 logger.error(`Error claiming boards: ${error}`);
-                res.status(500).json({ error: "Internal Server Error" });
+                res.status(500).json({ error: `Error claiming boards: ${error}` });
             }
         }
     )
