@@ -2,6 +2,7 @@ import { SupportedFormats, SupportedRaster, SupportedVector } from "./types";
 
 export const supportedRasters = [
 	"image/png",
+	"image/webp"
 ] as const;
 export const supportedVector = [
 	"image/svg+xml",
