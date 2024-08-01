@@ -307,9 +307,9 @@
 	"sidePanel": {
 		"title": "Boards",
 		"folders": {
-			"publicBoards": "Public boards",
+			"publicDrafts": "Public drafts",
 			"privateBoards": "Private boards",
-			"sharedBoards": "Shared boards",
+			"sharedBoards": "Shared with me",
 			"myBoards": "My boards"
 		},
 		"addNew": "Add new"

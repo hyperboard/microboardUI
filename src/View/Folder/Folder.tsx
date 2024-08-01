@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import React, {
+	useEffect,
 	useState,
 	type MouseEventHandler,
 	type PropsWithChildren,
@@ -15,6 +16,10 @@ type Props = PropsWithChildren<{
 
 export function Folder({ title, icon, children, isOpened = false }: Props) {
 	const [isOpen, setIsOpen] = useState(isOpened);
+
+	useEffect(() => {
+		setIsOpen(isOpened);
+	}, [isOpened]);
 
 	const handleTitleClick: MouseEventHandler = () => {
 		setIsOpen(prev => !prev);

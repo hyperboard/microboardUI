@@ -23,15 +23,23 @@ import { ImportFromMiro } from "./ImportFromMiro";
 
 export function SidePanel() {
 	const { isOpen, toggleSideMenu } = useSidePanelContext();
-	const [width, setWidth] = useState(300);
-	const animationId = useRef<number | null>(null);
-	const forceUpdate = useForceUpdate();
 	const { app, board } = useAppContext();
-	const navigate = useNavigate();
 	const { open, close } = useContextMenuContext();
 	const { t } = useTranslation();
+	const animationId = useRef<number | null>(null);
+	const forceUpdate = useForceUpdate();
+	const navigate = useNavigate();
+	const [width, setWidth] = useState(300);
+	const publicBoards = app.storage.listPublicBoards();
+	const sharedBoards = app.storage.listSharedBoards();
+	const isShared = sharedBoards.some(
+		({ boardId }) => boardId === board.getBoardId(),
+	);
+	const isPublic = publicBoards.some(
+		({ boardId }) => boardId === board.getBoardId(),
+	);
 
-	const update = () => {
+	const update = (): void => {
 		if (animationId.current) {
 			return; // Function already scheduled to run
 		}
@@ -54,7 +62,7 @@ export function SidePanel() {
 		close();
 	});
 
-	const handleBoardClick = (boardId: string) => {
+	const handleBoardClick = (boardId: string): void => {
 		app.openBoard(boardId);
 		navigate(`/boards/${boardId}`, { replace: true });
 	};
@@ -85,14 +93,6 @@ export function SidePanel() {
 		});
 	};
 
-	const publicBoards = app.storage.listPublicBoards();
-	const sharedBoards = app.storage.listSharedBoards();
-	const isShared = sharedBoards.some(
-		({ boardId }) => boardId === board.getBoardId(),
-	);
-	const isPublic = publicBoards.some(
-		({ boardId }) => boardId === board.getBoardId(),
-	);
 	return (
 		<UiPanel
 			ref={panelRef}
@@ -126,10 +126,10 @@ export function SidePanel() {
 							isOpened={isPublic}
 						>
 							<Folder
-								title={t("sidePanel.folders.publicBoards")}
+								title={t("sidePanel.folders.publicDrafts")}
 								icon={
 									<Icon
-										iconName="Folder"
+										iconName="publicDrafts"
 										width={20}
 										height={20}
 									/>
@@ -154,10 +154,10 @@ export function SidePanel() {
 					)}
 					{!app.storage.isAuth && (
 						<Folder
-							title={t("sidePanel.folders.publicBoards")}
+							title={t("sidePanel.folders.publicDrafts")}
 							icon={
 								<Icon
-									iconName="Folder"
+									iconName="publicDrafts"
 									width={20}
 									height={20}
 								/>
@@ -179,7 +179,13 @@ export function SidePanel() {
 					)}
 					<Folder
 						title={t("sidePanel.folders.sharedBoards")}
-						icon={<Icon iconName="Folder" width={20} height={20} />}
+						icon={
+							<Icon
+								iconName="sharedBoards"
+								width={20}
+								height={20}
+							/>
+						}
 						isOpened={isShared}
 					>
 						{sharedBoards.map(({ boardId }) => (

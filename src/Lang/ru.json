@@ -305,7 +305,7 @@
 	"sidePanel": {
 		"title": "Доски",
 		"folders": {
-			"publicBoards": "Публичные доски",
+			"publicDrafts": "Публичные черновики",
 			"privateBoards": "Приватные доски",
 			"sharedBoards": "Доступные доски",
 			"myBoards": "Мои доски"
