@@ -6,14 +6,14 @@ export const DEFAULT_END_POINTER = "TriangleFilled";
 export const DRAW_TEXT_BORDER = false;
 export const TEXT_BORDER_PADDING = 0;
 export const CONNECTOR_ANCHOR_COLOR: ConnectorAnchorColors = {
-	snapBorder: "rgba(0,0,255,0.8)",
-	snapBackgroundHighlight: "rgba(0,0,0,0.2)",
+	snapBorder: "rgb(71, 120, 245)",
+	snapBackgroundHighlight: "rgba(0,0,0,0.1)",
 	snapBackground: "rgba(0,0,0,0)",
-	anchorBorder: "rgba(0,0,255,0.8)",
-	anchorBackground: "rgba(255,255,255,0.8)",
-	anchorHighlight: "rgba(0,0,255,0.8)",
-	pointBorder: "rgba(0,0,0,0)",
-	pointBackground: "rgba(0,0,255,0.8)",
+	anchorBorder: "rgb(147, 175, 246)",
+	anchorBackground: "rgb(255, 255, 255)",
+	anchorHighlight: "rgb(255, 255, 255)",
+	pointBorder: "rgb(147, 175, 246)",
+	pointBackground: "rgb(147, 175, 246)",
 };
 
 export const CONNECTOR_ANCHOR_TYPE = "rect";
