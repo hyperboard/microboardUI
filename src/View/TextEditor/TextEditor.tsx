@@ -220,6 +220,8 @@ export class TextEditor extends React.Component<
 									{...attributes}
 									style={{
 										// position: "absolute",
+										display: "inline-block",
+										width: 0,
 										whiteSpace: "nowrap",
 										opacity: 0.33,
 										maxWidth: "100%",
