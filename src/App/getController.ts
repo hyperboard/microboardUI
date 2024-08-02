@@ -497,6 +497,7 @@ export function getController(getBoard: () => Board): Controller {
 				};
 
 				reader.readAsDataURL(file);
+				return;
 			}
 		}
 
