@@ -278,7 +278,6 @@ export function getController(getBoard: () => Board): Controller {
 	function onPointerMove(event: PointerEvent): boolean {
 		const currentTime = Date.now();
 		if (currentTime - pointerDownTime < pointerMoveDelay) {
-			console.log("prevent");
 			return false;
 		}
 		const board = getBoard();
