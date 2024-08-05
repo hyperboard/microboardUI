@@ -228,6 +228,7 @@ export class TextEditor extends React.Component<
 										textDecoration: "none",
 										userSelect: "none",
 										pointerEvents: "none",
+										fontSize: "inherit",
 									}}
 								>
 									{children}
@@ -244,6 +245,9 @@ export class TextEditor extends React.Component<
 								overflowY: !text.getAutosize()
 									? "auto"
 									: "visible",
+								fontSize:
+									(text.getFontSize() / editorScale) *
+									camera.getScale(),
 								// transform: `scale(${editorScale})`,
 								// transformOrigin: `left top`,
 							}}
