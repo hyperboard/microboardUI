@@ -24,7 +24,7 @@ export enum EUserRole {
 	guest = "Guest",
 }
 
-async function refreshTokens(refreshToken: string): Promise<void> {
+export async function refreshTokens(refreshToken: string): Promise<void> {
 	fetch(getApiUrl("/auth/refresh"), {
 		method: "POST",
 		headers: {

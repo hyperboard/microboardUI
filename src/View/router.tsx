@@ -68,6 +68,16 @@ export function getRender(app: App): () => void {
 				},
 			],
 		},
+		{
+			path: "/boards",
+			element: <ProtectedRoute isPublic={true} />,
+			children: [
+				{
+					path: "",
+					element: <BoardView app={app} />,
+				},
+			],
+		},
 	]);
 
 	return function () {

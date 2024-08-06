@@ -225,6 +225,13 @@
 		"noAccess": "No access",
 		"copyLink": "Copy link"
 	},
+	"modalInfo": {
+		"accessDenied": {
+			"title": "Board is unavailable",
+			"description": "You do not have access to this board, or the board does not exist"
+		}
+	},
+	"ok": "Ok",
 	"colors": {
 		"White": "White",
 		"Mustard Yellow": "Mustard Yellow",

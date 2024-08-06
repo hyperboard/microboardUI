@@ -1,5 +1,5 @@
 import { useForceUpdate } from "lib/useForceUpdate";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { TextEditors } from "View/TextEditor/TextEditor";
 import { UserPanel } from "View/UserPanel/UserPanel";
@@ -15,6 +15,7 @@ import { ToastProvider } from "View/ToastProvider";
 import { ZoomPanel } from "View/ZoomPanel";
 import style from "./AppView.module.css";
 import { ImportMiroBoards } from "../ImportMiroBoards";
+import { InfoModal } from "View/Modal/InfoModal";
 
 export function AppView() {
 	const { app, board } = useAppContext();
@@ -109,20 +110,34 @@ export function AppView() {
 		app.openBoard(boardId!);
 	}
 
-	if (!board) {
+	if (!board && boardId !== "boards") {
 		return <div></div>;
 	}
 
 	return (
 		<div className={style.wrapper}>
-			<div ref={containerRef}>
-				<Canvas
-					router={{ location, navigate, params }}
-					app={app}
-					board={board}
-				/>
-				<TextEditors app={app} board={board} />
-			</div>
+			{boardId !== "boards" && (
+				<div ref={containerRef}>
+					<Canvas
+						router={{ location, navigate, params }}
+						app={app}
+						board={board}
+					/>
+					<TextEditors app={app} board={board} />
+				</div>
+			)}
+			{boardId === "boards" && (
+				<div
+					style={{
+						display: "flex",
+						justifyContent: "center",
+						alignItems: "center",
+						height: "100%",
+					}}
+				>
+					No board is open
+				</div>
+			)}
 			<ContextMenuContextProvider>
 				<SidePanelContextProvider>
 					<ExportVisible>

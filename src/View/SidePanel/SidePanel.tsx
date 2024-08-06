@@ -21,7 +21,7 @@ import style from "./SidePanel.module.css";
 import { useSidePanelContext } from "./SidePanelContext";
 import { ImportFromMiro } from "./ImportFromMiro";
 
-export function SidePanel() {
+export function SidePanel(): React.ReactNode {
 	const { isOpen, toggleSideMenu } = useSidePanelContext();
 	const { app, board } = useAppContext();
 	const { open, close } = useContextMenuContext();
@@ -32,6 +32,7 @@ export function SidePanel() {
 	const [width, setWidth] = useState(300);
 	const publicBoards = app.storage.listPublicBoards();
 	const sharedBoards = app.storage.listSharedBoards();
+	const isBlank = app.getBoard() === undefined;
 	const isShared = sharedBoards.some(
 		({ boardId }) => boardId === board.getBoardId(),
 	);
@@ -67,22 +68,22 @@ export function SidePanel() {
 		navigate(`/boards/${boardId}`, { replace: true });
 	};
 
-	const handleContextMenuOpen: MouseEventHandler = e => {
-		e.preventDefault();
-		open(e.clientX, e.clientY);
+	const handleContextMenuOpen: MouseEventHandler = event => {
+		event.preventDefault();
+		open(event.clientX, event.clientY);
 	};
 
-	const handleContextMenuClose: MouseEventHandler = e => {
-		e.preventDefault();
+	const handleContextMenuClose: MouseEventHandler = event => {
+		event.preventDefault();
 		close();
 	};
 
 	const handleBoardContextMenu =
 		(boardId: string): MouseEventHandler =>
-		e => {
-			e.preventDefault();
-			e.stopPropagation();
-			open(e.clientX, e.clientY, boardId);
+		event => {
+			event.preventDefault();
+			event.stopPropagation();
+			open(event.clientX, event.clientY, boardId);
 		};
 
 	const handleAddNew: MouseEventHandler = async () => {
@@ -123,7 +124,8 @@ export function SidePanel() {
 									height={20}
 								/>
 							}
-							isOpened={isPublic}
+							isOpened={isPublic || isBlank}
+							isBlank={isBlank}
 						>
 							<Folder
 								title={t("sidePanel.folders.publicDrafts")}
@@ -134,7 +136,8 @@ export function SidePanel() {
 										height={20}
 									/>
 								}
-								isOpened={isPublic}
+								isOpened={isPublic || isBlank}
+								isBlank={isBlank}
 							>
 								{publicBoards.map(({ boardId }) => (
 									<FolderItem
@@ -163,6 +166,7 @@ export function SidePanel() {
 								/>
 							}
 							isOpened={isPublic}
+							isBlank={isBlank}
 						>
 							{publicBoards.map(({ boardId }) => (
 								<FolderItem
@@ -186,7 +190,8 @@ export function SidePanel() {
 								height={20}
 							/>
 						}
-						isOpened={isShared}
+						isOpened={isShared || isBlank}
+						isBlank={isBlank}
 					>
 						{sharedBoards.map(({ boardId }) => (
 							<FolderItem

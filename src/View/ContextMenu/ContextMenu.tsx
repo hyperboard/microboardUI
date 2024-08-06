@@ -32,11 +32,16 @@ export function ContextMenu() {
 	const handleDeleteBoard: MouseEventHandler = e => {
 		e.preventDefault();
 		e.stopPropagation();
-		app.storage.removePublicBoard(boardId);
-		close();
-		if (boardId === board.getBoardId()) {
-			navigate("/");
-		}
+		const removingCurr = boardId === app.getBoard()?.getBoardId();
+		app.storage
+			.removeBoard(boardId)
+			.then(() => {
+				if (removingCurr) {
+					navigate("/boards");
+				}
+				close();
+			})
+			.catch(console.error);
 	};
 
 	return (

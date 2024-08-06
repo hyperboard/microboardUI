@@ -1,11 +1,22 @@
 import { getApiUrl } from "Config";
 import Cookies from "js-cookie";
 import { Subject } from "Subject";
+import { refreshTokens } from "View/Routes/ProtectedRoute";
 
+// TODO strictly type shared/owned/haveRights boards
 interface VisitedPublicBoard {
 	boardId: string;
 	name?: string;
 	authorKey?: string;
+	actualId?: string;
+}
+
+interface BoardWId extends VisitedPublicBoard {
+	actualId: string;
+}
+
+interface BoardWKey extends VisitedPublicBoard {
+	authorKey: string;
 }
 
 export type AuthorKeys = { [boardId: string]: string };
@@ -53,24 +64,6 @@ export class Storage {
 		sessionStorage.setItem("lastSticker", JSON.stringify(lastSticker));
 	}
 
-	/* Adds an id of a visited public board to the local storage
-    setPublicBoard(board: VisitedPublicBoard): void {
-        let visitedBoards = this.listPublicBoards();
-        const length = visitedBoards.length;
-        for (let i = 0; i < length; i++) {
-            if (visitedBoards[i].boardId === board.boardId) {
-                visitedBoards[i] = { ...visitedBoards[i], ...board };
-                localStorage.setItem(this.visitedPublicBoards, JSON.stringify(visitedBoards));
-                this.subject.publish();
-                return;
-            }
-        }
-        visitedBoards.push(board);
-        localStorage.setItem(this.visitedPublicBoards, JSON.stringify(visitedBoards));
-        this.subject.publish();
-    }
-    */
-
 	/* Adds an id of a visited public board to the local storage */
 	setPublicBoard(board: VisitedPublicBoard, isPublic = true): void {
 		const visitedBoards = isPublic
@@ -99,9 +92,7 @@ export class Storage {
 			JSON.stringify(visitedBoards),
 		);
 		if (board.authorKey) {
-			const authoredBoard = board as VisitedPublicBoard & {
-				authorKey: string;
-			};
+			const authoredBoard = board as BoardWKey;
 			if (this.isAuth) {
 				this.claimBoard(authoredBoard);
 			} else {
@@ -122,22 +113,35 @@ export class Storage {
 			},
 		});
 		const { author, canEdit, canView, shared } = await res.json();
+		console.log("fetched", author);
 		localStorage.setItem(
 			this.visitedPublicBoards,
-			JSON.stringify(author.map(boardId => ({ boardId }))),
+			JSON.stringify(
+				author.map(board => ({
+					boardId: board.link,
+					actualId: board.boardId,
+				})),
+			),
 		);
+		// TODO replace with shared, haveRights
 		localStorage.setItem(
 			this.sharedBoards,
 			JSON.stringify([
-				...canEdit.map(boardId => ({ boardId })),
-				...canView.map(boardId => ({ boardId })),
+				...canEdit.map(board => ({
+					boardId: board.link,
+					actualId: board.boardId,
+				})),
+				...canView.map(board => ({
+					boardId: board.link,
+					actualId: board.boardId,
+				})),
 				...shared.map(boardId => ({ boardId })),
 			]),
 		);
 		this.subject.publish();
 	}
 
-	claimBoard(board: VisitedPublicBoard & { authorKey: string }): void {
+	claimBoard(board: BoardWKey): void {
 		fetch(getApiUrl("/boards/claim"), {
 			method: "POST",
 			headers: {
@@ -156,6 +160,8 @@ export class Storage {
 					`authorKey_${board.boardId}`,
 					board.authorKey,
 				);
+			} else {
+				refreshTokens(Cookies.get("refreshToken") || "");
 			}
 		});
 	}
@@ -211,9 +217,8 @@ export class Storage {
 	}
 
 	/**
-	 *
-	 * @type AuthorKeys = { [boardId: string]: string }
-	 */
+	@type AuthorKeys = { [boardId: string]: string }
+		*/
 	getAuthorKeys(): AuthorKeys {
 		return (Array.from({ length: localStorage.length }) as string[]).reduce(
 			(acc, _, i) => {
@@ -268,12 +273,101 @@ export class Storage {
 		this.cleanAuthorKeys();
 	}
 
+	private deleteBoard(board: BoardWId): Promise<boolean> {
+		return fetch(getApiUrl(`/boards/${board.actualId}`), {
+			method: "DELETE",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${Cookies.get("accessToken")}`,
+			},
+		}).then(response => {
+			if (response.ok) {
+				this.removePublicBoard(board.boardId);
+				return true;
+			} else {
+				console.error("Could not delete board");
+				return false;
+			}
+		});
+	}
+
+	private deleteBoardUnauthed(board: BoardWId & BoardWKey): Promise<boolean> {
+		return fetch(
+			getApiUrl(`/boards/${board.actualId}/${board.authorKey}`),
+			{
+				method: "DELETE",
+				headers: {
+					"Content-Type": "application/json",
+				},
+			},
+		).then(response => {
+			if (response.ok) {
+				this.removePublicBoard(board.boardId);
+				return true;
+			} else {
+				console.error("Could not delete board");
+				return false;
+			}
+		});
+	}
+
+	private unvisitBoard(board: VisitedPublicBoard): Promise<boolean> {
+		return fetch(getApiUrl(`/boards/${board.boardId}/visited`), {
+			method: "DELETE",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${Cookies.get("accessToken")}`,
+			},
+		}).then(response => {
+			if (response.ok) {
+				this.removeSharedBoard(board.boardId);
+				return true;
+			} else {
+				console.error("Could not delete shared board");
+				return false;
+			}
+		});
+	}
+
+	removeBoard(id: string): Promise<boolean> {
+		const publicBoard = this.listPublicBoards().find(
+			board => board.boardId === id && board.actualId,
+		);
+		const sharedBoard = this.listSharedBoards().find(
+			board => board.boardId === id && !board.actualId,
+		); // no id === no rules
+
+		// TODO replace with map
+		if (this.isAuth) {
+			if (publicBoard) {
+				const guaranteedIdBoard = publicBoard as BoardWId;
+				return this.deleteBoard(guaranteedIdBoard);
+			} else if (sharedBoard) {
+				return this.unvisitBoard(sharedBoard);
+			} else {
+				throw new Error(`unkown board id ${id}`);
+			}
+		} else {
+			if (publicBoard && publicBoard.authorKey) {
+				const typedBoard = publicBoard as BoardWId & BoardWKey;
+				return this.deleteBoardUnauthed(typedBoard);
+			} else if (sharedBoard) {
+				return Promise.resolve(this.removeSharedBoard(id));
+			} else {
+				throw new Error(`unkown board id ${id}`);
+			}
+		}
+	}
+
 	/* Removes an id of a visited public board from the local storage */
 	removePublicBoard(id: string): void {
 		const visitedBoards = this.listPublicBoards();
 		const length = visitedBoards.length;
 		for (let i = 0; i < length; i++) {
 			if (visitedBoards[i].boardId === id) {
+				if (visitedBoards[i].authorKey) {
+					localStorage.removeItem(`authorKey_${id}`);
+				}
 				visitedBoards.splice(i, 1);
 				localStorage.setItem(
 					this.visitedPublicBoards,
@@ -284,6 +378,20 @@ export class Storage {
 			}
 		}
 	}
+
+	/* Removes an id of a visited shared board from the local storage */
+	removeSharedBoard(id: string): boolean {
+		return this.listSharedBoards().some((board, index, array) => {
+			if (board.boardId === id) {
+				array.splice(index, 1);
+				localStorage.setItem(this.sharedBoards, JSON.stringify(array));
+				this.subject.publish();
+				return true;
+			}
+			return false;
+		});
+	}
+
 	reorderPublicBoard(draggedBoardId: string, targetBoardId: string): void {
 		const visitedBoards = this.listPublicBoards();
 		const draggedBoardIndex = visitedBoards.findIndex(

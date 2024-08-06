@@ -15,7 +15,7 @@ export const useAuth = (app: App): UseAuth => {
 
 	useEffect(() => {
 		app.storage.setIsAuth(isAuth);
-		if (isAuth) {
+		if (isAuth && app.getBoard()) {
 			app.storage.visitBoard({ boardId: app.getBoard().getBoardId() });
 		}
 	}, [isAuth]);
