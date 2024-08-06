@@ -1,3 +1,4 @@
+import { getBoardIds, getLinks, getSharedLinks } from "Database";
 import { AccessToken } from "Interface";
 import { Pool } from "pg";
 import { v4 as uuidv4 } from "uuid";
@@ -75,62 +76,28 @@ export class Boards {
 
     async getBoards(user: AccessToken) {
         try {
-            const authorQuery = await this.database.query<{ get_boards_user_authored: string }>(
-                "SELECT * FROM get_boards_user_authored($1)",
-                [user.sub]
-            );
-            const canEditQuery = await this.database.query<{ get_boards_user_can_edit: string }>(
-                "SELECT * FROM get_boards_user_can_edit($1)",
-                [user.sub]
-            );
-            const canViewQuery = await this.database.query<{ get_boards_user_can_view: string }>(
-                "SELECT * FROM get_boards_user_can_view($1)",
-                [user.sub]
-            );
+            const ids = await getBoardIds(this.database, user.sub);
 
-            const getLinks = async (boardIds: string[], type: "edit" | "view") => {
-                const query = type === "edit"
-                    ? "SELECT * FROM get_board_edit_link($1::uuid)"
-                    : "SELECT * FROM get_board_view_link($1::uuid)";
-                const links = await Promise.all(
-                    boardIds.map(async (boardId) => {
-                        const result = await this.database.query<{
-                            get_board_edit_link?: string;
-                            get_board_view_link?: string
-                        }>(query, [boardId]);
-                        return result.rows[0].get_board_edit_link ?? result.rows[0].get_board_view_link;
-                    })
-                );
-                return links;
+            const withLinks = {
+                author: (await getLinks(this.database, ids.author, "edit")).map((link, index) => ({
+                    boardId: ids.author[index],
+                    link: link
+                })),
+                canEdit: (await getLinks(this.database, ids.canEdit, "edit")).map((link, index) => ({
+                    boardId: ids.canEdit[index],
+                    link: link
+                })),
+                canView: (await getLinks(this.database, ids.canView, "view")).map((link, index) => ({
+                    boardId: ids.canView[index],
+                    link: link
+                })),
             };
 
-            const ids = {
-                author: authorQuery.rows.map(row => row.get_boards_user_authored),
-                canEdit: canEditQuery.rows.map(row => row.get_boards_user_can_edit),
-                canView: canViewQuery.rows.map(row => row.get_boards_user_can_view),
-            };
-            const links = {
-                author: await getLinks(ids.author, "edit"),
-                canEdit: await getLinks(ids.canEdit, "edit"),
-                canView: await getLinks(ids.canView, "view"),
-            };
-
-             // Fetch shared links
-             const sharedEditLinksQuery = await this.database.query<{ edit_link_uuid: string }>(
-                "SELECT edit_link_uuid FROM user_edit_link WHERE user_id = $1",
-                [user.sub]
-            );
-            const sharedViewLinksQuery = await this.database.query<{ view_link_uuid: string }>(
-                "SELECT view_link_uuid FROM user_view_link WHERE user_id = $1",
-                [user.sub]
-            );
+            const shared = await getSharedLinks(this.database, user.sub);
 
             return {
-                ...links,
-                shared: [
-                    ...sharedEditLinksQuery.rows.map(row => row.edit_link_uuid),
-                    ...sharedViewLinksQuery.rows.map(row => row.view_link_uuid),
-                ]
+                ...withLinks,
+                shared,
             };
         } catch (error) {
             this.logger.error(`Error fetching boards for user ${user.sub}: ${error}`);
@@ -180,12 +147,42 @@ export class Boards {
         }
     }
 
+    async isValidAuthorKey(boardId: string, authorKey: string): Promise<boolean> {
+        try {
+            validateUUID(boardId, "boardId");
+            validateUUID(authorKey, "authorKey");
+            const result = await this.database.query(
+                "SELECT 1 FROM boards WHERE uniq_id = $1 AND author_key = $2 LIMIT 1",
+                [boardId, authorKey]
+            );
+            return result.rows.length === 1;
+        } catch (error) {
+            this.logger.error(`Error checking if author key is valid: ${error}`);
+            throw error;
+        }
+    }
+
     async deleteBoard(boardId: string): Promise<void> {
         try {
             validateUUID(boardId, "boardId");
             await this.database.query("SELECT delete_board($1)", [boardId]);
+            this.logger.info(`Succesfully deleted ${boardId}`);
         } catch (error) {
             this.logger.error(`Error deleting board: ${error}`);
+            throw error;
+        }
+    }
+
+    async deleteVisted(user: AccessToken, linkId: string): Promise<void> {
+        try {
+            validateUUID(linkId, "linkId");
+            await this.database.query(
+                "SELECT user_unvisited($1, $2)",
+                [user.sub, linkId]
+            );
+            this.logger.info(`Successfully removed visited link ${linkId} for user ${user.sub}`);
+        } catch (error) {
+            this.logger.error(`Error removing visited link ${linkId} for user ${user.sub}: ${error}`);
             throw error;
         }
     }

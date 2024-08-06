@@ -11,6 +11,7 @@ import { AccessToken } from "Interface";
 import { Permissions } from "./types";
 import { verifyToken } from "Tokens";
 import * as crypto from "crypto";
+import { getBoardIds } from "Database";
 // import { publicKey } from "shared/config/keys";
 
 type RegisterPayload = {
@@ -100,9 +101,10 @@ export class Auth {
         const permissions = await this.getPermissions(user.rows[0].id);
 
         const { accessToken, refreshToken } =
-            await this.authHelper.generateTokens(user.rows[0].id, {
-                ...permissions,
-            });
+            await this.authHelper.generateTokens(
+                user.rows[0].id,
+                { ...permissions },
+            );
 
         const salt = await bcrypt.genSalt(10);
         const refreshTokenHash = await bcrypt.hash(refreshToken, salt);
@@ -276,11 +278,14 @@ export class Auth {
         const permissions = await this.getPermissions(+claims.sub);
 
         const { accessToken, refreshToken } =
-            await this.authHelper.generateTokens(+claims.sub, {
-                owns: { ...claims.owns, ...permissions.owns },
-                edits: { ...claims.edits, ...permissions.edits },
-                reads: { ...claims.reads, ...permissions.reads },
-            });
+            await this.authHelper.generateTokens(
+                +claims.sub,
+                {
+                    owns: { ...claims.owns, ...permissions.owns },
+                    edits: { ...claims.edits, ...permissions.edits },
+                    reads: { ...claims.reads, ...permissions.reads },
+                }
+            );
 
         const salt = await bcrypt.genSalt(10);
         const refreshTokenHash = await bcrypt.hash(refreshToken, salt);
@@ -381,7 +386,7 @@ export class Auth {
                 owns: { ...permissions.owns },
                 edits: { ...permissions.edits },
                 reads: { ...permissions.reads },
-            }
+            },
         );
 
         const salt = await bcrypt.genSalt(10);
@@ -540,45 +545,19 @@ export class Auth {
         }
     }
 
-    private async getPermissions(user_id: number): Promise<Permissions> {
+    private async getPermissions(userId: number): Promise<Permissions> {
+        const { author, canEdit, canView } = await getBoardIds(this.database, userId + "");
         const permissions: Permissions = {
             owns: {
-                boards: [],
+                boards: author,
             },
             edits: {
-                boards: [],
+                boards: canEdit,
             },
             reads: {
-                boards: [],
+                boards: canView,
             },
         };
-
-        const boardsOwnerships = await this.database.query<{
-            board_id: number;
-            can_view: boolean;
-            can_edit: boolean;
-            user_id: number;
-            owner_id: number;
-        }>(`
-        SELECT bp.board_id, bp.can_view,  bp.can_edit, bp.user_id, bo.owner_id
-        FROM board_permissions bp 
-        JOIN board_owner bo 
-        ON bo.board_id = bp.board_id 
-        `);
-
-        if (boardsOwnerships) {
-            for (const rights of boardsOwnerships.rows) {
-                if (rights.can_view) {
-                    permissions.reads.boards.push(`${rights.board_id}`);
-                }
-                if (rights.can_edit) {
-                    permissions.edits.boards.push(`${rights.board_id}`);
-                }
-                if (rights.user_id === rights.owner_id) {
-                    permissions.owns.boards.push(`${rights.board_id}`);
-                }
-            }
-        }
 
         return permissions;
     }

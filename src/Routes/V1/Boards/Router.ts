@@ -7,6 +7,7 @@ import { authenticate } from "Middlewares";
 import { AccessToken } from "Interface";
 import { jwtMiddleware } from "Middlewares/jwt.middleware";
 import validator from "validator";
+import { createToken } from "Tokens";
 
 function checkPermissions(
     jwt: AccessToken,
@@ -238,6 +239,34 @@ export function getBoardsRouter(
                     await boards.deleteBoard(boardId);
                 }
 
+                return res.status(204).send();
+            } catch (err) {
+                logger.error(err);
+                return res.status(500).send("Server error");
+            }
+        }
+    );
+
+    // Deleting a board without authentication but with authorKey
+    router.delete(
+        "/boards/:boardId/:authorKey",
+        param("boardId").isUUID(),
+        param("authorKey").isUUID(),
+        async (req: Request, res: Response) => {
+            try {
+                const { boardId, authorKey } = req.params;
+
+                const isBoardExist = await boards.isBoardExists(boardId);
+                if (!isBoardExist) {
+                    return res.status(404).json({ message: "Board not found" });
+                }
+
+                const isValidAuthorKey = await boards.isValidAuthorKey(boardId, authorKey);
+                if (!isValidAuthorKey) {
+                    return res.status(403).json({ message: "Invalid author key" });
+                }
+
+                await boards.deleteBoard(boardId);
                 return res.status(204).send();
             } catch (err) {
                 logger.error(err);
@@ -564,6 +593,30 @@ export function getBoardsRouter(
                 return res.status(204).send();
             } catch (err) {
                 logger.error(err);
+                return res.status(500).send("Server error");
+            }
+        }
+    );
+
+    // Removing a visited link
+    router.delete(
+        "/boards/:linkId/visited",
+        authenticate,
+        param("linkId").isUUID(),
+        async (req: Request, res: Response) => {
+            try {
+                const errors = validationResult(req);
+                if (!errors.isEmpty()) {
+                    return res.status(400).json({ errors: errors.array() });
+                }
+
+                const linkId = req.params.linkId;
+
+                await boards.deleteVisted(req.token, linkId);
+
+                return res.status(204).send();
+            } catch (err) {
+                logger.error(`Error removing visited link: ${err}`);
                 return res.status(500).send("Server error");
             }
         }

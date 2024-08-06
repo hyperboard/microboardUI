@@ -170,6 +170,8 @@ begin
         
         delete from board_permissions where board_id = board_id_to_delete;
         delete from board_owner where board_id = board_id_to_delete;
+        delete from user_edit_link where edit_link_uuid in (select edit_link_uuid from board_edit_link where board_id = board_id_to_delete);
+        delete from user_view_link where view_link_uuid in (select view_link_uuid from board_view_link where board_id = board_id_to_delete);
         delete from board_edit_link where board_id = board_id_to_delete;
         delete from board_view_link where board_id = board_id_to_delete;
         delete from board_snapshots where board_id = board_id_to_delete;
@@ -496,6 +498,7 @@ create table if not exists user_view_link (
 );
 
 -- Function to record a user visiting an edit link
+-- we asume that link exist
 create or replace function user_visited_edit(
     p_user_id integer,
     p_edit_link_uuid uuid
@@ -504,13 +507,6 @@ declare
     link_exists boolean;
     is_author boolean;
 begin
-    -- Check if the edit link exists
-    select exists (select 1 from board_edit_link where edit_link_uuid = p_edit_link_uuid) into link_exists;
-    
-    if not link_exists then
-        raise exception 'Edit link % does not exist', p_edit_link_uuid;
-    end if;
-
     -- Check if the user is the owner of the board
     select exists (
         select 1 
@@ -530,6 +526,7 @@ end;
 $$ language plpgsql;
 
 -- Function to record a user visiting a view link
+-- we asume that link exist
 create or replace function user_visited_view(
     p_user_id integer,
     p_view_link_uuid uuid
@@ -538,13 +535,6 @@ declare
     link_exists boolean;
     is_author boolean;
 begin
-    -- Check if the view link exists
-    select exists (select 1 from board_view_link where view_link_uuid = p_view_link_uuid) into link_exists;
-    
-    if not link_exists then
-        raise exception 'View link % does not exist', p_view_link_uuid;
-    end if;
-
     -- Check if the user is the owner of the board
     select exists (
         select 1 
@@ -570,22 +560,17 @@ create or replace function user_visited(
 ) returns void as $$
 declare
     link_type varchar;
-    already_visited boolean;
 begin
-    -- Check if the user has already visited the edit link
-    select true into already_visited
-    from user_edit_link
-    where user_id = p_user_id and edit_link_uuid = p_link_uuid;
+    lock table user_edit_link in exclusive mode;
+    lock table user_view_link in exclusive mode;
 
-    if already_visited then
+    -- Check if the user has already visited the edit link
+    if exists (select 1 from user_edit_link where user_id = p_user_id and edit_link_uuid = p_link_uuid) then
         return;
     end if;
-    -- Check if the user has already visited the view link
-    select true into already_visited
-    from user_view_link
-    where user_id = p_user_id and view_link_uuid = p_link_uuid;
 
-    if already_visited then
+    -- Check if the user has already visited the view link
+    if exists (select 1 from user_view_link where user_id = p_user_id and view_link_uuid = p_link_uuid) then
         return;
     end if;
 
@@ -611,6 +596,29 @@ begin
 
     -- If the link does not exist in either table, raise an exception
     raise exception 'Link % does not exist', p_link_uuid;
+end;
+$$ language plpgsql;
+
+-- Function to delete information that a user visited a link (edit or view)
+create or replace function user_unvisited(
+    p_user_id integer,
+    p_link_uuid uuid
+) returns void as $$
+declare
+    edit_deleted integer;
+    view_deleted integer;
+begin
+    delete from user_edit_link
+    where user_id = p_user_id and edit_link_uuid = p_link_uuid
+    returning 1 into edit_deleted;
+
+    delete from user_view_link
+    where user_id = p_user_id and view_link_uuid = p_link_uuid
+    returning 1 into view_deleted;
+
+    if edit_deleted is null and view_deleted is null then
+        raise exception 'No link found for user_id % and link_uuid %', p_user_id, p_link_uuid;
+    end if;
 end;
 $$ language plpgsql;
 
@@ -1011,6 +1019,32 @@ begin
     where b.uniq_id = board_uuid;
     return view_link;
 end;
+$$;
+
+CREATE OR REPLACE FUNCTION get_user_boards(p_user_id integer)
+RETURNS TABLE (
+    authored_boards uuid,
+    can_edit_boards uuid,
+    can_view_boards uuid
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        authored.board_id AS authored_boards,
+        can_edit.board_id AS can_edit_boards,
+        can_view.board_id AS can_view_boards
+    FROM (
+        SELECT get_boards_user_authored(p_user_id) AS board_id
+    ) authored
+    FULL OUTER JOIN (
+        SELECT get_boards_user_can_edit(p_user_id) AS board_id
+    ) can_edit ON true
+    FULL OUTER JOIN (
+        SELECT get_boards_user_can_view(p_user_id) AS board_id
+    ) can_view ON true;
+END;
 $$;
 
 create or replace function get_boards_user_authored(

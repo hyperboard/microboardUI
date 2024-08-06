@@ -2,6 +2,7 @@ import { Config } from "shared/config/config";
 import { AccessToken } from "Interface";
 import { Permissions } from "./types";
 import { createToken } from "Tokens";
+import { getBoardIds } from "Database";
 
 export class AuthHelper {
     constructor(private config: Config) {}
