@@ -32,7 +32,8 @@ export function SidePanel(): React.ReactNode {
 	const [width, setWidth] = useState(300);
 	const publicBoards = app.storage.listPublicBoards();
 	const sharedBoards = app.storage.listSharedBoards();
-	const isBlank = app.getBoard() === undefined;
+	const isBlank =
+		app.getBoard() === undefined || app.getBoard().getBoardId() === "blank";
 	const isShared = sharedBoards.some(
 		({ boardId }) => boardId === board.getBoardId(),
 	);

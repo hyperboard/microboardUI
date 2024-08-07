@@ -100,13 +100,14 @@ export function AppView() {
 	}, []);
 
 	const urlString = new URL(window.location.href).pathname;
-	const boardId = params?.boardId || urlString.split("/").pop();
+	const firstPath = urlString.split("/").pop();
+	const boardId = params?.boardId || firstPath;
 	const query = new URLSearchParams(location?.search);
 	const codeSearch = query.get("code");
 	const teamIdSearch = query.get("team_id");
 	const isOpenMiroBoards = codeSearch && teamIdSearch;
 
-	if (boardId) {
+	if (boardId && firstPath !== "boards") {
 		app.openBoard(boardId!);
 	}
 
@@ -114,9 +115,10 @@ export function AppView() {
 		return <div></div>;
 	}
 
+	const appBoard = app.getBoard();
 	return (
 		<div className={style.wrapper}>
-			{boardId !== "boards" && (
+			{appBoard && appBoard.getBoardId() !== "blank" && (
 				<div ref={containerRef}>
 					<Canvas
 						router={{ location, navigate, params }}
@@ -126,7 +128,7 @@ export function AppView() {
 					<TextEditors app={app} board={board} />
 				</div>
 			)}
-			{boardId === "boards" && (
+			{(!appBoard || appBoard.getBoardId() === "blank") && (
 				<div
 					style={{
 						display: "flex",
