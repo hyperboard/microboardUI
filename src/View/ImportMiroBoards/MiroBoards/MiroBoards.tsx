@@ -57,9 +57,9 @@ export function MiroBoards({
 				},
 			);
 
-			const data = await response.json();
-			if (data) {
-				Cookies.set("miro_accessToken", data.access_token);
+			const token = await response.json();
+			if (token) {
+				Cookies.set("miro_accessToken", token.access_token);
 				await fetchBoards();
 			}
 		} catch (e) {

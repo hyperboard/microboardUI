@@ -63,7 +63,7 @@ export function ImportBoardItem({
 			const boardItems = await response.json();
 			const {
 				data: boardItemsData,
-				cursor: currentboardItemsCursor,
+				cursor: currentBoardItemsCursor,
 				total,
 			} = boardItems;
 
@@ -71,7 +71,7 @@ export function ImportBoardItem({
 			setItemsInfo(info => {
 				return {
 					cursor: {
-						items: currentboardItemsCursor ?? "",
+						items: currentBoardItemsCursor ?? "",
 						connectors: info.cursor.connectors,
 					},
 					total: {
@@ -126,6 +126,17 @@ export function ImportBoardItem({
 		}
 	};
 
+	const createNewBoard = async () => {
+		await app.createPublicBoard().then((id: string) => {
+			app.openBoard(id);
+			navigate(`/boards/${id}`, {
+				replace: true,
+			});
+			const board = app.getBoard();
+			useCopyBoardItems(board, boardItems);
+		});
+	};
+
 	useEffect(() => {
 		fetchBoardsItems();
 		fetchBoardsItemsConnectors();
@@ -141,19 +152,13 @@ export function ImportBoardItem({
 
 	useEffect(() => {
 		if (
+			isOpen &&
 			boardItems &&
 			itemsInfo.total.items + itemsInfo.total.connectors ===
 				boardItems.length
 		) {
 			onCloseModal();
-			app.createPublicBoard().then((id: string) => {
-				app.openBoard(id);
-				navigate(`/boards/${id}`, {
-					replace: true,
-				});
-				const board = app.getBoard();
-				useCopyBoardItems(board, boardItems);
-			});
+			createNewBoard();
 		}
 	}, [boardItems, itemsInfo.total]);
 

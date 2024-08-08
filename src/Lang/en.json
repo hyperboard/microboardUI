@@ -321,7 +321,9 @@
 		"importMiro": "Import from Miro",
 		"importMiroBtn": "Import board from Miro",
 		"miroError": "An error has occurred. Try importing again",
-		"loading": "Loading..."
+		"loading": "Loading...",
+		"connectorError": "Start and end connector points not found",
+		"notFoundConnectorItemById": "Start and end connection objects for the connector not found"
 	},
 	"connector": {
 		"textPlaceholder": "Text"

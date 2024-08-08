@@ -319,7 +319,9 @@
 		"importMiro": "Импорт из Miro",
 		"importMiroBtn": "Импортировать доску из Miro",
 		"miroError": "Произошла ошибка. Попробуйте импортировать еще раз",
-		"loading": "Загрузка..."
+		"loading": "Загрузка...",
+		"connectorError": "Начальная и конечная точки коннектора не найдены",
+		"notFoundConnectorItemById": "Начальная и конечная объекты соединения коннектора не найдены"
 	},
 	"connector": {
 		"textPlaceholder": "Текст"
