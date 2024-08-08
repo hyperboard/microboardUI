@@ -1,24 +1,40 @@
 import { Board } from "Board";
-import { IMiroBoardItem } from "../MiroBoards/MiroBoardsModels";
+import {
+	IMiroBoardItem,
+	IMiroBoardItemConnector,
+	IMiroBoardItemImage,
+	IMiroBoardItemShape,
+	IMiroBoardItemSticker,
+	IMiroBoardItemText,
+	MiroBoardItemTypes,
+	MiroItemsTypes,
+} from "../MiroBoards/MiroBoardsModels";
 import { Connector, Mbr, RichText, Shape } from "Board/Items";
 import { BorderStyle } from "Board/Items/Path";
 import { Sticker, stickerColors } from "Board/Items/Sticker";
 import { ImageItem } from "Board/Items/Image";
 import Cookies from "js-cookie";
-import { BoardPoint } from "Board/Items/Connector";
 import { ConnectionLineWidths } from "Board/Items/Connector/Connector";
 import { CONNECTOR_LINE_WIDTH } from "View/Items/Connector";
+import { prepareImage } from "Board/Items/Image/ImageHelpers";
+import { BoardPoint } from "Board/Items/Connector";
+import i18next from "i18next";
 
 interface MiroImage {
 	type: string;
 	url: string;
 }
 
-export function useCopyBoardItems(
+export const useCopyBoardItems = (
 	board: Board,
 	miroItems: IMiroBoardItem[],
-): void {
-	const SCALE_FACTOR = 100;
+): void => {
+	const connectorError = i18next.t("miro.connectorError");
+	const notFoundConnectorItemById = i18next.t(
+		"miro.notFoundConnectorItemById",
+	);
+	const SCALE_FACTOR = 150;
+	const RICH_TEXT_MAX_WIDTH = 600;
 
 	const colorsSticker = {
 		dark_blue: stickerColors["Sky Blue"],
@@ -47,7 +63,19 @@ export function useCopyBoardItems(
 		parallelogram: "Parallelogram",
 		star: "Star",
 		right_arrow: "ArrowRight",
+		left_arrow: "ArrowLeft",
 		rectangle: "Rectangle",
+		left_right_arrow: "ArrowLeftRight",
+		pentagon: "Pentagon",
+		octagon: "Octagon",
+		hexagon: "Hexagon",
+		flow_chart_predefined_process: "PredefinedProcess",
+		trapezoid: "Trapezoid",
+		cloud: "Cloud",
+		cross: "Cross",
+		can: "Cylinder",
+		left_brace: "BracesRight",
+		right_brace: "BracesLeft",
 	};
 
 	const borderStyles = {
@@ -80,33 +108,54 @@ export function useCopyBoardItems(
 		erd_zero_or_one: "OneOptional",
 	};
 
+	const parseTextData = (text: string): Element[] => {
+		const parser = new DOMParser();
+		const parsedText = parser.parseFromString(text, "text/html");
+		return Array.from(parsedText.getElementsByTagName("body")[0].children);
+	};
+
 	const setItemText = (
 		item: Shape | Sticker,
 		text: string,
 		fontSize: string,
 		fontFamily: string,
 	): void => {
-		const textWithoutTag = text.replace(/<[^>]*>/g, "");
-		item.text.addText(textWithoutTag);
-		item.text.setSelectionFontSize(+fontSize);
-		item.text.setSelectionFontFamily(fontFamily);
+		const textEls = parseTextData(text);
+
+		if (textEls) {
+			textEls.forEach(element => {
+				const textSpan = element.getElementsByTagName("span")[0];
+				const paragraph = (element as HTMLElement).innerText ?? "\n";
+
+				item.text.addText(paragraph);
+
+				item.text.setSelectionFontSize(+fontSize);
+				item.text.setSelectionFontFamily(fontFamily);
+
+				if (item.itemType === "Shape" && textSpan) {
+					const { color, backgroundColor } = textSpan.style;
+					item.text.setSelectionFontColor(color);
+					item.text.setSelectionFontHighlight(backgroundColor);
+				}
+			});
+		}
 	};
 
-	const copyShape = (item: IMiroBoardItem): void => {
+	const copyShape = (item: IMiroBoardItemShape): void => {
 		const { id, style, position, data, geometry } = item;
-		const { x, y } = position;
-		const { height, width } = geometry;
-		const {
-			fillColor,
-			fillOpacity,
-			borderColor,
-			borderOpacity,
-			borderStyle,
-			borderWidth,
-			fontSize,
-			fontFamily,
-		} = style;
-		if (data) {
+		if (data && position && geometry) {
+			const { height, width } = geometry;
+			const {
+				fillColor,
+				fillOpacity,
+				borderColor,
+				borderOpacity,
+				borderStyle,
+				borderWidth,
+				fontSize,
+				fontFamily,
+			} = style;
+			const { x, y } = position;
 			const { shape, content } = data;
 			const miroShapeType = shape ?? "";
 			const shapeType = shapeTypes[miroShapeType];
@@ -116,18 +165,23 @@ export function useCopyBoardItems(
 					undefined,
 					id,
 					shapeType,
-					fillColor,
+					fillColor ?? "",
 					+fillOpacity,
 					borderColor,
 					+borderOpacity,
 					newBorderStyle as BorderStyle,
 					+borderWidth,
 				);
+				const shapeW = newShape.getPaths().getMbr().getWidth();
+				const shapeH = newShape.getPaths().getMbr().getHeight();
 
-				newShape.transformation.translateTo(x, y);
+				const newShapeX = x - width / 2;
+				const newShapeY = y - height / 2;
+
+				newShape.transformation.translateTo(newShapeX, newShapeY);
 				newShape.transformation.scaleTo(
-					width / SCALE_FACTOR,
-					height / SCALE_FACTOR,
+					width / shapeW,
+					height / shapeH,
 				);
 
 				content && setItemText(newShape, content, fontSize, fontFamily);
@@ -137,29 +191,32 @@ export function useCopyBoardItems(
 		}
 	};
 
-	const copySticker = (item: IMiroBoardItem): void => {
+	const copySticker = (item: IMiroBoardItemSticker): void => {
 		const { id, style, position, data, geometry } = item;
-		const { x, y } = position;
-		const { height, width } = geometry;
-		const { fillColor, fontSize, fontFamily } = style;
-		if (data && fillColor) {
+		const { fillColor } = style;
+		if (fillColor) {
+			const { height, width } = geometry;
+			const { x, y } = position!;
 			const color = colorsSticker[fillColor];
 			const sticker = new Sticker(undefined, id, color);
 
-			sticker.transformation.translateTo(x, y);
-			const stickerScaleFactor = SCALE_FACTOR * 2;
-			sticker.transformation.scaleTo(
-				width / stickerScaleFactor,
-				height / stickerScaleFactor,
-			);
+			const stickerW = sticker.getPaths().getMbr().getWidth();
+			const stickerH = sticker.getPaths().getMbr().getHeight();
 
-			data.content &&
+			const stickerX = x - width / 2;
+			const stickerY = y - height / 2;
+
+			sticker.transformation.translateTo(stickerX, stickerY);
+			sticker.transformation.scaleTo(stickerW / width, stickerH / height);
+
+			if (data.content) {
+				const { fontSize, fontFamily } = style;
 				setItemText(sticker, data.content, fontSize, fontFamily);
+			}
 
 			board.add(sticker);
 		}
 	};
-
 	const getImage = async (imageUrl: string): Promise<MiroImage | null> => {
 		const token = Cookies.get("miro_accessToken");
 		try {
@@ -168,8 +225,8 @@ export function useCopyBoardItems(
 					Authorization: "Bearer " + token,
 				},
 			});
-			const data = await response.json();
-			return data;
+			const img = await response.json();
+			return img;
 		} catch (error) {
 			console.log(error);
 		}
@@ -178,53 +235,61 @@ export function useCopyBoardItems(
 
 	const imageUrlToBase64 = async (
 		url: string,
-	): Promise<string | ArrayBuffer | null> => {
+	): Promise<string | undefined> => {
 		const data = await fetch(url);
 		const blob = await data.blob();
 		return new Promise((resolve, reject) => {
 			const reader = new FileReader();
 			reader.readAsDataURL(blob);
 			reader.onloadend = () => {
-				const base64data = reader.result;
+				const base64data = reader.result?.toString();
 				resolve(base64data);
 			};
 			reader.onerror = reject;
 		});
 	};
 
-	const copyImage = async (item: IMiroBoardItem): Promise<void> => {
-		const { id, position, data, geometry } = item;
-		if (data && data.imageUrl) {
-			const { x, y } = position;
-			const { height, width } = geometry;
+	const copyImage = async (item: IMiroBoardItemImage): Promise<void> => {
+		const { position, data, geometry } = item;
+		const { x, y } = position;
+		const { width, height } = geometry;
+		const prepareImgUrl =
+			data.imageUrl.split("?")[0] + "?format=original&redirect=false";
+		const img = await getImage(prepareImgUrl);
+		const imgUrl = img?.url ?? "";
+		const imgBase64: string = await imageUrlToBase64(imgUrl ?? "").then(
+			base64Data => base64Data ?? "",
+		);
 
-			const imgUrl = await getImage(data.imageUrl);
-			const imgBase64 = await imageUrlToBase64(imgUrl?.url ?? "").then(
-				base64Data => base64Data,
+		prepareImage(imgBase64).then(imageData => {
+			const imgItem = new ImageItem(imageData);
+
+			const imgX = x - width / 2;
+			const imgY = y - height / 2;
+
+			imgItem.transformation.translateTo(imgX, imgY);
+			imgItem.transformation.scaleTo(
+				width / SCALE_FACTOR,
+				height / SCALE_FACTOR,
 			);
-			const img = new ImageItem(imgBase64, undefined, id);
-
-			img.transformation.translateTo(x, y);
-			const imgScaleFactor = SCALE_FACTOR + 50;
-			img.transformation.scaleTo(
-				width / imgScaleFactor,
-				height / imgScaleFactor,
-			);
-
-			board.add(img);
-		}
+			board.add(imgItem);
+		});
 	};
 
 	const getMiroItemById = (id: string): IMiroBoardItem | undefined =>
-		miroItems.find((item: IMiroBoardItem) => item.id === id) || undefined;
+		miroItems.find((item: IMiroBoardItem) => item.id === id);
 
 	const getConnectorPoint = (
 		start: number,
-		end: number,
-		percent: string,
+		geometry: number | undefined,
+		percent: string | undefined,
 	): number => {
-		const percentInt = +percent.replace("%", "");
-		return start + (end * percentInt) / SCALE_FACTOR;
+		const percentInt = percent?.replace("%", "") ?? 1;
+		if (geometry) {
+			const startPoint = start - geometry / 2;
+			return startPoint + (geometry * +percentInt) / 100;
+		}
+		return start;
 	};
 
 	const setConnectorsStyles = (
@@ -243,103 +308,137 @@ export function useCopyBoardItems(
 		}
 	};
 
-	const copyConnector = async (item: IMiroBoardItem): Promise<void> => {
+	const copyConnector = (item: IMiroBoardItemConnector): void | null => {
 		const { startItem, endItem, style, shape } = item;
-		if (startItem && endItem && shape) {
-			const startItemMiro = getMiroItemById(startItem.id);
-			const endItemMiro = getMiroItemById(endItem.id);
 
-			if (startItemMiro && endItemMiro) {
-				const startX = getConnectorPoint(
-					startItemMiro.position.x,
-					startItemMiro.geometry.width,
-					startItem.position.x,
-				);
-				const startY = getConnectorPoint(
-					startItemMiro.position.y,
-					startItemMiro.geometry.height,
-					startItem.position.y,
-				);
-
-				const endX = getConnectorPoint(
-					endItemMiro.position.x,
-					startItemMiro.geometry.width,
-					endItem.position.x,
-				);
-				const endY = getConnectorPoint(
-					endItemMiro.position.y,
-					startItemMiro.geometry.height,
-					endItem.position.y,
-				);
-
-				const connector = new Connector(
-					board,
-					undefined,
-					new BoardPoint(startX, startY),
-					new BoardPoint(endX, endY),
-				);
-
-				const {
-					strokeColor,
-					strokeWidth: miroStrokeWidth,
-					startStrokeCap,
-					endStrokeCap,
-				} = style;
-				strokeColor && connector.setLineColor(strokeColor);
-
-				const connectorType = connectorTypes[shape];
-				connector.setLineStyle(connectorType);
-				const strokeWidth =
-					miroStrokeWidth &&
-					ConnectionLineWidths.find(
-						width => width === +miroStrokeWidth,
-					);
-				connector.setLineWidth(
-					strokeWidth ? strokeWidth : CONNECTOR_LINE_WIDTH,
-				);
-
-				setConnectorsStyles(connector, startStrokeCap, endStrokeCap);
-
-				board.add(connector);
-			}
+		if (!startItem?.position || !endItem?.position) {
+			console.error(connectorError);
+			return null;
 		}
+		// start and end connection objects for the connector
+		const startItemMiro = getMiroItemById(startItem.id);
+		const endItemMiro = getMiroItemById(endItem.id);
+
+		if (!startItemMiro || !endItemMiro) {
+			console.error(notFoundConnectorItemById);
+			return null;
+		}
+		// coordinates of the start and end objects for the connector
+		const { x: startItemX, y: startItemY } = startItemMiro.position;
+		const { x: endItemX, y: endItemY } = endItemMiro.position;
+
+		// geometry of the start and end objects for the connector
+		const startItemHeight =
+			startItemMiro.type !== MiroBoardItemTypes.TEXT
+				? startItemMiro.geometry.height
+				: undefined;
+		const endItemHeight =
+			endItemMiro.type !== MiroBoardItemTypes.TEXT
+				? endItemMiro.geometry.height
+				: undefined;
+
+		const startX = getConnectorPoint(
+			startItemX,
+			startItemMiro.geometry.width,
+			startItem.position.x,
+		);
+		const startY = getConnectorPoint(
+			startItemY,
+			startItemHeight,
+			startItem.position.y,
+		);
+
+		const endX = getConnectorPoint(
+			endItemX,
+			endItemMiro.geometry.width,
+			endItem.position.x,
+		);
+		const endY = getConnectorPoint(
+			endItemY,
+			endItemHeight,
+			endItem.position.y,
+		);
+
+		const connector = new Connector(
+			board,
+			undefined,
+			new BoardPoint(startX, startY),
+			new BoardPoint(endX, endY),
+		);
+
+		const {
+			strokeColor,
+			strokeWidth: miroStrokeWidth,
+			startStrokeCap,
+			endStrokeCap,
+		} = style;
+		strokeColor && connector.setLineColor(strokeColor);
+
+		const connectorType = connectorTypes[shape];
+		connector.setLineStyle(connectorType);
+		const strokeWidth =
+			miroStrokeWidth &&
+			ConnectionLineWidths.find(width => width === +miroStrokeWidth);
+		connector.setLineWidth(
+			strokeWidth ? strokeWidth : CONNECTOR_LINE_WIDTH,
+		);
+
+		setConnectorsStyles(connector, startStrokeCap, endStrokeCap);
+
+		board.add(connector);
 	};
 
-	const copyText = (item: IMiroBoardItem): void => {
+	const copyText = (item: IMiroBoardItemText): void => {
 		const { style, position, data, geometry } = item;
-		if (data && data.content) {
-			const { fontSize, fontFamily } = style;
-			const { x, y } = position;
-			const { width } = geometry;
+		const { x, y } = position;
+		const { fontSize, color } = style;
 
-			const richtext = new RichText(new Mbr());
-			richtext.transformation.translateTo(x, y);
-			richtext.transformation.scaleTo(
-				width / SCALE_FACTOR,
-				width / SCALE_FACTOR,
-			);
+		const richtext = new RichText(new Mbr());
 
-			richtext.setSelectionFontFamily(fontFamily);
-			richtext.setSelectionFontSize(+fontSize);
+		const richTextWidth = geometry?.width ?? RICH_TEXT_MAX_WIDTH;
+		richtext.setMaxWidth(richTextWidth);
+
+		const richtextX = x - richTextWidth / 2;
+		richtext.transformation.translateTo(richtextX, y);
+
+		const textEls = parseTextData(data.content);
+		textEls.forEach(text => {
+			const paragraph = (text as HTMLElement).innerText ?? "\n";
+			const textSpanStyles = text.getElementsByTagName("span")[0]?.style;
 
 			richtext.editor.editor.children = [
+				...richtext.editor.editor.children,
 				{
 					type: "paragraph",
 					children: [
 						{
 							type: "text",
-							text: data.content.replace(/<[^>]*>/g, ""),
+							text: paragraph,
+							fontColor: color ?? "black",
+							fontSize: +fontSize,
+							fontHighlight:
+								textSpanStyles?.backgroundColor ?? "",
 						},
 					],
 				},
 			];
+		});
 
-			board.add(richtext);
+		board.add(richtext);
+	};
+
+	const zoomToFit = (): void => {
+		const items = board.items.listAll();
+		if (items.length > 0) {
+			const rect = board.items.getMbr();
+			board.camera.zoomToFit(rect);
 		}
 	};
 
 	const copyBoardItems = (): void => {
-		const itemsTypes = {
+		const itemsTypes: {
+			[key in MiroItemsTypes]: (item: any) => void;
+		} = {
 			shape: copyShape,
 			sticky_note: copySticker,
 			image: copyImage,
@@ -347,10 +446,15 @@ export function useCopyBoardItems(
 			connector: copyConnector,
 		};
 
-		miroItems.forEach(async item => {
-			itemsTypes[item.type](item);
+		miroItems.forEach((item: IMiroBoardItem) => {
+			const type = item.type as MiroItemsTypes;
+			if (itemsTypes[type]) {
+				itemsTypes[type](item);
+			}
 		});
+
+		zoomToFit();
 	};
 
 	copyBoardItems();
-}
+};
