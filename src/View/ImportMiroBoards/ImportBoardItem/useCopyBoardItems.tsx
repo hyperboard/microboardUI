@@ -18,7 +18,6 @@ import { ConnectionLineWidths } from "Board/Items/Connector/Connector";
 import { CONNECTOR_LINE_WIDTH } from "View/Items/Connector";
 import { prepareImage } from "Board/Items/Image/ImageHelpers";
 import { BoardPoint } from "Board/Items/Connector";
-import i18next from "i18next";
 
 interface MiroImage {
 	type: string;
@@ -29,10 +28,6 @@ export const useCopyBoardItems = (
 	board: Board,
 	miroItems: IMiroBoardItem[],
 ): void => {
-	const connectorError = i18next.t("miro.connectorError");
-	const notFoundConnectorItemById = i18next.t(
-		"miro.notFoundConnectorItemById",
-	);
 	const SCALE_FACTOR = 150;
 	const RICH_TEXT_MAX_WIDTH = 600;
 
@@ -310,6 +305,9 @@ export const useCopyBoardItems = (
 
 	const copyConnector = (item: IMiroBoardItemConnector): void | null => {
 		const { startItem, endItem, style, shape } = item;
+		const connectorError = "Start and end connector points not found";
+		const notFoundConnectorItemById =
+			"Start and end connection objects for the connector not found";
 
 		if (!startItem?.position || !endItem?.position) {
 			console.error(connectorError);
