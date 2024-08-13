@@ -21,6 +21,8 @@ import style from "./SidePanel.module.css";
 import { useSidePanelContext } from "./SidePanelContext";
 import { ImportFromMiro } from "./ImportFromMiro";
 
+const MIN_PANEL_WIDTH = 250;
+
 export function SidePanel() {
 	const { isOpen, toggleSideMenu } = useSidePanelContext();
 	const [width, setWidth] = useState(300);
@@ -89,6 +91,8 @@ export function SidePanel() {
 	const isFolderOpen = publicBoards.some(
 		({ boardId }) => boardId === board.getBoardId(),
 	);
+
+	const newWidth = width <= MIN_PANEL_WIDTH ? MIN_PANEL_WIDTH : width;
 	return (
 		<UiPanel
 			ref={panelRef}
@@ -96,8 +100,9 @@ export function SidePanel() {
 			onClick={handleContextMenuClose}
 			padding={0}
 			className={clsx(style.sidePanel, { [style.open]: isOpen })}
+			style={{ width: newWidth }}
 		>
-			<div style={{ width }} className={style.content}>
+			<div className={style.content}>
 				<div className={style.header}>
 					<h3 className={style.title}>{t("sidePanel.title")}</h3>
 					<UiButton

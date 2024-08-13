@@ -1,5 +1,5 @@
 .sidePanel {
-	transition: 0.3s;
+	transition: max-width 0.3s;
 	overflow: hidden;
 	max-width: 0;
 	display: block;
@@ -22,10 +22,8 @@
 }
 
 .content {
-	width: 300px;
 	padding: 8px 0;
-	max-width: 100%;
-	min-width: 150px;
+	min-width: 100%;
 	display: flex;
 	flex-direction: column;
 	align-items: stretch;
