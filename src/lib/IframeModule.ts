@@ -2,7 +2,6 @@ import Cookies from "js-cookie";
 import { isIframe } from "./isIframe";
 import { exportBoardSnapshot } from "Board/Tools/ExportSnapshot/exportBoardSnapshot";
 import { App } from "App";
-import { Quality } from "Board/Tools/ExportSnapshot/types";
 import { Board } from "Board";
 
 // type MessagePattern = "updateUserToken" | "iframeEvent" | "makeSnapshot";
@@ -33,7 +32,6 @@ interface KeyboardPayload {
 
 interface SnapshotPayload {
 	name?: string;
-	quality: Quality;
 }
 
 interface SetAuthTokenMessage {
@@ -104,13 +102,28 @@ export class IframeModule {
 		}
 
 		if (data.pattern === "makeSnapshot") {
+			if (!isIframe()) {
+				return;
+			}
 			const board: Board = this.app.getBoard() as Board;
 
 			if (!board) {
 				return;
 			}
 
-			const snapshot = exportBoardSnapshot(board, Quality.MEDIUM);
+			const cachedSelection = board.selection.items.list();
+			board.selection.addAll();
+
+			const snapshot = exportBoardSnapshot({
+				board,
+				selection: board.selection.getMbr()!,
+				nameToExport:
+					`board-${board.getBoardId()}.png` || data.payload.name,
+				upscaleTo: 4000,
+			});
+
+			board.selection.removeAll();
+			board.selection.add(cachedSelection);
 
 			window.parent.postMessage(
 				{

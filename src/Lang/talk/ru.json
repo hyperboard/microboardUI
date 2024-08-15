@@ -120,5 +120,8 @@
 		"cancel": "Отменить",
 		"error": "Не удалось экспортировать фрагмент доски"
 	},
-	"appTitle": "Microboard X Контур"
+	"appTitle": "Microboard X Контур",
+	"connector": {
+		"textPlaceholder": "Текст"
+	}
 }

@@ -33,3 +33,25 @@ export function renderAnchor(
 	ctx.stroke();
 	ctx.closePath();
 }
+
+export function renderCircleAnchor(
+	ctx: CanvasRenderingContext2D,
+	center: Center,
+	radius: number,
+	borderColor: string,
+	backgroundColor: string,
+	strokeWidth: number,
+	scale: number,
+) {
+	ctx.strokeStyle = borderColor;
+	ctx.lineWidth = strokeWidth / scale;
+	ctx.beginPath();
+	ctx.arc(center.x, center.y, radius / scale, 0, 2 * Math.PI);
+
+	if (backgroundColor !== "none") {
+		ctx.fillStyle = backgroundColor;
+		ctx.fill();
+	}
+	ctx.stroke();
+	ctx.closePath();
+}

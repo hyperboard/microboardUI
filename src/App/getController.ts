@@ -220,7 +220,11 @@ export function getController(getBoard: () => Board): Controller {
 		}
 	}
 
+	let pointerDownTime = 0;
+	const pointerMoveDelay = 100;
+
 	function onPointerDown(event: PointerEvent): boolean {
+		pointerDownTime = Date.now();
 		const board = getBoard();
 		if (!board) {
 			return false;
@@ -272,6 +276,10 @@ export function getController(getBoard: () => Board): Controller {
 	}
 
 	function onPointerMove(event: PointerEvent): boolean {
+		const currentTime = Date.now();
+		if (currentTime - pointerDownTime < pointerMoveDelay) {
+			return false;
+		}
 		const board = getBoard();
 		if (!board) {
 			return false;
@@ -489,6 +497,7 @@ export function getController(getBoard: () => Board): Controller {
 				};
 
 				reader.readAsDataURL(file);
+				return;
 			}
 		}
 

@@ -331,5 +331,8 @@
 		"importMiroBtn": "Import board from Miro",
 		"miroError": "An error has occurred. Try importing again",
 		"loading": "Loading..."
+	},
+	"connector": {
+		"textPlaceholder": "Text"
 	}
 }

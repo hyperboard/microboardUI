@@ -116,5 +116,8 @@
 		"cancel": "Cancel",
 		"error": "Failed to export board fragment"
 	},
-	"appTitle": "Microboard X Kontur"
+	"appTitle": "Microboard X Kontur",
+	"connector": {
+		"textPlaceholder": "Text"
+	}
 }

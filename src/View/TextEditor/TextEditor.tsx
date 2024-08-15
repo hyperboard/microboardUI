@@ -1,12 +1,11 @@
 import React from "react";
-import { Slate, Editable, ReactEditor } from "slate-react";
+import { Slate, Editable } from "slate-react";
 import { Leaf } from "./Leaf";
 import { Element } from "./Element";
 import { App } from "App";
 import { Board } from "Board";
 import { verticalAlignmentToFlex } from "./verticalAlignmentToFlex";
 import { RichText } from "Board/Items/RichText/RichText";
-import { Mbr, Point } from "Board/Items";
 import { DEFAULT_TEXT_STYLES } from "View/Items/RichText";
 
 export class TextEditors extends React.Component<
@@ -220,13 +219,16 @@ export class TextEditor extends React.Component<
 								<span
 									{...attributes}
 									style={{
-										position: "absolute",
+										// position: "absolute",
+										display: "inline-block",
+										width: 0,
 										whiteSpace: "nowrap",
 										opacity: 0.33,
 										maxWidth: "100%",
 										textDecoration: "none",
 										userSelect: "none",
 										pointerEvents: "none",
+										fontSize: "inherit",
 									}}
 								>
 									{children}
@@ -243,6 +245,9 @@ export class TextEditor extends React.Component<
 								overflowY: !text.getAutosize()
 									? "auto"
 									: "visible",
+								fontSize:
+									(text.getFontSize() / editorScale) *
+									camera.getScale(),
 								// transform: `scale(${editorScale})`,
 								// transformOrigin: `left top`,
 							}}

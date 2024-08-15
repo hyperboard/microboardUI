@@ -113,7 +113,6 @@ export class Storage {
 			},
 		});
 		const { author, canEdit, canView, shared } = await res.json();
-		console.log("fetched", author);
 		localStorage.setItem(
 			this.visitedPublicBoards,
 			JSON.stringify(
