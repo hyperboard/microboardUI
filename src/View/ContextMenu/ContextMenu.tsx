@@ -32,12 +32,17 @@ export function ContextMenu() {
 	const handleDeleteBoard: MouseEventHandler = e => {
 		e.preventDefault();
 		e.stopPropagation();
+		if (!boardId) {
+			throw new Error("Can't delete board with id null");
+		}
 		const removingCurr = boardId === app.getBoard()?.getBoardId();
 		app.storage
 			.removeBoard(boardId)
 			.then(() => {
+				// app.storage.showedErrorModals[boardId] = true;
 				if (removingCurr) {
 					navigate("/boards");
+					app.openBoard("blank");
 				}
 				close();
 			})

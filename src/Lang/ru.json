@@ -230,6 +230,12 @@
 		}
 	},
 	"ok": "Ок",
+	"noBoard": {
+		"title": "Нет открытой доски для работы",
+		"chooseBoard": "Выбрать доску из",
+		"chooseBoardButton": "списка",
+		"createNewBoard": "Создать новую доску"
+	},
 	"colors": {
 		"White": "Белый",
 		"Mustard Yellow": "Горчично-Желтый",

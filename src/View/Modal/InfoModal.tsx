@@ -1,4 +1,4 @@
-import React, { createContext } from "react";
+import React, { createContext, useEffect } from "react";
 import { createPortal } from "react-dom";
 import styles from "./InfoModal.module.css";
 import { useClickOutside } from "../../lib/useClickOutside";
@@ -18,7 +18,6 @@ const InfoModalView: React.FC<InfoModalProps> = ({
 	description,
 	onClose,
 }) => {
-	const modalRef = useClickOutside(onClose);
 	const { t } = useTranslation();
 
 	if (!isOpen) {
@@ -27,7 +26,7 @@ const InfoModalView: React.FC<InfoModalProps> = ({
 
 	return (
 		<div className={`${styles.modal} ${isOpen ? styles.open : null}`}>
-			<div ref={modalRef} className={styles.wrapper}>
+			<div className={styles.wrapper}>
 				<div className={styles.title}>{title}</div>
 				<div className={styles.description}>{description}</div>
 				<button className={styles.modalButton} onClick={onClose}>

@@ -136,6 +136,11 @@ export function createApp(isHistory = true): App {
 		subscriptions.setBoard(currentBoard);
 		boardSubject.publish(currentBoard);
 		board = currentBoard;
+		if (app.storage.showedErrorModals[id]) {
+			app.storage.showedErrorModals[id] = false;
+			app.connection.wsClient.onAccessDenied(id, true);
+			return;
+		}
 	}
 
 	function getLastBoardId(): string | null {

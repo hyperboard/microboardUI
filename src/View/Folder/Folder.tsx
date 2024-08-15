@@ -10,7 +10,6 @@ import style from "./Folder.module.css";
 
 type Props = PropsWithChildren<{
 	title: string;
-	isBlank: boolean;
 	icon?: ReactNode;
 	isOpened?: boolean;
 }>;
@@ -19,15 +18,12 @@ export function Folder({
 	title,
 	icon,
 	children,
-	isBlank,
 	isOpened = false,
 }: Props): React.ReactElement<Props> {
 	const [isOpen, setIsOpen] = useState(isOpened);
 
 	useEffect(() => {
-		if (!isBlank) {
-			setIsOpen(isOpened);
-		}
+		setIsOpen(isOpened);
 	}, [isOpened]);
 
 	const handleTitleClick: MouseEventHandler = () => {

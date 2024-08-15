@@ -26,6 +26,7 @@ export class Storage {
 	sharedBoards = `${location.host}/sharedBoards`;
 	subject = new Subject<void>();
 	isAuth = false;
+	showedErrorModals: { [boardId: string]: boolean } = {};
 
 	setIsAuth(val: boolean): void {
 		this.isAuth = val;
@@ -319,8 +320,12 @@ export class Storage {
 			},
 		}).then(response => {
 			if (response.ok) {
-				this.removeSharedBoard(board.boardId);
-				return true;
+				return this.removeSharedBoard(board.boardId);
+			} else if (response.status === 404) {
+				console.warn(
+					`status 404, did not find record about visiting ${board.boardId} link, removing shared link locally`,
+				);
+				return this.removeSharedBoard(board.boardId);
 			} else {
 				console.error("Could not delete shared board");
 				return false;
@@ -335,27 +340,31 @@ export class Storage {
 		const sharedBoard = this.listSharedBoards().find(
 			board => board.boardId === id && !board.actualId,
 		); // no id === no rules
-
-		// TODO replace with map
-		if (this.isAuth) {
-			if (publicBoard) {
-				const guaranteedIdBoard = publicBoard as BoardWId;
-				return this.deleteBoard(guaranteedIdBoard);
-			} else if (sharedBoard) {
-				return this.unvisitBoard(sharedBoard);
-			} else {
-				throw new Error(`unkown board id ${id}`);
-			}
-		} else {
-			if (publicBoard && publicBoard.authorKey) {
-				const typedBoard = publicBoard as BoardWId & BoardWKey;
-				return this.deleteBoardUnauthed(typedBoard);
-			} else if (sharedBoard) {
-				return Promise.resolve(this.removeSharedBoard(id));
-			} else {
-				throw new Error(`unkown board id ${id}`);
-			}
+		const boardType = publicBoard
+			? "public"
+			: sharedBoard
+			? "shared"
+			: null;
+		if (!boardType) {
+			throw new Error(`unknown board id ${id}`);
 		}
+
+		const board = publicBoard ? publicBoard : sharedBoard;
+
+		const boardActions = {
+			true: {
+				public: (board: BoardWId) => this.deleteBoard(board),
+				shared: (board: VisitedPublicBoard) => this.unvisitBoard(board),
+			},
+			false: {
+				public: (board: BoardWId & BoardWKey) =>
+					this.deleteBoardUnauthed(board),
+				shared: (board: VisitedPublicBoard) =>
+					Promise.resolve(this.removeSharedBoard(board.boardId)),
+			},
+		};
+
+		return boardActions[this.isAuth.toString()][boardType](board);
 	}
 
 	/* Removes an id of a visited public board from the local storage */

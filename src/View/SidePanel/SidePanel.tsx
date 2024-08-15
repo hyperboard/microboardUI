@@ -24,7 +24,7 @@ import { ImportFromMiro } from "./ImportFromMiro";
 const MIN_PANEL_WIDTH = 250;
 
 export function SidePanel(): React.ReactNode {
-	const { isOpen, toggleSideMenu } = useSidePanelContext();
+	const { isOpen, toggleSideMenu, handleAddNew } = useSidePanelContext();
 	const { app, board } = useAppContext();
 	const { open, close } = useContextMenuContext();
 	const { t } = useTranslation();
@@ -89,14 +89,6 @@ export function SidePanel(): React.ReactNode {
 			open(event.clientX, event.clientY, boardId);
 		};
 
-	const handleAddNew: MouseEventHandler = async () => {
-		const boardId = await app.createPublicBoard();
-		app.openBoard(boardId);
-		navigate(`/boards/${boardId}`, {
-			replace: true,
-		});
-	};
-
 	const newWidth = width <= MIN_PANEL_WIDTH ? MIN_PANEL_WIDTH : width;
 	return (
 		<UiPanel
@@ -130,7 +122,6 @@ export function SidePanel(): React.ReactNode {
 								/>
 							}
 							isOpened={isPublic || isBlank}
-							isBlank={isBlank}
 						>
 							<Folder
 								title={t("sidePanel.folders.publicDrafts")}
@@ -142,7 +133,6 @@ export function SidePanel(): React.ReactNode {
 									/>
 								}
 								isOpened={isPublic || isBlank}
-								isBlank={isBlank}
 							>
 								{publicBoards.map(({ boardId }) => (
 									<FolderItem
@@ -170,8 +160,7 @@ export function SidePanel(): React.ReactNode {
 									height={20}
 								/>
 							}
-							isOpened={isPublic}
-							isBlank={isBlank}
+							isOpened={isPublic || isBlank}
 						>
 							{publicBoards.map(({ boardId }) => (
 								<FolderItem
@@ -196,7 +185,6 @@ export function SidePanel(): React.ReactNode {
 							/>
 						}
 						isOpened={isShared || isBlank}
-						isBlank={isBlank}
 					>
 						{sharedBoards.map(({ boardId }) => (
 							<FolderItem

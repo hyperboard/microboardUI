@@ -6,6 +6,8 @@ import { AppContext } from "./AppContext";
 import { AppView } from "View/AppView";
 import { InfoModal, ModalContext } from "./Modal/InfoModal";
 import { useTranslation } from "react-i18next";
+import { SidePanelContextProvider } from "./SidePanel/SidePanelContext";
+import { ContextMenuContextProvider } from "./ContextMenu";
 // import "./index.css";
 type Props = {
 	app: App;
@@ -22,23 +24,28 @@ export const BoardView = ({ app }: Props) => {
 		description: string;
 		opened: boolean;
 	}>({ opened: false, title: "", description: "" });
-	const showedModal = useRef<{ [key: string]: boolean }>({});
 
 	const openModalInfo = (title: string, description: string): void => {
 		setModalInfo({ title, description, opened: true });
 	};
 
-	app.connection.wsClient.onAccessDenied = () => {
-		const boardId = board ? board.getBoardId() : undefined;
-		if (boardId && !showedModal.current[boardId]) {
+	app.connection.wsClient.onAccessDenied = (
+		deniedBoardId: string,
+		forceUpdate = false,
+	) => {
+		if (
+			forceUpdate ||
+			(deniedBoardId === board.getBoardId() &&
+				!app.storage.showedErrorModals[deniedBoardId])
+		) {
 			openModalInfo(
 				t("modalInfo.accessDenied.title"),
 				t("modalInfo.accessDenied.description"),
 			);
+			navigate("/boards");
 			app.openBoard("blank");
 			app.render();
-			navigate("/boards");
-			showedModal.current[boardId] = true;
+			app.storage.showedErrorModals[deniedBoardId] = true;
 		}
 	};
 
@@ -56,7 +63,11 @@ export const BoardView = ({ app }: Props) => {
 	return (
 		<ModalContext.Provider value={{ openModalInfo }}>
 			<AppContext.Provider value={{ app, board }}>
-				<AppView />
+				<ContextMenuContextProvider>
+					<SidePanelContextProvider>
+						<AppView />
+					</SidePanelContextProvider>
+				</ContextMenuContextProvider>
 				<InfoModal
 					isOpen={modalInfo.opened}
 					title={modalInfo.title}

@@ -205,7 +205,7 @@ interface WsClient {
 	connect: () => void;
 	send: (message: SocketMessage) => void;
 	isConnected: () => boolean;
-	onAccessDenied: () => void;
+	onAccessDenied: (boardId: string, forceUpdate?: boolean) => void;
 }
 
 type SocketMsgHandler = (message: SocketMessage) => void;
@@ -224,15 +224,20 @@ export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
 		socket.onerror = onError;
 	}
 
-	let onAccessDenied = (): void => {
-		console.error("Not implemented");
+	let onAccessDenied = (boardId: string): void => {
+		console.error("Not implemented. Access denied to board:", boardId);
 	};
 
 	function onMessage(event: MessageEvent<SocketMessage>): void {
 		try {
 			const json = JSON.parse(event.data);
 			if (json && json.type === "Error") {
-				throw new Error("Error received: " + json.message);
+				throw new Error(
+					"Error received: " +
+						json.message +
+						(json.denidedBoardId &&
+							`. deniedBoardId: ${json.denidedBoardId}`),
+				);
 			}
 			msgHandler(json);
 		} catch (error) {
@@ -241,7 +246,13 @@ export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
 				error instanceof Error &&
 				error.message.includes("Access denied")
 			) {
-				onAccessDenied();
+				const match = error.message.match(/deniedBoardId: (\S+)/);
+				if (match) {
+					const deniedBoardId = match[1];
+					if (deniedBoardId !== "blank") {
+						onAccessDenied(deniedBoardId);
+					}
+				}
 			}
 		}
 	}
@@ -292,7 +303,9 @@ export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
 		get onAccessDenied() {
 			return onAccessDenied;
 		},
-		set onAccessDenied(handler) {
+		set onAccessDenied(
+			handler: (boardId: string, forceUpdate?: boolean) => void,
+		) {
 			onAccessDenied = handler;
 		},
 	};

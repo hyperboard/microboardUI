@@ -232,6 +232,12 @@
 		}
 	},
 	"ok": "Ok",
+	"noBoard": {
+		"title": "No board is open",
+		"chooseBoard": "Open a board from",
+		"chooseBoardButton": "the board list",
+		"createNewBoard": "Create a new board"
+	},
 	"colors": {
 		"White": "White",
 		"Mustard Yellow": "Mustard Yellow",

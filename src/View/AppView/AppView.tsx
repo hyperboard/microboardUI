@@ -1,30 +1,32 @@
 import { useForceUpdate } from "lib/useForceUpdate";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { TextEditors } from "View/TextEditor/TextEditor";
 import { UserPanel } from "View/UserPanel/UserPanel";
 import { useAppContext } from "View/AppContext";
 import { Canvas } from "View/Canvas";
-import { ContextMenu, ContextMenuContextProvider } from "View/ContextMenu";
+import { ContextMenu } from "View/ContextMenu";
 import { ContextPanel } from "View/ContextPanel";
 import { ExportPanel } from "View/ExportPanel";
 import { ExportVisible } from "View/ExportPanel/ExportVisible";
-import { SidePanelContextProvider } from "View/SidePanel/SidePanelContext";
+import { useSidePanelContext } from "View/SidePanel/SidePanelContext";
 import { SidePanelsContainer } from "View/SidePanelsContainer";
 import { ToastProvider } from "View/ToastProvider";
 import { ZoomPanel } from "View/ZoomPanel";
 import style from "./AppView.module.css";
 import { ImportMiroBoards } from "../ImportMiroBoards";
-import { InfoModal } from "View/Modal/InfoModal";
+import { useTranslation } from "react-i18next";
 
 export function AppView() {
 	const { app, board } = useAppContext();
 	const location = useLocation();
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const params = useParams();
 	const forceUpdate = useForceUpdate();
 	const animationId = useRef<number | null>(null);
 	const containerRef = useRef<HTMLDivElement | null>(null);
+	const { openMenu, handleAddNew } = useSidePanelContext();
 
 	const update = () => {
 		if (animationId.current) {
@@ -137,17 +139,55 @@ export function AppView() {
 						height: "100%",
 					}}
 				>
-					No board is open
+					<div
+						style={{
+							display: "flex",
+							flexDirection: "column",
+							alignItems: "flex-start",
+							padding: "0px",
+							gap: "16px",
+						}}
+					>
+						<span
+							style={{
+								fontSize: "2em",
+								fontWeight: 400,
+							}}
+						>
+							{t("noBoard.title")}
+						</span>
+						<ul
+							style={{
+								flex: "none",
+								order: "0",
+								flexGrow: "0",
+								listStylePosition: "inside",
+								paddingLeft: "8px",
+							}}
+						>
+							<li>
+								<span>
+									{t("noBoard.chooseBoard")}{" "}
+									<button onClick={openMenu}>
+										{t("noBoard.chooseBoardButton")}
+									</button>
+								</span>
+							</li>
+							<li>
+								<span>
+									<button onClick={handleAddNew}>
+										{t("noBoard.createNewBoard")}
+									</button>
+								</span>
+							</li>
+						</ul>
+					</div>
 				</div>
 			)}
-			<ContextMenuContextProvider>
-				<SidePanelContextProvider>
-					<ExportVisible>
-						<SidePanelsContainer />
-						<ContextMenu />
-					</ExportVisible>
-				</SidePanelContextProvider>
-			</ContextMenuContextProvider>
+			<ExportVisible>
+				<SidePanelsContainer />
+				<ContextMenu />
+			</ExportVisible>
 			<ExportVisible>
 				<UserPanel app={app} />
 			</ExportVisible>
