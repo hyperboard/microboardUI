@@ -43,7 +43,6 @@ export function ContextMenu() {
 		app.storage
 			.removeBoard(boardId)
 			.then(() => {
-				// app.storage.showedErrorModals[boardId] = true;
 				if (removingCurr) {
 					navigate("/boards");
 					app.openBoard("blank");
