@@ -1217,3 +1217,5 @@ BEGIN
     RETURN event_count;
 END;
 $$;
+
+ALTER TABLE boards ADD COLUMN IF NOT EXISTS author_key uuid;
