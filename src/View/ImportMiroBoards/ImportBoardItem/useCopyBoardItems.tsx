@@ -124,7 +124,10 @@ export const useCopyBoardItems = (
 
 				item.text.addText(paragraph);
 
-				item.text.setSelectionFontSize(+fontSize);
+				if (fontSize) {
+					item.text.setSelectionFontSize(+fontSize);
+				}
+
 				item.text.setSelectionFontFamily(fontFamily);
 
 				if (item.itemType === "Shape" && textSpan) {
@@ -195,14 +198,16 @@ export const useCopyBoardItems = (
 			const color = colorsSticker[fillColor];
 			const sticker = new Sticker(undefined, id, color);
 
-			const stickerW = sticker.getPaths().getMbr().getWidth();
-			const stickerH = sticker.getPaths().getMbr().getHeight();
-
 			const stickerX = x - width / 2;
 			const stickerY = y - height / 2;
 
+			const initialWidth = sticker.getPaths().getMbr().getWidth();
+			const initialHeight = sticker.getPaths().getMbr().getHeight();
+			const stickerWidth = initialWidth / width / 4;
+			const stickerHeight = initialHeight / height / 4;
+
 			sticker.transformation.translateTo(stickerX, stickerY);
-			sticker.transformation.scaleTo(stickerW / width, stickerH / height);
+			sticker.transformation.scaleTo(stickerWidth, stickerHeight);
 
 			if (data.content) {
 				const { fontSize, fontFamily } = style;
