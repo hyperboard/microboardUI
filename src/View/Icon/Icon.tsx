@@ -52,7 +52,9 @@ export type IconId =
 	| "VerticalAlignTop"
 	| "VerticalAlignCenter"
 	| "VerticalAlignBottom"
-	| "AddText";
+	| "AddText"
+	| "publicDrafts"
+	| "sharedBoards";
 
 type Props = {
 	iconName: IconId;

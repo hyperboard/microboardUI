@@ -223,6 +223,13 @@
 		"noAccess": "Нет доступа",
 		"copyLink": "Копировать ссылку"
 	},
+	"modalInfo": {
+		"accessDenied": {
+			"title": "Доска недоступна",
+			"description": "У вас нет прав на просмотр этой доски или такая доска не существует"
+		}
+	},
+	"ok": "Ок",
 	"colors": {
 		"White": "Белый",
 		"Mustard Yellow": "Горчично-Желтый",
@@ -305,8 +312,10 @@
 	"sidePanel": {
 		"title": "Доски",
 		"folders": {
-			"publicBoards": "Публичные доски",
-			"privateBoards": "Приватные доски"
+			"publicDrafts": "Публичные черновики",
+			"privateBoards": "Приватные доски",
+			"sharedBoards": "Доступные доски",
+			"myBoards": "Мои доски"
 		},
 		"addNew": "Добавить"
 	},

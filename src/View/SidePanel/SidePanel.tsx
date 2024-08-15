@@ -23,17 +23,27 @@ import { ImportFromMiro } from "./ImportFromMiro";
 
 const MIN_PANEL_WIDTH = 250;
 
-export function SidePanel() {
+export function SidePanel(): React.ReactNode {
 	const { isOpen, toggleSideMenu } = useSidePanelContext();
-	const [width, setWidth] = useState(300);
-	const animationId = useRef<number | null>(null);
-	const forceUpdate = useForceUpdate();
 	const { app, board } = useAppContext();
-	const navigate = useNavigate();
 	const { open, close } = useContextMenuContext();
 	const { t } = useTranslation();
+	const animationId = useRef<number | null>(null);
+	const forceUpdate = useForceUpdate();
+	const navigate = useNavigate();
+	const [width, setWidth] = useState(300);
+	const publicBoards = app.storage.listPublicBoards();
+	const sharedBoards = app.storage.listSharedBoards();
+	const isBlank =
+		app.getBoard() === undefined || app.getBoard().getBoardId() === "blank";
+	const isShared = sharedBoards.some(
+		({ boardId }) => boardId === board.getBoardId(),
+	);
+	const isPublic = publicBoards.some(
+		({ boardId }) => boardId === board.getBoardId(),
+	);
 
-	const update = () => {
+	const update = (): void => {
 		if (animationId.current) {
 			return; // Function already scheduled to run
 		}
@@ -56,27 +66,27 @@ export function SidePanel() {
 		close();
 	});
 
-	const handleBoardClick = (boardId: string) => {
+	const handleBoardClick = (boardId: string): void => {
 		app.openBoard(boardId);
 		navigate(`/boards/${boardId}`, { replace: true });
 	};
 
-	const handleContextMenuOpen: MouseEventHandler = e => {
-		e.preventDefault();
-		open(e.clientX, e.clientY);
+	const handleContextMenuOpen: MouseEventHandler = event => {
+		event.preventDefault();
+		open(event.clientX, event.clientY);
 	};
 
-	const handleContextMenuClose: MouseEventHandler = e => {
-		e.preventDefault();
+	const handleContextMenuClose: MouseEventHandler = event => {
+		event.preventDefault();
 		close();
 	};
 
 	const handleBoardContextMenu =
 		(boardId: string): MouseEventHandler =>
-		e => {
-			e.preventDefault();
-			e.stopPropagation();
-			open(e.clientX, e.clientY, boardId);
+		event => {
+			event.preventDefault();
+			event.stopPropagation();
+			open(event.clientX, event.clientY, boardId);
 		};
 
 	const handleAddNew: MouseEventHandler = async () => {
@@ -86,11 +96,6 @@ export function SidePanel() {
 			replace: true,
 		});
 	};
-
-	const publicBoards = app.storage.listPublicBoards();
-	const isFolderOpen = publicBoards.some(
-		({ boardId }) => boardId === board.getBoardId(),
-	);
 
 	const newWidth = width <= MIN_PANEL_WIDTH ? MIN_PANEL_WIDTH : width;
 	return (
@@ -114,12 +119,86 @@ export function SidePanel() {
 					</UiButton>
 				</div>
 				<div className={style.folders}>
+					{app.storage.isAuth && (
+						<Folder
+							title={t("sidePanel.folders.myBoards")}
+							icon={
+								<Icon
+									iconName="Folder"
+									width={20}
+									height={20}
+								/>
+							}
+							isOpened={isPublic || isBlank}
+							isBlank={isBlank}
+						>
+							<Folder
+								title={t("sidePanel.folders.publicDrafts")}
+								icon={
+									<Icon
+										iconName="publicDrafts"
+										width={20}
+										height={20}
+									/>
+								}
+								isOpened={isPublic || isBlank}
+								isBlank={isBlank}
+							>
+								{publicBoards.map(({ boardId }) => (
+									<FolderItem
+										active={boardId === board.getBoardId()}
+										key={boardId}
+										onClick={() =>
+											handleBoardClick(boardId)
+										}
+										onClickContext={handleBoardContextMenu(
+											boardId,
+										)}
+										text={boardId}
+									/>
+								))}
+							</Folder>
+						</Folder>
+					)}
+					{!app.storage.isAuth && (
+						<Folder
+							title={t("sidePanel.folders.publicDrafts")}
+							icon={
+								<Icon
+									iconName="publicDrafts"
+									width={20}
+									height={20}
+								/>
+							}
+							isOpened={isPublic}
+							isBlank={isBlank}
+						>
+							{publicBoards.map(({ boardId }) => (
+								<FolderItem
+									active={boardId === board.getBoardId()}
+									key={boardId}
+									onClick={() => handleBoardClick(boardId)}
+									onClickContext={handleBoardContextMenu(
+										boardId,
+									)}
+									text={boardId}
+								/>
+							))}
+						</Folder>
+					)}
 					<Folder
-						title={t("sidePanel.folders.publicBoards")}
-						icon={<Icon iconName="Folder" width={20} height={20} />}
-						isOpened={isFolderOpen}
+						title={t("sidePanel.folders.sharedBoards")}
+						icon={
+							<Icon
+								iconName="sharedBoards"
+								width={20}
+								height={20}
+							/>
+						}
+						isOpened={isShared || isBlank}
+						isBlank={isBlank}
 					>
-						{publicBoards.map(({ boardId }) => (
+						{sharedBoards.map(({ boardId }) => (
 							<FolderItem
 								active={boardId === board.getBoardId()}
 								key={boardId}

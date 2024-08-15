@@ -225,6 +225,13 @@
 		"noAccess": "No access",
 		"copyLink": "Copy link"
 	},
+	"modalInfo": {
+		"accessDenied": {
+			"title": "Board is unavailable",
+			"description": "You do not have access to this board, or the board does not exist"
+		}
+	},
+	"ok": "Ok",
 	"colors": {
 		"White": "White",
 		"Mustard Yellow": "Mustard Yellow",
@@ -307,8 +314,10 @@
 	"sidePanel": {
 		"title": "Boards",
 		"folders": {
-			"publicBoards": "Public boards",
-			"privateBoards": "Private boards"
+			"publicDrafts": "Public drafts",
+			"privateBoards": "Private boards",
+			"sharedBoards": "Shared with me",
+			"myBoards": "My boards"
 		},
 		"addNew": "Add new"
 	},

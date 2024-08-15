@@ -46,9 +46,10 @@ export function createApp(isHistory = true): App {
 	const accounts = new Accounts(connection);
 	const test = createTester(getBoard);
 
-	let board: Board;
+	let board: Board | undefined;
 
 	function getBoard(): Board {
+		// TODO fix ts
 		return board;
 	}
 
@@ -96,8 +97,12 @@ export function createApp(isHistory = true): App {
 				throw new Error("response not OK");
 			}
 			const data = await response.json();
-			const { boardId, linkId, linkUri } = data;
-			storage.setPublicBoard({ boardId: linkId, ownerId: boardId });
+			const { boardId, linkId, linkUri, authorKey } = data;
+			storage.setPublicBoard({
+				boardId: linkId,
+				authorKey,
+				actualId: boardId,
+			});
 			return linkId as string;
 		} catch (error) {
 			console.error("Failed to create a new public board.", error);
@@ -105,6 +110,11 @@ export function createApp(isHistory = true): App {
 	}
 
 	function openBoard(id: string): void {
+		if (id === "boards") {
+			board = undefined;
+			return;
+		}
+
 		let currentBoard = boards.get(id);
 		if (!currentBoard) {
 			currentBoard = new Board(id);
@@ -112,6 +122,16 @@ export function createApp(isHistory = true): App {
 			boards.set(id, currentBoard);
 		}
 		localStorage.setItem(LAST_BOARD_KEY, id);
+		if (
+			!storage.listPublicBoards().some(board => board.boardId === id) &&
+			!storage.listSharedBoards().some(board => board.boardId === id) &&
+			id !== "blank"
+		) {
+			storage.setPublicBoard({ boardId: id }, false);
+			if (storage.isAuth) {
+				storage.visitBoard({ boardId: id });
+			}
+		}
 
 		subscriptions.setBoard(currentBoard);
 		boardSubject.publish(currentBoard);

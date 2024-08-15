@@ -16,23 +16,28 @@ import { UiPanel } from "View/Ui/UiPanel";
 import { UiButton } from "View/Ui/UiButton";
 import { isIframe } from "lib/isIframe";
 import { UiLink } from "View/Ui/UiLink";
+import { App } from "App";
+import { useAuth } from "shared/hooks/useAuth";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	email: string;
 	isOpen: boolean;
 	setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-	setIsAuth: React.Dispatch<React.SetStateAction<boolean>>;
 	setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
+	app: App;
 }
 
+// TODO each file for each component
 const UserDropDown: React.FC<UserDropDownProps> = ({
 	email,
 	setIsModalOpen,
-	setIsAuth,
 	setIsDropdownOpen,
 	isOpen,
+	app,
 }) => {
 	const dropdownRef = useRef<HTMLDivElement>(null);
+	const nav = useNavigate();
+	const { setIsAuth } = useAuth(app);
 
 	const closeDropdown = (): void => {
 		setIsDropdownOpen(false);
@@ -50,6 +55,8 @@ const UserDropDown: React.FC<UserDropDownProps> = ({
 		setIsAuth(false);
 		Cookies.remove("refreshToken");
 		Cookies.remove("accessToken");
+		app.storage.clean();
+		nav(0);
 	};
 
 	if (!isOpen) {
@@ -95,6 +102,7 @@ interface UserPicProps extends React.HTMLAttributes<HTMLDivElement> {
 type TUserPicProps = UserPicProps &
 	Omit<UserDropDownProps, "isOpen" | "setIsDropdownOpen">;
 
+// TODO each file for each component
 const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -132,7 +140,7 @@ const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 				setIsDropdownOpen={setIsDropdownOpen}
 				email={props.email}
 				setIsModalOpen={props.setIsModalOpen}
-				setIsAuth={props.setIsAuth}
+				app={props.app}
 			/>
 		</>
 	);
@@ -143,6 +151,7 @@ interface ModalProps extends React.HTMLAttributes<HTMLDivElement> {
 	setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+// TODO each file for each component
 const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 	const modalRef = useRef<HTMLDivElement>(null);
 	const formRef = useRef<HTMLFormElement>(null);
@@ -386,38 +395,14 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 	);
 };
 
-export const UserPanel: React.FC = () => {
-	const [email, setEmail] = useState("example@mail.com");
+export const UserPanel: React.FC<{ app: App }> = ({ app }) => {
+	const { isAuth, setIsAuth, email } = useAuth(app);
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [isAuth, setIsAuth] = useState(false);
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 
 	const isMicroboardIframe =
 		isIframe() && import.meta.env.INTEGRATION_UI === "microboard";
-
-	useLayoutEffect(() => {
-		fetch(`${getApiUrl()}/users/me`, {
-			method: "GET",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${Cookies.get("accessToken")}`,
-			},
-		})
-			.then(response => {
-				if (!response.ok) {
-					return Promise.reject(response);
-				}
-				return response.json();
-			})
-			.then(data => {
-				setEmail(data.email);
-				setIsAuth(true);
-			})
-			.catch(() => {
-				setIsAuth(false);
-			});
-	});
 
 	if (!isAuth) {
 		return (
@@ -534,6 +519,7 @@ export const UserPanel: React.FC = () => {
 						email={email}
 						setIsModalOpen={setIsModalOpen}
 						setIsAuth={setIsAuth}
+						app={app}
 					/>
 				</div>
 			</UiPanel>

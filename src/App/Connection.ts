@@ -76,6 +76,7 @@ export interface Connection {
 	): void;
 	publishBoardEvent(boardId: string, event: BoardEvent): void;
 	publishSnapshot(boardId: string, snapshot: BoardSnapshot): void;
+	wsClient: WsClient;
 }
 
 interface Subscription {
@@ -194,6 +195,7 @@ export function createConnection(): Connection {
 		unsubscribe,
 		publishBoardEvent,
 		publishSnapshot,
+		wsClient: ws,
 	};
 }
 
@@ -203,6 +205,7 @@ interface WsClient {
 	connect: () => void;
 	send: (message: SocketMessage) => void;
 	isConnected: () => boolean;
+	onAccessDenied: () => void;
 }
 
 type SocketMsgHandler = (message: SocketMessage) => void;
@@ -221,6 +224,10 @@ export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
 		socket.onerror = onError;
 	}
 
+	let onAccessDenied = (): void => {
+		console.error("Not implemented");
+	};
+
 	function onMessage(event: MessageEvent<SocketMessage>): void {
 		try {
 			const json = JSON.parse(event.data);
@@ -230,6 +237,12 @@ export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
 			msgHandler(json);
 		} catch (error) {
 			console.warn(error);
+			if (
+				error instanceof Error &&
+				error.message.includes("Access denied")
+			) {
+				onAccessDenied();
+			}
 		}
 	}
 
@@ -276,5 +289,11 @@ export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
 		connect,
 		send,
 		isConnected,
+		get onAccessDenied() {
+			return onAccessDenied;
+		},
+		set onAccessDenied(handler) {
+			onAccessDenied = handler;
+		},
 	};
 }

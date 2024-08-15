@@ -119,6 +119,9 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 						}
 					}
 				})
+				.then(() => {
+					app.storage.claimBoards();
+				})
 				.catch(error => {
 					if (error?.message === "PASSCODE_ATTEMPTS_EXCEEDED") {
 						setIsAttemptsExceeded(true);

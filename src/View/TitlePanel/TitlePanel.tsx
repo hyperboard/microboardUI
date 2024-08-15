@@ -48,7 +48,9 @@ export function TitlePanel() {
 			</UiButton>
 			<UiSeparator vertical />
 			<UiButton variant="secondary" rounded="none">
-				<span className={style.name}>{board?.getBoardId()}</span>
+				<span className={style.name}>
+					{app.getBoard() ? board?.getBoardId() : "Unselected"}
+				</span>
 			</UiButton>
 			<UiSeparator vertical />
 			<UiButton
