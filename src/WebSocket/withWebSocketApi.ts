@@ -89,8 +89,13 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards): void {
         wsTokens.set(ws, tokens);
     }
 
-    function sendError(ws: WebSocket, message: string): void {
-        return ws.send(JSON.stringify({ type: "Error", message }));
+    function sendError(
+        ws: WebSocket,
+        message: string,
+        ...args: Array<{ [additionalInfo: string]: string }>
+    ): void {
+        const additionalInfo = Object.assign({}, ...args);
+        return ws.send(JSON.stringify({ type: "Error", message, ...additionalInfo }));
     }
 
     async function handleSubscribeMsg(
@@ -101,7 +106,8 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards): void {
             if (!(await hasSubscribeRights(ws, msg.boardId))) {
                 return sendError(
                     ws,
-                    "Access denied: Subscribe to board events."
+                    "Access denied: Subscribe to board events.",
+                    { denidedBoardId: msg.boardId },
                 );
             }
             subscribeClientToBoard(ws, msg.boardId);

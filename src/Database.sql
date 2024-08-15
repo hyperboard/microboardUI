@@ -539,9 +539,9 @@ begin
     select exists (
         select 1 
         from boards b
-        join board_edit_link bel on b.id = bel.board_id
+        join board_view_link bvl on b.id = bvl.board_id
         join board_owner bo on b.id = bo.board_id
-        where bel.edit_link_uuid = p_edit_link_uuid and bo.owner_id = p_user_id
+        where bvl.view_link_uuid = p_view_link_uuid and bo.owner_id = p_user_id
     ) into is_author;
 
     if is_author then
