@@ -5,17 +5,21 @@ import { TextEditors } from "View/TextEditor/TextEditor";
 import { UserPanel } from "View/UserPanel/UserPanel";
 import { useAppContext } from "View/AppContext";
 import { Canvas } from "View/Canvas";
-import { ContextMenu } from "View/ContextMenu";
+import { ContextMenu, ContextMenuContextProvider } from "View/ContextMenu";
 import { ContextPanel } from "View/ContextPanel";
 import { ExportPanel } from "View/ExportPanel";
 import { ExportVisible } from "View/ExportPanel/ExportVisible";
-import { useSidePanelContext } from "View/SidePanel/SidePanelContext";
+import {
+	SidePanelContextProvider,
+	useSidePanelContext,
+} from "View/SidePanel/SidePanelContext";
 import { SidePanelsContainer } from "View/SidePanelsContainer";
 import { ToastProvider } from "View/ToastProvider";
 import { ZoomPanel } from "View/ZoomPanel";
 import style from "./AppView.module.css";
 import { ImportMiroBoards } from "../ImportMiroBoards";
 import { useTranslation } from "react-i18next";
+import { BoardRenameContextProvider } from "View/BoardName";
 
 export function AppView() {
 	const { app, board } = useAppContext();
@@ -184,10 +188,16 @@ export function AppView() {
 					</div>
 				</div>
 			)}
-			<ExportVisible>
-				<SidePanelsContainer />
-				<ContextMenu />
-			</ExportVisible>
+			<BoardRenameContextProvider>
+				<SidePanelContextProvider>
+					<ContextMenuContextProvider>
+						<ExportVisible>
+							<SidePanelsContainer />
+							<ContextMenu />
+						</ExportVisible>
+					</ContextMenuContextProvider>
+				</SidePanelContextProvider>
+			</BoardRenameContextProvider>
 			<ExportVisible>
 				<UserPanel app={app} />
 			</ExportVisible>

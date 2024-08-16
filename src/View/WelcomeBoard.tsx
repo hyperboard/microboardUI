@@ -17,7 +17,7 @@ const INITIAL_FIT_AREA = {
 
 export function WelcomeBoard({ app }: Props) {
 	const navigate = useNavigate();
-	const { i18n } = useTranslation();
+	const { i18n, t } = useTranslation();
 
 	const createPublicBoard = async (app: App): Promise<string> => {
 		const lastBoardId = app.getLastBoardId();
@@ -26,7 +26,9 @@ export function WelcomeBoard({ app }: Props) {
 			return lastBoardId;
 		}
 
-		const boardId = await app.createPublicBoard();
+		const boardId = await app.createPublicBoard(
+			t("board.welcomeBoardTitle"),
+		);
 		app.openBoard(boardId);
 		const board = app.getBoard();
 

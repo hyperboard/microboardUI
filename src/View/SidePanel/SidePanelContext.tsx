@@ -6,7 +6,6 @@ import { useAppContext } from "View/AppContext";
 type SidePanelContext = {
 	toggleSideMenu: () => void;
 	openMenu: () => void;
-	handleAddNew: () => Promise<void>;
 	isOpen: boolean;
 };
 
@@ -19,24 +18,12 @@ export function useSidePanelContext(): SidePanelContext {
 export function SidePanelContextProvider({
 	children,
 }: PropsWithChildren<{}>): JSX.Element {
-	const { app } = useAppContext();
-	const navigate = useNavigate();
 	const [isOpen, setIsOpen] = useState(false);
 	const toggleSideMenu = (): void => setIsOpen(prev => !prev);
 	const openMenu = (): void => setIsOpen(true);
 
-	const handleAddNew = async (): Promise<void> => {
-		const boardId = await app.createPublicBoard();
-		app.openBoard(boardId);
-		navigate(`/boards/${boardId}`, {
-			replace: true,
-		});
-	};
-
 	return (
-		<SidePanelContext.Provider
-			value={{ toggleSideMenu, isOpen, openMenu, handleAddNew }}
-		>
+		<SidePanelContext.Provider value={{ toggleSideMenu, isOpen, openMenu }}>
 			{children}
 		</SidePanelContext.Provider>
 	);

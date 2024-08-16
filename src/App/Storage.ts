@@ -424,4 +424,58 @@ export class Storage {
 		);
 		this.subject.publish();
 	}
+
+	getPublicBoard(id: string) {
+		return this.listPublicBoards().find(({ boardId }) => boardId === id);
+	}
+
+	getSharedBoard(id: string) {
+		return this.listSharedBoards().find(({ boardId }) => boardId === id);
+	}
+
+	getBoard(id: string) {
+		const publicBoard = this.getPublicBoard(id);
+
+		if (publicBoard) {
+			return publicBoard;
+		}
+
+		const sharedBoard = this.getSharedBoard(id);
+		return sharedBoard;
+	}
+
+	renameBoard(id: string, name: string) {
+		const publicBoard = this.getPublicBoard(id);
+
+		if (!publicBoard) {
+			return;
+		}
+
+		if (publicBoard) {
+			this.setPublicBoard({ ...publicBoard, name });
+		}
+
+		fetch(getApiUrl(`/boards/${id}`), {
+			method: "PATCH",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${Cookies.get("accessToken")}`,
+			},
+			body: JSON.stringify({
+				newTitle: name,
+			}),
+		})
+			.then(res => {
+				if (!res.ok) {
+					throw new Error("Unauthorized");
+				}
+			})
+			.catch(err => {
+				console.error(err);
+			})
+			.finally(() => {
+				this.subject.publish();
+			});
+	}
 }

@@ -159,8 +159,8 @@
 	},
 	"titlePanel": {
 		"menu": {
-			"open": "Открыть меню",
-			"close": "Закрыть меню"
+			"open": "Раскрыть список досок",
+			"close": "Закрыть список досок"
 		}
 	},
 	"auth": {
@@ -302,7 +302,9 @@
 		"OneOptional": "Ноль или один"
 	},
 	"board": {
-		"textPlaceholder": "Напишите что-нибудь"
+		"textPlaceholder": "Напишите что-нибудь",
+		"untitled": "Без названия",
+		"welcomeBoardTitle": "Добро пожаловать в Microboard!"
 	},
 	"thickness": "Толщина",
 	"appTitle": "Microboard",
@@ -327,7 +329,8 @@
 	},
 	"contextMenu": {
 		"delete": "Удалить",
-		"addNew": "Добавить"
+		"addNew": "Добавить",
+		"rename": "Переименовать"
 	},
 	"miro": {
 		"boardsTitle": "Выберите доску для импорта",
