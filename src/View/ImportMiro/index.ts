@@ -1,3 +1,3 @@
 export { ImportMiroStartModal } from "./ImportMiroStartModal/ImportMiroStartModal";
 
-export { ImportMiroBoards } from "./ImportMiroBoards";
+export { ImportMiroBoards } from "./ImportMiroBoards/ImportMiroBoards";

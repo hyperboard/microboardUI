@@ -6,7 +6,11 @@ import { App } from "App";
 import { useNavigate } from "react-router-dom";
 import { useCopyBoardItems } from "./useCopyBoardItems";
 import { getApiUrl } from "Config";
-import { ImportMiroModal } from "../ImportMiroModal";
+import { Modal } from "shared/ui-lib/Modal";
+import { ModalSize } from "shared/ui-lib/Modal/Modal";
+import { Loader } from "shared/ui-lib/Loader/Loader";
+import styles from "../ImportMiroBoards.module.css";
+import { Message } from "shared/ui-lib/Message/Message";
 
 interface IImportBoardItem {
 	isOpen: boolean | null;
@@ -15,16 +19,14 @@ interface IImportBoardItem {
 	app: App;
 }
 
-export function ImportBoardItem({
-	isOpen,
-	setIsOpen,
-	boardId,
-	app,
-}: IImportBoardItem): React.ReactElement {
+export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
+	const { isOpen, setIsOpen, boardId, app } = props;
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const [boardItems, setBoardItems] = useState<IMiroBoardItem[]>([]);
 	const [error, setError] = useState<string | null>(null);
+	const [isOpenSuccessMessage, setIsOpenSuccessMessage] =
+		useState<boolean>(false);
 	const errorMessage = t("miro.miroError");
 	const LIMIT_MIRO_ITEMS = 20;
 	const [itemsInfo, setItemsInfo] = useState<{
@@ -151,6 +153,14 @@ export function ImportBoardItem({
 	}, [itemsInfo.cursor.connectors]);
 
 	useEffect(() => {
+		if (isOpenSuccessMessage) {
+			setTimeout(() => {
+				setIsOpenSuccessMessage(false);
+			}, 10000);
+		}
+	}, [isOpenSuccessMessage]);
+
+	useEffect(() => {
 		if (
 			isOpen &&
 			boardItems &&
@@ -159,15 +169,22 @@ export function ImportBoardItem({
 		) {
 			onCloseModal();
 			createNewBoard();
+			setIsOpenSuccessMessage(true);
 		}
 	}, [boardItems, itemsInfo.total]);
 
 	const onCloseModal = (): void => setIsOpen(false);
 
 	return (
-		<ImportMiroModal isOpen={isOpen} setIsOpen={setIsOpen}>
-			<h2>{t("miro.importMiro")}</h2>
-			{error ? <p>{error}</p> : <p>{t("miro.loading")}</p>}
-		</ImportMiroModal>
+		<>
+			<Modal isOpen={isOpen} setIsOpen={setIsOpen} size={ModalSize.S}>
+				<h2 className={styles.title}>{t("miro.importMiro")}</h2>
+				<p className={styles.text}>{t("miro.importItemsModalText")}</p>
+				{error ? <p>{error}</p> : <Loader />}
+			</Modal>
+			<Message isOpen={isOpenSuccessMessage}>
+				The board exported successfully!
+			</Message>
+		</>
 	);
 }

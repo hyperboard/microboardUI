@@ -16,6 +16,9 @@ export const ImportMiroStartModal = ({
 }: ImportMiroStartModalProps) => {
 	const { t } = useTranslation();
 
+	// TODO fix loader png
+	const importMiroStartImg = ImportMiroStartImg?.toString().replace(".", "");
+
 	const onClick = (): void => {
 		// TODO using ENV after transferring to the client
 		// const clientId = import.meta.env.MIRO_CLIENT_ID;
@@ -36,7 +39,7 @@ export const ImportMiroStartModal = ({
 			<h3 className={styles.title}>{t("miro.importMiro")}</h3>
 			<p className={styles.text}>{t("miro.startModalText")}</p>
 			<div className={styles.img}>
-				<img src={ImportMiroStartImg} alt={t("miro.importMiro")} />
+				<img src={importMiroStartImg} alt={t("miro.importMiro")} />
 			</div>
 			<UiButton onClick={onClick} className={styles.btn} size="sm">
 				{t("miro.nextStepBtn")}

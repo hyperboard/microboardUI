@@ -300,7 +300,7 @@ export function SidePanel(): React.ReactNode {
 					id={"miro"}
 					pattern="secondary"
 					onClick={() => setIsOpenImportMiro(true)}
-					disabled={!app.storage.isAuth}
+					// disabled={!app.storage.isAuth}
 					// tooltip={t('miro.importMiroBtnTooltip')}
 				>
 					<Icon

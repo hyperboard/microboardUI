@@ -5,27 +5,40 @@ import styles from "./Modal.module.css";
 import { createPortal } from "react-dom";
 import { Icon } from "View/Icon";
 
+export enum ModalSize {
+	S = "sizeS",
+	M = "sizeM",
+}
+
 interface ModalProps {
 	className?: string;
 	isOpen: boolean;
 	setIsOpen: (isOpen: boolean) => void;
 	children: ReactNode;
+	size?: ModalSize;
 }
 
-const ModalBase: React.FC<ModalProps> = ({
-	className,
-	isOpen,
-	setIsOpen,
-	children,
-}: ModalProps) => {
+const ModalBase = (props: ModalProps) => {
+	const {
+		className,
+		isOpen,
+		setIsOpen,
+		children,
+		size = ModalSize.S,
+		...otherProps
+	} = props;
 	const onCloseModal = (): void => setIsOpen(false);
 
 	return (
 		<div
 			className={clsx(styles.modal, isOpen && styles.open, className)}
 			onClick={onCloseModal}
+			{...otherProps}
 		>
-			<div className={styles.wr} onClick={e => e.stopPropagation()}>
+			<div
+				className={clsx(styles.wr, size && styles[size])}
+				onClick={e => e.stopPropagation()}
+			>
 				<div className={styles.modalCross} onClick={onCloseModal}>
 					<Icon
 						iconName={"modalCross"}

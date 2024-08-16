@@ -342,7 +342,8 @@
 		"startModalText": "Log in to Miro and select the team whose board you want to import to Microboard. You can import boards from Miro 10 minutes after they are created.",
 		"miroError": "An error has occurred. Try importing again",
 		"loading": "Loading...",
-		"nextStepBtn": "Сontinue"
+		"nextStepBtn": "Сontinue",
+		"importItemsModalText": "The board is being imported. Please do not close the tab until the import is complete."
 	},
 	"connector": {
 		"textPlaceholder": "Text"

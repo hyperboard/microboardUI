@@ -6,7 +6,9 @@ import { IMiroBoards } from "./MiroBoardsModels";
 import { MiroBoardItem } from "./MiroBoardItem";
 import Cookies from "js-cookie";
 import { getApiUrl } from "Config";
-import { ImportMiroModal } from "../ImportMiroModal";
+import { Modal } from "shared/ui-lib/Modal";
+import { ModalSize } from "shared/ui-lib/Modal/Modal";
+import { Loader } from "shared/ui-lib/Loader/Loader";
 
 interface IMiroBoardsProps {
 	isOpen: boolean | null;
@@ -103,23 +105,25 @@ export function MiroBoards({
 	};
 
 	return (
-		<ImportMiroModal isOpen={isOpen} setIsOpen={setIsOpen}>
-			<h2>{t("miro.boardsTitle")}</h2>
-			<div className={styles.boards}>
-				{boards
-					? boards.data.map(board => {
-							const { id, name, picture } = board;
-							return (
-								<MiroBoardItem
-									key={id}
-									onClick={() => onClickBoard(id)}
-									name={name}
-									picture={picture}
-								/>
-							);
-					  })
-					: "Loading..."}
-			</div>
-		</ImportMiroModal>
+		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size={ModalSize.M}>
+			<h2 className={styles.title}>{t("miro.boardsTitle")}</h2>
+			{boards ? (
+				<div className={styles.boards}>
+					{boards.data.map(board => {
+						const { id, name, picture } = board;
+						return (
+							<MiroBoardItem
+								key={id}
+								onClick={() => onClickBoard(id)}
+								name={name}
+								picture={picture}
+							/>
+						);
+					})}
+				</div>
+			) : (
+				<Loader />
+			)}
+		</Modal>
 	);
 }

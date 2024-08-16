@@ -25,13 +25,20 @@
 	position: relative;
 	background-color: white;
 	border-radius: 24px;
-	max-width: 608px;
 	width: 100%;
 	max-height: 90vh;
 	overflow-y: scroll;
 	padding: 32px 64px;
 	margin: 0 40px;
 	text-align: center;
+}
+
+.sizeS {
+	max-width: 608px;
+}
+
+.sizeM {
+	max-width: 988px;
 }
 
 .modalCross {

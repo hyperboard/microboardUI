@@ -17,11 +17,7 @@ export function MiroBoardItem({
 	return (
 		<div className={styles.board} onClick={onClick}>
 			<div>
-				{imgBoard ? (
-					<img src={imgBoard} alt={name} className={styles.img} />
-				) : (
-					<div className={styles.stubImg}></div>
-				)}
+				<img src={imgBoard} alt={name} className={styles.img} />
 			</div>
 			<p className={styles.name}>{name}</p>
 		</div>
