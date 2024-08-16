@@ -16,6 +16,7 @@ export enum MiroBoardItemTypes {
 	STICKER = "sticky_note",
 	IMAGE = "image",
 	CONNECTOR = "connector",
+	FRAME = "frame",
 }
 
 export type MiroItemsTypes =
@@ -23,6 +24,7 @@ export type MiroItemsTypes =
 	| "sticky_note"
 	| "image"
 	| "text"
+	| "frame"
 	| "connector";
 
 export interface IMiroBoardItemStyle {
@@ -108,6 +110,18 @@ export interface IMiroBoardItemImage extends IMiroBoardItemBase {
 	position: IMiroPosition;
 }
 
+export interface IMiroBoardItemFrame extends IMiroBoardItemBase {
+	type: MiroBoardItemTypes.FRAME;
+	data: {
+		format: string;
+		showContent: boolean;
+		title: string;
+		type: string;
+	};
+	geometry: IMiroGeometry;
+	position: IMiroPosition;
+}
+
 interface IMiroBoardConnectionsPoints {
 	links: {
 		self: string;
@@ -136,4 +150,5 @@ export type IMiroBoardItem =
 	| IMiroBoardItemShape
 	| IMiroBoardItemSticker
 	| IMiroBoardItemImage
-	| IMiroBoardItemConnector;
+	| IMiroBoardItemConnector
+	| IMiroBoardItemFrame;

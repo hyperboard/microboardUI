@@ -2,6 +2,7 @@ import { Board } from "Board";
 import {
 	IMiroBoardItem,
 	IMiroBoardItemConnector,
+	IMiroBoardItemFrame,
 	IMiroBoardItemImage,
 	IMiroBoardItemShape,
 	IMiroBoardItemSticker,
@@ -9,7 +10,7 @@ import {
 	MiroBoardItemTypes,
 	MiroItemsTypes,
 } from "../MiroBoards/MiroBoardsModels";
-import { Connector, Mbr, RichText, Shape } from "Board/Items";
+import { Connector, Frame, Mbr, RichText, Shape } from "Board/Items";
 import { BorderStyle } from "Board/Items/Path";
 import { Sticker, stickerColors } from "Board/Items/Sticker";
 import { ImageItem } from "Board/Items/Image";
@@ -83,6 +84,18 @@ export const useCopyBoardItems = (
 		straight: "straight",
 		curved: "curved",
 		elbowed: "curved",
+	};
+
+	const frameTypes = {
+		custom: "Custom",
+		a4: "A4",
+		letter: "Letter",
+		ratio_16x9: "Frame16x9",
+		ratio_4x3: "Frame4x3",
+		ratio_1x1: "Frame1x1",
+		phone: "Custom",
+		tablet: "Custom",
+		desktop: "Custom",
 	};
 
 	const connectorStyles = {
@@ -438,6 +451,32 @@ export const useCopyBoardItems = (
 		}
 	};
 
+	const copyFrame = (item: IMiroBoardItemFrame): void => {
+		const { style, geometry, position, id, data } = item;
+		const { width, height } = geometry;
+		const { x, y } = position;
+		const { fillColor } = style;
+		const { format } = data;
+		const frame = new Frame(board.events).setId(id).setBoard(board);
+
+		fillColor && frame.setBackgroundColor(fillColor);
+		frame.setFrameType(frameTypes[format]);
+
+		const frameX = x - width / 2;
+		const frameY = y - height / 2;
+
+		const initialWidth = frame.getPaths().getMbr().getWidth();
+		const initialHeight = frame.getPaths().getMbr().getHeight();
+
+		const frameWidth = width / initialWidth;
+		const frameHeight = height / initialHeight;
+
+		frame.transformation.translateTo(frameX, frameY);
+		frame.transformation.scaleTo(frameWidth, frameHeight);
+
+		board.add(frame);
+	};
+
 	const copyBoardItems = (): void => {
 		const itemsTypes: {
 			[key in MiroItemsTypes]: (item: any) => void;
@@ -446,6 +485,7 @@ export const useCopyBoardItems = (
 			sticky_note: copySticker,
 			image: copyImage,
 			text: copyText,
+			frame: copyFrame,
 			connector: copyConnector,
 		};
 
