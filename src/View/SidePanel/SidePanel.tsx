@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { useClickOutside } from "lib/useClickOutside";
 import { useForceUpdate } from "lib/useForceUpdate";
 import React, {
+	ChangeEventHandler,
 	useEffect,
 	useRef,
 	useState,
@@ -20,11 +21,12 @@ import { ResizableEdge } from "./ResizableEdge";
 import style from "./SidePanel.module.css";
 import { useSidePanelContext } from "./SidePanelContext";
 import { ImportFromMiro } from "./ImportFromMiro";
+import { BoardName, BoardRename, useBoardRenameContext } from "View/BoardName";
 
 const MIN_PANEL_WIDTH = 250;
 
 export function SidePanel(): React.ReactNode {
-	const { isOpen, toggleSideMenu, handleAddNew } = useSidePanelContext();
+	const { isOpen, toggleSideMenu } = useSidePanelContext();
 	const { app, board } = useAppContext();
 	const { open, close } = useContextMenuContext();
 	const { t } = useTranslation();
@@ -42,6 +44,13 @@ export function SidePanel(): React.ReactNode {
 	const isPublic = publicBoards.some(
 		({ boardId }) => boardId === board.getBoardId(),
 	);
+	const {
+		setRenamingBoardId,
+		setNewBoardName,
+		renamingBoardId,
+		rename,
+		newBoardName,
+	} = useBoardRenameContext();
 
 	const update = (): void => {
 		if (animationId.current) {
@@ -81,12 +90,42 @@ export function SidePanel(): React.ReactNode {
 		close();
 	};
 
-	const handleBoardContextMenu =
+	const handleBoardRename: ChangeEventHandler<HTMLInputElement> = event => {
+		setNewBoardName(event.currentTarget.value);
+	};
+
+	const handleAddNew = async (): Promise<void> => {
+		const boardId = await app.createPublicBoard();
+		app.openBoard(boardId);
+		navigate(`/boards/${boardId}`, {
+			replace: true,
+		});
+		setNewBoardName(t("board.untitled"));
+		setRenamingBoardId(boardId);
+	};
+
+	const handleBoardRenameStart =
 		(boardId: string): MouseEventHandler =>
 		event => {
 			event.preventDefault();
-			event.stopPropagation();
-			open(event.clientX, event.clientY, boardId);
+			const boardName =
+				app.storage.getBoard(boardId)?.name || t("board.untitled");
+			console.log(boardId, app.storage.getBoard(boardId));
+			setRenamingBoardId(boardId);
+			setNewBoardName(boardName);
+		};
+
+	const handleRenameCancel = () => {
+		setRenamingBoardId(null);
+		setNewBoardName("");
+	};
+
+	const handleBoardContextMenu =
+		(boardId: string): MouseEventHandler =>
+		e => {
+			e.preventDefault();
+			e.stopPropagation();
+			open(e.clientX, e.clientY, boardId);
 		};
 
 	const newWidth = width <= MIN_PANEL_WIDTH ? MIN_PANEL_WIDTH : width;
@@ -134,18 +173,36 @@ export function SidePanel(): React.ReactNode {
 								}
 								isOpened={isPublic || isBlank}
 							>
-								{publicBoards.map(({ boardId }) => (
-									<FolderItem
-										active={boardId === board.getBoardId()}
-										key={boardId}
-										onClick={() =>
-											handleBoardClick(boardId)
-										}
-										onClickContext={handleBoardContextMenu(
-											boardId,
-										)}
-										text={boardId}
-									/>
+								{publicBoards.map(({ boardId, name }) => (
+									<FolderItem key={boardId}>
+										<BoardName
+											active={
+												board.getBoardId() === boardId
+											}
+											onClick={() =>
+												handleBoardClick(boardId)
+											}
+											onClickContext={handleBoardContextMenu(
+												boardId,
+											)}
+											onDoubleClick={handleBoardRenameStart(
+												boardId,
+											)}
+										>
+											{renamingBoardId === boardId ? (
+												<BoardRename
+													value={newBoardName}
+													onCancel={
+														handleRenameCancel
+													}
+													onChange={handleBoardRename}
+													onConfirm={rename}
+												/>
+											) : (
+												name || t("board.untitled")
+											)}
+										</BoardName>
+									</FolderItem>
 								))}
 							</Folder>
 						</Folder>
@@ -162,16 +219,32 @@ export function SidePanel(): React.ReactNode {
 							}
 							isOpened={isPublic || isBlank}
 						>
-							{publicBoards.map(({ boardId }) => (
-								<FolderItem
-									active={boardId === board.getBoardId()}
-									key={boardId}
-									onClick={() => handleBoardClick(boardId)}
-									onClickContext={handleBoardContextMenu(
-										boardId,
-									)}
-									text={boardId}
-								/>
+							{publicBoards.map(({ boardId, name }) => (
+								<FolderItem key={boardId}>
+									<BoardName
+										active={board.getBoardId() === boardId}
+										onClick={() =>
+											handleBoardClick(boardId)
+										}
+										onClickContext={handleBoardContextMenu(
+											boardId,
+										)}
+										onDoubleClick={handleBoardRenameStart(
+											boardId,
+										)}
+									>
+										{renamingBoardId === boardId ? (
+											<BoardRename
+												value={newBoardName}
+												onCancel={handleRenameCancel}
+												onChange={handleBoardRename}
+												onConfirm={rename}
+											/>
+										) : (
+											name || t("board.untitled")
+										)}
+									</BoardName>
+								</FolderItem>
 							))}
 						</Folder>
 					)}
@@ -186,14 +259,30 @@ export function SidePanel(): React.ReactNode {
 						}
 						isOpened={isShared || isBlank}
 					>
-						{sharedBoards.map(({ boardId }) => (
-							<FolderItem
-								active={boardId === board.getBoardId()}
-								key={boardId}
-								onClick={() => handleBoardClick(boardId)}
-								onClickContext={handleBoardContextMenu(boardId)}
-								text={boardId}
-							/>
+						{sharedBoards.map(({ boardId, name }) => (
+							<FolderItem key={boardId}>
+								<BoardName
+									active={board.getBoardId() === boardId}
+									onClick={() => handleBoardClick(boardId)}
+									onClickContext={handleBoardContextMenu(
+										boardId,
+									)}
+									onDoubleClick={handleBoardRenameStart(
+										boardId,
+									)}
+								>
+									{renamingBoardId === boardId ? (
+										<BoardRename
+											value={newBoardName}
+											onCancel={handleRenameCancel}
+											onChange={handleBoardRename}
+											onConfirm={rename}
+										/>
+									) : (
+										name || t("board.untitled")
+									)}
+								</BoardName>
+							</FolderItem>
 						))}
 					</Folder>
 				</div>

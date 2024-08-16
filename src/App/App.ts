@@ -12,6 +12,7 @@ import { Subscriptions, getSubscriptions } from "./getSubscriptions";
 import { Controller, getController } from "./getController";
 import { TestRecorder, createTester } from "./testRecorder";
 import { BoardSnapshot } from "Board/Board";
+import Cookies from "js-cookie";
 
 const LAST_BOARD_KEY = "lastSeenBoard";
 
@@ -29,7 +30,8 @@ export interface App {
 	subscriptions: Subscriptions;
 	openStartingBoard: () => Promise<void>;
 	getStartingBoardId: () => string | null;
-	createPublicBoard: () => Promise<string>;
+	createPublicBoard: (name?: string) => Promise<string>;
+	createBoard: () => Promise<string>;
 	openBoard: (id: string) => void;
 	getBoard: () => Board;
 	getLastBoardId: () => string | null;
@@ -80,7 +82,7 @@ export function createApp(isHistory = true): App {
 		return null;
 	}
 
-	async function createPublicBoard(): Promise<string> {
+	async function createPublicBoard(name?: string): Promise<string> {
 		try {
 			const response = await fetch(`${getApiUrl()}/public-boards`, {
 				method: "POST",
@@ -103,6 +105,32 @@ export function createApp(isHistory = true): App {
 				authorKey,
 				actualId: boardId,
 			});
+			return linkId as string;
+		} catch (error) {
+			console.error("Failed to create a new public board.", error);
+		}
+	}
+
+	async function createBoard(): Promise<void> {
+		try {
+			const response = await fetch(`${getApiUrl()}/boards`, {
+				method: "POST",
+				mode: "cors",
+				cache: "no-cache",
+				credentials: "same-origin",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${Cookies.get("accessToken")}`,
+				},
+				redirect: "follow",
+				referrerPolicy: "no-referrer",
+			});
+			if (!response.ok) {
+				throw new Error("response not OK");
+			}
+			const data = await response.json();
+			const { boardId, linkId, linkUri, authorKey } = data;
+			storage.setPublicBoard({ boardId: linkId, authorKey });
 			return linkId as string;
 		} catch (error) {
 			console.error("Failed to create a new public board.", error);
@@ -173,6 +201,7 @@ export function createApp(isHistory = true): App {
 		render,
 		test,
 		getSnapshot,
+		createBoard,
 	};
 
 	function render(): void {

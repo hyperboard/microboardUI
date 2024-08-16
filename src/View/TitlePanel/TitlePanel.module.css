@@ -17,12 +17,16 @@
 }
 
 .name {
-	max-width: 100px;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	margin: auto;
 	overflow: hidden;
 	color: var(--text-base-primary);
+	font-size: 16px;
+	font-weight: 400;
+}
+
+input.rename {
 	font-size: 16px;
 	font-weight: 400;
 }

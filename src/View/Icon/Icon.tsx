@@ -53,6 +53,7 @@ export type IconId =
 	| "VerticalAlignCenter"
 	| "VerticalAlignBottom"
 	| "AddText"
+	| "Rename"
 	| "publicDrafts"
 	| "sharedBoards";
 

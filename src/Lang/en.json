@@ -161,8 +161,8 @@
 	},
 	"titlePanel": {
 		"menu": {
-			"open": "Open Menu",
-			"close": "Close Menu"
+			"open": "Open board list",
+			"close": "Close board list"
 		}
 	},
 	"auth": {
@@ -304,7 +304,9 @@
 		"OneOptional": "Zero or one"
 	},
 	"board": {
-		"textPlaceholder": "Type something"
+		"textPlaceholder": "Type something",
+		"untitled": "Untitled",
+		"welcomeBoardTitle": "Welcome to Microboard!"
 	},
 	"thickness": "Thickness",
 	"appTitle": "Microboard",
@@ -329,7 +331,8 @@
 	},
 	"contextMenu": {
 		"delete": "Delete",
-		"addNew": "Add new"
+		"addNew": "Add new",
+		"rename": "Rename"
 	},
 	"miro": {
 		"boardsTitle": "Select a board to import",
