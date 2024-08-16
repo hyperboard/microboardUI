@@ -1,7 +1,12 @@
 /* eslint-disable react/prop-types */
 import { App } from "App";
 import React, { useLayoutEffect, useRef, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+	useLocation,
+	useNavigate,
+	useParams,
+	useSearchParams,
+} from "react-router-dom";
 import { AppContext } from "./AppContext";
 import { AppView } from "View/AppView";
 import { InfoModal, ModalContext } from "./Modal/InfoModal";
@@ -19,6 +24,11 @@ export const BoardView = ({ app }: Props) => {
 	const { pathname } = useLocation();
 	const { t } = useTranslation();
 	const navigate = useNavigate();
+	const [searchParams] = useSearchParams();
+	const codeSearch = searchParams.get("code");
+	const teamIdSearch = searchParams.get("team_id");
+	const isOpenMiroBoards = codeSearch && teamIdSearch;
+
 	const [modalInfo, setModalInfo] = useState<{
 		title: string;
 		description: string;
@@ -36,7 +46,8 @@ export const BoardView = ({ app }: Props) => {
 		if (
 			forceUpdate ||
 			(deniedBoardId === board.getBoardId() &&
-				!app.storage.showedErrorModals[deniedBoardId])
+				!app.storage.showedErrorModals[deniedBoardId] &&
+				!isOpenMiroBoards)
 		) {
 			openModalInfo(
 				t("modalInfo.accessDenied.title"),

@@ -20,8 +20,9 @@ import { UiPanel } from "View/Ui/UiPanel";
 import { ResizableEdge } from "./ResizableEdge";
 import style from "./SidePanel.module.css";
 import { useSidePanelContext } from "./SidePanelContext";
-import { ImportFromMiro } from "./ImportFromMiro";
 import { BoardName, BoardRename, useBoardRenameContext } from "View/BoardName";
+import { ImportMiroStartModal } from "View/ImportMiro";
+import { Button } from "shared/ui-lib/Button";
 
 const MIN_PANEL_WIDTH = 250;
 
@@ -44,6 +45,7 @@ export function SidePanel(): React.ReactNode {
 	const isPublic = publicBoards.some(
 		({ boardId }) => boardId === board.getBoardId(),
 	);
+	const [isOpenImportMiro, setIsOpenImportMiro] = useState(false);
 	const {
 		setRenamingBoardId,
 		setNewBoardName,
@@ -294,9 +296,27 @@ export function SidePanel(): React.ReactNode {
 				</button>
 			</div>
 			<div className={style.importMiroBtn}>
-				<ImportFromMiro />
+				<Button
+					id={"miro"}
+					pattern="secondary"
+					onClick={() => setIsOpenImportMiro(true)}
+					disabled={!app.storage.isAuth}
+					// tooltip={t('miro.importMiroBtnTooltip')}
+				>
+					<Icon
+						iconName="import"
+						width={16}
+						height={16}
+						style={{ fill: "#696B76" }}
+					/>
+					<span>{t("miro.importMiroBtn")}</span>
+				</Button>
 			</div>
 			<ResizableEdge panelWidth={width} setWidth={setWidth} />
+			<ImportMiroStartModal
+				isOpen={isOpenImportMiro}
+				setIsOpen={setIsOpenImportMiro}
+			/>
 		</UiPanel>
 	);
 }

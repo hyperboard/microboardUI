@@ -3,18 +3,22 @@ import { MiroBoards } from "./MiroBoards/MiroBoards";
 import React from "react";
 import { ImportBoardItem } from "./ImportBoardItem";
 import { App } from "App";
+import { useSearchParams } from "react-router-dom";
 
 interface IImportMiroBoards {
-	isOpen: boolean | null;
 	app: App;
 }
 
 export function ImportMiroBoards({
-	isOpen,
 	app,
 }: IImportMiroBoards): React.ReactElement | null {
+	const [searchParams] = useSearchParams();
+	const codeSearch = searchParams.get("code");
+	const teamIdSearch = searchParams.get("team_id");
+	const isOpenMiroBoards = codeSearch && teamIdSearch;
+
 	const [stage, setStage] = useState<number>(1);
-	const [open, setOpen] = useState<boolean | null>(isOpen);
+	const [open, setOpen] = useState<boolean | null>(!!isOpenMiroBoards);
 	const [boardId, setBoardId] = useState<string>("");
 
 	return stage === 1 && open ? (

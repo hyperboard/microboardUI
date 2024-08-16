@@ -17,7 +17,7 @@ import { SidePanelsContainer } from "View/SidePanelsContainer";
 import { ToastProvider } from "View/ToastProvider";
 import { ZoomPanel } from "View/ZoomPanel";
 import style from "./AppView.module.css";
-import { ImportMiroBoards } from "../ImportMiroBoards";
+import { ImportMiroBoards } from "../ImportMiro";
 import { useTranslation } from "react-i18next";
 import { BoardRenameContextProvider } from "View/BoardName";
 
@@ -108,10 +108,6 @@ export function AppView() {
 	const urlString = new URL(window.location.href).pathname;
 	const firstPath = urlString.split("/").pop();
 	const boardId = params?.boardId || firstPath;
-	const query = new URLSearchParams(location?.search);
-	const codeSearch = query.get("code");
-	const teamIdSearch = query.get("team_id");
-	const isOpenMiroBoards = codeSearch && teamIdSearch;
 
 	if (boardId && firstPath !== "boards") {
 		app.openBoard(boardId!);
@@ -205,7 +201,7 @@ export function AppView() {
 			<ContextPanel />
 			<ExportPanel />
 			<ToastProvider />
-			<ImportMiroBoards isOpen={isOpenMiroBoards} app={app} />
+			<ImportMiroBoards app={app} />
 		</div>
 	);
 }

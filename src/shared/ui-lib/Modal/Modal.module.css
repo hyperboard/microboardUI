@@ -1,0 +1,48 @@
+.modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 100vw;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: rgb(0 0 0 / 20%);
+	visibility: hidden;
+	opacity: 0;
+	z-index: 0;
+	transition: all 0.45s ease-out;
+}
+
+.open {
+	visibility: visible;
+	opacity: 1;
+	z-index: 100;
+}
+
+.wr {
+	position: relative;
+	background-color: white;
+	border-radius: 24px;
+	max-width: 608px;
+	width: 100%;
+	max-height: 90vh;
+	overflow-y: scroll;
+	padding: 32px 64px;
+	margin: 0 40px;
+	text-align: center;
+}
+
+.modalCross {
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	padding: 6px;
+	cursor: pointer;
+}
+
+.modalCrossIcon {
+	fill: "#0D1126";
+	fill-opacity: 0.4;
+}

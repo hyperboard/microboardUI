@@ -55,7 +55,9 @@ export type IconId =
 	| "AddText"
 	| "Rename"
 	| "publicDrafts"
-	| "sharedBoards";
+	| "sharedBoards"
+	| "import"
+	| "modalCross";
 
 type Props = {
 	iconName: IconId;
