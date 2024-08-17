@@ -2,13 +2,15 @@ import { useTranslation } from "react-i18next";
 import React, { useEffect, useState } from "react";
 import styles from "../ImportMiroBoards.module.css";
 import { useLocation } from "react-router-dom";
-import { IMiroBoards } from "./MiroBoardsModels";
+import { IMiroBoard, IMiroBoards } from "./MiroBoardsModels";
 import { MiroBoardItem } from "./MiroBoardItem";
 import Cookies from "js-cookie";
 import { getApiUrl } from "Config";
 import { Modal } from "shared/ui-lib/Modal";
 import { ModalSize } from "shared/ui-lib/Modal/Modal";
 import { Loader } from "shared/ui-lib/Loader/Loader";
+import { Loader as ButtonLoader } from "shared/ui-lib/Button/Loader";
+import { UiButton } from "View/Ui/UiButton";
 
 interface IMiroBoardsProps {
 	isOpen: boolean | null;
@@ -27,7 +29,12 @@ export function MiroBoards({
 	const location = useLocation();
 	const teamId = new URLSearchParams(location.search).get("team_id");
 	const authCode = new URLSearchParams(location.search).get("code");
-	const [boards, setBoards] = useState<IMiroBoards | null>(null);
+	const [boards, setBoards] = useState<IMiroBoard[] | null>(null);
+	const BOARD_LIMIT = 9;
+	const [boardsInfo, setBoardsInfo] = useState<Omit<IMiroBoards, "data">>({
+		total: 0,
+		offset: 0,
+	});
 
 	const fetchToken = async () => {
 		try {
@@ -72,7 +79,12 @@ export function MiroBoards({
 	const fetchBoards = async () => {
 		const token = Cookies.get("miro_accessToken");
 		const response = await fetch(
-			"https://api.miro.com/v2/boards?team_id=" + teamId,
+			"https://api.miro.com/v2/boards?team_id=" +
+				teamId +
+				"&limit=" +
+				BOARD_LIMIT +
+				"&offset=" +
+				boardsInfo.offset,
 			{
 				headers: {
 					Authorization: "Bearer " + token,
@@ -84,7 +96,12 @@ export function MiroBoards({
 		if (dataBoards.status === 401) {
 			fetchToken();
 		} else {
-			setBoards(dataBoards);
+			const { total, offset, data } = dataBoards;
+			setBoards(prevBoards =>
+				prevBoards ? prevBoards.concat(data) : data,
+			);
+
+			setBoardsInfo({ total, offset: offset + BOARD_LIMIT });
 		}
 	};
 
@@ -104,26 +121,44 @@ export function MiroBoards({
 		setStage(2);
 	};
 
+	if (!boards) {
+		return (
+			<Modal isOpen={isOpen} setIsOpen={setIsOpen} size={ModalSize.M}>
+				<h2 className={styles.title}>{t("miro.boardsTitle")}</h2>
+				<Loader />;
+			</Modal>
+		);
+	}
+
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size={ModalSize.M}>
 			<h2 className={styles.title}>{t("miro.boardsTitle")}</h2>
-			{boards ? (
-				<div className={styles.boards}>
-					{boards.data.map(board => {
-						const { id, name, picture } = board;
-						return (
-							<MiroBoardItem
-								key={id}
-								onClick={() => onClickBoard(id)}
-								name={name}
-								picture={picture}
-							/>
-						);
-					})}
-				</div>
-			) : (
-				<Loader />
-			)}
+			<div className={styles.boards}>
+				{boards?.map(board => {
+					const { id, name, picture } = board;
+					return (
+						<MiroBoardItem
+							key={id}
+							onClick={() => onClickBoard(id)}
+							name={name}
+							picture={picture}
+						/>
+					);
+				})}
+			</div>
+			{boards.length >= BOARD_LIMIT &&
+			boardsInfo.offset <= boardsInfo.total ? (
+				<UiButton
+					onClick={fetchBoards}
+					className={styles.btn}
+					size="sm"
+				>
+					{boardsInfo.offset >= BOARD_LIMIT * 2 ? (
+						<ButtonLoader color="white" />
+					) : null}
+					{t("miro.showMoreBtn")}
+				</UiButton>
+			) : null}
 		</Modal>
 	);
 }

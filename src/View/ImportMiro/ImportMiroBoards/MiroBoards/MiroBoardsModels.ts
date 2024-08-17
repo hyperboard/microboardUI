@@ -1,5 +1,7 @@
 export interface IMiroBoards {
 	data: IMiroBoard[];
+	total: number;
+	offset: number;
 }
 
 export interface IMiroBoard {

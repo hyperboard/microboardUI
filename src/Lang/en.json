@@ -343,7 +343,8 @@
 		"miroError": "An error has occurred. Try importing again",
 		"loading": "Loading...",
 		"nextStepBtn": "Сontinue",
-		"importItemsModalText": "The board is being imported. Please do not close the tab until the import is complete."
+		"importItemsModalText": "The board is being imported. Please do not close the tab until the import is complete.",
+		"showMoreBtn": "Show more"
 	},
 	"connector": {
 		"textPlaceholder": "Text"

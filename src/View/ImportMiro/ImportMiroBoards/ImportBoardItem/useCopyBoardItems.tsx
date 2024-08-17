@@ -29,7 +29,7 @@ export const useCopyBoardItems = (
 	board: Board,
 	miroItems: IMiroBoardItem[],
 ): void => {
-	const SCALE_FACTOR = 150;
+	const SCALE_FACTOR = 200;
 	const RICH_TEXT_MAX_WIDTH = 600;
 
 	const colorsSticker = {
@@ -216,8 +216,8 @@ export const useCopyBoardItems = (
 
 			const initialWidth = sticker.getPaths().getMbr().getWidth();
 			const initialHeight = sticker.getPaths().getMbr().getHeight();
-			const stickerWidth = initialWidth / width / 4;
-			const stickerHeight = initialHeight / height / 4;
+			const stickerWidth = width / initialWidth;
+			const stickerHeight = height / initialHeight;
 
 			sticker.transformation.translateTo(stickerX, stickerY);
 			sticker.transformation.scaleTo(stickerWidth, stickerHeight);
@@ -285,6 +285,7 @@ export const useCopyBoardItems = (
 				width / SCALE_FACTOR,
 				height / SCALE_FACTOR,
 			);
+
 			board.add(imgItem);
 		});
 	};
@@ -414,31 +415,53 @@ export const useCopyBoardItems = (
 		const richTextWidth = geometry?.width ?? RICH_TEXT_MAX_WIDTH;
 		richtext.setMaxWidth(richTextWidth);
 
-		const richtextX = x - richTextWidth / 2;
-		richtext.transformation.translateTo(richtextX, y);
-
 		const textEls = parseTextData(data.content);
-		textEls.forEach(text => {
+		textEls.forEach((text, index) => {
 			const paragraph = (text as HTMLElement).innerText ?? "\n";
 			const textSpanStyles = text.getElementsByTagName("span")[0]?.style;
 
-			richtext.editor.editor.children = [
-				...richtext.editor.editor.children,
-				{
-					type: "paragraph",
-					children: [
-						{
-							type: "text",
-							text: paragraph,
-							fontColor: color ?? "black",
-							fontSize: +fontSize,
-							fontHighlight:
-								textSpanStyles?.backgroundColor ?? "",
-						},
-					],
-				},
-			];
+			if (index === 0) {
+				richtext.editor.editor.children = [
+					{
+						type: "paragraph",
+						children: [
+							{
+								type: "text",
+								text: paragraph,
+								fontColor: color ?? "black",
+								fontSize: +fontSize,
+								fontHighlight:
+									textSpanStyles?.backgroundColor ?? "",
+							},
+						],
+					},
+				];
+			} else {
+				richtext.editor.editor.children = [
+					...richtext.editor.editor.children,
+					{
+						type: "paragraph",
+						children: [
+							{
+								type: "text",
+								text: paragraph,
+								fontColor: color ?? "black",
+								fontSize: +fontSize,
+								fontHighlight:
+									textSpanStyles?.backgroundColor ?? "",
+							},
+						],
+					},
+				];
+			}
 		});
+
+		const richtextX = x - richTextWidth / 3;
+		const richtextY = y;
+		richtext.transformation.translateTo(richtextX, richtextY);
+
+		const height = richtext.getHeight();
+		richtext.transformation.translateTo(richtextX, y - height / 2);
 
 		board.add(richtext);
 	};
