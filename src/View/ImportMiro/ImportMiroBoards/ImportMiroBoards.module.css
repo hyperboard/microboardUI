@@ -14,9 +14,27 @@
 .boards {
 	display: grid;
 	gap: 16px;
-	grid-template-columns: repeat(3, 31%);
-	height: 70vh;
+	grid-template-columns: repeat(3, 31.5%);
+	height: min-content;
+	max-height: 70vh;
 	overflow-y: scroll;
+}
+
+.boards::-webkit-scrollbar {
+	width: 8px;
+}
+
+.boards::-webkit-scrollbar-track {
+	background: #fff;
+}
+
+.boards::-webkit-scrollbar-thumb {
+	background: #dee1e8;
+	border-radius: 2px;
+}
+
+.boards::-webkit-scrollbar-thumb:hover {
+	background: rgba(146, 79, 232, 0.5);
 }
 
 .board {
