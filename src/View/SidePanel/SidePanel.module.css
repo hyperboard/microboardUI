@@ -31,7 +31,7 @@
 }
 
 .folders {
-	flex: 1 1 500px;
+	flex: 1 1 50vh;
 	overflow: auto;
 	height: calc(100% - 100px);
 }
