@@ -23,6 +23,7 @@ import { useSidePanelContext } from "./SidePanelContext";
 import { BoardName, BoardRename, useBoardRenameContext } from "View/BoardName";
 import { ImportMiroStartModal } from "View/ImportMiro";
 import { Button } from "shared/ui-lib/Button";
+import { Tooltip } from "View/Ui/UiButton/Tooltip";
 
 const MIN_PANEL_WIDTH = 250;
 
@@ -295,13 +296,13 @@ export function SidePanel(): React.ReactNode {
 					<span>{t("sidePanel.addNew")}</span>
 				</button>
 			</div>
-			<div className={style.importMiroBtn}>
+			<div className={style.importMiroBtnWr}>
 				<Button
 					id={"miro"}
 					pattern="secondary"
 					onClick={() => setIsOpenImportMiro(true)}
-					// disabled={!app.storage.isAuth}
-					// tooltip={t('miro.importMiroBtnTooltip')}
+					disabled={!app.storage.isAuth}
+					className={style.importMiroBtn}
 				>
 					<Icon
 						iconName="import"
@@ -310,6 +311,12 @@ export function SidePanel(): React.ReactNode {
 						style={{ fill: "#696B76" }}
 					/>
 					<span>{t("miro.importMiroBtn")}</span>
+					{!app.storage.isAuth && (
+						<Tooltip
+							tooltip={t("miro.importMiroBtnTooltip")}
+							tooltipPosition="top-center-fixed"
+						/>
+					)}
 				</Button>
 			</div>
 			<ResizableEdge panelWidth={width} setWidth={setWidth} />

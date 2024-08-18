@@ -167,7 +167,14 @@
 	z-index: 200;
 }
 
-.button:hover .tip-container {
+.top-center-fixed {
+	position: fixed;
+	bottom: 7.6rem;
+	left: 17.2rem;
+	z-index: 100;
+}
+
+button:hover .tip-container {
 	display: flex;
 }
 
@@ -197,6 +204,13 @@
 	border-right: 0.7rem solid transparent;
 	border-bottom: 0.8rem solid rgb(11, 12, 14);
 	border-radius: 8px;
+}
+
+.tip-container.top-center-fixed .tip::before {
+	left: 4%;
+	margin-left: -0.7rem;
+	bottom: -0.6rem;
+	transform: rotate(180deg);
 }
 
 .tip-container.right .tip::before {

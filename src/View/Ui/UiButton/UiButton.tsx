@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import React, { forwardRef, HTMLAttributes } from "react";
 import style from "./UiButton.module.css";
+import { Tooltip } from "./Tooltip";
 
 type UiButtonProps = HTMLAttributes<HTMLButtonElement> & {
 	active?: boolean;
@@ -12,6 +13,7 @@ type UiButtonProps = HTMLAttributes<HTMLButtonElement> & {
 		| "top"
 		| "top-left"
 		| "top-right"
+		| "top-center-fixed"
 		| "bottom"
 		| "bottom-right"
 		| "bottom-left";
@@ -76,25 +78,11 @@ export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
 			>
 				{children}
 				{tooltip && (
-					<div
-						className={clsx(style.tipContainer, {
-							[style.right]: tooltipPosition === "right",
-							[style.top]: tooltipPosition === "top",
-							[style.topRight]: tooltipPosition === "top-right",
-							[style.bottom]: tooltipPosition === "bottom",
-							[style.bottomRight]:
-								tooltipPosition === "bottom-right",
-							[style.bottomLeft]:
-								tooltipPosition === "bottom-left",
-						})}
-					>
-						<div className={clsx(style.tip)}>
-							<span className={style.tipText}>{tooltip}</span>
-							{hotkey && (
-								<span className={style.hotkey}>{hotkey}</span>
-							)}
-						</div>
-					</div>
+					<Tooltip
+						tooltip={tooltip}
+						tooltipPosition={tooltipPosition}
+						hotkey={hotkey}
+					/>
 				)}
 			</button>
 		);
