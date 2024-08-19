@@ -280,11 +280,11 @@ export const useCopyBoardItems = (
 			const imgX = x - width / 2;
 			const imgY = y - height / 2;
 
+			const imgW = width / imgItem.imageDimension.width;
+			const imgH = height / imgItem.imageDimension.height;
+
 			imgItem.transformation.translateTo(imgX, imgY);
-			imgItem.transformation.scaleTo(
-				width / SCALE_FACTOR,
-				height / SCALE_FACTOR,
-			);
+			imgItem.transformation.scaleTo(imgW, imgH);
 
 			board.add(imgItem);
 		});

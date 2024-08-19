@@ -14,7 +14,7 @@
 .boards {
 	display: grid;
 	gap: 16px;
-	grid-template-columns: repeat(3, 31.5%);
+	grid-template-columns: repeat(3, 32%);
 	height: min-content;
 	max-height: 70vh;
 	overflow-y: scroll;
