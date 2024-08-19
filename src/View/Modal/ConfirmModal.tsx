@@ -1,19 +1,22 @@
-import React, { createContext, MouseEventHandler, useEffect } from "react";
+import React, { createContext, MouseEventHandler, useState } from "react";
 import { createPortal } from "react-dom";
 import styles from "./ConfirmModal.module.css";
-import { useStrictContext } from "lib/strictContext";
+import { createStrictContext, useStrictContext } from "lib/strictContext";
 import { useTranslation } from "react-i18next";
 
-interface ConfirmModalProps {
-	isOpen: boolean;
+interface ConfirmModalData {
 	title: string;
 	description: string;
-	onClose: () => void;
+	opened: boolean;
 	onConfirm: () => Promise<void>;
 }
 
+interface ConfirmModalProps extends ConfirmModalData {
+	onClose: () => void;
+}
+
 const ConfirmModalView: React.FC<ConfirmModalProps> = ({
-	isOpen,
+	opened,
 	title,
 	description,
 	onClose,
@@ -21,7 +24,7 @@ const ConfirmModalView: React.FC<ConfirmModalProps> = ({
 }) => {
 	const { t } = useTranslation();
 
-	if (!isOpen) {
+	if (!opened) {
 		return null;
 	}
 
@@ -39,7 +42,7 @@ const ConfirmModalView: React.FC<ConfirmModalProps> = ({
 	};
 
 	return (
-		<div className={`${styles.modal} ${isOpen ? styles.open : null}`}>
+		<div className={`${styles.modal} ${opened ? styles.open : null}`}>
 			<div className={styles.wrapper}>
 				<div className={styles.title}>{title}</div>
 				<div className={styles.description}>{description}</div>
@@ -69,14 +72,56 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = props => {
 	);
 };
 
-export const ConfirmModalContext = createContext<{
+export const ConfirmModalContext = createStrictContext<{
 	openModalConfirm: (
 		title: string,
 		description: string,
 		onConfirm: () => Promise<void>,
 	) => void;
-} | null>(null);
+	closeModalConfirm: () => void;
+	confirmModalInfo: ConfirmModalData;
+} | null>();
 
 export function useConfirmModalContext() {
 	return useStrictContext(ConfirmModalContext);
 }
+
+export const ConfirmModalProvider: React.FC = ({ children }) => {
+	const [modalConfirm, setModalConfirm] = useState<ConfirmModalData>({
+		opened: false,
+		title: "",
+		description: "",
+		onConfirm: () => Promise.reject(),
+	});
+
+	const openModalConfirm = (
+		title: string,
+		description: string,
+		onConfirm: () => Promise<void>,
+	): void => {
+		setModalConfirm({ title, description, opened: true, onConfirm });
+	};
+
+	const closeModalConfirm = (): void => {
+		setModalConfirm(prev => ({ ...prev, opened: false }));
+	};
+
+	return (
+		<ConfirmModalContext.Provider
+			value={{
+				openModalConfirm,
+				closeModalConfirm,
+				confirmModalInfo: modalConfirm,
+			}}
+		>
+			{children}
+			<ConfirmModal
+				opened={modalConfirm.opened}
+				title={modalConfirm.title}
+				description={modalConfirm.description}
+				onClose={closeModalConfirm}
+				onConfirm={modalConfirm.onConfirm}
+			/>
+		</ConfirmModalContext.Provider>
+	);
+};

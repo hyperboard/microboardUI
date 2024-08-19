@@ -9,17 +9,17 @@ import {
 } from "react-router-dom";
 import { AppContext } from "./AppContext";
 import { AppView } from "View/AppView";
-import { InfoModal, InfoModalContext } from "./Modal/InfoModal";
+import { useModalInfoContext } from "./Modal/InfoModal";
 import { useTranslation } from "react-i18next";
 import { SidePanelContextProvider } from "./SidePanel/SidePanelContext";
 import { ContextMenuContextProvider } from "./ContextMenu";
-import { ConfirmModal, ConfirmModalContext } from "./Modal/ConfirmModal";
+import ModalsWrapper from "./Modal/ModalsWrapper";
 // import "./index.css";
 type Props = {
 	app: App;
 };
 
-export const BoardView = ({ app }: Props) => {
+const BoardView = ({ app }: Props): JSX.Element => {
 	const board = app.getBoard();
 	const params = useParams<{ boardId: string }>();
 	const { pathname } = useLocation();
@@ -30,33 +30,7 @@ export const BoardView = ({ app }: Props) => {
 	const teamIdSearch = searchParams.get("team_id");
 	const isOpenMiroBoards = codeSearch && teamIdSearch;
 
-	const [modalInfo, setModalInfo] = useState<{
-		title: string;
-		description: string;
-		opened: boolean;
-	}>({ opened: false, title: "", description: "" });
-	const openModalInfo = (title: string, description: string): void => {
-		setModalInfo({ title, description, opened: true });
-	};
-
-	const [modalConfirm, setModalConfirm] = useState<{
-		title: string;
-		description: string;
-		opened: boolean;
-		onConfirm: () => Promise<void>;
-	}>({
-		opened: false,
-		title: "",
-		description: "",
-		onConfirm: () => Promise.reject(),
-	});
-	const openModalConfirm = (
-		title: string,
-		description: string,
-		onConfirm: () => Promise<void>,
-	): void => {
-		setModalConfirm({ title, description, opened: true, onConfirm });
-	};
+	const { openModalInfo } = useModalInfoContext();
 
 	app.connection.wsClient.onAccessDenied = (
 		deniedBoardId: string,
@@ -91,42 +65,22 @@ export const BoardView = ({ app }: Props) => {
 	}
 
 	return (
-		<InfoModalContext.Provider value={{ openModalInfo }}>
-			<ConfirmModalContext.Provider value={{ openModalConfirm }}>
-				<AppContext.Provider value={{ app, board }}>
-					<ContextMenuContextProvider>
-						<SidePanelContextProvider>
-							<AppView />
-						</SidePanelContextProvider>
-					</ContextMenuContextProvider>
-					<InfoModal
-						isOpen={modalInfo.opened}
-						title={modalInfo.title}
-						description={modalInfo.description}
-						onClose={() =>
-							setModalInfo({
-								opened: false,
-								title: "",
-								description: "",
-							})
-						}
-					/>
-					<ConfirmModal
-						isOpen={modalConfirm.opened}
-						title={modalConfirm.title}
-						description={modalConfirm.description}
-						onClose={() =>
-							setModalConfirm({
-								opened: false,
-								title: "",
-								description: "",
-								onConfirm: () => Promise.reject(),
-							})
-						}
-						onConfirm={modalConfirm.onConfirm}
-					/>
-				</AppContext.Provider>
-			</ConfirmModalContext.Provider>
-		</InfoModalContext.Provider>
+		<AppContext.Provider value={{ app, board }}>
+			<ModalsWrapper>
+				<ContextMenuContextProvider>
+					<SidePanelContextProvider>
+						<AppView />
+					</SidePanelContextProvider>
+				</ContextMenuContextProvider>
+			</ModalsWrapper>
+		</AppContext.Provider>
 	);
 };
+
+const BoardViewWithModals = (props: Props): JSX.Element => (
+	<ModalsWrapper>
+		<BoardView {...props} />
+	</ModalsWrapper>
+);
+
+export { BoardViewWithModals as BoardView };

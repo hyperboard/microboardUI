@@ -1,7 +1,7 @@
-import React, { createContext, MouseEventHandler } from "react";
+import React, { createContext, MouseEventHandler, useState } from "react";
 import { createPortal } from "react-dom";
 import styles from "./InfoModal.module.css";
-import { useStrictContext } from "lib/strictContext";
+import { createStrictContext, useStrictContext } from "lib/strictContext";
 import { useTranslation } from "react-i18next";
 
 interface InfoModalProps {
@@ -49,10 +49,39 @@ export const InfoModal: React.FC<InfoModalProps> = props => {
 	);
 };
 
-export const InfoModalContext = createContext<{
+export const InfoModalContext = createStrictContext<{
 	openModalInfo: (title: string, description: string) => void;
-} | null>(null);
+	closeModalInfo: () => void;
+} | null>();
 
 export function useModalInfoContext() {
 	return useStrictContext(InfoModalContext);
 }
+
+export const InfoModalProvider: React.FC = ({ children }) => {
+	const [modalInfo, setModalInfo] = useState<{
+		title: string;
+		description: string;
+		opened: boolean;
+	}>({ opened: false, title: "", description: "" });
+
+	const openModalInfo = (title: string, description: string): void => {
+		setModalInfo({ title, description, opened: true });
+	};
+
+	const closeModalInfo = (): void => {
+		setModalInfo({ opened: false, title: "", description: "" });
+	};
+
+	return (
+		<InfoModalContext.Provider value={{ openModalInfo, closeModalInfo }}>
+			{children}
+			<InfoModal
+				isOpen={modalInfo.opened}
+				title={modalInfo.title}
+				description={modalInfo.description}
+				onClose={closeModalInfo}
+			/>
+		</InfoModalContext.Provider>
+	);
+};
