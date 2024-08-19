@@ -40,6 +40,7 @@ export function SidePanel(): React.ReactNode {
 	const sharedBoards = app.storage.listSharedBoards();
 	const isBlank =
 		app.getBoard() === undefined || app.getBoard().getBoardId() === "blank";
+	const keyUpd = useRef(0);
 	const isShared = sharedBoards.some(
 		({ boardId }) => boardId === board.getBoardId(),
 	);
@@ -106,6 +107,8 @@ export function SidePanel(): React.ReactNode {
 		});
 		setNewBoardName(t("board.untitled"));
 		setRenamingBoardId(boardId);
+
+		keyUpd.current += 1;
 	};
 
 	const handleBoardRenameStart =
@@ -156,6 +159,7 @@ export function SidePanel(): React.ReactNode {
 				<div className={style.folders}>
 					{app.storage.isAuth && (
 						<Folder
+							key={`myBoards_${keyUpd.current}`}
 							title={t("sidePanel.folders.myBoards")}
 							icon={
 								<Icon
@@ -167,6 +171,7 @@ export function SidePanel(): React.ReactNode {
 							isOpened={isPublic || isBlank}
 						>
 							<Folder
+								key={`authed_publicDrafts_${keyUpd.current}`}
 								title={t("sidePanel.folders.publicDrafts")}
 								icon={
 									<Icon
@@ -213,6 +218,7 @@ export function SidePanel(): React.ReactNode {
 					)}
 					{!app.storage.isAuth && (
 						<Folder
+							key={`unauthed_publicDrafts_${keyUpd.current}`}
 							title={t("sidePanel.folders.publicDrafts")}
 							icon={
 								<Icon
@@ -253,6 +259,7 @@ export function SidePanel(): React.ReactNode {
 						</Folder>
 					)}
 					<Folder
+						key={`sharedBoards_${keyUpd.current}`}
 						title={t("sidePanel.folders.sharedBoards")}
 						icon={
 							<Icon
