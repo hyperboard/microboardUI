@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { SidePanelContextProvider } from "./SidePanel/SidePanelContext";
 import { ContextMenuContextProvider } from "./ContextMenu";
 import ModalsWrapper from "./Modal/ModalsWrapper";
+import { BoardRenameContextProvider } from "./BoardName";
 // import "./index.css";
 type Props = {
 	app: App;
@@ -68,9 +69,11 @@ const BoardView = ({ app }: Props): JSX.Element => {
 		<AppContext.Provider value={{ app, board }}>
 			<ModalsWrapper>
 				<ContextMenuContextProvider>
-					<SidePanelContextProvider>
-						<AppView />
-					</SidePanelContextProvider>
+					<BoardRenameContextProvider>
+						<SidePanelContextProvider>
+							<AppView />
+						</SidePanelContextProvider>
+					</BoardRenameContextProvider>
 				</ContextMenuContextProvider>
 			</ModalsWrapper>
 		</AppContext.Provider>

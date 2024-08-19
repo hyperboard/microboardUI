@@ -28,7 +28,7 @@ import { Tooltip } from "View/Ui/UiButton/Tooltip";
 const MIN_PANEL_WIDTH = 250;
 
 export function SidePanel(): React.ReactNode {
-	const { isOpen, toggleSideMenu } = useSidePanelContext();
+	const { isOpen, toggleSideMenu, handleAddNew } = useSidePanelContext();
 	const { app, board } = useAppContext();
 	const { open, close } = useContextMenuContext();
 	const { t } = useTranslation();
@@ -40,7 +40,6 @@ export function SidePanel(): React.ReactNode {
 	const sharedBoards = app.storage.listSharedBoards();
 	const isBlank =
 		app.getBoard() === undefined || app.getBoard().getBoardId() === "blank";
-	const keyUpd = useRef(0);
 	const isShared = sharedBoards.some(
 		({ boardId }) => boardId === board.getBoardId(),
 	);
@@ -99,18 +98,6 @@ export function SidePanel(): React.ReactNode {
 		setNewBoardName(event.currentTarget.value);
 	};
 
-	const handleAddNew = async (): Promise<void> => {
-		const boardId = await app.createPublicBoard();
-		app.openBoard(boardId);
-		navigate(`/boards/${boardId}`, {
-			replace: true,
-		});
-		setNewBoardName(t("board.untitled"));
-		setRenamingBoardId(boardId);
-
-		keyUpd.current += 1;
-	};
-
 	const handleBoardRenameStart =
 		(boardId: string): MouseEventHandler =>
 		event => {
@@ -159,7 +146,6 @@ export function SidePanel(): React.ReactNode {
 				<div className={style.folders}>
 					{app.storage.isAuth && (
 						<Folder
-							key={`myBoards_${keyUpd.current}`}
 							title={t("sidePanel.folders.myBoards")}
 							icon={
 								<Icon
@@ -168,10 +154,10 @@ export function SidePanel(): React.ReactNode {
 									height={20}
 								/>
 							}
-							isOpened={isPublic || isBlank}
+							isOpened={isPublic}
+							isBlank={isBlank}
 						>
 							<Folder
-								key={`authed_publicDrafts_${keyUpd.current}`}
 								title={t("sidePanel.folders.publicDrafts")}
 								icon={
 									<Icon
@@ -180,7 +166,8 @@ export function SidePanel(): React.ReactNode {
 										height={20}
 									/>
 								}
-								isOpened={isPublic || isBlank}
+								isOpened={isPublic}
+								isBlank={isBlank}
 							>
 								{publicBoards.map(({ boardId, name }) => (
 									<FolderItem key={boardId}>
@@ -218,7 +205,6 @@ export function SidePanel(): React.ReactNode {
 					)}
 					{!app.storage.isAuth && (
 						<Folder
-							key={`unauthed_publicDrafts_${keyUpd.current}`}
 							title={t("sidePanel.folders.publicDrafts")}
 							icon={
 								<Icon
@@ -227,7 +213,8 @@ export function SidePanel(): React.ReactNode {
 									height={20}
 								/>
 							}
-							isOpened={isPublic || isBlank}
+							isOpened={isPublic}
+							isBlank={isBlank}
 						>
 							{publicBoards.map(({ boardId, name }) => (
 								<FolderItem key={boardId}>
@@ -259,7 +246,6 @@ export function SidePanel(): React.ReactNode {
 						</Folder>
 					)}
 					<Folder
-						key={`sharedBoards_${keyUpd.current}`}
 						title={t("sidePanel.folders.sharedBoards")}
 						icon={
 							<Icon
@@ -268,7 +254,8 @@ export function SidePanel(): React.ReactNode {
 								height={20}
 							/>
 						}
-						isOpened={isShared || isBlank}
+						isOpened={isShared}
+						isBlank={isBlank}
 					>
 						{sharedBoards.map(({ boardId, name }) => (
 							<FolderItem key={boardId}>
@@ -299,7 +286,15 @@ export function SidePanel(): React.ReactNode {
 				</div>
 			</div>
 			<div className={style.bottom}>
-				<button className={style.add} onClick={handleAddNew}>
+				<button
+					className={style.add}
+					onClick={() =>
+						handleAddNew(boardId => {
+							setNewBoardName(t("board.untitled"));
+							setRenamingBoardId(boardId);
+						})
+					}
+				>
 					<Icon iconName="Plus" width={16} height={16} />
 					<span>{t("sidePanel.addNew")}</span>
 				</button>

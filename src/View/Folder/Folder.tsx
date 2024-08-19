@@ -12,6 +12,7 @@ type Props = PropsWithChildren<{
 	title: string;
 	icon?: ReactNode;
 	isOpened: boolean;
+	isBlank: boolean;
 }>;
 
 export function Folder({
@@ -19,12 +20,13 @@ export function Folder({
 	icon,
 	children,
 	isOpened,
+	isBlank,
 }: Props): React.ReactElement<Props> {
 	const [isOpen, setIsOpen] = useState(isOpened);
 
 	useEffect(() => {
-		setIsOpen(isOpened);
-	}, [isOpened]);
+		setIsOpen(isOpened || isBlank);
+	}, [isOpened, isBlank]);
 
 	const handleTitleClick: MouseEventHandler = () => {
 		setIsOpen(prev => !prev);

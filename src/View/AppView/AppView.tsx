@@ -1,5 +1,5 @@
 import { useForceUpdate } from "lib/useForceUpdate";
-import React, { useEffect, useRef } from "react";
+import React, { MouseEventHandler, useEffect, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { TextEditors } from "View/TextEditor/TextEditor";
 import { UserPanel } from "View/UserPanel/UserPanel";
@@ -30,7 +30,7 @@ export function AppView() {
 	const forceUpdate = useForceUpdate();
 	const animationId = useRef<number | null>(null);
 	const containerRef = useRef<HTMLDivElement | null>(null);
-	const { openMenu, handleAddNew } = useSidePanelContext();
+	const { openMenu, handleAddNew, toggleSideMenu } = useSidePanelContext();
 
 	const update = () => {
 		if (animationId.current) {
@@ -117,6 +117,12 @@ export function AppView() {
 		return <div></div>;
 	}
 
+	const handleOpenMenu: MouseEventHandler = event => {
+		event.stopPropagation();
+		event.preventDefault();
+		openMenu();
+	};
+
 	const appBoard = app.getBoard();
 	return (
 		<div className={style.wrapper}>
@@ -168,14 +174,14 @@ export function AppView() {
 							<li>
 								<span>
 									{t("noBoard.chooseBoard")}{" "}
-									<button onClick={openMenu}>
+									<button onClick={handleOpenMenu}>
 										{t("noBoard.chooseBoardButton")}
 									</button>
 								</span>
 							</li>
 							<li>
 								<span>
-									<button onClick={handleAddNew}>
+									<button onClick={() => handleAddNew()}>
 										{t("noBoard.createNewBoard")}
 									</button>
 								</span>
@@ -184,16 +190,10 @@ export function AppView() {
 					</div>
 				</div>
 			)}
-			<BoardRenameContextProvider>
-				<SidePanelContextProvider>
-					<ContextMenuContextProvider>
-						<ExportVisible>
-							<SidePanelsContainer />
-							<ContextMenu />
-						</ExportVisible>
-					</ContextMenuContextProvider>
-				</SidePanelContextProvider>
-			</BoardRenameContextProvider>
+			<ExportVisible>
+				<SidePanelsContainer />
+				<ContextMenu />
+			</ExportVisible>
 			<ExportVisible>
 				<UserPanel app={app} />
 			</ExportVisible>
