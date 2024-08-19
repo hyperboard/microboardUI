@@ -37,12 +37,30 @@
 	text-align: center;
 }
 
-.modalButton {
+.buttons {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	padding: 0px;
+	gap: 16px;
+}
+
+.cancelButton {
 	padding: 10px 20px;
 	font-size: 16px;
 	cursor: pointer;
 	background-color: black;
 	color: white;
 	border: none;
+	border-radius: 8px;
+}
+
+.confirmButton {
+	padding: 10px 20px;
+	font-size: 16px;
+	cursor: pointer;
+	background: rgba(10, 15, 41, 0.04);
 	border-radius: 12px;
+	color: black;
+	border: none;
 }

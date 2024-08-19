@@ -46,6 +46,7 @@ export function SidePanel(): React.ReactNode {
 	const isPublic = publicBoards.some(
 		({ boardId }) => boardId === board.getBoardId(),
 	);
+
 	const [isOpenImportMiro, setIsOpenImportMiro] = useState(false);
 	const {
 		setRenamingBoardId,
@@ -158,7 +159,7 @@ export function SidePanel(): React.ReactNode {
 							title={t("sidePanel.folders.myBoards")}
 							icon={
 								<Icon
-									iconName="Folder"
+									iconName="myBoards"
 									width={20}
 									height={20}
 								/>

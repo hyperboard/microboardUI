@@ -1,7 +1,6 @@
-import React, { createContext, useEffect } from "react";
+import React, { createContext, MouseEventHandler } from "react";
 import { createPortal } from "react-dom";
 import styles from "./InfoModal.module.css";
-import { useClickOutside } from "../../lib/useClickOutside";
 import { useStrictContext } from "lib/strictContext";
 import { useTranslation } from "react-i18next";
 
@@ -24,12 +23,18 @@ const InfoModalView: React.FC<InfoModalProps> = ({
 		return null;
 	}
 
+	const handleClose: MouseEventHandler = event => {
+		event.stopPropagation();
+		event.preventDefault();
+		onClose();
+	};
+
 	return (
 		<div className={`${styles.modal} ${isOpen ? styles.open : null}`}>
 			<div className={styles.wrapper}>
 				<div className={styles.title}>{title}</div>
 				<div className={styles.description}>{description}</div>
-				<button className={styles.modalButton} onClick={onClose}>
+				<button className={styles.modalButton} onClick={handleClose}>
 					{t("ok")}
 				</button>
 			</div>
@@ -44,10 +49,10 @@ export const InfoModal: React.FC<InfoModalProps> = props => {
 	);
 };
 
-export const ModalContext = createContext<{
+export const InfoModalContext = createContext<{
 	openModalInfo: (title: string, description: string) => void;
 } | null>(null);
 
-export function useModalContext() {
-	return useStrictContext(ModalContext);
+export function useModalInfoContext() {
+	return useStrictContext(InfoModalContext);
 }

@@ -11,10 +11,12 @@ import { Icon } from "View/Icon";
 import { UiPanel } from "View/Ui/UiPanel";
 import style from "./ContextMenu.module.css";
 import { useContextMenuContext } from "./ContextMenuContext";
+import { useConfirmModalContext } from "View/Modal/ConfirmModal";
 
 export function ContextMenu() {
 	const { isOpen, boardId, x, y, close } = useContextMenuContext();
 	const { app, board } = useAppContext();
+	const { openModalConfirm } = useConfirmModalContext();
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 	const { setRenamingBoardId, setNewBoardName } = useBoardRenameContext();
@@ -33,23 +35,21 @@ export function ContextMenu() {
 		});
 	};
 
-	const handleDeleteBoard: MouseEventHandler = e => {
-		e.preventDefault();
-		e.stopPropagation();
+	const handleDeleteBoard: MouseEventHandler = (ev): Promise<void> => {
+		ev.preventDefault();
+		ev.stopPropagation();
 		if (!boardId) {
 			throw new Error("Can't delete board with id null");
 		}
 		const removingCurr = boardId === app.getBoard()?.getBoardId();
-		app.storage
-			.removeBoard(boardId)
-			.then(() => {
-				if (removingCurr) {
-					navigate("/boards");
-					app.openBoard("blank");
-				}
-				close();
-			})
-			.catch(console.error);
+		app.storage.removeBoard(boardId).then(() => {
+			if (removingCurr) {
+				navigate("/boards");
+				app.openBoard("blank");
+			}
+			close();
+		});
+		return Promise.resolve();
 	};
 
 	const handleRenameBoard: MouseEventHandler = event => {
@@ -75,7 +75,18 @@ export function ContextMenu() {
 			{boardId ? (
 				<>
 					<ContextMenuItem
-						onClick={handleDeleteBoard}
+						onClick={event => {
+							event.preventDefault();
+							event.stopPropagation();
+							close();
+							openModalConfirm(
+								t("modalConfirm.deleteBoard.title"),
+								`${t(
+									"modalConfirm.deleteBoard.description",
+								)} "${boardName}"?`,
+								() => handleDeleteBoard(event),
+							);
+						}}
 						icon={<Icon iconName="Delete" width={20} height={20} />}
 					>
 						{t("contextMenu.delete")}

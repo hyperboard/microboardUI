@@ -231,6 +231,14 @@
 			"description": "You do not have access to this board, or the board does not exist"
 		}
 	},
+	"modalConfirm": {
+		"deleteBoard": {
+			"title": "Deleting board",
+			"description": "Are you sure you want to delete board",
+			"delete": "Delete",
+			"cancel": "Cancel"
+		}
+	},
 	"ok": "Ok",
 	"noBoard": {
 		"title": "No board is open",

@@ -9,10 +9,11 @@ import {
 } from "react-router-dom";
 import { AppContext } from "./AppContext";
 import { AppView } from "View/AppView";
-import { InfoModal, ModalContext } from "./Modal/InfoModal";
+import { InfoModal, InfoModalContext } from "./Modal/InfoModal";
 import { useTranslation } from "react-i18next";
 import { SidePanelContextProvider } from "./SidePanel/SidePanelContext";
 import { ContextMenuContextProvider } from "./ContextMenu";
+import { ConfirmModal, ConfirmModalContext } from "./Modal/ConfirmModal";
 // import "./index.css";
 type Props = {
 	app: App;
@@ -34,9 +35,27 @@ export const BoardView = ({ app }: Props) => {
 		description: string;
 		opened: boolean;
 	}>({ opened: false, title: "", description: "" });
-
 	const openModalInfo = (title: string, description: string): void => {
 		setModalInfo({ title, description, opened: true });
+	};
+
+	const [modalConfirm, setModalConfirm] = useState<{
+		title: string;
+		description: string;
+		opened: boolean;
+		onConfirm: () => Promise<void>;
+	}>({
+		opened: false,
+		title: "",
+		description: "",
+		onConfirm: () => Promise.reject(),
+	});
+	const openModalConfirm = (
+		title: string,
+		description: string,
+		onConfirm: () => Promise<void>,
+	): void => {
+		setModalConfirm({ title, description, opened: true, onConfirm });
 	};
 
 	app.connection.wsClient.onAccessDenied = (
@@ -72,26 +91,42 @@ export const BoardView = ({ app }: Props) => {
 	}
 
 	return (
-		<ModalContext.Provider value={{ openModalInfo }}>
-			<AppContext.Provider value={{ app, board }}>
-				<ContextMenuContextProvider>
-					<SidePanelContextProvider>
-						<AppView />
-					</SidePanelContextProvider>
-				</ContextMenuContextProvider>
-				<InfoModal
-					isOpen={modalInfo.opened}
-					title={modalInfo.title}
-					description={modalInfo.description}
-					onClose={() =>
-						setModalInfo({
-							opened: false,
-							title: "",
-							description: "",
-						})
-					}
-				/>
-			</AppContext.Provider>
-		</ModalContext.Provider>
+		<InfoModalContext.Provider value={{ openModalInfo }}>
+			<ConfirmModalContext.Provider value={{ openModalConfirm }}>
+				<AppContext.Provider value={{ app, board }}>
+					<ContextMenuContextProvider>
+						<SidePanelContextProvider>
+							<AppView />
+						</SidePanelContextProvider>
+					</ContextMenuContextProvider>
+					<InfoModal
+						isOpen={modalInfo.opened}
+						title={modalInfo.title}
+						description={modalInfo.description}
+						onClose={() =>
+							setModalInfo({
+								opened: false,
+								title: "",
+								description: "",
+							})
+						}
+					/>
+					<ConfirmModal
+						isOpen={modalConfirm.opened}
+						title={modalConfirm.title}
+						description={modalConfirm.description}
+						onClose={() =>
+							setModalConfirm({
+								opened: false,
+								title: "",
+								description: "",
+								onConfirm: () => Promise.reject(),
+							})
+						}
+						onConfirm={modalConfirm.onConfirm}
+					/>
+				</AppContext.Provider>
+			</ConfirmModalContext.Provider>
+		</InfoModalContext.Provider>
 	);
 };

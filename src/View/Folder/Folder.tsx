@@ -11,14 +11,14 @@ import style from "./Folder.module.css";
 type Props = PropsWithChildren<{
 	title: string;
 	icon?: ReactNode;
-	isOpened?: boolean;
+	isOpened: boolean;
 }>;
 
 export function Folder({
 	title,
 	icon,
 	children,
-	isOpened = false,
+	isOpened,
 }: Props): React.ReactElement<Props> {
 	const [isOpen, setIsOpen] = useState(isOpened);
 

@@ -54,6 +54,7 @@ export type IconId =
 	| "VerticalAlignBottom"
 	| "AddText"
 	| "Rename"
+	| "myBoards"
 	| "publicDrafts"
 	| "sharedBoards"
 	| "import"
