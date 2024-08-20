@@ -154,8 +154,8 @@ export function SidePanel(): React.ReactNode {
 									height={20}
 								/>
 							}
-							isOpened={isPublic}
-							isBlank={isBlank}
+							isOpened={isPublic || isBlank}
+							currBoardId={app.getBoard().getBoardId()}
 						>
 							<Folder
 								title={t("sidePanel.folders.publicDrafts")}
@@ -166,8 +166,8 @@ export function SidePanel(): React.ReactNode {
 										height={20}
 									/>
 								}
-								isOpened={isPublic}
-								isBlank={isBlank}
+								isOpened={isPublic || isBlank}
+								currBoardId={app.getBoard().getBoardId()}
 							>
 								{publicBoards.map(({ boardId, name }) => (
 									<FolderItem key={boardId}>
@@ -213,8 +213,8 @@ export function SidePanel(): React.ReactNode {
 									height={20}
 								/>
 							}
-							isOpened={isPublic}
-							isBlank={isBlank}
+							isOpened={isPublic || isBlank}
+							currBoardId={app.getBoard().getBoardId()}
 						>
 							{publicBoards.map(({ boardId, name }) => (
 								<FolderItem key={boardId}>
@@ -254,8 +254,8 @@ export function SidePanel(): React.ReactNode {
 								height={20}
 							/>
 						}
-						isOpened={isShared}
-						isBlank={isBlank}
+						isOpened={isShared || isBlank}
+						currBoardId={app.getBoard().getBoardId()}
 					>
 						{sharedBoards.map(({ boardId, name }) => (
 							<FolderItem key={boardId}>
