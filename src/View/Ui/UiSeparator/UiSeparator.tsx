@@ -4,14 +4,16 @@ import style from "./UiSeparator.module.css";
 
 type Props = {
 	vertical?: boolean;
+	className?: string;
 };
 
-export function UiSeparator({ vertical = false }: Props) {
+export function UiSeparator({ vertical = false, className }: Props) {
 	return (
 		<div
 			className={clsx(
 				style.container,
 				vertical ? style.vertical : style.horizontal,
+				className,
 			)}
 		>
 			<div

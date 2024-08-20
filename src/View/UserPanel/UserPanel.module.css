@@ -335,3 +335,15 @@
 		padding-top: 12px;
 	}
 }
+
+@media screen and (max-width: 1170px) {
+	.wrapper.iframe {
+		right: 72px;
+	}
+}
+
+@media screen and (max-width: 400px) {
+	a.smallMobileHide {
+		display: none;
+	}
+}

@@ -354,5 +354,13 @@
 	},
 	"connector": {
 		"textPlaceholder": "Текст"
+	},
+	"landing": {
+		"menu": {
+			"about": "О сервисе",
+			"features": "Возможности",
+			"price": "Цены",
+			"buy": "Купить"
+		}
 	}
 }

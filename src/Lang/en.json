@@ -356,5 +356,13 @@
 	},
 	"connector": {
 		"textPlaceholder": "Text"
+	},
+	"landing": {
+		"menu": {
+			"about": "About Microboard",
+			"features": "Features",
+			"price": "Pricing",
+			"buy": "Buy"
+		}
 	}
 }

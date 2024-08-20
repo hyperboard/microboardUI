@@ -1,44 +1,44 @@
 import React from "react";
 
-export function Logo() {
+export function Logo({ id }: { id: string }) {
 	return (
 		<svg
-			id="Logo"
+			id={id}
 			width={20}
 			height={20}
 			viewBox="0 0 20 20"
 			fill="none"
 			xmlns="http://www.w3.org/2000/svg"
 		>
-			<g clipPath="url(#clip0_2046_5864)">
+			<g clipPath={`url(#clip0_2046_5864_${id})`}>
 				<path
 					d="M6.86237 17.5C15.8658 17.4994 13.0954 3.82447 13.0954 1.79292"
-					stroke="url(#paint0_linear_2046_5864)"
+					stroke={`url(#paint0_linear_2046_5864__${id})`}
 					strokeWidth="4.16824"
 					strokeLinecap="round"
 				/>
 				<path
 					d="M17.5002 6.58374C17.4995 15.5869 3.82425 12.8166 1.79265 12.8166"
-					stroke="url(#paint1_linear_2046_5864)"
+					stroke={`url(#paint1_linear_2046_5864_${id})`}
 					strokeWidth="4.16824"
 					strokeLinecap="round"
 				/>
 				<path
 					d="M12.9779 1.66675C3.9745 1.66739 6.74483 15.3423 6.74483 17.3738"
-					stroke="url(#paint2_linear_2046_5864)"
+					stroke={`url(#paint2_linear_2046_5864_${id})`}
 					strokeWidth="4.16824"
 					strokeLinecap="round"
 				/>
 				<path
 					d="M1.66669 12.699C1.66733 3.69583 15.3426 6.46608 17.3742 6.46608"
-					stroke="url(#paint3_linear_2046_5864)"
+					stroke={`url(#paint3_linear_2046_5864_${id})`}
 					strokeWidth="4.16824"
 					strokeLinecap="round"
 				/>
 			</g>
 			<defs>
 				<linearGradient
-					id="paint0_linear_2046_5864"
+					id={`paint0_linear_2046_5864_${id}`}
 					x1="8.21141"
 					y1="23.2627"
 					x2="6.39338"
@@ -49,7 +49,7 @@ export function Logo() {
 					<stop offset="1" stopColor="#C03AFF" />
 				</linearGradient>
 				<linearGradient
-					id="paint1_linear_2046_5864"
+					id={`paint1_linear_2046_5864_${id}`}
 					x1="23.263"
 					y1="7.93274"
 					x2="2.83068"
@@ -60,7 +60,7 @@ export function Logo() {
 					<stop offset="1" stopColor="#C03AFF" />
 				</linearGradient>
 				<linearGradient
-					id="paint2_linear_2046_5864"
+					id={`paint2_linear_2046_5864_${id}`}
 					x1="11.6289"
 					y1="-4.09591"
 					x2="13.4469"
@@ -71,7 +71,7 @@ export function Logo() {
 					<stop offset="1" stopColor="#C03AFF" />
 				</linearGradient>
 				<linearGradient
-					id="paint3_linear_2046_5864"
+					id={`paint3_linear_2046_5864_${id}`}
 					x1="-4.09614"
 					y1="11.35"
 					x2="16.3362"
@@ -81,7 +81,7 @@ export function Logo() {
 					<stop stopColor="white" />
 					<stop offset="1" stopColor="#C03AFF" />
 				</linearGradient>
-				<clipPath id="clip0_2046_5864">
+				<clipPath id={`clip0_2046_5864_${id}`}>
 					<rect width="20" height="20" fill="white" />
 				</clipPath>
 			</defs>
