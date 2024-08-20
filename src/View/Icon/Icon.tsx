@@ -58,7 +58,8 @@ export type IconId =
 	| "publicDrafts"
 	| "sharedBoards"
 	| "import"
-	| "modalCross";
+	| "modalCross"
+	| "BurgerMenu";
 
 type Props = {
 	iconName: IconId;

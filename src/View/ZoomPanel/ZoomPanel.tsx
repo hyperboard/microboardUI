@@ -9,6 +9,7 @@ import { useForceUpdate } from "lib/useForceUpdate";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import style from "./ZoomPanel.module.css";
+import clsx from "clsx";
 
 export function ZoomPanel() {
 	const { app, board } = useAppContext();
@@ -43,6 +44,7 @@ export function ZoomPanel() {
 	return (
 		<UiPanel className={style.panel} padding={0}>
 			<UiButton
+				className={style.zoomToFit}
 				id="zoom-to-fit"
 				tooltip={t("zoomPanel.zoomToFit.tooltip")}
 				tooltipPosition="top"
@@ -52,8 +54,9 @@ export function ZoomPanel() {
 			>
 				<Icon iconName="ZoomToFit" />
 			</UiButton>
-			<UiSeparator vertical />
+			<UiSeparator vertical className={style.tableHide} />
 			<UiButton
+				className={style.tableHide}
 				id={"zoom-out"}
 				tooltipPosition="top"
 				tooltip={t("zoomPanel.zoomOut.tooltip")}
@@ -65,11 +68,11 @@ export function ZoomPanel() {
 				<Icon iconName="Minus" />
 			</UiButton>
 			<UiButton
+				className={clsx(style.tableHide, style.zoom)}
 				id={"zoom-default"}
 				tooltipPosition="top"
 				tooltip={t("zoomPanel.zoomDefault.tooltip")}
 				hotkey={getHotkeyLabel("zoomDefault")}
-				className={style.zoom}
 				onClick={handleDefaultZoom}
 				variant="secondary"
 				rounded="none"
@@ -77,6 +80,7 @@ export function ZoomPanel() {
 				{currentScale}%
 			</UiButton>
 			<UiButton
+				className={style.tableHide}
 				id={"zoom-in"}
 				tooltipPosition="top-right"
 				tooltip={t("zoomPanel.zoomIn.tooltip")}

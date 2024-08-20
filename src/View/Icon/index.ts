@@ -7,3 +7,5 @@ export { ShapeIcon } from "./ShapeIcon";
 export { StrokeColorIndicator } from "./StrokeColorIndicator";
 export { TextColorIndicator } from "./TextColorIndicator";
 export { TextHighlightIndicator } from "./TextHighlightIndicator";
+export { EyeClosed } from "./EyeClosed";
+export { EyeOpened } from "./EyeOpened";

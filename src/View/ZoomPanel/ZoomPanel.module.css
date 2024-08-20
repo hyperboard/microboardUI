@@ -9,3 +9,13 @@
 	font-size: 1.6rem;
 	min-width: 65px;
 }
+
+@media screen and (max-width: 640px) {
+	.tableHide {
+		display: none;
+	}
+
+	.zoomToFit {
+		border-radius: var(--radius);
+	}
+}

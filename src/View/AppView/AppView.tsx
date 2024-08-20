@@ -1,25 +1,22 @@
 import { useForceUpdate } from "lib/useForceUpdate";
 import React, { MouseEventHandler, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { TextEditors } from "View/TextEditor/TextEditor";
-import { UserPanel } from "View/UserPanel/UserPanel";
 import { useAppContext } from "View/AppContext";
 import { Canvas } from "View/Canvas";
-import { ContextMenu, ContextMenuContextProvider } from "View/ContextMenu";
+import { ContextMenu } from "View/ContextMenu";
 import { ContextPanel } from "View/ContextPanel";
 import { ExportPanel } from "View/ExportPanel";
 import { ExportVisible } from "View/ExportPanel/ExportVisible";
-import {
-	SidePanelContextProvider,
-	useSidePanelContext,
-} from "View/SidePanel/SidePanelContext";
+import { ImportMiroBoards } from "View/ImportMiro";
+import { LandingMenu, MobileLandingMenu } from "View/LandingMenu";
+import { useSidePanelContext } from "View/SidePanel/SidePanelContext";
 import { SidePanelsContainer } from "View/SidePanelsContainer";
+import { TextEditors } from "View/TextEditor/TextEditor";
 import { ToastProvider } from "View/ToastProvider";
+import { UserPanel } from "View/UserPanel/UserPanel";
 import { ZoomPanel } from "View/ZoomPanel";
 import style from "./AppView.module.css";
-import { ImportMiroBoards } from "../ImportMiro";
-import { useTranslation } from "react-i18next";
-import { BoardRenameContextProvider } from "View/BoardName";
 
 export function AppView() {
 	const { app, board } = useAppContext();
@@ -126,6 +123,8 @@ export function AppView() {
 	const appBoard = app.getBoard();
 	return (
 		<div className={style.wrapper}>
+			<LandingMenu />
+			<MobileLandingMenu />
 			{appBoard && appBoard.getBoardId() !== "blank" && (
 				<div ref={containerRef}>
 					<Canvas

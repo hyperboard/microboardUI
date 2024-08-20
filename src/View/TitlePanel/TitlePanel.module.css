@@ -30,3 +30,25 @@ input.rename {
 	font-size: 16px;
 	font-weight: 400;
 }
+
+@media screen and (max-width: 520px) {
+	.mobileHide {
+		display: none;
+	}
+
+	.menuButton {
+		border-top-right-radius: var(--radius);
+		border-bottom-right-radius: var(--radius);
+	}
+}
+
+@media screen and (max-width: 680px) {
+	.tabletHide {
+		display: none;
+	}
+
+	.logoWrapper {
+		border-top-right-radius: var(--radius);
+		border-bottom-right-radius: var(--radius);
+	}
+}

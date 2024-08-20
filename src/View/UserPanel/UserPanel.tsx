@@ -1,23 +1,24 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { Button } from "shared/ui-lib/Button";
-import styles from "./UserPanel.module.css";
-import { ChangePassword } from "./icons/ChangePassword";
-import { Logout } from "./icons/Logout";
+import type { App } from "App";
+import clsx from "clsx";
 import { getApiUrl } from "Config";
 import Cookies from "js-cookie";
-import { Input } from "shared/ui-lib/Input";
-import { Tail } from "View/AuthView/Tail";
-import { useOutsideClickHandler } from "shared/hooks/useOutsideClickHandler";
-import { LockIcon } from "View/SignupView/LockIcon";
+import { isMicroboardIframe } from "lib/isMicroboardIframe";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { PasswordChanged } from "View/Widgets/form-notifications/password-changed";
-import { UiPanel } from "View/Ui/UiPanel";
-import { UiButton } from "View/Ui/UiButton";
-import { isIframe } from "lib/isIframe";
-import { UiLink } from "View/Ui/UiLink";
-import { App } from "App";
 import { useAuth } from "shared/hooks/useAuth";
+import { useOutsideClickHandler } from "shared/hooks/useOutsideClickHandler";
+import { Button } from "shared/ui-lib/Button";
+import { Input } from "shared/ui-lib/Input";
+import { Tail } from "View/AuthView/Tail";
+import { LockIcon } from "View/SignupView/LockIcon";
+import { UiButton } from "View/Ui/UiButton";
+import { UiLink } from "View/Ui/UiLink";
+import { UiPanel } from "View/Ui/UiPanel";
+import { PasswordChanged } from "View/Widgets/form-notifications/password-changed";
+import { ChangePassword } from "./icons/ChangePassword";
+import { Logout } from "./icons/Logout";
+import styles from "./UserPanel.module.css";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	email: string;
@@ -401,12 +402,38 @@ export const UserPanel: React.FC<{ app: App }> = ({ app }) => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 
-	const isMicroboardIframe =
-		isIframe() && import.meta.env.INTEGRATION_UI === "microboard";
+	useLayoutEffect(() => {
+		fetch(`${getApiUrl()}/users/me`, {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${Cookies.get("accessToken")}`,
+			},
+		})
+			.then(response => {
+				if (!response.ok) {
+					return Promise.reject(response);
+				}
+				return response.json();
+			})
+			.then(data => {
+				setEmail(data.email);
+				setIsAuth(true);
+			})
+			.catch(() => {
+				setIsAuth(false);
+			});
+	});
 
 	if (!isAuth) {
 		return (
-			<UiPanel padding={0} className={styles.wrapper}>
+			<UiPanel
+				padding={0}
+				className={clsx(
+					styles.wrapper,
+					isMicroboardIframe() && styles.iframe,
+				)}
+			>
 				<div className={styles.unauthWrapper}>
 					{/* <span className={styles.unauthText}> */}
 					{/* 	Save&nbsp;this&nbsp;board&nbsp;to&nbsp;favorite. */}
@@ -449,7 +476,7 @@ export const UserPanel: React.FC<{ app: App }> = ({ app }) => {
 						{/* 		</> */}
 						{/* 	} */}
 						{/* /> */}
-						{isMicroboardIframe ? (
+						{isMicroboardIframe() ? (
 							<>
 								<UiLink
 									variant="secondary"
@@ -461,7 +488,10 @@ export const UserPanel: React.FC<{ app: App }> = ({ app }) => {
 									{t("auth.login")}
 								</UiLink>
 								<UiLink
-									className={styles.signUpBtn}
+									className={clsx(
+										styles.signUpBtn,
+										styles.smallMobileHide,
+									)}
 									href={`/auth/sign-up`}
 									size="sm"
 									target="_parent"
