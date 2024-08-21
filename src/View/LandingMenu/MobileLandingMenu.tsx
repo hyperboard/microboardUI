@@ -24,7 +24,7 @@ export function MobileLandingMenu() {
 	return (
 		<UiPanel padding={0} className={style.mobileLandingMenuWrapper}>
 			<UiButton variant="secondary" onClick={handleOpen}>
-				<Icon iconName="BurgerMenu" />
+				<Icon width={20} height={20} iconName="BurgerMenu" />
 			</UiButton>
 			{isOpen
 				? createPortal(

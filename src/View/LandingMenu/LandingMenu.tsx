@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { isMicroboardIframe } from "lib/isMicroboardIframe";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { EyeClosed, EyeOpened, Icon } from "View/Icon";
+import { EyeClosed, EyeOpened } from "View/Icon";
 import { UiButton } from "View/Ui/UiButton";
 import { UiLink } from "View/Ui/UiLink";
 import { UiPanel } from "View/Ui/UiPanel";
