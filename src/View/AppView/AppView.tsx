@@ -100,7 +100,7 @@ export function AppView() {
 				window.removeEventListener("drop", controller.onDrop);
 			}
 		};
-	}, []);
+	}, [containerRef.current]);
 
 	const urlString = new URL(window.location.href).pathname;
 	const firstPath = urlString.split("/").pop();
