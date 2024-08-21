@@ -48,10 +48,9 @@ export function createApp(isHistory = true): App {
 	const accounts = new Accounts(connection);
 	const test = createTester(getBoard);
 
-	let board: Board | undefined;
+	let board: Board;
 
 	function getBoard(): Board {
-		// TODO fix ts
 		return board;
 	}
 
@@ -139,7 +138,6 @@ export function createApp(isHistory = true): App {
 
 	function openBoard(id: string): void {
 		if (id === "boards") {
-			board = undefined;
 			return;
 		}
 

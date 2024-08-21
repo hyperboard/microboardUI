@@ -27,7 +27,7 @@ import { Tooltip } from "View/Ui/UiButton/Tooltip";
 
 const MIN_PANEL_WIDTH = 250;
 
-export function SidePanel(): React.ReactNode {
+export function SidePanel(): JSX.Element {
 	const { isOpen, toggleSideMenu, handleAddNew } = useSidePanelContext();
 	const { app, board } = useAppContext();
 	const { open, close } = useContextMenuContext();

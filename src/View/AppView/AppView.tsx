@@ -10,13 +10,14 @@ import { ExportPanel } from "View/ExportPanel";
 import { ExportVisible } from "View/ExportPanel/ExportVisible";
 import { ImportMiroBoards } from "View/ImportMiro";
 import { LandingMenu, MobileLandingMenu } from "View/LandingMenu";
-import { useSidePanelContext } from "View/SidePanel/SidePanelContext";
 import { SidePanelsContainer } from "View/SidePanelsContainer";
 import { TextEditors } from "View/TextEditor/TextEditor";
 import { ToastProvider } from "View/ToastProvider";
 import { UserPanel } from "View/UserPanel/UserPanel";
 import { ZoomPanel } from "View/ZoomPanel";
 import style from "./AppView.module.css";
+import NoBoardIsOpen from "./NoBoardIsOpen";
+import { InactiveBoardHidder } from "./InactiveBoardHidder";
 
 export function AppView() {
 	const { app, board } = useAppContext();
@@ -27,7 +28,6 @@ export function AppView() {
 	const forceUpdate = useForceUpdate();
 	const animationId = useRef<number | null>(null);
 	const containerRef = useRef<HTMLDivElement | null>(null);
-	const { openMenu, handleAddNew, toggleSideMenu } = useSidePanelContext();
 
 	const update = () => {
 		if (animationId.current) {
@@ -42,6 +42,9 @@ export function AppView() {
 
 	useEffect(() => {
 		app.boardSubject.subscribe(update);
+		if (app.storage.isAuth) {
+			app.storage.fetchBoards();
+		}
 		const container = containerRef.current;
 		const controller = app.controller;
 		if (container) {
@@ -114,18 +117,12 @@ export function AppView() {
 		return <div></div>;
 	}
 
-	const handleOpenMenu: MouseEventHandler = event => {
-		event.stopPropagation();
-		event.preventDefault();
-		openMenu();
-	};
-
 	const appBoard = app.getBoard();
 	return (
 		<div className={style.wrapper}>
 			<LandingMenu />
 			<MobileLandingMenu />
-			{appBoard && appBoard.getBoardId() !== "blank" && (
+			<InactiveBoardHidder>
 				<div ref={containerRef}>
 					<Canvas
 						router={{ location, navigate, params }}
@@ -134,69 +131,20 @@ export function AppView() {
 					/>
 					<TextEditors app={app} board={board} />
 				</div>
-			)}
-			{(!appBoard || appBoard.getBoardId() === "blank") && (
-				<div
-					style={{
-						display: "flex",
-						justifyContent: "center",
-						alignItems: "center",
-						height: "100%",
-					}}
-				>
-					<div
-						style={{
-							display: "flex",
-							flexDirection: "column",
-							alignItems: "flex-start",
-							padding: "0px",
-							gap: "16px",
-						}}
-					>
-						<span
-							style={{
-								fontSize: "2em",
-								fontWeight: 400,
-							}}
-						>
-							{t("noBoard.title")}
-						</span>
-						<ul
-							style={{
-								flex: "none",
-								order: "0",
-								flexGrow: "0",
-								listStylePosition: "inside",
-								paddingLeft: "8px",
-							}}
-						>
-							<li>
-								<span>
-									{t("noBoard.chooseBoard")}{" "}
-									<button onClick={handleOpenMenu}>
-										{t("noBoard.chooseBoardButton")}
-									</button>
-								</span>
-							</li>
-							<li>
-								<span>
-									<button onClick={() => handleAddNew()}>
-										{t("noBoard.createNewBoard")}
-									</button>
-								</span>
-							</li>
-						</ul>
-					</div>
-				</div>
-			)}
+			</InactiveBoardHidder>
+			{appBoard.getBoardId() === "blank" && <NoBoardIsOpen />}
 			<ExportVisible>
-				<SidePanelsContainer />
+				<SidePanelsContainer
+					isBlank={appBoard.getBoardId() === "blank"}
+				/>
 				<ContextMenu />
 			</ExportVisible>
 			<ExportVisible>
 				<UserPanel app={app} />
 			</ExportVisible>
-			<ZoomPanel />
+			<InactiveBoardHidder>
+				<ZoomPanel />
+			</InactiveBoardHidder>
 			<ContextPanel />
 			<ExportPanel />
 			<ToastProvider />

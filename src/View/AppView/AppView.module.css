@@ -4,18 +4,3 @@
 	background-color: rgba(200, 200, 200, 0.2);
 	overflow: hidden;
 }
-
-/* https://stackoverflow.com/questions/4373046/css-control-space-between-bullet-and-li */
-li span {
-	position: relative;
-	left: -8px;
-}
-
-li span button {
-	color: #924fe8;
-	padding: 0;
-	font-size: 1.6rem;
-	text-decoration: underline;
-	text-decoration-color: #924fe8;
-	cursor: pointer;
-}
