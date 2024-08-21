@@ -21,7 +21,7 @@ const RootView: React.FC<RootViewProps> = ({ app }) => {
 		});
 	}, []);
 
-	return <div>RootView</div>;
+	return <div></div>;
 };
 
 export default RootView;
