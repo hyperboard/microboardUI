@@ -95,7 +95,7 @@ export async function getApp(): Promise<http.Server> {
     );
     const database = await getDatabase(logger);
     const boards = new Boards(database, logger);
-    withWebSocketApi(wss, boards);
+    withWebSocketApi(wss, boards, logger);
     const auth = new Auth(database, logger, config, mailer);
     const users = new Users(database, logger);
 

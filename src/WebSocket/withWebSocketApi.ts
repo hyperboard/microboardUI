@@ -2,6 +2,7 @@ import WebSocket, { WebSocketServer } from "ws";
 import { Boards } from "Routes/V1/Boards";
 import { AccessToken } from "Interface";
 import { verifyToken } from "Tokens";
+import winston from "winston";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
@@ -12,7 +13,7 @@ const SNAPSHOT_EVENTS_TO_REQUEST = 100;
 const SNAPSHOT_RETRY_TIMEOUT = 2 * MINUTE;
 const SNAPSHOT_REQUEST_TIMEOUT = 10 * SECOND;
 
-export function withWebSocketApi(wss: WebSocketServer, boards: Boards): void {
+export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: winston.Logger): void {
     const boardClients = new Map<string, WebSocket.WebSocket[]>();
     const wsTokens = new Map<WebSocket, AccessToken[]>();
     const snapshotRequestTimers = new Map<string, NodeJS.Timeout>();
@@ -30,17 +31,34 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards): void {
         });
     }
 
+    const msgHandlingQueue: SocketMessage[] = [];
     function setupSocketMessageHandling(ws: WebSocket) {
         ws.on("message", async (data) => {
             try {
                 const msg = JSON.parse(data.toString()) as SocketMessage;
-                await handleMessage(ws, msg);
+                msgHandlingQueue.push(msg);
+                processMsgQueue(ws);
             } catch (error) {
                 console.error("Error parsing JSON message:", error);
                 sendError(ws, "Invalid JSON message format");
                 ws.close();
             }
         });
+    }
+
+    let isProcessing = false;
+    async function processMsgQueue(ws: WebSocket) {
+        if (isProcessing) return;
+        isProcessing = true;
+
+        while (msgHandlingQueue.length > 0) {
+            const msg = msgHandlingQueue.shift();
+            if (msg) {
+                await handleMessage(ws, msg);
+            }
+        }
+
+        isProcessing = false;
     }
 
     async function handleMessage(ws: WebSocket, msg: SocketMessage) {
