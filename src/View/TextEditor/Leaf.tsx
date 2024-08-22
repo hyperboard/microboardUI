@@ -4,7 +4,25 @@ import { RenderLeafProps } from "slate-react";
 export function Leaf(props: RenderLeafProps): React.ReactElement {
 	const { attributes, leaf } = props;
 	let { children } = props;
-	const styles = leaf.styles ? leaf.styles : [];
+	const styles = new Set<string>();
+	if (leaf.bold) {
+		styles.add("bold");
+	}
+	if (leaf.italic) {
+		styles.add("italic");
+	}
+	if (leaf.underline) {
+		styles.add("underline");
+	}
+	if (leaf["line-through"]) {
+		styles.add("line-through");
+	}
+	if (leaf.sub) {
+		styles.add("sub");
+	}
+	if (leaf.super) {
+		styles.add("super");
+	}
 	for (const style of styles) {
 		switch (style) {
 			case "bold":
