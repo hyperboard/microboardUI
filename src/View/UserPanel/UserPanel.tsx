@@ -397,33 +397,10 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 };
 
 export const UserPanel: React.FC<{ app: App }> = ({ app }) => {
-	const { isAuth, setIsAuth, email } = useAuth(app);
+	const { isAuth, email } = useAuth(app);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const { t } = useTranslation();
 	const navigate = useNavigate();
-
-	useLayoutEffect(() => {
-		fetch(`${getApiUrl()}/users/me`, {
-			method: "GET",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${Cookies.get("accessToken")}`,
-			},
-		})
-			.then(response => {
-				if (!response.ok) {
-					return Promise.reject(response);
-				}
-				return response.json();
-			})
-			.then(data => {
-				setEmail(data.email);
-				setIsAuth(true);
-			})
-			.catch(() => {
-				setIsAuth(false);
-			});
-	});
 
 	if (!isAuth) {
 		return (
@@ -548,7 +525,6 @@ export const UserPanel: React.FC<{ app: App }> = ({ app }) => {
 					<UserPic
 						email={email}
 						setIsModalOpen={setIsModalOpen}
-						setIsAuth={setIsAuth}
 						app={app}
 					/>
 				</div>
