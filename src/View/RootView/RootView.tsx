@@ -21,7 +21,19 @@ const RootView: React.FC<RootViewProps> = ({ app }) => {
 		});
 	}, []);
 
-	return <div></div>;
+	return (
+		<div
+			style={{
+				display: "flex",
+				justifyContent: "center",
+				alignItems: "center",
+			}}
+		>
+			<label htmlFor="loading">
+				<h1>Loading...</h1>
+			</label>
+		</div>
+	);
 };
 
 export default RootView;
