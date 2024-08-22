@@ -48,6 +48,13 @@ export interface IMiroBoardItemStyle {
 	endStrokeCap?: string;
 }
 
+export interface IMiroParent {
+	id: string;
+	links: {
+		self: string;
+	};
+}
+
 interface IMiroBoardItemBase {
 	id: string;
 	links: {
@@ -64,22 +71,28 @@ interface IMiroBoardItemBase {
 		type: string;
 	};
 	style: IMiroBoardItemStyle;
+	parent?: IMiroParent;
 }
 
 interface IMiroData {
 	content: string;
 }
 
-interface IMiroGeometry {
+export interface IMiroGeometry {
 	width: number;
 	height: number;
 }
 
-interface IMiroPosition {
+export enum MiroRelativeTo {
+	frame = "parent_top_left",
+	board = "canvas_center",
+}
+
+export interface IMiroPosition {
 	x: number;
 	y: number;
 	origin: string;
-	relativeTo: string;
+	relativeTo: MiroRelativeTo;
 }
 
 export interface IMiroBoardItemText extends IMiroBoardItemBase {

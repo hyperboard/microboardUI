@@ -125,7 +125,7 @@ export function MiroBoards({
 		return (
 			<Modal isOpen={isOpen} setIsOpen={setIsOpen} size={ModalSize.M}>
 				<h2 className={styles.title}>{t("miro.boardsTitle")}</h2>
-				<Loader />;
+				<Loader />
 			</Modal>
 		);
 	}

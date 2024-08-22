@@ -7,8 +7,12 @@ import {
 	IMiroBoardItemShape,
 	IMiroBoardItemSticker,
 	IMiroBoardItemText,
+	IMiroGeometry,
+	IMiroParent,
+	IMiroPosition,
 	MiroBoardItemTypes,
 	MiroItemsTypes,
+	MiroRelativeTo,
 } from "../MiroBoards/MiroBoardsModels";
 import { Connector, Frame, Mbr, RichText, Shape } from "Board/Items";
 import { BorderStyle } from "Board/Items/Path";
@@ -19,6 +23,7 @@ import { ConnectionLineWidths } from "Board/Items/Connector/Connector";
 import { CONNECTOR_LINE_WIDTH } from "View/Items/Connector";
 import { prepareImage } from "Board/Items/Image/ImageHelpers";
 import { BoardPoint } from "Board/Items/Connector";
+import { Descendant } from "slate";
 
 interface MiroImage {
 	type: string;
@@ -29,8 +34,22 @@ export const useCopyBoardItems = (
 	board: Board,
 	miroItems: IMiroBoardItem[],
 ): void => {
-	const SCALE_FACTOR = 200;
 	const RICH_TEXT_MAX_WIDTH = 600;
+
+	const initialItemGeometry = {
+		sticky_note: {
+			width: 200,
+			height: 200,
+		},
+		shape: {
+			width: 100,
+			height: 100,
+		},
+		frame: {
+			width: 100,
+			height: 100,
+		},
+	};
 
 	const colorsSticker = {
 		dark_blue: stickerColors["Sky Blue"],
@@ -152,10 +171,59 @@ export const useCopyBoardItems = (
 		}
 	};
 
+	const getMiroItemById = (id: string): IMiroBoardItem | undefined =>
+		miroItems.find((item: IMiroBoardItem) => item.id === id);
+
+	const getItemPosition = (
+		position: IMiroPosition,
+		geometry: IMiroGeometry,
+		parent?: IMiroParent,
+	): { x: number; y: number } | null => {
+		const { x, y, relativeTo } = position;
+		const { height, width } = geometry;
+		if (relativeTo === MiroRelativeTo.board) {
+			return {
+				x: x - width / 2,
+				y: y - height / 2,
+			};
+		}
+
+		if (!parent) {
+			console.error("Parent is undefined");
+			return null;
+		}
+
+		const frame = getMiroItemById(parent?.id) as IMiroBoardItemFrame;
+		const framePosition = getItemPosition(frame.position, frame.geometry);
+
+		if (!framePosition) {
+			console.error("Unable to calculate frame position");
+			return null;
+		}
+
+		return {
+			x: x - width / 2 + framePosition.x,
+			y: y - height / 2 + framePosition.y,
+		};
+	};
+
+	const getItemGeometry = (
+		geometry: IMiroGeometry,
+		itemType: string,
+	): { width: number; height: number } => {
+		const { width: initialWidth, height: initialHeight } =
+			initialItemGeometry[itemType];
+		const { width, height } = geometry;
+
+		return {
+			width: width / initialWidth,
+			height: height / initialHeight,
+		};
+	};
+
 	const copyShape = (item: IMiroBoardItemShape): void => {
-		const { id, style, position, data, geometry } = item;
+		const { id, style, position, data, geometry, parent } = item;
 		if (data && position && geometry) {
-			const { height, width } = geometry;
 			const {
 				fillColor,
 				fillOpacity,
@@ -166,7 +234,6 @@ export const useCopyBoardItems = (
 				fontSize,
 				fontFamily,
 			} = style;
-			const { x, y } = position;
 			const { shape, content } = data;
 			const miroShapeType = shape ?? "";
 			const shapeType = shapeTypes[miroShapeType];
@@ -176,23 +243,34 @@ export const useCopyBoardItems = (
 					undefined,
 					id,
 					shapeType,
-					fillColor ?? "",
+					fillColor === "#ffffff" ? "transparent" : fillColor,
 					+fillOpacity,
 					borderColor,
 					+borderOpacity,
 					newBorderStyle as BorderStyle,
 					+borderWidth,
 				);
-				const shapeW = newShape.getPaths().getMbr().getWidth();
-				const shapeH = newShape.getPaths().getMbr().getHeight();
 
-				const newShapeX = x - width / 2;
-				const newShapeY = y - height / 2;
+				const newShapeGeometry = getItemGeometry(
+					geometry,
+					MiroBoardItemTypes.SHAPE,
+				);
 
-				newShape.transformation.translateTo(newShapeX, newShapeY);
+				const newShapePosition = getItemPosition(
+					position,
+					geometry,
+					parent,
+				);
+
+				newShapePosition &&
+					newShape.transformation.translateTo(
+						newShapePosition.x,
+						newShapePosition.y,
+					);
+
 				newShape.transformation.scaleTo(
-					width / shapeW,
-					height / shapeH,
+					newShapeGeometry.width,
+					newShapeGeometry.height,
 				);
 
 				content && setItemText(newShape, content, fontSize, fontFamily);
@@ -206,21 +284,30 @@ export const useCopyBoardItems = (
 		const { id, style, position, data, geometry } = item;
 		const { fillColor } = style;
 		if (fillColor) {
-			const { height, width } = geometry;
-			const { x, y } = position!;
 			const color = colorsSticker[fillColor];
 			const sticker = new Sticker(undefined, id, color);
 
-			const stickerX = x - width / 2;
-			const stickerY = y - height / 2;
+			const stickerGeometry = getItemGeometry(
+				geometry,
+				MiroBoardItemTypes.STICKER,
+			);
 
-			const initialWidth = sticker.getPaths().getMbr().getWidth();
-			const initialHeight = sticker.getPaths().getMbr().getHeight();
-			const stickerWidth = width / initialWidth;
-			const stickerHeight = height / initialHeight;
+			const newStickerPosition = getItemPosition(
+				position,
+				geometry,
+				item.parent,
+			);
 
-			sticker.transformation.translateTo(stickerX, stickerY);
-			sticker.transformation.scaleTo(stickerWidth, stickerHeight);
+			newStickerPosition &&
+				sticker.transformation.translateTo(
+					newStickerPosition.x,
+					newStickerPosition.y,
+				);
+
+			sticker.transformation.scaleTo(
+				stickerGeometry.width,
+				stickerGeometry.height,
+			);
 
 			if (data.content) {
 				const { fontSize, fontFamily } = style;
@@ -263,9 +350,7 @@ export const useCopyBoardItems = (
 	};
 
 	const copyImage = async (item: IMiroBoardItemImage): Promise<void> => {
-		const { position, data, geometry } = item;
-		const { x, y } = position;
-		const { width, height } = geometry;
+		const { id, position, data, geometry } = item;
 		const prepareImgUrl =
 			data.imageUrl.split("?")[0] + "?format=original&redirect=false";
 		const img = await getImage(prepareImgUrl);
@@ -275,33 +360,32 @@ export const useCopyBoardItems = (
 		);
 
 		prepareImage(imgBase64).then(imageData => {
-			const imgItem = new ImageItem(imageData);
+			const imgItem = new ImageItem(imageData).setId(id);
 
-			const imgX = x - width / 2;
-			const imgY = y - height / 2;
+			const imgPosition = getItemPosition(
+				position,
+				geometry,
+				item.parent,
+			);
 
-			const imgW = width / imgItem.imageDimension.width;
-			const imgH = height / imgItem.imageDimension.height;
-
-			imgItem.transformation.translateTo(imgX, imgY);
-			imgItem.transformation.scaleTo(imgW, imgH);
+			imgPosition &&
+				imgItem.transformation.translateTo(
+					imgPosition.x,
+					imgPosition.y,
+				);
 
 			board.add(imgItem);
 		});
 	};
-
-	const getMiroItemById = (id: string): IMiroBoardItem | undefined =>
-		miroItems.find((item: IMiroBoardItem) => item.id === id);
 
 	const getConnectorPoint = (
 		start: number,
 		geometry: number | undefined,
 		percent: string | undefined,
 	): number => {
-		const percentInt = percent?.replace("%", "") ?? 1;
 		if (geometry) {
-			const startPoint = start - geometry / 2;
-			return startPoint + (geometry * +percentInt) / 100;
+			const percentInt = Number(percent?.replace("%", "")) ?? 1;
+			return start + ((geometry * percentInt) / 100) * 100;
 		}
 		return start;
 	};
@@ -341,38 +425,53 @@ export const useCopyBoardItems = (
 			return null;
 		}
 		// coordinates of the start and end objects for the connector
-		const { x: startItemX, y: startItemY } = startItemMiro.position;
-		const { x: endItemX, y: endItemY } = endItemMiro.position;
+		if (
+			startItemMiro.type === MiroBoardItemTypes.TEXT ||
+			endItemMiro.type === MiroBoardItemTypes.TEXT
+		) {
+			console.error("text");
+			return null;
+		}
 
-		// geometry of the start and end objects for the connector
-		const startItemHeight =
-			startItemMiro.type !== MiroBoardItemTypes.TEXT
-				? startItemMiro.geometry.height
-				: undefined;
-		const endItemHeight =
-			endItemMiro.type !== MiroBoardItemTypes.TEXT
-				? endItemMiro.geometry.height
-				: undefined;
+		const startItemGeometry = getItemGeometry(
+			startItemMiro.geometry,
+			startItemMiro.type,
+		);
+		const endItemGeometry = getItemGeometry(
+			endItemMiro.geometry,
+			endItemMiro.type,
+		);
+
+		const startItemPosition = getItemPosition(
+			startItemMiro.position,
+			startItemMiro.geometry,
+			startItemMiro.parent,
+		)!;
+		const endItemPosition = getItemPosition(
+			endItemMiro.position,
+			endItemMiro.geometry,
+			endItemMiro.parent,
+		)!;
 
 		const startX = getConnectorPoint(
-			startItemX,
-			startItemMiro.geometry.width,
+			startItemPosition.x,
+			startItemGeometry.width,
 			startItem.position.x,
 		);
 		const startY = getConnectorPoint(
-			startItemY,
-			startItemHeight,
+			startItemPosition.y,
+			startItemGeometry.height,
 			startItem.position.y,
 		);
 
 		const endX = getConnectorPoint(
-			endItemX,
-			endItemMiro.geometry.width,
+			endItemPosition.x,
+			endItemGeometry.width,
 			endItem.position.x,
 		);
 		const endY = getConnectorPoint(
-			endItemY,
-			endItemHeight,
+			endItemPosition.y,
+			endItemGeometry.height,
 			endItem.position.y,
 		);
 
@@ -406,11 +505,11 @@ export const useCopyBoardItems = (
 	};
 
 	const copyText = (item: IMiroBoardItemText): void => {
-		const { style, position, data, geometry } = item;
+		const { id, style, position, data, geometry } = item;
 		const { x, y } = position;
 		const { fontSize, color } = style;
 
-		const richtext = new RichText(new Mbr());
+		const richtext = new RichText(new Mbr(), id);
 
 		const richTextWidth = geometry?.width ?? RICH_TEXT_MAX_WIDTH;
 		richtext.setMaxWidth(richTextWidth);
@@ -420,48 +519,41 @@ export const useCopyBoardItems = (
 			const paragraph = (text as HTMLElement).innerText ?? "\n";
 			const textSpanStyles = text.getElementsByTagName("span")[0]?.style;
 
-			if (index === 0) {
-				richtext.editor.editor.children = [
+			const newParagraph: Descendant = {
+				type: "paragraph",
+				children: [
 					{
-						type: "paragraph",
-						children: [
-							{
-								type: "text",
-								text: paragraph,
-								fontColor: color ?? "black",
-								fontSize: +fontSize,
-								fontHighlight:
-									textSpanStyles?.backgroundColor ?? "",
-							},
-						],
+						type: "text",
+						text: paragraph,
+						fontColor: color ?? "black",
+						fontSize: +fontSize,
+						fontHighlight: textSpanStyles?.backgroundColor ?? "",
 					},
-				];
-			} else {
-				richtext.editor.editor.children = [
-					...richtext.editor.editor.children,
-					{
-						type: "paragraph",
-						children: [
-							{
-								type: "text",
-								text: paragraph,
-								fontColor: color ?? "black",
-								fontSize: +fontSize,
-								fontHighlight:
-									textSpanStyles?.backgroundColor ?? "",
-							},
-						],
-					},
-				];
-			}
+				],
+			};
+
+			richtext.editor.editor.children =
+				index === 0
+					? [newParagraph]
+					: [...richtext.editor.editor.children, newParagraph];
 		});
 
 		const richtextX = x - richTextWidth / 3;
 		const richtextY = y;
+
 		richtext.transformation.translateTo(richtextX, richtextY);
 
 		const height = richtext.getHeight();
-		richtext.transformation.translateTo(richtextX, y - height / 2);
+		const richTextPosition = getItemPosition(
+			position,
+			{ width: geometry.width, height },
+			item.parent,
+		);
+		richTextPosition &&
+			richtext.transformation.translateTo(
+				richTextPosition.x,
+				richTextPosition.y,
+			);
 
 		board.add(richtext);
 	};
@@ -476,8 +568,6 @@ export const useCopyBoardItems = (
 
 	const copyFrame = (item: IMiroBoardItemFrame): void => {
 		const { style, geometry, position, id, data } = item;
-		const { width, height } = geometry;
-		const { x, y } = position;
 		const { fillColor } = style;
 		const { format } = data;
 		const frame = new Frame(board.events).setId(id).setBoard(board);
@@ -485,17 +575,16 @@ export const useCopyBoardItems = (
 		fillColor && frame.setBackgroundColor(fillColor);
 		frame.setFrameType(frameTypes[format]);
 
-		const frameX = x - width / 2;
-		const frameY = y - height / 2;
+		const framePosition = getItemPosition(position, geometry, item.parent);
 
-		const initialWidth = frame.getPaths().getMbr().getWidth();
-		const initialHeight = frame.getPaths().getMbr().getHeight();
+		const { width, height } = getItemGeometry(
+			geometry,
+			MiroBoardItemTypes.FRAME,
+		);
 
-		const frameWidth = width / initialWidth;
-		const frameHeight = height / initialHeight;
-
-		frame.transformation.translateTo(frameX, frameY);
-		frame.transformation.scaleTo(frameWidth, frameHeight);
+		framePosition &&
+			frame.transformation.translateTo(framePosition.x, framePosition.y);
+		frame.transformation.scaleTo(width, height);
 
 		board.add(frame);
 	};
