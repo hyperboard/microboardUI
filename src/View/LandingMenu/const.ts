@@ -1,1 +1,1 @@
-export const LANDING_URL = "https://microboard.ru/development";
+export const LANDING_URL = "https://microboard.ru";
