@@ -32,6 +32,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
     }
 
     const msgHandlingQueue: SocketMessage[] = [];
+    let isProcessing = false;
     function setupSocketMessageHandling(ws: WebSocket) {
         ws.on("message", async (data) => {
             try {
@@ -42,11 +43,11 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
                 console.error("Error parsing JSON message:", error);
                 sendError(ws, "Invalid JSON message format");
                 ws.close();
+                isProcessing = false;
             }
         });
     }
 
-    let isProcessing = false;
     async function processMsgQueue(ws: WebSocket) {
         if (isProcessing) return;
         isProcessing = true;
