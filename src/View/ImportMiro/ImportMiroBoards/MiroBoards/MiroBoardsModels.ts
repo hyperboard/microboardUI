@@ -98,7 +98,7 @@ export interface IMiroPosition {
 export interface IMiroBoardItemText extends IMiroBoardItemBase {
 	type: MiroBoardItemTypes.TEXT;
 	data: IMiroData;
-	geometry: Omit<IMiroGeometry, "height">;
+	geometry: IMiroGeometry;
 	position: IMiroPosition;
 }
 
@@ -142,7 +142,7 @@ interface IMiroBoardConnectionsPoints {
 		self: string;
 	};
 	id: string;
-	position: {
+	position?: {
 		x: string;
 		y: string;
 	};
