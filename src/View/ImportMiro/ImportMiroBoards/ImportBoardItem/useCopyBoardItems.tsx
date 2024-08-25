@@ -6,6 +6,7 @@ import {
 	IMiroBoardItemImage,
 	IMiroBoardItemShape,
 	IMiroBoardItemSticker,
+	IMiroBoardItemStyle,
 	IMiroBoardItemText,
 	IMiroGeometry,
 	IMiroParent,
@@ -23,7 +24,9 @@ import { ConnectionLineWidths } from "Board/Items/Connector/Connector";
 import { CONNECTOR_LINE_WIDTH } from "View/Items/Connector";
 import { prepareImage } from "Board/Items/Image/ImageHelpers";
 import { BoardPoint } from "Board/Items/Connector";
-import { Descendant } from "slate";
+import { Descendant, Editor, Path, Transforms } from "slate";
+import { ReactEditor } from "slate-react";
+import { TextNode, TextStyle } from "Board/Items/RichText/Editor/TextNode";
 
 interface MiroImage {
 	type: string;
@@ -152,19 +155,36 @@ export const useCopyBoardItems = (
 			if (node.nodeType === Node.ELEMENT_NODE) {
 				const element = node as HTMLElement;
 				let hasText = false;
+				let hasStrong = false;
 
 				element.childNodes.forEach(child => {
+					if (child.nodeType === Node.ELEMENT_NODE) {
+						const childElement = child as HTMLElement;
+
+						if (
+							childElement.tagName.toLowerCase() === "strong" ||
+							childElement.tagName.toLowerCase() === "em" ||
+							childElement.tagName.toLowerCase() === "s" ||
+							childElement.tagName.toLowerCase() === "u" ||
+							childElement.tagName.toLowerCase() === "span"
+						) {
+							hasStrong = true;
+							return;
+						}
+					}
+
 					if (
 						child.nodeType === Node.TEXT_NODE &&
 						child.textContent?.trim()
 					) {
 						hasText = true;
 					}
+
 					traverse(child);
 				});
 
-				if (hasText && element.tagName.toLowerCase() !== "span") {
-					elementsWithText.push(node as HTMLElement);
+				if (hasStrong || hasText) {
+					elementsWithText.push(element);
 				}
 			}
 		}
@@ -174,34 +194,81 @@ export const useCopyBoardItems = (
 		return elementsWithText;
 	};
 
+	//
+
 	const setItemText = (
-		item: Shape | Sticker,
+		item: Shape | Sticker | RichText,
 		text: string,
-		fontSize: string,
-		fontFamily: string,
+		style: IMiroBoardItemStyle,
 	): void => {
 		const textEls = parseTextData(text);
 
-		if (textEls) {
-			textEls.forEach(element => {
-				const textSpan = element.getElementsByTagName("span")[0];
-				const paragraph = (element as HTMLElement).innerText ?? "\n";
+		if (!textEls) return;
 
-				item.text.addText(paragraph);
+		const { fontSize } = style;
+		const targetText = item.itemType === "RichText" ? item : item.text;
+		const editor = targetText.editor.editor;
 
-				if (fontSize) {
-					item.text.setSelectionFontSize(+fontSize);
-				}
+		textEls.forEach((element, index) => {
+			const textChildren: TextNode[] = getTextNodes(
+				element as HTMLElement,
+			);
 
-				item.text.setSelectionFontFamily(fontFamily);
+			Transforms.insertNodes(
+				editor,
+				{ type: "paragraph", children: textChildren },
+				{
+					at: {
+						path: [index, 0],
+						offset: targetText.getTextString().length,
+					},
+				},
+			);
 
-				if (item.itemType === "Shape" && textSpan) {
-					const { color, backgroundColor } = textSpan.style;
-					item.text.setSelectionFontColor(color);
-					item.text.setSelectionFontHighlight(backgroundColor);
-				}
-			});
-		}
+			if (fontSize) {
+				targetText.setSelectionFontSize(+fontSize);
+			}
+		});
+	};
+
+	const getTextNodes = (element: HTMLElement): TextNode[] => {
+		return Array.from(element.childNodes).map(child => {
+			const childElement = child as HTMLElement;
+			const stringText = child.textContent ?? "";
+			const fontStyles = getFontStyles(childElement);
+			const textStyles = childElement.style;
+
+			return {
+				text: stringText,
+				type: "text",
+				bold: fontStyles.includes("bold"),
+				italic: fontStyles.includes("italic"),
+				underline: fontStyles.includes("underline"),
+				overline: false,
+				lineThrough: fontStyles.includes("line-through"),
+				subscript: false,
+				superscript: false,
+				fontColor: textStyles?.color ?? "black",
+			};
+		});
+	};
+
+	const getFontStyles = (element: HTMLElement): string[] => {
+		const fontStyles: string[] = [];
+		const tagName = element?.tagName?.toLowerCase();
+
+		if (tagName === "strong") fontStyles.push("bold");
+		if (tagName === "em") fontStyles.push("italic");
+		if (tagName === "u") fontStyles.push("underline");
+		if (tagName === "s") fontStyles.push("line-through");
+
+		Array.from(element.childNodes).forEach(child => {
+			if (child instanceof HTMLElement) {
+				fontStyles.push(...getFontStyles(child));
+			}
+		});
+
+		return fontStyles;
 	};
 
 	const getMiroItemById = (id: string): IMiroBoardItem | undefined =>
@@ -264,6 +331,25 @@ export const useCopyBoardItems = (
 			MiroBoardItemTypes.SHAPE,
 		);
 
+		if (item.itemType === "RichText") {
+			const height = item.getPath().getMbr().getHeight();
+			const width = item.getPath().getMbr().getWidth();
+			const richtextGeometry = {
+				width,
+				height,
+			};
+			const itemPosition = getItemPosition(
+				position,
+				richtextGeometry,
+				parent,
+			);
+
+			itemPosition &&
+				item.transformation.translateTo(itemPosition.x, itemPosition.y);
+
+			return;
+		}
+
 		const itemPosition = getItemPosition(position, geometry, parent);
 
 		itemPosition &&
@@ -283,8 +369,6 @@ export const useCopyBoardItems = (
 			borderOpacity,
 			borderStyle,
 			borderWidth,
-			fontSize,
-			fontFamily,
 		} = style;
 		const { shape, content } = data;
 		const miroShapeType = shape ?? "";
@@ -305,7 +389,7 @@ export const useCopyBoardItems = (
 
 			setTransformation(newShape, item);
 
-			content && setItemText(newShape, content, fontSize, fontFamily);
+			content && setItemText(newShape, content, style);
 
 			board.add(newShape);
 			setBoardMiroId(id);
@@ -322,8 +406,7 @@ export const useCopyBoardItems = (
 		setTransformation(sticker, item);
 
 		if (!data.content) return null;
-		const { fontSize, fontFamily } = style;
-		setItemText(sticker, data.content, fontSize, fontFamily);
+		setItemText(sticker, data.content, style);
 
 		board.add(sticker);
 		setBoardMiroId(id);
@@ -504,65 +587,20 @@ export const useCopyBoardItems = (
 	};
 
 	const copyText = (item: IMiroBoardItemText): void => {
-		const { id, style, position, data, geometry } = item;
-		const { x, y } = position;
-		const { fontSize, color } = style;
+		const { id, style, data, geometry } = item;
 
 		const richtext = new RichText(new Mbr(), id);
 
 		const richTextWidth = geometry?.width ?? RICH_TEXT_MAX_WIDTH;
 		richtext.setMaxWidth(richTextWidth);
 
-		const textEls = parseTextData(data.content);
-		textEls.forEach((text, index) => {
-			const paragraph = (text as HTMLElement).innerText ?? "\n";
-			const textSpanStyles = text.getElementsByTagName("span")[0]?.style;
-
-			const newParagraph: Descendant = {
-				type: "paragraph",
-				children: [
-					{
-						type: "text",
-						text: paragraph,
-						fontColor: color ?? "black",
-						fontSize: +fontSize,
-						fontHighlight: textSpanStyles?.backgroundColor ?? "",
-						bold: false,
-						italic: false,
-						underline: false,
-						overline: false,
-						lineThrough: false,
-						subscript: false,
-						superscript: false,
-					},
-				],
-			};
-
-			richtext.editor.editor.children =
-				index === 0
-					? [newParagraph]
-					: [...richtext.editor.editor.children, newParagraph];
-		});
-
-		const richtextX = x - richTextWidth / 3;
-		const richtextY = y;
-
-		richtext.transformation.translateTo(richtextX, richtextY);
-
-		const height = richtext.getHeight();
-		const richTextPosition = getItemPosition(
-			position,
-			{ width: geometry.width, height },
-			item.parent,
-		);
-		richTextPosition &&
-			richtext.transformation.translateTo(
-				richTextPosition.x,
-				richTextPosition.y,
-			);
-
 		board.add(richtext);
 		setBoardMiroId(id);
+
+		const boardRichText =
+			board.items.listAll()[board.items.listAll().length - 1];
+		setTransformation(boardRichText, item);
+		setItemText(boardRichText as RichText, data.content, style);
 	};
 
 	const copyFrame = (item: IMiroBoardItemFrame): void => {
