@@ -34,7 +34,10 @@ import { prepareImage } from "Board/Items/Image/ImageHelpers";
 import { BoardPoint, FixedPoint } from "Board/Items/Connector";
 import { Transforms } from "slate";
 import { TextNode } from "Board/Items/RichText/Editor/TextNode";
-import type { HorisontalAlignment } from "Board/Items/Alignment";
+import type {
+	HorisontalAlignment,
+	VerticalAlignment,
+} from "Board/Items/Alignment";
 import { STICKER_COLORS } from "View/Tools/AddSticker";
 import { toRelativePoint } from "Board/Items/Connector/ControlPoint";
 
@@ -58,6 +61,12 @@ const INITIAL_GEOMETRY = {
 		width: 100,
 		height: 100,
 	},
+};
+
+const TEXT_VERTICAL_ALIGNMENT = {
+	top: "top",
+	middle: "center",
+	bottom: "bottom",
 };
 
 const STICKER_COLOR = {
@@ -294,6 +303,17 @@ export const useCopyBoardItems = (
 		return fontStyles;
 	};
 
+	const setVerticalAlignment = (textAlignVertical: string): void => {
+		const lastBoardItem =
+			board.items.listAll()[board.items.listAll().length - 1];
+
+		board.selection.add(lastBoardItem);
+		board.selection.setVerticalAlignment(
+			TEXT_VERTICAL_ALIGNMENT[textAlignVertical],
+		);
+		board.selection.remove(lastBoardItem);
+	};
+
 	const getMiroItemById = (id: string): IMiroBoardItem | undefined =>
 		miroItems.find((item: IMiroBoardItem) => item.id === id);
 
@@ -394,6 +414,7 @@ export const useCopyBoardItems = (
 			borderOpacity,
 			borderStyle,
 			borderWidth,
+			textAlignVertical,
 		} = style;
 		const { shape, content } = data;
 		const miroShapeType = shape ?? "";
@@ -412,16 +433,19 @@ export const useCopyBoardItems = (
 		);
 
 		setTransformation(newShape, item);
-
 		content && setItemText(newShape, content, style);
 
 		board.add(newShape);
 		setBoardMiroId(id);
+
+		if (textAlignVertical) {
+			setVerticalAlignment(textAlignVertical);
+		}
 	};
 
 	const copySticker = (item: IMiroBoardItemSticker): void | null => {
 		const { id, style, data } = item;
-		const { fillColor } = style;
+		const { fillColor, textAlignVertical } = style;
 		if (!fillColor) {
 			return null;
 		}
@@ -429,11 +453,14 @@ export const useCopyBoardItems = (
 		const sticker = new Sticker(undefined, id, color);
 
 		setTransformation(sticker, item);
-
 		setItemText(sticker, data.content, style);
 
 		board.add(sticker);
 		setBoardMiroId(id);
+
+		if (textAlignVertical) {
+			setVerticalAlignment(textAlignVertical);
+		}
 	};
 
 	const getImage = async (imageUrl: string): Promise<MiroImage | null> => {
