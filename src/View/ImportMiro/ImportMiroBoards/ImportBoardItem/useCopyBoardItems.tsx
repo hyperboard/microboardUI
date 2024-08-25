@@ -15,7 +15,15 @@ import {
 	MiroItemsTypes,
 	MiroRelativeTo,
 } from "../MiroBoards/MiroBoardsModels";
-import { Connector, Frame, Item, Mbr, RichText, Shape } from "Board/Items";
+import {
+	Connector,
+	Frame,
+	Item,
+	Mbr,
+	Point,
+	RichText,
+	Shape,
+} from "Board/Items";
 import { BorderStyle } from "Board/Items/Path";
 import { Sticker, stickerColors } from "Board/Items/Sticker";
 import { ImageItem } from "Board/Items/Image";
@@ -23,11 +31,12 @@ import Cookies from "js-cookie";
 import { ConnectionLineWidths } from "Board/Items/Connector/Connector";
 import { CONNECTOR_LINE_WIDTH } from "View/Items/Connector";
 import { prepareImage } from "Board/Items/Image/ImageHelpers";
-import { BoardPoint } from "Board/Items/Connector";
+import { BoardPoint, FixedPoint } from "Board/Items/Connector";
 import { Transforms } from "slate";
 import { TextNode } from "Board/Items/RichText/Editor/TextNode";
 import type { HorisontalAlignment } from "Board/Items/Alignment";
 import { STICKER_COLORS } from "View/Tools/AddSticker";
+import { toRelativePoint } from "Board/Items/Connector/ControlPoint";
 
 interface MiroImage {
 	type: string;
@@ -572,11 +581,20 @@ export const useCopyBoardItems = (
 			endItem.position?.y,
 		);
 
+		const startRelativePoint = toRelativePoint(
+			new Point(startX, startY),
+			startItemMiro,
+		);
+		const endRelativePoint = toRelativePoint(
+			new Point(endX, endY),
+			endItemMiro,
+		);
+
 		const connector = new Connector(
 			board,
 			undefined,
-			new BoardPoint(startX, startY),
-			new BoardPoint(endX, endY),
+			new FixedPoint(startItemMiro, startRelativePoint),
+			new FixedPoint(endItemMiro, endRelativePoint),
 		);
 
 		const {
@@ -599,6 +617,7 @@ export const useCopyBoardItems = (
 		setConnectorsStyles(connector, startStrokeCap, endStrokeCap);
 
 		board.add(connector);
+		board.tools.publish();
 	};
 
 	const copyText = (item: IMiroBoardItemText): void => {
