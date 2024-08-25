@@ -212,7 +212,7 @@ export const useCopyBoardItems = (
 	};
 
 	const setItemText = (
-		item: Shape | Sticker | RichText,
+		item: Shape | Sticker | RichText | Connector,
 		text: string,
 		style: IMiroBoardItemStyle,
 	): void => {
@@ -593,7 +593,7 @@ export const useCopyBoardItems = (
 	};
 
 	const copyConnector = (item: IMiroBoardItemConnector): void | null => {
-		const { startItem, endItem, style, shape } = item;
+		const { startItem, endItem, style, shape, captions } = item;
 		const connectorError = "Start and end connector points not found";
 		const notFoundConnectorItemById =
 			"Start and end connection objects for the connector not found";
@@ -611,33 +611,35 @@ export const useCopyBoardItems = (
 			return null;
 		}
 
-		const startWidth = startItemMiro.getPath().getMbr().getWidth();
-		const startHeight = startItemMiro.getPath().getMbr().getHeight();
+		const startDimensions = getItemDimensions(startItemMiro);
 		const { left: startItemX, top: startItemY } = startItemMiro
 			.getPath()
 			.getMbr();
 
-		const endWidth = endItemMiro.getPath().getMbr().getWidth();
-		const endHeight = endItemMiro.getPath().getMbr().getHeight();
+		const endDimensions = getItemDimensions(endItemMiro);
 		const { left: endItemX, top: endItemY } = endItemMiro
 			.getPath()
 			.getMbr();
 
 		const startX = getConnectorPoint(
 			startItemX,
-			startWidth,
+			startDimensions.width,
 			startItem.position?.x,
 		);
 		const startY = getConnectorPoint(
 			startItemY,
-			startHeight,
+			startDimensions.height,
 			startItem.position?.y,
 		);
 
-		const endX = getConnectorPoint(endItemX, endWidth, endItem.position?.x);
+		const endX = getConnectorPoint(
+			endItemX,
+			endDimensions.width,
+			endItem.position?.x,
+		);
 		const endY = getConnectorPoint(
 			endItemY,
-			endHeight,
+			endDimensions.height,
 			endItem.position?.y,
 		);
 
@@ -667,6 +669,7 @@ export const useCopyBoardItems = (
 
 		const connectorType = CONNECTOR_TYPES[shape];
 		connector.setLineStyle(connectorType);
+
 		const strokeWidth =
 			miroStrokeWidth &&
 			ConnectionLineWidths.find(width => width === +miroStrokeWidth);
@@ -675,9 +678,9 @@ export const useCopyBoardItems = (
 		);
 
 		setConnectorsStyles(connector, startStrokeCap, endStrokeCap);
+		captions && setItemText(connector, captions[0].content, style);
 
 		board.add(connector);
-		board.tools.publish();
 	};
 
 	const copyText = (item: IMiroBoardItemText): void => {

@@ -148,11 +148,15 @@ interface IMiroBoardConnectionsPoints {
 	};
 }
 
+interface IMiroBoardItemConnectorCaption {
+	content: string;
+	position: string;
+	textAlignVertical: string;
+}
+
 export interface IMiroBoardItemConnector extends IMiroBoardItemBase {
+	captions?: IMiroBoardItemConnectorCaption[];
 	type: MiroBoardItemTypes.CONNECTOR;
-	data: {
-		imageUrl: string;
-	};
 	startItem?: IMiroBoardConnectionsPoints;
 	endItem?: IMiroBoardConnectionsPoints;
 	shape: string;
