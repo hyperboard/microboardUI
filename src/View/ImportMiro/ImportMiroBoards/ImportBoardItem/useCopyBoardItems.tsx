@@ -25,19 +25,16 @@ import {
 	Shape,
 } from "Board/Items";
 import { BorderStyle } from "Board/Items/Path";
-import { Sticker, stickerColors } from "Board/Items/Sticker";
+import { Sticker } from "Board/Items/Sticker";
 import { ImageItem } from "Board/Items/Image";
 import Cookies from "js-cookie";
 import { ConnectionLineWidths } from "Board/Items/Connector/Connector";
 import { CONNECTOR_LINE_WIDTH } from "View/Items/Connector";
 import { prepareImage } from "Board/Items/Image/ImageHelpers";
-import { BoardPoint, FixedPoint } from "Board/Items/Connector";
+import { FixedPoint } from "Board/Items/Connector";
 import { Transforms } from "slate";
 import { TextNode } from "Board/Items/RichText/Editor/TextNode";
-import type {
-	HorisontalAlignment,
-	VerticalAlignment,
-} from "Board/Items/Alignment";
+import type { HorisontalAlignment } from "Board/Items/Alignment";
 import { STICKER_COLORS } from "View/Tools/AddSticker";
 import { toRelativePoint } from "Board/Items/Connector/ControlPoint";
 
@@ -368,37 +365,73 @@ export const useCopyBoardItems = (
 
 	const setTransformation = (item: Item, miroItem: IMiroBoardItem): void => {
 		const { geometry, position, parent } = miroItem;
-
-		const itemGeometry = getItemGeometry(
-			geometry,
-			MiroBoardItemTypes.SHAPE,
-		);
+		const itemGeometry = getItemGeometry(geometry, miroItem.type);
 
 		if (item.itemType === "RichText") {
-			const height = item.getPath().getMbr().getHeight();
-			const width = item.getPath().getMbr().getWidth();
-			const richtextGeometry = {
-				width,
-				height,
-			};
-			const itemPosition = getItemPosition(
-				position,
-				richtextGeometry,
-				parent,
-			);
+			applyRichTextTransformation(item, position, parent);
+		} else {
+			applyStandardTransformation(item, itemGeometry, position, parent);
+		}
+	};
 
-			itemPosition &&
-				item.transformation.translateTo(itemPosition.x, itemPosition.y);
+	const applyRichTextTransformation = (
+		item: Item,
+		position: any,
+		parent: any,
+	): void => {
+		const { width, height } = getItemDimensions(item);
+		const itemPosition = getItemPosition(
+			position,
+			{ width, height },
+			parent,
+		);
 
-			return;
+		if (itemPosition) {
+			item.transformation.translateTo(itemPosition.x, itemPosition.y);
+		}
+	};
+
+	const applyStandardTransformation = (
+		item: Item,
+		itemGeometry: { width: number; height: number },
+		position: any,
+		parent: any,
+	): void => {
+		const updatedGeometry = updateStickerGeometry(item, itemGeometry);
+		const itemPosition = getItemPosition(position, updatedGeometry, parent);
+
+		if (itemPosition) {
+			item.transformation.translateTo(itemPosition.x, itemPosition.y);
 		}
 
-		const itemPosition = getItemPosition(position, geometry, parent);
+		item.transformation.scaleTo(
+			updatedGeometry.width,
+			updatedGeometry.height,
+		);
+	};
 
-		itemPosition &&
-			item.transformation.translateTo(itemPosition.x, itemPosition.y);
+	const getItemDimensions = (
+		item: Item,
+	): { width: number; height: number } => {
+		const { getPath } = item;
+		const mbr = getPath().getMbr();
+		return {
+			width: mbr.getWidth(),
+			height: mbr.getHeight(),
+		};
+	};
 
-		item.transformation.scaleTo(itemGeometry.width, itemGeometry.height);
+	const updateStickerGeometry = (
+		item: Item,
+		geometry: { width: number; height: number },
+	): { width: number; height: number } => {
+		if (item.itemType === "Sticker") {
+			return {
+				width: geometry.width,
+				height: geometry.width,
+			};
+		}
+		return geometry;
 	};
 
 	const copyShape = (item: IMiroBoardItemShape): void | null => {
