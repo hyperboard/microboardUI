@@ -24,9 +24,9 @@ import { ConnectionLineWidths } from "Board/Items/Connector/Connector";
 import { CONNECTOR_LINE_WIDTH } from "View/Items/Connector";
 import { prepareImage } from "Board/Items/Image/ImageHelpers";
 import { BoardPoint } from "Board/Items/Connector";
-import { Descendant, Editor, Path, Transforms } from "slate";
-import { ReactEditor } from "slate-react";
-import { TextNode, TextStyle } from "Board/Items/RichText/Editor/TextNode";
+import { Transforms } from "slate";
+import { TextNode } from "Board/Items/RichText/Editor/TextNode";
+import type { HorisontalAlignment } from "Board/Items/Alignment";
 
 interface MiroImage {
 	type: string;
@@ -194,8 +194,6 @@ export const useCopyBoardItems = (
 		return elementsWithText;
 	};
 
-	//
-
 	const setItemText = (
 		item: Shape | Sticker | RichText,
 		text: string,
@@ -203,9 +201,11 @@ export const useCopyBoardItems = (
 	): void => {
 		const textEls = parseTextData(text);
 
-		if (!textEls) return;
+		if (!textEls) {
+			return;
+		}
 
-		const { fontSize } = style;
+		const { fontSize, textAlign } = style;
 		const targetText = item.itemType === "RichText" ? item : item.text;
 		const editor = targetText.editor.editor;
 
@@ -216,7 +216,11 @@ export const useCopyBoardItems = (
 
 			Transforms.insertNodes(
 				editor,
-				{ type: "paragraph", children: textChildren },
+				{
+					type: "paragraph",
+					children: textChildren,
+					horisontalAlignment: textAlign as HorisontalAlignment,
+				},
 				{
 					at: {
 						path: [index, 0],
@@ -257,10 +261,18 @@ export const useCopyBoardItems = (
 		const fontStyles: string[] = [];
 		const tagName = element?.tagName?.toLowerCase();
 
-		if (tagName === "strong") fontStyles.push("bold");
-		if (tagName === "em") fontStyles.push("italic");
-		if (tagName === "u") fontStyles.push("underline");
-		if (tagName === "s") fontStyles.push("line-through");
+		if (tagName === "strong") {
+			fontStyles.push("bold");
+		}
+		if (tagName === "em") {
+			fontStyles.push("italic");
+		}
+		if (tagName === "u") {
+			fontStyles.push("underline");
+		}
+		if (tagName === "s") {
+			fontStyles.push("line-through");
+		}
 
 		Array.from(element.childNodes).forEach(child => {
 			if (child instanceof HTMLElement) {
@@ -360,7 +372,9 @@ export const useCopyBoardItems = (
 
 	const copyShape = (item: IMiroBoardItemShape): void | null => {
 		const { id, style, position, data, geometry } = item;
-		if (!data || !position || !geometry) return null;
+		if (!data || !position || !geometry) {
+			return null;
+		}
 
 		const {
 			fillColor,
@@ -399,13 +413,17 @@ export const useCopyBoardItems = (
 	const copySticker = (item: IMiroBoardItemSticker): void | null => {
 		const { id, style, data } = item;
 		const { fillColor } = style;
-		if (!fillColor) return null;
+		if (!fillColor) {
+			return null;
+		}
 		const color = STICKER_COLOR[fillColor];
 		const sticker = new Sticker(undefined, id, color);
 
 		setTransformation(sticker, item);
 
-		if (!data.content) return null;
+		if (!data.content) {
+			return null;
+		}
 		setItemText(sticker, data.content, style);
 
 		board.add(sticker);
