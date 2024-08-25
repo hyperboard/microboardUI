@@ -27,6 +27,7 @@ import { BoardPoint } from "Board/Items/Connector";
 import { Transforms } from "slate";
 import { TextNode } from "Board/Items/RichText/Editor/TextNode";
 import type { HorisontalAlignment } from "Board/Items/Alignment";
+import { STICKER_COLORS } from "View/Tools/AddSticker";
 
 interface MiroImage {
 	type: string;
@@ -51,21 +52,22 @@ const INITIAL_GEOMETRY = {
 };
 
 const STICKER_COLOR = {
-	dark_blue: stickerColors["Sky Blue"],
-	blue: stickerColors["Sky Blue"],
-	light_blue: stickerColors["Sky Blue"],
-	red: stickerColors["Pastel Red"],
-	orange: stickerColors["Pastel Red"],
-	violet: stickerColors["Pastel Red"],
-	pink: stickerColors["Pastel Red"],
-	light_pink: stickerColors["Lavender"],
-	cyan: stickerColors["Aqua Cyan"],
-	dark_green: stickerColors["Sage Green"],
-	green: stickerColors["Sage Green"],
-	light_green: stickerColors["Sage Green"],
-	yellow: stickerColors["Pale Yellow"],
-	light_yellow: stickerColors["Pale Yellow"],
-	gray: stickerColors["Light Gray"],
+	dark_blue: STICKER_COLORS[0],
+	blue: STICKER_COLORS[0],
+	light_blue: STICKER_COLORS[0],
+	red: STICKER_COLORS[5],
+	orange: STICKER_COLORS[1],
+	violet: STICKER_COLORS[3],
+	pink: STICKER_COLORS[5],
+	light_pink: STICKER_COLORS[5],
+	cyan: STICKER_COLORS[4],
+	dark_green: STICKER_COLORS[2],
+	green: STICKER_COLORS[2],
+	light_green: STICKER_COLORS[2],
+	yellow: STICKER_COLORS[1],
+	light_yellow: STICKER_COLORS[1],
+	gray: STICKER_COLORS[6],
+	black: STICKER_COLORS[7],
 };
 
 const SHAPE_TYPES = {
@@ -372,7 +374,7 @@ export const useCopyBoardItems = (
 
 	const copyShape = (item: IMiroBoardItemShape): void | null => {
 		const { id, style, position, data, geometry } = item;
-		if (!data || !position || !geometry) {
+		if (!position || !geometry) {
 			return null;
 		}
 
@@ -387,27 +389,25 @@ export const useCopyBoardItems = (
 		const { shape, content } = data;
 		const miroShapeType = shape ?? "";
 		const shapeType = SHAPE_TYPES[miroShapeType];
-		if (borderOpacity && borderWidth && borderColor && borderStyle) {
-			const newBorderStyle = BORDER_STYLES[borderStyle];
-			const newShape = new Shape(
-				undefined,
-				id,
-				shapeType,
-				fillColor === "#ffffff" ? "transparent" : fillColor,
-				+fillOpacity,
-				borderColor,
-				+borderOpacity,
-				newBorderStyle as BorderStyle,
-				+borderWidth,
-			);
+		const newBorderStyle = borderStyle && BORDER_STYLES[borderStyle];
+		const newShape = new Shape(
+			undefined,
+			id,
+			shapeType,
+			fillColor === "#ffffff" ? "transparent" : fillColor,
+			+fillOpacity,
+			borderColor,
+			borderOpacity ? +borderOpacity : 1,
+			newBorderStyle as BorderStyle,
+			borderWidth ? +borderWidth : 1,
+		);
 
-			setTransformation(newShape, item);
+		setTransformation(newShape, item);
 
-			content && setItemText(newShape, content, style);
+		content && setItemText(newShape, content, style);
 
-			board.add(newShape);
-			setBoardMiroId(id);
-		}
+		board.add(newShape);
+		setBoardMiroId(id);
 	};
 
 	const copySticker = (item: IMiroBoardItemSticker): void | null => {
@@ -421,9 +421,6 @@ export const useCopyBoardItems = (
 
 		setTransformation(sticker, item);
 
-		if (!data.content) {
-			return null;
-		}
 		setItemText(sticker, data.content, style);
 
 		board.add(sticker);
@@ -611,6 +608,7 @@ export const useCopyBoardItems = (
 
 		const richTextWidth = geometry?.width ?? RICH_TEXT_MAX_WIDTH;
 		richtext.setMaxWidth(richTextWidth);
+		setItemText(richtext, data.content, style);
 
 		board.add(richtext);
 		setBoardMiroId(id);
@@ -618,7 +616,6 @@ export const useCopyBoardItems = (
 		const boardRichText =
 			board.items.listAll()[board.items.listAll().length - 1];
 		setTransformation(boardRichText, item);
-		setItemText(boardRichText as RichText, data.content, style);
 	};
 
 	const copyFrame = (item: IMiroBoardItemFrame): void => {
