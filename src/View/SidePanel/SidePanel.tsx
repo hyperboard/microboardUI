@@ -302,16 +302,16 @@ export function SidePanel(): JSX.Element {
 			<div className={style.importMiroBtnWr}>
 				<Button
 					id={"miro"}
-					pattern="secondary"
+					pattern="primary"
 					onClick={() => setIsOpenImportMiro(true)}
 					disabled={!app.storage.isAuth}
 					className={style.importMiroBtn}
 				>
 					<Icon
-						iconName="import"
+						iconName="miro"
 						width={16}
 						height={16}
-						style={{ fill: "#696B76" }}
+						style={{ color: "#050038" }}
 					/>
 					<span>{t("miro.importMiroBtn")}</span>
 					{!app.storage.isAuth && (

@@ -36,7 +36,10 @@ export const Tooltip = ({
 			{...props}
 		>
 			<div className={clsx(style.tip)}>
-				<span className={style.tipText}>{tooltip}</span>
+				<span
+					className={style.tipText}
+					dangerouslySetInnerHTML={{ __html: tooltip }}
+				/>
 				{hotkey && <span className={style.hotkey}>{hotkey}</span>}
 			</div>
 		</div>
