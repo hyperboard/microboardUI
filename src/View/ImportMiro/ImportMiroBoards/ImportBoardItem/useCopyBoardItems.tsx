@@ -35,7 +35,7 @@ import { FixedPoint } from "Board/Items/Connector";
 import { Transforms } from "slate";
 import { TextNode } from "Board/Items/RichText/Editor/TextNode";
 import type { HorisontalAlignment } from "Board/Items/Alignment";
-import { STICKER_COLORS } from "View/Tools/AddSticker";
+import { STICKER_COLORS } from "../../../Tools/AddSticker";
 import { toRelativePoint } from "Board/Items/Connector/ControlPoint";
 
 interface MiroImage {

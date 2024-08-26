@@ -3,7 +3,7 @@ import { isMicroboardIframe } from "lib/isMicroboardIframe";
 import React, { useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
-import { Icon, Logo } from "View/Icon";
+import { Icon, Logo } from "../Icon";
 import { UiButton } from "View/Ui/UiButton";
 import { UiLink } from "View/Ui/UiLink";
 import { UiPanel } from "View/Ui/UiPanel";
