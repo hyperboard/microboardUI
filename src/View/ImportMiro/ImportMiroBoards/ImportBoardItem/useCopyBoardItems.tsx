@@ -47,8 +47,14 @@ const RICH_TEXT_MAX_WIDTH = 600;
 
 const INITIAL_GEOMETRY = {
 	sticky_note: {
-		width: 200,
-		height: 200,
+		square: {
+			width: 200,
+			height: 200,
+		},
+		rectangle: {
+			width: 230,
+			height: 200,
+		},
 	},
 	shape: {
 		width: 100,
@@ -346,12 +352,21 @@ export const useCopyBoardItems = (
 	const getItemGeometry = (
 		geometry: IMiroGeometry,
 		itemType: string,
+		shapeType?: string,
 	): { width: number; height: number } => {
+		const { width, height } = geometry;
+
+		if (itemType === "sticky_note" && shapeType) {
+			return {
+				width: width / INITIAL_GEOMETRY[itemType][shapeType].width,
+				height: height / INITIAL_GEOMETRY[itemType][shapeType].height,
+			};
+		}
+
 		const initialGeometry = INITIAL_GEOMETRY[itemType] ?? {
 			width: 1,
 			height: 1,
 		};
-		const { width, height } = geometry;
 
 		return {
 			width: width / initialGeometry.width,
@@ -361,7 +376,13 @@ export const useCopyBoardItems = (
 
 	const setTransformation = (item: Item, miroItem: IMiroBoardItem): void => {
 		const { geometry, position, parent } = miroItem;
-		const itemGeometry = getItemGeometry(geometry, miroItem.type);
+		const shapeType =
+			miroItem.type === "sticky_note" ? miroItem.data.shape : undefined;
+		const itemGeometry = getItemGeometry(
+			geometry,
+			miroItem.type,
+			shapeType,
+		);
 
 		if (item.itemType === "RichText") {
 			applyRichTextTransformation(item, position, parent);
@@ -400,7 +421,11 @@ export const useCopyBoardItems = (
 		position: IMiroPosition,
 		parent?: IMiroParent,
 	): void => {
-		const updatedGeometry = updateStickerGeometry(item, itemGeometry);
+		const updatedGeometry = updateStickerGeometry(
+			item,
+			itemGeometry,
+			miroItem,
+		);
 		const itemPosition = getItemPosition(
 			position,
 			miroItem.geometry,
@@ -430,14 +455,23 @@ export const useCopyBoardItems = (
 	const updateStickerGeometry = (
 		item: Item,
 		geometry: { width: number; height: number },
+		miroItem: IMiroBoardItem,
 	): { width: number; height: number } => {
-		if (item.itemType === "Sticker") {
+		if (item.itemType !== "Sticker") {
+			return geometry;
+		}
+
+		if ((miroItem as IMiroBoardItemSticker).data.shape === "square") {
 			return {
 				width: geometry.height,
 				height: geometry.height,
 			};
 		}
-		return geometry;
+
+		return {
+			width: geometry.width,
+			height: geometry.height,
+		};
 	};
 
 	const copyShape = (item: IMiroBoardItemShape): void | null => {
@@ -617,7 +651,6 @@ export const useCopyBoardItems = (
 			return null;
 		}
 
-		debugger;
 		const startDimensions = getItemDimensions(startItemMiro);
 		const { left: startItemX, top: startItemY } = startItemMiro
 			.getPath()
