@@ -576,8 +576,8 @@ export const useCopyBoardItems = (
 		percent?: string,
 	): number => {
 		if (geometry) {
-			const percentInt = Number(percent?.replace("%", "")) ?? 1;
-			return start + (geometry * percentInt) / 100;
+			const percentInt = percent?.replace("%", "") ?? 1;
+			return start + (geometry * Number(percentInt)) / 100;
 		}
 		return start;
 	};
@@ -617,6 +617,7 @@ export const useCopyBoardItems = (
 			return null;
 		}
 
+		debugger;
 		const startDimensions = getItemDimensions(startItemMiro);
 		const { left: startItemX, top: startItemY } = startItemMiro
 			.getPath()
