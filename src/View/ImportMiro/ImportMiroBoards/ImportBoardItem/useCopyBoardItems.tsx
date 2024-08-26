@@ -32,10 +32,10 @@ import { ConnectionLineWidths } from "Board/Items/Connector/Connector";
 import { CONNECTOR_LINE_WIDTH } from "View/Items/Connector";
 import { prepareImage } from "Board/Items/Image/ImageHelpers";
 import { FixedPoint } from "Board/Items/Connector";
-import { Transforms } from "slate";
+import { Descendant } from "slate";
 import { TextNode } from "Board/Items/RichText/Editor/TextNode";
 import type { HorisontalAlignment } from "Board/Items/Alignment";
-import { STICKER_COLORS } from "../../../Tools/AddSticker";
+import { STICKER_COLORS } from "View/Tools/AddSticker";
 import { toRelativePoint } from "Board/Items/Connector/ControlPoint";
 
 interface MiroImage {
@@ -222,42 +222,36 @@ export const useCopyBoardItems = (
 			return;
 		}
 
-		const { fontSize, textAlign } = style;
+		const { textAlign } = style;
 		const targetText = item.itemType === "RichText" ? item : item.text;
 		const editor = targetText.editor.editor;
 
 		textEls.forEach((element, index) => {
 			const textChildren: TextNode[] = getTextNodes(
 				element as HTMLElement,
+				style,
 			);
 
-			Transforms.insertNodes(
-				editor,
-				{
-					type: "paragraph",
-					children: textChildren,
-					horisontalAlignment: textAlign as HorisontalAlignment,
-				},
-				{
-					at: {
-						path: [index, 0],
-						offset: targetText.getTextString().length,
-					},
-				},
-			);
+			const node: Descendant = {
+				type: "paragraph",
+				children: textChildren,
+				horisontalAlignment: textAlign as HorisontalAlignment,
+			};
 
-			if (fontSize) {
-				targetText.setSelectionFontSize(+fontSize);
-			}
+			editor.children = index === 0 ? [node] : [...editor.children, node];
 		});
 	};
 
-	const getTextNodes = (element: HTMLElement): TextNode[] => {
+	const getTextNodes = (
+		element: HTMLElement,
+		style?: IMiroBoardItemStyle,
+	): TextNode[] => {
 		return Array.from(element.childNodes).map(child => {
 			const childElement = child as HTMLElement;
 			const stringText = child.textContent ?? "";
 			const fontStyles = getFontStyles(childElement);
 			const textStyles = childElement.style;
+			const textColor = style?.color ? style.color : textStyles?.color;
 
 			return {
 				text: stringText,
@@ -269,7 +263,9 @@ export const useCopyBoardItems = (
 				lineThrough: fontStyles.includes("line-through"),
 				subscript: false,
 				superscript: false,
-				fontColor: textStyles?.color ?? "black",
+				fontColor: textColor ?? "black",
+				fontSize: style?.fontSize ? +style.fontSize : 14,
+				fontHighlight: textStyles?.backgroundColor,
 			};
 		});
 	};
@@ -370,14 +366,20 @@ export const useCopyBoardItems = (
 		if (item.itemType === "RichText") {
 			applyRichTextTransformation(item, position, parent);
 		} else {
-			applyStandardTransformation(item, itemGeometry, position, parent);
+			applyStandardTransformation(
+				item,
+				itemGeometry,
+				miroItem,
+				position,
+				parent,
+			);
 		}
 	};
 
 	const applyRichTextTransformation = (
 		item: Item,
-		position: any,
-		parent: any,
+		position: IMiroPosition,
+		parent?: IMiroParent,
 	): void => {
 		const { width, height } = getItemDimensions(item);
 		const itemPosition = getItemPosition(
@@ -394,11 +396,16 @@ export const useCopyBoardItems = (
 	const applyStandardTransformation = (
 		item: Item,
 		itemGeometry: { width: number; height: number },
-		position: any,
-		parent: any,
+		miroItem: IMiroBoardItem,
+		position: IMiroPosition,
+		parent?: IMiroParent,
 	): void => {
 		const updatedGeometry = updateStickerGeometry(item, itemGeometry);
-		const itemPosition = getItemPosition(position, updatedGeometry, parent);
+		const itemPosition = getItemPosition(
+			position,
+			miroItem.geometry,
+			parent,
+		);
 
 		if (itemPosition) {
 			item.transformation.translateTo(itemPosition.x, itemPosition.y);
@@ -413,8 +420,7 @@ export const useCopyBoardItems = (
 	const getItemDimensions = (
 		item: Item,
 	): { width: number; height: number } => {
-		const { getPath } = item;
-		const mbr = getPath().getMbr();
+		const mbr = item.getPath().getMbr();
 		return {
 			width: mbr.getWidth(),
 			height: mbr.getHeight(),
@@ -427,8 +433,8 @@ export const useCopyBoardItems = (
 	): { width: number; height: number } => {
 		if (item.itemType === "Sticker") {
 			return {
-				width: geometry.width,
-				height: geometry.width,
+				width: geometry.height,
+				height: geometry.height,
 			};
 		}
 		return geometry;
