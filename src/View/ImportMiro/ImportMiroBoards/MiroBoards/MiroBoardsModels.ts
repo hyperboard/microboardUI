@@ -10,6 +10,11 @@ export interface IMiroBoard {
 	picture: {
 		imageURL: string;
 	};
+	team: {
+		id: string;
+		name: string;
+		type: string;
+	};
 }
 
 export enum MiroBoardItemTypes {

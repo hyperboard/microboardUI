@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import styles from "../ImportMiroBoards.module.css";
 import { useLocation } from "react-router-dom";
 import { IMiroBoard, IMiroBoards } from "./MiroBoardsModels";
-import { MiroBoardItem } from "./MiroBoardItem";
+import { MiroBoardItem } from "./MiroBoardItem/MiroBoardsItem";
 import Cookies from "js-cookie";
 import { getApiUrl } from "Config";
 import { Modal } from "shared/ui-lib/Modal";
@@ -124,7 +124,7 @@ export function MiroBoards({
 	if (!boards) {
 		return (
 			<Modal isOpen={isOpen} setIsOpen={setIsOpen} size={ModalSize.M}>
-				<h2 className={styles.title}>{t("miro.boardsTitle")}</h2>
+				<h2 className={styles.title}>{t("miro.boards.title")}</h2>
 				<Loader />
 			</Modal>
 		);
@@ -132,7 +132,11 @@ export function MiroBoards({
 
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size={ModalSize.M}>
-			<h2 className={styles.title}>{t("miro.boardsTitle")}</h2>
+			<h2 className={styles.title}>{t("miro.boards.title")}</h2>
+			<p className={styles.boardsText}>{t("miro.boards.text")}</p>
+			<div className={styles.teamBoards}>
+				{t("miro.boards.teamTitle")} <b>{boards[0].team.name}</b>
+			</div>
 			<div className={styles.boards}>
 				{boards?.map(board => {
 					const { id, name, picture } = board;
@@ -156,7 +160,7 @@ export function MiroBoards({
 					{boardsInfo.offset >= BOARD_LIMIT * 2 ? (
 						<ButtonLoader color="white" />
 					) : null}
-					{t("miro.showMoreBtn")}
+					{t("miro.boards.showMoreBtn")}
 				</UiButton>
 			) : null}
 		</Modal>

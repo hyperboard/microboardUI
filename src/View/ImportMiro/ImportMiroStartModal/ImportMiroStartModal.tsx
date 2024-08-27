@@ -41,7 +41,7 @@ export const ImportMiroStartModal = ({
 			<div className={styles.img}>
 				<img src={importMiroStartImg} alt={t("miro.importMiro")} />
 			</div>
-			<UiButton onClick={onClick} className={styles.btn} size="sm">
+			<UiButton onClick={onClick} size="sm">
 				{t("miro.nextStepBtn")}
 			</UiButton>
 		</Modal>

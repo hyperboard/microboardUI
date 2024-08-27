@@ -4,6 +4,15 @@
 	margin-bottom: 16px;
 }
 
+.boards-text {
+	margin-bottom: 24px;
+	max-width: 680px;
+}
+
+.team-boards {
+	margin-bottom: 16px;
+}
+
 .text {
 	font-size: 14px;
 	line-height: 1.42;
@@ -59,9 +68,9 @@
 	object-fit: cover;
 }
 
-.stubImg {
-	background-color: rgb(249, 183, 180);
-	height: 200px;
+.img-placeholder {
+	background-color: rgb(146, 79, 232, 0.5);
+	height: 150px;
 	width: 100%;
 	border-radius: 20px;
 }

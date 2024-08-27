@@ -1,5 +1,6 @@
 import React, { MouseEventHandler } from "react";
 import styles from "../../ImportMiroBoards.module.css";
+import clsx from "clsx";
 
 interface IMiroBoardItemProps {
 	name: string;
@@ -16,7 +17,7 @@ export function MiroBoardItem({
 
 	return (
 		<div className={styles.board} onClick={onClick}>
-			<div>
+			<div className={clsx({ [styles.imgPlaceholder]: !imgBoard })}>
 				<img src={imgBoard} alt={name} className={styles.img} />
 			</div>
 			<p className={styles.name}>{name}</p>

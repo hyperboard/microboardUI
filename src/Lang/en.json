@@ -343,7 +343,12 @@
 		"rename": "Rename"
 	},
 	"miro": {
-		"boardsTitle": "Select a board to import",
+		"boards": {
+			"title": "Select a board to import",
+			"text": "The speed of importing from Miro depends on the size of the board being imported - it may take some time.",
+			"teamTitle": "Team boards",
+			"showMoreBtn": "Show more"
+		},
 		"importMiro": "Import from Miro",
 		"importMiroBtn": "Import from Miro",
 		"importMiroBtnTooltip": "Sign up to access all features of Microboard",
@@ -351,8 +356,7 @@
 		"miroError": "An error has occurred. Try importing again",
 		"loading": "Loading...",
 		"nextStepBtn": "Сontinue",
-		"importItemsModalText": "The board is being imported. Please do not close the tab until the import is complete.",
-		"showMoreBtn": "Show more"
+		"importItemsModalText": "The board is being imported. Please do not close the tab until the import is complete."
 	},
 	"connector": {
 		"textPlaceholder": "Text"
