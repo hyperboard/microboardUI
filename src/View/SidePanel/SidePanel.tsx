@@ -25,7 +25,7 @@ import { ImportMiroStartModal } from "View/ImportMiro";
 import { Button } from "shared/ui-lib/Button";
 import { Tooltip } from "View/Ui/UiButton/Tooltip";
 
-const MIN_PANEL_WIDTH = 250;
+const MIN_PANEL_WIDTH = 280;
 
 export function SidePanel(): JSX.Element {
 	const { isOpen, toggleSideMenu, handleAddNew } = useSidePanelContext();

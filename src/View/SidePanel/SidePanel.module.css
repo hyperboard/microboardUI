@@ -21,6 +21,12 @@
 	margin-left: 12px;
 }
 
+@media screen and (max-width: 640px) {
+	.sidePanel.open {
+		max-width: calc(100dvw - 86px);
+	}
+}
+
 .content {
 	padding: 8px 0;
 	min-width: 100%;
