@@ -73,15 +73,23 @@
 	background-color: rgba(10, 15, 41, 0.08);
 }
 
-.secondary:active {
+.secondary:active,
+.tertiary:active {
 	border: 1px solid #b78af0;
 	outline: 2px solid rgba(200, 178, 255, 0.5);
 }
 
+/* TERTIARY */
+
 .tertiary {
+	color: #14151a;
+	background-color: #ffffff;
+	border: 1px solid #dee0e3;
 }
 
-/* TERTIARY */
+.tertiary:hover {
+	background-color: #f7f7f8;
+}
 
 /* GHOST */
 

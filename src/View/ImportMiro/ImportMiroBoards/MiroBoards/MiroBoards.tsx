@@ -16,14 +16,14 @@ interface IMiroBoardsProps {
 	isOpen: boolean | null;
 	setIsOpen: (isOpen: boolean) => void;
 	setStage: (stage: number) => void;
-	setBoardId: (id: string) => void;
+	setBoardInfo: ({ id, name }: Pick<IMiroBoard, "id" | "name">) => void;
 }
 
 export function MiroBoards({
 	isOpen,
 	setIsOpen,
 	setStage,
-	setBoardId,
+	setBoardInfo,
 }: IMiroBoardsProps): React.ReactElement {
 	const { t } = useTranslation();
 	const location = useLocation();
@@ -116,8 +116,8 @@ export function MiroBoards({
 		}
 	}, []);
 
-	const onClickBoard = (id: string) => {
-		setBoardId(id);
+	const onClickBoard = (id: string, name: string) => {
+		setBoardInfo({ id, name });
 		setStage(2);
 	};
 
@@ -143,7 +143,7 @@ export function MiroBoards({
 					return (
 						<MiroBoardItem
 							key={id}
-							onClick={() => onClickBoard(id)}
+							onClick={() => onClickBoard(id, name)}
 							name={name}
 							picture={picture}
 						/>

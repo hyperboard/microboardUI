@@ -17,7 +17,6 @@
 	font-size: 14px;
 	line-height: 1.42;
 	margin-bottom: 16px;
-	padding: 0 30px;
 }
 
 .boards {
@@ -83,4 +82,36 @@
 
 .btn {
 	margin: 16px auto 0;
+}
+
+.progress {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+.items-btn {
+	max-width: min-content;
+	padding: 0 12px;
+	font-weight: 600 !important;
+}
+
+.notification-loader {
+	position: absolute;
+	top: 16px;
+	left: 16px;
+}
+
+.notification-loader-title {
+	font-weight: 500;
+}
+
+.notification-loader-wr {
+	max-width: 326px;
+}
+
+.notification-loader-text {
+	margin-top: 4px;
+	color: rgba(15, 19, 36, 0.6);
 }

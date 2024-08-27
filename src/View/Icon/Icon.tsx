@@ -60,7 +60,8 @@ export type IconId =
 	| "import"
 	| "modalCross"
 	| "BurgerMenu"
-	| "miro";
+	| "miro"
+	| "loader";
 
 type Props = {
 	iconName: IconId;

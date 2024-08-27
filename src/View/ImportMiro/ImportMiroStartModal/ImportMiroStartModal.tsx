@@ -13,7 +13,7 @@ interface ImportMiroStartModalProps {
 export const ImportMiroStartModal = ({
 	isOpen,
 	setIsOpen,
-}: ImportMiroStartModalProps) => {
+}: ImportMiroStartModalProps): JSX.Element => {
 	const { t } = useTranslation();
 
 	// TODO fix loader png

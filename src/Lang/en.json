@@ -349,14 +349,21 @@
 			"teamTitle": "Team boards",
 			"showMoreBtn": "Show more"
 		},
+		"items": {
+			"modalText": "Please do not close the browser window until the import is complete. Completed on",
+			"closeModal": "Collapse"
+		},
+		"loadingNotification": {
+			"title": "Import from Miro in progress",
+			"text": "To avoid losing progress, do not close the browser window until the end. Completed on"
+		},
 		"importMiro": "Import from Miro",
 		"importMiroBtn": "Import from Miro",
 		"importMiroBtnTooltip": "Sign up to access all features of Microboard",
 		"startModalText": "Log in to Miro and select the team whose board you want to import to Microboard. You can import boards from Miro 10 minutes after they are created.",
 		"miroError": "An error has occurred. Try importing again",
 		"loading": "Loading...",
-		"nextStepBtn": "Сontinue",
-		"importItemsModalText": "The board is being imported. Please do not close the tab until the import is complete."
+		"nextStepBtn": "Сontinue"
 	},
 	"connector": {
 		"textPlaceholder": "Text"
