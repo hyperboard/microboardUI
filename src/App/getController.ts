@@ -174,12 +174,15 @@ export function getController(getBoard: () => Board): Controller {
 			board,
 		);
 
-		if (
+		const isSingleItemInSelection = board.selection.items.isSingle();
+
+		const isTextEditStarted =
 			!isHotkeyTriggered &&
 			context !== "EditTextUnderPointer" &&
+			isSingleItemInSelection &&
 			!(event.ctrlKey || event.metaKey || event.altKey) &&
-			!isControlCharacter(event.key)
-		) {
+			!isControlCharacter(event.key);
+		if (isTextEditStarted) {
 			board.selection.editText(event.key);
 		}
 
@@ -187,7 +190,9 @@ export function getController(getBoard: () => Board): Controller {
 		if (!board.selection.tool.keyDown(board.keyboard.down)) {
 			board.tools.keyDown(board.keyboard.down);
 		}
-		postKeyboardEvent(event);
+		if (!isTextEditStarted) {
+			postKeyboardEvent(event);
+		}
 	}
 
 	function onKeyUp(event: KeyboardEvent): void {
@@ -200,6 +205,7 @@ export function getController(getBoard: () => Board): Controller {
 		if (!board.selection.tool.keyUp(board.keyboard.up)) {
 			board.tools.keyUp(board.keyboard.up);
 		}
+
 		postKeyboardEvent(event);
 	}
 
