@@ -96,6 +96,7 @@ export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 		} catch (error: Error) {
 			console.error(error);
 			onCloseModal();
+			setLoadingNotification(false);
 			setError(true);
 		}
 	};
@@ -137,6 +138,7 @@ export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 		} catch (error: Error) {
 			console.error(error);
 			onCloseModal();
+			setLoadingNotification(false);
 			setError(true);
 		}
 	};

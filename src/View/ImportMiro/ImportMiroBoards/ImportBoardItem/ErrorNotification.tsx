@@ -40,13 +40,13 @@ export const ErrorNotification = ({
 					>
 						{t("miro.notifications.okBtn")}
 					</Button>
-					<Button
+					{/* <Button
 						pattern="primary"
 						onClick={() => setIsOpen(false)}
 						className={styles.notificationBtn}
 					>
 						{t("miro.notifications.chooseBoardBtn")}
-					</Button>
+					</Button> */}
 				</div>
 			</div>
 		</Notification>
