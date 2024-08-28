@@ -24,7 +24,7 @@
 	gap: 16px;
 	grid-template-columns: repeat(3, 32%);
 	height: min-content;
-	max-height: 70vh;
+	max-height: 56vh;
 	overflow-y: scroll;
 }
 
@@ -97,13 +97,13 @@
 	font-weight: 600 !important;
 }
 
-.notification-loader {
+.notification-icon {
 	position: absolute;
 	top: 16px;
 	left: 16px;
 }
 
-.notification-loader-title {
+.notification-title {
 	font-weight: 500;
 }
 
@@ -111,7 +111,23 @@
 	max-width: 326px;
 }
 
-.notification-loader-text {
+.notification-wr {
+	max-width: 294px;
+}
+
+.notification-text {
 	margin-top: 4px;
 	color: rgba(15, 19, 36, 0.6);
+}
+
+.notification-btns {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.notification-btn {
+	margin-top: 12px;
+	max-width: max-content;
+	padding: 0 10px;
 }

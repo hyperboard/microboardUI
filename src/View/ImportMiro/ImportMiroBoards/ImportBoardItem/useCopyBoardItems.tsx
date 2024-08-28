@@ -480,39 +480,46 @@ export const useCopyBoardItems = (
 			return null;
 		}
 
-		const {
-			fillColor,
-			fillOpacity,
-			borderColor,
-			borderOpacity,
-			borderStyle,
-			borderWidth,
-			textAlignVertical,
-		} = style;
-		const { shape, content } = data;
-		const miroShapeType = shape ?? "";
+		const miroShapeType = data?.shape ?? "rectangle";
 		const shapeType = SHAPE_TYPES[miroShapeType];
-		const newBorderStyle = borderStyle && BORDER_STYLES[borderStyle];
-		const newShape = new Shape(
-			undefined,
-			id,
-			shapeType,
-			fillColor === "#ffffff" ? "transparent" : fillColor,
-			+fillOpacity,
-			borderColor,
-			borderOpacity ? +borderOpacity : 1,
-			newBorderStyle as BorderStyle,
-			borderWidth ? +borderWidth : 1,
-		);
+
+		const newShape = new Shape(undefined, id, shapeType);
+
+		if (style) {
+			const {
+				fillColor,
+				fillOpacity,
+				borderColor,
+				borderOpacity,
+				borderStyle,
+				borderWidth,
+			} = style;
+
+			if (borderStyle) {
+				const newBorderStyle = BORDER_STYLES[borderStyle];
+				newShape.setBorderStyle(newBorderStyle);
+			}
+
+			if (fillColor) {
+				const shapeFillColor =
+					fillColor === "#ffffff" ? "transparent" : fillColor;
+				newShape.setBackgroundColor(shapeFillColor);
+			}
+
+			fillOpacity && newShape.setBackgroundOpacity(+fillOpacity);
+			borderColor && newShape.setBorderColor(borderColor);
+			borderOpacity && newShape.setBorderOpacity(+borderOpacity);
+			borderWidth && newShape.setBorderWidth(+borderWidth);
+		}
 
 		setTransformation(newShape, item);
-		content && setItemText(newShape, content, style);
+		data?.content && setItemText(newShape, data.content, style);
 
 		board.add(newShape);
 		setBoardMiroId(id);
 
-		if (textAlignVertical) {
-			setVerticalAlignment(textAlignVertical);
+		if (style?.textAlignVertical) {
+			setVerticalAlignment(style.textAlignVertical);
 		}
 	};
 
@@ -708,7 +715,7 @@ export const useCopyBoardItems = (
 		strokeColor && connector.setLineColor(strokeColor);
 
 		const connectorType = CONNECTOR_TYPES[shape];
-		connector.setLineStyle(connectorType);
+		connectorType && connector.setLineStyle(connectorType);
 
 		const strokeWidth =
 			miroStrokeWidth &&

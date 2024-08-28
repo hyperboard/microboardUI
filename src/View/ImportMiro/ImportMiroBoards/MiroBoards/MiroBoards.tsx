@@ -11,6 +11,7 @@ import { ModalSize } from "shared/ui-lib/Modal/Modal";
 import { Loader } from "shared/ui-lib/Loader/Loader";
 import { Loader as ButtonLoader } from "shared/ui-lib/Button/Loader";
 import { UiButton } from "View/Ui/UiButton";
+import { ErrorBoardsNotification } from "./ErrorBoardsNotification";
 
 interface IMiroBoardsProps {
 	isOpen: boolean | null;
@@ -30,6 +31,7 @@ export function MiroBoards({
 	const teamId = new URLSearchParams(location.search).get("team_id");
 	const authCode = new URLSearchParams(location.search).get("code");
 	const [boards, setBoards] = useState<IMiroBoard[] | null>(null);
+	const [error, setError] = useState<boolean>(false);
 	const BOARD_LIMIT = 9;
 	const [boardsInfo, setBoardsInfo] = useState<Omit<IMiroBoards, "data">>({
 		total: 0,
@@ -44,7 +46,7 @@ export function MiroBoards({
 			// const baseURl = import.meta.env.BASE_URL
 			const clientId = "3458764589599848573";
 			const clientSecret = "RWatK9uBMqwxXlCKRpBhwxivQXmP12Je";
-			const redirectUrl = window.location.origin + "/boards/:boardId/";
+			const redirectUrl = window.location.origin + "/boards";
 
 			const response = await fetch(
 				getApiUrl(
@@ -71,37 +73,46 @@ export function MiroBoards({
 				Cookies.set("miro_accessToken", token.access_token);
 				await fetchBoards();
 			}
-		} catch (e) {
+		} catch (e: Error) {
 			console.error(e);
+			setIsOpen(false);
+			setError(true);
 		}
 	};
 
 	const fetchBoards = async () => {
 		const token = Cookies.get("miro_accessToken");
-		const response = await fetch(
-			"https://api.miro.com/v2/boards?team_id=" +
-				teamId +
-				"&limit=" +
-				BOARD_LIMIT +
-				"&offset=" +
-				boardsInfo.offset,
-			{
-				headers: {
-					Authorization: "Bearer " + token,
-					Accept: "application/json",
+		try {
+			const response = await fetch(
+				"https://api.miro.com/v2/boards?team_id=" +
+					teamId +
+					"&limit=" +
+					BOARD_LIMIT +
+					"&offset=" +
+					boardsInfo.offset,
+				{
+					headers: {
+						Authorization: "Bearer " + token,
+						Accept: "application/json",
+					},
 				},
-			},
-		);
-		const dataBoards = await response.json();
-		if (dataBoards.status === 401) {
-			fetchToken();
-		} else {
-			const { total, offset, data } = dataBoards;
-			setBoards(prevBoards =>
-				prevBoards ? prevBoards.concat(data) : data,
 			);
+			const dataBoards = await response.json();
 
-			setBoardsInfo({ total, offset: offset + BOARD_LIMIT });
+			if (dataBoards.status === 401) {
+				fetchToken();
+			} else {
+				const { total, offset, data } = dataBoards;
+				setBoards(prevBoards =>
+					prevBoards ? prevBoards.concat(data) : data,
+				);
+
+				setBoardsInfo({ total, offset: offset + BOARD_LIMIT });
+			}
+		} catch (e: Error) {
+			console.error(e);
+			setIsOpen(false);
+			setError(true);
 		}
 	};
 
@@ -121,48 +132,51 @@ export function MiroBoards({
 		setStage(2);
 	};
 
-	if (!boards) {
+	const boardsItems = boards?.map(board => {
+		const { id, name, picture } = board;
 		return (
-			<Modal isOpen={isOpen} setIsOpen={setIsOpen} size={ModalSize.M}>
-				<h2 className={styles.title}>{t("miro.boards.title")}</h2>
-				<Loader />
-			</Modal>
+			<MiroBoardItem
+				key={id}
+				onClick={() => onClickBoard(id, name)}
+				name={name}
+				picture={picture}
+			/>
 		);
-	}
+	});
+
+	const boardsBtn =
+		boards &&
+		boards.length >= BOARD_LIMIT &&
+		boardsInfo.offset <= boardsInfo.total ? (
+			<UiButton onClick={fetchBoards} className={styles.btn} size="sm">
+				{boardsInfo.offset >= BOARD_LIMIT * 2 ? (
+					<ButtonLoader color="white" />
+				) : null}
+				{t("miro.boards.showMoreBtn")}
+			</UiButton>
+		) : null;
 
 	return (
-		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size={ModalSize.M}>
-			<h2 className={styles.title}>{t("miro.boards.title")}</h2>
-			<p className={styles.boardsText}>{t("miro.boards.text")}</p>
-			<div className={styles.teamBoards}>
-				{t("miro.boards.teamTitle")} <b>{boards[0].team.name}</b>
-			</div>
-			<div className={styles.boards}>
-				{boards?.map(board => {
-					const { id, name, picture } = board;
-					return (
-						<MiroBoardItem
-							key={id}
-							onClick={() => onClickBoard(id, name)}
-							name={name}
-							picture={picture}
-						/>
-					);
-				})}
-			</div>
-			{boards.length >= BOARD_LIMIT &&
-			boardsInfo.offset <= boardsInfo.total ? (
-				<UiButton
-					onClick={fetchBoards}
-					className={styles.btn}
-					size="sm"
-				>
-					{boardsInfo.offset >= BOARD_LIMIT * 2 ? (
-						<ButtonLoader color="white" />
-					) : null}
-					{t("miro.boards.showMoreBtn")}
-				</UiButton>
-			) : null}
-		</Modal>
+		<>
+			<Modal isOpen={isOpen} setIsOpen={setIsOpen} size={ModalSize.M}>
+				<h2 className={styles.title}>{t("miro.boards.title")}</h2>
+				{!boards ? (
+					<Loader />
+				) : (
+					<>
+						<p className={styles.boardsText}>
+							{t("miro.boards.text")}
+						</p>
+						<div className={styles.teamBoards}>
+							{t("miro.boards.teamTitle")}{" "}
+							<b>{boards[0].team.name}</b>
+						</div>
+						<div className={styles.boards}>{boardsItems}</div>
+						{boardsBtn}
+					</>
+				)}
+			</Modal>
+			<ErrorBoardsNotification isOpen={error} setIsOpen={setError} />
+		</>
 	);
 }

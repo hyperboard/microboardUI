@@ -357,6 +357,15 @@
 			"title": "Import from Miro in progress",
 			"text": "To avoid losing progress, do not close the browser window until the end. Completed on"
 		},
+		"notifications": {
+			"success": "Import from Miro completed successfully",
+			"okBtn": "Ok",
+			"chooseBoardBtn": "Select another team",
+			"errorTitle": "Import error",
+			"errorItemsText": "Unable to complete import from Miro. Please try again later.",
+			"errorBoardsText": "We were unable to retrieve the list of boards from Miro. Please try again later.",
+			"boardsOkBtn": "Ok"
+		},
 		"importMiro": "Import from Miro",
 		"importMiroBtn": "Import from Miro",
 		"importMiroBtnTooltip": "Sign up to access all features of Microboard",

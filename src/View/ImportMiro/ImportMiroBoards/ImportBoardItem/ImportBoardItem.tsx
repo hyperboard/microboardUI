@@ -9,11 +9,11 @@ import { getApiUrl } from "Config";
 import { Modal } from "shared/ui-lib/Modal";
 import { ModalSize } from "shared/ui-lib/Modal/Modal";
 import styles from "../ImportMiroBoards.module.css";
-import { Message } from "shared/ui-lib/Message/Message";
 import { ProgressBar } from "shared/ui-lib/Progress/Progress";
 import { Button } from "shared/ui-lib/Button";
-import { Notification } from "shared/ui-lib/Notification";
-import { Loader } from "shared/ui-lib/Loader/Loader";
+import { LoadingNotification } from "./LoadingNotification";
+import { SuccessNotification } from "./SuccessNotification";
+import { ErrorNotification } from "./ErrorNotification";
 
 interface IImportBoardItem {
 	isOpen: boolean | null;
@@ -30,10 +30,9 @@ export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 	const [loadingNotification, setLoadingNotification] =
 		useState<boolean>(false);
 	const [boardItems, setBoardItems] = useState<IMiroBoardItem[]>([]);
-	const [error, setError] = useState<string | null>(null);
+	const [error, setError] = useState<boolean>(false);
 	const [isOpenSuccessMessage, setIsOpenSuccessMessage] =
 		useState<boolean>(false);
-	const errorMessage = t("miro.miroError");
 	const LIMIT_MIRO_ITEMS = 20;
 	const [itemsInfo, setItemsInfo] = useState<{
 		cursor: { items: string; connectors: string };
@@ -96,7 +95,8 @@ export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 			});
 		} catch (error: Error) {
 			console.error(error);
-			setError(errorMessage);
+			onCloseModal();
+			setError(true);
 		}
 	};
 
@@ -136,7 +136,8 @@ export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 			});
 		} catch (error: Error) {
 			console.error(error);
-			setError(errorMessage);
+			onCloseModal();
+			setError(true);
 		}
 	};
 
@@ -149,6 +150,7 @@ export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 			const board = app.getBoard();
 			// app.storage.renameBoard(board.getBoardId(), boardInfo.name);
 			useCopyBoardItems(board, boardItems);
+			setIsOpenSuccessMessage(true);
 		});
 	};
 
@@ -158,11 +160,15 @@ export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 	}, []);
 
 	useEffect(() => {
-		itemsInfo.cursor.items !== "" && fetchBoardsItems();
+		if (itemsInfo.cursor.items !== "" && !error) {
+			fetchBoardsItems();
+		}
 	}, [itemsInfo.cursor.items]);
 
 	useEffect(() => {
-		itemsInfo.cursor.connectors !== "" && fetchBoardsItemsConnectors();
+		if (itemsInfo.cursor.connectors !== "" && !error) {
+			fetchBoardsItemsConnectors();
+		}
 	}, [itemsInfo.cursor.connectors]);
 
 	useEffect(() => {
@@ -174,11 +180,10 @@ export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 	}, [isOpenSuccessMessage]);
 
 	useEffect(() => {
-		if (loadingPercentage === 100) {
+		if (loadingPercentage === 100 && !error) {
 			onCloseModal();
-			setLoadingNotification(false);
+			loadingNotification && setLoadingNotification(false);
 			createNewBoard();
-			setIsOpenSuccessMessage(true);
 		}
 	}, [loadingPercentage]);
 
@@ -208,25 +213,15 @@ export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 					classnames={styles.progress}
 				/>
 			</Modal>
-			<Message isOpen={isOpenSuccessMessage}>
-				The board exported successfully!
-			</Message>
-			<Notification isOpen={loadingNotification}>
-				<Loader
-					className={styles.notificationLoader}
-					width={20}
-					height={20}
-				/>
-				<div className={styles.notificationLoaderWr}>
-					<h4 className={styles.notificationLoaderTitle}>
-						{t("miro.loadingNotification.title")}
-					</h4>
-					<p className={styles.notificationLoaderText}>
-						{t("miro.loadingNotification.text")} {loadingPercentage}
-						%...
-					</p>
-				</div>
-			</Notification>
+			<LoadingNotification
+				loadingNotification={loadingNotification}
+				loadingPercentage={loadingPercentage}
+			/>
+			<SuccessNotification
+				isOpen={isOpenSuccessMessage}
+				setIsOpen={setIsOpenSuccessMessage}
+			/>
+			<ErrorNotification isOpen={error} setIsOpen={setError} />
 		</>
 	);
 }

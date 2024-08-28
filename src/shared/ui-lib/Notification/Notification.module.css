@@ -10,7 +10,7 @@
 	box-shadow: 0 4px 4px #00000040;
 	opacity: 0;
 	visibility: hidden;
-	transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+	transition: opacity 0.2s ease-out, visibility 0.2s ease-out;
 }
 
 .open {
@@ -18,7 +18,28 @@
 	opacity: 1;
 }
 
+.with-cross {
+	padding: 16px 48px;
+}
+
 .notification-loader {
 	width: 20px;
 	height: 20px;
+}
+
+.cross {
+	position: absolute;
+	top: 16px;
+	right: 16px;
+	padding: 4px;
+	cursor: pointer;
+	color: #696b76;
+	width: 20px;
+	height: 20px;
+}
+
+.notification-icon {
+	position: absolute;
+	top: 16px;
+	left: 16px;
 }

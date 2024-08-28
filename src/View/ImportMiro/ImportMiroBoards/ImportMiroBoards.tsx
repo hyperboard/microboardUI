@@ -27,7 +27,7 @@ export function ImportMiroBoards({
 		},
 	);
 
-	return stage === 1 && open ? (
+	return stage === 1 ? (
 		<MiroBoards
 			isOpen={open}
 			setIsOpen={setOpen}
