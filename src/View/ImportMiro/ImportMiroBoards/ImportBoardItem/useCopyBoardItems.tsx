@@ -24,7 +24,6 @@ import {
 	RichText,
 	Shape,
 } from "Board/Items";
-import { BorderStyle } from "Board/Items/Path";
 import { Sticker } from "Board/Items/Sticker";
 import { ImageItem } from "Board/Items/Image";
 import Cookies from "js-cookie";
@@ -173,25 +172,21 @@ export const useCopyBoardItems = (
 		const parser = new DOMParser();
 		const parsedText = parser.parseFromString(text, "text/html");
 		const elementsWithText: HTMLElement[] = [];
+		const relevantTags = new Set(["strong", "em", "s", "u", "span", "br"]);
 
 		function traverse(node: Node): void {
 			if (node.nodeType === Node.ELEMENT_NODE) {
 				const element = node as HTMLElement;
 				let hasText = false;
-				let hasStrong = false;
+				let hasRelevantTag = false;
 
 				element.childNodes.forEach(child => {
 					if (child.nodeType === Node.ELEMENT_NODE) {
 						const childElement = child as HTMLElement;
+						const tagName = childElement.tagName.toLowerCase();
 
-						if (
-							childElement.tagName.toLowerCase() === "strong" ||
-							childElement.tagName.toLowerCase() === "em" ||
-							childElement.tagName.toLowerCase() === "s" ||
-							childElement.tagName.toLowerCase() === "u" ||
-							childElement.tagName.toLowerCase() === "span"
-						) {
-							hasStrong = true;
+						if (relevantTags.has(tagName)) {
+							hasRelevantTag = true;
 							return;
 						}
 					}
@@ -206,7 +201,7 @@ export const useCopyBoardItems = (
 					traverse(child);
 				});
 
-				if (hasStrong || hasText) {
+				if (hasRelevantTag || hasText) {
 					elementsWithText.push(element);
 				}
 			}
@@ -233,9 +228,10 @@ export const useCopyBoardItems = (
 		const editor = targetText.editor.editor;
 
 		textEls.forEach((element, index) => {
-			const textChildren: TextNode[] = getTextNodes(
+			const textChildren = getTextNodes(
 				element as HTMLElement,
 				style,
+				item,
 			);
 
 			const node: Descendant = {
@@ -251,13 +247,23 @@ export const useCopyBoardItems = (
 	const getTextNodes = (
 		element: HTMLElement,
 		style?: IMiroBoardItemStyle,
-	): TextNode[] => {
+		item?: Shape | Sticker | RichText | Connector,
+	): (TextNode & { "line-through": boolean })[] => {
 		return Array.from(element.childNodes).map(child => {
 			const childElement = child as HTMLElement;
 			const stringText = child.textContent ?? "";
 			const fontStyles = getFontStyles(childElement);
-			const textStyles = childElement.style;
-			const textColor = style?.color ? style.color : textStyles?.color;
+			const spanText =
+				childElement.children &&
+				childElement.getElementsByTagName("span")[0];
+			const textStyles = spanText ? spanText.style : childElement.style;
+			const stickerColor =
+				item &&
+				item.itemType === "Sticker" &&
+				item.getBackgroundColor() === STICKER_COLORS[7] &&
+				"white";
+			const textColor =
+				textStyles?.color || style?.color || stickerColor || "black";
 
 			return {
 				text: stringText,
@@ -269,9 +275,10 @@ export const useCopyBoardItems = (
 				lineThrough: fontStyles.includes("line-through"),
 				subscript: false,
 				superscript: false,
-				fontColor: textColor ?? "black",
+				fontColor: textColor,
 				fontSize: style?.fontSize ? +style.fontSize : 14,
 				fontHighlight: textStyles?.backgroundColor,
+				"line-through": fontStyles.includes("line-through"),
 			};
 		});
 	};
