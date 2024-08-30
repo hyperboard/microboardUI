@@ -104,7 +104,6 @@ export function SidePanel(): JSX.Element {
 			event.preventDefault();
 			const boardName =
 				app.storage.getBoard(boardId)?.name || t("board.untitled");
-			console.log(boardId, app.storage.getBoard(boardId));
 			setRenamingBoardId(boardId);
 			setNewBoardName(boardName);
 		};
