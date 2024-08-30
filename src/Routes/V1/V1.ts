@@ -11,6 +11,7 @@ import { createMediaRouter } from "./Media";
 import { MediaDAL } from "./Media/MediaDAL";
 import { getMiroRouter } from "./Miro";
 import path from "path";
+import fs from "fs";
 
 export function getV1Router(
     config: Config,
@@ -32,7 +33,15 @@ export function getV1Router(
     router.use("/api/v1/miro", getMiroRouter());
 
     router.get('/api/v1/embed.js', (req, res) => {
-        res.sendFile(path.resolve(__dirname, "./Embedding/embedMicroboard.js"));
+        const filePath = path.resolve(__dirname, "./Embedding/embedMicroboard.js");
+        fs.readFile(filePath, 'utf8', (err, data) => {
+            if (err) {
+                logger.error('Error reading embedMicroboard.js', err);
+                return res.status(500).send('Internal Server Error');
+            }
+            const updatedData = data.replaceAll(/<embedUrl\/>/g, process.env.EMBED_URL || '');
+            res.type('application/javascript').send(updatedData);
+        });
     });
 
     return router;
