@@ -1,1 +1,1 @@
-export const CANVAS_BG_COLOR = "#e4e4e4";
+export const CANVAS_BG_COLOR = "#f6f6f6";
