@@ -174,8 +174,10 @@
 	z-index: 100;
 }
 
-button:hover .tip-container {
-	display: flex;
+@media screen and (hover: hover) {
+	button:hover .tip-container {
+		display: flex;
+	}
 }
 
 .tip {
