@@ -5,28 +5,40 @@ import { Icon } from "View/Icon";
 import { ConnectorLineStylePicker } from "View/Pickers/ConnectorLineStylePicker";
 import { UiButton } from "View/Ui/UiButton";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ButtonWithMenu } from "./ButtonWithMenu/ButtonWithMenu";
 
 export function AddConnector() {
 	const { board } = useAppContext();
 	const { t } = useTranslation();
+	const [isActive, setIsActive] = useState(
+		Boolean(board.tools.getAddConnector()),
+	);
+
+	const addTool = board.tools.getAddConnector();
+	useEffect(() => {
+		if (addTool) {
+			setIsActive(true);
+		} else {
+			setIsActive(false);
+		}
+	}, [addTool]);
 
 	const handleClick = () => {
 		board.tools.addConnector(true);
+		setIsActive(false);
 	};
 
-	const handlePick = (shape: ConnectorLineStyle) => {
+	const handlePick = (lineStyle: ConnectorLineStyle) => {
 		const tool = board.tools.getAddConnector();
 		if (tool) {
-			tool.setLineStyle(shape);
+			tool.setLineStyle(lineStyle);
+			setIsActive(false);
 		}
 	};
 
 	const selectedConnector = board.tools.getAddConnector()?.lineStyle;
-
-	const isActive = Boolean(board.tools.getAddConnector());
 
 	return (
 		<ButtonWithMenu
@@ -35,7 +47,7 @@ export function AddConnector() {
 					id={"tool-add-connector"}
 					tooltip={t("toolsPanel.addConnector.tooltip")}
 					hotkey={getHotkeyLabel("connector")}
-					active={isActive}
+					active={isActive || !!addTool}
 					onClick={handleClick}
 					variant="secondary"
 					rounded="none"

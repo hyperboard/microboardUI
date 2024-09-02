@@ -5,26 +5,39 @@ import { ColorPicker } from "View/Pickers/ColorPicker/ColorPicker";
 import { STICKER_COLORS } from "View/Tools/AddSticker";
 import { UiButton } from "View/Ui/UiButton";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ButtonWithMenu } from "./ButtonWithMenu";
 
 export function AddSticker() {
 	const { board } = useAppContext();
 	const { t } = useTranslation();
+	const [isActive, setIsActive] = useState(
+		Boolean(board.tools.getAddConnector()),
+	);
+
+	const addTool = board.tools.getAddSticker();
+	useEffect(() => {
+		if (addTool) {
+			setIsActive(true);
+		} else {
+			setIsActive(false);
+		}
+	}, [addTool]);
 
 	const handleClick = () => {
 		board.tools.addSticker(true);
+		setIsActive(false);
 	};
 
 	const handlePick = (color: string) => {
 		const tool = board.tools.getAddSticker();
 		if (tool) {
 			tool.setBackgroundColor(color);
+			setIsActive(false);
 		}
 	};
 
-	const isActive = Boolean(board.tools.getAddSticker());
 	const selectedColor = board.tools.getAddSticker()?.getBackgroundColor();
 
 	return (
@@ -34,7 +47,7 @@ export function AddSticker() {
 					id={"tool-add-sticker"}
 					tooltip={t("toolsPanel.addSticker.tooltip")}
 					hotkey={getHotkeyLabel("sticker")}
-					active={isActive}
+					active={isActive || !!addTool}
 					onClick={handleClick}
 					variant="secondary"
 					rounded="none"
