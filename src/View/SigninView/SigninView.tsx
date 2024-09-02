@@ -12,6 +12,7 @@ import { Button } from "shared/ui-lib/Button";
 import { isEmail } from "lib/regex";
 import { Link } from "shared/ui-lib/Link";
 import { App } from "App";
+import { OuterLink } from "shared/ui-lib/OuterLink";
 
 type RegisterOkResponse = {
 	accessToken: string;
@@ -202,13 +203,19 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 
 			<div className={styles.policy}>
 				{t("auth.policyWith")}{" "}
-				<Link to="#" className={styles.policyLink}>
+				<OuterLink
+					href="https://microboard.ru/terms"
+					className={styles.policyLink}
+				>
 					{t("auth.termsAndConditions")}
-				</Link>{" "}
+				</OuterLink>{" "}
 				{t("common.and")}{" "}
-				<Link to="#" className={styles.policyLink}>
+				<OuterLink
+					href="https://microboard.ru/personal"
+					className={styles.policyLink}
+				>
 					{t("auth.privacyPolicy")}
-				</Link>
+				</OuterLink>
 			</div>
 		</div>
 	);

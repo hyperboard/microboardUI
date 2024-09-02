@@ -10,6 +10,7 @@ import { LockIcon } from "./LockIcon";
 import { Link } from "shared/ui-lib/Link";
 import { Button } from "shared/ui-lib/Button";
 import isEmail from "validator/lib/isEmail";
+import { OuterLink } from "shared/ui-lib/OuterLink";
 
 type RegisterOkResponse = {
 	id: number;
@@ -170,13 +171,19 @@ export const SignupView = (): React.ReactElement => {
 			</form>
 			<div className={styles.policy}>
 				{t("auth.policyWith")}{" "}
-				<Link to="#" className={styles.policyLink}>
+				<OuterLink
+					href="https://microboard.ru/terms"
+					className={styles.policyLink}
+				>
 					{t("auth.termsAndConditions")}
-				</Link>{" "}
+				</OuterLink>{" "}
 				{t("common.and")}{" "}
-				<Link to="#" className={styles.policyLink}>
+				<OuterLink
+					href="https://microboard.ru/personal"
+					className={styles.policyLink}
+				>
 					{t("auth.privacyPolicy")}
-				</Link>
+				</OuterLink>
 			</div>
 		</div>
 	);
