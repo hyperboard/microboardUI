@@ -24,6 +24,9 @@ export enum MiroBoardItemTypes {
 	IMAGE = "image",
 	CONNECTOR = "connector",
 	FRAME = "frame",
+	CARD = "card",
+	DOCUMENT = "document",
+	MINDMAP = "mindmap_node",
 }
 
 export type MiroItemsTypes =
@@ -98,6 +101,31 @@ export interface IMiroPosition {
 	y: number;
 	origin: string;
 	relativeTo: MiroRelativeTo;
+}
+
+export interface IMiroBoardItemMindmap extends IMiroBoardItemBase {
+	type: MiroBoardItemTypes.MINDMAP;
+	geometry: IMiroGeometry;
+	position: IMiroPosition;
+}
+
+export interface IMiroBoardItemCard extends IMiroBoardItemBase {
+	type: MiroBoardItemTypes.CARD;
+	data: {
+		title: string;
+	};
+	geometry: IMiroGeometry;
+	position: IMiroPosition;
+}
+
+export interface IMiroBoardItemDocument extends IMiroBoardItemBase {
+	type: MiroBoardItemTypes.DOCUMENT;
+	data: {
+		title: string;
+		documentUrl: string;
+	};
+	geometry: IMiroGeometry;
+	position: IMiroPosition;
 }
 
 export interface IMiroBoardItemText extends IMiroBoardItemBase {
@@ -175,4 +203,7 @@ export type IMiroBoardItem =
 	| IMiroBoardItemSticker
 	| IMiroBoardItemImage
 	| IMiroBoardItemConnector
-	| IMiroBoardItemFrame;
+	| IMiroBoardItemFrame
+	| IMiroBoardItemMindmap
+	| IMiroBoardItemCard
+	| IMiroBoardItemDocument;

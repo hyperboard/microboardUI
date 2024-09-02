@@ -8,14 +8,24 @@ interface ErrorNotificationProps {
 	className?: string;
 	isOpen: boolean;
 	setIsOpen: (isOpen: boolean) => void;
+	setStage: (stage: number) => void;
+	setModalOpen: (modalOpen: boolean) => void;
 }
 
 export const ErrorNotification = ({
 	className,
 	isOpen,
 	setIsOpen,
+	setStage,
+	setModalOpen,
 }: ErrorNotificationProps): React.ReactElement => {
 	const { t } = useTranslation();
+
+	const onClickChooseBoard = (): void => {
+		setIsOpen(false);
+		setStage(1);
+		setModalOpen(true);
+	};
 
 	return (
 		<Notification
@@ -40,13 +50,13 @@ export const ErrorNotification = ({
 					>
 						{t("miro.notifications.okBtn")}
 					</Button>
-					{/* <Button
+					<Button
 						pattern="primary"
-						onClick={() => setIsOpen(false)}
+						onClick={onClickChooseBoard}
 						className={styles.notificationBtn}
 					>
 						{t("miro.notifications.chooseBoardBtn")}
-					</Button> */}
+					</Button>
 				</div>
 			</div>
 		</Notification>

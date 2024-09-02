@@ -359,6 +359,10 @@
 		},
 		"notifications": {
 			"success": "Import from Miro completed successfully",
+			"warn": "Import from Miro completed",
+			"warnFirstDescription": "We successfully imported the board contents, except for objects that are restricted from importing by Miro, such as tables, kanban boards, and mind maps. Learn more about Miro's restrictions.",
+			"warnLinkDescription": "Learn more about Miro limitations.",
+			"warnSecondDescription": "We recommend taking screenshots of the missing objects and adding them to the board.",
 			"okBtn": "Ok",
 			"chooseBoardBtn": "Select another team",
 			"errorTitle": "Import error",

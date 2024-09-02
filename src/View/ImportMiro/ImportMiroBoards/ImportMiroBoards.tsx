@@ -37,6 +37,7 @@ export function ImportMiroBoards({
 	) : stage === 2 ? (
 		<ImportBoardItem
 			isOpen={open}
+			setStage={setStage}
 			setIsOpen={setOpen}
 			boardInfo={boardInfo}
 			app={app}

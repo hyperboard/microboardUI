@@ -21,10 +21,9 @@
 
 .boards {
 	display: grid;
-	gap: 16px;
-	grid-template-columns: repeat(3, 32%);
-	height: min-content;
-	max-height: 56vh;
+	grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+	gap: 10px;
+	max-height: calc(90vh - 272px);
 	overflow-y: scroll;
 }
 
@@ -130,4 +129,18 @@
 	margin-top: 12px;
 	max-width: max-content;
 	padding: 0 10px;
+}
+
+.notification-success-description {
+	margin-top: 4px;
+	opacity: 0.6;
+}
+
+.notification-success-link,
+.notification-success-description {
+	color: #0f1324;
+}
+
+.notification-success-link {
+	text-decoration-thickness: 0.5px;
 }

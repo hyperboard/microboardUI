@@ -6,6 +6,7 @@ import { Icon } from "View/Icon";
 export enum InfoColor {
 	error = "#E6483D",
 	success = "#26BD6C",
+	warn = "#F48E2F",
 }
 
 interface NotificationProps {

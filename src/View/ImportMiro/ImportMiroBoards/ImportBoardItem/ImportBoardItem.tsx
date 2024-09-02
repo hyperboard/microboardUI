@@ -1,7 +1,11 @@
 import { useTranslation } from "react-i18next";
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
-import { IMiroBoard, IMiroBoardItem } from "../MiroBoards/MiroBoardsModels";
+import {
+	IMiroBoard,
+	IMiroBoardItem,
+	MiroBoardItemTypes,
+} from "../MiroBoards/MiroBoardsModels";
 import { App } from "App";
 import { useNavigate } from "react-router-dom";
 import { useCopyBoardItems } from "./useCopyBoardItems";
@@ -20,10 +24,11 @@ interface IImportBoardItem {
 	setIsOpen: (isOpen: boolean) => void;
 	boardInfo: Pick<IMiroBoard, "id" | "name">;
 	app: App;
+	setStage: (stage: number) => void;
 }
 
 export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
-	const { isOpen, setIsOpen, boardInfo, app } = props;
+	const { isOpen, setIsOpen, boardInfo, app, setStage } = props;
 
 	const { t } = useTranslation();
 	const navigate = useNavigate();
@@ -115,6 +120,7 @@ export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 				),
 				options,
 			);
+
 			const connectors = await response.json();
 			const {
 				data: connectorsItems,
@@ -174,20 +180,20 @@ export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 	}, [itemsInfo.cursor.connectors]);
 
 	useEffect(() => {
-		if (isOpenSuccessMessage) {
-			setTimeout(() => {
-				setIsOpenSuccessMessage(false);
-			}, 10000);
-		}
-	}, [isOpenSuccessMessage]);
-
-	useEffect(() => {
 		if (loadingPercentage === 100 && !error) {
 			onCloseModal();
 			loadingNotification && setLoadingNotification(false);
 			createNewBoard();
 		}
 	}, [loadingPercentage]);
+
+	const isWarnMessageOpen = (): boolean =>
+		boardItems.some(
+			item =>
+				item.type === MiroBoardItemTypes.CARD ||
+				item.type === MiroBoardItemTypes.DOCUMENT ||
+				item.type === MiroBoardItemTypes.MINDMAP,
+		);
 
 	const onCloseModal = (): void => setIsOpen(false);
 
@@ -220,10 +226,16 @@ export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 				loadingPercentage={loadingPercentage}
 			/>
 			<SuccessNotification
+				isWarn={isWarnMessageOpen()}
 				isOpen={isOpenSuccessMessage}
 				setIsOpen={setIsOpenSuccessMessage}
 			/>
-			<ErrorNotification isOpen={error} setIsOpen={setError} />
+			<ErrorNotification
+				isOpen={error}
+				setIsOpen={setError}
+				setStage={setStage}
+				setModalOpen={setIsOpen}
+			/>
 		</>
 	);
 }
