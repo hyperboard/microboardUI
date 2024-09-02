@@ -137,6 +137,7 @@ export function createApp(isHistory = true): App {
 	}
 
 	function openBoard(id: string): void {
+		app.getBoard()?.selection.quickAddButtons.clear();
 		if (id === "boards") {
 			return;
 		}

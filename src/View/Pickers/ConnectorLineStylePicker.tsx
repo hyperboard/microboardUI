@@ -12,11 +12,14 @@ export function ConnectorLineStylePicker({
 	onPick,
 	selected,
 }: Props): React.ReactElement {
-	const handleStraightPick = () => {
+	const handleStraightPick = (): void => {
 		onPick("straight");
 	};
-	const handleCurvedPick = () => {
+	const handleCurvedPick = (): void => {
 		onPick("curved");
+	};
+	const handleOrthogonalPick = (): void => {
+		onPick("orthogonal");
 	};
 	return (
 		<>
@@ -35,6 +38,14 @@ export function ConnectorLineStylePicker({
 				variant="secondary"
 			>
 				<ConnectorIcon iconName="curved" />
+			</UiButton>
+			<UiButton
+				id={"connector-orthogonal"}
+				onClick={handleOrthogonalPick}
+				active={selected === "orthogonal"}
+				variant="secondary"
+			>
+				<ConnectorIcon iconName="orthogonal" />
 			</UiButton>
 		</>
 	);
