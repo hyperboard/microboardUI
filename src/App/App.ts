@@ -16,9 +16,6 @@ import Cookies from "js-cookie";
 
 const LAST_BOARD_KEY = "lastSeenBoard";
 
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-	"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js";
-
 export interface App {
 	connection: Connection;
 	clipboard: Clipboard;
