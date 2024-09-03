@@ -219,7 +219,11 @@ export class TextEditor extends React.Component<
 								<span
 									{...attributes}
 									style={{
-										// position: "absolute",
+										position: "absolute",
+										left: 0,
+										right: 0,
+										top: 0,
+										zIndex: 0,
 										display: "inline-block",
 										width: 0,
 										whiteSpace: "nowrap",
