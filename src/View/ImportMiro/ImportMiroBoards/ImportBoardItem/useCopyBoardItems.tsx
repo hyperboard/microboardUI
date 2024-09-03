@@ -758,7 +758,7 @@ export const useCopyBoardItems = (
 		const { style, id, data } = item;
 		const { fillColor } = style;
 		const { format } = data;
-		const frame = new Frame(board.events).setId(id).setBoard(board);
+		const frame = new Frame().setId(id).setBoard(board);
 
 		fillColor && frame.setBackgroundColor(fillColor);
 		frame.setFrameType(FRAME_TYPES[format]);
@@ -766,6 +766,7 @@ export const useCopyBoardItems = (
 		setTransformation(frame, item);
 
 		board.add(frame);
+
 		setBoardMiroId(id);
 	};
 
