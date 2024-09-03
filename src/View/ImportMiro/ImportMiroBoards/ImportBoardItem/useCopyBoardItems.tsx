@@ -51,8 +51,8 @@ const INITIAL_GEOMETRY = {
 			height: 210,
 		},
 		rectangle: {
-			width: 240,
-			height: 240,
+			width: 235,
+			height: 205,
 		},
 	},
 	shape: {
