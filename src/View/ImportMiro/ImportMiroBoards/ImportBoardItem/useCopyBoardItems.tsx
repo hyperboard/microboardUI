@@ -47,12 +47,12 @@ const RICH_TEXT_MAX_WIDTH = 600;
 const INITIAL_GEOMETRY = {
 	sticky_note: {
 		square: {
-			width: 200,
-			height: 200,
+			width: 210,
+			height: 210,
 		},
 		rectangle: {
-			width: 230,
-			height: 200,
+			width: 240,
+			height: 240,
 		},
 	},
 	shape: {
