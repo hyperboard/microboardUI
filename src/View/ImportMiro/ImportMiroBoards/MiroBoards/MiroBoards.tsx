@@ -89,7 +89,8 @@ export function MiroBoards({
 					"&limit=" +
 					BOARD_LIMIT +
 					"&offset=" +
-					boardsInfo.offset,
+					boardsInfo.offset +
+					"&sort=last_opened",
 				{
 					headers: {
 						Authorization: "Bearer " + token,
