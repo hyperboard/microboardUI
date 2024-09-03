@@ -41,7 +41,12 @@ export function FontSize({ rounded = "none" }: Props) {
 	};
 
 	const handlePick = (size: number | "auto"): void => {
-		board.selection.setFontSize(size);
+		if (size === "auto") {
+			board.selection.autosizeEnable();
+		} else {
+			board.selection.autosizeDisable();
+			board.selection.setFontSize(size);
+		}
 		toggleMenu("None");
 	};
 
@@ -56,8 +61,10 @@ export function FontSize({ rounded = "none" }: Props) {
 		const midpoint = rect.top + rect.height / 2;
 
 		if (event.clientY < midpoint) {
+			board.selection.autosizeDisable();
 			board.selection.setFontSize(getNextBiggerValue(fontSize));
 		} else {
+			board.selection.autosizeDisable();
 			board.selection.setFontSize(getNextSmallerValue(fontSize));
 		}
 	};
