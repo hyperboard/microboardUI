@@ -51,7 +51,7 @@ export function createApp(isHistory = true): App {
 		return board;
 	}
 
-	const controller = getController(getBoard);
+	const controller = getController(getBoard, clipboard);
 	const subscriptions = getSubscriptions(getBoard);
 
 	const boards = new Map();

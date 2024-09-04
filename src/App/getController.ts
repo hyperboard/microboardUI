@@ -27,9 +27,10 @@ export interface Controller {
 	onDrop: (event: DragEvent) => void;
 }
 
-export function getController(getBoard: () => Board): Controller {
-	const clipboard = new Clipboard();
-
+export function getController(
+	getBoard: () => Board,
+	clipboard: Clipboard,
+): Controller {
 	function onWheel(event: WheelEvent): void {
 		event.preventDefault();
 		event.stopPropagation();
@@ -444,12 +445,12 @@ export function getController(getBoard: () => Board): Controller {
 	}
 
 	function onCopy(event: ClipboardEvent): void {
-		if (isEditInProcess()) {
-			clipboard.set(event.clipboardData?.getData("text/plain"));
-			return;
-		}
 		const board = getBoard();
 		if (!board) {
+			return;
+		}
+		if (board.selection.getContext() === "EditTextUnderPointer") {
+			clipboard.set(event.clipboardData?.getData("text/plain"));
 			return;
 		}
 		const data = board.selection.copy();
@@ -464,7 +465,7 @@ export function getController(getBoard: () => Board): Controller {
 		if (!board) {
 			return;
 		}
-		if (isEditInProcess()) {
+		if (board.selection.getContext() === "EditTextUnderPointer") {
 			const text = event.clipboardData.getData("text/plain");
 			try {
 				const data = JSON.parse(text);
