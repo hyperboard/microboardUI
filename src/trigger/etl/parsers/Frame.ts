@@ -1,0 +1,69 @@
+import { FrameItem } from "@mirohq/miro-api";
+import { v4 } from "uuid";
+
+interface FramePayload {
+    item: FrameItem;
+    boardId: string;
+    userId: string;
+    order: number;
+}
+
+const frameTypes = {
+    custom: "Custom",
+    a4: "A4",
+    letter: "Letter",
+    ratio_16x9: "Frame16x9",
+    ratio_4x3: "Frame4x3",
+    ratio_1x1: "Frame1x1",
+    phone: "Custom",
+    tablet: "Custom",
+    desktop: "Custom",
+};
+
+export const parseFrame = (payload: FramePayload) => {
+    const { item, boardId, userId, order } = payload;
+    const uuid = v4();
+
+    const width = item.geometry?.width || 100;
+    const height = item.geometry?.height || 100;
+
+    const xOffset = width / 2;
+    const yOffset = height / 2;
+
+    const event: any = {
+        userId: userId,
+        boardId: boardId,
+        eventId: `${userId}:${order}`,
+        operation: {
+            data: {
+                itemType: "Frame",
+                shapeType: frameTypes[item?.data?.format as keyof typeof frameTypes] || "Custom",
+                borderColor: "#1a1a1a",
+                canChangeRatio: true,
+                borderStyle: "solid",
+                borderWidth: 1,
+                borderOpacity: 1,
+                transformation: {
+                    rotate: 0,
+                    scaleX: item.geometry?.width ? item.geometry.width / 100 : 1,
+                    scaleY: item.geometry?.height ? item.geometry.height / 100 : 1,
+                    translateX: (item?.position?.x || 0) - xOffset,
+                    translateY: (item?.position?.y || 0) - yOffset,
+                },
+                backgroundColor: "#ffffff",
+                backgroundOpacity: 1,
+            },
+            item: uuid,
+            class: "Board",
+            method: "add",
+        },
+    };
+
+    // if (item?.data?.content?.length) {
+    //     const parsedText = parseTextFromShape(item);
+    //     const textBlock = makeInjectedText(parsedText);
+    //     event.operation.data.text = textBlock.text;
+    // }
+
+    return event;
+};

@@ -16,28 +16,48 @@ export class Boards {
 
     onEventSave(boardId: string, boardEvent: any): void {}
 
-    async createBoard(
-        boardId: string,
-        title: string,
-        ownerId?: string
-    ): Promise<any> {
+    async saveBoardData(transformedData: { id: string; name: string; items: any[]; userId?: string }): Promise<string> {
+        try {
+            const boardId = uuidv4();
+            const editLink = uuidv4();
+
+            await this.createBoard(boardId, transformedData.name, transformedData.userId);
+            await this.createLink(boardId, "edit", editLink);
+
+            for (const item of transformedData.items) {
+                await this.addEventToBoard(boardId, item.eventId, item);
+            }
+
+            this.logger.info(`Board ${boardId} created successfully`);
+
+            return editLink;
+        } catch (err) {
+            this.logger.error("Error saving board data:", err);
+            throw err;
+        }
+    }
+
+    async saveMiroBoard() {
+        try {
+            console.log("hello");
+        } catch (e) {}
+    }
+
+    async createBoard(boardId: string, title: string, ownerId?: string): Promise<any> {
         try {
             validateUUID(boardId, "boardId");
             if (ownerId) {
                 const privateBoard = await this.database.query<{
                     board_id: number;
-                }>("select * from create_private_board($1, $2, $3)", [
-                    boardId,
-                    title,
-                    ownerId,
-                ]);
+                }>("select * from create_private_board($1, $2, $3)", [boardId, title, ownerId]);
                 return privateBoard.rows[0].board_id;
             } else {
                 const authorKey = uuidv4();
-                const result = await this.database.query(
-                    "SELECT * FROM create_board($1, $2, $3)",
-                    [boardId, title, authorKey]
-                );
+                const result = await this.database.query("SELECT * FROM create_board($1, $2, $3)", [
+                    boardId,
+                    title,
+                    authorKey,
+                ]);
                 return { ...result.rows[0].boardId, authorKey };
             }
         } catch (error) {
@@ -49,24 +69,18 @@ export class Boards {
     async setOwner(user: AccessToken, authorKey: string): Promise<void> {
         try {
             validateUUID(authorKey, "boardId");
-            await this.database.query(
-                `SELECT add_board_owner($1, $2)`,
-                [authorKey, user.sub]
-            );
+            await this.database.query(`SELECT add_board_owner($1, $2)`, [authorKey, user.sub]);
             this.logger.info(`Succesfully Set owner ${user.sub}`);
         } catch (error) {
             this.logger.error(`Error setting owner for ${user.sub}: ${error}`);
             throw error;
         }
     }
-    
+
     async userVisited(user: AccessToken, linkId: string): Promise<void> {
         try {
             validateUUID(linkId, "linkId");
-            await this.database.query(
-                "SELECT user_visited($1, $2)",
-                [user.sub, linkId]
-            );
+            await this.database.query("SELECT user_visited($1, $2)", [user.sub, linkId]);
             this.logger.info(`Succesfully set visited ${user.sub} ${linkId}`);
         } catch (error) {
             this.logger.error(`Error recording user visit for link ${linkId}: ${error}`);
@@ -81,15 +95,15 @@ export class Boards {
             const withLinks = {
                 author: (await getLinks(this.database, ids.author, "edit")).map((link, index) => ({
                     boardId: ids.author[index],
-                    link: link
+                    link: link,
                 })),
                 canEdit: (await getLinks(this.database, ids.canEdit, "edit")).map((link, index) => ({
                     boardId: ids.canEdit[index],
-                    link: link
+                    link: link,
                 })),
                 canView: (await getLinks(this.database, ids.canView, "view")).map((link, index) => ({
                     boardId: ids.canView[index],
-                    link: link
+                    link: link,
                 })),
             };
 
@@ -105,9 +119,7 @@ export class Boards {
         }
     }
 
-    async getBoardDetails(
-        boardId: string
-    ): Promise<{ boardId: string; created: Date; title: string } | null> {
+    async getBoardDetails(boardId: string): Promise<{ boardId: string; created: Date; title: string } | null> {
         try {
             validateUUID(boardId, "boardId");
             const result = await this.database.query(
@@ -126,9 +138,7 @@ export class Boards {
                 return null;
             }
         } catch (error) {
-            this.logger.error(
-                `Error fetching board details for board ID ${boardId}: ${error}`
-            );
+            this.logger.error(`Error fetching board details for board ID ${boardId}: ${error}`);
             throw error;
         }
     }
@@ -136,10 +146,7 @@ export class Boards {
     async isBoardExists(boardId: string): Promise<boolean> {
         try {
             validateUUID(boardId, "boardId");
-            const result = await this.database.query(
-                "SELECT id FROM boards WHERE uniq_id = $1 LIMIT 1",
-                [boardId]
-            );
+            const result = await this.database.query("SELECT id FROM boards WHERE uniq_id = $1 LIMIT 1", [boardId]);
             return result.rows.length === 1;
         } catch (error) {
             this.logger.error(`Error checking if board exists: ${error}`);
@@ -176,10 +183,7 @@ export class Boards {
     async deleteVisted(user: AccessToken, linkId: string): Promise<void> {
         try {
             validateUUID(linkId, "linkId");
-            await this.database.query(
-                "SELECT user_unvisited($1, $2)",
-                [user.sub, linkId]
-            );
+            await this.database.query("SELECT user_unvisited($1, $2)", [user.sub, linkId]);
             this.logger.info(`Successfully removed visited link ${linkId} for user ${user.sub}`);
         } catch (error) {
             this.logger.error(`Error removing visited link ${linkId} for user ${user.sub}: ${error}`);
@@ -187,17 +191,14 @@ export class Boards {
         }
     }
 
-    async duplicateBoard(
-        originalBoardId: string,
-        newBoardId: string
-    ): Promise<any> {
+    async duplicateBoard(originalBoardId: string, newBoardId: string): Promise<any> {
         try {
             validateUUID(originalBoardId, "originalBoardId");
             validateUUID(newBoardId, "newBoardId");
-            const result = await this.database.query(
-                "SELECT * FROM duplicate_board($1, $2)",
-                [originalBoardId, newBoardId]
-            );
+            const result = await this.database.query("SELECT * FROM duplicate_board($1, $2)", [
+                originalBoardId,
+                newBoardId,
+            ]);
             return result.rows[0];
         } catch (error) {
             this.logger.error(`Error duplicating board: ${error}`);
@@ -208,21 +209,14 @@ export class Boards {
     async renameBoard(boardId: string, newTitle: string): Promise<void> {
         try {
             validateUUID(boardId, "boardId");
-            const result = await this.database.query(
-                "SELECT rename_board($1, $2)",
-                [boardId, newTitle]
-            );
+            const result = await this.database.query("SELECT rename_board($1, $2)", [boardId, newTitle]);
         } catch (error) {
             this.logger.error(`Error renaming board: ${error}`);
             throw error;
         }
     }
 
-    async addEventToBoard(
-        boardId: string,
-        eventId: string,
-        eventBody: object
-    ): Promise<{ order: number; body: any }> {
+    async addEventToBoard(boardId: string, eventId: string, eventBody: object): Promise<{ order: number; body: any }> {
         try {
             validateUUID(boardId, "boardId");
             const result = await this.database.query<{ order: number }>(
@@ -243,12 +237,7 @@ export class Boards {
         }
     }
 
-    async getBoardEvents(
-        boardId: string,
-        offset = 0,
-        page?: number,
-        limit?: number
-    ): Promise<any[]> {
+    async getBoardEvents(boardId: string, offset = 0, page?: number, limit?: number): Promise<any[]> {
         try {
             validateUUID(boardId, "boardId");
             /*
@@ -270,18 +259,11 @@ export class Boards {
         }
     }
 
-    async createLink(
-        boardId: string,
-        type: string,
-        linkId: string
-    ): Promise<any> {
+    async createLink(boardId: string, type: string, linkId: string): Promise<any> {
         try {
             validateUUID(boardId, "boardId");
             validateUUID(linkId, "linkId");
-            const table = await this.database.query(
-                "select create_link($1, $2, $3)",
-                [boardId, type, linkId]
-            );
+            const table = await this.database.query("select create_link($1, $2, $3)", [boardId, type, linkId]);
             return table;
         } catch (error) {
             this.logger.error(`Error creating link: ${error}`);
@@ -293,10 +275,7 @@ export class Boards {
         try {
             validateUUID(boardId, "boardId");
             validateUUID(linkId, "linkId");
-            const table = await this.database.query(
-                "select delete_link($1, $2)",
-                [boardId, linkId]
-            );
+            const table = await this.database.query("select delete_link($1, $2)", [boardId, linkId]);
             return table;
         } catch (error) {
             this.logger.error(`Error deleting link: ${error}`);
@@ -304,16 +283,10 @@ export class Boards {
         }
     }
 
-    async isValidLink(
-        linkId: string,
-        linkTypes: ("view" | "edit")[]
-    ): Promise<boolean> {
+    async isValidLink(linkId: string, linkTypes: ("view" | "edit")[]): Promise<boolean> {
         try {
             validateUUID(linkId, "linkId");
-            const result = await this.database.query(
-                "SELECT * FROM get_link($1)",
-                [linkId]
-            );
+            const result = await this.database.query("SELECT * FROM get_link($1)", [linkId]);
             if (result.rowCount === 0) {
                 return false;
             }
@@ -336,18 +309,15 @@ export class Boards {
                 SELECT board_id, link_uuid, type 
                 FROM get_link($1)
             `;
-            const link = await this.database.query<LinkDetail>(queryText, [
-                linkId,
-            ]);
+            const link = await this.database.query<LinkDetail>(queryText, [linkId]);
 
             if (link.rows.length === 0) {
                 return null;
             }
 
-            const board = await this.database.query(
-                `SELECT uniq_id from boards where id = $1`,
-                [link.rows[0].board_id]
-            );
+            const board = await this.database.query(`SELECT uniq_id from boards where id = $1`, [
+                link.rows[0].board_id,
+            ]);
 
             if (board.rows.length === 0) {
                 throw new Error("Board Not Found");
@@ -366,9 +336,7 @@ export class Boards {
         }
     }
 
-    async getPrivateBoards(
-        user: AccessToken
-    ): Promise<Array<{ get_private_boards: string }> | undefined> {
+    async getPrivateBoards(user: AccessToken): Promise<Array<{ get_private_boards: string }> | undefined> {
         try {
             const privateBoards = await this.database.query<{
                 get_private_boards: string;
@@ -383,14 +351,13 @@ export class Boards {
     async saveBoardSnapshot(boardUuidOrEditLink: string, snapshot: any) {
         try {
             validateUUID(boardUuidOrEditLink, "boardUuidOrEditLink");
-            await this.database.query(
-                "SELECT save_board_snapshot($1, $2, $3)",
-                [boardUuidOrEditLink, snapshot, snapshot.lastIndex]
-            );
+            await this.database.query("SELECT save_board_snapshot($1, $2, $3)", [
+                boardUuidOrEditLink,
+                snapshot,
+                snapshot.lastIndex,
+            ]);
         } catch (error) {
-            this.logger.error(
-                `Error saving snapshot for board ${boardUuidOrEditLink}: ${error}`
-            );
+            this.logger.error(`Error saving snapshot for board ${boardUuidOrEditLink}: ${error}`);
             throw error;
         }
     }
@@ -404,16 +371,12 @@ export class Boards {
             );
 
             if (result.rows.length === 0) {
-                throw new Error(
-                    `No snapshot found for board or link UUID ${boardUuidOrEditLink}`
-                );
+                throw new Error(`No snapshot found for board or link UUID ${boardUuidOrEditLink}`);
             }
 
             return result.rows[0].snapshot;
         } catch (error) {
-            this.logger.error(
-                `Error retrieving latest snapshot for board ${boardUuidOrEditLink}: ${error}`
-            );
+            this.logger.error(`Error retrieving latest snapshot for board ${boardUuidOrEditLink}: ${error}`);
             throw error;
         }
     }
@@ -427,9 +390,7 @@ export class Boards {
             );
             return result.rows[0].count;
         } catch (error) {
-            this.logger.error(
-                `Error getting event count since last snapshot for board ${boardId}: ${error}`
-            );
+            this.logger.error(`Error getting event count since last snapshot for board ${boardId}: ${error}`);
             throw error;
         }
     }

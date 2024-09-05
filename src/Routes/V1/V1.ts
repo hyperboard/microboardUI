@@ -7,10 +7,15 @@ import { jwtMiddleware } from "Middlewares/jwt.middleware";
 import { getUsersRouter } from "./Users";
 import { Config } from "shared/config/config";
 import { Mailer } from "shared/modules/mailer/mailer";
-import { createMediaRouter } from "./Media";
-import { MediaDAL } from "./Media/MediaDAL";
 import { getMiroRouter } from "./Miro";
+import { createJobsRouter } from "./Jobs";
+import { createTalkRouter } from "./Talk";
+import { WebSocketServer } from "ws";
 import path from "path";
+import { BarrelMediaDAL } from "./MediaTalk/MediaDAL";
+import { getMediaRouter } from "./MediaTalk";
+import { MediaDAL } from "./Media/MediaDAL";
+import { createMediaRouter } from "./Media";
 import fs from "fs";
 
 export function getV1Router(
@@ -20,13 +25,20 @@ export function getV1Router(
     logger: winston.Logger,
     auth: Auth,
     users: Users,
-    media: MediaDAL
+    media: BarrelMediaDAL | MediaDAL,
+    wss: WebSocketServer
 ): express.Router {
     const router = express.Router();
     const authMiddleware = jwtMiddleware(logger);
     router.use("/api/v1", getAuthRouter(auth, logger));
     router.use("/api/v1", getBoardsRouter(boards, logger));
-    router.use("/api/v1", createMediaRouter(media, logger));
+    router.use("/api/v1",
+        process.env.MINIO_ENABLED === "true"
+        ? createMediaRouter(media as MediaDAL, logger)
+        : getMediaRouter(media as BarrelMediaDAL, logger)
+    );
+    router.use("/api/v1", createJobsRouter(logger, wss));
+    router.use("/api/v1", createTalkRouter());
     // BUG: Миддлвар блокирует запрос GET boards/:id без токена по edit/view ссылке
     // router.use(authMiddleware);
     router.use("/api/v1", getUsersRouter(users, logger));

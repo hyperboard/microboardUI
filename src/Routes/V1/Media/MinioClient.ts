@@ -8,7 +8,7 @@ const config = {
     secretKey: process.env.MINIO_SECRET_KEY || "",
 };
 
-export const minioClient = new Client(config);
+export const minioClient = process.env.MINIO_ENABLED === "true" ? new Client(config) : null;
 
 // Check if the bucket exists, if not create it
 const MAX_RETRIES = 5; // Define the maximum number of retries
@@ -95,4 +95,6 @@ const ensureBucketExists = async (retries: number = 0) => {
 };
 
 // Initialize MinIO setup
-ensureBucketExists();
+if (process.env.MINIO_ENABLED === "true") {
+    ensureBucketExists();
+}

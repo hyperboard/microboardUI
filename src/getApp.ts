@@ -8,6 +8,7 @@ import helmet from "helmet";
 import http from "http";
 import { WebSocketServer } from "ws";
 import morgan from "morgan";
+
 import { nocache } from "./nocache";
 import { Boards } from "./Routes/V1/Boards";
 import { Auth } from "./Routes/V1/Auth";
@@ -17,20 +18,31 @@ import { getV1Router } from "./Routes";
 import { withWebSocketApi } from "./WebSocket";
 import { Config } from "./shared/config/config";
 import { Mailer } from "./shared/modules/mailer/mailer";
+import { createBarrelMediaDAL } from "Routes/V1/MediaTalk/Media";
 import { createMinioMediaDAL } from "Routes/V1/Media";
+import { createMiddleware } from "@trigger.dev/express";
+import { client } from "trigger";
+import cors from "cors";
 
 export async function getApp(): Promise<http.Server> {
     const app = express();
+
     app.use(morgan("combined"));
+    if (process.env.NODE_ENV !== "production") {
+        app.use(cors());
+    }
 
     const server = http.createServer(app);
     const wss = new WebSocketServer({
         server,
     });
-    app.use(bodyParser.json({ limit: '10mb' }));
-    app.use(bodyParser.urlencoded({ extended: false, limit: '10mb' }));
+
+    app.use(bodyParser.json({ limit: "10mb" }));
+    app.use(bodyParser.urlencoded({ extended: false, limit: "10mb" }));
     app.use(cookieParser());
     app.use(compression());
+
+    app.use(createMiddleware(client, "/api/trigger"));
 
     // Create a winston logger.
     const logger = winston.createLogger({
@@ -88,11 +100,7 @@ export async function getApp(): Promise<http.Server> {
     app.use(nocache);
 
     const config = new Config();
-    const mailer = new Mailer(
-        config,
-        logger,
-        process.env.BASE_URL ?? "example"
-    );
+    const mailer = new Mailer(config, logger, process.env.BASE_URL ?? "example");
     const database = await getDatabase(logger);
     const boards = new Boards(database, logger);
     withWebSocketApi(wss, boards, logger);
@@ -108,12 +116,9 @@ export async function getApp(): Promise<http.Server> {
         response.status(200).json({ connection: timestamp });
     });
 
-    const media = createMinioMediaDAL(logger); // replace with konturMediaDAL for their version
+    const media = process.env.MINIO_ENABLED === "true" ? createMinioMediaDAL(logger) : createBarrelMediaDAL(logger);
 
-    app.use(
-        "/",
-        getV1Router(config, mailer, boards, logger, auth, users, media)
-    );
+    app.use("/", getV1Router(config, mailer, boards, logger, auth, users, media, wss));
 
     app.use((req, res, next) => {
         if (req.path.includes("favicon.svg")) {
