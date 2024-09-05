@@ -1,0 +1,126 @@
+import { eventEmitter } from "eventEmitter";
+import express, { Request, Response } from "express";
+import { body } from "express-validator";
+import { healthCheckJob } from "trigger/jobs/health-check";
+import { importMiroBoard } from "trigger/jobs/import-miro";
+import winston from "winston";
+import { WebSocketServer } from "ws";
+
+interface ImportMiroBoardsRequest {
+    accessToken: string;
+    userId: string;
+    boardIds: string[];
+}
+
+export const createJobsRouter = (logger: winston.Logger, wss: WebSocketServer) => {
+    const router = express.Router();
+
+    router.post(
+        "/jobs/import-miro-boards",
+        body("accessToken").isString(),
+        body("userId").isString(),
+        body("boardIds").isArray(),
+        async (req: Request, res: Response) => {
+            const { accessToken, userId, boardIds } = req.body as ImportMiroBoardsRequest;
+            console.log("body: ", req.body);
+            try {
+                for (const boardId of boardIds) {
+                    await importMiroBoard.invoke({
+                        accessToken,
+                        userId,
+                        boardId,
+                    });
+                }
+
+                res.status(200).json({
+                    message: "Import Miro board jobs started",
+                });
+            } catch (e) {
+                logger.error("Error importing boards:", e);
+                res.status(500).json({
+                    error: "Error to start importing boards jobs",
+                });
+            }
+        }
+    );
+
+    router.get("/sse/:userId", (req: Request, res: Response) => {
+        const { userId } = req.params;
+
+        // Set headers to keep the connection open
+        res.setHeader("Content-Type", "text/event-stream");
+        res.setHeader("Cache-Control", "no-cache");
+        res.setHeader("Connection", "keep-alive");
+
+        // Send an initial message to establish the connection
+        res.write(`data: Connection established for user ${userId}\n\n`);
+
+        const onJobComplete = (data: any) => {
+            res.write(`${JSON.stringify(data)}\n\n`);
+        };
+
+        const onJobError = (error: any) => {
+            res.write(`${JSON.stringify(error)}\n\n`);
+        };
+
+        // Listen for job completion events
+        eventEmitter.on(`job-${userId}`, onJobComplete);
+        eventEmitter.on(`job-${userId}-error`, onJobError);
+
+        // Cleanup when the connection is closed
+        req.on("close", () => {
+            eventEmitter.off(`job-${userId}`, onJobComplete);
+            eventEmitter.off(`job-${userId}-error`, onJobError);
+        });
+    });
+
+    router.post("/jobs/notify", async (req: Request, res: Response) => {
+        try {
+            notifyClients(req.body, wss);
+            return res.status(200).json({
+                message: "Job completed",
+            });
+        } catch (e) {
+            return res.status(500).json({
+                error: "Error to notify clients",
+            });
+        }
+    });
+
+    router.get("/jobs/health", async (req: Request, res: Response) => {
+        console.log("Test job endpoint");
+        try {
+            await healthCheckJob.invoke({});
+            res.status(200)
+                .json({
+                    message: "Test job endpoint invoked",
+                })
+                .end();
+        } catch (e) {
+            res.status(500)
+                .json({
+                    message: "Test job endpoint failed",
+                })
+                .end();
+        }
+    });
+
+    return router;
+};
+
+function notifyClients(
+    payload: { type: string; userId?: string; boardId?: string; jobId?: string },
+    wss: WebSocketServer
+) {
+    const message = JSON.stringify({
+        ...payload,
+    });
+
+    if (wss.clients.size === 0) {
+        return;
+    }
+
+    wss.clients.forEach((client) => {
+        client.send(message);
+    });
+}
