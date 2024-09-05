@@ -84,13 +84,15 @@ export function MiroBoards({
 		const token = Cookies.get("miro_accessToken");
 		try {
 			const response = await fetch(
-				"https://api.miro.com/v2/boards?team_id=" +
-					teamId +
-					"&limit=" +
-					BOARD_LIMIT +
-					"&offset=" +
-					boardsInfo.offset +
-					"&sort=last_opened",
+				getApiUrl(
+					"/miro/boards?team_id=" +
+						teamId +
+						"&limit=" +
+						BOARD_LIMIT +
+						"&offset=" +
+						boardsInfo.offset +
+						"&sort=last_opened",
+				),
 				{
 					headers: {
 						Authorization: "Bearer " + token,

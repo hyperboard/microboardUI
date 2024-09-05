@@ -373,7 +373,7 @@
 		"importMiro": "Import from Miro",
 		"importMiroBtn": "Import from Miro",
 		"importMiroBtnTooltip": "Sign up to access all features of Microboard",
-		"startModalText": "Log in to Miro and select the team whose board you want to import to Microboard. You can import boards from Miro 10 minutes after they are created.",
+		"startModalText": "Log in to Miro and select the team whose board you want to import to Microboard.",
 		"miroError": "An error has occurred. Try importing again",
 		"loading": "Loading...",
 		"nextStepBtn": "Сontinue"
