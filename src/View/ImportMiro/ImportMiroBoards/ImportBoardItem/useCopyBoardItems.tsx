@@ -123,7 +123,7 @@ const BORDER_STYLES = {
 const CONNECTOR_TYPES = {
 	straight: "straight",
 	curved: "curved",
-	elbowed: "curved",
+	elbowed: "orthogonal",
 };
 
 const FRAME_TYPES = {
@@ -648,12 +648,8 @@ export const useCopyBoardItems = (
 
 	const copyConnector = (item: IMiroBoardItemConnector): void | null => {
 		const { startItem, endItem, style, shape, captions } = item;
-		const connectorError = "Start and end connector points not found";
-		const notFoundConnectorItemById =
-			"Start and end connection objects for the connector not found";
 
 		if (!startItem || !endItem) {
-			console.error(connectorError);
 			return null;
 		}
 		// start and end connection objects for the connector
@@ -661,7 +657,6 @@ export const useCopyBoardItems = (
 		const endItemMiro = board.items.getById(boardMiroId[endItem.id]);
 
 		if (!startItemMiro || !endItemMiro) {
-			console.error(notFoundConnectorItemById);
 			return null;
 		}
 
