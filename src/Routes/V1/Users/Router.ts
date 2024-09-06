@@ -18,7 +18,7 @@ export function getUsersRouter(
             const { token } = request;
             const userToken = await token;
             const userId = parseInt(userToken?.sub);
-            if (!token) {
+            if (!token || userToken === null) {
                 response
                     .status(HttpStatus.UNAUTHORIZED)
                     .json({
