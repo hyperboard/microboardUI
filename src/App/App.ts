@@ -14,7 +14,8 @@ import { TestRecorder, createTester } from "./testRecorder";
 import { BoardSnapshot } from "Board/Board";
 import Cookies from "js-cookie";
 
-const LAST_BOARD_KEY = "lastSeenBoard";
+export const LAST_BOARD_KEY = "lastSeenBoard";
+export const LAST_BOARD_KEY_QS = LAST_BOARD_KEY.concat("Wqs");
 
 export interface App {
 	connection: Connection;
@@ -146,6 +147,10 @@ export function createApp(isHistory = true): App {
 			boards.set(id, currentBoard);
 		}
 		localStorage.setItem(LAST_BOARD_KEY, id);
+		localStorage.setItem(
+			LAST_BOARD_KEY_QS,
+			`${id}${window.location.search}`,
+		);
 		if (
 			!storage.listPublicBoards().some(board => board.boardId === id) &&
 			!storage.listSharedBoards().some(board => board.boardId === id) &&

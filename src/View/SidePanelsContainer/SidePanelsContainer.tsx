@@ -5,6 +5,7 @@ import { TitlePanel } from "View/TitlePanel";
 import { ToolsPanel } from "View/ToolsPanel";
 import style from "./SidePanelsContainer.module.css";
 import { InactiveBoardHidder } from "View/AppView/InactiveBoardHidder";
+import { showTitlePanel } from "lib/queryStringParser";
 
 interface SidePanelsContainerProps {
 	isBlank: boolean;
@@ -23,7 +24,7 @@ export const SidePanelsContainer = memo(
 
 		return (
 			<div ref={containerRef} className={style.sidePanels}>
-				<TitlePanel />
+				{showTitlePanel() && <TitlePanel />}
 				<SidePanel />
 				<InactiveBoardHidder>
 					<ToolsPanel />

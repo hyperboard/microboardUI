@@ -1,8 +1,12 @@
-import React, { PropsWithChildren } from "react";
+import React, { CSSProperties, PropsWithChildren } from "react";
 import style from "./FolderItem.module.css";
 
-type Props = PropsWithChildren<{}>;
+type Props = PropsWithChildren<{ customStyle?: CSSProperties }>;
 
-export function FolderItem({ children }: Props) {
-	return <li className={style.item}>{children}</li>;
+export function FolderItem({ children, customStyle }: Props) {
+	return (
+		<li className={style.item} style={customStyle}>
+			{children}
+		</li>
+	);
 }

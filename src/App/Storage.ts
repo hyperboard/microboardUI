@@ -4,7 +4,7 @@ import { Subject } from "Subject";
 import { refreshTokens } from "View/Routes/ProtectedRoute";
 
 // TODO strictly type shared/owned/haveRights boards
-interface VisitedPublicBoard {
+export interface VisitedPublicBoard {
 	boardId: string;
 	name?: string;
 	authorKey?: string;

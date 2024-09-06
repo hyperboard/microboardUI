@@ -4,11 +4,19 @@ type ClickOutsideCb = () => void;
 
 export const useClickOutside = (
 	callback: ClickOutsideCb,
+	refs: RefObject<HTMLElement>[] = [],
 ): RefObject<HTMLDivElement> => {
 	const ref = useRef<HTMLDivElement>(null);
 
 	const handleClickOutside = (event: MouseEvent): void => {
-		if (ref.current && !ref.current.contains(event.target as Node)) {
+		const isOutside =
+			ref.current &&
+			!ref.current.contains(event.target as Node) &&
+			refs.every(
+				ref =>
+					ref.current && !ref.current.contains(event.target as Node),
+			);
+		if (isOutside) {
 			callback();
 		}
 	};

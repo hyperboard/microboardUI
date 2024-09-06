@@ -386,5 +386,19 @@
 			"price": "Цены",
 			"buy": "Купить"
 		}
+	},
+	"embedding": {
+		"title": "Выберите доску для встаривания",
+		"customize": "Настройте параметры доски",
+		"startingView": "Стартовая Камера",
+		"fullBoard": "По умолчанию",
+		"allVisitors": "Участники",
+		"canEdit": "Могут редактировать",
+		"canView": "Могут просматривать",
+		"inputPlaceholder": "Поиск",
+		"addNew": "Новая доска",
+		"embedBoardButton": "Встроить доску",
+		"newBoardPlaceholder": "Название доски",
+		"back": "Назад"
 	}
 }

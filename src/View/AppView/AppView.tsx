@@ -18,6 +18,7 @@ import { ZoomPanel } from "View/ZoomPanel";
 import style from "./AppView.module.css";
 import NoBoardIsOpen from "./NoBoardIsOpen";
 import { InactiveBoardHidder } from "./InactiveBoardHidder";
+import { showTitlePanel } from "lib/queryStringParser";
 
 export function AppView() {
 	const { app, board } = useAppContext();
@@ -120,8 +121,8 @@ export function AppView() {
 	const appBoard = app.getBoard();
 	return (
 		<div className={style.wrapper}>
-			<LandingMenu />
-			<MobileLandingMenu />
+			{showTitlePanel() && <LandingMenu />}
+			{showTitlePanel() && <MobileLandingMenu />}
 			<InactiveBoardHidder>
 				<div ref={containerRef}>
 					<Canvas

@@ -9,6 +9,7 @@ import { LockIcon } from "View/SignupView/LockIcon";
 import { Button } from "shared/ui-lib/Button";
 import { Tail } from "View/AuthView/Tail";
 import { App } from "App";
+import { LAST_BOARD_KEY_QS } from "App/App";
 
 const secondsToHumanReadable = (seconds: number): string => {
 	const minutes = Math.floor(seconds / 60);
@@ -108,9 +109,11 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 					return data;
 				})
 				.then(async () => {
-					if (localStorage.getItem("lastSeenBoard")) {
+					if (localStorage.getItem(LAST_BOARD_KEY_QS)) {
 						navigate(
-							`/boards/${localStorage.getItem("lastSeenBoard")}`,
+							`/boards/${localStorage.getItem(
+								LAST_BOARD_KEY_QS,
+							)}`,
 						);
 					} else {
 						const boardId = await app.createPublicBoard();
@@ -278,9 +281,9 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 				Cookies.set("refreshToken", data.refreshToken, {
 					secure: true,
 				});
-				if (localStorage.getItem("lastSeenBoard")) {
+				if (localStorage.getItem(LAST_BOARD_KEY_QS)) {
 					navigate(
-						`/boards/${localStorage.getItem("lastSeenBoard")}`,
+						`/boards/${localStorage.getItem(LAST_BOARD_KEY_QS)}`,
 					);
 				} else {
 					const boardId = await app.createPublicBoard();
