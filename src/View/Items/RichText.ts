@@ -6,4 +6,8 @@ export const DEFAULT_TEXT_STYLES: DefaultTextStyles = {
 	fontColor: "black",
 	fontHighlight: "",
 	lineHeight: 1.4,
+	bold: false,
+	underline: false,
+	italic: false,
+	"line-through": false,
 };
