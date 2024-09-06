@@ -13,6 +13,9 @@ import { RestorePassword } from "./RestorePassword/RestorePassword";
 import { ForgotPassword } from "./ForgotPassword/ForgotPassword";
 import { ProtectedRoute } from "./Routes/ProtectedRoute";
 import { WelcomeBoard } from "./WelcomeBoard";
+import { getApiUrl } from "Config";
+import TestComponent from "./Embedding/Test";
+import SelectBoard from "./Embedding/SelectBoard";
 
 export function getRender(app: App): () => void {
 	new IframeModule(app);
@@ -75,6 +78,26 @@ export function getRender(app: App): () => void {
 				{
 					path: "",
 					element: <BoardView app={app} />,
+				},
+			],
+		},
+		{
+			path: "/test",
+			element: <ProtectedRoute isPublic={true} />,
+			children: [
+				{
+					path: "",
+					element: <TestComponent />,
+				},
+			],
+		},
+		{
+			path: "/selectBoard",
+			element: <ProtectedRoute isPublic={true} />,
+			children: [
+				{
+					path: "",
+					element: <SelectBoard app={app} />,
 				},
 			],
 		},

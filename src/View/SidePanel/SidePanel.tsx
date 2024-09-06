@@ -12,18 +12,17 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "View/AppContext";
 import { useContextMenuContext } from "View/ContextMenu";
-import { Folder } from "View/Folder/Folder";
-import { FolderItem } from "View/Folder/FolderItem";
 import { Icon } from "View/Icon";
 import { UiButton } from "View/Ui/UiButton";
 import { UiPanel } from "View/Ui/UiPanel";
 import { ResizableEdge } from "./ResizableEdge";
 import style from "./SidePanel.module.css";
 import { useSidePanelContext } from "./SidePanelContext";
-import { BoardName, BoardRename, useBoardRenameContext } from "View/BoardName";
+import { BoardRename, useBoardRenameContext } from "View/BoardName";
 import { ImportMiroStartModal } from "View/ImportMiro";
 import { Button } from "shared/ui-lib/Button";
 import { Tooltip } from "View/Ui/UiButton/Tooltip";
+import { Folders } from "View/Folder";
 
 const MIN_PANEL_WIDTH = 280;
 
@@ -142,147 +141,39 @@ export function SidePanel(): JSX.Element {
 						<Icon iconName="Close" />
 					</UiButton>
 				</div>
-				<div className={style.folders}>
-					{app.storage.isAuth && (
-						<Folder
-							title={t("sidePanel.folders.myBoards")}
-							icon={
-								<Icon
-									iconName="myBoards"
-									width={20}
-									height={20}
+				<Folders
+					containerClassName={style.folders}
+					isAuth={app.storage.isAuth}
+					isPublicOpened={isPublic || isBlank}
+					isSharedOpened={isShared || isBlank}
+					currBoardId={app.getBoard().getBoardId()}
+					publicBoards={publicBoards}
+					sharedBoards={sharedBoards}
+					activeBoardFunction={board =>
+						board.boardId === app.getBoard().getBoardId()
+					}
+					boardNameOnClick={board => handleBoardClick(board.boardId)}
+					boardNameOnClickContext={board =>
+						handleBoardContextMenu(board.boardId)
+					}
+					boardNameOnDoubleClick={board =>
+						handleBoardRenameStart(board.boardId)
+					}
+					boardNameChildren={board => (
+						<>
+							{renamingBoardId === board.boardId ? (
+								<BoardRename
+									value={newBoardName}
+									onCancel={handleRenameCancel}
+									onChange={handleBoardRename}
+									onConfirm={rename}
 								/>
-							}
-							isOpened={isPublic || isBlank}
-							currBoardId={app.getBoard().getBoardId()}
-						>
-							<Folder
-								title={t("sidePanel.folders.publicDrafts")}
-								icon={
-									<Icon
-										iconName="publicDrafts"
-										width={20}
-										height={20}
-									/>
-								}
-								isOpened={isPublic || isBlank}
-								currBoardId={app.getBoard().getBoardId()}
-							>
-								{publicBoards.map(({ boardId, name }) => (
-									<FolderItem key={boardId}>
-										<BoardName
-											active={
-												board.getBoardId() === boardId
-											}
-											onClick={() =>
-												handleBoardClick(boardId)
-											}
-											onClickContext={handleBoardContextMenu(
-												boardId,
-											)}
-											onDoubleClick={handleBoardRenameStart(
-												boardId,
-											)}
-										>
-											{renamingBoardId === boardId ? (
-												<BoardRename
-													value={newBoardName}
-													onCancel={
-														handleRenameCancel
-													}
-													onChange={handleBoardRename}
-													onConfirm={rename}
-												/>
-											) : (
-												name || t("board.untitled")
-											)}
-										</BoardName>
-									</FolderItem>
-								))}
-							</Folder>
-						</Folder>
+							) : (
+								board.name || t("board.untitled")
+							)}
+						</>
 					)}
-					{!app.storage.isAuth && (
-						<Folder
-							title={t("sidePanel.folders.publicDrafts")}
-							icon={
-								<Icon
-									iconName="publicDrafts"
-									width={20}
-									height={20}
-								/>
-							}
-							isOpened={isPublic || isBlank}
-							currBoardId={app.getBoard().getBoardId()}
-						>
-							{publicBoards.map(({ boardId, name }) => (
-								<FolderItem key={boardId}>
-									<BoardName
-										active={board.getBoardId() === boardId}
-										onClick={() =>
-											handleBoardClick(boardId)
-										}
-										onClickContext={handleBoardContextMenu(
-											boardId,
-										)}
-										onDoubleClick={handleBoardRenameStart(
-											boardId,
-										)}
-									>
-										{renamingBoardId === boardId ? (
-											<BoardRename
-												value={newBoardName}
-												onCancel={handleRenameCancel}
-												onChange={handleBoardRename}
-												onConfirm={rename}
-											/>
-										) : (
-											name || t("board.untitled")
-										)}
-									</BoardName>
-								</FolderItem>
-							))}
-						</Folder>
-					)}
-					<Folder
-						title={t("sidePanel.folders.sharedBoards")}
-						icon={
-							<Icon
-								iconName="sharedBoards"
-								width={20}
-								height={20}
-							/>
-						}
-						isOpened={isShared || isBlank}
-						currBoardId={app.getBoard().getBoardId()}
-					>
-						{sharedBoards.map(({ boardId, name }) => (
-							<FolderItem key={boardId}>
-								<BoardName
-									active={board.getBoardId() === boardId}
-									onClick={() => handleBoardClick(boardId)}
-									onClickContext={handleBoardContextMenu(
-										boardId,
-									)}
-									onDoubleClick={handleBoardRenameStart(
-										boardId,
-									)}
-								>
-									{renamingBoardId === boardId ? (
-										<BoardRename
-											value={newBoardName}
-											onCancel={handleRenameCancel}
-											onChange={handleBoardRename}
-											onConfirm={rename}
-										/>
-									) : (
-										name || t("board.untitled")
-									)}
-								</BoardName>
-							</FolderItem>
-						))}
-					</Folder>
-				</div>
+				/>
 			</div>
 			<div className={style.bottom}>
 				<button
