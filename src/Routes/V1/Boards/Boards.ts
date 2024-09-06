@@ -16,7 +16,12 @@ export class Boards {
 
     onEventSave(boardId: string, boardEvent: any): void {}
 
-    async saveBoardData(transformedData: { id: string; name: string; items: any[]; userId?: string }): Promise<string> {
+    async saveBoardData(transformedData: {
+        id: string;
+        name: string;
+        items: any[];
+        userId?: string;
+    }): Promise<{ boardId: string; editLink: string }> {
         try {
             const boardId = uuidv4();
             const editLink = uuidv4();
@@ -24,24 +29,24 @@ export class Boards {
             await this.createBoard(boardId, transformedData.name, transformedData.userId);
             await this.createLink(boardId, "edit", editLink);
 
-            for (const item of transformedData.items) {
-                await this.addEventToBoard(boardId, item.eventId, item);
+            const batchSize = 100;
+            for (let i = 0; i < transformedData.items.length; i += batchSize) {
+                const batch = transformedData.items.slice(i, i + batchSize);
+                await Promise.all(batch.map((item) => this.addEventToBoard(boardId, item.eventId, item)));
             }
 
             this.logger.info(`Board ${boardId} created successfully`);
 
-            return editLink;
+            return {
+                boardId,
+                editLink,
+            };
         } catch (err) {
             this.logger.error("Error saving board data:", err);
             throw err;
         }
     }
 
-    async saveMiroBoard() {
-        try {
-            console.log("hello");
-        } catch (e) {}
-    }
 
     async createBoard(boardId: string, title: string, ownerId?: string): Promise<any> {
         try {

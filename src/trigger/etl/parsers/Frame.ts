@@ -1,11 +1,11 @@
 import { FrameItem } from "@mirohq/miro-api";
-import { v4 } from "uuid";
 
 interface FramePayload {
     item: FrameItem;
     boardId: string;
     userId: string;
     order: number;
+    newItemId: string;
 }
 
 const frameTypes = {
@@ -21,8 +21,7 @@ const frameTypes = {
 };
 
 export const parseFrame = (payload: FramePayload) => {
-    const { item, boardId, userId, order } = payload;
-    const uuid = v4();
+    const { item, boardId, userId, order, newItemId } = payload;
 
     const width = item.geometry?.width || 100;
     const height = item.geometry?.height || 100;
@@ -53,17 +52,38 @@ export const parseFrame = (payload: FramePayload) => {
                 backgroundColor: "#ffffff",
                 backgroundOpacity: 1,
             },
-            item: uuid,
+            item: newItemId,
             class: "Board",
             method: "add",
         },
     };
 
-    // if (item?.data?.content?.length) {
-    //     const parsedText = parseTextFromShape(item);
-    //     const textBlock = makeInjectedText(parsedText);
-    //     event.operation.data.text = textBlock.text;
-    // }
+    if (item.data?.title) {
+        event.operation.data.text = {
+            children: [
+                {
+                    type: "paragraph",
+                    horisontalAlignment: "left",
+                    children: [
+                        {
+                            fontColor: "rgb(107, 110, 120)",
+                            fontFamily: "Arial",
+                            fontHighlight: "",
+                            fontSize: 14,
+                            lineHeight: 1.4,
+                            text: item.data.title,
+                            type: "text",
+                        },
+                    ],
+                },
+            ],
+            insideOf: "RichText",
+            itemType: "RichText",
+            placeholderText: `Frame`,
+            realsSize: 14,
+            verticalAlignment: "center",
+        };
+    }
 
     return event;
 };

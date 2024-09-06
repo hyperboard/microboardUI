@@ -1,22 +1,31 @@
-import { ImageItem } from "@mirohq/miro-api";
-import { v4 } from "uuid";
+import { FrameItem, ImageItem } from "@mirohq/miro-api";
+import { getItemPosition } from "./shared";
 
 interface ImagePayload {
     item: ImageItem;
     boardId: string;
     userId: string;
     order: number;
+    newItemId: string;
+    parent?: FrameItem;
 }
 
-export const parseImage = (payload: ImagePayload) => {
-    const { item, boardId, userId, order } = payload;
-    const uuid = v4();
+export const parseImage = async (payload: ImagePayload) => {
+    const { item, boardId, userId, order, parent, newItemId } = payload;
 
-    const width = item.geometry?.width || 100;
-    const height = item.geometry?.height || 100;
+    const width = item?.geometry?.width || 0;
+    const height = item?.geometry?.height || 0;
+    const imageDimension = {
+        width,
+        height,
+    };
 
-    const xOffset = width / 2;
-    const yOffset = height / 2;
+    if (item.dimensions) {
+        imageDimension.width = item.dimensions.width;
+        imageDimension.height = item.dimensions.height;
+    }
+
+    const pos = await getItemPosition(item, parent);
 
     return {
         userId: userId,
@@ -32,13 +41,13 @@ export const parseImage = (payload: ImagePayload) => {
                 },
                 transformation: {
                     rotate: 0,
-                    scaleX: 0,
-                    scaleY: 0,
-                    translateX: (item?.position?.x || 0) - xOffset,
-                    translateY: (item?.position?.y || 0) - yOffset,
+                    scaleX: width / imageDimension.width,
+                    scaleY: height / imageDimension.height,
+                    translateX: pos.x,
+                    translateY: pos.y,
                 },
             },
-            item: uuid,
+            item: newItemId,
             class: "Board",
             method: "add",
         },

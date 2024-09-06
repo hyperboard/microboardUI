@@ -1,11 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { verifyToken } from "Tokens";
 
-export async function authenticate(
-    req: Request,
-    res: Response,
-    next: NextFunction
-) {
+export async function authenticate(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return res.status(401).json({ message: "Unauthorized" });
@@ -14,9 +10,7 @@ export async function authenticate(
     const token = authHeader.split(" ")[1];
     const decodedToken = await verifyToken(token);
     if (!decodedToken) {
-        return res
-            .status(401)
-            .json({ message: "Invalid or expired JWT token" });
+        return res.status(401).json({ message: "Invalid or expired JWT token" });
     }
 
     req.token = decodedToken;

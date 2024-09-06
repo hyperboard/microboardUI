@@ -1,7 +1,7 @@
 import { Connector } from "@mirohq/miro-api";
 import { WidgetItem } from "@mirohq/miro-api/dist/highlevel/Item";
 import { makeInjectedText, parseTextFromConnector } from "./RichText";
-import { v4 } from "uuid";
+import { getItemPosition } from "./shared";
 
 interface ConnectorPayload {
     item: Connector;
@@ -12,17 +12,18 @@ interface ConnectorPayload {
     order: number;
     parsedStart: any;
     parsedEnd: any;
+    newItemId: string;
 }
 
 const connectorTypes = {
     straight: "straight",
     curved: "curved",
-    elbowed: "curved",
+    elbowed: "orthogonal",
 };
 
-export const parseConnector = (payload: ConnectorPayload) => {
-    const { item, startItem, endItem, userId, boardId, order, parsedStart, parsedEnd } = payload;
-    const uuid = v4();
+export const parseConnector = async (payload: ConnectorPayload) => {
+    const { item, startItem, endItem, userId, boardId, order, parsedStart, parsedEnd, newItemId } = payload;
+
     // position in percentage
     const endPos = {
         x: item.endItem?.position?.x ? parseInt(item.endItem?.position?.x) : 0,
@@ -34,24 +35,24 @@ export const parseConnector = (payload: ConnectorPayload) => {
     };
 
     // Calculate actual start and end points
-    const calculatePoint = (pos: { x: number; y: number }, wItem?: WidgetItem) => {
+    const calculatePoint = async (pos: { x: number; y: number }, wItem?: WidgetItem) => {
         if (!wItem) return { x: 0, y: 0 };
         const width = wItem.geometry!.width!;
         const height = wItem.geometry!.height!;
+        const wPos = await getItemPosition(wItem);
 
         // Calculate the offset to move from center to top-left
         const xOffset = width / 2;
         const yOffset = height / 2;
 
         // Calculate the position relative to the top-left corner
-        const x = wItem.position!.x! - xOffset + (pos.x / 100) * width;
-        const y = wItem.position!.y! - yOffset + (pos.y / 100) * height;
+        const x = wPos.x + (pos.x / 100) * width;
+        const y = wPos.y + (pos.y / 100) * height;
 
         return { x, y };
     };
 
-    const startPoint = calculatePoint(startPos, startItem);
-    const endPoint = calculatePoint(endPos, endItem);
+    const startPoint = await calculatePoint(startPos, startItem);
 
     const event: any = {
         userId: userId,
@@ -60,13 +61,13 @@ export const parseConnector = (payload: ConnectorPayload) => {
         operation: {
             data: {
                 endPoint: {
-                    itemId: parsedEnd.event.operation.item,
+                    itemId: parsedEnd?.event?.operation?.item,
                     relativeX: endPos.x,
                     relativeY: endPos.y,
                     pointType: "Fixed",
                 },
                 startPoint: {
-                    itemId: parsedStart.event.operation.item,
+                    itemId: parsedStart?.event?.operation?.item,
                     relativeX: startPos.x,
                     relativeY: startPos.y,
                     pointType: "Fixed",
@@ -84,7 +85,7 @@ export const parseConnector = (payload: ConnectorPayload) => {
                     translateY: startPoint.y,
                 },
             },
-            item: uuid,
+            item: newItemId,
             class: "Board",
             method: "add",
         },

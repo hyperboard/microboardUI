@@ -4,14 +4,19 @@ import { Boards } from "Routes/V1/Boards";
 import { s3 } from "s3";
 import { client } from "trigger";
 import { getTransformedBoard } from "trigger/etl/parsers";
-import { processImageItem } from "trigger/etl/utils";
+import { imageUrlToBase64 } from "trigger/etl/utils";
 import { v4 } from "uuid";
 import { createLogger } from "winston";
 import { z } from "zod";
+import sizeOf from "image-size";
 
-const TALK_BUCKET_NAME = process.env.TALK_BUCKET_NAME || "talk";
 const HEARTBEAT_INTERVAL = 15000;
 const storageUrl = process.env.STORAGE_URL || "http://localhost:8001/api/v1/media";
+
+const talkConfig = {
+    bucket: process.env.TALK_BUCKET_NAME || "talk",
+    exportedFolder: "exported",
+};
 
 interface S3Board {
     board: string | null;
@@ -54,8 +59,8 @@ function spitBoardFiles(filePaths: string[]): S3Board {
 async function setLastActivity(taskId: string, io: IO) {
     const now = Date.now();
     try {
-        const taskJson = await s3.getJson(TALK_BUCKET_NAME, `tasks/exported/${taskId}.json`);
-        await s3.updateJsonFile(TALK_BUCKET_NAME, `tasks/exported/${taskId}.json`, {
+        const taskJson = await s3.getJson(talkConfig.bucket, `tasks/${talkConfig.exportedFolder}/${taskId}.json`);
+        await s3.updateJsonFile(talkConfig.bucket, `tasks/${talkConfig.exportedFolder}/${taskId}.json`, {
             ...taskJson,
             lastActivityTime: now,
         });
@@ -88,7 +93,7 @@ export const talkIntegrationJob = client.defineJob({
 
             const taskJson = await io.runTask(
                 "Get JSON File",
-                async () => await s3.getJson(TALK_BUCKET_NAME, `tasks/exported/${payload.id}.json`)
+                async () => await s3.getJson(talkConfig.bucket, `tasks/${talkConfig.exportedFolder}/${payload.id}.json`)
             );
 
             await io.logger.info("Importing board from Talk", {
@@ -101,7 +106,7 @@ export const talkIntegrationJob = client.defineJob({
 
             const boardFiles = await io.runTask(
                 "List Files",
-                async () => await s3.listAllFiles(TALK_BUCKET_NAME, `${workerID}/${payload.id}`)
+                async () => await s3.listAllFiles(talkConfig.bucket, `${workerID}/${payload.id}`)
             );
             await io.logger.info("Files found", {
                 files: boardFiles,
@@ -118,7 +123,7 @@ export const talkIntegrationJob = client.defineJob({
 
             const board = await io.runTask(
                 "Get Board",
-                async () => await s3.getJson(TALK_BUCKET_NAME, boardData.board!)
+                async () => await s3.getJson(talkConfig.bucket, boardData.board!)
             );
 
             await io.logger.info(`S3 Board fetched: ${boardData.board}`, {
@@ -130,7 +135,7 @@ export const talkIntegrationJob = client.defineJob({
                 let imageProcessingPromises: Promise<void>[] = [];
 
                 for (const itemFilePath of boardData.items) {
-                    const itemData = await s3.getJson(TALK_BUCKET_NAME, itemFilePath);
+                    const itemData = await s3.getJson(talkConfig.bucket, itemFilePath);
 
                     await io.logger.info(`Item fetched: ${itemFilePath}`, {
                         itemData,
@@ -141,11 +146,18 @@ export const talkIntegrationJob = client.defineJob({
                             const imageJsonPath = boardData.images.find((image) => image.includes(data.id));
                             const processImagePromise = (async () => {
                                 try {
-                                    const imageJson = await s3.getJson(TALK_BUCKET_NAME, imageJsonPath!);
+                                    const imageJson = await s3.getJson(talkConfig.bucket, imageJsonPath!);
                                     const hash = imageJson.FilePath;
+                                    const base64 = await imageUrlToBase64(`http://localhost:8000/api/v1/media${hash}`);
+
+                                    const base64Data = base64.replace(/^data:image\/\w+;base64,/, "");
+                                    const imgBuffer = Buffer.from(base64Data, "base64");
+                                    const dimensions = sizeOf(imgBuffer);
+
                                     const copiedImage = { ...data };
 
                                     copiedImage.data.imageUrl = `${storageUrl}${hash}`;
+                                    copiedImage.dimensions = dimensions;
                                     await io.logger.log(`Processed image: ${data.id}`, {
                                         image: copiedImage,
                                     });
@@ -178,7 +190,7 @@ export const talkIntegrationJob = client.defineJob({
 
                 let connectors: any[] = [];
                 for (const connectorFilePath of boardData.connectors) {
-                    const connectorData = await s3.getJson(TALK_BUCKET_NAME, connectorFilePath);
+                    const connectorData = await s3.getJson(talkConfig.bucket, connectorFilePath);
 
                     await io.logger.info(`Connector fetched: ${connectorFilePath}`, {
                         connectorData,
@@ -200,7 +212,7 @@ export const talkIntegrationJob = client.defineJob({
 
             const { items, connectors } = await fetchItemsFromS3();
 
-            const transformedBoard = getTransformedBoard({
+            const transformedBoard = await getTransformedBoard({
                 miroBoard: board,
                 userId: payload.userId,
                 items,
@@ -212,18 +224,23 @@ export const talkIntegrationJob = client.defineJob({
             });
 
             const boards = new Boards(database, winstonLogger);
-            const createdBoardId = await boards.saveBoardData(transformedBoard);
+            const createdBoard = await boards.saveBoardData(transformedBoard);
 
-            if (createdBoardId) {
+            if (createdBoard) {
                 await io.logger.info(`import success: ${payload.id}`);
                 await io.runTask(`Update JSON File: success ${payload.id}}`, async () => {
-                    await s3.updateJsonFile(TALK_BUCKET_NAME, `tasks/exported/${payload.id}.json`, {
-                        ...taskJson,
-                        MicroBoardId: createdBoardId,
-                    });
+                    await s3.updateJsonFile(
+                        talkConfig.bucket,
+                        `tasks/${talkConfig.exportedFolder}/${payload.id}.json`,
+                        {
+                            ...taskJson,
+                            MicroBoardId: createdBoard.boardId,
+                            MicroBoardEditLink: createdBoard.editLink,
+                        }
+                    );
                     await s3.moveFile(
-                        TALK_BUCKET_NAME,
-                        `tasks/exported/${payload.id}.json`,
+                        talkConfig.bucket,
+                        `tasks/${talkConfig.exportedFolder}/${payload.id}.json`,
                         `tasks/imported/${payload.id}.json`
                     );
                 });
@@ -236,14 +253,20 @@ export const talkIntegrationJob = client.defineJob({
                 error,
             });
             await io.runTask("Import error", async () => {
-                const taskJson = await s3.getJson(TALK_BUCKET_NAME, `tasks/exported/${payload.id}.json`);
-                await s3.updateJsonFile(TALK_BUCKET_NAME, `tasks/exported/${payload.id}.json`, {
+                const taskJson = await s3.getJson(
+                    talkConfig.bucket,
+                    `tasks/${talkConfig.exportedFolder}/${payload.id}.json`
+                );
+                await s3.updateJsonFile(talkConfig.bucket, `tasks/${talkConfig.exportedFolder}/${payload.id}.json`, {
                     ...taskJson,
-                    "MetaInfo.errorMessage": JSON.stringify(error),
+                    MetaInfo: {
+                        ...(taskJson.MetaInfo || {}),
+                        errorMessage: JSON.stringify(error),
+                    },
                 });
                 await s3.moveFile(
-                    TALK_BUCKET_NAME,
-                    `tasks/exported/${payload.id}.json`,
+                    talkConfig.bucket,
+                    `tasks/${talkConfig.exportedFolder}/${payload.id}.json`,
                     `tasks/import-error/${payload.id}.json`
                 );
             });

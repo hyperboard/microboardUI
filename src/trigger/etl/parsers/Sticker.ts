@@ -1,12 +1,14 @@
-import { StickyNoteItem } from "@mirohq/miro-api";
+import { FrameItem, StickyNoteItem } from "@mirohq/miro-api";
 import { makeInjectedText, parseTextFromSticker } from "./RichText";
-import { v4 } from "uuid";
+import { getItemPosition } from "./shared";
 
 interface StickerPayload {
     item: StickyNoteItem;
     boardId: string;
     userId: string;
     order: number;
+    newItemId: string;
+    parent?: FrameItem;
 }
 
 export const stickerColors = {
@@ -39,15 +41,10 @@ const colorsSticker = {
     black: stickerColors["Black Black"],
 };
 
-export const parseSticker = (payload: StickerPayload) => {
-    const { item, boardId, userId, order } = payload;
-    const uuid = v4();
+export const parseSticker = async (payload: StickerPayload) => {
+    const { item, boardId, userId, order, parent, newItemId } = payload;
 
-    const width = item.geometry?.width || 100;
-    const height = item.geometry?.height || 100;
-
-    const xOffset = width / 2;
-    const yOffset = height / 2;
+    const pos = await getItemPosition(item, parent);
 
     const event: any = {
         userId: userId,
@@ -60,14 +57,14 @@ export const parseSticker = (payload: StickerPayload) => {
                     rotate: 0,
                     scaleX: item.geometry?.width ? item.geometry?.width / 200 : 1,
                     scaleY: item.geometry?.height ? item.geometry?.height / 200 : 1,
-                    translateX: (item?.position?.x || 0) - xOffset,
-                    translateY: (item?.position?.y || 0) - yOffset,
+                    translateX: pos.x,
+                    translateY: pos.y,
                 },
                 backgroundColor: item?.style?.fillColor
                     ? colorsSticker[item?.style?.fillColor as keyof typeof colorsSticker] || stickerColors["Sky Blue"]
                     : stickerColors["Sky Blue"],
             },
-            item: uuid,
+            item: newItemId,
             class: "Board",
             method: "add",
         },

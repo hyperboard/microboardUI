@@ -31,23 +31,19 @@ class SizeLimitStream extends Transform {
 export function getMediaRouter(media: BarrelMediaDAL, logger: Logger) {
     const router = express.Router();
 
-    router.post(
-        "/media",
-        async (req: Request, res: Response, next: NextFunction) => {
-            const id = req.headers["x-image-id"] as string;
-            const format = req.headers["content-type"] || "unknown";
-            const storageURL = process.env.STORAGE_URL;
-            if (!storageURL) {
-                logger.error(
-                    `Error saving image with ID ${id}: env.STORAGE_URL is not defined`
-                );
-                return res.status(500).json({
-                    error: `Could not upload the image to storage, env.STORAGE_URL is not defined on the server`,
-                });
-            }
-            const src = `${storageURL}/${id}`;
-            const sizeLimitStream = new SizeLimitStream(maxSizeInBytes);
-            const passThroughStream = new PassThrough();
+    router.post("/media", async (req: Request, res: Response, next: NextFunction) => {
+        const id = req.headers["x-image-id"] as string;
+        const format = req.headers["content-type"] || "unknown";
+        const storageURL = process.env.SERVER_DAL_URL;
+        if (!storageURL) {
+            logger.error(`Error saving image with ID ${id}: env.SERVER_DAL_URL is not defined`);
+            return res.status(500).json({
+                error: `Could not upload the image to storage, env.SERVER_DAL_URL is not defined on the server`,
+            });
+        }
+        const src = `${storageURL}/${id}`;
+        const sizeLimitStream = new SizeLimitStream(maxSizeInBytes);
+        const passThroughStream = new PassThrough();
 
         req.pipe(sizeLimitStream)
             .on("error", (error) => {

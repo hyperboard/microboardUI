@@ -1,12 +1,14 @@
-import { ShapeItem } from "@mirohq/miro-api";
-import { v4 } from "uuid";
+import { FrameItem, ShapeItem } from "@mirohq/miro-api";
 import { makeInjectedText, parseTextFromShape } from "./RichText";
+import { getItemPosition } from "./shared";
 
 interface ShapePayload {
     item: ShapeItem;
     boardId: string;
     userId: string;
     order: number;
+    newItemId: string;
+    parent?: FrameItem;
 }
 
 const shapeTypes = {
@@ -39,20 +41,18 @@ const borderStyles = {
     dashed: "dash",
 };
 
-export const parseShape = (payload: ShapePayload) => {
-    const { item, boardId, userId, order } = payload;
-    const uuid = v4();
+export const parseShape = async (payload: ShapePayload) => {
+    const { item, boardId, userId, order, parent, newItemId } = payload;
+
+    const width = item.geometry?.width || 100;
+    const height = item.geometry?.height || 100;
+
+    const pos = await getItemPosition(item, parent);
 
     const fillStyle = {
         color: item?.style?.fillColor || "#ffffff",
         opacity: item?.style?.fillOpacity ? Number(item?.style?.fillOpacity) : 1.0,
     };
-
-    const width = item.geometry?.width || 100;
-    const height = item.geometry?.height || 100;
-
-    const xOffset = width / 2;
-    const yOffset = height / 2;
 
     const event: any = {
         userId: userId,
@@ -72,13 +72,13 @@ export const parseShape = (payload: ShapePayload) => {
                     rotate: 0,
                     scaleX: width / 100,
                     scaleY: height / 100,
-                    translateX: (item?.position?.x || 0) - xOffset,
-                    translateY: (item?.position?.y || 0) - yOffset,
+                    translateX: pos.x,
+                    translateY: pos.y,
                 },
                 backgroundColor: fillStyle.color === "#ffffff" ? "transparent" : fillStyle.color,
                 backgroundOpacity: fillStyle.color === "#ffffff" ? 0 : fillStyle.opacity,
             },
-            item: uuid,
+            item: newItemId,
             class: "Board",
             method: "add",
         },

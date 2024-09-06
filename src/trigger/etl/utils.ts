@@ -4,7 +4,7 @@ import { Blob } from "node:buffer";
 import { Readable } from "node:stream";
 import { Buffer } from "node:buffer";
 
-async function imageUrlToBase64(url: string): Promise<string> {
+export async function imageUrlToBase64(url: string): Promise<string> {
     try {
         const response = await fetch(url);
 

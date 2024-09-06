@@ -40,21 +40,44 @@ interface TransformedBoard {
     items: any[];
 }
 
-export const getTransformedBoard = (payload: BoardPayload): TransformedBoard => {
-    const { miroBoard, items, connectors, userId } = payload;
-    const uuid = v4();
+export const getTransformedBoard = async (payload: BoardPayload): Promise<TransformedBoard> => {
+    const { items, connectors, userId, miroBoard } = payload;
+    const boardUUID = v4();
+    let order = 0;
 
-    const parsedItems = items.reduce<any[]>((acc, data, index) => {
+    let frames: Map<string, { item: { frame: FrameItem; newItemId: string }; children: string[] }> = new Map();
+
+    const parents = await items.reduce<Promise<any[]>>(async (accPromise, data, index) => {
+        const acc = await accPromise;
+        if (data?.item?.type === "frame") {
+            acc.push(data.item);
+        }
+        return acc;
+    }, Promise.resolve([]));
+
+    const parsedItems = await items.reduce<Promise<any[]>>(async (accPromise, data, index) => {
+        const acc = await accPromise;
+        const itemUUID = v4();
         if (data?.item.type === "connector" && !(data.item as Connector).isSupported) {
             return acc;
         }
+        if (data?.item.type === "frame") {
+            frames.set(data.item.id, { item: { frame: data.item as FrameItem, newItemId: itemUUID }, children: [] });
+        }
+        let parent: FrameItem | undefined = undefined;
+        if (data?.item?.parent) {
+            parent = parents.find((p) => {
+                return p.id === data?.item?.parent?.id;
+            });
+        }
 
-        const event = getParseFunction({
+        const event = await getParseFunction({
             item: data.item,
-            miroBoard,
-            order: index + 1,
-            boardId: uuid,
+            newItemId: itemUUID,
+            order: ++order,
+            boardId: boardUUID,
             userId: userId,
+            parent: parent,
         });
 
         if (!event) {
@@ -63,53 +86,85 @@ export const getTransformedBoard = (payload: BoardPayload): TransformedBoard => 
 
         acc.push({ event, originalId: data.item.id });
 
-        return acc;
-    }, []);
+        if (data?.item.type !== "frame" && data?.item.parent && frames.has(data.item.parent.id)) {
+            frames.get(data.item?.parent?.id)!.children.push(itemUUID);
+        }
 
-    const parsedConnectors = connectors.reduce<any[]>((acc, data, index) => {
+        return acc;
+    }, Promise.resolve([]));
+
+    const parsedConnectors = await connectors.reduce<Promise<any[]>>(async (accPromise, data, index) => {
+        const acc = await accPromise;
+        const itemUUID = v4();
+
         if (data?.item?.isSupported === false) {
             return acc;
         }
-        const startItem = items.find((item) => item.item.id === data.item?.startItem?.id);
-        const endItem = items.find((item) => item.item.id === data.item?.endItem?.id);
-        const parsedStart = parsedItems.find((item) => item.originalId === startItem?.item.id);
-        const parsedEnd = parsedItems.find((item) => item.originalId === endItem?.item.id);
+
+        const startItem = await items.find((item) => item.item.id === data.item?.startItem?.id);
+        const endItem = await items.find((item) => item.item.id === data.item?.endItem?.id);
+        const parsedStart = await parsedItems.find((item) => item.originalId === startItem?.item.id);
+        const parsedEnd = await parsedItems.find((item) => item.originalId === endItem?.item.id);
+
         if (!startItem || !endItem) {
             return acc;
         }
-        const event = parseConnector({
+
+        const event = await parseConnector({
             item: data.item,
             startItem: startItem.item,
             endItem: endItem.item,
             userId: userId,
-            boardId: uuid,
+            boardId: boardUUID,
             parsedStart,
             parsedEnd,
-            order: parsedItems.length + index + 1,
+            order: ++order,
+            newItemId: itemUUID,
         });
 
         acc.push(event);
         return acc;
-    }, []);
+    }, Promise.resolve([]));
+
+    const frameAddChildEvents = Array.from(frames.entries()).flatMap(([frameId, frameData]) => {
+        return frameData.children.map((childId) => {
+            const newOrder = ++order;
+            const event = {
+                eventId: `${userId}:${newOrder}`,
+                userId: userId,
+                boardId: boardUUID,
+                order: newOrder,
+                operation: {
+                    class: "Frame",
+                    method: "addChild",
+                    item: [frameData.item.newItemId],
+                    childId: childId,
+                },
+            };
+
+            return event;
+        });
+    });
 
     return {
         id: miroBoard.id,
         name: miroBoard.name || "Untitled",
-        items: [...parsedItems.map((item) => item.event), ...parsedConnectors],
+        items: [...parsedItems.map((item) => item.event), ...parsedConnectors, ...frameAddChildEvents],
     };
 };
 
 interface ItemPayload {
     item: WidgetItem;
-    miroBoard: Board;
     boardId: string;
     userId: string;
     order: number;
+    newItemId: string;
     startItem?: WidgetItem;
     endItem?: WidgetItem;
+    parent?: FrameItem;
 }
 
-const getParseFunction = (data: ItemPayload) => {
+const getParseFunction = async (data: ItemPayload) => {
     switch (data.item.type) {
         case MiroBoardItemTypes.SHAPE:
             return parseShape({

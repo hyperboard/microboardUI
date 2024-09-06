@@ -4,7 +4,7 @@ import { Boards } from "../../Routes/V1/Boards";
 import { client } from "..";
 import { getDatabase } from "../../Database";
 import { createLogger } from "winston";
-import Miro, { Board, MiroApi } from "@mirohq/miro-api";
+import { Board, MiroApi } from "@mirohq/miro-api";
 import { BUCKET_NAME, minioClient } from "Routes/V1/Media/MinioClient";
 import { v4 } from "uuid";
 import { getTransformedBoard } from "trigger/etl/parsers";
@@ -72,7 +72,7 @@ export const importMiroBoard = client.defineJob({
             });
 
             const transformedBoard = await io.runTask("transform Board", async () => {
-                return getTransformedBoard({
+                return await getTransformedBoard({
                     miroBoard: board,
                     userId: userId,
                     items,
@@ -80,14 +80,14 @@ export const importMiroBoard = client.defineJob({
                 });
             });
 
-            minioClient.putObject(BUCKET_NAME, `${boardId}.json`, JSON.stringify(transformedBoard));
+            minioClient!.putObject(BUCKET_NAME, `${boardId}.json`, JSON.stringify(transformedBoard));
 
             await io.logger.info(`Transformed board: `, {
                 transformedBoard,
             });
 
             const boards = new Boards(database, winstonLogger);
-            const savedBoardID = await boards.saveBoardData(transformedBoard);
+            const savedBoard = await boards.saveBoardData(transformedBoard);
 
             const notifyResponse = await io.runTask("notify clients", async () => {
                 const response = await fetch(NOTIFY_URL, {
@@ -99,7 +99,7 @@ export const importMiroBoard = client.defineJob({
                         type: "JobComplete-ImportMiroBoard",
                         userId,
                         jobId: ctx.run.id,
-                        boardId: savedBoardID,
+                        boardId: savedBoard.editLink,
                     }),
                 });
 
@@ -109,7 +109,7 @@ export const importMiroBoard = client.defineJob({
                 type: "JobComplete-ImportMiroBoard",
                 userId,
                 jobId: ctx.run.id,
-                boardId: savedBoardID,
+                boardId: savedBoard.editLink,
             });
 
             await io.logger.info(`Notify response: `, {
