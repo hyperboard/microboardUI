@@ -18,7 +18,8 @@ import TestComponent from "./Embedding/Test";
 import SelectBoard from "./Embedding/SelectBoard";
 
 export function getRender(app: App): () => void {
-	new IframeModule(app);
+	// new IframeModule(app);
+	const iframeModule = IframeModule.getInstance(app);
 
 	const router = createBrowserRouter([
 		{

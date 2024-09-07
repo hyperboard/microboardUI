@@ -52,6 +52,7 @@ interface MakeSnapshotMessage {
 type Message = SetAuthTokenMessage | KeyboardEventMessage | MakeSnapshotMessage;
 
 export class IframeModule {
+	private static instance: IframeModule | null = null;
 	private origins: string[];
 	private app: App;
 
@@ -67,14 +68,21 @@ export class IframeModule {
 		}
 		window.addEventListener(
 			"message",
-			(event: MessageEvent<Message>) => {
+			async (event: MessageEvent<Message>) => {
 				// if (!this.allowOrigins(event, this.origins)) {
 				//   return;
 				// }
-				this.handleCustomMessages(event.data);
+				await this.handleCustomMessages(event.data);
 			},
 			false,
 		);
+	}
+
+	static getInstance(app: App, origins?: string[]): IframeModule {
+		if (!IframeModule.instance) {
+			IframeModule.instance = new IframeModule(app, origins);
+		}
+		return IframeModule.instance;
 	}
 
 	private allowOrigins(
@@ -89,59 +97,102 @@ export class IframeModule {
 		return true;
 	}
 
-	private handleCustomMessages(data: Message): void {
-		console.log("Message: ", data);
+	private async handleCustomMessages(data: Message): Promise<void> {
+		try {
+			// console.log("Message: ", data);
 
-		if (data.pattern === "updateUserToken") {
-			Cookies.set("mb_accessToken", data.payload.accessToken, {
-				secure: false,
-			});
-			Cookies.set("mb_refreshToken", data.payload.refreshToken, {
-				secure: false,
-			});
-		}
-
-		if (data.pattern === "makeSnapshot") {
-			if (!isIframe()) {
-				return;
-			}
-			const board: Board = this.app.getBoard() as Board;
-
-			if (!board) {
-				return;
+			if (data.pattern === "updateUserToken") {
+				Cookies.set("mb_accessToken", data.payload.accessToken, {
+					secure: false,
+				});
+				Cookies.set("mb_refreshToken", data.payload.refreshToken, {
+					secure: false,
+				});
 			}
 
-			const cachedSelection = board.selection.items.list();
-			board.selection.addAll();
+			if (data.pattern === "makeSnapshot") {
+				if (!isIframe()) {
+					console.warn("Not in an iframe, snapshot creation aborted");
+					return;
+				}
 
-			const snapshot = exportBoardSnapshot({
-				board,
-				selection: board.selection.getMbr()!,
-				nameToExport:
-					`board-${board.getBoardId()}.png` || data.payload.name,
-				upscaleTo: 4000,
-			});
+				const board: Board = this.app.getBoard() as Board;
 
-			board.selection.removeAll();
-			board.selection.add(cachedSelection);
+				if (!board) {
+					console.error("Board not found");
+					this.sendSnapshotError("Board not found");
+					return;
+				}
 
+				try {
+					const cachedSelection = board.selection.items.list();
+					board.selection.addAll();
+
+					const snapshot = await exportBoardSnapshot({
+						board,
+						selection: board.selection.getMbr()!,
+						nameToExport:
+							data.payload.name ||
+							`board-${board.getBoardId()}.png`,
+						upscaleTo: 4000,
+					});
+
+					board.selection.removeAll();
+					board.selection.add(cachedSelection);
+
+					if (snapshot && snapshot.dataUrl) {
+						this.sendSnapshotCreated(snapshot);
+					} else {
+						this.sendSnapshotError("Invalid snapshot data");
+					}
+				} catch (error) {
+					console.error("Error creating snapshot:", error);
+					this.sendSnapshotError("Failed to create snapshot");
+				} finally {
+					board.selection.removeAll();
+				}
+			}
+
+			if (data.pattern === "iframeEvent") {
+				if (isIframe()) {
+					const keyboardEvent = new KeyboardEvent(
+						data.payload.event.eventType,
+						{ ...data.payload.event.eventData },
+					);
+					window.self.dispatchEvent(keyboardEvent);
+				}
+			}
+		} catch (error) {
 			window.parent.postMessage(
 				{
-					pattern: "makeSnapshot",
-					payload: JSON.stringify(snapshot),
+					pattern: "MicroboardError",
+					payload: JSON.stringify({ error }),
 				},
 				"*",
 			);
 		}
+	}
 
-		if (data.pattern === "iframeEvent") {
-			if (isIframe()) {
-				const keyboardEvent = new KeyboardEvent(
-					data.payload.event.eventType,
-					{ ...data.payload.event.eventData },
-				);
-				window.self.dispatchEvent(keyboardEvent);
-			}
-		}
+	private sendSnapshotCreated(snapshot: {
+		dataUrl: string;
+		nameToExport: string;
+	}): void {
+		window.parent.postMessage(
+			{
+				pattern: "snapshotCreated",
+				payload: JSON.stringify(snapshot),
+			},
+			"*",
+		);
+	}
+
+	private sendSnapshotError(errorMessage: string): void {
+		window.parent.postMessage(
+			{
+				pattern: "snapshotError",
+				payload: JSON.stringify({ error: errorMessage }),
+			},
+			"*",
+		);
 	}
 }
