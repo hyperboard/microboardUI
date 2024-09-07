@@ -52,6 +52,11 @@ interface SnapshotResponse {
 	lastEventOrder: number;
 }
 
+interface ViewMode {
+	type: "ViewMode";
+	boardId: string;
+}
+
 export type SocketMessage =
 	| Auth
 	| BoardEvent
@@ -59,6 +64,7 @@ export type SocketMessage =
 	| Subscribe
 	| Unsubscribe
 	| Error
+	| ViewMode
 	| SnapshotRequest
 	| SnapshotResponse;
 

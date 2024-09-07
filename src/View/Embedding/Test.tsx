@@ -29,9 +29,9 @@ const TestComponent: React.FC = () => {
 					(window as any).microboardOpener.selectBoard({
 						success: data => {
 							console.log("SUCCESS", data);
-							const { authorLink } = data;
+							const { authorLink, visitorsLink } = data;
 							if (containerRef.current) {
-								containerRef.current.innerHTML = `<iframe src="${authorLink}" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>`;
+								containerRef.current.innerHTML = `<iframe src="${visitorsLink}" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>`;
 							}
 						},
 						error: console.error,

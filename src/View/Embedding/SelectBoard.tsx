@@ -7,9 +7,14 @@ import { App } from "App";
 import { useTranslation } from "react-i18next";
 import { TFunction } from "i18next";
 import { VisitedPublicBoard } from "App/Storage";
-import Selector from "./Selector";
+import Selector, { SelectorHandle } from "./Selector";
 import { useAuth } from "shared/hooks/useAuth";
 import { getEmbedUrl } from "lib/getEmbedUrl";
+import Cookies from "js-cookie";
+import { getApiUrl } from "Config";
+import toast from "react-hot-toast";
+import { notify } from "View/Ui/Toast";
+import { ICreateStringAttachment } from "@cucumber/cucumber/lib/runtime/attachment_manager";
 
 const customHeader: CSSProperties = {
 	padding: "6px",
@@ -37,6 +42,7 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 	const { t } = useTranslation();
 	const searchRef = useRef<HTMLInputElement>(null);
 	const newBoardRef = useRef<HTMLInputElement>(null);
+	const selectorRef = useRef<SelectorHandle>(null);
 	const { isAuth } = useAuth(app);
 	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [selected, setSelected] = useState<
@@ -60,23 +66,87 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 		// "*" - ANY OPENER ORIGIN, REPLACE HERE
 	}
 
-	function handleSelect(
-		boardId: string,
-		name?: string,
-		actualId?: string,
+	function successMessageToParent(
+		authorLinkId: string,
+		visitorsLinkId: string,
+		name: string,
+		id?: string,
 	): void {
 		window.opener?.postMessage(
 			{
 				success: {
-					visitorsLink: `${getEmbedUrl()}/boards/${boardId}?titlePanel=false`,
-					authorLink: `${getEmbedUrl()}/boards/${boardId}?titlePanel=false`,
-					name: getName(t, name),
-					id: actualId,
+					visitorsLink: `${getEmbedUrl()}/boards/${visitorsLinkId}?titlePanel=false`,
+					authorLink: `${getEmbedUrl()}/boards/${authorLinkId}?titlePanel=false`,
+					name,
+					id,
 				},
 			},
 			"*",
 		);
 		// "*" - ANY OPENER ORIGIN, REPLACE HERE
+	}
+
+	async function handleSuccess(
+		boardId: string,
+		name?: string,
+		actualId?: string,
+		authorKey?: string,
+	): Promise<void> {
+		if (
+			selectorRef.current?.getSelectedOption().value === "view" &&
+			actualId
+		) {
+			console.log("VIEW", boardId, actualId, authorKey);
+			const authedUrl = `${getApiUrl()}/boards/${actualId}/links`;
+			const unauthedUrl = `${getApiUrl()}/boards/${actualId}/links/unauthed`;
+			const url = app.storage.isAuth
+				? authedUrl
+				: authorKey
+				? unauthedUrl
+				: "";
+			if (!url) {
+				throw new Error("unable to create link");
+			}
+			const body = JSON.stringify({
+				type: "view",
+				authorKey,
+			});
+
+			let response = await fetch(url, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body,
+			});
+
+			if (!response.ok) {
+				// user might be authed, but could not claim board
+				// so try to create link with authorKey instead of token
+				response = await fetch(unauthedUrl, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body,
+				});
+			}
+			const { linkId } = await response.json();
+			console.log("created link", linkId);
+			if (!linkId) {
+				handleError(
+					"could not create view link, try again later or with new board",
+				);
+			}
+			successMessageToParent(boardId, linkId, getName(t, name), actualId);
+		} else {
+			successMessageToParent(
+				boardId,
+				boardId,
+				getName(t, name),
+				actualId,
+			);
+		}
 	}
 
 	useEffect(() => {
@@ -113,12 +183,23 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 				const created = await app.createPublicBoard(
 					newBoardRef.current?.value,
 				);
-				handleSelect(created, newBoardRef.current?.value);
+				const stored = app.storage.getBoard(created);
+				handleSuccess(
+					created,
+					newBoardRef.current?.value,
+					stored?.actualId,
+					stored?.authorKey,
+				);
 			} catch (er) {
 				handleError(er);
 			}
 		} else if (selected) {
-			handleSelect(selected.boardId, selected.name, selected.actualId);
+			handleSuccess(
+				selected.boardId,
+				selected.name,
+				selected.actualId,
+				selected.authorKey,
+			);
 		}
 	};
 
@@ -242,6 +323,7 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 								]}
 							/>} */}
 							<Selector
+								ref={selectorRef}
 								label={t("embedding.allVisitors")}
 								options={[
 									{
@@ -262,16 +344,24 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 											</div>
 										),
 									},
-									// {
-									//   value: "view",
-									//   label: (
-									//     <div
-									//       className={style.selectorText}
-									//     >
-									//       {<Icon style={{ marginRight: "10px" }} iconName="canView" width={20} height={20} />}{" "}{t("embedding.canView")}
-									//     </div>
-									//   ),
-									// },
+									{
+										value: "view",
+										label: (
+											<div className={style.selectorText}>
+												{
+													<Icon
+														style={{
+															marginRight: "10px",
+														}}
+														iconName="canView"
+														width={20}
+														height={20}
+													/>
+												}{" "}
+												{t("embedding.canView")}
+											</div>
+										),
+									},
 								]}
 							/>
 						</div>
