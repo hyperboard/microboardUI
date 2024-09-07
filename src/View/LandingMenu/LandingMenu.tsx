@@ -39,9 +39,9 @@ export function LandingMenu() {
 					rounded="none"
 					variant="secondary"
 					target="_parent"
-					href={`${LANDING_URL}#features`}
+					href={`${LANDING_URL}/perenos-dannih-iz-miro`}
 				>
-					{t("landing.menu.features")}
+					{t("landing.menu.importFromMiro")}
 				</UiLink>
 				<UiSeparator vertical />
 

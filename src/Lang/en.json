@@ -385,6 +385,7 @@
 		"menu": {
 			"about": "About Microboard",
 			"features": "Features",
+			"importFromMiro": "Import from Miro",
 			"price": "Pricing",
 			"buy": "Buy"
 		}

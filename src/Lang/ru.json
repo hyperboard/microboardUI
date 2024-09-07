@@ -383,6 +383,7 @@
 		"menu": {
 			"about": "О сервисе",
 			"features": "Возможности",
+			"importFromMiro": "Перенос из Miro",
 			"price": "Цены",
 			"buy": "Купить"
 		}
