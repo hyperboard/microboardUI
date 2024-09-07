@@ -392,10 +392,7 @@ export const UserPanel: React.FC<{ app: App }> = ({ app }) => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 
-	const insideOfMicroboard =
-		window.parent &&
-		window.parent.location &&
-		window.parent.location.href.includes("microboard");
+	const insideOfMicroboard = document.referrer.includes("microboard");
 
 	if (!isAuth) {
 		return (
