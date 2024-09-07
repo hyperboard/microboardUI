@@ -8,6 +8,7 @@ import { AccessToken } from "Interface";
 import { jwtMiddleware } from "Middlewares/jwt.middleware";
 import validator from "validator";
 import { createToken } from "Tokens";
+import { HttpStatus } from "shared/enums/http-status.enum";
 
 function checkPermissions(
     jwt: AccessToken,
@@ -453,6 +454,47 @@ export function getBoardsRouter(
             } catch (err) {
                 logger.error(err);
                 res.status(500).send("Server error");
+            }
+        }
+    );
+
+    // Creating a link to a board for reading or editing unauthed
+    router.post(
+        "/boards/:boardId/links/unauthed",
+        param("boardId").isUUID(),
+        body("type").isIn(["edit", "view"]),
+        body("authorKey").isUUID(),
+        async (req: Request, res: Response) => {
+            try {
+                const errors = validationResult(req);
+                if (!errors.isEmpty()) {
+                    return res.status(HttpStatus.BAD_REQUEST).json({ errors: errors.array() });
+                }
+
+                const boardId = req.params.boardId;
+                const { type, authorKey } = req.body
+                
+                const boardExists = await boards.isBoardExists(boardId);
+                if (!boardExists) {
+                    return res.status(HttpStatus.NOT_FOUND).json({ message: "Board not found" });
+                }
+                
+                const hasBoardOwnership = boards.isValidAuthorKey(boardId, authorKey)
+                if (!hasBoardOwnership) {
+                    return forbidden(res);
+                }
+                
+                const linkId = uuidv4();
+                await boards.createLink(boardId, type, linkId);
+
+                const linkUri = `./boards/${linkId}`;
+                return res.status(HttpStatus.CREATED).json({
+                    linkId,
+                    linkUri,
+                });
+            } catch (err) {
+                logger.error(err);
+                return res.status(500).send("Server error");
             }
         }
     );

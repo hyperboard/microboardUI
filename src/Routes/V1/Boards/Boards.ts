@@ -264,6 +264,49 @@ export class Boards {
         }
     }
 
+    async createViewLink(boardId: string): Promise<any> {
+        try {
+            validateUUID(boardId, "boardId");
+            const linkId = uuidv4();
+            return this.createLink(boardId, "view", linkId);
+        } catch (error) {
+            this.logger.error(`Error creating link: ${error}`);
+            throw error;
+        }
+    }
+
+    async getBoardByLink(link: string): Promise<any> {
+        try {
+            validateUUID(link, "link");
+    
+            const queryText = `
+                SELECT b.uniq_id as boardId, b.created, b.boardname as title
+                FROM boards b
+                LEFT JOIN board_edit_link bel ON b.id = bel.board_id
+                LEFT JOIN board_view_link bvl ON b.id = bvl.board_id
+                WHERE bel.edit_link_uuid = $1 OR bvl.view_link_uuid = $1
+                LIMIT 1
+            `;
+    
+            const result = await this.database.query(queryText, [link]);
+    
+            if (result.rows.length === 0) {
+                return undefined;
+            }
+    
+            const row = result.rows[0];
+            this.logger.info(`found id: ${row.boardid}`)
+            return {
+                boardId: row.boardid,
+                created: row.created,
+                title: row.title,
+            };
+        } catch (error) {
+            this.logger.error(`Error fetching board by link ${link}: ${error}`);
+            throw error;
+        }
+    }
+
     async createLink(boardId: string, type: string, linkId: string): Promise<any> {
         try {
             validateUUID(boardId, "boardId");

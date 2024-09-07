@@ -130,6 +130,10 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
                 );
             }
             subscribeClientToBoard(ws, msg.boardId);
+            const details = await boards.getLinkDetails(msg.boardId);
+            if (details?.type === "view") {
+                enforceViewMode(ws, msg.boardId);
+            }
             await sendInitialDataToClient(ws, msg.boardId);
         } catch (error) {
             return sendError(ws, "Access denied: Subscribe to board events.");
@@ -182,6 +186,15 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         const clients = boardClients.get(boardId) ?? [];
         clients.push(ws);
         boardClients.set(boardId, clients);
+    }
+
+    function enforceViewMode(ws: WebSocket, boardId: string) {
+        ws.send(
+            JSON.stringify({
+                type: "ViewMode",
+                boardId: boardId,
+            })
+        );
     }
 
     async function sendInitialDataToClient(ws: WebSocket, boardId: string) {
