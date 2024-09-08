@@ -1,6 +1,6 @@
 import React, { CSSProperties, useEffect, useRef, useState } from "react";
 import { FolderItem, Folders } from "View/Folder";
-import { Icon, Logo } from "View/Icon";
+import { Icon, Logo } from "../Icon";
 import style from "./SelectBoard.module.css";
 import { BoardName } from "View/BoardName";
 import { App } from "App";

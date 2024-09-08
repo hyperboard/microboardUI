@@ -1,12 +1,10 @@
+import { App } from "App";
 import { useAppSubscription } from "Board/useBoardSubscription";
 import { useForceUpdate } from "lib/useForceUpdate";
-import { PropsWithChildren } from "react";
-import { useAppContext } from "./AppContext";
-import React from "react";
+import React, { PropsWithChildren } from "react";
 
-type Props = PropsWithChildren<{}>;
-export function ViewModeGuard({ children }: Props) {
-	const { app, board } = useAppContext();
+type Props = PropsWithChildren<{ app: App }>;
+export function ViewModeGuard({ children, app }: Props) {
 	const forceUpdate = useForceUpdate();
 	useAppSubscription(app, {
 		subjects: ["tools"],
@@ -14,6 +12,7 @@ export function ViewModeGuard({ children }: Props) {
 			forceUpdate();
 		},
 	});
+	const board = app.getBoard();
 	if (board.interfaceType === "view") {
 		return null;
 	}
