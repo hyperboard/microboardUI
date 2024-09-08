@@ -66,111 +66,113 @@ export function getController(
 		}
 
 		const context = board.selection.getContext();
-		const isHotkeyTriggered = checkHotkeys(
-			{
-				select: {
-					cb: () => board.tools.select(true),
-					selectionContext: ["SelectUnderPointer", "None"],
-				},
-				text: {
-					cb: () => board.tools.addText(true),
-					selectionContext: ["SelectUnderPointer", "None"],
-				},
-				sticker: {
-					cb: () => board.tools.addSticker(true),
-					selectionContext: ["SelectUnderPointer", "None"],
-				},
-				shape: {
-					cb: () => board.tools.addShape(true),
-					selectionContext: ["SelectUnderPointer", "None"],
-				},
-				connector: {
-					cb: () => board.tools.addConnector(true),
-					selectionContext: ["SelectUnderPointer", "None"],
-				},
-				pen: {
-					cb: () => board.tools.addDrawing(true),
-					selectionContext: ["SelectUnderPointer", "None"],
-				},
-				frame: {
-					cb: () => board.tools.addFrame(true),
-					selectionContext: ["SelectUnderPointer", "None"],
-				},
-				duplicate: {
-					cb: () => board.selection.duplicate(),
-					selectionContext: [
-						"EditUnderPointer",
-						"SelectByRect",
-						"EditTextUnderPointer",
-					],
-				},
-				bringToFront: {
-					cb: () => board.selection.bringToFront(),
-					selectionContext: [
-						"EditUnderPointer",
-						"SelectByRect",
-						"EditTextUnderPointer",
-					],
-				},
-				sendToBack: {
-					cb: () => board.selection.sendToBack(),
-					selectionContext: [
-						"EditUnderPointer",
-						"SelectByRect",
-						"EditTextUnderPointer",
-					],
-				},
-				delete: {
-					cb: () => board.selection.removeFromBoard(),
-					selectionContext: ["EditUnderPointer", "SelectByRect"],
-				},
-				textBold: {
-					cb: () => board.selection.setFontStyle("bold"),
-					selectionContext: [
-						"EditTextUnderPointer",
-						"EditUnderPointer",
-						"SelectByRect",
-					],
-				},
-				textItalic: {
-					cb: () => board.selection.setFontStyle("italic"),
-					selectionContext: [
-						"EditTextUnderPointer",
-						"EditUnderPointer",
-						"SelectByRect",
-					],
-				},
-				textStrike: {
-					cb: () => board.selection.setFontStyle("line-through"),
-					selectionContext: [
-						"EditTextUnderPointer",
-						"EditUnderPointer",
-						"SelectByRect",
-					],
-				},
-				textUnderline: {
-					cb: () => board.selection.setFontStyle("underline"),
-					selectionContext: [
-						"EditTextUnderPointer",
-						"EditUnderPointer",
-						"SelectByRect",
-					],
-				},
-				selectAll: {
-					cb: () => board.selection.addAll(),
-					selectionContext: [
-						"None",
-						"EditUnderPointer",
-						"SelectByRect",
-					],
-				},
-				undo: () => board.events?.undo(),
-				redo: () => board.events?.redo(),
-				cancel: () => board.tools.cancel(),
-				zoomIn: () => board.camera.zoomInToViewCenter(),
-				zoomOut: () => board.camera.zoomOutFromViewCenter(),
-				zoomDefault: () => board.camera.zoomToViewCenter(1),
+		const editModeHotkeys = {
+			select: {
+				cb: () => board.tools.select(true),
+				selectionContext: ["SelectUnderPointer", "None"],
 			},
+			text: {
+				cb: () => board.tools.addText(true),
+				selectionContext: ["SelectUnderPointer", "None"],
+			},
+			sticker: {
+				cb: () => board.tools.addSticker(true),
+				selectionContext: ["SelectUnderPointer", "None"],
+			},
+			shape: {
+				cb: () => board.tools.addShape(true),
+				selectionContext: ["SelectUnderPointer", "None"],
+			},
+			connector: {
+				cb: () => board.tools.addConnector(true),
+				selectionContext: ["SelectUnderPointer", "None"],
+			},
+			pen: {
+				cb: () => board.tools.addDrawing(true),
+				selectionContext: ["SelectUnderPointer", "None"],
+			},
+			frame: {
+				cb: () => board.tools.addFrame(true),
+				selectionContext: ["SelectUnderPointer", "None"],
+			},
+			duplicate: {
+				cb: () => board.selection.duplicate(),
+				selectionContext: [
+					"EditUnderPointer",
+					"SelectByRect",
+					"EditTextUnderPointer",
+				],
+			},
+			bringToFront: {
+				cb: () => board.selection.bringToFront(),
+				selectionContext: [
+					"EditUnderPointer",
+					"SelectByRect",
+					"EditTextUnderPointer",
+				],
+			},
+			sendToBack: {
+				cb: () => board.selection.sendToBack(),
+				selectionContext: [
+					"EditUnderPointer",
+					"SelectByRect",
+					"EditTextUnderPointer",
+				],
+			},
+			delete: {
+				cb: () => board.selection.removeFromBoard(),
+				selectionContext: ["EditUnderPointer", "SelectByRect"],
+			},
+			textBold: {
+				cb: () => board.selection.setFontStyle("bold"),
+				selectionContext: [
+					"EditTextUnderPointer",
+					"EditUnderPointer",
+					"SelectByRect",
+				],
+			},
+			textItalic: {
+				cb: () => board.selection.setFontStyle("italic"),
+				selectionContext: [
+					"EditTextUnderPointer",
+					"EditUnderPointer",
+					"SelectByRect",
+				],
+			},
+			textStrike: {
+				cb: () => board.selection.setFontStyle("line-through"),
+				selectionContext: [
+					"EditTextUnderPointer",
+					"EditUnderPointer",
+					"SelectByRect",
+				],
+			},
+			textUnderline: {
+				cb: () => board.selection.setFontStyle("underline"),
+				selectionContext: [
+					"EditTextUnderPointer",
+					"EditUnderPointer",
+					"SelectByRect",
+				],
+			},
+			selectAll: {
+				cb: () => board.selection.addAll(),
+				selectionContext: ["None", "EditUnderPointer", "SelectByRect"],
+			},
+			undo: () => board.events?.undo(),
+			redo: () => board.events?.redo(),
+			cancel: () => board.tools.cancel(),
+			zoomIn: () => board.camera.zoomInToViewCenter(),
+			zoomOut: () => board.camera.zoomOutFromViewCenter(),
+			zoomDefault: () => board.camera.zoomToViewCenter(1),
+		};
+		const viewModeHotkeys = {
+			zoomIn: () => board.camera.zoomInToViewCenter(),
+			zoomOut: () => board.camera.zoomOutFromViewCenter(),
+			zoomDefault: () => board.camera.zoomToViewCenter(1),
+		};
+		const isHotkeyTriggered = checkHotkeys(
+			board.interfaceType === "edit" ? editModeHotkeys : viewModeHotkeys,
 			event,
 			board,
 		);

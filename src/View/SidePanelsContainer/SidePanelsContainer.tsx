@@ -30,7 +30,7 @@ export const SidePanelsContainer = memo(
 				{showTitlePanel() && <TitlePanel />}
 				<SidePanel />
 				<InactiveBoardHidder>
-					{app.getBoard().interfaceType !== "view" && <ToolsPanel />}
+					<ToolsPanel />
 				</InactiveBoardHidder>
 			</div>
 		);

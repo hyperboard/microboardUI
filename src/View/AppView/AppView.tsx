@@ -19,6 +19,7 @@ import style from "./AppView.module.css";
 import NoBoardIsOpen from "./NoBoardIsOpen";
 import { InactiveBoardHidder } from "./InactiveBoardHidder";
 import { showTitlePanel } from "lib/queryStringParser";
+import { ViewModeGuard } from "View/ViewModeGuard";
 
 export function AppView() {
 	const { app, board } = useAppContext();
@@ -134,20 +135,26 @@ export function AppView() {
 				</div>
 			</InactiveBoardHidder>
 			{appBoard.getBoardId() === "blank" && <NoBoardIsOpen />}
-			<ExportVisible>
-				<SidePanelsContainer
-					isBlank={appBoard.getBoardId() === "blank"}
-				/>
-				<ContextMenu />
-			</ExportVisible>
-			<ExportVisible>
-				<UserPanel app={app} />
-			</ExportVisible>
+			<ViewModeGuard>
+				<ExportVisible>
+					<SidePanelsContainer
+						isBlank={appBoard.getBoardId() === "blank"}
+					/>
+					<ContextMenu />
+				</ExportVisible>
+			</ViewModeGuard>
+			<ViewModeGuard>
+				<ExportVisible>
+					<UserPanel app={app} />
+				</ExportVisible>
+			</ViewModeGuard>
 			<InactiveBoardHidder>
 				<ZoomPanel />
 			</InactiveBoardHidder>
-			<ContextPanel />
-			<ExportPanel />
+			<ViewModeGuard>
+				<ContextPanel />
+				<ExportPanel />
+			</ViewModeGuard>
 			<ToastProvider />
 			<ImportMiroBoards app={app} />
 		</div>
