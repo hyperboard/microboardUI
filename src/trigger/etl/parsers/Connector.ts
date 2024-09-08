@@ -54,6 +54,10 @@ export const parseConnector = async (payload: ConnectorPayload) => {
 
     const startPoint = await calculatePoint(startPos, startItem);
 
+    if (!parsedStart?.event?.operation?.item || !parsedEnd?.event?.operation?.item) {
+        return null;
+    }
+
     const event: any = {
         userId: userId,
         boardId: boardId,

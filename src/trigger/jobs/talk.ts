@@ -4,7 +4,7 @@ import { Boards } from "Routes/V1/Boards";
 import { s3 } from "s3";
 import { client } from "trigger";
 import { getTransformedBoard } from "trigger/etl/parsers";
-import { imageUrlToBase64 } from "trigger/etl/utils";
+import { getSVGDimensionsFromURL, imageUrlToBase64 } from "trigger/etl/utils";
 import { v4 } from "uuid";
 import { createLogger } from "winston";
 import { z } from "zod";
@@ -64,7 +64,7 @@ async function setLastActivity(taskId: string, io: IO) {
             ...taskJson,
             lastActivityTime: now,
         });
-        await io.logger.log(`Last activity updated ${now}}`, { now });
+        await io.logger.log(`Last activity updated - ${now}`, { now });
     } catch (e) {
         await io.logger.error(`Error updating last activity ${now}}`, { e });
     }
@@ -131,78 +131,120 @@ export const talkIntegrationJob = client.defineJob({
             });
 
             const fetchItemsFromS3 = async () => {
-                let items: any[] = [];
-                let imageProcessingPromises: Promise<void>[] = [];
+                const items = await io.runTask("Fetch items", async () => {
+                    let items: any[] = [];
+                    let imageProcessingPromises: Promise<void>[] = [];
 
-                for (const itemFilePath of boardData.items) {
-                    const itemData = await s3.getJson(talkConfig.bucket, itemFilePath);
+                    for (const itemFilePath of boardData.items) {
+                        const itemData = await s3.getJson(talkConfig.bucket, itemFilePath);
 
-                    await io.logger.info(`Item fetched: ${itemFilePath}`, {
-                        itemData,
-                    });
+                        await io.logger.info(`Item fetched: ${itemFilePath}`, {
+                            itemData,
+                        });
 
-                    for (const data of itemData?.data || []) {
-                        if (data.type === "image") {
-                            const imageJsonPath = boardData.images.find((image) => image.includes(data.id));
-                            const processImagePromise = (async () => {
-                                try {
-                                    const imageJson = await s3.getJson(talkConfig.bucket, imageJsonPath!);
-                                    const hash = imageJson.FilePath;
-                                    const base64 = await imageUrlToBase64(`http://localhost:8000/api/v1/media${hash}`);
+                        for (const data of itemData?.data || []) {
+                            if (data.type === "image") {
+                                const imageJsonPath = boardData.images.find((image) => image.includes(data.id));
+                                const processImagePromise = (async () => {
+                                    try {
+                                        const imageJson = await s3.getJson(talkConfig.bucket, imageJsonPath!);
+                                        const hash = imageJson.FilePath;
+                                        const talkDimensions = {
+                                            width: imageJson?.Width || null,
+                                            height: imageJson?.Height || null,
+                                        };
+                                        let dimensions = null;
+                                        if (!talkDimensions.width || !talkDimensions.height) {
+                                            await io.logger.warn(
+                                                `Failed to parse image dimensions from TALK for image ${
+                                                    imageJson.FilePath || data.id
+                                                }`
+                                            );
+                                            const base64 = await imageUrlToBase64(
+                                                `http://localhost:8000/api/v1/media${hash}`
+                                            );
+                                            const base64Data = base64.replace(/^data:image\/\w+;base64,/, "");
+                                            const imgBuffer = Buffer.from(base64Data, "base64");
+                                            const uint8Array = Uint8Array.from(imgBuffer);
+                                            const firstByte = uint8Array[0];
 
-                                    const base64Data = base64.replace(/^data:image\/\w+;base64,/, "");
-                                    const imgBuffer = Buffer.from(base64Data, "base64");
-                                    const dimensions = sizeOf(imgBuffer);
-
-                                    const copiedImage = { ...data };
-
-                                    copiedImage.data.imageUrl = `${storageUrl}${hash}`;
-                                    copiedImage.dimensions = dimensions;
-                                    await io.logger.log(`Processed image: ${data.id}`, {
-                                        image: copiedImage,
-                                    });
-                                    items.push({
-                                        item: copiedImage,
-                                        boardId: newBoardId,
-                                        userId: payload.userId,
-                                    });
-                                } catch (e) {
-                                    await io.logger.error(
-                                        `Error processing image item: ${imageJsonPath}, skipping...`,
-                                        {
-                                            error: e,
+                                            if (firstByte === 117) {
+                                                // SVG
+                                                try {
+                                                    const svgDimensions = await getSVGDimensionsFromURL(
+                                                        `http://localhost:8000/api/v1/media${hash}`
+                                                    );
+                                                    dimensions = {
+                                                        width: svgDimensions.width || data.geometry?.width || 0,
+                                                        height: svgDimensions.height || data.geometry?.height || 0,
+                                                    };
+                                                } catch (_) {
+                                                    dimensions = {
+                                                        width: data.geometry?.width || 0,
+                                                        height: data.geometry?.height || 0,
+                                                    };
+                                                }
+                                            } else {
+                                                dimensions = sizeOf(uint8Array);
+                                            }
+                                        } else {
+                                            dimensions = talkDimensions;
                                         }
-                                    );
-                                }
-                            })();
-                            imageProcessingPromises.push(processImagePromise);
-                        } else {
-                            items.push({
+
+                                        const copiedImage = { ...data };
+
+                                        copiedImage.data.imageUrl = `${storageUrl}${hash}`;
+                                        copiedImage.dimensions = dimensions;
+                                        await io.logger.log(`Processed image: ${data.id}`, {
+                                            image: copiedImage,
+                                        });
+                                        items.push({
+                                            item: copiedImage,
+                                            boardId: newBoardId,
+                                            userId: payload.userId,
+                                        });
+                                    } catch (e) {
+                                        await io.logger.error(
+                                            `Error processing image item: ${imageJsonPath}, skipping...`,
+                                            {
+                                                error: JSON.stringify(e?.message),
+                                            }
+                                        );
+                                    }
+                                })();
+                                imageProcessingPromises.push(processImagePromise);
+                            } else {
+                                items.push({
+                                    item: data,
+                                    boardId: newBoardId,
+                                    userId: payload.userId,
+                                });
+                            }
+                        }
+                    }
+
+                    await Promise.all(imageProcessingPromises);
+                    return items;
+                });
+
+                const connectors = await io.runTask("Fetch connectors", async () => {
+                    let connectors: any[] = [];
+                    for (const connectorFilePath of boardData.connectors) {
+                        const connectorData = await s3.getJson(talkConfig.bucket, connectorFilePath);
+
+                        await io.logger.info(`Connector fetched: ${connectorFilePath}`, {
+                            connectorData,
+                        });
+                        (connectorData?.data as any[]).forEach((data) => {
+                            connectors.push({
                                 item: data,
                                 boardId: newBoardId,
                                 userId: payload.userId,
                             });
-                        }
-                    }
-                }
-
-                await Promise.all(imageProcessingPromises);
-
-                let connectors: any[] = [];
-                for (const connectorFilePath of boardData.connectors) {
-                    const connectorData = await s3.getJson(talkConfig.bucket, connectorFilePath);
-
-                    await io.logger.info(`Connector fetched: ${connectorFilePath}`, {
-                        connectorData,
-                    });
-                    (connectorData?.data as any[]).forEach((data) => {
-                        connectors.push({
-                            item: data,
-                            boardId: newBoardId,
-                            userId: payload.userId,
                         });
-                    });
-                }
+                    }
+                    return connectors;
+                });
 
                 return {
                     items,

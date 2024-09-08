@@ -89,7 +89,11 @@ export function getMediaRouter(media: BarrelMediaDAL, logger: Logger) {
             const buffer = Buffer.from(await imageBlob.arrayBuffer());
 
             const type = await fileTypeFromBuffer(buffer);
-            const mimeType = type?.mime || "application/octet-stream";
+            let mimeType = type?.mime || "application/octet-stream";
+
+            if (id.endsWith(".svg")) {
+                mimeType = "image/svg+xml";
+            }
 
             const imageStream = new PassThrough();
             imageStream.end(buffer);

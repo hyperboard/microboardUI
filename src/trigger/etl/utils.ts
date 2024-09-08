@@ -247,3 +247,47 @@ export async function fetchAndProcessConnectors(
 
     return connectors;
 }
+
+export async function getSVGDimensionsFromURL(url: string): Promise<{
+    width: number | null;
+    height: number | null;
+}> {
+    try {
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("image/svg+xml")) {
+            throw new Error("The URL did not return an SVG image");
+        }
+
+        const svgText = await response.text();
+
+        const widthRegex = /\bwidth\s*=\s*["'](\d+(?:\.\d+)?)\w*["']/;
+        const heightRegex = /\bheight\s*=\s*["'](\d+(?:\.\d+)?)\w*["']/;
+        const viewBoxRegex =
+            /\bviewBox\s*=\s*["'](\d+(?:\.\d+)?\s+\d+(?:\.\d+)?\s+(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?))["']/;
+
+        let width = svgText.match(widthRegex)?.[1];
+        let height = svgText.match(heightRegex)?.[1];
+
+        if (!width || !height) {
+            const viewBoxMatch = svgText.match(viewBoxRegex);
+            if (viewBoxMatch) {
+                width = width || viewBoxMatch[2];
+                height = height || viewBoxMatch[3];
+            }
+        }
+
+        return {
+            width: width ? parseFloat(width) : null,
+            height: height ? parseFloat(height) : null,
+        };
+    } catch (error) {
+        console.error("Error fetching or parsing SVG:", error);
+        return { width: null, height: null };
+    }
+}

@@ -126,30 +126,36 @@ export const getTransformedBoard = async (payload: BoardPayload): Promise<Transf
         return acc;
     }, Promise.resolve([]));
 
-    const frameAddChildEvents = Array.from(frames.entries()).flatMap(([frameId, frameData]) => {
-        return frameData.children.map((childId) => {
-            const newOrder = ++order;
-            const event = {
-                eventId: `${userId}:${newOrder}`,
-                userId: userId,
-                boardId: boardUUID,
-                order: newOrder,
-                operation: {
-                    class: "Frame",
-                    method: "addChild",
-                    item: [frameData.item.newItemId],
-                    childId: childId,
-                },
-            };
+    const parsedFramesChildren = Array.from(frames.entries())
+        .flatMap(([_, frameData]) => {
+            return frameData.children.map((childId) => {
+                const newOrder = ++order;
+                const event = {
+                    eventId: `${userId}:${newOrder}`,
+                    userId: userId,
+                    boardId: boardUUID,
+                    order: newOrder,
+                    operation: {
+                        class: "Frame",
+                        method: "addChild",
+                        item: [frameData.item.newItemId],
+                        childId: childId,
+                    },
+                };
 
-            return event;
-        });
-    });
+                return event;
+            });
+        })
+        .filter(Boolean);
+
+    const itemEvents = parsedItems.map((item) => item.event).filter((i) => i !== null);
+    const connectorEvents = parsedConnectors.filter((i) => i !== null);
+    const frameChildrenEvents = parsedFramesChildren.filter((i) => i !== null);
 
     return {
         id: miroBoard.id,
         name: miroBoard.name || "Untitled",
-        items: [...parsedItems.map((item) => item.event), ...parsedConnectors, ...frameAddChildEvents],
+        items: [...itemEvents, ...connectorEvents, ...frameChildrenEvents],
     };
 };
 
@@ -164,7 +170,14 @@ interface ItemPayload {
     parent?: FrameItem;
 }
 
-const getParseFunction = async (data: ItemPayload) => {
+interface BoardEvent {
+    userId: string;
+    boardId: string;
+    eventId: string;
+    operation: Record<any, any>;
+}
+
+const getParseFunction = async (data: ItemPayload): Promise<BoardEvent | null> => {
     switch (data.item.type) {
         case MiroBoardItemTypes.SHAPE:
             return parseShape({
@@ -194,5 +207,6 @@ const getParseFunction = async (data: ItemPayload) => {
             });
         default:
             console.log("item not supported");
+            return null;
     }
 };
