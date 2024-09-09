@@ -20,7 +20,7 @@ const frameTypes = {
     desktop: "Custom",
 };
 
-export const parseFrame = (payload: FramePayload) => {
+export const parseFrame = async (payload: FramePayload): Promise<Array<any | null>> => {
     const { item, boardId, userId, order, newItemId } = payload;
 
     const width = item.geometry?.width || 100;
@@ -80,10 +80,10 @@ export const parseFrame = (payload: FramePayload) => {
             insideOf: "RichText",
             itemType: "RichText",
             placeholderText: `Frame`,
-            realsSize: 14,
+            realSize: 14,
             verticalAlignment: "center",
         };
     }
 
-    return event;
+    return [event];
 };

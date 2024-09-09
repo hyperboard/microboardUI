@@ -27,7 +27,7 @@ export const parseImage = async (payload: ImagePayload) => {
 
     const pos = await getItemPosition(item, parent);
 
-    return {
+    const event = {
         userId: userId,
         boardId: boardId,
         eventId: `${userId}:${order}`,
@@ -52,4 +52,6 @@ export const parseImage = async (payload: ImagePayload) => {
             method: "add",
         },
     };
+
+    return [event];
 };

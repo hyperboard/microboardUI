@@ -18,6 +18,7 @@ interface TextStyle {
     "line-through": boolean;
     fontColor: string;
     fontSize: number;
+    fontHighlight?: string;
 }
 
 interface TextSegment {
@@ -53,6 +54,36 @@ const getStylesFromElement = (
     };
 };
 
+const getStylesFromSingleElement = (element: any, $: cheerio.Root, item: any): TextStyle => {
+    const $element = $(element);
+    const styles: any = {
+        bold:
+            $element.is("strong, b") ||
+            $element.parents("strong, b").length > 0 ||
+            $element.css("font-weight") === "bold" ||
+            $element.css("font-weight") === "700",
+        italic: $element.is("em, i") || $element.parents("em, i").length > 0 || $element.css("font-style") === "italic",
+        underline:
+            $element.is("u") ||
+            $element.parents("u").length > 0 ||
+            $element.css("text-decoration")?.includes("underline") ||
+            false,
+        "line-through":
+            $element.is("s, strike, del") ||
+            $element.parents("s, strike, del").length > 0 ||
+            $element.css("text-decoration")?.includes("line-through") ||
+            false,
+        fontColor: $element.css("color") || item?.style?.color || "#000000",
+        fontSize: parseInt($element.css("font-size") || "") || parseInt(item?.style?.fontSize || "") || 14,
+        fontHighlight: $element.css("background-color") || null,
+    };
+    const fontHighlight = $element.css("background-color") || null;
+    if (fontHighlight) {
+        styles.fontHighlight = fontHighlight;
+    }
+    return styles;
+};
+
 const parseTextRecursive = (
     $: cheerio.Root,
     element: cheerio.Element,
@@ -67,9 +98,14 @@ const parseTextRecursive = (
 
     $element.contents().each((_, child) => {
         if (child.type === "text") {
+            const styles = { ...getStylesFromElement($, child.parent, defaultStyle) };
+            const hasHighlight = Boolean(styles.fontHighlight);
+            const parsedColor = styles.fontColor;
+            const finalColor = parsedColor === "#ffffff" && !hasHighlight ? "#1a1a1a" : parsedColor;
+            styles.fontColor = finalColor;
             segments.push({
                 text: $(child).text(),
-                style: getStylesFromElement($, child.parent, defaultStyle),
+                style: styles,
             });
         } else if (child.type === "tag") {
             segments.push(...parseTextRecursive($, child, defaultStyle));
@@ -79,7 +115,7 @@ const parseTextRecursive = (
     return segments;
 };
 
-export const parseText = async (payload: TextPayload) => {
+export const parseText = async (payload: TextPayload): Promise<Array<any | null>> => {
     const { item, boardId, userId, order, newItemId, parent } = payload;
 
     const $ = cheerio.load(item.data?.content!);
@@ -94,7 +130,8 @@ export const parseText = async (payload: TextPayload) => {
 
     const getStylesFromElement = (element: any): TextStyle => {
         const $element = $(element);
-        return {
+        const fontColor = $element.css("color") || item?.style?.color || "#000000";
+        const styles: any = {
             bold:
                 $element.is("strong, b") ||
                 $element.parents("strong, b").length > 0 ||
@@ -112,9 +149,40 @@ export const parseText = async (payload: TextPayload) => {
                 $element.parents("s, strike, del").length > 0 ||
                 $element.css("text-decoration")?.includes("line-through") ||
                 false,
-            fontColor: $element.css("color") || item?.style?.color || "#000000",
+            fontColor,
             fontSize: parseInt($element.css("font-size") || "") || parseInt(item?.style?.fontSize || "") || 14,
+            fontHighlight: $element.css("background-color") || null,
         };
+        const fontHighlight = $element.css("background-color") || null;
+        if (fontHighlight && fontHighlight !== "transparent") {
+            styles.fontHighlight = fontHighlight;
+        }
+
+        if (
+            (!fontHighlight || fontHighlight === "transparent") &&
+            (fontColor === "#ffffff" || fontColor === "rgb(255,255,255)" || fontColor === "white")
+        ) {
+            styles.fontColor = "#1a1a1a";
+        }
+        return styles;
+    };
+
+    const parseOrderedOrUnorderedList = (element: cheerio.Element): TextSegment[] => {
+        const segments: TextSegment[] = [];
+        const $element = $(element);
+
+        $element.find("li").each((_, li) => {
+            const $li = $(li);
+            const liText = $li.text();
+            segments.push({
+                text: liText + "\n",
+                style: {
+                    ...getStylesFromElement(li),
+                },
+            });
+        });
+
+        return segments;
     };
 
     const parseTextRecursive = (element: cheerio.Element): TextSegment[] => {
@@ -127,21 +195,52 @@ export const parseText = async (payload: TextPayload) => {
 
         $element.contents().each((_, child) => {
             if (child.type === "text") {
-                segments.push({
-                    text: $(child).text(),
-                    style: getStylesFromElement(child.parent),
+                const lines = $(child).text().split("\n");
+                lines.forEach((line, index) => {
+                    const lineParts = line.split("<br/>");
+                    lineParts.forEach((linePart, partIndex) => {
+                        if (linePart.trim() !== "") {
+                            segments.push({
+                                text: linePart,
+                                style: getStylesFromElement(child.parent),
+                            });
+                        }
+                        if (partIndex < lineParts.length - 1) {
+                            segments.push({
+                                text: "\n",
+                                style: getStylesFromElement(child.parent),
+                            });
+                        }
+                    });
                 });
-            } else if (child.type === "tag") {
-                segments.push(...parseTextRecursive(child));
+            } else if ((child.type = "tag")) {
+                const tagName = $(child).prop("tagName").toLowerCase();
+                if (tagName === "ol" || tagName === "ul") {
+                    const parsedListElements = parseOrderedOrUnorderedList(child);
+                    segments.push(...parsedListElements);
+                } else {
+                    segments.push(...parseTextRecursive(child));
+                }
             }
         });
 
         return segments;
     };
 
-    const textSegments = parseTextRecursive($("p").get(0));
+    const textSegments: TextSegment[] = [];
 
-    return {
+    $("p, ol, ul").each((_, element) => {
+        const $element = $(element);
+        const tagName = $element.prop("tagName").toLowerCase();
+
+        if (tagName === "p") {
+            textSegments.push(...parseTextRecursive(element));
+        } else if (tagName === "ol" || tagName === "ul") {
+            textSegments.push(...parseOrderedOrUnorderedList(element));
+        }
+    });
+
+    const event = {
         userId: userId,
         boardId: boardId,
         eventId: `${userId}:${order}`,
@@ -178,6 +277,8 @@ export const parseText = async (payload: TextPayload) => {
             method: "add",
         },
     };
+
+    return [event];
 };
 
 interface TextToInject {
@@ -187,19 +288,28 @@ interface TextToInject {
     fontColor: string;
     fontFamily: string;
     maxWidth: number;
+    maxHeight: number;
     parentItem: "Connector" | "Shape" | "Frame" | "Sticker";
+    realSize?: string;
 }
 
 export const parseTextFromConnector = (connector: Connector): TextToInject => {
-    const html = cheerio.load(connector.captions![0].content);
-    const elementWithColor = html('[style*="color"]');
-    const fontColor = elementWithColor.css("color");
+    const $ = cheerio.load(connector.captions![0].content);
+    const element = $("*").first();
+
+    const styles = { ...getStylesFromSingleElement(element, $, connector) };
+    const hasHighlight = Boolean(styles.fontHighlight);
+    const parsedColor = styles.fontColor;
+    const finalColor =
+        parsedColor === "#ffffff" && !hasHighlight ? "#1a1a1a" : connector?.style?.color || parsedColor || "black";
+    styles.fontColor = finalColor;
 
     return {
         rawHtml: connector.captions![0].content,
-        text: html.text(),
+        text: element.text(),
+        maxHeight: 100,
         fontSize: connector?.style?.fontSize ? +connector?.style?.fontSize : 14,
-        fontColor: connector?.style?.color || fontColor || "black",
+        fontColor: finalColor,
         fontFamily: "Arial",
         maxWidth: 300,
         parentItem: "Connector",
@@ -211,26 +321,42 @@ export const parseTextFromSticker = (sticker: StickyNoteItem): TextToInject => {
     const fontColor = elementWithColor.css("color");
     // const fontSize ???
 
+    const maxHeight = sticker?.geometry?.height || 300;
+
     return {
         rawHtml: sticker.data?.content!,
         text: html.text(),
+        maxHeight: maxHeight,
         fontSize: 14,
         fontColor: fontColor || "black",
         fontFamily: "Arial",
         maxWidth: sticker?.geometry?.width || 300,
         parentItem: "Sticker",
+        realSize: "auto",
     };
 };
 export const parseTextFromShape = (shape: ShapeItem): TextToInject => {
-    const html = cheerio.load(shape.data?.content!);
-    const elementWithColor = html('[style*="color"]');
-    const fontColor = elementWithColor.css("color");
+    const $ = cheerio.load(shape.data?.content!);
+    const elementWithColor = $('[style*="color"]');
+    const element = $("*").first();
+
+    const fillStyle = shape?.style?.fillColor || "#ffffff";
+
+    const styles = { ...getStylesFromSingleElement(element, $, shape) };
+    const parsedColor = styles.fontColor;
+    const finalColor =
+        (parsedColor === "#ffffff" || parsedColor === "white" || parsedColor === "rgb(255, 255, 255)") &&
+        fillStyle === "#ffffff"
+            ? "#1a1a1a"
+            : shape?.style?.color || parsedColor || "black";
+    styles.fontColor = finalColor;
 
     return {
         rawHtml: shape.data?.content!,
-        text: html.text(),
+        text: element.text(),
+        maxHeight: shape?.geometry?.height || 300,
         fontSize: shape?.style?.fontSize ? +shape?.style?.fontSize : 14,
-        fontColor: shape?.style?.color || fontColor || "black",
+        fontColor: finalColor,
         fontFamily: shape?.style?.fontFamily || "Arial",
         maxWidth: shape?.geometry?.width || 300,
         parentItem: "Shape",
@@ -246,7 +372,7 @@ export const makeInjectedText = (
     const $ = cheerio.load(data.rawHtml);
     const textElement = $("*").first();
 
-    const getStylesFromTags = (element: cheerio.Cheerio<any>) => {
+    const getStylesFromTags = (element: cheerio.Cheerio) => {
         return {
             bold: element.find("strong, b").length > 0 || element.parents("strong, b").length > 0,
             italic: element.find("em, i").length > 0 || element.parents("em, i").length > 0,
@@ -272,31 +398,36 @@ export const makeInjectedText = (
     };
 
     return {
-        text: {
-            children: [
-                {
-                    type: "paragraph",
-                    children: [
-                        {
-                            text: data.text || "",
-                            type: "text",
-                            fontSize: data.fontSize,
-                            fontColor: options?.colorReverse ? "white" : data.fontColor,
-                            fontFamily: data.fontFamily,
-                            lineHeight: 1.4,
-                            fontHighlight: "",
-                            ...styles,
-                        },
-                    ],
-                    horisontalAlignment: data.parentItem === "Connector" ? "center" : "left",
-                },
-            ],
-            insideOf: data.parentItem,
-            itemType: "RichText",
-            maxWidth: data.maxWidth,
-            placeholderText: "Type anything",
-            containerMaxWidth: data.maxWidth,
-            verticalAlignment: "center",
+        event: {
+            text: {
+                children: [
+                    {
+                        type: "paragraph",
+                        children: [
+                            {
+                                text: data.text || "",
+                                type: "text",
+                                fontSize: data.fontSize,
+                                fontColor: options?.colorReverse ? "white" : data.fontColor,
+                                fontFamily: data.fontFamily,
+                                lineHeight: 1.4,
+                                fontHighlight: "",
+                                ...styles,
+                            },
+                        ],
+                        horisontalAlignment:
+                            data.parentItem === "Connector" || data.parentItem === "Shape" ? "center" : "left",
+                    },
+                ],
+                insideOf: data.parentItem,
+                itemType: "RichText",
+                maxWidth: data.maxWidth,
+                maxHeight: data.maxHeight,
+                placeholderText: "Type anything",
+                containerMaxWidth: data.maxWidth,
+                // verticalAlignment: "center",
+            },
         },
+        styles,
     };
 };

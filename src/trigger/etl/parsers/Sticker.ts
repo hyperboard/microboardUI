@@ -41,7 +41,7 @@ const colorsSticker = {
     black: stickerColors["Black Black"],
 };
 
-export const parseSticker = async (payload: StickerPayload) => {
+export const parseSticker = async (payload: StickerPayload): Promise<Array<any | null>> => {
     const { item, boardId, userId, order, parent, newItemId } = payload;
 
     const pos = await getItemPosition(item, parent);
@@ -70,14 +70,65 @@ export const parseSticker = async (payload: StickerPayload) => {
         },
     };
 
+    let insertEvent = null;
     if (item?.data?.content) {
         const parsedText = parseTextFromSticker(item);
         const text = makeInjectedText(parsedText, {
             colorReverse: item?.style?.fillColor === "black",
         });
 
-        event.operation.data.text = text.text;
+        event.operation.data.text = { ...text.event.text, realSize: "auto" };
+
+        insertEvent = {
+            type: "BoardEvent",
+            boardId: boardId,
+            event: {
+                order: 0,
+                body: {
+                    eventId: `${userId}:${order}`,
+                    userId: 1725879524889,
+                    boardId: boardId,
+                    operation: {
+                        class: "RichText",
+                        method: "edit",
+                        item: [newItemId],
+                        selection: {
+                            anchor: {
+                                path: [0, 0],
+                                offset: 124,
+                            },
+                            focus: {
+                                path: [0, 0],
+                                offset: 124,
+                            },
+                        },
+                        ops: [
+                            {
+                                type: "insert_node",
+                                path: [0],
+                                node: {
+                                    type: "paragraph",
+                                    children: [
+                                        {
+                                            text: parsedText.text,
+                                            type: "text",
+                                            fontSize: 14,
+                                            fontColor: "black",
+                                            fontFamily: "Arial",
+                                            lineHeight: 1.4,
+                                            fontHighlight: "",
+                                            ...text.styles,
+                                        },
+                                    ],
+                                    horisontalAlignment: "center",
+                                },
+                            },
+                        ],
+                    },
+                },
+            },
+        };
     }
 
-    return event;
+    return [event];
 };

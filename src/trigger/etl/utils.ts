@@ -4,6 +4,8 @@ import { Blob } from "node:buffer";
 import { Readable } from "node:stream";
 import { Buffer } from "node:buffer";
 
+const INTERNAL_SERVER_URL = process.env.INTERNAL_SERVER_URL || "http://localhost:8000";
+
 export async function imageUrlToBase64(url: string): Promise<string> {
     try {
         const response = await fetch(url);
@@ -44,14 +46,10 @@ export const uploadToTheStorage = async (hash: string, dataURL: string): Promise
         const bytes = Uint8Array.from(binaryString, (char) => char.charCodeAt(0));
         const blob = new Blob([bytes], { type: mimeType });
 
-        // TODO: Always link to localhost endpoint?
-        const storageUrl =
-            process.env.MINIO_ENABLED === "true"
-                ? "http://localhost:8000/api/v1/media"
-                : process.env.SERVER_DAL_URL || "http://localhost:8000/api/v1/media";
+        const internalStorageUrl = `${INTERNAL_SERVER_URL}/api/v1/media`;
 
         // Post data to the server
-        const response = await fetch(storageUrl, {
+        const response = await fetch(internalStorageUrl, {
             method: "POST",
             headers: {
                 "Content-Type": mimeType,

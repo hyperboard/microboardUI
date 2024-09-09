@@ -9,14 +9,14 @@ import { BUCKET_NAME, minioClient } from "Routes/V1/Media/MinioClient";
 import { v4 } from "uuid";
 import { getTransformedBoard } from "trigger/etl/parsers";
 import { fetchAndProcessItems, fetchAndProcessConnectors } from "../etl/utils";
-import { eventEmitter } from "eventEmitter";
 
 interface ExtractedBoard {
     board: Board;
     items: any[];
 }
 
-const NOTIFY_URL = "http://localhost:8000/api/v1/jobs/notify";
+const INTERNAL_SERVER_URL = process.env.INTERNAL_SERVER_URL || "http://localhost:8000";
+const NOTIFY_URL = `${INTERNAL_SERVER_URL}/api/v1/jobs/notify`;
 
 export const importMiroBoard = client.defineJob({
     id: "import-miro-board",
@@ -105,12 +105,6 @@ export const importMiroBoard = client.defineJob({
 
                 return response.json();
             });
-            eventEmitter.emit(`job-${userId}`, {
-                type: "JobComplete-ImportMiroBoard",
-                userId,
-                jobId: ctx.run.id,
-                boardId: savedBoard.editLink,
-            });
 
             await io.logger.info(`Notify response: `, {
                 notifyResponse,
@@ -129,11 +123,6 @@ export const importMiroBoard = client.defineJob({
                         userId,
                         jobId: ctx.run.id,
                     }),
-                });
-                eventEmitter.emit(`job-${userId}-error`, {
-                    type: "JobComplete-ImportMiroBoard",
-                    userId,
-                    jobId: ctx.run.id,
                 });
 
                 return response.json();

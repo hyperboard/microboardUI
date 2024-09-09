@@ -41,7 +41,7 @@ const borderStyles = {
     dashed: "dash",
 };
 
-export const parseShape = async (payload: ShapePayload) => {
+export const parseShape = async (payload: ShapePayload): Promise<Array<any | null>> => {
     const { item, boardId, userId, order, parent, newItemId } = payload;
 
     const width = item.geometry?.width || 100;
@@ -86,9 +86,9 @@ export const parseShape = async (payload: ShapePayload) => {
 
     if (item?.data?.content?.length) {
         const parsedText = parseTextFromShape(item);
-        const textBlock = makeInjectedText(parsedText);
-        event.operation.data.text = textBlock.text;
+        const textBlock = { ...makeInjectedText(parsedText) };
+        event.operation.data.text = textBlock.event.text;
     }
 
-    return event;
+    return [event];
 };

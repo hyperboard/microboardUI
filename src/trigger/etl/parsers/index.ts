@@ -71,7 +71,7 @@ export const getTransformedBoard = async (payload: BoardPayload): Promise<Transf
             });
         }
 
-        const event = await getParseFunction({
+        const events = await getParseFunction({
             item: data.item,
             newItemId: itemUUID,
             order: ++order,
@@ -80,11 +80,15 @@ export const getTransformedBoard = async (payload: BoardPayload): Promise<Transf
             parent: parent,
         });
 
-        if (!event) {
+        const nonNullEvents = events.filter((event) => event !== null);
+
+        if (!nonNullEvents.length) {
             return acc;
         }
 
-        acc.push({ event, originalId: data.item.id });
+        for (const event of nonNullEvents) {
+            acc.push({ event, originalId: data.item.id });
+        }
 
         if (data?.item.type !== "frame" && data?.item.parent && frames.has(data.item.parent.id)) {
             frames.get(data.item?.parent?.id)!.children.push(itemUUID);
@@ -110,7 +114,7 @@ export const getTransformedBoard = async (payload: BoardPayload): Promise<Transf
             return acc;
         }
 
-        const event = await parseConnector({
+        const events = await parseConnector({
             item: data.item,
             startItem: startItem.item,
             endItem: endItem.item,
@@ -122,7 +126,16 @@ export const getTransformedBoard = async (payload: BoardPayload): Promise<Transf
             newItemId: itemUUID,
         });
 
-        acc.push(event);
+        const nonNullEvents = events.filter((event) => event !== null);
+
+        if (!nonNullEvents.length) {
+            return acc;
+        }
+
+        for (const event of nonNullEvents) {
+            acc.push(event);
+        }
+
         return acc;
     }, Promise.resolve([]));
 
@@ -170,14 +183,14 @@ interface ItemPayload {
     parent?: FrameItem;
 }
 
-interface BoardEvent {
+export interface BoardEvent {
     userId: string;
     boardId: string;
     eventId: string;
     operation: Record<any, any>;
 }
 
-const getParseFunction = async (data: ItemPayload): Promise<BoardEvent | null> => {
+const getParseFunction = async (data: ItemPayload): Promise<Array<BoardEvent | null>> => {
     switch (data.item.type) {
         case MiroBoardItemTypes.SHAPE:
             return parseShape({
@@ -207,6 +220,6 @@ const getParseFunction = async (data: ItemPayload): Promise<BoardEvent | null> =
             });
         default:
             console.log("item not supported");
-            return null;
+            return [null];
     }
 };

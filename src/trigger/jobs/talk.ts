@@ -11,7 +11,9 @@ import { z } from "zod";
 import sizeOf from "image-size";
 
 const HEARTBEAT_INTERVAL = 15000;
-const storageUrl = process.env.STORAGE_URL || "http://localhost:8001/api/v1/media";
+const INTERNAL_SERVER_URL = process.env.INTERNAL_SERVER_URL || "http://localhost:8000";
+const externalStorageUrl = process.env.STORAGE_URL || "http://localhost:8001/api/v1/media"; // used for frontend links
+const internalStorageUrl = `${INTERNAL_SERVER_URL}/api/v1/media`;
 
 const talkConfig = {
     bucket: process.env.TALK_BUCKET_NAME || "talk",
@@ -160,9 +162,7 @@ export const talkIntegrationJob = client.defineJob({
                                                     imageJson.FilePath || data.id
                                                 }`
                                             );
-                                            const base64 = await imageUrlToBase64(
-                                                `http://localhost:8000/api/v1/media${hash}`
-                                            );
+                                            const base64 = await imageUrlToBase64(`${internalStorageUrl}${hash}`);
                                             const base64Data = base64.replace(/^data:image\/\w+;base64,/, "");
                                             const imgBuffer = Buffer.from(base64Data, "base64");
                                             const uint8Array = Uint8Array.from(imgBuffer);
@@ -172,7 +172,7 @@ export const talkIntegrationJob = client.defineJob({
                                                 // SVG
                                                 try {
                                                     const svgDimensions = await getSVGDimensionsFromURL(
-                                                        `http://localhost:8000/api/v1/media${hash}`
+                                                        `${internalStorageUrl}${hash}`
                                                     );
                                                     dimensions = {
                                                         width: svgDimensions.width || data.geometry?.width || 0,
@@ -193,7 +193,7 @@ export const talkIntegrationJob = client.defineJob({
 
                                         const copiedImage = { ...data };
 
-                                        copiedImage.data.imageUrl = `${storageUrl}${hash}`;
+                                        copiedImage.data.imageUrl = `${externalStorageUrl}${hash}`;
                                         copiedImage.dimensions = dimensions;
                                         await io.logger.log(`Processed image: ${data.id}`, {
                                             image: copiedImage,
@@ -203,7 +203,7 @@ export const talkIntegrationJob = client.defineJob({
                                             boardId: newBoardId,
                                             userId: payload.userId,
                                         });
-                                    } catch (e) {
+                                    } catch (e: any) {
                                         await io.logger.error(
                                             `Error processing image item: ${imageJsonPath}, skipping...`,
                                             {

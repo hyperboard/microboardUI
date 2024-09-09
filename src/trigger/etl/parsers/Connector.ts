@@ -21,7 +21,7 @@ const connectorTypes = {
     elbowed: "orthogonal",
 };
 
-export const parseConnector = async (payload: ConnectorPayload) => {
+export const parseConnector = async (payload: ConnectorPayload): Promise<Array<any | null>> => {
     const { item, startItem, endItem, userId, boardId, order, parsedStart, parsedEnd, newItemId } = payload;
 
     // position in percentage
@@ -55,7 +55,7 @@ export const parseConnector = async (payload: ConnectorPayload) => {
     const startPoint = await calculatePoint(startPos, startItem);
 
     if (!parsedStart?.event?.operation?.item || !parsedEnd?.event?.operation?.item) {
-        return null;
+        return [null];
     }
 
     const event: any = {
@@ -95,11 +95,11 @@ export const parseConnector = async (payload: ConnectorPayload) => {
         },
     };
 
-    if (item?.captions?.length) {
+    if (item?.captions) {
         const parsedText = parseTextFromConnector(item);
         const textBlock = makeInjectedText(parsedText);
-        event.operation.data.text = textBlock.text;
+        event.operation.data.text = textBlock.event.text;
     }
 
-    return event;
+    return [event];
 };
