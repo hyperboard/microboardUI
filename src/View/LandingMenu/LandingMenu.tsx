@@ -7,12 +7,14 @@ import { UiButton } from "View/Ui/UiButton";
 import { UiLink } from "View/Ui/UiLink";
 import { UiPanel } from "View/Ui/UiPanel";
 import { UiSeparator } from "View/Ui/UiSeparator";
-import { LANDING_URL } from "./const";
+import { LANDING_URL, LANDING_URL_EN } from "./const";
 import style from "./LandingMenu.module.css";
 
 export function LandingMenu() {
 	const [isOpen, setIsOpen] = useState(true);
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
+	const isRu = i18n.language === "ru";
+	const landingUrl = isRu ? LANDING_URL : LANDING_URL_EN;
 	if (!isMicroboardIframe()) {
 		return null;
 	}
@@ -29,7 +31,7 @@ export function LandingMenu() {
 					rounded="none"
 					variant="secondary"
 					target="_parent"
-					href={`${LANDING_URL}#about`}
+					href={`${landingUrl}#about`}
 				>
 					{t("landing.menu.about")}
 				</UiLink>
@@ -39,9 +41,15 @@ export function LandingMenu() {
 					rounded="none"
 					variant="secondary"
 					target="_parent"
-					href={`${LANDING_URL}/perenos-dannih-iz-miro`}
+					href={
+						isRu
+							? `${landingUrl}/perenos-dannih-iz-miro`
+							: `${landingUrl}#features`
+					}
 				>
-					{t("landing.menu.importFromMiro")}
+					{isRu
+						? t("landing.menu.importFromMiro")
+						: t("landing.menu.features")}
 				</UiLink>
 				<UiSeparator vertical />
 
@@ -50,7 +58,7 @@ export function LandingMenu() {
 					rounded="none"
 					target="_parent"
 					variant="secondary"
-					href={`${LANDING_URL}#pricing`}
+					href={`${landingUrl}#pricing`}
 				>
 					{t("landing.menu.price")}
 				</UiLink>
@@ -60,7 +68,7 @@ export function LandingMenu() {
 					rounded="none"
 					target="_parent"
 					variant="secondary"
-					href={`${LANDING_URL}#forma`}
+					href={`${landingUrl}#forma`}
 				>
 					{t("landing.menu.buy")}
 				</UiLink>
