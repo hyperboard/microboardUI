@@ -18,7 +18,7 @@ import { ZoomPanel } from "View/ZoomPanel";
 import style from "./AppView.module.css";
 import NoBoardIsOpen from "./NoBoardIsOpen";
 import { InactiveBoardHidder } from "./InactiveBoardHidder";
-import { showTitlePanel, showUserPanel } from "lib/queryStringParser";
+import { shouldShow } from "lib/queryStringParser";
 import { ViewModeGuard } from "View/ViewModeGuard";
 
 export function AppView() {
@@ -122,8 +122,8 @@ export function AppView() {
 	const appBoard = app.getBoard();
 	return (
 		<div className={style.wrapper}>
-			{showTitlePanel() && <LandingMenu />}
-			{showTitlePanel() && <MobileLandingMenu />}
+			{shouldShow("titlePanel") && <LandingMenu />}
+			{shouldShow("titlePanel") && <MobileLandingMenu />}
 			<InactiveBoardHidder>
 				<div ref={containerRef}>
 					<Canvas
@@ -145,7 +145,7 @@ export function AppView() {
 			</ViewModeGuard>
 			<ViewModeGuard>
 				<ExportVisible>
-					{showUserPanel() && <UserPanel app={app} />}
+					{shouldShow("userPanel") && <UserPanel app={app} />}
 				</ExportVisible>
 			</ViewModeGuard>
 			<InactiveBoardHidder>

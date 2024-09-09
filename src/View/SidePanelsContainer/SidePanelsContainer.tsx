@@ -5,7 +5,7 @@ import { TitlePanel } from "View/TitlePanel";
 import { ToolsPanel } from "View/ToolsPanel";
 import style from "./SidePanelsContainer.module.css";
 import { InactiveBoardHidder } from "View/AppView/InactiveBoardHidder";
-import { showTitlePanel } from "lib/queryStringParser";
+import { shouldShow } from "lib/queryStringParser";
 import { useAppContext } from "View/AppContext";
 
 interface SidePanelsContainerProps {
@@ -24,10 +24,9 @@ export const SidePanelsContainer = memo(
 		});
 
 		useEffect(() => {}, [isBlank, interfaceType]);
-		console.log("interfacetype", interfaceType);
 		return (
 			<div ref={containerRef} className={style.sidePanels}>
-				{showTitlePanel() && <TitlePanel />}
+				{shouldShow("titlePanel") && <TitlePanel />}
 				<SidePanel />
 				<InactiveBoardHidder>
 					<ToolsPanel />
