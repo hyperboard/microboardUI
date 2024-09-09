@@ -18,7 +18,7 @@ import { ZoomPanel } from "View/ZoomPanel";
 import style from "./AppView.module.css";
 import NoBoardIsOpen from "./NoBoardIsOpen";
 import { InactiveBoardHidder } from "./InactiveBoardHidder";
-import { showTitlePanel } from "lib/queryStringParser";
+import { showTitlePanel, showUserPanel } from "lib/queryStringParser";
 import { ViewModeGuard } from "View/ViewModeGuard";
 
 export function AppView() {
@@ -145,7 +145,7 @@ export function AppView() {
 			</ViewModeGuard>
 			<ViewModeGuard>
 				<ExportVisible>
-					<UserPanel app={app} />
+					{showUserPanel() && <UserPanel app={app} />}
 				</ExportVisible>
 			</ViewModeGuard>
 			<InactiveBoardHidder>

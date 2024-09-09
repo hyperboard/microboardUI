@@ -11,3 +11,8 @@ function getBooleanParam(searchParam: string, defaultValue: boolean): boolean {
 export function showTitlePanel(defaultValue = true): boolean {
 	return getBooleanParam("titlePanel", defaultValue);
 }
+
+/** Tries to find "userPanel" search param, returns default value if not found */
+export function showUserPanel(defaultValue = true): boolean {
+	return getBooleanParam("userPanel", defaultValue);
+}
