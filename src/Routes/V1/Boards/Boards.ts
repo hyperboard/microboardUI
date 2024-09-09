@@ -295,7 +295,6 @@ export class Boards {
             }
     
             const row = result.rows[0];
-            this.logger.info(`found id: ${row.boardid}`)
             return {
                 boardId: row.boardid,
                 created: row.created,

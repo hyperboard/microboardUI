@@ -15,6 +15,8 @@ const SNAPSHOT_REQUEST_TIMEOUT = 10 * SECOND;
 
 export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: winston.Logger): void {
     const boardClients = new Map<string, WebSocket.WebSocket[]>();
+    const boardIdToLinks = new Map<string, string[]>();
+    const linkToBoardId = new Map<string, string>();
     const wsTokens = new Map<WebSocket, AccessToken[]>();
     const snapshotRequestTimers = new Map<string, NodeJS.Timeout>();
 
@@ -182,7 +184,19 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         return false; // No valid token with the required rights
     }
 
-    function subscribeClientToBoard(ws: WebSocket, boardId: string): void {
+    async function subscribeClientToBoard(ws: WebSocket, boardId: string): Promise<void> {
+        const board = await boards.getBoardByLink(boardId);
+        if (board) {
+            const mapped = boardIdToLinks.get(board.boardId) ?? [];
+            mapped.push(boardId);
+            boardIdToLinks.set(board.boardId, mapped);
+            linkToBoardId.set(boardId, board.boardId);
+        } else {
+            const mappedIds = boardIdToLinks.get(boardId);
+            if (!mappedIds) {
+                boardIdToLinks.set(boardId, []);
+            }
+        }
         const clients = boardClients.get(boardId) ?? [];
         clients.push(ws);
         boardClients.set(boardId, clients);
@@ -274,16 +288,37 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         boardClients.set(msg.boardId, clients);
     }
 
-    boards.onEventSave = sendMessageToClients;
+    boards.onEventSave = onEventSave;
 
-    function sendMessageToClients(
-        boardId: string,
-        message: SocketMessage
-    ): void {
-        const clients = boardClients.get(boardId) ?? [];
+    function sendMessageToClients(message: SocketMessage, clients: WebSocket.WebSocket[]): void {
         const content = JSON.stringify(message);
         for (const client of clients) {
             client.send(content);
+        }
+    }
+
+    async function onEventSave(
+        boardOrLinkId: string,
+        message: BoardEvent
+    ): Promise<void> {
+        const linksById = boardIdToLinks.get(boardOrLinkId);
+        if (linksById) {
+            const clients = boardClients.get(boardOrLinkId) ?? [];
+            sendMessageToClients(message, clients);
+            linksById.forEach((link) => {
+                const linkMessage = { ...message };
+                linkMessage.boardId = link;
+                const linkClients = boardClients.get(link) ?? [];
+                sendMessageToClients(linkMessage, linkClients);
+            })
+        } else {
+            const actualId = linkToBoardId.get(boardOrLinkId);
+            if (!actualId) {
+                throw new Error("Didnt find boardId by link");
+            }
+            const actualIdMsg = { ...message };
+            actualIdMsg.boardId = actualId;
+            onEventSave(actualId, actualIdMsg);
         }
     }
 
