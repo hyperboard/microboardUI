@@ -75,15 +75,19 @@ export const uploadToTheStorage = async (hash: string, dataURL: string): Promise
 };
 
 export async function sha256(message: any): Promise<string> {
-    // encode as UTF-8
-    const msgBuffer = new TextEncoder().encode(message);
-    // hash the message
-    const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
-    // convert ArrayBuffer to Array
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    // convert bytes to hex string
-    const hashHex = hashArray.map((byte) => byte.toString(16).padStart(2, "0")).join("");
-    return hashHex;
+    try {
+        // encode as UTF-8
+        const msgBuffer = new TextEncoder().encode(message);
+        // hash the message
+        const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+        // convert ArrayBuffer to Array
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        // convert bytes to hex string
+        const hashHex = hashArray.map((byte) => byte.toString(16).padStart(2, "0")).join("");
+        return hashHex;
+    } catch (error) {
+        throw new Error(`Failed to hash message: ${error}`);
+    }
 }
 
 interface GetAllItemsResponse {
@@ -106,38 +110,46 @@ export async function fetchAndProcessItems(
     userId: string,
     io: any
 ) {
-    let items: any[] = [];
-    let nextLink: string | null = `https://api.miro.com/v2/boards/${boardId}/items?limit=50`;
+    try {
+        let items: any[] = [];
+        let nextLink: string | null = `https://api.miro.com/v2/boards/${boardId}/items?limit=50`;
 
-    while (nextLink) {
-        const response = await fetchItemsWithRetry(nextLink, accessToken, io);
-        const processedItems = await processItems(response.data, newBoardId, userId, accessToken, io);
-        items.push(...processedItems);
-        nextLink = response.links.next || null;
+        while (nextLink) {
+            const response = await fetchItemsWithRetry(nextLink, accessToken, io);
+            const processedItems = await processItems(response.data, newBoardId, userId, accessToken, io);
+            items.push(...processedItems);
+            nextLink = response.links.next || null;
+        }
+
+        return items;
+    } catch (e) {
+        throw new Error(`Failed to fetch and process items: ${e}`);
     }
-
-    return items;
 }
 
 export async function fetchItemsWithRetry(url: string, accessToken: string, io: any): Promise<GetAllItemsResponse> {
-    while (true) {
-        const rawItemsRequest = await fetch(url, {
-            method: "GET",
-            headers: {
-                Accept: "application/json",
-                Authorization: "Bearer " + accessToken,
-            },
-        });
+    try {
+        while (true) {
+            const rawItemsRequest = await fetch(url, {
+                method: "GET",
+                headers: {
+                    Accept: "application/json",
+                    Authorization: "Bearer " + accessToken,
+                },
+            });
 
-        if (rawItemsRequest.status === 429) {
-            await io.logger.warn(`Rate limit hit, waiting 10 seconds before retrying ${url}`);
-            await io.wait("wait 10 seconds", 10);
-            continue;
-        } else if (!rawItemsRequest.ok) {
-            throw new Error(`Failed to fetch items: ${rawItemsRequest.statusText}`);
+            if (rawItemsRequest.status === 429) {
+                await io.logger.warn(`Rate limit hit, waiting 10 seconds before retrying ${url}`);
+                await io.wait("wait 10 seconds", 10);
+                continue;
+            } else if (!rawItemsRequest.ok) {
+                throw new Error(`Failed to fetch items: ${rawItemsRequest.statusText}`);
+            }
+
+            return await rawItemsRequest.json();
         }
-
-        return await rawItemsRequest.json();
+    } catch (e) {
+        throw new Error(`Failed to fetch items: ${e}`);
     }
 }
 
@@ -148,34 +160,37 @@ export async function processItems(
     accessToken: string,
     io: any
 ) {
-    const processedItems = [];
+    try {
+        const processedItems = [];
 
-    for (const item of items) {
-        await io.logger.debug(`Processing item ${item.id} of type ${item.type}`, { item });
+        for (const item of items) {
+            await io.logger.debug(`Processing item ${item.id} of type ${item.type}`, { item });
 
-        if (item.type === "image") {
-            const processedImageItem = await processImageItem(item as ImageItem, accessToken, io);
-            processedItems.push({
-                item: processedImageItem,
-                boardId: newBoardId,
-                userId: userId,
-            });
-        } else {
-            processedItems.push({
-                item,
-                boardId: newBoardId,
-                userId: userId,
-            });
+            if (item.type === "image") {
+                const processedImageItem = await processImageItem(item as ImageItem, accessToken, io);
+                processedItems.push({
+                    item: processedImageItem,
+                    boardId: newBoardId,
+                    userId: userId,
+                });
+            } else {
+                processedItems.push({
+                    item,
+                    boardId: newBoardId,
+                    userId: userId,
+                });
+            }
         }
-    }
 
-    return processedItems;
+        return processedItems;
+    } catch (error) {
+        throw new Error(`Failed to process items (utils): ${error}`);
+    }
 }
 
 export async function processImageItem(item: ImageItem, accessToken: string, io: any): Promise<ImageItem> {
-    const url = item.data!.imageUrl!.split("?")[0] + "?format=original&redirect=false";
-
     try {
+        const url = item.data!.imageUrl!.split("?")[0] + "?format=original&redirect=false";
         const img = await fetchImageWithRetry(url, accessToken, io);
         const imgUrl = img?.url ?? "";
         console.log("imgUrl: ", imgUrl);
@@ -192,30 +207,34 @@ export async function processImageItem(item: ImageItem, accessToken: string, io:
         copiedItem.data!.imageUrl! = src;
         return copiedItem;
     } catch (error) {
-        console.error("Error processing image item:", error);
+        console.error("Error processing image item (utils):", error);
         throw error;
     }
 }
 
 export async function fetchImageWithRetry(url: string, accessToken: string, io: any) {
-    while (true) {
-        const rawImageRequest = await fetch(url, {
-            headers: {
-                Authorization: "Bearer " + accessToken,
-            },
-        });
+    try {
+        while (true) {
+            const rawImageRequest = await fetch(url, {
+                headers: {
+                    Authorization: "Bearer " + accessToken,
+                },
+            });
 
-        if (rawImageRequest.status === 429) {
-            await io.logger.warn(
-                `Rate limit hit while fetching image, waiting 10 seconds before retrying ${url} - ${Date.now()}`
-            );
-            await io.wait("wait 10 seconds", 10);
-            continue;
-        } else if (!rawImageRequest.ok) {
-            throw new Error(`Failed to fetch image: ${rawImageRequest.statusText}`);
+            if (rawImageRequest.status === 429) {
+                await io.logger.warn(
+                    `Rate limit hit while fetching image, waiting 10 seconds before retrying ${url} - ${Date.now()}`
+                );
+                await io.wait("wait 10 seconds", 10);
+                continue;
+            } else if (!rawImageRequest.ok) {
+                throw new Error(`Failed to fetch image: ${rawImageRequest.statusText}`);
+            }
+
+            return await rawImageRequest.json();
         }
-
-        return await rawImageRequest.json();
+    } catch (error) {
+        throw new Error(`Failed to fetch image (utils): ${error}`);
     }
 }
 
@@ -225,25 +244,29 @@ export async function fetchAndProcessConnectors(
     boardId: string,
     userId: string
 ): Promise<any[]> {
-    const rawConnectors = board.getAllConnectors();
-    const connectors = [];
-    let index = 0;
+    try {
+        const rawConnectors = board.getAllConnectors();
+        const connectors = [];
+        let index = 0;
 
-    for await (const connector of rawConnectors) {
-        index++;
-        await io.logger.debug(`Connector fetched: ${board.id} ${index}`, { connector });
-        if (connector.isSupported === false) {
-            continue;
+        for await (const connector of rawConnectors) {
+            index++;
+            await io.logger.debug(`Connector fetched: ${board.id} ${index}`, { connector });
+            if (connector.isSupported === false) {
+                continue;
+            }
+
+            connectors.push({
+                item: connector,
+                boardId: boardId,
+                userId: userId,
+            });
         }
 
-        connectors.push({
-            item: connector,
-            boardId: boardId,
-            userId: userId,
-        });
+        return connectors;
+    } catch (error) {
+        throw new Error(`Failed to fetch connectors (utils): ${error}`);
     }
-
-    return connectors;
 }
 
 export async function getSVGDimensionsFromURL(url: string): Promise<{
@@ -285,7 +308,7 @@ export async function getSVGDimensionsFromURL(url: string): Promise<{
             height: height ? parseFloat(height) : null,
         };
     } catch (error) {
-        console.error("Error fetching or parsing SVG:", error);
+        console.error("Error fetching or parsing SVG (utils):", error);
         return { width: null, height: null };
     }
 }

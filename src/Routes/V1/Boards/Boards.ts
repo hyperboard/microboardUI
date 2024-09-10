@@ -29,10 +29,8 @@ export class Boards {
             await this.createBoard(boardId, transformedData.name, transformedData.userId);
             await this.createLink(boardId, "edit", editLink);
 
-            const batchSize = 100;
-            for (let i = 0; i < transformedData.items.length; i += batchSize) {
-                const batch = transformedData.items.slice(i, i + batchSize);
-                await Promise.all(batch.map((item) => this.addEventToBoard(boardId, item.eventId, item)));
+            for (const item of transformedData.items) {
+                await this.addEventToBoard(boardId, item.eventId, item);
             }
 
             this.logger.info(`Board ${boardId} created successfully`);
@@ -46,7 +44,6 @@ export class Boards {
             throw err;
         }
     }
-
 
     async createBoard(boardId: string, title: string, ownerId?: string): Promise<any> {
         try {
@@ -278,7 +275,7 @@ export class Boards {
     async getBoardByLink(link: string): Promise<any> {
         try {
             validateUUID(link, "link");
-    
+
             const queryText = `
                 SELECT b.uniq_id as boardId, b.created, b.boardname as title
                 FROM boards b
@@ -287,13 +284,13 @@ export class Boards {
                 WHERE bel.edit_link_uuid = $1 OR bvl.view_link_uuid = $1
                 LIMIT 1
             `;
-    
+
             const result = await this.database.query(queryText, [link]);
-    
+
             if (result.rows.length === 0) {
                 return undefined;
             }
-    
+
             const row = result.rows[0];
             return {
                 boardId: row.boardid,
