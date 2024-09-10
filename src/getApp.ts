@@ -26,10 +26,10 @@ import cors from "cors";
 
 export async function getApp(): Promise<http.Server> {
     const app = express();
-
+    const allowedOrigins = process.env.ALLOW_ORIGIN?.split(',').map((o) => o.trim());
     app.use(morgan("combined"));
     app.use(cors({
-        origin: process.env.NODE_ENV === 'development' ? '*' : process.env.BASE_URL
+        origin: process.env.NODE_ENV === 'development' ? '*' : allowedOrigins
     }));
 
     const server = http.createServer(app);
