@@ -251,7 +251,7 @@ export class TextEditor extends React.Component<
 								wordBreak: "normal",
 								width: "100%",
 								maxHeight: !text.getAutosize()
-									? `${editorMaxHeight}}px`
+									? `${editorMaxHeight}px`
 									: "none",
 								overflowY: !text.getAutosize()
 									? "auto"
