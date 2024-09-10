@@ -75,6 +75,7 @@ export class TextEditor extends React.Component<
 		const { camera } = this.props.board;
 		const { point, width, height, maxWidth, maxHeight, textScale } =
 			text.getDimensions();
+		const textWhiteSpace = text.frameMbr ? "nowrap" : "pre-wrap";
 		point.transform(camera.getMatrix());
 		const left = point.x;
 		/** A heuristic trick to better align editor with canvas */
@@ -84,6 +85,12 @@ export class TextEditor extends React.Component<
 
 		const container = text.getTransformedContainer();
 		container.transform(camera.getMatrix());
+		const editorHeight = text.frameMbr
+			? height / editorScale
+			: container.getHeight() / editorScale;
+		const editorMaxHeight = text.frameMbr
+			? height / editorScale
+			: maxHeight + 1;
 
 		if (this.state.hasError) {
 			return (
@@ -163,11 +170,11 @@ export class TextEditor extends React.Component<
 					top: `${top}px`,
 
 					maxWidth: `${maxWidth + 1}px`,
-					maxHeight: `${maxHeight + 1}px`,
+					maxHeight: `${editorMaxHeight}px`,
 					// width: `${maxWidth}px`,
 					// height: `${maxHeight}px`,
 					width: `${container.getWidth() / editorScale}px`,
-					height: `${container.getHeight() / editorScale}px`,
+					height: `${editorHeight}px`,
 
 					transformOrigin: "left top",
 					// transform: `scale(${editorScale})`,
@@ -239,12 +246,12 @@ export class TextEditor extends React.Component<
 								</span>
 							)}
 							style={{
-								whiteSpace: "pre-wrap",
+								whiteSpace: textWhiteSpace,
 								overflowWrap: "break-word",
 								wordBreak: "normal",
 								width: "100%",
 								maxHeight: !text.getAutosize()
-									? `${maxHeight + 1}px`
+									? `${editorMaxHeight}}px`
 									: "none",
 								overflowY: !text.getAutosize()
 									? "auto"
