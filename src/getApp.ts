@@ -28,9 +28,9 @@ export async function getApp(): Promise<http.Server> {
     const app = express();
 
     app.use(morgan("combined"));
-    if (process.env.NODE_ENV !== "production") {
-        app.use(cors());
-    }
+    app.use(cors({
+        origin: process.env.NODE_ENV === 'development' ? '*' : process.env.BASE_URL
+    }));
 
     const server = http.createServer(app);
     const wss = new WebSocketServer({
