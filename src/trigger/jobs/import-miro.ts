@@ -238,7 +238,7 @@ export const importMiroBoard = client.defineJob({
                 error,
             });
 
-            throw error;
+            // throw error;
         }
     },
 });

@@ -37,8 +37,8 @@ export const parseConnector = async (payload: ConnectorPayload): Promise<Array<a
     // Calculate actual start and end points
     const calculatePoint = async (pos: { x: number; y: number }, wItem?: WidgetItem) => {
         if (!wItem) return { x: 0, y: 0 };
-        const width = wItem.geometry!.width!;
-        const height = wItem.geometry!.height!;
+        const width = wItem.geometry?.width || 0;
+        const height = wItem.geometry?.height || 0;
         const wPos = await getItemPosition(wItem);
 
         // Calculate the offset to move from center to top-left

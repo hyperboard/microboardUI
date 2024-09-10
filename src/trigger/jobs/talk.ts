@@ -219,7 +219,7 @@ export const talkIntegrationJob = client.defineJob({
                                                     height: imageJson?.Height || null,
                                                 };
                                                 let dimensions = null;
-                                                if (!talkDimensions.width || !talkDimensions.height) {
+                                                if (!talkDimensions?.width || !talkDimensions?.height) {
                                                     await io.logger.warn(
                                                         `Failed to parse image dimensions from TALK for image ${
                                                             imageJson.FilePath || data.id
@@ -454,7 +454,7 @@ export const talkIntegrationJob = client.defineJob({
                 }
             );
 
-            throw error;
+            // throw error;
         } finally {
             clearInterval(heartbeat);
         }

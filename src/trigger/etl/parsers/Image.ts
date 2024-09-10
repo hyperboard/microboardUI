@@ -21,8 +21,8 @@ export const parseImage = async (payload: ImagePayload) => {
     };
 
     if (item.dimensions) {
-        imageDimension.width = item.dimensions.width;
-        imageDimension.height = item.dimensions.height;
+        imageDimension.width = item.dimensions?.width || 0;
+        imageDimension.height = item.dimensions?.height || 0;
     }
 
     const pos = await getItemPosition(item, parent);
