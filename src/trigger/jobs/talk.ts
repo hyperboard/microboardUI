@@ -83,6 +83,12 @@ export const talkIntegrationJob = client.defineJob({
         }),
     }),
     run: async (payload, io, ctx) => {
+        if (!payload.id) {
+            await io.logger.error("Task id not provided, payload:", {
+                payload,
+            });
+            throw new Error("Task id not provided");
+        }
         const heartbeat = setInterval(async () => {
             await setLastActivity(payload.id, io);
         }, HEARTBEAT_INTERVAL);
@@ -383,7 +389,7 @@ export const talkIntegrationJob = client.defineJob({
                                 talkConfig.bucket,
                                 `tasks/${talkConfig.exportedFolder}/${payload.id}.json`,
                                 {
-                                    ...taskJson,
+                                    ...taskJson.data,
                                     MicroBoardId: createdBoard.boardId,
                                     MicroBoardEditLink: createdBoard.editLink,
                                 }
