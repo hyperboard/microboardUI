@@ -1,3 +1,4 @@
+import { ConnectorLineStyle } from "Board/Items/Connector";
 import { getApiUrl } from "Config";
 import Cookies from "js-cookie";
 import { Subject } from "Subject";
@@ -63,6 +64,19 @@ export class Storage {
 
 	setLastSticker(lastSticker) {
 		sessionStorage.setItem("lastSticker", JSON.stringify(lastSticker));
+	}
+
+	setConnectorLineStyle(type: ConnectorLineStyle): void {
+		sessionStorage.setItem("connectorLineStyle", type);
+	}
+
+	getConnectorLineStyle(): ConnectorLineStyle | undefined {
+		const saved = sessionStorage.getItem("connectorLineStyle");
+		if (saved) {
+			return saved as ConnectorLineStyle;
+		}
+
+		return undefined;
 	}
 
 	/* Adds an id of a visited public board to the local storage */

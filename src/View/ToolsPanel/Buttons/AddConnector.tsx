@@ -9,8 +9,8 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ButtonWithMenu } from "./ButtonWithMenu/ButtonWithMenu";
 
-export function AddConnector() {
-	const { board } = useAppContext();
+export function AddConnector(): React.ReactElement {
+	const { board, app } = useAppContext();
 	const { t } = useTranslation();
 	const [isActive, setIsActive] = useState(
 		Boolean(board.tools.getAddConnector()),
@@ -25,15 +25,16 @@ export function AddConnector() {
 		}
 	}, [addTool]);
 
-	const handleClick = () => {
+	const handleClick = (): void => {
 		board.tools.addConnector(true);
 		setIsActive(false);
 	};
 
-	const handlePick = (lineStyle: ConnectorLineStyle) => {
+	const handlePick = (lineStyle: ConnectorLineStyle): void => {
 		const tool = board.tools.getAddConnector();
 		if (tool) {
 			tool.setLineStyle(lineStyle);
+			app.storage.setConnectorLineStyle(lineStyle);
 			setIsActive(false);
 		}
 	};
