@@ -1219,3 +1219,120 @@ END;
 $$;
 
 ALTER TABLE boards ADD COLUMN IF NOT EXISTS author_key uuid;
+
+-- Удаление старой версии функции
+DROP FUNCTION IF EXISTS add_events_to_board(UUID, JSONB);
+
+-- Создание новой версии функции
+CREATE OR REPLACE FUNCTION add_events_to_board(
+    board_uuid UUID,
+    events JSONB
+)
+RETURNS VOID
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    board_found_id INTEGER;
+BEGIN
+    -- Find the board_id
+    SELECT id INTO board_found_id FROM boards WHERE uniq_id = board_uuid;
+    IF board_found_id IS NULL THEN
+        SELECT board_id INTO board_found_id
+        FROM board_edit_link bel
+        WHERE bel.edit_link_uuid = board_uuid;
+    END IF;
+    IF board_found_id IS NULL THEN
+        RAISE EXCEPTION 'Board with UUID % does not exist', board_uuid;
+    END IF;
+
+    -- Insert all events in a single query
+    EXECUTE format(
+        'WITH event_data AS (
+            SELECT 
+                unnest(ARRAY(SELECT (value->>''order'')::INTEGER FROM jsonb_array_elements($1))) AS event_order,
+                unnest(ARRAY(SELECT (value->>''eventId'')::TEXT FROM jsonb_array_elements($1))) AS eventid,
+                unnest(ARRAY(SELECT value FROM jsonb_array_elements($1))) AS eventbody
+        )
+        INSERT INTO board%s (logid, eventid, eventbody)
+        SELECT event_order, eventid, eventbody
+        FROM event_data
+        ON CONFLICT (logid) DO NOTHING',
+        board_found_id
+    ) USING events;
+END;
+$$;
+
+
+
+DROP FUNCTION IF EXISTS get_all_board_last_event_orders();
+
+CREATE OR REPLACE FUNCTION get_all_board_last_event_orders()
+RETURNS TABLE (board_uuid UUID, edit_link_uuids UUID[], last_order INTEGER)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    board_cursor CURSOR FOR 
+        SELECT b.id, b.uniq_id, array_agg(bel.edit_link_uuid) AS edit_links
+        FROM boards b
+        LEFT JOIN board_edit_link bel ON b.id = bel.board_id
+        GROUP BY b.id, b.uniq_id;
+    board_record RECORD;
+    max_logid INTEGER;
+BEGIN
+    FOR board_record IN board_cursor LOOP
+        EXECUTE format('SELECT COALESCE(MAX(logid), 0) FROM board%s', board_record.id) INTO max_logid;
+        
+        board_uuid := board_record.uniq_id;
+        edit_link_uuids := board_record.edit_links;
+        last_order := max_logid;
+        
+        RETURN NEXT;
+    END LOOP;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION get_board_last_event_orders(start_id INTEGER, end_id INTEGER)
+RETURNS TABLE (board_uuid UUID, edit_link_uuids UUID[], last_order INTEGER)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    current_batch TEXT;
+BEGIN
+    CREATE TEMPORARY TABLE temp_results (
+        board_id INTEGER,
+        temp_board_uuid UUID,
+        temp_edit_link_uuids UUID[],
+        temp_last_order INTEGER
+    ) ON COMMIT DROP;
+
+    INSERT INTO temp_results (board_id, temp_board_uuid, temp_edit_link_uuids)
+    SELECT b.id, b.uniq_id, array_agg(bel.edit_link_uuid)
+    FROM boards b
+    LEFT JOIN board_edit_link bel ON b.id = bel.board_id
+    WHERE b.id BETWEEN start_id AND end_id
+    GROUP BY b.id, b.uniq_id;
+
+    current_batch := '';
+    FOR i IN start_id..end_id LOOP
+        IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'board' || i::text) THEN
+            IF current_batch != '' THEN
+                current_batch := current_batch || ' UNION ALL ';
+            END IF;
+            current_batch := current_batch || format('SELECT %s AS board_id, COALESCE(MAX(logid), 0) AS max_logid FROM board%s', i, i);
+        END IF;
+    END LOOP;
+
+    IF current_batch != '' THEN
+        EXECUTE format('
+            UPDATE temp_results tr
+            SET temp_last_order = subquery.max_logid
+            FROM (%s) AS subquery
+            WHERE tr.board_id = subquery.board_id
+        ', current_batch);
+    END IF;
+
+    RETURN QUERY 
+    SELECT temp_board_uuid AS board_uuid, temp_edit_link_uuids AS edit_link_uuids, temp_last_order AS last_order 
+    FROM temp_results;
+END;
+$$;

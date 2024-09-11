@@ -1,14 +1,15 @@
 import WebSocket, { WebSocketServer } from "ws";
-import { Boards } from "Routes/V1/Boards";
+import { BoardEventData, Boards } from "Routes/V1/Boards";
 import { AccessToken } from "Interface";
 import { verifyToken } from "Tokens";
 import winston from "winston";
+import { boardEventQueueLatency, boardEventTotalLatency, websocketEventQueueSize } from "Metrics/metrics";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
 const TEN_MINUTES = 10 * MINUTE;
 const WS_TOKENS_CLEANUP_INTERVAL = TEN_MINUTES;
-const SAVE_EVENTS_INTERVAL = 10;
+const SAVE_EVENTS_INTERVAL = 1000;
 const SNAPSHOT_EVENTS_TO_REQUEST = 100;
 const SNAPSHOT_RETRY_TIMEOUT = 2 * MINUTE;
 const SNAPSHOT_REQUEST_TIMEOUT = 10 * SECOND;
@@ -40,6 +41,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
             try {
                 const msg = JSON.parse(data.toString()) as SocketMessage;
                 msgHandlingQueue.push(msg);
+                websocketEventQueueSize.set(msgHandlingQueue.length);
                 processMsgQueue(ws);
             } catch (error) {
                 console.error("Error parsing JSON message:", error);
@@ -59,23 +61,25 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
             if (msg) {
                 await handleMessage(ws, msg);
             }
+            websocketEventQueueSize.set(msgHandlingQueue.length);
         }
 
         isProcessing = false;
     }
 
     async function handleMessage(ws: WebSocket, msg: SocketMessage) {
+        // should probably await
         switch (msg.type) {
             case "Auth":
-                return handleAuthMsg(msg, ws);
+                return await handleAuthMsg(msg, ws);
             case "Subscribe":
-                return handleSubscribeMsg(msg, ws);
+                return await handleSubscribeMsg(msg, ws);
             case "Unsubscribe":
-                return handleUnsubscribeMsg(msg, ws);
+                return await handleUnsubscribeMsg(msg, ws);
             case "BoardEvent":
-                return handleBoardEventMsg(msg, ws);
+                return await handleBoardEventMsg(msg, ws);
             case "BoardSnapshot":
-                return handleSnapshotMsg(msg, ws);
+                return await handleSnapshotMsg(msg, ws);
         }
     }
 
@@ -110,26 +114,15 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         wsTokens.set(ws, tokens);
     }
 
-    function sendError(
-        ws: WebSocket,
-        message: string,
-        ...args: Array<{ [additionalInfo: string]: string }>
-    ): void {
+    function sendError(ws: WebSocket, message: string, ...args: Array<{ [additionalInfo: string]: string }>): void {
         const additionalInfo = Object.assign({}, ...args);
         return ws.send(JSON.stringify({ type: "Error", message, ...additionalInfo }));
     }
 
-    async function handleSubscribeMsg(
-        msg: Subscribe,
-        ws: WebSocket
-    ): Promise<void> {
+    async function handleSubscribeMsg(msg: Subscribe, ws: WebSocket): Promise<void> {
         try {
             if (!(await hasSubscribeRights(ws, msg.boardId))) {
-                return sendError(
-                    ws,
-                    "Access denied: Subscribe to board events.",
-                    { denidedBoardId: msg.boardId },
-                );
+                return sendError(ws, "Access denied: Subscribe to board events.", { denidedBoardId: msg.boardId });
             }
             subscribeClientToBoard(ws, msg.boardId);
             const details = await boards.getLinkDetails(msg.boardId);
@@ -142,20 +135,14 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         }
     }
 
-    async function hasSubscribeRights(
-        ws: WebSocket,
-        boardId: string
-    ): Promise<boolean> {
+    async function hasSubscribeRights(ws: WebSocket, boardId: string): Promise<boolean> {
         return (
             (await isValidLink(boardId, ["view", "edit"])) ||
             hasAnyRightInTokens(ws, boardId, ["reads", "edits", "owns"])
         );
     }
 
-    async function isValidLink(
-        boardId: string,
-        linkTypes: ("view" | "edit")[]
-    ): Promise<boolean> {
+    async function isValidLink(boardId: string, linkTypes: ("view" | "edit")[]): Promise<boolean> {
         try {
             return boards.isValidLink(boardId, linkTypes);
         } catch (error) {
@@ -163,11 +150,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         }
     }
 
-    function hasAnyRightInTokens(
-        ws: WebSocket,
-        boardId: string,
-        rightsTypes: ("reads" | "edits" | "owns")[]
-    ): boolean {
+    function hasAnyRightInTokens(ws: WebSocket, boardId: string, rightsTypes: ("reads" | "edits" | "owns")[]): boolean {
         const tokens = wsTokens.get(ws) || [];
         const currentTime = Date.now() / 1000; // Convert to seconds
         for (const rightType of rightsTypes) {
@@ -216,10 +199,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         await sendBoardEvents(ws, boardId, lastSnapshotEvent);
     }
 
-    async function sendLatestSnapshot(
-        ws: WebSocket,
-        boardId: string
-    ): Promise<number> {
+    async function sendLatestSnapshot(ws: WebSocket, boardId: string): Promise<number> {
         const snapshot = await boards.getLatestBoardSnapshot(boardId);
         if (!snapshot) {
             return 0;
@@ -247,36 +227,36 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
 
     const eventsManager = new EventsManager(boards);
 
-    async function handleBoardEventMsg(
-        msg: BoardEvent,
-        ws: WebSocket
-    ): Promise<void> {
+    eventsManager.initialize();
+
+    async function handleBoardEventMsg(msg: BoardEvent, ws: WebSocket): Promise<void> {
+        const startTime = process.hrtime.bigint();
+
         const hasEditRights = await canEditBoard(ws, msg.boardId);
         if (!hasEditRights) {
             return sendError(ws, "Access denied: edit board.");
         }
-        enqueueBoardEvent(msg.boardId, msg.event.body);
+
+        const eventData = eventsManager.processEvent(msg.boardId, msg.event.body, {
+            startTime: startTime,
+            queueTime: process.hrtime.bigint(),
+        });
+
+        sendMessageToBoardSubscribers(msg.boardId, {
+            type: "BoardEvent",
+            boardId: msg.boardId,
+            event: { body: eventData, order: eventData.order },
+        });
+
+        const totalEndTime = process.hrtime.bigint();
+        const totalLatency = Number(totalEndTime - startTime);
+        boardEventTotalLatency.observe(totalLatency);
     }
 
-    async function canEditBoard(
-        ws: WebSocket,
-        boardId: string
-    ): Promise<boolean> {
-        const hasDirectLinkEditPermission = await isValidLink(boardId, [
-            "edit",
-        ]);
-        const hasTokenEditPermission = hasAnyRightInTokens(ws, boardId, [
-            "edits",
-            "owns",
-        ]);
+    async function canEditBoard(ws: WebSocket, boardId: string): Promise<boolean> {
+        const hasDirectLinkEditPermission = await isValidLink(boardId, ["edit"]);
+        const hasTokenEditPermission = hasAnyRightInTokens(ws, boardId, ["edits", "owns"]);
         return hasDirectLinkEditPermission || hasTokenEditPermission;
-    }
-
-    function enqueueBoardEvent(
-        boardId: string,
-        eventBody: BoardEventBody
-    ): void {
-        eventsManager.enqueueEvent(boardId, eventBody);
     }
 
     function handleUnsubscribeMsg(msg: Unsubscribe, ws: WebSocket): void {
@@ -288,65 +268,30 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         boardClients.set(msg.boardId, clients);
     }
 
-    boards.onEventSave = onEventSave;
+    // boards.onEventSave = sendMessageToClients;
 
-    function sendMessageToClients(message: SocketMessage, clients: WebSocket.WebSocket[]): void {
+    function sendMessageToBoardSubscribers(boardId: string, message: SocketMessage): void {
+        const clients = boardClients.get(boardId) ?? [];
         const content = JSON.stringify(message);
         for (const client of clients) {
             client.send(content);
         }
     }
 
-    async function onEventSave(
-        boardOrLinkId: string,
-        message: BoardEvent
-    ): Promise<void> {
-        const linksById = boardIdToLinks.get(boardOrLinkId);
-        if (linksById) {
-            const clients = boardClients.get(boardOrLinkId) ?? [];
-            sendMessageToClients(message, clients);
-            linksById.forEach((link) => {
-                const linkMessage = { ...message };
-                linkMessage.boardId = link;
-                const linkClients = boardClients.get(link) ?? [];
-                sendMessageToClients(linkMessage, linkClients);
-            })
-        } else {
-            const actualId = linkToBoardId.get(boardOrLinkId);
-            if (!actualId) {
-                throw new Error("Didnt find boardId by link");
-            }
-            const actualIdMsg = { ...message };
-            actualIdMsg.boardId = actualId;
-            onEventSave(actualId, actualIdMsg);
-        }
-    }
-
-    function requestSnapshotFromClient(
-        boardId: string,
-        sinceLast: number
-    ): void {
-        if (snapshotRequestTimers.has(boardId)) {
-            return;
-        }
+    function requestSnapshotFromClient(boardId: string, sinceLast: number): void {
         const clients = boardClients.get(boardId);
         if (clients && clients.length > 0) {
             const randomIndex = Math.floor(Math.random() * clients.length);
             const randomClient = clients[randomIndex];
             if (randomClient) {
                 sendSnapshotRequest(randomClient, boardId, sinceLast);
-                setupSnapshotRequestTimeout(boardId, randomClient, sinceLast);
             }
         }
     }
 
     eventsManager.requestSnapshotCallback = requestSnapshotFromClient;
 
-    function sendSnapshotRequest(
-        ws: WebSocket,
-        boardId: string,
-        sinceLast: number
-    ) {
+    function sendSnapshotRequest(ws: WebSocket, boardId: string, sinceLast: number) {
         const message = JSON.stringify({
             type: "CreateSnapshotRequest",
             boardId: boardId,
@@ -355,11 +300,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         ws.send(message);
     }
 
-    function setupSnapshotRequestTimeout(
-        boardId: string,
-        client: WebSocket,
-        sinceLast: number
-    ): void {
+    function setupSnapshotRequestTimeout(boardId: string, client: WebSocket, sinceLast: number): void {
         clearTimeout(snapshotRequestTimers.get(boardId));
         const timer = setTimeout(() => {
             requestSnapshotFromClient(boardId, sinceLast);
@@ -371,8 +312,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         try {
             const { boardId, snapshot } = snapshotMsg;
             await boards.saveBoardSnapshot(boardId, snapshot);
-            clearTimeout(snapshotRequestTimers.get(boardId));
-            snapshotRequestTimers.delete(boardId);
+            eventsManager.updateSnapshotInfo(boardId, snapshot.lastIndex);
         } catch (error) {
             console.error(`Failed to process snapshot: ${error}`);
         }
@@ -449,13 +389,24 @@ export type SocketMessage =
 
 type BoardEventBody = any;
 
+export interface EventMetadata {
+    startTime: bigint;
+    queueTime: bigint;
+}
+
 export class EventsManager {
     readonly processing: string[] = [];
+
+    private lastEventOrders: Map<string, number> = new Map();
+    private boardUuidMap: Map<string, string> = new Map();
+    private eventCountSinceLastSnapshot: Map<string, number> = new Map();
+    private snapshotRequestTimers: Map<string, NodeJS.Timeout> = new Map();
 
     private queues: {
         [boardId: string]: {
             boardId: string;
             events: BoardEventBody[];
+            isSaving: boolean;
         };
     } = {};
 
@@ -465,79 +416,143 @@ export class EventsManager {
         }, SAVE_EVENTS_INTERVAL);
     }
 
-    tryToSaveEvents = (): void => {
-        for (const eventsQueue of Object.values(this.queues)) {
-            const boardId = eventsQueue.boardId;
-            if (this.isBoardReady(boardId)) {
-                delete this.queues[boardId];
-                this.saveEvents(boardId, eventsQueue.events);
-            }
-        }
-    };
-
-    async saveEvents(
-        boardId: string,
-        eventBodyQueue: BoardEventBody[]
-    ): Promise<void> {
+    async initialize() {
         try {
-            this.processing.push(boardId);
-            let eventBody: BoardEventBody | undefined;
-            while (
-                eventBodyQueue.length > 0 &&
-                (eventBody = eventBodyQueue.shift())
-            ) {
-                const boardEvent = await this.boards.addEventToBoard(
-                    boardId,
-                    eventBody.eventId,
-                    eventBody
-                );
-                this.requestSnapshotIfNeeded(boardId);
-            }
-            const index = this.processing.indexOf(boardId);
-            if (index > -1) {
-                this.processing.splice(index, 1);
-            }
-        } catch (error) {}
-    }
+            const boardLastOrders = await this.boards.getAllBoardLastEventOrders();
+            for (const { board_uuid, edit_link_uuids, last_order } of boardLastOrders) {
+                this.lastEventOrders.set(board_uuid, last_order);
+                this.boardUuidMap.set(board_uuid, board_uuid);
+                this.eventCountSinceLastSnapshot.set(board_uuid, 0);
 
-    private snapshotTimers: Map<string, NodeJS.Timeout> = new Map<
-        string,
-        NodeJS.Timeout
-    >();
-
-    async requestSnapshotIfNeeded(boardId: string): Promise<void> {
-        try {
-            const count = await this.boards.getEventCountSinceLastSnapshot(
-                boardId
-            );
-            if (count >= SNAPSHOT_EVENTS_TO_REQUEST) {
-                if (this.snapshotTimers.has(boardId)) {
-                    clearTimeout(this.snapshotTimers.get(boardId)!);
+                for (const edit_link_uuid of edit_link_uuids) {
+                    if (edit_link_uuid) {
+                        this.boardUuidMap.set(edit_link_uuid, board_uuid);
+                    }
                 }
 
-                const timer = setTimeout(() => {
-                    this.requestSnapshotCallback(boardId, count);
-                    this.snapshotTimers.delete(boardId);
-                }, SNAPSHOT_REQUEST_TIMEOUT);
-
-                this.snapshotTimers.set(boardId, timer);
+                const eventCount = await this.boards.getEventCountSinceLastSnapshot(board_uuid);
+                this.eventCountSinceLastSnapshot.set(board_uuid, eventCount);
             }
         } catch (error) {
-            console.error(
-                `Failed to request snapshot for board ${boardId}: ${error}`
-            );
+            console.error("Failed to initialize event orders:", error);
         }
+    }
+
+    processEvent(boardId: string, eventBody: BoardEventBody, metadata: EventMetadata): BoardEventData {
+        const actualBoardUuid = this.boardUuidMap.get(boardId) || boardId;
+        const newOrder = (this.lastEventOrders.get(actualBoardUuid) || 0) + 1;
+        this.lastEventOrders.set(actualBoardUuid, newOrder);
+
+        const queue = this.queues[actualBoardUuid] || {
+            boardId: actualBoardUuid,
+            events: [],
+        };
+        const data = { ...eventBody, order: newOrder };
+        queue.events.push({
+            data,
+            metadata,
+        });
+        this.queues[actualBoardUuid] = queue;
+
+        const currentCount = this.eventCountSinceLastSnapshot.get(actualBoardUuid) || 0;
+        this.eventCountSinceLastSnapshot.set(actualBoardUuid, currentCount + 1);
+
+        this.checkAndRequestSnapshot(boardId);
+
+        return data;
+    }
+    private checkAndRequestSnapshot(boardId: string) {
+        const actualBoardUuid = this.boardUuidMap.get(boardId) || boardId;
+
+        const eventCount = this.eventCountSinceLastSnapshot.get(actualBoardUuid) || 0;
+
+        if (eventCount >= SNAPSHOT_EVENTS_TO_REQUEST) {
+            this.requestSnapshotIfNeeded(boardId);
+        }
+    }
+
+    private requestSnapshotIfNeeded(boardId: string): void {
+        // Clear any existing timers
+        if (this.snapshotRequestTimers.has(boardId)) {
+            clearTimeout(this.snapshotRequestTimers.get(boardId));
+            this.snapshotRequestTimers.delete(boardId);
+        }
+
+        const initialTimer = setTimeout(() => {
+            this.executeSnapshotRequest(boardId);
+        }, SNAPSHOT_REQUEST_TIMEOUT);
+
+        this.snapshotRequestTimers.set(boardId, initialTimer);
+    }
+
+    private executeSnapshotRequest(boardId: string): void {
+        const eventCount = this.eventCountSinceLastSnapshot.get(boardId) || 0;
+
+        this.requestSnapshotCallback(boardId, eventCount);
+
+        const retryTimer = setTimeout(() => {
+            this.executeSnapshotRequest(boardId); // Retry the request
+        }, SNAPSHOT_RETRY_TIMEOUT);
+
+        this.snapshotRequestTimers.set(boardId, retryTimer);
+    }
+
+    // In updateSnapshotInfo method:
+    updateSnapshotInfo(boardId: string, lastEventOrder: number) {
+        const actualBoardUuid = this.boardUuidMap.get(boardId) || boardId;
+        this.eventCountSinceLastSnapshot.set(actualBoardUuid, 0);
+        this.lastEventOrders.set(actualBoardUuid, lastEventOrder);
+
+        // Clear any existing timers when snapshot is received
+        if (this.snapshotRequestTimers.has(actualBoardUuid)) {
+            clearTimeout(this.snapshotRequestTimers.get(actualBoardUuid));
+            this.snapshotRequestTimers.delete(actualBoardUuid);
+        }
+    }
+
+    async tryToSaveEvents() {
+        for (const [boardId, queue] of Object.entries(this.queues)) {
+            if (queue.events.length > 0 && !queue.isSaving) {
+                queue.isSaving = true;
+                try {
+                    const eventsToSave = [...queue.events];
+                    const before = eventsToSave.length;
+
+                    await this.saveEvents(boardId, eventsToSave);
+                    // New events could have been enqueued after saving
+                    queue.events.splice(0, before);
+                } catch (error) {
+                    console.error(`Failed to save events for board ${boardId}:`, error);
+                } finally {
+                    queue.isSaving = false;
+                }
+            }
+        }
+    }
+
+    private async saveEvents(
+        boardId: string,
+        eventQueue: Array<{
+            data: BoardEventData;
+            metadata: EventMetadata;
+        }>
+    ) {
+        const events = eventQueue.map((event) => event.data);
+
+        await this.boards.addEventsToBoard(boardId, events);
+        /*
+        eventQueue.forEach((event, index) => {
+            const { metadata } = event;
+            const totalEndTime = process.hrtime.bigint();
+            const totalLatency = Number(totalEndTime - metadata.startTime);
+            boardEventTotalLatency.observe(totalLatency);
+        });
+        */
     }
 
     requestSnapshotCallback(boardId: string, sinceLast: number): void {}
 
     isBoardReady(boardId: string): boolean {
         return !this.processing.includes(boardId);
-    }
-
-    enqueueEvent(boardId: string, eventBody: BoardEventBody): void {
-        const queue = this.queues[boardId] || { boardId, events: [] };
-        queue.events.push(eventBody);
-        this.queues[boardId] = queue;
     }
 }
