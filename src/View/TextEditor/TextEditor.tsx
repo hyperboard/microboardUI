@@ -110,9 +110,9 @@ export class TextEditor extends React.Component<
 						left: `${left}px`,
 						top: `${top}px`,
 
-						maxWidth: `${maxWidth}px`,
+						maxWidth: `${Math.ceil(maxWidth)}px`,
 						maxHeight: `${maxHeight}px`,
-						width: `${maxWidth}px`,
+						width: `${Math.ceil(maxWidth)}px`,
 						height: `${maxHeight}px`,
 
 						// transformOrigin: "left top",
@@ -169,11 +169,11 @@ export class TextEditor extends React.Component<
 					left: `${left}px`,
 					top: `${top}px`,
 
-					maxWidth: `${maxWidth + 1}px`,
+					maxWidth: `${Math.ceil(maxWidth) + 1}px`,
 					maxHeight: `${editorMaxHeight}px`,
 					// width: `${maxWidth}px`,
 					// height: `${maxHeight}px`,
-					width: `${container.getWidth() / editorScale}px`,
+					width: `${Math.ceil(container.getWidth() / editorScale)}px`,
 					height: `${editorHeight}px`,
 
 					transformOrigin: "left top",
