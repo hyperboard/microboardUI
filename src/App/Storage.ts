@@ -1,4 +1,6 @@
 import { ConnectorLineStyle } from "Board/Items/Connector";
+import { ConnectorEdge } from "Board/Items/Connector/Pointers";
+import { ConnectorPointerStyle } from "Board/Items/Connector/Pointers/Pointers";
 import { getApiUrl } from "Config";
 import Cookies from "js-cookie";
 import { Subject } from "Subject";
@@ -64,6 +66,25 @@ export class Storage {
 
 	setLastSticker(lastSticker) {
 		sessionStorage.setItem("lastSticker", JSON.stringify(lastSticker));
+	}
+
+	setConnectorPointer(
+		type: ConnectorPointerStyle,
+		edge: ConnectorEdge,
+	): void {
+		sessionStorage.setItem(
+			`connector${edge.charAt(0).toUpperCase() + edge.slice(1)}Pointer`,
+			type,
+		);
+	}
+
+	getConnectorPointer(
+		edge: ConnectorEdge,
+	): ConnectorPointerStyle | undefined {
+		const saved = sessionStorage.getItem(
+			`connector${edge.charAt(0).toUpperCase() + edge.slice(1)}Pointer`,
+		);
+		return (saved as ConnectorPointerStyle) || undefined;
 	}
 
 	setConnectorLineStyle(type: ConnectorLineStyle): void {

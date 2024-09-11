@@ -3,9 +3,10 @@ import { CONNECTOR_POINTER_TYPES } from "View/Tools/AddConnector";
 import { UiButton } from "View/Ui/UiButton/UiButton";
 import React from "react";
 import style from "./ConnectorPointerPicker.module.css";
+import { ConnectorPointerStyle } from "Board/Items/Connector/Pointers/Pointers";
 
 type Props = {
-	onPick: (pointer: string) => void;
+	onPick: (pointer: ConnectorPointerStyle) => void;
 	selected: string;
 };
 

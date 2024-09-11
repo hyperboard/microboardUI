@@ -8,21 +8,23 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import style from "./EndPointer.module.css";
 import { useAppContext } from "View/AppContext";
+import { ConnectorPointerStyle } from "Board/Items/Connector/Pointers/Pointers";
 
 const MENU_NAME = "EndPointer";
 
 export function EndPointer(): React.ReactElement | null {
 	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
 		usePanelContext();
-	const { board } = useAppContext();
+	const { board, app } = useAppContext();
 	const { t } = useTranslation();
 	const pointerStartStyle = board.selection.getEndPointerStyle();
 
-	const handleClick = () => {
+	const handleClick = (): void => {
 		toggleMenu(MENU_NAME);
 	};
-	const handlePick = (type: string) => {
+	const handlePick = (type: ConnectorPointerStyle): void => {
 		board.selection.setEndPointerStyle(type);
+		app.storage.setConnectorPointer(type, "end");
 		toggleMenu("None");
 	};
 	return (
