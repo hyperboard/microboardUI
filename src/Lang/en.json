@@ -402,6 +402,8 @@
 		"addNew": "New board",
 		"embedBoardButton": "Embed board",
 		"newBoardPlaceholder": "Board name",
-		"back": "Back"
+		"back": "Back",
+		"notOwner": "This board has been shared with you",
+		"optionsUnavailable": "But modifying permissions is not allowed. All other participants will have the same access level."
 	}
 }

@@ -322,48 +322,77 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 									// TODO add frames
 								]}
 							/>} */}
-							<Selector
-								ref={selectorRef}
-								label={t("embedding.allVisitors")}
-								options={[
-									{
-										value: "edit",
-										label: (
-											<div className={style.selectorText}>
-												{
-													<Icon
-														style={{
-															marginRight: "10px",
-														}}
-														iconName="canEdit"
-														width={20}
-														height={20}
-													/>
-												}{" "}
-												{t("embedding.canEdit")}
-											</div>
-										),
-									},
-									{
-										value: "view",
-										label: (
-											<div className={style.selectorText}>
-												{
-													<Icon
-														style={{
-															marginRight: "10px",
-														}}
-														iconName="canView"
-														width={20}
-														height={20}
-													/>
-												}{" "}
-												{t("embedding.canView")}
-											</div>
-										),
-									},
-								]}
-							/>
+							{selected === "addNew" ||
+							app.storage
+								.listPublicBoards()
+								.includes(selected) ? (
+								<Selector
+									ref={selectorRef}
+									label={t("embedding.allVisitors")}
+									options={[
+										{
+											value: "edit",
+											label: (
+												<div
+													className={
+														style.selectorText
+													}
+												>
+													{
+														<Icon
+															style={{
+																marginRight:
+																	"10px",
+															}}
+															iconName="canEdit"
+															width={20}
+															height={20}
+														/>
+													}{" "}
+													{t("embedding.canEdit")}
+												</div>
+											),
+										},
+										{
+											value: "view",
+											label: (
+												<div
+													className={
+														style.selectorText
+													}
+												>
+													{
+														<Icon
+															style={{
+																marginRight:
+																	"10px",
+															}}
+															iconName="canView"
+															width={20}
+															height={20}
+														/>
+													}{" "}
+													{t("embedding.canView")}
+												</div>
+											),
+										},
+									]}
+								/>
+							) : (
+								<div className={style.infoMessage}>
+									<div>
+										<Icon
+											iconName="Info"
+											width={16}
+											height={16}
+										/>
+										{t("embedding.notOwner")}
+									</div>
+									<div className={style.secondary}>
+										{t("embedding.optionsUnavailable")}
+									</div>
+								</div>
+							)}
 						</div>
 						<div className={style.buttonContainer}>
 							<button
