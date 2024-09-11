@@ -49,7 +49,7 @@ export const parseFrame = async (payload: FramePayload): Promise<Array<any | nul
                     translateX: (item?.position?.x || 0) - xOffset,
                     translateY: (item?.position?.y || 0) - yOffset,
                 },
-                backgroundColor: "#ffffff",
+                backgroundColor: item?.style?.fillColor || "#ffffff",
                 backgroundOpacity: 1,
             },
             item: newItemId,

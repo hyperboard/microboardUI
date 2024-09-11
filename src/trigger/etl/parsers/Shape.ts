@@ -67,7 +67,7 @@ export const parseShape = async (payload: ShapePayload): Promise<Array<any | nul
                     ? borderStyles[item?.style?.borderStyle as keyof typeof borderStyles]
                     : "solid",
                 borderWidth: item?.style?.borderWidth || 2,
-                borderOpacity: item?.style?.borderOpacity || 1,
+                borderOpacity: parseFloat(item?.style?.borderOpacity || "1") || 1,
                 transformation: {
                     rotate: 0,
                     scaleX: width / 100,

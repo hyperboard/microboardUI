@@ -99,7 +99,7 @@ export const talkIntegrationJob = client.defineJob({
             const database = await getDatabase(winstonLogger);
             const newBoardId = v4();
 
-            const taskJson = await io.try(
+            const talktaskJsonTask = await io.try(
                 async () => {
                     const taskJson = await io.runTask(
                         "Get JSON File",
@@ -121,14 +121,14 @@ export const talkIntegrationJob = client.defineJob({
                 }
             );
 
-            if (taskJson?.isSuccess === false) {
-                throw taskJson.error;
+            if (talktaskJsonTask?.isSuccess === false) {
+                throw talktaskJsonTask.error;
             }
 
             await io.logger.info("Importing board from Talk", {
-                jsonFile: taskJson,
+                jsonFile: talktaskJsonTask,
             });
-            const workerID = taskJson.data?.WorkerName;
+            const workerID = talktaskJsonTask.data?.WorkerName;
             if (!workerID) {
                 throw new Error("Worker ID not found");
             }
@@ -389,7 +389,7 @@ export const talkIntegrationJob = client.defineJob({
                                 talkConfig.bucket,
                                 `tasks/${talkConfig.exportedFolder}/${payload.id}.json`,
                                 {
-                                    ...taskJson.data,
+                                    ...talktaskJsonTask.data,
                                     MicroBoardId: createdBoard.boardId,
                                     MicroBoardEditLink: createdBoard.editLink,
                                 }
