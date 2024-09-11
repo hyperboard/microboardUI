@@ -20,6 +20,7 @@ import NoBoardIsOpen from "./NoBoardIsOpen";
 import { InactiveBoardHidder } from "./InactiveBoardHidder";
 import { shouldShow } from "lib/queryStringParser";
 import { ViewModeGuard } from "View/ViewModeGuard";
+import { QuickAddPanel } from "./QuickAddPanel";
 
 export function AppView() {
 	const { app, board } = useAppContext();
@@ -153,6 +154,7 @@ export function AppView() {
 			</InactiveBoardHidder>
 			<ViewModeGuard>
 				<ContextPanel />
+				<QuickAddPanel />
 				<ExportPanel />
 			</ViewModeGuard>
 			<ToastProvider />

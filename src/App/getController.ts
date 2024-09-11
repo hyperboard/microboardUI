@@ -8,6 +8,7 @@ import { Clipboard } from "./Clipboard";
 import { createWheel } from "./Wheel/Wheel";
 import { isSafari } from "./isSafari";
 import { prepareImage } from "Board/Items/Image/ImageHelpers";
+import { HotkeysMap } from "Board/Keyboard/types";
 
 export interface Controller {
 	onWheel: (event: WheelEvent) => void;
@@ -66,7 +67,7 @@ export function getController(
 		}
 
 		const context = board.selection.getContext();
-		const editModeHotkeys = {
+		const editModeHotkeys: HotkeysMap = {
 			select: {
 				cb: () => board.tools.select(true),
 				selectionContext: ["SelectUnderPointer", "None"],
@@ -162,6 +163,7 @@ export function getController(
 			undo: () => board.events?.undo(),
 			redo: () => board.events?.redo(),
 			cancel: () => board.tools.cancel(),
+			confirm: () => board.tools.confirm(),
 			zoomIn: () => board.camera.zoomInToViewCenter(),
 			zoomOut: () => board.camera.zoomOutFromViewCenter(),
 			zoomDefault: () => board.camera.zoomToViewCenter(1),
