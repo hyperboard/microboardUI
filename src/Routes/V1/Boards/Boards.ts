@@ -4,11 +4,19 @@ import { Pool } from "pg";
 import { v4 as uuidv4 } from "uuid";
 import validator from "validator";
 import winston from "winston";
+import { snapshotSaveLatency, snapshotReadLatency, boardEventDbWriteLatency } from "Metrics/metrics";
+import { EventMetadata } from "WebSocket";
 
 function validateUUID(id: string, idName: string): void {
     if (!validator.isUUID(id)) {
         throw new Error(`Invalid ${idName}: ${id}`);
     }
+}
+
+export interface BoardEventData {
+    eventId: string;
+    body: object;
+    order: number;
 }
 
 export class Boards {
@@ -221,20 +229,60 @@ export class Boards {
     async addEventToBoard(boardId: string, eventId: string, eventBody: object): Promise<{ order: number; body: any }> {
         try {
             validateUUID(boardId, "boardId");
+            const startDbWrite = process.hrtime.bigint();
             const result = await this.database.query<{ order: number }>(
                 "select add_event_using_uuid($1, $2, $3) as order",
                 [boardId, eventId, eventBody]
             );
+
+            const endDbWrite = process.hrtime.bigint();
+            const dbWriteLatency = Number(endDbWrite - startDbWrite);
+            boardEventDbWriteLatency.observe(dbWriteLatency);
+
             const order = result.rows[0].order;
+
             const event = { order, body: eventBody };
             this.onEventSave(boardId, {
                 type: "BoardEvent",
                 boardId,
                 event,
             });
+
             return event;
         } catch (error) {
             this.logger.error(`Error adding event to board: ${error}`);
+            throw error;
+        }
+    }
+
+    async addEventsToBoard(boardId: string, events: Array<BoardEventData>): Promise<void> {
+        try {
+            validateUUID(boardId, "boardId");
+            const startDbWrite = process.hrtime.bigint();
+
+            const eventsJson = JSON.stringify(events);
+            await this.database.query<{
+                add_events_to_board: number;
+            }>("SELECT * FROM add_events_to_board($1, $2)", [boardId, eventsJson]);
+
+            const endDbWrite = process.hrtime.bigint();
+            const dbWriteLatency = Number(endDbWrite - startDbWrite);
+            boardEventDbWriteLatency.observe(dbWriteLatency);
+
+            // const orders = result.rows.map((row) => row.add_events_to_board);
+            /*
+            const boardEventList = {
+                type: "BoardEventList",
+                boardId,
+                events: events.map((event, index) => ({
+                    order: orders[index],
+                    body: event.body,
+                })),
+            };
+            */
+            // this.onEventSave(boardId, boardEventList);
+        } catch (error) {
+            this.logger.error(`Error adding events to board: ${error}`);
             throw error;
         }
     }
@@ -394,12 +442,15 @@ export class Boards {
 
     async saveBoardSnapshot(boardUuidOrEditLink: string, snapshot: any) {
         try {
+            const startTime = Date.now();
             validateUUID(boardUuidOrEditLink, "boardUuidOrEditLink");
             await this.database.query("SELECT save_board_snapshot($1, $2, $3)", [
                 boardUuidOrEditLink,
                 snapshot,
                 snapshot.lastIndex,
             ]);
+            const endTime = Date.now();
+            snapshotSaveLatency.observe((endTime - startTime) / 1000);
         } catch (error) {
             this.logger.error(`Error saving snapshot for board ${boardUuidOrEditLink}: ${error}`);
             throw error;
@@ -408,6 +459,8 @@ export class Boards {
 
     async getLatestBoardSnapshot(boardUuidOrEditLink: string): Promise<any> {
         try {
+            const startTime = Date.now();
+
             validateUUID(boardUuidOrEditLink, "boardUuidOrEditLink");
             const result = await this.database.query<{ snapshot: any }>(
                 "SELECT get_latest_board_snapshot($1) AS snapshot",
@@ -417,6 +470,9 @@ export class Boards {
             if (result.rows.length === 0) {
                 throw new Error(`No snapshot found for board or link UUID ${boardUuidOrEditLink}`);
             }
+
+            const endTime = Date.now();
+            snapshotReadLatency.observe((endTime - startTime) / 1000);
 
             return result.rows[0].snapshot;
         } catch (error) {
@@ -435,6 +491,52 @@ export class Boards {
             return result.rows[0].count;
         } catch (error) {
             this.logger.error(`Error getting event count since last snapshot for board ${boardId}: ${error}`);
+            throw error;
+        }
+    }
+
+    async getAllBoardLastEventOrders(batchSize: number = 10): Promise<
+        Array<{
+            board_uuid: string;
+            edit_link_uuids: string[];
+            last_order: number;
+        }>
+    > {
+        const results: Array<{
+            board_uuid: string;
+            edit_link_uuids: string[];
+            last_order: number;
+        }> = [];
+
+        try {
+            const maxIdResult = await this.database.query<{ max: number }>("SELECT MAX(id) FROM boards");
+            const maxId = maxIdResult.rows[0].max;
+
+            for (let startId = 1; startId <= maxId; startId += batchSize) {
+                const endId = Math.min(startId + batchSize - 1, maxId);
+
+                try {
+                    const result = await this.database.query<{
+                        board_uuid: string;
+                        edit_link_uuids: string[];
+                        last_order: number;
+                    }>("SELECT * FROM get_board_last_event_orders($1, $2)", [startId, endId]);
+
+                    results.push(
+                        ...result.rows.map((row) => ({
+                            board_uuid: row.board_uuid,
+                            edit_link_uuids: row.edit_link_uuids || [],
+                            last_order: parseInt(row.last_order.toString(), 10),
+                        }))
+                    );
+                } catch (batchError) {
+                    this.logger.error(`Error processing boards from ID ${startId} to ${endId}: ${batchError}`);
+                }
+            }
+
+            return results;
+        } catch (error) {
+            this.logger.error(`Error in getAllBoardLastEventOrders: ${error}`);
             throw error;
         }
     }

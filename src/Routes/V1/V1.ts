@@ -57,5 +57,9 @@ export function getV1Router(
         });
     });
 
+    router.get("/api/v1/healthcheck", (req, res) => {
+        res.status(200).json({ status: "OK", message: "Server is up and running" });
+    });
+
     return router;
 }

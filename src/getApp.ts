@@ -20,6 +20,7 @@ import { Config } from "./shared/config/config";
 import { Mailer } from "./shared/modules/mailer/mailer";
 import { createBarrelMediaDAL } from "Routes/V1/MediaTalk/Media";
 import { createMinioMediaDAL } from "Routes/V1/Media";
+import { register } from "./Metrics/metrics";
 import { createMiddleware } from "@trigger.dev/express";
 import { client } from "trigger";
 import cors from "cors";
