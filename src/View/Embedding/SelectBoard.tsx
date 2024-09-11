@@ -10,11 +10,7 @@ import { VisitedPublicBoard } from "App/Storage";
 import Selector, { SelectorHandle } from "./Selector";
 import { useAuth } from "shared/hooks/useAuth";
 import { getEmbedUrl } from "lib/getEmbedUrl";
-import Cookies from "js-cookie";
 import { getApiUrl } from "Config";
-import toast from "react-hot-toast";
-import { notify } from "View/Ui/Toast";
-import { ICreateStringAttachment } from "@cucumber/cucumber/lib/runtime/attachment_manager";
 
 const customHeader: CSSProperties = {
 	padding: "6px",
@@ -325,7 +321,9 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 							{selected === "addNew" ||
 							app.storage
 								.listPublicBoards()
-								.includes(selected) ? (
+								.some(
+									board => board.boardId === selected.boardId,
+								) ? (
 								<Selector
 									ref={selectorRef}
 									label={t("embedding.allVisitors")}
