@@ -108,6 +108,12 @@
 		},
 		"restMenu": {
 			"tooltip": "Опции"
+		},
+		"lock": {
+			"tooltip": "Заблокировать"
+		},
+		"unlock": {
+			"tooltip": "Разблокировать"
 		}
 	},
 	"toolsPanel": {

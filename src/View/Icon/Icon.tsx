@@ -69,7 +69,9 @@ export type IconId =
 	| "BurgerMenu"
 	| "miro"
 	| "loader"
-	| "Info";
+	| "Info"
+	| "lock"
+	| "unlock";
 
 type Props = {
 	iconName: IconId;

@@ -1,8 +1,7 @@
 import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
 import { useAppSubscription } from "Board/useBoardSubscription";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useAppContext } from "View/AppContext";
-import { MiroBoardItemTypes } from "View/ImportMiro/ImportMiroBoards/MiroBoards/MiroBoardsModels";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import { UiSeparator } from "View/Ui/UiSeparator/UiSeparator";
 import { ConnectorAddText } from "./Buttons/ConnectorAddText";
@@ -35,6 +34,7 @@ import { TextColor } from "./Buttons/TextColor";
 import { TextHighlight } from "./Buttons/TextHighlight";
 import { ToggleFrameRatio } from "./Buttons/ToggleFrameRatio";
 import { PanelContext } from "./PanelContext";
+import { Lock } from "./Buttons/Lock";
 
 export function ContextPanel() {
 	const { app, board } = useAppContext();
@@ -227,6 +227,7 @@ export function ContextPanel() {
 						<UiSeparator vertical />
 						<Duplicate />
 						<Delete />
+						<Lock />
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
