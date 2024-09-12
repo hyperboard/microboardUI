@@ -76,7 +76,7 @@ export class TextEditor extends React.Component<
 		const { camera } = this.props.board;
 		const { point, width, height, maxWidth, maxHeight, textScale } =
 			text.getDimensions();
-		const textWhiteSpace = text.frameMbr ? "nowrap" : "pre-wrap";
+		const textWhiteSpace = text.frameMbr ? "pre" : "pre-wrap";
 		point.transform(camera.getMatrix());
 		const left = point.x;
 		/** A heuristic trick to better align editor with canvas */
@@ -257,8 +257,8 @@ export class TextEditor extends React.Component<
 							// )}
 							style={{
 								whiteSpace: textWhiteSpace,
-								overflowWrap: "break-word",
-								wordBreak: "normal",
+								// overflowWrap: "break-word",
+								// wordBreak: "normal",
 								width: "100%",
 								maxHeight: !text.getAutosize()
 									? `${editorMaxHeight}px`
