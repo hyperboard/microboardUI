@@ -7,6 +7,7 @@ import { Board } from "Board";
 import { verticalAlignmentToFlex } from "./verticalAlignmentToFlex";
 import { RichText } from "Board/Items/RichText/RichText";
 import { DEFAULT_TEXT_STYLES } from "View/Items/RichText";
+import styles from "./TextEditor.module.css";
 
 export class TextEditors extends React.Component<
 	{
@@ -86,11 +87,9 @@ export class TextEditor extends React.Component<
 		const container = text.getTransformedContainer();
 		container.transform(camera.getMatrix());
 		const editorHeight = text.frameMbr
-			? height / editorScale
+			? height
 			: container.getHeight() / editorScale;
-		const editorMaxHeight = text.frameMbr
-			? height / editorScale
-			: maxHeight + 1;
+		const editorMaxHeight = text.frameMbr ? height : maxHeight + 1;
 
 		if (this.state.hasError) {
 			return (
@@ -206,7 +205,12 @@ export class TextEditor extends React.Component<
 						transform: `translate(0px) scale(${editorScale})`,
 						transformOrigin: `left top`,
 						pointerEvents: "all",
+						fontSize:
+							(text.getFontSize() / editorScale) *
+							camera.getScale(),
 					}}
+					className={styles.editorContainer}
+					data-placeholder={text.placeholderText}
 				>
 					<Slate
 						editor={text.editor.editor}
@@ -221,30 +225,30 @@ export class TextEditor extends React.Component<
 							selection={text.editor.editor.selection}
 							onBlur={text.handleBlur}
 							onFocus={text.handleFocus}
-							placeholder={text.placeholderText}
-							renderPlaceholder={({ children, attributes }) => (
-								<span
-									{...attributes}
-									style={{
-										position: "absolute",
-										left: 0,
-										right: 0,
-										top: 0,
-										zIndex: 0,
-										display: "inline-block",
-										width: 0,
-										whiteSpace: "nowrap",
-										opacity: 0.33,
-										maxWidth: "100%",
-										textDecoration: "none",
-										userSelect: "none",
-										pointerEvents: "none",
-										fontSize: "inherit",
-									}}
-								>
-									{children}
-								</span>
-							)}
+							// placeholder={text.placeholderText}
+							// renderPlaceholder={({ children, attributes }) => (
+							// 	<span
+							// 		{...attributes}
+							// 		style={{
+							// 			position: "absolute",
+							// 			left: 0,
+							// 			right: 0,
+							// 			top: 0,
+							// 			zIndex: 0,
+							// 			display: "inline-block",
+							// 			width: 0,
+							// 			whiteSpace: "nowrap",
+							// 			opacity: 0.33,
+							// 			maxWidth: "100%",
+							// 			textDecoration: "none",
+							// 			userSelect: "none",
+							// 			pointerEvents: "none",
+							// 			fontSize: "inherit",
+							// 		}}
+							// 	>
+							// 		{children}
+							// 	</span>
+							// )}
 							style={{
 								whiteSpace: textWhiteSpace,
 								overflowWrap: "break-word",
@@ -256,9 +260,7 @@ export class TextEditor extends React.Component<
 								overflowY: !text.getAutosize()
 									? "auto"
 									: "visible",
-								fontSize:
-									(text.getFontSize() / editorScale) *
-									camera.getScale(),
+								fontSize: "inherit",
 								// transform: `scale(${editorScale})`,
 								// transformOrigin: `left top`,
 							}}

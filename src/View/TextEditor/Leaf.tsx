@@ -45,7 +45,6 @@ export function Leaf(props: RenderLeafProps): React.ReactElement {
 				break;
 		}
 	}
-	const fontSize = props.text.fontSize;
 
 	return (
 		<span
@@ -53,7 +52,7 @@ export function Leaf(props: RenderLeafProps): React.ReactElement {
 			style={{
 				color: props.text.fontColor,
 				backgroundColor: props.text.fontHighlight,
-				fontSize,
+				fontSize: "inherit",
 				/* lineHeight: lineHeight + 'px', */
 				fontFamily: props.text.fontFamily,
 			}}
