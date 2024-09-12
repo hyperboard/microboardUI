@@ -90,6 +90,12 @@ export class TextEditor extends React.Component<
 			? height
 			: container.getHeight() / editorScale;
 		const editorMaxHeight = text.frameMbr ? height : maxHeight + 1;
+		const editorWidth =
+			text.insideOf === "Sticker"
+				? container.getWidth() / editorScale
+				: Math.ceil(container.getWidth() / editorScale);
+		const editorMaxWidth =
+			text.insideOf === "Sticker" ? maxWidth : Math.ceil(maxWidth);
 
 		if (this.state.hasError) {
 			return (
@@ -168,12 +174,12 @@ export class TextEditor extends React.Component<
 					left: `${left}px`,
 					top: `${top}px`,
 
-					maxWidth: `${Math.ceil(maxWidth) + 1}px`,
+					maxWidth: `${editorMaxWidth}px`,
 					maxHeight: `${editorMaxHeight}px`,
 					// width: `${maxWidth}px`,
 					// height: `${maxHeight}px`,
-					width: `${Math.ceil(container.getWidth() / editorScale)}px`,
-					height: `${editorHeight}px`,
+					width: `${editorWidth}px`,
+					height: `${Math.ceil(editorHeight)}px`,
 
 					transformOrigin: "left top",
 					// transform: `scale(${editorScale})`,
