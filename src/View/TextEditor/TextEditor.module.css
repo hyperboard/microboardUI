@@ -1,6 +1,5 @@
 .editor-container {
 	position: relative;
-	overflow-x: hidden;
 }
 
 .editor-container::before {
