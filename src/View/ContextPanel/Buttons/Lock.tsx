@@ -1,13 +1,25 @@
+import { useAppContext } from "View/AppContext";
 import { Icon } from "View/Icon";
 import { UiButton } from "View/Ui/UiButton";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Frame } from "Board/Items";
 
 export const Lock = (): React.ReactElement | null => {
 	const { t } = useTranslation();
-	const [isLocked, setIsLocked] = useState(false);
+	const { board } = useAppContext();
+	const selectedFrames = board.selection.list() as Frame[];
+	// const isLocked = selectedFrames.some(frame => frame.getIsLocked());
+	const [isLocked, setIsLocked] = useState<boolean>(
+		selectedFrames.some(frame => frame.isLocked),
+	);
 
 	const handleClick = (): void => {
+		selectedFrames.forEach(frame => {
+			const isLockedFrame = frame.isLocked;
+			frame.setIsLocked(!isLockedFrame);
+		});
+
 		setIsLocked(isLocked => !isLocked);
 	};
 
