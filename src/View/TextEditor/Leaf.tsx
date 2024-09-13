@@ -52,7 +52,7 @@ export function Leaf(props: RenderLeafProps): React.ReactElement {
 			style={{
 				color: props.text.fontColor,
 				backgroundColor: props.text.fontHighlight,
-				fontSize: "inherit",
+				fontSize: props.text.fontSize,
 				/* lineHeight: lineHeight + 'px', */
 				fontFamily: props.text.fontFamily,
 			}}
