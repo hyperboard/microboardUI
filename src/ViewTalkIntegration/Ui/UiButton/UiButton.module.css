@@ -6,7 +6,7 @@
 	--active-bg-color: rgb(232, 242, 252);
 	--active-content-color: rgb(34, 145, 255);
 	--disabled-bg-color: "transparent";
-	--disabled-content-color: rgb(153, 153, 153);
+	--disabled-content-color: rgba(0, 0, 0, 0.8);
 	--outline-color: rgba(128, 183, 255, 0.4);
 }
 

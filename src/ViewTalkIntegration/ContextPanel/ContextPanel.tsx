@@ -172,7 +172,14 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 						<Delete />
 					</>
 				)}
-				{isDifferentItems && <RestOptionsMenu />}
+				{isDifferentItems && (
+					<>
+						<Duplicate />
+						<RestOptionsMenu />
+						<UiSeparator vertical />
+						<Delete />
+					</>
+				)}
 			</UiPanel>
 		</PanelContext.Provider>
 	);
