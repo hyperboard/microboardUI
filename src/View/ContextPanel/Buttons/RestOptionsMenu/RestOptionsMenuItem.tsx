@@ -22,7 +22,7 @@ export function RestOptionsMenuItem({
 	return (
 		<button id={id} className={style.item} onClick={onClick}>
 			{icon}
-			<span>{children}</span>
+			<span className={style.text}>{children}</span>
 			{hotkey && <span className={style.hotkey}>{hotkey}</span>}
 		</button>
 	);
