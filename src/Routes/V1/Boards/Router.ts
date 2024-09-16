@@ -685,6 +685,35 @@ export function getBoardsRouter(
             response.end();
         }
     );
+    
+    router.get(
+        "/boards/:boardId/exists",
+        param("boardId").isUUID(),
+        async (req: Request, res: Response) => {
+            try {
+                const errors = validationResult(req);
+                if (!errors.isEmpty()) {
+                    return res.status(400).json({ errors: errors.array() });
+                }
+
+                const boardId = req.params.boardId;
+                let exists = await boards.isBoardExists(boardId);
+                
+                if (!exists) {
+                    exists = await boards.isValidLink(boardId, ["view", "edit"]);
+                }
+
+                if (!exists) {
+                    throw new Error(`Uuid ${boardId} doesnt exist`);
+                }
+
+                return res.status(200).send();
+            } catch (err) {
+                logger.error(`Error checking UUID existence: ${err}`);
+                return res.status(404).send("Not found");
+            }
+        }
+    );
 
     return router;
 }
