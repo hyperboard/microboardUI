@@ -11,13 +11,13 @@ export const Lock = (): React.ReactElement | null => {
 	const selectedFrames = board.selection.list() as Frame[];
 	// const isLocked = selectedFrames.some(frame => frame.getIsLocked());
 	const [isLocked, setIsLocked] = useState<boolean>(
-		selectedFrames.some(frame => frame.isLocked),
+		selectedFrames.some(frame => frame.transformation.isLocked),
 	);
 
 	const handleClick = (): void => {
 		selectedFrames.forEach(frame => {
-			const isLockedFrame = frame.isLocked;
-			frame.setIsLocked(!isLockedFrame);
+			const isLockedFrame = frame.transformation.isLocked;
+			frame.transformation.setIsLocked(!isLockedFrame);
 		});
 
 		setIsLocked(isLocked => !isLocked);
