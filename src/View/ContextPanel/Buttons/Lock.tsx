@@ -5,7 +5,13 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Frame } from "Board/Items";
 
-export const Lock = (): React.ReactElement | null => {
+type Props = {
+	rounded?: "none" | "left";
+};
+
+export const Lock = ({
+	rounded = "none",
+}: Props): React.ReactElement | null => {
 	const { t } = useTranslation();
 	const { board } = useAppContext();
 	const selectedFrames = board.selection.list() as Frame[];
@@ -39,7 +45,7 @@ export const Lock = (): React.ReactElement | null => {
 			onClick={handleClick}
 			active={isLocked}
 			variant="secondary"
-			rounded="none"
+			rounded={rounded}
 			tooltip={tooltip}
 			tooltipPosition="top"
 		>

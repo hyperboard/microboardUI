@@ -109,7 +109,8 @@ export function ContextPanel() {
 			>
 				{isLockedFrame && (
 					<>
-						<Lock />
+						<Lock rounded="left" />
+						<Duplicate />
 						<RestOptionsMenu rounded="right">
 							<CopyFrameLink />
 							<ExportFrame />
