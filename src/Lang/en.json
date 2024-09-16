@@ -405,5 +405,8 @@
 		"back": "Back",
 		"notOwner": "This board has been shared with you",
 		"optionsUnavailable": "But modifying permissions is not allowed. All other participants will have the same access level."
+	},
+	"frame": {
+		"copy": "Copy of "
 	}
 }
