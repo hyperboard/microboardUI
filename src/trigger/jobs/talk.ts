@@ -28,6 +28,17 @@ interface S3Board {
     images: string[];
 }
 
+function errorToJson(error: any) {
+    const e = {
+        message: error.message || "Unknown error",
+        stack: error.stack || "Unknown stack",
+        name: error.name || "Unknown name",
+        ...(error.code && { code: error.code }),
+    };
+
+    return JSON.stringify(e, null, 4);
+}
+
 function splitBoardFiles(filePaths: string[]): S3Board {
     try {
         const boardData: S3Board = {
@@ -67,8 +78,10 @@ async function setLastActivity(taskId: string, io: IO) {
             lastActivityTime: now,
         });
         await io.logger.log(`Last activity updated - ${now}`, { now });
-    } catch (e) {
-        await io.logger.error(`Error updating last activity ${now}}`, { e });
+    } catch (error: any) {
+        await io.logger.error(`Error updating last activity ${now}}`, {
+            error: errorToJson(error),
+        });
     }
 }
 
@@ -112,8 +125,10 @@ export const talkIntegrationJob = client.defineJob({
                         data: taskJson,
                     };
                 },
-                async (error) => {
-                    await io.logger.error(`Error fetching tasks`, { error });
+                async (error: any) => {
+                    await io.logger.error(`Error fetching tasks`, {
+                        error: errorToJson(error),
+                    });
                     return {
                         isSuccess: false as const,
                         error,
@@ -145,8 +160,10 @@ export const talkIntegrationJob = client.defineJob({
                         data: boardFilesTask,
                     };
                 },
-                async (error) => {
-                    await io.logger.error(`Error fetching files`, { error });
+                async (error: any) => {
+                    await io.logger.error(`Error fetching files`, {
+                        error: errorToJson(error),
+                    });
                     return {
                         isSuccess: false as const,
                         error,
@@ -182,8 +199,10 @@ export const talkIntegrationJob = client.defineJob({
                         data: boardTask,
                     };
                 },
-                async (error) => {
-                    await io.logger.error(`Error fetching board`, { error });
+                async (error: any) => {
+                    await io.logger.error(`Error fetching board`, {
+                        error: errorToJson(error),
+                    });
                     return {
                         isSuccess: false as const,
                         error,
@@ -275,11 +294,11 @@ export const talkIntegrationJob = client.defineJob({
                                                     boardId: newBoardId,
                                                     userId: payload.userId,
                                                 });
-                                            } catch (e: any) {
+                                            } catch (error: any) {
                                                 await io.logger.error(
                                                     `Error processing image item: ${imageJsonPath}, skipping...`,
                                                     {
-                                                        error: JSON.stringify(e?.message),
+                                                        error: errorToJson(error),
                                                     }
                                                 );
                                             }
@@ -304,8 +323,10 @@ export const talkIntegrationJob = client.defineJob({
                             data: items,
                         };
                     },
-                    async (error) => {
-                        await io.logger.error(`Error fetching items`, { error });
+                    async (error: any) => {
+                        await io.logger.error(`Error fetching items`, {
+                            error: errorToJson(error),
+                        });
                         return {
                             isSuccess: false as const,
                             error,
@@ -343,8 +364,10 @@ export const talkIntegrationJob = client.defineJob({
                             data: connectors,
                         };
                     },
-                    async (error) => {
-                        await io.logger.error(`Error fetching connectors`, { error });
+                    async (error: any) => {
+                        await io.logger.error(`Error fetching connectors`, {
+                            error: errorToJson(error),
+                        });
                         return {
                             isSuccess: false as const,
                             error,
@@ -406,9 +429,9 @@ export const talkIntegrationJob = client.defineJob({
                             data: true,
                         };
                     },
-                    async (error) => {
+                    async (error: any) => {
                         await io.logger.error(`Error in import job for board ${payload.id}:`, {
-                            error,
+                            error: errorToJson(error),
                         });
                         return {
                             isSuccess: false as const,
@@ -420,9 +443,9 @@ export const talkIntegrationJob = client.defineJob({
                 await io.logger.info(`import failed: ${payload.id}`);
                 throw new Error(`Save board to db error: ${payload.id}`);
             }
-        } catch (error) {
+        } catch (error: any) {
             await io.logger.error(`Error in import job for board ${payload.id}:`, {
-                error,
+                error: errorToJson(error),
             });
             await io.try(
                 async () => {
@@ -438,7 +461,7 @@ export const talkIntegrationJob = client.defineJob({
                                 ...taskJson,
                                 MetaInfo: {
                                     ...(taskJson.MetaInfo || {}),
-                                    errorMessage: JSON.stringify(error),
+                                    error: errorToJson(error),
                                 },
                             }
                         );
@@ -449,9 +472,9 @@ export const talkIntegrationJob = client.defineJob({
                         );
                     });
                 },
-                async (error) => {
+                async (error: any) => {
                     await io.logger.error(`Error in import job for board ${payload.id}:`, {
-                        error,
+                        error: errorToJson(error),
                     });
                     return {
                         isSuccess: false as const,
@@ -460,7 +483,7 @@ export const talkIntegrationJob = client.defineJob({
                 }
             );
 
-            // throw error;
+            throw error;
         } finally {
             clearInterval(heartbeat);
         }

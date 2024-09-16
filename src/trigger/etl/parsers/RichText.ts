@@ -126,8 +126,6 @@ export const parseText = async (payload: TextPayload): Promise<Array<any | null>
     const xOffset = width / 2;
     const yOffset = height / 2;
 
-    const pos = await getItemPosition(item, parent);
-
     const getStylesFromElement = (element: any): TextStyle => {
         const $element = $(element);
         const fontColor = $element.css("color") || item?.style?.color || "#000000";
@@ -239,6 +237,36 @@ export const parseText = async (payload: TextPayload): Promise<Array<any | null>
             textSegments.push(...parseOrderedOrUnorderedList(element));
         }
     });
+
+    let rowCount = 1;
+    let longestLineLength = 0;
+    let currentLineLength = 0;
+
+    textSegments.forEach((segment) => {
+        if (segment.text.includes("\n") || segment.text === "\n") {
+            rowCount++;
+            longestLineLength = Math.max(longestLineLength, currentLineLength);
+            currentLineLength = 0;
+        } else {
+            currentLineLength += segment.text.length;
+        }
+    });
+
+    // const rowCount = textSegments.filter((segment) => segment.text.includes("\n") || segment.text === "\n").length + 1;
+    const fontSize = textSegments[0]?.style?.fontSize || 14;
+    const calculatedHeight = rowCount * fontSize;
+
+    longestLineLength = Math.max(longestLineLength, currentLineLength);
+    const averageCharWidth = fontSize * 0.6; // Assuming average character width is 60% of font size (It's not, find better solution)
+    const calculatedWidth = longestLineLength * averageCharWidth;
+
+    const copiedItem = { ...item };
+    copiedItem.geometry!.height = calculatedHeight;
+    if (item.style?.textAlign === "center") {
+        copiedItem.geometry!.width = calculatedWidth;
+    }
+
+    const pos = await getItemPosition(copiedItem, parent);
 
     const event = {
         userId: userId,
