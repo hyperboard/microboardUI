@@ -64,6 +64,12 @@ export function ContextPanel() {
 		return null;
 	}
 
+	const isLockedFrame = board.selection.items
+		.list()
+		.some(
+			item => item.transformation.isLocked && item.itemType === "Frame",
+		);
+
 	const isSelectUnderPointer =
 		board.selection.getContext() === "SelectUnderPointer";
 
@@ -101,6 +107,15 @@ export function ContextPanel() {
 				padding={0}
 				id="ContextPanel"
 			>
+				{isLockedFrame && (
+					<>
+						<Lock />
+						<RestOptionsMenu rounded="right">
+							<CopyFrameLink />
+							<ExportFrame />
+						</RestOptionsMenu>
+					</>
+				)}
 				{isSelectUnderPointer && (
 					<>
 						<Edit />
@@ -218,7 +233,7 @@ export function ContextPanel() {
 						</RestOptionsMenu>
 					</>
 				)}
-				{isFrame && !isSelectUnderPointer && (
+				{isFrame && !isSelectUnderPointer && !isLockedFrame && (
 					<>
 						<FrameRatio />
 						<ToggleFrameRatio />
