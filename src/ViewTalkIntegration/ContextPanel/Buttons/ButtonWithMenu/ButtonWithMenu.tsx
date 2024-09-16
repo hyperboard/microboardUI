@@ -10,7 +10,7 @@ import React, {
 import style from "./UiButtonWithMenu.module.css";
 
 type Props = PropsWithChildren<{
-	button: ReactNode;
+	button: ((updatePosition: () => void) => ReactNode) | ReactNode;
 	menuName: string;
 	openedMenu: string;
 	panelMbr: Mbr;
@@ -33,7 +33,7 @@ export function ButtonWithMenu({
 		"bottom" | "top" | "middle"
 	>("bottom");
 
-	useEffect(() => {
+	const updatePosition = () => {
 		const menu = menuRef.current;
 		if (!menu) {
 			return;
@@ -49,23 +49,27 @@ export function ButtonWithMenu({
 			return;
 		}
 		setVerticalAlign("middle");
-	}, [panelMbr.top, windowHeight]);
+	};
+
+	useEffect(() => {
+		updatePosition();
+	}, [panelMbr, windowHeight, openedMenu]);
 
 	return (
 		<div className={style.container}>
-			{button}
-			{openedMenu === menuName && (
-				<div
-					ref={menuRef}
-					className={clsx([
-						style.menu,
-						style[verticalAlign],
-						style[align],
-					])}
-				>
-					{children}
-				</div>
-			)}
+			{typeof button === "function" ? button(updatePosition) : button}
+
+			<div
+				ref={menuRef}
+				className={clsx([
+					style.menu,
+					openedMenu === menuName && style.visible,
+					style[verticalAlign],
+					style[align],
+				])}
+			>
+				{children}
+			</div>
 		</div>
 	);
 }
