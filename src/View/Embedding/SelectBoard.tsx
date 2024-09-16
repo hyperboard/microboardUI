@@ -11,6 +11,8 @@ import Selector, { SelectorHandle } from "./Selector";
 import { useAuth } from "shared/hooks/useAuth";
 import { getEmbedUrl } from "lib/getEmbedUrl";
 import { getApiUrl } from "Config";
+import { UiButton } from "View/Ui/UiButton";
+import { useForceUpdate } from "lib/useForceUpdate";
 
 const customHeader: CSSProperties = {
 	padding: "6px",
@@ -36,11 +38,13 @@ const getName = (i18t: TFunction, name?: string): string =>
 
 const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 	const { t } = useTranslation();
+	const forceUpdate = useForceUpdate();
 	const searchRef = useRef<HTMLInputElement>(null);
 	const newBoardRef = useRef<HTMLInputElement>(null);
 	const selectorRef = useRef<SelectorHandle>(null);
 	const { isAuth } = useAuth(app);
 	const [searchQuery, setSearchQuery] = useState<string>("");
+	const [loading, setLoading] = useState(false);
 	const [selected, setSelected] = useState<
 		VisitedPublicBoard | null | "addNew"
 	>(null);
@@ -92,7 +96,6 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 			selectorRef.current?.getSelectedOption().value === "view" &&
 			actualId
 		) {
-			console.log("VIEW", boardId, actualId, authorKey);
 			const authedUrl = `${getApiUrl()}/boards/${actualId}/links`;
 			const unauthedUrl = `${getApiUrl()}/boards/${actualId}/links/unauthed`;
 			const url = app.storage.isAuth
@@ -128,7 +131,6 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 				});
 			}
 			const { linkId } = await response.json();
-			console.log("created link", linkId);
 			if (!linkId) {
 				handleError(
 					"could not create view link, try again later or with new board",
@@ -174,8 +176,8 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 	}, [selected]);
 
 	const handleEmbed = async (): Promise<void> => {
-		if (selected === "addNew") {
-			try {
+		try {
+			if (selected === "addNew") {
 				const created = await app.createPublicBoard(
 					newBoardRef.current?.value,
 				);
@@ -186,16 +188,49 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 					stored?.actualId,
 					stored?.authorKey,
 				);
-			} catch (er) {
-				handleError(er);
+			} else if (selected) {
+				setLoading(true);
+				let res = await fetch(
+					`${getApiUrl()}/boards/${selected.boardId}/exists`,
+					{
+						method: "GET",
+					},
+				);
+				if (!res.ok && selected.actualId) {
+					res = await fetch(
+						`${getApiUrl()}/boards/${selected.actualId}/exists`,
+						{
+							method: "GET",
+						},
+					);
+				}
+				if (!res.ok) {
+					setLoading(false);
+					selected.notFound = true;
+					if (
+						app.storage
+							.listPublicBoards()
+							.some(shared => shared.boardId === selected.boardId)
+					) {
+						app.storage.setPublicBoard(selected);
+					} else {
+						app.storage.setPublicBoard(selected, false);
+					}
+					setSelected(selected);
+					app.storage.subject.publish();
+					forceUpdate();
+				} else {
+					handleSuccess(
+						selected.boardId,
+						selected.name,
+						selected.actualId,
+						selected.authorKey,
+					);
+				}
 			}
-		} else if (selected) {
-			handleSuccess(
-				selected.boardId,
-				selected.name,
-				selected.actualId,
-				selected.authorKey,
-			);
+		} catch (er) {
+			setLoading(false);
+			handleError(er);
 		}
 	};
 
@@ -392,19 +427,43 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 								</div>
 							)}
 						</div>
+						{selected !== "addNew" && selected.notFound && (
+							<div
+								className={`${style.infoMessage} ${style.error}`}
+							>
+								<div>
+									<Icon
+										iconName="Info"
+										width={16}
+										height={16}
+									/>
+									{t("modalInfo.accessDenied.title")}
+								</div>
+								<div className={style.secondary}>
+									{t("modalInfo.accessDenied.description")}
+								</div>
+							</div>
+						)}
 						<div className={style.buttonContainer}>
-							<button
+							<UiButton
 								className={`${style.button} ${style.primary}`}
 								onClick={handleEmbed}
+								disabled={
+									loading ||
+									(selected !== "addNew" && selected.notFound)
+								}
+								size="sm"
 							>
 								{t("embedding.embedBoardButton")}
-							</button>
-							<button
+							</UiButton>
+							<UiButton
 								className={`${style.button} ${style.secondary}`}
 								onClick={() => setSelected(null)}
+								disabled={loading}
+								size="sm"
 							>
 								{t("embedding.back")}
-							</button>
+							</UiButton>
 						</div>
 					</>
 				)}

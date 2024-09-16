@@ -219,3 +219,8 @@
 .infoMessage .secondary {
 	color: var(--text-base-secondary);
 }
+
+.infoMessage.error {
+	background-color: #fdf2f1;
+	color: #e6483d;
+}

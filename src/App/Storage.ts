@@ -12,6 +12,7 @@ export interface VisitedPublicBoard {
 	name?: string;
 	authorKey?: string;
 	actualId?: string;
+	notFound?: boolean;
 }
 
 interface BoardWId extends VisitedPublicBoard {
