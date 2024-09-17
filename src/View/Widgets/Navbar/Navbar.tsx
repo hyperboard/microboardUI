@@ -3,6 +3,7 @@ import { LeadIcon } from "./lead-icon";
 import { useTranslation } from "react-i18next";
 import { NavLink, useLocation } from "react-router-dom";
 import "./Navbar.css";
+import { isIframe } from "lib/isIframe";
 
 const loginVisibleRoutes = ["/auth/verify", "/auth/sign-up"];
 const signUpVisibleRoutes = [
@@ -20,7 +21,12 @@ export const Navbar: React.FC = () => {
 
 	return (
 		<header className="NavbarWrapper">
-			<a className="Logo" href="https://microboard.ru">
+			<a
+				className="Logo"
+				target={isIframe() ? "_blank" : "_top"}
+				href="https://microboard.ru"
+				rel="noreferrer"
+			>
 				<LeadIcon width={20} height={20} />
 				<span>Microboard</span>
 			</a>
