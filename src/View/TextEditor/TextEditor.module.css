@@ -2,6 +2,14 @@
 	position: relative;
 }
 
+.scroll-container {
+	scrollbar-width: none;
+}
+
+.scroll-container::-webkit-scrollbar {
+	display: none;
+}
+
 .editor-container::before {
 	content: attr(data-placeholder);
 	position: absolute;
@@ -19,6 +27,7 @@
 	font-size: inherit;
 	align-items: center;
 	display: none;
+	overflow: hidden;
 }
 
 .show-placeholder.editor-container::before {

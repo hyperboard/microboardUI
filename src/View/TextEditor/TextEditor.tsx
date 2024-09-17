@@ -236,6 +236,7 @@ export class TextEditor extends React.Component<
 							selection={text.editor.editor.selection}
 							onBlur={text.handleBlur}
 							onFocus={text.handleFocus}
+							className={text.frameMbr && styles.scrollContainer}
 							// placeholder={text.placeholderText}
 							// renderPlaceholder={({ children, attributes }) => (
 							// 	<span
@@ -268,6 +269,7 @@ export class TextEditor extends React.Component<
 								maxHeight: !text.getAutosize()
 									? `${editorMaxHeight}px`
 									: "none",
+								// overflow: `${text.frameMbr ? 'hidden' : 'unset'}`,
 								overflowY: !text.getAutosize()
 									? "auto"
 									: "visible",
