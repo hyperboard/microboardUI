@@ -1,7 +1,7 @@
 import { useAppContext } from "View/AppContext";
 import { Icon } from "View/Icon";
 import { UiButton } from "View/Ui/UiButton";
-import React, { useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { Frame } from "Board/Items";
 
@@ -15,9 +15,8 @@ export const Lock = ({
 	const { t } = useTranslation();
 	const { board } = useAppContext();
 	const selectedFrames = board.selection.list() as Frame[];
-	// const isLocked = selectedFrames.some(frame => frame.getIsLocked());
-	const [isLocked, setIsLocked] = useState<boolean>(
-		selectedFrames.some(frame => frame.transformation.isLocked),
+	const isLocked = selectedFrames.some(
+		frame => frame.transformation.isLocked,
 	);
 
 	const handleClick = (): void => {
@@ -25,8 +24,6 @@ export const Lock = ({
 			const isLockedFrame = frame.transformation.isLocked;
 			frame.transformation.setIsLocked(!isLockedFrame);
 		});
-
-		setIsLocked(isLocked => !isLocked);
 	};
 
 	const tooltip = isLocked
