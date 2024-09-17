@@ -15,6 +15,7 @@ import { Select } from "./Buttons/Select";
 import { Undo } from "./Buttons/Undo";
 import { PanelContext } from "./PanelContext";
 import style from "./ToolsPanel.module.css";
+import { AddTemplate } from "./Buttons/AddTemplate";
 
 export function ToolsPanel() {
 	const [openedMenu, setOpenedMenu] = useState("None");
@@ -33,6 +34,7 @@ export function ToolsPanel() {
 		<PanelContext.Provider value={{ toggleMenu, openedMenu }}>
 			<div className={style.wrapper}>
 				<UiPanel vertical padding={0} zIndex={20}>
+					<AddTemplate />
 					<Select />
 					<AddDrawing />
 					<AddText />
