@@ -270,12 +270,34 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
 
     // boards.onEventSave = sendMessageToClients;
 
-    function sendMessageToBoardSubscribers(boardId: string, message: SocketMessage): void {
-        const clients = boardClients.get(boardId) ?? [];
+    function sendMessageToClients(message: SocketMessage, clients: WebSocket.WebSocket[]): void {
         const content = JSON.stringify(message);
         for (const client of clients) {
             client.send(content);
         }
+    }
+
+    function sendMessageToBoardSubscribers(boardOrLinkId: string, message: BoardEvent): void {
+        const linksById = boardIdToLinks.get(boardOrLinkId);
+        if (linksById) {
+            const clients = boardClients.get(boardOrLinkId) ?? [];
+            sendMessageToClients(message, clients);
+            linksById.forEach((link) => {
+                const linkMessage = { ...message };
+                linkMessage.boardId = link;
+                const linkClients = boardClients.get(link) ?? [];
+                sendMessageToClients(linkMessage, linkClients);
+            })
+        } else {
+            const actualId = linkToBoardId.get(boardOrLinkId);
+            if (!actualId) {
+                throw new Error("Didnt find boardId by link");
+            }
+            const actualIdMsg = { ...message };
+            actualIdMsg.boardId = actualId;
+            sendMessageToBoardSubscribers(actualId, actualIdMsg);
+        }
+
     }
 
     function requestSnapshotFromClient(boardId: string, sinceLast: number): void {
