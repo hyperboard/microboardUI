@@ -65,6 +65,9 @@
 		},
 		"edit": {
 			"text": "Edit"
+		},
+		"copy": {
+			"text": "Copy"
 		}
 	},
 	"toolsPanel": {

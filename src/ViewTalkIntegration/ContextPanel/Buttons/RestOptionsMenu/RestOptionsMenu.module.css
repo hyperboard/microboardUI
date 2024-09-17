@@ -19,3 +19,7 @@
 	text-wrap: nowrap;
 	color: rgba(0, 0, 0, 0.24);
 }
+
+.delete {
+	color: rgba(223, 78, 73, 1);
+}

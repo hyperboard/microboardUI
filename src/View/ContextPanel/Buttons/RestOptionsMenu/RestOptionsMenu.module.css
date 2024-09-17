@@ -11,7 +11,7 @@
 	padding: 6px;
 	width: 220px;
 	cursor: pointer;
-	transition: 0.3s;
+	transition: background 0.3s;
 	font-size: 1.4rem;
 }
 
@@ -35,6 +35,8 @@
 
 .text {
 	text-wrap: nowrap;
+	min-width: 140px;
+	text-align: left;
 }
 
 .hotkey {

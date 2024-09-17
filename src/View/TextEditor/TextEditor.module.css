@@ -1,6 +1,13 @@
 .editor-container {
 	position: relative;
-	overflow-x: hidden;
+}
+
+.scroll-container {
+	scrollbar-width: none;
+}
+
+.scroll-container::-webkit-scrollbar {
+	display: none;
 }
 
 .editor-container::before {
@@ -20,8 +27,9 @@
 	font-size: inherit;
 	align-items: center;
 	display: none;
+	overflow: hidden;
 }
 
-.editor-container:has(span[data-slate-zero-width="n"])::before {
+.show-placeholder.editor-container::before {
 	display: flex;
 }

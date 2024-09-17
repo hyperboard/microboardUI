@@ -8,6 +8,7 @@ import { verticalAlignmentToFlex } from "./verticalAlignmentToFlex";
 import { RichText } from "Board/Items/RichText/RichText";
 import { DEFAULT_TEXT_STYLES } from "View/Items/RichText";
 import styles from "./TextEditor.module.css";
+import clsx from "clsx";
 
 export class TextEditors extends React.Component<
 	{
@@ -179,7 +180,7 @@ export class TextEditor extends React.Component<
 					// width: `${maxWidth}px`,
 					// height: `${maxHeight}px`,
 					width: `${editorWidth}px`,
-					height: `${Math.ceil(editorHeight)}px`,
+					height: `${editorHeight}px`,
 
 					transformOrigin: "left top",
 					// transform: `scale(${editorScale})`,
@@ -215,7 +216,11 @@ export class TextEditor extends React.Component<
 							(text.getFontSize() / editorScale) *
 							camera.getScale(),
 					}}
-					className={styles.editorContainer}
+					className={clsx(
+						styles.editorContainer,
+						text.getTextString().length === 0 &&
+							styles.showPlaceholder,
+					)}
 					data-placeholder={text.placeholderText}
 				>
 					<Slate
@@ -231,6 +236,7 @@ export class TextEditor extends React.Component<
 							selection={text.editor.editor.selection}
 							onBlur={text.handleBlur}
 							onFocus={text.handleFocus}
+							className={text.frameMbr && styles.scrollContainer}
 							// placeholder={text.placeholderText}
 							// renderPlaceholder={({ children, attributes }) => (
 							// 	<span
@@ -263,6 +269,7 @@ export class TextEditor extends React.Component<
 								maxHeight: !text.getAutosize()
 									? `${editorMaxHeight}px`
 									: "none",
+								// overflow: `${text.frameMbr ? 'hidden' : 'unset'}`,
 								overflowY: !text.getAutosize()
 									? "auto"
 									: "visible",
