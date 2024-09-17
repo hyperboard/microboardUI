@@ -3,6 +3,8 @@ import { Logger } from "winston";
 import { MediaDAL } from "./MediaDAL";
 import { getImageFormat, isAllowedFormat } from "./MediaHelpers";
 import { Transform, PassThrough } from "stream";
+import { optimize } from "svgo";
+import { processSvg } from "shared/lib/processSvg";
 
 const mega = 1024 * 1024;
 const maxSizeInBytes = 5 * mega; // 5 MB
@@ -66,7 +68,12 @@ export function createMediaRouter(media: MediaDAL, logger: Logger) {
                     src,
                 });
             }
-            await media.saveImageStream(id, passThroughStream);
+            if (format === "image/svg+xml") {
+                const optimizedStream = await processSvg(passThroughStream)
+                await media.saveImageStream(id, optimizedStream);
+            } else {
+                await media.saveImageStream(id, passThroughStream);
+            }
             res.status(200).json({
                 message: `Image with ID ${id} successfully saved.`,
                 src,
