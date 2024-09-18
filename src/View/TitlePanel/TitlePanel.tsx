@@ -68,6 +68,10 @@ export function TitlePanel() {
 		board.tools.export();
 	};
 
+	const saveTemplate = () => {
+		board.events?.emitSnapshot();
+	};
+
 	const isMicroboard = import.meta.env.INTEGRATION_UI === "microboard";
 
 	const strippedName =
@@ -126,6 +130,16 @@ export function TitlePanel() {
 			<UiButton
 				className={style.tabletHide}
 				onClick={openExport}
+				variant="secondary"
+				rounded="right"
+				tooltip={t("export.tooltip")}
+				tooltipPosition="bottom"
+			>
+				<Icon iconName="Export" />
+			</UiButton>
+			<UiButton
+				className={style.tabletHide}
+				onClick={saveTemplate}
 				variant="secondary"
 				rounded="right"
 				tooltip={t("export.tooltip")}

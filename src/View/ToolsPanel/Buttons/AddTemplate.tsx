@@ -11,6 +11,9 @@ import { ButtonWithMenu } from "./ButtonWithMenu";
 import { getApiUrl } from "../../../Config";
 import Cookies from "js-cookie";
 import { BoardEvent } from "../../../Board/Events/Events";
+import { createCommand } from "../../../Board/Events/Command";
+import { BoardSnapshot } from "../../../Board/Board";
+import { Item } from "../../../Board/Items";
 
 export function AddTemplate() {
 	const { board } = useAppContext();
@@ -19,7 +22,7 @@ export function AddTemplate() {
 		Boolean(board.tools.getAddConnector()),
 	);
 
-	const addTool = board.tools.getAddSticker();
+	const addTool = board.tools.getAddTemplate();
 	useEffect(() => {
 		if (addTool) {
 			setIsActive(true);
@@ -31,14 +34,14 @@ export function AddTemplate() {
 	const handleClick = async () => {
 		const boards = await getUserBoards();
 		if (boards) {
-			const events = await getBoardEvents(boards[1].boardId);
-			if (board.events && events) {
-				console.log(events);
-				events.forEach(event => {
-					event.order += 2000;
-					board.events.d;
-					board.events!.addEvent(event);
-				});
+			const template = await getTemplateSnapshot(boards[0].boardId);
+			if (board.events && template) {
+				board.paste(template.items, true);
+				if (!board.tools.getSelect()) {
+					board.tools.select();
+				}
+				const itemsMbr = board.items.getMbr();
+				board.camera.zoomToFit(itemsMbr);
 			}
 		}
 		setIsActive(false);
@@ -68,10 +71,10 @@ export function AddTemplate() {
 		}
 	}
 
-	async function getBoardEvents(boardId: string) {
+	async function getTemplateSnapshot(boardId: string) {
 		try {
 			const response = await fetch(
-				`${getApiUrl()}/boards/${boardId}/events`,
+				`${getApiUrl()}/boards/${boardId}/snapshot`,
 				{
 					method: "GET",
 					mode: "cors",
@@ -89,7 +92,7 @@ export function AddTemplate() {
 				throw new Error("response not OK");
 			}
 			const data = await response.json();
-			return data as BoardEvent[];
+			return data as BoardSnapshot;
 		} catch (error) {
 			console.error("Failed to get board events.", error);
 		}
