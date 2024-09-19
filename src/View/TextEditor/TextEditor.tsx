@@ -213,7 +213,10 @@ export class TextEditor extends React.Component<
 						transformOrigin: `left top`,
 						pointerEvents: "all",
 						fontSize:
-							(text.getFontSize() / editorScale) *
+							((text.getTextString().length === 0
+								? text.getFontSize()
+								: text.getMinFontSize()) /
+								editorScale) *
 							camera.getScale(),
 					}}
 					className={clsx(
@@ -273,7 +276,7 @@ export class TextEditor extends React.Component<
 								overflowY: !text.getAutosize()
 									? "auto"
 									: "visible",
-								fontSize: "inherit",
+								// fontSize: "inherit",
 								// transform: `scale(${editorScale})`,
 								// transformOrigin: `left top`,
 							}}
