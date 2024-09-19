@@ -45,7 +45,12 @@ export function TextColorIndicator({
 						r="5"
 						fill={color}
 						fillOpacity="0.8"
-						stroke="white"
+						stroke={
+							color === "#FFFFFF" ||
+							color === "rgb(255, 255, 255)"
+								? "#D3D5D7"
+								: "rgb(255, 255, 255)"
+						}
 					></circle>
 				</>
 			) : (

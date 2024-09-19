@@ -1,0 +1,35 @@
+.editor-container {
+	position: relative;
+}
+
+.scroll-container {
+	scrollbar-width: none;
+}
+
+.scroll-container::-webkit-scrollbar {
+	display: none;
+}
+
+.editor-container::before {
+	content: attr(data-placeholder);
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	width: 100%;
+	white-space: nowrap;
+	opacity: 0.33;
+	max-width: 100%;
+	text-decoration: none;
+	user-select: none;
+	pointer-events: none;
+	font-size: inherit;
+	align-items: center;
+	display: none;
+	overflow: hidden;
+}
+
+.show-placeholder.editor-container::before {
+	display: flex;
+}

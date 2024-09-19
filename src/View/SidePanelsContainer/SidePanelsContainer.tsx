@@ -5,6 +5,8 @@ import { TitlePanel } from "View/TitlePanel";
 import { ToolsPanel } from "View/ToolsPanel";
 import style from "./SidePanelsContainer.module.css";
 import { InactiveBoardHidder } from "View/AppView/InactiveBoardHidder";
+import { shouldShow } from "lib/queryStringParser";
+import { useAppContext } from "View/AppContext";
 
 interface SidePanelsContainerProps {
 	isBlank: boolean;
@@ -13,17 +15,18 @@ interface SidePanelsContainerProps {
 export const SidePanelsContainer = memo(
 	({ isBlank }: SidePanelsContainerProps) => {
 		const { toggleSideMenu, isOpen } = useSidePanelContext();
+		const { app } = useAppContext();
+		const interfaceType = app.getBoard().interfaceType;
 		const containerRef = useClickOutside(() => {
 			if (isOpen) {
 				toggleSideMenu();
 			}
 		});
 
-		useEffect(() => {}, [isBlank]);
-
+		useEffect(() => {}, [isBlank, interfaceType]);
 		return (
 			<div ref={containerRef} className={style.sidePanels}>
-				<TitlePanel />
+				{shouldShow("titlePanel") && <TitlePanel />}
 				<SidePanel />
 				<InactiveBoardHidder>
 					<ToolsPanel />

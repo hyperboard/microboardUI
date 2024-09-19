@@ -12,6 +12,7 @@ import { Button } from "shared/ui-lib/Button";
 import { isEmail } from "lib/regex";
 import { Link } from "shared/ui-lib/Link";
 import { App } from "App";
+import { LAST_BOARD_KEY_QS } from "App/App";
 import { OuterLink } from "shared/ui-lib/OuterLink";
 
 type RegisterOkResponse = {
@@ -68,9 +69,9 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 					secure: true,
 				});
 				setErrorText("");
-				if (localStorage.getItem("lastSeenBoard")) {
+				if (localStorage.getItem(LAST_BOARD_KEY_QS)) {
 					navigate(
-						`/boards/${localStorage.getItem("lastSeenBoard")}`,
+						`/boards/${localStorage.getItem(LAST_BOARD_KEY_QS)}`,
 					);
 				} else {
 					const boardId = await app.createPublicBoard();

@@ -20,6 +20,13 @@ export function RestOptionsMenu(): React.ReactElement | null {
 	const handleClick = () => toggleMenu(MENU_NAME);
 	const isNotImage = !board.selection.items.isItemTypes(["Image"]);
 
+	const handleCopy = () => {
+		const data = board.selection.copy();
+		const text = JSON.stringify(data);
+		navigator.clipboard.writeText(text).finally(() => {
+			toggleMenu("None");
+		});
+	};
 	const handleDuplicate = () => {
 		board.selection.duplicate();
 		toggleMenu("None");
@@ -51,6 +58,13 @@ export function RestOptionsMenu(): React.ReactElement | null {
 			}
 		>
 			<UiPanel vertical className={style.menu}>
+				<Item
+					id="options-menu-copy"
+					onClick={handleCopy}
+					hotkey={getHotkeyLabel("copy")}
+				>
+					{t("contextPanel.copy.text")}
+				</Item>
 				{isNotImage && (
 					<Item
 						id="options-menu-duplicate"
@@ -77,6 +91,7 @@ export function RestOptionsMenu(): React.ReactElement | null {
 				{isNotImage && (
 					<Item
 						id="options-menu-delete"
+						className={style.delete}
 						onClick={handleDelete}
 						hotkey={getHotkeyLabel("delete")}
 					>

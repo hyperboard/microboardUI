@@ -385,8 +385,28 @@
 		"menu": {
 			"about": "About Microboard",
 			"features": "Features",
+			"importFromMiro": "Import from Miro",
 			"price": "Pricing",
 			"buy": "Buy"
 		}
+	},
+	"embedding": {
+		"title": "Pick a board to embed",
+		"customize": "Customize your embed",
+		"startingView": "Starting view",
+		"fullBoard": "Full board",
+		"allVisitors": "All visitors",
+		"canEdit": "Can edit",
+		"canView": "Can view",
+		"inputPlaceholder": "Search",
+		"addNew": "New board",
+		"embedBoardButton": "Embed board",
+		"newBoardPlaceholder": "Board name",
+		"back": "Back",
+		"notOwner": "This board has been shared with you",
+		"optionsUnavailable": "But modifying permissions is not allowed. All other participants will have the same access level."
+	},
+	"frame": {
+		"copy": "Copy of "
 	}
 }

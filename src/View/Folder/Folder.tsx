@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import React, {
+	CSSProperties,
 	useEffect,
 	useState,
 	type MouseEventHandler,
@@ -13,7 +14,9 @@ type Props = PropsWithChildren<{
 	icon?: ReactNode;
 	isOpened: boolean;
 	// isBlank: boolean;
-	currBoardId: string;
+	currBoardId?: string;
+	customHeader?: CSSProperties;
+	customList?: CSSProperties;
 }>;
 
 export function Folder({
@@ -23,6 +26,8 @@ export function Folder({
 	isOpened,
 	// isBlank,
 	currBoardId,
+	customHeader,
+	customList,
 }: Props): React.ReactElement<Props> {
 	const [isOpen, setIsOpen] = useState(isOpened);
 
@@ -38,11 +43,17 @@ export function Folder({
 
 	return (
 		<div className={clsx(style.folder, isOpen && style.open)}>
-			<button className={style.header} onClick={handleTitleClick}>
+			<button
+				className={style.header}
+				onClick={handleTitleClick}
+				style={customHeader}
+			>
 				{icon}
 				<h3 className={style.title}>{title}</h3>
 			</button>
-			<ul className={style.list}>{children}</ul>
+			<ul className={style.list} style={customList}>
+				{children}
+			</ul>
 		</div>
 	);
 }

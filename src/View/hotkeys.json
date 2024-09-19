@@ -228,5 +228,14 @@
 			"mac": "⌘V",
 			"windows": "Ctrl + V"
 		}
+	},
+	"confirm": {
+		"key": {
+			"button": "Enter"
+		},
+		"label": {
+			"mac": "⏎",
+			"windows": "⏎"
+		}
 	}
 }

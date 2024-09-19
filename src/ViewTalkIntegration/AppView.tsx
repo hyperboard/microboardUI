@@ -8,6 +8,7 @@ import { TitlePanel } from "./TitlePanel";
 import { ToolsPanel } from "./ToolsPanel";
 import { ZoomPanel } from "./ZoomPanel";
 import { ToastProvider } from "./ToastProvider";
+import { ViewModeGuard } from "./ViewModeGuard";
 
 const AppViewBase = ({ app, router }) => {
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -120,11 +121,13 @@ const AppViewBase = ({ app, router }) => {
 			<div ref={containerRef}>
 				<Canvas app={app} board={board} />
 				<TextEditors app={app} board={board} />
-				<ToolsPanel app={app} board={board} />
+				<ViewModeGuard app={app}>
+					<ToolsPanel app={app} board={board} />
+					<ContextPanel app={app} board={board} />
+					<TitlePanel app={app} board={board} />
+					<ExportPanel app={app} board={board} />
+				</ViewModeGuard>
 				<ZoomPanel app={app} board={board} />
-				<ContextPanel app={app} board={board} />
-				<TitlePanel app={app} board={board} />
-				<ExportPanel app={app} board={board} />
 				<ToastProvider />
 			</div>
 		</div>

@@ -9,21 +9,23 @@ import { useTranslation } from "react-i18next";
 import style from "./StartPointer.module.css";
 import { useAppContext } from "View/AppContext";
 import clsx from "clsx";
+import { ConnectorPointerStyle } from "Board/Items/Connector/Pointers/Pointers";
 
 const MENU_NAME = "StartPointer";
 
 export function StartPointer(): React.ReactElement | null {
 	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
 		usePanelContext();
-	const { board } = useAppContext();
+	const { board, app } = useAppContext();
 	const { t } = useTranslation();
 	const pointerStartStyle = board.selection.getStartPointerStyle();
 
-	const handleClick = () => {
+	const handleClick = (): void => {
 		toggleMenu(MENU_NAME);
 	};
-	const handlePick = (type: string) => {
+	const handlePick = (type: ConnectorPointerStyle): void => {
 		board.selection.setStartPointerStyle(type);
+		app.storage.setConnectorPointer(type, "start");
 		toggleMenu("None");
 	};
 	return (

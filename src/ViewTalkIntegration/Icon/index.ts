@@ -6,3 +6,5 @@ export { RedoIcon } from "./RedoIcon";
 export { UndoIcon } from "./UndoIcon";
 export { StrokeColorIndicator } from "./StrokeColorIndicator";
 export { TextHighlightIndicator } from "./TextHighlightIndicator";
+export { Logo } from "./Logo";
+export * from "./ShapeIcon";

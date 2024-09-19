@@ -29,7 +29,7 @@ export function UiColorInput({
 				styles.colorPickerContainer,
 			)}
 		>
-			<div
+			<button
 				className={clsx(
 					styles.colorCircle,
 					color === "none" && styles.image,

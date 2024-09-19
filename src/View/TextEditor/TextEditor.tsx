@@ -7,6 +7,8 @@ import { Board } from "Board";
 import { verticalAlignmentToFlex } from "./verticalAlignmentToFlex";
 import { RichText } from "Board/Items/RichText/RichText";
 import { DEFAULT_TEXT_STYLES } from "View/Items/RichText";
+import styles from "./TextEditor.module.css";
+import clsx from "clsx";
 
 export class TextEditors extends React.Component<
 	{
@@ -75,6 +77,7 @@ export class TextEditor extends React.Component<
 		const { camera } = this.props.board;
 		const { point, width, height, maxWidth, maxHeight, textScale } =
 			text.getDimensions();
+		const textWhiteSpace = text.frameMbr ? "pre" : "pre-wrap";
 		point.transform(camera.getMatrix());
 		const left = point.x;
 		/** A heuristic trick to better align editor with canvas */
@@ -84,6 +87,16 @@ export class TextEditor extends React.Component<
 
 		const container = text.getTransformedContainer();
 		container.transform(camera.getMatrix());
+		const editorHeight = text.frameMbr
+			? height
+			: container.getHeight() / editorScale;
+		const editorMaxHeight = text.frameMbr ? height : maxHeight + 1;
+		const editorWidth =
+			text.insideOf === "Sticker"
+				? container.getWidth() / editorScale
+				: Math.ceil(container.getWidth() / editorScale);
+		const editorMaxWidth =
+			text.insideOf === "Sticker" ? maxWidth : Math.ceil(maxWidth);
 
 		if (this.state.hasError) {
 			return (
@@ -103,9 +116,9 @@ export class TextEditor extends React.Component<
 						left: `${left}px`,
 						top: `${top}px`,
 
-						maxWidth: `${maxWidth}px`,
+						maxWidth: `${Math.ceil(maxWidth)}px`,
 						maxHeight: `${maxHeight}px`,
-						width: `${maxWidth}px`,
+						width: `${Math.ceil(maxWidth)}px`,
 						height: `${maxHeight}px`,
 
 						// transformOrigin: "left top",
@@ -162,12 +175,12 @@ export class TextEditor extends React.Component<
 					left: `${left}px`,
 					top: `${top}px`,
 
-					maxWidth: `${maxWidth + 1}px`,
-					maxHeight: `${maxHeight + 1}px`,
+					maxWidth: `${editorMaxWidth}px`,
+					maxHeight: `${editorMaxHeight}px`,
 					// width: `${maxWidth}px`,
 					// height: `${maxHeight}px`,
-					width: `${container.getWidth() / editorScale}px`,
-					height: `${container.getHeight() / editorScale}px`,
+					width: `${editorWidth}px`,
+					height: `${editorHeight}px`,
 
 					transformOrigin: "left top",
 					// transform: `scale(${editorScale})`,
@@ -199,7 +212,16 @@ export class TextEditor extends React.Component<
 						transform: `translate(0px) scale(${editorScale})`,
 						transformOrigin: `left top`,
 						pointerEvents: "all",
+						fontSize:
+							(text.getFontSize() / editorScale) *
+							camera.getScale(),
 					}}
+					className={clsx(
+						styles.editorContainer,
+						text.getTextString().length === 0 &&
+							styles.showPlaceholder,
+					)}
+					data-placeholder={text.placeholderText}
 				>
 					<Slate
 						editor={text.editor.editor}
@@ -214,44 +236,44 @@ export class TextEditor extends React.Component<
 							selection={text.editor.editor.selection}
 							onBlur={text.handleBlur}
 							onFocus={text.handleFocus}
-							placeholder={text.placeholderText}
-							renderPlaceholder={({ children, attributes }) => (
-								<span
-									{...attributes}
-									style={{
-										position: "absolute",
-										left: 0,
-										right: 0,
-										top: 0,
-										zIndex: 0,
-										display: "inline-block",
-										width: 0,
-										whiteSpace: "nowrap",
-										opacity: 0.33,
-										maxWidth: "100%",
-										textDecoration: "none",
-										userSelect: "none",
-										pointerEvents: "none",
-										fontSize: "inherit",
-									}}
-								>
-									{children}
-								</span>
-							)}
+							className={text.frameMbr && styles.scrollContainer}
+							// placeholder={text.placeholderText}
+							// renderPlaceholder={({ children, attributes }) => (
+							// 	<span
+							// 		{...attributes}
+							// 		style={{
+							// 			position: "absolute",
+							// 			left: 0,
+							// 			right: 0,
+							// 			top: 0,
+							// 			zIndex: 0,
+							// 			display: "inline-block",
+							// 			width: 0,
+							// 			whiteSpace: "nowrap",
+							// 			opacity: 0.33,
+							// 			maxWidth: "100%",
+							// 			textDecoration: "none",
+							// 			userSelect: "none",
+							// 			pointerEvents: "none",
+							// 			fontSize: "inherit",
+							// 		}}
+							// 	>
+							// 		{children}
+							// 	</span>
+							// )}
 							style={{
-								whiteSpace: "pre-wrap",
-								overflowWrap: "break-word",
-								wordBreak: "normal",
+								whiteSpace: textWhiteSpace,
+								// overflowWrap: "break-word",
+								// wordBreak: "normal",
 								width: "100%",
 								maxHeight: !text.getAutosize()
-									? `${maxHeight + 1}px`
+									? `${editorMaxHeight}px`
 									: "none",
+								// overflow: `${text.frameMbr ? 'hidden' : 'unset'}`,
 								overflowY: !text.getAutosize()
 									? "auto"
 									: "visible",
-								fontSize:
-									(text.getFontSize() / editorScale) *
-									camera.getScale(),
+								fontSize: "inherit",
 								// transform: `scale(${editorScale})`,
 								// transformOrigin: `left top`,
 							}}

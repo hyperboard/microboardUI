@@ -1,5 +1,10 @@
 import clsx from "clsx";
-import React, { MouseEventHandler, PropsWithChildren, useRef } from "react";
+import React, {
+	CSSProperties,
+	MouseEventHandler,
+	PropsWithChildren,
+	useRef,
+} from "react";
 import { Icon } from "View/Icon";
 import style from "./BoardName.module.css";
 
@@ -8,6 +13,7 @@ type Props = PropsWithChildren<{
 	onClick?: MouseEventHandler;
 	onClickContext?: MouseEventHandler;
 	onDoubleClick?: MouseEventHandler;
+	customStyle?: CSSProperties;
 }>;
 
 const DOUBLE_CLICK_DELAY = 300;
@@ -18,6 +24,7 @@ export function BoardName({
 	onClick,
 	onClickContext,
 	onDoubleClick,
+	customStyle,
 }: Props) {
 	const clickTimeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -46,11 +53,14 @@ export function BoardName({
 			onClick={handleClick}
 			onContextMenu={onClickContext}
 			onDoubleClick={handleDoubleClick}
+			style={customStyle}
 		>
 			<span className={style.text}>{children}</span>
-			<button className={style.context} onClick={onClickContext}>
-				<Icon iconName="ContextMenu" width={16} height={16} />
-			</button>
+			{onClickContext && (
+				<button className={style.context} onClick={onClickContext}>
+					<Icon iconName="ContextMenu" width={16} height={16} />
+				</button>
+			)}
 		</div>
 	);
 }

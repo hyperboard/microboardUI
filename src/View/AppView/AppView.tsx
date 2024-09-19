@@ -18,6 +18,9 @@ import { ZoomPanel } from "View/ZoomPanel";
 import style from "./AppView.module.css";
 import NoBoardIsOpen from "./NoBoardIsOpen";
 import { InactiveBoardHidder } from "./InactiveBoardHidder";
+import { shouldShow } from "lib/queryStringParser";
+import { ViewModeGuard } from "View/ViewModeGuard";
+import { QuickAddPanel } from "./QuickAddPanel";
 
 export function AppView() {
 	const { app, board } = useAppContext();
@@ -120,8 +123,8 @@ export function AppView() {
 	const appBoard = app.getBoard();
 	return (
 		<div className={style.wrapper}>
-			<LandingMenu />
-			<MobileLandingMenu />
+			{shouldShow("titlePanel") && <LandingMenu />}
+			{shouldShow("titlePanel") && <MobileLandingMenu />}
 			<InactiveBoardHidder>
 				<div ref={containerRef}>
 					<Canvas
@@ -133,20 +136,27 @@ export function AppView() {
 				</div>
 			</InactiveBoardHidder>
 			{appBoard.getBoardId() === "blank" && <NoBoardIsOpen />}
-			<ExportVisible>
-				<SidePanelsContainer
-					isBlank={appBoard.getBoardId() === "blank"}
-				/>
-				<ContextMenu />
-			</ExportVisible>
-			<ExportVisible>
-				<UserPanel app={app} />
-			</ExportVisible>
+			<ViewModeGuard>
+				<ExportVisible>
+					<SidePanelsContainer
+						isBlank={appBoard.getBoardId() === "blank"}
+					/>
+					<ContextMenu />
+				</ExportVisible>
+			</ViewModeGuard>
+			<ViewModeGuard>
+				<ExportVisible>
+					{shouldShow("userPanel") && <UserPanel app={app} />}
+				</ExportVisible>
+			</ViewModeGuard>
 			<InactiveBoardHidder>
 				<ZoomPanel />
 			</InactiveBoardHidder>
-			<ContextPanel />
-			<ExportPanel />
+			<ViewModeGuard>
+				<ContextPanel />
+				<QuickAddPanel />
+				<ExportPanel />
+			</ViewModeGuard>
 			<ToastProvider />
 			<ImportMiroBoards app={app} />
 		</div>

@@ -1,14 +1,18 @@
+import { ConnectorLineStyle } from "Board/Items/Connector";
+import { ConnectorEdge } from "Board/Items/Connector/Pointers";
+import { ConnectorPointerStyle } from "Board/Items/Connector/Pointers/Pointers";
 import { getApiUrl } from "Config";
 import Cookies from "js-cookie";
 import { Subject } from "Subject";
 import { refreshTokens } from "View/Routes/ProtectedRoute";
 
 // TODO strictly type shared/owned/haveRights boards
-interface VisitedPublicBoard {
+export interface VisitedPublicBoard {
 	boardId: string;
 	name?: string;
 	authorKey?: string;
 	actualId?: string;
+	notFound?: boolean;
 }
 
 interface BoardWId extends VisitedPublicBoard {
@@ -63,6 +67,38 @@ export class Storage {
 
 	setLastSticker(lastSticker) {
 		sessionStorage.setItem("lastSticker", JSON.stringify(lastSticker));
+	}
+
+	setConnectorPointer(
+		type: ConnectorPointerStyle,
+		edge: ConnectorEdge,
+	): void {
+		sessionStorage.setItem(
+			`connector${edge.charAt(0).toUpperCase() + edge.slice(1)}Pointer`,
+			type,
+		);
+	}
+
+	getConnectorPointer(
+		edge: ConnectorEdge,
+	): ConnectorPointerStyle | undefined {
+		const saved = sessionStorage.getItem(
+			`connector${edge.charAt(0).toUpperCase() + edge.slice(1)}Pointer`,
+		);
+		return (saved as ConnectorPointerStyle) || undefined;
+	}
+
+	setConnectorLineStyle(type: ConnectorLineStyle): void {
+		sessionStorage.setItem("connectorLineStyle", type);
+	}
+
+	getConnectorLineStyle(): ConnectorLineStyle | undefined {
+		const saved = sessionStorage.getItem("connectorLineStyle");
+		if (saved) {
+			return saved as ConnectorLineStyle;
+		}
+
+		return undefined;
 	}
 
 	/* Adds an id of a visited public board to the local storage */

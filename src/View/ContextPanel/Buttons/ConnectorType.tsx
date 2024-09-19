@@ -15,15 +15,16 @@ export function ConnectorType(): React.ReactElement | null {
 	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
 		usePanelContext();
 
-	const { board } = useAppContext();
+	const { board, app } = useAppContext();
 	const { t } = useTranslation();
 
 	const connectorType = board.selection.getConnectorLineStyle();
-	const handleClick = () => {
+	const handleClick = (): void => {
 		toggleMenu(MENU_NAME);
 	};
-	const handlePick = (type: ConnectorLineStyle) => {
+	const handlePick = (type: ConnectorLineStyle): void => {
 		board.selection.setConnectorLineStyle(type);
+		app.storage.setConnectorLineStyle(type);
 		toggleMenu("None");
 	};
 	return (

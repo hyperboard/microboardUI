@@ -59,9 +59,17 @@ export type IconId =
 	| "sharedBoards"
 	| "import"
 	| "modalCross"
+	| "Search"
+	| "UserPic"
+	| "EmbedBoardIcon"
+	| "addButton"
+	| "canEdit"
+	| "canView"
+	| "checkMark"
 	| "BurgerMenu"
 	| "miro"
-	| "loader";
+	| "loader"
+	| "Info";
 
 type Props = {
 	iconName: IconId;
