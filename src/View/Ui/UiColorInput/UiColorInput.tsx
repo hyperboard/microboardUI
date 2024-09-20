@@ -7,6 +7,8 @@ interface Props {
 	color?: string;
 	isActive?: boolean;
 	inputClassName?: string;
+	toggleMenu?: (menu: string) => void;
+	setIsCloseMenu?: (isColorSelected: boolean) => void;
 }
 
 export function UiColorInput({
@@ -14,12 +16,19 @@ export function UiColorInput({
 	isActive,
 	color,
 	inputClassName,
+	toggleMenu,
+	setIsCloseMenu,
 }: Props) {
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	const handleColorChange = (event: ChangeEvent<HTMLInputElement>) => {
 		const newColor = event.target.value;
 		onChange(newColor);
+	};
+
+	const onBlur = () => {
+		toggleMenu?.("None");
+		setIsCloseMenu?.(true);
 	};
 
 	return (
@@ -45,6 +54,7 @@ export function UiColorInput({
 				type="color"
 				value={color}
 				onChange={handleColorChange}
+				onBlur={onBlur}
 			/>
 		</div>
 	);

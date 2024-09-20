@@ -77,6 +77,7 @@ export function FillStyle(): React.ReactElement | null {
 						onChange={handleCustomPick}
 						color={isPredefinedColor ? "none" : fillColor}
 						isActive={fillColor !== "none" && !isPredefinedColor}
+						toggleMenu={toggleMenu}
 					/>
 				</UiPanel>
 			)}
