@@ -14,9 +14,11 @@ import { BoardEvent } from "../../../Board/Events/Events";
 import { createCommand } from "../../../Board/Events/Command";
 import { BoardSnapshot } from "../../../Board/Board";
 import { Item } from "../../../Board/Items";
+import { SelectTemplateModal } from "../../Templates/SelectTemplateModal/SelectTemplateModal";
 
 export function AddTemplate() {
 	const { board } = useAppContext();
+	const [selectTemplateOpen, setSelectTemplateOpen] = useState(false);
 	const { t } = useTranslation();
 	const [isActive, setIsActive] = useState(
 		Boolean(board.tools.getAddConnector()),
@@ -32,96 +34,32 @@ export function AddTemplate() {
 	}, [addTool]);
 
 	const handleClick = async () => {
-		const boards = await getUserBoards();
-		if (boards) {
-			const template = await getTemplateSnapshot(boards[0].boardId);
-			if (board.events && template) {
-				board.paste(template.items, true);
-				if (!board.tools.getSelect()) {
-					board.tools.select();
-				}
-				const itemsMbr = board.items.getMbr();
-				board.camera.zoomToFit(itemsMbr);
-			}
-		}
+		setSelectTemplateOpen(true);
 		setIsActive(false);
 	};
 
-	async function getUserBoards() {
-		try {
-			const response = await fetch(`${getApiUrl()}/boards`, {
-				method: "GET",
-				mode: "cors",
-				cache: "no-cache",
-				credentials: "same-origin",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${Cookies.get("accessToken")}`,
-				},
-				redirect: "follow",
-				referrerPolicy: "no-referrer",
-			});
-			if (!response.ok) {
-				throw new Error("response not OK");
-			}
-			const data = await response.json();
-			return data.author as { boardId: string; link: string }[];
-		} catch (error) {
-			console.error("Failed to get boards.", error);
-		}
-	}
-
-	async function getTemplateSnapshot(boardId: string) {
-		try {
-			const response = await fetch(
-				`${getApiUrl()}/boards/${boardId}/snapshot`,
-				{
-					method: "GET",
-					mode: "cors",
-					cache: "no-cache",
-					credentials: "same-origin",
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${Cookies.get("accessToken")}`,
-					},
-					redirect: "follow",
-					referrerPolicy: "no-referrer",
-				},
-			);
-			if (!response.ok) {
-				throw new Error("response not OK");
-			}
-			const data = await response.json();
-			return data as BoardSnapshot;
-		} catch (error) {
-			console.error("Failed to get board events.", error);
-		}
-	}
-
-	const handlePick = (color: string) => {
-		const tool = board.tools.getAddSticker();
-		if (tool) {
-			tool.setBackgroundColor(color);
-			setIsActive(false);
-		}
-	};
-
 	return (
-		<ButtonWithMenu
-			button={
-				<UiButton
-					id={"tool-add-template"}
-					tooltip={t("toolsPanel.addTemplate.tooltip")}
-					hotkey={getHotkeyLabel("template")}
-					active={isActive || !!addTool}
-					onClick={handleClick}
-					variant="secondary"
-					rounded="none"
-				>
-					<Icon iconName="Sticker" />
-				</UiButton>
-			}
-			isOpen={isActive}
-		></ButtonWithMenu>
+		<div>
+			<ButtonWithMenu
+				button={
+					<UiButton
+						id={"tool-add-template"}
+						tooltip={t("toolsPanel.addTemplate.tooltip")}
+						hotkey={getHotkeyLabel("template")}
+						active={isActive || !!addTool}
+						onClick={handleClick}
+						variant="secondary"
+						rounded="none"
+					>
+						<Icon iconName="Sticker" />
+					</UiButton>
+				}
+				isOpen={isActive}
+			></ButtonWithMenu>
+			<SelectTemplateModal
+				isOpen={selectTemplateOpen}
+				setIsOpen={setSelectTemplateOpen}
+			/>
+		</div>
 	);
 }

@@ -1,0 +1,27 @@
+.card {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	width: 280px;
+	border: 1px solid black;
+	border-radius: 12px;
+	align-items: center;
+	gap: 8px;
+	max-height: 550px;
+}
+
+.image {
+	display: block;
+	width: 100%;
+	border-radius: 12px;
+	aspect-ratio: 1/1;
+	object-fit: cover;
+}
+
+.shortInfo {
+	width: 100%;
+	display: flex;
+	gap: 12px;
+	flex-wrap: wrap;
+	justify-content: space-between;
+}

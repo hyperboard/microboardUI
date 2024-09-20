@@ -47,6 +47,7 @@ export function SidePanel(): JSX.Element {
 	);
 
 	const [isOpenImportMiro, setIsOpenImportMiro] = useState(false);
+
 	const {
 		setRenamingBoardId,
 		setNewBoardName,

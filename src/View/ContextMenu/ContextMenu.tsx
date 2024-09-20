@@ -97,6 +97,12 @@ export function ContextMenu() {
 					>
 						{t("contextMenu.rename")}
 					</ContextMenuItem>
+					<ContextMenuItem
+						onClick={handleRenameBoard}
+						icon={<Icon iconName="Rename" width={20} height={20} />}
+					>
+						Создать шаблон
+					</ContextMenuItem>
 				</>
 			) : (
 				<ContextMenuItem

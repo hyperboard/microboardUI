@@ -18,6 +18,10 @@ import { UiPanel } from "View/Ui/UiPanel";
 import { UiSeparator } from "View/Ui/UiSeparator";
 import { Icon, Logo } from "../Icon";
 import style from "./TitlePanel.module.css";
+import { Button } from "../../shared/ui-lib/Button";
+import { CreateTemplateModal } from "../Templates";
+import { getApiUrl } from "../../Config";
+import Cookies from "js-cookie";
 
 const MAX_BOARD_TITLE_LENGTH = 32;
 
@@ -41,6 +45,7 @@ export function TitlePanel() {
 
 	const [isRenaming, setIsRenaming] = useState(false);
 	const [newBoardName, setNewBoardName] = useState(boardName);
+	const [createTemplateOpen, setCreateTemplateOpen] = useState(false);
 
 	const isExport = board.tools.getExport();
 	if (isExport) {
@@ -69,8 +74,35 @@ export function TitlePanel() {
 	};
 
 	const saveTemplate = () => {
-		board.events?.emitSnapshot();
+		const body = JSON.stringify({ snapshot: board.getSnapshot() });
+		saveTemplateReq(body).catch(e => console.error(e));
 	};
+
+	async function saveTemplateReq(body: any) {
+		try {
+			const response = await fetch(
+				`${getApiUrl()}/boards/${board.getBoardId()}/template`,
+				{
+					method: "PATCH",
+					mode: "cors",
+					cache: "no-cache",
+					credentials: "same-origin",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${Cookies.get("accessToken")}`,
+					},
+					body,
+					redirect: "follow",
+					referrerPolicy: "no-referrer",
+				},
+			);
+			if (!response.ok) {
+				throw new Error("response not OK");
+			}
+		} catch (error) {
+			console.error("Failed to create template.", error);
+		}
+	}
 
 	const isMicroboard = import.meta.env.INTEGRATION_UI === "microboard";
 
@@ -137,6 +169,18 @@ export function TitlePanel() {
 			>
 				<Icon iconName="Export" />
 			</UiButton>
+			<UiSeparator vertical className={style.tabletHide} />
+			<UiButton
+				className={style.tabletHide}
+				onClick={() => setCreateTemplateOpen(true)}
+				variant="secondary"
+				rounded="right"
+				tooltip={t("export.tooltip")}
+				tooltipPosition="bottom"
+			>
+				<Icon iconName="Pen" />
+			</UiButton>
+			<UiSeparator vertical className={style.tabletHide} />
 			<UiButton
 				className={style.tabletHide}
 				onClick={saveTemplate}
@@ -145,8 +189,12 @@ export function TitlePanel() {
 				tooltip={t("export.tooltip")}
 				tooltipPosition="bottom"
 			>
-				<Icon iconName="Export" />
+				<Icon iconName="Redo" />
 			</UiButton>
+			<CreateTemplateModal
+				isOpen={createTemplateOpen}
+				setIsOpen={setCreateTemplateOpen}
+			/>
 		</UiPanel>
 	);
 }
