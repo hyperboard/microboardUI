@@ -1,4 +1,3 @@
-import { BoardEvent } from "../Board/Events/Events";
 import { getApiUrl } from "Config";
 import { getWebsocketUrl } from "../Config";
 import { Subject } from "Subject";
@@ -94,6 +93,9 @@ interface Subscription {
 export function createConnection(): Connection {
 	const subscriptions = new Map<string, Subscription>();
 	function onMessage(msg: SocketMessage): void {
+		if (msg.type === "Auth" || msg.type === "Error") {
+			return;
+		}
 		const subscription = subscriptions.get(msg.boardId);
 		if (!subscription) {
 			return;
@@ -236,7 +238,7 @@ export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
 
 	function onMessage(event: MessageEvent<SocketMessage>): void {
 		try {
-			const json = JSON.parse(event.data);
+			const json = JSON.parse(event.data as unknown as string);
 			if (json && json.type === "Error") {
 				throw new Error(
 					"Error received: " +
@@ -270,7 +272,7 @@ export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
 	}
 
 	function isConnected(): boolean {
-		return socket && socket.readyState === WebSocket.OPEN;
+		return (socket && socket.readyState === WebSocket.OPEN) || false;
 	}
 
 	function onOpen(): void {

@@ -28,11 +28,16 @@ export function ContextMenu() {
 		app.storage.getBoard(boardId)?.name || t("board.untitled");
 
 	const handleCreateBoard: MouseEventHandler = async () => {
-		const boardId = await app.createPublicBoard();
-		app.openBoard(boardId);
-		navigate(`/boards/${boardId}`, {
-			replace: true,
-		});
+		try {
+			const boardId = await app.createPublicBoard();
+			app.openBoard(boardId);
+			navigate(`/boards/${boardId}`, {
+				replace: true,
+			});
+		} catch (err) {
+			// TODO notify user
+			console.error(err);
+		}
 	};
 
 	const handleDeleteBoard: MouseEventHandler = (ev): Promise<void> => {

@@ -50,9 +50,12 @@ export function WelcomeBoard({ app }: Props) {
 	};
 
 	React.useEffect(() => {
-		createPublicBoard(app).then(boardId => {
-			navigate(`/boards/${boardId}`);
-		});
+		createPublicBoard(app)
+			.then(boardId => {
+				navigate(`/boards/${boardId}`);
+			})
+			.catch(console.error);
+		// TODO notify user
 	}, [app]);
 
 	return <div>WelcomeBoard</div>;
