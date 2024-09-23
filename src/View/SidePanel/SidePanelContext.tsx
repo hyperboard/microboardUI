@@ -37,13 +37,18 @@ export function SidePanelContextProvider({
 	const handleAddNew = async (
 		cb?: (boardId: string) => void,
 	): Promise<void> => {
-		const boardId = await app.createPublicBoard();
-		app.openBoard(boardId);
-		navigate(`/boards/${boardId}`, {
-			replace: true,
-		});
-		if (cb) {
-			cb(boardId);
+		try {
+			const boardId = await app.createPublicBoard();
+			app.openBoard(boardId);
+			navigate(`/boards/${boardId}`, {
+				replace: true,
+			});
+			if (cb) {
+				cb(boardId);
+			}
+		} catch (err) {
+			// TODO notify user
+			console.error(err);
 		}
 	};
 

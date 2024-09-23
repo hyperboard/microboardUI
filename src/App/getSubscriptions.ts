@@ -1,5 +1,6 @@
 import { Board } from "Board";
 import { Subject } from "../Subject";
+import { BoardEvent } from "Board/Events/Events";
 
 export interface Subscription {
 	subjects: string[];
@@ -15,7 +16,7 @@ export interface Subscriptions {
 export function getSubscriptions(getBoard: () => Board): Subscriptions {
 	let board = getBoard();
 
-	const subjects: Map<string, () => Subject<any>> = new Map([
+	const subjectsArray: [string, () => Subject<any>][] = [
 		["camera", () => board.camera.subject],
 		["cameraResize", () => board.camera.resizeSubject],
 		["selection", () => board.selection.subject],
@@ -23,9 +24,16 @@ export function getSubscriptions(getBoard: () => Board): Subscriptions {
 		["selectionItems", () => board.selection.itemsSubject],
 		["items", () => board.items.subject],
 		["tools", () => board.tools.subject],
-		["events", () => board.events.subject],
+		["events", () => board.events?.subject as Subject<BoardEvent>],
 		["pointer", () => board.pointer.subject],
-	]);
+	];
+
+	const subjects: Map<string, () => Subject<any>> = new Map(
+		subjectsArray.filter(([, subject]) => subject !== undefined) as [
+			string,
+			() => Subject<any>,
+		][],
+	);
 
 	const subscriptions: Subscription[] = [];
 	const updateQueue: Set<() => void> = new Set();

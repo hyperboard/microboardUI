@@ -150,16 +150,20 @@ export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 	};
 
 	const createNewBoard = async () => {
-		await app.createPublicBoard().then((id: string) => {
-			app.openBoard(id);
-			navigate(`/boards/${id}`, {
-				replace: true,
-			});
-			const board = app.getBoard();
-			// app.storage.renameBoard(board.getBoardId(), boardInfo.name);
-			useCopyBoardItems(board, boardItems);
-			setIsOpenSuccessMessage(true);
-		});
+		await app
+			.createPublicBoard()
+			.then((id: string) => {
+				app.openBoard(id);
+				navigate(`/boards/${id}`, {
+					replace: true,
+				});
+				const board = app.getBoard();
+				// app.storage.renameBoard(board.getBoardId(), boardInfo.name);
+				useCopyBoardItems(board, boardItems);
+				setIsOpenSuccessMessage(true);
+			})
+			.catch(console.error);
+		// TODO notify user;
 	};
 
 	useEffect(() => {

@@ -454,12 +454,12 @@ export function getController(
 			return;
 		}
 		if (board.selection.getContext() === "EditTextUnderPointer") {
-			clipboard.set(event.clipboardData?.getData("text/plain"));
+			clipboard.set(null);
 			return;
 		}
 		const data = board.selection.copy();
 		const text = JSON.stringify(data);
-		event.clipboardData.setData("text/plain", text);
+		event.clipboardData?.setData("text/plain", text);
 		clipboard.set(data);
 		event.preventDefault();
 	}
@@ -470,7 +470,7 @@ export function getController(
 			return;
 		}
 		if (board.selection.getContext() === "EditTextUnderPointer") {
-			const text = event.clipboardData.getData("text/plain");
+			const text = event.clipboardData?.getData("text/plain") || "";
 			try {
 				const data = JSON.parse(text);
 				const isDataValid = validateItemsMap(data);
@@ -486,9 +486,12 @@ export function getController(
 			return;
 		}
 
-		const items = event.clipboardData.items;
+		let didAttempImage = false;
+		const items = event.clipboardData?.items;
+		// @ts-expect-error iterates just fine
 		for (const item of items) {
 			if (item.type.indexOf("image") !== -1) {
+				didAttempImage = true;
 				const file = item.getAsFile();
 				const reader = new FileReader();
 				reader.onload = event => {
@@ -508,11 +511,13 @@ export function getController(
 				};
 
 				reader.readAsDataURL(file);
-				return;
 			}
 		}
+		if (didAttempImage) {
+			return;
+		}
 
-		const text = event.clipboardData.getData("text/plain");
+		const text = event.clipboardData?.getData("text/plain") || "";
 		try {
 			const data = JSON.parse(text);
 			const isDataValid = validateItemsMap(data);
