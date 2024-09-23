@@ -1,6 +1,6 @@
 import { useAppSubscription } from "Board/useBoardSubscription";
 import { useForceUpdate } from "lib/useForceUpdate";
-import { useTranslation } from "react-i18next";
+// import { useTranslation } from "react-i18next";
 import { Board } from "Board";
 import { App } from "App";
 
@@ -9,9 +9,9 @@ type Props = {
 	app: App;
 };
 
-export function TitlePanel({ board, app }: Props) {
+export function TitlePanel({ board, app }: Props): null {
 	const forceUpdate = useForceUpdate();
-	const { t } = useTranslation();
+	// const { t } = useTranslation();
 
 	useAppSubscription(app, { observer: forceUpdate, subjects: ["tools"] });
 
@@ -20,9 +20,9 @@ export function TitlePanel({ board, app }: Props) {
 		return null;
 	}
 
-	const openExport = () => {
-		board.tools.export();
-	};
+	// const openExport = () => {
+	//	board.tools.export();
+	// };
 
 	return null;
 

@@ -95,7 +95,7 @@ export function createApp(isHistory = true): App {
 			throw new Error("Could not create public board");
 		}
 		const data = await response.json();
-		const { boardId, linkId, linkUri, authorKey } = data;
+		const { boardId, linkId, authorKey } = data;
 		storage.setPublicBoard({
 			boardId: linkId,
 			authorKey,
@@ -121,7 +121,7 @@ export function createApp(isHistory = true): App {
 			throw new Error("Could not create private board");
 		}
 		const data = await response.json();
-		const { boardId, linkId, linkUri, authorKey } = data;
+		const { linkId, authorKey } = data;
 		storage.setPublicBoard({ boardId: linkId, authorKey });
 		return linkId as string;
 	}
