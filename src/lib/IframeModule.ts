@@ -4,6 +4,7 @@ import { exportBoardSnapshot } from "Board/Tools/ExportSnapshot/exportBoardSnaps
 import { App } from "App";
 import { Board } from "Board";
 import { ExportSnapshot } from "../Board/Tools/ExportSnapshot/ExportSnapshot";
+import { BoardTool } from "Board/Tools/BoardTool";
 
 // type MessagePattern = "updateUserToken" | "iframeEvent" | "makeSnapshot";
 
@@ -166,7 +167,9 @@ export class IframeModule {
 
 			if (data.pattern === "fireSnapshotEvent") {
 				const board: Board = this.app.getBoard() as Board;
-				board.tools.setTool(new ExportSnapshot(board));
+				board.tools.setTool(
+					new ExportSnapshot(board) as unknown as BoardTool,
+				);
 				board.tools.publish();
 			}
 
@@ -174,7 +177,9 @@ export class IframeModule {
 				if (isIframe()) {
 					const keyboardEvent = new KeyboardEvent(
 						data.payload.event.eventType,
-						{ ...data.payload.event.eventData },
+						{
+							...data.payload.event.eventData,
+						} as unknown as KeyboardEventInit,
 					);
 					window.self.dispatchEvent(keyboardEvent);
 				}
