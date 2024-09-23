@@ -73,8 +73,8 @@ export function MiroBoards({
 				Cookies.set("miro_accessToken", token.access_token);
 				await fetchBoards();
 			}
-		} catch (e: Error) {
-			console.error(e);
+		} catch (error) {
+			console.error(error);
 			setIsOpen(false);
 			setError(true);
 		}
@@ -112,8 +112,8 @@ export function MiroBoards({
 
 				setBoardsInfo({ total, offset: offset + BOARD_LIMIT });
 			}
-		} catch (e: Error) {
-			console.error(e);
+		} catch (error) {
+			console.error(error);
 			setIsOpen(false);
 			setError(true);
 		}

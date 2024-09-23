@@ -8,20 +8,20 @@ import { useNavigate } from "react-router-dom";
 import { useAppContext } from "View/AppContext";
 import { useBoardRenameContext } from "View/BoardName";
 import { Icon } from "View/Icon";
+import { useConfirmModalContext } from "View/Modal/ConfirmModal";
 import { UiPanel } from "View/Ui/UiPanel";
 import style from "./ContextMenu.module.css";
 import { useContextMenuContext } from "./ContextMenuContext";
-import { useConfirmModalContext } from "View/Modal/ConfirmModal";
 
 export function ContextMenu() {
 	const { isOpen, boardId, x, y, close } = useContextMenuContext();
-	const { app, board } = useAppContext();
+	const { app } = useAppContext();
 	const { openModalConfirm } = useConfirmModalContext();
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 	const { setRenamingBoardId, setNewBoardName } = useBoardRenameContext();
 
-	if (!isOpen) {
+	if (!isOpen || !boardId) {
 		return null;
 	}
 	const boardName =
@@ -84,7 +84,7 @@ export function ContextMenu() {
 								`${t(
 									"modalConfirm.deleteBoard.description",
 								)} "${boardName}"?`,
-								() => handleDeleteBoard(event),
+								async () => handleDeleteBoard(event),
 							);
 						}}
 						icon={<Icon iconName="Delete" width={20} height={20} />}

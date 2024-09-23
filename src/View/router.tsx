@@ -1,25 +1,22 @@
 import { App } from "App";
-import { BoardView } from "View/BoardView";
-import { IframeModule } from "lib/IframeModule";
 import React from "react";
 import ReactDOM from "react-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { BoardView } from "View/BoardView";
+import AuthView from "./AuthView/AuthView";
+import SelectBoard from "./Embedding/SelectBoard";
+import TestComponent from "./Embedding/Test";
+import { ForgotPassword } from "./ForgotPassword/ForgotPassword";
+import { RestorePassword } from "./RestorePassword/RestorePassword";
+import RootView from "./RootView/RootView";
+import { ProtectedRoute } from "./Routes/ProtectedRoute";
 import { SigninView } from "./SigninView/SigninView";
 import { SignupView } from "./SignupView/SignupView";
 import { VerifyMailView } from "./VerifyMailView/VerifyMailView";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import RootView from "./RootView/RootView";
-import AuthView from "./AuthView/AuthView";
-import { RestorePassword } from "./RestorePassword/RestorePassword";
-import { ForgotPassword } from "./ForgotPassword/ForgotPassword";
-import { ProtectedRoute } from "./Routes/ProtectedRoute";
 import { WelcomeBoard } from "./WelcomeBoard";
-import { getApiUrl } from "Config";
-import TestComponent from "./Embedding/Test";
-import SelectBoard from "./Embedding/SelectBoard";
 
 export function getRender(app: App): () => void {
 	// new IframeModule(app);
-	const iframeModule = IframeModule.getInstance(app);
 
 	const router = createBrowserRouter([
 		{

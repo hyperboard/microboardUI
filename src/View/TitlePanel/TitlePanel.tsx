@@ -3,7 +3,6 @@ import clsx from "clsx";
 import { useForceUpdate } from "lib/useForceUpdate";
 import {
 	default as React,
-	default as React,
 	useEffect,
 	useState,
 	type ChangeEventHandler,
@@ -47,7 +46,10 @@ export function TitlePanel() {
 		return null;
 	}
 
-	const handleBoardRename: ChangeEventHandler = event => {
+	const handleBoardRename: ChangeEventHandler<HTMLInputElement> = event => {
+		if (!event.currentTarget) {
+			return;
+		}
 		setNewBoardName(event.currentTarget.value);
 	};
 
@@ -55,7 +57,7 @@ export function TitlePanel() {
 		setIsRenaming(false);
 	};
 
-	const handleBoardRenameStart: MouseEventHandler = event => {
+	const handleBoardRenameStart: MouseEventHandler = () => {
 		setIsRenaming(true);
 		setNewBoardName(boardName);
 	};
@@ -68,12 +70,13 @@ export function TitlePanel() {
 		board.tools.export();
 	};
 
+	// @ts-expect-error import.meta object didn't exists in common-js modules
 	const isMicroboard = import.meta.env.INTEGRATION_UI === "microboard";
 
 	const strippedName =
-		boardName?.length > MAX_BOARD_TITLE_LENGTH
+		(boardName?.length ?? 0) > MAX_BOARD_TITLE_LENGTH
 			? `${boardName?.slice(0, MAX_BOARD_TITLE_LENGTH)}...`
-			: boardName;
+			: boardName ?? "";
 	return (
 		<UiPanel className={style.panel} padding={0} zIndex={10}>
 			<SidePanelButton
@@ -148,6 +151,7 @@ function SidePanelButton({
 }): React.ReactElement {
 	const { t } = useTranslation();
 
+	// @ts-expect-error import.meta object didn't exists in common-js modules
 	if (import.meta.env.INTEGRATION_UI !== "microboard") {
 		return <></>;
 	}

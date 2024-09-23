@@ -1,13 +1,12 @@
+import { useClickOutside } from "lib/useClickOutside";
 import React, {
 	forwardRef,
-	MouseEventHandler,
 	useImperativeHandle,
 	useRef,
 	useState,
 } from "react";
-import style from "./Selector.module.css";
-import { useClickOutside } from "lib/useClickOutside";
 import { Icon } from "View/Icon";
+import style from "./Selector.module.css";
 
 interface SelectorProps {
 	label: string;
