@@ -37,6 +37,7 @@ export const SelectTemplateModal = ({
 				<div className={styles.container}>
 					{templates.map(template => (
 						<TemplateItem
+							key={template.uniq_id}
 							preview={template.preview}
 							description={template.desc}
 							language={template.lan}

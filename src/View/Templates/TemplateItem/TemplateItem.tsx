@@ -46,7 +46,7 @@ export const TemplateItem = ({
 				<p>{`language: ${language}`}</p>
 				<div>
 					tags:
-					{tags && tags.map(tag => <p>#{tag}</p>)}
+					{tags && tags.map(tag => <p key={tag}>#{tag}</p>)}
 				</div>
 			</div>
 			<p>{`${description}`}</p>
