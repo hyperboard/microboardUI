@@ -1,8 +1,7 @@
 import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
 import { useAppSubscription } from "Board/useBoardSubscription";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useAppContext } from "View/AppContext";
-import { MiroBoardItemTypes } from "View/ImportMiro/ImportMiroBoards/MiroBoards/MiroBoardsModels";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import { UiSeparator } from "View/Ui/UiSeparator/UiSeparator";
 import { ConnectorAddText } from "./Buttons/ConnectorAddText";

@@ -1,7 +1,7 @@
 import React from "react";
 import sprite from "./sprite.svg";
 
-type ConnectorType =
+export type ConnectorPointerType =
 	| "None"
 	| "ArrowBroad"
 	| "ArrowThin"
@@ -20,7 +20,7 @@ type ConnectorType =
 	| "OneOptional";
 
 type Props = {
-	iconName: ConnectorType;
+	iconName: ConnectorPointerType;
 	width?: number | string;
 	height?: number | string;
 	style?: React.CSSProperties;

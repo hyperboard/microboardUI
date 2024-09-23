@@ -10,6 +10,7 @@ import style from "./StartPointer.module.css";
 import { useAppContext } from "View/AppContext";
 import clsx from "clsx";
 import { ConnectorPointerStyle } from "Board/Items/Connector/Pointers/Pointers";
+import { ConnectorPointerType } from "View/Icon/ConnectorPointerIcon";
 
 const MENU_NAME = "StartPointer";
 
@@ -54,7 +55,9 @@ export function StartPointer(): React.ReactElement | null {
 					{pointerStartStyle === "None" ? (
 						"None"
 					) : (
-						<ConnectorPointerIcon iconName={pointerStartStyle} />
+						<ConnectorPointerIcon
+							iconName={pointerStartStyle as ConnectorPointerType}
+						/>
 					)}
 				</UiButton>
 			)}

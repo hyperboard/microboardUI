@@ -55,12 +55,14 @@ async function getUser() {
 	}).then(response => {
 		if (response.ok) {
 			return response.json();
+		} else {
+			return Promise.reject(new Error("Get current user error"));
 		}
 	});
 }
 
 export const ProtectedRoute: React.FC<TProtectedRoute> = ({
-	allowRoles,
+	// allowRoles,
 	isPublic = false,
 }) => {
 	const [isLoggedIn, setIsLoggedIn] = React.useState(true);

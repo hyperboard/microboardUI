@@ -75,7 +75,7 @@ export class TextEditor extends React.Component<
 			return null;
 		}
 		const { camera } = this.props.board;
-		const { point, width, height, maxWidth, maxHeight, textScale } =
+		const { point, height, maxWidth, maxHeight, textScale } =
 			text.getDimensions();
 		const textWhiteSpace = text.frameMbr ? "pre" : "pre-wrap";
 		point.transform(camera.getMatrix());
@@ -90,12 +90,14 @@ export class TextEditor extends React.Component<
 		const editorHeight = text.frameMbr
 			? height
 			: container.getHeight() / editorScale;
+		// @ts-expect-error maxHeight undefined
 		const editorMaxHeight = text.frameMbr ? height : maxHeight + 1;
 		const editorWidth =
 			text.insideOf === "Sticker"
 				? container.getWidth() / editorScale
 				: Math.ceil(container.getWidth() / editorScale);
 		const editorMaxWidth =
+			// @ts-expect-error maxWidth undefined
 			text.insideOf === "Sticker" ? maxWidth : Math.ceil(maxWidth);
 
 		if (this.state.hasError) {
@@ -116,8 +118,10 @@ export class TextEditor extends React.Component<
 						left: `${left}px`,
 						top: `${top}px`,
 
+						// @ts-expect-error maxWidth undefined
 						maxWidth: `${Math.ceil(maxWidth)}px`,
 						maxHeight: `${maxHeight}px`,
+						// @ts-expect-error maxWidth undefined
 						width: `${Math.ceil(maxWidth)}px`,
 						height: `${maxHeight}px`,
 
@@ -229,14 +233,12 @@ export class TextEditor extends React.Component<
 					<Slate
 						editor={text.editor.editor}
 						value={text.getText()}
-						selection={text.editor.editor.selection}
 						key={text.getId()}
 						onChange={() => {}}
 					>
 						<Editable
 							renderElement={Element}
 							renderLeaf={Leaf}
-							selection={text.editor.editor.selection}
 							onBlur={text.handleBlur}
 							onFocus={text.handleFocus}
 							className={text.frameMbr && styles.scrollContainer}

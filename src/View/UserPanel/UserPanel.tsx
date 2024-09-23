@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { getApiUrl } from "Config";
 import Cookies from "js-cookie";
 import { isMicroboardIframe } from "lib/isMicroboardIframe";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "shared/hooks/useAuth";
@@ -11,6 +11,7 @@ import { useOutsideClickHandler } from "shared/hooks/useOutsideClickHandler";
 import { Button } from "shared/ui-lib/Button";
 import { Input } from "shared/ui-lib/Input";
 import { Tail } from "View/AuthView/Tail";
+import { Icon } from "View/Icon";
 import { LockIcon } from "View/SignupView/LockIcon";
 import { UiButton } from "View/Ui/UiButton";
 import { UiLink } from "View/Ui/UiLink";
@@ -19,7 +20,6 @@ import { PasswordChanged } from "View/Widgets/form-notifications/password-change
 import { ChangePassword } from "./icons/ChangePassword";
 import { Logout } from "./icons/Logout";
 import styles from "./UserPanel.module.css";
-import { Icon } from "View/Icon";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	email: string;

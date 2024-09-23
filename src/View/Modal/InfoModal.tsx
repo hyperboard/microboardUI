@@ -1,8 +1,8 @@
-import React, { createContext, MouseEventHandler, useState } from "react";
-import { createPortal } from "react-dom";
-import styles from "./InfoModal.module.css";
 import { createStrictContext, useStrictContext } from "lib/strictContext";
+import React, { MouseEventHandler, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
+import styles from "./InfoModal.module.css";
 
 interface InfoModalProps {
 	isOpen: boolean;
