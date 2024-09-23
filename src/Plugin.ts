@@ -1,10 +1,31 @@
+import { Connection } from "App/Connection";
+import { Operation } from "Board/Events";
+import { Item, ItemData, Matrix, Mbr, RichText } from "Board/Items";
+import { HorisontalAlignment, VerticalAlignment } from "Board/Items/Alignment";
+import { ConnectorLineStyle } from "Board/Items/Connector";
+import { DrawingContext } from "Board/Items/DrawingContext";
+import { BorderStyle } from "Board/Items/Path";
+import { TextStyle } from "Board/Items/RichText";
+import { ShapeType } from "Board/Items/Shape/Basic";
+import { Cursor } from "Board/Pointer";
+import { SelectionContext } from "Board/Selection/Selection";
+import { SelectionItems } from "Board/Selection/SelectionItems";
+import { SelectionTransformer } from "Board/Selection/SelectionTransformer";
+import { Items } from "Board/SpatialIndex";
+import { Tools } from "Board/Tools";
+import { AddConnector } from "Board/Tools/AddConnector";
+import { AddDrawing } from "Board/Tools/AddDrawing";
+import { AddShape } from "Board/Tools/AddShape";
+import { AddText } from "Board/Tools/AddText";
+import { BoardTool } from "Board/Tools/BoardTool";
+import { Navigate } from "Board/Tools/Navigate";
+import { Select } from "Board/Tools/Select";
+import { Point } from "slate";
+import { Subject } from "Subject";
+
 interface WhiteboardPlugin {
 	install: (whiteboard: WhiteboardApp) => void;
 }
-
-interface Command {}
-
-interface Tool {}
 
 export interface Selection {
 	readonly subject: Subject<Selection>;
@@ -70,7 +91,7 @@ export interface Selection {
 	render(context: DrawingContext): void;
 }
 
-interface ITools {
+export interface ITools {
 	readonly subject: Subject<Tools>;
 	setTool(tool: BoardTool): void;
 	navigate(): void;
@@ -166,7 +187,7 @@ export interface Command {
 	revert(): void;
 }
 
-interface Board {
+export interface Board {
 	selection: Selection;
 	tools: Tools;
 	pointer: Pointer;
@@ -177,7 +198,7 @@ interface Board {
 	connect(connection: Connection): void; // Connects to an events server
 	disconnect(): void; // Disconnects from an events server
 	getNewItemId(): string; // Generates a new item ID
-	emit(operation: BoardOperation): void; // Emits an operation event
+	emit(operation: Operation): void; // Emits an operation event
 	apply(op: Operation): void | false; // Applies an operation
 	applyPasteOperation(itemsMap: { [key: string]: ItemData }): void; // Internal method to apply paste operations
 
@@ -295,7 +316,7 @@ class WhiteboardApp {
 	}
 }
 
-function registerPlugin(
+export function registerPlugin(
 	plugin: WhiteboardPlugin,
 	whiteboardApp: WhiteboardApp,
 ): void {
