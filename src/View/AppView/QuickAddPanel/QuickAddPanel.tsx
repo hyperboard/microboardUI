@@ -13,8 +13,6 @@ import { ShapeType } from "Board/Items/Shape/Basic";
 import { quickAddItem } from "Board/Selection/QuickAddButtons";
 import { getHotkeyLabel } from "Board/Keyboard";
 
-type Props = {};
-
 export function QuickAddPanel(): React.ReactElement | null {
 	const { app } = useAppContext();
 	const { t } = useTranslation();

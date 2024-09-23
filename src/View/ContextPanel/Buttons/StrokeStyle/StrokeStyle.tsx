@@ -112,6 +112,7 @@ export function StrokeStyle(): React.ReactElement | null {
 							isActive={
 								borderColor !== "none" && !isPredefinedColor
 							}
+							toggleMenu={toggleMenu}
 						/>
 					</div>
 				</UiPanel>

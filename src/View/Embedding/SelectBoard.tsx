@@ -13,6 +13,7 @@ import { getEmbedUrl } from "lib/getEmbedUrl";
 import { getApiUrl } from "Config";
 import { UiButton } from "View/Ui/UiButton";
 import { useForceUpdate } from "lib/useForceUpdate";
+import Cookies from "js-cookie";
 
 const customHeader: CSSProperties = {
 	padding: "6px",
@@ -115,6 +116,7 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
+					Authorization: `Bearer ${Cookies.get("accessToken")}`,
 				},
 				body,
 			});

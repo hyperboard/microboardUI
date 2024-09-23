@@ -71,6 +71,7 @@ export function TextColor(): React.ReactElement | null {
 						onChange={handleCustomPick}
 						color={isPredefinedColor ? "none" : fontColor}
 						isActive={fontColor !== "none" && !isPredefinedColor}
+						toggleMenu={toggleMenu}
 					/>
 				</UiPanel>
 			)}

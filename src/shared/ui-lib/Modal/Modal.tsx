@@ -54,5 +54,5 @@ const ModalBase = (props: ModalProps) => {
 };
 
 export const Modal = (props: any) => {
-	return createPortal(<ModalBase {...props} />, window.root);
+	return createPortal(<ModalBase {...props} />, window.document.body);
 };

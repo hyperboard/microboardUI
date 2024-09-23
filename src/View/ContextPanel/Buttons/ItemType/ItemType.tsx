@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import style from "./ItemType.module.css";
 import { useAppContext } from "View/AppContext";
 import clsx from "clsx";
+import { Shape } from "Board/Items";
 
 const MENU_NAME = "ItemType";
 
@@ -28,7 +29,9 @@ export function ItemType(): React.ReactElement | null {
 		toggleMenu("None");
 	};
 
-	const selectedShapes = board.selection.list();
+	const selectedShapes = board.selection
+		.list()
+		.filter(i => i.itemType === "Shape") as Shape[];
 	return (
 		<ButtonWithMenu
 			menuName={MENU_NAME}

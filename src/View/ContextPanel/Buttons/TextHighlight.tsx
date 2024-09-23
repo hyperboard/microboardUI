@@ -71,6 +71,7 @@ export function TextHighlight(): React.ReactElement | null {
 						isActive={
 							highlightColor !== "none" && !isPredefinedColor
 						}
+						toggleMenu={toggleMenu}
 					/>
 				</UiPanel>
 			)}
