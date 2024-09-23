@@ -2,11 +2,11 @@ import { useAppSubscription } from "Board/useBoardSubscription";
 import clsx from "clsx";
 import { useForceUpdate } from "lib/useForceUpdate";
 import {
+	type ChangeEventHandler,
 	default as React,
+	type MouseEventHandler,
 	useEffect,
 	useState,
-	type ChangeEventHandler,
-	type MouseEventHandler,
 } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
@@ -20,7 +20,7 @@ import style from "./TitlePanel.module.css";
 
 const MAX_BOARD_TITLE_LENGTH = 32;
 
-export function TitlePanel() {
+export function TitlePanel(): JSX.Element | null {
 	const forceUpdate = useForceUpdate();
 	const { t } = useTranslation();
 	const { app, board } = useAppContext();

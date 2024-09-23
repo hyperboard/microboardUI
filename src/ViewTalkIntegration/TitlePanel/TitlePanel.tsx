@@ -1,11 +1,6 @@
 import { useAppSubscription } from "Board/useBoardSubscription";
 import { useForceUpdate } from "lib/useForceUpdate";
-import React from "react";
 import { useTranslation } from "react-i18next";
-import { Icon } from "ViewTalkIntegration/Icon";
-import { UiButton } from "ViewTalkIntegration/Ui/UiButton";
-import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel";
-import style from "./TitlePanel.module.css";
 import { Board } from "Board";
 import { App } from "App";
 
@@ -29,16 +24,18 @@ export function TitlePanel({ board, app }: Props) {
 		board.tools.export();
 	};
 
-	return (
-		<UiPanel className={style.panel}>
-			<UiButton
-				onClick={openExport}
-				variant="secondary"
-				tooltip={t("export.tooltip")}
-				tooltipPosition="bottom"
-			>
-				<Icon iconName="Export" />
-			</UiButton>
-		</UiPanel>
-	);
+	return null;
+
+	// return (
+	// 	<UiPanel className={style.panel}>
+	// 		<UiButton
+	// 			onClick={openExport}
+	// 			variant="secondary"
+	// 			tooltip={t("export.tooltip")}
+	// 			tooltipPosition="bottom"
+	// 		>
+	// 			<Icon iconName="Export" />
+	// 		</UiButton>
+	// 	</UiPanel>
+	// );
 }

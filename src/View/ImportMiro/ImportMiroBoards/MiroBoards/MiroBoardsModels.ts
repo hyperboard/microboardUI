@@ -82,7 +82,7 @@ interface IMiroBoardItemBase {
 	parent?: IMiroParent;
 }
 
-interface IMiroData {
+export interface IMiroData {
 	content: string;
 }
 
