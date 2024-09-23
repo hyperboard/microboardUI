@@ -16,9 +16,12 @@ const RootView: React.FC<RootViewProps> = ({ app }) => {
 	};
 
 	React.useEffect(() => {
-		createPublicBoard(app).then(boardId => {
-			navigate(`/boards/${boardId}`);
-		});
+		createPublicBoard(app)
+			.then(boardId => {
+				navigate(`/boards/${boardId}`);
+			})
+			.catch(console.error);
+		// TODO notify user;
 	}, []);
 
 	return (

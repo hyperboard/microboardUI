@@ -28,8 +28,8 @@ defineFeature(feature, test => {
 			const boardValidation = await page.evaluate(() => {
 				const board = window.app.getBoard();
 				return {
-					hasGetIdMethod: typeof board.getId === "function",
-					id: board.getId(),
+					hasGetIdMethod: typeof board.getBoardId === "function",
+					id: board.getBoardId(),
 				};
 			});
 			// Simple validation for UUID format, this can be improved

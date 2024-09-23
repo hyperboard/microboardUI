@@ -3,7 +3,6 @@ import clsx from "clsx";
 import { useForceUpdate } from "lib/useForceUpdate";
 import {
 	default as React,
-	default as React,
 	useEffect,
 	useState,
 	type ChangeEventHandler,
@@ -18,7 +17,6 @@ import { UiPanel } from "View/Ui/UiPanel";
 import { UiSeparator } from "View/Ui/UiSeparator";
 import { Icon, Logo } from "../Icon";
 import style from "./TitlePanel.module.css";
-import { Button } from "../../shared/ui-lib/Button";
 import { CreateTemplateModal } from "../Templates";
 import { getApiUrl } from "../../Config";
 import Cookies from "js-cookie";
@@ -30,6 +28,7 @@ export function TitlePanel() {
 	const { t } = useTranslation();
 	const { app, board } = useAppContext();
 	const { isOpen, toggleSideMenu } = useSidePanelContext();
+	const [createTemplateOpen, setCreateTemplateOpen] = useState(false);
 	useAppSubscription(app, { observer: forceUpdate, subjects: ["tools"] });
 	useEffect(() => {
 		app.storage.subject.subscribe(forceUpdate);
@@ -45,14 +44,16 @@ export function TitlePanel() {
 
 	const [isRenaming, setIsRenaming] = useState(false);
 	const [newBoardName, setNewBoardName] = useState(boardName);
-	const [createTemplateOpen, setCreateTemplateOpen] = useState(false);
 
 	const isExport = board.tools.getExport();
 	if (isExport) {
 		return null;
 	}
 
-	const handleBoardRename: ChangeEventHandler = event => {
+	const handleBoardRename: ChangeEventHandler<HTMLInputElement> = event => {
+		if (!event.currentTarget) {
+			return;
+		}
 		setNewBoardName(event.currentTarget.value);
 	};
 
@@ -60,7 +61,7 @@ export function TitlePanel() {
 		setIsRenaming(false);
 	};
 
-	const handleBoardRenameStart: MouseEventHandler = event => {
+	const handleBoardRenameStart: MouseEventHandler = () => {
 		setIsRenaming(true);
 		setNewBoardName(boardName);
 	};
@@ -104,12 +105,13 @@ export function TitlePanel() {
 		}
 	}
 
+	// @ts-expect-error import.meta object didn't exists in common-js modules
 	const isMicroboard = import.meta.env.INTEGRATION_UI === "microboard";
 
 	const strippedName =
-		boardName?.length > MAX_BOARD_TITLE_LENGTH
+		(boardName?.length ?? 0) > MAX_BOARD_TITLE_LENGTH
 			? `${boardName?.slice(0, MAX_BOARD_TITLE_LENGTH)}...`
-			: boardName;
+			: boardName ?? "";
 	return (
 		<UiPanel className={style.panel} padding={0} zIndex={10}>
 			<SidePanelButton
@@ -210,6 +212,7 @@ function SidePanelButton({
 }): React.ReactElement {
 	const { t } = useTranslation();
 
+	// @ts-expect-error import.meta object didn't exists in common-js modules
 	if (import.meta.env.INTEGRATION_UI !== "microboard") {
 		return <></>;
 	}

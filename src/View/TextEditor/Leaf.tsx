@@ -17,10 +17,10 @@ export function Leaf(props: RenderLeafProps): React.ReactElement {
 	if (leaf["line-through"]) {
 		styles.add("line-through");
 	}
-	if (leaf.sub) {
+	if (leaf.subscript) {
 		styles.add("sub");
 	}
-	if (leaf.super) {
+	if (leaf.superscript) {
 		styles.add("super");
 	}
 	for (const style of styles) {

@@ -113,6 +113,7 @@ export function AddDrawing() {
 							selectedColor !== "none" && !isPredefinedColor
 						}
 						onChange={handleCustomColorPick}
+						setIsCloseMenu={setIsColorSelected}
 					/>
 				</div>
 			</UiPanel>

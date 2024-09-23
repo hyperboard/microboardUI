@@ -16,13 +16,16 @@ const ModalView = ({ boardLink, closeModal }: TModal): React.ReactElement => {
 	function copyText() {
 		const span = textToCopyRef.current;
 		const range = document.createRange();
+		if (!span) {
+			return;
+		}
 		range.selectNode(span);
 
-		window.getSelection().removeAllRanges();
-		window.getSelection().addRange(range);
+		window.getSelection()?.removeAllRanges();
+		window.getSelection()?.addRange(range);
 		document.execCommand("copy");
 
-		window.getSelection().removeAllRanges();
+		window.getSelection()?.removeAllRanges();
 	}
 
 	const modalRef = useClickOutside(closeModal);
@@ -46,5 +49,5 @@ const ModalView = ({ boardLink, closeModal }: TModal): React.ReactElement => {
 };
 
 export const Modal = (props: any) => {
-	return createPortal(<ModalView {...props} />, window.root);
+	return createPortal(<ModalView {...props} />, window.document.body);
 };

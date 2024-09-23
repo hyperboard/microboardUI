@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useEffect } from "react";
 
 export const useOutsideClickHandler = (
 	ref: React.MutableRefObject<HTMLElement | null>,

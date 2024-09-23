@@ -7,8 +7,12 @@ export class Clipboard {
 		throw new Error("Method not implemented.");
 	}
 
-	set(data: { [key: string]: ItemData }): void {
-		this.items = data;
+	set(data: { [key: string]: ItemData } | null): void {
+		if (data) {
+			this.items = data;
+		} else {
+			this.items = {};
+		}
 	}
 
 	get(): { [key: string]: ItemData } | null {

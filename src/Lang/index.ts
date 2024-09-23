@@ -21,6 +21,7 @@ export const resources = {
 i18n.use(initReactI18next)
 	.use(LanguageDetector)
 	.init({
+		// @ts-expect-error import.meta object didn't exists in common-js modules
 		debug: import.meta.env.NODE_ENV === "development",
 		detection: {
 			order: ["navigator"],
@@ -28,6 +29,7 @@ i18n.use(initReactI18next)
 		supportedLngs: ["en", "ru"],
 		defaultNS,
 		resources,
+		// @ts-expect-error import.meta object didn't exists in common-js modules
 		fallbackLng: import.meta.env.FALLBACK_LNG ?? "en",
 		interpolation: {
 			escapeValue: false,
