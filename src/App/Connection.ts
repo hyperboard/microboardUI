@@ -120,10 +120,31 @@ export function createConnection(): Connection {
 			if (!response.ok) {
 				throw new Error("response not OK");
 			}
+			window.parent.postMessage(
+				{
+					pattern: "connectionState",
+					payload: "connected",
+				},
+				"*",
+			);
 			const data = await response.json();
 			connectionId = data.connection;
 		} catch (error) {
 			console.error("Error Establishing Connection:", error);
+			window.parent.postMessage(
+				{
+					pattern: "MicroboardError",
+					payload: JSON.stringify({ error }),
+				},
+				"*",
+			);
+			window.parent.postMessage(
+				{
+					pattern: "connectionState",
+					payload: "disconnected",
+				},
+				"*",
+			);
 		}
 	}
 
@@ -147,12 +168,26 @@ export function createConnection(): Connection {
 
 		const subscribe = (): void => {
 			ws.onOpenSubject.subscribe(onOpen);
+			window.parent.postMessage(
+				{
+					pattern: "connectionState",
+					payload: "connecting",
+				},
+				"*",
+			);
 			onOpen();
 		};
 
 		const unsubscribe = (): void => {
 			ws.onOpenSubject.unsubscribe(onOpen);
 			ws.send({ type: "Unsubscribe", boardId: boardId });
+			window.parent.postMessage(
+				{
+					pattern: "connectionState",
+					payload: "disconnected",
+				},
+				"*",
+			);
 		};
 
 		subscribe();
@@ -171,6 +206,14 @@ export function createConnection(): Connection {
 		}
 		subscription.unsubscribe();
 		subscriptions.delete(boardId);
+
+		window.parent.postMessage(
+			{
+				pattern: "connectionState",
+				payload: "disconnected",
+			},
+			"*",
+		);
 	}
 
 	function publishBoardEvent(boardId: string, event: BoardEvent): void {
@@ -288,6 +331,15 @@ export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
 
 	function onError(event): void {
 		console.error("WebsocketClient: error", event);
+		window.parent.postMessage(
+			{
+				pattern: "MicroboardError",
+				payload: JSON.stringify({
+					error: `WebsocketClient: error ${event}`,
+				}),
+			},
+			"*",
+		);
 	}
 
 	const pingMsg = JSON.stringify({ type: "ping" });

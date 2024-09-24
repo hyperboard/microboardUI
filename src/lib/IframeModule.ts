@@ -56,11 +56,23 @@ interface FireSnapshotEvent {
 	payload: any;
 }
 
+enum ConnectionStateType {
+	Connected = "connected",
+	Connecting = "connecting",
+	Disconnected = "disconnected",
+}
+
+interface ConnectionState {
+	pattern: "connectionState";
+	payload: any;
+}
+
 type Message =
 	| SetAuthTokenMessage
 	| KeyboardEventMessage
 	| MakeSnapshotMessage
-	| FireSnapshotEvent;
+	| FireSnapshotEvent
+	| ConnectionState;
 
 export class IframeModule {
 	private static instance: IframeModule | null = null;
@@ -111,7 +123,7 @@ export class IframeModule {
 
 	private async handleCustomMessages(data: Message): Promise<void> {
 		try {
-			// console.log("Message: ", data);
+			console.log("Message: ", data);
 
 			if (data.pattern === "updateUserToken") {
 				Cookies.set("mb_accessToken", data.payload.accessToken, {

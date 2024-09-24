@@ -162,6 +162,14 @@ export function createApp(isHistory = true): App {
 			app.connection.wsClient.onAccessDenied(id, true);
 			return;
 		}
+
+		window.parent.postMessage(
+			{
+				pattern: "connectionState",
+				payload: "connected",
+			},
+			"*",
+		);
 	}
 
 	function getLastBoardId(): string | null {

@@ -14,9 +14,12 @@ import { SigninView } from "./SigninView/SigninView";
 import { SignupView } from "./SignupView/SignupView";
 import { VerifyMailView } from "./VerifyMailView/VerifyMailView";
 import { WelcomeBoard } from "./WelcomeBoard";
+import { IframeModule } from "lib/IframeModule";
 
 export function getRender(app: App): () => void {
 	// new IframeModule(app);
+
+	const iframeModule = IframeModule.getInstance(app);
 
 	const router = createBrowserRouter([
 		{
