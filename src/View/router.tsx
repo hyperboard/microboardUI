@@ -19,7 +19,7 @@ import { IframeModule } from "lib/IframeModule";
 export function getRender(app: App): () => void {
 	// new IframeModule(app);
 
-	const iframeModule = IframeModule.getInstance(app);
+	IframeModule.getInstance(app);
 
 	const router = createBrowserRouter([
 		{

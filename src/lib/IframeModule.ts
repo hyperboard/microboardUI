@@ -53,32 +53,21 @@ interface MakeSnapshotMessage {
 
 interface FireSnapshotEvent {
 	pattern: "fireSnapshotEvent";
-	payload: any;
-}
-
-enum ConnectionStateType {
-	Connected = "connected",
-	Connecting = "connecting",
-	Disconnected = "disconnected",
-}
-
-interface ConnectionState {
-	pattern: "connectionState";
-	payload: any;
+	payload: unknown;
 }
 
 type Message =
 	| SetAuthTokenMessage
 	| KeyboardEventMessage
 	| MakeSnapshotMessage
-	| FireSnapshotEvent
-	| ConnectionState;
+	| FireSnapshotEvent;
 
 export class IframeModule {
 	private static instance: IframeModule | null = null;
 	// private origins: string[];
 	private app: App;
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	constructor(app: App, origins?: string[]) {
 		// this.origins = origins || [];
 		this.app = app;
