@@ -51,7 +51,7 @@ export const CreateTemplateModal = ({
 
 		setSubmitDisabled(true);
 
-		fetch("http://localhost:8000/api/v1/media", requestOptions)
+		fetch(getApiUrl("/media"), requestOptions)
 			.then(response => response.json())
 			.then(result => {
 				imageSrc.current = result.src;

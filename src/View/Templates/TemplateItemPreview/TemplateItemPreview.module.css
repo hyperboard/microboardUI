@@ -1,0 +1,41 @@
+h2 {
+	font-size: 48px;
+}
+
+.wrapper {
+	width: 100%;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	gap: 20px;
+	padding: 12px;
+}
+
+.header {
+	display: flex;
+	justify-content: space-between;
+}
+
+.backBtn {
+	width: 120px;
+}
+
+.mainSection {
+	display: flex;
+	width: 100%;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	column-gap: 48px;
+}
+
+.useBtn {
+	width: 100%;
+	min-width: 200px;
+	height: 48px;
+}
+
+.frame {
+	flex-grow: 1;
+	aspect-ratio: 1/0.6;
+}

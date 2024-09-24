@@ -4,5 +4,5 @@
 	height: 550px;
 	justify-content: space-between;
 	flex-wrap: wrap;
-	overflow-y: visible;
+	overflow-y: auto;
 }

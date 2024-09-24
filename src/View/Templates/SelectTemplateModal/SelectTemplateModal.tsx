@@ -4,6 +4,9 @@ import { useTranslation } from "react-i18next";
 import { TemplateItem } from "../TemplateItem/TemplateItem";
 import styles from "./SelectTemplateModal.module.css";
 import { ModalSize } from "../../../shared/ui-lib/Modal/Modal";
+import { Template } from "../types";
+import { TemplateItemPreview } from "../TemplateItemPreview/TemplateItemPreview";
+import { getApiUrl } from "../../../Config";
 
 interface SelectTemplateModalProps {
 	isOpen: boolean;
@@ -15,7 +18,10 @@ export const SelectTemplateModal = ({
 	setIsOpen,
 }: SelectTemplateModalProps): JSX.Element => {
 	const { t } = useTranslation();
-	const [templates, setTemplates] = useState<any[]>([]);
+	const [templates, setTemplates] = useState<Template[]>([]);
+	const [presentedTemplate, setPresentedTemplate] = useState<Template | null>(
+		null,
+	);
 
 	useEffect(() => {
 		if (isOpen) {
@@ -23,30 +29,44 @@ export const SelectTemplateModal = ({
 		}
 	}, [isOpen]);
 
-	const geTemplates = async () => {
-		return fetch("http://localhost:8000/api/v1/boards/templates", {
+	const geTemplates = async (): Promise<Template[]> => {
+		return fetch(`${getApiUrl()}/boards/templates`, {
 			method: "GET",
 		})
 			.then(response => response.json())
-			.catch(error => console.error(error));
+			.catch(error => {
+				console.error(error);
+				return [];
+			});
 	};
 
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size={ModalSize.M}>
-			{templates && (
+			{templates && !presentedTemplate && (
 				<div className={styles.container}>
 					{templates.map(template => (
 						<TemplateItem
 							key={template.uniq_id}
 							preview={template.preview}
-							description={template.desc}
-							language={template.lan}
-							tags={template.tags}
-							snapshot={template.snapshot}
-							setIsOpen={setIsOpen}
+							name={"Hello"}
+							setPresentedTemplate={() =>
+								setPresentedTemplate(template)
+							}
 						/>
 					))}
 				</div>
+			)}
+			{presentedTemplate && (
+				<TemplateItemPreview
+					name={"Hello"}
+					language={presentedTemplate.lan}
+					description={presentedTemplate.desc}
+					snapshot={presentedTemplate.snapshot}
+					setPresentedTemplate={setPresentedTemplate}
+					setIsOpen={setIsOpen}
+					tags={presentedTemplate.tags}
+					viewLinkId={presentedTemplate.uniq_id}
+				/>
 			)}
 		</Modal>
 	);
