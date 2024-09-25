@@ -21,7 +21,7 @@ const connectorTypes = {
     elbowed: "orthogonal",
 };
 
-export const parseConnector = async (payload: ConnectorPayload): Promise<Array<any | null>> => {
+export const parseConnector = (payload: ConnectorPayload): Array<any | null> => {
     const { item, startItem, endItem, userId, boardId, order, parsedStart, parsedEnd, newItemId } = payload;
 
     // position in percentage
@@ -35,11 +35,11 @@ export const parseConnector = async (payload: ConnectorPayload): Promise<Array<a
     };
 
     // Calculate actual start and end points
-    const calculatePoint = async (pos: { x: number; y: number }, wItem?: WidgetItem) => {
+    const calculatePoint = (pos: { x: number; y: number }, wItem?: WidgetItem) => {
         if (!wItem) return { x: 0, y: 0 };
         const width = wItem.geometry?.width || 0;
         const height = wItem.geometry?.height || 0;
-        const wPos = await getItemPosition(wItem);
+        const wPos = getItemPosition(wItem);
 
         // Calculate the offset to move from center to top-left
         const xOffset = width / 2;
@@ -52,7 +52,7 @@ export const parseConnector = async (payload: ConnectorPayload): Promise<Array<a
         return { x, y };
     };
 
-    const startPoint = await calculatePoint(startPos, startItem);
+    const startPoint = calculatePoint(startPos, startItem);
 
     if (!parsedStart?.event?.operation?.item || !parsedEnd?.event?.operation?.item) {
         return [null];

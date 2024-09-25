@@ -1,4 +1,4 @@
-import { Board, FrameItem, ImageItem, MiroApi, ShapeItem, StickyNoteItem, TextItem } from "@mirohq/miro-api";
+import { FrameItem, ImageItem, ShapeItem, StickyNoteItem, TextItem } from "@mirohq/miro-api";
 
 export const INITIAL_GEOMETRY = {
     sticky_note: {
@@ -21,7 +21,7 @@ export const INITIAL_GEOMETRY = {
     },
 };
 
-export const getItemPosition = async (item: ShapeItem | StickyNoteItem | ImageItem | TextItem, parent?: FrameItem) => {
+export const getItemPosition = (item: ShapeItem | StickyNoteItem | ImageItem | TextItem, parent?: FrameItem) => {
     const width = item.geometry?.width || 100;
     const height = item.geometry?.height || 100;
 

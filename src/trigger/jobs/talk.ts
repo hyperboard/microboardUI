@@ -14,6 +14,7 @@ const HEARTBEAT_INTERVAL = 15000;
 const INTERNAL_SERVER_URL = process.env.INTERNAL_SERVER_URL || "http://localhost:8000";
 const externalStorageUrl = process.env.STORAGE_URL || "http://localhost:8001/api/v1/media"; // used for frontend links
 const internalStorageUrl = `${INTERNAL_SERVER_URL}/api/v1/media`;
+const TOTAL_STEPS = 7;
 
 const talkConfig = {
     bucket: process.env.TALK_BUCKET_NAME || "talk",
@@ -88,7 +89,7 @@ async function setLastActivity(taskId: string, io: IO) {
 export const talkIntegrationJob = client.defineJob({
     id: "talk-integration",
     name: "Talk Integration",
-    version: "0.0.1",
+    version: "0.0.2",
     trigger: invokeTrigger({
         schema: z.object({
             id: z.string(),
@@ -140,7 +141,7 @@ export const talkIntegrationJob = client.defineJob({
                 throw talktaskJsonTask.error;
             }
 
-            await io.logger.info("Importing board from Talk", {
+            await io.logger.info(`1/${TOTAL_STEPS} - Start importing board...`, {
                 jsonFile: talktaskJsonTask,
             });
             const workerID = talktaskJsonTask.data?.WorkerName;
@@ -174,12 +175,12 @@ export const talkIntegrationJob = client.defineJob({
                 throw boardFilesTask.error;
             }
 
-            await io.logger.info("Files found", {
-                files: boardFilesTask.data,
+            await io.logger.info(`2/${TOTAL_STEPS} - Initial board files parsed`, {
+                files: boardFilesTask.data.length,
             });
 
             const boardData = splitBoardFiles(boardFilesTask.data);
-            await io.logger.info("Board data", {
+            await io.logger.debug("Board data", {
                 boardData,
             });
 
@@ -214,180 +215,129 @@ export const talkIntegrationJob = client.defineJob({
                 throw boardTask.error;
             }
 
-            await io.logger.info(`S3 Board fetched: ${boardData.board}`, {
+            await io.logger.debug(`S3 Board fetched: ${boardData.board}`, {
                 board: boardTask.data,
             });
 
             const fetchItemsFromS3 = async () => {
-                const itemsTask = await io.try(
-                    async () => {
-                        const items = await io.runTask("Fetch items", async () => {
-                            let items: any[] = [];
-                            let imageProcessingPromises: Promise<void>[] = [];
+                let items: any[] = [];
+                let connectors: any[] = [];
+                let imageProcessingPromises: Promise<void>[] = [];
 
-                            for (const itemFilePath of boardData.items) {
-                                const itemData = await s3.getJson(talkConfig.bucket, itemFilePath);
+                try {
+                    await io.runTask(`3/${TOTAL_STEPS} - Start fetching items...`, async () => {
+                        for (const itemFilePath of boardData.items) {
+                            const itemData = await s3.getJson(talkConfig.bucket, itemFilePath);
 
-                                await io.logger.info(`Item fetched: ${itemFilePath}`, {
-                                    itemData,
-                                });
+                            for (const data of itemData?.data || []) {
+                                if (data.type === "image") {
+                                    const imageJsonPath = boardData.images.find((image) => image.includes(data.id));
+                                    const processImagePromise = (async () => {
+                                        try {
+                                            const imageJson = await s3.getJson(talkConfig.bucket, imageJsonPath!);
+                                            const hash = imageJson.FilePath;
+                                            const talkDimensions = {
+                                                width: imageJson?.Width || null,
+                                                height: imageJson?.Height || null,
+                                            };
+                                            let dimensions = null;
+                                            if (!talkDimensions?.width || !talkDimensions?.height) {
+                                                await io.logger.debug(
+                                                    `Failed to parse image dimensions from TALK for image ${
+                                                        imageJson.FilePath || data.id
+                                                    }`
+                                                );
+                                                const base64 = await imageUrlToBase64(`${internalStorageUrl}${hash}`);
+                                                const base64Data = base64.replace(/^data:image\/\w+;base64,/, "");
+                                                const imgBuffer = Buffer.from(base64Data, "base64");
+                                                const uint8Array = Uint8Array.from(imgBuffer);
+                                                const firstByte = uint8Array[0];
 
-                                for (const data of itemData?.data || []) {
-                                    if (data.type === "image") {
-                                        const imageJsonPath = boardData.images.find((image) => image.includes(data.id));
-                                        const processImagePromise = (async () => {
-                                            try {
-                                                const imageJson = await s3.getJson(talkConfig.bucket, imageJsonPath!);
-                                                const hash = imageJson.FilePath;
-                                                const talkDimensions = {
-                                                    width: imageJson?.Width || null,
-                                                    height: imageJson?.Height || null,
-                                                };
-                                                let dimensions = null;
-                                                if (!talkDimensions?.width || !talkDimensions?.height) {
-                                                    await io.logger.warn(
-                                                        `Failed to parse image dimensions from TALK for image ${
-                                                            imageJson.FilePath || data.id
-                                                        }`
-                                                    );
-                                                    const base64 = await imageUrlToBase64(
-                                                        `${internalStorageUrl}${hash}`
-                                                    );
-                                                    const base64Data = base64.replace(/^data:image\/\w+;base64,/, "");
-                                                    const imgBuffer = Buffer.from(base64Data, "base64");
-                                                    const uint8Array = Uint8Array.from(imgBuffer);
-                                                    const firstByte = uint8Array[0];
-
-                                                    if (firstByte === 117) {
-                                                        // SVG
-                                                        try {
-                                                            const svgDimensions = await getSVGDimensionsFromURL(
-                                                                `${internalStorageUrl}${hash}`
-                                                            );
-                                                            dimensions = {
-                                                                width: svgDimensions.width || data.geometry?.width || 0,
-                                                                height:
-                                                                    svgDimensions.height || data.geometry?.height || 0,
-                                                            };
-                                                        } catch (_) {
-                                                            dimensions = {
-                                                                width: data.geometry?.width || 0,
-                                                                height: data.geometry?.height || 0,
-                                                            };
-                                                        }
-                                                    } else {
-                                                        dimensions = sizeOf(uint8Array);
+                                                if (firstByte === 117) {
+                                                    // SVG
+                                                    try {
+                                                        const svgDimensions = await getSVGDimensionsFromURL(
+                                                            `${internalStorageUrl}${hash}`
+                                                        );
+                                                        dimensions = {
+                                                            width: svgDimensions.width || data.geometry?.width || 0,
+                                                            height: svgDimensions.height || data.geometry?.height || 0,
+                                                        };
+                                                    } catch (_) {
+                                                        dimensions = {
+                                                            width: data.geometry?.width || 0,
+                                                            height: data.geometry?.height || 0,
+                                                        };
                                                     }
                                                 } else {
-                                                    dimensions = talkDimensions;
+                                                    dimensions = sizeOf(uint8Array);
                                                 }
-
-                                                const copiedImage = { ...data };
-
-                                                copiedImage.data.imageUrl = `${externalStorageUrl}${hash}`;
-                                                copiedImage.dimensions = dimensions;
-                                                await io.logger.log(`Processed image: ${data.id}`, {
-                                                    image: copiedImage,
-                                                });
-                                                items.push({
-                                                    item: copiedImage,
-                                                    boardId: newBoardId,
-                                                    userId: payload.userId,
-                                                });
-                                            } catch (error: any) {
-                                                await io.logger.error(
-                                                    `Error processing image item: ${imageJsonPath}, skipping...`,
-                                                    {
-                                                        error: errorToJson(error),
-                                                    }
-                                                );
+                                            } else {
+                                                dimensions = talkDimensions;
                                             }
-                                        })();
-                                        imageProcessingPromises.push(processImagePromise);
-                                    } else {
-                                        items.push({
-                                            item: data,
-                                            boardId: newBoardId,
-                                            userId: payload.userId,
-                                        });
-                                    }
-                                }
-                            }
 
-                            await Promise.all(imageProcessingPromises);
-                            return items;
-                        });
+                                            const copiedImage = { ...data };
 
-                        return {
-                            isSuccess: true as const,
-                            data: items,
-                        };
-                    },
-                    async (error: any) => {
-                        await io.logger.error(`Error fetching items`, {
-                            error: errorToJson(error),
-                        });
-                        return {
-                            isSuccess: false as const,
-                            error,
-                        };
-                    }
-                );
+                                            copiedImage.data.imageUrl = `${externalStorageUrl}${hash}`;
+                                            copiedImage.dimensions = dimensions;
 
-                if (itemsTask?.isSuccess === false) {
-                    throw itemsTask.error;
-                }
-
-                const connectorsTask = await io.try(
-                    async () => {
-                        const connectors = await io.runTask("Fetch connectors", async () => {
-                            let connectors: any[] = [];
-                            for (const connectorFilePath of boardData.connectors) {
-                                const connectorData = await s3.getJson(talkConfig.bucket, connectorFilePath);
-
-                                await io.logger.info(`Connector fetched: ${connectorFilePath}`, {
-                                    connectorData,
-                                });
-                                (connectorData?.data as any[]).forEach((data) => {
-                                    connectors.push({
+                                            items.push({
+                                                item: copiedImage,
+                                                boardId: newBoardId,
+                                                userId: payload.userId,
+                                            });
+                                        } catch (error: any) {
+                                            await io.logger.error(
+                                                `Error processing image item: ${imageJsonPath}, skipping...`,
+                                                {
+                                                    error: errorToJson(error),
+                                                }
+                                            );
+                                        }
+                                    })();
+                                    imageProcessingPromises.push(processImagePromise);
+                                } else {
+                                    items.push({
                                         item: data,
                                         boardId: newBoardId,
                                         userId: payload.userId,
                                     });
-                                });
+                                }
                             }
-                            return connectors;
-                        });
+                        }
+                    });
 
-                        return {
-                            isSuccess: true as const,
-                            data: connectors,
-                        };
-                    },
-                    async (error: any) => {
-                        await io.logger.error(`Error fetching connectors`, {
-                            error: errorToJson(error),
-                        });
-                        return {
-                            isSuccess: false as const,
-                            error,
-                        };
-                    }
-                );
+                    await Promise.all(imageProcessingPromises);
 
-                if (connectorsTask?.isSuccess === false) {
-                    throw connectorsTask.error;
+                    await io.runTask(`4/${TOTAL_STEPS} - Start fetching connectors...`, async () => {
+                        for (const connectorFilePath of boardData.connectors) {
+                            const connectorData = await s3.getJson(talkConfig.bucket, connectorFilePath);
+
+                            await io.logger.info(`Connector fetched: ${connectorFilePath}`, {
+                                date: new Date().toISOString(),
+                            });
+                            (connectorData?.data as any[]).forEach((data) => {
+                                connectors.push({
+                                    item: data,
+                                    boardId: newBoardId,
+                                    userId: payload.userId,
+                                });
+                            });
+                        }
+                    });
+
+                    return { items, connectors };
+                } catch (error) {
+                    await io.logger.error(`Error in fetchItemsFromS3`, {
+                        error: errorToJson(error),
+                    });
+                    throw error;
                 }
-
-                const [items, connectors] = [itemsTask.data, connectorsTask.data];
-
-                return {
-                    items,
-                    connectors,
-                };
             };
 
             const { items, connectors } = await fetchItemsFromS3();
+
+            await io.logger.info(`5/${TOTAL_STEPS} - Items & connectors parsed, start to transform board...`);
 
             const transformedBoard = await getTransformedBoard({
                 miroBoard: boardTask.data,
@@ -396,15 +346,16 @@ export const talkIntegrationJob = client.defineJob({
                 connectors,
             });
 
-            await io.logger.info(`Transformed board: `, {
-                transformedBoard,
+            await io.logger.info(`6/${TOTAL_STEPS} - Board transformed. Start to save board to database...`, {
+                // transformedBoardItems: transformedBoard.items.length,
+                date: new Date().toISOString(),
             });
 
             const boards = new Boards(database, winstonLogger);
             const createdBoard = await boards.saveBoardData(transformedBoard);
 
             if (createdBoard) {
-                await io.logger.info(`import success: ${payload.id}`);
+                await io.logger.info(`7/${TOTAL_STEPS} - Import job done: ${payload.id}`);
                 await io.try(
                     async () => {
                         await io.runTask(`Update JSON File: success ${payload.id}}`, async () => {
@@ -449,6 +400,13 @@ export const talkIntegrationJob = client.defineJob({
             });
             await io.try(
                 async () => {
+                    let errorMessage = "";
+                    try {
+                        errorMessage = error?.message || JSON.parse(errorToJson(error))?.message || "Unhandled error";
+                    } catch (e) {
+                        errorMessage = "Unhandled error";
+                    }
+
                     await io.runTask("Import error", async () => {
                         const taskJson = await s3.getJson(
                             talkConfig.bucket,
@@ -461,7 +419,7 @@ export const talkIntegrationJob = client.defineJob({
                                 ...taskJson,
                                 MetaInfo: {
                                     ...(taskJson.MetaInfo || {}),
-                                    error: errorToJson(error),
+                                    errorMessage,
                                 },
                             }
                         );

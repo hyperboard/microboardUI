@@ -261,6 +261,11 @@ export const parseText = async (payload: TextPayload): Promise<Array<any | null>
     const calculatedWidth = longestLineLength * averageCharWidth;
 
     const copiedItem = { ...item };
+
+    if (!copiedItem.geometry) {
+        copiedItem.geometry = {};
+    }
+
     copiedItem.geometry!.height = calculatedHeight;
     if (item.style?.textAlign === "center") {
         copiedItem.geometry!.width = calculatedWidth;

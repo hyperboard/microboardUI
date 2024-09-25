@@ -45,31 +45,26 @@ export const getTransformedBoard = async (payload: BoardPayload): Promise<Transf
     const boardUUID = v4();
     let order = 0;
 
-    let frames: Map<string, { item: { frame: FrameItem; newItemId: string }; children: string[] }> = new Map();
+    const frames = new Map<string, { item: { frame: FrameItem; newItemId: string }; children: string[] }>();
+    const parentsMap = new Map<string, FrameItem>();
 
-    const parents = await items.reduce<Promise<any[]>>(async (accPromise, data, index) => {
-        const acc = await accPromise;
+    // Pre-process parents
+    items.forEach((data) => {
         if (data?.item?.type === "frame") {
-            acc.push(data.item);
+            parentsMap.set(data.item.id, data.item as FrameItem);
         }
-        return acc;
-    }, Promise.resolve([]));
+    });
 
-    const parsedItems = await items.reduce<Promise<any[]>>(async (accPromise, data, index) => {
-        const acc = await accPromise;
+    // Process items
+    const itemPromises = items.map(async (data, index) => {
         const itemUUID = v4();
         if (data?.item.type === "connector" && !(data.item as Connector).isSupported) {
-            return acc;
+            return null;
         }
         if (data?.item.type === "frame") {
             frames.set(data.item.id, { item: { frame: data.item as FrameItem, newItemId: itemUUID }, children: [] });
         }
-        let parent: FrameItem | undefined = undefined;
-        if (data?.item?.parent) {
-            parent = parents.find((p) => {
-                return p.id === data?.item?.parent?.id;
-            });
-        }
+        const parent = data?.item?.parent ? parentsMap.get(data?.item?.parent?.id) : undefined;
 
         const events = await getParseFunction({
             item: data.item,
@@ -82,36 +77,28 @@ export const getTransformedBoard = async (payload: BoardPayload): Promise<Transf
 
         const nonNullEvents = events.filter((event) => event !== null);
 
-        if (!nonNullEvents.length) {
-            return acc;
-        }
-
-        for (const event of nonNullEvents) {
-            acc.push({ event, originalId: data.item.id });
-        }
-
         if (data?.item.type !== "frame" && data?.item.parent && frames.has(data.item.parent.id)) {
             frames.get(data.item?.parent?.id)!.children.push(itemUUID);
         }
 
-        return acc;
-    }, Promise.resolve([]));
+        return nonNullEvents.length ? nonNullEvents.map((event) => ({ event, originalId: data.item.id })) : null;
+    });
 
-    const parsedConnectors = await connectors.reduce<Promise<any[]>>(async (accPromise, data, index) => {
-        const acc = await accPromise;
-        const itemUUID = v4();
+    const parsedItems = (await Promise.all(itemPromises)).filter((item) => item !== null).flat();
 
+    // Process connectors
+    const connectorPromises = connectors.map(async (data, index) => {
         if (data?.item?.isSupported === false) {
-            return acc;
+            return null;
         }
 
-        const startItem = await items.find((item) => item.item.id === data.item?.startItem?.id);
-        const endItem = await items.find((item) => item.item.id === data.item?.endItem?.id);
-        const parsedStart = await parsedItems.find((item) => item.originalId === startItem?.item.id);
-        const parsedEnd = await parsedItems.find((item) => item.originalId === endItem?.item.id);
+        const startItem = items.find((item) => item.item.id === data.item?.startItem?.id);
+        const endItem = items.find((item) => item.item.id === data.item?.endItem?.id);
+        const parsedStart = parsedItems.find((item) => item?.originalId === startItem?.item.id);
+        const parsedEnd = parsedItems.find((item) => item?.originalId === endItem?.item.id);
 
         if (!startItem || !endItem) {
-            return acc;
+            return null;
         }
 
         const events = await parseConnector({
@@ -123,52 +110,36 @@ export const getTransformedBoard = async (payload: BoardPayload): Promise<Transf
             parsedStart,
             parsedEnd,
             order: ++order,
-            newItemId: itemUUID,
+            newItemId: v4(),
         });
 
-        const nonNullEvents = events.filter((event) => event !== null);
+        return events.filter((event) => event !== null);
+    });
 
-        if (!nonNullEvents.length) {
-            return acc;
-        }
+    const parsedConnectors = (await Promise.all(connectorPromises)).filter((item) => item !== null).flat();
 
-        for (const event of nonNullEvents) {
-            acc.push(event);
-        }
+    // Process frame children
+    const parsedFramesChildren = Array.from(frames.entries()).flatMap(([_, frameData]) =>
+        frameData.children.map((childId) => ({
+            eventId: `${userId}:${++order}`,
+            userId: userId,
+            boardId: boardUUID,
+            order: order,
+            operation: {
+                class: "Frame",
+                method: "addChild",
+                item: [frameData.item.newItemId],
+                childId: childId,
+            },
+        }))
+    );
 
-        return acc;
-    }, Promise.resolve([]));
-
-    const parsedFramesChildren = Array.from(frames.entries())
-        .flatMap(([_, frameData]) => {
-            return frameData.children.map((childId) => {
-                const newOrder = ++order;
-                const event = {
-                    eventId: `${userId}:${newOrder}`,
-                    userId: userId,
-                    boardId: boardUUID,
-                    order: newOrder,
-                    operation: {
-                        class: "Frame",
-                        method: "addChild",
-                        item: [frameData.item.newItemId],
-                        childId: childId,
-                    },
-                };
-
-                return event;
-            });
-        })
-        .filter(Boolean);
-
-    const itemEvents = parsedItems.map((item) => item.event).filter((i) => i !== null);
-    const connectorEvents = parsedConnectors.filter((i) => i !== null);
-    const frameChildrenEvents = parsedFramesChildren.filter((i) => i !== null);
+    const itemEvents = parsedItems.map((item) => item?.event);
 
     return {
         id: miroBoard.id,
         name: miroBoard.name || "Untitled",
-        items: [...itemEvents, ...connectorEvents, ...frameChildrenEvents],
+        items: [...itemEvents, ...parsedConnectors, ...parsedFramesChildren],
     };
 };
 
