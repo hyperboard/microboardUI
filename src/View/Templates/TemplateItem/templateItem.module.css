@@ -2,26 +2,27 @@
 	display: flex;
 	flex-direction: column;
 	flex-wrap: wrap;
-	width: 280px;
-	border: 1px solid black;
-	border-radius: 12px;
-	align-items: center;
-	gap: 8px;
-	max-height: 550px;
+	border: 1px solid rgba(233, 234, 236, 1);
+	border-radius: 16px;
+	gap: 16px;
+	font-family: "Manrope", "Arial";
+	color: rgba(20, 21, 26, 1);
+	height: fit-content;
 }
 
 .image {
 	display: block;
 	width: 100%;
-	border-radius: 12px;
-	aspect-ratio: 1/1;
+	border-radius: 16px;
+	aspect-ratio: 1/0.6;
 	object-fit: cover;
 }
 
-.shortInfo {
+.info {
 	width: 100%;
-	display: flex;
-	gap: 12px;
-	flex-wrap: wrap;
-	justify-content: space-between;
+	padding: 0 8px 16px 8px;
+	font-size: 20px;
+	font-weight: 500;
+	line-height: 28px;
+	letter-spacing: -0.012em;
 }

@@ -21,7 +21,9 @@ export const TemplateItem = ({
 				src={preview}
 				alt="template preview"
 			/>
-			<p>{name}</p>
+			<div className={styles.info}>
+				<p>{name}</p>
+			</div>
 		</div>
 	);
 };

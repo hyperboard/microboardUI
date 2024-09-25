@@ -16,6 +16,7 @@ interface ModalProps {
 	setIsOpen: (isOpen: boolean) => void;
 	children: ReactNode;
 	size?: ModalSize;
+	wrClassName?: string;
 }
 
 const ModalBase = (props: ModalProps) => {
@@ -25,6 +26,7 @@ const ModalBase = (props: ModalProps) => {
 		setIsOpen,
 		children,
 		size = ModalSize.S,
+		wrClassName,
 		...otherProps
 	} = props;
 	const onCloseModal = (): void => setIsOpen(false);
@@ -36,7 +38,7 @@ const ModalBase = (props: ModalProps) => {
 			{...otherProps}
 		>
 			<div
-				className={clsx(styles.wr, size && styles[size])}
+				className={clsx(styles.wr, size && styles[size], wrClassName)}
 				onClick={e => e.stopPropagation()}
 			>
 				<div className={styles.modalCross} onClick={onCloseModal}>

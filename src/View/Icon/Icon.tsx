@@ -69,7 +69,18 @@ export type IconId =
 	| "BurgerMenu"
 	| "miro"
 	| "loader"
-	| "Info";
+	| "Info"
+	| "AllTemplates"
+	| "ResearchAnalysis"
+	| "Diagramming"
+	| "MeetingWorkshop"
+	| "StrategyPlanning"
+	| "Brainstorming"
+	| "AgileWorkflow"
+	| "IcebreakerGame"
+	| "Education"
+	| "Template"
+	| "Planet";
 
 type Props = {
 	iconName: IconId;
