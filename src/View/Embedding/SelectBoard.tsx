@@ -339,8 +339,7 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 				)}
 				{selected && (
 					<>
-						<div className={style.selectorsContainer}>
-							{/* {selected !== "addNew" &&
+						{/* {selected !== "addNew" &&
 							<Selector
 								label={t("embedding.startingView")}
 								options={[
@@ -355,12 +354,13 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 									// TODO add frames
 								]}
 							/>} */}
-							{selected === "addNew" ||
-							app.storage
-								.listPublicBoards()
-								.some(
-									board => board.boardId === selected.boardId,
-								) ? (
+						{selected === "addNew" ||
+						app.storage
+							.listPublicBoards()
+							.some(
+								board => board.boardId === selected.boardId,
+							) ? (
+							<div className={style.selectorsContainer}>
 								<Selector
 									ref={selectorRef}
 									label={t("embedding.allVisitors")}
@@ -413,7 +413,9 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 										},
 									]}
 								/>
-							) : (
+							</div>
+						) : (
+							!selected.notFound && (
 								<div className={style.infoMessage}>
 									<div>
 										<Icon
@@ -427,8 +429,8 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 										{t("embedding.optionsUnavailable")}
 									</div>
 								</div>
-							)}
-						</div>
+							)
+						)}
 						{selected !== "addNew" && selected.notFound && (
 							<div
 								className={`${style.infoMessage} ${style.error}`}
