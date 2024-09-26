@@ -109,7 +109,10 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 					return data;
 				})
 				.then(async () => {
-					if (localStorage.getItem(LAST_BOARD_KEY_QS)) {
+					if (searchParams.get("backToSelect") === "true") {
+						await app.storage.fetchBoards();
+						navigate("/selectBoard");
+					} else if (localStorage.getItem(LAST_BOARD_KEY_QS)) {
 						navigate(
 							`/boards/${localStorage.getItem(
 								LAST_BOARD_KEY_QS,

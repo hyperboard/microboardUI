@@ -33,6 +33,8 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 	const [emailError, setEmailError] = useState<string>("");
 	const [errorText, setErrorText] = useState<string>("");
 
+	const searchParams = new URLSearchParams(location.search);
+
 	const onSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
 	): Promise<void> => {
@@ -68,7 +70,10 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 					secure: true,
 				});
 				setErrorText("");
-				if (localStorage.getItem(LAST_BOARD_KEY_QS)) {
+				if (searchParams.get("backToSelect") === "true") {
+					await app.storage.fetchBoards();
+					navigate("/selectBoard");
+				} else if (localStorage.getItem(LAST_BOARD_KEY_QS)) {
 					navigate(
 						`/boards/${localStorage.getItem(LAST_BOARD_KEY_QS)}`,
 					);
@@ -94,6 +99,7 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 					navigate({
 						pathname: "/auth/verify",
 						search: createSearchParams({
+							...Object.fromEntries(searchParams),
 							email: email,
 						}).toString(),
 					});

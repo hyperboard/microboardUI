@@ -109,6 +109,9 @@ export const SignupView = (): React.ReactElement => {
 				navigate({
 					pathname: "/auth/verify",
 					search: createSearchParams({
+						...Object.fromEntries(
+							new URLSearchParams(location.search),
+						),
 						userId: `${data.id}`,
 						email: data.email,
 					}).toString(),

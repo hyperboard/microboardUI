@@ -164,6 +164,8 @@
 		}
 	},
 	"auth": {
+		"backToBoard": "Вернуться к доске",
+		"backToBoardSelection": "Вернуться к выбору доски",
 		"checkEmail": "Проверьте электронную почту с кодом доступа.",
 		"email": "Email",
 		"emailPlaceholder": "Введите Email",

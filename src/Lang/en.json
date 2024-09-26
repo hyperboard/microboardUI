@@ -166,6 +166,8 @@
 		}
 	},
 	"auth": {
+		"backToBoard": "Back to the board",
+		"backToBoardSelection": "Back to the board selection",
 		"checkEmail": "Check for an email with a pass code.",
 		"email": "Email",
 		"emailPlaceholder": "Your email",
