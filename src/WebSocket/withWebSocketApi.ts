@@ -29,7 +29,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
 
     function setupSocketErrorHandling(ws: WebSocket) {
         ws.on("error", (err) => {
-            console.error("WebSocket error:", err);
+            logger.error("WebSocket error:", err);
             ws.close();
         });
     }
@@ -44,7 +44,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
                 websocketEventQueueSize.set(msgHandlingQueue.length);
                 processMsgQueue(ws);
             } catch (error) {
-                console.error("Error parsing JSON message:", error);
+                logger.error("Error parsing JSON message:", error);
                 sendError(ws, "Invalid JSON message format");
                 ws.close();
                 isProcessing = false;
@@ -80,6 +80,8 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
                 return await handleBoardEventMsg(msg, ws);
             case "BoardSnapshot":
                 return await handleSnapshotMsg(msg, ws);
+            case "BoardEventList":
+                return await handleBoardEventListMsg(msg, ws);
         }
     }
 
@@ -171,8 +173,11 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         const board = await boards.getBoardByLink(boardId);
         if (board) {
             const mapped = boardIdToLinks.get(board.boardId) ?? [];
-            mapped.push(boardId);
+            if (!mapped.includes(boardId)) {
+                mapped.push(boardId);
+            }
             boardIdToLinks.set(board.boardId, mapped);
+
             linkToBoardId.set(boardId, board.boardId);
         } else {
             const mappedIds = boardIdToLinks.get(boardId);
@@ -180,6 +185,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
                 boardIdToLinks.set(boardId, []);
             }
         }
+
         const clients = boardClients.get(boardId) ?? [];
         clients.push(ws);
         boardClients.set(boardId, clients);
@@ -225,7 +231,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         );
     }
 
-    const eventsManager = new EventsManager(boards);
+    const eventsManager = new EventsManager(boards, logger);
 
     eventsManager.initialize();
 
@@ -243,10 +249,29 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         });
 
         sendMessageToBoardSubscribers(msg.boardId, {
-            type: "BoardEvent",
+            type: msg.type,
             boardId: msg.boardId,
             event: { body: eventData, order: eventData.order },
         });
+
+        const totalEndTime = process.hrtime.bigint();
+        const totalLatency = Number(totalEndTime - startTime);
+        boardEventTotalLatency.observe(totalLatency);
+    }
+
+    async function handleBoardEventListMsg(msg: BoardEventList, ws: WebSocket): Promise<void> {
+        const startTime = process.hrtime.bigint();
+        const hasEditRights = await canEditBoard(ws, msg.boardId);
+        if (!hasEditRights) {
+            return sendError(ws, "Access denied: edit board.");
+        }
+        /*
+        const eventData = eventsManager.processEvent(msg.boardId, msg.event.body, {
+            startTime: startTime,
+            queueTime: process.hrtime.bigint(),
+        });
+        */
+        sendMessageToBoardSubscribers(msg.boardId, msg);
 
         const totalEndTime = process.hrtime.bigint();
         const totalLatency = Number(totalEndTime - startTime);
@@ -277,17 +302,16 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         }
     }
 
-    function sendMessageToBoardSubscribers(boardOrLinkId: string, message: BoardEvent): void {
+    function sendMessageToBoardSubscribers(boardOrLinkId: string, message: BoardEvent | BoardEventList): void {
         const linksById = boardIdToLinks.get(boardOrLinkId);
         if (linksById) {
             const clients = boardClients.get(boardOrLinkId) ?? [];
-            sendMessageToClients(message, clients);
             linksById.forEach((link) => {
                 const linkMessage = { ...message };
                 linkMessage.boardId = link;
                 const linkClients = boardClients.get(link) ?? [];
                 sendMessageToClients(linkMessage, linkClients);
-            })
+            });
         } else {
             const actualId = linkToBoardId.get(boardOrLinkId);
             if (!actualId) {
@@ -297,7 +321,6 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
             actualIdMsg.boardId = actualId;
             sendMessageToBoardSubscribers(actualId, actualIdMsg);
         }
-
     }
 
     function requestSnapshotFromClient(boardId: string, sinceLast: number): void {
@@ -336,7 +359,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
             await boards.saveBoardSnapshot(boardId, snapshot);
             eventsManager.updateSnapshotInfo(boardId, snapshot.lastIndex);
         } catch (error) {
-            console.error(`Failed to process snapshot: ${error}`);
+            logger.error(`Failed to process snapshot: ${error}`);
         }
     }
 
@@ -432,7 +455,7 @@ export class EventsManager {
         };
     } = {};
 
-    constructor(private boards: Boards) {
+    constructor(private boards: Boards, private logger: winston.Logger) {
         setInterval(() => {
             this.tryToSaveEvents();
         }, SAVE_EVENTS_INTERVAL);
@@ -456,7 +479,7 @@ export class EventsManager {
                 this.eventCountSinceLastSnapshot.set(board_uuid, eventCount);
             }
         } catch (error) {
-            console.error("Failed to initialize event orders:", error);
+            this.logger.error("Failed to initialize event orders:", error);
         }
     }
 
@@ -544,7 +567,7 @@ export class EventsManager {
                     // New events could have been enqueued after saving
                     queue.events.splice(0, before);
                 } catch (error) {
-                    console.error(`Failed to save events for board ${boardId}:`, error);
+                    this.logger.error(`Failed to save events for board ${boardId}:`, error);
                 } finally {
                     queue.isSaving = false;
                 }
