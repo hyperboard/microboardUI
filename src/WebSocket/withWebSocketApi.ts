@@ -68,7 +68,6 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
     }
 
     async function handleMessage(ws: WebSocket, msg: SocketMessage) {
-        // should probably await
         switch (msg.type) {
             case "Auth":
                 return await handleAuthMsg(msg, ws);
