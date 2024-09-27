@@ -79,8 +79,6 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
                 return await handleBoardEventMsg(msg, ws);
             case "BoardSnapshot":
                 return await handleSnapshotMsg(msg, ws);
-            case "BoardEventList":
-                return await handleBoardEventListMsg(msg, ws);
         }
     }
 
