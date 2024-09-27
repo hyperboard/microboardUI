@@ -69,7 +69,7 @@ export function getMediaRouter(media: BarrelMediaDAL, logger: Logger) {
                 });
             }
             if (format === "image/svg+xml") {
-                const optimizedStream = await processSvg(passThroughStream)
+                const optimizedStream = await processSvg(passThroughStream);
                 await media.saveImageStream(id, optimizedStream);
             } else {
                 await media.saveImageStream(id, passThroughStream);
@@ -83,7 +83,6 @@ export function getMediaRouter(media: BarrelMediaDAL, logger: Logger) {
             res.status(400).json({
                 error: `Error: could not upload the image to storage`,
             });
-            next(error);
         }
     });
 
