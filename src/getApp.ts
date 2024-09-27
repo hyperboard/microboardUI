@@ -134,5 +134,14 @@ export async function getApp(): Promise<http.Server> {
         }
     });
 
+    const onError = (err: unknown) => {
+        logger.warn('Caught unhandled exception')
+        if (err instanceof Error) {
+            logger?.warn(err.message);
+            console.error(err);
+        }
+    }
+    process.on('unhandledRejection', onError)
+    process.on('uncaughtException', onError);
     return server;
 }

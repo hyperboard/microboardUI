@@ -5,6 +5,7 @@ import { body, validationResult } from "express-validator";
 import { HttpException } from "shared/exceptions/http-exception";
 import { HttpStatus } from "shared/enums/http-status.enum";
 import { jwtMiddleware } from "Middlewares/jwt.middleware";
+import { catchAsync } from "shared/lib/catchAsync";
 
 export function getAuthRouter(
     authService: Auth,
@@ -17,7 +18,7 @@ export function getAuthRouter(
         body("email").isEmail(),
         body("password").not().isEmpty(),
         validateRequest,
-        async (req, res) => {
+        catchAsync(async (req, res) => {
             try {
                 const { email, password } = req.body;
                 const jwts = await authService.login({ email, password });
@@ -25,15 +26,15 @@ export function getAuthRouter(
             } catch (err: HttpException | any) {
                 return handleError(res, err);
             }
-        }
-    );
+        }, logger
+        ));
 
     router.post(
         "/auth/register",
         body("email").isEmail(),
         body("password").isLength({ min: 6 }),
         validateRequest,
-        async (req, res) => {
+        catchAsync(async (req, res) => {
             try {
                 const { email, password } = req.body;
                 const user = await authService.register({
@@ -44,10 +45,10 @@ export function getAuthRouter(
             } catch (err: HttpException | any) {
                 return handleError(res, err);
             }
-        }
+        }, logger)
     );
 
-    router.post("/auth/refresh", async (req, res) => {
+    router.post("/auth/refresh", catchAsync(async (req, res) => {
         try {
             const refreshToken = req.headers["authorization"]?.split(" ")?.[1];
             if (!refreshToken) {
@@ -64,14 +65,14 @@ export function getAuthRouter(
         } catch (err) {
             return handleError(res, err);
         }
-    });
+    }, logger));
 
     router.post(
         "/auth/verify",
         body("email").not().isEmpty(),
         body("passcode").not().isEmpty(),
         validateRequest,
-        async (req, res) => {
+        catchAsync(async (req, res) => {
             const { email, passcode } = req.body;
             try {
                 const tokens = await authService.verifyEmail({
@@ -82,14 +83,14 @@ export function getAuthRouter(
             } catch (err) {
                 return handleError(res, err);
             }
-        }
-    );
+        }, logger
+    ));
 
     router.post(
         "/auth/checkVerificationCodes",
         body("email").not().isEmpty(),
         validateRequest,
-        async (req, res) => {
+        catchAsync(async (req, res) => {
             const { email } = req.body;
             try {
                 const answer = await authService.checkVerificationCodes({
@@ -100,7 +101,7 @@ export function getAuthRouter(
             } catch (err) {
                 return handleError(res, err);
             }
-        }
+        }, logger)
     );
 
     router.post(
@@ -108,7 +109,7 @@ export function getAuthRouter(
         body("email").isEmail(),
         // body("userId").not().isEmpty(),
         validateRequest,
-        async (req, res) => {
+        catchAsync(async (req, res) => {
             const { email } = req.body;
             try {
                 await authService.resendEmail({ email });
@@ -116,14 +117,14 @@ export function getAuthRouter(
             } catch (err) {
                 return handleError(res, err);
             }
-        }
+        }, logger)
     );
 
     router.put(
         "/auth/logout",
         jwtMiddleware(logger),
         validateRequest,
-        async (req, res) => {
+        catchAsync(async (req, res) => {
             const { token } = req;
             const userToken = await token;
             const userId = parseInt(userToken?.sub);
@@ -134,7 +135,7 @@ export function getAuthRouter(
             } catch (err) {
                 return handleError(res, err);
             }
-        }
+        }, logger)
     );
 
     router.post(
@@ -142,7 +143,7 @@ export function getAuthRouter(
         body("token").not().isEmpty(),
         body("newPassword").not().isEmpty(),
         validateRequest,
-        async (req, res) => {
+        catchAsync(async (req, res) => {
             const { newPassword, token } = req.body;
 
             console.log("token: ", token);
@@ -153,14 +154,14 @@ export function getAuthRouter(
             } catch (err) {
                 return handleError(res, err);
             }
-        }
+        }, logger)
     );
 
     router.post(
         "/auth/password/restore/request",
         body("email").isEmail(),
         validateRequest,
-        async (req, res) => {
+        catchAsync(async (req, res) => {
             const { email } = req.body;
 
             try {
@@ -169,7 +170,7 @@ export function getAuthRouter(
             } catch (err) {
                 return handleError(res, err);
             }
-        }
+        }, logger)
     );
 
     router.patch(
@@ -178,7 +179,7 @@ export function getAuthRouter(
         body("oldPassword").not().isEmpty(),
         body("newPassword").not().isEmpty(),
         validateRequest,
-        async (req, res) => {
+        catchAsync(async (req, res) => {
             const { newPassword, oldPassword } = req.body;
             const { token } = req;
             const userToken = await token;
@@ -205,7 +206,7 @@ export function getAuthRouter(
             } catch (err) {
                 return handleError(res, err);
             }
-        }
+        }, logger)
     );
 
     return router;

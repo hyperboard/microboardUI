@@ -1,5 +1,6 @@
 import express, { Response, Request } from "express";
 import { body } from "express-validator";
+import { catchAsync } from "shared/lib/catchAsync";
 import { talkIntegrationJob } from "trigger/jobs/talk";
 export function createTalkRouter() {
     const router = express.Router();
@@ -8,7 +9,7 @@ export function createTalkRouter() {
         "/talk/transform",
         body("taskId").isString().notEmpty(),
         body("userId").optional().isString(),
-        async (req: Request, res: Response) => {
+        catchAsync(async (req: Request, res: Response) => {
             try {
                 const taskId = req?.body?.taskId;
                 if (!taskId) {
@@ -32,7 +33,7 @@ export function createTalkRouter() {
                 });
             }
         }
-    );
+        ));
 
     return router;
 }

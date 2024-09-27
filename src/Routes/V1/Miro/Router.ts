@@ -1,5 +1,5 @@
 import express from "express";
-import { createProxyMiddleware } from "http-proxy-middleware";
+import { createProxyMiddleware, Options } from "http-proxy-middleware";
 
 export function getMiroRouter() {
     const router = express.Router();
@@ -10,7 +10,7 @@ export function getMiroRouter() {
           target: "https://api.miro.com/v1/oauth/token",
           changeOrigin: true,
           proxyTimeout: 30000,  
-      })
+      } as Options)
   );
 
   router.use(
@@ -19,7 +19,7 @@ export function getMiroRouter() {
           target: "https://api.miro.com/v2/boards",
           changeOrigin: true,
           proxyTimeout: 30000,
-      })
+      } as Options)
   );
 
   router.use(
@@ -28,7 +28,7 @@ export function getMiroRouter() {
           target: "https://api.miro.com/v2/boards/{id}/**",
           changeOrigin: true,
           proxyTimeout: 30000,
-      })
+      } as Options)
   );
 
     return router;

@@ -9,6 +9,7 @@ import { jwtMiddleware } from "Middlewares/jwt.middleware";
 import validator from "validator";
 import { createToken } from "Tokens";
 import { HttpStatus } from "shared/enums/http-status.enum";
+import { catchAsync } from "shared/lib/catchAsync";
 
 function checkPermissions(
     jwt: AccessToken,
@@ -55,7 +56,7 @@ export function getBoardsRouter(
         authenticate,
         body("catalogId").optional().custom(isUUIDOrRoot),
         body("title").optional().isString(),
-        async (req: Request, res: Response) => {
+        catchAsync(async (req: Request, res: Response) => {
             try {
                 const errors = validationResult(req);
                 if (!errors.isEmpty()) {
@@ -84,13 +85,13 @@ export function getBoardsRouter(
                 logger.error(err);
                 return res.status(500).send("Server error");
             }
-        }
-    );
+        }, logger
+    ));
 
     router.get(
         "/boards",
         authenticate,
-        async (req: Request, res: Response) => {
+        catchAsync(async (req: Request, res: Response) => {
             try {
                 const boardsData = await boards.getBoards(req.token);
                 return res.status(200).json(boardsData);
@@ -98,7 +99,7 @@ export function getBoardsRouter(
                 logger.error(`Error fetching boards: ${err}`);
                 return res.status(500).json({ error: `Error fetching boards: ${err}` });
             }
-        }
+        }, logger)
     );
 
     // Getting board details
@@ -106,7 +107,7 @@ export function getBoardsRouter(
         "/boards/:boardId/details",
         authenticate,
         param("boardId").isUUID(),
-        async (req: Request, res: Response) => {
+        catchAsync(async (req: Request, res: Response) => {
             try {
                 const errors = validationResult(req);
                 if (!errors.isEmpty()) {
@@ -135,7 +136,7 @@ export function getBoardsRouter(
                 logger.error(err);
                 return res.status(500).send("Server error");
             }
-        }
+        }, logger)
     );
 
     if (process.env.IS_PUBLIC_BOARDS_ENABLED) {
@@ -143,7 +144,7 @@ export function getBoardsRouter(
         router.post(
             "/public-boards",
             body("title").optional().isString(),
-            async (req: Request, res: Response) => {
+            catchAsync(async (req: Request, res: Response) => {
                 try {
                     const boardId = uuidv4();
                     const editLink = uuidv4();
@@ -162,14 +163,14 @@ export function getBoardsRouter(
                     logger.error(err);
                     return res.status(500).send("Server error");
                 }
-            }
+            }, logger)
         );
     }
     
     router.post(
         "/boards/claim",
         authenticate,
-        async (req, res) => {
+        catchAsync(async (req, res) => {
             const { authorKeys, visited } = req.body;
             if (authorKeys && authorKeys.length < 0 || visited && visited.length < 0) {
                 return res.status(400).json({ error: "wrong format, cant claim / nothing to claim" });
@@ -192,7 +193,7 @@ export function getBoardsRouter(
                 logger.error(`Error claiming boards: ${error}`);
                 res.status(500).json({ error: `Error claiming boards: ${error}` });
             }
-        }
+        }, logger)
     )
 
     // Deleting a board
@@ -201,7 +202,7 @@ export function getBoardsRouter(
         authenticate,
         param("boardId").isUUID(),
         body("catalogId").optional().custom(isUUIDOrRoot),
-        async (req: Request, res: Response) => {
+        catchAsync(async (req: Request, res: Response) => {
             try {
                 const errors = validationResult(req);
                 if (!errors.isEmpty()) {
@@ -245,7 +246,7 @@ export function getBoardsRouter(
                 logger.error(err);
                 return res.status(500).send("Server error");
             }
-        }
+        }, logger)
     );
 
     // Deleting a board without authentication but with authorKey
@@ -253,7 +254,7 @@ export function getBoardsRouter(
         "/boards/:boardId/:authorKey",
         param("boardId").isUUID(),
         param("authorKey").isUUID(),
-        async (req: Request, res: Response) => {
+        catchAsync(async (req: Request, res: Response) => {
             try {
                 const { boardId, authorKey } = req.params;
 
@@ -273,7 +274,7 @@ export function getBoardsRouter(
                 logger.error(err);
                 return res.status(500).send("Server error");
             }
-        }
+        }, logger)
     );
 
     // Duplicating a board
@@ -282,7 +283,7 @@ export function getBoardsRouter(
         authenticate,
         body("catalogId").optional().custom(isUUIDOrRoot),
         param("boardId").isUUID(),
-        async (req: Request, res: Response) => {
+        catchAsync(async (req: Request, res: Response) => {
             try {
                 const errors = validationResult(req);
                 if (!errors.isEmpty()) {
@@ -322,7 +323,7 @@ export function getBoardsRouter(
                 logger.error(err);
                 return res.status(500).send("Server error");
             }
-        }
+        }, logger)
     );
 
     // Renaming a board
@@ -332,7 +333,7 @@ export function getBoardsRouter(
         body("catalogId").optional().custom(isUUIDOrRoot),
         param("boardId").isUUID(),
         body("newTitle").isString(),
-        async (req: Request, res: Response) => {
+        catchAsync(async (req: Request, res: Response) => {
             try {
                 const errors = validationResult(req);
                 if (!errors.isEmpty()) {
@@ -378,7 +379,7 @@ export function getBoardsRouter(
                 logger.error(err);
                 return res.status(500).send("Server error");
             }
-        }
+        }, logger)
     );
 
     // Adding an event to a board
@@ -388,7 +389,7 @@ export function getBoardsRouter(
         param("boardId").isUUID(),
         body("eventId").isUUID(),
         body("eventBody").isObject(),
-        async (req: Request, res: Response): Promise<any> => {
+        catchAsync(async (req: Request, res: Response): Promise<any> => {
             try {
                 const errors = validationResult(req);
                 if (!errors.isEmpty()) {
@@ -416,7 +417,7 @@ export function getBoardsRouter(
                 logger.error(err);
                 return res.status(500).send("Server error");
             }
-        }
+        }, logger)
     );
 
     // Retrieving board events
@@ -426,7 +427,7 @@ export function getBoardsRouter(
         param("boardId").isUUID(),
         query("page").optional().isInt({ min: 1 }),
         query("limit").optional().isInt({ min: 1, max: 100 }),
-        async (req: Request, res: Response): Promise<any> => {
+        catchAsync(async (req: Request, res: Response): Promise<any> => {
             try {
                 const errors = validationResult(req);
                 if (!errors.isEmpty()) {
@@ -455,7 +456,7 @@ export function getBoardsRouter(
                 logger.error(err);
                 res.status(500).send("Server error");
             }
-        }
+        }, logger)
     );
 
     // Creating a link to a board for reading or editing unauthed
@@ -464,7 +465,7 @@ export function getBoardsRouter(
         param("boardId").isUUID(),
         body("type").isIn(["edit", "view"]),
         body("authorKey").isUUID(),
-        async (req: Request, res: Response) => {
+        catchAsync(async (req: Request, res: Response) => {
             try {
                 const errors = validationResult(req);
                 if (!errors.isEmpty()) {
@@ -496,7 +497,7 @@ export function getBoardsRouter(
                 logger.error(err);
                 return res.status(500).send("Server error");
             }
-        }
+        }, logger)
     );
 
     // Creating a link to a board for reading or editing
@@ -505,7 +506,7 @@ export function getBoardsRouter(
         authenticate,
         param("boardId").isUUID(),
         body("type").isIn(["edit", "view"]),
-        async (req: Request, res: Response) => {
+        catchAsync(async (req: Request, res: Response) => {
             try {
                 const errors = validationResult(req);
                 if (!errors.isEmpty()) {
@@ -548,7 +549,7 @@ export function getBoardsRouter(
                 logger.error(err);
                 return res.status(500).send("Server error");
             }
-        }
+        }, logger)
     );
 
     router.get(
@@ -556,7 +557,7 @@ export function getBoardsRouter(
         authenticate,
         param("boardId").isUUID(),
         param("linkId").isUUID(),
-        async (req: Request, res: Response) => {
+        catchAsync(async (req: Request, res: Response) => {
             try {
                 const errors = validationResult(req);
                 if (!errors.isEmpty()) {
@@ -585,7 +586,7 @@ export function getBoardsRouter(
                 logger.error(err);
                 return res.status(500).send("Server error");
             }
-        }
+        }, logger)
     );
 
     // Remove link to a board
@@ -594,7 +595,7 @@ export function getBoardsRouter(
         authenticate,
         param("boardId").isUUID(),
         param("linkId").isUUID(),
-        async (req: Request, res: Response) => {
+        catchAsync(async (req: Request, res: Response) => {
             try {
                 const errors = validationResult(req);
                 if (!errors.isEmpty()) {
@@ -637,7 +638,7 @@ export function getBoardsRouter(
                 logger.error(err);
                 return res.status(500).send("Server error");
             }
-        }
+        }, logger)
     );
 
     // Removing a visited link
@@ -645,7 +646,7 @@ export function getBoardsRouter(
         "/boards/:linkId/visited",
         authenticate,
         param("linkId").isUUID(),
-        async (req: Request, res: Response) => {
+        catchAsync(async (req: Request, res: Response) => {
             try {
                 const errors = validationResult(req);
                 if (!errors.isEmpty()) {
@@ -661,14 +662,14 @@ export function getBoardsRouter(
                 logger.error(`Error removing visited link: ${err}`);
                 return res.status(500).send("Server error");
             }
-        }
+        }, logger)
     );
 
     // Get private boards
     router.get(
         "/boards/private",
         jwtMiddleware(logger),
-        async (request, response) => {
+        catchAsync(async (request, response) => {
             const user = request.token;
             const privateBoards = await boards.getPrivateBoards(user);
             if (!privateBoards) {
@@ -683,13 +684,13 @@ export function getBoardsRouter(
             };
             response.json(json);
             response.end();
-        }
+        }, logger)
     );
     
     router.get(
         "/boards/:boardId/exists",
         param("boardId").isUUID(),
-        async (req: Request, res: Response) => {
+        catchAsync(async (req: Request, res: Response) => {
             try {
                 const errors = validationResult(req);
                 if (!errors.isEmpty()) {
@@ -712,7 +713,7 @@ export function getBoardsRouter(
                 logger.error(`Error checking UUID existence: ${err}`);
                 return res.status(404).send("Not found");
             }
-        }
+        }, logger)
     );
 
     return router;

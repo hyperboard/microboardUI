@@ -4,6 +4,7 @@ import { HttpException } from "shared/exceptions/http-exception";
 import { HttpStatus } from "shared/enums/http-status.enum";
 import winston from "winston";
 import { jwtMiddleware } from "Middlewares/jwt.middleware";
+import { catchAsync } from "shared/lib/catchAsync";
 
 export function getUsersRouter(
     usersService: Users,
@@ -14,7 +15,7 @@ export function getUsersRouter(
     router.get(
         "/users/me",
         jwtMiddleware(logger),
-        async (request, response) => {
+        catchAsync(async (request, response) => {
             const { token } = request;
             const userToken = await token;
             const userId = parseInt(userToken?.sub);
@@ -43,8 +44,8 @@ export function getUsersRouter(
             }
 
             response.end();
-        }
-    );
+        }, logger
+        ));
 
     return router;
 }

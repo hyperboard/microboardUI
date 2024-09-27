@@ -5,6 +5,8 @@ import { getImageFormat, isAllowedFormat } from "./MediaHelpers";
 import { Transform, PassThrough } from "stream";
 import { optimize } from "svgo";
 import { processSvg } from "shared/lib/processSvg";
+import { catchAsync } from "shared/lib/catchAsync";
+
 
 const mega = 1024 * 1024;
 const maxSizeInBytes = 5 * mega; // 5 MB
@@ -32,7 +34,7 @@ class SizeLimitStream extends Transform {
 export function createMediaRouter(media: MediaDAL, logger: Logger) {
     const router = express.Router();
 
-    router.post("/media", async (req: Request, res: Response, next: NextFunction) => {
+    router.post("/media", catchAsync(async (req: Request, res: Response, next: NextFunction) => {
         const id = req.headers["x-image-id"] as string;
         const format = req.headers["content-type"] || "unknown";
         const storageURL = process.env.STORAGE_URL;
@@ -84,9 +86,9 @@ export function createMediaRouter(media: MediaDAL, logger: Logger) {
                 error: `Error: could not upload the image to storage`,
             });
         }
-    });
+    }, logger));
 
-    router.get("/media/:id", async (req: Request, res: Response, next: NextFunction) => {
+    router.get("/media/:id", catchAsync(async (req: Request, res: Response, next: NextFunction) => {
         const { id } = req.params;
 
         try {
@@ -106,7 +108,7 @@ export function createMediaRouter(media: MediaDAL, logger: Logger) {
             });
             next(error);
         }
-    });
+    }, logger));
 
     return router;
 }

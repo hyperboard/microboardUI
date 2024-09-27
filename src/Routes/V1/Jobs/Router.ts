@@ -4,6 +4,7 @@ import { healthCheckJob } from "trigger/jobs/health-check";
 import { importMiroBoard } from "trigger/jobs/import-miro";
 import winston from "winston";
 import { WebSocketServer } from "ws";
+import { catchAsync } from "shared/lib/catchAsync";
 
 interface ImportMiroBoardsRequest {
     accessToken: string;
@@ -19,7 +20,7 @@ export const createJobsRouter = (logger: winston.Logger, wss: WebSocketServer) =
         body("accessToken").isString(),
         body("userId").isString(),
         body("boardIds").isArray(),
-        async (req: Request, res: Response) => {
+        catchAsync(async (req: Request, res: Response) => {
             const { accessToken, userId, boardIds } = req.body as ImportMiroBoardsRequest;
             console.log("body: ", req.body);
             try {
@@ -40,10 +41,10 @@ export const createJobsRouter = (logger: winston.Logger, wss: WebSocketServer) =
                     error: "Error to start importing boards jobs",
                 });
             }
-        }
+        }, logger)
     );
 
-    router.post("/jobs/notify", async (req: Request, res: Response) => {
+    router.post("/jobs/notify", catchAsync(async (req: Request, res: Response) => {
         try {
             notifyClients(req.body, wss);
             return res.status(200).json({
@@ -54,9 +55,9 @@ export const createJobsRouter = (logger: winston.Logger, wss: WebSocketServer) =
                 error: "Error to notify clients",
             });
         }
-    });
+    }, logger));
 
-    router.get("/jobs/health", async (req: Request, res: Response) => {
+    router.get("/jobs/health", catchAsync(async (req: Request, res: Response) => {
         console.log("Test job endpoint");
         try {
             await healthCheckJob.invoke({});
@@ -72,7 +73,7 @@ export const createJobsRouter = (logger: winston.Logger, wss: WebSocketServer) =
                 })
                 .end();
         }
-    });
+    }, logger));
 
     return router;
 };
