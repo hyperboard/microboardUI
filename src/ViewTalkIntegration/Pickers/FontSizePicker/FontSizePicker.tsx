@@ -10,6 +10,7 @@ type Props = {
 	fontSizes: number[];
 	currentFontSize: number | "auto";
 	onAutoSizePick?: () => void;
+	isAutoSize?: boolean;
 	id?: string;
 };
 
@@ -19,20 +20,17 @@ export function FontSizePicker({
 	fontSizes,
 	currentFontSize,
 	onAutoSizePick,
+	isAutoSize,
 	id = "",
 }: Props): React.ReactElement {
 	const { t } = useTalkTranslation();
-
 	return (
 		<>
 			{onAutoSizePick && (
 				<UiButton
 					key={"auto"}
 					onClick={onAutoSizePick}
-					className={clsx(
-						style.button,
-						currentFontSize === "auto" && style.active,
-					)}
+					className={clsx(style.button, isAutoSize && style.active)}
 				>
 					{t("contextPanel.fontSize.auto")}
 				</UiButton>
@@ -46,7 +44,6 @@ export function FontSizePicker({
 						style.button,
 						size === currentFontSize && style.active,
 					)}
-					disabled={Boolean(max && size > max)}
 				>
 					{size}
 				</UiButton>

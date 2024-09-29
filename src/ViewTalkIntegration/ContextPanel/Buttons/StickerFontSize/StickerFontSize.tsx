@@ -35,6 +35,9 @@ export function StickerFontSize() {
 	};
 	const handleAutoSizePick = () => {
 		text?.autosizeEnable();
+		text?.updateElement();
+		text?.subject.publish(text);
+		toggleMenu("None");
 	};
 
 	const handleChevronClick: MouseEventHandler = e => {
@@ -96,6 +99,7 @@ export function StickerFontSize() {
 					currentFontSize={fontSize}
 					fontSizes={fontSizes}
 					onPick={handlePick}
+					isAutoSize={isAuto}
 					max={maxFontSize}
 					onAutoSizePick={handleAutoSizePick}
 				/>
