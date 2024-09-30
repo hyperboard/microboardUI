@@ -32,23 +32,33 @@ export function ButtonWithMenu({
 	const [verticalAlign, setVerticalAlign] = useState<
 		"bottom" | "top" | "middle"
 	>("bottom");
+	const [horizontalAlign, setHorizontalAlign] = useState<
+		"center" | "left" | "right"
+	>(align);
 
 	const updatePosition = () => {
 		const menu = menuRef.current;
 		if (!menu) {
 			return;
 		}
-		const menuHeight = menu.getBoundingClientRect().height;
+		const menuRect = menu.getBoundingClientRect();
+		const menuHeight = menuRect.height;
+		const menuWidth = menuRect.width;
+		const windowWidth = window.innerWidth;
 
 		if (panelMbr.bottom + menuHeight < windowHeight) {
 			setVerticalAlign("bottom");
-			return;
-		}
-		if (panelMbr.top - menuHeight >= 0) {
+		} else if (panelMbr.top - menuHeight >= 0) {
 			setVerticalAlign("top");
-			return;
+		} else {
+			setVerticalAlign("middle");
 		}
-		setVerticalAlign("middle");
+
+		if (panelMbr.right + menuWidth >= windowWidth) {
+			setHorizontalAlign("right");
+		} else {
+			setHorizontalAlign(align);
+		}
 	};
 
 	useEffect(() => {
@@ -65,7 +75,7 @@ export function ButtonWithMenu({
 					style.menu,
 					openedMenu === menuName && style.visible,
 					style[verticalAlign],
-					style[align],
+					style[horizontalAlign],
 				])}
 			>
 				{children}

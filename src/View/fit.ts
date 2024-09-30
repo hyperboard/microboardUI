@@ -4,7 +4,8 @@ export function fitContextPanel(
 	selectionMbr: Mbr,
 	view: Mbr,
 	panel: Mbr,
-	offset = 40,
+	verticalOffset = 40,
+	horizontalOffset = 40,
 	richTextSelection?: RichText,
 ): Mbr {
 	const topSpace = selectionMbr.top - view.top;
@@ -14,52 +15,49 @@ export function fitContextPanel(
 
 	const shouldPlaceAbove =
 		topSpace > bottomSpace - panelHeight ||
-		(richTextSelection && topSpace >= panelHeight + offset);
+		(richTextSelection && topSpace >= panelHeight + verticalOffset);
 
 	if (shouldPlaceAbove) {
-		newPanel.top = selectionMbr.top - panelHeight - offset;
+		newPanel.top = selectionMbr.top - panelHeight - verticalOffset;
 		if (newPanel.top < view.top) {
-			newPanel.top = view.top + offset;
+			newPanel.top = view.top + verticalOffset;
 		}
 	} else {
 		if (
 			panel.top > 1 &&
-			panel.top > selectionMbr.top + offset &&
+			panel.top > selectionMbr.top + verticalOffset &&
 			richTextSelection
 		) {
 			newPanel.top = panel.top;
 		} else {
-			newPanel.top = selectionMbr.bottom + offset;
+			newPanel.top = selectionMbr.bottom + verticalOffset;
 		}
 
 		const isOverflowingBottom = newPanel.top + panelHeight > view.bottom;
 		const isLargeOffsetForRichText =
 			richTextSelection &&
-			newPanel.top >= selectionMbr.bottom + offset * 2;
+			newPanel.top >= selectionMbr.bottom + verticalOffset * 2;
 
 		if (isOverflowingBottom || isLargeOffsetForRichText) {
-			newPanel.top = selectionMbr.bottom - (panelHeight + offset);
+			newPanel.top = selectionMbr.bottom - (panelHeight + verticalOffset);
 		}
 	}
 
 	newPanel.bottom = newPanel.top + panelHeight;
+
 	const panelWidth = panel.getWidth();
 
-	if (richTextSelection) {
-		const itemMbr = selectionMbr.getMbr();
-		newPanel.left = itemMbr.left;
-	} else {
-		const itemCenter = selectionMbr.getCenter();
-		newPanel.left = itemCenter.x - panelWidth / 2;
-	}
+	// Center the panel regardless of richTextSelection
+	const itemCenter = selectionMbr.getCenter();
+	newPanel.left = itemCenter.x - panelWidth / 2;
 
 	newPanel.right = newPanel.left + panelWidth;
-	if (newPanel.left < view.left + offset) {
-		newPanel.left = view.left + offset;
+	if (newPanel.left < view.left + horizontalOffset) {
+		newPanel.left = view.left + horizontalOffset;
 		newPanel.right = newPanel.left + panelWidth;
-	} else if (newPanel.right + offset > view.right) {
-		newPanel.right = view.right - offset;
-		newPanel.left = view.right - (panelWidth + offset);
+	} else if (newPanel.right + horizontalOffset > view.right) {
+		newPanel.right = view.right - horizontalOffset;
+		newPanel.left = view.right - (panelWidth + horizontalOffset);
 	}
 	return newPanel;
 }

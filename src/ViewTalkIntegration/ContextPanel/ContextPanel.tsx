@@ -39,7 +39,7 @@ type ContextPanelProps = {
 export function ContextPanel({ board, app }: ContextPanelProps) {
 	const [openedMenu, setOpenedMenu] = useState("None");
 	const panelRef = useRef<HTMLDivElement>(null);
-	const mbr = useDomMbr({ app, board, ref: panelRef });
+	const mbr = useDomMbr({ app, board, ref: panelRef, horizontalOffset: 60 });
 
 	const [updatedMbr, setUpdatedMbr] = React.useState<Mbr>(new Mbr());
 	const [shouldUpd, setShouldUpd] = React.useState<boolean>(true);
