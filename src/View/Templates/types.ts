@@ -7,4 +7,16 @@ export interface Template {
 	lan: string;
 	tags: string[];
 	snapshot: BoardSnapshot;
+	name: string;
 }
+
+export type TemplateCategory =
+	| "All templates"
+	| "Research & Analysis"
+	| "Diagramming"
+	| "Meeting & Workshop"
+	| "Strategy & Planning"
+	| "Brainstorming"
+	| "Agile Workflow"
+	| "Icebreaker & Game"
+	| "Education";

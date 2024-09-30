@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { Loader } from "./Loader";
 
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-	pattern?: "primary" | "secondary" | "tertiary" | "ghost";
+	pattern?: "primary" | "secondary" | "tertiary" | "ghost" | "quaternary";
 	loading?: boolean;
 }
 

@@ -91,6 +91,19 @@
 	background-color: #f7f7f8;
 }
 
+/* QUATERNARY */
+
+.quaternary {
+	color: #ffffff;
+	background-color: rgba(146, 79, 232, 1);
+	border: 1px solid rgba(146, 79, 232, 1);
+}
+
+.quaternary:hover {
+	background-color: rgb(183, 153, 245);
+	border: 1px solid rgba(146, 79, 232, 1);
+}
+
 /* GHOST */
 
 .ghost {

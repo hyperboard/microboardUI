@@ -1,0 +1,77 @@
+.card {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	border: 1px solid rgba(233, 234, 236, 1);
+	border-radius: 16px;
+	gap: 16px;
+	font-family: "Manrope", "Arial";
+	color: rgba(20, 21, 26, 1);
+	height: fit-content;
+}
+
+.imageBox {
+	width: 100%;
+	height: fit-content;
+	position: relative;
+}
+
+.buttonsBox {
+	position: absolute;
+	width: 100%;
+	background-color: rgba(217, 217, 217, 0.8);
+	top: 25%;
+	display: flex;
+	visibility: hidden;
+	height: 75%;
+	border-radius: 10px;
+	animation-direction: reverse;
+}
+
+.buttonsBox > div {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	width: 120px;
+}
+
+.imageBox:hover > .buttonsBox {
+	justify-content: center;
+	align-items: center;
+	animation: openButtons 250ms ease-out;
+	animation-fill-mode: both;
+}
+
+.image {
+	display: block;
+	width: 100%;
+	border-radius: 16px;
+	aspect-ratio: 1/0.6;
+	object-fit: cover;
+}
+
+.info {
+	width: 100%;
+	padding: 0 8px 16px 8px;
+	font-size: 20px;
+	font-weight: 500;
+	line-height: 28px;
+	letter-spacing: -0.012em;
+	word-break: break-word;
+}
+
+@keyframes openButtons {
+	0% {
+		top: 25%;
+		height: 75%;
+		visibility: hidden;
+	}
+	10% {
+		visibility: visible;
+	}
+	100% {
+		visibility: visible;
+		height: 100%;
+		transform: translateY(-25%);
+	}
+}

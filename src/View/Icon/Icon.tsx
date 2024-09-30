@@ -80,7 +80,8 @@ export type IconId =
 	| "IcebreakerGame"
 	| "Education"
 	| "Template"
-	| "Planet";
+	| "Planet"
+	| "BackArrow";
 
 type Props = {
 	iconName: IconId;

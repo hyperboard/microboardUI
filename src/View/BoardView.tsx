@@ -15,6 +15,7 @@ import { ContextMenuContextProvider } from "./ContextMenu";
 import { useModalInfoContext } from "./Modal/InfoModal";
 import ModalsWrapper from "./Modal/ModalsWrapper";
 import { SidePanelContextProvider } from "./SidePanel/SidePanelContext";
+import { Tolgee, DevTools, TolgeeProvider, FormatSimple } from "@tolgee/react";
 // import "./index.css";
 type Props = {
 	app: App;
@@ -61,22 +62,47 @@ const BoardView = ({ app }: Props): JSX.Element => {
 		}
 	}, []);
 
+	const tolgee = Tolgee()
+		.use(DevTools())
+		.use(FormatSimple())
+		.init({
+			language: "en",
+			availableLanguages: ["en", "ru"],
+			observerType: "text",
+			// observerOptions: {},
+
+			// for development
+			apiUrl: import.meta.env.TOLGEE_API_URL || "https://app.tolgee.io",
+			apiKey:
+				import.meta.env.TOLGEE_API_KEY ||
+				"tgpak_geydamzsl53gs4tbgbyw6ndfg5zwizdpnu2gqmlun4zggy3sgzya",
+			projectId: import.meta.env.TOLGEE_PROJECT_ID || 10032,
+
+			// for production
+			staticData: {},
+		});
+
 	if (!board) {
 		return <div></div>;
 	}
 
 	return (
-		<AppContext.Provider value={{ app, board }}>
-			<ModalsWrapper>
-				<ContextMenuContextProvider>
-					<BoardRenameContextProvider>
-						<SidePanelContextProvider>
-							<AppView />
-						</SidePanelContextProvider>
-					</BoardRenameContextProvider>
-				</ContextMenuContextProvider>
-			</ModalsWrapper>
-		</AppContext.Provider>
+		<TolgeeProvider
+			tolgee={tolgee}
+			fallback="Loading..." // loading fallback
+		>
+			<AppContext.Provider value={{ app, board }}>
+				<ModalsWrapper>
+					<ContextMenuContextProvider>
+						<BoardRenameContextProvider>
+							<SidePanelContextProvider>
+								<AppView />
+							</SidePanelContextProvider>
+						</BoardRenameContextProvider>
+					</ContextMenuContextProvider>
+				</ModalsWrapper>
+			</AppContext.Provider>
+		</TolgeeProvider>
 	);
 };
 

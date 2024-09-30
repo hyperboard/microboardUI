@@ -35,17 +35,9 @@
 	height: 30px;
 }
 
-.templatesGrid {
-	margin-top: 16px;
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-	max-height: fit-content;
-	gap: 16px;
-	overflow-y: visible;
-}
-
 .templatesContainer {
 	padding: 16px 0;
+	width: 100%;
 }
 
 .searchOptions {
@@ -133,6 +125,12 @@
 	display: none;
 }
 
+.templatesGrid {
+	max-height: calc(90vh - 152px);
+	overflow-y: auto;
+	padding-right: 16px;
+}
+
 @media (max-width: 768px) {
 	.sidebar {
 		display: none;
@@ -158,6 +156,7 @@
 		min-width: 200px;
 		position: absolute;
 		top: 36px;
+		z-index: 5;
 		padding: 0 8px 12px 16px;
 		border-radius: 10px;
 		border: 1px solid rgba(233, 234, 236, 1);

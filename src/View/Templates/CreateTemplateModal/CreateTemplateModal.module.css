@@ -1,11 +1,34 @@
 .form {
 	display: flex;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
 	flex-direction: column;
 	gap: 12px;
 	align-items: center;
+	overflow-y: auto;
+	max-height: calc(90vh - 64px);
 }
 
 .errorText {
 	color: red;
+}
+
+.multiselect {
+	width: 160px;
+}
+
+.multiselect option {
+	padding: 5px;
+}
+
+.multiselect option:checked {
+	background-color: #652094;
+}
+
+.dropdownItem {
+	cursor: pointer;
+	border-radius: 8px;
+}
+
+.dropdownItem:hover {
+	background-color: #acafaf;
 }
