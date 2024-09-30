@@ -40,7 +40,6 @@ export const Lock = ({
 		<UiButton
 			id={"lock"}
 			onClick={handleClick}
-			active={isLocked}
 			variant="secondary"
 			rounded={rounded}
 			tooltip={tooltip}
