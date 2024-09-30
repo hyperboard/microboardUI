@@ -113,10 +113,22 @@
 	gap: 16px;
 }
 
+.Link.Back {
+	padding: 0 120px;
+	gap: 4px;
+	color: var(--icon-base-secondary);
+	display: flex;
+	align-items: center;
+	text-decoration: none;
+}
+
 @media screen and (max-width: 1280px) {
 	.NavbarWrapper {
 		padding: 0 16px;
 		max-width: 100%;
+	}
+	.Link.Back {
+		padding: 0 16px;
 	}
 }
 

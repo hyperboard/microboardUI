@@ -1,5 +1,4 @@
-import { Connector } from "Board/Items";
-import React, { ReactNode } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
 import { Icon } from "View/Icon";

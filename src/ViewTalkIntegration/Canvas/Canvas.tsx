@@ -52,7 +52,9 @@ export class CanvasBase extends React.Component<Props> {
 
 	componentDidUpdate(prevProps: Readonly<Props>): void {
 		if (
+			// @ts-expect-error boardId didn't exist in params record
 			prevProps.router.params?.boardId !==
+			// @ts-expect-error boardId didn't exist in params record
 			this.props.router.params?.boardId
 		) {
 			this.initCanvasRendering();

@@ -2,15 +2,14 @@ import { getApiUrl } from "Config";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { createSearchParams, useNavigate } from "react-router-dom";
-import styles from "./SignupView.module.css";
+import { Button } from "shared/ui-lib/Button";
 import { Input } from "shared/ui-lib/Input/Input";
+import { OuterLink } from "shared/ui-lib/OuterLink";
+import isEmail from "validator/lib/isEmail";
 import { Tail } from "View/AuthView/Tail";
 import { EmailIcon } from "./EmailIcon";
 import { LockIcon } from "./LockIcon";
-import { Link } from "shared/ui-lib/Link";
-import { Button } from "shared/ui-lib/Button";
-import isEmail from "validator/lib/isEmail";
-import { OuterLink } from "shared/ui-lib/OuterLink";
+import styles from "./SignupView.module.css";
 
 type RegisterOkResponse = {
 	id: number;
@@ -110,6 +109,9 @@ export const SignupView = (): React.ReactElement => {
 				navigate({
 					pathname: "/auth/verify",
 					search: createSearchParams({
+						...Object.fromEntries(
+							new URLSearchParams(location.search),
+						),
 						userId: `${data.id}`,
 						email: data.email,
 					}).toString(),

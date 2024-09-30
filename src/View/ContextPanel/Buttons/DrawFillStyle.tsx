@@ -71,6 +71,7 @@ export function DrawFillStyle(): React.ReactElement | null {
 						onChange={handleCustomPick}
 						color={isPredefinedColor ? "none" : drawingColor}
 						isActive={drawingColor !== "none" && !isPredefinedColor}
+						toggleMenu={toggleMenu}
 					/>
 				</UiPanel>
 			)}

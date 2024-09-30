@@ -17,24 +17,24 @@ const secondsToHumanReadable = (seconds: number): string => {
 	return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 };
 
-const resendEmail = async (email: string): Promise<any> => {
-	return fetch(getApiUrl("/auth/resendEmail"), {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({ email }),
-	})
-		.then(data => {
-			return data.json();
-		})
-		.then(data => {
-			if (data?.status >= 300) {
-				return Promise.reject(data);
-			}
-			return data;
-		});
-};
+// const resendEmail = async (email: string): Promise<any> => {
+// 	return fetch(getApiUrl("/auth/resendEmail"), {
+// 		method: "POST",
+// 		headers: {
+// 			"Content-Type": "application/json",
+// 		},
+// 		body: JSON.stringify({ email }),
+// 	})
+// 		.then(data => {
+// 			return data.json();
+// 		})
+// 		.then(data => {
+// 			if (data?.status >= 300) {
+// 				return Promise.reject(data);
+// 			}
+// 			return data;
+// 		});
+// };
 
 const verifyEmail = async (email: string, passcode: string): Promise<any> => {
 	return fetch(getApiUrl("/auth/verify"), {
@@ -109,7 +109,10 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 					return data;
 				})
 				.then(async () => {
-					if (localStorage.getItem(LAST_BOARD_KEY_QS)) {
+					if (searchParams.get("backToSelect") === "true") {
+						await app.storage.fetchBoards();
+						navigate("/selectBoard");
+					} else if (localStorage.getItem(LAST_BOARD_KEY_QS)) {
 						navigate(
 							`/boards/${localStorage.getItem(
 								LAST_BOARD_KEY_QS,
@@ -340,7 +343,7 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 					label={codeTip ? t(codeTip) : ""}
 					hasError={!!error.length}
 					errorText={error}
-					onInput={dbCheckForm}
+					onInput={() => dbCheckForm()}
 				/>
 				<div className={styles.btns}>
 					<Button

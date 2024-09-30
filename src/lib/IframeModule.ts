@@ -3,6 +3,8 @@ import { isIframe } from "./isIframe";
 import { exportBoardSnapshot } from "Board/Tools/ExportSnapshot/exportBoardSnapshot";
 import { App } from "App";
 import { Board } from "Board";
+import { ExportSnapshot } from "../Board/Tools/ExportSnapshot/ExportSnapshot";
+import { BoardTool } from "Board/Tools/BoardTool";
 
 // type MessagePattern = "updateUserToken" | "iframeEvent" | "makeSnapshot";
 
@@ -49,15 +51,25 @@ interface MakeSnapshotMessage {
 	payload: SnapshotPayload;
 }
 
-type Message = SetAuthTokenMessage | KeyboardEventMessage | MakeSnapshotMessage;
+interface FireSnapshotEvent {
+	pattern: "fireSnapshotEvent";
+	payload: unknown;
+}
+
+type Message =
+	| SetAuthTokenMessage
+	| KeyboardEventMessage
+	| MakeSnapshotMessage
+	| FireSnapshotEvent;
 
 export class IframeModule {
 	private static instance: IframeModule | null = null;
-	private origins: string[];
+	// private origins: string[];
 	private app: App;
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	constructor(app: App, origins?: string[]) {
-		this.origins = origins || [];
+		// this.origins = origins || [];
 		this.app = app;
 		this.setEventListeners();
 	}
@@ -85,21 +97,22 @@ export class IframeModule {
 		return IframeModule.instance;
 	}
 
-	private allowOrigins(
-		event: MessageEvent<Message>,
-		origins: string[],
-	): boolean {
-		for (const origin of origins) {
-			if (event.origin !== origin) {
-				return false;
-			}
-		}
-		return true;
-	}
+	// No feature requests for now
+	// private allowOrigins(
+	//     event: MessageEvent<Message>,
+	//     origins: string[],
+	// ): boolean {
+	//     for (const origin of origins) {
+	//         if (event.origin !== origin) {
+	//             return false;
+	//         }
+	//     }
+	//     return true;
+	// }
 
 	private async handleCustomMessages(data: Message): Promise<void> {
 		try {
-			// console.log("Message: ", data);
+			console.log("Message: ", data);
 
 			if (data.pattern === "updateUserToken") {
 				Cookies.set("mb_accessToken", data.payload.accessToken, {
@@ -153,11 +166,21 @@ export class IframeModule {
 				}
 			}
 
+			if (data.pattern === "fireSnapshotEvent") {
+				const board: Board = this.app.getBoard() as Board;
+				board.tools.setTool(
+					new ExportSnapshot(board) as unknown as BoardTool,
+				);
+				board.tools.publish();
+			}
+
 			if (data.pattern === "iframeEvent") {
 				if (isIframe()) {
 					const keyboardEvent = new KeyboardEvent(
 						data.payload.event.eventType,
-						{ ...data.payload.event.eventData },
+						{
+							...data.payload.event.eventData,
+						} as unknown as KeyboardEventInit,
 					);
 					window.self.dispatchEvent(keyboardEvent);
 				}

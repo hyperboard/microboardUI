@@ -1,7 +1,7 @@
 import { Board } from "Board";
 import { Mbr } from "Board/Items";
 import { ImageItem } from "Board/Items/Image";
-import { RichText, isEditInProcess } from "Board/Items/RichText/RichText";
+import { RichText } from "Board/Items/RichText/RichText";
 import { checkHotkeys, isControlCharacter } from "Board/Keyboard";
 import { validateItemsMap } from "Board/Validators";
 import { Clipboard } from "./Clipboard";
@@ -9,6 +9,8 @@ import { createWheel } from "./Wheel/Wheel";
 import { isSafari } from "./isSafari";
 import { prepareImage } from "Board/Items/Image/ImageHelpers";
 import { HotkeysMap } from "Board/Keyboard/types";
+import { pasteMiroClipboard } from "../View/ImportMiro/ImportMiroBoards/ImportBoardItem/MiroClipboardTransformer";
+import Cookies from "js-cookie";
 
 export interface Controller {
 	onWheel: (event: WheelEvent) => void;
@@ -454,12 +456,12 @@ export function getController(
 			return;
 		}
 		if (board.selection.getContext() === "EditTextUnderPointer") {
-			clipboard.set(event.clipboardData?.getData("text/plain"));
+			clipboard.set(null);
 			return;
 		}
 		const data = board.selection.copy();
 		const text = JSON.stringify(data);
-		event.clipboardData.setData("text/plain", text);
+		event.clipboardData?.setData("text/plain", text);
 		clipboard.set(data);
 		event.preventDefault();
 	}
@@ -470,7 +472,7 @@ export function getController(
 			return;
 		}
 		if (board.selection.getContext() === "EditTextUnderPointer") {
-			const text = event.clipboardData.getData("text/plain");
+			const text = event.clipboardData?.getData("text/plain") || "";
 			try {
 				const data = JSON.parse(text);
 				const isDataValid = validateItemsMap(data);
@@ -486,9 +488,12 @@ export function getController(
 			return;
 		}
 
-		const items = event.clipboardData.items;
+		let didAttempImage = false;
+		const items = event.clipboardData?.items;
+		// @ts-expect-error iterates just fine
 		for (const item of items) {
 			if (item.type.indexOf("image") !== -1) {
+				didAttempImage = true;
 				const file = item.getAsFile();
 				const reader = new FileReader();
 				reader.onload = event => {
@@ -508,11 +513,76 @@ export function getController(
 				};
 
 				reader.readAsDataURL(file);
-				return;
+			}
+		}
+		if (didAttempImage) {
+			return;
+		}
+
+		function adjustBytes(byteArray: Uint8Array, adjustment: number): void {
+			for (let i = 0; i < byteArray.length; i++) {
+				const byte = byteArray[i];
+				if (byte < 256) {
+					byteArray[i] = (byte + adjustment) % 256;
+				}
 			}
 		}
 
-		const text = event.clipboardData.getData("text/plain");
+		function getVersionSuffix(version: number): string {
+			return version > 0 ? `-v${version}` : "";
+		}
+
+		function decodeData(encodedData: string): string | null {
+			return (function (
+				encodedString: string,
+				adjustment: number,
+			): string {
+				const decodedBase64 = atob(encodedString);
+				const byteArray = new Uint8Array(decodedBase64.length);
+
+				for (let i = 0; i < byteArray.length; i++) {
+					byteArray[i] = decodedBase64.charCodeAt(i);
+				}
+
+				adjustBytes(byteArray, 197);
+				return new TextDecoder().decode(byteArray);
+			})(
+				(function (data: string, version = 1): string | null {
+					const versionSuffix = getVersionSuffix(version);
+					const regex = new RegExp(
+						`<--\\(miro-data${versionSuffix}\\)(.*)(\\(\\/miro-data${versionSuffix}\\)-->)`,
+						"gi",
+					);
+					const match = regex.exec(data);
+					return match ? match[1] : null;
+				})(encodedData) || encodedData,
+				0,
+			);
+		}
+
+		const html = event?.clipboardData?.getData("text/html");
+		if (html) {
+			try {
+				const decoded = decodeData(html);
+
+				if (decoded !== null) {
+					const miroData = JSON.parse(decoded);
+
+					const userToken = Cookies.get("accessToken");
+					if (!userToken && miroData !== null) {
+						window.location.href = "/auth/sign-in";
+					}
+					pasteMiroClipboard(board, miroData || []);
+
+					return;
+				}
+			} catch (err) {
+				console.error(err);
+				// TODO: notification/ toast?
+			}
+		}
+
+		const text = event?.clipboardData?.getData("text/plain") || "";
 		try {
 			const data = JSON.parse(text);
 			const isDataValid = validateItemsMap(data);

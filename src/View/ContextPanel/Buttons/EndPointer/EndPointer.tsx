@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import style from "./EndPointer.module.css";
 import { useAppContext } from "View/AppContext";
 import { ConnectorPointerStyle } from "Board/Items/Connector/Pointers/Pointers";
+import { ConnectorPointerType } from "View/Icon/ConnectorPointerIcon";
 
 const MENU_NAME = "EndPointer";
 
@@ -48,7 +49,9 @@ export function EndPointer(): React.ReactElement | null {
 					{pointerStartStyle === "None" ? (
 						"None"
 					) : (
-						<ConnectorPointerIcon iconName={pointerStartStyle} />
+						<ConnectorPointerIcon
+							iconName={pointerStartStyle as ConnectorPointerType}
+						/>
 					)}
 				</UiButton>
 			}

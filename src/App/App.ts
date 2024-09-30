@@ -80,58 +80,50 @@ export function createApp(isHistory = true): App {
 	}
 
 	async function createPublicBoard(name?: string): Promise<string> {
-		try {
-			const response = await fetch(`${getApiUrl()}/public-boards`, {
-				method: "POST",
-				mode: "cors",
-				cache: "no-cache",
-				credentials: "same-origin",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				redirect: "follow",
-				referrerPolicy: "no-referrer",
-			});
-			if (!response.ok) {
-				throw new Error("response not OK");
-			}
-			const data = await response.json();
-			const { boardId, linkId, linkUri, authorKey } = data;
-			storage.setPublicBoard({
-				boardId: linkId,
-				authorKey,
-				actualId: boardId,
-			});
-			return linkId as string;
-		} catch (error) {
-			console.error("Failed to create a new public board.", error);
+		const response = await fetch(`${getApiUrl()}/public-boards`, {
+			method: "POST",
+			mode: "cors",
+			cache: "no-cache",
+			credentials: "same-origin",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			redirect: "follow",
+			referrerPolicy: "no-referrer",
+		});
+		if (!response.ok) {
+			throw new Error("Could not create public board");
 		}
+		const data = await response.json();
+		const { boardId, linkId, authorKey } = data;
+		storage.setPublicBoard({
+			boardId: linkId,
+			authorKey,
+			actualId: boardId,
+		});
+		return linkId as string;
 	}
 
-	async function createBoard(): Promise<void> {
-		try {
-			const response = await fetch(`${getApiUrl()}/boards`, {
-				method: "POST",
-				mode: "cors",
-				cache: "no-cache",
-				credentials: "same-origin",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${Cookies.get("accessToken")}`,
-				},
-				redirect: "follow",
-				referrerPolicy: "no-referrer",
-			});
-			if (!response.ok) {
-				throw new Error("response not OK");
-			}
-			const data = await response.json();
-			const { boardId, linkId, linkUri, authorKey } = data;
-			storage.setPublicBoard({ boardId: linkId, authorKey });
-			return linkId as string;
-		} catch (error) {
-			console.error("Failed to create a new public board.", error);
+	async function createBoard(): Promise<string> {
+		const response = await fetch(`${getApiUrl()}/boards`, {
+			method: "POST",
+			mode: "cors",
+			cache: "no-cache",
+			credentials: "same-origin",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${Cookies.get("accessToken")}`,
+			},
+			redirect: "follow",
+			referrerPolicy: "no-referrer",
+		});
+		if (!response.ok) {
+			throw new Error("Could not create private board");
 		}
+		const data = await response.json();
+		const { linkId, authorKey } = data;
+		storage.setPublicBoard({ boardId: linkId, authorKey });
+		return linkId as string;
 	}
 
 	function openBoard(id: string): void {
@@ -170,6 +162,14 @@ export function createApp(isHistory = true): App {
 			app.connection.wsClient.onAccessDenied(id, true);
 			return;
 		}
+
+		window.parent.postMessage(
+			{
+				pattern: "connectionState",
+				payload: "connected",
+			},
+			"*",
+		);
 	}
 
 	function getLastBoardId(): string | null {

@@ -1,8 +1,6 @@
-import { App } from "App";
 import { createStrictContext, useStrictContext } from "lib/strictContext";
-import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
+import React, { PropsWithChildren, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDebounce } from "shared/hooks/useDebounce";
 import { useAppContext } from "View/AppContext";
 
 type SidePanelContext = {
@@ -39,13 +37,18 @@ export function SidePanelContextProvider({
 	const handleAddNew = async (
 		cb?: (boardId: string) => void,
 	): Promise<void> => {
-		const boardId = await app.createPublicBoard();
-		app.openBoard(boardId);
-		navigate(`/boards/${boardId}`, {
-			replace: true,
-		});
-		if (cb) {
-			cb(boardId);
+		try {
+			const boardId = await app.createPublicBoard();
+			app.openBoard(boardId);
+			navigate(`/boards/${boardId}`, {
+				replace: true,
+			});
+			if (cb) {
+				cb(boardId);
+			}
+		} catch (err) {
+			// TODO notify user
+			console.error(err);
 		}
 	};
 

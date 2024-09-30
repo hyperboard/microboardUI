@@ -89,7 +89,9 @@ function isCanvasElement(target: Element): boolean {
 	return target.nodeName.toLowerCase() === "canvas";
 }
 
-interface PointerEventData<T = "pointerup" | "pointerdown" | "pointermove"> {
+type PointerEventType = "pointerup" | "pointerdown" | "pointermove";
+
+interface PointerEventData<T = PointerEventType> {
 	timestamp: number;
 	type: T;
 	x: number;
@@ -105,7 +107,7 @@ interface CompressedPointermoveEventData {
 function createPointerEventData(event: PointerEvent): PointerEventData {
 	return {
 		timestamp: event.timeStamp,
-		type: event.type,
+		type: event.type as PointerEventType,
 		x: parseFloat(event.offsetX.toFixed(2)),
 		y: parseFloat(event.offsetY.toFixed(2)),
 		selector: getSelector(event.target as Element),
@@ -149,9 +151,11 @@ function createWheelEventData(event: ChromeWheelEvent): WheelEventData {
 	};
 }
 
+type KeyboardEventType = "keydown" | "keyup";
+
 interface KeyboardEventData {
 	timestamp: number;
-	type: "keydown" | "keyup";
+	type: KeyboardEventType;
 	key: string;
 	code: string;
 	altKey: boolean;
@@ -164,7 +168,7 @@ interface KeyboardEventData {
 function createKeyboardEventData(event: KeyboardEvent): KeyboardEventData {
 	return {
 		timestamp: event.timeStamp,
-		type: event.type,
+		type: event.type as KeyboardEventType,
 		key: event.key,
 		code: event.code,
 		altKey: event.altKey,

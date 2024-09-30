@@ -21,7 +21,7 @@ export function FontStyle(): React.ReactElement | null {
 	};
 
 	const handlePick = (style: string) => {
-		board.selection.setFontStyle([style]);
+		board.selection.setFontStyle(style);
 		toggleMenu("None");
 	};
 

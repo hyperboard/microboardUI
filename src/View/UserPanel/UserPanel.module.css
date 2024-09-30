@@ -98,7 +98,7 @@
 }
 
 .dropdownWrapper {
-	position: fixed;
+	position: absolute;
 	top: 70px;
 	right: 8px;
 	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
@@ -207,6 +207,7 @@
 .userPic {
 	width: 32px;
 	height: 32px;
+	color: #696b76;
 
 	display: flex;
 	flex-direction: column;

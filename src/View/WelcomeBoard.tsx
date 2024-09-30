@@ -1,4 +1,4 @@
-import { Mbr } from "Board/Items";
+import { ItemData, Mbr } from "Board/Items";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +15,7 @@ const INITIAL_FIT_AREA = {
 	bottom: 850,
 };
 
-export function WelcomeBoard({ app }: Props) {
+export function WelcomeBoard({ app }: Props): React.ReactElement {
 	const navigate = useNavigate();
 	const { i18n, t } = useTranslation();
 
@@ -33,9 +33,19 @@ export function WelcomeBoard({ app }: Props) {
 		const board = app.getBoard();
 
 		if (i18n.language === "ru") {
-			board.paste(boardDataRu, false);
+			board.paste(
+				boardDataRu as unknown as {
+					[key: string]: ItemData;
+				},
+				false,
+			);
 		} else {
-			board.paste(boardDataEn, false);
+			board.paste(
+				boardDataEn as unknown as {
+					[key: string]: ItemData;
+				},
+				false,
+			);
 		}
 
 		const mbr = new Mbr(
@@ -50,9 +60,12 @@ export function WelcomeBoard({ app }: Props) {
 	};
 
 	React.useEffect(() => {
-		createPublicBoard(app).then(boardId => {
-			navigate(`/boards/${boardId}`);
-		});
+		createPublicBoard(app)
+			.then(boardId => {
+				navigate(`/boards/${boardId}`);
+			})
+			.catch(console.error);
+		// TODO notify user
 	}, [app]);
 
 	return <div>WelcomeBoard</div>;

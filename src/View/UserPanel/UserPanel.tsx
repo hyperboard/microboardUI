@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { getApiUrl } from "Config";
 import Cookies from "js-cookie";
 import { isMicroboardIframe } from "lib/isMicroboardIframe";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { RefObject, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "shared/hooks/useAuth";
@@ -11,6 +11,7 @@ import { useOutsideClickHandler } from "shared/hooks/useOutsideClickHandler";
 import { Button } from "shared/ui-lib/Button";
 import { Input } from "shared/ui-lib/Input";
 import { Tail } from "View/AuthView/Tail";
+import { Icon } from "View/Icon";
 import { LockIcon } from "View/SignupView/LockIcon";
 import { UiButton } from "View/Ui/UiButton";
 import { UiLink } from "View/Ui/UiLink";
@@ -19,79 +20,61 @@ import { PasswordChanged } from "View/Widgets/form-notifications/password-change
 import { ChangePassword } from "./icons/ChangePassword";
 import { Logout } from "./icons/Logout";
 import styles from "./UserPanel.module.css";
-import { Icon } from "View/Icon";
+import { useAppContext } from "View/AppContext";
+import { useClickOutside } from "lib/useClickOutside";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
-	email: string;
+	email?: string;
 	isOpen: boolean;
-	setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 	setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
-	app: App;
+	buttons: React.ReactNode[];
+	openerRef?: RefObject<HTMLDivElement>;
+	customTop?: number;
 }
 
 // TODO each file for each component
-const UserDropDown: React.FC<UserDropDownProps> = ({
-	email,
-	setIsModalOpen,
+export const UserDropDown: React.FC<UserDropDownProps> = ({
 	setIsDropdownOpen,
 	isOpen,
-	app,
+	buttons,
+	email,
+	openerRef,
+	customTop,
 }) => {
-	const dropdownRef = useRef<HTMLDivElement>(null);
-	const nav = useNavigate();
-	const { setIsAuth } = useAuth(app);
-
 	const closeDropdown = (): void => {
 		setIsDropdownOpen(false);
 	};
 
-	useOutsideClickHandler(dropdownRef, closeDropdown);
-	const logout = (): void => {
-		fetch(`${getApiUrl()}/auth/logout`, {
-			method: "PUT",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${Cookies.get("accessToken")}`,
-			},
-		});
-		setIsAuth(false);
-		Cookies.remove("refreshToken");
-		Cookies.remove("accessToken");
-		app.storage.clean();
-		nav(0);
-	};
+	const dropdownRef = useClickOutside(
+		closeDropdown,
+		openerRef ? [openerRef] : [],
+	);
 
 	if (!isOpen) {
 		return null;
 	}
 
 	return (
-		<div className={styles.dropdownWrapper} ref={dropdownRef}>
-			<div className={styles.userInfo}>
-				{/* <p className={styles.userName}>John Doe</p> */}
-				<p className={styles.userEmail}>{email}</p>
-			</div>
+		<div
+			className={styles.dropdownWrapper}
+			ref={dropdownRef}
+			style={{ top: customTop }}
+		>
+			{email && (
+				<div className={styles.userInfo}>
+					<p className={styles.userEmail}>{email}</p>
+				</div>
+			)}
 			<div className={styles.dropdownBtns}>
-				<Button
-					onClick={() => {
-						setIsModalOpen(true);
-						setIsDropdownOpen(false);
-					}}
-					className={styles.dropdownBtn}
-					pattern="ghost"
-				>
-					<ChangePassword /> Change password
-				</Button>
-				{/* <Button className={styles.dropdownBtn} pattern="ghost">
-					<Upgrade /> Upgrade
-				</Button> */}
-				<Button
-					className={styles.dropdownBtn}
-					pattern="ghost"
-					onClick={logout}
-				>
-					<Logout /> Log out
-				</Button>
+				{buttons.filter(React.isValidElement).map((button, index) => {
+					return React.cloneElement(
+						button as React.ReactElement<HTMLButtonElement>,
+						{
+							className: styles.dropdownBtn,
+							key: index,
+						},
+					);
+				})}
 			</div>
 		</div>
 	);
@@ -99,20 +82,28 @@ const UserDropDown: React.FC<UserDropDownProps> = ({
 
 interface UserPicProps extends React.HTMLAttributes<HTMLDivElement> {
 	avatar?: string;
+	setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 type TUserPicProps = UserPicProps &
-	Omit<UserDropDownProps, "isOpen" | "setIsDropdownOpen">;
+	Omit<
+		UserDropDownProps,
+		"isOpen" | "setIsDropdownOpen" | "buttons" | "openerRef" | "customTop"
+	>;
 
 // TODO each file for each component
 const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
+	const { app } = useAppContext();
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+	const userPanelRef = useRef<HTMLDivElement>(null);
+	const navigate = useNavigate();
 
 	return (
 		<>
 			<div
 				className={styles.userPicWrapper}
 				{...props}
+				ref={userPanelRef}
 				onMouseDown={event => {
 					event.stopPropagation();
 					if (!isDropdownOpen) {
@@ -127,11 +118,47 @@ const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 				</div>
 			</div>
 			<UserDropDown
+				openerRef={userPanelRef}
 				isOpen={isDropdownOpen}
 				setIsDropdownOpen={setIsDropdownOpen}
 				email={props.email}
-				setIsModalOpen={props.setIsModalOpen}
-				app={props.app}
+				buttons={[
+					<Button
+						key="userDropDown1"
+						onClick={() => {
+							props.setIsModalOpen(true);
+							setIsDropdownOpen(false);
+						}}
+						pattern="ghost"
+					>
+						<ChangePassword /> Change password
+					</Button>,
+					<Button
+						key="userDropDown2"
+						pattern="ghost"
+						onClick={() => {
+							const logout = (): void => {
+								fetch(`${getApiUrl()}/auth/logout`, {
+									method: "PUT",
+									headers: {
+										"Content-Type": "application/json",
+										Authorization: `Bearer ${Cookies.get(
+											"accessToken",
+										)}`,
+									},
+								});
+							};
+							logout();
+							app.storage.setIsAuth(false);
+							Cookies.remove("refreshToken");
+							Cookies.remove("accessToken");
+							app.storage.clean();
+							navigate(0);
+						}}
+					>
+						<Logout /> Log out
+					</Button>,
+				]}
 			/>
 		</>
 	);
@@ -392,7 +419,9 @@ export const UserPanel: React.FC<{ app: App }> = ({ app }) => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 
-	const insideOfMicroboard = document.referrer.includes("microboard");
+	const insideOfMicroboard =
+		document.referrer.includes("https://microboard.io/") ||
+		document.referrer.includes("https://microboard.ru/");
 
 	if (!isAuth) {
 		return (
@@ -400,7 +429,7 @@ export const UserPanel: React.FC<{ app: App }> = ({ app }) => {
 				padding={0}
 				className={clsx(
 					styles.wrapper,
-					isMicroboardIframe() && styles.iframe,
+					isMicroboardIframe() && insideOfMicroboard && styles.iframe,
 				)}
 			>
 				<div className={styles.unauthWrapper}>
@@ -514,11 +543,7 @@ export const UserPanel: React.FC<{ app: App }> = ({ app }) => {
 
 				{/* TODO: remove temporarily inline style */}
 				<div style={{ padding: "8px 6px" }}>
-					<UserPic
-						email={email}
-						setIsModalOpen={setIsModalOpen}
-						app={app}
-					/>
+					<UserPic email={email} setIsModalOpen={setIsModalOpen} />
 				</div>
 			</UiPanel>
 

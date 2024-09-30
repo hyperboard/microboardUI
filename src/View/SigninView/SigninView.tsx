@@ -1,19 +1,18 @@
-import React, { useRef, useState } from "react";
-import styles from "./SigninView.module.css";
-import { createSearchParams, useNavigate } from "react-router-dom";
+import { App } from "App";
+import { LAST_BOARD_KEY_QS } from "App/App";
 import { getApiUrl } from "Config";
 import Cookies from "js-cookie";
+import { isEmail } from "lib/regex";
+import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { createSearchParams, useNavigate } from "react-router-dom";
+import { Button } from "shared/ui-lib/Button";
 import { Input } from "shared/ui-lib/Input/Input";
+import { OuterLink } from "shared/ui-lib/OuterLink";
 import { Tail } from "View/AuthView/Tail";
 import { EmailIcon } from "View/SignupView/EmailIcon";
 import { LockIcon } from "View/SignupView/LockIcon";
-import { Button } from "shared/ui-lib/Button";
-import { isEmail } from "lib/regex";
-import { Link } from "shared/ui-lib/Link";
-import { App } from "App";
-import { LAST_BOARD_KEY_QS } from "App/App";
-import { OuterLink } from "shared/ui-lib/OuterLink";
+import styles from "./SigninView.module.css";
 
 type RegisterOkResponse = {
 	accessToken: string;
@@ -33,6 +32,8 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 	const formRef = useRef<HTMLFormElement>(null);
 	const [emailError, setEmailError] = useState<string>("");
 	const [errorText, setErrorText] = useState<string>("");
+
+	const searchParams = new URLSearchParams(location.search);
 
 	const onSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
@@ -69,7 +70,10 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 					secure: true,
 				});
 				setErrorText("");
-				if (localStorage.getItem(LAST_BOARD_KEY_QS)) {
+				if (searchParams.get("backToSelect") === "true") {
+					await app.storage.fetchBoards();
+					navigate("/selectBoard");
+				} else if (localStorage.getItem(LAST_BOARD_KEY_QS)) {
 					navigate(
 						`/boards/${localStorage.getItem(LAST_BOARD_KEY_QS)}`,
 					);
@@ -95,6 +99,7 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 					navigate({
 						pathname: "/auth/verify",
 						search: createSearchParams({
+							...Object.fromEntries(searchParams),
 							email: email,
 						}).toString(),
 					});

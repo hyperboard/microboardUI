@@ -69,9 +69,13 @@ export type IconId =
 	| "BurgerMenu"
 	| "miro"
 	| "loader"
-	| "Info"
 	| "lock"
-	| "unlock";
+	| "unlock"
+	| "ArrowLeft"
+	| "ArrowLeft1"
+	| "BoxedPlus"
+	| "SignIn"
+	| "Info";
 
 type Props = {
 	iconName: IconId;

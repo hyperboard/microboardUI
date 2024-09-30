@@ -1,6 +1,6 @@
+import { shouldShow } from "lib/queryStringParser";
 import { useForceUpdate } from "lib/useForceUpdate";
-import React, { MouseEventHandler, useEffect, useRef } from "react";
-import { useTranslation } from "react-i18next";
+import React, { useEffect, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAppContext } from "View/AppContext";
 import { Canvas } from "View/Canvas";
@@ -14,18 +14,16 @@ import { SidePanelsContainer } from "View/SidePanelsContainer";
 import { TextEditors } from "View/TextEditor/TextEditor";
 import { ToastProvider } from "View/ToastProvider";
 import { UserPanel } from "View/UserPanel/UserPanel";
+import { ViewModeGuard } from "View/ViewModeGuard";
 import { ZoomPanel } from "View/ZoomPanel";
 import style from "./AppView.module.css";
-import NoBoardIsOpen from "./NoBoardIsOpen";
 import { InactiveBoardHidder } from "./InactiveBoardHidder";
-import { shouldShow } from "lib/queryStringParser";
-import { ViewModeGuard } from "View/ViewModeGuard";
+import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
 
 export function AppView() {
 	const { app, board } = useAppContext();
 	const location = useLocation();
-	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const params = useParams();
 	const forceUpdate = useForceUpdate();

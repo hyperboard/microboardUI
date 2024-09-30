@@ -1,1 +1,0 @@
-export { StickerFontSize } from "./StickerFontSize";

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import style from "./UiSlider.module.css";
 type Props = {
 	id?: string;
@@ -23,7 +23,7 @@ export const UiSlider: React.FC<Props> = ({
 	};
 
 	const calculateProgressWidth = () => {
-		return ((value - min) / (max - min)) * 100 + "%";
+		return (((value ?? 0) - min) / (max - min)) * 100 + "%";
 	};
 
 	return (

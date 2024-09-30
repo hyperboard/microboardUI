@@ -18,7 +18,11 @@ export function ResizableEdge({ panelWidth, setWidth }: Props) {
 	const [isDown, setIsDown] = useState(false);
 
 	const pointerDown = (event: PointerEvent) => {
-		event.currentTarget.setPointerCapture(event.pointerId);
+		if (!event.currentTarget) {
+			return;
+		}
+		const target = event.currentTarget as HTMLDivElement;
+		target.setPointerCapture(event.pointerId);
 		setIsDown(true);
 	};
 
@@ -32,12 +36,20 @@ export function ResizableEdge({ panelWidth, setWidth }: Props) {
 	};
 
 	const pointerUp = (event: PointerEvent) => {
-		event.currentTarget.releasePointerCapture(event.pointerId);
+		if (!event.currentTarget) {
+			return;
+		}
+		const target = event.currentTarget as HTMLDivElement;
+		target.releasePointerCapture(event.pointerId);
 		setIsDown(false);
 	};
 
 	const pointerCancel = (event: PointerEvent) => {
-		event.currentTarget.releasePointerCapture(event.pointerId);
+		if (!event.currentTarget) {
+			return;
+		}
+		const target = event.currentTarget as HTMLDivElement;
+		target.releasePointerCapture(event.pointerId);
 		setIsDown(false);
 	};
 

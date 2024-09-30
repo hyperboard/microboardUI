@@ -8,14 +8,14 @@ export const ANCHOR_BACKGROUND_COLOR = "rgb(255, 255, 255)";
 export const ANCHOR_STROKE_WIDTH = 1;
 export const ANCHOR_RADIUS = 50;
 export function renderAnchor(
-	ctx: CanvasRenderingContext2D,
+	ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
 	center: Center,
 	width: number,
 	borderColor: string,
 	backgroundColor: string,
 	strokeWidth: number,
 	scale: number,
-) {
+): void {
 	const sizeFactor = 0.8; // Adjust this factor to decrease the size
 	const adjustedWidth = width * sizeFactor;
 
@@ -38,14 +38,14 @@ export function renderAnchor(
 }
 
 export function renderCircleAnchor(
-	ctx: CanvasRenderingContext2D,
+	ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
 	center: Center,
 	radius: number,
 	borderColor: string,
 	backgroundColor: string,
 	strokeWidth: number,
 	scale: number,
-) {
+): void {
 	renderAnchor(
 		ctx,
 		center,

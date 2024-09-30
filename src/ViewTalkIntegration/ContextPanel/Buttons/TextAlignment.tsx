@@ -1,7 +1,4 @@
-import { RichText } from "Board/Items";
 import { HorisontalAlignment } from "Board/Items/Alignment";
-import { Drawing } from "Board/Items/Drawing";
-import { ImageItem } from "Board/Items/Image";
 import React from "react";
 import { ButtonWithMenu } from "ViewTalkIntegration/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "ViewTalkIntegration/ContextPanel/PanelContext";

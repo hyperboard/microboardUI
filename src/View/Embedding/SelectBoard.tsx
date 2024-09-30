@@ -13,6 +13,11 @@ import { getEmbedUrl } from "lib/getEmbedUrl";
 import { getApiUrl } from "Config";
 import { UiButton } from "View/Ui/UiButton";
 import { useForceUpdate } from "lib/useForceUpdate";
+import Cookies from "js-cookie";
+import { Dropdown } from "shared/ui-lib/Dropdown/Dropdown";
+import { UserDropDown } from "View/UserPanel/UserPanel";
+import { Button } from "shared/ui-lib/Button";
+import { useNavigate } from "react-router-dom";
 
 const customHeader: CSSProperties = {
 	padding: "6px",
@@ -38,11 +43,14 @@ const getName = (i18t: TFunction, name?: string): string =>
 
 const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 	const { t } = useTranslation();
+	const navigate = useNavigate();
 	const forceUpdate = useForceUpdate();
+	const { isAuth } = useAuth(app);
 	const searchRef = useRef<HTMLInputElement>(null);
 	const newBoardRef = useRef<HTMLInputElement>(null);
 	const selectorRef = useRef<SelectorHandle>(null);
-	const { isAuth } = useAuth(app);
+	const userPanelRef = useRef<HTMLDivElement>(null);
+	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [loading, setLoading] = useState(false);
 	const [selected, setSelected] = useState<
@@ -115,6 +123,7 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
+					Authorization: `Bearer ${Cookies.get("accessToken")}`,
 				},
 				body,
 			});
@@ -237,14 +246,64 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 	return (
 		<>
 			<div className={style.container}>
-				<div className={style.header}>
+				<div className={style.header} style={{ position: "relative" }}>
 					<div className={style.logo}>
 						<Logo id="logo" />
 						<div className={style.headerTitle}>Microboard</div>
 					</div>
-					{isAuth && (
+					{isAuth ? (
 						<div className={style.profile}>
 							<Icon iconName="UserPic" width={16} height={16} />
+						</div>
+					) : (
+						<div
+							ref={userPanelRef}
+							className={`${style.profile} ${style.unAuth}`}
+							onClick={() => setIsDropdownOpen(prev => !prev)}
+						>
+							<Icon iconName="UserPic" width={16} height={16} />
+							<UserDropDown
+								openerRef={userPanelRef}
+								isOpen={isDropdownOpen}
+								setIsDropdownOpen={setIsDropdownOpen}
+								customTop={50}
+								buttons={[
+									<Button
+										key="userDropDown1"
+										onClick={() => {
+											setIsDropdownOpen(false);
+											navigate(
+												"/auth/sign-in?backToSelect=true",
+											);
+										}}
+										pattern="ghost"
+									>
+										<Icon
+											iconName="SignIn"
+											width={20}
+											height={20}
+										/>{" "}
+										{t("auth.signIn")}
+									</Button>,
+									<Button
+										key="userDropDown2"
+										pattern="ghost"
+										onClick={() => {
+											setIsDropdownOpen(false);
+											navigate(
+												"/auth/sign-up?backToSelect=true",
+											);
+										}}
+									>
+										<Icon
+											iconName="BoxedPlus"
+											width={20}
+											height={20}
+										/>{" "}
+										{t("auth.signUp")}
+									</Button>,
+								]}
+							/>
 						</div>
 					)}
 				</div>
@@ -337,8 +396,7 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 				)}
 				{selected && (
 					<>
-						<div className={style.selectorsContainer}>
-							{/* {selected !== "addNew" &&
+						{/* {selected !== "addNew" &&
 							<Selector
 								label={t("embedding.startingView")}
 								options={[
@@ -353,12 +411,13 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 									// TODO add frames
 								]}
 							/>} */}
-							{selected === "addNew" ||
-							app.storage
-								.listPublicBoards()
-								.some(
-									board => board.boardId === selected.boardId,
-								) ? (
+						{selected === "addNew" ||
+						app.storage
+							.listPublicBoards()
+							.some(
+								board => board.boardId === selected.boardId,
+							) ? (
+							<div className={style.selectorsContainer}>
 								<Selector
 									ref={selectorRef}
 									label={t("embedding.allVisitors")}
@@ -411,7 +470,9 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 										},
 									]}
 								/>
-							) : (
+							</div>
+						) : (
+							!selected.notFound && (
 								<div className={style.infoMessage}>
 									<div>
 										<Icon
@@ -425,8 +486,8 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 										{t("embedding.optionsUnavailable")}
 									</div>
 								</div>
-							)}
-						</div>
+							)
+						)}
 						{selected !== "addNew" && selected.notFound && (
 							<div
 								className={`${style.infoMessage} ${style.error}`}

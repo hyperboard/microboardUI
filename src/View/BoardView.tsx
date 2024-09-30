@@ -1,20 +1,20 @@
 /* eslint-disable react/prop-types */
 import { App } from "App";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useLayoutEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
 	useLocation,
 	useNavigate,
 	useParams,
 	useSearchParams,
 } from "react-router-dom";
-import { AppContext } from "./AppContext";
 import { AppView } from "View/AppView";
-import { useModalInfoContext } from "./Modal/InfoModal";
-import { useTranslation } from "react-i18next";
-import { SidePanelContextProvider } from "./SidePanel/SidePanelContext";
-import { ContextMenuContextProvider } from "./ContextMenu";
-import ModalsWrapper from "./Modal/ModalsWrapper";
+import { AppContext } from "./AppContext";
 import { BoardRenameContextProvider } from "./BoardName";
+import { ContextMenuContextProvider } from "./ContextMenu";
+import { useModalInfoContext } from "./Modal/InfoModal";
+import ModalsWrapper from "./Modal/ModalsWrapper";
+import { SidePanelContextProvider } from "./SidePanel/SidePanelContext";
 // import "./index.css";
 type Props = {
 	app: App;

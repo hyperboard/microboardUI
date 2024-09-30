@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from "react";
 import { getApiUrl } from "Config";
+import React, { useEffect, useRef } from "react";
 
 const TestComponent: React.FC = () => {
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -29,7 +29,7 @@ const TestComponent: React.FC = () => {
 					(window as any).microboardOpener.selectBoard({
 						success: data => {
 							console.log("SUCCESS", data);
-							const { authorLink, visitorsLink } = data;
+							const { visitorsLink } = data;
 							if (containerRef.current) {
 								containerRef.current.innerHTML = `<iframe src="${visitorsLink}" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>`;
 							}
