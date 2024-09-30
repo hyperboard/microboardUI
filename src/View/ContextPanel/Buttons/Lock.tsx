@@ -31,9 +31,9 @@ export const Lock = ({
 		: t("contextPanel.lock.tooltip");
 
 	const icon = isLocked ? (
-		<Icon iconName="unlock" />
-	) : (
 		<Icon iconName="lock" />
+	) : (
+		<Icon iconName="unlock" />
 	);
 
 	return (
