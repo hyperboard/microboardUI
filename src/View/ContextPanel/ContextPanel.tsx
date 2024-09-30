@@ -66,7 +66,7 @@ export function ContextPanel() {
 
 	const isLockedFrame = board.selection.items
 		.list()
-		.some(
+		.filter(
 			item => item.transformation.isLocked && item.itemType === "Frame",
 		);
 
@@ -110,11 +110,17 @@ export function ContextPanel() {
 				{isLockedFrame && (
 					<>
 						<Lock rounded="left" />
-						<Duplicate />
-						<RestOptionsMenu rounded="right">
-							<CopyFrameLink />
-							<ExportFrame />
-						</RestOptionsMenu>
+						<Duplicate
+							rounded={
+								isLockedFrame.length > 1 ? "right" : "none"
+							}
+						/>
+						{isLockedFrame.length <= 1 && (
+							<RestOptionsMenu rounded="right">
+								<CopyFrameLink />
+								<ExportFrame />
+							</RestOptionsMenu>
+						)}
 					</>
 				)}
 				{isSelectUnderPointer && (
