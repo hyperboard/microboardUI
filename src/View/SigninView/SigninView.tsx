@@ -65,9 +65,13 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 				}
 			})
 			.then(async (data: RegisterOkResponse) => {
-				Cookies.set("accessToken", data.accessToken, { secure: true });
+				Cookies.set("accessToken", data.accessToken, {
+					secure: true,
+					sameSite: "none",
+				});
 				Cookies.set("refreshToken", data.refreshToken, {
 					secure: true,
+					sameSite: "none",
 				});
 				setErrorText("");
 				if (searchParams.get("backToSelect") === "true") {

@@ -39,8 +39,14 @@ export class WhiteboardModuleView implements WhiteboardModule {
 		});
 	}
 	setAuthToken(accessToken: string, refreshToken: string): void {
-		Cookies.set("accessToken", accessToken, { secure: true });
-		Cookies.set("refreshToken", refreshToken, { secure: true });
+		Cookies.set("accessToken", accessToken, {
+			secure: true,
+			sameSite: "none",
+		});
+		Cookies.set("refreshToken", refreshToken, {
+			secure: true,
+			sameSite: "none",
+		});
 	}
 	async dispose(): Promise<void> {
 		unmountComponentAtNode(window.root);
