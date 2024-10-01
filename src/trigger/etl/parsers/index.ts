@@ -101,7 +101,7 @@ export const getTransformedBoard = async (payload: BoardPayload): Promise<Transf
             return null;
         }
 
-        const events = await parseConnector({
+        const events = parseConnector({
             item: data.item,
             startItem: startItem.item,
             endItem: endItem.item,
@@ -161,7 +161,7 @@ export interface BoardEvent {
     operation: Record<any, any>;
 }
 
-const getParseFunction = async (data: ItemPayload): Promise<Array<BoardEvent | null>> => {
+const getParseFunction = (data: ItemPayload): Array<BoardEvent | null> => {
     switch (data.item.type) {
         case MiroBoardItemTypes.SHAPE:
             return parseShape({

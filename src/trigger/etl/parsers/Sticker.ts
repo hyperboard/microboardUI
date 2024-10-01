@@ -41,10 +41,10 @@ const colorsSticker = {
     black: stickerColors["Black Black"],
 };
 
-export const parseSticker = async (payload: StickerPayload): Promise<Array<any | null>> => {
+export const parseSticker = (payload: StickerPayload): Array<any | null> => {
     const { item, boardId, userId, order, parent, newItemId } = payload;
 
-    const pos = await getItemPosition(item, parent);
+    const pos = getItemPosition(item, parent);
 
     const event: any = {
         userId: userId,

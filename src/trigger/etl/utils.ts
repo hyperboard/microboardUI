@@ -3,8 +3,10 @@ import { WidgetItem } from "@mirohq/miro-api/dist/highlevel/Item";
 import { Blob } from "node:buffer";
 import { Readable } from "node:stream";
 import { Buffer } from "node:buffer";
+import sizeOf from "image-size";
 
 const INTERNAL_SERVER_URL = process.env.INTERNAL_SERVER_URL || "http://localhost:8000";
+const internalStorageUrl = `${INTERNAL_SERVER_URL}/api/v1/media`;
 
 export async function imageUrlToBase64(url: string): Promise<string> {
     try {
@@ -14,8 +16,13 @@ export async function imageUrlToBase64(url: string): Promise<string> {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const contentType = response.headers.get("content-type") || "application/octet-stream";
+        let contentType = response.headers.get("content-type") || "application/octet-stream";
         const arrayBuffer = await response.arrayBuffer();
+        const uint8Array = Uint8Array.from(Buffer.from(arrayBuffer));
+        const firstByte = uint8Array[0];
+        if (firstByte === 117) {
+            contentType = "image/svg+xml";
+        }
         const buffer = Buffer.from(arrayBuffer);
 
         return new Promise((resolve, reject) => {
@@ -35,7 +42,7 @@ export async function imageUrlToBase64(url: string): Promise<string> {
     }
 }
 
-export const uploadToTheStorage = async (hash: string, dataURL: string): Promise<string> => {
+export const uploadToTheStorage = async (hash: string, dataURL: string): Promise<string | null> => {
     try {
         // Extract the base64 string and mime type from the Data URL
         const [metadata, base64String] = dataURL.split(",");
@@ -59,7 +66,8 @@ export const uploadToTheStorage = async (hash: string, dataURL: string): Promise
         });
 
         if (response.status !== 200) {
-            throw new Error(`HTTP status: ${response.status}`);
+            console.error("HTTP status:", response.status);
+            return null;
         }
 
         const base = process.env.STORAGE_URL || "http://localhost:8001/api/v1/media";
@@ -70,7 +78,7 @@ export const uploadToTheStorage = async (hash: string, dataURL: string): Promise
         return link;
     } catch (error) {
         console.error("Media storage error:", error);
-        throw error;
+        return null;
     }
 };
 
@@ -194,17 +202,55 @@ export async function processImageItem(item: ImageItem, accessToken: string, io:
         const img = await fetchImageWithRetry(url, accessToken, io);
         const imgUrl = img?.url ?? "";
         console.log("imgUrl: ", imgUrl);
-        const imgBase64 = await imageUrlToBase64(imgUrl);
+        let imgBase64 = null;
+        try {
+            imgBase64 = await imageUrlToBase64(imgUrl);
+        } catch (e) {
+            console.error("Failed to convert image to base64 in processImageItem(): ", e);
+        }
 
         if (!imgBase64) {
-            throw new Error("Failed to convert image to base64");
+            return item;
         }
 
         const src = await uploadToTheStorage(item.id, imgBase64);
+
+        if (!src) {
+            return item;
+        }
+
         await io.logger.log(`Image uploaded ${item.id}}`, { src });
 
-        const copiedItem: ImageItem = { ...item };
+        let dimensions = null;
+        if (imgBase64) {
+            const base64Data = imgBase64?.replace(/^data:image\/\w+;base64,/, "");
+            const imgBuffer = Buffer.from(base64Data, "base64");
+            const uint8Array = Uint8Array.from(imgBuffer);
+            const firstByte = uint8Array[0];
+
+            if (firstByte === 117) {
+                // SVG
+                try {
+                    const svgDimensions = await getSVGDimensionsFromURL(`${internalStorageUrl}${item.id}`);
+                    dimensions = {
+                        width: svgDimensions.width || item.geometry?.width || 0,
+                        height: svgDimensions.height || item.geometry?.height || 0,
+                    };
+                } catch (_) {
+                    dimensions = {
+                        width: item.geometry?.width || 0,
+                        height: item.geometry?.height || 0,
+                    };
+                }
+            } else {
+                console.log("USING SIZEOF");
+                dimensions = sizeOf(uint8Array);
+            }
+        }
+
+        const copiedItem: any = { ...item };
         copiedItem.data!.imageUrl! = src;
+        copiedItem.dimensions = dimensions;
         return copiedItem;
     } catch (error) {
         console.error("Error processing image item (utils):", error);

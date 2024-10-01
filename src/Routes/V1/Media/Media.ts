@@ -10,11 +10,7 @@ import { BUCKET_NAME } from "./MinioClient";
  * @param imageStream - The image stream to be saved.
  * @param logger - A winston logger instance for logging.
  */
-async function saveImageStream(
-    id: string,
-    imageStream: stream.Readable,
-    logger: Logger
-): Promise<void> {
+async function saveImageStream(id: string, imageStream: stream.Readable, logger: Logger): Promise<void> {
     await minioClient.putObject(BUCKET_NAME, id, imageStream);
     logger.info(`Image with ID ${id} successfully saved.`);
 }
@@ -37,12 +33,12 @@ async function getImageStream(id: string, logger: Logger): Promise<stream.Readab
  * @returns - A promise that resolves to true if the image exists, false otherwise.
  */
 export async function doesImageExist(id: string, logger: Logger): Promise<boolean> {
-	try {
-		await minioClient.statObject(BUCKET_NAME, id);
-		return true;
-	} catch (error) {
+    try {
+        await minioClient.statObject(BUCKET_NAME, id);
+        return true;
+    } catch (error) {
         return false;
-	}
+    }
 }
 
 /**
@@ -52,8 +48,7 @@ export async function doesImageExist(id: string, logger: Logger): Promise<boolea
  */
 export function createMinioMediaDAL(logger: Logger): MediaDAL {
     return {
-        saveImageStream: (id: string, imageStream: stream.Readable) => 
-            saveImageStream(id, imageStream, logger),
+        saveImageStream: (id: string, imageStream: stream.Readable) => saveImageStream(id, imageStream, logger),
         getImageStream: (id: string) => getImageStream(id, logger),
         doesImageExist: (id: string) => doesImageExist(id, logger),
     };

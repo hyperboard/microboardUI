@@ -162,6 +162,10 @@ export const importMiroBoard = client.defineJob({
             const boards = new Boards(database, winstonLogger);
             const savedBoard = await boards.saveBoardData(transformedBoardTask.data);
 
+            await io.logger.info(`Saved board: `, {
+                savedBoard: savedBoard,
+            });
+
             const notifyTask = await io.try(
                 async () => {
                     const notifyResponse = await io.runTask("notify clients", async () => {

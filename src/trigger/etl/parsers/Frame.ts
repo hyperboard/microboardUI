@@ -20,7 +20,7 @@ const frameTypes = {
     desktop: "Custom",
 };
 
-export const parseFrame = async (payload: FramePayload): Promise<Array<any | null>> => {
+export const parseFrame = (payload: FramePayload): Array<any | null> => {
     const { item, boardId, userId, order, newItemId } = payload;
 
     const width = item.geometry?.width || 100;

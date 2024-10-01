@@ -2,7 +2,7 @@ import { FrameItem, ImageItem } from "@mirohq/miro-api";
 import { getItemPosition } from "./shared";
 
 interface ImagePayload {
-    item: ImageItem;
+    item: ImageItem & { dimensions?: { width: number; height: number } };
     boardId: string;
     userId: string;
     order: number;
@@ -10,7 +10,7 @@ interface ImagePayload {
     parent?: FrameItem;
 }
 
-export const parseImage = async (payload: ImagePayload) => {
+export const parseImage = (payload: ImagePayload): Array<any | null> => {
     const { item, boardId, userId, order, parent, newItemId } = payload;
 
     const width = item?.geometry?.width || 0;
@@ -25,7 +25,7 @@ export const parseImage = async (payload: ImagePayload) => {
         imageDimension.height = item.dimensions?.height || 0;
     }
 
-    const pos = await getItemPosition(item, parent);
+    const pos = getItemPosition(item, parent);
 
     const event = {
         userId: userId,
@@ -36,8 +36,8 @@ export const parseImage = async (payload: ImagePayload) => {
                 itemType: "Image",
                 storageLink: item?.data?.imageUrl,
                 imageDimension: {
-                    width: item?.geometry?.width || 0,
-                    height: item?.geometry?.height || 0,
+                    width: item.dimensions?.width || item?.geometry?.width || 0,
+                    height: item.dimensions?.height || item?.geometry?.height || 0,
                 },
                 transformation: {
                     rotate: 0,

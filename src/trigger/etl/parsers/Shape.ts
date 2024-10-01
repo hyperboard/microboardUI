@@ -41,13 +41,13 @@ const borderStyles = {
     dashed: "dash",
 };
 
-export const parseShape = async (payload: ShapePayload): Promise<Array<any | null>> => {
+export const parseShape = (payload: ShapePayload): Array<any | null> => {
     const { item, boardId, userId, order, parent, newItemId } = payload;
 
     const width = item.geometry?.width || 100;
     const height = item.geometry?.height || 100;
 
-    const pos = await getItemPosition(item, parent);
+    const pos = getItemPosition(item, parent);
 
     const fillStyle = {
         color: item?.style?.fillColor || "#ffffff",

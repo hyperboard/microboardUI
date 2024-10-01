@@ -115,7 +115,7 @@ const parseTextRecursive = (
     return segments;
 };
 
-export const parseText = async (payload: TextPayload): Promise<Array<any | null>> => {
+export const parseText = (payload: TextPayload): Array<any | null> => {
     const { item, boardId, userId, order, newItemId, parent } = payload;
 
     const $ = cheerio.load(item.data?.content!);
@@ -271,7 +271,7 @@ export const parseText = async (payload: TextPayload): Promise<Array<any | null>
         copiedItem.geometry!.width = calculatedWidth;
     }
 
-    const pos = await getItemPosition(copiedItem, parent);
+    const pos = getItemPosition(copiedItem, parent);
 
     const event = {
         userId: userId,
@@ -285,8 +285,6 @@ export const parseText = async (payload: TextPayload): Promise<Array<any | null>
                         children: textSegments.map((segment) => ({
                             text: segment.text,
                             type: "text",
-                            fontSize: segment.style.fontSize,
-                            fontColor: segment.style.fontColor,
                             fontHighlight: "",
                             ...segment.style,
                         })),
