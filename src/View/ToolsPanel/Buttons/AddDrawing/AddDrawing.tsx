@@ -9,7 +9,7 @@ import { DrawingTool } from "../../../Tools/AddDrawing";
 import style from "./AddDrawing.module.css";
 import { AddHighlighter } from "./AddHighlighter/AddHighlighter";
 import { AddPen } from "./AddPen/AddPen";
-import { AddEraser } from "./AddEraser/AddEraser";
+import { Eraser } from "./Eraser/Eraser";
 import { useAppContext } from "../../../AppContext";
 
 export function AddDrawing() {
@@ -22,10 +22,12 @@ export function AddDrawing() {
 	const isActive = Boolean(
 		board.tools.getAddDrawing() ||
 			board.tools.getAddHighlighter() ||
-			board.tools.getAddEraser(),
+			board.tools.getEraser(),
 	);
 	const handleClick = () => {
-		if (isActive) return;
+		if (isActive) {
+			return;
+		}
 		switch (lastOpenedMenu) {
 			case "Pen": {
 				board.tools.addDrawing(true);
@@ -36,7 +38,7 @@ export function AddDrawing() {
 				break;
 			}
 			case "Eraser": {
-				board.tools.addEraser(true);
+				board.tools.eraser(true);
 				break;
 			}
 			default: {
@@ -79,7 +81,7 @@ export function AddDrawing() {
 				<UiPanel vertical padding={0} className={style.panel}>
 					<AddPen />
 					<AddHighlighter />
-					<AddEraser />
+					<Eraser />
 				</UiPanel>
 			</ButtonWithMenu>
 		</AddDrawingContext.Provider>
