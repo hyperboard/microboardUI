@@ -94,6 +94,10 @@ export function getController(
 				cb: () => board.tools.addDrawing(true),
 				selectionContext: ["SelectUnderPointer", "None"],
 			},
+			eraser: {
+				cb: () => board.tools.addEraser(true),
+				selectionContext: ["SelectUnderPointer", "None"],
+			},
 			frame: {
 				cb: () => board.tools.addFrame(true),
 				selectionContext: ["SelectUnderPointer", "None"],
@@ -565,7 +569,7 @@ export function getController(
 			try {
 				const decoded = decodeData(html);
 
-				if(decoded !== null){
+				if (decoded !== null) {
 					const miroData = JSON.parse(decoded);
 
 					const userToken = Cookies.get("accessToken");
@@ -573,7 +577,7 @@ export function getController(
 						window.location.href = "/auth/sign-in";
 					}
 					pasteMiroClipboard(board, miroData || []);
-	
+
 					return;
 				}
 			} catch (err) {
@@ -582,7 +586,7 @@ export function getController(
 			}
 		}
 
-		const text = event?.clipboardData?.getData("text/plain")|| "";
+		const text = event?.clipboardData?.getData("text/plain") || "";
 		try {
 			const data = JSON.parse(text);
 			const isDataValid = validateItemsMap(data);

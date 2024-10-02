@@ -1,0 +1,136 @@
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useAppContext } from "View/AppContext";
+import { Icon } from "View/Icon";
+import { ColorPicker } from "View/Pickers/ColorPicker/ColorPicker";
+import { SliderPicker } from "View/Pickers/SliderPicker/SliderPicker";
+import {
+	MAX_DRAWING_STROKE_WIDTH,
+	MIN_DRAWING_STROKE_WIDTH,
+	HIGHLIGHTER_COLORS,
+	STEP_DRAWING_STROKE_WIDTH,
+} from "View/Tools/AddDrawing";
+import { UiButton } from "View/Ui/UiButton";
+import { UiColorInput } from "View/Ui/UiColorInput";
+import { UiPanel } from "View/Ui/UiPanel/UiPanel";
+import { ButtonWithMenu } from "../../ButtonWithMenu";
+import style from "./AddHighlighter.module.css";
+import { useAddDrawingContext } from "../AddDrawingContext";
+
+export function AddHighlighter() {
+	const [isColorSelected, setIsColorSelected] = useState(false);
+	const { board } = useAppContext();
+	const { t } = useTranslation();
+	const { setSelectedColor, setLastOpenedMenu } = useAddDrawingContext();
+
+	const addHighlighter = board.tools.getAddHighlighter();
+	const isActive = Boolean(addHighlighter);
+	const selectedColor = addHighlighter?.getStrokeColor();
+	const strokeWidth = addHighlighter?.getStrokeWidth();
+	const isDrawing = addHighlighter?.isDown;
+
+	const convertHexToRGBA = (hex: string, alpha: number = 0.5) => {
+		const tempHex = hex.replace("#", "");
+		const r = parseInt(tempHex.substring(0, 2), 16);
+		const g = parseInt(tempHex.substring(2, 4), 16);
+		const b = parseInt(tempHex.substring(4, 6), 16);
+
+		return `rgba(${r},${g},${b},${alpha})`;
+	};
+
+	useEffect(() => {
+		if (isActive) {
+			setSelectedColor(selectedColor || "none");
+			setLastOpenedMenu("Highlighter");
+		}
+		if (isDrawing) {
+			setIsColorSelected(true);
+		}
+	}, [isDrawing, isActive]);
+
+	const handleClick = () => {
+		if (isActive && selectedColor !== "none" && isColorSelected) {
+			setIsColorSelected(false);
+		} else if (isActive && selectedColor !== "none") {
+			setIsColorSelected(true);
+		}
+		if (!isActive || (isActive && selectedColor === "none")) {
+			board.tools.addHighlighter(true);
+			setSelectedColor(selectedColor || "none");
+			setLastOpenedMenu("Pen");
+			setIsColorSelected(false);
+		}
+	};
+
+	const handleSliderPick = (width: number): void => {
+		if (addHighlighter) {
+			addHighlighter.setStrokeWidth(width);
+		}
+	};
+
+	const handleColorPick = (color: string): void => {
+		if (addHighlighter) {
+			setSelectedColor(color);
+			addHighlighter.setStrokeColor(color);
+			setIsColorSelected(true);
+		}
+	};
+
+	const handleCustomColorPick = (color: string): void => {
+		if (addHighlighter) {
+			const RGBA = convertHexToRGBA(color);
+			setSelectedColor(RGBA);
+			addHighlighter.setStrokeColor(RGBA);
+		}
+	};
+
+	const isPredefinedColor = HIGHLIGHTER_COLORS.some(
+		color => color === selectedColor,
+	);
+
+	return (
+		<ButtonWithMenu
+			button={
+				<UiButton
+					id={"tool-add-highlighter"}
+					tooltip={t("toolsPanel.addDrawing.addHighlighter.tooltip")}
+					active={isActive}
+					variant="secondary"
+					rounded="none"
+					onClick={handleClick}
+				>
+					<Icon iconName="Highlighter" />
+				</UiButton>
+			}
+			isOpen={isActive && !isColorSelected}
+		>
+			<UiPanel vertical className={style.panel}>
+				<div className={style.slider}>
+					<SliderPicker
+						onPick={handleSliderPick}
+						min={MIN_DRAWING_STROKE_WIDTH}
+						max={MAX_DRAWING_STROKE_WIDTH}
+						step={STEP_DRAWING_STROKE_WIDTH}
+						value={strokeWidth}
+						showLabel
+					/>
+				</div>
+				<div className={style.colors}>
+					<ColorPicker
+						selectedColor={selectedColor}
+						onPick={handleColorPick}
+						colors={HIGHLIGHTER_COLORS}
+					/>
+					<UiColorInput
+						color={isPredefinedColor ? "none" : selectedColor}
+						isActive={
+							selectedColor !== "none" && !isPredefinedColor
+						}
+						onChange={handleCustomColorPick}
+						setIsCloseMenu={setIsColorSelected}
+					/>
+				</div>
+			</UiPanel>
+		</ButtonWithMenu>
+	);
+}
