@@ -77,7 +77,8 @@ export class TextEditor extends React.Component<
 		const { camera } = this.props.board;
 		const { point, height, maxWidth, maxHeight, textScale } =
 			text.getDimensions();
-		const textWhiteSpace = text.frameMbr ? "pre" : "pre-wrap";
+		const isInsideOfFrame = text.insideOf === "Frame";
+		const textWhiteSpace = isInsideOfFrame ? "pre" : "pre-wrap";
 		point.transform(camera.getMatrix());
 		const left = point.x;
 		/** A heuristic trick to better align editor with canvas */
@@ -87,11 +88,11 @@ export class TextEditor extends React.Component<
 
 		const container = text.getTransformedContainer();
 		container.transform(camera.getMatrix());
-		const editorHeight = text.frameMbr
+		const editorHeight = isInsideOfFrame
 			? height
 			: container.getHeight() / editorScale;
 		// @ts-expect-error maxHeight undefined
-		const editorMaxHeight = text.frameMbr ? height : maxHeight + 1;
+		const editorMaxHeight = isInsideOfFrame ? height : maxHeight + 1;
 		const editorWidth =
 			text.insideOf === "Sticker"
 				? container.getWidth() / editorScale
@@ -241,7 +242,9 @@ export class TextEditor extends React.Component<
 							renderLeaf={Leaf}
 							onBlur={text.handleBlur}
 							onFocus={text.handleFocus}
-							className={text.frameMbr && styles.scrollContainer}
+							className={
+								isInsideOfFrame ? styles.scrollContainer : ""
+							}
 							// placeholder={text.placeholderText}
 							// renderPlaceholder={({ children, attributes }) => (
 							// 	<span
