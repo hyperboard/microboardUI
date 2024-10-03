@@ -31,7 +31,11 @@ export function TextHighlightIndicator({
 				width="10"
 				height="10"
 				rx="5"
-				stroke={color !== "none" ? "white" : "none"}
+				stroke={
+					color === "#FFFFFF" || color === "rgb(255, 255, 255)"
+						? "#D3D5D7"
+						: "rgb(255, 255, 255)"
+				}
 			/>
 		</svg>
 	);
