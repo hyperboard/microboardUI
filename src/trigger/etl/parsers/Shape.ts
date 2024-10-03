@@ -69,11 +69,15 @@ export const parseShape = (payload: ShapePayload): Array<any | null> => {
                 borderWidth: item?.style?.borderWidth || 2,
                 borderOpacity: parseFloat(item?.style?.borderOpacity || "1") || 1,
                 transformation: {
-                    rotate: 0,
+                    rotate: parseInt(`${item.geometry?.rotation}` || "0") || 0,
                     scaleX: width / 100,
                     scaleY: height / 100,
                     translateX: pos.x,
                     translateY: pos.y,
+                    dimension: {
+                        width: width,
+                        height: height,
+                    },
                 },
                 backgroundColor: fillStyle.color === "#ffffff" ? "transparent" : fillStyle.color,
                 backgroundOpacity: fillStyle.color === "#ffffff" ? 0 : fillStyle.opacity,

@@ -293,11 +293,15 @@ export const parseText = (payload: TextPayload): Array<any | null> => {
                 insideOf: "RichText",
                 itemType: "RichText",
                 transformation: {
-                    rotate: 0,
+                    rotate: parseInt(`${item.geometry?.rotation}` || "0") || 0,
                     scaleX: 1,
                     scaleY: 1,
                     translateX: pos.x,
                     translateY: pos.y,
+                    dimension: {
+                        width: item.geometry?.width || 0,
+                        height: item.geometry?.height || 0,
+                    },
                 },
                 placeholderText: "Type something",
                 containerMaxWidth: item?.geometry?.width || 0,

@@ -54,11 +54,15 @@ export const parseSticker = (payload: StickerPayload): Array<any | null> => {
             data: {
                 itemType: "Sticker",
                 transformation: {
-                    rotate: 0,
+                    rotate: parseInt(`${item.geometry?.rotation}` || "0") || 0,
                     scaleX: item.geometry?.width ? item.geometry?.width / 200 : 1,
                     scaleY: item.geometry?.height ? item.geometry?.height / 200 : 1,
                     translateX: pos.x,
                     translateY: pos.y,
+                    dimension: {
+                        width: item.geometry?.width || 0,
+                        height: item.geometry?.height || 0,
+                    },
                 },
                 backgroundColor: item?.style?.fillColor
                     ? colorsSticker[item?.style?.fillColor as keyof typeof colorsSticker] || stickerColors["Sky Blue"]
