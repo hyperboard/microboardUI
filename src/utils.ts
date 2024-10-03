@@ -174,8 +174,8 @@ export function detectLanguage(text: string) {
 	};
 	for (const [lang, regex] of Object.entries(regexes)) {
 		// detect occurances of lang in a word
-		let matches = text.match(regex) || [];
-		let score = matches.length / text.length;
+		const matches = text.match(regex) || [];
+		const score = matches.length / text.length;
 		if (score) {
 			// high percentage, return result
 			if (score > 0.85) {
@@ -185,7 +185,9 @@ export function detectLanguage(text: string) {
 		}
 	}
 	// not detected
-	if (Object.keys(scores).length == 0) return "en";
+	if (Object.keys(scores).length == 0) {
+		return "en";
+	}
 	// pick lang with highest percentage
 	return Object.keys(scores).reduce((a, b) =>
 		scores[a] > scores[b] ? a : b,

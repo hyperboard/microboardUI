@@ -1,12 +1,12 @@
 import React from "react";
 import { Button } from "../../../../shared/ui-lib/Button";
 import { BoardSnapshot } from "../../../../Board/Board";
-import { Template } from "../../types";
 import { useAppContext } from "../../../AppContext";
 import styles from "./TemplateItemPreview.module.css";
 import { pasteSnapshot } from "../../../../utils";
 import { Icon } from "../../../Icon";
 import { TemplateItemsGrid } from "../TemplateItemsGrid/TemplateItemsGrid";
+import { Template } from "../../../Tools/Template";
 
 interface TemplateItemPreviewProps {
 	name: string;
@@ -52,7 +52,7 @@ export const TemplateItemPreview = ({
 				<div className={styles.mainSection}>
 					<iframe
 						className={styles.frame}
-						src={`http://localhost:8000/boards/${viewLinkId}`}
+						src={`${import.meta.env.BASE_URL}/boards/${viewLinkId}`}
 					></iframe>
 					<div className={styles.infoBox}>
 						<h2>{name}</h2>

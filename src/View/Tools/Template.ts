@@ -20,3 +20,14 @@ export type TemplateCategory =
 	| "Agile Workflow"
 	| "Icebreaker & Game"
 	| "Education";
+
+export const CATEGORIES: TemplateCategory[] = [
+	"Research & Analysis",
+	"Diagramming",
+	"Meeting & Workshop",
+	"Strategy & Planning",
+	"Brainstorming",
+	"Agile Workflow",
+	"Icebreaker & Game",
+	"Education",
+];

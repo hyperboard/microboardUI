@@ -126,6 +126,9 @@
 		"addSticker": {
 			"tooltip": "Стикер"
 		},
+		"addTemplate": {
+			"tooltip": "Шаблон"
+		},
 		"addShape": {
 			"tooltip": "Фигура"
 		},

@@ -1,24 +1,19 @@
 import React from "react";
 import styles from "./templateItem.module.css";
-import { Template } from "../../../types";
 import { Button } from "../../../../../shared/ui-lib/Button";
 import { useAppContext } from "../../../../AppContext";
-import { BoardSnapshot } from "../../../../../Board/Board";
 import { pasteSnapshot } from "../../../../../utils";
+import { Template } from "../../../../Tools/Template";
 
 interface TemplateItemProps {
-	preview: string;
-	name: string;
+	template: Template;
 	setPresentedTemplate: (template: null | Template) => void;
-	snapshot: BoardSnapshot;
 	setIsOpen: (isOpen: boolean) => void;
 }
 
 export const TemplateItem = ({
-	preview,
-	name,
+	template,
 	setPresentedTemplate,
-	snapshot,
 	setIsOpen,
 }: TemplateItemProps) => {
 	const { board } = useAppContext();
@@ -26,25 +21,25 @@ export const TemplateItem = ({
 	const pasteSnapshotAndClose = () => {
 		setPresentedTemplate(null);
 		setIsOpen(false);
-		pasteSnapshot({ board, snapshot });
+		pasteSnapshot({ board, snapshot: template.snapshot });
 	};
 
 	return (
 		<div className={styles.card}>
 			<div className={styles.imageBox}>
 				<img
-					onClick={setPresentedTemplate}
+					onClick={() => setPresentedTemplate(template)}
 					className={styles.image}
-					src={preview}
-					alt="template preview"
+					src={template.preview}
+					alt={template.name}
 				/>
 				<div
 					className={styles.buttonsBox}
-					onClick={setPresentedTemplate}
+					onClick={() => setPresentedTemplate(template)}
 				>
 					<div>
 						<Button
-							onClick={setPresentedTemplate}
+							onClick={() => setPresentedTemplate(template)}
 							pattern="tertiary"
 						>
 							Preview
@@ -59,7 +54,7 @@ export const TemplateItem = ({
 				</div>
 			</div>
 			<div className={styles.info}>
-				<p>{name}</p>
+				<p>{template.name}</p>
 			</div>
 		</div>
 	);

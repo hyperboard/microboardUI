@@ -87,10 +87,7 @@ const BoardView = ({ app }: Props): JSX.Element => {
 	}
 
 	return (
-		<TolgeeProvider
-			tolgee={tolgee}
-			fallback="Loading..." // loading fallback
-		>
+		<TolgeeProvider tolgee={tolgee}>
 			<AppContext.Provider value={{ app, board }}>
 				<ModalsWrapper>
 					<ContextMenuContextProvider>

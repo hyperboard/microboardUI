@@ -1,8 +1,8 @@
 import React from "react";
 import styles from "./TemplateItemsGrid.module.css";
 import { TemplateItem } from "./TemplateItem/TemplateItem";
-import { Template } from "../../types";
 import clsx from "clsx";
+import { Template } from "../../../Tools/Template";
 
 interface TemplateItemsGridProps {
 	templates: Template[];
@@ -22,11 +22,9 @@ export const TemplateItemsGrid = ({
 			{templates.map(template => (
 				<TemplateItem
 					key={template.uniq_id}
-					preview={template.preview}
-					name={template.name}
 					setIsOpen={setIsOpen}
-					snapshot={template.snapshot}
-					setPresentedTemplate={() => setPresentedTemplate(template)}
+					template={template}
+					setPresentedTemplate={setPresentedTemplate}
 				/>
 			))}
 		</div>

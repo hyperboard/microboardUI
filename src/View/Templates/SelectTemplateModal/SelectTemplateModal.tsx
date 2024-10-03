@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./SelectTemplateModal.module.css";
 import { ModalSize } from "../../../shared/ui-lib/Modal/Modal";
-import { Template, TemplateCategory } from "../types";
 import { TemplateItemPreview } from "./TemplateItemPreview/TemplateItemPreview";
 import { getApiUrl } from "../../../Config";
 import { Icon } from "../../Icon";
@@ -14,6 +13,8 @@ import { CategoriesMenu } from "./CategoriesMenu/CategoriesMenu";
 import i18next from "i18next";
 import { useDebounce } from "../../../shared/hooks/useDebounce";
 import { TemplateItemsGrid } from "./TemplateItemsGrid/TemplateItemsGrid";
+import { Template, TemplateCategory } from "../../Tools/Template";
+import { LanguagesDropdown } from "./LanguagesDropdown/LanguagesDropdown";
 
 interface SelectTemplateModalProps {
 	isOpen: boolean;
@@ -29,7 +30,6 @@ export const SelectTemplateModal = ({
 	const [presentedTemplate, setPresentedTemplate] = useState<Template | null>(
 		null,
 	);
-	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const [selectedLanguage, setSelectedLanguage] = useState<string>(
 		i18next.language,
 	);
@@ -55,10 +55,6 @@ export const SelectTemplateModal = ({
 		(e: React.ChangeEvent<HTMLInputElement>) =>
 			setInputValue(e.target.value),
 	);
-
-	const toggleDropdown = (): void => {
-		setIsDropdownOpen(!isDropdownOpen);
-	};
 
 	const geTemplates = async (params: {
 		term?: string;
@@ -165,45 +161,10 @@ export const SelectTemplateModal = ({
 							</div>
 							<div className={styles.searchOptions}>
 								<p>{selectedCategory}</p>
-								<div className={styles.dropdown}>
-									<button
-										onClick={toggleDropdown}
-										className={clsx(
-											styles.dropdownButton,
-											isDropdownOpen &&
-												styles.dropdownActive,
-										)}
-									>
-										<Icon
-											width={16}
-											height={16}
-											iconName="Planet"
-										/>
-										{selectedLanguage}
-										<Chevron />
-									</button>
-									{isDropdownOpen && (
-										<ul className={styles.dropdownMenu}>
-											{i18next.languages.map(
-												(item, index) => (
-													<li
-														key={index}
-														className={
-															styles.dropdownItem
-														}
-														onClick={() =>
-															setSelectedLanguage(
-																item,
-															)
-														}
-													>
-														{item}
-													</li>
-												),
-											)}
-										</ul>
-									)}
-								</div>
+								<LanguagesDropdown
+									setSelectedLanguage={setSelectedLanguage}
+									selectedLanguage={selectedLanguage}
+								/>
 							</div>
 							<TemplateItemsGrid
 								templates={templates}

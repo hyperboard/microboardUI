@@ -53,60 +53,6 @@
 	letter-spacing: -0.014em;
 }
 
-.dropdown {
-	position: relative;
-	display: inline-block;
-}
-
-.dropdownButton {
-	display: flex;
-	align-items: center;
-	justify-content: space-around;
-	border: none;
-	height: 32px;
-	width: 112px;
-	background: none;
-	font-size: 14px;
-	font-weight: 500;
-	line-height: 20px;
-	letter-spacing: -0.005em;
-	color: rgba(15, 19, 36, 0.6);
-}
-
-.dropdownButton:hover {
-	background-color: rgba(10, 15, 41, 0.04);
-}
-
-.dropdownMenu {
-	position: fixed;
-	padding: 8px 16px;
-	background-color: #ffffff;
-	width: 112px;
-	z-index: 1;
-	border: 1px solid rgba(233, 234, 236, 1);
-	border-top: none;
-	box-shadow: 0 10px 16px rgba(20, 21, 26, 0.05);
-}
-
-.dropdownItem {
-	text-decoration: none;
-	display: block;
-	font-size: 14px;
-	font-weight: 500;
-	line-height: 20px;
-	letter-spacing: -0.005em;
-	color: rgba(15, 19, 36, 0.6);
-	cursor: pointer;
-}
-
-.dropdownItem:hover {
-	background-color: rgba(10, 15, 41, 0.04);
-}
-
-.dropdownActive svg:last-child {
-	transform: rotate(180deg);
-}
-
 .templatesContainerHeader {
 	display: flex;
 	gap: 12px;

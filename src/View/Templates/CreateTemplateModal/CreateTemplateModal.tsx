@@ -1,11 +1,5 @@
 import { Modal } from "shared/ui-lib/Modal";
-import React, {
-	ChangeEventHandler,
-	ReactNode,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+import React, { ChangeEventHandler, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Input } from "../../../shared/ui-lib/Input";
 import { Button } from "../../../shared/ui-lib/Button";
@@ -13,10 +7,10 @@ import { useAppContext } from "../../AppContext";
 import { getApiUrl } from "../../../Config";
 import Cookies from "js-cookie";
 import styles from "./CreateTemplateModal.module.css";
-import { TemplateCategory } from "../types";
+import { TemplateCategory, CATEGORIES } from "../../Tools/Template";
 import { Dropdown } from "../../../shared/ui-lib/Dropdown/Dropdown";
 import i18next from "i18next";
-import { useTolgee, useTranslate } from "@tolgee/react";
+import { useTolgee } from "@tolgee/react";
 import { detectLanguage } from "../../../utils";
 
 interface CreateTemplateModalProps {
@@ -31,16 +25,12 @@ interface TranslatableInput {
 	defaultValue?: string;
 }
 
-const CATEGORIES: TemplateCategory[] = [
-	"Research & Analysis",
-	"Diagramming",
-	"Meeting & Workshop",
-	"Strategy & Planning",
-	"Brainstorming",
-	"Agile Workflow",
-	"Icebreaker & Game",
-	"Education",
-];
+const TOLGEE_API_KEY =
+	import.meta.env.TOLGEE_API_KEY ||
+	"tgpak_geydamzsl53gs4tbgbyw6ndfg5zwizdpnu2gqmlun4zggy3sgzya";
+const TOLGEE_API_URL =
+	import.meta.env.TOLGEE_API_URL || "https://app.tolgee.io";
+const TOLGEE_PROJECT_ID = import.meta.env.TOLGEE_PROJECT_ID || "10032";
 
 export const CreateTemplateModal = ({
 	isOpen,
@@ -67,13 +57,6 @@ export const CreateTemplateModal = ({
 	]);
 	const { t } = useTranslation();
 	const { board } = useAppContext();
-
-	const TOLGEE_API_KEY =
-		import.meta.env.TOLGEE_API_KEY ||
-		"tgpak_geydamzsl53gs4tbgbyw6ndfg5zwizdpnu2gqmlun4zggy3sgzya";
-	const TOLGEE_API_URL =
-		import.meta.env.TOLGEE_API_URL || "https://app.tolgee.io";
-	const TOLGEE_PROJECT_ID = import.meta.env.TOLGEE_PROJECT_ID || "10032";
 
 	useEffect(() => {
 		return () => {
@@ -332,7 +315,7 @@ export const CreateTemplateModal = ({
 				multilanguageName[name.id.split("templateName")[1]] = value;
 			});
 		}
-		let tags = selectedCategories;
+		const tags = selectedCategories;
 		const snapshot = board.getSnapshot();
 
 		setIsSubmitLoading(true);
