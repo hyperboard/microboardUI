@@ -1336,3 +1336,58 @@ BEGIN
     FROM temp_results;
 END;
 $$;
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto; 
+
+CREATE OR REPLACE FUNCTION generate_random_password(length integer) RETURNS text AS $$
+DECLARE
+  chars text := 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
+  result text := '';
+  i integer := 0;
+BEGIN
+  FOR i IN 1..length LOOP
+    result := result || substr(chars, floor(random() * length(chars) + 1)::integer, 1);
+  END LOOP;
+  RETURN result;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION bcrypt_hash(password text) RETURNS text AS $$
+BEGIN
+  RETURN crypt(password, gen_salt('bf', 10));
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION insert_users_with_passwords(
+    p_count INTEGER,
+    p_prefix TEXT
+)
+RETURNS TABLE (email TEXT, plain_password TEXT) AS $$
+DECLARE
+    v_id INTEGER;
+    v_email TEXT;
+    v_plain_password TEXT;
+BEGIN
+    FOR i IN 1..p_count LOOP
+        -- Insert user
+        v_email := p_prefix || '+' || i || 'u@example.com';
+        INSERT INTO users (email, activated)
+        VALUES (v_email, true)
+        RETURNING id INTO v_id;
+
+        -- Generate password
+        v_plain_password := generate_random_password(12);
+
+        -- Insert password
+        INSERT INTO user_password (user_id, password)
+        VALUES (v_id, bcrypt_hash(v_plain_password));
+
+        -- Return result
+        email := v_email;
+        plain_password := v_plain_password;
+        RETURN NEXT;
+    END LOOP;
+
+    RETURN;
+END;
+$$ LANGUAGE plpgsql;
