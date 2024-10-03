@@ -458,7 +458,7 @@ export const makeInjectedText = (
                 itemType: "RichText",
                 maxWidth: data.maxWidth,
                 maxHeight: data.maxHeight,
-                placeholderText: "Type anything",
+                placeholderText: " ",
                 containerMaxWidth: data.maxWidth,
                 // verticalAlignment: "center",
             },

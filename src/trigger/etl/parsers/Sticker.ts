@@ -81,7 +81,7 @@ export const parseSticker = (payload: StickerPayload): Array<any | null> => {
             colorReverse: item?.style?.fillColor === "black",
         });
 
-        event.operation.data.text = { ...text.event.text, realSize: "auto" };
+        event.operation.data.text = { ...text.event.text, realSize: "auto", placeholderText: " " };
 
         insertEvent = {
             type: "BoardEvent",
