@@ -7,8 +7,11 @@ import { SliderPicker } from "View/Pickers/SliderPicker/SliderPicker";
 import {
 	MAX_DRAWING_STROKE_WIDTH,
 	MIN_DRAWING_STROKE_WIDTH,
-	HIGHLIGHTER_COLORS,
 	STEP_DRAWING_STROKE_WIDTH,
+	PEN_COLORS,
+	HIGHLIGHTER_COLORS,
+	DEFAULT_PEN_COLOR,
+	DEFAULT_HIGHLIGHTER_COLOR,
 } from "View/Tools/AddDrawing";
 import { UiButton } from "View/Ui/UiButton";
 import { UiColorInput } from "View/Ui/UiColorInput";
@@ -16,6 +19,39 @@ import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import { ButtonWithMenu } from "../../ButtonWithMenu";
 import style from "./AddHighlighter.module.css";
 import { useAddDrawingContext } from "../AddDrawingContext";
+
+const convertHexToRGBA = (hex: string, alpha = 0.5) => {
+	const tempHex = hex.replace("#", "");
+	const r = parseInt(tempHex.substring(0, 2), 16);
+	const g = parseInt(tempHex.substring(2, 4), 16);
+	const b = parseInt(tempHex.substring(4, 6), 16);
+
+	return `rgba(${r},${g},${b},${alpha})`;
+};
+
+function rgbToRgba(rgbColor: string, alpha = 0.5) {
+	const rgb = rgbColor.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+	if (!rgb) {
+		return DEFAULT_HIGHLIGHTER_COLOR;
+	}
+	const [r, g, b] = rgb.slice(1);
+	return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function rgbaToRgb(rgbaColor: string) {
+	try {
+		const rgba = rgbaColor.match(
+			/^rgba\((\d+),\s*(\d+),\s*(\d+),\s*(\d+(?:\.\d+)?)\)$/,
+		);
+		if (!rgba) {
+			return DEFAULT_PEN_COLOR;
+		}
+		const [r, g, b, a] = rgba.slice(1);
+		return `rgb(${r}, ${g}, ${b})`;
+	} catch {
+		return DEFAULT_PEN_COLOR;
+	}
+}
 
 export function AddHighlighter() {
 	const [isColorSelected, setIsColorSelected] = useState(false);
@@ -28,15 +64,6 @@ export function AddHighlighter() {
 	const selectedColor = addHighlighter?.getStrokeColor();
 	const strokeWidth = addHighlighter?.getStrokeWidth();
 	const isDrawing = addHighlighter?.isDown;
-
-	const convertHexToRGBA = (hex: string, alpha = 0.5) => {
-		const tempHex = hex.replace("#", "");
-		const r = parseInt(tempHex.substring(0, 2), 16);
-		const g = parseInt(tempHex.substring(2, 4), 16);
-		const b = parseInt(tempHex.substring(4, 6), 16);
-
-		return `rgba(${r},${g},${b},${alpha})`;
-	};
 
 	useEffect(() => {
 		if (isActive) {
@@ -70,8 +97,8 @@ export function AddHighlighter() {
 
 	const handleColorPick = (color: string): void => {
 		if (addHighlighter) {
-			setSelectedColor(color);
-			addHighlighter.setStrokeColor(color);
+			setSelectedColor(rgbToRgba(color));
+			addHighlighter.setStrokeColor(rgbToRgba(color));
 			setIsColorSelected(true);
 		}
 	};
@@ -117,9 +144,11 @@ export function AddHighlighter() {
 				</div>
 				<div className={style.colors}>
 					<ColorPicker
-						selectedColor={selectedColor}
+						selectedColor={
+							selectedColor && rgbaToRgb(selectedColor)
+						}
 						onPick={handleColorPick}
-						colors={HIGHLIGHTER_COLORS}
+						colors={PEN_COLORS}
 					/>
 					<UiColorInput
 						color={isPredefinedColor ? "none" : selectedColor}
