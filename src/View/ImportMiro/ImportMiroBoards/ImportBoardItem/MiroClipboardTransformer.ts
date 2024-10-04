@@ -117,7 +117,7 @@ const TEXT_ALIGNMENT = {
 // tav from style
 const TEXT_VERTICAL_ALIGNMENT = {
 	t: "top",
-	c: "center",
+	m: "center",
 	b: "bottom",
 };
 
@@ -563,8 +563,7 @@ const transformPaint = (
 	const strokeWidth =
 		style.t > MAX_DRAWING_STROKE_WIDTH ? MAX_DRAWING_STROKE_WIDTH : style.t;
 	const points: Point[] = json.points.map(
-		point =>
-			new Point(point.x / strokeWidth / 5, point.y / strokeWidth / 5),
+		point => new Point(point.x / 5, point.y / 5),
 	);
 
 	const transformedPaint: IMiroBoardItemPaint = {
