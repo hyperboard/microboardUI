@@ -411,7 +411,10 @@ export const transformSticker = (
 			textAlignVertical: TEXT_VERTICAL_ALIGNMENT[style.tav] || "middle",
 			fontSize: style.fs?.toString() || "14",
 			fontFamily: style.ffn || "Arial",
-			color: getColor(style.tc),
+			color:
+				STICKER_COLORS[style.sbc] === "black"
+					? "white"
+					: getColor(style.tc),
 		},
 		data: {
 			content: json.text || "",
