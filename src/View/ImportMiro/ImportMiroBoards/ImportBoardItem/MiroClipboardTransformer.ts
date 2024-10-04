@@ -3,6 +3,7 @@ import {
 	IMiroBoardItemConnector,
 	IMiroBoardItemFrame,
 	IMiroBoardItemImage,
+	IMiroBoardItemPaint,
 	IMiroBoardItemShape,
 	IMiroBoardItemSticker,
 	IMiroBoardItemText,
@@ -11,6 +12,11 @@ import {
 } from "../MiroBoards/MiroBoardsModels";
 import { Board } from "Board";
 import { useCopyBoardItems } from "./useCopyBoardItems";
+import {
+	INITIAL_DRAWING_STROKE_WIDTH,
+	MAX_DRAWING_STROKE_WIDTH,
+} from "View/Tools/AddDrawing";
+import { Point } from "Board/Items";
 
 type SupportedMiroType =
 	| IMiroBoardItemConnector
@@ -18,7 +24,8 @@ type SupportedMiroType =
 	| IMiroBoardItemImage
 	| IMiroBoardItemShape
 	| IMiroBoardItemSticker
-	| IMiroBoardItemText;
+	| IMiroBoardItemText
+	| IMiroBoardItemPaint;
 
 interface MiroClipboardItem {
 	widgetData: {
@@ -541,6 +548,48 @@ export const transformFrame = (
 	return transformedFrame;
 };
 
+const transformPaint = (
+	paint: MiroClipboardItem,
+	cursorPosition: {
+		x: number;
+		y: number;
+	},
+): IMiroBoardItemPaint => {
+	const json = paint.widgetData.json!;
+	const style = parseStyle(json.style);
+	const strokeWidth =
+		style.t > MAX_DRAWING_STROKE_WIDTH ? MAX_DRAWING_STROKE_WIDTH : style.t;
+	const points: Point[] = json.points.map(
+		point =>
+			new Point(point.x / strokeWidth / 5, point.y / strokeWidth / 5),
+	);
+
+	const transformedPaint: IMiroBoardItemPaint = {
+		...createBaseItem(paint),
+		type: MiroBoardItemTypes.PAINT,
+		geometry: {
+			width: json.size.width || 100,
+			height: json.size.height || 100,
+		},
+		style: {
+			color: getColor(style.lc),
+			strokeWidth: strokeWidth || INITIAL_DRAWING_STROKE_WIDTH,
+			strokeOpacity: style.lo,
+		},
+		data: {
+			points,
+		},
+		position: {
+			x: (json._position?.offsetPx?.x || 0) + cursorPosition.x,
+			y: (json._position?.offsetPx?.y || 0) + cursorPosition.y,
+			origin: "center",
+			relativeTo: MiroRelativeTo.board,
+		},
+	};
+
+	return transformedPaint;
+};
+
 export const parseItem = (
 	item: MiroClipboardItem,
 	cursorPosition: {
@@ -557,6 +606,8 @@ export const parseItem = (
 			return transformText(item, cursorPosition, clipboardItems);
 		// case "line":
 		//     return transformConnector(item, cursorPosition, clipboardItems);
+		case "paint":
+			return transformPaint(item, cursorPosition);
 		case "sticker":
 			return transformSticker(item, cursorPosition, clipboardItems);
 		case "image":
