@@ -27,7 +27,7 @@ interface TranslatableInput {
 
 const TOLGEE_API_KEY =
 	import.meta.env.TOLGEE_API_KEY ||
-	"tgpak_geydamzsl53gs4tbgbyw6ndfg5zwizdpnu2gqmlun4zggy3sgzya";
+	"tgpak_geydamzsl4zw4ntogvrgcmbvgnwxm5trmnstmmtnmjwxkntlozuq";
 const TOLGEE_API_URL =
 	import.meta.env.TOLGEE_API_URL || "https://app.tolgee.io";
 const TOLGEE_PROJECT_ID = import.meta.env.TOLGEE_PROJECT_ID || "10032";

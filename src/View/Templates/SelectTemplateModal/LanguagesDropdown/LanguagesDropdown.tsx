@@ -5,7 +5,7 @@ import { Chevron } from "../../../../shared/ui-lib/Dropdown/Chevron";
 import i18next from "i18next";
 import styles from "./LanguagesDropdown.module.css";
 
-//This component will be removed after the dropdown from ui lib could be customized
+// This component will be removed after the dropdown from ui lib could be customized
 
 interface Props {
 	setSelectedLanguage: (lan: string) => void;

@@ -75,7 +75,7 @@ const BoardView = ({ app }: Props): JSX.Element => {
 			apiUrl: import.meta.env.TOLGEE_API_URL || "https://app.tolgee.io",
 			apiKey:
 				import.meta.env.TOLGEE_API_KEY ||
-				"tgpak_geydamzsl53gs4tbgbyw6ndfg5zwizdpnu2gqmlun4zggy3sgzya",
+				"tgpak_geydamzsl4zw4ntogvrgcmbvgnwxm5trmnstmmtnmjwxkntlozuq",
 			projectId: import.meta.env.TOLGEE_PROJECT_ID || 10032,
 
 			// for production
