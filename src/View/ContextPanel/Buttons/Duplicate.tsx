@@ -16,7 +16,6 @@ export function Duplicate({ rounded = "none" }: Props) {
 	const handleClick = () => {
 		board.selection.duplicate();
 	};
-
 	return (
 		<UiButton
 			id={"duplicate"}

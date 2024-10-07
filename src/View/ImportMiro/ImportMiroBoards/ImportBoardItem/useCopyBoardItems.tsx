@@ -4,6 +4,7 @@ import {
 	IMiroBoardItemConnector,
 	IMiroBoardItemFrame,
 	IMiroBoardItemImage,
+	IMiroBoardItemPaint,
 	IMiroBoardItemShape,
 	IMiroBoardItemSticker,
 	IMiroBoardItemStyle,
@@ -36,6 +37,7 @@ import { TextNode } from "Board/Items/RichText/Editor/TextNode";
 import type { HorisontalAlignment } from "Board/Items/Alignment";
 import { STICKER_COLORS } from "../../../Tools/AddSticker";
 import { toRelativePoint } from "Board/Items/Connector/ControlPoint";
+import { Drawing } from "Board/Items/Drawing";
 
 interface MiroImage {
 	type: string;
@@ -62,6 +64,10 @@ const INITIAL_GEOMETRY = {
 	frame: {
 		width: 100,
 		height: 100,
+	},
+	paint: {
+		width: 1,
+		height: 1,
 	},
 };
 
@@ -797,6 +803,25 @@ export const useCopyBoardItems = (
 		}
 	};
 
+	const copyPaint = (item: IMiroBoardItemPaint): void => {
+		const { style, data, id } = item;
+
+		const drawing = new Drawing([]);
+		data.points.forEach(point =>
+			drawing.addPoint(new Point(point.x, point.y)),
+		);
+		INITIAL_GEOMETRY.paint.width = data.scale * 100;
+		INITIAL_GEOMETRY.paint.height = data.scale * 100;
+		setTransformation(drawing, item);
+
+		drawing.setStrokeColor(style.color);
+		drawing.setStrokeWidth(Number(style.strokeWidth));
+		drawing.setStrokeOpacity(style.strokeOpacity || 1);
+
+		board.add(drawing);
+		setBoardMiroId(id);
+	};
+
 	const copyBoardItems = (): void => {
 		const itemsTypes: {
 			[key in MiroItemsTypes]: (item: any) => void;
@@ -807,6 +832,7 @@ export const useCopyBoardItems = (
 			text: copyText,
 			frame: copyFrame,
 			connector: copyConnector,
+			paint: copyPaint,
 		};
 
 		miroItems.forEach((item: IMiroBoardItem) => {

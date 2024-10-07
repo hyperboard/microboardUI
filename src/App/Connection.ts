@@ -129,12 +129,14 @@ export function createConnection(): Connection {
 			);
 			const data = await response.json();
 			connectionId = data.connection;
-		} catch (error) {
+		} catch (error: Error) {
 			console.error("Error Establishing Connection:", error);
 			window.parent.postMessage(
 				{
 					pattern: "MicroboardError",
-					payload: JSON.stringify({ error }),
+					payload: JSON.stringify({
+						error: error.message,
+					}),
 				},
 				"*",
 			);
@@ -335,7 +337,7 @@ export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
 			{
 				pattern: "MicroboardError",
 				payload: JSON.stringify({
-					error: `WebsocketClient: error ${event}`,
+					error: `WebsocketClient: error ${JSON.stringify(event)}`,
 				}),
 			},
 			"*",

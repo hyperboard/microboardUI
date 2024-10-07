@@ -44,6 +44,7 @@ export function FontSizePicker({
 						style.button,
 						size === currentFontSize && style.active,
 					)}
+					// disabled={typeof max === "number" && size >= max}
 				>
 					{size}
 				</UiButton>
