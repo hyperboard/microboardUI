@@ -69,11 +69,13 @@ export function ContextPanel() {
 		return null;
 	}
 
-	const isLockedFrame = board.selection.items
+	const lockedFrames = board.selection.items
 		.list()
 		.filter(
 			item => item.transformation.isLocked && item.itemType === "Frame",
 		);
+
+	console.log("Boolean(lockedFrames)", Boolean(lockedFrames));
 
 	const isSelectUnderPointer =
 		board.selection.getContext() === "SelectUnderPointer";
@@ -112,23 +114,7 @@ export function ContextPanel() {
 				padding={0}
 				id="ContextPanel"
 			>
-				{isLockedFrame && (
-					<>
-						<Lock rounded="left" />
-						<Duplicate
-							rounded={
-								isLockedFrame.length > 1 ? "right" : "none"
-							}
-						/>
-						{isLockedFrame.length <= 1 && (
-							<RestOptionsMenu rounded="right">
-								<CopyFrameLink />
-								<ExportFrame />
-							</RestOptionsMenu>
-						)}
-					</>
-				)}
-				{isSelectUnderPointer && (
+				{isSelectUnderPointer && !lockedFrames.length && (
 					<>
 						<Edit />
 						<RestOptionsMenu rounded="right">
@@ -244,7 +230,7 @@ export function ContextPanel() {
 						</RestOptionsMenu>
 					</>
 				)}
-				{isFrame && !isSelectUnderPointer && !isLockedFrame && (
+				{isFrame && !isSelectUnderPointer && !lockedFrames.length && (
 					<>
 						<FrameRatio />
 						<ToggleFrameRatio />
@@ -260,6 +246,20 @@ export function ContextPanel() {
 							<CopyFrameLink />
 							<ExportFrame />
 						</RestOptionsMenu>
+					</>
+				)}
+				{!!lockedFrames.length && (
+					<>
+						<Lock rounded="left" />
+						<Duplicate
+							rounded={lockedFrames.length > 1 ? "right" : "none"}
+						/>
+						{lockedFrames.length <= 1 ? (
+							<RestOptionsMenu rounded="right">
+								<CopyFrameLink />
+								<ExportFrame />
+							</RestOptionsMenu>
+						) : null}
 					</>
 				)}
 				{isDifferentItems && !isSelectUnderPointer && (
