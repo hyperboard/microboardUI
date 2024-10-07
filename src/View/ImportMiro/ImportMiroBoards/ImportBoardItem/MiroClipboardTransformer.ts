@@ -562,9 +562,6 @@ const transformDrawing = (
 	const style = parseStyle(json.style);
 	const strokeWidth =
 		style.t > MAX_DRAWING_STROKE_WIDTH ? MAX_DRAWING_STROKE_WIDTH : style.t;
-	const points: Point[] = json.points.map(
-		point => new Point(point.x / 5, point.y / 5),
-	);
 
 	const transformDrawing: IMiroBoardItemPaint = {
 		...createBaseItem(paint),
@@ -579,7 +576,8 @@ const transformDrawing = (
 			strokeOpacity: style.lo,
 		},
 		data: {
-			points,
+			points: json.points,
+			scale: json.scale,
 		},
 		position: {
 			x: (json._position?.offsetPx?.x || 0) + cursorPosition.x,
