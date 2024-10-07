@@ -15,9 +15,15 @@ export const Lock = ({
 	const { t } = useTranslation();
 	const { board } = useAppContext();
 	const selectedFrames = board.selection.list() as Frame[];
-	const isLocked = selectedFrames.some(
-		frame => frame.transformation.isLocked,
-	);
+	let isLocked = false;
+
+	if (selectedFrames.length > 1) {
+		isLocked = !selectedFrames.some(
+			frame => !frame.transformation.isLocked,
+		);
+	} else if (selectedFrames.length === 1) {
+		isLocked = selectedFrames[0].transformation.isLocked;
+	}
 
 	const handleClick = (): void => {
 		selectedFrames.forEach(frame => {
