@@ -34,6 +34,7 @@ import { TextColor } from "./Buttons/TextColor";
 import { TextHighlight } from "./Buttons/TextHighlight";
 import { ToggleFrameRatio } from "./Buttons/ToggleFrameRatio";
 import { PanelContext } from "./PanelContext";
+import { ConnectorLineColor } from "./Buttons/ConnectorLineColor";
 
 export function ContextPanel() {
 	const { app, board } = useAppContext();
@@ -176,14 +177,13 @@ export function ContextPanel() {
 						<EndPointer />
 						<UiSeparator vertical />
 						<ConnectorType />
+						<ConnectorLineColor />
 						<UiSeparator vertical />
 						<ConnectorAddText />
 						<FontSize />
 						<FontStyle />
-						<UiSeparator vertical />
 						<TextColor />
 						<TextHighlight />
-						<UiSeparator vertical />
 						<Duplicate />
 						<Delete />
 						<RestOptionsMenu>

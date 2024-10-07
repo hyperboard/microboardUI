@@ -185,11 +185,11 @@ export class IframeModule {
 					window.self.dispatchEvent(keyboardEvent);
 				}
 			}
-		} catch (error) {
+		} catch (error: Error) {
 			window.parent.postMessage(
 				{
 					pattern: "MicroboardError",
-					payload: JSON.stringify({ error }),
+					payload: JSON.stringify({ error: error.message }),
 				},
 				"*",
 			);

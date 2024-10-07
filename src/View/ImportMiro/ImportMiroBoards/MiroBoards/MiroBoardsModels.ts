@@ -1,3 +1,5 @@
+import { Point } from "Board/Items";
+
 export interface IMiroBoards {
 	data: IMiroBoard[];
 	total: number;
@@ -27,6 +29,7 @@ export enum MiroBoardItemTypes {
 	CARD = "card",
 	DOCUMENT = "document",
 	MINDMAP = "mindmap_node",
+	PAINT = "paint",
 }
 
 export type MiroItemsTypes =
@@ -35,7 +38,8 @@ export type MiroItemsTypes =
 	| "image"
 	| "text"
 	| "frame"
-	| "connector";
+	| "connector"
+	| "paint";
 
 export interface IMiroBoardItemStyle {
 	borderColor?: string;
@@ -44,12 +48,13 @@ export interface IMiroBoardItemStyle {
 	borderWidth?: string;
 	color: string;
 	fillColor?: string;
-	fillOpacity: string;
-	fontFamily: string;
-	fontSize: string;
-	textAlign: string;
-	textAlignVertical: string;
+	fillOpacity?: string;
+	fontFamily?: string;
+	fontSize?: string;
+	textAlign?: string;
+	textAlignVertical?: string;
 	strokeColor?: string;
+	strokeOpacity?: number;
 	strokeStyle?: string;
 	strokeWidth?: string;
 	startStrokeCap?: string;
@@ -170,6 +175,15 @@ export interface IMiroBoardItemFrame extends IMiroBoardItemBase {
 	position: IMiroPosition;
 }
 
+export interface IMiroBoardItemPaint extends IMiroBoardItemBase {
+	type: MiroBoardItemTypes.PAINT;
+	data: {
+		points: Point[];
+	};
+	geometry: IMiroGeometry;
+	position: IMiroPosition;
+}
+
 interface IMiroBoardConnectionsPoints {
 	links: {
 		self: string;
@@ -206,4 +220,5 @@ export type IMiroBoardItem =
 	| IMiroBoardItemFrame
 	| IMiroBoardItemMindmap
 	| IMiroBoardItemCard
-	| IMiroBoardItemDocument;
+	| IMiroBoardItemDocument
+	| IMiroBoardItemPaint;

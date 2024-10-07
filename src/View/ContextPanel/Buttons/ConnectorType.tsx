@@ -8,6 +8,9 @@ import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
+import { ConnectionLineWidths } from "../../../Board/Items/Connector/Connector";
+import { STEP_STROKE_WIDTH } from "../../Tools/AddShape";
+import { SliderPicker } from "../../Pickers/SliderPicker";
 
 const MENU_NAME = "ConnectorType";
 
@@ -19,6 +22,7 @@ export function ConnectorType(): React.ReactElement | null {
 	const { t } = useTranslation();
 
 	const connectorType = board.selection.getConnectorLineStyle();
+	const connectorLineWidth = board.selection.getConnectorLineWidth();
 	const handleClick = (): void => {
 		toggleMenu(MENU_NAME);
 	};
@@ -27,6 +31,11 @@ export function ConnectorType(): React.ReactElement | null {
 		app.storage.setConnectorLineStyle(type);
 		toggleMenu("None");
 	};
+
+	const handleSliderChange = (width: number): void => {
+		board.selection.setStrokeWidth(width);
+	};
+
 	return (
 		<ButtonWithMenu
 			menuName={MENU_NAME}
@@ -57,13 +66,23 @@ export function ConnectorType(): React.ReactElement | null {
 			{verticalAlign => (
 				<UiPanel
 					rounded={verticalAlign === "bottom" ? "bottom" : "full"}
-					gap={2}
-					padding={2}
-					vertical
+					gap={8}
+					grid
 				>
+					<SliderPicker
+						value={connectorLineWidth}
+						onPick={handleSliderChange}
+						min={ConnectionLineWidths[0]}
+						max={ConnectionLineWidths[7]}
+						step={STEP_STROKE_WIDTH}
+						showLabel
+						id="connector-line-width"
+					/>
 					<ConnectorLineStylePicker
 						onPick={handlePick}
 						selected={connectorType}
+						onSliderChange={handleSliderChange}
+						lineWidth={connectorLineWidth}
 					/>
 				</UiPanel>
 			)}

@@ -29,31 +29,26 @@ export function StickerFontSize() {
 	};
 
 	const handlePick = (size: number) => {
-		text?.autosizeDisable();
 		board.selection.setFontSize(size);
 		toggleMenu("None");
 	};
 	const handleAutoSizePick = () => {
-		text?.autosizeEnable();
-		text?.updateElement();
-		text?.subject.publish(text);
+		board.selection.setFontSize("auto");
 		toggleMenu("None");
 	};
 
 	const handleChevronClick: MouseEventHandler = e => {
 		e.stopPropagation();
 
-		if (!chevronRef.current || !maxFontSize) {
+		if (!chevronRef.current) {
+			console.log("return");
 			return;
 		}
-
-		text?.autosizeDisable();
-
 		const rect = chevronRef.current.getBoundingClientRect();
 		const midpoint = rect.top + rect.height / 2;
 
 		if (e.clientY < midpoint) {
-			if (fontSize >= maxFontSize) {
+			if (fontSize >= (fontSizes.at(-1) ?? 64)) {
 				return;
 			}
 			board.selection.setFontSize(fontSize + 1);

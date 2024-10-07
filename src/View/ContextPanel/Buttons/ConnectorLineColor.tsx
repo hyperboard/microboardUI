@@ -1,51 +1,43 @@
-import { ButtonWithMenu } from "View/ContextPanel/Buttons/ButtonWithMenu";
-import { usePanelContext } from "View/ContextPanel/PanelContext";
-import { TextColorIndicator } from "View/Icon";
-import { ColorPicker } from "View/Pickers/ColorPicker/ColorPicker";
-import { TEXT_COLORS } from "View/Tools/AddText";
-import { UiButton } from "View/Ui/UiButton/UiButton";
-import { UiColorInput } from "View/Ui/UiColorInput";
-import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
-import { Connector } from "../../../Board/Items";
+import { ButtonWithMenu } from "View/ContextPanel/Buttons/ButtonWithMenu";
+import { usePanelContext } from "View/ContextPanel/PanelContext";
+import { FillColorIndicator } from "View/Icon/FillColorIndicator";
+import { ColorPicker } from "View/Pickers/ColorPicker/ColorPicker";
+import { STROKE_COLORS } from "View/Tools/AddShape";
+import { UiButton } from "View/Ui/UiButton/UiButton";
+import { UiColorInput } from "View/Ui/UiColorInput";
+import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 
-const MENU_NAME = "TextColor";
+const MENU_NAME = "ConnectorLineColor";
 
-export function TextColor(): React.ReactElement | null {
+export function ConnectorLineColor(): React.ReactElement | null {
 	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
 		usePanelContext();
 	const { board } = useAppContext();
-	const { t } = useTranslation();
-	const fontColor = board.selection.getFontColor();
 
-	const connector = board.selection.items.getItemsByItemTypes([
-		"Connector",
-	])[0] as Connector;
-	const context = board.selection.getContext();
-	if (
-		context !== "EditTextUnderPointer" &&
-		connector &&
-		!connector.hasText()
-	) {
-		return null;
-	}
+	const { t } = useTranslation();
+
+	const connectorLineColor = board.selection.getConnectorLineColor();
 
 	const handleClick = () => {
 		toggleMenu(MENU_NAME);
 	};
 
 	const handlePick = (color: string) => {
-		board.selection.setFontColor(color);
+		board.selection.setStrokeColor(color);
 		toggleMenu("None");
 	};
 
 	const handleCustomPick = (color: string) => {
-		board.selection.setFontColor(color);
+		board.selection.setStrokeColor(color);
 	};
 
-	const isPredefinedColor = TEXT_COLORS.some(color => color === fontColor);
+	const isPredefinedColor = STROKE_COLORS.some(
+		color => color === connectorLineColor,
+	);
+
 	return (
 		<ButtonWithMenu
 			menuName={MENU_NAME}
@@ -55,15 +47,19 @@ export function TextColor(): React.ReactElement | null {
 			align="left"
 			button={
 				<UiButton
-					id="ChangeTextColor"
-					tooltip={t("contextPanel.textColor.tooltip")}
+					id={"fill-style"}
+					tooltip={t("contextPanel.fillStyle.tooltip")}
 					tooltipPosition="top"
 					onClick={handleClick}
 					variant="secondary"
 					active={openedMenu === MENU_NAME}
 					rounded="none"
 				>
-					<TextColorIndicator color={fontColor} />
+					<FillColorIndicator
+						width={24}
+						height={24}
+						color={connectorLineColor}
+					/>
 				</UiButton>
 			}
 		>
@@ -75,15 +71,17 @@ export function TextColor(): React.ReactElement | null {
 					gap={8}
 				>
 					<ColorPicker
-						id={"TextColor"}
-						colors={TEXT_COLORS}
-						selectedColor={fontColor}
+						id={"connector-line-color"}
+						selectedColor={connectorLineColor}
+						colors={STROKE_COLORS}
 						onPick={handlePick}
 					/>
 					<UiColorInput
 						onChange={handleCustomPick}
-						color={isPredefinedColor ? "none" : fontColor}
-						isActive={fontColor !== "none" && !isPredefinedColor}
+						color={isPredefinedColor ? "none" : connectorLineColor}
+						isActive={
+							connectorLineColor !== "none" && !isPredefinedColor
+						}
 						toggleMenu={toggleMenu}
 					/>
 				</UiPanel>
