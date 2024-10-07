@@ -9,6 +9,8 @@ import React, { MouseEventHandler, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import style from "./FontSize.module.css";
 import { useAppContext } from "View/AppContext";
+import { Connector } from "../../../../Board/Items";
+import { UiSeparator } from "../../../Ui/UiSeparator";
 
 const MENU_NAME = "FontSize";
 
@@ -35,6 +37,18 @@ export function FontSize({ rounded = "none" }: Props) {
 	const chevronRef = useRef<HTMLSpanElement>(null);
 
 	const fontSize = board.selection.getFontSize();
+
+	const connector = board.selection.items.getItemsByItemTypes([
+		"Connector",
+	])[0] as Connector;
+	const context = board.selection.getContext();
+	if (
+		context !== "EditTextUnderPointer" &&
+		connector &&
+		!connector.hasText()
+	) {
+		return null;
+	}
 
 	const handleClick = (): void => {
 		toggleMenu(MENU_NAME);
@@ -63,67 +77,72 @@ export function FontSize({ rounded = "none" }: Props) {
 	};
 
 	return (
-		<ButtonWithMenu
-			menuName={MENU_NAME}
-			openedMenu={openedMenu}
-			panelMbr={panelMbr}
-			windowHeight={windowHeight}
-			align="left"
-			button={verticalAlign => (
-				<UiButton
-					id="pick-font-size"
-					tooltip={t("contextPanel.fontSize.tooltip")}
-					tooltipPosition="top"
-					className={clsx(
-						style.button,
-						verticalAlign === "bottom" &&
-							openedMenu === MENU_NAME &&
-							style.menuBottom,
-					)}
-					onClick={handleClick}
-					variant="secondary"
-					rounded={rounded}
-					active={openedMenu === MENU_NAME}
-				>
-					<span className={style.fontSize}>
-						{board.selection.getAutosize()
-							? t("contextPanel.fontSize.auto")
-							: fontSize}
-					</span>
-					<span
-						ref={chevronRef}
-						onClick={handleChevronClick}
-						className={style.chevron}
-						id="FontSizeChevron"
+		<>
+			<ButtonWithMenu
+				menuName={MENU_NAME}
+				openedMenu={openedMenu}
+				panelMbr={panelMbr}
+				windowHeight={windowHeight}
+				align="left"
+				button={verticalAlign => (
+					<UiButton
+						id="pick-font-size"
+						tooltip={t("contextPanel.fontSize.tooltip")}
+						tooltipPosition="top"
+						className={clsx(
+							style.button,
+							verticalAlign === "bottom" &&
+								openedMenu === MENU_NAME &&
+								style.menuBottom,
+						)}
+						onClick={handleClick}
+						variant="secondary"
+						rounded={rounded}
+						active={openedMenu === MENU_NAME}
 					>
-						<Icon width={20} height={20} iconName="Chevron" />
-					</span>
-				</UiButton>
-			)}
-		>
-			{verticalAlign => (
-				<UiPanel
-					padding={0}
-					vertical
-					className={clsx(style.sizeList)}
-					rounded={verticalAlign === "bottom" ? "bottom" : "full"}
-				>
-					<FontSizePicker
-						id={"FontSize"}
-						currentFontSize={
-							board.selection.getAutosize() ? "auto" : fontSize
-						}
-						fontSizes={fontSizes}
-						showAuto={
-							board.selection.list().length ===
-							board.selection.items.getItemsByItemTypes([
-								"Sticker",
-							]).length
-						}
-						onPick={handlePick}
-					/>
-				</UiPanel>
-			)}
-		</ButtonWithMenu>
+						<span className={style.fontSize}>
+							{board.selection.getAutosize()
+								? t("contextPanel.fontSize.auto")
+								: fontSize}
+						</span>
+						<span
+							ref={chevronRef}
+							onClick={handleChevronClick}
+							className={style.chevron}
+							id="FontSizeChevron"
+						>
+							<Icon width={20} height={20} iconName="Chevron" />
+						</span>
+					</UiButton>
+				)}
+			>
+				{verticalAlign => (
+					<UiPanel
+						padding={0}
+						vertical
+						className={clsx(style.sizeList)}
+						rounded={verticalAlign === "bottom" ? "bottom" : "full"}
+					>
+						<FontSizePicker
+							id={"FontSize"}
+							currentFontSize={
+								board.selection.getAutosize()
+									? "auto"
+									: fontSize
+							}
+							fontSizes={fontSizes}
+							showAuto={
+								board.selection.list().length ===
+								board.selection.items.getItemsByItemTypes([
+									"Sticker",
+								]).length
+							}
+							onPick={handlePick}
+						/>
+					</UiPanel>
+				)}
+			</ButtonWithMenu>
+			<UiSeparator vertical />
+		</>
 	);
 }

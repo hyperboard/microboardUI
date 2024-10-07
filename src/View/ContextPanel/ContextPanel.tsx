@@ -182,10 +182,8 @@ export function ContextPanel() {
 						<ConnectorAddText />
 						<FontSize />
 						<FontStyle />
-						<UiSeparator vertical />
 						<TextColor />
 						<TextHighlight />
-						<UiSeparator vertical />
 						<Duplicate />
 						<Delete />
 						<RestOptionsMenu>
