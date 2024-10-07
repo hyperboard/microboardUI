@@ -1,1 +1,1 @@
-export { UiButton } from "./UiButton";
+export { UiButton, UiDivButton } from "./UiButton";
