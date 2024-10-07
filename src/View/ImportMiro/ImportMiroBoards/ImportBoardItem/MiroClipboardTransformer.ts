@@ -324,7 +324,7 @@ export const transformConnector = (
 			color: getColor(style.tc),
 			fillOpacity: "1",
 			fontFamily: "Arial",
-			fontSize: style.fs || json.line.captions[0].fontSize || "14",
+			fontSize: style.fs || json.line.captions[0]?.fontSize || "14",
 			textAlign: "center",
 			textAlignVertical: "middle",
 		},
@@ -653,7 +653,7 @@ export const pasteMiroClipboard = (board: Board, clipboardJson: any): any => {
 		return acc;
 	}, [] as IMiroBoardItem[]);
 	const miroConnectors = clipboardItems.reduce((acc, item) => {
-		if (item.widgetData.type === "line") {
+		if (item.widgetData?.type === "line") {
 			acc.push(
 				transformConnector(item, initialPositions, clipboardItems),
 			);
