@@ -526,7 +526,7 @@ export const transformFrame = (
 			height: json.height || 100,
 		},
 		style: {
-			fillColor: getColor(style.bc),
+			fillColor: style.bc !== -1 ? getColor(style.bc) : "#ffffff",
 			fillOpacity: style.fo?.toString() || "1",
 			color: "#000000",
 			fontFamily: "Arial",
@@ -601,7 +601,7 @@ export const parseItem = (
 	clipboardItems: MiroClipboardItem[],
 	boardId: string,
 ): SupportedMiroType | null => {
-	switch (item.widgetData.type) {
+	switch (item.widgetData?.type) {
 		case "shape":
 			return transformShape(item, cursorPosition, clipboardItems);
 		case "text":
