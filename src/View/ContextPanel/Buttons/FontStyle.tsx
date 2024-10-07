@@ -7,8 +7,6 @@ import { Icon } from "View/Icon";
 import { FontStylePicker } from "View/Pickers/FontStylePicker";
 import { UiButton } from "View/Ui/UiButton/UiButton";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
-import { Connector } from "../../../Board/Items";
-import { UiSeparator } from "../../Ui/UiSeparator";
 
 const MENU_NAME = "FontStyle";
 
@@ -20,18 +18,6 @@ export function FontStyle(): React.ReactElement | null {
 
 	const fontStyles = board.selection.getText()?.getFontStyles();
 
-	const connector = board.selection.items.getItemsByItemTypes([
-		"Connector",
-	])[0] as Connector;
-	const context = board.selection.getContext();
-	if (
-		context !== "EditTextUnderPointer" &&
-		connector &&
-		!connector.hasText()
-	) {
-		return null;
-	}
-
 	const handleClick = () => {
 		toggleMenu(MENU_NAME);
 	};
@@ -42,41 +28,38 @@ export function FontStyle(): React.ReactElement | null {
 	};
 
 	return (
-		<>
-			<ButtonWithMenu
-				menuName={MENU_NAME}
-				openedMenu={openedMenu}
-				panelMbr={panelMbr}
-				windowHeight={windowHeight}
-				align="left"
-				button={
-					<UiButton
-						id={"ChangeFontStyle"}
-						tooltip={t("contextPanel.fontStyle.tooltip")}
-						tooltipPosition="top"
-						onClick={handleClick}
-						variant="secondary"
-						rounded="none"
-						active={openedMenu === MENU_NAME}
-					>
-						<Icon iconName="TextStyle" />
-					</UiButton>
-				}
-			>
-				{verticalAlign => (
-					<UiPanel
-						padding={12}
-						gap={8}
-						rounded={verticalAlign === "bottom" ? "bottom" : "full"}
-					>
-						<FontStylePicker
-							fontStyles={fontStyles}
-							onPick={handlePick}
-						/>
-					</UiPanel>
-				)}
-			</ButtonWithMenu>
-			<UiSeparator vertical />
-		</>
+		<ButtonWithMenu
+			menuName={MENU_NAME}
+			openedMenu={openedMenu}
+			panelMbr={panelMbr}
+			windowHeight={windowHeight}
+			align="left"
+			button={
+				<UiButton
+					id={"ChangeFontStyle"}
+					tooltip={t("contextPanel.fontStyle.tooltip")}
+					tooltipPosition="top"
+					onClick={handleClick}
+					variant="secondary"
+					rounded="none"
+					active={openedMenu === MENU_NAME}
+				>
+					<Icon iconName="TextStyle" />
+				</UiButton>
+			}
+		>
+			{verticalAlign => (
+				<UiPanel
+					padding={12}
+					gap={8}
+					rounded={verticalAlign === "bottom" ? "bottom" : "full"}
+				>
+					<FontStylePicker
+						fontStyles={fontStyles}
+						onPick={handlePick}
+					/>
+				</UiPanel>
+			)}
+		</ButtonWithMenu>
 	);
 }

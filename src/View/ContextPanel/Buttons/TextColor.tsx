@@ -9,7 +9,6 @@ import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
-import { Connector } from "../../../Board/Items";
 
 const MENU_NAME = "TextColor";
 
@@ -19,18 +18,6 @@ export function TextColor(): React.ReactElement | null {
 	const { board } = useAppContext();
 	const { t } = useTranslation();
 	const fontColor = board.selection.getFontColor();
-
-	const connector = board.selection.items.getItemsByItemTypes([
-		"Connector",
-	])[0] as Connector;
-	const context = board.selection.getContext();
-	if (
-		context !== "EditTextUnderPointer" &&
-		connector &&
-		!connector.hasText()
-	) {
-		return null;
-	}
 
 	const handleClick = () => {
 		toggleMenu(MENU_NAME);

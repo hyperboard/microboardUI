@@ -9,7 +9,6 @@ import React, { MouseEventHandler, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import style from "./FontSize.module.css";
 import { useAppContext } from "View/AppContext";
-import { ReactEditor } from "slate-react";
 
 const MENU_NAME = "FontSize";
 
