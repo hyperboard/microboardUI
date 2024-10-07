@@ -324,7 +324,7 @@ export const transformConnector = (
 			color: getColor(style.tc),
 			fillOpacity: "1",
 			fontFamily: "Arial",
-			fontSize: "14",
+			fontSize: style.fs || json.line.captions[0].fontSize || "14",
 			textAlign: "center",
 			textAlignVertical: "middle",
 		},
@@ -551,7 +551,7 @@ export const transformFrame = (
 	return transformedFrame;
 };
 
-const transformPaint = (
+const transformDrawing = (
 	paint: MiroClipboardItem,
 	cursorPosition: {
 		x: number;
@@ -566,7 +566,7 @@ const transformPaint = (
 		point => new Point(point.x / 5, point.y / 5),
 	);
 
-	const transformedPaint: IMiroBoardItemPaint = {
+	const transformDrawing: IMiroBoardItemPaint = {
 		...createBaseItem(paint),
 		type: MiroBoardItemTypes.PAINT,
 		geometry: {
@@ -589,7 +589,7 @@ const transformPaint = (
 		},
 	};
 
-	return transformedPaint;
+	return transformDrawing;
 };
 
 export const parseItem = (
@@ -609,7 +609,7 @@ export const parseItem = (
 		// case "line":
 		//     return transformConnector(item, cursorPosition, clipboardItems);
 		case "paint":
-			return transformPaint(item, cursorPosition);
+			return transformDrawing(item, cursorPosition);
 		case "sticker":
 			return transformSticker(item, cursorPosition, clipboardItems);
 		case "image":
