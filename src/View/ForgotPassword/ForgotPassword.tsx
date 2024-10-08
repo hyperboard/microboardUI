@@ -99,7 +99,7 @@ export const ForgotPassword: React.FC = () => {
 					{t("auth.requestReceivedSuccessfully")}
 				</p>
 				<Button
-					onClick={() => navigate("/auth/sign-in")}
+					onClick={() => navigate(`/auth/sign-in${location.search}`)}
 					className={styles.backToLogin}
 				>
 					{t("auth.backToLogIn")}
@@ -132,7 +132,7 @@ export const ForgotPassword: React.FC = () => {
 				<Button
 					pattern="ghost"
 					onClick={() => {
-						navigate("/auth/sign-in");
+						navigate(`/auth/sign-in${location.search}`);
 					}}
 				>
 					{t("auth.backToLogIn")}

@@ -230,7 +230,7 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 					error?.message === "Passcode not found" ||
 					error?.message === "User not found"
 				) {
-					navigate("/auth/sign-up");
+					navigate(`/auth/sign-up${location.search}`);
 					return;
 				}
 			})
