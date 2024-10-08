@@ -69,6 +69,12 @@ export class TextEditor extends React.Component<
 	containerRef = React.createRef<HTMLDivElement>();
 	editableRef = React.createRef<HTMLDivElement>();
 
+	onKeyDown(event: React.KeyboardEvent<HTMLDivElement>): void {
+		if (event.key === "Enter" && this.props.text.insideOf === "Frame") {
+			event.preventDefault();
+		}
+	}
+
 	render(): React.ReactElement | null {
 		const text = this.props.text;
 		if (!text) {
@@ -245,6 +251,14 @@ export class TextEditor extends React.Component<
 							className={
 								isInsideOfFrame ? styles.scrollContainer : ""
 							}
+							onKeyDown={e => {
+								if (
+									e.key === "Enter" &&
+									text.insideOf === "Frame"
+								) {
+									e.preventDefault();
+								}
+							}}
 							// placeholder={text.placeholderText}
 							// renderPlaceholder={({ children, attributes }) => (
 							// 	<span

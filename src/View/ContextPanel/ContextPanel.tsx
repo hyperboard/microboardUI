@@ -75,8 +75,6 @@ export function ContextPanel() {
 			item => item.transformation.isLocked && item.itemType === "Frame",
 		);
 
-	console.log("Boolean(lockedFrames)", Boolean(lockedFrames));
-
 	const isSelectUnderPointer =
 		board.selection.getContext() === "SelectUnderPointer";
 
