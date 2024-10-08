@@ -1,5 +1,8 @@
 /* eslint-disable react/prop-types */
 import { App } from "App";
+import { LAST_BOARD_KEY } from "App/App";
+import { useAccount } from "App/useAccount";
+import { useBoardsList } from "App/useBoardsList";
 import React, { useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -9,10 +12,14 @@ import {
 	useSearchParams,
 } from "react-router-dom";
 import { AppView } from "View/AppView";
+import { AppView } from "View/AppView";
 import { AppContext } from "./AppContext";
 import { BoardRenameContextProvider } from "./BoardName";
 import { ContextMenuContextProvider } from "./ContextMenu";
+import { BoardRenameContextProvider } from "./BoardName";
+import { ContextMenuContextProvider } from "./ContextMenu";
 import { useModalInfoContext } from "./Modal/InfoModal";
+import ModalsWrapper from "./Modal/ModalsWrapper";
 import ModalsWrapper from "./Modal/ModalsWrapper";
 import { SidePanelContextProvider } from "./SidePanel/SidePanelContext";
 // import "./index.css";
@@ -30,35 +37,54 @@ const BoardView = ({ app }: Props): JSX.Element => {
 	const codeSearch = searchParams.get("code");
 	const teamIdSearch = searchParams.get("team_id");
 	const isOpenMiroBoards = codeSearch && teamIdSearch;
+	const boardsList = useBoardsList();
+	const account = useAccount();
 
 	const { openModalInfo } = useModalInfoContext();
 
-	app.connection.wsClient.onAccessDenied = (
+	app.connection.wsClient.onAccessDenied = async (
 		deniedBoardId: string,
 		forceUpdate = false,
 	) => {
 		if (
 			forceUpdate ||
 			(deniedBoardId === board.getBoardId() &&
-				!app.storage.showedErrorModals[deniedBoardId] &&
+				!app.boardsList.showedErrorModals[deniedBoardId] &&
 				!isOpenMiroBoards)
 		) {
 			openModalInfo(
 				t("modalInfo.accessDenied.title"),
 				t("modalInfo.accessDenied.description"),
 			);
+			if (!account.isLoggedIn) {
+				await boardsList.remove(board.getBoardId());
+			}
 			navigate("/boards");
-			app.openBoard("blank");
+			await app.openBoard("blank");
 			app.render();
-			app.storage.showedErrorModals[deniedBoardId] = true;
+			app.boardsList.showedErrorModals[deniedBoardId] = true;
 		}
 	};
 
 	useLayoutEffect(() => {
-		if (params.boardId || pathname === "/boards") {
-			app.openBoard(params.boardId || "blank");
-			app.render();
-		}
+		account.init().finally(() => {
+			boardsList.loadBoards().then(() => {
+				if (params.boardId || pathname === "/boards") {
+					app.openBoard(params.boardId || "blank").then(() => {
+						if (params.boardId) {
+							navigate(`/boards/${params.boardId}`, {
+								replace: true,
+							});
+						} else {
+							navigate(`/boards/blank`, {
+								replace: true,
+							});
+						}
+						app.render();
+					});
+				}
+			});
+		});
 	}, []);
 
 	if (!board) {

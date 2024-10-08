@@ -1,20 +1,18 @@
-import { getApiUrl } from "Config";
+import { useAccount } from "App/useAccount";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { createSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "shared/ui-lib/Button";
+import { Button } from "shared/ui-lib/Button";
 import { Input } from "shared/ui-lib/Input/Input";
+import { OuterLink } from "shared/ui-lib/OuterLink";
+import isEmail from "validator/lib/isEmail";
 import { OuterLink } from "shared/ui-lib/OuterLink";
 import isEmail from "validator/lib/isEmail";
 import { Tail } from "View/AuthView/Tail";
 import { EmailIcon } from "./EmailIcon";
 import { LockIcon } from "./LockIcon";
 import styles from "./SignupView.module.css";
-
-type RegisterOkResponse = {
-	id: number;
-	email: string;
-};
 
 export const SignupView = (): React.ReactElement => {
 	const { t } = useTranslation();
@@ -24,6 +22,7 @@ export const SignupView = (): React.ReactElement => {
 	const [isSubmitLoading, setIsSubmitLoading] = useState(false);
 	const [error, setError] = useState<string>("");
 	const [emailError, setEmailError] = useState<string>("");
+	const account = useAccount();
 
 	const checkEmail = (): boolean => {
 		const email = formRef.current?.email.value;
@@ -82,40 +81,28 @@ export const SignupView = (): React.ReactElement => {
 
 		setIsDisabled(true);
 		setIsSubmitLoading(true);
-		fetch(getApiUrl("/auth/register"), {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				email: event.currentTarget.email.value,
-				password: event.currentTarget.password.value,
-			}),
-		})
-			.then(async response => {
-				if (response.ok) {
-					return response.json();
-				} else {
-					const data = await response.json();
-					return Promise.reject(data);
-				}
-			})
+
+		account
+			.register(
+				event.currentTarget.email.value,
+				event.currentTarget.password.value,
+			)
+			.then(res => res.data)
 			.catch(error => {
 				if (`${error?.status}` === "409") {
 					setError(t("auth.userAlreadyExists"));
 				}
 			})
-			.then((data: RegisterOkResponse) => {
-				navigate({
-					pathname: "/auth/verify",
-					search: createSearchParams({
-						...Object.fromEntries(
-							new URLSearchParams(location.search),
-						),
-						userId: `${data.id}`,
-						email: data.email,
-					}).toString(),
-				});
+			.then(data => {
+				if (data) {
+					navigate({
+						pathname: "/auth/verify",
+						search: createSearchParams({
+							userId: `${data.id}`,
+							email: data.email,
+						}).toString(),
+					});
+				}
 			})
 			.catch(error => {
 				// setErrorMessage(error.message);

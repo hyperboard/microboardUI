@@ -218,7 +218,8 @@
 		"cancel": "Cancel",
 		"passwordDoNotMatch": "The entered passwords do not match",
 		"currentPasswordIsIncorrect": "The current password you entered is incorrect. Please try again",
-		"enterAValidEmailAddress": "Enter a valid email address"
+		"enterAValidEmailAddress": "Enter a valid email address",
+		"sessionExpired": "Session expired. Please login again"
 	},
 	"modal": {
 		"canEdit": "Can edit",
@@ -341,6 +342,7 @@
 	},
 	"contextMenu": {
 		"delete": "Delete",
+		"deleteShared": "Remove from my list",
 		"addNew": "Add new",
 		"rename": "Rename"
 	},

@@ -1,12 +1,15 @@
-import React, { CSSProperties, PropsWithChildren } from "react";
+import React, { CSSProperties, forwardRef, PropsWithChildren } from "react";
 import style from "./FolderItem.module.css";
 
 type Props = PropsWithChildren<{ customStyle?: CSSProperties }>;
 
-export function FolderItem({ children, customStyle }: Props) {
+export const FolderItem = forwardRef<HTMLLIElement, Props>(function FolderItem(
+	{ children, customStyle },
+	ref,
+) {
 	return (
-		<li className={style.item} style={customStyle}>
+		<li ref={ref} className={style.item} style={customStyle}>
 			{children}
 		</li>
 	);
-}
+});

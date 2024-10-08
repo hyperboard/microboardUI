@@ -43,9 +43,6 @@ export function AppView() {
 
 	useEffect(() => {
 		app.boardSubject.subscribe(update);
-		if (app.storage.isAuth) {
-			app.storage.fetchBoards();
-		}
 		const container = containerRef.current;
 		const controller = app.controller;
 		if (container) {
@@ -105,18 +102,6 @@ export function AppView() {
 			}
 		};
 	}, [containerRef.current]);
-
-	const urlString = new URL(window.location.href).pathname;
-	const firstPath = urlString.split("/").pop();
-	const boardId = params?.boardId || firstPath;
-
-	if (boardId && firstPath !== "boards") {
-		app.openBoard(boardId!);
-	}
-
-	if (!board && boardId !== "boards") {
-		return <div></div>;
-	}
 
 	const appBoard = app.getBoard();
 	return (

@@ -1,12 +1,10 @@
 import type { App } from "App";
+import { useAccount } from "App/useAccount";
 import clsx from "clsx";
-import { getApiUrl } from "Config";
-import Cookies from "js-cookie";
 import { isMicroboardIframe } from "lib/isMicroboardIframe";
 import React, { RefObject, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "shared/hooks/useAuth";
 import { useOutsideClickHandler } from "shared/hooks/useOutsideClickHandler";
 import { Button } from "shared/ui-lib/Button";
 import { Input } from "shared/ui-lib/Input";
@@ -20,8 +18,6 @@ import { PasswordChanged } from "View/Widgets/form-notifications/password-change
 import { ChangePassword } from "./icons/ChangePassword";
 import { Logout } from "./icons/Logout";
 import styles from "./UserPanel.module.css";
-import { useAppContext } from "View/AppContext";
-import { useClickOutside } from "lib/useClickOutside";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	email?: string;
@@ -41,14 +37,21 @@ export const UserDropDown: React.FC<UserDropDownProps> = ({
 	openerRef,
 	customTop,
 }) => {
+	const dropdownRef = useRef<HTMLDivElement>(null);
+	const nav = useNavigate();
+	const account = useAccount();
+
 	const closeDropdown = (): void => {
 		setIsDropdownOpen(false);
 	};
 
-	const dropdownRef = useClickOutside(
-		closeDropdown,
-		openerRef ? [openerRef] : [],
-	);
+
+	useOutsideClickHandler(dropdownRef, closeDropdown);
+	const logout = (): void => {
+		account.logout().then(() => {
+			nav(0);
+		});
+	};
 
 	if (!isOpen) {
 		return null;
@@ -178,6 +181,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 	const [error, setError] = useState("");
 	const { t } = useTranslation();
 	const [isPasswordChanged, setIsPasswordChanged] = useState(false);
+	const account = useAccount();
 	// const navigate = useNavigate();
 
 	// const [currentPassword, setCurrentPassword] = useState("");
@@ -205,26 +209,14 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 
 		setIsSubmitDisabled(true);
 		setIsSubmitLoading(true);
-		fetch(`${getApiUrl()}/auth/password/change`, {
-			method: "PATCH",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${Cookies.get("accessToken")}`,
-			},
-			body: JSON.stringify({
-				oldPassword: formRef.current.currentPassword.value,
-				newPassword: formRef.current.newPassword.value,
-			}),
-		})
-			.then(async response => {
-				if (response.ok) {
-					// setIsOpen(false);
-					setIsPasswordChanged(true);
-					return response.json();
-				} else {
-					const data = await response.json();
-					return Promise.reject(data);
-				}
+
+		account
+			.changePassword(
+				formRef.current.currentPassword.value,
+				formRef.current.newPassword.value,
+			)
+			.then(() => {
+				setIsPasswordChanged(true);
 			})
 			.catch(error => {
 				if (error?.message === "Wrong password") {
@@ -414,16 +406,16 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 };
 
 export const UserPanel: React.FC<{ app: App }> = ({ app }) => {
-	const { isAuth, email } = useAuth(app);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const { t } = useTranslation();
 	const navigate = useNavigate();
+	const account = useAccount();
 
 	const insideOfMicroboard =
 		document.referrer.includes("https://microboard.io/") ||
 		document.referrer.includes("https://microboard.ru/");
 
-	if (!isAuth) {
+	if (!account.isLoggedIn) {
 		return (
 			<UiPanel
 				padding={0}
@@ -543,7 +535,11 @@ export const UserPanel: React.FC<{ app: App }> = ({ app }) => {
 
 				{/* TODO: remove temporarily inline style */}
 				<div style={{ padding: "8px 6px" }}>
-					<UserPic email={email} setIsModalOpen={setIsModalOpen} />
+					<UserPic
+						email={account.info?.email ?? ""}
+						setIsModalOpen={setIsModalOpen}
+						app={app}
+					/>
 				</div>
 			</UiPanel>
 

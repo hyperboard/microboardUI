@@ -79,6 +79,7 @@ export interface Connection {
 		boardId: string,
 		callback: (serverMessage: SocketMessage) => void,
 	): void;
+	publishAuth(jwt: string): void;
 	publishBoardEvent(boardId: string, event: BoardEvent): void;
 	publishSnapshot(boardId: string, snapshot: BoardSnapshot): void;
 	wsClient: WsClient;
@@ -218,6 +219,13 @@ export function createConnection(): Connection {
 		);
 	}
 
+	function publishAuth(jwt: string): void {
+		ws.send({
+			type: "Auth",
+			jwt,
+		});
+	}
+
 	function publishBoardEvent(boardId: string, event: BoardEvent): void {
 		ws.send({
 			type: "BoardEvent",
@@ -249,6 +257,7 @@ export function createConnection(): Connection {
 		publishBoardEvent,
 		publishSnapshot,
 		wsClient: ws,
+		publishAuth,
 	};
 }
 
@@ -259,6 +268,7 @@ interface WsClient {
 	send: (message: SocketMessage) => void;
 	isConnected: () => boolean;
 	onAccessDenied: (boardId: string, forceUpdate?: boolean) => void;
+	onConnect: () => void;
 }
 
 type SocketMsgHandler = (message: SocketMessage) => void;
@@ -279,6 +289,10 @@ export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
 
 	let onAccessDenied = (boardId: string): void => {
 		console.error("Not implemented. Access denied to board:", boardId);
+	};
+
+	let onConnect = (): void => {
+		console.error("onConnect callback not implemented.");
 	};
 
 	function onMessage(event: MessageEvent<SocketMessage>): void {
@@ -369,6 +383,12 @@ export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
 			handler: (boardId: string, forceUpdate?: boolean) => void,
 		) {
 			onAccessDenied = handler;
+		},
+		get onConnect() {
+			return onConnect;
+		},
+		set onConnect(handler: () => void) {
+			onConnect = handler;
 		},
 	};
 }
