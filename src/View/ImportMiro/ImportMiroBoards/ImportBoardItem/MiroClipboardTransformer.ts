@@ -3,6 +3,7 @@ import {
 	IMiroBoardItemConnector,
 	IMiroBoardItemFrame,
 	IMiroBoardItemImage,
+	IMiroBoardItemPaint,
 	IMiroBoardItemShape,
 	IMiroBoardItemSticker,
 	IMiroBoardItemText,
@@ -11,6 +12,11 @@ import {
 } from "../MiroBoards/MiroBoardsModels";
 import { Board } from "Board";
 import { useCopyBoardItems } from "./useCopyBoardItems";
+import {
+	INITIAL_DRAWING_STROKE_WIDTH,
+	MAX_DRAWING_STROKE_WIDTH,
+} from "View/Tools/AddDrawing";
+import { Point } from "Board/Items";
 
 type SupportedMiroType =
 	| IMiroBoardItemConnector
@@ -18,7 +24,8 @@ type SupportedMiroType =
 	| IMiroBoardItemImage
 	| IMiroBoardItemShape
 	| IMiroBoardItemSticker
-	| IMiroBoardItemText;
+	| IMiroBoardItemText
+	| IMiroBoardItemPaint;
 
 interface MiroClipboardItem {
 	widgetData: {
@@ -110,7 +117,7 @@ const TEXT_ALIGNMENT = {
 // tav from style
 const TEXT_VERTICAL_ALIGNMENT = {
 	t: "top",
-	c: "center",
+	m: "center",
 	b: "bottom",
 };
 
@@ -317,7 +324,7 @@ export const transformConnector = (
 			color: getColor(style.tc),
 			fillOpacity: "1",
 			fontFamily: "Arial",
-			fontSize: "14",
+			fontSize: style.fs || json.line.captions[0]?.fontSize || "14",
 			textAlign: "center",
 			textAlignVertical: "middle",
 		},
@@ -404,7 +411,10 @@ export const transformSticker = (
 			textAlignVertical: TEXT_VERTICAL_ALIGNMENT[style.tav] || "middle",
 			fontSize: style.fs?.toString() || "14",
 			fontFamily: style.ffn || "Arial",
-			color: getColor(style.tc),
+			color:
+				STICKER_COLORS[style.sbc] === "black"
+					? "white"
+					: getColor(style.tc),
 		},
 		data: {
 			content: json.text || "",
@@ -516,7 +526,7 @@ export const transformFrame = (
 			height: json.height || 100,
 		},
 		style: {
-			fillColor: getColor(style.bc),
+			fillColor: style.bc !== -1 ? getColor(style.bc) : "#ffffff",
 			fillOpacity: style.fo?.toString() || "1",
 			color: "#000000",
 			fontFamily: "Arial",
@@ -541,6 +551,45 @@ export const transformFrame = (
 	return transformedFrame;
 };
 
+const transformDrawing = (
+	paint: MiroClipboardItem,
+	cursorPosition: {
+		x: number;
+		y: number;
+	},
+): IMiroBoardItemPaint => {
+	const json = paint.widgetData.json!;
+	const style = parseStyle(json.style);
+	const strokeWidth =
+		style.t > MAX_DRAWING_STROKE_WIDTH ? MAX_DRAWING_STROKE_WIDTH : style.t;
+
+	const transformDrawing: IMiroBoardItemPaint = {
+		...createBaseItem(paint),
+		type: MiroBoardItemTypes.PAINT,
+		geometry: {
+			width: json.size.width || 100,
+			height: json.size.height || 100,
+		},
+		style: {
+			color: getColor(style.lc),
+			strokeWidth: strokeWidth || INITIAL_DRAWING_STROKE_WIDTH,
+			strokeOpacity: style.lo,
+		},
+		data: {
+			points: json.points,
+			scale: json.scale,
+		},
+		position: {
+			x: (json._position?.offsetPx?.x || 0) + cursorPosition.x,
+			y: (json._position?.offsetPx?.y || 0) + cursorPosition.y,
+			origin: "center",
+			relativeTo: MiroRelativeTo.board,
+		},
+	};
+
+	return transformDrawing;
+};
+
 export const parseItem = (
 	item: MiroClipboardItem,
 	cursorPosition: {
@@ -550,13 +599,15 @@ export const parseItem = (
 	clipboardItems: MiroClipboardItem[],
 	boardId: string,
 ): SupportedMiroType | null => {
-	switch (item.widgetData.type) {
+	switch (item.widgetData?.type) {
 		case "shape":
 			return transformShape(item, cursorPosition, clipboardItems);
 		case "text":
 			return transformText(item, cursorPosition, clipboardItems);
 		// case "line":
 		//     return transformConnector(item, cursorPosition, clipboardItems);
+		case "paint":
+			return transformDrawing(item, cursorPosition);
 		case "sticker":
 			return transformSticker(item, cursorPosition, clipboardItems);
 		case "image":
@@ -600,7 +651,7 @@ export const pasteMiroClipboard = (board: Board, clipboardJson: any): any => {
 		return acc;
 	}, [] as IMiroBoardItem[]);
 	const miroConnectors = clipboardItems.reduce((acc, item) => {
-		if (item.widgetData.type === "line") {
+		if (item.widgetData?.type === "line") {
 			acc.push(
 				transformConnector(item, initialPositions, clipboardItems),
 			);

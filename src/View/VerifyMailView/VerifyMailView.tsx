@@ -51,8 +51,14 @@ const verifyEmail = async (email: string, passcode: string): Promise<any> => {
 			if (data?.status >= 300) {
 				return Promise.reject(data);
 			}
-			Cookies.set("accessToken", data.accessToken);
-			Cookies.set("refreshToken", data.refreshToken);
+			Cookies.set("accessToken", data.accessToken, {
+				secure: true,
+				sameSite: "none",
+			});
+			Cookies.set("refreshToken", data.refreshToken, {
+				secure: true,
+				sameSite: "none",
+			});
 			return data;
 		});
 };
@@ -104,8 +110,14 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 					if (data?.status >= 300) {
 						return Promise.reject(data);
 					}
-					Cookies.set("accessToken", data.accessToken);
-					Cookies.set("refreshToken", data.refreshToken);
+					Cookies.set("accessToken", data.accessToken, {
+						secure: true,
+						sameSite: "none",
+					});
+					Cookies.set("refreshToken", data.refreshToken, {
+						secure: true,
+						sameSite: "none",
+					});
 					return data;
 				})
 				.then(async () => {
@@ -218,7 +230,7 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 					error?.message === "Passcode not found" ||
 					error?.message === "User not found"
 				) {
-					navigate("/auth/sign-up");
+					navigate(`/auth/sign-up${location.search}`);
 					return;
 				}
 			})
@@ -280,9 +292,13 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 			searchParams.get("passcode") || "",
 		)
 			.then(async (data): Promise<void> => {
-				Cookies.set("accessToken", data.accessToken, { secure: true });
+				Cookies.set("accessToken", data.accessToken, {
+					secure: true,
+					sameSite: "none",
+				});
 				Cookies.set("refreshToken", data.refreshToken, {
 					secure: true,
+					sameSite: "none",
 				});
 				if (localStorage.getItem(LAST_BOARD_KEY_QS)) {
 					navigate(
