@@ -1,5 +1,5 @@
 .sidePanel {
-	transition: max-width 0.3s;
+	transition: max-width 0.3s, outline 0.3s 0.35s, box-shadow 0.3s 0.35s;
 	overflow: hidden;
 	max-width: 0;
 	display: block;
@@ -21,6 +21,11 @@
 	margin-left: 12px;
 }
 
+.sidePanel.open.highlited {
+	box-shadow: 0px 0px 0px 4px rgba(200, 178, 255, 0.5);
+	outline: 1px solid rgba(183, 138, 240, 1);
+}
+
 @media screen and (max-width: 640px) {
 	.sidePanel.open {
 		max-width: calc(100dvw - 86px);
@@ -29,6 +34,7 @@
 
 .content {
 	padding: 8px 0;
+	padding-right: 3px;
 	min-width: 100%;
 	display: flex;
 	flex-direction: column;

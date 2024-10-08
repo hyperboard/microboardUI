@@ -6,18 +6,24 @@ import { useBoardRenameContext } from "View/BoardName";
 
 const NoBoardIsOpen: React.FC = () => {
 	const { t } = useTranslation();
-	const { openMenu, handleAddNew } = useSidePanelContext();
+	const { openMenu, handleAddNew, isOpen } = useSidePanelContext();
 	const { setNewBoardName, setRenamingBoardId } = useBoardRenameContext();
 
 	const handleOpenMenu: React.MouseEventHandler = event => {
 		event.stopPropagation();
 		event.preventDefault();
-		openMenu();
+		if (isOpen) {
+			openMenu(1500);
+		} else {
+			openMenu();
+		}
 	};
 
 	const handleCreateNewBoard: React.MouseEventHandler = event => {
+		event.preventDefault();
+		event.stopPropagation();
 		handleAddNew(boardId => {
-			handleOpenMenu(event);
+			openMenu();
 			setNewBoardName(t("board.untitled"));
 			setRenamingBoardId(boardId);
 		});

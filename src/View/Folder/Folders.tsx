@@ -1,9 +1,9 @@
-import React, { CSSProperties } from "react";
+import React, { CSSProperties, useRef } from "react";
 import { Folder, FolderItem } from "View/Folder";
 import { Icon } from "View/Icon";
-import { VisitedPublicBoard } from "App/Storage";
 import { BoardName } from "View/BoardName";
 import { useTranslation } from "react-i18next";
+import { boardsApi } from "shared/api";
 
 interface FoldersProps {
 	containerClassName: string;
@@ -14,17 +14,17 @@ interface FoldersProps {
 	isPublicOpened: boolean;
 	isSharedOpened: boolean;
 	currBoardId?: string;
-	publicBoards: VisitedPublicBoard[];
-	sharedBoards: VisitedPublicBoard[];
-	activeBoardFunction?: (board: VisitedPublicBoard) => boolean;
-	boardNameOnClick: (board: VisitedPublicBoard) => void;
+	publicBoards: boardsApi.Board[];
+	sharedBoards: boardsApi.Board[];
+	activeBoardFunction?: (board: boardsApi.Board) => boolean;
+	boardNameOnClick: (board: boardsApi.Board) => void;
 	boardNameOnClickContext?: (
-		board: VisitedPublicBoard,
+		board: boardsApi.Board,
 	) => (event: React.MouseEvent) => void;
 	boardNameOnDoubleClick?: (
-		board: VisitedPublicBoard,
+		board: boardsApi.Board,
 	) => (event: React.MouseEvent) => void;
-	boardNameChildren: (board: VisitedPublicBoard) => React.ReactNode;
+	boardNameChildren: (board: boardsApi.Board) => React.ReactNode;
 }
 
 const Folders: React.FC<FoldersProps> = ({
@@ -35,7 +35,7 @@ const Folders: React.FC<FoldersProps> = ({
 	isAuth,
 	isPublicOpened,
 	isSharedOpened,
-	currBoardId,
+	// Misnaming, in fact contains both private and public boards
 	publicBoards,
 	sharedBoards,
 	activeBoardFunction,
@@ -43,9 +43,25 @@ const Folders: React.FC<FoldersProps> = ({
 	boardNameOnClickContext,
 	boardNameOnDoubleClick,
 	boardNameChildren,
+	currBoardId,
 }) => {
 	const { t } = useTranslation();
 
+	const draftBoards = publicBoards.filter(board => board.isPublic);
+	const privateBoards = publicBoards.filter(board => !board.isPublic);
+
+	const sharedBoardsRefs = useRef<HTMLLIElement[]>([]);
+	const scrollToElem = (scrollToN: number) => {
+		for (let i = scrollToN - 1; i >= 0; i--) {
+			if (sharedBoardsRefs.current[i]) {
+				sharedBoardsRefs.current[i].scrollIntoView({
+					block: "nearest",
+					behavior: "smooth",
+				});
+				return;
+			}
+		}
+	};
 	return (
 		<div className={containerClassName}>
 			{isAuth && (
@@ -57,6 +73,33 @@ const Folders: React.FC<FoldersProps> = ({
 					customList={customListStyle}
 					currBoardId={currBoardId}
 				>
+					{privateBoards.map(board => (
+						<FolderItem
+							key={board.id}
+							customStyle={customFolderItemStyle}
+						>
+							<BoardName
+								active={
+									activeBoardFunction
+										? activeBoardFunction(board)
+										: undefined
+								}
+								onClick={() => boardNameOnClick(board)}
+								onClickContext={
+									boardNameOnClickContext
+										? boardNameOnClickContext(board)
+										: undefined
+								}
+								onDoubleClick={
+									boardNameOnDoubleClick
+										? boardNameOnDoubleClick(board)
+										: undefined
+								}
+							>
+								{boardNameChildren(board)}
+							</BoardName>
+						</FolderItem>
+					))}
 					<Folder
 						title={t("sidePanel.folders.publicDrafts")}
 						icon={
@@ -69,11 +112,10 @@ const Folders: React.FC<FoldersProps> = ({
 						isOpened={isPublicOpened}
 						customHeader={customHeaderStyle}
 						customList={customListStyle}
-						currBoardId={currBoardId}
 					>
-						{publicBoards.map(board => (
+						{draftBoards.map(board => (
 							<FolderItem
-								key={board.boardId}
+								key={board.id}
 								customStyle={customFolderItemStyle}
 							>
 								<BoardName
@@ -114,7 +156,7 @@ const Folders: React.FC<FoldersProps> = ({
 				>
 					{publicBoards.map(board => (
 						<FolderItem
-							key={board.boardId}
+							key={board.id}
 							customStyle={customFolderItemStyle}
 						>
 							<BoardName
@@ -147,12 +189,24 @@ const Folders: React.FC<FoldersProps> = ({
 				isOpened={isSharedOpened}
 				customHeader={customHeaderStyle}
 				customList={customListStyle}
+				onToggle={isOpen => {
+					if (!isOpen) {
+						setTimeout(() => {
+							scrollToElem(3);
+						}, 500);
+					}
+				}}
 				currBoardId={currBoardId}
 			>
-				{sharedBoards.map(board => (
+				{sharedBoards.map((board, idx) => (
 					<FolderItem
-						key={board.boardId}
+						key={board.id}
 						customStyle={customFolderItemStyle}
+						ref={el => {
+							if (el) {
+								sharedBoardsRefs.current[idx] = el;
+							}
+						}}
 					>
 						<BoardName
 							active={

@@ -216,7 +216,8 @@
 		"cancel": "Отменить",
 		"passwordDoNotMatch": "Введенные пароли не совпадают",
 		"currentPasswordIsIncorrect": "Текущий пароль введен неправильно. Попробуйте еще раз",
-		"enterAValidEmailAddress": "Введите корректный email"
+		"enterAValidEmailAddress": "Введите корректный email",
+		"sessionExpired": "Сессия истекла. Пожалуйста, войдите еще раз"
 	},
 	"modal": {
 		"canEdit": "Можно редактировать",
@@ -339,6 +340,7 @@
 	},
 	"contextMenu": {
 		"delete": "Удалить",
+		"deleteShared": "Убрать из списка",
 		"addNew": "Добавить",
 		"rename": "Переименовать"
 	},

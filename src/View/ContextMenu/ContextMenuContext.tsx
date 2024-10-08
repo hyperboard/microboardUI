@@ -30,7 +30,6 @@ export function ContextMenuContextProvider({ children }: Props) {
 		if (boardId) {
 			setBoardId(boardId);
 		}
-
 		setX(x);
 		setY(y);
 		setIsOpen(true);

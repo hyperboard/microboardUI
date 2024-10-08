@@ -9,19 +9,8 @@ type RootViewProps = {
 const RootView: React.FC<RootViewProps> = ({ app }) => {
 	const navigate = useNavigate();
 
-	const createPublicBoard = async (app: App): Promise<string> => {
-		const board = await app.createPublicBoard();
-		app.openBoard(board);
-		return board;
-	};
-
 	React.useEffect(() => {
-		createPublicBoard(app)
-			.then(boardId => {
-				navigate(`/boards/${boardId}`);
-			})
-			.catch(console.error);
-		// TODO notify user;
+		navigate(`/boards`);
 	}, []);
 
 	return (

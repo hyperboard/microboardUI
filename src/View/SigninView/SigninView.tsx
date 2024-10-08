@@ -1,7 +1,7 @@
 import { App } from "App";
 import { LAST_BOARD_KEY_QS } from "App/App";
-import { getApiUrl } from "Config";
-import Cookies from "js-cookie";
+import { useAccount } from "App/useAccount";
+import { useBoardsList } from "App/useBoardsList";
 import { isEmail } from "lib/regex";
 import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -9,15 +9,11 @@ import { createSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "shared/ui-lib/Button";
 import { Input } from "shared/ui-lib/Input/Input";
 import { OuterLink } from "shared/ui-lib/OuterLink";
+import { OuterLink } from "shared/ui-lib/OuterLink";
 import { Tail } from "View/AuthView/Tail";
 import { EmailIcon } from "View/SignupView/EmailIcon";
 import { LockIcon } from "View/SignupView/LockIcon";
 import styles from "./SigninView.module.css";
-
-type RegisterOkResponse = {
-	accessToken: string;
-	refreshToken: string;
-};
 
 interface Props {
 	app: App;
@@ -32,8 +28,8 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 	const formRef = useRef<HTMLFormElement>(null);
 	const [emailError, setEmailError] = useState<string>("");
 	const [errorText, setErrorText] = useState<string>("");
-
-	const searchParams = new URLSearchParams(location.search);
+	const account = useAccount();
+	const boards = useBoardsList();
 
 	const onSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
@@ -46,33 +42,9 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 
 		setIsSubmitLoading(true);
 		setSubmitDisabled(true);
-		fetch(getApiUrl("/auth/login"), {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				email: email,
-				password: password,
-			}),
-		})
-			.then(async response => {
-				if (response.ok) {
-					return response.json();
-				} else {
-					const data = await response.json();
-					return Promise.reject(data);
-				}
-			})
-			.then(async (data: RegisterOkResponse) => {
-				Cookies.set("accessToken", data.accessToken, {
-					secure: true,
-					sameSite: "none",
-				});
-				Cookies.set("refreshToken", data.refreshToken, {
-					secure: true,
-					sameSite: "none",
-				});
+		account
+			.login(email, password)
+			.then(async () => {
 				setErrorText("");
 				if (searchParams.get("backToSelect") === "true") {
 					await app.storage.fetchBoards();
@@ -82,14 +54,11 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 						`/boards/${localStorage.getItem(LAST_BOARD_KEY_QS)}`,
 					);
 				} else {
-					const boardId = await app.createPublicBoard();
+					const boardId = await boards.createBoard();
 					if (boardId) {
 						navigate(`/boards/${boardId}`);
 					}
 				}
-			})
-			.then(() => {
-				app.storage.claimBoards();
 			})
 			.catch(error => {
 				// setErrorMessage(error.message);

@@ -14,9 +14,10 @@ type Props = PropsWithChildren<{
 	icon?: ReactNode;
 	isOpened: boolean;
 	// isBlank: boolean;
-	currBoardId?: string;
 	customHeader?: CSSProperties;
 	customList?: CSSProperties;
+	onToggle?: (isOpen: boolean) => void;
+	currBoardId?: string;
 }>;
 
 export function Folder({
@@ -25,21 +26,23 @@ export function Folder({
 	children,
 	isOpened,
 	// isBlank,
-	currBoardId,
 	customHeader,
 	customList,
+	onToggle,
+	currBoardId,
 }: Props): React.ReactElement<Props> {
 	const [isOpen, setIsOpen] = useState(isOpened);
 
-	useEffect(() => {
-		// 	setIsOpen(isOpened || isBlank);
-		// }, [isOpened, isBlank]);
-		setIsOpen(isOpened);
-	}, [isOpened, currBoardId]);
-
 	const handleTitleClick: MouseEventHandler = () => {
+		onToggle?.(isOpen);
 		setIsOpen(prev => !prev);
 	};
+
+	useEffect(() => {
+		if (!isOpen) {
+			setIsOpen(isOpened);
+		}
+	}, [isOpened, currBoardId]);
 
 	return (
 		<div className={clsx(style.folder, isOpen && style.open)}>

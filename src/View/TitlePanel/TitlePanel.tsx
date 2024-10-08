@@ -1,11 +1,11 @@
+import { useAccount } from "App/useAccount";
+import { useBoardsList } from "App/useBoardsList";
 import { useAppSubscription } from "Board/useBoardSubscription";
 import clsx from "clsx";
 import { useForceUpdate } from "lib/useForceUpdate";
 import {
 	type ChangeEventHandler,
 	default as React,
-	type MouseEventHandler,
-	useEffect,
 	useState,
 } from "react";
 import { useTranslation } from "react-i18next";
@@ -26,17 +26,13 @@ export function TitlePanel(): JSX.Element | null {
 	const { app, board } = useAppContext();
 	const { isOpen, toggleSideMenu } = useSidePanelContext();
 	useAppSubscription(app, { observer: forceUpdate, subjects: ["tools"] });
-	useEffect(() => {
-		app.storage.subject.subscribe(forceUpdate);
-
-		return () => {
-			app.storage.subject.unsubscribe(forceUpdate);
-		};
-	}, []);
+	const boardsList = useBoardsList();
+	const account = useAccount();
 
 	const boardId = board.getBoardId();
 	const boardName =
-		app.storage.getBoard(boardId)?.name || t("board.untitled");
+		boardsList.getBoardInfo(boardId)?.title || t("board.untitled");
+	const isBlank = boardId === "blank";
 
 	const [isRenaming, setIsRenaming] = useState(false);
 	const [newBoardName, setNewBoardName] = useState(boardName);
@@ -57,13 +53,21 @@ export function TitlePanel(): JSX.Element | null {
 		setIsRenaming(false);
 	};
 
-	const handleBoardRenameStart: MouseEventHandler = () => {
+	const canRename = account.permissions.checkPermissions(
+		"owns",
+		"boards",
+		boardId ?? "",
+	);
+	const handleBoardRenameStart: MouseEventHandler = event => {
+		if (!canRename || isBlank) {
+			return;
+		}
 		setIsRenaming(true);
 		setNewBoardName(boardName);
 	};
 
 	const handleRenameConfirm = () => {
-		app.storage.renameBoard(boardId, newBoardName);
+		boardsList.rename(boardId, newBoardName);
 	};
 
 	const openExport = () => {
@@ -122,7 +126,9 @@ export function TitlePanel(): JSX.Element | null {
 						className={style.rename}
 					/>
 				) : (
-					<span className={style.name}>{strippedName}</span>
+					<span className={style.name}>
+						{isBlank ? t("noBoard.title") : strippedName}
+					</span>
 				)}
 			</UiButton>
 			<UiSeparator vertical className={style.tabletHide} />
