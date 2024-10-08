@@ -66,8 +66,8 @@ const INITIAL_GEOMETRY = {
 		height: 100,
 	},
 	paint: {
-		width: 100,
-		height: 100,
+		width: 1,
+		height: 1,
 	},
 };
 
@@ -807,8 +807,12 @@ export const useCopyBoardItems = (
 		const { style, data, id } = item;
 
 		const drawing = new Drawing([]);
+		data.points.forEach(point =>
+			drawing.addPoint(new Point(point.x, point.y)),
+		);
+		INITIAL_GEOMETRY.paint.width = data.scale * 100;
+		INITIAL_GEOMETRY.paint.height = data.scale * 100;
 		setTransformation(drawing, item);
-		data.points.forEach(point => drawing.addPoint(point));
 
 		drawing.setStrokeColor(style.color);
 		drawing.setStrokeWidth(Number(style.strokeWidth));

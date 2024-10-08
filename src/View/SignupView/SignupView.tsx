@@ -163,7 +163,10 @@ export const SignupView = (): React.ReactElement => {
 					<Button
 						pattern="ghost"
 						onClick={() => {
-							navigate("/auth/sign-in");
+							navigate({
+								pathname: "/auth/sign-in",
+								search: location.search,
+							});
 						}}
 						className={styles.login}
 					>

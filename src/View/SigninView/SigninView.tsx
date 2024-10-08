@@ -197,14 +197,24 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 					<Button
 						pattern="secondary"
 						className={styles.forgot}
-						onClick={() => navigate("/auth/forgot-password")}
+						onClick={() =>
+							navigate({
+								pathname: "/auth/forgot-password",
+								search: searchParams.toString(),
+							})
+						}
 					>
 						{t("auth.forgotPassword")}
 					</Button>
 
 					<Button
 						pattern="ghost"
-						onClick={() => navigate("/auth/sign-up")}
+						onClick={() =>
+							navigate({
+								pathname: "/auth/sign-up",
+								search: searchParams.toString(),
+							})
+						}
 					>
 						{t("auth.signUpForFree")}
 					</Button>

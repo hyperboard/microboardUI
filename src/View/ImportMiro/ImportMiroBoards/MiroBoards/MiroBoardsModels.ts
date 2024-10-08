@@ -179,6 +179,7 @@ export interface IMiroBoardItemPaint extends IMiroBoardItemBase {
 	type: MiroBoardItemTypes.PAINT;
 	data: {
 		points: Point[];
+		scale: number;
 	};
 	geometry: IMiroGeometry;
 	position: IMiroPosition;
