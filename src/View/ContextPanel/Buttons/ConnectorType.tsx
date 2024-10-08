@@ -83,6 +83,7 @@ export function ConnectorType(): React.ReactElement | null {
 						selected={connectorType}
 						onSliderChange={handleSliderChange}
 						lineWidth={connectorLineWidth}
+						direction="row"
 					/>
 				</UiPanel>
 			)}

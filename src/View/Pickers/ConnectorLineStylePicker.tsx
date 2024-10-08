@@ -2,17 +2,17 @@ import { ConnectorLineStyle } from "Board/Items/Connector";
 import { ConnectorIcon } from "View/Icon";
 import { UiButton } from "View/Ui/UiButton/UiButton";
 import React from "react";
-import { UiSlider } from "../Ui/UiSlider";
-import { ConnectionLineWidths } from "../../Board/Items/Connector/Connector";
 
 type Props = {
 	onPick: (type: ConnectorLineStyle) => void;
 	selected?: string;
+	direction?: "row" | "column";
 };
 
 export function ConnectorLineStylePicker({
 	onPick,
 	selected,
+	direction = "column",
 }: Props): React.ReactElement {
 	const handleStraightPick = (): void => {
 		onPick("straight");
@@ -24,7 +24,7 @@ export function ConnectorLineStylePicker({
 		onPick("orthogonal");
 	};
 	return (
-		<div style={{ display: "flex" }}>
+		<div style={{ display: direction === "row" ? "flex" : "block" }}>
 			<UiButton
 				id={"connector-straight"}
 				onClick={handleStraightPick}
