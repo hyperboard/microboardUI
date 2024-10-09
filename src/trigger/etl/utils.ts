@@ -201,7 +201,6 @@ export async function processImageItem(item: ImageItem, accessToken: string, io:
         const url = item.data!.imageUrl!.split("?")[0] + "?format=original&redirect=false";
         const img = await fetchImageWithRetry(url, accessToken, io);
         const imgUrl = img?.url ?? "";
-        console.log("imgUrl: ", imgUrl);
         let imgBase64 = null;
         try {
             imgBase64 = await imageUrlToBase64(imgUrl);

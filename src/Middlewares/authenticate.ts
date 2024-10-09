@@ -6,9 +6,8 @@ export async function authenticate(req: Request, res: Response, next: NextFuncti
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return res.status(401).json({ message: "Unauthorized" });
     }
-
     const token = authHeader.split(" ")[1];
-    const decodedToken = await verifyToken(token);
+    const decodedToken = await verifyToken(token, 'access');
     if (!decodedToken) {
         return res.status(401).json({ message: "Invalid or expired JWT token" });
     }

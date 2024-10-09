@@ -1,11 +1,14 @@
-import { Config } from "shared/config/config";
 import { AccessToken } from "Interface";
-import { Permissions } from "./types";
+import { Config } from "shared/config/config";
 import { createToken } from "Tokens";
-import { getBoardIds } from "Database";
+import { Permissions } from "./types";
+
+export const REFRESH_TOKEN_EXPIRY = 60 * 60 * 24 * 30; // 30 days
+export const ACCESS_TOKEN_EXPIRY = 1 * 60 * 60; // 1 hour
+
 
 export class AuthHelper {
-    constructor(private config: Config) {}
+    constructor(private config: Config) { }
 
     public generatePasscode(length: number = 6): string {
         const symbols = "0123456789";
@@ -19,17 +22,13 @@ export class AuthHelper {
         return passcode;
     }
 
-    public async generateRefreshToken(id: number, permissions?: Permissions): Promise<string> {
-        const claims: Partial<AccessToken> = {
-            ...permissions,
-        };
-
+    public async generateRefreshToken(id: number): Promise<string> {
         const token = await createToken(
-            claims,
             `${id}`,
             60 * 60, // 1 hour
             'Whiteboard',
-            'Whiteboard'
+            'Whiteboard',
+            'refresh'
         );
 
         if (!token) {
@@ -40,17 +39,18 @@ export class AuthHelper {
     }
 
     public async generateAccessToken(id: number, permissions?: Permissions): Promise<string> {
-        
+
         const claims: Partial<AccessToken> = {
             ...permissions,
         };
 
         const token = await createToken(
-            claims,
             `${id}`,
-            60 * 60 * 24 * 7, // 7 days
+            ACCESS_TOKEN_EXPIRY,
             'Whiteboard',
-            'Whiteboard'
+            'Whiteboard',
+            'access',
+            claims,
         );
 
         if (!token) {
@@ -68,7 +68,7 @@ export class AuthHelper {
         refreshToken: string;
     }> {
         const accessToken = await this.generateAccessToken(id, permissions);
-        const refreshToken = await this.generateRefreshToken(id, permissions);
+        const refreshToken = await this.generateRefreshToken(id);
 
         if (!accessToken || !refreshToken) {
             throw new Error("Failed to generate tokens");

@@ -75,15 +75,14 @@ export class Auth {
             throw new HttpException(HttpStatus.NOT_FOUND, "Invalid email or password");
         }
 
-        if (!user.rows[0].activated) {
-            throw new HttpException(HttpStatus.UNAUTHORIZED, "User not activated");
-        }
-
-        this.logger.log("info", user.rows[0].password, payload.password);
         const isValidPassword = await bcrypt.compare(payload.password, user.rows[0].password);
 
         if (!isValidPassword) {
-            throw new HttpException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
+            throw new HttpException(HttpStatus.NOT_FOUND, "Invalid email or password");
+        }
+
+        if (!user.rows[0].activated) {
+            throw new HttpException(HttpStatus.UNAUTHORIZED, "User not activated");
         }
 
         const permissions = await this.getPermissions(user.rows[0].id);
@@ -220,7 +219,7 @@ export class Auth {
             throw new HttpException(HttpStatus.UNAUTHORIZED, "Refresh token is invalid or expired");
         }
 
-        const verifiedUser = verifyToken(payload.refreshToken);
+        const verifiedUser = verifyToken(payload.refreshToken, 'refresh');
 
         if (!verifiedUser) {
             throw new HttpException(HttpStatus.UNAUTHORIZED, "Refresh token is invalid or expired");
@@ -255,7 +254,7 @@ export class Auth {
         };
     }
 
-    async verifyEmail(payload: VerifyEmailPayload): Promise<any> {
+    async verifyEmail(payload: VerifyEmailPayload) {
         const user = await this.database.query(`select id from users where email = $1`, [payload.email]);
 
         const userId = user?.rows[0]?.id;

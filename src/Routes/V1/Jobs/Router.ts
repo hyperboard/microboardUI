@@ -22,7 +22,6 @@ export const createJobsRouter = (logger: winston.Logger, wss: WebSocketServer) =
         body("boardIds").isArray(),
         catchAsync(async (req: Request, res: Response) => {
             const { accessToken, userId, boardIds } = req.body as ImportMiroBoardsRequest;
-            console.log("body: ", req.body);
             try {
                 for (const boardId of boardIds) {
                     await importMiroBoard.invoke({
