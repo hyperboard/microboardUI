@@ -197,6 +197,14 @@
 	white-space: nowrap;
 }
 
+.tip-text.center {
+	text-align: center;
+}
+
+.tip-text.left {
+	text-align: left;
+}
+
 .tip::before {
 	content: "";
 	position: absolute;

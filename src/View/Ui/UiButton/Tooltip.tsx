@@ -14,11 +14,13 @@ interface TooltipProps {
 		| "bottom"
 		| "bottom-right"
 		| "bottom-left";
+	tooltipAlign?: "center" | "left";
 }
 
 export const Tooltip = ({
 	tooltip,
 	tooltipPosition = "right",
+	tooltipAlign = "center",
 	hotkey,
 	...props
 }: TooltipProps): JSX.Element => {
@@ -37,7 +39,10 @@ export const Tooltip = ({
 		>
 			<div className={clsx(style.tip)}>
 				<span
-					className={style.tipText}
+					className={clsx(style.tipText, {
+						[style.center]: tooltipAlign === "center",
+						[style.left]: tooltipAlign === "left",
+					})}
 					dangerouslySetInnerHTML={{ __html: tooltip }}
 				/>
 				{hotkey && <span className={style.hotkey}>{hotkey}</span>}

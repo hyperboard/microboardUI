@@ -202,12 +202,15 @@ export function SidePanel(): JSX.Element {
 						style={{ color: "#050038" }}
 					/>
 					<span>{t("miro.importMiroBtn")}</span>
-					{!account.isLoggedIn && (
-						<Tooltip
-							tooltip={t("miro.importMiroBtnTooltip")}
-							tooltipPosition="top-center-fixed"
-						/>
-					)}
+					<Tooltip
+						tooltip={
+							!account.isLoggedIn
+								? t("miro.authTooltip")
+								: t("miro.tooltipClipboardImport")
+						}
+						tooltipPosition="top-center-fixed"
+						tooltipAlign="left"
+					/>
 				</Button>
 			</div>
 			<ResizableEdge panelWidth={width} setWidth={setWidth} />
