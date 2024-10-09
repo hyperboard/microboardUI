@@ -76,7 +76,7 @@ const BoardView = ({ app }: Props): JSX.Element => {
 								replace: true,
 							});
 						} else {
-							navigate(`/boards/blank`, {
+							navigate(`/boards/blank?${searchParams}`, {
 								replace: true,
 							});
 						}
