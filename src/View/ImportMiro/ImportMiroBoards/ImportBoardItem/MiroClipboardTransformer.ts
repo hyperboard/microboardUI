@@ -16,7 +16,6 @@ import {
 	INITIAL_DRAWING_STROKE_WIDTH,
 	MAX_DRAWING_STROKE_WIDTH,
 } from "View/Tools/AddDrawing";
-import { Point } from "Board/Items";
 
 type SupportedMiroType =
 	| IMiroBoardItemConnector
@@ -557,6 +556,7 @@ const transformDrawing = (
 		x: number;
 		y: number;
 	},
+	clipboardItems: MiroClipboardItem[],
 ): IMiroBoardItemPaint => {
 	const json = paint.widgetData.json!;
 	const style = parseStyle(json.style);
@@ -583,9 +583,20 @@ const transformDrawing = (
 			x: (json._position?.offsetPx?.x || 0) + cursorPosition.x,
 			y: (json._position?.offsetPx?.y || 0) + cursorPosition.y,
 			origin: "center",
-			relativeTo: MiroRelativeTo.board,
+			relativeTo: json._parent
+				? MiroRelativeTo.frame
+				: MiroRelativeTo.board,
 		},
 	};
+
+	if (json._parent) {
+		transformDrawing.parent = {
+			id: clipboardItems[json._parent.index].initialId,
+			links: {
+				self: "",
+			},
+		};
+	}
 
 	return transformDrawing;
 };
@@ -607,7 +618,7 @@ export const parseItem = (
 		// case "line":
 		//     return transformConnector(item, cursorPosition, clipboardItems);
 		case "paint":
-			return transformDrawing(item, cursorPosition);
+			return transformDrawing(item, cursorPosition, clipboardItems);
 		case "sticker":
 			return transformSticker(item, cursorPosition, clipboardItems);
 		case "image":

@@ -333,6 +333,7 @@ export const useCopyBoardItems = (
 		position: IMiroPosition,
 		geometry: IMiroGeometry,
 		parent?: IMiroParent,
+		itemType?: string,
 	): { x: number; y: number } | null => {
 		const { x, y, relativeTo } = position;
 		const { height, width } = geometry;
@@ -356,6 +357,14 @@ export const useCopyBoardItems = (
 			return null;
 		}
 
+		if (itemType === "paint") {
+			const pointer = board.pointer.point;
+			return {
+				x: x - width / 2 + framePosition.x - pointer.x,
+				y: y - height / 2 + framePosition.y - pointer.y,
+			};
+		}
+
 		return {
 			x: x - width / 2 + framePosition.x,
 			y: y - height / 2 + framePosition.y,
@@ -375,6 +384,8 @@ export const useCopyBoardItems = (
 				height: height / INITIAL_GEOMETRY[itemType][shapeType].height,
 			};
 		}
+
+		console.log("itemType", itemType);
 
 		const initialGeometry = INITIAL_GEOMETRY[itemType] ?? {
 			width: 1,
@@ -443,6 +454,7 @@ export const useCopyBoardItems = (
 			position,
 			miroItem.geometry,
 			parent,
+			miroItem.type,
 		);
 
 		if (itemPosition) {
@@ -837,6 +849,7 @@ export const useCopyBoardItems = (
 
 		miroItems.forEach((item: IMiroBoardItem) => {
 			const type = item.type as MiroItemsTypes;
+			console.log("item", item);
 
 			if (
 				item.type !== MiroBoardItemTypes.CONNECTOR &&
