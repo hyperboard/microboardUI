@@ -1,9 +1,9 @@
-import WebSocket, { WebSocketServer } from "ws";
-import { BoardEventData, Boards } from "Routes/V1/Boards";
 import { AccessToken } from "Interface";
+import { boardEventTotalLatency, websocketEventQueueSize } from "Metrics/metrics";
+import { BoardEventData, Boards } from "Routes/V1/Boards";
 import { verifyToken } from "Tokens";
 import winston from "winston";
-import { boardEventQueueLatency, boardEventTotalLatency, websocketEventQueueSize } from "Metrics/metrics";
+import WebSocket, { WebSocketServer } from "ws";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
@@ -99,7 +99,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
     }
 
     async function handleAuthMsg(msg: Auth, ws: WebSocket): Promise<void> {
-        const token = await verifyToken(msg.jwt);
+        const token = await verifyToken(msg.jwt, 'access');
         if (token) {
             return saveToken(ws, token);
         } else {
@@ -120,15 +120,27 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
 
     async function handleSubscribeMsg(msg: Subscribe, ws: WebSocket): Promise<void> {
         try {
-            if (!(await hasSubscribeRights(ws, msg.boardId))) {
-                return sendError(ws, "Access denied: Subscribe to board events.", { denidedBoardId: msg.boardId });
-            }
-            subscribeClientToBoard(ws, msg.boardId);
             const details = await boards.getLinkDetails(msg.boardId);
+            const isPublic = await boards.isBoardPublic(msg.boardId);
             if (details?.type === "view") {
+                subscribeClientToBoard(ws, msg.boardId);
                 enforceViewMode(ws, msg.boardId);
+                await sendInitialDataToClient(ws, msg.boardId);
+                return;
             }
-            await sendInitialDataToClient(ws, msg.boardId);
+
+            if (details?.type === 'edit') {
+                subscribeClientToBoard(ws, msg.boardId);
+                await sendInitialDataToClient(ws, msg.boardId);
+                return;
+            }
+
+            if ((await hasSubscribeRights(ws, msg.boardId)) || isPublic) {
+                subscribeClientToBoard(ws, msg.boardId);
+                await sendInitialDataToClient(ws, msg.boardId);
+                return
+            }
+            sendError(ws, "Access denied: Subscribe to board events.", { denidedBoardId: msg.boardId });
         } catch (error) {
             return sendError(ws, "Access denied: Subscribe to board events.");
         }
@@ -136,7 +148,6 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
 
     async function hasSubscribeRights(ws: WebSocket, boardId: string): Promise<boolean> {
         return (
-            (await isValidLink(boardId, ["view", "edit"])) ||
             hasAnyRightInTokens(ws, boardId, ["reads", "edits", "owns"])
         );
     }
@@ -277,8 +288,9 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
 
     async function canEditBoard(ws: WebSocket, boardId: string): Promise<boolean> {
         const hasDirectLinkEditPermission = await isValidLink(boardId, ["edit"]);
+        const isPublic = await boards.isBoardPublic(boardId);
         const hasTokenEditPermission = hasAnyRightInTokens(ws, boardId, ["edits", "owns"]);
-        return hasDirectLinkEditPermission || hasTokenEditPermission;
+        return hasDirectLinkEditPermission || hasTokenEditPermission || isPublic;
     }
 
     function handleUnsubscribeMsg(msg: Unsubscribe, ws: WebSocket): void {
@@ -592,7 +604,7 @@ export class EventsManager {
         */
     }
 
-    requestSnapshotCallback(boardId: string, sinceLast: number): void {}
+    requestSnapshotCallback(boardId: string, sinceLast: number): void { }
 
     isBoardReady(boardId: string): boolean {
         return !this.processing.includes(boardId);

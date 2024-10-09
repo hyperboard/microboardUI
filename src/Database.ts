@@ -50,7 +50,7 @@ export async function getBoardIds(database: Pool, userId: string) {
         authored_boards: string;
         can_edit_boards: string;
         can_view_boards: string;
-    }>("SELECT * FROM get_user_boards($1)", [userId]);
+    }>("SELECT * FROM get_user_board_ids($1)", [userId]);
 
     return {
         author: result.rows.map((row) => row.authored_boards).filter((id) => id),
@@ -75,16 +75,42 @@ export async function getLinks(database: Pool, boardIds: string[], type: "edit" 
 }
 
 /** @returns array of edit/view links user visited but not authored */
-export async function getSharedLinks(database: Pool, userId: string) {
+export async function getSharedLinks(database: Pool, userId: number) {
     const sharedEditLinksQuery = await database.query<{
-        edit_link_uuid: string;
-    }>("SELECT edit_link_uuid FROM user_edit_link WHERE user_id = $1", [userId]);
+        id: string;
+        boardname: string;
+        is_public: boolean;
+    }>(`
+                SELECT uel.edit_link_uuid as id, b.boardname, b.is_public
+                FROM user_edit_link uel 
+                JOIN board_edit_link bel ON bel.edit_link_uuid = uel.edit_link_uuid
+                JOIN boards b ON bel.board_id = b.id
+                WHERE uel.user_id = $1
+            `, [userId]);
     const sharedViewLinksQuery = await database.query<{
-        view_link_uuid: string;
-    }>("SELECT view_link_uuid FROM user_view_link WHERE user_id = $1", [userId]);
-
+        id: string;
+        boardname: string;
+        is_public: boolean;
+    }>(`
+                SELECT uvl.view_link_uuid as id, b.boardname, b.is_public
+                FROM user_view_link uvl 
+                JOIN board_view_link bvl ON bvl.view_link_uuid = uvl.view_link_uuid
+                JOIN boards b ON bvl.board_id = b.id
+                WHERE uvl.user_id = $1
+            `, [userId]);
+    const sharedBoardIdsQuery = await database.query<{
+        id: string;
+        boardname: string;
+        is_public: boolean;
+    }>(`
+                SELECT ubi.board_uuid as id, b.boardname, b.is_public
+                FROM user_board_id ubi 
+                JOIN boards b ON ubi.board_uuid = b.uniq_id
+                WHERE ubi.user_id = $1
+            `, [userId]);
     return [
-        ...sharedEditLinksQuery.rows.map((row) => row.edit_link_uuid),
-        ...sharedViewLinksQuery.rows.map((row) => row.view_link_uuid),
+        ...sharedEditLinksQuery.rows,
+        ...sharedViewLinksQuery.rows,
+        ...sharedBoardIdsQuery.rows
     ];
 }

@@ -2,13 +2,14 @@ import express, { Request, Response, NextFunction } from "express";
 import winston from "winston";
 import { v4 as uuidv4 } from "uuid";
 import { body, validationResult, param, query } from "express-validator";
-import { Boards } from "./Boards";
+import { Boards, type AnonymousBoard, type OwnedBoard } from "./Boards";
 import { authenticate } from "Middlewares";
 import { AccessToken } from "Interface";
 import { jwtMiddleware } from "Middlewares/jwt.middleware";
 import validator from "validator";
 import { createToken } from "Tokens";
 import { HttpStatus } from "shared/enums/http-status.enum";
+import { title } from "process";
 import { catchAsync } from "shared/lib/catchAsync";
 
 function checkPermissions(
@@ -55,6 +56,7 @@ export function getBoardsRouter(
         "/boards",
         authenticate,
         body("catalogId").optional().custom(isUUIDOrRoot),
+        body("isPublic").optional().isBoolean(),
         body("title").optional().isString(),
         catchAsync(async (req: Request, res: Response) => {
             try {
@@ -63,9 +65,9 @@ export function getBoardsRouter(
                     return res.status(400).json({ errors: errors.array() });
                 }
 
-                const boardId = uuidv4();
-                const title: string = req.body.title || boardId;
-                const ownerId = req.body.ownerId || undefined;
+                const title: string = req.body.title;
+                const ownerId = +req.token.sub || undefined;
+                const isPublic = req.body.isPublic || false;
 
                 const catalogId = req.params.catalogId ?? "root";
                 if (
@@ -74,12 +76,39 @@ export function getBoardsRouter(
                     return forbidden(res);
                 }
 
-                const { authorKey } = await boards.createBoard(boardId, title, ownerId);
+                const board = await boards.createBoard(title, ownerId, isPublic) as OwnedBoard;
+
                 return res.status(201).json({
-                    boardId: boardId,
-                    boardUrl: `/boards/${boardId}`,
-                    board: `/boards/${boardId}`,
-                    authorKey,
+                    id: board.uniq_id,
+                    title: board.boardname,
+                    isPublic: board.is_public
+                })
+            } catch (err) {
+                logger.error(err);
+                return res.status(500).send("Server error");
+            }
+        }, logger
+    ));
+
+    // Creating a new board unauthed
+    router.post(
+        "/boards/unauthed",
+        body("title").optional().isString(),
+        catchAsync(async (req: Request, res: Response) => {
+            try {
+                const errors = validationResult(req);
+                if (!errors.isEmpty()) {
+                    return res.status(400).json({ errors: errors.array() });
+                }
+
+                const title: string = req.body.title;
+
+                const board = await boards.createBoard(title, undefined, true) as AnonymousBoard;
+                return res.status(201).json({
+                    id: board.uniq_id,
+                    authorKey: board.author_key,
+                    title: board.boardname,
+                    isPublic: true
                 });
             } catch (err) {
                 logger.error(err);
@@ -93,8 +122,29 @@ export function getBoardsRouter(
         authenticate,
         catchAsync(async (req: Request, res: Response) => {
             try {
-                const boardsData = await boards.getBoards(req.token);
-                return res.status(200).json(boardsData);
+                const boardsData = await boards.getBoards(+req.token.sub);
+                return res.status(200).json({
+                    author: boardsData.author.map((b) => ({
+                        id: b.uniq_id,
+                        title: b.boardname,
+                        isPublic: b.is_public
+                    })),
+                    canView: boardsData.canView.map((b) => ({
+                        id: b.uniq_id,
+                        title: b.boardname,
+                        isPublic: b.is_public
+                    })),
+                    canEdit: boardsData.canEdit.map((b) => ({
+                        id: b.uniq_id,
+                        title: b.boardname,
+                        isPublic: b.is_public
+                    })),
+                    shared: boardsData.shared.map((b) => ({
+                        id: b.id,
+                        title: b.boardname,
+                        isPublic: b.is_public
+                    }))
+                });
             } catch (err) {
                 logger.error(`Error fetching boards: ${err}`);
                 return res.status(500).json({ error: `Error fetching boards: ${err}` });
@@ -105,7 +155,6 @@ export function getBoardsRouter(
     // Getting board details
     router.get(
         "/boards/:boardId/details",
-        authenticate,
         param("boardId").isUUID(),
         catchAsync(async (req: Request, res: Response) => {
             try {
@@ -116,22 +165,17 @@ export function getBoardsRouter(
 
                 const boardId = req.params.boardId;
 
-                if (
-                    !hasRootCatalogPermission(req.token) &&
-                    !checkPermissions(req.token, "owns", "boards", boardId) &&
-                    !checkPermissions(req.token, "edits", "boards", boardId) &&
-                    !checkPermissions(req.token, "reads", "boards", boardId)
-                ) {
-                    return forbidden(res);
-                }
-
                 const boardDetails = await boards.getBoardDetails(boardId);
 
                 if (!boardDetails) {
                     return res.status(404).json({ message: "Board not found" });
                 }
 
-                return res.status(200).json(boardDetails);
+                return res.status(200).json({
+                    id: boardId,
+                    title: boardDetails.boardname,
+                    isPublic: boardDetails.is_public
+                });
             } catch (err) {
                 logger.error(err);
                 return res.status(500).send("Server error");
@@ -166,7 +210,7 @@ export function getBoardsRouter(
             }, logger)
         );
     }
-    
+
     router.post(
         "/boards/claim",
         authenticate,
@@ -175,7 +219,7 @@ export function getBoardsRouter(
             if (authorKeys && authorKeys.length < 0 || visited && visited.length < 0) {
                 return res.status(400).json({ error: "wrong format, cant claim / nothing to claim" });
             }
-        
+
             try {
                 if (authorKeys) {
                     await Promise.all(authorKeys.map(
@@ -184,7 +228,7 @@ export function getBoardsRouter(
                 }
                 if (visited) {
                     await Promise.all(visited.map(
-                        async (linkId: string) => 
+                        async (linkId: string) =>
                             await boards.userVisited(req.token, linkId)
                     ));
                 }
@@ -249,34 +293,6 @@ export function getBoardsRouter(
         }, logger)
     );
 
-    // Deleting a board without authentication but with authorKey
-    router.delete(
-        "/boards/:boardId/:authorKey",
-        param("boardId").isUUID(),
-        param("authorKey").isUUID(),
-        catchAsync(async (req: Request, res: Response) => {
-            try {
-                const { boardId, authorKey } = req.params;
-
-                const isBoardExist = await boards.isBoardExists(boardId);
-                if (!isBoardExist) {
-                    return res.status(404).json({ message: "Board not found" });
-                }
-
-                const isValidAuthorKey = await boards.isValidAuthorKey(boardId, authorKey);
-                if (!isValidAuthorKey) {
-                    return res.status(403).json({ message: "Invalid author key" });
-                }
-
-                await boards.deleteBoard(boardId);
-                return res.status(204).send();
-            } catch (err) {
-                logger.error(err);
-                return res.status(500).send("Server error");
-            }
-        }, logger)
-    );
-
     // Duplicating a board
     router.post(
         "/boards/:boardId/duplicate",
@@ -330,7 +346,6 @@ export function getBoardsRouter(
     router.patch(
         "/boards/:boardId",
         authenticate,
-        body("catalogId").optional().custom(isUUIDOrRoot),
         param("boardId").isUUID(),
         body("newTitle").isString(),
         catchAsync(async (req: Request, res: Response) => {
@@ -374,7 +389,37 @@ export function getBoardsRouter(
                 }
 
                 await boards.renameBoard(boardId, newTitle);
-                return res.status(200).send();
+                return res.status(204).send();
+            } catch (err) {
+                logger.error(err);
+                return res.status(500).send("Server error");
+            }
+        }, logger)
+    );
+
+    // Renaming a board without authentication but with authorKey
+    router.patch(
+        "/boards/:boardId/:authorKey",
+        param("boardId").isUUID(),
+        param("authorKey").isUUID(),
+        body("newTitle").isString(),
+        catchAsync(async (req: Request, res: Response) => {
+            try {
+                const { boardId, authorKey } = req.params;
+                const {newTitle} = req.body;
+
+                const isBoardExist = await boards.isBoardExists(boardId);
+                if (!isBoardExist) {
+                    return res.status(404).json({ message: "Board not found" });
+                }
+
+                const isValidAuthorKey = await boards.isValidAuthorKey(boardId, authorKey);
+                if (!isValidAuthorKey) {
+                    return res.status(403).json({ message: "Invalid author key" });
+                }
+
+                await boards.renameBoard(boardId, newTitle);
+                return res.status(204).send();
             } catch (err) {
                 logger.error(err);
                 return res.status(500).send("Server error");
@@ -474,17 +519,17 @@ export function getBoardsRouter(
 
                 const boardId = req.params.boardId;
                 const { type, authorKey } = req.body
-                
+
                 const boardExists = await boards.isBoardExists(boardId);
                 if (!boardExists) {
                     return res.status(HttpStatus.NOT_FOUND).json({ message: "Board not found" });
                 }
-                
+
                 const hasBoardOwnership = boards.isValidAuthorKey(boardId, authorKey)
                 if (!hasBoardOwnership) {
                     return forbidden(res);
                 }
-                
+
                 const linkId = uuidv4();
                 await boards.createLink(boardId, type, linkId);
 
@@ -686,7 +731,7 @@ export function getBoardsRouter(
             response.end();
         }, logger)
     );
-    
+
     router.get(
         "/boards/:boardId/exists",
         param("boardId").isUUID(),
@@ -699,7 +744,7 @@ export function getBoardsRouter(
 
                 const boardId = req.params.boardId;
                 let exists = await boards.isBoardExists(boardId);
-                
+
                 if (!exists) {
                     exists = await boards.isValidLink(boardId, ["view", "edit"]);
                 }

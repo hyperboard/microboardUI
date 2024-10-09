@@ -18,7 +18,7 @@ export function jwtMiddleware(logger: winston.Logger) {
             response.end();
             return;
         }
-        const claims = verifyToken(token);
+        const claims = verifyToken(token, 'access');
         if (!claims) {
             response.status(401);
             response.json({

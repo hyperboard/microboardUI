@@ -3,18 +3,20 @@ create extension if not exists "uuid-ossp";
 -- Table to store users
 create table if not exists users (
 	id serial primary key,
-	email varchar(100),
+	email varchar(254),
 	activated boolean default false,
     refresh_token varchar
 );
 
+
 -- Intialize the boards table.
 create table if not exists boards (
 	id serial primary key,
-	uniq_id uuid,
+	uniq_id uuid NOT NULL DEFAULT uuid_generate_v4(),
 	created timestamp default now(),
 	boardname varchar(32),
-    author_key uuid
+    author_key uuid,
+    is_public boolean NOT NULL DEFAULT false
 );
 
 ALTER TABLE boards ADD UNIQUE (uniq_id);
@@ -497,6 +499,12 @@ create table if not exists user_view_link (
 	view_link_uuid UUID
 );
 
+-- Table to store user visited board ids
+create table if not exists user_board_id (
+	user_id integer references users(id) on delete cascade,
+	board_uuid UUID
+);
+
 -- Function to record a user visiting an edit link
 -- we asume that link exist
 create or replace function user_visited_edit(
@@ -553,6 +561,32 @@ begin
 end;
 $$ language plpgsql;
 
+-- Function to record a user visiting a board id
+create or replace function user_visited_board_id(
+    p_user_id integer,
+    p_board_uuid uuid
+) returns void as $$
+declare
+    link_exists boolean;
+    is_author boolean;
+begin
+    -- Check if the user is the owner of the board
+    select exists (
+        select 1 
+        from boards b
+        join board_owner bo on b.id = bo.board_id
+        where b.uniq_id = p_board_uuid and bo.owner_id = p_user_id
+    ) into is_author;
+
+    if is_author then
+        return;
+    end if;
+
+    insert into user_board_id (user_id, board_uuid)
+    values (p_user_id, p_board_uuid);
+end;
+$$ language plpgsql;
+
 -- Function to record a user visiting a link (edit or view)
 create or replace function user_visited(
     p_user_id integer,
@@ -563,6 +597,7 @@ declare
 begin
     lock table user_edit_link in exclusive mode;
     lock table user_view_link in exclusive mode;
+    lock table user_board_id in exclusive mode;
 
     -- Check if the user has already visited the edit link
     if exists (select 1 from user_edit_link where user_id = p_user_id and edit_link_uuid = p_link_uuid) then
@@ -571,6 +606,10 @@ begin
 
     -- Check if the user has already visited the view link
     if exists (select 1 from user_view_link where user_id = p_user_id and view_link_uuid = p_link_uuid) then
+        return;
+    end if;
+
+    if exists (select 1 from user_board_id where user_id = p_user_id and board_uuid = p_link_uuid) then
         return;
     end if;
 
@@ -594,6 +633,15 @@ begin
         return;
     end if;
 
+    select 'board' into link_type
+    from boards
+    where uniq_id = p_link_uuid;
+
+    if found then
+        perform user_visited_board_id(p_user_id, p_link_uuid);
+        return;
+    end if;
+
     -- If the link does not exist in either table, raise an exception
     raise exception 'Link % does not exist', p_link_uuid;
 end;
@@ -607,6 +655,7 @@ create or replace function user_unvisited(
 declare
     edit_deleted integer;
     view_deleted integer;
+    board_id_deleted integer;
 begin
     delete from user_edit_link
     where user_id = p_user_id and edit_link_uuid = p_link_uuid
@@ -616,7 +665,11 @@ begin
     where user_id = p_user_id and view_link_uuid = p_link_uuid
     returning 1 into view_deleted;
 
-    if edit_deleted is null and view_deleted is null then
+    delete from user_board_id
+    where user_id = p_user_id and board_uuid = p_link_uuid
+    returning 1 into board_id_deleted;
+
+    if edit_deleted is null and view_deleted is null and board_id_deleted is null then
         raise exception 'No link found for user_id % and link_uuid %', p_user_id, p_link_uuid;
     end if;
 end;
@@ -985,6 +1038,23 @@ begin
 end;
 $$ language plpgsql;
 
+CREATE OR REPLACE FUNCTION get_board_is_public(
+    board_uuid uuid 
+)
+RETURNS boolean
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    is_public boolean;
+BEGIN
+    SELECT b.is_public INTO is_public
+    FROM boards b
+    WHERE b.uniq_id = board_uuid;
+
+    RETURN is_public;
+END;
+$$;
+
 -- Function to get the edit link for a board
 create or replace function get_board_edit_link(
     board_uuid uuid
@@ -1021,7 +1091,7 @@ begin
 end;
 $$;
 
-CREATE OR REPLACE FUNCTION get_user_boards(p_user_id integer)
+CREATE OR REPLACE FUNCTION get_user_board_ids(p_user_id integer)
 RETURNS TABLE (
     authored_boards uuid,
     can_edit_boards uuid,
@@ -1031,23 +1101,70 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
     RETURN QUERY
+    WITH authored AS (
+        SELECT b1.uniq_id
+        FROM boards b1
+        JOIN board_owner bo ON b1.id = bo.board_id
+        WHERE bo.owner_id = p_user_id
+    )
     SELECT
-        authored.board_id AS authored_boards,
-        can_edit.board_id AS can_edit_boards,
-        can_view.board_id AS can_view_boards
-    FROM (
-        SELECT get_boards_user_authored(p_user_id) AS board_id
-    ) authored
-    FULL OUTER JOIN (
-        SELECT get_boards_user_can_edit(p_user_id) AS board_id
-    ) can_edit ON true
-    FULL OUTER JOIN (
-        SELECT get_boards_user_can_view(p_user_id) AS board_id
-    ) can_view ON true;
+        a.uniq_id AS authored_boards,
+        NULL::uuid AS can_edit_boards,
+        NULL::uuid AS can_view_boards
+    FROM
+        authored a
+
+    UNION ALL
+
+    SELECT
+        NULL::uuid AS authored_boards,
+        b2.uniq_id AS can_edit_boards,
+        NULL::uuid AS can_view_boards
+    FROM
+        boards b2
+    JOIN
+        board_permissions bp1 ON b2.id = bp1.board_id
+    WHERE
+        bp1.user_id = p_user_id AND bp1.can_edit = TRUE
+        AND b2.uniq_id NOT IN (SELECT uniq_id FROM authored)
+
+    UNION ALL
+
+    SELECT
+        NULL::uuid AS authored_boards,
+        NULL::uuid AS can_edit_boards,
+        b3.uniq_id AS can_view_boards
+    FROM
+        boards b3
+    JOIN
+        board_permissions bp2 ON b3.id = bp2.board_id
+    WHERE
+        bp2.user_id = p_user_id AND bp2.can_view = TRUE
+        AND b3.uniq_id NOT IN (SELECT uniq_id FROM authored);
 END;
 $$;
 
 create or replace function get_boards_user_authored(
+	p_owner_id integer
+)
+returns table (
+	uniq_id uuid,
+	id integer,
+	boardname text,
+	owner_id integer,
+    is_public boolean
+) as $$
+begin
+	return query
+	select b.uniq_id, b.id, b.boardname, o.owner_id, b.is_public
+	from boards b
+	inner join board_owner o ON b.id = o.board_id
+	where o.owner_id = p_owner_id
+    order by b.created desc;
+end;
+$$ language plpgsql;
+
+create or replace function get_board_ids_user_authored(
 	userId integer
 )
 returns setof uuid as $$
@@ -1061,6 +1178,32 @@ end;
 $$ language plpgsql;
 
 create or replace function get_boards_user_can_view(
+	p_user_id integer
+)
+returns table (
+	uniq_id uuid,
+	id integer,
+	boardname text,
+    is_public boolean
+) as $$
+begin
+	return query
+	select b.uniq_id, b.id, b.boardname, b.is_public
+	from boards b
+	inner join board_permissions p ON b.id = p.board_id
+	where p.user_id = p_user_id 
+	  and p.can_view = true  -- Check can_view
+	  and not exists (  -- Exclude boards where the user is the owner
+	      select 1 
+	      from board_owner bo 
+	      where bo.board_id = b.id 
+	      and bo.owner_id = p_user_id
+	  )
+	order by b.created desc;  -- Sorting by created field
+end;
+$$ language plpgsql;
+
+create or replace function get_board_ids_user_can_view(
 	userId integer
 )
 returns setof uuid as $$
@@ -1075,6 +1218,32 @@ end;
 $$ language plpgsql;
 
 create or replace function get_boards_user_can_edit(
+	p_user_id integer
+)
+returns table (
+	uniq_id uuid,
+	id integer,
+	boardname text,
+    is_public boolean
+) as $$
+begin
+	return query
+	select b.uniq_id, b.id, b.boardname, b.is_public
+	from boards b
+	inner join board_permissions p ON b.id = p.board_id
+	where p.user_id = p_user_id 
+	  and p.can_edit = true  -- Check can_edit
+	  and not exists (  -- Exclude boards where the user is the owner
+	      select 1 
+	      from board_owner bo 
+	      where bo.board_id = b.id 
+	      and bo.owner_id = p_user_id
+	  )
+	order by b.created desc;  -- Sorting by created field
+end;
+$$ language plpgsql;
+
+create or replace function get_board_ids_user_can_edit(
 	userId integer
 )
 returns setof uuid as $$
@@ -1091,7 +1260,7 @@ $$ language plpgsql;
 create or replace function get_boards_by_user(
 	userId integer
 )
-returns setof uuid as $$
+returns setof record as $$
 begin
 	return query
 	select * from get_boards_user_authored(userId)
@@ -1104,61 +1273,65 @@ $$ language plpgsql;
 
 ALTER TABLE boards ALTER COLUMN boardname TYPE text;
 
-DROP FUNCTION IF EXISTS create_board(uuid, varchar(32));
-DROP FUNCTION IF EXISTS create_private_board(uuid, varchar(32), integer);
+DROP FUNCTION IF EXISTS create_board(text);
+DROP FUNCTION IF EXISTS create_private_board(text, integer);
 DROP FUNCTION IF EXISTS rename_board(uuid, varchar);
 
 CREATE OR REPLACE FUNCTION create_board(
-    board_id uuid,
-    title text,  -- or varchar(255)
-    author_key uuid
+    title varchar(32),  -- or varchar(255)
+    p_is_public boolean default false
 )
-RETURNS uuid
+RETURNS TABLE (id integer, uniq_id uuid, boardname varchar(32), author_key uuid, is_public boolean)
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    new_board_id uuid := board_id; 
     created_board_id integer;
+    new_uniq_id uuid;
+    new_boardname varchar(32);
+    new_author_key uuid;
+    new_is_public boolean;
 BEGIN
-    IF (new_board_id IS NULL) THEN
-        new_board_id := uuid_generate_v4();
-    END IF;
-
-    INSERT INTO boards (uniq_id, boardname, author_key)
-    VALUES (new_board_id, title, author_key)
-    RETURNING id INTO created_board_id;
+    INSERT INTO boards (boardname, author_key, is_public)
+    VALUES (title, uuid_generate_v4(), p_is_public)
+    RETURNING boards.id, boards.uniq_id, boards.boardname, boards.author_key, boards.is_public INTO created_board_id, new_uniq_id, new_boardname, new_author_key, new_is_public;
 
     PERFORM addboardtable(created_board_id);
 
-    RETURN new_board_id;
+    RETURN QUERY SELECT created_board_id, new_uniq_id, new_boardname, new_author_key, new_is_public;
 END;
 $$;
 
 CREATE OR REPLACE FUNCTION create_private_board(
-    board_id uuid,
-    title text,  -- or varchar(255)
-    owner_id integer
+    title varchar(32),  -- Increased length for flexibility
+    p_owner_id integer,
+    p_is_public boolean default false
 )
-RETURNS uuid
+RETURNS TABLE (id integer, uniq_id uuid, boardname varchar(32), owner_id integer, is_public boolean)
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    board_uuid uuid := board_id;
-    created_board_id integer;
+    new_board_id integer;
+    new_board_uniq_id uuid;
+    new_boardname varchar(32);
+    new_is_public boolean;
 BEGIN
-    IF (board_uuid IS NULL) THEN
-        board_uuid := uuid_generate_v4();
-    END IF;
-    PERFORM create_board(board_uuid, title);
-    SELECT id INTO created_board_id FROM boards WHERE uniq_id = board_uuid;
+    -- Create the board and get the id, uniq_id, and boardname
+    INSERT INTO boards (boardname, is_public)
+    VALUES (title, p_is_public)
+    RETURNING boards.id, boards.uniq_id, boards.boardname, boards.is_public INTO new_board_id, new_board_uniq_id, new_boardname, new_is_public;
 
-    INSERT INTO board_owner ("board_id", owner_id)
-    VALUES (created_board_id, owner_id);
+    -- Insert into board_owner and board_permissions in a single statement
+    INSERT INTO board_owner (board_id, owner_id)
+    VALUES (new_board_id, p_owner_id);
 
-    INSERT INTO board_permissions ("board_id", user_id, can_view, can_edit)
-    VALUES (created_board_id, owner_id, TRUE, TRUE);
+    INSERT INTO board_permissions (board_id, user_id, can_view, can_edit)
+    VALUES (new_board_id, p_owner_id, TRUE, TRUE);
 
-    RETURN board_uuid;
+    -- Create the board table
+    PERFORM addboardtable(new_board_id);
+
+    -- Return the new board details
+    RETURN QUERY SELECT  new_board_id, new_board_uniq_id, new_boardname, p_owner_id, new_is_public;
 END;
 $$;
 

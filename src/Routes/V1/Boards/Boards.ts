@@ -1,11 +1,10 @@
 import { getBoardIds, getLinks, getSharedLinks } from "Database";
 import { AccessToken } from "Interface";
+import { boardEventDbWriteLatency, snapshotReadLatency, snapshotSaveLatency } from "Metrics/metrics";
 import { Pool } from "pg";
 import { v4 as uuidv4 } from "uuid";
 import validator from "validator";
 import winston from "winston";
-import { snapshotSaveLatency, snapshotReadLatency, boardEventDbWriteLatency } from "Metrics/metrics";
-import { EventMetadata } from "WebSocket";
 
 function validateUUID(id: string, idName: string): void {
     if (!validator.isUUID(id)) {
@@ -19,10 +18,25 @@ export interface BoardEventData {
     order: number;
 }
 
-export class Boards {
-    constructor(private database: Pool, private logger: winston.Logger) {}
+type Board = {
+    id: number;
+    uniq_id: string;
+    boardname: string | null;
+    is_public: boolean;
+}
 
-    onEventSave(boardId: string, boardEvent: any): void {}
+export type AnonymousBoard = Board & {
+    author_key: string;
+}
+
+export type OwnedBoard = Board & {
+    owner_id: number;
+}
+
+export class Boards {
+    constructor(private database: Pool, private logger: winston.Logger) { }
+
+    onEventSave(boardId: string, boardEvent: any): void { }
 
     async saveBoardData(transformedData: {
         id: string;
@@ -34,7 +48,9 @@ export class Boards {
             const boardId = uuidv4();
             const editLink = uuidv4();
 
-            await this.createBoard(boardId, transformedData.name, transformedData.userId);
+            if (transformedData.userId !== undefined) {
+                await this.createBoard(transformedData.name, +transformedData.userId);
+            }
             await this.createLink(boardId, "edit", editLink);
 
             for (const item of transformedData.items) {
@@ -45,7 +61,7 @@ export class Boards {
 
             return {
                 boardId,
-                editLink,
+                editLink
             };
         } catch (err) {
             this.logger.error("Error saving board data:", err);
@@ -53,22 +69,17 @@ export class Boards {
         }
     }
 
-    async createBoard(boardId: string, title: string, ownerId?: string): Promise<any> {
+    async createBoard(title?: string, ownerId?: number, isPublic?: boolean): Promise<AnonymousBoard | OwnedBoard> {
         try {
-            validateUUID(boardId, "boardId");
             if (ownerId) {
-                const privateBoard = await this.database.query<{
-                    board_id: number;
-                }>("select * from create_private_board($1, $2, $3)", [boardId, title, ownerId]);
-                return privateBoard.rows[0].board_id;
+                const privateBoard = await this.database.query<OwnedBoard>("select * from create_private_board($1, $2, $3)", [title, ownerId, isPublic]);
+                return privateBoard.rows[0];
             } else {
-                const authorKey = uuidv4();
-                const result = await this.database.query("SELECT * FROM create_board($1, $2, $3)", [
-                    boardId,
+                const result = await this.database.query<AnonymousBoard>("SELECT * FROM create_board($1, $2)", [
                     title,
-                    authorKey,
+                    isPublic
                 ]);
-                return { ...result.rows[0].boardId, authorKey };
+                return result.rows[0];
             }
         } catch (error) {
             this.logger.error(`Error creating board: ${error}`);
@@ -98,54 +109,92 @@ export class Boards {
         }
     }
 
-    async getBoards(user: AccessToken) {
+    async getBoards(userId: number) {
         try {
-            const ids = await getBoardIds(this.database, user.sub);
+            const author = await this.getAuthoredBoards(userId);
+            const canView = await this.getCanViewBoards(userId);
+            const canEdit = await this.getCanEditBoards(userId);
+            const shared = await getSharedLinks(this.database, userId);
 
-            const withLinks = {
-                author: (await getLinks(this.database, ids.author, "edit")).map((link, index) => ({
-                    boardId: ids.author[index],
-                    link: link,
-                })),
-                canEdit: (await getLinks(this.database, ids.canEdit, "edit")).map((link, index) => ({
-                    boardId: ids.canEdit[index],
-                    link: link,
-                })),
-                canView: (await getLinks(this.database, ids.canView, "view")).map((link, index) => ({
-                    boardId: ids.canView[index],
-                    link: link,
-                })),
-            };
-
-            const shared = await getSharedLinks(this.database, user.sub);
-
-            return {
-                ...withLinks,
-                shared,
-            };
+            return { author, canEdit, canView, shared };
         } catch (error) {
-            this.logger.error(`Error fetching boards for user ${user.sub}: ${error}`);
+            this.logger.error(`Error fetching boards for user ${userId}: ${error}`);
             throw error;
         }
     }
 
-    async getBoardDetails(boardId: string): Promise<{ boardId: string; created: Date; title: string } | null> {
+    async getAuthoredBoards(userId: number) {
+        try {
+            const res = await this.database.query<OwnedBoard>('SELECT * FROM get_boards_user_authored($1)', [userId])
+            return res.rows;
+        } catch (error) {
+            this.logger.error(`Error fetching boards for user ${userId}: ${error}`);
+            throw error;
+        }
+    }
+
+    async getCanViewBoards(userId: number) {
+        try {
+            const res = await this.database.query<Board>('SELECT * FROM get_boards_user_can_view($1)', [userId])
+            return res.rows;
+        } catch (error) {
+            this.logger.error(`Error fetching boards for user ${userId}: ${error}`);
+            throw error;
+        }
+    }
+
+    async getCanEditBoards(userId: number) {
+        try {
+            const res = await this.database.query<Board>('SELECT * FROM get_boards_user_can_edit($1)', [userId])
+            return res.rows;
+        } catch (error) {
+            this.logger.error(`Error fetching boards for user ${userId}: ${error}`);
+            throw error;
+        }
+    }
+
+    async getBoardIds(userId: number) {
+        try {
+            const res = await this.database.query('SELECT * FROM get_user_board_ids($1)', [userId])
+            return res;
+        } catch (error) {
+            this.logger.error(`Error fetching boards for user ${userId}: ${error}`);
+            throw error;
+        }
+    }
+
+    async getBoardDetails(boardId: string) {
         try {
             validateUUID(boardId, "boardId");
-            const result = await this.database.query(
-                `SELECT uniq_id as boardId, created, boardname as title FROM boards WHERE uniq_id = $1 LIMIT 1`,
+            const board = await this.database.query<Board>(
+                `SELECT id, uniq_id, boardname, is_public FROM boards WHERE uniq_id = $1 LIMIT 1`,
                 [boardId]
             );
+            const editLink = await this.database.query<Board>(`
+                    SELECT b.id, b.uniq_id, b.boardname, b.is_public
+                    FROM boards b
+                    JOIN board_edit_link bel ON b.id = bel.board_id
+                    WHERE edit_link_uuid = $1 LIMIT 1
+                `,
+                [boardId]
+            );
+            const viewLink = await this.database.query<Board>(`
+                SELECT b.id, b.uniq_id, b.boardname, b.is_public
+                FROM boards b
+                JOIN board_view_link bvl ON b.id = bvl.board_id
+                WHERE view_link_uuid = $1 LIMIT 1
+            `,
+            [boardId]
+        );
 
-            if (result.rows.length > 0) {
-                const row = result.rows[0];
-                return {
-                    boardId: row.boardid,
-                    created: row.created,
-                    title: row.title,
-                };
-            } else {
-                return null;
+            if (board.rowCount > 0) {
+                return board.rows[0]
+            }
+            if (editLink.rowCount > 0) {
+                return editLink.rows[0]
+            }
+            if (viewLink.rowCount > 0) {
+                return viewLink.rows[0]
             }
         } catch (error) {
             this.logger.error(`Error fetching board details for board ID ${boardId}: ${error}`);
@@ -384,6 +433,20 @@ export class Boards {
             }
             const link = result.rows[0];
             return linkTypes.includes(link.type);
+        } catch (error) {
+            this.logger.error(`Error checking valid link: ${error}`);
+            return false;
+        }
+    }
+
+    async isBoardPublic(boardId: string): Promise<boolean> {
+        try {
+            validateUUID(boardId, "");
+            const result = await this.database.query<{get_board_is_public: boolean}>("SELECT * FROM get_board_is_public($1)", [boardId]);
+            if (result.rowCount === 0) {
+                return false;
+            }
+            return result.rows[0].get_board_is_public;
         } catch (error) {
             this.logger.error(`Error checking valid link: ${error}`);
             return false;

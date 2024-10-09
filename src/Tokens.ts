@@ -1,8 +1,10 @@
 import jwt from "jsonwebtoken";
-import { AccessToken } from "Interface";
+import { AccessToken, type RefreshToken } from "Interface";
 import fs from "fs";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
+
+type TokenType = "access" | "refresh";
 
 export interface Token {
     sub: string; // Subject (usually user id)
@@ -15,16 +17,16 @@ export interface Token {
 }
 
 export async function createToken(
-    claims: object,
     userId: string,
     expiresIn: number,
     issuer: string,
-    audience: string
+    audience: string,
+    type: TokenType,
+    claims?: object
 ): Promise<string> {
-    const privateKey = getPrivateKey();
-
     const issuedAt = Math.floor(Date.now() / 1000);
     const expirationTime = issuedAt + expiresIn;
+    const privateKey = getPrivateKey(type);
 
     const standardClaims: Token = {
         sub: userId, // Subject (usually the user id)
@@ -51,14 +53,20 @@ export async function createToken(
     return tokenString;
 }
 
+
+
 export async function verifyToken(
-    tokenString: string
+    tokenString: string,
+    type: TokenType
 ): Promise<AccessToken | null> {
     try {
-        const publicKey = getPublicKey();
+        const publicKey = getPublicKey(type);
+        if (!publicKey) {
+            throw new Error("Private key is not defined");
+        }
         const token = jwt.verify(tokenString, publicKey, {
             algorithms: ["ES256"],
-        }) as AccessToken;
+        }) as AccessToken | RefreshToken;
         if (isTokenValid(token)) {
             return token;
         } else {
@@ -69,15 +77,49 @@ export async function verifyToken(
     }
 }
 
-function getPublicKey() {
-    const publicKeyPath = process.env.PUBLIC_KEY_PATH;
+
+function getPrivateKey(type: TokenType) {
+    switch (type) {
+        case "access":
+            return getAccessPrivateKey();
+        case "refresh":
+            return getRefreshPrivateKey();
+        default:
+            throw new Error("Wrong token type");
+    }
+}
+
+function getPublicKey(type: TokenType) {
+    switch (type) {
+        case "access":
+            return getAccessPublicKey();
+        case "refresh":
+            return getRefreshPublicKey();
+        default:
+            throw new Error("Wrong token type");
+    }
+}
+
+function getAccessPublicKey() {
+    const publicKeyPath = process.env.ACCESS_PUBLIC_KEY_PATH;
     return getKey(publicKeyPath);
 }
 
-function getPrivateKey() {
-    const publicKeyPath = process.env.PRIVATE_KEY_PATH;
+function getAccessPrivateKey() {
+    const privateKeyPath = process.env.ACCESS_PRIVATE_KEY_PATH;
+    return getKey(privateKeyPath);
+}
+
+function getRefreshPublicKey() {
+    const publicKeyPath = process.env.REFRESH_PUBLIC_KEY_PATH;
     return getKey(publicKeyPath);
 }
+
+function getRefreshPrivateKey() {
+    const privateKeyPath = process.env.REFRESH_PRIVATE_KEY_PATH;
+    return getKey(privateKeyPath);
+}
+
 
 function getKey(keyPath: string | undefined) {
     if (!keyPath) {

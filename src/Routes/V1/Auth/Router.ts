@@ -1,11 +1,24 @@
-import express from "express";
+import express, { type Response } from "express";
 import winston from "winston";
 import { Auth } from "./Auth";
 import { body, validationResult } from "express-validator";
 import { HttpException } from "shared/exceptions/http-exception";
 import { HttpStatus } from "shared/enums/http-status.enum";
 import { jwtMiddleware } from "Middlewares/jwt.middleware";
+import { REFRESH_TOKEN_EXPIRY } from "./AuthHelper";
+
 import { catchAsync } from "shared/lib/catchAsync";
+export const REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
+
+function setCookies(res: Response, refreshToken: string) {
+    res.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: REFRESH_TOKEN_EXPIRY * 1000,
+    });
+}
+
 
 export function getAuthRouter(
     authService: Auth,
@@ -22,6 +35,13 @@ export function getAuthRouter(
             try {
                 const { email, password } = req.body;
                 const jwts = await authService.login({ email, password });
+                if (!jwts?.refreshToken) {
+                    return res.status(HttpStatus.UNAUTHORIZED).json({
+                        status: HttpStatus.UNAUTHORIZED,
+                        message: "Unauthorized",
+                    });
+                }
+                setCookies(res, jwts.refreshToken);
                 return res.json(jwts);
             } catch (err: HttpException | any) {
                 return handleError(res, err);
@@ -50,7 +70,7 @@ export function getAuthRouter(
 
     router.post("/auth/refresh", catchAsync(async (req, res) => {
         try {
-            const refreshToken = req.headers["authorization"]?.split(" ")?.[1];
+            const refreshToken = req.cookies[REFRESH_TOKEN_COOKIE_NAME];
             if (!refreshToken) {
                 return res.status(HttpStatus.UNAUTHORIZED).json({
                     status: HttpStatus.UNAUTHORIZED,
@@ -61,6 +81,14 @@ export function getAuthRouter(
             const jwtTokens = await authService.refresh({
                 refreshToken,
             });
+
+            if (!jwtTokens?.refreshToken) {
+                return res.status(HttpStatus.UNAUTHORIZED).json({
+                    status: HttpStatus.UNAUTHORIZED,
+                    message: "Unauthorized",
+                });
+            }
+            setCookies(res, jwtTokens.refreshToken)
             return res.json(jwtTokens);
         } catch (err) {
             return handleError(res, err);
@@ -79,6 +107,14 @@ export function getAuthRouter(
                     email,
                     passcode,
                 });
+                if (!tokens.refreshToken) {
+                    return res.status(HttpStatus.UNAUTHORIZED).json({
+                        status: HttpStatus.UNAUTHORIZED,
+                        message: "Unauthorized",
+                    });
+                }
+
+                setCookies(res, tokens.refreshToken)
                 res.json(tokens);
             } catch (err) {
                 return handleError(res, err);
@@ -131,6 +167,7 @@ export function getAuthRouter(
 
             try {
                 await authService.logout(userId);
+                res.clearCookie(REFRESH_TOKEN_COOKIE_NAME)
                 res.json({ message: "User logged out" });
             } catch (err) {
                 return handleError(res, err);
@@ -146,7 +183,6 @@ export function getAuthRouter(
         catchAsync(async (req, res) => {
             const { newPassword, token } = req.body;
 
-            console.log("token: ", token);
 
             try {
                 await authService.restorePassword(token, newPassword);
