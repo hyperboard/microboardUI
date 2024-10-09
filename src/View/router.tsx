@@ -5,7 +5,7 @@ import ReactDOM from "react-dom";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AppContext } from "./AppContext";
 import AuthView from "./AuthView/AuthView";
-import { BoardView } from "./BoardView";
+import { BoardView } from "View/BoardView";
 import SelectBoard from "./Embedding/SelectBoard";
 import TestComponent from "./Embedding/Test";
 import { ForgotPassword } from "./ForgotPassword/ForgotPassword";

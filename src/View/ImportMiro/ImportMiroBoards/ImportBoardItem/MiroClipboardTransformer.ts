@@ -15,7 +15,8 @@ import { useCopyBoardItems } from "./useCopyBoardItems";
 import {
 	INITIAL_DRAWING_STROKE_WIDTH,
 	MAX_DRAWING_STROKE_WIDTH,
-} from "View/Tools/AddDrawing";
+} from "../../../Tools/AddDrawing";
+import { Point } from "Board/Items";
 
 type SupportedMiroType =
 	| IMiroBoardItemConnector

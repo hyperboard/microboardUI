@@ -1,20 +1,28 @@
+import { App } from "App";
 import { withRouter } from "lib/withRouter";
 import React, { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { TextEditors } from "View/TextEditor/TextEditor";
 import { Canvas } from "./Canvas";
 import { ContextPanel } from "./ContextPanel";
 import { ExportPanel } from "./ExportPanel";
-import { TextEditors } from "View/TextEditor/TextEditor";
 import { TitlePanel } from "./TitlePanel";
-import { ToolsPanel } from "./ToolsPanel";
-import { ZoomPanel } from "./ZoomPanel";
 import { ToastProvider } from "./ToastProvider";
+import { ToolsPanel } from "./ToolsPanel";
 import { ViewModeGuard } from "./ViewModeGuard";
+import { ZoomPanel } from "./ZoomPanel";
 
-const AppViewBase = ({ app, router }) => {
+type Props = { app: App };
+
+export const AppView = ({ app }: Props) => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [animationFrameId, setAnimationFrameId] = useState<number | null>(
 		null,
 	);
+	const location = useLocation();
+	const navigate = useNavigate();
+	const params = useParams();
+	const router = { location, navigate, params };
 
 	const update = () => {
 		if (animationFrameId) {
@@ -95,15 +103,6 @@ const AppViewBase = ({ app, router }) => {
 		};
 	}, [app, animationFrameId]);
 
-	const urlString = new URL(window.location.href).pathname;
-	const boardId = router?.params?.boardId || urlString.split("/").pop();
-
-	useEffect(() => {
-		if (boardId) {
-			app.openBoard(boardId);
-		}
-	}, [boardId, app]);
-
 	const board = app.getBoard();
 	if (!board) {
 		return <div></div>;
@@ -133,8 +132,6 @@ const AppViewBase = ({ app, router }) => {
 		</div>
 	);
 };
-
-export const AppView = withRouter(AppViewBase);
 
 function preventDefault(event: TouchEvent): void {
 	event.preventDefault();
