@@ -36,7 +36,10 @@ import { Descendant } from "slate";
 import { TextNode } from "Board/Items/RichText/Editor/TextNode";
 import type { HorisontalAlignment } from "Board/Items/Alignment";
 import { STICKER_COLORS } from "../../../Tools/AddSticker";
-import { toRelativePoint } from "Board/Items/Connector/ControlPoint";
+import {
+	BoardPoint,
+	toRelativePoint,
+} from "Board/Items/Connector/ControlPoint";
 import { Drawing } from "Board/Items/Drawing";
 
 interface MiroImage {
@@ -167,6 +170,8 @@ export const useCopyBoardItems = (
 	miroItems?: IMiroBoardItem[],
 ): void => {
 	const boardMiroId: { [key: string]: string } = {};
+	const searchParams = new URLSearchParams(window.location.search);
+	const isClipboard = searchParams.get("clipboard");
 
 	const setBoardMiroId = (id: string): void => {
 		boardMiroId[id] =
@@ -657,15 +662,15 @@ export const useCopyBoardItems = (
 	};
 
 	const getConnectorPoint = (
-		start: number,
+		position: number,
 		geometry?: number,
 		percent?: string,
 	): number => {
 		if (geometry) {
 			const percentInt = percent?.replace("%", "") ?? 1;
-			return start + (geometry * Number(percentInt)) / 100;
+			return position + (geometry * Number(percentInt)) / 100;
 		}
-		return start;
+		return position;
 	};
 
 	const setConnectorsStyles = (
@@ -684,19 +689,44 @@ export const useCopyBoardItems = (
 		}
 	};
 
-	const copyConnector = (item: IMiroBoardItemConnector): void | null => {
-		// TODO: Rewrite to clipboard single usage
-		const { startItem, endItem, style, shape, captions } = item;
+	const createConnector = (
+		item: IMiroBoardItemConnector,
+	): Connector | null => {
+		const { startItem, endItem } = item;
 
 		if (!startItem || !endItem) {
-			console.log("no start or end item");
+			console.error("no start or end item");
 			return null;
 		}
 		// start and end connection objects for the connector
 		const startItemMiro = board.items.getById(boardMiroId[startItem.id]);
 		const endItemMiro = board.items.getById(boardMiroId[endItem.id]);
+
 		if (!startItemMiro || !endItemMiro) {
-			return null;
+			if (!isClipboard) {
+				return null;
+			}
+
+			const startItemPosition = startItem.position;
+			const endItemPosition = endItem.position;
+			const pointer = board.pointer.point;
+
+			return new Connector(
+				board,
+				undefined,
+				new BoardPoint(
+					Number(startItemPosition?.x.replace("%", "")) / 100 +
+						pointer.x,
+					Number(startItemPosition?.y.replace("%", "")) / 100 +
+						pointer.y,
+				),
+				new BoardPoint(
+					Number(endItemPosition?.x.replace("%", "")) / 100 +
+						pointer.x,
+					Number(endItemPosition?.y.replace("%", "")) / 100 +
+						pointer.y,
+				),
+			);
 		}
 
 		const startDimensions = getItemDimensions(startItemMiro);
@@ -740,12 +770,21 @@ export const useCopyBoardItems = (
 			endItemMiro,
 		);
 
-		const connector = new Connector(
+		return new Connector(
 			board,
 			undefined,
 			new FixedPoint(startItemMiro, startRelativePoint),
 			new FixedPoint(endItemMiro, endRelativePoint),
 		);
+	};
+
+	const copyConnector = (item: IMiroBoardItemConnector): void | null => {
+		const { style, shape, captions } = item;
+
+		const connector = createConnector(item);
+		if (!connector) {
+			return;
+		}
 
 		const {
 			strokeColor,
@@ -820,6 +859,10 @@ export const useCopyBoardItems = (
 	};
 
 	const copyPaint = (item: IMiroBoardItemPaint): void => {
+		if (!isClipboard) {
+			return;
+		}
+
 		const { style, data, id } = item;
 
 		const drawing = new Drawing([]);
@@ -876,7 +919,11 @@ export const useCopyBoardItems = (
 		const miroBoardItems = miroItems || sessionMiroItemsParsed || [];
 		const token = Cookies.get("miro_accessToken");
 
-		if (!token && miroBoardItems.some(item => item.type === "image")) {
+		if (
+			!token &&
+			miroBoardItems.some(item => item.type === "image") &&
+			!isClipboard
+		) {
 			getMiroToken();
 			return;
 		}
@@ -896,8 +943,8 @@ export const useCopyBoardItems = (
 			.filter(item => item.type === MiroBoardItemTypes.CONNECTOR)
 			.forEach(copyConnector);
 
+		sessionMiroItemsParsed && sessionStorage.removeItem(`miroItems`);
 		zoomToFit();
-		sessionStorage.removeItem(`miroItems`);
 	};
 
 	copyBoardItems();

@@ -7,7 +7,6 @@ import {
 	MiroBoardItemTypes,
 } from "../MiroBoards/MiroBoardsModels";
 import { App } from "App";
-import { useNavigate } from "react-router-dom";
 import { useCopyBoardItems } from "./useCopyBoardItems";
 import { getApiUrl } from "Config";
 import { Modal } from "shared/ui-lib/Modal";
@@ -18,6 +17,8 @@ import { Button } from "shared/ui-lib/Button";
 import { LoadingNotification } from "./LoadingNotification";
 import { SuccessNotification } from "./SuccessNotification";
 import { ErrorNotification } from "./ErrorNotification";
+import { useSidePanelContext } from "View/SidePanel/SidePanelContext";
+import { useBoardRenameContext } from "View/BoardName";
 
 interface IImportBoardItem {
 	isOpen: boolean | null;
@@ -30,8 +31,9 @@ interface IImportBoardItem {
 export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 	const { isOpen, setIsOpen, boardInfo, app, setStage } = props;
 
+	const { handleAddNew } = useSidePanelContext();
+	const { setRenamingBoardId, setNewBoardName } = useBoardRenameContext();
 	const { t } = useTranslation();
-	const navigate = useNavigate();
 	const [loadingNotification, setLoadingNotification] =
 		useState<boolean>(false);
 	const [boardItems, setBoardItems] = useState<IMiroBoardItem[]>([]);
@@ -150,19 +152,14 @@ export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 	};
 
 	const createNewBoard = async () => {
-		await app
-			.createPublicBoard()
-			.then((id: string) => {
-				app.openBoard(id);
-				navigate(`/boards/${id}`, {
-					replace: true,
-				});
-				const board = app.getBoard();
-				// app.storage.renameBoard(board.getBoardId(), boardInfo.name);
-				useCopyBoardItems(board, boardItems);
-				setIsOpenSuccessMessage(true);
-			})
-			.catch(console.error);
+		await handleAddNew(boardId => {
+			setNewBoardName(boardInfo.name);
+			setRenamingBoardId(boardId);
+
+			const board = app.getBoard();
+			useCopyBoardItems(board, boardItems);
+			setIsOpenSuccessMessage(true);
+		}).catch(console.error);
 		// TODO notify user;
 	};
 
