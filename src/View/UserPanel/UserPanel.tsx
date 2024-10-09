@@ -18,6 +18,7 @@ import { PasswordChanged } from "View/Widgets/form-notifications/password-change
 import { ChangePassword } from "./icons/ChangePassword";
 import { Logout } from "./icons/Logout";
 import styles from "./UserPanel.module.css";
+import { useAppContext } from "View/AppContext";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	email?: string;
@@ -44,7 +45,6 @@ export const UserDropDown: React.FC<UserDropDownProps> = ({
 	const closeDropdown = (): void => {
 		setIsDropdownOpen(false);
 	};
-
 
 	useOutsideClickHandler(dropdownRef, closeDropdown);
 	const logout = (): void => {

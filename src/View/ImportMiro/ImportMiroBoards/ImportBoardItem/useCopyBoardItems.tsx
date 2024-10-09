@@ -164,7 +164,7 @@ const CONNECTOR_STYLES = {
 
 export const useCopyBoardItems = (
 	board: Board,
-	miroItems: IMiroBoardItem[],
+	miroItems?: IMiroBoardItem[],
 ): void => {
 	const boardMiroId: { [key: string]: string } = {};
 
@@ -326,8 +326,14 @@ export const useCopyBoardItems = (
 		board.selection.remove(lastBoardItem);
 	};
 
-	const getMiroItemById = (id: string): IMiroBoardItem | undefined =>
-		miroItems.find((item: IMiroBoardItem) => item.id === id);
+	const getMiroItemById = (id: string): IMiroBoardItem | undefined => {
+		const sessionMiroItems = sessionStorage.getItem(`miroItems`);
+		const miroBoardItems = sessionMiroItems
+			? JSON.parse(sessionMiroItems)
+			: miroItems;
+
+		return miroBoardItems.find((item: IMiroBoardItem) => item.id === id);
+	};
 
 	const getItemPosition = (
 		position: IMiroPosition,
@@ -384,8 +390,6 @@ export const useCopyBoardItems = (
 				height: height / INITIAL_GEOMETRY[itemType][shapeType].height,
 			};
 		}
-
-		console.log("itemType", itemType);
 
 		const initialGeometry = INITIAL_GEOMETRY[itemType] ?? {
 			width: 1,
@@ -834,6 +838,22 @@ export const useCopyBoardItems = (
 		setBoardMiroId(id);
 	};
 
+	const getMiroToken = (): void => {
+		const token = Cookies.get("miro_accessToke");
+		if (!token) {
+			sessionStorage.setItem(`miroItems`, JSON.stringify(miroItems));
+			const clientId = "3458764589599848573";
+			const redirectUrl =
+				window.location.origin + "/boards?clipboard=true";
+
+			window.location.href =
+				"https://miro.com/oauth/authorize?response_type=code&client_id=" +
+				clientId +
+				"&redirect_uri=" +
+				redirectUrl;
+		}
+	};
+
 	const copyBoardItems = (): void => {
 		const itemsTypes: {
 			[key in MiroItemsTypes]: (item: any) => void;
@@ -847,9 +867,22 @@ export const useCopyBoardItems = (
 			paint: copyPaint,
 		};
 
-		miroItems.forEach((item: IMiroBoardItem) => {
+		const sessionMiroItems = sessionStorage.getItem(`miroItems`);
+		const sessionMiroItemsParsed =
+			sessionMiroItems && sessionMiroItems !== undefined
+				? JSON.parse(sessionMiroItems)
+				: null;
+
+		const miroBoardItems = miroItems || sessionMiroItemsParsed || [];
+		const token = Cookies.get("miro_accessToken");
+
+		if (!token && miroBoardItems.some(item => item.type === "image")) {
+			getMiroToken();
+			return;
+		}
+
+		miroBoardItems.forEach((item: IMiroBoardItem) => {
 			const type = item.type as MiroItemsTypes;
-			console.log("item", item);
 
 			if (
 				item.type !== MiroBoardItemTypes.CONNECTOR &&
@@ -859,13 +892,12 @@ export const useCopyBoardItems = (
 			}
 		});
 
-		miroItems
+		miroBoardItems
 			.filter(item => item.type === MiroBoardItemTypes.CONNECTOR)
-			.forEach((item: IMiroBoardItem) => {
-				copyConnector(item as IMiroBoardItemConnector);
-			});
+			.forEach(copyConnector);
 
 		zoomToFit();
+		sessionStorage.removeItem(`miroItems`);
 	};
 
 	copyBoardItems();
