@@ -138,6 +138,7 @@ export interface IMiroBoardItemText extends IMiroBoardItemBase {
 	data: IMiroData;
 	geometry: IMiroGeometry;
 	position: IMiroPosition;
+	scale: number;
 }
 
 export interface IMiroBoardItemShape extends IMiroBoardItemBase {

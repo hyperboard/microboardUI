@@ -16,7 +16,6 @@ import {
 	INITIAL_DRAWING_STROKE_WIDTH,
 	MAX_DRAWING_STROKE_WIDTH,
 } from "../../../Tools/AddDrawing";
-import { Point } from "Board/Items";
 
 type SupportedMiroType =
 	| IMiroBoardItemConnector
@@ -287,6 +286,7 @@ export const transformText = (
 				? MiroRelativeTo.frame
 				: MiroRelativeTo.board,
 		},
+		scale: json.scale.scale,
 	};
 
 	if (json._parent) {

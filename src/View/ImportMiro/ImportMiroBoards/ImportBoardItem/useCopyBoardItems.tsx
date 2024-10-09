@@ -407,7 +407,11 @@ export const useCopyBoardItems = (
 		};
 	};
 
-	const setTransformation = (item: Item, miroItem: IMiroBoardItem): void => {
+	const setTransformation = (
+		item: Item,
+		miroItem: IMiroBoardItem,
+		scale?: number,
+	): void => {
 		const { geometry, position, parent } = miroItem;
 		const shapeType =
 			miroItem.type === "sticky_note" ? miroItem.data.shape : undefined;
@@ -418,7 +422,7 @@ export const useCopyBoardItems = (
 		);
 
 		if (item.itemType === "RichText") {
-			applyRichTextTransformation(item, position, parent);
+			applyRichTextTransformation(item, position, parent, scale);
 		} else {
 			applyStandardTransformation(
 				item,
@@ -431,10 +435,13 @@ export const useCopyBoardItems = (
 	};
 
 	const applyRichTextTransformation = (
-		item: Item,
+		item: RichText,
 		position: IMiroPosition,
 		parent?: IMiroParent,
+		scale?: number,
 	): void => {
+		scale && item.transformation.scaleBy(scale, scale);
+
 		const { width, height } = getItemDimensions(item);
 		const itemPosition = getItemPosition(
 			position,
@@ -442,9 +449,8 @@ export const useCopyBoardItems = (
 			parent,
 		);
 
-		if (itemPosition) {
+		itemPosition &&
 			item.transformation.translateTo(itemPosition.x, itemPosition.y);
-		}
 	};
 
 	const applyStandardTransformation = (
@@ -812,11 +818,9 @@ export const useCopyBoardItems = (
 	};
 
 	const copyText = (item: IMiroBoardItemText): void => {
-		const { id, style, data, geometry, position, parent } = item;
+		const { id, style, data, geometry, scale } = item;
 
 		const richtext = new RichText(new Mbr(), id);
-
-		const textPosition = getItemPosition(position, geometry, parent);
 
 		const richTextWidth = geometry?.width ?? RICH_TEXT_MAX_WIDTH;
 		richtext.setMaxWidth(richTextWidth);
@@ -827,9 +831,7 @@ export const useCopyBoardItems = (
 
 		const boardRichText =
 			board.items.listAll()[board.items.listAll().length - 1];
-		setTransformation(boardRichText, item);
-		textPosition &&
-			richtext.transformation.translateTo(textPosition.x, textPosition.y);
+		setTransformation(boardRichText, item, scale);
 	};
 
 	const copyFrame = (item: IMiroBoardItemFrame): void => {
@@ -859,7 +861,7 @@ export const useCopyBoardItems = (
 	};
 
 	const copyPaint = (item: IMiroBoardItemPaint): void => {
-		if (!isClipboard) {
+		if (!item.data) {
 			return;
 		}
 
@@ -922,7 +924,7 @@ export const useCopyBoardItems = (
 		if (
 			!token &&
 			miroBoardItems.some(item => item.type === "image") &&
-			!isClipboard
+			isClipboard
 		) {
 			getMiroToken();
 			return;
@@ -944,7 +946,7 @@ export const useCopyBoardItems = (
 			.forEach(copyConnector);
 
 		sessionMiroItemsParsed && sessionStorage.removeItem(`miroItems`);
-		zoomToFit();
+		// zoomToFit();
 	};
 
 	copyBoardItems();
