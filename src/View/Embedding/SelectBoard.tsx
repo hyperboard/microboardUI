@@ -7,17 +7,16 @@ import { App } from "App";
 import { useTranslation } from "react-i18next";
 import { TFunction } from "i18next";
 import Selector, { SelectorHandle } from "./Selector";
-import { useAuth } from "shared/hooks/useAuth";
 import { getEmbedUrl } from "lib/getEmbedUrl";
 import { getApiUrl } from "Config";
 import { UiButton } from "View/Ui/UiButton";
 import { useForceUpdate } from "lib/useForceUpdate";
 import Cookies from "js-cookie";
-import { Dropdown } from "shared/ui-lib/Dropdown/Dropdown";
 import { UserDropDown } from "View/UserPanel/UserPanel";
 import { Button } from "shared/ui-lib/Button";
 import { useNavigate } from "react-router-dom";
 import { boardsApi } from "shared/api";
+import { useBoardsList } from "App/useBoardsList";
 
 const customHeader: CSSProperties = {
 	padding: "6px",
@@ -46,6 +45,7 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 	const navigate = useNavigate();
 	const forceUpdate = useForceUpdate();
 	// const { isAuth } = useAuth(app);
+	const boardsList = useBoardsList();
 	const isAuth = app.account.isLoggedIn;
 	const searchRef = useRef<HTMLInputElement>(null);
 	const newBoardRef = useRef<HTMLInputElement>(null);
@@ -59,10 +59,10 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 	);
 	const [newBoardName, setNewBoardName] = useState(t("board.untitled"));
 	const [filteredPublicBoards, setFilteredPublicBoards] = useState(
-		app.boardsList.publicBoards,
+		boardsList.publicBoards,
 	);
 	const [filteredSharedBoards, setFilteredSharedBoards] = useState(
-		app.boardsList.sharedBoards,
+		boardsList.sharedBoards,
 	);
 
 	function handleError(er: unknown): void {
@@ -159,14 +159,14 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 
 	useEffect(() => {
 		setFilteredPublicBoards(
-			app.boardsList.publicBoards.filter(board =>
+			boardsList.publicBoards.filter(board =>
 				getName(t, board.title)
 					.toLowerCase()
 					.includes(searchQuery.trim().toLowerCase()),
 			),
 		);
 		setFilteredSharedBoards(
-			app.boardsList.sharedBoards.filter(board =>
+			boardsList.sharedBoards.filter(board =>
 				getName(t, board.title)
 					.toLowerCase()
 					.includes(searchQuery.trim().toLowerCase()),
@@ -181,14 +181,36 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 		}
 	}, [selected]);
 
+	useEffect(() => {
+		const fetchBoards = async (): Promise<void> => {
+			await app.boardsList.loadBoards();
+			setFilteredSharedBoards(
+				boardsList.sharedBoards.filter(board =>
+					getName(t, board.title)
+						.toLowerCase()
+						.includes(searchQuery.trim().toLowerCase()),
+				),
+			);
+			setFilteredPublicBoards(
+				boardsList.publicBoards.filter(board =>
+					getName(t, board.title)
+						.toLowerCase()
+						.includes(searchQuery.trim().toLowerCase()),
+				),
+			);
+		}
+
+		fetchBoards();
+	}, []);
+
 	const handleEmbed = async (): Promise<void> => {
 		try {
 			if (selected === "addNew") {
-				const created = await app.boardsList.createBoard(
+				const created = await boardsList.createBoard(
 					newBoardRef.current?.value,
 					true,
 				);
-				const stored = app.boardsList.getBoardInfo(created);
+				const stored = boardsList.getBoardInfo(created);
 				handleSuccess(created, newBoardRef.current?.value, stored?.id);
 			} else if (selected) {
 				setLoading(true);
@@ -210,7 +232,7 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 					setLoading(false);
 					selected.notFound = true;
 					if (
-						app.boardsList.publicBoards.some(
+						boardsList.publicBoards.some(
 							shared => shared.id === selected.id,
 						)
 					) {
@@ -219,7 +241,7 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 						// app.storage.setPublicBoard(selected, false);
 					}
 					setSelected(selected);
-					app.boardsList.subject.publish();
+					boardsList.subject.publish();
 					// app.storage.subject.publish();
 					forceUpdate();
 				} else {
@@ -405,7 +427,7 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 								]}
 							/>} */}
 						{selected === "addNew" ||
-						app.boardsList.publicBoards.some(
+						boardsList.publicBoards.some(
 							board => board.id === selected.id,
 						) ? (
 							<div className={style.selectorsContainer}>
