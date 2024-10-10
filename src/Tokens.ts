@@ -120,12 +120,17 @@ function getRefreshPrivateKey() {
     return getKey(privateKeyPath);
 }
 
-
+const keysCache = new Map<string, string>();
 function getKey(keyPath: string | undefined) {
     if (!keyPath) {
         throw new Error("Key path is not set up");
     }
-    return fs.readFileSync(path.resolve(keyPath), "utf8");
+    if (keysCache.has(keyPath)) {
+        return keysCache.get(keyPath);
+    }
+    const key = fs.readFileSync(path.resolve(keyPath), "utf8");
+    keysCache.set(keyPath, key);
+    return key;
 }
 
 function isTokenValid(token: Token): boolean {
