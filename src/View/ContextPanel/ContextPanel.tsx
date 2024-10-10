@@ -34,6 +34,7 @@ import { TextColor } from "./Buttons/TextColor";
 import { TextHighlight } from "./Buttons/TextHighlight";
 import { ToggleFrameRatio } from "./Buttons/ToggleFrameRatio";
 import { PanelContext } from "./PanelContext";
+import { Lock } from "./Buttons/Lock";
 import { ConnectorLineColor } from "./Buttons/ConnectorLineColor";
 import { ConnectorFontStyle } from "./Buttons/ConnectorFontStyle";
 import { ConnectorFontSize } from "./Buttons/FontSize";
@@ -67,6 +68,12 @@ export function ContextPanel() {
 	if (isInvisible) {
 		return null;
 	}
+
+	const lockedFrames = board.selection.items
+		.list()
+		.filter(
+			item => item.transformation.isLocked && item.itemType === "Frame",
+		);
 
 	const isSelectUnderPointer =
 		board.selection.getContext() === "SelectUnderPointer";
@@ -105,7 +112,7 @@ export function ContextPanel() {
 				padding={0}
 				id="ContextPanel"
 			>
-				{isSelectUnderPointer && (
+				{isSelectUnderPointer && !lockedFrames.length && (
 					<>
 						<Edit />
 						<RestOptionsMenu rounded="right">
@@ -221,7 +228,7 @@ export function ContextPanel() {
 						</RestOptionsMenu>
 					</>
 				)}
-				{isFrame && !isSelectUnderPointer && (
+				{isFrame && !isSelectUnderPointer && !lockedFrames.length && (
 					<>
 						<FrameRatio />
 						<ToggleFrameRatio />
@@ -230,12 +237,27 @@ export function ContextPanel() {
 						<UiSeparator vertical />
 						<Duplicate />
 						<Delete />
+						<Lock />
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
 							<CopyFrameLink />
 							<ExportFrame />
 						</RestOptionsMenu>
+					</>
+				)}
+				{!!lockedFrames.length && (
+					<>
+						<Lock rounded="left" />
+						<Duplicate
+							rounded={lockedFrames.length > 1 ? "right" : "none"}
+						/>
+						{lockedFrames.length <= 1 ? (
+							<RestOptionsMenu rounded="right">
+								<CopyFrameLink />
+								<ExportFrame />
+							</RestOptionsMenu>
+						) : null}
 					</>
 				)}
 				{isDifferentItems && !isSelectUnderPointer && (

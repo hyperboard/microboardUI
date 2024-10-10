@@ -108,6 +108,12 @@
 		},
 		"restMenu": {
 			"tooltip": "Options"
+		},
+		"lock": {
+			"tooltip": "Lock"
+		},
+		"unlock": {
+			"tooltip": "Unlock"
 		}
 	},
 	"toolsPanel": {
