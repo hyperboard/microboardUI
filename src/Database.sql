@@ -1284,6 +1284,7 @@ ALTER TABLE boards ALTER COLUMN boardname TYPE text;
 DROP FUNCTION IF EXISTS create_board(text);
 DROP FUNCTION IF EXISTS create_private_board(text, integer);
 DROP FUNCTION IF EXISTS rename_board(uuid, varchar);
+DROP FUNCTION IF EXISTS create_board(varchar, boolean);
 
 CREATE OR REPLACE FUNCTION create_board(
     title varchar(32),  -- or varchar(255)
