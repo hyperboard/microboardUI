@@ -139,23 +139,8 @@ const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 					<Button
 						key="userDropDown2"
 						pattern="ghost"
-						onClick={() => {
-							const logout = (): void => {
-								fetch(`${getApiUrl()}/auth/logout`, {
-									method: "PUT",
-									headers: {
-										"Content-Type": "application/json",
-										Authorization: `Bearer ${Cookies.get(
-											"accessToken",
-										)}`,
-									},
-								});
-							};
-							logout();
-							app.storage.setIsAuth(false);
-							Cookies.remove("refreshToken");
-							Cookies.remove("accessToken");
-							app.storage.clean();
+						onClick={async () => {
+							app.account.logout();
 							navigate(0);
 						}}
 					>
