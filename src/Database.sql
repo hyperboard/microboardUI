@@ -1263,6 +1263,8 @@ begin
 end;
 $$ language plpgsql;
 
+DROP FUNCTION get_boards_by_user(integer);
+
 create or replace function get_boards_by_user(
 	userId integer
 )
