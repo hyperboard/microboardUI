@@ -1179,6 +1179,8 @@ begin
 end;
 $$ language plpgsql;
 
+DROP FUNCTION get_boards_user_can_view(integer);
+
 create or replace function get_boards_user_can_view(
 	p_user_id integer
 )
