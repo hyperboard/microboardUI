@@ -1,10 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-export type ModalName =
-	| "startImportMiro"
-	| "authClipboardMiro"
-	| "miroBoards"
-	| "importMiroItems";
+export type ModalName = "startImportMiro" | "authClipboardMiro";
 
 interface ModalContextType {
 	modals: Record<ModalName, boolean>;
@@ -17,8 +13,6 @@ const ModalContext = createContext<ModalContextType>({
 	modals: {
 		startImportMiro: false,
 		authClipboardMiro: false,
-		miroBoards: false,
-		importMiroItems: false,
 	},
 	showModal: modalName => {},
 	hideModal: modalName => {},
@@ -39,8 +33,6 @@ export const ModalProvider = ({ children }) => {
 	const [modals, setModals] = useState<Record<ModalName, boolean>>({
 		startImportMiro: false,
 		authClipboardMiro: false,
-		miroBoards: false,
-		importMiroItems: false,
 	});
 	const showModal = modalName => {
 		setModals(prevModals => ({

@@ -380,6 +380,11 @@
 			"errorBoardsText": "We were unable to retrieve the list of boards from Miro. Please try again later.",
 			"boardsOkBtn": "Ok"
 		},
+		"authClipboardModal": {
+			"title": "Import Error",
+			"description": "To import the board from Miro, you need to authorize. Please log in to save your progress.",
+			"authBtn": "Log In"
+		},
 		"importMiro": "Import from Miro",
 		"importMiroBtn": "Import from Miro",
 		"authTooltip": "Sign up to access all features of Microboard",

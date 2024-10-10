@@ -20,6 +20,7 @@ import style from "./AppView.module.css";
 import { InactiveBoardHidder } from "./InactiveBoardHidder";
 import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
+import { ImportMiroStartModal, AuthClipboardModal } from "View/ImportMiro";
 
 export function AppView() {
 	const { app, board } = useAppContext();
@@ -142,6 +143,8 @@ export function AppView() {
 			</ViewModeGuard>
 			<ToastProvider />
 			<ImportMiroBoards app={app} />
+			<ImportMiroStartModal />
+			<AuthClipboardModal />
 		</div>
 	);
 }

@@ -10,7 +10,7 @@ import { isSafari } from "./isSafari";
 import { prepareImage } from "Board/Items/Image/ImageHelpers";
 import { HotkeysMap } from "Board/Keyboard/types";
 import { pasteMiroClipboard } from "../View/ImportMiro/ImportMiroBoards/ImportBoardItem/MiroClipboardTransformer";
-import Cookies from "js-cookie";
+import { getGlobalShowModal } from "View/Modal/ModalProvider";
 
 export interface Controller {
 	onWheel: (event: WheelEvent) => void;
@@ -578,10 +578,18 @@ export function getController(
 				if (decoded !== null) {
 					const miroData = JSON.parse(decoded);
 
-					const userToken = Cookies.get("accessToken");
-					if (!userToken && miroData !== null) {
-						window.location.href = "/auth/sign-in";
+					if (!window.app.account.isLoggedIn && miroData !== null) {
+						console.log("test");
+						console.log(
+							"window.app.account.isLoggedIn",
+							window.app.account.isLoggedIn,
+						);
+						console.log("miroData", miroData);
+						const showModal = getGlobalShowModal();
+						showModal?.("authClipboardMiro");
+						return;
 					}
+
 					pasteMiroClipboard(board, miroData || []);
 
 					return;

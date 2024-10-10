@@ -15,13 +15,13 @@ import { BoardRename, useBoardRenameContext } from "View/BoardName";
 import { useContextMenuContext } from "View/ContextMenu";
 import { Folders } from "View/Folder";
 import { Icon } from "View/Icon";
-import { ImportMiroStartModal } from "View/ImportMiro";
 import { UiButton } from "View/Ui/UiButton";
 import { Tooltip } from "View/Ui/UiButton/Tooltip";
 import { UiPanel } from "View/Ui/UiPanel";
 import { ResizableEdge } from "./ResizableEdge";
 import style from "./SidePanel.module.css";
 import { useSidePanelContext } from "./SidePanelContext";
+import { useModal } from "View/Modal/ModalProvider";
 
 const MIN_PANEL_WIDTH = 280;
 
@@ -40,11 +40,11 @@ export function SidePanel(): JSX.Element {
 	const isBlank =
 		app.getBoard() === undefined || app.getBoard().getBoardId() === "blank";
 	const [isLoading, setIsLoading] = useState(false);
+	const { showModal } = useModal();
 
 	const isShared = sharedBoards.some(({ id }) => id === board.getBoardId());
 	const isPublic = publicBoards.some(({ id }) => id === board.getBoardId());
 
-	const [isOpenImportMiro, setIsOpenImportMiro] = useState(false);
 	const {
 		setRenamingBoardId,
 		setNewBoardName,
@@ -191,7 +191,7 @@ export function SidePanel(): JSX.Element {
 				<Button
 					id={"miro"}
 					pattern="primary"
-					onClick={() => setIsOpenImportMiro(true)}
+					onClick={() => showModal("startImportMiro")}
 					disabled={!account.isLoggedIn}
 					className={style.importMiroBtn}
 				>
@@ -214,10 +214,6 @@ export function SidePanel(): JSX.Element {
 				</Button>
 			</div>
 			<ResizableEdge panelWidth={width} setWidth={setWidth} />
-			<ImportMiroStartModal
-				isOpen={isOpenImportMiro}
-				setIsOpen={setIsOpenImportMiro}
-			/>
 		</UiPanel>
 	);
 }
