@@ -15,10 +15,11 @@ create table if not exists boards (
 	uniq_id uuid NOT NULL DEFAULT uuid_generate_v4(),
 	created timestamp default now(),
 	boardname varchar(32),
-    author_key uuid,
-    is_public boolean NOT NULL DEFAULT false
+    author_key uuid
 );
 
+-- Add is_public column to the existing boards table
+ALTER TABLE boards ADD COLUMN IF NOT EXISTS is_public boolean NOT NULL DEFAULT false;
 ALTER TABLE boards ADD UNIQUE (uniq_id);
 
 -- Add a new event at the end of the log of events in a board table.
