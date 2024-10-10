@@ -1221,6 +1221,8 @@ begin
 end;
 $$ language plpgsql;
 
+DROP FUNCTION get_boards_user_can_edit(integer);
+
 create or replace function get_boards_user_can_edit(
 	p_user_id integer
 )
