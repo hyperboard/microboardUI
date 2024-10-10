@@ -1144,6 +1144,8 @@ BEGIN
 END;
 $$;
 
+DROP FUNCTION get_boards_user_authored(integer);
+
 create or replace function get_boards_user_authored(
 	p_owner_id integer
 )
