@@ -21,6 +21,7 @@ create table if not exists boards (
 -- Add is_public column to the existing boards table
 ALTER TABLE boards ADD COLUMN IF NOT EXISTS is_public boolean NOT NULL DEFAULT false;
 ALTER TABLE boards ADD UNIQUE (uniq_id);
+ALTER TABLE boards ALTER COLUMN uniq_id SET DEFAULT uuid_generate_v4();
 
 -- Add a new event at the end of the log of events in a board table.
 -- Does not add the event if the event id is already in the table.
@@ -1145,7 +1146,7 @@ BEGIN
 END;
 $$;
 
-DROP FUNCTION get_boards_user_authored(integer);
+DROP FUNCTION IF EXISTS get_boards_user_authored(integer);
 
 create or replace function get_boards_user_authored(
 	p_owner_id integer
@@ -1180,7 +1181,7 @@ begin
 end;
 $$ language plpgsql;
 
-DROP FUNCTION get_boards_user_can_view(integer);
+DROP FUNCTION IF EXISTS get_boards_user_can_view(integer);
 
 create or replace function get_boards_user_can_view(
 	p_user_id integer
@@ -1222,7 +1223,7 @@ begin
 end;
 $$ language plpgsql;
 
-DROP FUNCTION get_boards_user_can_edit(integer);
+DROP FUNCTION IF EXISTS get_boards_user_can_edit(integer);
 
 create or replace function get_boards_user_can_edit(
 	p_user_id integer
@@ -1264,7 +1265,7 @@ begin
 end;
 $$ language plpgsql;
 
-DROP FUNCTION get_boards_by_user(integer);
+DROP FUNCTION IF EXISTS get_boards_by_user(integer);
 
 create or replace function get_boards_by_user(
 	userId integer
