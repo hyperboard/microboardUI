@@ -3,10 +3,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { createSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "shared/ui-lib/Button";
-import { Button } from "shared/ui-lib/Button";
 import { Input } from "shared/ui-lib/Input/Input";
-import { OuterLink } from "shared/ui-lib/OuterLink";
-import isEmail from "validator/lib/isEmail";
 import { OuterLink } from "shared/ui-lib/OuterLink";
 import isEmail from "validator/lib/isEmail";
 import { Tail } from "View/AuthView/Tail";
@@ -98,6 +95,9 @@ export const SignupView = (): React.ReactElement => {
 					navigate({
 						pathname: "/auth/verify",
 						search: createSearchParams({
+							...Object.fromEntries(
+								new URLSearchParams(location.search),
+							),
 							userId: `${data.id}`,
 							email: data.email,
 						}).toString(),
@@ -150,7 +150,7 @@ export const SignupView = (): React.ReactElement => {
 					<Button
 						pattern="ghost"
 						onClick={() => {
-							navigate("/auth/sign-in");
+							navigate(`/auth/sign-in${location.search}`);
 						}}
 						className={styles.login}
 					>

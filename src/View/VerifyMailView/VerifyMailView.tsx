@@ -38,6 +38,20 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 	const account = useAccount();
 	const boardsList = useBoardsList();
 
+	const onSuccess = async (): Promise<void> => {
+		if (searchParams.get("backToSelect") === "true") {
+			await app.boardsList.loadBoards();
+			navigate("/selectBoard");
+		} else if (localStorage.getItem(LAST_BOARD_KEY_QS)) {
+			navigate(`/boards/${localStorage.getItem(LAST_BOARD_KEY_QS)}`);
+		} else {
+			const boardId = await boardsList.createBoard();
+			if (boardId) {
+				navigate(`/boards/${boardId}`);
+			}
+		}
+	};
+
 	const onSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
 	): Promise<void> => {
@@ -52,23 +66,7 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 
 			account
 				.verifyMail(searchParams.get("email") ?? "", passcode)
-				.then(async () => {
-					if (searchParams.get("backToSelect") === "true") {
-						await app.storage.fetchBoards();
-						navigate("/selectBoard");
-					} else if (localStorage.getItem(LAST_BOARD_KEY_QS)) {
-						navigate(
-							`/boards/${localStorage.getItem(
-								LAST_BOARD_KEY_QS,
-							)}`,
-						);
-					} else {
-						const boardId = await boardsList.createBoard();
-						if (boardId) {
-							navigate(`/boards/${boardId}`);
-						}
-					}
-				})
+				.then(onSuccess)
 				.catch(error => {
 					if (error?.message === "PASSCODE_ATTEMPTS_EXCEEDED") {
 						setIsAttemptsExceeded(true);
@@ -146,7 +144,7 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 					error?.message === "Passcode not found" ||
 					error?.message === "User not found"
 				) {
-					navigate("/auth/sign-up");
+					navigate(`/auth/sign-up${location.search}`);
 					return;
 				}
 			})
@@ -196,18 +194,7 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 				searchParams.get("email") || "",
 				searchParams.get("passcode") || "",
 			)
-			.then(async (data): Promise<void> => {
-				if (localStorage.getItem(LAST_BOARD_KEY_QS)) {
-					navigate(
-						`/boards/${localStorage.getItem(LAST_BOARD_KEY_QS)}`,
-					);
-				} else {
-					const boardId = await app.createPublicBoard();
-					if (boardId) {
-						navigate(`/boards/${boardId}`);
-					}
-				}
-			})
+			.then(onSuccess)
 			.catch(_ => {
 				setError(t("auth.errorVerificationCode"));
 			})

@@ -9,7 +9,6 @@ import { createSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "shared/ui-lib/Button";
 import { Input } from "shared/ui-lib/Input/Input";
 import { OuterLink } from "shared/ui-lib/OuterLink";
-import { OuterLink } from "shared/ui-lib/OuterLink";
 import { Tail } from "View/AuthView/Tail";
 import { EmailIcon } from "View/SignupView/EmailIcon";
 import { LockIcon } from "View/SignupView/LockIcon";
@@ -39,6 +38,7 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 		const form = formRef.current;
 		const email = form?.email.value;
 		const password = form?.password.value;
+		const searchParams = createSearchParams(window.location.search);
 
 		setIsSubmitLoading(true);
 		setSubmitDisabled(true);
@@ -47,7 +47,7 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 			.then(async () => {
 				setErrorText("");
 				if (searchParams.get("backToSelect") === "true") {
-					await app.storage.fetchBoards();
+					await app.boardsList.loadBoards();
 					navigate("/selectBoard");
 				} else if (localStorage.getItem(LAST_BOARD_KEY_QS)) {
 					navigate(
@@ -166,20 +166,23 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 					<Button
 						pattern="secondary"
 						className={styles.forgot}
-						onClick={() => navigate("/auth/forgot-password")}
+						onClick={() =>
+							navigate(`/auth/forgot-password${location.search}`)
+						}
 					>
 						{t("auth.forgotPassword")}
 					</Button>
 
 					<Button
 						pattern="ghost"
-						onClick={() => navigate("/auth/sign-up")}
+						onClick={() =>
+							navigate(`/auth/sign-up${location.search}`)
+						}
 					>
 						{t("auth.signUpForFree")}
 					</Button>
 				</div>
 			</form>
-
 			<div className={styles.policy}>
 				{t("auth.policyWith")}{" "}
 				<OuterLink
