@@ -105,8 +105,7 @@ export function AppView() {
 	}, [containerRef.current]);
 
 	const appBoard = app.getBoard();
-	console.log(shouldShow("titlePanel"));
-	console.log("search", window.location.search);
+
 	return (
 		<div className={style.wrapper}>
 			{shouldShow("titlePanel") && <LandingMenu />}

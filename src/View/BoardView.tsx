@@ -12,14 +12,10 @@ import {
 	useSearchParams,
 } from "react-router-dom";
 import { AppView } from "View/AppView";
-import { AppView } from "View/AppView";
 import { AppContext } from "./AppContext";
 import { BoardRenameContextProvider } from "./BoardName";
 import { ContextMenuContextProvider } from "./ContextMenu";
-import { BoardRenameContextProvider } from "./BoardName";
-import { ContextMenuContextProvider } from "./ContextMenu";
 import { useModalInfoContext } from "./Modal/InfoModal";
-import ModalsWrapper from "./Modal/ModalsWrapper";
 import ModalsWrapper from "./Modal/ModalsWrapper";
 import { SidePanelContextProvider } from "./SidePanel/SidePanelContext";
 // import "./index.css";
@@ -72,9 +68,12 @@ const BoardView = ({ app }: Props): JSX.Element => {
 				if (params.boardId || pathname === "/boards") {
 					app.openBoard(params.boardId || "blank").then(() => {
 						if (params.boardId) {
-							navigate(`/boards/${params.boardId}`, {
-								replace: true,
-							});
+							navigate(
+								`/boards/${params.boardId}?${searchParams}`,
+								{
+									replace: true,
+								},
+							);
 						} else {
 							navigate(`/boards/blank?${searchParams}`, {
 								replace: true,
