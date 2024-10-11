@@ -136,7 +136,8 @@ export class Account {
 	}
 
 	async checkVerificationCodes(email: string) {
-		await authApi.checkVerificationCodes({ email });
+		const { data } = await authApi.checkVerificationCodes({ email });
+		return data;
 	}
 
 	async changePassword(oldPassword: string, newPassword: string) {

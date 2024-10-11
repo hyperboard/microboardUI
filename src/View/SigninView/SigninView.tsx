@@ -5,7 +5,11 @@ import { useBoardsList } from "App/useBoardsList";
 import { isEmail } from "lib/regex";
 import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { createSearchParams, useNavigate } from "react-router-dom";
+import {
+	createSearchParams,
+	useNavigate,
+	useSearchParams,
+} from "react-router-dom";
 import { Button } from "shared/ui-lib/Button";
 import { Input } from "shared/ui-lib/Input/Input";
 import { OuterLink } from "shared/ui-lib/OuterLink";
@@ -29,6 +33,7 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 	const [errorText, setErrorText] = useState<string>("");
 	const account = useAccount();
 	const boards = useBoardsList();
+	const [searchParams] = useSearchParams();
 
 	const onSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
@@ -47,7 +52,6 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 			.then(async () => {
 				setErrorText("");
 				if (searchParams.get("backToSelect") === "true") {
-					await app.boardsList.loadBoards();
 					navigate("/selectBoard");
 				} else if (localStorage.getItem(LAST_BOARD_KEY_QS)) {
 					navigate(

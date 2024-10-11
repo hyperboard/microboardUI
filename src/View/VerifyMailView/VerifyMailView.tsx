@@ -40,7 +40,6 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 
 	const onSuccess = async (): Promise<void> => {
 		if (searchParams.get("backToSelect") === "true") {
-			await app.boardsList.loadBoards();
 			navigate("/selectBoard");
 		} else if (localStorage.getItem(LAST_BOARD_KEY_QS)) {
 			navigate(`/boards/${localStorage.getItem(LAST_BOARD_KEY_QS)}`);

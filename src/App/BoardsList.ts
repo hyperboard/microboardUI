@@ -94,11 +94,17 @@ export class BoardsList {
 	async claim() {
 		const publicBoards = this.storage.listCreatedBoards();
 		const sharedBoards = this.storage.listVisitedBoards();
-
-		await boardsApi.claim({
-			authorKeys: publicBoards.map(({ authorKey }) => authorKey),
-			visited: sharedBoards.map(({ id }) => id),
-		});
+		if (publicBoards.length === 0 && sharedBoards.length === 0) {
+			return;
+		}
+		try {
+			await boardsApi.claim({
+				authorKeys: publicBoards.map(({ authorKey }) => authorKey),
+				visited: sharedBoards.map(({ id }) => id),
+			});
+		} catch {
+			console.error("Error claiming boards");
+		}
 		await this.account.refreshTokens();
 		await this.updateList();
 	}
