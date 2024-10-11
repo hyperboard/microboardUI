@@ -293,6 +293,34 @@ export function getBoardsRouter(
         }, logger)
     );
 
+        // Deleting a board without authentication but with authorKey
+        router.delete(
+            "/boards/:boardId/:authorKey",
+            param("boardId").isUUID(),
+            param("authorKey").isUUID(),
+            catchAsync(async (req: Request, res: Response) => {
+                try {
+                    const { boardId, authorKey } = req.params;
+    
+                    const isBoardExist = await boards.isBoardExists(boardId);
+                    if (!isBoardExist) {
+                        return res.status(404).json({ message: "Board not found" });
+                    }
+    
+                    const isValidAuthorKey = await boards.isValidAuthorKey(boardId, authorKey);
+                    if (!isValidAuthorKey) {
+                        return res.status(403).json({ message: "Invalid author key" });
+                    }
+    
+                    await boards.deleteBoard(boardId);
+                    return res.status(204).send();
+                } catch (err) {
+                    logger.error(err);
+                    return res.status(500).send("Server error");
+                }
+            }, logger)
+        );
+
     // Duplicating a board
     router.post(
         "/boards/:boardId/duplicate",
