@@ -13,8 +13,8 @@ export const REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 function setCookies(res: Response, refreshToken: string) {
     res.cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: true,
+        sameSite: "none",
         maxAge: REFRESH_TOKEN_EXPIRY * 1000,
     });
 }
