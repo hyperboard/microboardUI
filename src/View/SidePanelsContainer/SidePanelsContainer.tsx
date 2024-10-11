@@ -21,7 +21,6 @@ export const SidePanelsContainer = memo(
 		const { app } = useAppContext();
 		const interfaceType = app.getBoard().interfaceType;
 		const containerRef = useClickOutside(() => {
-			console.log(renamingBoardId);
 			if (isOpen && !renamingBoardId) {
 				toggleSideMenu();
 			}
