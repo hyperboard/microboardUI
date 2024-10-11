@@ -17,6 +17,7 @@ import { Button } from "shared/ui-lib/Button";
 import { useNavigate } from "react-router-dom";
 import { boardsApi } from "shared/api";
 import { useBoardsList } from "App/useBoardsList";
+import { useAccount } from "App/useAccount";
 
 const customHeader: CSSProperties = {
 	padding: "6px",
@@ -46,6 +47,7 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 	const forceUpdate = useForceUpdate();
 	// const { isAuth } = useAuth(app);
 	const boardsList = useBoardsList();
+	const account = useAccount();
 	const isAuth = app.account.isLoggedIn;
 	const searchRef = useRef<HTMLInputElement>(null);
 	const newBoardRef = useRef<HTMLInputElement>(null);
@@ -183,6 +185,7 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 
 	useEffect(() => {
 		const fetchBoards = async (): Promise<void> => {
+			await account.init();
 			await app.boardsList.loadBoards();
 			setFilteredSharedBoards(
 				boardsList.sharedBoards.filter(board =>
@@ -198,7 +201,7 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 						.includes(searchQuery.trim().toLowerCase()),
 				),
 			);
-		}
+		};
 
 		fetchBoards();
 	}, []);
