@@ -23,20 +23,20 @@ type Board = {
     uniq_id: string;
     boardname: string | null;
     is_public: boolean;
-}
+};
 
 export type AnonymousBoard = Board & {
     author_key: string;
-}
+};
 
 export type OwnedBoard = Board & {
     owner_id: number;
-}
+};
 
 export class Boards {
-    constructor(private database: Pool, private logger: winston.Logger) { }
+    constructor(private database: Pool, private logger: winston.Logger) {}
 
-    onEventSave(boardId: string, boardEvent: any): void { }
+    onEventSave(boardId: string, boardEvent: any): void {}
 
     async saveBoardData(transformedData: {
         id: string;
@@ -61,7 +61,7 @@ export class Boards {
 
             return {
                 boardId,
-                editLink
+                editLink,
             };
         } catch (err) {
             this.logger.error("Error saving board data:", err);
@@ -72,12 +72,15 @@ export class Boards {
     async createBoard(title?: string, ownerId?: number, isPublic?: boolean): Promise<AnonymousBoard | OwnedBoard> {
         try {
             if (ownerId) {
-                const privateBoard = await this.database.query<OwnedBoard>("select * from create_private_board($1, $2, $3)", [title, ownerId, isPublic]);
+                const privateBoard = await this.database.query<OwnedBoard>(
+                    "select * from create_private_board($1, $2, $3)",
+                    [title, ownerId, isPublic]
+                );
                 return privateBoard.rows[0];
             } else {
                 const result = await this.database.query<AnonymousBoard>("SELECT * FROM create_board($1, $2)", [
                     title,
-                    isPublic
+                    isPublic,
                 ]);
                 return result.rows[0];
             }
@@ -125,7 +128,7 @@ export class Boards {
 
     async getAuthoredBoards(userId: number) {
         try {
-            const res = await this.database.query<OwnedBoard>('SELECT * FROM get_boards_user_authored($1)', [userId])
+            const res = await this.database.query<OwnedBoard>("SELECT * FROM get_boards_user_authored($1)", [userId]);
             return res.rows;
         } catch (error) {
             this.logger.error(`Error fetching boards for user ${userId}: ${error}`);
@@ -135,7 +138,7 @@ export class Boards {
 
     async getCanViewBoards(userId: number) {
         try {
-            const res = await this.database.query<Board>('SELECT * FROM get_boards_user_can_view($1)', [userId])
+            const res = await this.database.query<Board>("SELECT * FROM get_boards_user_can_view($1)", [userId]);
             return res.rows;
         } catch (error) {
             this.logger.error(`Error fetching boards for user ${userId}: ${error}`);
@@ -145,7 +148,7 @@ export class Boards {
 
     async getCanEditBoards(userId: number) {
         try {
-            const res = await this.database.query<Board>('SELECT * FROM get_boards_user_can_edit($1)', [userId])
+            const res = await this.database.query<Board>("SELECT * FROM get_boards_user_can_edit($1)", [userId]);
             return res.rows;
         } catch (error) {
             this.logger.error(`Error fetching boards for user ${userId}: ${error}`);
@@ -155,7 +158,7 @@ export class Boards {
 
     async getBoardIds(userId: number) {
         try {
-            const res = await this.database.query('SELECT * FROM get_user_board_ids($1)', [userId])
+            const res = await this.database.query("SELECT * FROM get_user_board_ids($1)", [userId]);
             return res;
         } catch (error) {
             this.logger.error(`Error fetching boards for user ${userId}: ${error}`);
@@ -170,7 +173,8 @@ export class Boards {
                 `SELECT id, uniq_id, boardname, is_public FROM boards WHERE uniq_id = $1 LIMIT 1`,
                 [boardId]
             );
-            const editLink = await this.database.query<Board>(`
+            const editLink = await this.database.query<Board>(
+                `
                     SELECT b.id, b.uniq_id, b.boardname, b.is_public
                     FROM boards b
                     JOIN board_edit_link bel ON b.id = bel.board_id
@@ -178,23 +182,24 @@ export class Boards {
                 `,
                 [boardId]
             );
-            const viewLink = await this.database.query<Board>(`
+            const viewLink = await this.database.query<Board>(
+                `
                 SELECT b.id, b.uniq_id, b.boardname, b.is_public
                 FROM boards b
                 JOIN board_view_link bvl ON b.id = bvl.board_id
                 WHERE view_link_uuid = $1 LIMIT 1
             `,
-            [boardId]
-        );
+                [boardId]
+            );
 
             if (board.rowCount > 0) {
-                return board.rows[0]
+                return board.rows[0];
             }
             if (editLink.rowCount > 0) {
-                return editLink.rows[0]
+                return editLink.rows[0];
             }
             if (viewLink.rowCount > 0) {
-                return viewLink.rows[0]
+                return viewLink.rows[0];
             }
         } catch (error) {
             this.logger.error(`Error fetching board details for board ID ${boardId}: ${error}`);
@@ -372,13 +377,14 @@ export class Boards {
     async getBoardByLink(link: string): Promise<any> {
         try {
             validateUUID(link, "link");
-
             const queryText = `
                 SELECT b.uniq_id as boardId, b.created, b.boardname as title
                 FROM boards b
                 LEFT JOIN board_edit_link bel ON b.id = bel.board_id
                 LEFT JOIN board_view_link bvl ON b.id = bvl.board_id
-                WHERE bel.edit_link_uuid = $1 OR bvl.view_link_uuid = $1
+                WHERE bel.edit_link_uuid = $1 
+                OR bvl.view_link_uuid = $1 
+                OR b.uniq_id = $1
                 LIMIT 1
             `;
 
@@ -442,7 +448,10 @@ export class Boards {
     async isBoardPublic(boardId: string): Promise<boolean> {
         try {
             validateUUID(boardId, "");
-            const result = await this.database.query<{get_board_is_public: boolean}>("SELECT * FROM get_board_is_public($1)", [boardId]);
+            const result = await this.database.query<{ get_board_is_public: boolean }>(
+                "SELECT * FROM get_board_is_public($1)",
+                [boardId]
+            );
             if (result.rowCount === 0) {
                 return false;
             }
