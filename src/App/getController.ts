@@ -11,6 +11,7 @@ import { prepareImage } from "Board/Items/Image/ImageHelpers";
 import { HotkeysMap } from "Board/Keyboard/types";
 import { pasteMiroClipboard } from "../View/ImportMiro/ImportMiroBoards/ImportBoardItem/MiroClipboardTransformer";
 import { getGlobalShowModal } from "View/Modal/ModalProvider";
+import { App } from "./App";
 
 export interface Controller {
 	onWheel: (event: WheelEvent) => void;
@@ -26,7 +27,7 @@ export interface Controller {
 	onResize: () => void;
 	onContextMenu: (event: MouseEvent) => void;
 	onCopy: (event: ClipboardEvent) => void;
-	onPaste: (event: ClipboardEvent) => void;
+	onPaste: (event: ClipboardEvent, app: App) => void;
 	onDrop: (event: DragEvent) => void;
 }
 
@@ -476,7 +477,7 @@ export function getController(
 		event.preventDefault();
 	}
 
-	function onPaste(event: ClipboardEvent): void {
+	function onPaste(event: ClipboardEvent, app: App): void {
 		const board = getBoard();
 		if (!board) {
 			return;
@@ -578,13 +579,7 @@ export function getController(
 				if (decoded !== null) {
 					const miroData = JSON.parse(decoded);
 
-					if (!window.app.account.isLoggedIn && miroData !== null) {
-						console.log("test");
-						console.log(
-							"window.app.account.isLoggedIn",
-							window.app.account.isLoggedIn,
-						);
-						console.log("miroData", miroData);
+					if (!app.account.isLoggedIn && miroData !== null) {
 						const showModal = getGlobalShowModal();
 						showModal?.("authClipboardMiro");
 						return;
