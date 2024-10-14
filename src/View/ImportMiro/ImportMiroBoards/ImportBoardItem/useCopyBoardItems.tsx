@@ -361,6 +361,9 @@ export const useCopyBoardItems = (
 		}
 
 		const frame = getMiroItemById(parent?.id) as IMiroBoardItemFrame;
+		if (!frame) {
+			return null;
+		}
 		const framePosition = getItemPosition(frame.position, frame.geometry);
 
 		if (!framePosition) {
