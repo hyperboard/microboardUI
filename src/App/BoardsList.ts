@@ -21,7 +21,7 @@ export class BoardsList {
 		});
 	}
 
-	async createBoard(name?: string, isPublic = true) {
+	async createBoard(name?: string, isPublic = true): Promise<string> {
 		return await this.action(
 			async () => {
 				const { data } = await boardsApi.createBoard(name, isPublic);

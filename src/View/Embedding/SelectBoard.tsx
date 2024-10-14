@@ -15,7 +15,7 @@ import Cookies from "js-cookie";
 import { UserDropDown } from "View/UserPanel/UserPanel";
 import { Button } from "shared/ui-lib/Button";
 import { useNavigate } from "react-router-dom";
-import { boardsApi } from "shared/api";
+import { api, boardsApi } from "shared/api";
 import { useBoardsList } from "App/useBoardsList";
 import { useAccount } from "App/useAccount";
 
@@ -81,7 +81,6 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 		authorLinkId: string,
 		visitorsLinkId: string,
 		name: string,
-		id?: string,
 	): void {
 		window.opener?.postMessage(
 			{
@@ -89,7 +88,6 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 					visitorsLink: `${getEmbedUrl()}/boards/${visitorsLinkId}?titlePanel=false`,
 					authorLink: `${getEmbedUrl()}/boards/${authorLinkId}?titlePanel=false`,
 					name,
-					id,
 				},
 			},
 			"*",
@@ -99,16 +97,12 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 
 	async function handleSuccess(
 		boardId: string,
-		name?: string,
-		actualId?: string,
+		name?: string | null,
 		authorKey?: string,
 	): Promise<void> {
-		if (
-			selectorRef.current?.getSelectedOption().value === "view" &&
-			actualId
-		) {
-			const authedUrl = `${getApiUrl()}/boards/${actualId}/links`;
-			const unauthedUrl = `${getApiUrl()}/boards/${actualId}/links/unauthed`;
+		if (selectorRef.current?.getSelectedOption().value === "view") {
+			const authedUrl = `/boards/${boardId}/links`;
+			const unauthedUrl = `/boards/${boardId}/links/unauthed`;
 			const url = app.account.isLoggedIn
 				? authedUrl
 				: authorKey
@@ -117,45 +111,23 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 			if (!url) {
 				throw new Error("unable to create link");
 			}
-			const body = JSON.stringify({
+			const body = {
 				type: "view",
 				authorKey,
-			});
+			};
 
-			let response = await fetch(url, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${Cookies.get("accessToken")}`,
-				},
-				body,
-			});
+			const { data } = await api.post(url, body);
+			const { linkId } = data;
 
-			if (!response.ok) {
-				// user might be authed, but could not claim board
-				// so try to create link with authorKey instead of token
-				response = await fetch(unauthedUrl, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body,
-				});
-			}
-			const { linkId } = await response.json();
 			if (!linkId) {
 				handleError(
 					"could not create view link, try again later or with new board",
 				);
+				return;
 			}
-			successMessageToParent(boardId, linkId, getName(t, name), actualId);
+			successMessageToParent(boardId, linkId, getName(t, name));
 		} else {
-			successMessageToParent(
-				boardId,
-				boardId,
-				getName(t, name),
-				actualId,
-			);
+			successMessageToParent(boardId, boardId, getName(t, name));
 		}
 	}
 
@@ -209,31 +181,32 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 	const handleEmbed = async (): Promise<void> => {
 		try {
 			if (selected === "addNew") {
-				const created = await boardsList.createBoard(
+				const createdId = await boardsList.createBoard(
 					newBoardRef.current?.value,
 					true,
 				);
-				const stored = boardsList.getBoardInfo(created);
-				handleSuccess(created, newBoardRef.current?.value, stored?.id);
+				const unauthedData = app.storage.getCreatedBoard(createdId);
+				if (unauthedData) {
+					handleSuccess(
+						unauthedData.id,
+						unauthedData.title,
+						unauthedData.authorKey,
+					);
+				} else {
+					handleSuccess(createdId, newBoardRef.current?.value);
+				}
 			} else if (selected) {
 				setLoading(true);
-				let res = await fetch(
+				const res = await fetch(
 					`${getApiUrl()}/boards/${selected.id}/exists`,
 					{
 						method: "GET",
 					},
 				);
-				if (!res.ok && selected.id) {
-					res = await fetch(
-						`${getApiUrl()}/boards/${selected.id}/exists`,
-						{
-							method: "GET",
-						},
-					);
-				}
 				if (!res.ok) {
 					setLoading(false);
-					selected.notFound = true;
+					// selected.notFound = true;
+					// TODO fixed not found boards
 					if (
 						boardsList.publicBoards.some(
 							shared => shared.id === selected.id,
@@ -243,16 +216,23 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 					} else {
 						// app.storage.setPublicBoard(selected, false);
 					}
-					setSelected(selected);
+					setSelected({ ...selected, notFound: true });
 					boardsList.subject.publish();
 					// app.storage.subject.publish();
 					forceUpdate();
 				} else {
-					handleSuccess(
-						selected.id,
-						selected.title || "",
+					const unauthedData = app.storage.getCreatedBoard(
 						selected.id,
 					);
+					if (unauthedData) {
+						handleSuccess(
+							unauthedData.id,
+							unauthedData.title,
+							unauthedData.authorKey,
+						);
+					} else {
+						handleSuccess(selected.id, selected.title || "");
+					}
 				}
 			}
 		} catch (er) {

@@ -1,6 +1,6 @@
 import { api } from "../base/base";
 import type { MessageResponse } from "../types";
-import type { AnonymousBoard, Board, BoardsList } from "./types";
+import type { AnonymousBoard, Board, BoardsList, ClaimPayload } from "./types";
 
 export function createBoard(title?: string, isPublic?: boolean) {
 	return api.post<Board>(
