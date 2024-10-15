@@ -1288,6 +1288,23 @@ DROP FUNCTION IF EXISTS create_private_board(text, integer);
 DROP FUNCTION IF EXISTS rename_board(uuid, varchar);
 DROP FUNCTION IF EXISTS create_board(varchar, boolean);
 
+DO $$ 
+DECLARE 
+    func_record RECORD;
+BEGIN 
+    FOR func_record IN (
+        SELECT proname, oid, proargtypes 
+        FROM pg_proc 
+        WHERE proname = 'create_board'
+    ) LOOP
+        EXECUTE 'DROP FUNCTION IF EXISTS ' || func_record.proname || '(' || 
+                array_to_string(ARRAY(
+                    SELECT pg_catalog.format_type(arg, NULL)
+                    FROM unnest(func_record.proargtypes) AS arg
+                ), ', ') || ') CASCADE';
+    END LOOP;
+END $$;
+
 CREATE OR REPLACE FUNCTION create_board(
     title varchar(32),  -- or varchar(255)
     p_is_public boolean default false
@@ -1311,6 +1328,23 @@ BEGIN
     RETURN QUERY SELECT created_board_id, new_uniq_id, new_boardname, new_author_key, new_is_public;
 END;
 $$;
+
+DO $$ 
+DECLARE 
+    func_record RECORD;
+BEGIN 
+    FOR func_record IN (
+        SELECT proname, oid, proargtypes 
+        FROM pg_proc 
+        WHERE proname = 'create_private_board'
+    ) LOOP
+        EXECUTE 'DROP FUNCTION IF EXISTS ' || func_record.proname || '(' || 
+                array_to_string(ARRAY(
+                    SELECT pg_catalog.format_type(arg, NULL)
+                    FROM unnest(func_record.proargtypes) AS arg
+                ), ', ') || ') CASCADE';
+    END LOOP;
+END $$;
 
 CREATE OR REPLACE FUNCTION create_private_board(
     title varchar(32),  -- Increased length for flexibility
