@@ -572,7 +572,7 @@ export function getController(
 		}
 
 		const html = event?.clipboardData?.getData("text/html");
-		if (html) {
+		if (html && /miro/i.test(html.substring(0, 100))) {
 			try {
 				const decoded = decodeData(html);
 
