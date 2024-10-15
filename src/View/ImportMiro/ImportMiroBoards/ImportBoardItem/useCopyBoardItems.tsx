@@ -171,7 +171,9 @@ export const useCopyBoardItems = (
 ): void => {
 	const boardMiroId: { [key: string]: string } = {};
 	const searchParams = new URLSearchParams(window.location.search);
-	const isClipboard = searchParams.get("clipboard");
+	const isClipboard =
+		searchParams.get("clipboard") ||
+		!(searchParams.get("code") && searchParams.get("team_id"));
 
 	const setBoardMiroId = (id: string): void => {
 		boardMiroId[id] =
@@ -949,7 +951,9 @@ export const useCopyBoardItems = (
 			.forEach(copyConnector);
 
 		sessionMiroItemsParsed && sessionStorage.removeItem(`miroItems`);
-		// zoomToFit();
+		if (!isClipboard) {
+			zoomToFit();
+		}
 	};
 
 	copyBoardItems();
