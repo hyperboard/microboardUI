@@ -613,6 +613,11 @@ export const useCopyBoardItems = (
 				},
 			});
 			const img = await response.json();
+
+			if (img.status === 401) {
+				getMiroToken();
+			}
+
 			return img;
 		} catch (error) {
 			console.error(error);
@@ -889,19 +894,15 @@ export const useCopyBoardItems = (
 	};
 
 	const getMiroToken = (): void => {
-		const token = Cookies.get("miro_accessToke");
-		if (!token) {
-			sessionStorage.setItem(`miroItems`, JSON.stringify(miroItems));
-			const clientId = "3458764589599848573";
-			const redirectUrl =
-				window.location.origin + "/boards?clipboard=true";
+		sessionStorage.setItem(`miroItems`, JSON.stringify(miroItems));
+		const clientId = "3458764589599848573";
+		const redirectUrl = window.location.origin + "/boards?clipboard=true";
 
-			window.location.href =
-				"https://miro.com/oauth/authorize?response_type=code&client_id=" +
-				clientId +
-				"&redirect_uri=" +
-				redirectUrl;
-		}
+		window.location.href =
+			"https://miro.com/oauth/authorize?response_type=code&client_id=" +
+			clientId +
+			"&redirect_uri=" +
+			redirectUrl;
 	};
 
 	const copyBoardItems = (): void => {
@@ -919,11 +920,12 @@ export const useCopyBoardItems = (
 
 		const sessionMiroItems = sessionStorage.getItem(`miroItems`);
 		const sessionMiroItemsParsed =
-			sessionMiroItems && sessionMiroItems !== undefined
+			sessionMiroItems && sessionMiroItems !== "undefined"
 				? JSON.parse(sessionMiroItems)
 				: null;
 
 		const miroBoardItems = miroItems || sessionMiroItemsParsed || [];
+		console.log("miroBoardItems", miroBoardItems);
 		const token = Cookies.get("miro_accessToken");
 
 		if (
