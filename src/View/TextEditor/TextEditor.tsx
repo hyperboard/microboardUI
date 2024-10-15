@@ -112,6 +112,7 @@ export class TextEditor extends React.Component<
 				<div
 					id="TextEditor"
 					ref={this.containerRef}
+					className="notranslate"
 					style={{
 						border: "none",
 						padding: "0px",
@@ -169,6 +170,7 @@ export class TextEditor extends React.Component<
 			<div
 				id="TextEditor"
 				ref={this.containerRef}
+				className="notranslate"
 				style={{
 					border: "none",
 					padding: "0px",
