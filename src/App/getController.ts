@@ -643,7 +643,7 @@ export function getController(
 	return {
 		onWheel,
 		onPointerDown,
-		onPointerMove: throttle(onPointerMove, 32), // 32 мс ~ 30 fps,
+		onPointerMove: throttle(onPointerMove, 16), // 16 мс ~ 60 fps,
 		onPointerUp,
 		onPointerLeave,
 		onPointerCancel,

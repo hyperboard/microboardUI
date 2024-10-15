@@ -2,70 +2,96 @@ import { getApiUrl } from "Config";
 import { getWebsocketUrl } from "../Config";
 import { Subject } from "Subject";
 import { BoardSnapshot } from "Board/Board";
+import { BoardEvent, BoardEventPack } from "Board/Events/Events";
 
 const WS_RECONNECT_TIMEOUT = 5000;
 const WS_PING_INTERVAL = 30000;
 
-interface Auth {
+export interface AuthMsg {
 	type: "Auth";
 	jwt: string;
 }
 
-interface BoardEvent {
+export interface BoardEventMsg {
 	type: "BoardEvent";
 	boardId: string;
-	event: any;
+	event: BoardEvent | BoardEventPack;
+	messageId: string;
+	sequenceNumber: number;
 }
 
-interface BoardEventList {
+export interface ConfirmationMsg {
+	type: "Confirmation";
+	messageId: string;
+	boardId: string;
+	sequenceNumber: number;
+	order: number;
+}
+
+export interface BoardEventListMsg {
 	type: "BoardEventList";
 	boardId: string;
-	events: any[];
+	events: BoardEvent[];
 }
 
-interface Subscribe {
+export interface SubscribeMsg {
 	type: "Subscribe";
 	boardId: string;
 	index: number;
 }
 
-interface Unsubscribe {
+export interface SubscribeConfirmationMsg {
+	type: "SubscribeConfirmation";
+	boardId: string;
+	initialSequenceNumber: number;
+}
+
+export interface UnsubscribeMsg {
 	type: "Unsubscribe";
 	boardId: string;
 }
 
-interface Error {
+export interface ErrorMsg {
 	type: "Error";
 	message: string;
+	deniedBoardId?: string;
+	expectedSequence?: number;
+	receivedSequence?: number;
 }
 
-interface SnapshotRequest {
+export interface SnapshotRequestMsg {
 	type: "CreateSnapshotRequest";
 	boardId: string;
 }
 
-interface SnapshotResponse {
+export interface SnapshotResponseMsg {
 	type: "BoardSnapshot";
 	boardId: string;
-	snapshot: BoardSnapshot; // This could be strongly typed
+	snapshot: BoardSnapshot;
 	lastEventOrder: number;
 }
 
-interface ViewMode {
+export interface ViewModeMsg {
 	type: "ViewMode";
 	boardId: string;
 }
 
-export type SocketMessage =
-	| Auth
-	| BoardEvent
-	| BoardEventList
-	| Subscribe
-	| Unsubscribe
-	| Error
-	| ViewMode
-	| SnapshotRequest
-	| SnapshotResponse;
+export type EventsMsg =
+	| ViewModeMsg
+	| BoardEventMsg
+	| BoardEventListMsg
+	| SnapshotRequestMsg
+	| SnapshotResponseMsg
+	| SubscribeConfirmationMsg
+	| ConfirmationMsg;
+
+export type SocketMsg =
+	| EventsMsg
+	| AuthMsg
+	| SubscribeMsg
+	| UnsubscribeMsg
+	| ErrorMsg
+	| ViewModeMsg;
 
 export interface Connection {
 	connectionId: number;
@@ -73,35 +99,58 @@ export interface Connection {
 	connect(): Promise<void>;
 	subscribe(
 		boardId: string,
-		callback: (serverMessage: SocketMessage) => void,
+		callback: (serverMessage: EventsMsg) => void,
 	): void;
 	unsubscribe(
 		boardId: string,
-		callback: (serverMessage: SocketMessage) => void,
+		callback: (serverMessage: EventsMsg) => void,
+	): void;
+	publishBoardEvent(
+		boardId: string,
+		event: BoardEventPack,
+		sequenceNumber: number,
 	): void;
 	publishAuth(jwt: string): void;
-	publishBoardEvent(boardId: string, event: BoardEvent): void;
 	publishSnapshot(boardId: string, snapshot: BoardSnapshot): void;
 	wsClient: WsClient;
 }
 
 interface Subscription {
-	publish: (message: SocketMessage) => void;
+	publish: (message: EventsMsg) => void;
 	subscribe: () => void;
 	unsubscribe: () => void;
 }
 
 export function createConnection(): Connection {
 	const subscriptions = new Map<string, Subscription>();
-	function onMessage(msg: SocketMessage): void {
-		if (msg.type === "Auth" || msg.type === "Error") {
-			return;
+
+	function onMessage(msg: SocketMsg): void {
+		switch (msg.type) {
+			case "SubscribeConfirmation":
+			case "Confirmation":
+			case "BoardEvent":
+			case "BoardEventList":
+			case "BoardSnapshot":
+			case "ViewMode":
+			case "CreateSnapshotRequest":
+				const subscription = subscriptions.get(msg.boardId);
+				if (!subscription) {
+					console.warn(
+						`Debug: No subscription found for boardId ${msg.boardId}`,
+					);
+					return;
+				}
+				subscription.publish(msg);
+				break;
+			case "Subscribe":
+				break;
+			case "Unsubscribe":
+				break;
+			case "Error":
+				break;
+			default:
+				console.warn("Debug: Received unknown message type:", msg.type);
 		}
-		const subscription = subscriptions.get(msg.boardId);
-		if (!subscription) {
-			return;
-		}
-		subscription.publish(msg);
 	}
 	const ws = createWsClient(onMessage);
 
@@ -153,7 +202,7 @@ export function createConnection(): Connection {
 
 	function subscribe(
 		boardId: string,
-		callback: (serverMessage: any) => void,
+		callback: (serverMessage: EventsMsg) => void,
 	): void {
 		const subject = subscriptions.get(boardId);
 		if (subject) {
@@ -226,12 +275,26 @@ export function createConnection(): Connection {
 		});
 	}
 
-	function publishBoardEvent(boardId: string, event: BoardEvent): void {
-		ws.send({
+	function publishBoardEvent(
+		boardId: string,
+		event: BoardEventPack,
+		sequenceNumber: number,
+	): void {
+		const messageId = generateMessageId();
+
+		const message: BoardEventMsg = {
 			type: "BoardEvent",
 			boardId,
 			event,
-		});
+			messageId,
+			sequenceNumber,
+		};
+
+		ws.send(message);
+	}
+
+	function generateMessageId(): string {
+		return Date.now().toString(36) + Math.random().toString(36).substr(2);
 	}
 
 	function publishSnapshot(boardId: string, snapshot: BoardSnapshot): void {
@@ -265,13 +328,13 @@ interface WsClient {
 	onOpenSubject: Subject<unknown>;
 	onCloseSubject: Subject<unknown>;
 	connect: () => void;
-	send: (message: SocketMessage) => void;
+	send: (message: SocketMsg) => void;
 	isConnected: () => boolean;
 	onAccessDenied: (boardId: string, forceUpdate?: boolean) => void;
 	onConnect: () => void;
 }
 
-type SocketMsgHandler = (message: SocketMessage) => void;
+type SocketMsgHandler = (message: SocketMsg) => void;
 
 export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
 	let socket: WebSocket | null;
@@ -295,7 +358,7 @@ export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
 		console.error("onConnect callback not implemented.");
 	};
 
-	function onMessage(event: MessageEvent<SocketMessage>): void {
+	function onMessage(event: MessageEvent<SocketMsg>): void {
 		try {
 			const json = JSON.parse(event.data as unknown as string);
 			if (json && json.type === "Error") {
@@ -331,7 +394,7 @@ export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
 	}
 
 	function isConnected(): boolean {
-		return (socket && socket.readyState === WebSocket.OPEN) || false;
+		return socket ? socket.readyState === WebSocket.OPEN : false;
 	}
 
 	function onOpen(): void {
@@ -352,6 +415,15 @@ export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
 				pattern: "MicroboardError",
 				payload: JSON.stringify({
 					error: `WebsocketClient: error ${JSON.stringify(event)}`,
+				}),
+			},
+			"*",
+		);
+		window.parent.postMessage(
+			{
+				pattern: "MicroboardError",
+				payload: JSON.stringify({
+					error: `WebsocketClient: error ${event}`,
 				}),
 			},
 			"*",
