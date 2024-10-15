@@ -3,11 +3,7 @@ import { useBoardsList } from "App/useBoardsList";
 import { useAppSubscription } from "Board/useBoardSubscription";
 import clsx from "clsx";
 import { useForceUpdate } from "lib/useForceUpdate";
-import {
-	type ChangeEventHandler,
-	default as React,
-	useState,
-} from "react";
+import { type ChangeEventHandler, default as React, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
 import { BoardRename } from "View/BoardName";
