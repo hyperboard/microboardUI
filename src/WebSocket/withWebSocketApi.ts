@@ -34,12 +34,12 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         });
     }
 
-    const msgHandlingQueue: SocketMessage[] = [];
+    const msgHandlingQueue: SocketMsg[] = [];
     let isProcessing = false;
     function setupSocketMessageHandling(ws: WebSocket) {
         ws.on("message", async (data) => {
             try {
-                const msg = JSON.parse(data.toString()) as SocketMessage;
+                const msg = JSON.parse(data.toString()) as SocketMsg;
                 msgHandlingQueue.push(msg);
                 websocketEventQueueSize.set(msgHandlingQueue.length);
                 processMsgQueue(ws);
@@ -67,7 +67,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         isProcessing = false;
     }
 
-    async function handleMessage(ws: WebSocket, msg: SocketMessage) {
+    async function handleMessage(ws: WebSocket, msg: SocketMsg) {
         switch (msg.type) {
             case "Auth":
                 return await handleAuthMsg(msg, ws);
@@ -98,8 +98,8 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         }
     }
 
-    async function handleAuthMsg(msg: Auth, ws: WebSocket): Promise<void> {
-        const token = await verifyToken(msg.jwt, 'access');
+    async function handleAuthMsg(msg: AuthMsg, ws: WebSocket): Promise<void> {
+        const token = await verifyToken(msg.jwt, "access");
         if (token) {
             return saveToken(ws, token);
         } else {
@@ -118,38 +118,51 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         return ws.send(JSON.stringify({ type: "Error", message, ...additionalInfo }));
     }
 
-    async function handleSubscribeMsg(msg: Subscribe, ws: WebSocket): Promise<void> {
+    const clientBoardSequences = new Map<WebSocket, Map<string, number>>();
+
+    async function handleSubscribeMsg(msg: SubscribeMsg, ws: WebSocket): Promise<void> {
         try {
             const details = await boards.getLinkDetails(msg.boardId);
             const isPublic = await boards.isBoardPublic(msg.boardId);
-            if (details?.type === "view") {
-                subscribeClientToBoard(ws, msg.boardId);
-                enforceViewMode(ws, msg.boardId);
-                await sendInitialDataToClient(ws, msg.boardId);
-                return;
-            }
 
-            if (details?.type === 'edit') {
+            if (
+                details?.type === "view" ||
+                details?.type === "edit" ||
+                (await hasSubscribeRights(ws, msg.boardId)) ||
+                isPublic
+            ) {
                 subscribeClientToBoard(ws, msg.boardId);
-                await sendInitialDataToClient(ws, msg.boardId);
-                return;
-            }
 
-            if ((await hasSubscribeRights(ws, msg.boardId)) || isPublic) {
-                subscribeClientToBoard(ws, msg.boardId);
+                // Генерируем начальный порядковый номер для этой подписки
+                const initialSequenceNumber = 1;
+                if (!clientBoardSequences.has(ws)) {
+                    clientBoardSequences.set(ws, new Map());
+                }
+                clientBoardSequences.get(ws)!.set(msg.boardId, initialSequenceNumber);
+
+                // Отправляем подтверждение подписки с начальным порядковым номером
+                ws.send(
+                    JSON.stringify({
+                        type: "SubscribeConfirmation",
+                        boardId: msg.boardId,
+                        initialSequenceNumber: initialSequenceNumber,
+                    })
+                );
+                if (details?.type === "view") {
+                    enforceViewMode(ws, msg.boardId);
+                }
                 await sendInitialDataToClient(ws, msg.boardId);
-                return
+            } else {
+                sendError(ws, "Access denied: Subscribe to board events.", { denidedBoardId: msg.boardId });
             }
-            sendError(ws, "Access denied: Subscribe to board events.", { denidedBoardId: msg.boardId });
         } catch (error) {
-            return sendError(ws, "Access denied: Subscribe to board events.");
+            logger.error("Failed to subscribe to board events:", error);
+            return sendError(ws, "Failed to subscribe to board events.");
         }
     }
 
     async function hasSubscribeRights(ws: WebSocket, boardId: string): Promise<boolean> {
-        return (
-            hasAnyRightInTokens(ws, boardId, ["reads", "edits", "owns"])
-        );
+        return hasAnyRightInTokens(ws, boardId, ["reads", "edits", "owns"]);
     }
 
     async function isValidLink(boardId: string, linkTypes: ("view" | "edit")[]): Promise<boolean> {
@@ -243,47 +256,60 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
 
     eventsManager.initialize();
 
-    async function handleBoardEventMsg(msg: BoardEvent, ws: WebSocket): Promise<void> {
-        const startTime = process.hrtime.bigint();
+    async function handleBoardEventMsg(msg: BoardEventMsg, ws: WebSocket): Promise<void> {
+        const expectedSequence = clientBoardSequences.get(ws)?.get(msg.boardId) || 1;
 
-        const hasEditRights = await canEditBoard(ws, msg.boardId);
-        if (!hasEditRights) {
-            return sendError(ws, "Access denied: edit board.");
+        if (msg.sequenceNumber === expectedSequence) {
+            const startTime = process.hrtime.bigint();
+
+            try {
+                const canEdit = await canEditBoard(ws, msg.boardId);
+                if (!canEdit) {
+                    return sendError(ws, "Access denied: edit board.");
+                }
+
+                const eventData = eventsManager.processEvent(msg.boardId, msg.event.body, {
+                    startTime: startTime,
+                    queueTime: process.hrtime.bigint(),
+                });
+
+                broadcastBoardEvent(msg.boardId, {
+                    type: msg.type,
+                    boardId: msg.boardId,
+                    event: { body: eventData, order: eventData.order },
+                    sequenceNumber: msg.sequenceNumber,
+                    messageId: msg.messageId,
+                });
+
+                clientBoardSequences.get(ws)!.set(msg.boardId, expectedSequence + 1);
+
+                ws.send(
+                    JSON.stringify({
+                        type: "Confirmation",
+                        messageId: msg.messageId,
+                        boardId: msg.boardId,
+                        sequenceNumber: msg.sequenceNumber,
+                        order: eventData.order,
+                    })
+                );
+
+                const totalEndTime = process.hrtime.bigint();
+                const totalLatency = Number(totalEndTime - startTime);
+                boardEventTotalLatency.observe(totalLatency);
+            } catch (error) {
+                return sendError(ws, "Failed to process board event.");
+            }
+        } else {
+            sendError(
+                ws,
+                "Unexpected sequence number" +
+                    JSON.stringify({
+                        expectedSequence,
+                        receivedSequence: msg.sequenceNumber,
+                        boardId: msg.boardId,
+                    })
+            );
         }
-
-        const eventData = eventsManager.processEvent(msg.boardId, msg.event.body, {
-            startTime: startTime,
-            queueTime: process.hrtime.bigint(),
-        });
-
-        sendMessageToBoardSubscribers(msg.boardId, {
-            type: msg.type,
-            boardId: msg.boardId,
-            event: { body: eventData, order: eventData.order },
-        });
-
-        const totalEndTime = process.hrtime.bigint();
-        const totalLatency = Number(totalEndTime - startTime);
-        boardEventTotalLatency.observe(totalLatency);
-    }
-
-    async function handleBoardEventListMsg(msg: BoardEventList, ws: WebSocket): Promise<void> {
-        const startTime = process.hrtime.bigint();
-        const hasEditRights = await canEditBoard(ws, msg.boardId);
-        if (!hasEditRights) {
-            return sendError(ws, "Access denied: edit board.");
-        }
-        /*
-        const eventData = eventsManager.processEvent(msg.boardId, msg.event.body, {
-            startTime: startTime,
-            queueTime: process.hrtime.bigint(),
-        });
-        */
-        sendMessageToBoardSubscribers(msg.boardId, msg);
-
-        const totalEndTime = process.hrtime.bigint();
-        const totalLatency = Number(totalEndTime - startTime);
-        boardEventTotalLatency.observe(totalLatency);
     }
 
     async function canEditBoard(ws: WebSocket, boardId: string): Promise<boolean> {
@@ -293,7 +319,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         return hasDirectLinkEditPermission || hasTokenEditPermission || isPublic;
     }
 
-    function handleUnsubscribeMsg(msg: Unsubscribe, ws: WebSocket): void {
+    function handleUnsubscribeMsg(msg: UnsubscribeMsg, ws: WebSocket): void {
         const clients = boardClients.get(msg.boardId) ?? [];
         const index = clients.indexOf(ws);
         if (index !== -1) {
@@ -302,16 +328,14 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         boardClients.set(msg.boardId, clients);
     }
 
-    // boards.onEventSave = sendMessageToClients;
-
-    function sendMessageToClients(message: SocketMessage, clients: WebSocket.WebSocket[]): void {
+    function sendMessageToClients(message: SocketMsg, clients: WebSocket.WebSocket[]): void {
         const content = JSON.stringify(message);
         for (const client of clients) {
             client.send(content);
         }
     }
 
-    function sendMessageToBoardSubscribers(boardOrLinkId: string, message: BoardEvent | BoardEventList): void {
+    function broadcastBoardEvent(boardOrLinkId: string, message: BoardEventMsg | BoardEventListMsg): void {
         const linksById = boardIdToLinks.get(boardOrLinkId);
         if (linksById) {
             const clients = boardClients.get(boardOrLinkId) ?? [];
@@ -328,7 +352,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
             }
             const actualIdMsg = { ...message };
             actualIdMsg.boardId = actualId;
-            sendMessageToBoardSubscribers(actualId, actualIdMsg);
+            broadcastBoardEvent(actualId, actualIdMsg);
         }
     }
 
@@ -386,60 +410,84 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
     }, WS_TOKENS_CLEANUP_INTERVAL);
 }
 
-interface Auth {
+export interface AuthMsg {
     type: "Auth";
     jwt: string;
 }
 
-interface BoardEvent {
+export interface BoardEventMsg {
     type: "BoardEvent";
     boardId: string;
     event: any;
+    messageId: string;
+    sequenceNumber: number;
 }
 
-interface BoardEventList {
+export interface ConfirmationMsg {
+    type: "Confirmation";
+    messageId: string;
+    boardId: string;
+    sequenceNumber: number;
+    order: number;
+}
+
+export interface BoardEventListMsg {
     type: "BoardEventList";
     boardId: string;
     events: any[];
 }
 
-interface Subscribe {
+export interface SubscribeMsg {
     type: "Subscribe";
     boardId: string;
     index: number;
 }
 
-interface Unsubscribe {
+export interface SubscribeConfirmationMsg {
+    type: "SubscribeConfirmation";
+    boardId: string;
+    initialSequenceNumber: number;
+}
+
+export interface UnsubscribeMsg {
     type: "Unsubscribe";
     boardId: string;
 }
 
-interface Error {
+export interface ErrorMsg {
     type: "Error";
     message: string;
+    deniedBoardId?: string;
+    expectedSequence?: number;
+    receivedSequence?: number;
 }
 
-interface SnapshotRequest {
+export interface SnapshotRequestMsg {
     type: "CreateSnapshotRequest";
     boardId: string;
 }
 
-interface SnapshotResponse {
+export interface SnapshotResponseMsg {
     type: "BoardSnapshot";
     boardId: string;
-    snapshot: any; // This could be strongly typed
+    snapshot: any;
     lastEventOrder: number;
 }
 
-export type SocketMessage =
-    | Auth
-    | BoardEvent
-    | BoardEventList
-    | Subscribe
-    | Unsubscribe
-    | Error
-    | SnapshotRequest
-    | SnapshotResponse;
+export interface ViewModeMsg {
+    type: "ViewMode";
+    boardId: string;
+}
+
+export type EventsMsg =
+    | ViewModeMsg
+    | BoardEventMsg
+    | BoardEventListMsg
+    | SnapshotRequestMsg
+    | SnapshotResponseMsg
+    | SubscribeConfirmationMsg;
+
+export type SocketMsg = EventsMsg | AuthMsg | SubscribeMsg | UnsubscribeMsg | ErrorMsg | ViewModeMsg | ConfirmationMsg;
 
 type BoardEventBody = any;
 
@@ -515,6 +563,7 @@ export class EventsManager {
 
         return data;
     }
+
     private checkAndRequestSnapshot(boardId: string) {
         const actualBoardUuid = this.boardUuidMap.get(boardId) || boardId;
 
@@ -593,18 +642,24 @@ export class EventsManager {
     ) {
         const events = eventQueue.map((event) => event.data);
 
-        await this.boards.addEventsToBoard(boardId, events);
+        try {
+            await this.boards.addEventsToBoard(boardId, events);
+        } catch (error) {
+            throw error;
+        }
+
         /*
         eventQueue.forEach((event, index) => {
             const { metadata } = event;
             const totalEndTime = process.hrtime.bigint();
             const totalLatency = Number(totalEndTime - metadata.startTime);
             boardEventTotalLatency.observe(totalLatency);
+            console.log(`[DEBUG] Event ${index} total latency: ${totalLatency}`);
         });
         */
     }
 
-    requestSnapshotCallback(boardId: string, sinceLast: number): void { }
+    requestSnapshotCallback(boardId: string, sinceLast: number): void {}
 
     isBoardReady(boardId: string): boolean {
         return !this.processing.includes(boardId);

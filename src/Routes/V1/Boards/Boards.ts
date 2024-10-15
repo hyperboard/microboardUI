@@ -383,8 +383,8 @@ export class Boards {
                 LEFT JOIN board_edit_link bel ON b.id = bel.board_id
                 LEFT JOIN board_view_link bvl ON b.id = bvl.board_id
                 WHERE bel.edit_link_uuid = $1 
-                OR bvl.view_link_uuid = $1 
-                OR b.uniq_id = $1
+                   OR bvl.view_link_uuid = $1
+                   OR b.uniq_id = $1
                 LIMIT 1
             `;
 
