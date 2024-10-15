@@ -43,6 +43,10 @@ export function AppView() {
 	};
 
 	useEffect(() => {
+		const handlePaste = (event: ClipboardEvent) => {
+			controller.onPaste(event, app);
+		};
+
 		app.boardSubject.subscribe(update);
 		const container = containerRef.current;
 		const controller = app.controller;
@@ -73,9 +77,7 @@ export function AppView() {
 			window.addEventListener("keydown", controller.onKeyDown);
 			window.addEventListener("keyup", controller.onKeyUp);
 			window.addEventListener("copy", controller.onCopy);
-			window.addEventListener("paste", (event: ClipboardEvent) =>
-				controller.onPaste(event, app),
-			);
+			window.addEventListener("paste", handlePaste);
 			window.addEventListener("drop", controller.onDrop);
 			window.addEventListener("dragover", event =>
 				event.preventDefault(),
@@ -100,9 +102,7 @@ export function AppView() {
 				window.removeEventListener("keydown", controller.onKeyDown);
 				window.removeEventListener("keyup", controller.onKeyUp);
 				window.removeEventListener("copy", controller.onCopy);
-				window.removeEventListener("paste", (event: ClipboardEvent) =>
-					controller.onPaste(event, app),
-				);
+				window.removeEventListener("paste", handlePaste);
 				window.removeEventListener("drop", controller.onDrop);
 			}
 		};
