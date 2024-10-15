@@ -65,21 +65,21 @@ const BoardView = ({ app }: Props): JSX.Element => {
 	useLayoutEffect(() => {
 		account.init().finally(() => {
 			boardsList.loadBoards().then(() => {
-				if (params.boardId || pathname === "/boards") {
-					app.openBoard(params.boardId || "blank").then(() => {
-						if (params.boardId) {
-							navigate(
-								`/boards/${params.boardId}?${searchParams}`,
-								{
-									replace: true,
-								},
-							);
-						} else {
-							navigate(`/boards/blank?${searchParams}`, {
+				if (params.boardId) {
+					app.openBoard(params.boardId).then(() => {
+						navigate(`/boards/${params.boardId}?${searchParams}`, {
+							replace: true,
+						});
+						app.render();
+					});
+				} else {
+					boardsList.createBoard().then(boardId => {
+						app.openBoard(boardId).then(() => {
+							navigate(`/boards/${boardId}?${searchParams}`, {
 								replace: true,
 							});
-						}
-						app.render();
+							app.render();
+						});
 					});
 				}
 			});
