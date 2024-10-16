@@ -240,7 +240,10 @@ export const talkIntegrationJob = client.defineJob({
                                                 width: imageJson?.Width || null,
                                                 height: imageJson?.Height || null,
                                             };
-                                            let dimensions = null;
+                                            let dimensions: { width: number; height: number } & any = {
+                                                width: 500,
+                                                height: 500,
+                                            };
                                             if (!talkDimensions?.width || !talkDimensions?.height) {
                                                 await io.logger.debug(
                                                     `Failed to parse image dimensions from TALK for image ${

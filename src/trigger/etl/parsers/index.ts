@@ -36,6 +36,7 @@ interface BoardPayload {
 
 interface TransformedBoard {
     id: string;
+    userId?: string;
     name: string;
     items: any[];
 }
@@ -138,6 +139,7 @@ export const getTransformedBoard = async (payload: BoardPayload): Promise<Transf
 
     return {
         id: miroBoard.id,
+        userId: userId,
         name: miroBoard.name || "Untitled",
         items: [...itemEvents, ...parsedConnectors, ...parsedFramesChildren],
     };

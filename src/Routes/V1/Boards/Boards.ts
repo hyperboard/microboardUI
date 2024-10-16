@@ -45,22 +45,25 @@ export class Boards {
         userId?: string;
     }): Promise<{ boardId: string; editLink: string }> {
         try {
-            const boardId = uuidv4();
             const editLink = uuidv4();
+            let createdBoard: null | OwnedBoard = null;
 
             if (transformedData.userId !== undefined) {
-                await this.createBoard(transformedData.name, +transformedData.userId);
+                createdBoard = (await this.createBoard(transformedData.name, +transformedData.userId)) as OwnedBoard;
             }
-            await this.createLink(boardId, "edit", editLink);
+            if (createdBoard === null) {
+                throw new Error("Error creating board: create_private_board");
+            }
+            await this.createLink(createdBoard.uniq_id, "edit", editLink);
 
             for (const item of transformedData.items) {
-                await this.addEventToBoard(boardId, item.eventId, item);
+                await this.addEventToBoard(createdBoard.uniq_id, item.eventId, item);
             }
 
-            this.logger.info(`Board ${boardId} created successfully`);
+            this.logger.info(`Board ${createdBoard.uniq_id} created successfully`);
 
             return {
-                boardId,
+                boardId: createdBoard.uniq_id,
                 editLink,
             };
         } catch (err) {
@@ -69,7 +72,11 @@ export class Boards {
         }
     }
 
-    async createBoard(title?: string, ownerId?: number, isPublic?: boolean): Promise<AnonymousBoard | OwnedBoard> {
+    async createBoard(
+        title?: string,
+        ownerId: number | undefined = undefined,
+        isPublic = false
+    ): Promise<AnonymousBoard | OwnedBoard> {
         try {
             if (ownerId) {
                 const privateBoard = await this.database.query<OwnedBoard>(

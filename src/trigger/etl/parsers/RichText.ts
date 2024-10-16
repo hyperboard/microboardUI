@@ -118,7 +118,7 @@ const parseTextRecursive = (
 export const parseText = (payload: TextPayload): Array<any | null> => {
     const { item, boardId, userId, order, newItemId, parent } = payload;
 
-    const $ = cheerio.load(item.data?.content!);
+    const $ = cheerio.load(item.data?.content! || "<p></p>");
 
     const width = item.geometry?.width || 100;
     const height = item.geometry?.height || 100;
@@ -191,36 +191,40 @@ export const parseText = (payload: TextPayload): Array<any | null> => {
             return [];
         }
 
-        $element.contents().each((_, child) => {
-            if (child.type === "text") {
-                const lines = $(child).text().split("\n");
-                lines.forEach((line, index) => {
-                    const lineParts = line.split("<br/>");
-                    lineParts.forEach((linePart, partIndex) => {
-                        if (linePart.trim() !== "") {
-                            segments.push({
-                                text: linePart,
-                                style: getStylesFromElement(child.parent),
-                            });
-                        }
-                        if (partIndex < lineParts.length - 1) {
-                            segments.push({
-                                text: "\n",
-                                style: getStylesFromElement(child.parent),
-                            });
-                        }
+        try {
+            $element.contents().each((_, child) => {
+                if (child.type === "text") {
+                    const lines = $(child).text().split("\n");
+                    lines.forEach((line, index) => {
+                        const lineParts = line.split("<br/>");
+                        lineParts.forEach((linePart, partIndex) => {
+                            if (linePart.trim() !== "") {
+                                segments.push({
+                                    text: linePart,
+                                    style: getStylesFromElement(child.parent),
+                                });
+                            }
+                            if (partIndex < lineParts.length - 1) {
+                                segments.push({
+                                    text: "\n",
+                                    style: getStylesFromElement(child.parent),
+                                });
+                            }
+                        });
                     });
-                });
-            } else if ((child.type = "tag")) {
-                const tagName = $(child).prop("tagName").toLowerCase();
-                if (tagName === "ol" || tagName === "ul") {
-                    const parsedListElements = parseOrderedOrUnorderedList(child);
-                    segments.push(...parsedListElements);
-                } else {
-                    segments.push(...parseTextRecursive(child));
+                } else if ((child.type = "tag")) {
+                    const tagName = $(child).prop("tagName").toLowerCase();
+                    if (tagName === "ol" || tagName === "ul") {
+                        const parsedListElements = parseOrderedOrUnorderedList(child);
+                        segments.push(...parsedListElements);
+                    } else {
+                        segments.push(...parseTextRecursive(child));
+                    }
                 }
-            }
-        });
+            });
+        } catch (e) {
+            console.error("Failed to parse text segments: ", e);
+        }
 
         return segments;
     };
