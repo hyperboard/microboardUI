@@ -9,6 +9,7 @@ import {
 	IMiroBoardItemText,
 	MiroBoardItemTypes,
 	MiroRelativeTo,
+	MiroUnsupportedItem,
 } from "../MiroBoards/MiroBoardsModels";
 import { Board } from "Board";
 import { useCopyBoardItems } from "./useCopyBoardItems";
@@ -602,6 +603,39 @@ const transformDrawing = (
 	return transformDrawing;
 };
 
+export const transformUnsupportedItems = (
+	item: MiroClipboardItem,
+	cursorPosition: {
+		x: number;
+		y: number;
+	},
+): MiroUnsupportedItem => {
+	const json = item.widgetData.json!;
+
+	const transformUnsupportedItem: MiroUnsupportedItem = {
+		...createBaseItem(item),
+		type: MiroBoardItemTypes.UNSUPPORTED,
+		geometry: {
+			width: json.size.width || 100,
+			height: json.size.height || 100,
+		},
+		position: {
+			x: (json._position?.offsetPx?.x || 0) + cursorPosition.x,
+			y: (json._position?.offsetPx?.y || 0) + cursorPosition.y,
+			origin: "center",
+			relativeTo: json._parent
+				? MiroRelativeTo.frame
+				: MiroRelativeTo.board,
+		},
+		miroData: item,
+		style: {
+			color: "",
+		},
+	};
+
+	return transformUnsupportedItem;
+};
+
 export const parseItem = (
 	item: MiroClipboardItem,
 	cursorPosition: {
@@ -610,7 +644,7 @@ export const parseItem = (
 	},
 	clipboardItems: MiroClipboardItem[],
 	boardId: string,
-): SupportedMiroType | null => {
+): SupportedMiroType | MiroUnsupportedItem => {
 	switch (item.widgetData?.type) {
 		case "shape":
 			return transformShape(item, cursorPosition, clipboardItems);
@@ -632,7 +666,7 @@ export const parseItem = (
 		case "frame":
 			return transformFrame(item, cursorPosition, clipboardItems);
 		default:
-			return null;
+			return transformUnsupportedItems(item, cursorPosition);
 	}
 };
 

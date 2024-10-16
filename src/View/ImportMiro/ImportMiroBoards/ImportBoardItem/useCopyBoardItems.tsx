@@ -15,6 +15,7 @@ import {
 	MiroBoardItemTypes,
 	MiroItemsTypes,
 	MiroRelativeTo,
+	MiroUnsupportedItem,
 } from "../MiroBoards/MiroBoardsModels";
 import {
 	Connector,
@@ -41,6 +42,7 @@ import {
 	toRelativePoint,
 } from "Board/Items/Connector/ControlPoint";
 import { Drawing } from "Board/Items/Drawing";
+import { Placeholder } from "Board/Items/Placeholder/Placeholder";
 
 interface MiroImage {
 	type: string;
@@ -399,6 +401,10 @@ export const useCopyBoardItems = (
 				width: width / INITIAL_GEOMETRY[itemType][shapeType].width,
 				height: height / INITIAL_GEOMETRY[itemType][shapeType].height,
 			};
+		}
+
+		if (itemType === "unsupported") {
+			itemType = "shape";
 		}
 
 		const initialGeometry = INITIAL_GEOMETRY[itemType] ?? {
@@ -895,6 +901,28 @@ export const useCopyBoardItems = (
 		setBoardMiroId(id);
 	};
 
+	const copyUnsupportedItem = (item: MiroUnsupportedItem): void => {
+		const { position, geometry } = item;
+
+		const shapePosition = getItemPosition(position, geometry);
+		const placeholder = new Placeholder(
+			undefined,
+			item,
+			item.id,
+			"RoundedRectangle",
+			undefined,
+		);
+
+		setTransformation(placeholder, item);
+		shapePosition &&
+			placeholder.transformation.translateTo(
+				shapePosition.x,
+				shapePosition.y,
+			);
+
+		board.add<Placeholder>(placeholder);
+	};
+
 	const getMiroToken = (): void => {
 		sessionStorage.setItem(`miroItems`, JSON.stringify(miroItems));
 		const clientId = "3458764589599848573";
@@ -907,19 +935,20 @@ export const useCopyBoardItems = (
 			redirectUrl;
 	};
 
-	const copyBoardItems = (): void => {
-		const itemsTypes: {
-			[key in MiroItemsTypes]: (item: any) => void;
-		} = {
-			shape: copyShape,
-			sticky_note: copySticker,
-			image: copyImage,
-			text: copyText,
-			frame: copyFrame,
-			connector: copyConnector,
-			paint: copyPaint,
-		};
+	const itemsTypes: {
+		[key in MiroItemsTypes]: (item: any) => void;
+	} = {
+		shape: copyShape,
+		sticky_note: copySticker,
+		image: copyImage,
+		text: copyText,
+		frame: copyFrame,
+		connector: copyConnector,
+		paint: copyPaint,
+		unsupported: copyUnsupportedItem,
+	};
 
+	const copyBoardItems = (): void => {
 		const sessionMiroItems = sessionStorage.getItem(`miroItems`);
 		const sessionMiroItemsParsed =
 			sessionMiroItems && sessionMiroItems !== "undefined"
