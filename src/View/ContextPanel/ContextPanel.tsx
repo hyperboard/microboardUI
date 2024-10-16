@@ -34,12 +34,12 @@ import { TextColor } from "./Buttons/TextColor";
 import { TextHighlight } from "./Buttons/TextHighlight";
 import { ToggleFrameRatio } from "./Buttons/ToggleFrameRatio";
 import { PanelContext } from "./PanelContext";
-import { Lock } from "./Buttons/Lock";
 import { ConnectorLineColor } from "./Buttons/ConnectorLineColor";
 import { ConnectorFontStyle } from "./Buttons/ConnectorFontStyle";
 import { ConnectorFontSize } from "./Buttons/FontSize";
 import { ConnectorTextColor } from "./Buttons/ConnectorTextColor";
 import { ConnectorTextHighlight } from "./Buttons/ConnectorTextHighlight";
+import { Mbr } from "../../Board/Items";
 
 export function ContextPanel() {
 	const { app, board } = useAppContext();
@@ -68,12 +68,6 @@ export function ContextPanel() {
 	if (isInvisible) {
 		return null;
 	}
-
-	const lockedFrames = board.selection.items
-		.list()
-		.filter(
-			item => item.transformation.isLocked && item.itemType === "Frame",
-		);
 
 	const isSelectUnderPointer =
 		board.selection.getContext() === "SelectUnderPointer";
@@ -112,7 +106,7 @@ export function ContextPanel() {
 				padding={0}
 				id="ContextPanel"
 			>
-				{isSelectUnderPointer && !lockedFrames.length && (
+				{isSelectUnderPointer && (
 					<>
 						<Edit />
 						<RestOptionsMenu rounded="right">
@@ -162,16 +156,25 @@ export function ContextPanel() {
 					<>
 						<ItemType />
 						<UiSeparator vertical />
-						<FontSize />
-						<UiSeparator vertical />
-						<FontStyle />
-						<TextAlignment />
-						<UiSeparator vertical />
-						<TextColor />
-						<TextHighlight />
-						<UiSeparator vertical />
+						{board.selection.items
+							.getItemsByItemTypes(["Shape"])[0]
+							.getIsShapeWithText() && (
+							<>
+								<FontSize />
+								<UiSeparator vertical />
+								<FontStyle />
+								<TextAlignment />
+								<UiSeparator vertical />
+								<TextColor />
+								<TextHighlight />
+								<UiSeparator vertical />
+							</>
+						)}
 						<StrokeStyle />
-						<FillStyle />
+						{board.selection.items
+							.getItemsByItemTypes(["Shape"])[0]
+							.getPath()
+							.isClosed() && <FillStyle />}
 						<UiSeparator vertical />
 						<Duplicate />
 						<Delete />
@@ -228,7 +231,7 @@ export function ContextPanel() {
 						</RestOptionsMenu>
 					</>
 				)}
-				{isFrame && !isSelectUnderPointer && !lockedFrames.length && (
+				{isFrame && !isSelectUnderPointer && (
 					<>
 						<FrameRatio />
 						<ToggleFrameRatio />
@@ -237,27 +240,12 @@ export function ContextPanel() {
 						<UiSeparator vertical />
 						<Duplicate />
 						<Delete />
-						<Lock />
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
 							<CopyFrameLink />
 							<ExportFrame />
 						</RestOptionsMenu>
-					</>
-				)}
-				{!!lockedFrames.length && (
-					<>
-						<Lock rounded="left" />
-						<Duplicate
-							rounded={lockedFrames.length > 1 ? "right" : "none"}
-						/>
-						{lockedFrames.length <= 1 ? (
-							<RestOptionsMenu rounded="right">
-								<CopyFrameLink />
-								<ExportFrame />
-							</RestOptionsMenu>
-						) : null}
 					</>
 				)}
 				{isDifferentItems && !isSelectUnderPointer && (

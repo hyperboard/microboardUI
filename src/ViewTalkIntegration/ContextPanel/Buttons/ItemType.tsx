@@ -1,4 +1,4 @@
-import { ShapeType } from "Board/Items/Shape/Basic";
+import { ShapeType } from "Board/Items/Shape";
 import React from "react";
 import { ButtonWithMenu } from "ViewTalkIntegration/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "ViewTalkIntegration/ContextPanel/PanelContext";

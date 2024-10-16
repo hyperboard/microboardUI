@@ -1,4 +1,4 @@
-import { ShapeType } from "Board/Items/Shape/Basic";
+import { ShapeType } from "Board/Items/Shape";
 import { ButtonWithMenu } from "View/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "View/ContextPanel/PanelContext";
 import { Icon, ShapeIcon } from "View/Icon";
@@ -12,8 +12,17 @@ import style from "./ItemType.module.css";
 import { useAppContext } from "View/AppContext";
 import clsx from "clsx";
 import { Shape } from "Board/Items";
+import { ShapeCategoryName } from "../../../Tools/AddShape";
 
 const MENU_NAME = "ItemType";
+
+const getCategoryName = (shapeType: ShapeType): ShapeCategoryName => {
+	const separated = shapeType.split("_");
+	if (separated.length === 1) {
+		return "basicShapes";
+	}
+	return separated[0] as ShapeCategoryName;
+};
 
 export function ItemType(): React.ReactElement | null {
 	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
@@ -32,6 +41,9 @@ export function ItemType(): React.ReactElement | null {
 	const selectedShapes = board.selection
 		.list()
 		.filter(i => i.itemType === "Shape") as Shape[];
+
+	const shapeCategory = getCategoryName(selectedShapes[0].getShapeType());
+
 	return (
 		<ButtonWithMenu
 			menuName={MENU_NAME}
@@ -86,6 +98,7 @@ export function ItemType(): React.ReactElement | null {
 						)}
 					>
 						<ShapePicker
+							categoryName={shapeCategory}
 							selected={
 								selectedShapes.length === 1
 									? selectedShapes[0].getShapeType()

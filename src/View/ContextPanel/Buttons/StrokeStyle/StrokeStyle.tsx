@@ -18,8 +18,18 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import style from "./StrokeStyle.module.css";
 import { useAppContext } from "View/AppContext";
+import { Shape } from "../../../../Board/Items";
 
 const MENU_NAME = "StrokeStyle";
+
+const getIsBorderStyleEditable = (shapes: Shape[]) => {
+	for (const shape of shapes) {
+		if (!shape.getIsBorderStyleEditable()) {
+			return false;
+		}
+	}
+	return true;
+};
 
 export function StrokeStyle(): React.ReactElement | null {
 	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
@@ -30,6 +40,10 @@ export function StrokeStyle(): React.ReactElement | null {
 	const borderColor = board.selection.getStrokeColor();
 	const borderWidth = board.selection.getStrokeWidth();
 	const borderStyle = board.selection.getBorderStyle();
+
+	const isBorderStyleEditable = getIsBorderStyleEditable(
+		board.selection.items.getItemsByItemTypes(["Shape"]) as Shape[],
+	);
 
 	const handleClick = () => {
 		toggleMenu(MENU_NAME);
@@ -84,12 +98,14 @@ export function StrokeStyle(): React.ReactElement | null {
 					vertical
 					className={style.menu}
 				>
-					<div className={style.panel}>
-						<StrokeStylePicker
-							stroke={borderStyle}
-							onPick={handleStrokeStylePick}
-						/>
-					</div>
+					{isBorderStyleEditable && (
+						<div className={style.panel}>
+							<StrokeStylePicker
+								stroke={borderStyle}
+								onPick={handleStrokeStylePick}
+							/>
+						</div>
+					)}
 					<SliderPicker
 						value={borderWidth}
 						onPick={handleStrokeWidthPick}

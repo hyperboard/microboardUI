@@ -255,6 +255,18 @@
 	right: -1rem;
 }
 
+.tip-container.top-left .tip::before {
+	left: 2.5rem;
+	margin-right: -0.7rem;
+	bottom: -0.6rem;
+	transform: rotate(180deg);
+}
+
+.tip-container.top-left {
+	bottom: calc(100% + 1.2rem);
+	left: -1rem;
+}
+
 .tip-container.bottom-right .tip::before {
 	right: 2.5rem;
 	margin-right: -0.7rem;

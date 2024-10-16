@@ -149,6 +149,31 @@
 			"tooltip": "Добавить фрейм"
 		}
 	},
+	"shapesPanel": {
+		"title": "Библиотека фигур",
+		"basicShapes": "Стандартный набор",
+		"BPMN": "BPMN"
+	},
+	"shapePicker": {
+		"BPMN": {
+			"BPMN_Gateway": "Шлюз",
+			"BPMN_DataStore": "Хранилище данных",
+			"BPMN_GatewayParallel": "Параллельный шлюз",
+			"BPMN_GatewayXOR": "Шлюз XOR",
+			"BPMN_EndEvent": "Конечное событие",
+			"BPMN_StartEvent": "Начальное событие",
+			"BPMN_StartEventInterrupting": "Начальное прерывающее событие",
+			"BPMN_IntermediateEvent": "Промежуточное событие",
+			"BPMN_IntermediateEventInterrupting": "Промежуточное прерывающее событие",
+			"BPMN_Group": "Группа",
+			"BPMN_Participant": "Участник",
+			"BPMN_Task": "Задача",
+			"BPMN_Transaction": "Транзакция",
+			"BPMN_SubprocessExpanded": "Развернутый подпроцесс",
+			"BPMN_TextAnnotation": "Текстовая аннотация",
+			"BPMN_DataObject": "Объект данных"
+		}
+	},
 	"zoomPanel": {
 		"zoomOut": {
 			"tooltip": "Отдалить"

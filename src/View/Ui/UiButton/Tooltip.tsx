@@ -30,6 +30,7 @@ export const Tooltip = ({
 				[style.right]: tooltipPosition === "right",
 				[style.top]: tooltipPosition === "top",
 				[style.topRight]: tooltipPosition === "top-right",
+				[style.topLeft]: tooltipPosition === "top-left",
 				[style.topCenterFixed]: tooltipPosition === "top-center-fixed",
 				[style.bottom]: tooltipPosition === "bottom",
 				[style.bottomRight]: tooltipPosition === "bottom-right",

@@ -1,4 +1,4 @@
-import { ShapeType } from "Board/Items/Shape/Basic";
+import { ShapeType } from "Board/Items/Shape";
 import { getHotkeyLabel } from "Board/Keyboard";
 import React from "react";
 import { Icon } from "ViewTalkIntegration/Icon";

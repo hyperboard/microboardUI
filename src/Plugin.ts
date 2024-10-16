@@ -6,7 +6,7 @@ import { ConnectorLineStyle } from "Board/Items/Connector";
 import { DrawingContext } from "Board/Items/DrawingContext";
 import { BorderStyle } from "Board/Items/Path";
 import { TextStyle } from "Board/Items/RichText";
-import { ShapeType } from "Board/Items/Shape/Basic";
+import { ShapeType } from "Board/Items/Shape";
 import { Cursor } from "Board/Pointer";
 import { SelectionContext } from "Board/Selection/Selection";
 import { SelectionItems } from "Board/Selection/SelectionItems";

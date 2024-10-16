@@ -1,19 +1,20 @@
-import { ShapeType } from "Board/Items/Shape/Basic";
+import { ShapeType } from "Board/Items/Shape";
 import { getHotkeyLabel } from "Board/Keyboard";
 import { useAppContext } from "View/AppContext";
 import { Icon, ShapeIcon } from "View/Icon";
 import { ShapePicker } from "View/Pickers/ShapeTypePicker";
-import { UiAccordion } from "View/Ui/UiAccordion";
 import { UiButton } from "View/Ui/UiButton";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ButtonWithMenu } from "../ButtonWithMenu";
 import style from "./AddShape.module.css";
+import { useShapesPanelContext } from "../../../ShapesPanel";
 
 export function AddShape() {
 	const [isShapeSelected, setIsShapeSelected] = useState(false);
 	const { board } = useAppContext();
+	const { isOpen, openShapesPanel } = useShapesPanelContext();
 	const { t } = useTranslation();
 
 	const addShape = board.tools.getAddShape();
@@ -59,7 +60,7 @@ export function AddShape() {
 					variant="secondary"
 					rounded="none"
 				>
-					{isActive && selectedShape !== "None" ? (
+					{isActive && selectedShape !== "None" && !isOpen ? (
 						<ShapeIcon
 							height={24}
 							width={24}
@@ -70,24 +71,23 @@ export function AddShape() {
 					)}
 				</UiButton>
 			}
-			isOpen={isActive && !isShapeSelected}
+			isOpen={isActive && !isShapeSelected && !isOpen}
 		>
-			<UiPanel>
-				<UiAccordion
-					className={style.wrapper}
-					contentClassName={style.panel}
-					closedHeight={128}
-					openedHeight={300}
-					renderButton={(toggle, isOpen) => (
-						<UiButton onClick={toggle} variant="tertiary" size="sm">
-							{isOpen
-								? t("toolsPanel.addText.showBasic")
-								: t("toolsPanel.addText.showAll")}
-						</UiButton>
-					)}
+			<UiPanel className={style.wrapper}>
+				<div className={style.panel}>
+					<ShapePicker
+						categoryName="basicShapes"
+						selected={selectedShape}
+						onPick={handlePick}
+					/>
+				</div>
+				<UiButton
+					onClick={openShapesPanel}
+					variant="tertiary"
+					size="sm"
 				>
-					<ShapePicker selected={selectedShape} onPick={handlePick} />
-				</UiAccordion>
+					{t("toolsPanel.addText.showAll")}
+				</UiButton>
 			</UiPanel>
 		</ButtonWithMenu>
 	);

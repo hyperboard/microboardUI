@@ -151,6 +151,31 @@
 			"tooltip": "Frame"
 		}
 	},
+	"shapesPanel": {
+		"title": "Shapes library",
+		"basicShapes": "Basic shapes",
+		"BPMN": "BPMN"
+	},
+	"shapePicker": {
+		"BPMN": {
+			"BPMN_Gateway": "Gateway",
+			"BPMN_DataStore": "Data store",
+			"BPMN_GatewayParallel": "Gateway parallel",
+			"BPMN_GatewayXOR": "Gateway XOR",
+			"BPMN_EndEvent": "End event",
+			"BPMN_StartEvent": "Start event",
+			"BPMN_StartEventInterrupting": "Start event interrupting",
+			"BPMN_IntermediateEvent": "Intermediate event",
+			"BPMN_IntermediateEventInterrupting": "Intermediate event interrupting",
+			"BPMN_Group": "Group",
+			"BPMN_Participant": "Participant",
+			"BPMN_Task": "Task",
+			"BPMN_Transaction": "Transaction",
+			"BPMN_SubprocessExpanded": "Subprocess expanded",
+			"BPMN_TextAnnotation": "Text annotation",
+			"BPMN_DataObject": "Data object"
+		}
+	},
 	"zoomPanel": {
 		"zoomOut": {
 			"tooltip": "Zoom out"
