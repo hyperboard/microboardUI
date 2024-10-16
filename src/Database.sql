@@ -14,9 +14,11 @@ create table if not exists boards (
 	id serial primary key,
 	uniq_id uuid NOT NULL DEFAULT uuid_generate_v4(),
 	created timestamp default now(),
-	boardname varchar(32),
+	boardname text,
     author_key uuid
 );
+
+ALTER TABLE boards ALTER COLUMN boardname TYPE text;
 
 -- Add is_public column to the existing boards table
 ALTER TABLE boards ADD COLUMN IF NOT EXISTS is_public boolean NOT NULL DEFAULT false;
@@ -212,7 +214,9 @@ begin
 end;
 $$;
 
-create or replace function rename_board(board_uuid UUID, new_boardname varchar)
+DROP FUNCTION IF EXISTS rename_board(uuid, varchar);
+
+create or replace function rename_board(board_uuid UUID, new_boardname text)
 returns VOID AS $$
 declare
     board_id integer;
@@ -696,13 +700,15 @@ begin
 end;
 $$ language plpgsql;
 
+DROP FUNCTION IF EXISTS get_board_by_edit_link(uuid);
+
 -- Function to retrieve a board's details by edit link
 create or replace function get_board_by_edit_link(
     p_edit_link uuid
 ) returns table (
     board_id integer,
     created timestamp,
-    boardname varchar(32)
+    boardname text
 ) as $$
 begin
     return query select b.id, b.created, b.boardname 
@@ -718,13 +724,15 @@ create table if not exists board_view_link (
 	view_link_uuid UUID
 );
 
+DROP FUNCTION IF EXISTS get_board_by_view_link(uuid);
+
 -- Function to retrieve a board's details by view link:
 create or replace function get_board_by_view_link(
     p_view_link uuid
 ) returns table (
     board_id integer,
     created timestamp,
-    boardname varchar(32)
+    boardname text
 ) as $$
 begin
     return query select b.id, b.created, b.boardname 
@@ -1306,16 +1314,16 @@ BEGIN
 END $$;
 
 CREATE OR REPLACE FUNCTION create_board(
-    title varchar(32),  -- or varchar(255)
+    title text,
     p_is_public boolean default false
 )
-RETURNS TABLE (id integer, uniq_id uuid, boardname varchar(32), author_key uuid, is_public boolean)
+RETURNS TABLE (id integer, uniq_id uuid, boardname text, author_key uuid, is_public boolean)
 LANGUAGE plpgsql
 AS $$
 DECLARE
     created_board_id integer;
     new_uniq_id uuid;
-    new_boardname varchar(32);
+    new_boardname text;
     new_author_key uuid;
     new_is_public boolean;
 BEGIN
@@ -1347,17 +1355,17 @@ BEGIN
 END $$;
 
 CREATE OR REPLACE FUNCTION create_private_board(
-    title varchar(32),  -- Increased length for flexibility
+    title text,
     p_owner_id integer,
     p_is_public boolean default false
 )
-RETURNS TABLE (id integer, uniq_id uuid, boardname varchar(32), owner_id integer, is_public boolean)
+RETURNS TABLE (id integer, uniq_id uuid, boardname text, owner_id integer, is_public boolean)
 LANGUAGE plpgsql
 AS $$
 DECLARE
     new_board_id integer;
     new_board_uniq_id uuid;
-    new_boardname varchar(32);
+    new_boardname text;
     new_is_public boolean;
 BEGIN
     -- Create the board and get the id, uniq_id, and boardname
