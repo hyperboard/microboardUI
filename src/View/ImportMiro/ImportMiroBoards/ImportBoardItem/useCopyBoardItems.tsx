@@ -654,9 +654,10 @@ export const useCopyBoardItems = (
 		prepareImage(imgBase64).then(imageData => {
 			const imgItem = new ImageItem(imageData).setId(id);
 
-			const imgItemWidth = geometry.width / imgItem.imageDimension.width;
-			const imgItemHeight =
-				geometry.height / imgItem.imageDimension.height;
+			// Calculate scale based on the desired geometry and the actual image dimensions
+			const scaleX = geometry.width / imageData.imageDimension.width;
+			const scaleY = geometry.height / imageData.imageDimension.height;
+			const scale = Math.min(scaleX, scaleY); // Use the smaller scale to maintain aspect ratio
 
 			const imgPosition = getItemPosition(
 				position,
@@ -670,7 +671,8 @@ export const useCopyBoardItems = (
 					imgPosition.y,
 				);
 
-			imgItem.transformation.scaleTo(imgItemWidth, imgItemHeight);
+			// Use a single scale value to maintain aspect ratio
+			imgItem.transformation.scaleTo(scale, scale);
 
 			board.add(imgItem);
 			setBoardMiroId(id);
