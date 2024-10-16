@@ -21,6 +21,8 @@ import { InactiveBoardHidder } from "./InactiveBoardHidder";
 import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
 import { ImportMiroStartModal, AuthClipboardModal } from "View/ImportMiro";
+import { SetLinkToModal } from "../Modal/SetLinkToModal";
+import { LinksProvider } from "../LinksProvider/LinksProvider";
 
 export function AppView() {
 	const { app, board } = useAppContext();
@@ -142,6 +144,7 @@ export function AppView() {
 				<ZoomPanel />
 			</InactiveBoardHidder>
 			<ViewModeGuard>
+				<LinksProvider />
 				<ContextPanel />
 				<QuickAddPanel />
 				<ExportPanel />
@@ -149,6 +152,7 @@ export function AppView() {
 			<ToastProvider />
 			<ImportMiroBoards app={app} />
 			<ImportMiroStartModal />
+			<SetLinkToModal />
 			<AuthClipboardModal />
 		</div>
 	);

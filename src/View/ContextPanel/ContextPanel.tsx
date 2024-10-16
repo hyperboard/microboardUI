@@ -40,6 +40,8 @@ import { ConnectorFontStyle } from "./Buttons/ConnectorFontStyle";
 import { ConnectorFontSize } from "./Buttons/FontSize";
 import { ConnectorTextColor } from "./Buttons/ConnectorTextColor";
 import { ConnectorTextHighlight } from "./Buttons/ConnectorTextHighlight";
+import { CopyItemLink } from "./Buttons/RestOptionsMenu/Items/CopyItemLink";
+import { SetLinkTo } from "./Buttons/RestOptionsMenu/Items/SetLinkTo";
 
 export function ContextPanel() {
 	const { app, board } = useAppContext();
@@ -135,6 +137,7 @@ export function ContextPanel() {
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
+							<CopyItemLink />
 						</RestOptionsMenu>
 					</>
 				)}
@@ -155,6 +158,7 @@ export function ContextPanel() {
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
+							<CopyItemLink />
 						</RestOptionsMenu>
 					</>
 				)}
@@ -178,6 +182,8 @@ export function ContextPanel() {
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
+							<CopyItemLink />
+							<SetLinkTo />
 						</RestOptionsMenu>
 					</>
 				)}
@@ -200,6 +206,7 @@ export function ContextPanel() {
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
+							<CopyItemLink />
 						</RestOptionsMenu>
 					</>
 				)}
@@ -214,6 +221,7 @@ export function ContextPanel() {
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
+							<CopyItemLink />
 						</RestOptionsMenu>
 					</>
 				)}
@@ -225,6 +233,7 @@ export function ContextPanel() {
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
+							<CopyItemLink />
 						</RestOptionsMenu>
 					</>
 				)}
@@ -241,7 +250,7 @@ export function ContextPanel() {
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
-							<CopyFrameLink />
+							<CopyItemLink />
 							<ExportFrame />
 						</RestOptionsMenu>
 					</>
@@ -254,7 +263,7 @@ export function ContextPanel() {
 						/>
 						{lockedFrames.length <= 1 ? (
 							<RestOptionsMenu rounded="right">
-								<CopyFrameLink />
+								<CopyItemLink />
 								<ExportFrame />
 							</RestOptionsMenu>
 						) : null}

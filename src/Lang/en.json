@@ -89,11 +89,11 @@
 		"frameColor": {
 			"tooltip": "Frame color"
 		},
-		"copyFrameLink": {
+		"copyItemLink": {
 			"text": "Copy link",
 			"error": {
 				"title": "Copy link error",
-				"description": "An error occurred while copying the frame link"
+				"description": "An error occurred while copying link"
 			},
 			"success": {
 				"description": "Link copied to clipboard"

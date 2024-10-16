@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-export type ModalName = "startImportMiro" | "authClipboardMiro";
+export type ModalName = "startImportMiro" | "authClipboardMiro" | "setLinkTo";
 
 interface ModalContextType {
 	modals: Record<ModalName, boolean>;

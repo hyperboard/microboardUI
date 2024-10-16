@@ -89,7 +89,7 @@
 		"frameColor": {
 			"tooltip": "Цвет фрейма"
 		},
-		"copyFrameLink": {
+		"copyItemLink": {
 			"text": "Копировать ссылку",
 			"error": {
 				"title": "Ошибка копирования ссылки",
