@@ -4,7 +4,11 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
 
-export function Delete() {
+type Props = {
+	rounded?: "left" | "right" | "none" | "full";
+};
+
+export function Delete({ rounded = "right" }: Props) {
 	const { board } = useAppContext();
 	const { t } = useTranslation();
 	const handleClick = () => {
@@ -16,7 +20,7 @@ export function Delete() {
 			id={"delete"}
 			onClick={handleClick}
 			variant="secondary"
-			rounded="none"
+			rounded={rounded}
 			tooltip={t("contextPanel.delete.tooltip")}
 			tooltipPosition="top"
 		>

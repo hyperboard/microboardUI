@@ -85,6 +85,7 @@ export function ContextPanel() {
 	const isPen = board.selection.items.isAllItemsType("Drawing");
 	const isImage = board.selection.items.isAllItemsType("Image");
 	const isFrame = board.selection.items.isAllItemsType("Frame");
+	const isPlaceholder = board.selection.items.isAllItemsType("Placeholder");
 	const isDifferentItems =
 		!isText &&
 		!isSticker &&
@@ -92,7 +93,8 @@ export function ContextPanel() {
 		!isConnector &&
 		!isPen &&
 		!isImage &&
-		!isFrame;
+		!isFrame &&
+		!isPlaceholder;
 	return (
 		<PanelContext.Provider
 			value={{
@@ -115,6 +117,15 @@ export function ContextPanel() {
 				{isSelectUnderPointer && !lockedFrames.length && (
 					<>
 						<Edit />
+						<RestOptionsMenu rounded="right">
+							<BringToFront />
+							<SendToBack />
+						</RestOptionsMenu>
+					</>
+				)}
+				{isPlaceholder && !isSelectUnderPointer && (
+					<>
+						<Delete rounded="left" />
 						<RestOptionsMenu rounded="right">
 							<BringToFront />
 							<SendToBack />
