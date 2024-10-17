@@ -79,6 +79,8 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
                 return await handleBoardEventMsg(msg, ws);
             case "BoardSnapshot":
                 return await handleSnapshotMsg(msg, ws);
+            case "ping":
+                return await handlePingMsg(msg, ws);
         }
     }
 
@@ -116,6 +118,12 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
     function sendError(ws: WebSocket, message: string, ...args: Array<{ [additionalInfo: string]: string }>): void {
         const additionalInfo = Object.assign({}, ...args);
         return ws.send(JSON.stringify({ type: "Error", message, ...additionalInfo }));
+    }
+
+    function handlePingMsg(_msg: PingMsg, ws: WebSocket): void {
+        ws.send(JSON.stringify({
+            type: "ping",
+        }));
     }
 
     const clientBoardSequences = new Map<WebSocket, Map<string, number>>();
@@ -479,6 +487,10 @@ export interface ViewModeMsg {
     boardId: string;
 }
 
+export interface PingMsg {
+    type: "ping";
+}
+
 export type EventsMsg =
     | ViewModeMsg
     | BoardEventMsg
@@ -487,7 +499,7 @@ export type EventsMsg =
     | SnapshotResponseMsg
     | SubscribeConfirmationMsg;
 
-export type SocketMsg = EventsMsg | AuthMsg | SubscribeMsg | UnsubscribeMsg | ErrorMsg | ViewModeMsg | ConfirmationMsg;
+export type SocketMsg = EventsMsg | AuthMsg | SubscribeMsg | UnsubscribeMsg | ErrorMsg | ViewModeMsg | ConfirmationMsg | PingMsg;
 
 type BoardEventBody = any;
 
