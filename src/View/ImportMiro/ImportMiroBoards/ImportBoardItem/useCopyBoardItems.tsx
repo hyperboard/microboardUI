@@ -956,7 +956,6 @@ export const useCopyBoardItems = (
 				: null;
 
 		const miroBoardItems = miroItems || sessionMiroItemsParsed || [];
-		console.log("miroBoardItems", miroBoardItems);
 		const token = Cookies.get("miro_accessToken");
 
 		if (

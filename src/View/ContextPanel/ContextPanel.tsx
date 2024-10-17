@@ -78,6 +78,9 @@ export function ContextPanel() {
 	const isSelectUnderPointer =
 		board.selection.getContext() === "SelectUnderPointer";
 
+	const isHoverUnderPointer =
+		board.selection.getContext() === "HoverUnderPointer";
+
 	const isText = board.selection.items.isAllItemsType("RichText");
 	const isSticker = board.selection.items.isAllItemsType("Sticker");
 	const isShape = board.selection.items.isAllItemsType("Shape");
@@ -114,15 +117,17 @@ export function ContextPanel() {
 				padding={0}
 				id="ContextPanel"
 			>
-				{isSelectUnderPointer && !lockedFrames.length && (
-					<>
-						<Edit />
-						<RestOptionsMenu rounded="right">
-							<BringToFront />
-							<SendToBack />
-						</RestOptionsMenu>
-					</>
-				)}
+				{isSelectUnderPointer &&
+					!isHoverUnderPointer &&
+					!lockedFrames.length && (
+						<>
+							<Edit />
+							<RestOptionsMenu rounded="right">
+								<BringToFront />
+								<SendToBack />
+							</RestOptionsMenu>
+						</>
+					)}
 				{isPlaceholder && !isSelectUnderPointer && (
 					<>
 						<Delete rounded="left" />

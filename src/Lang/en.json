@@ -383,7 +383,7 @@
 		"authClipboardModal": {
 			"title": "Import Error",
 			"description": "To import the board from Miro, you need to authorize. Please log in to save your progress.",
-			"authBtn": "Log In"
+			"authBtn": "Sign In"
 		},
 		"importMiro": "Import from Miro",
 		"importMiroBtn": "Import from Miro",
@@ -424,5 +424,8 @@
 	},
 	"frame": {
 		"copy": "Copy of "
+	},
+	"itemTooltips": {
+		"placeholder": "This type of object isn’t<br /> supported yet,<br /> <span style='opacity: 60%'>but we’re working on it.<br /> It will be available soon!</span>"
 	}
 }

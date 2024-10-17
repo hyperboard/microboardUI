@@ -21,6 +21,7 @@ import { InactiveBoardHidder } from "./InactiveBoardHidder";
 import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
 import { ImportMiroStartModal, AuthClipboardModal } from "View/ImportMiro";
+import { ItemTooltip } from "View/ItemTooltip";
 
 export function AppView() {
 	const { app, board } = useAppContext();
@@ -131,6 +132,7 @@ export function AppView() {
 						isBlank={appBoard.getBoardId() === "blank"}
 					/>
 					<ContextMenu />
+					<ItemTooltip />
 				</ExportVisible>
 			</ViewModeGuard>
 			<ViewModeGuard>
