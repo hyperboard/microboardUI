@@ -909,7 +909,7 @@ export const useCopyBoardItems = (
 			undefined,
 			item,
 			item.id,
-			"RoundedRectangle",
+			undefined,
 			undefined,
 		);
 
