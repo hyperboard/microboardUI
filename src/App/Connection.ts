@@ -153,6 +153,13 @@ export function createConnection(): Connection {
 		}
 	}
 	const ws = createWsClient(onMessage);
+	window.parent.postMessage(
+		{
+			pattern: "connectionState",
+			payload: "connecting",
+		},
+		"*",
+	);
 
 	async function connect(): Promise<void> {
 		try {
@@ -220,13 +227,6 @@ export function createConnection(): Connection {
 
 		const subscribe = (): void => {
 			ws.onOpenSubject.subscribe(onOpen);
-			window.parent.postMessage(
-				{
-					pattern: "connectionState",
-					payload: "connecting",
-				},
-				"*",
-			);
 			onOpen();
 		};
 
