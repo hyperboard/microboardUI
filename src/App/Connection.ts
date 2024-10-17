@@ -153,16 +153,16 @@ export function createConnection(): Connection {
 		}
 	}
 	const ws = createWsClient(onMessage);
-	window.parent.postMessage(
-		{
-			pattern: "connectionState",
-			payload: "connecting",
-		},
-		"*",
-	);
 
 	async function connect(): Promise<void> {
 		try {
+			window.parent.postMessage(
+				{
+					pattern: "connectionState",
+					payload: "connecting",
+				},
+				"*",
+			);
 			const response = await fetch(`${getApiUrl()}/connection`, {
 				method: "GET",
 				mode: "cors",
