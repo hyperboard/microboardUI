@@ -43,15 +43,15 @@ export const parseFrame = (payload: FramePayload): Array<any | null> => {
                 borderWidth: 1,
                 borderOpacity: 1,
                 transformation: {
-                    rotate: parseInt(`${item.geometry?.rotation}` || "0") || 0,
+                    // rotate: parseInt(`${item.geometry?.rotation}` || "0") || 0,
                     scaleX: item.geometry?.width ? item.geometry.width / 100 : 1,
                     scaleY: item.geometry?.height ? item.geometry.height / 100 : 1,
                     translateX: (item?.position?.x || 0) - xOffset,
                     translateY: (item?.position?.y || 0) - yOffset,
-                    dimension: {
-                        width: width,
-                        height: height,
-                    },
+                    // dimension: {
+                    //     width: width,
+                    //     height: height,
+                    // },
                 },
                 backgroundColor: item?.style?.fillColor || "#ffffff",
                 backgroundOpacity: 1,

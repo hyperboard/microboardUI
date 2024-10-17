@@ -40,15 +40,15 @@ export const parseImage = (payload: ImagePayload): Array<any | null> => {
                     height: item.dimensions?.height || item?.geometry?.height || 0,
                 },
                 transformation: {
-                    rotate: parseInt(`${item.geometry?.rotation}` || "0") || 0,
+                    // rotate: parseInt(`${item.geometry?.rotation}` || "0") || 0,
                     scaleX: width / imageDimension.width,
                     scaleY: height / imageDimension.height,
                     translateX: pos.x,
                     translateY: pos.y,
-                    dimension: {
-                        width: item.dimensions?.width || item?.geometry?.width || 0,
-                        height: item.dimensions?.height || item?.geometry?.height || 0,
-                    },
+                    // dimension: {
+                    //     width: item.dimensions?.width || item?.geometry?.width || 0,
+                    //     height: item.dimensions?.height || item?.geometry?.height || 0,
+                    // },
                 },
             },
             item: newItemId,
