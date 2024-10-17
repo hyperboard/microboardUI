@@ -19,10 +19,11 @@ export const LinksProvider = () => {
 
 	return (
 		<>
-			{board.items
-				.listAll()
+			{[...board.items.listAll(), ...board.items.listFrames()]
 				.filter(
-					item => item.linkTo && item.isInView(board.camera.getMbr()),
+					item =>
+						item.getLinkTo() &&
+						item.isInView(board.camera.getMbr()),
 				)
 				.map(item => {
 					return <LinkToButton item={item} key={item.getId()} />;

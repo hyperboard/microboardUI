@@ -19,10 +19,7 @@ export const SetLinkToModal = (): JSX.Element => {
 		event.preventDefault();
 		const form = formRef.current;
 		const item = board.selection.items.getSingle();
-		if (!(item instanceof Shape)) {
-			return;
-		}
-		item.setLinkTo(form?.linkTo.value);
+		item.linkTo.setLinkTo(form?.linkTo.value);
 	};
 
 	return (

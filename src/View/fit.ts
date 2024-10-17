@@ -123,7 +123,64 @@ export function fitOnLeftOrRightOfItem(
 		fit.bottom = view.bottom - offset;
 		fit.top = view.bottom - (offset + height);
 	}
+
 	return fit;
+}
+
+export function fitTR(
+	itemMbr: Mbr,
+	view: Mbr,
+	panel: Mbr,
+	verticalOffset = 0,
+	horizontalOffset = 0,
+): Mbr {
+	const topSpace = itemMbr.top - view.top;
+	const bottomSpace = view.bottom - itemMbr.bottom;
+	const panelHeight = panel.getHeight();
+	const newPanel = new Mbr();
+
+	const shouldPlaceAbove =
+		topSpace > bottomSpace - panelHeight ||
+		topSpace >= panelHeight + verticalOffset;
+
+	if (shouldPlaceAbove) {
+		newPanel.top = itemMbr.top - panelHeight - verticalOffset;
+		if (newPanel.top < view.top) {
+			newPanel.top = view.top + verticalOffset;
+		}
+	} else {
+		if (panel.top > 1 && panel.top > itemMbr.top + verticalOffset) {
+			newPanel.top = panel.top;
+		} else {
+			newPanel.top = itemMbr.bottom + verticalOffset;
+		}
+
+		const isOverflowingBottom = newPanel.top + panelHeight > view.bottom;
+		const isLargeOffsetForRichText =
+			newPanel.top >= itemMbr.bottom + verticalOffset * 2;
+
+		if (isOverflowingBottom || isLargeOffsetForRichText) {
+			newPanel.top = itemMbr.bottom - (panelHeight + verticalOffset);
+		}
+	}
+
+	newPanel.top = newPanel.top + panelHeight;
+	newPanel.bottom = newPanel.top + panelHeight * 2;
+
+	const panelWidth = panel.getWidth();
+
+	// Center the panel regardless of richTextSelection
+	newPanel.left = itemMbr.right - panelWidth;
+
+	newPanel.right = newPanel.left + panelWidth;
+	if (newPanel.left < view.left + horizontalOffset) {
+		newPanel.left = view.left + horizontalOffset;
+		newPanel.right = newPanel.left + panelWidth;
+	} else if (newPanel.right + horizontalOffset > view.right) {
+		newPanel.right = view.right - horizontalOffset;
+		newPanel.left = view.right - (panelWidth + horizontalOffset);
+	}
+	return newPanel;
 }
 
 export function fitOnTopOrBottomOfItem(

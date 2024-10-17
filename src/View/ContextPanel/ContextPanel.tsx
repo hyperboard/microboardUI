@@ -138,6 +138,7 @@ export function ContextPanel() {
 							<BringToFront />
 							<SendToBack />
 							<CopyItemLink />
+							<SetLinkTo />
 						</RestOptionsMenu>
 					</>
 				)}
@@ -159,6 +160,7 @@ export function ContextPanel() {
 							<BringToFront />
 							<SendToBack />
 							<CopyItemLink />
+							<SetLinkTo />
 						</RestOptionsMenu>
 					</>
 				)}
@@ -222,6 +224,7 @@ export function ContextPanel() {
 							<BringToFront />
 							<SendToBack />
 							<CopyItemLink />
+							<SetLinkTo />
 						</RestOptionsMenu>
 					</>
 				)}
@@ -234,6 +237,7 @@ export function ContextPanel() {
 							<BringToFront />
 							<SendToBack />
 							<CopyItemLink />
+							<SetLinkTo />
 						</RestOptionsMenu>
 					</>
 				)}
@@ -251,6 +255,7 @@ export function ContextPanel() {
 							<BringToFront />
 							<SendToBack />
 							<CopyItemLink />
+							<SetLinkTo />
 							<ExportFrame />
 						</RestOptionsMenu>
 					</>

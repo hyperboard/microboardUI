@@ -4,6 +4,7 @@ import { useDomMbr } from "../../Board/Items/Mbr/useDomMbr";
 import { useAppContext } from "../AppContext";
 import { UiButton } from "../Ui/UiButton";
 import { Icon } from "../Icon";
+import styles from "./LinkToButton.module.css";
 
 interface Props {
 	item: Item;
@@ -16,28 +17,30 @@ export const LinkToButton = ({ item }: Props) => {
 		app,
 		board,
 		ref: linkToButtonRef,
-		subjects: ["camera"],
 		targetMbr: item.getMbr(),
+		subjects: ["camera", "selection"],
+		fit: "linkToBtn",
 	});
 
 	const handleClick = () => {
-		window.location.replace(item.linkTo);
+		window.location.replace(item.getLinkTo());
 	};
 
 	return (
 		<UiButton
 			style={{
 				position: "absolute",
-				left: mbr.right,
-				top: mbr.bottom,
+				left: mbr.left,
+				top: mbr.top,
 			}}
+			className={styles.btn}
 			ref={linkToButtonRef}
-			tooltip={item.linkTo}
+			tooltip={item.getLinkTo()}
 			onClick={handleClick}
 			variant="secondary"
 			rounded="none"
 		>
-			<Icon iconName="miro" />
+			<Icon iconName="miro" width={20} height={20} />
 		</UiButton>
 	);
 };
