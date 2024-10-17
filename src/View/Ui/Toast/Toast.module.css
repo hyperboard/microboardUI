@@ -10,6 +10,29 @@
 	align-items: center;
 }
 
+.black {
+	background-color: #000000;
+	border-radius: 0px;
+	gap: 9px;
+	transform: translate(0px, 4px);
+	padding: 12px 20px;
+
+	.title {
+		color: #fff;
+	}
+	.description {
+		color: #fff;
+	}
+
+	.content {
+		width: auto;
+	}
+}
+
+.container.black .icon {
+	visibility: hidden;
+}
+
 .container.info .icon {
 	color: rgb(71, 120, 245);
 }

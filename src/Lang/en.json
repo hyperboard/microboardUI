@@ -397,6 +397,10 @@
 	"connector": {
 		"textPlaceholder": "Text"
 	},
+	"notifications": {
+		"connectionLostHeader": "You are offline. Reconnecting...",
+		"connectionReestablished": "Connection re-established."
+	},
 	"landing": {
 		"menu": {
 			"about": "About Microboard",

@@ -126,15 +126,13 @@ export function AppView() {
 				</div>
 			</InactiveBoardHidder>
 			{appBoard.getBoardId() === "blank" && <NoBoardIsOpen />}
-			<ViewModeGuard>
-				<ExportVisible>
-					<SidePanelsContainer
-						isBlank={appBoard.getBoardId() === "blank"}
-					/>
-					<ContextMenu />
-					<ItemTooltip />
-				</ExportVisible>
-			</ViewModeGuard>
+			<ExportVisible>
+				<SidePanelsContainer
+					isBlank={appBoard.getBoardId() === "blank"}
+				/>
+				<ContextMenu />
+				<ItemTooltip />
+			</ExportVisible>
 			<ViewModeGuard>
 				<ExportVisible>
 					{shouldShow("userPanel") && <UserPanel app={app} />}

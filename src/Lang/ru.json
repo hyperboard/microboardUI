@@ -395,6 +395,10 @@
 	"connector": {
 		"textPlaceholder": "Текст"
 	},
+	"notifications": {
+		"connectionLostHeader": "Доска в оффлайн-режиме. Восстанавливаем соединение...",
+		"connectionReestablished": "Соедение восстановлено."
+	},
 	"landing": {
 		"menu": {
 			"about": "О сервисе",

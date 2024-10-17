@@ -1,7 +1,10 @@
+import toast from "react-hot-toast";
+import i18next from "i18next";
+import { notify } from "View/Ui/Toast";
 import { getApiUrl } from "Config";
 import { getWebsocketUrl } from "../Config";
 import { Subject } from "Subject";
-import { BoardSnapshot } from "Board/Board";
+import { Board, BoardSnapshot } from "Board/Board";
 import { BoardEvent, BoardEventPack } from "Board/Events/Events";
 
 const WS_RECONNECT_TIMEOUT = 5000;
@@ -76,6 +79,10 @@ export interface ViewModeMsg {
 	boardId: string;
 }
 
+export interface PingMsg {
+	type: "ping";
+}
+
 export type EventsMsg =
 	| ViewModeMsg
 	| BoardEventMsg
@@ -91,7 +98,8 @@ export type SocketMsg =
 	| SubscribeMsg
 	| UnsubscribeMsg
 	| ErrorMsg
-	| ViewModeMsg;
+	| ViewModeMsg
+	| PingMsg;
 
 export interface Connection {
 	connectionId: number;
@@ -121,12 +129,92 @@ interface Subscription {
 	unsubscribe: () => void;
 }
 
-export function createConnection(): Connection {
+export function createConnection(getBoard: () => Board): Connection {
 	const subscriptions = new Map<string, Subscription>();
+	let pingTimeout: NodeJS.Timeout | null = null;
+	let pingNotificationId: string | null = null;
+	let changedViewMode = false;
+
+	// const beforeUnloadListener = (event: BeforeUnloadEvent): void => {
+	// 	event.preventDefault();
+	// 	event.returnValue = "Do not leave the page to avoid losing data";
+	// };
+
+	const onConnectionLost = (): void => {
+		if (!pingNotificationId) {
+			pingNotificationId = notify({
+				header: i18next.t("notifications.connectionLostHeader"),
+				variant: "black",
+				duration: Infinity,
+				unclosable: true,
+				position: "bottom-center",
+			});
+			// window.addEventListener('beforeunload', beforeUnloadListener);
+		}
+		const board = getBoard();
+		if (board.getBoardId() !== "blank" && board.interfaceType !== "view") {
+			board.selection.removeAll();
+			board.interfaceType = "view";
+			board.tools.navigate();
+			changedViewMode = true;
+			board.tools.publish();
+		}
+		window.parent.postMessage(
+			{
+				pattern: "connectionState",
+				payload: "disconnected",
+			},
+			"*",
+		);
+	};
+
+	const onErorr = (error: unknown): void => {
+		const err = error as Error;
+		console.error("Error Establishing Connection:", err);
+		onConnectionLost();
+		window.parent.postMessage(
+			{
+				pattern: "MicroboardError",
+				payload: JSON.stringify({
+					error: err.message,
+				}),
+			},
+			"*",
+		);
+	};
+
+	const setConnectionErrorTimeout = (): void => {
+		pingTimeout = setTimeout(onConnectionLost, WS_PING_INTERVAL);
+	};
+
+	function clearConnectionError(): void {
+		if (pingTimeout) {
+			clearTimeout(pingTimeout);
+			pingTimeout = null;
+		}
+		if (pingNotificationId) {
+			toast.dismiss(pingNotificationId);
+			pingNotificationId = null;
+			notify({
+				header: i18next.t("notifications.connectionReestablished"),
+				variant: "black",
+				position: "bottom-center",
+				unclosable: true,
+			});
+			// window.removeEventListener('beforeunload', beforeUnloadListener);
+		}
+		if (changedViewMode) {
+			getBoard().interfaceType = "edit";
+			changedViewMode = false;
+			getBoard().tools.publish();
+		}
+	}
 
 	function onMessage(msg: SocketMsg): void {
 		switch (msg.type) {
 			case "SubscribeConfirmation":
+				clearConnectionError();
+			// eslint-disable-next-line no-fallthrough
 			case "Confirmation":
 			case "BoardEvent":
 			case "BoardEventList":
@@ -148,11 +236,14 @@ export function createConnection(): Connection {
 				break;
 			case "Error":
 				break;
+			case "ping":
+				clearConnectionError();
+				break;
 			default:
 				console.warn("Debug: Received unknown message type:", msg.type);
 		}
 	}
-	const ws = createWsClient(onMessage);
+	const ws = createWsClient(onMessage, setConnectionErrorTimeout, onErorr);
 
 	async function connect(): Promise<void> {
 		try {
@@ -186,24 +277,8 @@ export function createConnection(): Connection {
 			);
 			const data = await response.json();
 			connectionId = data.connection;
-		} catch (error: Error) {
-			console.error("Error Establishing Connection:", error);
-			window.parent.postMessage(
-				{
-					pattern: "MicroboardError",
-					payload: JSON.stringify({
-						error: error.message,
-					}),
-				},
-				"*",
-			);
-			window.parent.postMessage(
-				{
-					pattern: "connectionState",
-					payload: "disconnected",
-				},
-				"*",
-			);
+		} catch (error) {
+			onErorr(error);
 		}
 	}
 
@@ -336,7 +411,11 @@ interface WsClient {
 
 type SocketMsgHandler = (message: SocketMsg) => void;
 
-export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
+export function createWsClient(
+	msgHandler: SocketMsgHandler,
+	setConnectionErrorTimeout: () => void,
+	onError: (error: unknown) => void,
+): WsClient {
 	let socket: WebSocket | null;
 	const onOpenSubject = new Subject();
 	const onCloseSubject = new Subject();
@@ -381,6 +460,13 @@ export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
 					const deniedBoardId = match[1];
 					if (deniedBoardId !== "blank") {
 						onAccessDenied(deniedBoardId);
+						window.parent.postMessage(
+							{
+								pattern: "access-denied",
+								payload: deniedBoardId,
+							},
+							"*",
+						);
 					}
 				}
 			}
@@ -408,33 +494,13 @@ export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
 		}, WS_RECONNECT_TIMEOUT);
 	}
 
-	function onError(event): void {
-		console.error("WebsocketClient: error", event);
-		window.parent.postMessage(
-			{
-				pattern: "MicroboardError",
-				payload: JSON.stringify({
-					error: `WebsocketClient: error ${JSON.stringify(event)}`,
-				}),
-			},
-			"*",
-		);
-		window.parent.postMessage(
-			{
-				pattern: "MicroboardError",
-				payload: JSON.stringify({
-					error: `WebsocketClient: error ${event}`,
-				}),
-			},
-			"*",
-		);
-	}
-
 	const pingMsg = JSON.stringify({ type: "ping" });
 
 	function keepAlivePing(): void {
 		if (isConnected()) {
 			socket?.send(pingMsg);
+
+			setConnectionErrorTimeout();
 		}
 	}
 

@@ -41,7 +41,7 @@ export interface App {
 }
 
 export function createApp(isHistory = true): App {
-	const connection = createConnection();
+	const connection = createConnection(getBoard);
 	const clipboard = new Clipboard();
 	const location = new Location();
 	const storage = new Storage();
