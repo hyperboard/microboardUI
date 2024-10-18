@@ -240,6 +240,37 @@
 			"cancel": "Отменить"
 		}
 	},
+	"modalTemplate": {
+		"templates": "Шаблоны",
+		"noTemplates": "Шаблоны из данной категории отсутствуют",
+		"createTemplate": "Создать шаблон",
+		"UI": {
+			"inputs": {
+				"search": "Поиск",
+				"name": "Название шаблона",
+				"description": "Описание"
+			},
+			"buttons": {
+				"choosePreview": "Выбор изображения",
+				"save": "Сохранить",
+				"translate": "Перевести на выбранные языки"
+			}
+		},
+		"category": {
+			"useCases": "Варианты использования",
+			"useCaseItems": {
+				"All templates": "Все шаблоны",
+				"Research & Analysis": "Исследования и анализ",
+				"Diagramming": "Диаграммы",
+				"Meeting & Workshop": "Встречи и семинары",
+				"Strategy & Planning": "Стратегии и планирование",
+				"Brainstorming": "Мозговой штурм",
+				"Agile Workflow": "Гибкий рабочий процесс",
+				"Icebreaker & Game": "Игры",
+				"Education": "Образование"
+			}
+		}
+	},
 	"ok": "Ок",
 	"noBoard": {
 		"title": "Нет открытой доски для работы",
@@ -409,5 +440,9 @@
 	},
 	"frame": {
 		"copy": "Копия "
+	},
+	"template": {
+		"create": "Создать шаблон",
+		"update": "Обновить шаблон"
 	}
 }

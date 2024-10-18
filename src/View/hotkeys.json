@@ -1,13 +1,4 @@
 {
-	"template": {
-		"key": {
-			"button": "KeyZ"
-		},
-		"label": {
-			"mac": "Z",
-			"windows": "Z"
-		}
-	},
 	"select": {
 		"key": {
 			"button": "KeyV"

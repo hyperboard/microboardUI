@@ -371,7 +371,7 @@ export const CreateTemplateModal = ({
 				className={styles.dropdownItem}
 				onClick={() => handleSelectCategory(category)}
 			>
-				{category}
+				{t(`modalTemplate.category.useCaseItems.${category}`)}
 			</p>
 		);
 	});
@@ -402,14 +402,14 @@ export const CreateTemplateModal = ({
 				ref={formRef}
 				className={styles.form}
 			>
-				<h1>Create template</h1>
+				<h1>{t("modalTemplate.createTemplate")}</h1>
 				<input
 					ref={inputRef}
 					onChange={handleFileChange}
 					type="file"
 					style={{ display: "none" }}
 				/>
-				<Button onClick={handleChangeImageClick}>Choose preview</Button>
+				<Button onClick={handleChangeImageClick}>{t("modalTemplate.UI.buttons.choosePreview")}</Button>
 				<Dropdown
 					items={languagesDropdownItems}
 					label={
@@ -423,7 +423,7 @@ export const CreateTemplateModal = ({
 						<Input
 							id={input.id}
 							defaultValue={input.defaultValue}
-							placeholder={input.placeholder}
+							placeholder={t("modalTemplate.UI.inputs.name")}
 							label={input.label}
 							key={input.id}
 						/>
@@ -434,7 +434,7 @@ export const CreateTemplateModal = ({
 						<Input
 							id={input.id}
 							defaultValue={input.defaultValue}
-							placeholder={input.placeholder}
+							placeholder={t("modalTemplate.UI.inputs.description")}
 							label={input.label}
 							key={input.id}
 						/>
@@ -445,7 +445,7 @@ export const CreateTemplateModal = ({
 						disabled={submitDisabled || translateDisabled}
 						onClick={handleTranslateClick}
 					>
-						Translate
+						{t("modalTemplate.UI.buttons.translate")}
 					</Button>
 				)}
 				<Dropdown
@@ -461,7 +461,7 @@ export const CreateTemplateModal = ({
 					disabled={submitDisabled && translateDisabled}
 					loading={isSubmitLoading}
 				>
-					Save
+					{t("modalTemplate.UI.buttons.save")}
 				</Button>
 				{errors.length ? (
 					<p className={styles.errorText}>{errors[0]}</p>

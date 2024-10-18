@@ -95,7 +95,7 @@ export const SelectTemplateModal = ({
 				<div className={styles.sidebar}>
 					<div className={styles.sidebarHeader}>
 						<Icon width={30} height={30} iconName="Template" />
-						<h3>Templates</h3>
+						<h3>{t("modalTemplate.templates")}</h3>
 					</div>
 					<CategoriesMenu
 						setSelectedCategory={setSelectedCategory}
@@ -105,7 +105,7 @@ export const SelectTemplateModal = ({
 				<div className={styles.templatesContainer}>
 					{presentedTemplate ? (
 						<TemplateItemPreview
-							name={"Hello"}
+							name={presentedTemplate.name}
 							language={presentedTemplate.lan}
 							description={presentedTemplate.desc}
 							snapshot={presentedTemplate.snapshot}
@@ -147,7 +147,7 @@ export const SelectTemplateModal = ({
 								</div>
 								<Input
 									id="search-template"
-									placeholder="Search"
+									placeholder={t("modalTemplate.UI.inputs.search")}
 									onChange={handleInputChange}
 									prefixIcon={
 										<Icon
@@ -160,18 +160,22 @@ export const SelectTemplateModal = ({
 								<span className={styles.resizeMarker}></span>
 							</div>
 							<div className={styles.searchOptions}>
-								<p>{selectedCategory}</p>
+								<p>{t(`modalTemplate.category.useCaseItems.${selectedCategory}`)}</p>
 								<LanguagesDropdown
 									setSelectedLanguage={setSelectedLanguage}
 									selectedLanguage={selectedLanguage}
 								/>
 							</div>
-							<TemplateItemsGrid
+							{templates.length ?
+								<TemplateItemsGrid
 								templates={templates}
 								setIsOpen={setIsOpen}
 								setPresentedTemplate={setPresentedTemplate}
 								className={styles.templatesGrid}
 							/>
+								:
+								<p>{t("modalTemplate.noTemplates")}</p>
+							}
 						</>
 					)}
 				</div>

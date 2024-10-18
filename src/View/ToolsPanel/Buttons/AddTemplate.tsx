@@ -17,7 +17,6 @@ export function AddTemplate() {
 		<UiButton
 			id={"tool-add-template"}
 			tooltip={t("toolsPanel.addTemplate.tooltip")}
-			hotkey={getHotkeyLabel("template")}
 			onClick={handleClick}
 			variant="secondary"
 			rounded="top"

@@ -177,7 +177,7 @@ export function TitlePanel() {
 				onClick={() => setCreateTemplateOpen(true)}
 				variant="secondary"
 				rounded="right"
-				tooltip={t("createTemplate.tooltip")}
+				tooltip={t("template.create")}
 				tooltipPosition="bottom"
 			>
 				<Icon iconName="Pen" />
@@ -188,7 +188,7 @@ export function TitlePanel() {
 				onClick={saveTemplate}
 				variant="secondary"
 				rounded="right"
-				tooltip={t("saveTemplate.tooltip")}
+				tooltip={t("template.update")}
 				tooltipPosition="bottom"
 			>
 				<Icon iconName="Redo" />

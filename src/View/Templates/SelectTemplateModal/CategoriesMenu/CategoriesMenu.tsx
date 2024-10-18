@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { Icon } from "../../../Icon";
 import { IconId } from "../../../Icon/Icon";
 import { TemplateCategory } from "../../../Tools/Template";
+import { useTranslation } from "react-i18next";
 
 interface CategoriesMenuProps {
 	setSelectedCategory: (item: TemplateCategory) => void;
@@ -26,9 +27,11 @@ export const CategoriesMenu = ({
 	setSelectedCategory,
 	selectedCategory,
 }: CategoriesMenuProps) => {
+	const {t} = useTranslation()
+
 	return (
 		<nav className={styles.navigation}>
-			<h4 className={styles.categoryName}>Use cases</h4>
+			<h4 className={styles.categoryName}>{t("modalTemplate.category.useCases")}</h4>
 			<ul className={styles.categoryList}>
 				{USE_CASE_CATEGORIES.map(item => {
 					return (
@@ -46,7 +49,7 @@ export const CategoriesMenu = ({
 								height={20}
 								iconName={item.iconName}
 							/>
-							<p>{item.value}</p>
+							<p>{t(`modalTemplate.category.useCaseItems.${item.value}`)}</p>
 						</li>
 					);
 				})}

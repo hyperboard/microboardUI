@@ -242,6 +242,37 @@
 			"cancel": "Cancel"
 		}
 	},
+	"modalTemplate": {
+		"templates": "Templates",
+		"noTemplates": "There are no templates from this category",
+		"createTemplate": "Create template",
+		"UI": {
+			"inputs": {
+				"search": "Search",
+				"name": "Template name",
+				"description": "Description"
+			},
+			"buttons": {
+				"choosePreview": "Choose preview",
+				"save": "Save",
+				"translate": "Translate"
+			}
+		},
+		"category": {
+			"useCases": "Use cases",
+			"useCaseItems": {
+				"All templates": "All templates",
+				"Research & Analysis": "Research & Analysis",
+				"Diagramming": "Diagramming",
+				"Meeting & Workshop": "Meeting & Workshop",
+				"Strategy & Planning": "Strategy & Planning",
+				"Brainstorming": "Brainstorming",
+				"Agile Workflow": "Agile Workflow",
+				"Icebreaker & Game": "Icebreaker & Game",
+				"Education": "Education"
+			}
+		}
+	},
 	"ok": "Ok",
 	"noBoard": {
 		"title": "No board is open",
@@ -411,5 +442,10 @@
 	},
 	"frame": {
 		"copy": "Copy of "
+	},
+
+	"template": {
+		"create": "Create template",
+		"update": "Update template"
 	}
 }
