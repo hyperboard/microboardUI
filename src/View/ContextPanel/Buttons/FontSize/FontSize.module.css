@@ -1,5 +1,5 @@
 .button {
-	gap: 0.8rem;
+	gap: 0.6rem;
 	padding: 0;
 	padding-left: 0.6rem;
 	padding-right: 0;
@@ -7,9 +7,28 @@
 }
 
 .font-size {
+	flex: 1 0;
+	height: 100%;
+}
+
+.input {
+	color: rgba(20, 21, 26, 1);
 	font-size: 1.6rem;
 	font-weight: 500;
-	flex: 1 0;
+	max-width: 32px;
+	height: 100%;
+	text-align: center;
+	border: none;
+	outline: none;
+}
+
+.input:active {
+	color: rgba(20, 21, 26, 1);
+}
+
+.input:not(:focus) {
+	cursor: pointer;
+	color: rgba(83, 20, 163, 1);
 }
 
 .size-list {
