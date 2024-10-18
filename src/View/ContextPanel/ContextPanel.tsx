@@ -42,6 +42,7 @@ import { ConnectorTextColor } from "./Buttons/ConnectorTextColor";
 import { ConnectorTextHighlight } from "./Buttons/ConnectorTextHighlight";
 import { CopyItemLink } from "./Buttons/RestOptionsMenu/Items/CopyItemLink";
 import { SetLinkTo } from "./Buttons/RestOptionsMenu/Items/SetLinkTo";
+import { RemoveLinkTo } from "./Buttons/RestOptionsMenu/Items/RemoveLinkTo";
 
 export function ContextPanel() {
 	const { app, board } = useAppContext();
@@ -139,6 +140,7 @@ export function ContextPanel() {
 							<SendToBack />
 							<CopyItemLink />
 							<SetLinkTo />
+							<RemoveLinkTo />
 						</RestOptionsMenu>
 					</>
 				)}
@@ -161,6 +163,7 @@ export function ContextPanel() {
 							<SendToBack />
 							<CopyItemLink />
 							<SetLinkTo />
+							<RemoveLinkTo />
 						</RestOptionsMenu>
 					</>
 				)}
@@ -186,6 +189,7 @@ export function ContextPanel() {
 							<SendToBack />
 							<CopyItemLink />
 							<SetLinkTo />
+							<RemoveLinkTo />
 						</RestOptionsMenu>
 					</>
 				)}
@@ -225,6 +229,7 @@ export function ContextPanel() {
 							<SendToBack />
 							<CopyItemLink />
 							<SetLinkTo />
+							<RemoveLinkTo />
 						</RestOptionsMenu>
 					</>
 				)}
@@ -238,6 +243,7 @@ export function ContextPanel() {
 							<SendToBack />
 							<CopyItemLink />
 							<SetLinkTo />
+							<RemoveLinkTo />
 						</RestOptionsMenu>
 					</>
 				)}
@@ -256,6 +262,7 @@ export function ContextPanel() {
 							<SendToBack />
 							<CopyItemLink />
 							<SetLinkTo />
+							<RemoveLinkTo />
 							<ExportFrame />
 						</RestOptionsMenu>
 					</>

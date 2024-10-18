@@ -1,7 +1,8 @@
 {
 	"common": {
 		"and": "and",
-		"backToMain": "Back to main menu"
+		"backToMain": "Back to main menu",
+		"confirm": "Confirm"
 	},
 	"contextPanel": {
 		"connectorAddText": {
@@ -98,6 +99,12 @@
 			"success": {
 				"description": "Link copied to clipboard"
 			}
+		},
+		"setLinkTo": {
+			"text": "Link to"
+		},
+		"removeLinkTo": {
+			"text": "Remove Link To"
 		},
 		"delete": {
 			"text": "Delete",
@@ -247,6 +254,11 @@
 			"delete": "Delete",
 			"cancel": "Cancel"
 		}
+	},
+	"modalLinkTo": {
+		"error": "Incorrect link",
+		"title": "Link to Object",
+		"input": "Paste link"
 	},
 	"ok": "Ok",
 	"noBoard": {

@@ -1,7 +1,8 @@
 {
 	"common": {
 		"and": "и",
-		"backToMain": "Вернуться в главное меню"
+		"backToMain": "Вернуться в главное меню",
+		"confirm": "Принять"
 	},
 	"contextPanel": {
 		"connectorAddText": {
@@ -98,6 +99,12 @@
 			"success": {
 				"description": "Ссылка скопирована в буфер обмена"
 			}
+		},
+		"setLinkTo": {
+			"text": "Прикрепить ссылку"
+		},
+		"removeLinkTo": {
+			"text": "Открепить ссылку"
 		},
 		"delete": {
 			"text": "Удалить",
@@ -245,6 +252,11 @@
 			"delete": "Удалить",
 			"cancel": "Отменить"
 		}
+	},
+	"modalLinkTo": {
+		"error": "Некорректная ссылка",
+		"title": "Прикрепить ссылку",
+		"input": "Ссылка"
 	},
 	"ok": "Ок",
 	"noBoard": {
