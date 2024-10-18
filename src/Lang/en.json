@@ -407,7 +407,7 @@
 	},
 	"notifications": {
 		"connectionLostHeader": "You are offline. Reconnecting...",
-		"connectionReestablished": "Connection re-established."
+		"connectionReestablished": "Connection restored."
 	},
 	"landing": {
 		"menu": {
