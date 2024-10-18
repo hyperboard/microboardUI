@@ -38,12 +38,18 @@ export const Navbar: React.FC = () => {
 				</a>
 				<div>
 					{isLoginVisible && (
-						<NavLink to="/auth/sign-in" className={"Link"}>
+						<NavLink
+							to={`/auth/sign-in${location.search}`}
+							className={"Link"}
+						>
 							{t("auth.signIn")}
 						</NavLink>
 					)}
 					{isSignUpVisible && (
-						<NavLink to="/auth/sign-up" className={"Link"}>
+						<NavLink
+							to={`/auth/sign-up${location.search}`}
+							className={"Link"}
+						>
 							{t("auth.signUpForFree")}
 						</NavLink>
 					)}

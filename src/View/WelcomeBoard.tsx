@@ -1,4 +1,5 @@
-import { ItemData, Mbr } from "Board/Items";
+import { useBoardsList } from "App/useBoardsList";
+import { Mbr } from "Board/Items";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -18,18 +19,20 @@ const INITIAL_FIT_AREA = {
 export function WelcomeBoard({ app }: Props): React.ReactElement {
 	const navigate = useNavigate();
 	const { i18n, t } = useTranslation();
+	const boardsList = useBoardsList();
 
 	const createPublicBoard = async (app: App): Promise<string> => {
 		const lastBoardId = app.getLastBoardId();
 		if (lastBoardId) {
-			app.openBoard(lastBoardId);
+			await app.openBoard(lastBoardId);
 			return lastBoardId;
 		}
 
-		const boardId = await app.createPublicBoard(
+		const boardId = await boardsList.createBoard(
 			t("board.welcomeBoardTitle"),
+			true,
 		);
-		app.openBoard(boardId);
+		await app.openBoard(boardId);
 		const board = app.getBoard();
 
 		if (i18n.language === "ru") {

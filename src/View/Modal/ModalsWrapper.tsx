@@ -1,6 +1,7 @@
 import React from "react";
 import { ConfirmModalProvider } from "./ConfirmModal";
 import { InfoModalProvider } from "./InfoModal";
+import { ModalProvider } from "./ModalProvider";
 
 type Props = {
 	children: React.ReactNode;
@@ -8,9 +9,11 @@ type Props = {
 
 const ModalsWrapper: React.FC<Props> = ({ children }) => {
 	return (
-		<ConfirmModalProvider>
-			<InfoModalProvider>{children}</InfoModalProvider>
-		</ConfirmModalProvider>
+		<ModalProvider>
+			<ConfirmModalProvider>
+				<InfoModalProvider>{children}</InfoModalProvider>
+			</ConfirmModalProvider>
+		</ModalProvider>
 	);
 };
 

@@ -1,20 +1,28 @@
+import { App } from "App";
 import { withRouter } from "lib/withRouter";
 import React, { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { TextEditors } from "View/TextEditor/TextEditor";
 import { Canvas } from "./Canvas";
 import { ContextPanel } from "./ContextPanel";
 import { ExportPanel } from "./ExportPanel";
-import { TextEditors } from "View/TextEditor/TextEditor";
 import { TitlePanel } from "./TitlePanel";
-import { ToolsPanel } from "./ToolsPanel";
-import { ZoomPanel } from "./ZoomPanel";
 import { ToastProvider } from "./ToastProvider";
+import { ToolsPanel } from "./ToolsPanel";
 import { ViewModeGuard } from "./ViewModeGuard";
+import { ZoomPanel } from "./ZoomPanel";
 
-const AppViewBase = ({ app, router }) => {
+type Props = { app: App };
+
+export const AppView = ({ app }: Props) => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [animationFrameId, setAnimationFrameId] = useState<number | null>(
 		null,
 	);
+	const location = useLocation();
+	const navigate = useNavigate();
+	const params = useParams();
+	const router = { location, navigate, params };
 
 	const update = () => {
 		if (animationFrameId) {
@@ -28,6 +36,10 @@ const AppViewBase = ({ app, router }) => {
 	};
 
 	useEffect(() => {
+		const handlePaste = (event: ClipboardEvent) => {
+			controller.onPaste(event, app);
+		};
+
 		const subscription = app.boardSubject.subscribe(update);
 		const container = containerRef.current;
 		const controller = app.controller;
@@ -59,7 +71,7 @@ const AppViewBase = ({ app, router }) => {
 			window.addEventListener("keydown", controller.onKeyDown);
 			window.addEventListener("keyup", controller.onKeyUp);
 			window.addEventListener("copy", controller.onCopy);
-			window.addEventListener("paste", controller.onPaste);
+			window.addEventListener("paste", handlePaste);
 			window.addEventListener("drop", controller.onDrop);
 			window.addEventListener("dragover", event => {
 				event.preventDefault();
@@ -89,20 +101,11 @@ const AppViewBase = ({ app, router }) => {
 				window.removeEventListener("keydown", controller.onKeyDown);
 				window.removeEventListener("keyup", controller.onKeyUp);
 				window.removeEventListener("copy", controller.onCopy);
-				window.removeEventListener("paste", controller.onPaste);
+				window.removeEventListener("paste", handlePaste);
 				window.removeEventListener("drop", controller.onDrop);
 			}
 		};
 	}, [app, animationFrameId]);
-
-	const urlString = new URL(window.location.href).pathname;
-	const boardId = router?.params?.boardId || urlString.split("/").pop();
-
-	useEffect(() => {
-		if (boardId) {
-			app.openBoard(boardId);
-		}
-	}, [boardId, app]);
 
 	const board = app.getBoard();
 	if (!board) {
@@ -133,8 +136,6 @@ const AppViewBase = ({ app, router }) => {
 		</div>
 	);
 };
-
-export const AppView = withRouter(AppViewBase);
 
 function preventDefault(event: TouchEvent): void {
 	event.preventDefault();

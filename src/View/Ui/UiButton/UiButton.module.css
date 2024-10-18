@@ -192,9 +192,25 @@
 	color: rgb(247, 247, 247);
 }
 
+.tip.padding-md {
+	padding: 12px 16px;
+}
+
+.tip.radius-md {
+	border-radius: 8px;
+}
+
 .tip-text {
 	flex: 1 0;
 	white-space: nowrap;
+}
+
+.tip-text.center {
+	text-align: center;
+}
+
+.tip-text.left {
+	text-align: left;
 }
 
 .tip::before {

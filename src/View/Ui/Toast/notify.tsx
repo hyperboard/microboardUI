@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import React, { ReactNode } from "react";
-import toast from "react-hot-toast";
+import toast, { ToastPosition } from "react-hot-toast";
 import { Icon } from "View/Icon";
 import { UiButton } from "../UiButton";
 import style from "./Toast.module.css";
@@ -10,24 +10,29 @@ type Props = {
 	body?: ReactNode;
 	footer?: ReactNode;
 	duration?: number;
-	variant?: "success" | "error" | "info" | "warning";
+	variant?: "success" | "error" | "info" | "warning" | "black";
+	position?: ToastPosition;
+	unclosable?: boolean;
 };
 
+/** Triggers toast notification and returns notification id */
 export function notify({
 	header,
 	body,
 	footer,
 	duration = 4000,
 	variant = "info",
-}: Props) {
+	unclosable = false,
+	position = "top-right",
+}: Props): string {
 	return toast.custom(
-		t => (
+		toastMsg => (
 			<div
 				className={clsx(style.container, style[variant])}
 				style={{
-					opacity: t.visible ? 1 : 0,
+					opacity: toastMsg.visible ? 1 : 0,
 					animation: `${
-						t.visible ? style.fadeIn : style.fadeOut
+						toastMsg.visible ? style.fadeIn : style.fadeOut
 					} 0.3s ease`,
 				}}
 			>
@@ -50,17 +55,19 @@ export function notify({
 					)}
 					{footer}
 				</div>
-				<UiButton
-					size="sm"
-					rounded="none"
-					className={style.closeButton}
-					onClick={() => toast.dismiss(t.id)}
-					variant="secondary"
-				>
-					<Icon iconName="Close" width={20} height={20} />
-				</UiButton>
+				{!unclosable && (
+					<UiButton
+						size="sm"
+						rounded="none"
+						className={style.closeButton}
+						onClick={() => toast.dismiss(toastMsg.id)}
+						variant="secondary"
+					>
+						<Icon iconName="Close" width={20} height={20} />
+					</UiButton>
+				)}
 			</div>
 		),
-		{ duration, position: "top-right" },
+		{ duration, position },
 	);
 }

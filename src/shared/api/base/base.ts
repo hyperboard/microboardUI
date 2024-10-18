@@ -1,0 +1,189 @@
+import { getApiUrl } from "Config";
+import { createSearchParams, type URLSearchParamsInit } from "react-router-dom";
+import { HTTPError } from "./httpError";
+import { HTTPResponse } from "./httpResponse";
+import { Interceptors } from "./interceptors";
+import type {
+	HTTPConfig,
+	HTTPRequestConfig,
+	MutationRequestBody,
+	ParamsRecord,
+} from "./types";
+
+export class HTTP {
+	private readonly baseURL: string;
+	private readonly headers: Record<string, string>;
+	readonly interceptors = new Interceptors();
+
+	constructor(config: HTTPConfig) {
+		this.baseURL = config.baseURL;
+		this.headers = config.headers ?? {};
+	}
+
+	private getQuery(query?: URLSearchParamsInit): string {
+		return createSearchParams(query).toString();
+	}
+
+	private replacePathParams(path: string, params?: ParamsRecord): string {
+		if (!params) {
+			return path;
+		}
+
+		return path.replace(/:(\w+)/g, (_, key) => {
+			if (params[key]) {
+				return String(params[key]);
+			}
+
+			return key;
+		});
+	}
+
+	getUrl(
+		path = "",
+		params?: ParamsRecord,
+		query?: URLSearchParamsInit,
+	): string {
+		return `${this.baseURL}${this.replacePathParams(
+			path,
+			params,
+		)}${this.getQuery(query)}`;
+	}
+
+	private async $fetch<
+		R,
+		Q extends URLSearchParamsInit = URLSearchParamsInit,
+		P extends ParamsRecord = ParamsRecord,
+	>(path: string, config: HTTPRequestConfig<Q, P>): Promise<HTTPResponse<R>> {
+		try {
+			const modifiedConfig =
+				await this.interceptors.triggerRequestInterceptors(config);
+
+			const response = await fetch(
+				this.getUrl(path, config.params, config.query),
+				{
+					...modifiedConfig,
+					headers: {
+						...modifiedConfig.headers,
+						...this.headers,
+					},
+					credentials: "include",
+				},
+			);
+
+			if (!response.ok) {
+				const message = await response.json();
+				throw new HTTPError(
+					response.status,
+					message.message,
+					response,
+					response.url,
+				);
+			}
+
+			const customResponse = new HTTPResponse<R>(response);
+			if (customResponse.status !== 204) {
+				customResponse.data = await response.json();
+			} else {
+				customResponse.data = null;
+			}
+
+			this.interceptors.triggerResponseSuccessInterceptors(
+				customResponse,
+			);
+
+			return customResponse;
+		} catch (error) {
+			this.interceptors.triggerResponseErrorInterceptors(error);
+			throw error;
+		}
+	}
+
+	get<
+		R,
+		Q extends URLSearchParamsInit = URLSearchParamsInit,
+		P extends ParamsRecord = ParamsRecord,
+	>(
+		path: string,
+		config?: HTTPRequestConfig<Q, P>,
+	): Promise<HTTPResponse<R>> {
+		return this.$fetch<R>(path, {
+			method: "GET",
+			...config,
+		});
+	}
+
+	post<
+		R,
+		B extends MutationRequestBody = MutationRequestBody,
+		P extends ParamsRecord = ParamsRecord,
+	>(
+		path: string,
+		body?: B,
+		config?: HTTPRequestConfig<URLSearchParamsInit, P>,
+	): Promise<HTTPResponse<R>> {
+		const stringifiedBody = JSON.stringify(body);
+
+		return this.$fetch<R>(path, {
+			method: "POST",
+			body: stringifiedBody,
+			...config,
+		});
+	}
+
+	patch<
+		R,
+		B extends MutationRequestBody = MutationRequestBody,
+		P extends ParamsRecord = ParamsRecord,
+	>(
+		path: string,
+		body?: B,
+		config?: HTTPRequestConfig<URLSearchParamsInit, P>,
+	): Promise<HTTPResponse<R>> {
+		const stringifiedBody = JSON.stringify(body);
+
+		return this.$fetch<R>(path, {
+			method: "PATCH",
+			body: stringifiedBody,
+			...config,
+		});
+	}
+
+	put<
+		R,
+		B extends MutationRequestBody = MutationRequestBody,
+		P extends ParamsRecord = ParamsRecord,
+	>(
+		path: string,
+		body?: B,
+		config?: HTTPRequestConfig<URLSearchParamsInit, P>,
+	): Promise<HTTPResponse<R>> {
+		const stringifiedBody = JSON.stringify(body);
+
+		return this.$fetch<R>(path, {
+			method: "PUT",
+			body: stringifiedBody,
+			...config,
+		});
+	}
+
+	delete<
+		R,
+		Q extends URLSearchParamsInit = URLSearchParamsInit,
+		P extends ParamsRecord = ParamsRecord,
+	>(
+		path: string,
+		config?: HTTPRequestConfig<Q, P>,
+	): Promise<HTTPResponse<R>> {
+		return this.$fetch<R>(path, {
+			method: "DELETE",
+			...config,
+		});
+	}
+}
+
+export const api = new HTTP({
+	baseURL: getApiUrl(),
+	headers: {
+		"Content-Type": "application/json",
+	},
+});

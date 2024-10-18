@@ -148,7 +148,7 @@ export function ContextPanel({ board, app }: ContextPanelProps) {
 						<UiSeparator vertical />
 						<ConnectorType />
 						<UiSeparator vertical />
-						<ConnectorFontSize />
+						<FontSize />
 						<ConnectorAddText />
 						<ConnectorTextColor />
 						<UiSeparator vertical />

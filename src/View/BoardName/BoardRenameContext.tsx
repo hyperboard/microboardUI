@@ -1,3 +1,4 @@
+import { useBoardsList } from "App/useBoardsList";
 import { createStrictContext, useStrictContext } from "lib/strictContext";
 import React, {
 	Dispatch,
@@ -5,7 +6,6 @@ import React, {
 	SetStateAction,
 	useState,
 } from "react";
-import { useAppContext } from "View/AppContext";
 
 const BoardRenameContext = createStrictContext<{
 	renamingBoardId: string | null;
@@ -24,13 +24,12 @@ export function BoardRenameContextProvider({
 }: PropsWithChildren<{}>) {
 	const [renamingBoardId, setRenamingBoardId] = useState<string | null>(null);
 	const [newBoardName, setNewBoardName] = useState<string>("");
-	const { app } = useAppContext();
-
+	const boardsList = useBoardsList();
 	const rename = () => {
 		if (!renamingBoardId) {
 			return;
 		}
-		app.storage.renameBoard(renamingBoardId, newBoardName);
+		boardsList.rename(renamingBoardId, newBoardName);
 	};
 	return (
 		<BoardRenameContext.Provider
