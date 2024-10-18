@@ -95,6 +95,10 @@ export function getController(
 				cb: () => board.tools.addDrawing(true),
 				selectionContext: ["SelectUnderPointer", "None"],
 			},
+			eraser: {
+				cb: () => board.tools.eraser(true),
+				selectionContext: ["SelectUnderPointer", "None"],
+			},
 			frame: {
 				cb: () => board.tools.addFrame(true),
 				selectionContext: ["SelectUnderPointer", "None"],

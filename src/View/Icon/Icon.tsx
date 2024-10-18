@@ -4,6 +4,8 @@ import sprite from "./sprite.svg";
 export type IconId =
 	| "Select"
 	| "Pen"
+	| "Eraser"
+	| "Highlighter"
 	| "Text"
 	| "Shape"
 	| "Connector"

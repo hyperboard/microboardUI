@@ -141,7 +141,15 @@
 			"tooltip": "Connection line"
 		},
 		"addDrawing": {
-			"tooltip": "Pen",
+			"addPen": {
+				"tooltip": "Pen"
+			},
+			"addHighlighter": {
+				"tooltip": "Highlighter"
+			},
+			"addEraser": {
+				"tooltip": "Eraser"
+			},
 			"strokeWidth": "Stroke width"
 		},
 		"addImage": {

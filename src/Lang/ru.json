@@ -139,7 +139,15 @@
 			"tooltip": "Соединительная линия"
 		},
 		"addDrawing": {
-			"tooltip": "Карандаш",
+			"addPen": {
+				"tooltip": "Карандаш"
+			},
+			"addHighlighter": {
+				"tooltip": "Маркер"
+			},
+			"addEraser": {
+				"tooltip": "Ластик"
+			},
 			"strokeWidth": "Толщина линии"
 		},
 		"addImage": {
