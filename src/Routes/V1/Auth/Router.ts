@@ -120,7 +120,7 @@ export function getAuthRouter(
                 return handleError(res, err);
             }
         }, logger
-    ));
+        ));
 
     router.post(
         "/auth/checkVerificationCodes",
@@ -162,12 +162,14 @@ export function getAuthRouter(
         validateRequest,
         catchAsync(async (req, res) => {
             const { token } = req;
-            const userToken = await token;
-            const userId = parseInt(userToken?.sub);
+            const userId = +token.sub;
 
             try {
                 await authService.logout(userId);
-                res.clearCookie(REFRESH_TOKEN_COOKIE_NAME)
+                res.clearCookie(REFRESH_TOKEN_COOKIE_NAME, {
+                    httpOnly: true,
+                    secure: true
+                })
                 res.json({ message: "User logged out" });
             } catch (err) {
                 return handleError(res, err);

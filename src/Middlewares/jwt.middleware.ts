@@ -6,7 +6,7 @@ import { AccessToken } from "Interface";
 import { verifyToken } from "Tokens";
 
 export function jwtMiddleware(logger: winston.Logger) {
-    return (request: Request, response: Response, next: NextFunction): void => {
+    return async (request: Request, response: Response, next: NextFunction): Promise<void> => {
         const authorization = request.headers["authorization"];
         const token = authorization?.split(" ")[1];
         if (!token) {
@@ -18,7 +18,7 @@ export function jwtMiddleware(logger: winston.Logger) {
             response.end();
             return;
         }
-        const claims = verifyToken(token, 'access');
+        const claims = await verifyToken(token, 'access');
         if (!claims) {
             response.status(401);
             response.json({
@@ -28,7 +28,7 @@ export function jwtMiddleware(logger: winston.Logger) {
             response.end();
             return;
         }
-        request.token = claims as unknown as AccessToken;
+        request.token = claims;
         next();
     };
 }

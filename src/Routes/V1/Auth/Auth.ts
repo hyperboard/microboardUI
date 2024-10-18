@@ -451,7 +451,7 @@ export class Auth {
                 `
             UPDATE users
             SET refresh_token = ''
-            WHERE id = $1
+            WHERE id = $1;
             `,
                 [userId]
             );
