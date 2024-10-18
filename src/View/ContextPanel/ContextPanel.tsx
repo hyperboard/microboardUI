@@ -117,17 +117,15 @@ export function ContextPanel() {
 				padding={0}
 				id="ContextPanel"
 			>
-				{isSelectUnderPointer &&
-					!isHoverUnderPointer &&
-					!lockedFrames.length && (
-						<>
-							<Edit />
-							<RestOptionsMenu rounded="right">
-								<BringToFront />
-								<SendToBack />
-							</RestOptionsMenu>
-						</>
-					)}
+				{isSelectUnderPointer && !lockedFrames.length && (
+					<>
+						<Edit />
+						<RestOptionsMenu rounded="right">
+							<BringToFront />
+							<SendToBack />
+						</RestOptionsMenu>
+					</>
+				)}
 				{isPlaceholder && !isSelectUnderPointer && (
 					<>
 						<Delete rounded="left" />
@@ -276,12 +274,14 @@ export function ContextPanel() {
 						) : null}
 					</>
 				)}
-				{isDifferentItems && !isSelectUnderPointer && (
-					<RestOptionsMenu rounded="full">
-						<BringToFront />
-						<SendToBack />
-					</RestOptionsMenu>
-				)}
+				{isDifferentItems &&
+					!isSelectUnderPointer &&
+					!isHoverUnderPointer && (
+						<RestOptionsMenu rounded="full">
+							<BringToFront />
+							<SendToBack />
+						</RestOptionsMenu>
+					)}
 			</UiPanel>
 		</PanelContext.Provider>
 	);

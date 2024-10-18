@@ -1,4 +1,3 @@
-import { Mbr } from "Board/Items";
 import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
 import { useAppContext } from "View/AppContext";
 import { PanelContext } from "View/ContextPanel/PanelContext";
@@ -26,28 +25,20 @@ export function ItemTooltip(): JSX.Element {
 
 	const toggleMenu = (menu: string) => {
 		setOpenedMenu(prev => (prev === menu ? "HoverUnderPointer" : menu));
-		console.log("menu", menu);
 	};
 
 	const windowHeight = board.camera.window.height;
 
 	const isHoverUnderPointer =
 		board.selection.getContext() === "HoverUnderPointer";
-	const isSelectUnderPointer =
-		board.selection.getContext() === "SelectUnderPointer";
 
 	const isPlaceholder = placeholders.length === 1;
 
 	const placeholderMbr = placeholders[0]
 		?.getMbr()
 		.getTransformed(camera.getMatrix());
-	const transformedMbr = panelRef.current
-		? Mbr.fromDomRect(panelRef.current.getBoundingClientRect())
-		: mbr;
 	const tooltipPosition =
-		placeholderMbr && placeholderMbr.bottom < transformedMbr.top
-			? "bottom"
-			: "top";
+		placeholderMbr && placeholderMbr.bottom < mbr.top ? "bottom" : "top";
 
 	return (
 		<PanelContext.Provider
@@ -58,7 +49,7 @@ export function ItemTooltip(): JSX.Element {
 				windowHeight,
 			}}
 		>
-			{isHoverUnderPointer && isPlaceholder && !isSelectUnderPointer && (
+			{isHoverUnderPointer && isPlaceholder && (
 				<Tooltip
 					tooltipAlign={"left"}
 					tooltip={t("itemTooltips.placeholder")}
