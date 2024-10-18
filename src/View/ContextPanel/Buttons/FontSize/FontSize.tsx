@@ -99,7 +99,7 @@ export function FontSize({ rounded = "none" }: Props) {
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const fontSize = Number(e.target.value);
-		if (!!fontSize && fontSize >= 4) {
+		if (!!fontSize && fontSize >= 1) {
 			board.selection.setFontSize(fontSize);
 		}
 		setFontSizeInputValue(e.target.value);
@@ -138,7 +138,7 @@ export function FontSize({ rounded = "none" }: Props) {
 							onFocus={handleFocus}
 							onKeyDown={e => e.stopPropagation()}
 							value={fontSizeInputValue}
-							maxLength={2}
+							maxLength={3}
 						/>
 					</div>
 					<span

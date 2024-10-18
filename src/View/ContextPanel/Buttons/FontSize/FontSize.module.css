@@ -12,7 +12,7 @@
 }
 
 .input {
-	color: rgba(83, 20, 163, 1);
+	color: rgba(20, 21, 26, 1);
 	font-size: 1.6rem;
 	font-weight: 500;
 	max-width: 32px;
@@ -26,8 +26,9 @@
 	color: rgba(20, 21, 26, 1);
 }
 
-.input:not(:active) {
+.input:not(:focus) {
 	cursor: pointer;
+	color: rgba(83, 20, 163, 1);
 }
 
 .size-list {
