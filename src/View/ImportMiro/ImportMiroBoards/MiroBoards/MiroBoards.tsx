@@ -12,6 +12,8 @@ import { Loader } from "shared/ui-lib/Loader/Loader";
 import { Loader as ButtonLoader } from "shared/ui-lib/Button/Loader";
 import { UiButton } from "View/Ui/UiButton";
 import { ErrorBoardsNotification } from "./ErrorBoardsNotification";
+import { useAppContext } from "View/AppContext";
+import { useCopyBoardItems } from "View/ImportMiro/ImportMiroBoards/ImportBoardItem/useCopyBoardItems";
 
 interface IMiroBoardsProps {
 	isOpen: boolean | null;
@@ -26,10 +28,12 @@ export function MiroBoards({
 	setStage,
 	setBoardInfo,
 }: IMiroBoardsProps): React.ReactElement {
+	const { app } = useAppContext();
 	const { t } = useTranslation();
 	const location = useLocation();
 	const teamId = new URLSearchParams(location.search).get("team_id");
 	const authCode = new URLSearchParams(location.search).get("code");
+	const isClipboard = new URLSearchParams(location.search).get("clipboard");
 	const [boards, setBoards] = useState<IMiroBoard[] | null>(null);
 	const [error, setError] = useState<boolean>(false);
 	const BOARD_LIMIT = 9;
@@ -69,9 +73,13 @@ export function MiroBoards({
 			);
 
 			const token = await response.json();
-			if (token) {
+			if (token && !isClipboard) {
 				Cookies.set("miro_accessToken", token.access_token);
 				await fetchBoards();
+			}
+
+			if (token && isClipboard) {
+				openSeenLastBoard();
 			}
 		} catch (error) {
 			console.error(error);
@@ -119,18 +127,36 @@ export function MiroBoards({
 		}
 	};
 
+	const openSeenLastBoard = (): void => {
+		const lastSeenBoardId = app.getLastBoardId();
+
+		if (lastSeenBoardId) {
+			app.openBoard(lastSeenBoardId);
+			const lastSeenBoard = app.getBoard();
+			useCopyBoardItems(lastSeenBoard);
+		}
+
+		console.error("Last seen board is undefined");
+	};
+
 	useEffect(() => {
 		const token = Cookies.get("miro_accessToken");
 		if (isOpen) {
 			if (!token) {
 				fetchToken();
-			} else {
+			}
+
+			if (!isClipboard) {
 				fetchBoards();
+			}
+
+			if (isClipboard) {
+				openSeenLastBoard();
 			}
 		}
 	}, []);
 
-	const onClickBoard = (id: string, name: string) => {
+	const onClickBoard = (id: string, name: string): void => {
 		setBoardInfo({ id, name });
 		setStage(2);
 	};
@@ -161,25 +187,40 @@ export function MiroBoards({
 
 	return (
 		<>
-			<Modal isOpen={isOpen} setIsOpen={setIsOpen} size={ModalSize.M}>
-				<h2 className={styles.title}>{t("miro.boards.title")}</h2>
-				{!boards ? (
-					<Loader />
-				) : (
-					<>
-						<p className={styles.boardsText}>
-							{t("miro.boards.text")}
-						</p>
-						<div className={styles.teamBoards}>
-							{t("miro.boards.teamTitle")}{" "}
-							<b>{boards[0].team.name}</b>
-						</div>
-						<div className={styles.boards}>{boardsItems}</div>
-						{boardsBtn}
-					</>
-				)}
-			</Modal>
-			<ErrorBoardsNotification isOpen={error} setIsOpen={setError} />
+			{!isClipboard && (
+				<>
+					<Modal
+						isOpen={isOpen}
+						setIsOpen={setIsOpen}
+						size={ModalSize.M}
+					>
+						<h2 className={styles.title}>
+							{t("miro.boards.title")}
+						</h2>
+						{!boards ? (
+							<Loader />
+						) : (
+							<>
+								<p className={styles.boardsText}>
+									{t("miro.boards.text")}
+								</p>
+								<div className={styles.teamBoards}>
+									{t("miro.boards.teamTitle")}{" "}
+									<b>{boards[0].team.name}</b>
+								</div>
+								<div className={styles.boards}>
+									{boardsItems}
+								</div>
+								{boardsBtn}
+							</>
+						)}
+					</Modal>
+					<ErrorBoardsNotification
+						isOpen={error}
+						setIsOpen={setError}
+					/>
+				</>
+			)}
 		</>
 	);
 }

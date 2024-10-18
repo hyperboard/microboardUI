@@ -59,7 +59,10 @@ export function BoardRename({
 
 	const handleBlur: FocusEventHandler = event => {
 		onConfirm();
-		onCancel();
+
+		setTimeout(() => {
+			onCancel();
+		}, 100);
 	};
 
 	return (

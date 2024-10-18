@@ -23,6 +23,14 @@
 	top: calc(100% + var(--offset));
 }
 
+.offset-left {
+	left: calc(100% + var(--offset));
+}
+
+.offset-right {
+	right: calc(100% + var(--offset));
+}
+
 .middle {
 	top: 50%;
 	transform: translateY(-50%);

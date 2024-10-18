@@ -1,15 +1,17 @@
+import { useBoardsList } from "App/useBoardsList";
 import { createStrictContext, useStrictContext } from "lib/strictContext";
-import React, { PropsWithChildren, useState } from "react";
+import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "View/AppContext";
 
 type SidePanelContext = {
 	toggleSideMenu: () => void;
-	openMenu: () => void;
-	handleAddNew: (cb?: (boardId: string) => void) => void;
+	openMenu: (highlightTime?: number) => void;
+	handleAddNew: (cb?: (boardId: string) => void) => Promise<void>;
 	stamp: number | null;
 	setStamp: React.Dispatch<React.SetStateAction<number | null>>;
 	isOpen: boolean;
+	isHighlighted: boolean;
 };
 
 export const SidePanelContext = createStrictContext<SidePanelContext>();
@@ -23,32 +25,50 @@ export function SidePanelContextProvider({
 }: PropsWithChildren<{}>): JSX.Element {
 	const [isOpen, setIsOpen] = useState(false);
 	const [stamp, setStamp] = useState<null | number>(null);
+	const [highlighted, setHighlighted] = useState(false);
 	const { app } = useAppContext();
 	const navigate = useNavigate();
+	const boardsList = useBoardsList();
+	const timeoutRef = useRef<NodeJS.Timeout>();
 
 	const toggleSideMenu = (): void => {
 		setIsOpen(prev => !prev);
 	};
 
-	const openMenu = (): void => {
+	useEffect(() => {
+		return () => clearTimeout(timeoutRef.current);
+	}, []);
+
+	const openMenu = (highlightTime = 0): void => {
+		clearTimeout(timeoutRef.current);
+
+		if (highlightTime > 0) {
+			setHighlighted(true);
+			timeoutRef.current = setTimeout(() => {
+				setHighlighted(false);
+			}, highlightTime);
+		}
 		setIsOpen(true);
 	};
+
+	useEffect(() => {
+		if (!isOpen) {
+			return;
+		}
+
+		boardsList.loadBoards();
+	}, [isOpen]);
 
 	const handleAddNew = async (
 		cb?: (boardId: string) => void,
 	): Promise<void> => {
-		try {
-			const boardId = await app.createPublicBoard();
-			app.openBoard(boardId);
-			navigate(`/boards/${boardId}`, {
-				replace: true,
-			});
-			if (cb) {
-				cb(boardId);
-			}
-		} catch (err) {
-			// TODO notify user
-			console.error(err);
+		const boardId = await boardsList.createBoard();
+		await app.openBoard(boardId);
+		navigate(`/boards/${boardId}`, {
+			replace: true,
+		});
+		if (cb) {
+			cb(boardId);
 		}
 	};
 
@@ -61,6 +81,7 @@ export function SidePanelContextProvider({
 				handleAddNew,
 				stamp,
 				setStamp,
+				isHighlighted: highlighted,
 			}}
 		>
 			{children}

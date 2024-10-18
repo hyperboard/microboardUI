@@ -12,9 +12,13 @@
 	width: 220px;
 	cursor: pointer;
 	transition: 0.3s;
+	font-size: 1.4rem;
 }
 
 .icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	color: #696b76;
 }
 

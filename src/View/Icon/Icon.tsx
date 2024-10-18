@@ -71,6 +71,8 @@ export type IconId =
 	| "BurgerMenu"
 	| "miro"
 	| "loader"
+	| "lock"
+	| "unlock"
 	| "ArrowLeft"
 	| "ArrowLeft1"
 	| "BoxedPlus"

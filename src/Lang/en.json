@@ -108,6 +108,12 @@
 		},
 		"restMenu": {
 			"tooltip": "Options"
+		},
+		"lock": {
+			"tooltip": "Lock"
+		},
+		"unlock": {
+			"tooltip": "Unlock"
 		}
 	},
 	"toolsPanel": {
@@ -226,7 +232,8 @@
 		"cancel": "Cancel",
 		"passwordDoNotMatch": "The entered passwords do not match",
 		"currentPasswordIsIncorrect": "The current password you entered is incorrect. Please try again",
-		"enterAValidEmailAddress": "Enter a valid email address"
+		"enterAValidEmailAddress": "Enter a valid email address",
+		"sessionExpired": "Session expired. Please login again"
 	},
 	"modal": {
 		"canEdit": "Can edit",
@@ -349,6 +356,7 @@
 	},
 	"contextMenu": {
 		"delete": "Delete",
+		"deleteShared": "Remove from my list",
 		"addNew": "Add new",
 		"rename": "Rename"
 	},
@@ -380,9 +388,15 @@
 			"errorBoardsText": "We were unable to retrieve the list of boards from Miro. Please try again later.",
 			"boardsOkBtn": "Ok"
 		},
+		"authClipboardModal": {
+			"title": "Import Error",
+			"description": "To import the board from Miro, you need to authorize. Please log in to save your progress.",
+			"authBtn": "Sign In"
+		},
 		"importMiro": "Import from Miro",
 		"importMiroBtn": "Import from Miro",
-		"importMiroBtnTooltip": "Sign up to access all features of Microboard",
+		"authTooltip": "Sign up to access all features of Microboard",
+		"tooltipClipboardImport": "Аnother way to import<br /> a board from Miro<br /> <span style='opacity: 60%'>Copy the objects (Ctrl+C) in Miro<br /> and paste them onto the board<br /> (Ctrl+V). Some objects<br /> are not supported yet,<br /> but over time, all elements<br /> will be displayed correctly.</span",
 		"startModalText": "Log in to Miro and select the team whose board you want to import to Microboard.",
 		"miroError": "An error has occurred. Try importing again",
 		"loading": "Loading...",
@@ -390,6 +404,10 @@
 	},
 	"connector": {
 		"textPlaceholder": "Text"
+	},
+	"notifications": {
+		"connectionLostHeader": "You are offline. Reconnecting...",
+		"connectionReestablished": "Connection re-established."
 	},
 	"landing": {
 		"menu": {
@@ -418,5 +436,8 @@
 	},
 	"frame": {
 		"copy": "Copy of "
+	},
+	"itemTooltips": {
+		"placeholder": "This type of object isn’t<br /> supported yet,<br /> <span style='opacity: 60%'>but we’re working on it.<br /> It will be available soon!</span>"
 	}
 }

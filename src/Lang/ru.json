@@ -108,6 +108,12 @@
 		},
 		"restMenu": {
 			"tooltip": "Опции"
+		},
+		"lock": {
+			"tooltip": "Заблокировать"
+		},
+		"unlock": {
+			"tooltip": "Разблокировать"
 		}
 	},
 	"toolsPanel": {
@@ -224,7 +230,8 @@
 		"cancel": "Отменить",
 		"passwordDoNotMatch": "Введенные пароли не совпадают",
 		"currentPasswordIsIncorrect": "Текущий пароль введен неправильно. Попробуйте еще раз",
-		"enterAValidEmailAddress": "Введите корректный email"
+		"enterAValidEmailAddress": "Введите корректный email",
+		"sessionExpired": "Сессия истекла. Пожалуйста, войдите еще раз"
 	},
 	"modal": {
 		"canEdit": "Можно редактировать",
@@ -347,6 +354,7 @@
 	},
 	"contextMenu": {
 		"delete": "Удалить",
+		"deleteShared": "Убрать из списка",
 		"addNew": "Добавить",
 		"rename": "Переименовать"
 	},
@@ -378,16 +386,26 @@
 			"errorBoardsText": "Нам не удалось получить список досок из Miro. Попробуйте повторить попытку позже.",
 			"boardsOkBtn": "Понятно"
 		},
+		"authClipboardModal": {
+			"title": "Ошибка импорта",
+			"description": "Для импорта доски из Miro необходимо авторизоваться. Пожалуйста, войдите, чтобы сохранить прогресс.",
+			"authBtn": "Войти"
+		},
 		"importMiro": "Импорт из Miro",
 		"startModalText": "Авторизуйтесь в Miro и выберите команду, доску из которой необходимо импортировать в Microboard.",
 		"importMiroBtn": "Импортировать из Miro",
-		"importMiroBtnTooltip": "Зарегистрируйтесь, чтобы получить доступ <br /> ко всем функциям Microboard",
+		"authTooltip": "Зарегистрируйтесь, чтобы получить доступ <br /> ко всем функциям Microboard",
+		"tooltipClipboardImport": "Есть еще один способ импорта<br /> доски из Miro <br /> <span style='opacity: 60%'>Скопируйте объекты (Ctrl+C)<br /> в Miro и вставьте их на доску<br /> (Ctrl+V). Некоторые объекты<br /> пока не поддерживаются,<br /> но со временем все элементы будут<br /> отображаться корректно</span>",
 		"miroError": "Произошла ошибка. Попробуйте импортировать еще раз",
 		"loading": "Загрузка...",
 		"nextStepBtn": "Продолжить"
 	},
 	"connector": {
 		"textPlaceholder": "Текст"
+	},
+	"notifications": {
+		"connectionLostHeader": "Доска в оффлайн-режиме. Восстанавливаем соединение...",
+		"connectionReestablished": "Соедение восстановлено."
 	},
 	"landing": {
 		"menu": {
@@ -416,5 +434,8 @@
 	},
 	"frame": {
 		"copy": "Копия "
+	},
+	"itemTooltips": {
+		"placeholder": "Этот тип объектов пока<br /> не поддерживается<br /> <span style='opacity: 60%'>Но мы уже работаем над этим.<br /> Скоро все будет доступно!</span>"
 	}
 }

@@ -1,7 +1,8 @@
 import { createStrictContext, useStrictContext } from "lib/strictContext";
-import React, { MouseEventHandler, useState } from "react";
+import React, { MouseEventHandler, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
+import styles from "./ConfirmModal.module.css";
 import styles from "./ConfirmModal.module.css";
 
 interface ConfirmModalData {
@@ -24,9 +25,17 @@ const ConfirmModalView: React.FC<ConfirmModalProps> = ({
 }) => {
 	const { t } = useTranslation();
 
-	if (!opened) {
-		return null;
-	}
+	useEffect(() => {
+		const handleEscapeKey = (evt: KeyboardEvent) => {
+			if (evt.key === "Escape") {
+				onClose();
+			}
+		};
+		window.addEventListener("keyup", handleEscapeKey);
+		return () => {
+			window.removeEventListener("keyup", handleEscapeKey);
+		};
+	});
 
 	const handleConfirm: MouseEventHandler = (ev): void => {
 		ev.preventDefault();
@@ -40,6 +49,10 @@ const ConfirmModalView: React.FC<ConfirmModalProps> = ({
 		ev.stopPropagation();
 		onClose();
 	};
+
+	if (!opened) {
+		return null;
+	}
 
 	return (
 		<div className={`${styles.modal} ${opened ? styles.open : null}`}>

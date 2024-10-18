@@ -10,7 +10,8 @@ import { isSafari } from "./isSafari";
 import { prepareImage } from "Board/Items/Image/ImageHelpers";
 import { HotkeysMap } from "Board/Keyboard/types";
 import { pasteMiroClipboard } from "../View/ImportMiro/ImportMiroBoards/ImportBoardItem/MiroClipboardTransformer";
-import Cookies from "js-cookie";
+import { getGlobalShowModal } from "View/Modal/ModalProvider";
+import { App } from "./App";
 
 export interface Controller {
 	onWheel: (event: WheelEvent) => void;
@@ -26,7 +27,7 @@ export interface Controller {
 	onResize: () => void;
 	onContextMenu: (event: MouseEvent) => void;
 	onCopy: (event: ClipboardEvent) => void;
-	onPaste: (event: ClipboardEvent) => void;
+	onPaste: (event: ClipboardEvent, app: App) => void;
 	onDrop: (event: DragEvent) => void;
 }
 
@@ -186,6 +187,16 @@ export function getController(
 		);
 
 		const isSingleItemInSelection = board.selection.items.isSingle();
+		const isFrame = board.selection.items.getSingle()?.itemType === "Frame";
+
+		if (
+			isFrame &&
+			event.key === "Enter" &&
+			context === "EditTextUnderPointer"
+		) {
+			event.preventDefault();
+			board.selection.setContext("EditUnderPointer");
+		}
 
 		const isTextEditStarted =
 			!isHotkeyTriggered &&
@@ -470,7 +481,7 @@ export function getController(
 		event.preventDefault();
 	}
 
-	function onPaste(event: ClipboardEvent): void {
+	function onPaste(event: ClipboardEvent, app: App): void {
 		const board = getBoard();
 		if (!board) {
 			return;
@@ -565,17 +576,19 @@ export function getController(
 		}
 
 		const html = event?.clipboardData?.getData("text/html");
-		if (html) {
+		if (html && /miro/i.test(html.substring(0, 100))) {
 			try {
 				const decoded = decodeData(html);
 
 				if (decoded !== null) {
 					const miroData = JSON.parse(decoded);
 
-					const userToken = Cookies.get("accessToken");
-					if (!userToken && miroData !== null) {
-						window.location.href = "/auth/sign-in";
+					if (!app.account.isLoggedIn && miroData !== null) {
+						const showModal = getGlobalShowModal();
+						showModal?.("authClipboardMiro");
+						return;
 					}
+
 					pasteMiroClipboard(board, miroData || []);
 
 					return;
@@ -634,7 +647,7 @@ export function getController(
 	return {
 		onWheel,
 		onPointerDown,
-		onPointerMove: throttle(onPointerMove, 32), // 32 мс ~ 30 fps,
+		onPointerMove: throttle(onPointerMove, 16), // 16 мс ~ 60 fps,
 		onPointerUp,
 		onPointerLeave,
 		onPointerCancel,
