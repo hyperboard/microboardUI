@@ -293,6 +293,31 @@ export function getBoardsRouter(
         }, logger)
     );
 
+            // Removing a visited link
+            router.delete(
+                "/boards/:linkId/visited",
+                authenticate,
+                param("linkId").isUUID(),
+                catchAsync(async (req: Request, res: Response) => {
+                    try {
+                        const errors = validationResult(req);
+                        if (!errors.isEmpty()) {
+                            return res.status(400).json({ errors: errors.array() });
+                        }
+        
+                        const linkId = req.params.linkId;
+        
+                        await boards.deleteVisted(req.token, linkId);
+        
+                        return res.status(204).send();
+                    } catch (err) {
+                        console.error(err);
+                        logger.error(`Error removing visited link: ${err}`);
+                        return res.status(500).send("Server error");
+                    }
+                }, logger)
+            );
+
         // Deleting a board without authentication but with authorKey
         router.delete(
             "/boards/:boardId/:authorKey",
@@ -709,30 +734,6 @@ export function getBoardsRouter(
                 return res.status(204).send();
             } catch (err) {
                 logger.error(err);
-                return res.status(500).send("Server error");
-            }
-        }, logger)
-    );
-
-    // Removing a visited link
-    router.delete(
-        "/boards/:linkId/visited",
-        authenticate,
-        param("linkId").isUUID(),
-        catchAsync(async (req: Request, res: Response) => {
-            try {
-                const errors = validationResult(req);
-                if (!errors.isEmpty()) {
-                    return res.status(400).json({ errors: errors.array() });
-                }
-
-                const linkId = req.params.linkId;
-
-                await boards.deleteVisted(req.token, linkId);
-
-                return res.status(204).send();
-            } catch (err) {
-                logger.error(`Error removing visited link: ${err}`);
                 return res.status(500).send("Server error");
             }
         }, logger)
