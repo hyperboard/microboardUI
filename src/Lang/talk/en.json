@@ -70,6 +70,10 @@
 			"text": "Copy"
 		}
 	},
+	"notifications": {
+		"connectionLostHeader": "Connection lost. Reconnecting...",
+		"connectionReestablished": "Connection lost. Reconnecting..."
+	},
 	"toolsPanel": {
 		"select": {
 			"tooltip": "Select"

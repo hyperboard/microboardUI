@@ -1,9 +1,10 @@
 import clsx from "clsx";
 import React, { ReactNode } from "react";
 import toast, { ToastPosition } from "react-hot-toast";
-import { Icon } from "View/Icon";
+import { Icon } from "ViewTalkIntegration/Icon";
 import { UiButton } from "../UiButton";
-import style from "View/Ui/Toast/Toast.module.css";
+import style from "ViewTalkIntegration/Ui/Toast/Toast.module.css";
+import i18next from "i18next";
 
 type Props = {
 	header?: ReactNode;
@@ -36,26 +37,36 @@ export function notify({
 					} 0.3s ease`,
 				}}
 			>
-				<Icon
+				{/* <Icon
 					className={style.icon}
-					iconName="Notification"
+					iconName="talkLoader"
 					width={20}
 					height={20}
-				/>
+				/> */}
 				<div className={style.content}>
-					{header && typeof header === "string" ? (
-						<h3 className={style.title}>{header}</h3>
+					{variant === "black" ? (
+						<h3 className={style.title}>
+							{i18next.t(
+								"talk:notifications.connectionLostHeader",
+							)}
+						</h3>
 					) : (
-						header
+						<>
+							{header && typeof header === "string" ? (
+								<h3 className={style.title}>{header}</h3>
+							) : (
+								header
+							)}
+							{body && typeof body === "string" ? (
+								<p className={style.description}>{body}</p>
+							) : (
+								body
+							)}
+							{footer}
+						</>
 					)}
-					{body && typeof body === "string" ? (
-						<p className={style.description}>{body}</p>
-					) : (
-						body
-					)}
-					{footer}
 				</div>
-				{!unclosable && (
+				{/* {!unclosable && (
 					<UiButton
 						size="sm"
 						rounded="none"
@@ -65,7 +76,7 @@ export function notify({
 					>
 						<Icon iconName="Close" width={20} height={20} />
 					</UiButton>
-				)}
+				)} */}
 			</div>
 		),
 		{ duration, position },

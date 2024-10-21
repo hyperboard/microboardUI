@@ -51,6 +51,7 @@ export type IconId =
 	| "VerticalAlignBottom"
 	| "Minus"
 	| "Plus"
+	| "talkLoader"
 	| "Export"
 	| "ErrorIcon";
 
@@ -59,6 +60,7 @@ type Props = {
 	width?: number | string;
 	height?: number | string;
 	style?: React.CSSProperties;
+	className?: string;
 };
 
 export function Icon({
@@ -66,6 +68,7 @@ export function Icon({
 	style,
 	height = 24,
 	width = 24,
+	className,
 }: Props): React.ReactElement {
 	return (
 		<svg
@@ -73,6 +76,7 @@ export function Icon({
 			xmlnsXlink="http://www.w3.org/1999/xlink"
 			width={width}
 			height={height}
+			className={className}
 			style={style}
 		>
 			<use

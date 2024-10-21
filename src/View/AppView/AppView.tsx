@@ -12,7 +12,6 @@ import { ImportMiroBoards } from "View/ImportMiro";
 import { LandingMenu, MobileLandingMenu } from "View/LandingMenu";
 import { SidePanelsContainer } from "View/SidePanelsContainer";
 import { TextEditors } from "View/TextEditor/TextEditor";
-import { ToastProvider } from "View/ToastProvider";
 import { UserPanel } from "View/UserPanel/UserPanel";
 import { ViewModeGuard } from "View/ViewModeGuard";
 import { ZoomPanel } from "View/ZoomPanel";
@@ -146,7 +145,6 @@ export function AppView() {
 				<QuickAddPanel />
 				<ExportPanel />
 			</ViewModeGuard>
-			<ToastProvider />
 			<ImportMiroBoards app={app} />
 			<ImportMiroStartModal />
 			<AuthClipboardModal />
