@@ -46,7 +46,11 @@ export function AddConnector(): React.ReactElement {
 			button={
 				<UiButton
 					id={"tool-add-connector"}
-					tooltip={t("toolsPanel.addConnector.tooltip")}
+					tooltip={
+						isActive
+							? undefined
+							: t("toolsPanel.addConnector.tooltip")
+					}
 					hotkey={getHotkeyLabel("connector")}
 					active={isActive || !!addTool}
 					onClick={handleClick}
