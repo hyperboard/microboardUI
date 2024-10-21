@@ -39,8 +39,14 @@ export async function refreshTokens(refreshToken: string): Promise<void> {
 			throw new Error("Failed to refresh tokens");
 		})
 		.then((data: Tokens) => {
-			Cookies.set("accessToken", data.accessToken);
-			Cookies.set("refreshToken", data.refreshToken);
+			Cookies.set("accessToken", data.accessToken, {
+				secure: true,
+				sameSite: "none",
+			});
+			Cookies.set("refreshToken", data.refreshToken, {
+				secure: true,
+				sameSite: "none",
+			});
 		});
 }
 

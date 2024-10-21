@@ -1,16 +1,16 @@
-import { getHotkeyLabel } from "Board/Keyboard";
 import { Icon } from "View/Icon";
 import { UiButton } from "View/Ui/UiButton";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { SelectTemplateModal } from "../../Templates";
+import { useModal } from "../../Modal/ModalProvider";
 
 export function AddTemplate() {
-	const [selectTemplateOpen, setSelectTemplateOpen] = useState(false);
+	const { showModal } = useModal();
 	const { t } = useTranslation();
 
 	const handleClick = async () => {
-		setSelectTemplateOpen(true);
+		showModal("selectTemplate");
 	};
 
 	return (
@@ -22,10 +22,7 @@ export function AddTemplate() {
 			rounded="top"
 		>
 			<Icon iconName="Template" />
-			<SelectTemplateModal
-				isOpen={selectTemplateOpen}
-				setIsOpen={setSelectTemplateOpen}
-			/>
+			<SelectTemplateModal />
 		</UiButton>
 	);
 }

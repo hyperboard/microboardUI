@@ -1,52 +1,49 @@
+import { useAccount } from "App/useAccount";
+import { useBoardsList } from "App/useBoardsList";
 import clsx from "clsx";
 import { useClickOutside } from "lib/useClickOutside";
-import { useForceUpdate } from "lib/useForceUpdate";
 import React, {
 	ChangeEventHandler,
-	useEffect,
-	useRef,
 	useState,
 	type MouseEventHandler,
 } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { Button } from "shared/ui-lib/Button";
 import { useAppContext } from "View/AppContext";
+import { BoardRename, useBoardRenameContext } from "View/BoardName";
 import { useContextMenuContext } from "View/ContextMenu";
+import { Folders } from "View/Folder";
 import { Icon } from "View/Icon";
 import { UiButton } from "View/Ui/UiButton";
+import { Tooltip } from "View/Ui/UiButton/Tooltip";
 import { UiPanel } from "View/Ui/UiPanel";
 import { ResizableEdge } from "./ResizableEdge";
 import style from "./SidePanel.module.css";
 import { useSidePanelContext } from "./SidePanelContext";
-import { BoardRename, useBoardRenameContext } from "View/BoardName";
-import { ImportMiroStartModal } from "View/ImportMiro";
-import { Button } from "shared/ui-lib/Button";
-import { Tooltip } from "View/Ui/UiButton/Tooltip";
-import { Folders } from "View/Folder";
+import { useModal } from "View/Modal/ModalProvider";
 
 const MIN_PANEL_WIDTH = 280;
 
 export function SidePanel(): JSX.Element {
-	const { isOpen, toggleSideMenu, handleAddNew } = useSidePanelContext();
+	const { isOpen, toggleSideMenu, handleAddNew, isHighlighted } =
+		useSidePanelContext();
 	const { app, board } = useAppContext();
 	const { open, close } = useContextMenuContext();
 	const { t } = useTranslation();
-	const animationId = useRef<number | null>(null);
-	const forceUpdate = useForceUpdate();
 	const navigate = useNavigate();
 	const [width, setWidth] = useState(300);
-	const publicBoards = app.storage.listPublicBoards();
-	const sharedBoards = app.storage.listSharedBoards();
+	const boardsList = useBoardsList();
+	const account = useAccount();
+	const publicBoards = boardsList.publicBoards;
+	const sharedBoards = boardsList.sharedBoards;
 	const isBlank =
 		app.getBoard() === undefined || app.getBoard().getBoardId() === "blank";
-	const isShared = sharedBoards.some(
-		({ boardId }) => boardId === board.getBoardId(),
-	);
-	const isPublic = publicBoards.some(
-		({ boardId }) => boardId === board.getBoardId(),
-	);
+	const [isLoading, setIsLoading] = useState(false);
+	const { showModal } = useModal();
 
-	const [isOpenImportMiro, setIsOpenImportMiro] = useState(false);
+	const isShared = sharedBoards.some(({ id }) => id === board.getBoardId());
+	const isPublic = publicBoards.some(({ id }) => id === board.getBoardId());
 
 	const {
 		setRenamingBoardId,
@@ -56,36 +53,19 @@ export function SidePanel(): JSX.Element {
 		newBoardName,
 	} = useBoardRenameContext();
 
-	const update = (): void => {
-		if (animationId.current) {
-			return; // Function already scheduled to run
-		}
-
-		animationId.current = requestAnimationFrame(() => {
-			forceUpdate();
-			animationId.current = null;
-		});
-	};
-
-	useEffect(() => {
-		app.storage.subject.subscribe(update);
-
-		return () => {
-			app.storage.subject.unsubscribe(update);
-		};
-	}, []);
-
 	const panelRef = useClickOutside(() => {
 		close();
 	});
 
-	const handleBoardClick = (boardId: string): void => {
-		app.openBoard(boardId);
+	const handleBoardClick = async (boardId: string): Promise<void> => {
+		await app.openBoard(boardId);
 		navigate(`/boards/${boardId}`, { replace: true });
 	};
 
 	const handleContextMenuOpen: MouseEventHandler = event => {
 		event.preventDefault();
+		console.log("open");
+		close();
 		open(event.clientX, event.clientY);
 	};
 
@@ -101,9 +81,17 @@ export function SidePanel(): JSX.Element {
 	const handleBoardRenameStart =
 		(boardId: string): MouseEventHandler =>
 		event => {
+			const canRename = account.permissions.checkPermissions(
+				"owns",
+				"boards",
+				boardId ?? "",
+			);
+			if (!canRename) {
+				return;
+			}
 			event.preventDefault();
 			const boardName =
-				app.storage.getBoard(boardId)?.name || t("board.untitled");
+				boardsList.getBoardInfo(boardId)?.title || t("board.untitled");
 			setRenamingBoardId(boardId);
 			setNewBoardName(boardName);
 		};
@@ -128,7 +116,10 @@ export function SidePanel(): JSX.Element {
 			onContextMenu={handleContextMenuOpen}
 			onClick={handleContextMenuClose}
 			padding={0}
-			className={clsx(style.sidePanel, { [style.open]: isOpen })}
+			className={clsx(style.sidePanel, {
+				[style.open]: isOpen,
+				[style.highlited]: isHighlighted,
+			})}
 			style={{ width: newWidth }}
 		>
 			<div className={style.content}>
@@ -144,25 +135,25 @@ export function SidePanel(): JSX.Element {
 				</div>
 				<Folders
 					containerClassName={style.folders}
-					isAuth={app.storage.isAuth}
+					isAuth={account.isLoggedIn}
 					isPublicOpened={isPublic || isBlank}
 					isSharedOpened={isShared || isBlank}
 					currBoardId={app.getBoard().getBoardId()}
 					publicBoards={publicBoards}
 					sharedBoards={sharedBoards}
 					activeBoardFunction={board =>
-						board.boardId === app.getBoard().getBoardId()
+						board.id === app.getBoard().getBoardId()
 					}
-					boardNameOnClick={board => handleBoardClick(board.boardId)}
+					boardNameOnClick={board => handleBoardClick(board.id)}
 					boardNameOnClickContext={board =>
-						handleBoardContextMenu(board.boardId)
+						handleBoardContextMenu(board.id)
 					}
 					boardNameOnDoubleClick={board =>
-						handleBoardRenameStart(board.boardId)
+						handleBoardRenameStart(board.id)
 					}
 					boardNameChildren={board => (
 						<>
-							{renamingBoardId === board.boardId ? (
+							{renamingBoardId === board.id ? (
 								<BoardRename
 									value={newBoardName}
 									onCancel={handleRenameCancel}
@@ -170,7 +161,7 @@ export function SidePanel(): JSX.Element {
 									onConfirm={rename}
 								/>
 							) : (
-								board.name || t("board.untitled")
+								board.title || t("board.untitled")
 							)}
 						</>
 					)}
@@ -178,13 +169,19 @@ export function SidePanel(): JSX.Element {
 			</div>
 			<div className={style.bottom}>
 				<button
+					disabled={isLoading}
 					className={style.add}
-					onClick={() =>
-						handleAddNew(boardId => {
+					onClick={async () => {
+						setIsLoading(true);
+						if (isLoading) {
+							return;
+						}
+						await handleAddNew(boardId => {
 							setNewBoardName(t("board.untitled"));
 							setRenamingBoardId(boardId);
-						})
-					}
+						});
+						setIsLoading(false);
+					}}
 				>
 					<Icon iconName="Plus" width={16} height={16} />
 					<span>{t("sidePanel.addNew")}</span>
@@ -194,8 +191,8 @@ export function SidePanel(): JSX.Element {
 				<Button
 					id={"miro"}
 					pattern="primary"
-					onClick={() => setIsOpenImportMiro(true)}
-					disabled={!app.storage.isAuth}
+					onClick={() => showModal("startImportMiro")}
+					disabled={!account.isLoggedIn}
 					className={style.importMiroBtn}
 				>
 					<Icon
@@ -205,19 +202,18 @@ export function SidePanel(): JSX.Element {
 						style={{ color: "#050038" }}
 					/>
 					<span>{t("miro.importMiroBtn")}</span>
-					{!app.storage.isAuth && (
-						<Tooltip
-							tooltip={t("miro.importMiroBtnTooltip")}
-							tooltipPosition="top-center-fixed"
-						/>
-					)}
+					<Tooltip
+						tooltip={
+							!account.isLoggedIn
+								? t("miro.authTooltip")
+								: t("miro.tooltipClipboardImport")
+						}
+						tooltipPosition="top-center-fixed"
+						tooltipAlign="left"
+					/>
 				</Button>
 			</div>
 			<ResizableEdge panelWidth={width} setWidth={setWidth} />
-			<ImportMiroStartModal
-				isOpen={isOpenImportMiro}
-				setIsOpen={setIsOpenImportMiro}
-			/>
 		</UiPanel>
 	);
 }

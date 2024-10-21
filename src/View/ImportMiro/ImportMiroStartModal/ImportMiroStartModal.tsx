@@ -4,17 +4,11 @@ import { useTranslation } from "react-i18next";
 import ImportMiroStartImg from "shared/assets/imgs/importMiroStart.png";
 import { UiButton } from "View/Ui/UiButton";
 import styles from "./ImportMiroStartModal.module.css";
+import { useModal } from "View/Modal/ModalProvider";
 
-interface ImportMiroStartModalProps {
-	isOpen: boolean;
-	setIsOpen: (isOpen: boolean) => void;
-}
-
-export const ImportMiroStartModal = ({
-	isOpen,
-	setIsOpen,
-}: ImportMiroStartModalProps): JSX.Element => {
+export const ImportMiroStartModal = (): JSX.Element => {
 	const { t } = useTranslation();
+	const { isModalOpen, hideModal } = useModal();
 
 	// TODO fix loader png
 	const importMiroStartImg = ImportMiroStartImg?.toString().replace(".", "");
@@ -35,7 +29,11 @@ export const ImportMiroStartModal = ({
 	};
 
 	return (
-		<Modal isOpen={isOpen} setIsOpen={setIsOpen}>
+		<Modal
+			isOpen={isModalOpen("startImportMiro")}
+			hideModal={hideModal}
+			modalName="startImportMiro"
+		>
 			<h3 className={styles.title}>{t("miro.importMiro")}</h3>
 			<p className={styles.text}>{t("miro.startModalText")}</p>
 			<div className={styles.img}>

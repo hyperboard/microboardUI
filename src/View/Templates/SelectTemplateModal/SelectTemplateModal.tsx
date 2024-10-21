@@ -15,21 +15,15 @@ import { useDebounce } from "../../../shared/hooks/useDebounce";
 import { TemplateItemsGrid } from "./TemplateItemsGrid/TemplateItemsGrid";
 import { Template, TemplateCategory } from "../../Tools/Template";
 import { LanguagesDropdown } from "./LanguagesDropdown/LanguagesDropdown";
+import { useModal } from "../../Modal/ModalProvider";
 
-interface SelectTemplateModalProps {
-	isOpen: boolean;
-	setIsOpen: (isOpen: boolean) => void;
-}
-
-export const SelectTemplateModal = ({
-	isOpen,
-	setIsOpen,
-}: SelectTemplateModalProps): JSX.Element => {
+export const SelectTemplateModal = (): JSX.Element => {
 	const { t } = useTranslation();
 	const [templates, setTemplates] = useState<Template[]>([]);
 	const [presentedTemplate, setPresentedTemplate] = useState<Template | null>(
 		null,
 	);
+	const { hideModal, isModalOpen } = useModal();
 	const [selectedLanguage, setSelectedLanguage] = useState<string>(
 		i18next.language,
 	);
@@ -39,7 +33,7 @@ export const SelectTemplateModal = ({
 	const [isBurgerActive, setIsBurgerActive] = useState(false);
 
 	useEffect(() => {
-		if (isOpen) {
+		if (isModalOpen("selectTemplate")) {
 			const tag =
 				selectedCategory === "All templates"
 					? undefined
@@ -49,7 +43,12 @@ export const SelectTemplateModal = ({
 				templates => setTemplates(templates),
 			);
 		}
-	}, [isOpen, selectedCategory, selectedLanguage, inputValue]);
+	}, [
+		isModalOpen("selectTemplate"),
+		selectedCategory,
+		selectedLanguage,
+		inputValue,
+	]);
 
 	const handleInputChange = useDebounce(
 		(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -67,7 +66,7 @@ export const SelectTemplateModal = ({
 		params.tag && searchParams.set("tag", params.tag);
 		const stringifiedParams = searchParams.toString();
 		return fetch(
-			`${getApiUrl()}/boards/templates${
+			`${getApiUrl()}/templates${
 				stringifiedParams && "?" + stringifiedParams
 			}`,
 			{
@@ -81,10 +80,17 @@ export const SelectTemplateModal = ({
 			});
 	};
 
+	const hideModalAndReset = () => {
+		setSelectedCategory("All templates");
+		setSelectedLanguage(i18next.language);
+		setPresentedTemplate(null);
+		hideModal("selectTemplate");
+	};
+
 	return (
 		<Modal
-			isOpen={isOpen}
-			setIsOpen={setIsOpen}
+			isOpen={isModalOpen("selectTemplate")}
+			hideModal={hideModalAndReset}
 			size={ModalSize.M}
 			wrClassName={styles.modal}
 			onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) =>
@@ -110,7 +116,6 @@ export const SelectTemplateModal = ({
 							description={presentedTemplate.desc}
 							snapshot={presentedTemplate.snapshot}
 							setPresentedTemplate={setPresentedTemplate}
-							setIsOpen={setIsOpen}
 							tags={presentedTemplate.tags}
 							viewLinkId={presentedTemplate.uniq_id}
 							relatedTemplates={templates}
@@ -147,7 +152,9 @@ export const SelectTemplateModal = ({
 								</div>
 								<Input
 									id="search-template"
-									placeholder={t("modalTemplate.UI.inputs.search")}
+									placeholder={t(
+										"modalTemplate.UI.inputs.search",
+									)}
 									onChange={handleInputChange}
 									prefixIcon={
 										<Icon
@@ -160,22 +167,27 @@ export const SelectTemplateModal = ({
 								<span className={styles.resizeMarker}></span>
 							</div>
 							<div className={styles.searchOptions}>
-								<p>{t(`modalTemplate.category.useCaseItems.${selectedCategory}`)}</p>
+								<p>
+									{t(
+										`modalTemplate.category.useCaseItems.${selectedCategory}`,
+									)}
+								</p>
 								<LanguagesDropdown
 									setSelectedLanguage={setSelectedLanguage}
 									selectedLanguage={selectedLanguage}
 								/>
 							</div>
-							{templates.length ?
+							{templates.length ? (
 								<TemplateItemsGrid
-								templates={templates}
-								setIsOpen={setIsOpen}
-								setPresentedTemplate={setPresentedTemplate}
-								className={styles.templatesGrid}
-							/>
-								:
-								<p>{t("modalTemplate.noTemplates")}</p>
-							}
+									templates={templates}
+									setPresentedTemplate={setPresentedTemplate}
+									className={styles.templatesGrid}
+								/>
+							) : (
+								<p className={styles.noTemplatesText}>
+									{t("modalTemplate.noTemplates")}
+								</p>
+							)}
 						</>
 					)}
 				</div>

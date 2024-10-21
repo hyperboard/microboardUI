@@ -1,7 +1,7 @@
 import { Board } from "Board";
 import { Mbr } from "Board/Items";
 import { ImageItem } from "Board/Items/Image";
-import { RichText, isEditInProcess } from "Board/Items/RichText/RichText";
+import { RichText } from "Board/Items/RichText/RichText";
 import { checkHotkeys, isControlCharacter } from "Board/Keyboard";
 import { validateItemsMap } from "Board/Validators";
 import { Clipboard } from "./Clipboard";
@@ -9,6 +9,9 @@ import { createWheel } from "./Wheel/Wheel";
 import { isSafari } from "./isSafari";
 import { prepareImage } from "Board/Items/Image/ImageHelpers";
 import { HotkeysMap } from "Board/Keyboard/types";
+import { pasteMiroClipboard } from "../View/ImportMiro/ImportMiroBoards/ImportBoardItem/MiroClipboardTransformer";
+import { App } from "./App";
+import { getGlobalModalFunctions } from "View/Modal/ModalProvider";
 
 export interface Controller {
 	onWheel: (event: WheelEvent) => void;
@@ -24,7 +27,7 @@ export interface Controller {
 	onResize: () => void;
 	onContextMenu: (event: MouseEvent) => void;
 	onCopy: (event: ClipboardEvent) => void;
-	onPaste: (event: ClipboardEvent) => void;
+	onPaste: (event: ClipboardEvent, app: App) => void;
 	onDrop: (event: DragEvent) => void;
 }
 
@@ -90,6 +93,10 @@ export function getController(
 			},
 			pen: {
 				cb: () => board.tools.addDrawing(true),
+				selectionContext: ["SelectUnderPointer", "None"],
+			},
+			eraser: {
+				cb: () => board.tools.eraser(true),
 				selectionContext: ["SelectUnderPointer", "None"],
 			},
 			frame: {
@@ -180,6 +187,16 @@ export function getController(
 		);
 
 		const isSingleItemInSelection = board.selection.items.isSingle();
+		const isFrame = board.selection.items.getSingle()?.itemType === "Frame";
+
+		if (
+			isFrame &&
+			event.key === "Enter" &&
+			context === "EditTextUnderPointer"
+		) {
+			event.preventDefault();
+			board.selection.setContext("EditUnderPointer");
+		}
 
 		const isTextEditStarted =
 			!isHotkeyTriggered &&
@@ -464,7 +481,7 @@ export function getController(
 		event.preventDefault();
 	}
 
-	function onPaste(event: ClipboardEvent): void {
+	function onPaste(event: ClipboardEvent, app: App): void {
 		const board = getBoard();
 		if (!board) {
 			return;
@@ -517,7 +534,72 @@ export function getController(
 			return;
 		}
 
-		const text = event.clipboardData?.getData("text/plain") || "";
+		function adjustBytes(byteArray: Uint8Array, adjustment: number): void {
+			for (let i = 0; i < byteArray.length; i++) {
+				const byte = byteArray[i];
+				if (byte < 256) {
+					byteArray[i] = (byte + adjustment) % 256;
+				}
+			}
+		}
+
+		function getVersionSuffix(version: number): string {
+			return version > 0 ? `-v${version}` : "";
+		}
+
+		function decodeData(encodedData: string): string | null {
+			return (function (
+				encodedString: string,
+				adjustment: number,
+			): string {
+				const decodedBase64 = atob(encodedString);
+				const byteArray = new Uint8Array(decodedBase64.length);
+
+				for (let i = 0; i < byteArray.length; i++) {
+					byteArray[i] = decodedBase64.charCodeAt(i);
+				}
+
+				adjustBytes(byteArray, 197);
+				return new TextDecoder().decode(byteArray);
+			})(
+				(function (data: string, version = 1): string | null {
+					const versionSuffix = getVersionSuffix(version);
+					const regex = new RegExp(
+						`<--\\(miro-data${versionSuffix}\\)(.*)(\\(\\/miro-data${versionSuffix}\\)-->)`,
+						"gi",
+					);
+					const match = regex.exec(data);
+					return match ? match[1] : null;
+				})(encodedData) || encodedData,
+				0,
+			);
+		}
+
+		const html = event?.clipboardData?.getData("text/html");
+		if (html && /miro/i.test(html.substring(0, 100))) {
+			try {
+				const decoded = decodeData(html);
+
+				if (decoded !== null) {
+					const miroData = JSON.parse(decoded);
+
+					if (!app.account.isLoggedIn && miroData !== null) {
+						const { showModal } = getGlobalModalFunctions();
+						showModal?.("authClipboardMiro");
+						return;
+					}
+
+					pasteMiroClipboard(board, miroData || []);
+
+					return;
+				}
+			} catch (err) {
+				console.error(err);
+				// TODO: notification/ toast?
+			}
+		}
+
+		const text = event?.clipboardData?.getData("text/plain") || "";
 		try {
 			const data = JSON.parse(text);
 			const isDataValid = validateItemsMap(data);
@@ -565,7 +647,7 @@ export function getController(
 	return {
 		onWheel,
 		onPointerDown,
-		onPointerMove: throttle(onPointerMove, 32), // 32 мс ~ 30 fps,
+		onPointerMove: throttle(onPointerMove, 16), // 16 мс ~ 60 fps,
 		onPointerUp,
 		onPointerLeave,
 		onPointerCancel,

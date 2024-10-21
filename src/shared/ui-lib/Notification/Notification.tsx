@@ -2,6 +2,7 @@ import React, { ReactNode } from "react";
 import styles from "./Notification.module.css";
 import clsx from "clsx";
 import { Icon } from "View/Icon";
+import { createPortal } from "react-dom";
 
 export enum InfoColor {
 	error = "#E6483D",
@@ -14,12 +15,12 @@ interface NotificationProps {
 	children: ReactNode;
 	isOpen: boolean;
 	cross?: boolean;
-	setIsOpen?: (isOpen: boolean) => void;
+	setIsOpen: (isOpen: unknown) => void;
 	infoIcon?: boolean;
 	infoColor?: InfoColor;
 }
 
-export const Notification: React.FC<NotificationProps> = (
+export const NotificationBase: React.FC<NotificationProps> = (
 	props: NotificationProps,
 ) => {
 	const {
@@ -52,7 +53,7 @@ export const Notification: React.FC<NotificationProps> = (
 				/>
 			)}
 			{cross && (
-				<div onClick={() => setIsOpen?.(false)}>
+				<div onClick={setIsOpen}>
 					<Icon
 						iconName={"modalCross"}
 						className={styles.cross}
@@ -64,4 +65,8 @@ export const Notification: React.FC<NotificationProps> = (
 			{children}
 		</div>
 	);
+};
+
+export const Notification = (props: any) => {
+	return createPortal(<NotificationBase {...props} />, window.document.body);
 };

@@ -6,7 +6,7 @@ import { useAppContext } from "View/AppContext";
 import { getHotkeyLabel } from "Board/Keyboard";
 
 type Props = {
-	rounded?: "none" | "left";
+	rounded?: "none" | "left" | "right";
 };
 
 export function Duplicate({ rounded = "none" }: Props) {
@@ -16,7 +16,6 @@ export function Duplicate({ rounded = "none" }: Props) {
 	const handleClick = () => {
 		board.selection.duplicate();
 	};
-
 	return (
 		<UiButton
 			id={"duplicate"}

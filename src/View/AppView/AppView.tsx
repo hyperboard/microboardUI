@@ -12,7 +12,6 @@ import { ImportMiroBoards } from "View/ImportMiro";
 import { LandingMenu, MobileLandingMenu } from "View/LandingMenu";
 import { SidePanelsContainer } from "View/SidePanelsContainer";
 import { TextEditors } from "View/TextEditor/TextEditor";
-import { ToastProvider } from "View/ToastProvider";
 import { UserPanel } from "View/UserPanel/UserPanel";
 import { ViewModeGuard } from "View/ViewModeGuard";
 import { ZoomPanel } from "View/ZoomPanel";
@@ -20,6 +19,9 @@ import style from "./AppView.module.css";
 import { InactiveBoardHidder } from "./InactiveBoardHidder";
 import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
+import { ImportMiroStartModal, AuthClipboardModal } from "View/ImportMiro";
+import { ItemTooltip } from "View/ItemTooltip";
+import { ToastProvider } from "View/ToastProvider";
 
 export function AppView() {
 	const { app, board } = useAppContext();
@@ -42,10 +44,11 @@ export function AppView() {
 	};
 
 	useEffect(() => {
+		const handlePaste = (event: ClipboardEvent) => {
+			controller.onPaste(event, app);
+		};
+
 		app.boardSubject.subscribe(update);
-		if (app.storage.isAuth) {
-			app.storage.fetchBoards();
-		}
 		const container = containerRef.current;
 		const controller = app.controller;
 		if (container) {
@@ -75,7 +78,7 @@ export function AppView() {
 			window.addEventListener("keydown", controller.onKeyDown);
 			window.addEventListener("keyup", controller.onKeyUp);
 			window.addEventListener("copy", controller.onCopy);
-			window.addEventListener("paste", controller.onPaste);
+			window.addEventListener("paste", handlePaste);
 			window.addEventListener("drop", controller.onDrop);
 			window.addEventListener("dragover", event =>
 				event.preventDefault(),
@@ -100,25 +103,14 @@ export function AppView() {
 				window.removeEventListener("keydown", controller.onKeyDown);
 				window.removeEventListener("keyup", controller.onKeyUp);
 				window.removeEventListener("copy", controller.onCopy);
-				window.removeEventListener("paste", controller.onPaste);
+				window.removeEventListener("paste", handlePaste);
 				window.removeEventListener("drop", controller.onDrop);
 			}
 		};
 	}, [containerRef.current]);
 
-	const urlString = new URL(window.location.href).pathname;
-	const firstPath = urlString.split("/").pop();
-	const boardId = params?.boardId || firstPath;
-
-	if (boardId && firstPath !== "boards") {
-		app.openBoard(boardId!);
-	}
-
-	if (!board && boardId !== "boards") {
-		return <div></div>;
-	}
-
 	const appBoard = app.getBoard();
+
 	return (
 		<div className={style.wrapper}>
 			{shouldShow("titlePanel") && <LandingMenu />}
@@ -134,14 +126,13 @@ export function AppView() {
 				</div>
 			</InactiveBoardHidder>
 			{appBoard.getBoardId() === "blank" && <NoBoardIsOpen />}
-			<ViewModeGuard>
-				<ExportVisible>
-					<SidePanelsContainer
-						isBlank={appBoard.getBoardId() === "blank"}
-					/>
-					<ContextMenu />
-				</ExportVisible>
-			</ViewModeGuard>
+			<ExportVisible>
+				<SidePanelsContainer
+					isBlank={appBoard.getBoardId() === "blank"}
+				/>
+				<ContextMenu />
+				<ItemTooltip />
+			</ExportVisible>
 			<ViewModeGuard>
 				<ExportVisible>
 					{shouldShow("userPanel") && <UserPanel app={app} />}
@@ -156,7 +147,9 @@ export function AppView() {
 				<ExportPanel />
 			</ViewModeGuard>
 			<ToastProvider />
-			<ImportMiroBoards app={app} />
+			<ImportMiroBoards />
+			<ImportMiroStartModal />
+			<AuthClipboardModal />
 		</div>
 	);
 }

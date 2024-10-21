@@ -9,8 +9,10 @@ import { Icon } from "View/Icon";
 import style from "./Selector.module.css";
 
 interface SelectorProps {
-	label: string;
+	label?: string;
 	options: { value: string; label: React.ReactNode }[];
+	customOpener?: React.ReactNode;
+	customSelectorClassName?: string;
 }
 
 export interface SelectorHandle {
@@ -22,7 +24,7 @@ export interface SelectorHandle {
 }
 
 const Selector = forwardRef<SelectorHandle, SelectorProps>(
-	({ label, options }, ref) => {
+	({ label, options, customOpener, customSelectorClassName }, ref) => {
 		const [selectedOption, setSelectedOption] = useState(options[0]);
 		const selectorOpenerRef = useRef<HTMLSpanElement>(null);
 		const dropdownRef = useClickOutside(() => {
@@ -48,18 +50,35 @@ const Selector = forwardRef<SelectorHandle, SelectorProps>(
 
 		return (
 			<div className={style.selectorContainer}>
-				<label className={style.label}>{label}</label>
-				<br />
-				<span
-					ref={selectorOpenerRef}
-					className={style.selector}
-					onClick={() => setIsOpen(!isOpen)}
-				>
-					<span className={style.selectorText}>
-						{selectedOption.label}
+				{label && (
+					<>
+						<label className={style.label}>{label}</label>
+						<br />
+					</>
+				)}
+				{!customOpener ? (
+					<span
+						ref={selectorOpenerRef}
+						className={style.selector}
+						onClick={() => setIsOpen(!isOpen)}
+					>
+						<span className={style.selectorText}>
+							{!customSelectorClassName
+								? selectedOption.label
+								: customSelectorClassName}
+						</span>
+						<span className={style.arrow}></span>
 					</span>
-					<span className={style.arrow}></span>
-				</span>
+				) : (
+					<span
+						ref={selectorOpenerRef}
+						className={style.selector}
+						onClick={() => setIsOpen(!isOpen)}
+					>
+						{customOpener}
+					</span>
+				)}
+
 				{isOpen && (
 					<div ref={dropdownRef} className={style.dropdown}>
 						{options.map(option => (

@@ -36,6 +36,7 @@ export const UiSlider: React.FC<Props> = ({
 				step={step}
 				value={value}
 				onChange={handleSliderChange}
+				onClick={e => e.stopPropagation()}
 				className={style.slider}
 			/>
 			<div

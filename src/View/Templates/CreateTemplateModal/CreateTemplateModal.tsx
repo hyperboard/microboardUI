@@ -12,11 +12,7 @@ import { Dropdown } from "../../../shared/ui-lib/Dropdown/Dropdown";
 import i18next from "i18next";
 import { useTolgee } from "@tolgee/react";
 import { detectLanguage } from "../../../utils";
-
-interface CreateTemplateModalProps {
-	isOpen: boolean;
-	setIsOpen: (isOpen: boolean) => void;
-}
+import { useModal } from "../../Modal/ModalProvider";
 
 interface TranslatableInput {
 	id: string;
@@ -32,10 +28,7 @@ const TOLGEE_API_URL =
 	import.meta.env.TOLGEE_API_URL || "https://app.tolgee.io";
 const TOLGEE_PROJECT_ID = import.meta.env.TOLGEE_PROJECT_ID || "10032";
 
-export const CreateTemplateModal = ({
-	isOpen,
-	setIsOpen,
-}: CreateTemplateModalProps): JSX.Element => {
+export const CreateTemplateModal = (): JSX.Element => {
 	const formRef = useRef<HTMLFormElement>(null);
 	const imageSrc = useRef<null | string>(null);
 	const inputRef = useRef<HTMLInputElement | null>(null);
@@ -57,12 +50,14 @@ export const CreateTemplateModal = ({
 	]);
 	const { t } = useTranslation();
 	const { board } = useAppContext();
+	const { isModalOpen, hideModal } = useModal();
 
-	useEffect(() => {
-		return () => {
-			formRef.current?.reset();
-		};
-	}, []);
+	const hideModalAndResetForm = () => {
+		formRef?.current.reset();
+		setSelectedCategories([]);
+		setSelectedLanguages([i18next.language]);
+		hideModal("createTemplate");
+	};
 
 	const getLanguages = async () => {
 		const requestOptions = {
@@ -150,7 +145,7 @@ export const CreateTemplateModal = ({
 
 	async function createTemplate(body: string) {
 		const response = await fetch(
-			`${getApiUrl()}/boards/${board.getBoardId()}/template`,
+			`${getApiUrl()}/templates/${board.getBoardId()}`,
 			{
 				method: "POST",
 				mode: "cors",
@@ -333,9 +328,11 @@ export const CreateTemplateModal = ({
 		await createTemplate(body)
 			.then(res => {
 				formRef.current?.reset();
+				setSelectedCategories([]);
+				setSelectedLanguages([i18next.language]);
 				setSubmitDisabled(false);
 				setIsSubmitLoading(false);
-				setIsOpen(false);
+				hideModal("createTemplate");
 			})
 			.catch(() => {
 				setErrors(["Error while creating template"]);
@@ -390,11 +387,12 @@ export const CreateTemplateModal = ({
 
 	return (
 		<Modal
-			isOpen={isOpen}
-			setIsOpen={setIsOpen}
+			isOpen={isModalOpen("createTemplate")}
+			hideModal={hideModalAndResetForm}
 			onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) =>
 				e.stopPropagation()
 			}
+			modalName="createTemplate"
 		>
 			<form
 				id="create-template-form"
@@ -409,7 +407,9 @@ export const CreateTemplateModal = ({
 					type="file"
 					style={{ display: "none" }}
 				/>
-				<Button onClick={handleChangeImageClick}>{t("modalTemplate.UI.buttons.choosePreview")}</Button>
+				<Button onClick={handleChangeImageClick}>
+					{t("modalTemplate.UI.buttons.choosePreview")}
+				</Button>
 				<Dropdown
 					items={languagesDropdownItems}
 					label={
@@ -434,7 +434,9 @@ export const CreateTemplateModal = ({
 						<Input
 							id={input.id}
 							defaultValue={input.defaultValue}
-							placeholder={t("modalTemplate.UI.inputs.description")}
+							placeholder={t(
+								"modalTemplate.UI.inputs.description",
+							)}
 							label={input.label}
 							key={input.id}
 						/>

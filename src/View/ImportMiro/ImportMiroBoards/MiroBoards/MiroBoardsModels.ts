@@ -1,3 +1,5 @@
+import { Point } from "Board/Items";
+
 export interface IMiroBoards {
 	data: IMiroBoard[];
 	total: number;
@@ -27,6 +29,8 @@ export enum MiroBoardItemTypes {
 	CARD = "card",
 	DOCUMENT = "document",
 	MINDMAP = "mindmap_node",
+	PAINT = "paint",
+	UNSUPPORTED = "unsupported",
 }
 
 export type MiroItemsTypes =
@@ -35,7 +39,9 @@ export type MiroItemsTypes =
 	| "image"
 	| "text"
 	| "frame"
-	| "connector";
+	| "connector"
+	| "paint"
+	| "unsupported";
 
 export interface IMiroBoardItemStyle {
 	borderColor?: string;
@@ -44,12 +50,13 @@ export interface IMiroBoardItemStyle {
 	borderWidth?: string;
 	color: string;
 	fillColor?: string;
-	fillOpacity: string;
-	fontFamily: string;
-	fontSize: string;
-	textAlign: string;
-	textAlignVertical: string;
+	fillOpacity?: string;
+	fontFamily?: string;
+	fontSize?: string;
+	textAlign?: string;
+	textAlignVertical?: string;
 	strokeColor?: string;
+	strokeOpacity?: number;
 	strokeStyle?: string;
 	strokeWidth?: string;
 	startStrokeCap?: string;
@@ -82,7 +89,7 @@ interface IMiroBoardItemBase {
 	parent?: IMiroParent;
 }
 
-interface IMiroData {
+export interface IMiroData {
 	content: string;
 }
 
@@ -133,6 +140,7 @@ export interface IMiroBoardItemText extends IMiroBoardItemBase {
 	data: IMiroData;
 	geometry: IMiroGeometry;
 	position: IMiroPosition;
+	scale: number;
 }
 
 export interface IMiroBoardItemShape extends IMiroBoardItemBase {
@@ -170,6 +178,16 @@ export interface IMiroBoardItemFrame extends IMiroBoardItemBase {
 	position: IMiroPosition;
 }
 
+export interface IMiroBoardItemPaint extends IMiroBoardItemBase {
+	type: MiroBoardItemTypes.PAINT;
+	data: {
+		points: Point[];
+		scale: number;
+	};
+	geometry: IMiroGeometry;
+	position: IMiroPosition;
+}
+
 interface IMiroBoardConnectionsPoints {
 	links: {
 		self: string;
@@ -197,6 +215,13 @@ export interface IMiroBoardItemConnector extends IMiroBoardItemBase {
 	position: IMiroPosition;
 }
 
+export interface MiroUnsupportedItem extends IMiroBoardItemBase {
+	type: MiroBoardItemTypes.UNSUPPORTED;
+	geometry: IMiroGeometry;
+	position: IMiroPosition;
+	miroData: unknown;
+}
+
 export type IMiroBoardItem =
 	| IMiroBoardItemText
 	| IMiroBoardItemShape
@@ -206,4 +231,6 @@ export type IMiroBoardItem =
 	| IMiroBoardItemFrame
 	| IMiroBoardItemMindmap
 	| IMiroBoardItemCard
-	| IMiroBoardItemDocument;
+	| IMiroBoardItemDocument
+	| IMiroBoardItemPaint
+	| MiroUnsupportedItem;

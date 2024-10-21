@@ -7,6 +7,7 @@ import { pasteSnapshot } from "../../../../utils";
 import { Icon } from "../../../Icon";
 import { TemplateItemsGrid } from "../TemplateItemsGrid/TemplateItemsGrid";
 import { Template } from "../../../Tools/Template";
+import { useModal } from "../../../Modal/ModalProvider";
 
 interface TemplateItemPreviewProps {
 	name: string;
@@ -15,7 +16,6 @@ interface TemplateItemPreviewProps {
 	tags: string[];
 	snapshot: BoardSnapshot;
 	setPresentedTemplate: (template: null | Template) => void;
-	setIsOpen: (isOpen: boolean) => void;
 	viewLinkId: string;
 	relatedTemplates: Template[];
 }
@@ -25,15 +25,15 @@ export const TemplateItemPreview = ({
 	description,
 	snapshot,
 	setPresentedTemplate,
-	setIsOpen,
 	viewLinkId,
 	relatedTemplates,
 }: TemplateItemPreviewProps) => {
 	const { board } = useAppContext();
+	const { hideModal } = useModal();
 
 	const pasteSnapshotAndClose = () => {
 		setPresentedTemplate(null);
-		setIsOpen(false);
+		hideModal("selectTemplate");
 		pasteSnapshot({ board, snapshot });
 	};
 
@@ -70,7 +70,6 @@ export const TemplateItemPreview = ({
 				</h3>
 				<TemplateItemsGrid
 					templates={relatedTemplates}
-					setIsOpen={setIsOpen}
 					setPresentedTemplate={setPresentedTemplate}
 				/>
 			</div>

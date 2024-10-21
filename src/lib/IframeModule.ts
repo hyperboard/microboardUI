@@ -53,7 +53,7 @@ interface MakeSnapshotMessage {
 
 interface FireSnapshotEvent {
 	pattern: "fireSnapshotEvent";
-	payload: any;
+	payload: unknown;
 }
 
 type Message =
@@ -67,6 +67,7 @@ export class IframeModule {
 	// private origins: string[];
 	private app: App;
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	constructor(app: App, origins?: string[]) {
 		// this.origins = origins || [];
 		this.app = app;
@@ -111,7 +112,7 @@ export class IframeModule {
 
 	private async handleCustomMessages(data: Message): Promise<void> {
 		try {
-			// console.log("Message: ", data);
+			console.log("Message: ", data);
 
 			if (data.pattern === "updateUserToken") {
 				Cookies.set("mb_accessToken", data.payload.accessToken, {
@@ -184,11 +185,11 @@ export class IframeModule {
 					window.self.dispatchEvent(keyboardEvent);
 				}
 			}
-		} catch (error) {
+		} catch (error: Error) {
 			window.parent.postMessage(
 				{
 					pattern: "MicroboardError",
-					payload: JSON.stringify({ error }),
+					payload: JSON.stringify({ error: error.message }),
 				},
 				"*",
 			);

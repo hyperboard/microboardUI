@@ -1,0 +1,16 @@
+.title {
+	font-size: 30px;
+	margin: 28px 0 8px;
+}
+
+.text {
+	text-align: left;
+	font-size: 14px;
+	margin-bottom: 16px;
+}
+
+.btn {
+	margin-bottom: 40px;
+	max-width: 73px;
+	border-radius: 12px;
+}

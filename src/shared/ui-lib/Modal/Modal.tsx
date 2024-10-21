@@ -4,6 +4,7 @@ import clsx from "clsx";
 import styles from "./Modal.module.css";
 import { createPortal } from "react-dom";
 import { Icon } from "View/Icon";
+import { ModalName } from "View/Modal/ModalProvider";
 
 export enum ModalSize {
 	S = "sizeS",
@@ -13,7 +14,8 @@ export enum ModalSize {
 interface ModalProps {
 	className?: string;
 	isOpen: boolean;
-	setIsOpen: (isOpen: boolean) => void;
+	hideModal: (modalName: ModalName) => void;
+	modalName: ModalName;
 	children: ReactNode;
 	size?: ModalSize;
 	wrClassName?: string;
@@ -23,13 +25,15 @@ const ModalBase = (props: ModalProps) => {
 	const {
 		className,
 		isOpen,
-		setIsOpen,
+		hideModal,
+		modalName,
 		children,
 		size = ModalSize.S,
 		wrClassName,
 		...otherProps
 	} = props;
-	const onCloseModal = (): void => setIsOpen(false);
+
+	const onCloseModal = () => hideModal(modalName);
 
 	return (
 		<div
@@ -39,7 +43,7 @@ const ModalBase = (props: ModalProps) => {
 		>
 			<div
 				className={clsx(styles.wr, size && styles[size], wrClassName)}
-				onClick={e => e.stopPropagation()}
+				onClick={event => event.stopPropagation()}
 			>
 				<div className={styles.modalCross} onClick={onCloseModal}>
 					<Icon

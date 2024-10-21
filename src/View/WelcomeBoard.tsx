@@ -1,3 +1,4 @@
+import { useBoardsList } from "App/useBoardsList";
 import { Mbr } from "Board/Items";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -15,27 +16,39 @@ const INITIAL_FIT_AREA = {
 	bottom: 850,
 };
 
-export function WelcomeBoard({ app }: Props) {
+export function WelcomeBoard({ app }: Props): React.ReactElement {
 	const navigate = useNavigate();
 	const { i18n, t } = useTranslation();
+	const boardsList = useBoardsList();
 
 	const createPublicBoard = async (app: App): Promise<string> => {
 		const lastBoardId = app.getLastBoardId();
 		if (lastBoardId) {
-			app.openBoard(lastBoardId);
+			await app.openBoard(lastBoardId);
 			return lastBoardId;
 		}
 
-		const boardId = await app.createPublicBoard(
+		const boardId = await boardsList.createBoard(
 			t("board.welcomeBoardTitle"),
+			true,
 		);
-		app.openBoard(boardId);
+		await app.openBoard(boardId);
 		const board = app.getBoard();
 
 		if (i18n.language === "ru") {
-			board.paste(boardDataRu, false);
+			board.paste(
+				boardDataRu as unknown as {
+					[key: string]: ItemData;
+				},
+				false,
+			);
 		} else {
-			board.paste(boardDataEn, false);
+			board.paste(
+				boardDataEn as unknown as {
+					[key: string]: ItemData;
+				},
+				false,
+			);
 		}
 
 		const mbr = new Mbr(

@@ -6,6 +6,7 @@ import { UiButton } from "ViewTalkIntegration/Ui/UiButton/UiButton";
 import { ButtonWithMenu } from "ViewTalkIntegration/ContextPanel/Buttons/ButtonWithMenu";
 import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel/UiPanel";
 import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
+import { tempStorage } from "App/SessionStorage";
 
 const MENU_NAME = "StickerFillStyle";
 
@@ -32,12 +33,10 @@ export function StickerFillStyle(): React.ReactElement | null {
 	};
 	const handlePick = (color: string) => {
 		board.selection.setFillColor(color);
-		// TODO: use Storage.ts instead
-		const stickerJSON = sessionStorage.getItem("lastSticker");
-		if (stickerJSON) {
-			const sticker = JSON.parse(stickerJSON);
+		const sticker = tempStorage.getStickerData();
+		if (sticker) {
 			sticker.backgroundColor = color;
-			sessionStorage.setItem("lastSticker", JSON.stringify(sticker));
+			tempStorage.setStickerData(sticker);
 		}
 		toggleMenu("None");
 	};

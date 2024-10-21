@@ -6,14 +6,18 @@ import { BoardName } from "View/BoardName";
 import { App } from "App";
 import { useTranslation } from "react-i18next";
 import { TFunction } from "i18next";
-import { VisitedPublicBoard } from "App/Storage";
 import Selector, { SelectorHandle } from "./Selector";
-import { useAuth } from "shared/hooks/useAuth";
 import { getEmbedUrl } from "lib/getEmbedUrl";
 import { getApiUrl } from "Config";
 import { UiButton } from "View/Ui/UiButton";
 import { useForceUpdate } from "lib/useForceUpdate";
 import Cookies from "js-cookie";
+import { UserDropDown } from "View/UserPanel/UserPanel";
+import { Button } from "shared/ui-lib/Button";
+import { useNavigate } from "react-router-dom";
+import { api, boardsApi } from "shared/api";
+import { useBoardsList } from "App/useBoardsList";
+import { useAccount } from "App/useAccount";
 
 const customHeader: CSSProperties = {
 	padding: "6px",
@@ -34,27 +38,33 @@ const customIcon = (
 	/>
 );
 
-const getName = (i18t: TFunction, name?: string): string =>
+const getName = (i18t: TFunction, name?: string | null): string =>
 	name || i18t("board.untitled");
 
 const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 	const { t } = useTranslation();
+	const navigate = useNavigate();
 	const forceUpdate = useForceUpdate();
+	// const { isAuth } = useAuth(app);
+	const boardsList = useBoardsList();
+	const account = useAccount();
+	const isAuth = app.account.isLoggedIn;
 	const searchRef = useRef<HTMLInputElement>(null);
 	const newBoardRef = useRef<HTMLInputElement>(null);
 	const selectorRef = useRef<SelectorHandle>(null);
-	const { isAuth } = useAuth(app);
+	const userPanelRef = useRef<HTMLDivElement>(null);
+	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [loading, setLoading] = useState(false);
-	const [selected, setSelected] = useState<
-		VisitedPublicBoard | null | "addNew"
-	>(null);
+	const [selected, setSelected] = useState<boardsApi.Board | null | "addNew">(
+		null,
+	);
 	const [newBoardName, setNewBoardName] = useState(t("board.untitled"));
 	const [filteredPublicBoards, setFilteredPublicBoards] = useState(
-		app.storage.listPublicBoards(),
+		boardsList.publicBoards,
 	);
 	const [filteredSharedBoards, setFilteredSharedBoards] = useState(
-		app.storage.listSharedBoards(),
+		boardsList.sharedBoards,
 	);
 
 	function handleError(er: unknown): void {
@@ -71,7 +81,6 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 		authorLinkId: string,
 		visitorsLinkId: string,
 		name: string,
-		id?: string,
 	): void {
 		window.opener?.postMessage(
 			{
@@ -79,7 +88,6 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 					visitorsLink: `${getEmbedUrl()}/boards/${visitorsLinkId}?titlePanel=false`,
 					authorLink: `${getEmbedUrl()}/boards/${authorLinkId}?titlePanel=false`,
 					name,
-					id,
 				},
 			},
 			"*",
@@ -89,17 +97,13 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 
 	async function handleSuccess(
 		boardId: string,
-		name?: string,
-		actualId?: string,
+		name?: string | null,
 		authorKey?: string,
 	): Promise<void> {
-		if (
-			selectorRef.current?.getSelectedOption().value === "view" &&
-			actualId
-		) {
-			const authedUrl = `${getApiUrl()}/boards/${actualId}/links`;
-			const unauthedUrl = `${getApiUrl()}/boards/${actualId}/links/unauthed`;
-			const url = app.storage.isAuth
+		if (selectorRef.current?.getSelectedOption().value === "view") {
+			const authedUrl = `/boards/${boardId}/links`;
+			const unauthedUrl = `/boards/${boardId}/links/unauthed`;
+			const url = app.account.isLoggedIn
 				? authedUrl
 				: authorKey
 				? unauthedUrl
@@ -107,66 +111,40 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 			if (!url) {
 				throw new Error("unable to create link");
 			}
-			const body = JSON.stringify({
+			const body = {
 				type: "view",
 				authorKey,
-			});
+			};
 
-			let response = await fetch(url, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${Cookies.get("accessToken")}`,
-				},
-				body,
-			});
+			const { data } = await api.post(url, body);
+			const { linkId } = data;
 
-			if (!response.ok) {
-				// user might be authed, but could not claim board
-				// so try to create link with authorKey instead of token
-				response = await fetch(unauthedUrl, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body,
-				});
-			}
-			const { linkId } = await response.json();
 			if (!linkId) {
 				handleError(
 					"could not create view link, try again later or with new board",
 				);
+				return;
 			}
-			successMessageToParent(boardId, linkId, getName(t, name), actualId);
+			successMessageToParent(boardId, linkId, getName(t, name));
 		} else {
-			successMessageToParent(
-				boardId,
-				boardId,
-				getName(t, name),
-				actualId,
-			);
+			successMessageToParent(boardId, boardId, getName(t, name));
 		}
 	}
 
 	useEffect(() => {
 		setFilteredPublicBoards(
-			app.storage
-				.listPublicBoards()
-				.filter(board =>
-					getName(t, board.name)
-						.toLowerCase()
-						.includes(searchQuery.trim().toLowerCase()),
-				),
+			boardsList.publicBoards.filter(board =>
+				getName(t, board.title)
+					.toLowerCase()
+					.includes(searchQuery.trim().toLowerCase()),
+			),
 		);
 		setFilteredSharedBoards(
-			app.storage
-				.listSharedBoards()
-				.filter(board =>
-					getName(t, board.name)
-						.toLowerCase()
-						.includes(searchQuery.trim().toLowerCase()),
-				),
+			boardsList.sharedBoards.filter(board =>
+				getName(t, board.title)
+					.toLowerCase()
+					.includes(searchQuery.trim().toLowerCase()),
+			),
 		);
 	}, [searchQuery]);
 
@@ -177,57 +155,84 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 		}
 	}, [selected]);
 
+	useEffect(() => {
+		const fetchBoards = async (): Promise<void> => {
+			await account.init();
+			await app.boardsList.loadBoards();
+			setFilteredSharedBoards(
+				boardsList.sharedBoards.filter(board =>
+					getName(t, board.title)
+						.toLowerCase()
+						.includes(searchQuery.trim().toLowerCase()),
+				),
+			);
+			setFilteredPublicBoards(
+				boardsList.publicBoards.filter(board =>
+					getName(t, board.title)
+						.toLowerCase()
+						.includes(searchQuery.trim().toLowerCase()),
+				),
+			);
+		};
+
+		fetchBoards();
+	}, []);
+
 	const handleEmbed = async (): Promise<void> => {
 		try {
 			if (selected === "addNew") {
-				const created = await app.createPublicBoard(
+				const createdId = await boardsList.createBoard(
 					newBoardRef.current?.value,
+					true,
 				);
-				const stored = app.storage.getBoard(created);
-				handleSuccess(
-					created,
-					newBoardRef.current?.value,
-					stored?.actualId,
-					stored?.authorKey,
-				);
+				const unauthedData = app.storage.getCreatedBoard(createdId);
+				if (unauthedData) {
+					handleSuccess(
+						unauthedData.id,
+						unauthedData.title,
+						unauthedData.authorKey,
+					);
+				} else {
+					handleSuccess(createdId, newBoardRef.current?.value);
+				}
 			} else if (selected) {
 				setLoading(true);
-				let res = await fetch(
-					`${getApiUrl()}/boards/${selected.boardId}/exists`,
+				const res = await fetch(
+					`${getApiUrl()}/boards/${selected.id}/exists`,
 					{
 						method: "GET",
 					},
 				);
-				if (!res.ok && selected.actualId) {
-					res = await fetch(
-						`${getApiUrl()}/boards/${selected.actualId}/exists`,
-						{
-							method: "GET",
-						},
-					);
-				}
 				if (!res.ok) {
 					setLoading(false);
-					selected.notFound = true;
+					// selected.notFound = true;
+					// TODO fixed not found boards
 					if (
-						app.storage
-							.listPublicBoards()
-							.some(shared => shared.boardId === selected.boardId)
+						boardsList.publicBoards.some(
+							shared => shared.id === selected.id,
+						)
 					) {
-						app.storage.setPublicBoard(selected);
+						// app.storage.setPublicBoard(selected);
 					} else {
-						app.storage.setPublicBoard(selected, false);
+						// app.storage.setPublicBoard(selected, false);
 					}
-					setSelected(selected);
-					app.storage.subject.publish();
+					setSelected({ ...selected, notFound: true });
+					boardsList.subject.publish();
+					// app.storage.subject.publish();
 					forceUpdate();
 				} else {
-					handleSuccess(
-						selected.boardId,
-						selected.name,
-						selected.actualId,
-						selected.authorKey,
+					const unauthedData = app.storage.getCreatedBoard(
+						selected.id,
 					);
+					if (unauthedData) {
+						handleSuccess(
+							unauthedData.id,
+							unauthedData.title,
+							unauthedData.authorKey,
+						);
+					} else {
+						handleSuccess(selected.id, selected.title || "");
+					}
 				}
 			}
 		} catch (er) {
@@ -239,14 +244,64 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 	return (
 		<>
 			<div className={style.container}>
-				<div className={style.header}>
+				<div className={style.header} style={{ position: "relative" }}>
 					<div className={style.logo}>
 						<Logo id="logo" />
 						<div className={style.headerTitle}>Microboard</div>
 					</div>
-					{isAuth && (
+					{isAuth ? (
 						<div className={style.profile}>
 							<Icon iconName="UserPic" width={16} height={16} />
+						</div>
+					) : (
+						<div
+							ref={userPanelRef}
+							className={`${style.profile} ${style.unAuth}`}
+							onClick={() => setIsDropdownOpen(prev => !prev)}
+						>
+							<Icon iconName="UserPic" width={16} height={16} />
+							<UserDropDown
+								openerRef={userPanelRef}
+								isOpen={isDropdownOpen}
+								setIsDropdownOpen={setIsDropdownOpen}
+								customTop={50}
+								buttons={[
+									<Button
+										key="userDropDown1"
+										onClick={() => {
+											setIsDropdownOpen(false);
+											navigate(
+												"/auth/sign-in?backToSelect=true",
+											);
+										}}
+										pattern="ghost"
+									>
+										<Icon
+											iconName="SignIn"
+											width={20}
+											height={20}
+										/>{" "}
+										{t("auth.signIn")}
+									</Button>,
+									<Button
+										key="userDropDown2"
+										pattern="ghost"
+										onClick={() => {
+											setIsDropdownOpen(false);
+											navigate(
+												"/auth/sign-up?backToSelect=true",
+											);
+										}}
+									>
+										<Icon
+											iconName="BoxedPlus"
+											width={20}
+											height={20}
+										/>{" "}
+										{t("auth.signUp")}
+									</Button>,
+								]}
+							/>
 						</div>
 					)}
 				</div>
@@ -300,7 +355,7 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 							customListStyle={customList}
 							boardNameChildren={board => (
 								<>
-									{customIcon} {getName(t, board.name)}
+									{customIcon} {getName(t, board.title)}
 								</>
 							)}
 						/>
@@ -308,7 +363,7 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 				)}
 				{selected && selected !== "addNew" && (
 					<FolderItem
-						key={selected.boardId}
+						key={selected.id}
 						customStyle={{
 							...customItemStyle,
 							padding: 0,
@@ -320,7 +375,7 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 								cursor: "default",
 							}}
 						>
-							{customIcon} {getName(t, selected.name)}
+							{customIcon} {getName(t, selected.title)}
 						</BoardName>
 					</FolderItem>
 				)}
@@ -339,8 +394,7 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 				)}
 				{selected && (
 					<>
-						<div className={style.selectorsContainer}>
-							{/* {selected !== "addNew" &&
+						{/* {selected !== "addNew" &&
 							<Selector
 								label={t("embedding.startingView")}
 								options={[
@@ -355,12 +409,11 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 									// TODO add frames
 								]}
 							/>} */}
-							{selected === "addNew" ||
-							app.storage
-								.listPublicBoards()
-								.some(
-									board => board.boardId === selected.boardId,
-								) ? (
+						{selected === "addNew" ||
+						boardsList.publicBoards.some(
+							board => board.id === selected.id,
+						) ? (
+							<div className={style.selectorsContainer}>
 								<Selector
 									ref={selectorRef}
 									label={t("embedding.allVisitors")}
@@ -413,7 +466,9 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 										},
 									]}
 								/>
-							) : (
+							</div>
+						) : (
+							!selected.notFound && (
 								<div className={style.infoMessage}>
 									<div>
 										<Icon
@@ -427,8 +482,8 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 										{t("embedding.optionsUnavailable")}
 									</div>
 								</div>
-							)}
-						</div>
+							)
+						)}
 						{selected !== "addNew" && selected.notFound && (
 							<div
 								className={`${style.infoMessage} ${style.error}`}

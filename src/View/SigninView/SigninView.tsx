@@ -1,11 +1,15 @@
 import { App } from "App";
 import { LAST_BOARD_KEY_QS } from "App/App";
-import { getApiUrl } from "Config";
-import Cookies from "js-cookie";
+import { useAccount } from "App/useAccount";
+import { useBoardsList } from "App/useBoardsList";
 import { isEmail } from "lib/regex";
 import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { createSearchParams, useNavigate } from "react-router-dom";
+import {
+	createSearchParams,
+	useNavigate,
+	useSearchParams,
+} from "react-router-dom";
 import { Button } from "shared/ui-lib/Button";
 import { Input } from "shared/ui-lib/Input/Input";
 import { OuterLink } from "shared/ui-lib/OuterLink";
@@ -13,11 +17,6 @@ import { Tail } from "View/AuthView/Tail";
 import { EmailIcon } from "View/SignupView/EmailIcon";
 import { LockIcon } from "View/SignupView/LockIcon";
 import styles from "./SigninView.module.css";
-
-type RegisterOkResponse = {
-	accessToken: string;
-	refreshToken: string;
-};
 
 interface Props {
 	app: App;
@@ -32,6 +31,9 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 	const formRef = useRef<HTMLFormElement>(null);
 	const [emailError, setEmailError] = useState<string>("");
 	const [errorText, setErrorText] = useState<string>("");
+	const account = useAccount();
+	const boards = useBoardsList();
+	const [searchParams] = useSearchParams();
 
 	const onSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
@@ -41,46 +43,26 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 		const form = formRef.current;
 		const email = form?.email.value;
 		const password = form?.password.value;
+		const searchParams = createSearchParams(window.location.search);
 
 		setIsSubmitLoading(true);
 		setSubmitDisabled(true);
-		fetch(getApiUrl("/auth/login"), {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				email: email,
-				password: password,
-			}),
-		})
-			.then(async response => {
-				if (response.ok) {
-					return response.json();
-				} else {
-					const data = await response.json();
-					return Promise.reject(data);
-				}
-			})
-			.then(async (data: RegisterOkResponse) => {
-				Cookies.set("accessToken", data.accessToken, { secure: true });
-				Cookies.set("refreshToken", data.refreshToken, {
-					secure: true,
-				});
+		account
+			.login(email, password)
+			.then(async () => {
 				setErrorText("");
-				if (localStorage.getItem(LAST_BOARD_KEY_QS)) {
+				if (searchParams.get("backToSelect") === "true") {
+					navigate("/selectBoard");
+				} else if (localStorage.getItem(LAST_BOARD_KEY_QS)) {
 					navigate(
 						`/boards/${localStorage.getItem(LAST_BOARD_KEY_QS)}`,
 					);
 				} else {
-					const boardId = await app.createPublicBoard();
+					const boardId = await boards.createBoard();
 					if (boardId) {
 						navigate(`/boards/${boardId}`);
 					}
 				}
-			})
-			.then(() => {
-				app.storage.claimBoards();
 			})
 			.catch(error => {
 				// setErrorMessage(error.message);
@@ -94,6 +76,7 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 					navigate({
 						pathname: "/auth/verify",
 						search: createSearchParams({
+							...Object.fromEntries(searchParams),
 							email: email,
 						}).toString(),
 					});
@@ -187,20 +170,23 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 					<Button
 						pattern="secondary"
 						className={styles.forgot}
-						onClick={() => navigate("/auth/forgot-password")}
+						onClick={() =>
+							navigate(`/auth/forgot-password${location.search}`)
+						}
 					>
 						{t("auth.forgotPassword")}
 					</Button>
 
 					<Button
 						pattern="ghost"
-						onClick={() => navigate("/auth/sign-up")}
+						onClick={() =>
+							navigate(`/auth/sign-up${location.search}`)
+						}
 					>
 						{t("auth.signUpForFree")}
 					</Button>
 				</div>
 			</form>
-
 			<div className={styles.policy}>
 				{t("auth.policyWith")}{" "}
 				<OuterLink

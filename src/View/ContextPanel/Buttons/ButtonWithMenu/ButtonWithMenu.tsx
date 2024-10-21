@@ -13,6 +13,7 @@ type Props = {
 	panelMbr: Mbr;
 	windowHeight: number;
 	align?: "center" | "left" | "right";
+	offset?: "Left" | "Right";
 };
 
 export function ButtonWithMenu({
@@ -23,6 +24,7 @@ export function ButtonWithMenu({
 	panelMbr,
 	windowHeight,
 	align = "center",
+	offset,
 }: Props) {
 	const menuRef = useRef<HTMLDivElement>(null);
 	const [verticalAlign, setVerticalAlign] = useState<"bottom" | "middle">(
@@ -53,6 +55,9 @@ export function ButtonWithMenu({
 					style[verticalAlign],
 					style[align],
 					style[openedMenu === menuName ? "opened" : "closed"],
+					offset &&
+						verticalAlign === "middle" &&
+						style[`offset${offset}`],
 				])}
 			>
 				{typeof children === "function"

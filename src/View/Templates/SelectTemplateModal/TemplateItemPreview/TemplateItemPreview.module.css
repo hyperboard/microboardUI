@@ -3,7 +3,7 @@
 	width: 100%;
 }
 
-.ScrollContainer {
+.scrollContainer {
 	overflow-y: auto;
 	display: flex;
 	flex-direction: column;

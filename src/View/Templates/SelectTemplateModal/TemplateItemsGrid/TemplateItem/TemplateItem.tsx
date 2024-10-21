@@ -4,23 +4,23 @@ import { Button } from "../../../../../shared/ui-lib/Button";
 import { useAppContext } from "../../../../AppContext";
 import { pasteSnapshot } from "../../../../../utils";
 import { Template } from "../../../../Tools/Template";
+import { useModal } from "../../../../Modal/ModalProvider";
 
 interface TemplateItemProps {
 	template: Template;
 	setPresentedTemplate: (template: null | Template) => void;
-	setIsOpen: (isOpen: boolean) => void;
 }
 
 export const TemplateItem = ({
 	template,
 	setPresentedTemplate,
-	setIsOpen,
 }: TemplateItemProps) => {
 	const { board } = useAppContext();
+	const { hideModal } = useModal();
 
 	const pasteSnapshotAndClose = () => {
 		setPresentedTemplate(null);
-		setIsOpen(false);
+		hideModal("selectTemplate");
 		pasteSnapshot({ board, snapshot: template.snapshot });
 	};
 

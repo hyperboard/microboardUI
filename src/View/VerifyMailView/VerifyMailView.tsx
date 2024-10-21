@@ -1,60 +1,20 @@
-import { getApiUrl } from "Config";
-import Cookies from "js-cookie";
+import { App } from "App";
+import { useAccount } from "App/useAccount";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import styles from "./VerifyMailView.module.css";
-import { Input } from "shared/ui-lib/Input/Input";
-import { LockIcon } from "View/SignupView/LockIcon";
 import { Button } from "shared/ui-lib/Button";
+import { Input } from "shared/ui-lib/Input/Input";
 import { Tail } from "View/AuthView/Tail";
-import { App } from "App";
 import { LAST_BOARD_KEY_QS } from "App/App";
+import styles from "./VerifyMailView.module.css";
+import { LockIcon } from "View/SignupView/LockIcon";
+import { useBoardsList } from "App/useBoardsList";
 
 const secondsToHumanReadable = (seconds: number): string => {
 	const minutes = Math.floor(seconds / 60);
 	const remainingSeconds = seconds % 60;
 	return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
-};
-
-// const resendEmail = async (email: string): Promise<any> => {
-// 	return fetch(getApiUrl("/auth/resendEmail"), {
-// 		method: "POST",
-// 		headers: {
-// 			"Content-Type": "application/json",
-// 		},
-// 		body: JSON.stringify({ email }),
-// 	})
-// 		.then(data => {
-// 			return data.json();
-// 		})
-// 		.then(data => {
-// 			if (data?.status >= 300) {
-// 				return Promise.reject(data);
-// 			}
-// 			return data;
-// 		});
-// };
-
-const verifyEmail = async (email: string, passcode: string): Promise<any> => {
-	return fetch(getApiUrl("/auth/verify"), {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({ email, passcode }),
-	})
-		.then(data => {
-			return data.json();
-		})
-		.then(data => {
-			if (data?.status >= 300) {
-				return Promise.reject(data);
-			}
-			Cookies.set("accessToken", data.accessToken);
-			Cookies.set("refreshToken", data.refreshToken);
-			return data;
-		});
 };
 
 export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
@@ -75,6 +35,21 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 	const [isNewCode, setIsNewCode] = useState<boolean>(false);
 	const [isAttemptsExceeded, setIsAttemptsExceeded] =
 		useState<boolean>(false);
+	const account = useAccount();
+	const boardsList = useBoardsList();
+
+	const onSuccess = async (): Promise<void> => {
+		if (searchParams.get("backToSelect") === "true") {
+			navigate("/selectBoard");
+		} else if (localStorage.getItem(LAST_BOARD_KEY_QS)) {
+			navigate(`/boards/${localStorage.getItem(LAST_BOARD_KEY_QS)}`);
+		} else {
+			const boardId = await boardsList.createBoard();
+			if (boardId) {
+				navigate(`/boards/${boardId}`);
+			}
+		}
+	};
 
 	const onSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
@@ -87,44 +62,10 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 			const passcode = formRef.current?.code.value;
 			setSubmitDisabled(true);
 			setIsSubmitLoading(true);
-			fetch(getApiUrl("/auth/verify"), {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					email: searchParams.get("email"),
-					passcode: passcode,
-				}),
-			})
-				.then(data => {
-					return data.json();
-				})
-				.then(data => {
-					if (data?.status >= 300) {
-						return Promise.reject(data);
-					}
-					Cookies.set("accessToken", data.accessToken);
-					Cookies.set("refreshToken", data.refreshToken);
-					return data;
-				})
-				.then(async () => {
-					if (localStorage.getItem(LAST_BOARD_KEY_QS)) {
-						navigate(
-							`/boards/${localStorage.getItem(
-								LAST_BOARD_KEY_QS,
-							)}`,
-						);
-					} else {
-						const boardId = await app.createPublicBoard();
-						if (boardId) {
-							navigate(`/boards/${boardId}`);
-						}
-					}
-				})
-				.then(() => {
-					app.storage.claimBoards();
-				})
+
+			account
+				.verifyMail(searchParams.get("email") ?? "", passcode)
+				.then(onSuccess)
 				.catch(error => {
 					if (error?.message === "PASSCODE_ATTEMPTS_EXCEEDED") {
 						setIsAttemptsExceeded(true);
@@ -171,22 +112,9 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 		}
 		setRetryDisabled(true);
 		setIsRetryLoading(true);
-		fetch(getApiUrl("/auth/resendEmail"), {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({ email: searchParams.get("email") }),
-		})
-			.then(data => {
-				return data.json();
-			})
-			.then(data => {
-				if (data?.status >= 300) {
-					return Promise.reject(data);
-				}
-				return data;
-			})
+
+		account
+			.resendMail(searchParams.get("email") ?? "")
 			.then(() => {
 				setRetryCount(60 * 3);
 				setIsAttemptsExceeded(false);
@@ -215,7 +143,7 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 					error?.message === "Passcode not found" ||
 					error?.message === "User not found"
 				) {
-					navigate("/auth/sign-up");
+					navigate(`/auth/sign-up${location.search}`);
 					return;
 				}
 			})
@@ -233,21 +161,8 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 		}
 		setRetryDisabled(true);
 		setIsRetryLoading(true);
-		fetch(getApiUrl("/auth/checkVerificationCodes"), {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				email: searchParams.get("email"),
-			}),
-		})
-			.then(response => {
-				if (!response.ok) {
-					return Promise.reject(response);
-				}
-				return response.json();
-			})
+		account
+			.checkVerificationCodes(searchParams.get("email") ?? "")
 			.then(data => {
 				if (data?.message === "PASSCODE_SENDED") {
 					setRetryCount(60 * 3);
@@ -256,7 +171,8 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 					console.log("here");
 
 					try {
-						const timeToResend = data?.message.split(":")[1] / 1000;
+						const timeToResend =
+							+data?.message.split(":")[1] / 1000;
 						setRetryCount(parseInt(timeToResend.toFixed(0)));
 					} catch (_) {
 						setRetryCount(60 * 3);
@@ -272,26 +188,12 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 			return;
 		}
 		setIsSubmitLoading(true);
-		verifyEmail(
-			searchParams.get("email") || "",
-			searchParams.get("passcode") || "",
-		)
-			.then(async (data): Promise<void> => {
-				Cookies.set("accessToken", data.accessToken, { secure: true });
-				Cookies.set("refreshToken", data.refreshToken, {
-					secure: true,
-				});
-				if (localStorage.getItem(LAST_BOARD_KEY_QS)) {
-					navigate(
-						`/boards/${localStorage.getItem(LAST_BOARD_KEY_QS)}`,
-					);
-				} else {
-					const boardId = await app.createPublicBoard();
-					if (boardId) {
-						navigate(`/boards/${boardId}`);
-					}
-				}
-			})
+		account
+			.verifyMail(
+				searchParams.get("email") || "",
+				searchParams.get("passcode") || "",
+			)
+			.then(onSuccess)
 			.catch(_ => {
 				setError(t("auth.errorVerificationCode"));
 			})

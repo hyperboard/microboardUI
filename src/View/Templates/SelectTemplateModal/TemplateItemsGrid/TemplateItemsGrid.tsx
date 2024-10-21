@@ -6,7 +6,6 @@ import { Template } from "../../../Tools/Template";
 
 interface TemplateItemsGridProps {
 	templates: Template[];
-	setIsOpen: (isOpen: boolean) => void;
 	setPresentedTemplate: (template: null | Template) => void;
 	className?: string;
 }
@@ -14,7 +13,6 @@ interface TemplateItemsGridProps {
 export const TemplateItemsGrid = ({
 	templates,
 	setPresentedTemplate,
-	setIsOpen,
 	className,
 }: TemplateItemsGridProps) => {
 	return (
@@ -22,7 +20,6 @@ export const TemplateItemsGrid = ({
 			{templates.map(template => (
 				<TemplateItem
 					key={template.uniq_id}
-					setIsOpen={setIsOpen}
 					template={template}
 					setPresentedTemplate={setPresentedTemplate}
 				/>

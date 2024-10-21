@@ -1,12 +1,13 @@
+import { useAccount } from "App/useAccount";
+import { useBoardsList } from "App/useBoardsList";
 import { useAppSubscription } from "Board/useBoardSubscription";
 import clsx from "clsx";
 import { useForceUpdate } from "lib/useForceUpdate";
 import {
-	default as React,
-	useEffect,
-	useState,
 	type ChangeEventHandler,
-	type MouseEventHandler,
+	MouseEventHandler,
+	default as React,
+	useState,
 } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
@@ -17,30 +18,28 @@ import { UiPanel } from "View/Ui/UiPanel";
 import { UiSeparator } from "View/Ui/UiSeparator";
 import { Icon, Logo } from "../Icon";
 import style from "./TitlePanel.module.css";
+import { ViewModeGuard } from "View/ViewModeGuard";
 import { CreateTemplateModal } from "../Templates";
 import { getApiUrl } from "../../Config";
+import { useModal } from "../Modal/ModalProvider";
 import Cookies from "js-cookie";
 
 const MAX_BOARD_TITLE_LENGTH = 32;
 
-export function TitlePanel() {
+export function TitlePanel(): JSX.Element | null {
 	const forceUpdate = useForceUpdate();
 	const { t } = useTranslation();
+	const { showModal } = useModal();
 	const { app, board } = useAppContext();
 	const { isOpen, toggleSideMenu } = useSidePanelContext();
-	const [createTemplateOpen, setCreateTemplateOpen] = useState(false);
 	useAppSubscription(app, { observer: forceUpdate, subjects: ["tools"] });
-	useEffect(() => {
-		app.storage.subject.subscribe(forceUpdate);
-
-		return () => {
-			app.storage.subject.unsubscribe(forceUpdate);
-		};
-	}, []);
+	const boardsList = useBoardsList();
+	const account = useAccount();
 
 	const boardId = board.getBoardId();
 	const boardName =
-		app.storage.getBoard(boardId)?.name || t("board.untitled");
+		boardsList.getBoardInfo(boardId)?.title || t("board.untitled");
+	const isBlank = boardId === "blank";
 
 	const [isRenaming, setIsRenaming] = useState(false);
 	const [newBoardName, setNewBoardName] = useState(boardName);
@@ -57,20 +56,28 @@ export function TitlePanel() {
 		setNewBoardName(event.currentTarget.value);
 	};
 
-	const handleRenameCancel = () => {
+	const handleRenameCancel = (): void => {
 		setIsRenaming(false);
 	};
 
-	const handleBoardRenameStart: MouseEventHandler = () => {
+	const canRename = account.permissions.checkPermissions(
+		"owns",
+		"boards",
+		boardId ?? "",
+	);
+	const handleBoardRenameStart: MouseEventHandler = _event => {
+		if (!canRename || isBlank || board.interfaceType === "view") {
+			return;
+		}
 		setIsRenaming(true);
 		setNewBoardName(boardName);
 	};
 
-	const handleRenameConfirm = () => {
-		app.storage.renameBoard(boardId, newBoardName);
+	const handleRenameConfirm = (): void => {
+		boardsList.rename(boardId, newBoardName);
 	};
 
-	const openExport = () => {
+	const openExport = (): void => {
 		board.tools.export();
 	};
 
@@ -82,7 +89,7 @@ export function TitlePanel() {
 	async function saveTemplateReq(body: any) {
 		try {
 			const response = await fetch(
-				`${getApiUrl()}/boards/${board.getBoardId()}/template`,
+				`${getApiUrl()}/templates/${board.getBoardId()}`,
 				{
 					method: "PATCH",
 					mode: "cors",
@@ -114,16 +121,22 @@ export function TitlePanel() {
 			: boardName ?? "";
 	return (
 		<UiPanel className={style.panel} padding={0} zIndex={10}>
-			<SidePanelButton
-				isOpen={isOpen}
-				toggle={toggleSideMenu}
-				className={style.menuButton}
-			/>
-			<UiSeparator vertical className={style.mobileHide} />
+			<ViewModeGuard>
+				<SidePanelButton
+					isOpen={isOpen}
+					toggle={toggleSideMenu}
+					className={style.menuButton}
+				/>
+				<UiSeparator vertical className={style.mobileHide} />
+			</ViewModeGuard>
 			<UiButton
 				rounded="none"
 				variant="secondary"
-				className={clsx(style.mobileHide, style.logoWrapper)}
+				className={clsx(
+					style.mobileHide,
+					style.logoWrapper,
+					board.interfaceType === "view" && style.viewMode,
+				)}
 			>
 				{isMicroboard ? (
 					<div className={style.logo}>
@@ -141,7 +154,10 @@ export function TitlePanel() {
 				variant="secondary"
 				rounded="none"
 				onDoubleClick={handleBoardRenameStart}
-				className={style.tabletHide}
+				className={clsx(
+					style.tabletHide,
+					board.interfaceType === "view" && style.viewMode,
+				)}
 				onClick={evt => {
 					evt.preventDefault();
 					evt.stopPropagation();
@@ -157,46 +173,47 @@ export function TitlePanel() {
 						className={style.rename}
 					/>
 				) : (
-					<span className={style.name}>{strippedName}</span>
+					<span className={style.name}>
+						{isBlank ? t("noBoard.title") : strippedName}
+					</span>
 				)}
 			</UiButton>
-			<UiSeparator vertical className={style.tabletHide} />
-			<UiButton
-				className={style.tabletHide}
-				onClick={openExport}
-				variant="secondary"
-				rounded="right"
-				tooltip={t("export.tooltip")}
-				tooltipPosition="bottom"
-			>
-				<Icon iconName="Export" />
-			</UiButton>
-			<UiSeparator vertical className={style.tabletHide} />
-			<UiButton
-				className={style.tabletHide}
-				onClick={() => setCreateTemplateOpen(true)}
-				variant="secondary"
-				rounded="right"
-				tooltip={t("template.create")}
-				tooltipPosition="bottom"
-			>
-				<Icon iconName="Pen" />
-			</UiButton>
-			<UiSeparator vertical className={style.tabletHide} />
-			<UiButton
-				className={style.tabletHide}
-				onClick={saveTemplate}
-				variant="secondary"
-				rounded="right"
-				tooltip={t("template.update")}
-				tooltipPosition="bottom"
-			>
-				<Icon iconName="Redo" />
-			</UiButton>
-			<CreateTemplateModal
-				isOpen={createTemplateOpen}
-				setIsOpen={setCreateTemplateOpen}
-			/>
+			<ViewModeGuard>
+				<UiSeparator vertical className={style.tabletHide} />
+				<UiButton
+					className={style.tabletHide}
+					onClick={openExport}
+					variant="secondary"
+					rounded="right"
+					tooltip={t("export.tooltip")}
+					tooltipPosition="bottom"
+				>
+					<Icon iconName="Export" />
+				</UiButton>
+				<UiSeparator vertical className={style.tabletHide} />
+				<UiButton
+					className={style.tabletHide}
+					onClick={() => showModal("createTemplate")}
+					variant="secondary"
+					rounded="right"
+					tooltip={t("template.create")}
+					tooltipPosition="bottom"
+				>
+					<Icon iconName="Pen" />
+				</UiButton>
+				<UiSeparator vertical className={style.tabletHide} />
+				<UiButton
+					className={style.tabletHide}
+					onClick={saveTemplate}
+					variant="secondary"
+					rounded="right"
+					tooltip={t("template.update")}
+					tooltipPosition="bottom"
+				>
+					<Icon iconName="Redo" />
+				</UiButton>
+				<CreateTemplateModal />
+			</ViewModeGuard>
 		</UiPanel>
 	);
 }

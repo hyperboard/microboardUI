@@ -1,18 +1,34 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MiroBoards } from "./MiroBoards/MiroBoards";
 import React from "react";
 import { ImportBoardItem } from "./ImportBoardItem";
-import { App } from "App";
 import { useSearchParams } from "react-router-dom";
-import { IMiroBoard } from "./MiroBoards/MiroBoardsModels";
+import {
+	IMiroBoard,
+	IMiroBoardItem,
+	MiroBoardItemTypes,
+} from "./MiroBoards/MiroBoardsModels";
+import {
+	ErrorNotification,
+	LoadingNotification,
+	SuccessNotification,
+	WarnClipboardNotification,
+} from "./Notifications";
+import { useModal } from "View/Modal/ModalProvider";
 
-interface IImportMiroBoards {
-	app: App;
+export interface MiroItemsInfo {
+	cursor: {
+		items: string;
+		connectors: string;
+	};
+	total: {
+		items: number;
+		connectors: number;
+	};
 }
 
-export function ImportMiroBoards({
-	app,
-}: IImportMiroBoards): React.ReactElement | null {
+export function ImportMiroBoards(): React.ReactElement | null {
+	const { setModalData } = useModal();
 	const [searchParams] = useSearchParams();
 	const codeSearch = searchParams.get("code");
 	const teamIdSearch = searchParams.get("team_id");
@@ -27,20 +43,57 @@ export function ImportMiroBoards({
 		},
 	);
 
-	return stage === 1 ? (
-		<MiroBoards
-			isOpen={open}
-			setIsOpen={setOpen}
-			setStage={setStage}
-			setBoardInfo={setBoardInfo}
-		/>
-	) : stage === 2 ? (
-		<ImportBoardItem
-			isOpen={open}
-			setStage={setStage}
-			setIsOpen={setOpen}
-			boardInfo={boardInfo}
-			app={app}
-		/>
-	) : null;
+	const [itemsInfo, setItemsInfo] = useState<MiroItemsInfo>({
+		cursor: { items: "", connectors: "" },
+		total: { items: 0, connectors: 0 },
+	});
+
+	const [boardItems, setBoardItems] = useState<IMiroBoardItem[]>([]);
+
+	const isWarnMessageOpen = (): boolean =>
+		boardItems.some(
+			item =>
+				item.type === MiroBoardItemTypes.CARD ||
+				item.type === MiroBoardItemTypes.DOCUMENT ||
+				item.type === MiroBoardItemTypes.MINDMAP,
+		);
+
+	const loadingPercentage =
+		Math.ceil(
+			(boardItems.length /
+				(itemsInfo.total.items + itemsInfo.total.connectors)) *
+				100,
+		) || 0;
+
+	useEffect(() => {
+		setModalData?.(loadingPercentage);
+	}, [setModalData]);
+
+	return (
+		<>
+			<LoadingNotification />
+			<SuccessNotification isWarn={isWarnMessageOpen()} />
+			<ErrorNotification setStage={setStage} setModalOpen={setOpen} />
+			<WarnClipboardNotification />
+			{stage === 1 ? (
+				<MiroBoards
+					isOpen={open}
+					setIsOpen={setOpen}
+					setStage={setStage}
+					setBoardInfo={setBoardInfo}
+				/>
+			) : stage === 2 ? (
+				<ImportBoardItem
+					isOpen={open}
+					setIsOpen={setOpen}
+					boardInfo={boardInfo}
+					boardItems={boardItems}
+					setBoardItems={setBoardItems}
+					itemsInfo={itemsInfo}
+					setItemsInfo={setItemsInfo}
+					loadingPercentage={loadingPercentage}
+				/>
+			) : null}
+		</>
+	);
 }

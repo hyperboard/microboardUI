@@ -1,4 +1,5 @@
 import React, {
+	MouseEvent,
 	type MouseEventHandler,
 	type PropsWithChildren,
 	type ReactNode,
@@ -8,52 +9,55 @@ import { useNavigate } from "react-router-dom";
 import { useAppContext } from "View/AppContext";
 import { useBoardRenameContext } from "View/BoardName";
 import { Icon } from "View/Icon";
-import { useConfirmModalContext } from "View/Modal/ConfirmModal";
 import { UiPanel } from "View/Ui/UiPanel";
 import style from "./ContextMenu.module.css";
 import { useContextMenuContext } from "./ContextMenuContext";
+import { useConfirmModalContext } from "View/Modal/ConfirmModal";
+import { useBoardsList } from "App/useBoardsList";
+import { useAccount } from "App/useAccount";
 
 export function ContextMenu() {
 	const { isOpen, boardId, x, y, close } = useContextMenuContext();
-	const { app } = useAppContext();
 	const { openModalConfirm } = useConfirmModalContext();
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 	const { setRenamingBoardId, setNewBoardName } = useBoardRenameContext();
+	const boardsList = useBoardsList();
+	const account = useAccount();
+	const { app } = useAppContext();
 
-	if (!isOpen || !boardId) {
+	if (!isOpen) {
 		return null;
 	}
 	const boardName =
-		app.storage.getBoard(boardId)?.name || t("board.untitled");
+		boardsList.getBoardInfo(boardId)?.title || t("board.untitled");
 
-	const handleCreateBoard: MouseEventHandler = async () => {
-		try {
-			const boardId = await app.createPublicBoard();
-			app.openBoard(boardId);
-			navigate(`/boards/${boardId}`, {
-				replace: true,
-			});
-		} catch (err) {
-			// TODO notify user
-			console.error(err);
-		}
+	const handleCreateBoard: MouseEventHandler = async (ev: MouseEvent) => {
+		ev.preventDefault();
+		ev.stopPropagation();
+		const boardId = await boardsList.createBoard();
+		await app.openBoard(boardId);
+		navigate(`/boards/${boardId}`, {
+			replace: true,
+		});
+		setNewBoardName(boardName);
+		setRenamingBoardId(boardId);
+		close();
 	};
 
-	const handleDeleteBoard: MouseEventHandler = (ev): Promise<void> => {
+	const handleDeleteBoard: MouseEventHandler = async (ev): Promise<void> => {
 		ev.preventDefault();
 		ev.stopPropagation();
 		if (!boardId) {
 			throw new Error("Can't delete board with id null");
 		}
 		const removingCurr = boardId === app.getBoard()?.getBoardId();
-		app.storage.removeBoard(boardId).then(() => {
-			if (removingCurr) {
-				navigate("/boards");
-				app.openBoard("blank");
-			}
-			close();
-		});
+		boardsList.remove(boardId);
+		if (removingCurr) {
+			navigate("/boards");
+			await app.openBoard("blank");
+		}
+		close();
 		return Promise.resolve();
 	};
 
@@ -70,15 +74,40 @@ export function ContextMenu() {
 		close();
 	};
 
+	const canRename = account.permissions.checkPermissions(
+		"owns",
+		"boards",
+		boardId ?? "",
+	);
+
+	const isSharedBoard = Boolean(
+		boardsList.sharedBoards.find(b => b.id === boardId),
+	);
+
 	return (
 		<UiPanel
 			style={{ left: x, top: y }}
 			className={style.menu}
 			vertical
 			padding={6}
+			zIndex={100}
 		>
 			{boardId ? (
 				<>
+					{canRename && (
+						<ContextMenuItem
+							onClick={handleRenameBoard}
+							icon={
+								<Icon
+									iconName="Rename"
+									width={20}
+									height={20}
+								/>
+							}
+						>
+							{t("contextMenu.rename")}
+						</ContextMenuItem>
+					)}
 					<ContextMenuItem
 						onClick={event => {
 							event.preventDefault();
@@ -89,18 +118,24 @@ export function ContextMenu() {
 								`${t(
 									"modalConfirm.deleteBoard.description",
 								)} "${boardName}"?`,
-								async () => handleDeleteBoard(event),
+								() => handleDeleteBoard(event),
 							);
 						}}
-						icon={<Icon iconName="Delete" width={20} height={20} />}
+						icon={
+							isSharedBoard ? (
+								<Icon iconName="Close" width={20} height={20} />
+							) : (
+								<Icon
+									iconName="Delete"
+									width={20}
+									height={20}
+								/>
+							)
+						}
 					>
-						{t("contextMenu.delete")}
-					</ContextMenuItem>
-					<ContextMenuItem
-						onClick={handleRenameBoard}
-						icon={<Icon iconName="Rename" width={20} height={20} />}
-					>
-						{t("contextMenu.rename")}
+						{isSharedBoard
+							? t("contextMenu.deleteShared")
+							: t("contextMenu.delete")}
 					</ContextMenuItem>
 					<ContextMenuItem
 						onClick={handleRenameBoard}

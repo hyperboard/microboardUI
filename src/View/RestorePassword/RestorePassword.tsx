@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "shared/ui-lib/Link";
 import { Tail } from "View/AuthView/Tail";
 import { PasswordChanged } from "View/Widgets/form-notifications/password-changed";
+import { useAccount } from "App/useAccount";
 
 export const RestorePassword: React.FC = () => {
 	const { t } = useTranslation();
@@ -23,6 +24,7 @@ export const RestorePassword: React.FC = () => {
 	const [searchParams, _] = useSearchParams();
 	const [isPasswordChanged, setIsPasswordChanged] = useState<boolean>(false);
 	const navigate = useNavigate();
+	const account = useAccount();
 
 	const checkForm = (): void => {
 		const form = formRef.current;
@@ -88,24 +90,8 @@ export const RestorePassword: React.FC = () => {
 
 		setIsDisabled(true);
 		setIsSubmitLoading(true);
-		fetch(getApiUrl("/auth/password/restore"), {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				token: searchParams.get("token")!,
-				newPassword: form.newPassword.value,
-			}),
-		})
-			.then(async response => {
-				if (response.ok) {
-					return response.json();
-				} else {
-					const data = await response.json();
-					return Promise.reject(data);
-				}
-			})
+		account
+			.restorePassword(searchParams.get("token")!, form.newPassword.value)
 			.then(() => {
 				setIsPasswordChanged(true);
 			})
