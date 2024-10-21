@@ -43,6 +43,7 @@ import {
 } from "Board/Items/Connector/ControlPoint";
 import { Drawing } from "Board/Items/Drawing";
 import { Placeholder } from "Board/Items/Placeholder/Placeholder";
+import { getGlobalModalFunctions } from "View/Modal/ModalProvider";
 
 interface MiroImage {
 	type: string;
@@ -949,6 +950,8 @@ export const useCopyBoardItems = (
 	};
 
 	const copyBoardItems = (): void => {
+		const { showModal, hideModal, setModalData } =
+			getGlobalModalFunctions();
 		const sessionMiroItems = sessionStorage.getItem(`miroItems`);
 		const sessionMiroItemsParsed =
 			sessionMiroItems && sessionMiroItems !== "undefined"
@@ -967,8 +970,9 @@ export const useCopyBoardItems = (
 			return;
 		}
 
-		miroBoardItems.forEach((item: IMiroBoardItem) => {
+		miroBoardItems.forEach((item: IMiroBoardItem, index: number) => {
 			const type = item.type as MiroItemsTypes;
+			setModalData?.((miroBoardItems.length / 50 / index) * 100);
 
 			if (
 				item.type !== MiroBoardItemTypes.CONNECTOR &&
@@ -985,6 +989,20 @@ export const useCopyBoardItems = (
 		sessionMiroItemsParsed && sessionStorage.removeItem(`miroItems`);
 		if (!isClipboard) {
 			zoomToFit();
+		}
+
+		if (isClipboard) {
+			hideModal?.("loadingNotification");
+
+			const hasUnsupportedItems = miroBoardItems.some(
+				item => item.type === MiroBoardItemTypes.UNSUPPORTED,
+			);
+
+			if (hasUnsupportedItems) {
+				showModal?.("warnClipboardNotification");
+			} else {
+				showModal?.("successNotification");
+			}
 		}
 	};
 

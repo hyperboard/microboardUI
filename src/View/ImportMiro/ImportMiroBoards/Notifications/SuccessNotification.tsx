@@ -4,26 +4,25 @@ import React, { useEffect } from "react";
 import { Button } from "shared/ui-lib/Button";
 import { Notification } from "shared/ui-lib/Notification";
 import { InfoColor } from "shared/ui-lib/Notification/Notification";
+import { useModal } from "View/Modal/ModalProvider";
 
 interface SuccessNotificationProps {
 	className?: string;
-	isOpen: boolean;
-	setIsOpen: (isOpen: boolean) => void;
 	isWarn?: boolean;
 }
 
 export const SuccessNotification = ({
 	className,
-	isOpen,
-	setIsOpen,
 	isWarn,
 }: SuccessNotificationProps): React.ReactElement => {
 	const { t } = useTranslation();
+	const { isModalOpen, hideModal } = useModal();
+	const isOpen = isModalOpen("successNotification");
 
 	useEffect(() => {
 		if (isOpen) {
 			setTimeout(() => {
-				setIsOpen(false);
+				hideModal("successNotification");
 			}, 10000);
 		}
 	}, [isOpen]);
@@ -33,7 +32,7 @@ export const SuccessNotification = ({
 			<Notification
 				isOpen={isOpen}
 				className={className}
-				setIsOpen={setIsOpen}
+				setIsOpen={() => hideModal("successNotification")}
 				infoIcon
 				infoColor={InfoColor.warn}
 				cross
@@ -58,7 +57,7 @@ export const SuccessNotification = ({
 					</p>
 					<Button
 						pattern="secondary"
-						onClick={() => setIsOpen(false)}
+						onClick={() => hideModal("successNotification")}
 						className={styles.notificationBtn}
 					>
 						{t("miro.notifications.okBtn")}
@@ -70,9 +69,9 @@ export const SuccessNotification = ({
 
 	return (
 		<Notification
-			isOpen={isOpen}
+			isOpen={isModalOpen("successNotification")}
 			className={className}
-			setIsOpen={setIsOpen}
+			setIsOpen={() => hideModal("successNotification")}
 			infoIcon
 			infoColor={InfoColor.success}
 			cross
@@ -83,7 +82,7 @@ export const SuccessNotification = ({
 				</h4>
 				<Button
 					pattern="secondary"
-					onClick={() => setIsOpen(false)}
+					onClick={() => hideModal("successNotification")}
 					className={styles.notificationBtn}
 				>
 					{t("miro.notifications.okBtn")}

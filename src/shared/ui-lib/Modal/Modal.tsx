@@ -41,7 +41,7 @@ const ModalBase = (props: ModalProps) => {
 		>
 			<div
 				className={clsx(styles.wr, size && styles[size])}
-				onClick={e => e.stopPropagation()}
+				onClick={event => event.stopPropagation()}
 			>
 				<div className={styles.modalCross} onClick={onCloseModal}>
 					<Icon

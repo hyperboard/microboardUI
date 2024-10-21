@@ -386,7 +386,8 @@
 			"errorTitle": "Import error",
 			"errorItemsText": "Unable to complete import from Miro. Please try again later.",
 			"errorBoardsText": "We were unable to retrieve the list of boards from Miro. Please try again later.",
-			"boardsOkBtn": "Ok"
+			"boardsOkBtn": "Ok",
+			"warnClipboardDescription": "We have successfully imported the board content, except for some objects that are not supported yet. Do not delete them - they will be available soon."
 		},
 		"authClipboardModal": {
 			"title": "Import Error",

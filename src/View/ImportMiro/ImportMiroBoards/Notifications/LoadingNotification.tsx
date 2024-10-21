@@ -3,22 +3,23 @@ import { useTranslation } from "react-i18next";
 import styles from "../ImportMiroBoards.module.css";
 import React from "react";
 import { Loader } from "shared/ui-lib/Loader/Loader";
+import { useModal } from "View/Modal/ModalProvider";
 
 interface LoadingNotificationProps {
 	className?: string;
-	loadingNotification: boolean;
-	loadingPercentage: number;
 }
 
 export const LoadingNotification = ({
 	className,
-	loadingNotification,
-	loadingPercentage,
 }: LoadingNotificationProps): JSX.Element => {
+	const { isModalOpen, data } = useModal();
 	const { t } = useTranslation();
 
 	return (
-		<Notification isOpen={loadingNotification} className={className}>
+		<Notification
+			isOpen={isModalOpen("loadingNotification")}
+			className={className}
+		>
 			<Loader
 				className={styles.notificationIcon}
 				width={20}
@@ -29,7 +30,7 @@ export const LoadingNotification = ({
 					{t("miro.loadingNotification.title")}
 				</h4>
 				<p className={styles.notificationLoaderText}>
-					{t("miro.loadingNotification.text")} {loadingPercentage}
+					{t("miro.loadingNotification.text")} {data}
 					%...
 				</p>
 			</div>

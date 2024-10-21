@@ -17,6 +17,7 @@ import {
 	INITIAL_DRAWING_STROKE_WIDTH,
 	MAX_DRAWING_STROKE_WIDTH,
 } from "../../../Tools/AddDrawing";
+import { getGlobalModalFunctions } from "View/Modal/ModalProvider";
 
 type SupportedMiroType =
 	| IMiroBoardItemConnector
@@ -610,14 +611,17 @@ export const transformUnsupportedItems = (
 		y: number;
 	},
 ): MiroUnsupportedItem => {
-	const json = item.widgetData.json!;
+	const json = item.widgetData?.json;
+	if (!json) {
+		return;
+	}
 
 	const transformUnsupportedItem: MiroUnsupportedItem = {
 		...createBaseItem(item),
 		type: MiroBoardItemTypes.UNSUPPORTED,
 		geometry: {
-			width: json.size.width || 100,
-			height: json.size.height || 100,
+			width: json.size?.width || 100,
+			height: json.size?.height || 100,
 		},
 		position: {
 			x: (json._position?.offsetPx?.x || 0) + cursorPosition.x,
@@ -684,7 +688,11 @@ export const pasteMiroClipboard = (board: Board, clipboardJson: any): any => {
 	//     x: 0,
 	//     y: 0,
 	// };
-	const miroItems = clipboardItems.reduce((acc, item) => {
+	const { showModal, setModalData } = getGlobalModalFunctions();
+	showModal?.("loadingNotification");
+	setModalData?.(0);
+
+	const miroItems = clipboardItems.reduce((acc, item, index) => {
 		const transformedItem = parseItem(
 			item,
 			initialPositions,
@@ -694,6 +702,7 @@ export const pasteMiroClipboard = (board: Board, clipboardJson: any): any => {
 		if (transformedItem) {
 			acc.push(transformedItem);
 		}
+		setModalData?.(((index / clipboardItems.length) * 100) / 2);
 		return acc;
 	}, [] as IMiroBoardItem[]);
 	const miroConnectors = clipboardItems.reduce((acc, item) => {

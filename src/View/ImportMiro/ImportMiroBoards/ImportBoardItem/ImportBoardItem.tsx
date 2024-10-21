@@ -1,11 +1,7 @@
 import { useTranslation } from "react-i18next";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Cookies from "js-cookie";
-import {
-	IMiroBoard,
-	IMiroBoardItem,
-	MiroBoardItemTypes,
-} from "../MiroBoards/MiroBoardsModels";
+import { IMiroBoard, IMiroBoardItem } from "../MiroBoards/MiroBoardsModels";
 import { App } from "App";
 import { useCopyBoardItems } from "./useCopyBoardItems";
 import { getApiUrl } from "Config";
@@ -14,46 +10,40 @@ import { ModalSize } from "shared/ui-lib/Modal/Modal";
 import styles from "../ImportMiroBoards.module.css";
 import { ProgressBar } from "shared/ui-lib/Progress/Progress";
 import { Button } from "shared/ui-lib/Button";
-import { LoadingNotification } from "./LoadingNotification";
-import { SuccessNotification } from "./SuccessNotification";
-import { ErrorNotification } from "./ErrorNotification";
 import { useSidePanelContext } from "View/SidePanel/SidePanelContext";
 import { useBoardRenameContext } from "View/BoardName";
+import { MiroItemsInfo } from "../ImportMiroBoards";
+import { useModal } from "View/Modal/ModalProvider";
+import { useAppContext } from "View/AppContext";
 
 interface IImportBoardItem {
 	isOpen: boolean | null;
 	setIsOpen: (isOpen: boolean) => void;
 	boardInfo: Pick<IMiroBoard, "id" | "name">;
-	app: App;
-	setStage: (stage: number) => void;
+	boardItems: IMiroBoardItem[];
+	setBoardItems: (items: any) => void;
+	itemsInfo: MiroItemsInfo;
+	setItemsInfo: (info: MiroItemsInfo) => void;
+	loadingPercentage: number;
 }
 
 export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
-	const { isOpen, setIsOpen, boardInfo, app, setStage } = props;
-
+	const {
+		isOpen,
+		setIsOpen,
+		boardInfo,
+		boardItems,
+		setBoardItems,
+		itemsInfo,
+		setItemsInfo,
+		loadingPercentage,
+	} = props;
+	const { app } = useAppContext();
+	const { isModalOpen, hideModal, showModal } = useModal();
 	const { handleAddNew } = useSidePanelContext();
 	const { setRenamingBoardId, setNewBoardName } = useBoardRenameContext();
 	const { t } = useTranslation();
-	const [loadingNotification, setLoadingNotification] =
-		useState<boolean>(false);
-	const [boardItems, setBoardItems] = useState<IMiroBoardItem[]>([]);
-	const [error, setError] = useState<boolean>(false);
-	const [isOpenSuccessMessage, setIsOpenSuccessMessage] =
-		useState<boolean>(false);
 	const LIMIT_MIRO_ITEMS = 20;
-	const [itemsInfo, setItemsInfo] = useState<{
-		cursor: { items: string; connectors: string };
-		total: { items: number; connectors: number };
-	}>({
-		cursor: { items: "", connectors: "" },
-		total: { items: 0, connectors: 0 },
-	});
-	const loadingPercentage =
-		Math.ceil(
-			(boardItems.length /
-				(itemsInfo.total.items + itemsInfo.total.connectors)) *
-				100,
-		) || 0;
 
 	const token = Cookies.get("miro_accessToken");
 	const options = {
@@ -88,6 +78,8 @@ export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 			} = boardItems;
 
 			setBoardItems(items => [...items, ...boardItemsData]);
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-expect-error
 			setItemsInfo(info => {
 				return {
 					cursor: {
@@ -103,8 +95,8 @@ export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 		} catch (error) {
 			console.error(error);
 			onCloseModal();
-			setLoadingNotification(false);
-			setError(true);
+			hideModal("loadingNotification");
+			hideModal("errorNotification");
 		}
 	};
 
@@ -131,6 +123,8 @@ export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 			} = connectors;
 
 			setBoardItems(items => [...items, ...connectorsItems]);
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-expect-error
 			setItemsInfo(info => {
 				return {
 					cursor: {
@@ -146,8 +140,8 @@ export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 		} catch (error) {
 			console.error(error);
 			onCloseModal();
-			setLoadingNotification(false);
-			setError(true);
+			hideModal("loadingNotification");
+			hideModal("errorNotification");
 		}
 	};
 
@@ -158,7 +152,7 @@ export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 
 			const board = app.getBoard();
 			useCopyBoardItems(board, boardItems);
-			setIsOpenSuccessMessage(true);
+			showModal("successNotification");
 		}).catch(console.error);
 		// TODO notify user;
 	};
@@ -169,74 +163,56 @@ export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 	}, []);
 
 	useEffect(() => {
-		if (itemsInfo.cursor.items !== "" && !error) {
+		if (
+			itemsInfo.cursor.items !== "" &&
+			!isModalOpen("errorNotification")
+		) {
 			fetchBoardsItems();
 		}
 	}, [itemsInfo.cursor.items]);
 
 	useEffect(() => {
-		if (itemsInfo.cursor.connectors !== "" && !error) {
+		if (
+			itemsInfo.cursor.connectors !== "" &&
+			!isModalOpen("errorNotification")
+		) {
 			fetchBoardsItemsConnectors();
 		}
 	}, [itemsInfo.cursor.connectors]);
 
 	useEffect(() => {
-		if (loadingPercentage === 100 && !error) {
+		if (loadingPercentage === 100 && !isModalOpen("errorNotification")) {
 			onCloseModal();
-			loadingNotification && setLoadingNotification(false);
+			isModalOpen("loadingNotification") &&
+				hideModal("loadingNotification");
 			createNewBoard();
 		}
 	}, [loadingPercentage]);
-
-	const isWarnMessageOpen = (): boolean =>
-		boardItems.some(
-			item =>
-				item.type === MiroBoardItemTypes.CARD ||
-				item.type === MiroBoardItemTypes.DOCUMENT ||
-				item.type === MiroBoardItemTypes.MINDMAP,
-		);
 
 	const onCloseModal = (): void => setIsOpen(false);
 
 	const collapseModal = (): void => {
 		onCloseModal();
-		setLoadingNotification(true);
+		showModal("loadingNotification");
 	};
 
 	return (
-		<>
-			<Modal isOpen={isOpen} setIsOpen={setIsOpen} size={ModalSize.S}>
-				<h2 className={styles.title}>{t("miro.importMiro")}</h2>
-				<p className={styles.text}>
-					{t("miro.items.modalText")} {loadingPercentage}%...
-				</p>
-				<Button
-					pattern="tertiary"
-					onClick={collapseModal}
-					className={styles.itemsBtn}
-				>
-					{t("miro.items.closeModal")}
-				</Button>
-				<ProgressBar
-					width={loadingPercentage}
-					classnames={styles.progress}
-				/>
-			</Modal>
-			<LoadingNotification
-				loadingNotification={loadingNotification}
-				loadingPercentage={loadingPercentage}
+		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size={ModalSize.S}>
+			<h2 className={styles.title}>{t("miro.importMiro")}</h2>
+			<p className={styles.text}>
+				{t("miro.items.modalText")} {loadingPercentage}%...
+			</p>
+			<Button
+				pattern="tertiary"
+				onClick={collapseModal}
+				className={styles.itemsBtn}
+			>
+				{t("miro.items.closeModal")}
+			</Button>
+			<ProgressBar
+				width={Number(loadingPercentage)}
+				classnames={styles.progress}
 			/>
-			<SuccessNotification
-				isWarn={isWarnMessageOpen()}
-				isOpen={isOpenSuccessMessage}
-				setIsOpen={setIsOpenSuccessMessage}
-			/>
-			<ErrorNotification
-				isOpen={error}
-				setIsOpen={setError}
-				setStage={setStage}
-				setModalOpen={setIsOpen}
-			/>
-		</>
+		</Modal>
 	);
 }

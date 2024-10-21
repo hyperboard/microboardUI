@@ -21,6 +21,7 @@ import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
 import { ImportMiroStartModal, AuthClipboardModal } from "View/ImportMiro";
 import { ItemTooltip } from "View/ItemTooltip";
+import { ToastProvider } from "View/ToastProvider";
 
 export function AppView() {
 	const { app, board } = useAppContext();
@@ -145,7 +146,8 @@ export function AppView() {
 				<QuickAddPanel />
 				<ExportPanel />
 			</ViewModeGuard>
-			<ImportMiroBoards app={app} />
+			<ToastProvider />
+			<ImportMiroBoards />
 			<ImportMiroStartModal />
 			<AuthClipboardModal />
 		</div>
