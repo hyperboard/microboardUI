@@ -97,7 +97,7 @@ export function createApp(isHistory = true): App {
 		) {
 			boardsList.visitBoard(id);
 		}
-
+		sessionStorage.clear();
 		subscriptions.setBoard(currentBoard);
 		boardSubject.publish(currentBoard);
 		board = currentBoard;
