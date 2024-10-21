@@ -139,26 +139,14 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
                 (await hasSubscribeRights(ws, msg.boardId)) ||
                 isPublic
             ) {
-                subscribeClientToBoard(ws, msg.boardId);
+                await subscribeClientToBoard(ws, msg.boardId);
 
-                // Генерируем начальный порядковый номер для этой подписки
-                const initialSequenceNumber = 1;
-                if (!clientBoardSequences.has(ws)) {
-                    clientBoardSequences.set(ws, new Map());
-                }
-                clientBoardSequences.get(ws)!.set(msg.boardId, initialSequenceNumber);
+                confirmSubscriptionWithSeqNum(ws, msg);
 
-                // Отправляем подтверждение подписки с начальным порядковым номером
-                ws.send(
-                    JSON.stringify({
-                        type: "SubscribeConfirmation",
-                        boardId: msg.boardId,
-                        initialSequenceNumber: initialSequenceNumber,
-                    })
-                );
                 if (details?.type === "view") {
                     enforceViewMode(ws, msg.boardId);
                 }
+
                 await sendInitialDataToClient(ws, msg.boardId);
             } else {
                 sendError(ws, "Access denied: Subscribe to board events.", { denidedBoardId: msg.boardId });
@@ -167,6 +155,24 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
             logger.error("Failed to subscribe to board events:", error);
             return sendError(ws, "Failed to subscribe to board events.");
         }
+    }
+
+    function confirmSubscriptionWithSeqNum(ws: WebSocket, msg: SubscribeMsg) {
+        // Генерируем начальный порядковый номер для этой подписки
+        const initialSequenceNumber = 1;
+        if (!clientBoardSequences.has(ws)) {
+            clientBoardSequences.set(ws, new Map());
+        }
+        clientBoardSequences.get(ws)!.set(msg.boardId, initialSequenceNumber);
+
+        // Отправляем подтверждение подписки с начальным порядковым номером
+        ws.send(
+            JSON.stringify({
+                type: "SubscribeConfirmation",
+                boardId: msg.boardId,
+                initialSequenceNumber: initialSequenceNumber,
+            })
+        );
     }
 
     async function hasSubscribeRights(ws: WebSocket, boardId: string): Promise<boolean> {
