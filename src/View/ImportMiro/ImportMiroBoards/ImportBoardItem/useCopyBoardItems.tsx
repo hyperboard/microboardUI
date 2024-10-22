@@ -339,12 +339,6 @@ export const useCopyBoardItems = (
 
 	const getMiroItemById = (id: string): IMiroBoardItem | undefined => {
 		const miroBoardItems = getMiroBoardItems();
-		console.log("miroBoardItems", miroBoardItems);
-		console.log("id", id);
-		console.log(
-			"miroBoardItems",
-			miroBoardItems.find((item: IMiroBoardItem) => item.id === id),
-		);
 		return miroBoardItems.find((item: IMiroBoardItem) => item.id === id);
 	};
 
@@ -906,9 +900,9 @@ export const useCopyBoardItems = (
 	};
 
 	const copyUnsupportedItem = (item: MiroUnsupportedItem): void => {
-		const { position, geometry } = item;
+		const { position, geometry, parent } = item;
 
-		const shapePosition = getItemPosition(position, geometry);
+		const shapePosition = getItemPosition(position, geometry, parent);
 		const placeholder = new Placeholder(
 			undefined,
 			item,
@@ -974,6 +968,10 @@ export const useCopyBoardItems = (
 		) {
 			getMiroToken();
 			return;
+		}
+
+		if (isClipboard) {
+			showModal?.("loadingNotification");
 		}
 
 		miroBoardItems.forEach((item: IMiroBoardItem, index: number) => {
