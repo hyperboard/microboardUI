@@ -6,7 +6,8 @@ export type ModalName =
 	| "loadingNotification"
 	| "errorNotification"
 	| "successNotification"
-	| "warnClipboardNotification";
+	| "warnClipboardNotification"
+	| "imgAuthClipboardNotification";
 
 interface ModalContextType {
 	modals: Record<ModalName, boolean>;
@@ -25,6 +26,7 @@ const ModalContext = createContext<ModalContextType>({
 		errorNotification: false,
 		successNotification: false,
 		warnClipboardNotification: false,
+		imgAuthClipboardNotification: false,
 	},
 	showModal: modalName => {},
 	hideModal: modalName => {},
@@ -67,6 +69,7 @@ export const ModalProvider = ({ children }) => {
 		errorNotification: false,
 		successNotification: false,
 		warnClipboardNotification: false,
+		imgAuthClipboardNotification: false,
 	});
 	const [data, setModalData] = useState<unknown>();
 

@@ -3,7 +3,6 @@ import React, { MouseEventHandler, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import styles from "./ConfirmModal.module.css";
-import styles from "./ConfirmModal.module.css";
 
 interface ConfirmModalData {
 	title: string;

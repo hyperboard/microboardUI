@@ -610,10 +610,10 @@ export const transformUnsupportedItems = (
 		x: number;
 		y: number;
 	},
-): MiroUnsupportedItem => {
+): MiroUnsupportedItem | null => {
 	const json = item.widgetData?.json;
 	if (!json) {
-		return;
+		return null;
 	}
 
 	const transformUnsupportedItem: MiroUnsupportedItem = {
@@ -648,7 +648,7 @@ export const parseItem = (
 	},
 	clipboardItems: MiroClipboardItem[],
 	boardId: string,
-): SupportedMiroType | MiroUnsupportedItem => {
+): SupportedMiroType | MiroUnsupportedItem | null => {
 	switch (item.widgetData?.type) {
 		case "shape":
 			return transformShape(item, cursorPosition, clipboardItems);

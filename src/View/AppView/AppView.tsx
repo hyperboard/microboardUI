@@ -19,7 +19,11 @@ import style from "./AppView.module.css";
 import { InactiveBoardHidder } from "./InactiveBoardHidder";
 import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
-import { ImportMiroStartModal, AuthClipboardModal } from "View/ImportMiro";
+import {
+	ImportMiroStartModal,
+	AuthClipboardModal,
+	ImgAuthClipboardModal,
+} from "View/ImportMiro";
 import { ItemTooltip } from "View/ItemTooltip";
 import { ToastProvider } from "View/ToastProvider";
 
@@ -150,6 +154,7 @@ export function AppView() {
 			<ImportMiroBoards />
 			<ImportMiroStartModal />
 			<AuthClipboardModal />
+			<ImgAuthClipboardModal />
 		</div>
 	);
 }

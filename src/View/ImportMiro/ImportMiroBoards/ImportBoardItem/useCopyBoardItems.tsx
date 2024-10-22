@@ -659,7 +659,7 @@ export const useCopyBoardItems = (
 		);
 
 		prepareImage(imgBase64).then(imageData => {
-			const imgItem = new ImageItem(imageData).setId(id);
+			const imgItem = new ImageItem(imageData, board).setId(id);
 
 			// Calculate scale based on the desired geometry and the actual image dimensions
 			const scaleX = geometry.width / imageData.imageDimension.width;
@@ -925,15 +925,9 @@ export const useCopyBoardItems = (
 	};
 
 	const getMiroToken = (): void => {
-		sessionStorage.setItem(`miroItems`, JSON.stringify(miroItems));
-		const clientId = "3458764589599848573";
-		const redirectUrl = window.location.origin + "/boards?clipboard=true";
-
-		window.location.href =
-			"https://miro.com/oauth/authorize?response_type=code&client_id=" +
-			clientId +
-			"&redirect_uri=" +
-			redirectUrl;
+		localStorage.setItem(`miroItems`, JSON.stringify(miroItems));
+		const { showModal } = getGlobalModalFunctions();
+		showModal?.("imgAuthClipboardNotification");
 	};
 
 	const itemsTypes: {
@@ -952,13 +946,13 @@ export const useCopyBoardItems = (
 	const copyBoardItems = (): void => {
 		const { showModal, hideModal, setModalData } =
 			getGlobalModalFunctions();
-		const sessionMiroItems = sessionStorage.getItem(`miroItems`);
-		const sessionMiroItemsParsed =
-			sessionMiroItems && sessionMiroItems !== "undefined"
-				? JSON.parse(sessionMiroItems)
+		const storageMiroItems = localStorage.getItem(`miroItems`);
+		const storageItemsParsed =
+			storageMiroItems && storageMiroItems !== "undefined"
+				? JSON.parse(storageMiroItems)
 				: null;
 
-		const miroBoardItems = miroItems || sessionMiroItemsParsed || [];
+		const miroBoardItems = miroItems || storageItemsParsed || [];
 		const token = Cookies.get("miro_accessToken");
 
 		if (
@@ -972,7 +966,8 @@ export const useCopyBoardItems = (
 
 		miroBoardItems.forEach((item: IMiroBoardItem, index: number) => {
 			const type = item.type as MiroItemsTypes;
-			setModalData?.((miroBoardItems.length / 50 / index) * 100);
+			isClipboard &&
+				setModalData?.((miroBoardItems.length / 50 / index) * 100);
 
 			if (
 				item.type !== MiroBoardItemTypes.CONNECTOR &&
@@ -986,7 +981,7 @@ export const useCopyBoardItems = (
 			.filter(item => item.type === MiroBoardItemTypes.CONNECTOR)
 			.forEach(copyConnector);
 
-		sessionMiroItemsParsed && sessionStorage.removeItem(`miroItems`);
+		storageItemsParsed && localStorage.removeItem(`miroItems`);
 		if (!isClipboard) {
 			zoomToFit();
 		}

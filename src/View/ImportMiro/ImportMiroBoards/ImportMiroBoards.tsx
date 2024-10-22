@@ -32,10 +32,11 @@ export function ImportMiroBoards(): React.ReactElement | null {
 	const [searchParams] = useSearchParams();
 	const codeSearch = searchParams.get("code");
 	const teamIdSearch = searchParams.get("team_id");
-	const isOpenMiroBoards = codeSearch && teamIdSearch;
+	const isClipboard = searchParams.get("clipboard");
+	const isOpenMiroBoards = codeSearch && teamIdSearch && !isClipboard;
 
 	const [stage, setStage] = useState<number>(1);
-	const [open, setOpen] = useState<boolean | null>(!!isOpenMiroBoards);
+	const [open, setOpen] = useState<boolean>(!!isOpenMiroBoards);
 	const [boardInfo, setBoardInfo] = useState<Pick<IMiroBoard, "id" | "name">>(
 		{
 			id: "",

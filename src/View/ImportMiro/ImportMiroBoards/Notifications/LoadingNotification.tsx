@@ -12,13 +12,14 @@ interface LoadingNotificationProps {
 export const LoadingNotification = ({
 	className,
 }: LoadingNotificationProps): JSX.Element => {
-	const { isModalOpen, data } = useModal();
+	const { isModalOpen, data, hideModal } = useModal();
 	const { t } = useTranslation();
 
 	return (
 		<Notification
 			isOpen={isModalOpen("loadingNotification")}
 			className={className}
+			setIsOpen={() => hideModal("loadingNotification")}
 		>
 			<Loader
 				className={styles.notificationIcon}
