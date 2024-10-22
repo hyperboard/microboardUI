@@ -34,7 +34,7 @@ export const Modal = (props: ModalProps) => {
 	} = props;
 
 	const onCloseModal = (): void =>
-		modalName && hideModal ? hideModal?.(modalName) : setIsOpen(false);
+		modalName && hideModal ? hideModal?.(modalName) : setIsOpen?.(false);
 
 	return isOpen
 		? createPortal(

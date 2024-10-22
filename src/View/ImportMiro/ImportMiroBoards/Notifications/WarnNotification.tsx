@@ -6,38 +6,52 @@ import { Notification } from "shared/ui-lib/Notification";
 import { InfoColor } from "shared/ui-lib/Notification/Notification";
 import { useModal } from "View/Modal/ModalProvider";
 
-interface SuccessNotificationProps {
+interface WarnNotificationProps {
 	className?: string;
 }
 
-export const SuccessNotification = ({
+export const WarnNotification = ({
 	className,
-}: SuccessNotificationProps): React.ReactElement => {
+}: WarnNotificationProps): React.ReactElement => {
 	const { t } = useTranslation();
 	const { isModalOpen, hideModal } = useModal();
-	const isOpen = isModalOpen("successNotification");
+	const isOpen = isModalOpen("warnNotification");
 
 	useEffect(() => {
 		if (isOpen) {
 			setTimeout(() => {
-				hideModal("successNotification");
+				hideModal("warnNotification");
 			}, 10000);
 		}
 	}, [isOpen]);
 
 	return (
 		<Notification
-			isOpen={isModalOpen("successNotification")}
+			isOpen={isOpen}
 			className={className}
-			setIsOpen={() => hideModal("successNotification")}
+			setIsOpen={() => hideModal("warnNotification")}
 			infoIcon
-			infoColor={InfoColor.success}
+			infoColor={InfoColor.warn}
 			cross
 		>
 			<div className={styles.notificationWr}>
 				<h4 className={styles.notificationTitle}>
-					{t("miro.notifications.success")}
+					{t("miro.notifications.warn")}
 				</h4>
+				<p className={styles.notificationSuccessDescription}>
+					{t("miro.notifications.warnFirstDescription")}
+					<a
+						href="https://developers.miro.com/docs/miro-rest-api-introduction#what-can-i-do-with-the-rest-api"
+						target="_blank"
+						rel="noreferrer"
+						className={styles.notificationSuccessLink}
+					>
+						{t("miro.notifications.warnLinkDescription")}
+					</a>
+					<br />
+					<br />
+					{t("miro.notifications.warnSecondDescription")}
+				</p>
 				<Button
 					pattern="secondary"
 					onClick={() => hideModal("successNotification")}

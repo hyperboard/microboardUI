@@ -1,4 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { AuthClipboardModal, ImgAuthClipboardModal } from "View/ImportMiro";
+import {
+	LoadingNotification,
+	SuccessNotification,
+	WarnClipboardNotification,
+	WarnNotification,
+} from "View/ImportMiro/ImportMiroBoards/Notifications";
 
 export type ModalName =
 	| "startImportMiro"
@@ -7,6 +14,7 @@ export type ModalName =
 	| "errorNotification"
 	| "successNotification"
 	| "warnClipboardNotification"
+	| "warnNotification"
 	| "imgAuthClipboardNotification";
 
 interface ModalContextType {
@@ -27,6 +35,7 @@ const ModalContext = createContext<ModalContextType>({
 		successNotification: false,
 		warnClipboardNotification: false,
 		imgAuthClipboardNotification: false,
+		warnNotification: false,
 	},
 	showModal: modalName => {},
 	hideModal: modalName => {},
@@ -70,6 +79,7 @@ export const ModalProvider = ({ children }) => {
 		successNotification: false,
 		warnClipboardNotification: false,
 		imgAuthClipboardNotification: false,
+		warnNotification: false,
 	});
 	const [data, setModalData] = useState<unknown>();
 
@@ -88,6 +98,8 @@ export const ModalProvider = ({ children }) => {
 	};
 
 	const isModalOpen = modalName => !!modals[modalName];
+
+	console.log("isModalOpen", isModalOpen("loadingNotification"));
 
 	useEffect(() => {
 		setGlobalModalFunctions({
@@ -119,6 +131,12 @@ export const ModalProvider = ({ children }) => {
 			}}
 		>
 			{children}
+			<AuthClipboardModal />
+			<ImgAuthClipboardModal />
+			<LoadingNotification />
+			<WarnClipboardNotification />
+			<SuccessNotification />
+			<WarnNotification />
 		</ModalContext.Provider>
 	);
 };

@@ -78,6 +78,7 @@ export function MiroBoards({
 			);
 
 			const token = await response.json();
+			console.log("token", token);
 			if (token) {
 				Cookies.set("miro_accessToken", token.access_token);
 				!isClipboard && (await fetchBoards());
@@ -158,11 +159,11 @@ export function MiroBoards({
 		}
 
 		if (isClipboard) {
-			if (!token) {
+			if (!token || token === "undefined") {
 				fetchToken();
 			}
 
-			if (token) {
+			if (token && token !== "undefined") {
 				openSeenLastBoard();
 			}
 		}

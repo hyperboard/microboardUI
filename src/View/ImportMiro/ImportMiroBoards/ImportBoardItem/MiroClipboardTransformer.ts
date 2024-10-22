@@ -702,7 +702,7 @@ export const pasteMiroClipboard = (board: Board, clipboardJson: any): any => {
 		if (transformedItem) {
 			acc.push(transformedItem);
 		}
-		setModalData?.(((index / clipboardItems.length) * 100) / 2);
+		setModalData?.(Math.floor(((index / clipboardItems.length) * 100) / 2));
 		return acc;
 	}, [] as IMiroBoardItem[]);
 	const miroConnectors = clipboardItems.reduce((acc, item) => {

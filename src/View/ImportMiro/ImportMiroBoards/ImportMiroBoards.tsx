@@ -3,17 +3,8 @@ import { MiroBoards } from "./MiroBoards/MiroBoards";
 import React from "react";
 import { ImportBoardItem } from "./ImportBoardItem";
 import { useSearchParams } from "react-router-dom";
-import {
-	IMiroBoard,
-	IMiroBoardItem,
-	MiroBoardItemTypes,
-} from "./MiroBoards/MiroBoardsModels";
-import {
-	ErrorNotification,
-	LoadingNotification,
-	SuccessNotification,
-	WarnClipboardNotification,
-} from "./Notifications";
+import { IMiroBoard, IMiroBoardItem } from "./MiroBoards/MiroBoardsModels";
+import { ErrorNotification } from "./Notifications";
 import { useModal } from "View/Modal/ModalProvider";
 
 export interface MiroItemsInfo {
@@ -28,7 +19,7 @@ export interface MiroItemsInfo {
 }
 
 export function ImportMiroBoards(): React.ReactElement | null {
-	const { setModalData } = useModal();
+	const { setModalData, showModal } = useModal();
 	const [searchParams] = useSearchParams();
 	const codeSearch = searchParams.get("code");
 	const teamIdSearch = searchParams.get("team_id");
@@ -51,14 +42,6 @@ export function ImportMiroBoards(): React.ReactElement | null {
 
 	const [boardItems, setBoardItems] = useState<IMiroBoardItem[]>([]);
 
-	const isWarnMessageOpen = (): boolean =>
-		boardItems.some(
-			item =>
-				item.type === MiroBoardItemTypes.CARD ||
-				item.type === MiroBoardItemTypes.DOCUMENT ||
-				item.type === MiroBoardItemTypes.MINDMAP,
-		);
-
 	const loadingPercentage =
 		Math.ceil(
 			(boardItems.length /
@@ -72,10 +55,7 @@ export function ImportMiroBoards(): React.ReactElement | null {
 
 	return (
 		<>
-			<LoadingNotification />
-			<SuccessNotification isWarn={isWarnMessageOpen()} />
 			<ErrorNotification setStage={setStage} setModalOpen={setOpen} />
-			<WarnClipboardNotification />
 			{stage === 1 ? (
 				<MiroBoards
 					isOpen={open}

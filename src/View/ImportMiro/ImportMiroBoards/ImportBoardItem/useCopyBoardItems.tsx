@@ -337,9 +337,9 @@ export const useCopyBoardItems = (
 	};
 
 	const getMiroItemById = (id: string): IMiroBoardItem | undefined => {
-		const sessionMiroItems = sessionStorage.getItem(`miroItems`);
-		const miroBoardItems = sessionMiroItems
-			? JSON.parse(sessionMiroItems)
+		const storageMiroItems = localStorage.getItem(`miroItems`);
+		const miroBoardItems = storageMiroItems
+			? JSON.parse(storageMiroItems)
 			: miroItems;
 
 		return miroBoardItems.find((item: IMiroBoardItem) => item.id === id);
@@ -925,7 +925,6 @@ export const useCopyBoardItems = (
 	};
 
 	const getMiroToken = (): void => {
-		localStorage.setItem(`miroItems`, JSON.stringify(miroItems));
 		const { showModal } = getGlobalModalFunctions();
 		showModal?.("imgAuthClipboardNotification");
 	};
@@ -943,20 +942,29 @@ export const useCopyBoardItems = (
 		unsupported: copyUnsupportedItem,
 	};
 
-	const copyBoardItems = (): void => {
-		const { showModal, hideModal, setModalData } =
-			getGlobalModalFunctions();
-		const storageMiroItems = localStorage.getItem(`miroItems`);
+	const getMiroBoardItems = (): IMiroBoardItem[] => {
+		const storageMiroItems = localStorage.getItem("miroItems");
 		const storageItemsParsed =
 			storageMiroItems && storageMiroItems !== "undefined"
 				? JSON.parse(storageMiroItems)
 				: null;
 
 		const miroBoardItems = miroItems || storageItemsParsed || [];
+		isClipboard &&
+			localStorage.setItem("miroItems", JSON.stringify(miroItems));
+
+		return miroBoardItems;
+	};
+
+	const copyBoardItems = (): void => {
+		const { showModal, hideModal, setModalData } =
+			getGlobalModalFunctions();
+
+		const miroBoardItems = getMiroBoardItems();
 		const token = Cookies.get("miro_accessToken");
 
 		if (
-			!token &&
+			(!token || token === "undefined") &&
 			miroBoardItems.some(item => item.type === "image") &&
 			isClipboard
 		) {
@@ -967,7 +975,11 @@ export const useCopyBoardItems = (
 		miroBoardItems.forEach((item: IMiroBoardItem, index: number) => {
 			const type = item.type as MiroItemsTypes;
 			isClipboard &&
-				setModalData?.((miroBoardItems.length / 50 / index) * 100);
+				setModalData?.(
+					Math.floor(
+						50 + ((index / miroBoardItems.length) * 100) / 2,
+					),
+				);
 
 			if (
 				item.type !== MiroBoardItemTypes.CONNECTOR &&
@@ -981,23 +993,37 @@ export const useCopyBoardItems = (
 			.filter(item => item.type === MiroBoardItemTypes.CONNECTOR)
 			.forEach(copyConnector);
 
-		storageItemsParsed && localStorage.removeItem(`miroItems`);
+		isClipboard && localStorage.removeItem(`miroItems`);
 		if (!isClipboard) {
 			zoomToFit();
+
+			const isWarnMessageOpen = miroBoardItems.some(
+				item =>
+					item.type === MiroBoardItemTypes.CARD ||
+					item.type === MiroBoardItemTypes.DOCUMENT ||
+					item.type === MiroBoardItemTypes.MINDMAP,
+			);
+
+			if (isWarnMessageOpen) {
+				showModal?.("warnNotification");
+			} else {
+				showModal?.("successNotification");
+			}
 		}
 
 		if (isClipboard) {
-			hideModal?.("loadingNotification");
-
 			const hasUnsupportedItems = miroBoardItems.some(
 				item => item.type === MiroBoardItemTypes.UNSUPPORTED,
 			);
 
+			hideModal?.("loadingNotification");
 			if (hasUnsupportedItems) {
 				showModal?.("warnClipboardNotification");
 			} else {
 				showModal?.("successNotification");
 			}
+
+			searchParams.delete("clipboard");
 		}
 	};
 
