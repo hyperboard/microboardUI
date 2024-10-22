@@ -133,11 +133,9 @@ export function AppView() {
 				<ContextMenu />
 				<ItemTooltip />
 			</ExportVisible>
-			<ViewModeGuard>
-				<ExportVisible>
-					{shouldShow("userPanel") && <UserPanel app={app} />}
-				</ExportVisible>
-			</ViewModeGuard>
+			<ExportVisible>
+				{shouldShow("userPanel") && <UserPanel app={app} />}
+			</ExportVisible>
 			<InactiveBoardHidder>
 				<ZoomPanel />
 			</InactiveBoardHidder>
