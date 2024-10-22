@@ -14,6 +14,7 @@ export type IconId =
 	| "Image"
 	| "Undo"
 	| "Redo"
+	| "Gear"
 	| "SidePanelOpen"
 	| "SidePanelClose"
 	| "Export"

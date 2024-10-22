@@ -52,6 +52,7 @@ export type IconId =
 	| "Minus"
 	| "Plus"
 	| "talkLoader"
+	| "Gear"
 	| "Export"
 	| "ErrorIcon";
 
