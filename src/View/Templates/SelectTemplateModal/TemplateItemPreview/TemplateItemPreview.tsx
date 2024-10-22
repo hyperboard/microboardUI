@@ -8,6 +8,7 @@ import { Icon } from "../../../Icon";
 import { TemplateItemsGrid } from "../TemplateItemsGrid/TemplateItemsGrid";
 import { Template } from "../../../Tools/Template";
 import { useModal } from "../../../Modal/ModalProvider";
+import { useTranslation } from "react-i18next";
 
 interface TemplateItemPreviewProps {
 	name: string;
@@ -30,6 +31,7 @@ export const TemplateItemPreview = ({
 }: TemplateItemPreviewProps) => {
 	const { board } = useAppContext();
 	const { hideModal } = useModal();
+	const { t } = useTranslation();
 
 	const pasteSnapshotAndClose = () => {
 		setPresentedTemplate(null);
@@ -45,7 +47,7 @@ export const TemplateItemPreview = ({
 					onClick={() => setPresentedTemplate(null)}
 				>
 					<Icon iconName="BackArrow" width={14} height={14} />
-					Back to template center
+					{t("modalTemplate.backToTemplates")}
 				</button>
 			</div>
 			<div className={styles.scrollContainer}>
@@ -66,7 +68,7 @@ export const TemplateItemPreview = ({
 					</div>
 				</div>
 				<h3 className={styles.relatedTemplatesHeader}>
-					Related templates
+					{t("modalTemplate.relatedTemplates")}
 				</h3>
 				<TemplateItemsGrid
 					templates={relatedTemplates}

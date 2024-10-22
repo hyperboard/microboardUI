@@ -263,6 +263,8 @@
 		"templates": "Templates",
 		"noTemplates": "There are no templates from this category",
 		"createTemplate": "Create template",
+		"backToTemplates": "Back to template center",
+		"relatedTemplates": "Related templates",
 		"UI": {
 			"inputs": {
 				"search": "Search",

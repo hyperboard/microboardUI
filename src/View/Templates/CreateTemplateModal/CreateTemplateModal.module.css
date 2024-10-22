@@ -12,23 +12,10 @@
 	color: red;
 }
 
-.multiselect {
-	width: 160px;
+.categoriesSelector {
+	width: 100%;
 }
 
-.multiselect option {
-	padding: 5px;
-}
-
-.multiselect option:checked {
-	background-color: #652094;
-}
-
-.dropdownItem {
-	cursor: pointer;
-	border-radius: 8px;
-}
-
-.dropdownItem:hover {
-	background-color: #acafaf;
+.languagesSelector {
+	width: 50%;
 }

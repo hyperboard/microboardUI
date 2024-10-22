@@ -1,5 +1,5 @@
 import { Modal } from "shared/ui-lib/Modal";
-import React, { ChangeEventHandler, useEffect, useRef, useState } from "react";
+import React, { ChangeEventHandler, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Input } from "../../../shared/ui-lib/Input";
 import { Button } from "../../../shared/ui-lib/Button";
@@ -8,11 +8,12 @@ import { getApiUrl } from "../../../Config";
 import Cookies from "js-cookie";
 import styles from "./CreateTemplateModal.module.css";
 import { TemplateCategory, CATEGORIES } from "../../Tools/Template";
-import { Dropdown } from "../../../shared/ui-lib/Dropdown/Dropdown";
 import i18next from "i18next";
 import { useTolgee } from "@tolgee/react";
 import { detectLanguage } from "../../../utils";
 import { useModal } from "../../Modal/ModalProvider";
+import Selector, { SelectorHandle } from "../../Ui/Selector/Selector";
+import { useForceUpdate } from "../../../lib/useForceUpdate";
 
 interface TranslatableInput {
 	id: string;
@@ -30,32 +31,40 @@ const TOLGEE_PROJECT_ID = import.meta.env.TOLGEE_PROJECT_ID || "10032";
 
 export const CreateTemplateModal = (): JSX.Element => {
 	const formRef = useRef<HTMLFormElement>(null);
+	const categoriesSelectorRef = useRef<SelectorHandle<true>>(null);
+	const languagesSelectorRef = useRef<SelectorHandle<true>>(null);
 	const imageSrc = useRef<null | string>(null);
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const [submitDisabled, setSubmitDisabled] = useState<boolean>(false);
 	const [translateDisabled, setTranslateDisabled] = useState<boolean>(false);
 	const [isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
 	const [errors, setErrors] = useState<string[]>([]);
-	const [selectedCategories, setSelectedCategories] = useState<
-		TemplateCategory[]
-	>([]);
 	const [nameInputs, setNameInputs] = useState<TranslatableInput[]>([
 		{ id: "templateName", placeholder: "Template name" },
 	]);
 	const [descriptionInputs, setDescriptionInputs] = useState<
 		TranslatableInput[]
 	>([{ id: "description", placeholder: "Description" }]);
-	const [selectedLanguages, setSelectedLanguages] = useState<string[]>([
-		i18next.language,
-	]);
 	const { t } = useTranslation();
 	const { board } = useAppContext();
 	const { isModalOpen, hideModal } = useModal();
+	const forceUpdate = useForceUpdate();
+
+	const categories = CATEGORIES.map(category => {
+		return {
+			value: category,
+			label: t(`modalTemplate.category.useCaseItems.${category}`),
+		};
+	});
+
+	const languages = i18next.languages.map(lan => {
+		return { value: lan, label: lan };
+	});
 
 	const hideModalAndResetForm = () => {
-		formRef?.current.reset();
-		setSelectedCategories([]);
-		setSelectedLanguages([i18next.language]);
+		formRef.current?.reset();
+		categoriesSelectorRef.current?.setSelectedOptions([categories[0]]);
+		languagesSelectorRef.current?.setSelectedOptions([languages[0]]);
 		hideModal("createTemplate");
 	};
 
@@ -192,7 +201,9 @@ export const CreateTemplateModal = (): JSX.Element => {
 
 		const promises: Promise<void>[] = [];
 
-		for (const language of selectedLanguages) {
+		for (const language of languagesSelectorRef
+			.current!.getSelectedOptions()
+			.map(o => o.value)) {
 			if (language !== nameLanguage) {
 				const languageToTranslate = languages.find(lan => {
 					return language === tolgee.getLanguage()
@@ -292,8 +303,9 @@ export const CreateTemplateModal = (): JSX.Element => {
 		const multilanguageDescription: Record<string, string> = {};
 		const multilanguageName: Record<string, string> = {};
 		if (descriptionInputs.length === 1) {
-			multilanguageDescription[selectedLanguages[0]] =
-				form?.description.value;
+			multilanguageDescription[
+				languagesSelectorRef.current!.getSelectedOptions()[0].value
+			] = form?.description.value;
 		} else {
 			descriptionInputs.forEach(desc => {
 				console.log(desc.id);
@@ -303,14 +315,18 @@ export const CreateTemplateModal = (): JSX.Element => {
 			});
 		}
 		if (nameInputs.length === 1) {
-			multilanguageName[selectedLanguages[0]] = form?.templateName.value;
+			multilanguageName[
+				languagesSelectorRef.current!.getSelectedOptions()[0].value
+			] = form?.templateName.value;
 		} else {
 			nameInputs.forEach(name => {
 				const value = form[name.id].value as string;
 				multilanguageName[name.id.split("templateName")[1]] = value;
 			});
 		}
-		const tags = selectedCategories;
+		const tags = categoriesSelectorRef
+			.current!.getSelectedOptions()
+			.map(o => o.value);
 		const snapshot = board.getSnapshot();
 
 		setIsSubmitLoading(true);
@@ -318,7 +334,9 @@ export const CreateTemplateModal = (): JSX.Element => {
 
 		const body = JSON.stringify({
 			description: multilanguageDescription,
-			languages: selectedLanguages,
+			languages: languagesSelectorRef
+				.current!.getSelectedOptions()
+				.map(o => o.value),
 			tags,
 			snapshot,
 			name: multilanguageName,
@@ -328,8 +346,12 @@ export const CreateTemplateModal = (): JSX.Element => {
 		await createTemplate(body)
 			.then(res => {
 				formRef.current?.reset();
-				setSelectedCategories([]);
-				setSelectedLanguages([i18next.language]);
+				categoriesSelectorRef.current?.setSelectedOptions([
+					categories[0],
+				]);
+				languagesSelectorRef.current?.setSelectedOptions([
+					languages[0],
+				]);
 				setSubmitDisabled(false);
 				setIsSubmitLoading(false);
 				hideModal("createTemplate");
@@ -342,48 +364,6 @@ export const CreateTemplateModal = (): JSX.Element => {
 				setIsSubmitLoading(false);
 			});
 	};
-
-	const handleSelectLanguage = (lan: string) => {
-		if (selectedLanguages.includes(lan)) {
-			return setSelectedLanguages(
-				selectedLanguages.filter(language => language !== lan),
-			);
-		}
-		setSelectedLanguages([...selectedLanguages, lan]);
-	};
-
-	const handleSelectCategory = (category: TemplateCategory) => {
-		if (selectedCategories.includes(category)) {
-			return setSelectedCategories(
-				selectedCategories.filter(selected => selected !== category),
-			);
-		}
-		setSelectedCategories([...selectedCategories, category]);
-	};
-
-	const categoriesDropdownItems = CATEGORIES.map(category => {
-		return (
-			<p
-				key={category}
-				className={styles.dropdownItem}
-				onClick={() => handleSelectCategory(category)}
-			>
-				{t(`modalTemplate.category.useCaseItems.${category}`)}
-			</p>
-		);
-	});
-
-	const languagesDropdownItems = i18next.languages.map(lan => {
-		return (
-			<p
-				key={lan}
-				className={styles.dropdownItem}
-				onClick={() => handleSelectLanguage(lan)}
-			>
-				{lan}
-			</p>
-		);
-	});
 
 	return (
 		<Modal
@@ -401,6 +381,12 @@ export const CreateTemplateModal = (): JSX.Element => {
 				className={styles.form}
 			>
 				<h1>{t("modalTemplate.createTemplate")}</h1>
+				<Selector
+					multiselect={true}
+					options={categories}
+					ref={categoriesSelectorRef}
+					containerClassName={styles.categoriesSelector}
+				/>
 				<input
 					ref={inputRef}
 					onChange={handleFileChange}
@@ -410,13 +396,12 @@ export const CreateTemplateModal = (): JSX.Element => {
 				<Button onClick={handleChangeImageClick}>
 					{t("modalTemplate.UI.buttons.choosePreview")}
 				</Button>
-				<Dropdown
-					items={languagesDropdownItems}
-					label={
-						selectedLanguages.length
-							? selectedLanguages.join(", ")
-							: "none"
-					}
+				<Selector
+					multiselect={true}
+					options={languages}
+					ref={languagesSelectorRef}
+					onChange={forceUpdate}
+					containerClassName={styles.languagesSelector}
 				/>
 				{nameInputs.map(input => {
 					return (
@@ -442,22 +427,16 @@ export const CreateTemplateModal = (): JSX.Element => {
 						/>
 					);
 				})}
-				{selectedLanguages.length > 1 && (
-					<Button
-						disabled={submitDisabled || translateDisabled}
-						onClick={handleTranslateClick}
-					>
-						{t("modalTemplate.UI.buttons.translate")}
-					</Button>
-				)}
-				<Dropdown
-					items={categoriesDropdownItems}
-					label={
-						selectedCategories.length
-							? selectedCategories.join(", ")
-							: "none"
-					}
-				/>
+				{languagesSelectorRef.current &&
+					languagesSelectorRef.current.getSelectedOptions().length >
+						1 && (
+						<Button
+							disabled={submitDisabled || translateDisabled}
+							onClick={handleTranslateClick}
+						>
+							{t("modalTemplate.UI.buttons.translate")}
+						</Button>
+					)}
 				<Button
 					type="submit"
 					disabled={submitDisabled && translateDisabled}

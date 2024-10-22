@@ -7,7 +7,6 @@ import { TemplateItemPreview } from "./TemplateItemPreview/TemplateItemPreview";
 import { getApiUrl } from "../../../Config";
 import { Icon } from "../../Icon";
 import { Input } from "../../../shared/ui-lib/Input";
-import { Chevron } from "../../../shared/ui-lib/Dropdown/Chevron";
 import clsx from "clsx";
 import { CategoriesMenu } from "./CategoriesMenu/CategoriesMenu";
 import i18next from "i18next";

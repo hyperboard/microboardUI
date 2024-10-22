@@ -6,7 +6,7 @@ import { BoardName } from "View/BoardName";
 import { App } from "App";
 import { useTranslation } from "react-i18next";
 import { TFunction } from "i18next";
-import Selector, { SelectorHandle } from "./Selector";
+import Selector, { SelectorHandle } from "../Ui/Selector/Selector";
 import { getEmbedUrl } from "lib/getEmbedUrl";
 import { getApiUrl } from "Config";
 import { UiButton } from "View/Ui/UiButton";
@@ -51,7 +51,7 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 	const isAuth = app.account.isLoggedIn;
 	const searchRef = useRef<HTMLInputElement>(null);
 	const newBoardRef = useRef<HTMLInputElement>(null);
-	const selectorRef = useRef<SelectorHandle>(null);
+	const selectorRef = useRef<SelectorHandle<false>>(null);
 	const userPanelRef = useRef<HTMLDivElement>(null);
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState<string>("");
@@ -100,7 +100,7 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 		name?: string | null,
 		authorKey?: string,
 	): Promise<void> {
-		if (selectorRef.current?.getSelectedOption().value === "view") {
+		if (selectorRef.current?.getSelectedOptions().value === "view") {
 			const authedUrl = `/boards/${boardId}/links`;
 			const unauthedUrl = `/boards/${boardId}/links/unauthed`;
 			const url = app.account.isLoggedIn
