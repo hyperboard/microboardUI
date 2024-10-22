@@ -30,7 +30,7 @@ const ModalContext = createContext<ModalContextType>({
 	modals: {
 		startImportMiro: false,
 		authClipboardMiro: false,
-		loadingNotification: false,
+		loadingNotification: true,
 		errorNotification: false,
 		successNotification: false,
 		warnClipboardNotification: false,
@@ -98,8 +98,6 @@ export const ModalProvider = ({ children }) => {
 	};
 
 	const isModalOpen = modalName => !!modals[modalName];
-
-	console.log("isModalOpen", isModalOpen("loadingNotification"));
 
 	useEffect(() => {
 		setGlobalModalFunctions({

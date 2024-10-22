@@ -610,6 +610,7 @@ export const transformUnsupportedItems = (
 		x: number;
 		y: number;
 	},
+	clipboardItems: MiroClipboardItem[],
 ): MiroUnsupportedItem | null => {
 	const json = item.widgetData?.json;
 	if (!json) {
@@ -636,6 +637,15 @@ export const transformUnsupportedItems = (
 			color: "",
 		},
 	};
+
+	if (json._parent) {
+		transformUnsupportedItem.parent = {
+			id: clipboardItems[json._parent.index].initialId,
+			links: {
+				self: "",
+			},
+		};
+	}
 
 	return transformUnsupportedItem;
 };
@@ -670,7 +680,11 @@ export const parseItem = (
 		case "frame":
 			return transformFrame(item, cursorPosition, clipboardItems);
 		default:
-			return transformUnsupportedItems(item, cursorPosition);
+			return transformUnsupportedItems(
+				item,
+				cursorPosition,
+				clipboardItems,
+			);
 	}
 };
 

@@ -171,6 +171,7 @@ const CONNECTOR_STYLES = {
 export const useCopyBoardItems = (
 	board: Board,
 	miroItems?: IMiroBoardItem[],
+	withoutImgs?: boolean,
 ): void => {
 	const boardMiroId: { [key: string]: string } = {};
 	const searchParams = new URLSearchParams(window.location.search);
@@ -337,11 +338,13 @@ export const useCopyBoardItems = (
 	};
 
 	const getMiroItemById = (id: string): IMiroBoardItem | undefined => {
-		const storageMiroItems = localStorage.getItem(`miroItems`);
-		const miroBoardItems = storageMiroItems
-			? JSON.parse(storageMiroItems)
-			: miroItems;
-
+		const miroBoardItems = getMiroBoardItems();
+		console.log("miroBoardItems", miroBoardItems);
+		console.log("id", id);
+		console.log(
+			"miroBoardItems",
+			miroBoardItems.find((item: IMiroBoardItem) => item.id === id),
+		);
 		return miroBoardItems.find((item: IMiroBoardItem) => item.id === id);
 	};
 
@@ -943,6 +946,8 @@ export const useCopyBoardItems = (
 	};
 
 	const getMiroBoardItems = (): IMiroBoardItem[] => {
+		miroItems &&
+			localStorage.setItem("miroItems", JSON.stringify(miroItems));
 		const storageMiroItems = localStorage.getItem("miroItems");
 		const storageItemsParsed =
 			storageMiroItems && storageMiroItems !== "undefined"
@@ -950,8 +955,6 @@ export const useCopyBoardItems = (
 				: null;
 
 		const miroBoardItems = miroItems || storageItemsParsed || [];
-		isClipboard &&
-			localStorage.setItem("miroItems", JSON.stringify(miroItems));
 
 		return miroBoardItems;
 	};
@@ -966,7 +969,8 @@ export const useCopyBoardItems = (
 		if (
 			(!token || token === "undefined") &&
 			miroBoardItems.some(item => item.type === "image") &&
-			isClipboard
+			isClipboard &&
+			!withoutImgs
 		) {
 			getMiroToken();
 			return;
@@ -981,6 +985,10 @@ export const useCopyBoardItems = (
 					),
 				);
 
+			if (withoutImgs && type === MiroBoardItemTypes.IMAGE) {
+				return;
+			}
+
 			if (
 				item.type !== MiroBoardItemTypes.CONNECTOR &&
 				itemsTypes[type]
@@ -993,7 +1001,8 @@ export const useCopyBoardItems = (
 			.filter(item => item.type === MiroBoardItemTypes.CONNECTOR)
 			.forEach(copyConnector);
 
-		isClipboard && localStorage.removeItem(`miroItems`);
+		localStorage.removeItem(`miroItems`);
+
 		if (!isClipboard) {
 			zoomToFit();
 

@@ -5,12 +5,15 @@ import styles from "./ImgAuthClipboardModal.module.css";
 import { useModal } from "View/Modal/ModalProvider";
 import { Button } from "shared/ui-lib/Button";
 import { Icon } from "View/Icon";
+import { useCopyBoardItems } from "../ImportMiroBoards/ImportBoardItem/useCopyBoardItems";
+import { useAppContext } from "View/AppContext";
 
 export const ImgAuthClipboardModal = (): JSX.Element => {
 	const { t } = useTranslation();
 	const { isModalOpen, hideModal } = useModal();
+	const { board } = useAppContext();
 
-	const onClick = (): void => {
+	const onAuthClick = (): void => {
 		hideModal("imgAuthClipboardNotification");
 
 		const clientId = "3458764589599848573";
@@ -22,6 +25,11 @@ export const ImgAuthClipboardModal = (): JSX.Element => {
 			clientId +
 			"&redirect_uri=" +
 			redirectUrl;
+	};
+
+	const onContinueClick = (): void => {
+		hideModal("imgAuthClipboardNotification");
+		useCopyBoardItems(board, undefined, true);
 	};
 
 	return (
@@ -38,7 +46,7 @@ export const ImgAuthClipboardModal = (): JSX.Element => {
 			</p>
 			<div className={styles.btnWrapper}>
 				<Button
-					onClick={onClick}
+					onClick={onAuthClick}
 					className={styles.btn}
 					pattern="primary"
 				>
@@ -51,7 +59,7 @@ export const ImgAuthClipboardModal = (): JSX.Element => {
 					{t("miro.imgAuthClipboardModal.authBtn")}
 				</Button>
 				<Button
-					onClick={() => hideModal("imgAuthClipboardNotification")}
+					onClick={onContinueClick}
 					className={styles.btnContinue}
 					pattern="tertiary"
 				>

@@ -19,7 +19,7 @@ export interface MiroItemsInfo {
 }
 
 export function ImportMiroBoards(): React.ReactElement | null {
-	const { setModalData, showModal } = useModal();
+	const { setModalData } = useModal();
 	const [searchParams] = useSearchParams();
 	const codeSearch = searchParams.get("code");
 	const teamIdSearch = searchParams.get("team_id");
@@ -51,7 +51,7 @@ export function ImportMiroBoards(): React.ReactElement | null {
 
 	useEffect(() => {
 		setModalData?.(loadingPercentage);
-	}, [setModalData]);
+	}, [setModalData, loadingPercentage]);
 
 	return (
 		<>

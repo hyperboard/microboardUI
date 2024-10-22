@@ -27,7 +27,7 @@ export const SuccessNotification = ({
 
 	return (
 		<Notification
-			isOpen={isModalOpen("successNotification")}
+			isOpen={isOpen}
 			className={className}
 			setIsOpen={() => hideModal("successNotification")}
 			infoIcon

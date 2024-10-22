@@ -19,7 +19,7 @@ export const ImportMiroStartModal = (): JSX.Element => {
 		// const clientSecret = import.meta.env.MIRO_CLIENT_SECRET;
 		// const baseURl = import.meta.env.BASE_URL
 		const clientId = "3458764589599848573";
-		const redirectUrl = window.location.origin + "/boards";
+		const redirectUrl = window.location.origin + "/boards/blank";
 
 		window.location.href =
 			"https://miro.com/oauth/authorize?response_type=code&client_id=" +

@@ -78,7 +78,6 @@ export function MiroBoards({
 			);
 
 			const token = await response.json();
-			console.log("token", token);
 			if (token) {
 				Cookies.set("miro_accessToken", token.access_token);
 				!isClipboard && (await fetchBoards());
