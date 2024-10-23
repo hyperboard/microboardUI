@@ -22,12 +22,13 @@ export const SyncJournal = memo(function SyncJournal({
 
 	const handleExport = (): void => {
 		const data = eventsLog;
+		const confirmedEvents = board.events?.serialize();
 
 		const jsonData = JSON.stringify(data, null, 2);
 		const blob = new Blob([jsonData], { type: "application/json" });
 		const link = document.createElement("a");
 		link.download = `syncLog_${
-			board.events?.getAll()[board.events?.getAll().length - 1].order
+			confirmedEvents?.[confirmedEvents.length - 1].order
 		}_${board.getBoardId()}.json`;
 		link.href = URL.createObjectURL(blob);
 		document.body.appendChild(link);
