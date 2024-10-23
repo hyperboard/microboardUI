@@ -54,28 +54,34 @@ export const SyncJournal = memo(function SyncJournal({
 			>
 				export
 			</UiButton>
-			{eventsLog.reverse().map(
-				(eventLog, idx) =>
-					eventLog.events.length > 0 && (
-						<React.Fragment key={`${eventLog.msg}_${idx}`}>
-							<span key={`${eventLog.msg}_${idx}_span`}>
-								<b>
-									{eventLog.msg
-										.replace(/([a-z])([A-Z])/g, "$1 $2")
-										.replace(/^./, str =>
-											str.toUpperCase(),
-										)}
-								</b>
-								{eventLog.events.reverse().map((event, idx) => (
-									<EventComponent
-										event={event}
-										key={`${event.body.eventId}_${idx}`}
-									/>
-								))}
-							</span>
-						</React.Fragment>
-					),
-			)}
+			{/* TODO replace with pagination */}
+			{eventsLog
+				.reverse()
+				.slice(0, 100)
+				.map(
+					(logMsg, idx) =>
+						logMsg.events.length > 0 && (
+							<React.Fragment key={`${logMsg.msg}_${idx}`}>
+								<span key={`${logMsg.msg}_${idx}_span`}>
+									<b>
+										{logMsg.msg
+											.replace(/([a-z])([A-Z])/g, "$1 $2")
+											.replace(/^./, str =>
+												str.toUpperCase(),
+											)}
+									</b>
+									{logMsg.events
+										.reverse()
+										.map((event, idx) => (
+											<EventComponent
+												event={event}
+												key={`${event.body.eventId}_${idx}`}
+											/>
+										))}
+								</span>
+							</React.Fragment>
+						),
+				)}
 		</UiPanel>
 	);
 });

@@ -1,7 +1,6 @@
 import { BoardEvent, RawEvents } from "Board/Events/Events";
 import React, { CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
-import ReactJson from "react-json-view";
 import { useAppContext } from "View/AppContext";
 import { UiButton } from "View/Ui/UiButton";
 import { UiPanel } from "View/Ui/UiPanel";
@@ -122,12 +121,16 @@ export const History = React.memo(function History({
 								.replace(/([a-z])([A-Z])/g, "$1 $2")
 								.replace(/^./, str => str.toUpperCase())}
 						</div>
-						{events.reverse().map((event, idx) => (
-							<EventComponent
-								event={event}
-								key={`${event.body.eventId}_${idx}`}
-							/>
-						))}
+						{/* TODO replace with pagination */}
+						{events
+							.reverse()
+							.slice(0, 100)
+							.map((event, idx) => (
+								<EventComponent
+									event={event}
+									key={`${event.body.eventId}_${idx}`}
+								/>
+							))}
 					</React.Fragment>
 				),
 			)}
