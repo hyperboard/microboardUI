@@ -153,7 +153,7 @@
 			"tooltip": "Добавить изображение"
 		},
 		"addFrame": {
-			"tooltip": "Добавить фрейм"
+			"tooltip": "Фрейм"
 		}
 	},
 	"zoomPanel": {

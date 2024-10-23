@@ -14,7 +14,7 @@ interface Props {
 export const LinkToButton = ({ item }: Props) => {
 	const linkToButtonRef = useRef<HTMLButtonElement | null>(null);
 	const { app, board } = useAppContext();
-	let mbr = useDomMbr({
+	const mbr = useDomMbr({
 		app,
 		board,
 		ref: linkToButtonRef,
