@@ -44,6 +44,15 @@ export class Boards {
         items: any[];
         userId?: string;
     }): Promise<{ boardId: string; editLink: string }> {
+        const startTime = Date.now();
+        this.logger.info("Starting board data save", {
+            dataId: transformedData.id,
+            name: transformedData.name,
+            itemCount: transformedData.items.length,
+            userId: transformedData.userId,
+            operation: "saveBoardData",
+        });
+
         try {
             const editLink = uuidv4();
             let createdBoard: null | OwnedBoard = null;
@@ -51,23 +60,50 @@ export class Boards {
             if (transformedData.userId !== undefined) {
                 createdBoard = (await this.createBoard(transformedData.name, +transformedData.userId)) as OwnedBoard;
             }
+
             if (createdBoard === null) {
-                throw new Error("Error creating board: create_private_board");
+                throw new Error("Failed to create board: create_private_board returned null");
             }
+
+            this.logger.info("Board created, creating edit link", {
+                boardUuid: createdBoard.uniq_id,
+                editLink,
+                operation: "saveBoardData",
+            });
+
             await this.createLink(createdBoard.uniq_id, "edit", editLink);
+
+            this.logger.info("Starting item addition to board", {
+                boardUuid: createdBoard.uniq_id,
+                itemCount: transformedData.items.length,
+                operation: "saveBoardData",
+            });
 
             for (const item of transformedData.items) {
                 await this.addEventToBoard(createdBoard.uniq_id, item.eventId, item);
             }
 
-            this.logger.info(`Board ${createdBoard.uniq_id} created successfully`);
-
-            return {
+            const result = {
                 boardId: createdBoard.uniq_id,
                 editLink,
             };
+
+            this.logger.info("Board data saved successfully", {
+                boardUuid: createdBoard.uniq_id,
+                executionTime: Date.now() - startTime,
+                operation: "saveBoardData",
+            });
+
+            return result;
         } catch (err) {
-            this.logger.error("Error saving board data:", err);
+            this.logger.error("Error saving board data", {
+                error: err instanceof Error ? err.message : String(err),
+                stack: err instanceof Error ? err.stack : undefined,
+                dataId: transformedData.id,
+                userId: transformedData.userId,
+                executionTime: Date.now() - startTime,
+                operation: "saveBoardData",
+            });
             throw err;
         }
     }
@@ -77,22 +113,54 @@ export class Boards {
         ownerId: number | undefined = undefined,
         isPublic = false
     ): Promise<AnonymousBoard | OwnedBoard> {
+        const startTime = Date.now();
+        this.logger.info("Starting board creation", {
+            title,
+            ownerId,
+            isPublic,
+            operation: "createBoard",
+        });
+
         try {
             if (ownerId) {
                 const privateBoard = await this.database.query<OwnedBoard>(
                     "select * from create_private_board($1, $2, $3)",
                     [title, ownerId, isPublic]
                 );
+
+                this.logger.info("Private board created successfully", {
+                    boardId: privateBoard.rows[0]?.id,
+                    boardUuid: privateBoard.rows[0]?.uniq_id,
+                    executionTime: Date.now() - startTime,
+                    operation: "createBoard",
+                });
+
                 return privateBoard.rows[0];
             } else {
                 const result = await this.database.query<AnonymousBoard>("SELECT * FROM create_board($1, $2)", [
                     title,
                     isPublic,
                 ]);
+
+                this.logger.info("Anonymous board created successfully", {
+                    boardId: result.rows[0]?.id,
+                    boardUuid: result.rows[0]?.uniq_id,
+                    executionTime: Date.now() - startTime,
+                    operation: "createBoard",
+                });
+
                 return result.rows[0];
             }
         } catch (error) {
-            this.logger.error(`Error creating board: ${error}`);
+            this.logger.error("Error creating board", {
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+                title,
+                ownerId,
+                isPublic,
+                executionTime: Date.now() - startTime,
+                operation: "createBoard",
+            });
             throw error;
         }
     }
@@ -414,13 +482,39 @@ export class Boards {
     }
 
     async createLink(boardId: string, type: string, linkId: string): Promise<any> {
+        const startTime = Date.now();
+        this.logger.info("Starting link creation", {
+            boardId,
+            type,
+            linkId,
+            operation: "createLink",
+        });
+
         try {
             validateUUID(boardId, "boardId");
             validateUUID(linkId, "linkId");
-            const table = await this.database.query("select create_link($1, $2, $3)", [boardId, type, linkId]);
-            return table;
+
+            const result = await this.database.query("select create_link($1, $2, $3)", [boardId, type, linkId]);
+
+            this.logger.info("Link created successfully", {
+                boardId,
+                type,
+                linkId,
+                executionTime: Date.now() - startTime,
+                operation: "createLink",
+            });
+
+            return result;
         } catch (error) {
-            this.logger.error(`Error creating link: ${error}`);
+            this.logger.error("Error creating link", {
+                error: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+                boardId,
+                type,
+                linkId,
+                executionTime: Date.now() - startTime,
+                operation: "createLink",
+            });
             throw error;
         }
     }

@@ -229,30 +229,45 @@ begin
 end;
 $$ language plpgsql;
 
-create or replace function create_link(
+CREATE OR REPLACE FUNCTION create_link(
     board_uuid uuid,
     link_type varchar,
     link_uuid uuid
 )
-returns void
-language plpgsql
-as $$
-declare
+RETURNS void
+LANGUAGE plpgsql
+AS $$
+DECLARE
     board_id integer;
-begin
-    select id into board_id from boards where uniq_id = board_uuid;
-    if board_id is null then
-        raise exception 'Board not found';
-    end if;
+BEGIN
+    IF board_uuid IS NULL THEN
+        RAISE EXCEPTION 'Board UUID cannot be null';
+    END IF;
 
-    if link_type = 'edit' then
-        insert into board_edit_link (board_id, edit_link_uuid) values (board_id, link_uuid);
-    elsif link_type = 'view' then
-        insert into board_view_link (board_id, view_link_uuid) values (board_id, link_uuid);
-    else
-        raise exception 'Invalid link type';
-    end if;
-end;
+    IF link_uuid IS NULL THEN
+        RAISE EXCEPTION 'Link UUID cannot be null';
+    END IF;
+    
+    SELECT id INTO board_id FROM boards WHERE uniq_id = board_uuid;
+    IF board_id IS NULL THEN
+        RAISE EXCEPTION 'Board not found';
+    END IF;
+
+    BEGIN
+        IF link_type = 'edit' THEN
+            INSERT INTO board_edit_link (board_id, edit_link_uuid) 
+            VALUES (board_id, link_uuid);
+        ELSIF link_type = 'view' THEN
+            INSERT INTO board_view_link (board_id, view_link_uuid) 
+            VALUES (board_id, link_uuid);
+        ELSE
+            RAISE EXCEPTION 'Invalid link type';
+        END IF;
+    EXCEPTION 
+        WHEN unique_violation THEN
+            RAISE EXCEPTION 'Link already exists for this board';
+    END;
+END;
 $$;
 
 create or replace function get_link(in_link_uuid UUID)
@@ -1327,11 +1342,21 @@ DECLARE
     new_author_key uuid;
     new_is_public boolean;
 BEGIN
+    IF title IS NULL OR title = '' THEN
+        RAISE EXCEPTION 'Title cannot be empty';
+    END IF;
+
     INSERT INTO boards (boardname, author_key, is_public)
     VALUES (title, uuid_generate_v4(), p_is_public)
     RETURNING boards.id, boards.uniq_id, boards.boardname, boards.author_key, boards.is_public INTO created_board_id, new_uniq_id, new_boardname, new_author_key, new_is_public;
 
-    PERFORM addboardtable(created_board_id);
+    BEGIN
+        PERFORM addboardtable(created_board_id);
+    EXCEPTION
+        WHEN OTHERS THEN
+            DELETE FROM boards WHERE id = created_board_id;
+            RAISE EXCEPTION 'Failed to create board table';
+    END;
 
     RETURN QUERY SELECT created_board_id, new_uniq_id, new_boardname, new_author_key, new_is_public;
 END;
@@ -1368,25 +1393,55 @@ DECLARE
     new_boardname text;
     new_is_public boolean;
 BEGIN
+    IF title IS NULL OR title = '' THEN
+        RAISE EXCEPTION 'Title cannot be empty';
+    END IF;
+
+    IF p_owner_id IS NULL THEN
+        RAISE EXCEPTION 'Owner ID cannot be null';
+    END IF;
+
     -- Create the board and get the id, uniq_id, and boardname
     INSERT INTO boards (boardname, is_public)
     VALUES (title, p_is_public)
     RETURNING boards.id, boards.uniq_id, boards.boardname, boards.is_public INTO new_board_id, new_board_uniq_id, new_boardname, new_is_public;
 
     -- Insert into board_owner and board_permissions in a single statement
-    INSERT INTO board_owner (board_id, owner_id)
-    VALUES (new_board_id, p_owner_id);
+    BEGIN
+        INSERT INTO board_owner (board_id, owner_id)
+        VALUES (new_board_id, p_owner_id);
+    EXCEPTION 
+        WHEN unique_violation THEN
+            DELETE FROM boards WHERE id = new_board_id;
+            RAISE EXCEPTION 'Owner already assigned to this board';
+    END;
 
-    INSERT INTO board_permissions (board_id, user_id, can_view, can_edit)
-    VALUES (new_board_id, p_owner_id, TRUE, TRUE);
+    BEGIN
+        INSERT INTO board_permissions (board_id, user_id, can_view, can_edit)
+        VALUES (new_board_id, p_owner_id, TRUE, TRUE);
+    EXCEPTION
+        WHEN unique_violation THEN
+            DELETE FROM board_owner WHERE board_id = new_board_id;
+            DELETE FROM boards WHERE id = new_board_id;
+            RAISE EXCEPTION 'Board permissions already exist';
+    END;
 
     -- Create the board table
-    PERFORM addboardtable(new_board_id);
+    BEGIN
+        PERFORM addboardtable(new_board_id);
+    EXCEPTION
+        WHEN OTHERS THEN
+            DELETE FROM board_permissions WHERE board_id = new_board_id;
+            DELETE FROM board_owner WHERE board_id = new_board_id;
+            DELETE FROM boards WHERE id = new_board_id;
+            RAISE EXCEPTION 'Failed to create board table';
+    END;
 
     -- Return the new board details
-    RETURN QUERY SELECT  new_board_id, new_board_uniq_id, new_boardname, p_owner_id, new_is_public;
+    RETURN QUERY SELECT new_board_id, new_board_uniq_id, new_boardname, p_owner_id, new_is_public;
 END;
 $$;
+
 
 CREATE OR REPLACE FUNCTION rename_board(
     board_uuid uuid,
