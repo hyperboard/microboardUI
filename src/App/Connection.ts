@@ -211,10 +211,9 @@ export function createConnection(getBoard: () => Board): Connection {
 	}
 
 	function onMessage(msg: SocketMsg): void {
+		clearConnectionError();
 		switch (msg.type) {
 			case "SubscribeConfirmation":
-				clearConnectionError();
-			// eslint-disable-next-line no-fallthrough
 			case "Confirmation":
 			case "BoardEvent":
 			case "BoardEventList":
@@ -231,13 +230,9 @@ export function createConnection(getBoard: () => Board): Connection {
 				subscription.publish(msg);
 				break;
 			case "Subscribe":
-				break;
 			case "Unsubscribe":
-				break;
 			case "Error":
-				break;
 			case "ping":
-				clearConnectionError();
 				break;
 			default:
 				console.warn("Debug: Received unknown message type:", msg.type);
