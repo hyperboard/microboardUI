@@ -58,7 +58,10 @@ export class Boards {
             let createdBoard: null | OwnedBoard = null;
 
             if (transformedData.userId !== undefined) {
-                createdBoard = (await this.createBoard(transformedData.name, +transformedData.userId)) as OwnedBoard;
+                createdBoard = (await this.createBoard(
+                    transformedData.name || "Untitled",
+                    +transformedData.userId
+                )) as OwnedBoard;
             }
 
             if (createdBoard === null) {

@@ -1,6 +1,7 @@
 import express, { Response, Request } from "express";
 import { body } from "express-validator";
 import { catchAsync } from "shared/lib/catchAsync";
+import { internalError } from "shared/lib/routing";
 import { talkIntegrationJob } from "trigger/jobs/talk";
 export function createTalkRouter() {
     const router = express.Router();
@@ -28,12 +29,10 @@ export function createTalkRouter() {
                     job,
                 });
             } catch (e) {
-                return res.status(500).json({
-                    error: "Error to start talk integration job",
-                });
+                return internalError(res, e, "Error to start talk integration job");
             }
-        }
-        ));
+        })
+    );
 
     return router;
 }

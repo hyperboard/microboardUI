@@ -17,6 +17,7 @@ import { getMediaRouter } from "./MediaTalk";
 import { MediaDAL } from "./Media/MediaDAL";
 import { createMediaRouter } from "./Media";
 import fs from "fs";
+import { internalError } from "shared/lib/routing";
 
 export function getV1Router(
     config: Config,
@@ -50,7 +51,7 @@ export function getV1Router(
         fs.readFile(filePath, "utf8", (err, data) => {
             if (err) {
                 logger.error("Error reading embedMicroboard.js", err);
-                return res.status(500).send("Internal Server Error");
+                return internalError(res, err, "Internal Server Error");
             }
             const updatedData = data.replaceAll(/<embedUrl\/>/g, process.env.EMBED_URL || "");
             res.type("application/javascript").send(updatedData);

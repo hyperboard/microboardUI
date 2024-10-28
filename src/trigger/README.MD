@@ -27,39 +27,39 @@ Run rest app and trigger:
 
 Pull and run container:
 
-```
+```bash
 docker pull localstack/localstack
 docker run -d --rm -it -p 4566:4566 -p 4510-4559:4510-4559 localstack/localstack
 ```
 
 Take container-id/name from `docker ps` of Docker Desktop and enter in bash:
 
-```
+```bash
 docker exec -it '<container-id>/<name>' bash
 ```
 
 Create bucket (in container):
 
-```
+```bash
 aws configure --profile default
 awslocal s3api create-bucket --bucket talk --region us-east-1
 ```
 
 Copy sample (on local machine):
 
-```
+```bash
 docker cp <path_to_folder> <container_id>:/test-storage
 ```
 
 Add files to bucket (in container):
 
-```
+```bash
 awslocal s3 cp /test-storage s3://talk/ --recursive
 ```
 
 Localstack useful commands:
 
-```
+```bash
 awslocal s3 ls s3://talk/ --recursive # Check all files
 awslocal s3 rm s3://talk/ --recursive # Clear bucket
 
