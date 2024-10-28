@@ -141,7 +141,7 @@ export class Boards {
                 return privateBoard.rows[0];
             } else {
                 const result = await this.database.query<AnonymousBoard>("SELECT * FROM create_board($1, $2)", [
-                    title,
+                    title || "",
                     isPublic,
                 ]);
 

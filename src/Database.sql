@@ -1342,7 +1342,7 @@ DECLARE
     new_author_key uuid;
     new_is_public boolean;
 BEGIN
-    IF title IS NULL OR title = '' THEN
+    IF title IS NULL THEN
         RAISE EXCEPTION 'Title cannot be empty';
     END IF;
 
@@ -1393,7 +1393,7 @@ DECLARE
     new_boardname text;
     new_is_public boolean;
 BEGIN
-    IF title IS NULL OR title = '' THEN
+    IF title IS NULL THEN
         RAISE EXCEPTION 'Title cannot be empty';
     END IF;
 
