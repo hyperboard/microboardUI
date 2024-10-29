@@ -13,25 +13,23 @@ import { nocache } from "./nocache";
 import { Boards } from "./Routes/V1/Boards";
 import { Auth } from "./Routes/V1/Auth";
 import { Users } from "./Routes/V1/Users";
-import { getDatabase } from "./Database";
 import { getV1Router } from "./Routes";
 import { withWebSocketApi } from "./WebSocket";
 import { Config } from "./shared/config/config";
 import { Mailer } from "./shared/modules/mailer/mailer";
 import { createBarrelMediaDAL } from "Routes/V1/MediaTalk/Media";
 import { createMinioMediaDAL } from "Routes/V1/Media";
-import { register } from "./Metrics/metrics";
 import { createMiddleware } from "@trigger.dev/express";
 import { client } from "trigger";
 import cors from "cors";
 
 export async function getApp(): Promise<http.Server> {
     const app = express();
-    const allowedOrigins = process.env.ALLOW_ORIGIN?.split(',').map((o) => o.trim());
+
     app.use(morgan("combined"));
-    app.use(cors({
-        origin: process.env.NODE_ENV === 'development' ? '*' : allowedOrigins
-    }));
+    if (process.env.NODE_ENV !== "production") {
+        app.use(cors());
+    }
 
     const server = http.createServer(app);
     const wss = new WebSocketServer({
@@ -102,11 +100,10 @@ export async function getApp(): Promise<http.Server> {
 
     const config = new Config();
     const mailer = new Mailer(config, logger, process.env.BASE_URL ?? "example");
-    const database = await getDatabase(logger);
-    const boards = new Boards(database, logger);
+    const boards = new Boards(logger);
     withWebSocketApi(wss, boards, logger);
-    const auth = new Auth(database, logger, config, mailer);
-    const users = new Users(database, logger);
+    const auth = new Auth(logger, config, mailer);
+    const users = new Users(logger);
 
     app.get("/", (request, response) => {
         response.status(200).json({});
@@ -135,13 +132,13 @@ export async function getApp(): Promise<http.Server> {
     });
 
     const onError = (err: unknown) => {
-        logger.warn('Caught unhandled exception')
+        logger.warn("Caught unhandled exception");
         if (err instanceof Error) {
             logger?.warn(err.message);
             console.error(err);
         }
-    }
-    process.on('unhandledRejection', onError)
-    process.on('uncaughtException', onError);
+    };
+    process.on("unhandledRejection", onError);
+    process.on("uncaughtException", onError);
     return server;
 }

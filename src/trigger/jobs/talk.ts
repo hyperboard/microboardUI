@@ -354,7 +354,7 @@ export const talkIntegrationJob = client.defineJob({
                 date: new Date().toISOString(),
             });
 
-            const boards = new Boards(database, winstonLogger);
+            const boards = new Boards(winstonLogger);
             const createdBoard = await boards.saveBoardData(transformedBoard);
 
             if (createdBoard) {

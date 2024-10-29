@@ -3,7 +3,7 @@ import winston from "winston";
 import { sql } from "./sql";
 import { AccessToken } from "Interface";
 
-async function loadFunctions(database: Pool, logger: winston.Logger): Promise<void> {
+function loadFunctions(database: Pool, logger: winston.Logger): void {
     async function loadFunction(name: string, body: string): Promise<void> {
         try {
             await database.query(body);
@@ -26,7 +26,7 @@ async function loadFunctions(database: Pool, logger: winston.Logger): Promise<vo
         }
     }
 
-    await loadFunction("pgsql", sql);
+    loadFunction("pgsql", sql);
 }
 
 let database: Pool | null = null; // TODO: rewrite
@@ -40,7 +40,7 @@ export async function getDatabase(logger: winston.Logger): Promise<Pool> {
             port: Number.parseInt(DB_PORT ? DB_PORT : "5432"),
             host: DB_HOST,
         });
-        await loadFunctions(database, logger);
+        loadFunctions(database, logger);
     }
     return database;
 }
@@ -80,37 +80,42 @@ export async function getSharedLinks(database: Pool, userId: number) {
         id: string;
         boardname: string;
         is_public: boolean;
-    }>(`
+    }>(
+        `
                 SELECT uel.edit_link_uuid as id, b.boardname, b.is_public
                 FROM user_edit_link uel 
                 JOIN board_edit_link bel ON bel.edit_link_uuid = uel.edit_link_uuid
                 JOIN boards b ON bel.board_id = b.id
                 WHERE uel.user_id = $1
-            `, [userId]);
+            `,
+        [userId]
+    );
     const sharedViewLinksQuery = await database.query<{
         id: string;
         boardname: string;
         is_public: boolean;
-    }>(`
+    }>(
+        `
                 SELECT uvl.view_link_uuid as id, b.boardname, b.is_public
                 FROM user_view_link uvl 
                 JOIN board_view_link bvl ON bvl.view_link_uuid = uvl.view_link_uuid
                 JOIN boards b ON bvl.board_id = b.id
                 WHERE uvl.user_id = $1
-            `, [userId]);
+            `,
+        [userId]
+    );
     const sharedBoardIdsQuery = await database.query<{
         id: string;
         boardname: string;
         is_public: boolean;
-    }>(`
+    }>(
+        `
                 SELECT ubi.board_uuid as id, b.boardname, b.is_public
                 FROM user_board_id ubi 
                 JOIN boards b ON ubi.board_uuid = b.uniq_id
                 WHERE ubi.user_id = $1
-            `, [userId]);
-    return [
-        ...sharedEditLinksQuery.rows,
-        ...sharedViewLinksQuery.rows,
-        ...sharedBoardIdsQuery.rows
-    ];
+            `,
+        [userId]
+    );
+    return [...sharedEditLinksQuery.rows, ...sharedViewLinksQuery.rows, ...sharedBoardIdsQuery.rows];
 }

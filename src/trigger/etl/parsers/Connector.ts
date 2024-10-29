@@ -1,12 +1,12 @@
-import { Connector } from "@mirohq/miro-api";
+import { Connector, ImageItem, ShapeItem, StickyNoteItem, TextItem } from "@mirohq/miro-api";
 import { WidgetItem } from "@mirohq/miro-api/dist/highlevel/Item";
 import { makeInjectedText, parseTextFromConnector } from "./RichText";
 import { getItemPosition } from "./shared";
 
 interface ConnectorPayload {
     item: Connector;
-    startItem?: WidgetItem;
-    endItem?: WidgetItem;
+    startItem?: ImageItem | ShapeItem | StickyNoteItem | TextItem | undefined;
+    endItem?: ImageItem | ShapeItem | StickyNoteItem | TextItem | undefined;
     userId: string;
     boardId: string;
     order: number;
@@ -35,7 +35,10 @@ export const parseConnector = (payload: ConnectorPayload): Array<any | null> => 
     };
 
     // Calculate actual start and end points
-    const calculatePoint = (pos: { x: number; y: number }, wItem?: WidgetItem) => {
+    const calculatePoint = (
+        pos: { x: number; y: number },
+        wItem?: ImageItem | ShapeItem | StickyNoteItem | TextItem
+    ) => {
         if (!wItem) return { x: 0, y: 0 };
         const width = wItem.geometry?.width || 0;
         const height = wItem.geometry?.height || 0;
