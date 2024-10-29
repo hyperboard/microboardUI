@@ -77,16 +77,29 @@ export function getV1Router(
     router.use(apiBase, getUsersRouter(users, logger));
     router.use(`${apiBase}/miro`, getMiroRouter());
 
-    createFileRoute(router, `${apiBase}/embed.js`, "./Embedding/embedMicroboard.js", logger, "application/javascript", "utf8", (data) => {
-        return data.replaceAll(/<embedUrl\/>/g, process.env.EMBED_URL || "");
-    });
+    createFileRoute(
+        router,
+        `${apiBase}/embed.js`,
+        "./Embedding/embedMicroboard.js",
+        logger,
+        "application/javascript",
+        "utf8",
+        (data) => {
+            return data.replaceAll(/<embedUrl\/>/g, process.env.EMBED_URL || "");
+        }
+    );
 
     createFileRoute(router, `${apiBase}/dropflow.wasm`, "./dropflow.wasm", logger, "application/wasm");
-
     createFileRoute(router, `${apiBase}/fonts/Arial.ttf`, "./fonts/Arial.ttf", logger, "font/ttf");
     createFileRoute(router, `${apiBase}/fonts/Arial_Bold.ttf`, "./fonts/Arial_Bold.ttf", logger, "font/ttf");
     createFileRoute(router, `${apiBase}/fonts/Arial_Italic.ttf`, "./fonts/Arial_Italic.ttf", logger, "font/ttf");
-    createFileRoute(router, `${apiBase}/fonts/Arial_Bold_Italic.ttf`, "./fonts/Arial_Bold_Italic.ttf", logger, "font/ttf");
+    createFileRoute(
+        router,
+        `${apiBase}/fonts/Arial_Bold_Italic.ttf`,
+        "./fonts/Arial_Bold_Italic.ttf",
+        logger,
+        "font/ttf"
+    );
 
     router.get("/api/v1/healthcheck", (req, res) => {
         res.status(200).json({ status: "OK", message: "Server is up and running" });

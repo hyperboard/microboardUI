@@ -121,9 +121,11 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
     }
 
     function handlePingMsg(_msg: PingMsg, ws: WebSocket): void {
-        ws.send(JSON.stringify({
-            type: "ping",
-        }));
+        ws.send(
+            JSON.stringify({
+                type: "ping",
+            })
+        );
     }
 
     const clientBoardSequences = new Map<WebSocket, Map<string, number>>();
@@ -206,14 +208,17 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
 
     async function subscribeClientToBoard(ws: WebSocket, boardId: string): Promise<void> {
         const board = await boards.getBoardByLink(boardId);
+        if (!board?.id) {
+            throw new Error(`Board ${boardId} not found`);
+        }
         if (board) {
-            const mapped = boardIdToLinks.get(board.boardId) ?? [];
+            const mapped = boardIdToLinks.get(`${board.id}`) ?? [];
             if (!mapped.includes(boardId)) {
                 mapped.push(boardId);
             }
-            boardIdToLinks.set(board.boardId, mapped);
+            boardIdToLinks.set(`${board.id}`, mapped);
 
-            linkToBoardId.set(boardId, board.boardId);
+            linkToBoardId.set(boardId, `${board.id}`);
         } else {
             const mappedIds = boardIdToLinks.get(boardId);
             if (!mappedIds) {
@@ -242,7 +247,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
 
     async function sendLatestSnapshot(ws: WebSocket, boardId: string): Promise<number> {
         const snapshot = await boards.getLatestBoardSnapshot(boardId);
-        if (!snapshot) {
+        if (!snapshot || snapshot.length === 0) {
             return 0;
         }
         ws.send(
@@ -311,6 +316,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
                 const totalLatency = Number(totalEndTime - startTime);
                 boardEventTotalLatency.observe(totalLatency);
             } catch (error) {
+                logger.error("Failed to process board event:", error);
                 return sendError(ws, "Failed to process board event.");
             }
         } else {
@@ -505,7 +511,15 @@ export type EventsMsg =
     | SnapshotResponseMsg
     | SubscribeConfirmationMsg;
 
-export type SocketMsg = EventsMsg | AuthMsg | SubscribeMsg | UnsubscribeMsg | ErrorMsg | ViewModeMsg | ConfirmationMsg | PingMsg;
+export type SocketMsg =
+    | EventsMsg
+    | AuthMsg
+    | SubscribeMsg
+    | UnsubscribeMsg
+    | ErrorMsg
+    | ViewModeMsg
+    | ConfirmationMsg
+    | PingMsg;
 
 type BoardEventBody = any;
 
@@ -539,6 +553,9 @@ export class EventsManager {
     async initialize() {
         try {
             const boardLastOrders = await this.boards.getAllBoardLastEventOrders();
+            if (!boardLastOrders) {
+                throw new Error("Error finding last event orders");
+            }
             for (const { board_uuid, edit_link_uuids, last_order } of boardLastOrders) {
                 this.lastEventOrders.set(board_uuid, last_order);
                 this.boardUuidMap.set(board_uuid, board_uuid);

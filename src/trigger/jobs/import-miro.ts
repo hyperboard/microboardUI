@@ -159,7 +159,7 @@ export const importMiroBoard = client.defineJob({
                 transformedBoard: transformedBoardTask.data,
             });
 
-            const boards = new Boards(database, winstonLogger);
+            const boards = new Boards(winstonLogger);
             const savedBoard = await boards.saveBoardData(transformedBoardTask.data);
 
             await io.logger.info(`Saved board: `, {
@@ -242,7 +242,7 @@ export const importMiroBoard = client.defineJob({
                 error,
             });
 
-            throw error;
+            // throw error;
         }
     },
 });

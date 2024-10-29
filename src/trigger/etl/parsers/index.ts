@@ -23,6 +23,12 @@ interface Item {
     boardId: string;
 }
 
+interface ItemConnected {
+    item: ImageItem | ShapeItem | StickyNoteItem | TextItem;
+    userId: string;
+    boardId: string;
+}
+
 interface BoardPayload {
     miroBoard: Board;
     userId: string;
@@ -65,9 +71,11 @@ export const getTransformedBoard = async (payload: BoardPayload): Promise<Transf
         if (data?.item.type === "frame") {
             frames.set(data.item.id, { item: { frame: data.item as FrameItem, newItemId: itemUUID }, children: [] });
         }
-        const parent = data?.item?.parent ? parentsMap.get(data?.item?.parent?.id) : undefined;
 
-        const events = await getParseFunction({
+        // FIXME: remove any
+        const parent = (data?.item as any)?.parent ? parentsMap.get((data?.item as any)?.parent?.id) : undefined;
+
+        const events = getParseFunction({
             item: data.item,
             newItemId: itemUUID,
             order: ++order,
@@ -78,8 +86,9 @@ export const getTransformedBoard = async (payload: BoardPayload): Promise<Transf
 
         const nonNullEvents = events.filter((event) => event !== null);
 
-        if (data?.item.type !== "frame" && data?.item.parent && frames.has(data.item.parent.id)) {
-            frames.get(data.item?.parent?.id)!.children.push(itemUUID);
+        // FIXME: remove any
+        if (data?.item.type !== "frame" && (data?.item as any).parent && frames.has((data.item as any).parent.id)) {
+            frames.get((data.item as any)?.parent?.id)!.children.push(itemUUID);
         }
 
         return nonNullEvents.length ? nonNullEvents.map((event) => ({ event, originalId: data.item.id })) : null;
@@ -93,8 +102,8 @@ export const getTransformedBoard = async (payload: BoardPayload): Promise<Transf
             return null;
         }
 
-        const startItem = items.find((item) => item.item.id === data.item?.startItem?.id);
-        const endItem = items.find((item) => item.item.id === data.item?.endItem?.id);
+        const startItem = items.find((item) => item.item.id === data.item?.startItem?.id) as ItemConnected;
+        const endItem = items.find((item) => item.item.id === data.item?.endItem?.id) as ItemConnected;
         const parsedStart = parsedItems.find((item) => item?.originalId === startItem?.item.id);
         const parsedEnd = parsedItems.find((item) => item?.originalId === endItem?.item.id);
 
