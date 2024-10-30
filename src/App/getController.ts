@@ -148,7 +148,9 @@ export function getController(
 				],
 			},
 			textStrike: {
-				cb: () => board.selection.setFontStyle("line-through"),
+				/* TODO uncomment when dropflow can text-decoration, prevents default to prevent slate from adding same style */
+				// cb: () => board.selection.setFontStyle("line-through"),
+				cb: (event) => event?.preventDefault(),
 				selectionContext: [
 					"EditTextUnderPointer",
 					"EditUnderPointer",
@@ -156,7 +158,9 @@ export function getController(
 				],
 			},
 			textUnderline: {
-				cb: () => board.selection.setFontStyle("underline"),
+				/* TODO uncomment when dropflow can text-decoration, prevents default to prevent slate from adding same style */
+				// cb: () => board.selection.setFontStyle("underline"),
+				cb: (event) => event?.preventDefault(),
 				selectionContext: [
 					"EditTextUnderPointer",
 					"EditUnderPointer",
