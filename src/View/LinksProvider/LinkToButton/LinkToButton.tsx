@@ -7,6 +7,7 @@ import { Icon } from "../../Icon";
 import styles from "./LinkToButton.module.css";
 import { notify } from "../../Ui/Toast";
 import { useTranslation } from "react-i18next";
+import { useAppSubscription } from "../../../Board/useBoardSubscription";
 
 async function getFavicon(url: string) {
 	try {
@@ -40,7 +41,9 @@ export const LinkToButton = ({ item }: Props) => {
 			? `${new URL(item.getLinkTo()!).origin}/favicon.ico`
 			: undefined,
 	);
+	const imgRef = useRef<HTMLImageElement | null>(null);
 	const { app, board } = useAppContext();
+
 	const mbr = useDomMbr({
 		app,
 		board,
@@ -54,6 +57,15 @@ export const LinkToButton = ({ item }: Props) => {
 	});
 
 	const { t } = useTranslation();
+
+	useEffect(() => {
+		const url = item.getLinkTo()
+			? `${new URL(item.getLinkTo()!).origin}/favicon.ico`
+			: undefined;
+		if (url !== iconUrl) {
+			setIconUrl(url);
+		}
+	}, [item.getLinkTo()]);
 
 	const handleNotFoundItemLink = async () => {
 		try {
@@ -121,6 +133,7 @@ export const LinkToButton = ({ item }: Props) => {
 		>
 			{iconUrl ? (
 				<img
+					ref={imgRef}
 					className={styles.icon}
 					src={iconUrl}
 					alt="#"
