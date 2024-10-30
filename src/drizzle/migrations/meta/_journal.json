@@ -15,6 +15,13 @@
       "when": 1726642655570,
       "tag": "0001_fancy_thundra",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1730279930434,
+      "tag": "0002_light_magma",
+      "breakpoints": true
     }
   ]
 }

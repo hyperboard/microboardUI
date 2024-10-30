@@ -134,7 +134,8 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         try {
             const details = await boards.getLinkDetails(msg.boardId);
             const isPublic = await boards.isBoardPublic(msg.boardId);
-
+            console.log(details)
+            console.log(isPublic);
             if (
                 details?.type === "view" ||
                 details?.type === "edit" ||

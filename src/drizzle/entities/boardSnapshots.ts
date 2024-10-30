@@ -2,7 +2,7 @@ import { pgTable, uuid, jsonb, integer, timestamp, uniqueIndex, serial } from "d
 import { boards } from "./boards";
 
 export const boardSnapshots = pgTable(
-    "snapshots",
+    "board_snapshots",
     {
         id: serial("id").primaryKey(),
         boardUUID: uuid("board_id").references(() => boards.boardUUID),

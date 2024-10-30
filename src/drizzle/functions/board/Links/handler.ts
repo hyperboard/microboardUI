@@ -119,5 +119,4 @@ export async function getBoardLink(linkUUID: string) {
         return { boardId: record.boardId, linkUUID: linkUUID, linkType };
     }
 
-    throw new Error(`Could not find link by ${linkUUID} linkUUID`);
 }

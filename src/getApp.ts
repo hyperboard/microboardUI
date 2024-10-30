@@ -22,9 +22,12 @@ import { createMinioMediaDAL } from "Routes/V1/Media";
 import { createMiddleware } from "@trigger.dev/express";
 import { client } from "trigger";
 import cors from "cors";
+import { runMigration } from "drizzle/scripts/migrate";
 
 export async function getApp(): Promise<http.Server> {
     const app = express();
+
+    await runMigration();
 
     app.use(morgan("combined"));
     if (process.env.NODE_ENV !== "production") {

@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import { db } from "drizzle/db";
-import { boardEditLink, boardOwner, boards, boardViewLink, userEditLink, userViewLink } from "drizzle/entities";
+import { boardEditLink, boardOwner, boards, boardViewLink, userBoardId, userEditLink, userViewLink } from "drizzle/entities";
 
 /**
  * Function to record a user visiting an edit link if it does not exist.
@@ -44,6 +44,28 @@ export async function userVisitedViewLink(userId: number, viewLinkUUID: string) 
     await db.insert(userViewLink).values({ userId: userId, viewLinkUUID: viewLinkUUID }).execute();
 }
 
+export async function userVisitedBoardId(userId: number, boardUUID: string) {
+    const isAuthor = await db
+        .select({ id: boards.id })
+        .from(boards)
+        .innerJoin(boardOwner, eq(boardOwner.boardId, boards.id))
+        .where(and(eq(boards.boardUUID, boardUUID), eq(boardOwner.ownerId, userId)))
+
+    if (isAuthor.length > 0) {
+        return;
+    }
+
+    // Insert into userBoardId if not the author
+    await db
+        .insert(userBoardId)
+        .values({
+            userId: userId,
+            boardUuid: boardUUID
+        })
+        .execute();
+}
+
+
 /**
  * Function to record a user visiting a link (edit or view) if it does not exist.
  * @throws
@@ -73,6 +95,17 @@ export async function userVisited(userId: number, linkUUID: string) {
 
     console.log("viewLinkVisitedRecords", viewLinkVisitedRecords);
 
+    const boardIdVisited = await db
+        .select()
+        .from(userBoardId)
+        .where(and(eq(userBoardId.userId, userId), eq(userBoardId.boardUuid, linkUUID)))
+        .execute();
+
+    if (boardIdVisited.length > 0) {
+        return;
+    }
+
+
     const editLink = await db.select().from(boardEditLink).where(eq(boardEditLink.editLinkUUID, linkUUID)).execute();
 
     if (editLink.length > 0) {
@@ -87,7 +120,7 @@ export async function userVisited(userId: number, linkUUID: string) {
         return;
     }
 
-    throw new Error(`Link ${linkUUID} does not exist`);
+    await userVisitedBoardId(userId, linkUUID);
 }
 
 /**
@@ -107,27 +140,15 @@ export async function userUnvisited(userId: number, linkUUID: string) {
         .returning()
         .execute();
 
-    if (deletedEdit.length === 0 && deletedView.length === 0) {
+    const deletedBoardId = await db
+        .delete(userBoardId)
+        .where(and(eq(userBoardId.userId, userId), eq(userBoardId.boardUuid, linkUUID)))
+        .returning()
+        .execute();
+
+    if (deletedEdit.length === 0 && deletedView.length === 0 && deletedBoardId.length === 0) {
         console.error(`No link found for user_id ${userId} and link_uuid ${linkUUID}`);
         return null;
     }
 }
 
-export async function getSharedLinksUser(userId: number) {
-    const sharedEditLinksQuery = await db
-        .select({ editLinkUUID: userEditLink.editLinkUUID })
-        .from(userEditLink)
-        .where(eq(userEditLink.userId, userId))
-        .execute();
-
-    const sharedViewLinksQuery = await db
-        .select({ viewLinkUUID: userViewLink.viewLinkUUID })
-        .from(userViewLink)
-        .where(eq(userViewLink.userId, userId))
-        .execute();
-
-    return [
-        ...sharedEditLinksQuery.map((link) => link.editLinkUUID!),
-        ...sharedViewLinksQuery.map((link) => link.viewLinkUUID!),
-    ];
-}
