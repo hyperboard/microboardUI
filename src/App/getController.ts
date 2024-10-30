@@ -513,7 +513,7 @@ export function getController(
 				const reader = new FileReader();
 				reader.onload = event => {
 					prepareImage(event.target?.result)
-						.then(imageData => {
+						.then((imageData) => {
 							const image = new ImageItem(imageData);
 							image.transformation.translateTo(
 								board.pointer.point.x,
