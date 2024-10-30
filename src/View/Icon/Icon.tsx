@@ -72,6 +72,7 @@ export type IconId =
 	| "BurgerMenu"
 	| "miro"
 	| "loader"
+	| "TextLimitWarning"
 	| "lock"
 	| "unlock"
 	| "ArrowLeft"

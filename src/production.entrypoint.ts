@@ -1,3 +1,6 @@
+import { textInit } from "TextInit";
+textInit();
+
 import { createApp } from "App/App";
 import "./index.css";
 import { isMicroboard } from "lib/isMicroboard";

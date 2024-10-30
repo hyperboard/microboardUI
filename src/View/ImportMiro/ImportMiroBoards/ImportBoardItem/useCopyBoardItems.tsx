@@ -526,7 +526,7 @@ export const useCopyBoardItems = (
 	const copyShape = (item: IMiroBoardItemShape): void | null => {
 		const { id, style, position, data, geometry, parent } = item;
 		if (!position || !geometry) {
-			return null;
+			return;
 		}
 
 		const shapePosition = getItemPosition(position, geometry, parent);
@@ -584,7 +584,7 @@ export const useCopyBoardItems = (
 		const stickerPosition = getItemPosition(position, geometry, parent);
 		const { fillColor, textAlignVertical } = style;
 		if (!fillColor) {
-			return null;
+			return ;
 		}
 		const color = STICKER_COLOR[fillColor];
 		const sticker = new Sticker(undefined, id, color);
@@ -850,7 +850,7 @@ export const useCopyBoardItems = (
 		setTransformation(boardRichText, item, scale);
 	};
 
-	const copyFrame = (item: IMiroBoardItemFrame): void => {
+	const copyFrame = async (item: IMiroBoardItemFrame): Promise<void> => {
 		const { style, id, data } = item;
 		const { fillColor } = style;
 		const { format } = data;

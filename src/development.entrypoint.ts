@@ -1,3 +1,6 @@
+import { textInit } from "TextInit";
+textInit();
+
 import { App } from "App";
 import { createApp } from "App/App";
 import "./index.css";
