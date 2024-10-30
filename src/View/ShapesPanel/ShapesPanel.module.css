@@ -42,14 +42,3 @@
 	--min-height: 28px;
 	color: var(--text-base-primary);
 }
-
-.shapesGrid {
-	margin-top: 8px;
-	display: grid;
-	grid-template-columns: repeat(5, 48px);
-	gap: 8px;
-}
-
-.sectionTitle {
-	padding-left: 8px;
-}

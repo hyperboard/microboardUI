@@ -4,12 +4,12 @@ import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
 import { UiPanel } from "View/Ui/UiPanel";
 import styles from "./ShapesPanel.module.css";
-import { ShapePicker } from "../Pickers/ShapeTypePicker";
 import { useShapesPanelContext } from "./ShapesPanelContext";
 import { ShapeType } from "../../Board/Items/Shape";
 import { ShapeCategoryName, SHAPES_CATEGORIES } from "../Tools/AddShape";
 import { UiButton } from "../Ui/UiButton";
 import { Icon } from "../Icon";
+import { ShapesCategory } from "./ShapesCategory/ShapesCategory";
 
 export function ShapesPanel(): JSX.Element {
 	const [isShapeSelected, setIsShapeSelected] = useState(false);
@@ -26,11 +26,18 @@ export function ShapesPanel(): JSX.Element {
 		}
 	}, [isDown]);
 
-	const handlePick = (shape: ShapeType, category?: ShapeCategoryName) => {
+	const handlePick = (
+		shape: ShapeType,
+		category?: ShapeCategoryName,
+		e?: MouseEvent,
+	) => {
 		if (!board.tools.getAddShape()) {
 			board.tools.addShape(true);
 		}
 		const tool = board.tools.getAddShape();
+		if (e && e.detail === 2) {
+			return tool?.createShapeInCenter(shape);
+		}
 		if (tool) {
 			tool.setShapeType(shape);
 			setIsShapeSelected(true);
@@ -54,19 +61,11 @@ export function ShapesPanel(): JSX.Element {
 			</div>
 			{SHAPES_CATEGORIES.map(category => {
 				return (
-					<div key={category.name}>
-						<p className={styles.sectionTitle}>
-							{t(`shapesPanel.${category.name}`)}
-						</p>
-						<div className={styles.shapesGrid}>
-							<ShapePicker
-								withTooltips={true}
-								categoryName={category.name}
-								onPick={handlePick}
-								buttonSize="lg"
-							/>
-						</div>
-					</div>
+					<ShapesCategory
+						categoryName={category.name}
+						handlePick={handlePick}
+						key={category.name}
+					/>
 				);
 			})}
 		</UiPanel>

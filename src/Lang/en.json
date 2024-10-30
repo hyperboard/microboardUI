@@ -154,7 +154,7 @@
 	"shapesPanel": {
 		"title": "Shapes library",
 		"basicShapes": "Basic shapes",
-		"BPMN": "BPMN"
+		"BPMN": "Diagramming shapes"
 	},
 	"shapePicker": {
 		"BPMN": {
@@ -164,15 +164,15 @@
 			"BPMN_GatewayXOR": "Gateway XOR",
 			"BPMN_EndEvent": "End event",
 			"BPMN_StartEvent": "Start event",
-			"BPMN_StartEventInterrupting": "Start event interrupting",
+			"BPMN_StartEventNoneInterrupting": "Start event none interrupting",
 			"BPMN_IntermediateEvent": "Intermediate event",
-			"BPMN_IntermediateEventInterrupting": "Intermediate event interrupting",
+			"BPMN_IntermediateEventNoneInterrupting": "Intermediate event none interrupting",
 			"BPMN_Group": "Group",
 			"BPMN_Participant": "Participant",
 			"BPMN_Task": "Task",
 			"BPMN_Transaction": "Transaction",
-			"BPMN_SubprocessExpanded": "Subprocess expanded",
-			"BPMN_TextAnnotation": "Text annotation",
+			"BPMN_EventSubprocess": "Event subprocess",
+			"BPMN_Annotation": "Annotation",
 			"BPMN_DataObject": "Data object"
 		}
 	},

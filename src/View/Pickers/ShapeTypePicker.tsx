@@ -6,7 +6,11 @@ import { UiButton } from "View/Ui/UiButton/UiButton";
 import { useTranslation } from "react-i18next";
 
 type Props = {
-	onPick: (type: ShapeType, category?: ShapeCategoryName) => void;
+	onPick: (
+		type: ShapeType,
+		category?: ShapeCategoryName,
+		e?: MouseEvent,
+	) => void;
 	selected?: ShapeType | "None";
 	categoryName: ShapeCategoryName;
 	buttonSize?: "lg" | "md" | "sm";
@@ -62,13 +66,13 @@ export function ShapePicker({
 							: undefined
 					}
 					id={`shape-${shape}`}
-					onClick={() => onPick(shape, categoryName)}
+					onClick={e => onPick(shape, categoryName, e)}
 					key={shape}
 					size={buttonSize}
 					variant="secondary"
 					active={selected === shape}
 				>
-					<ShapeIcon iconName={shape} width={24} height={24} />
+					<ShapeIcon iconName={shape} width={20} height={20} />
 				</UiButton>
 			))}
 		</>
