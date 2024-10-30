@@ -22,7 +22,7 @@ export function CopyItemLink() {
 			notify({
 				body: t("contextPanel.copyItemLink.success.description"),
 				variant: "success",
-				duration: Number.POSITIVE_INFINITY,
+				duration: 3000,
 			});
 		} catch (err) {
 			console.error(err);

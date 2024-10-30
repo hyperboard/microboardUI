@@ -75,7 +75,8 @@ export type IconId =
 	| "ArrowLeft1"
 	| "BoxedPlus"
 	| "SignIn"
-	| "Info";
+	| "Info"
+	| "linkTo";
 
 type Props = {
 	iconName: IconId;

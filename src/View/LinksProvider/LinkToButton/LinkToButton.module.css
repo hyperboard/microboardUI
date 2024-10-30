@@ -1,0 +1,13 @@
+.btn {
+	min-width: 20px;
+	min-height: 20px;
+	padding: 0;
+	background: none;
+}
+
+.icon {
+	display: block;
+	width: 20px;
+	height: 20px;
+	background: none;
+}

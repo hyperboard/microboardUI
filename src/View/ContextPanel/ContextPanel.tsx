@@ -81,6 +81,11 @@ export function ContextPanel() {
 	const isSelectUnderPointer =
 		board.selection.getContext() === "SelectUnderPointer";
 
+	const hasLinkTo = () => {
+		const items = board.selection.items.list();
+		return !!(items.length === 1 && items[0].getLinkTo());
+	};
+
 	const isText = board.selection.items.isAllItemsType("RichText");
 	const isSticker = board.selection.items.isAllItemsType("Sticker");
 	const isShape = board.selection.items.isAllItemsType("Shape");
@@ -140,7 +145,7 @@ export function ContextPanel() {
 							<SendToBack />
 							<CopyItemLink />
 							<SetLinkTo />
-							<RemoveLinkTo />
+							{hasLinkTo() && <RemoveLinkTo />}
 						</RestOptionsMenu>
 					</>
 				)}
@@ -163,7 +168,7 @@ export function ContextPanel() {
 							<SendToBack />
 							<CopyItemLink />
 							<SetLinkTo />
-							<RemoveLinkTo />
+							{hasLinkTo() && <RemoveLinkTo />}
 						</RestOptionsMenu>
 					</>
 				)}
@@ -189,7 +194,7 @@ export function ContextPanel() {
 							<SendToBack />
 							<CopyItemLink />
 							<SetLinkTo />
-							<RemoveLinkTo />
+							{hasLinkTo() && <RemoveLinkTo />}
 						</RestOptionsMenu>
 					</>
 				)}
@@ -213,6 +218,8 @@ export function ContextPanel() {
 							<BringToFront />
 							<SendToBack />
 							<CopyItemLink />
+							<SetLinkTo />
+							{hasLinkTo() && <RemoveLinkTo />}
 						</RestOptionsMenu>
 					</>
 				)}
@@ -229,7 +236,7 @@ export function ContextPanel() {
 							<SendToBack />
 							<CopyItemLink />
 							<SetLinkTo />
-							<RemoveLinkTo />
+							{hasLinkTo() && <RemoveLinkTo />}
 						</RestOptionsMenu>
 					</>
 				)}
@@ -243,7 +250,7 @@ export function ContextPanel() {
 							<SendToBack />
 							<CopyItemLink />
 							<SetLinkTo />
-							<RemoveLinkTo />
+							{hasLinkTo() && <RemoveLinkTo />}
 						</RestOptionsMenu>
 					</>
 				)}
@@ -262,7 +269,7 @@ export function ContextPanel() {
 							<SendToBack />
 							<CopyItemLink />
 							<SetLinkTo />
-							<RemoveLinkTo />
+							{hasLinkTo() && <RemoveLinkTo />}
 							<ExportFrame />
 						</RestOptionsMenu>
 					</>

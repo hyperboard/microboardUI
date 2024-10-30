@@ -260,6 +260,13 @@
 		"title": "Link to Object",
 		"input": "Paste link"
 	},
+	"linkToToast": {
+		"noItem": "The linked item has been deleted from this board",
+		"error": {
+			"title": "Error when following the link",
+			"description": "An error occurred while following the link"
+		}
+	},
 	"ok": "Ok",
 	"noBoard": {
 		"title": "No board is open",
