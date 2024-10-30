@@ -1,1 +1,1 @@
-export { userVisitedEditLink, userVisitedViewLink, userVisited, userUnvisited, getSharedLinksUser } from "./handler";
+export { userVisitedEditLink, userVisitedViewLink, userVisited, userUnvisited } from "./handler";

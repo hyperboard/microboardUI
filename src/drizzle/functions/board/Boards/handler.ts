@@ -55,6 +55,7 @@ export async function createBoard(boardName: string, authorUUID?: string) {
         .values({
             boardName: boardName,
             authorUUID: authorUUID,
+            isPublic: true
         })
         .returning()
         .execute();
@@ -131,7 +132,7 @@ export const getBoardByLink = async (link: string) => {
             .from(boards)
             .leftJoin(boardEditLink, eq(boards.id, boardEditLink.boardId))
             .leftJoin(boardViewLink, eq(boards.id, boardViewLink.boardId))
-            .where(or(eq(boardEditLink.editLinkUUID, link), eq(boardViewLink.viewLinkUUID, link)))
+            .where(or(eq(boardEditLink.editLinkUUID, link), eq(boardViewLink.viewLinkUUID, link), eq(boards.boardUUID, link)))
             .limit(1);
 
         if (result.length === 0) {
@@ -473,7 +474,7 @@ export async function getBoardIsPublic(boardUUID: string): Promise<boolean> {
         .where(eq(boards.boardUUID, boardUUID))
         .limit(1);
 
-    return !!board.isPublic;
+    return !!board?.isPublic;
 }
 
 export async function getSharedLinks(userId: number) {

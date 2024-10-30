@@ -173,34 +173,6 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
         }, logger)
     );
 
-    if (process.env.IS_PUBLIC_BOARDS_ENABLED) {
-        // Creating a new public board
-        router.post(
-            "/public-boards",
-            body("title").optional().isString(),
-            catchAsync(async (req: Request, res: Response) => {
-                try {
-                    const boardId = uuidv4();
-                    const editLink = uuidv4();
-
-                    const title: string = req.body.title || `${editLink}`;
-                    const createdBoard = (await boards.createBoard(title)) as AnonymousBoard;
-                    await boards.createLink(boardId, "edit", editLink);
-
-                    return res.status(201).json({
-                        boardId: boardId,
-                        linkId: editLink,
-                        linkUri: `/boards/${editLink}`,
-                        authorKey: createdBoard.author_key,
-                    });
-                } catch (err) {
-                    logger.error(err);
-                    return internalError(res, err);
-                }
-            }, logger)
-        );
-    }
-
     router.post(
         "/boards/claim",
         authenticate,

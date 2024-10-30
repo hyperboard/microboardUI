@@ -508,7 +508,7 @@ export class Boards {
             const link = await Drizzle.getBoardLink(linkId);
 
             if (!link.boardId) {
-                throw new Error("Board Not Found");
+                return null;
             }
 
             const board = await Drizzle.getBoardById(link.boardId);

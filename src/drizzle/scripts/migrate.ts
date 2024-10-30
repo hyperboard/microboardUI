@@ -3,14 +3,29 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import path, { dirname } from "path";
 
-const main = async () => {
+export const runMigration = async () => {
     console.log("Running a migration...");
+    const migrationsFolder = process.env.MIGRATIONS_FOLDER;
+    const dbUrl = process.env.DATABASE_URL;
 
-    console.log("mig folder: ", "./migrations");
-    console.log("DB URL: ", process.env.DATABASE_URL);
+    if (!migrationsFolder || !dbUrl) {
+        if (!migrationsFolder) {
+            console.error('MIGRATIONS_FOLDER env variable is not set.')
+        }
+
+        if (!dbUrl) {
+            console.error('DATABASE_URL env variable is not set.')
+        }
+        console.error('Terminate migration...')
+        return;
+    }
+
+    console.log("mig folder: ", migrationsFolder);
+    console.log("DB URL: ", dbUrl);
+
 
     const sql = new pg.Client({
-        connectionString: process.env.DATABASE_URL,
+        connectionString: dbUrl,
     });
 
     await sql.connect();
@@ -22,7 +37,7 @@ const main = async () => {
 
         await migrate(db, {
             migrationsSchema: "public",
-            migrationsFolder: path.resolve(dirname(__filename), "./migrations"),
+            migrationsFolder: path.resolve(dirname(__filename), migrationsFolder),
         });
 
         console.log("Migration successful");
@@ -36,4 +51,3 @@ const main = async () => {
     return true;
 };
 
-main();
