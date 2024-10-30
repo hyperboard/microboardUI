@@ -2,7 +2,11 @@
 	min-width: 20px;
 	min-height: 20px;
 	padding: 0;
-	background: none;
+	background-color: transparent;
+}
+
+.btn:hover {
+	background-color: transparent;
 }
 
 .icon {
