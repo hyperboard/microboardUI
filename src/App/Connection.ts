@@ -5,7 +5,12 @@ import { getApiUrl } from "Config";
 import { getWebsocketUrl } from "../Config";
 import { Subject } from "Subject";
 import { Board, BoardSnapshot } from "Board/Board";
-import { BoardEvent, BoardEventPack } from "Board/Events/Events";
+import {
+	BoardEvent,
+	BoardEventPack,
+	SyncBoardEvent,
+	SyncEvent,
+} from "Board/Events/Events";
 
 const WS_RECONNECT_TIMEOUT = 5000;
 const WS_PING_INTERVAL = 30000;
@@ -18,7 +23,8 @@ export interface AuthMsg {
 export interface BoardEventMsg {
 	type: "BoardEvent";
 	boardId: string;
-	event: BoardEvent | BoardEventPack;
+	// event: BoardEvent | BoardEventPack;
+	event: SyncEvent;
 	messageId: string;
 	sequenceNumber: number;
 }
@@ -34,7 +40,8 @@ export interface ConfirmationMsg {
 export interface BoardEventListMsg {
 	type: "BoardEventList";
 	boardId: string;
-	events: BoardEvent[];
+	// events: BoardEvent[];
+	events: SyncBoardEvent[];
 }
 
 export interface SubscribeMsg {
@@ -115,7 +122,8 @@ export interface Connection {
 	): void;
 	publishBoardEvent(
 		boardId: string,
-		event: BoardEventPack,
+		// event: BoardEventPack,
+		event: SyncEvent,
 		sequenceNumber: number,
 	): void;
 	publishAuth(jwt: string): void;
@@ -347,7 +355,7 @@ export function createConnection(getBoard: () => Board): Connection {
 
 	function publishBoardEvent(
 		boardId: string,
-		event: BoardEventPack,
+		event: SyncEvent,
 		sequenceNumber: number,
 	): void {
 		const messageId = generateMessageId();
