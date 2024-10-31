@@ -44,14 +44,9 @@ export async function addBoardEventUsingUUID(boardOrEditLinkUUID: string, eventU
  * Takes an id of a board and an offset.
  */
 export async function getBoardEvents(boardOrLinkUUID: string, afterLogid: number) {
-    let board = await getBoardByLink(boardOrLinkUUID);
+    const board = await getBoardByLink(boardOrLinkUUID);
 
-    let boardId = board?.id || null;
-
-    if (!boardId) {
-        const linkRecord = await getBoardLink(boardOrLinkUUID);
-        boardId = linkRecord.boardId || boardId;
-    }
+    const boardId = board?.id
 
     if (!boardId) {
         throw new Error(`Board UUID or Link UUID does not exist`);
