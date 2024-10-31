@@ -7,9 +7,17 @@ import { boardEditLink, boardSnapshots, boardViewLink } from "drizzle/entities";
  * Function to create a board snapshot.
  */
 export async function createBoardSnapshot(boardUUID: string, snapshot: string, lastEvent: number) {
+    const board = await getBoardByLink(boardUUID);
+
+    const boardId = board?.id;
+
+    if (!boardId) {
+        throw new Error(`Board UUID, Edit Link UUID, or View Link UUID does not exist`);
+    }
+
     await db
         .insert(boardSnapshots)
-        .values({ boardUUID: boardUUID, snapshot: snapshot, lastEventOrder: lastEvent })
+        .values({ boardId: boardId, snapshot: snapshot, lastEventOrder: lastEvent })
         .execute();
 }
 
@@ -42,25 +50,17 @@ export async function getLatestBoardSnapshot(boardOrLinkUUID: string) {
  * Function to save board snapshot.
  */
 export async function saveBoardSnapshot(boardOrEditLinkUUID: string, snapshot: string, lastEvent: number) {
-    let boardId = await getBoardId(boardOrEditLinkUUID);
+    const board = await getBoardByLink(boardOrEditLinkUUID);
+
+    const boardId = board?.id;
 
     if (!boardId) {
-        const boardRecords = await db
-            .select({ boardId: boardEditLink.boardId })
-            .from(boardEditLink)
-            .where(eq(boardEditLink.editLinkUUID, boardOrEditLinkUUID))
-            .execute();
-
-        boardId = boardRecords[0].boardId || boardId;
-    }
-
-    if (!boardId) {
-        throw new Error(`Board UUID, Edit Link UUID does not exist`);
+        throw new Error(`Board UUID, Edit Link UUID, or View Link UUID does not exist`);
     }
 
     await db
         .update(boardSnapshots)
         .set({ snapshot: snapshot, lastEventOrder: lastEvent })
-        .where(eq(boardSnapshots.boardUUID, boardOrEditLinkUUID))
+        .where(eq(boardSnapshots.boardId, boardId))
         .execute();
 }
