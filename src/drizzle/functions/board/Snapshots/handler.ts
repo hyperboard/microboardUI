@@ -18,29 +18,9 @@ export async function createBoardSnapshot(boardUUID: string, snapshot: string, l
  * @returns snapshot.
  */
 export async function getLatestBoardSnapshot(boardOrLinkUUID: string) {
-    let board = await getBoardByLink(boardOrLinkUUID);
+    const board = await getBoardByLink(boardOrLinkUUID);
 
-    let boardId = board?.id || null;
-
-    if (!boardId) {
-        const boardRecords = await db
-            .select({ boardId: boardEditLink.boardId })
-            .from(boardEditLink)
-            .where(eq(boardEditLink.editLinkUUID, boardOrLinkUUID))
-            .execute();
-
-        boardId = boardRecords[0].boardId || boardId;
-    }
-
-    if (!boardId) {
-        const boardRecords = await db
-            .select({ boardId: boardEditLink.boardId })
-            .from(boardViewLink)
-            .where(eq(boardViewLink.viewLinkUUID, boardOrLinkUUID))
-            .execute();
-
-        boardId = boardRecords[0].boardId || boardId;
-    }
+    const boardId = board?.id;
 
     if (!boardId) {
         throw new Error(`Board UUID, Edit Link UUID, or View Link UUID does not exist`);
