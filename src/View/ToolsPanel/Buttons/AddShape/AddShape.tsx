@@ -14,7 +14,8 @@ import { useShapesPanelContext } from "../../../ShapesPanel";
 export function AddShape() {
 	const [isShapeSelected, setIsShapeSelected] = useState(false);
 	const { board } = useAppContext();
-	const { isOpen, openShapesPanel } = useShapesPanelContext();
+	const { isOpen, openShapesPanel, selectedCategory } =
+		useShapesPanelContext();
 	const { t } = useTranslation();
 
 	const addShape = board.tools.getAddShape();
@@ -60,7 +61,7 @@ export function AddShape() {
 					variant="secondary"
 					rounded="none"
 				>
-					{isActive && selectedShape !== "None" && !isOpen ? (
+					{isActive && selectedShape !== "None" ? (
 						<ShapeIcon
 							height={24}
 							width={24}
@@ -76,7 +77,7 @@ export function AddShape() {
 			<UiPanel className={style.wrapper}>
 				<div className={style.panel}>
 					<ShapePicker
-						categoryName="basicShapes"
+						categoryName={selectedCategory}
 						selected={selectedShape}
 						onPick={handlePick}
 					/>

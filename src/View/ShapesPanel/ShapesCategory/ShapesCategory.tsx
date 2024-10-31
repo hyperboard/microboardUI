@@ -46,7 +46,6 @@ export const ShapesCategory = ({ handlePick, categoryName }: Props) => {
 				)}
 			>
 				<ShapePicker
-					withTooltips={true}
 					categoryName={categoryName}
 					onPick={handlePick}
 					buttonSize="lg"

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { CSSProperties } from "react";
 import style from "./UiButton.module.css";
 import clsx from "clsx";
 
@@ -11,10 +11,12 @@ interface TooltipProps {
 		| "top-left"
 		| "top-right"
 		| "top-center-fixed"
+		| "top-right-fixed"
 		| "bottom"
 		| "bottom-right"
 		| "bottom-left";
 	tooltipAlign?: "center" | "left";
+	inlineStyle?: CSSProperties;
 }
 
 export const Tooltip = ({
@@ -22,6 +24,7 @@ export const Tooltip = ({
 	tooltipPosition = "right",
 	tooltipAlign = "center",
 	hotkey,
+	inlineStyle,
 	...props
 }: TooltipProps): JSX.Element => {
 	return (
@@ -32,10 +35,12 @@ export const Tooltip = ({
 				[style.topRight]: tooltipPosition === "top-right",
 				[style.topLeft]: tooltipPosition === "top-left",
 				[style.topCenterFixed]: tooltipPosition === "top-center-fixed",
+				[style.topRightFixed]: tooltipPosition === "top-right-fixed",
 				[style.bottom]: tooltipPosition === "bottom",
 				[style.bottomRight]: tooltipPosition === "bottom-right",
 				[style.bottomLeft]: tooltipPosition === "bottom-left",
 			})}
+			style={inlineStyle}
 			{...props}
 		>
 			<div className={clsx(style.tip)}>

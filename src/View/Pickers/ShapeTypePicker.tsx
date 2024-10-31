@@ -1,5 +1,5 @@
 import { ShapeType } from "Board/Items/Shape";
-import React from "react";
+import React, { CSSProperties, useRef, useState } from "react";
 import { ShapeIcon } from "View/Icon";
 import { ShapeCategoryName, SHAPES_CATEGORIES } from "View/Tools/AddShape";
 import { UiButton } from "View/Ui/UiButton/UiButton";
@@ -14,7 +14,6 @@ type Props = {
 	selected?: ShapeType | "None";
 	categoryName: ShapeCategoryName;
 	buttonSize?: "lg" | "md" | "sm";
-	withTooltips?: boolean;
 };
 
 export function ShapePicker({
@@ -22,46 +21,37 @@ export function ShapePicker({
 	selected,
 	categoryName,
 	buttonSize = "md",
-	withTooltips = false,
 }: Props): React.ReactElement {
+	const [toolTipStyle, setToolTipStyle] = useState<CSSProperties | undefined>(
+		undefined,
+	);
+	const refs = useRef({});
 	const { t } = useTranslation();
 
 	const shapes = SHAPES_CATEGORIES.find(
 		category => category.name === categoryName,
-	)!.shapes;
+	)!.shapes as ShapeType[];
 
-	let currentTooltipPosition = "top-left";
-	let currentTooltipPositionCount = 1;
-	const getTooltipPosition = () => {
-		const position = currentTooltipPosition;
-		if (position === "top") {
-			currentTooltipPosition = "top-right";
-			currentTooltipPositionCount = 1;
-			return position;
-		}
-		currentTooltipPositionCount += 1;
-		if (position === "top-left" && currentTooltipPositionCount > 2) {
-			currentTooltipPosition = "top";
-			currentTooltipPositionCount = 1;
-		} else if (
-			position === "top-right" &&
-			currentTooltipPositionCount > 2
-		) {
-			currentTooltipPosition = "top-left";
-			currentTooltipPositionCount = 1;
-		}
-		return position;
+	const getToolTipStyle = (shape: ShapeType): CSSProperties => {
+		const { left, top } = refs.current[shape].getBoundingClientRect();
+		return {
+			left: `calc(${left + 24}px - 1rem)`,
+			bottom: `calc(100% - ${top}px + 0.6rem)`,
+		};
+	};
+
+	const setRef = (name: ShapeType) => (el: HTMLButtonElement) => {
+		refs.current[name] = el;
 	};
 
 	return (
 		<>
-			{shapes.map((shape, index) => (
+			{shapes.map((shape: ShapeType) => (
 				<UiButton
-					tooltipPosition={
-						withTooltips ? getTooltipPosition() : undefined
-					}
+					ref={setRef(shape)}
+					tooltipPosition={"top-right-fixed"}
 					tooltip={
-						categoryName !== "basicShapes" && withTooltips
+						categoryName !== "basicShapes"
 							? t(`shapePicker.${categoryName}.${shape}`)
 							: undefined
 					}
@@ -71,6 +61,8 @@ export function ShapePicker({
 					size={buttonSize}
 					variant="secondary"
 					active={selected === shape}
+					onMouseEnter={() => setToolTipStyle(getToolTipStyle(shape))}
+					toolTipStyle={toolTipStyle}
 				>
 					<ShapeIcon iconName={shape} width={20} height={20} />
 				</UiButton>

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { forwardRef, HTMLAttributes } from "react";
+import React, { CSSProperties, forwardRef, HTMLAttributes } from "react";
 import style from "./UiButton.module.css";
 import { Tooltip } from "./Tooltip";
 
@@ -14,6 +14,7 @@ type UiButtonProps = HTMLAttributes<HTMLButtonElement> & {
 		| "top-left"
 		| "top-right"
 		| "top-center-fixed"
+		| "top-right-fixed"
 		| "bottom"
 		| "bottom-right"
 		| "bottom-left";
@@ -30,6 +31,7 @@ type UiButtonProps = HTMLAttributes<HTMLButtonElement> & {
 		| "bottom-right";
 	radius?: "xl" | "md" | "sm";
 	className?: string;
+	toolTipStyle?: CSSProperties;
 };
 
 export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
@@ -46,6 +48,7 @@ export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
 			size = "lg",
 			radius = "xl",
 			rounded = "full",
+			toolTipStyle,
 			...props
 		},
 		ref,
@@ -79,6 +82,7 @@ export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
 				{children}
 				{tooltip && (
 					<Tooltip
+						inlineStyle={toolTipStyle}
 						tooltip={tooltip}
 						tooltipPosition={tooltipPosition}
 						hotkey={hotkey}

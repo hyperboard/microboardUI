@@ -174,6 +174,12 @@
 	z-index: 100;
 }
 
+.top-right-fixed {
+	position: fixed;
+	/*pass position with inline styles*/
+	z-index: 100;
+}
+
 @media screen and (hover: hover) {
 	button:hover .tip-container {
 		display: flex;
@@ -219,6 +225,12 @@
 .tip-container.top-center-fixed .tip::before {
 	left: 4%;
 	margin-left: -0.7rem;
+	bottom: -0.6rem;
+	transform: rotate(180deg);
+}
+
+.tip-container.top-right-fixed .tip::before {
+	left: 0.5rem;
 	bottom: -0.6rem;
 	transform: rotate(180deg);
 }

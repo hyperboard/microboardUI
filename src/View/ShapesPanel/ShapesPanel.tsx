@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
 import { UiPanel } from "View/Ui/UiPanel";
@@ -12,19 +12,10 @@ import { Icon } from "../Icon";
 import { ShapesCategory } from "./ShapesCategory/ShapesCategory";
 
 export function ShapesPanel(): JSX.Element {
-	const [isShapeSelected, setIsShapeSelected] = useState(false);
-	const { isOpen, closeShapesPanel } = useShapesPanelContext();
+	const { isOpen, closeShapesPanel, setSelectedCategory } =
+		useShapesPanelContext();
 	const { board } = useAppContext();
 	const { t } = useTranslation();
-
-	const addShape = board.tools.getAddShape();
-	const isDown = addShape?.isDown;
-
-	useEffect(() => {
-		if (isDown) {
-			setIsShapeSelected(true);
-		}
-	}, [isDown]);
 
 	const handlePick = (
 		shape: ShapeType,
@@ -34,13 +25,13 @@ export function ShapesPanel(): JSX.Element {
 		if (!board.tools.getAddShape()) {
 			board.tools.addShape(true);
 		}
+		setSelectedCategory(category ? category : "basicShapes");
 		const tool = board.tools.getAddShape();
 		if (e && e.detail === 2) {
 			return tool?.createShapeInCenter(shape);
 		}
 		if (tool) {
 			tool.setShapeType(shape);
-			setIsShapeSelected(true);
 		}
 	};
 
