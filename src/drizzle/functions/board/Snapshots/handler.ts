@@ -31,11 +31,11 @@ export async function getLatestBoardSnapshot(boardOrLinkUUID: string) {
     const latestSnapshot = await db
         .select({ snapshot: boardSnapshots.snapshot })
         .from(boardSnapshots)
-        .where(eq(boardSnapshots.boardUUID, boardOrLinkUUID))
-        .orderBy(desc(boardSnapshots.boardUUID))
+        .where(eq(boardSnapshots.boardId, boardId))
+        .orderBy(desc(boardSnapshots.boardId))
         .limit(1);
 
-    return latestSnapshot ? latestSnapshot[0]?.snapshot || [] : [];
+    return latestSnapshot[0]?.snapshot ? latestSnapshot[0].snapshot : [];
 }
 
 /**
