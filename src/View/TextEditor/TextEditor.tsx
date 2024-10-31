@@ -233,7 +233,9 @@ export class TextEditor extends React.Component<
 
 					fontFamily: DEFAULT_TEXT_STYLES.fontFamily,
 					fontSize: `${DEFAULT_TEXT_STYLES.fontSize}px`,
-					lineHeight: DEFAULT_TEXT_STYLES.lineHeight,
+					lineHeight: text.getAutosize() && text.getAutoSizeScale() < 1
+						? DEFAULT_TEXT_STYLES.lineHeight * text.getAutoSizeScale()
+						: DEFAULT_TEXT_STYLES.lineHeight,
 					color: DEFAULT_TEXT_STYLES.fontColor,
 					pointerEvents: "none",
 
