@@ -107,7 +107,7 @@ export class TextEditor extends React.Component<
 			if (this.state.timeoutId) {
 				clearTimeout(this.state.timeoutId);
 			}
-	
+
 			this.setState({ limitReached: false }, () => {
 				this.setState({ limitReached: true });
 			});
@@ -115,7 +115,7 @@ export class TextEditor extends React.Component<
 			const newTimeoutId = setTimeout(() => {
 				this.setState({ limitReached: false, timeoutId: null });
 			}, 3000);
-	
+
 			this.setState({ timeoutId: newTimeoutId });
 		};
 
@@ -233,9 +233,11 @@ export class TextEditor extends React.Component<
 
 					fontFamily: DEFAULT_TEXT_STYLES.fontFamily,
 					fontSize: `${DEFAULT_TEXT_STYLES.fontSize}px`,
-					lineHeight: text.getAutosize() && text.getAutoSizeScale() < 1
-						? DEFAULT_TEXT_STYLES.lineHeight * text.getAutoSizeScale()
-						: DEFAULT_TEXT_STYLES.lineHeight,
+					lineHeight:
+						text.getAutosize() && text.getAutoSizeScale() < 1
+							? DEFAULT_TEXT_STYLES.lineHeight *
+								text.getAutoSizeScale()
+							: DEFAULT_TEXT_STYLES.lineHeight,
 					color: DEFAULT_TEXT_STYLES.fontColor,
 					pointerEvents: "none",
 
@@ -344,12 +346,12 @@ export class TextEditor extends React.Component<
 					height={this.editableRef.current?.offsetHeight}
 					className={clsx(
 						styles.limitWarning,
-						this.state.limitReached && styles.show
+						this.state.limitReached && styles.show,
 					)}
 					style={{
 						transform: `translate(0px) scale(${editorScale})`,
 					}}
-					/>
+				/>
 			</div>
 			// </div>
 		);
