@@ -1,3 +1,10 @@
+CREATE TABLE IF NOT EXISTS "board_events" (
+	"log_id" bigserial PRIMARY KEY NOT NULL,
+	"board_id" integer NOT NULL,
+	"event_id" varchar(32),
+	"event_body" jsonb
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "board_edit_link" (
 	"board_id" integer,
 	"edit_link_uuid" uuid
@@ -24,15 +31,22 @@ CREATE TABLE IF NOT EXISTS "board_permissions" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "boards" (
 	"id" serial PRIMARY KEY NOT NULL,
-	"uniq_id" uuid DEFAULT gen_random_uuid(),
+	"uniq_id" uuid DEFAULT gen_random_uuid() NOT NULL,
 	"created" timestamp DEFAULT now(),
-	"boardname" varchar(36),
+	"boardname" text,
 	"author_key" uuid,
+	"is_public" boolean DEFAULT false NOT NULL,
 	CONSTRAINT "boards_uniq_id_unique" UNIQUE("uniq_id")
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "user_board_id" (
+	"user_id" integer NOT NULL,
+	"board_uuid" uuid
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "board_snapshots" (
-	"board_id" uuid,
+	"id" serial PRIMARY KEY NOT NULL,
+	"board_id" integer,
 	"snapshot" jsonb,
 	"last_event_order" integer NOT NULL,
 	"created_at" timestamp DEFAULT now()
@@ -41,6 +55,11 @@ CREATE TABLE IF NOT EXISTS "board_snapshots" (
 CREATE TABLE IF NOT EXISTS "user_edit_link" (
 	"user_id" integer,
 	"edit_link_uuid" uuid
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "user_view_link" (
+	"user_id" integer,
+	"view_link_uuid" uuid
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "user_name" (
@@ -69,17 +88,18 @@ CREATE TABLE IF NOT EXISTS "user_password" (
 	"password" varchar(100)
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "user_view_link" (
-	"user_id" integer,
-	"view_link_uuid" uuid
-);
---> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "users" (
 	"id" serial PRIMARY KEY NOT NULL,
-	"email" varchar(100),
+	"email" varchar(254),
 	"activated" boolean DEFAULT false,
 	"refresh_token" varchar
 );
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "board_events" ADD CONSTRAINT "board_events_board_id_boards_id_fk" FOREIGN KEY ("board_id") REFERENCES "public"."boards"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "board_edit_link" ADD CONSTRAINT "board_edit_link_board_id_boards_id_fk" FOREIGN KEY ("board_id") REFERENCES "public"."boards"("id") ON DELETE cascade ON UPDATE no action;
@@ -118,13 +138,25 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "board_snapshots" ADD CONSTRAINT "board_snapshots_board_id_boards_uniq_id_fk" FOREIGN KEY ("board_id") REFERENCES "public"."boards"("uniq_id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "user_board_id" ADD CONSTRAINT "user_board_id_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "board_snapshots" ADD CONSTRAINT "board_snapshots_board_id_boards_id_fk" FOREIGN KEY ("board_id") REFERENCES "public"."boards"("id") ON DELETE no action ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "user_edit_link" ADD CONSTRAINT "user_edit_link_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "user_view_link" ADD CONSTRAINT "user_view_link_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -149,12 +181,6 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "user_password" ADD CONSTRAINT "user_password_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- ALTER TABLE "user_view_link" ADD CONSTRAINT "user_view_link_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
