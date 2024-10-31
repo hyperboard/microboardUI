@@ -52,6 +52,7 @@ export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 		},
 	};
 
+	// todo
 	const getCursor = (cursor: string): string =>
 		cursor !== "" ? "cursor=" + cursor : "";
 
