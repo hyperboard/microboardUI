@@ -507,7 +507,7 @@ export class Boards {
 
             const link = await Drizzle.getBoardLink(linkId);
 
-            if (!link.boardId) {
+            if (!link?.boardId) {
                 return null;
             }
 
