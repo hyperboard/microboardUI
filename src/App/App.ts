@@ -41,7 +41,7 @@ export interface App {
 }
 
 export function createApp(isHistory = true): App {
-	const connection = createConnection();
+	const connection = createConnection(getBoard);
 	const clipboard = new Clipboard();
 	const location = new Location();
 	const storage = new Storage();
@@ -97,7 +97,7 @@ export function createApp(isHistory = true): App {
 		) {
 			boardsList.visitBoard(id);
 		}
-
+		sessionStorage.clear();
 		subscriptions.setBoard(currentBoard);
 		boardSubject.publish(currentBoard);
 		board = currentBoard;
@@ -106,14 +106,6 @@ export function createApp(isHistory = true): App {
 			app.connection.wsClient.onAccessDenied(id, true);
 			return;
 		}
-
-		window.parent.postMessage(
-			{
-				pattern: "connectionState",
-				payload: "connected",
-			},
-			"*",
-		);
 	}
 
 	function getLastBoardId(): string | null {

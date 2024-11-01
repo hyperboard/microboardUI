@@ -1,7 +1,17 @@
 .panel {
 	position: absolute;
 	top: -60px;
-	left: 12px;
+	left: var(--absolute-position-panel-padding);
+}
+
+.logoWrapper.viewMode {
+	border-top-left-radius: var(--radius);
+	border-bottom-left-radius: var(--radius);
+}
+
+.tabletHide.viewMode {
+	border-top-right-radius: var(--radius);
+	border-bottom-right-radius: var(--radius);
 }
 
 .logo {

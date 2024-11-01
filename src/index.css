@@ -20,6 +20,8 @@
 	--icon-base-primary: rgb(20, 21, 26);
 	--icon-base-secondary: rgb(105, 107, 118);
 	--icon-accent-purple: rgb(146, 79, 232);
+
+	--absolute-position-panel-padding: 12px;
 }
 
 * {

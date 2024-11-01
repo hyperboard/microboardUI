@@ -148,7 +148,15 @@
 			"tooltip": "Connection line"
 		},
 		"addDrawing": {
-			"tooltip": "Pen",
+			"addPen": {
+				"tooltip": "Pen"
+			},
+			"addHighlighter": {
+				"tooltip": "Highlighter"
+			},
+			"addEraser": {
+				"tooltip": "Eraser"
+			},
 			"strokeWidth": "Stroke width"
 		},
 		"addImage": {
@@ -397,12 +405,19 @@
 			"errorTitle": "Import error",
 			"errorItemsText": "Unable to complete import from Miro. Please try again later.",
 			"errorBoardsText": "We were unable to retrieve the list of boards from Miro. Please try again later.",
-			"boardsOkBtn": "Ok"
+			"boardsOkBtn": "Ok",
+			"warnClipboardDescription": "We have successfully imported the board content, except for some objects that are not supported yet. Do not delete them - they will be available soon."
 		},
 		"authClipboardModal": {
 			"title": "Import Error",
 			"description": "To import the board from Miro, you need to authorize. Please log in to save your progress.",
-			"authBtn": "Log In"
+			"authBtn": "Sign In"
+		},
+		"imgAuthClipboardModal": {
+			"title": "You copied the images",
+			"description": "Miro does not allow importing images without authorization. Please sign in to continue.",
+			"authBtn": "Sign In",
+			"continueBtn": "Continue without images"
 		},
 		"importMiro": "Import from Miro",
 		"importMiroBtn": "Import from Miro",
@@ -415,6 +430,10 @@
 	},
 	"connector": {
 		"textPlaceholder": "Text"
+	},
+	"notifications": {
+		"connectionLostHeader": "You are offline. Reconnecting...",
+		"connectionReestablished": "Connection restored."
 	},
 	"landing": {
 		"menu": {
@@ -443,5 +462,8 @@
 	},
 	"frame": {
 		"copy": "Copy of "
+	},
+	"itemTooltips": {
+		"placeholder": "This type of object isn’t<br /> supported yet,<br /> <span style='opacity: 60%'>but we’re working on it.<br /> It will be available soon!</span>"
 	}
 }

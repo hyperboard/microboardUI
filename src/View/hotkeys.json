@@ -53,6 +53,15 @@
 			"windows": "P"
 		}
 	},
+	"eraser": {
+		"key": {
+			"button": "KeyE"
+		},
+		"label": {
+			"mac": "E",
+			"windows": "E"
+		}
+	},
 	"frame": {
 		"key": {
 			"button": "KeyF"

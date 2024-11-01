@@ -7,7 +7,6 @@ import { Canvas } from "./Canvas";
 import { ContextPanel } from "./ContextPanel";
 import { ExportPanel } from "./ExportPanel";
 import { TitlePanel } from "./TitlePanel";
-import { ToastProvider } from "./ToastProvider";
 import { ToolsPanel } from "./ToolsPanel";
 import { ViewModeGuard } from "./ViewModeGuard";
 import { ZoomPanel } from "./ZoomPanel";
@@ -131,7 +130,6 @@ export const AppView = ({ app }: Props) => {
 					<ExportPanel app={app} board={board} />
 				</ViewModeGuard>
 				<ZoomPanel app={app} board={board} />
-				<ToastProvider />
 			</div>
 		</div>
 	);

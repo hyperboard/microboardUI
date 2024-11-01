@@ -1,9 +1,22 @@
 import { Board } from "Board";
 import { Subject } from "../Subject";
 import { BoardEvent } from "Board/Events/Events";
+import { SyncLogSubject } from "Board/Events/SyncLog";
+
+export type SubjectName =
+	| "camera"
+	| "cameraResize"
+	| "selection"
+	| "selectionItem"
+	| "selectionItems"
+	| "items"
+	| "tools"
+	| "events"
+	| "syncLog"
+	| "pointer";
 
 export interface Subscription {
-	subjects: string[];
+	subjects: SubjectName[];
 	observer: () => void;
 }
 
@@ -16,7 +29,7 @@ export interface Subscriptions {
 export function getSubscriptions(getBoard: () => Board): Subscriptions {
 	let board = getBoard();
 
-	const subjectsArray: [string, () => Subject<any>][] = [
+	const subjectsArray: [SubjectName, () => Subject<any>][] = [
 		["camera", () => board.camera.subject],
 		["cameraResize", () => board.camera.resizeSubject],
 		["selection", () => board.selection.subject],
@@ -25,6 +38,7 @@ export function getSubscriptions(getBoard: () => Board): Subscriptions {
 		["items", () => board.items.subject],
 		["tools", () => board.tools.subject],
 		["events", () => board.events?.subject as Subject<BoardEvent>],
+		["syncLog", () => board.events?.syncLogSubject as SyncLogSubject],
 		["pointer", () => board.pointer.subject],
 	];
 

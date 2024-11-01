@@ -9,6 +9,7 @@ import { RichText } from "Board/Items/RichText/RichText";
 import { DEFAULT_TEXT_STYLES } from "View/Items/RichText";
 import styles from "./TextEditor.module.css";
 import clsx from "clsx";
+import { Icon } from "View/Icon";
 
 export class TextEditors extends React.Component<
 	{
@@ -49,6 +50,8 @@ export class TextEditor extends React.Component<
 	},
 	{
 		hasError: boolean;
+		limitReached: boolean;
+		timeoutId: NodeJS.Timeout | null;
 	}
 > {
 	static getDerivedStateFromError(error): {
@@ -62,8 +65,16 @@ export class TextEditor extends React.Component<
 		this.props.text.setCursorUnderLastClick(this.editableRef.current);
 	}
 
+	componentWillUnmount(): void {
+		if (this.state.timeoutId) {
+			clearTimeout(this.state.timeoutId);
+		}
+	}
+
 	state = {
 		hasError: false,
+		limitReached: false,
+		timeoutId: null,
 	};
 
 	containerRef = React.createRef<HTMLDivElement>();
@@ -91,6 +102,22 @@ export class TextEditor extends React.Component<
 		const top = point.y - 0.8 * camera.getScale();
 		const editorScale = textScale * camera.getScale();
 		const verticalAlignment = text.getVerticalAlignment();
+
+		text.onLimitReached = () => {
+			if (this.state.timeoutId) {
+				clearTimeout(this.state.timeoutId);
+			}
+
+			this.setState({ limitReached: false }, () => {
+				this.setState({ limitReached: true });
+			});
+
+			const newTimeoutId = setTimeout(() => {
+				this.setState({ limitReached: false, timeoutId: null });
+			}, 3000);
+
+			this.setState({ timeoutId: newTimeoutId });
+		};
 
 		const container = text.getTransformedContainer();
 		container.transform(camera.getMatrix());
@@ -206,7 +233,11 @@ export class TextEditor extends React.Component<
 
 					fontFamily: DEFAULT_TEXT_STYLES.fontFamily,
 					fontSize: `${DEFAULT_TEXT_STYLES.fontSize}px`,
-					lineHeight: DEFAULT_TEXT_STYLES.lineHeight,
+					lineHeight:
+						text.getAutosize() && text.getAutoSizeScale() < 1
+							? DEFAULT_TEXT_STYLES.lineHeight *
+								text.getAutoSizeScale()
+							: DEFAULT_TEXT_STYLES.lineHeight,
 					color: DEFAULT_TEXT_STYLES.fontColor,
 					pointerEvents: "none",
 
@@ -309,6 +340,18 @@ export class TextEditor extends React.Component<
 						/>
 					</Slate>
 				</div>
+				<Icon
+					iconName="TextLimitWarning"
+					width={this.editableRef.current?.offsetWidth}
+					height={this.editableRef.current?.offsetHeight}
+					className={clsx(
+						styles.limitWarning,
+						this.state.limitReached && styles.show,
+					)}
+					style={{
+						transform: `translate(0px) scale(${editorScale})`,
+					}}
+				/>
 			</div>
 			// </div>
 		);

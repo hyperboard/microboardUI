@@ -1,122 +1,93 @@
-import { getHotkeyLabel } from "Board/Keyboard";
-import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { useAppContext } from "View/AppContext";
-import { Icon } from "View/Icon";
-import { ColorPicker } from "View/Pickers/ColorPicker/ColorPicker";
-import { SliderPicker } from "View/Pickers/SliderPicker/SliderPicker";
-import {
-	MAX_DRAWING_STROKE_WIDTH,
-	MIN_DRAWING_STROKE_WIDTH,
-	PEN_COLORS,
-	STEP_DRAWING_STROKE_WIDTH,
-} from "View/Tools/AddDrawing";
-import { UiButton } from "View/Ui/UiButton";
-import { UiColorInput } from "View/Ui/UiColorInput";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
-import { ButtonWithMenu } from "../ButtonWithMenu/ButtonWithMenu";
+import React, { useState } from "react";
+import { AddDrawingContext } from "./AddDrawingContext";
+import { UiButton } from "../../../Ui/UiButton";
+import { Icon } from "../../../Icon";
+import { ButtonWithMenu } from "../ButtonWithMenu";
+import { useTranslation } from "react-i18next";
+import { DrawingTool } from "../../../Tools/AddDrawing";
 import style from "./AddDrawing.module.css";
+import { AddHighlighter } from "./AddHighlighter/AddHighlighter";
+import { AddPen } from "./AddPen/AddPen";
+import { Eraser } from "./Eraser/Eraser";
+import { useAppContext } from "../../../AppContext";
 
 export function AddDrawing() {
-	const [isColorSelected, setIsColorSelected] = useState(false);
+	const [lastOpenedMenu, setLastOpenedMenu] = useState<DrawingTool | null>(
+		null,
+	);
 	const { board } = useAppContext();
+	const [selectedColor, setSelectedColor] = useState<string>("none");
 	const { t } = useTranslation();
-
-	const addDrawing = board.tools.getAddDrawing();
-	const isActive = Boolean(addDrawing);
-	const selectedColor = addDrawing?.getStrokeColor();
-	const strokeWidth = addDrawing?.getStrokeWidth();
-	const isDrawing = addDrawing?.isDown;
-
-	useEffect(() => {
-		if (isDrawing) {
-			setIsColorSelected(true);
-		}
-	}, [isDrawing]);
-
+	const isActive = Boolean(
+		board.tools.getAddDrawing() ||
+			board.tools.getAddHighlighter() ||
+			board.tools.getEraser(),
+	);
 	const handleClick = () => {
-		if (isActive && selectedColor !== "none" && isColorSelected) {
-			setIsColorSelected(false);
-		} else if (isActive && selectedColor !== "none") {
-			setIsColorSelected(true);
+		if (isActive) {
+			return;
 		}
-		if (!isActive || (isActive && selectedColor === "none")) {
-			board.tools.addDrawing(true);
-			setIsColorSelected(false);
+		switch (lastOpenedMenu) {
+			case "Pen": {
+				board.tools.addDrawing(true);
+				break;
+			}
+			case "Highlighter": {
+				board.tools.addHighlighter(true);
+				break;
+			}
+			case "Eraser": {
+				board.tools.eraser(true);
+				break;
+			}
+			default: {
+				board.tools.addDrawing(true);
+				break;
+			}
 		}
+		setLastOpenedMenu(lastOpenedMenu || "Pen");
 	};
-
-	const handleSliderPick = (width: number): void => {
-		if (addDrawing) {
-			addDrawing.setStrokeWidth(width);
-		}
-	};
-
-	const handleColorPick = (color: string): void => {
-		if (addDrawing) {
-			addDrawing.setStrokeColor(color);
-			setIsColorSelected(true);
-		}
-	};
-
-	const handleCustomColorPick = (color: string): void => {
-		if (addDrawing) {
-			addDrawing.setStrokeColor(color);
-		}
-	};
-
-	const isPredefinedColor = PEN_COLORS.some(color => color === selectedColor);
 
 	return (
-		<ButtonWithMenu
-			button={
-				<UiButton
-					id={"tool-add-drawing"}
-					tooltip={t("toolsPanel.addDrawing.tooltip")}
-					hotkey={getHotkeyLabel("pen")}
-					active={isActive}
-					variant="secondary"
-					rounded="none"
-					onClick={handleClick}
-				>
-					{selectedColor && selectedColor !== "none" && (
-						<div
-							className={style.indicator}
-							style={{ backgroundColor: selectedColor }}
-						/>
-					)}
-					<Icon iconName="Pen" />
-				</UiButton>
-			}
-			isOpen={isActive && !isColorSelected}
+		<AddDrawingContext.Provider
+			value={{
+				setLastOpenedMenu,
+				lastOpenedMenu,
+				setSelectedColor,
+			}}
 		>
-			<UiPanel vertical className={style.panel}>
-				<div className={style.slider}>
-					<SliderPicker
-						onPick={handleSliderPick}
-						min={MIN_DRAWING_STROKE_WIDTH}
-						max={MAX_DRAWING_STROKE_WIDTH}
-						step={STEP_DRAWING_STROKE_WIDTH}
-						value={strokeWidth}
-						showLabel
-					/>
-				</div>
-				<div className={style.colors}>
-					<ColorPicker
-						selectedColor={selectedColor}
-						onPick={handleColorPick}
-						colors={PEN_COLORS}
-					/>
-					<UiColorInput
-						color={isPredefinedColor ? "none" : selectedColor}
-						isActive={
-							selectedColor !== "none" && !isPredefinedColor
+			<ButtonWithMenu
+				button={
+					<UiButton
+						id={"tool-add-drawing"}
+						tooltip={
+							isActive
+								? undefined
+								: t("toolsPanel.addDrawing.addPen.tooltip")
 						}
-						onChange={handleCustomColorPick}
-						setIsCloseMenu={setIsColorSelected}
-					/>
-				</div>
-			</UiPanel>
-		</ButtonWithMenu>
+						active={isActive}
+						variant="secondary"
+						rounded="none"
+						onClick={handleClick}
+					>
+						{selectedColor && selectedColor !== "none" && (
+							<div
+								className={style.indicator}
+								style={{ backgroundColor: selectedColor }}
+							/>
+						)}
+						<Icon iconName={lastOpenedMenu || "Pen"} />
+					</UiButton>
+				}
+				isOpen={isActive}
+			>
+				<UiPanel vertical padding={0} className={style.panel}>
+					<AddPen />
+					<AddHighlighter />
+					<Eraser />
+				</UiPanel>
+			</ButtonWithMenu>
+		</AddDrawingContext.Provider>
 	);
 }

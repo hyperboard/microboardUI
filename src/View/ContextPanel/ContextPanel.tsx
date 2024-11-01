@@ -21,7 +21,6 @@ import { ItemType } from "./Buttons/ItemType/ItemType";
 import { RestOptionsMenu } from "./Buttons/RestOptionsMenu";
 import {
 	BringToFront,
-	CopyFrameLink,
 	ExportFrame,
 	SendToBack,
 } from "./Buttons/RestOptionsMenu/Items";
@@ -81,6 +80,9 @@ export function ContextPanel() {
 	const isSelectUnderPointer =
 		board.selection.getContext() === "SelectUnderPointer";
 
+	const isHoverUnderPointer =
+		board.selection.getContext() === "HoverUnderPointer";
+
 	const hasLinkTo = () => {
 		const items = board.selection.items.list();
 		return !!(items.length === 1 && items[0].getLinkTo());
@@ -93,6 +95,7 @@ export function ContextPanel() {
 	const isPen = board.selection.items.isAllItemsType("Drawing");
 	const isImage = board.selection.items.isAllItemsType("Image");
 	const isFrame = board.selection.items.isAllItemsType("Frame");
+	const isPlaceholder = board.selection.items.isAllItemsType("Placeholder");
 	const isDifferentItems =
 		!isText &&
 		!isSticker &&
@@ -100,7 +103,8 @@ export function ContextPanel() {
 		!isConnector &&
 		!isPen &&
 		!isImage &&
-		!isFrame;
+		!isFrame &&
+		!isPlaceholder;
 	return (
 		<PanelContext.Provider
 			value={{
@@ -123,6 +127,15 @@ export function ContextPanel() {
 				{isSelectUnderPointer && !lockedFrames.length && (
 					<>
 						<Edit />
+						<RestOptionsMenu rounded="right">
+							<BringToFront />
+							<SendToBack />
+						</RestOptionsMenu>
+					</>
+				)}
+				{isPlaceholder && !isSelectUnderPointer && (
+					<>
+						<Delete rounded="left" />
 						<RestOptionsMenu rounded="right">
 							<BringToFront />
 							<SendToBack />
@@ -288,12 +301,14 @@ export function ContextPanel() {
 						) : null}
 					</>
 				)}
-				{isDifferentItems && !isSelectUnderPointer && (
-					<RestOptionsMenu rounded="full">
-						<BringToFront />
-						<SendToBack />
-					</RestOptionsMenu>
-				)}
+				{isDifferentItems &&
+					!isSelectUnderPointer &&
+					!isHoverUnderPointer && (
+						<RestOptionsMenu rounded="full">
+							<BringToFront />
+							<SendToBack />
+						</RestOptionsMenu>
+					)}
 			</UiPanel>
 		</PanelContext.Provider>
 	);

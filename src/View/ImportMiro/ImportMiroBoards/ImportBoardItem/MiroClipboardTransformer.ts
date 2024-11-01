@@ -9,6 +9,7 @@ import {
 	IMiroBoardItemText,
 	MiroBoardItemTypes,
 	MiroRelativeTo,
+	MiroUnsupportedItem,
 } from "../MiroBoards/MiroBoardsModels";
 import { Board } from "Board";
 import { useCopyBoardItems } from "./useCopyBoardItems";
@@ -16,6 +17,7 @@ import {
 	INITIAL_DRAWING_STROKE_WIDTH,
 	MAX_DRAWING_STROKE_WIDTH,
 } from "../../../Tools/AddDrawing";
+import { getGlobalModalFunctions } from "View/Modal/ModalProvider";
 
 type SupportedMiroType =
 	| IMiroBoardItemConnector
@@ -343,7 +345,7 @@ export const transformConnector = (
 					content: c.text || "",
 					position: "center",
 					textAlignVertical: "middle",
-			  }))
+				}))
 			: [],
 		shape: LINE_TYPE[style.lt] || "straight",
 		startItem: json.primary
@@ -357,7 +359,7 @@ export const transformConnector = (
 						y: (json.primary?.point?.y || 0) * 100 + "%",
 					},
 					links: { self: "" },
-			  }
+				}
 			: undefined,
 		endItem: json.secondary
 			? {
@@ -371,7 +373,7 @@ export const transformConnector = (
 						y: (json.secondary?.point?.y || 0) * 100 + "%",
 					},
 					links: { self: "" },
-			  }
+				}
 			: undefined,
 	};
 
@@ -602,6 +604,52 @@ const transformDrawing = (
 	return transformDrawing;
 };
 
+export const transformUnsupportedItems = (
+	item: MiroClipboardItem,
+	cursorPosition: {
+		x: number;
+		y: number;
+	},
+	clipboardItems: MiroClipboardItem[],
+): MiroUnsupportedItem | null => {
+	const json = item.widgetData?.json;
+	if (!json) {
+		return null;
+	}
+
+	const transformUnsupportedItem: MiroUnsupportedItem = {
+		...createBaseItem(item),
+		type: MiroBoardItemTypes.UNSUPPORTED,
+		geometry: {
+			width: json.size?.width || 100,
+			height: json.size?.height || 100,
+		},
+		position: {
+			x: (json._position?.offsetPx?.x || 0) + cursorPosition.x,
+			y: (json._position?.offsetPx?.y || 0) + cursorPosition.y,
+			origin: "center",
+			relativeTo: json._parent
+				? MiroRelativeTo.frame
+				: MiroRelativeTo.board,
+		},
+		miroData: item,
+		style: {
+			color: "",
+		},
+	};
+
+	if (json._parent) {
+		transformUnsupportedItem.parent = {
+			id: clipboardItems[json._parent.index].initialId,
+			links: {
+				self: "",
+			},
+		};
+	}
+
+	return transformUnsupportedItem;
+};
+
 export const parseItem = (
 	item: MiroClipboardItem,
 	cursorPosition: {
@@ -610,7 +658,7 @@ export const parseItem = (
 	},
 	clipboardItems: MiroClipboardItem[],
 	boardId: string,
-): SupportedMiroType | null => {
+): SupportedMiroType | MiroUnsupportedItem | null => {
 	switch (item.widgetData?.type) {
 		case "shape":
 			return transformShape(item, cursorPosition, clipboardItems);
@@ -632,7 +680,11 @@ export const parseItem = (
 		case "frame":
 			return transformFrame(item, cursorPosition, clipboardItems);
 		default:
-			return null;
+			return transformUnsupportedItems(
+				item,
+				cursorPosition,
+				clipboardItems,
+			);
 	}
 };
 
@@ -650,7 +702,11 @@ export const pasteMiroClipboard = (board: Board, clipboardJson: any): any => {
 	//     x: 0,
 	//     y: 0,
 	// };
-	const miroItems = clipboardItems.reduce((acc, item) => {
+	const { showModal, setModalData } = getGlobalModalFunctions();
+	showModal?.("loadingNotification");
+	setModalData?.(0);
+
+	const miroItems = clipboardItems.reduce((acc, item, index) => {
 		const transformedItem = parseItem(
 			item,
 			initialPositions,
@@ -660,6 +716,7 @@ export const pasteMiroClipboard = (board: Board, clipboardJson: any): any => {
 		if (transformedItem) {
 			acc.push(transformedItem);
 		}
+		setModalData?.(Math.floor(((index / clipboardItems.length) * 100) / 2));
 		return acc;
 	}, [] as IMiroBoardItem[]);
 	const miroConnectors = clipboardItems.reduce((acc, item) => {

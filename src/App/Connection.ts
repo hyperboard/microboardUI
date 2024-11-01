@@ -1,8 +1,16 @@
+import toast from "react-hot-toast";
+import i18next from "i18next";
+import { notify } from "View/Ui/Toast";
 import { getApiUrl } from "Config";
 import { getWebsocketUrl } from "../Config";
 import { Subject } from "Subject";
-import { BoardSnapshot } from "Board/Board";
-import { BoardEvent, BoardEventPack } from "Board/Events/Events";
+import { Board, BoardSnapshot } from "Board/Board";
+import {
+	BoardEvent,
+	BoardEventPack,
+	SyncBoardEvent,
+	SyncEvent,
+} from "Board/Events/Events";
 
 const WS_RECONNECT_TIMEOUT = 5000;
 const WS_PING_INTERVAL = 30000;
@@ -15,7 +23,8 @@ export interface AuthMsg {
 export interface BoardEventMsg {
 	type: "BoardEvent";
 	boardId: string;
-	event: BoardEvent | BoardEventPack;
+	// event: BoardEvent | BoardEventPack;
+	event: SyncEvent;
 	messageId: string;
 	sequenceNumber: number;
 }
@@ -31,7 +40,8 @@ export interface ConfirmationMsg {
 export interface BoardEventListMsg {
 	type: "BoardEventList";
 	boardId: string;
-	events: BoardEvent[];
+	// events: BoardEvent[];
+	events: SyncBoardEvent[];
 }
 
 export interface SubscribeMsg {
@@ -76,6 +86,10 @@ export interface ViewModeMsg {
 	boardId: string;
 }
 
+export interface PingMsg {
+	type: "ping";
+}
+
 export type EventsMsg =
 	| ViewModeMsg
 	| BoardEventMsg
@@ -91,7 +105,8 @@ export type SocketMsg =
 	| SubscribeMsg
 	| UnsubscribeMsg
 	| ErrorMsg
-	| ViewModeMsg;
+	| ViewModeMsg
+	| PingMsg;
 
 export interface Connection {
 	connectionId: number;
@@ -107,7 +122,8 @@ export interface Connection {
 	): void;
 	publishBoardEvent(
 		boardId: string,
-		event: BoardEventPack,
+		// event: BoardEventPack,
+		event: SyncEvent,
 		sequenceNumber: number,
 	): void;
 	publishAuth(jwt: string): void;
@@ -121,10 +137,89 @@ interface Subscription {
 	unsubscribe: () => void;
 }
 
-export function createConnection(): Connection {
+export function createConnection(getBoard: () => Board): Connection {
 	const subscriptions = new Map<string, Subscription>();
+	let pingTimeout: NodeJS.Timeout | null = null;
+	let pingNotificationId: string | null = null;
+	let changedViewMode = false;
+
+	// const beforeUnloadListener = (event: BeforeUnloadEvent): void => {
+	// 	event.preventDefault();
+	// 	event.returnValue = "Do not leave the page to avoid losing data";
+	// };
+
+	const onConnectionLost = (): void => {
+		if (!pingNotificationId) {
+			pingNotificationId = notify({
+				header: i18next.t("notifications.connectionLostHeader"),
+				variant: "black",
+				duration: Infinity,
+				unclosable: true,
+				position: "bottom-center",
+			});
+			// window.addEventListener('beforeunload', beforeUnloadListener);
+		}
+		const board = getBoard();
+		if (board.getBoardId() !== "blank" && board.interfaceType !== "view") {
+			board.selection.removeAll();
+			board.interfaceType = "view";
+			board.tools.navigate();
+			changedViewMode = true;
+			board.tools.publish();
+		}
+		window.parent.postMessage(
+			{
+				pattern: "connectionState",
+				payload: "disconnected",
+			},
+			"*",
+		);
+	};
+
+	const onErorr = (error: unknown): void => {
+		const err = error as Error;
+		console.error("Error Establishing Connection:", err);
+		onConnectionLost();
+		window.parent.postMessage(
+			{
+				pattern: "MicroboardError",
+				payload: JSON.stringify({
+					error: err.message,
+				}),
+			},
+			"*",
+		);
+	};
+
+	const setConnectionErrorTimeout = (): void => {
+		pingTimeout = setTimeout(onConnectionLost, WS_PING_INTERVAL);
+	};
+
+	function clearConnectionError(): void {
+		if (pingTimeout) {
+			clearTimeout(pingTimeout);
+			pingTimeout = null;
+		}
+		if (pingNotificationId) {
+			toast.dismiss(pingNotificationId);
+			pingNotificationId = null;
+			notify({
+				header: i18next.t("notifications.connectionReestablished"),
+				variant: "black",
+				position: "bottom-center",
+				unclosable: true,
+			});
+			// window.removeEventListener('beforeunload', beforeUnloadListener);
+		}
+		if (changedViewMode) {
+			getBoard().interfaceType = "edit";
+			changedViewMode = false;
+			getBoard().tools.publish();
+		}
+	}
 
 	function onMessage(msg: SocketMsg): void {
+		clearConnectionError();
 		switch (msg.type) {
 			case "SubscribeConfirmation":
 			case "Confirmation":
@@ -143,19 +238,25 @@ export function createConnection(): Connection {
 				subscription.publish(msg);
 				break;
 			case "Subscribe":
-				break;
 			case "Unsubscribe":
-				break;
 			case "Error":
+			case "ping":
 				break;
 			default:
 				console.warn("Debug: Received unknown message type:", msg.type);
 		}
 	}
-	const ws = createWsClient(onMessage);
+	const ws = createWsClient(onMessage, setConnectionErrorTimeout, onErorr);
 
 	async function connect(): Promise<void> {
 		try {
+			window.parent.postMessage(
+				{
+					pattern: "connectionState",
+					payload: "connecting",
+				},
+				"*",
+			);
 			const response = await fetch(`${getApiUrl()}/connection`, {
 				method: "GET",
 				mode: "cors",
@@ -179,24 +280,8 @@ export function createConnection(): Connection {
 			);
 			const data = await response.json();
 			connectionId = data.connection;
-		} catch (error: Error) {
-			console.error("Error Establishing Connection:", error);
-			window.parent.postMessage(
-				{
-					pattern: "MicroboardError",
-					payload: JSON.stringify({
-						error: error.message,
-					}),
-				},
-				"*",
-			);
-			window.parent.postMessage(
-				{
-					pattern: "connectionState",
-					payload: "disconnected",
-				},
-				"*",
-			);
+		} catch (error) {
+			onErorr(error);
 		}
 	}
 
@@ -220,13 +305,6 @@ export function createConnection(): Connection {
 
 		const subscribe = (): void => {
 			ws.onOpenSubject.subscribe(onOpen);
-			window.parent.postMessage(
-				{
-					pattern: "connectionState",
-					payload: "connecting",
-				},
-				"*",
-			);
 			onOpen();
 		};
 
@@ -277,7 +355,7 @@ export function createConnection(): Connection {
 
 	function publishBoardEvent(
 		boardId: string,
-		event: BoardEventPack,
+		event: SyncEvent,
 		sequenceNumber: number,
 	): void {
 		const messageId = generateMessageId();
@@ -336,7 +414,11 @@ interface WsClient {
 
 type SocketMsgHandler = (message: SocketMsg) => void;
 
-export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
+export function createWsClient(
+	msgHandler: SocketMsgHandler,
+	setConnectionErrorTimeout: () => void,
+	onError: (error: unknown) => void,
+): WsClient {
 	let socket: WebSocket | null;
 	const onOpenSubject = new Subject();
 	const onCloseSubject = new Subject();
@@ -381,6 +463,13 @@ export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
 					const deniedBoardId = match[1];
 					if (deniedBoardId !== "blank") {
 						onAccessDenied(deniedBoardId);
+						window.parent.postMessage(
+							{
+								pattern: "access-denied",
+								payload: deniedBoardId,
+							},
+							"*",
+						);
 					}
 				}
 			}
@@ -408,33 +497,13 @@ export function createWsClient(msgHandler: SocketMsgHandler): WsClient {
 		}, WS_RECONNECT_TIMEOUT);
 	}
 
-	function onError(event): void {
-		console.error("WebsocketClient: error", event);
-		window.parent.postMessage(
-			{
-				pattern: "MicroboardError",
-				payload: JSON.stringify({
-					error: `WebsocketClient: error ${JSON.stringify(event)}`,
-				}),
-			},
-			"*",
-		);
-		window.parent.postMessage(
-			{
-				pattern: "MicroboardError",
-				payload: JSON.stringify({
-					error: `WebsocketClient: error ${event}`,
-				}),
-			},
-			"*",
-		);
-	}
-
 	const pingMsg = JSON.stringify({ type: "ping" });
 
 	function keepAlivePing(): void {
 		if (isConnected()) {
 			socket?.send(pingMsg);
+
+			setConnectionErrorTimeout();
 		}
 	}
 

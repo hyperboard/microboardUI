@@ -14,7 +14,7 @@ import RootView from "./RootView/RootView";
 import { ProtectedRoute } from "./Routes/ProtectedRoute";
 import { SigninView } from "./SigninView/SigninView";
 import { SignupView } from "./SignupView/SignupView";
-import { ToastProvider } from "./ToastProvider";
+import { ToastProvider } from "View/ToastProvider";
 import { VerifyMailView } from "./VerifyMailView/VerifyMailView";
 import { WelcomeBoard } from "./WelcomeBoard";
 
