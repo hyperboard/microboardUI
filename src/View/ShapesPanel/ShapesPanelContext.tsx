@@ -2,8 +2,8 @@ import { createStrictContext, useStrictContext } from "lib/strictContext";
 import React, { PropsWithChildren, useEffect, useState } from "react";
 import { ShapeCategoryName } from "../Tools/AddShape";
 import { useAppContext } from "../AppContext";
-import { DefaultShapeData } from "../../Board/Items/Shape";
 import { useLocation } from "react-router-dom";
+import { tempStorage } from "App/SessionStorage";
 
 type ShapesPanelContext = {
 	openShapesPanel: () => void;
@@ -20,15 +20,10 @@ export function useShapesPanelContext(): ShapesPanelContext {
 }
 
 const getInitialShapeCategory = (boardId: string): ShapeCategoryName => {
-	let savedShapeData = sessionStorage.getItem("lastShapeData");
+	const savedShapeData = tempStorage.getShapeData(boardId);
 
-	if (!savedShapeData || !savedShapeData.includes(boardId)) {
-		savedShapeData = localStorage.getItem("lastShapeData");
-	}
-
-	if (savedShapeData && savedShapeData.includes(boardId)) {
-		const data = JSON.parse(savedShapeData)[boardId] as DefaultShapeData;
-		const splitted = data.shapeType.split("_");
+	if (savedShapeData) {
+		const splitted = savedShapeData.shapeType.split("_");
 		if (splitted.length > 1) {
 			return splitted[0] as ShapeCategoryName;
 		}
