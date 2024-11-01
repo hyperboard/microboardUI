@@ -34,12 +34,12 @@ import { TextColor } from "./Buttons/TextColor";
 import { TextHighlight } from "./Buttons/TextHighlight";
 import { ToggleFrameRatio } from "./Buttons/ToggleFrameRatio";
 import { PanelContext } from "./PanelContext";
+import { Lock } from "./Buttons/Lock";
 import { ConnectorLineColor } from "./Buttons/ConnectorLineColor";
 import { ConnectorFontStyle } from "./Buttons/ConnectorFontStyle";
 import { ConnectorFontSize } from "./Buttons/FontSize";
 import { ConnectorTextColor } from "./Buttons/ConnectorTextColor";
 import { ConnectorTextHighlight } from "./Buttons/ConnectorTextHighlight";
-import { Mbr } from "../../Board/Items";
 
 export function ContextPanel() {
 	const { app, board } = useAppContext();
@@ -69,8 +69,17 @@ export function ContextPanel() {
 		return null;
 	}
 
+	const lockedFrames = board.selection.items
+		.list()
+		.filter(
+			item => item.transformation.isLocked && item.itemType === "Frame",
+		);
+
 	const isSelectUnderPointer =
 		board.selection.getContext() === "SelectUnderPointer";
+
+	const isHoverUnderPointer =
+		board.selection.getContext() === "HoverUnderPointer";
 
 	const isText = board.selection.items.isAllItemsType("RichText");
 	const isSticker = board.selection.items.isAllItemsType("Sticker");
@@ -79,6 +88,7 @@ export function ContextPanel() {
 	const isPen = board.selection.items.isAllItemsType("Drawing");
 	const isImage = board.selection.items.isAllItemsType("Image");
 	const isFrame = board.selection.items.isAllItemsType("Frame");
+	const isPlaceholder = board.selection.items.isAllItemsType("Placeholder");
 	const isDifferentItems =
 		!isText &&
 		!isSticker &&
@@ -86,7 +96,8 @@ export function ContextPanel() {
 		!isConnector &&
 		!isPen &&
 		!isImage &&
-		!isFrame;
+		!isFrame &&
+		!isPlaceholder;
 	return (
 		<PanelContext.Provider
 			value={{
@@ -106,9 +117,18 @@ export function ContextPanel() {
 				padding={0}
 				id="ContextPanel"
 			>
-				{isSelectUnderPointer && (
+				{isSelectUnderPointer && !lockedFrames.length && (
 					<>
 						<Edit />
+						<RestOptionsMenu rounded="right">
+							<BringToFront />
+							<SendToBack />
+						</RestOptionsMenu>
+					</>
+				)}
+				{isPlaceholder && !isSelectUnderPointer && (
+					<>
+						<Delete rounded="left" />
 						<RestOptionsMenu rounded="right">
 							<BringToFront />
 							<SendToBack />
@@ -231,7 +251,7 @@ export function ContextPanel() {
 						</RestOptionsMenu>
 					</>
 				)}
-				{isFrame && !isSelectUnderPointer && (
+				{isFrame && !isSelectUnderPointer && !lockedFrames.length && (
 					<>
 						<FrameRatio />
 						<ToggleFrameRatio />
@@ -240,6 +260,7 @@ export function ContextPanel() {
 						<UiSeparator vertical />
 						<Duplicate />
 						<Delete />
+						<Lock />
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
@@ -248,12 +269,28 @@ export function ContextPanel() {
 						</RestOptionsMenu>
 					</>
 				)}
-				{isDifferentItems && !isSelectUnderPointer && (
-					<RestOptionsMenu rounded="full">
-						<BringToFront />
-						<SendToBack />
-					</RestOptionsMenu>
+				{!!lockedFrames.length && (
+					<>
+						<Lock rounded="left" />
+						<Duplicate
+							rounded={lockedFrames.length > 1 ? "right" : "none"}
+						/>
+						{lockedFrames.length <= 1 ? (
+							<RestOptionsMenu rounded="right">
+								<CopyFrameLink />
+								<ExportFrame />
+							</RestOptionsMenu>
+						) : null}
+					</>
 				)}
+				{isDifferentItems &&
+					!isSelectUnderPointer &&
+					!isHoverUnderPointer && (
+						<RestOptionsMenu rounded="full">
+							<BringToFront />
+							<SendToBack />
+						</RestOptionsMenu>
+					)}
 			</UiPanel>
 		</PanelContext.Provider>
 	);

@@ -1,1 +1,0 @@
-export { ConnectorFontSize } from "./ConnectorFontSize";

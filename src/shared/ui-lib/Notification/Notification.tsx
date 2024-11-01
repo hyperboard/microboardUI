@@ -2,6 +2,7 @@ import React, { ReactNode } from "react";
 import styles from "./Notification.module.css";
 import clsx from "clsx";
 import { Icon } from "View/Icon";
+import { createPortal } from "react-dom";
 
 export enum InfoColor {
 	error = "#E6483D",
@@ -14,7 +15,7 @@ interface NotificationProps {
 	children: ReactNode;
 	isOpen: boolean;
 	cross?: boolean;
-	setIsOpen?: (isOpen: boolean) => void;
+	setIsOpen: (isOpen: unknown) => void;
 	infoIcon?: boolean;
 	infoColor?: InfoColor;
 }
@@ -33,35 +34,38 @@ export const Notification: React.FC<NotificationProps> = (
 		...rest
 	} = props;
 
-	return (
-		<div
-			className={clsx(
-				styles.notification,
-				{ [styles.open]: isOpen, [styles.withCross]: cross },
-				[className],
-			)}
-			{...rest}
-		>
-			{infoIcon && (
-				<Icon
-					iconName={"Notification"}
-					className={styles.notificationIcon}
-					width={20}
-					height={20}
-					style={{ color: infoColor }}
-				/>
-			)}
-			{cross && (
-				<div onClick={() => setIsOpen?.(false)}>
-					<Icon
-						iconName={"modalCross"}
-						className={styles.cross}
-						width={11}
-						height={11}
-					/>
-				</div>
-			)}
-			{children}
-		</div>
-	);
+	return isOpen
+		? createPortal(
+				<div
+					className={clsx(
+						styles.notification,
+						{ [styles.open]: isOpen, [styles.withCross]: cross },
+						[className],
+					)}
+					{...rest}
+				>
+					{infoIcon && (
+						<Icon
+							iconName={"Notification"}
+							className={styles.notificationIcon}
+							width={20}
+							height={20}
+							style={{ color: infoColor }}
+						/>
+					)}
+					{cross && (
+						<div onClick={setIsOpen}>
+							<Icon
+								iconName={"modalCross"}
+								className={styles.cross}
+								width={11}
+								height={11}
+							/>
+						</div>
+					)}
+					{children}
+				</div>,
+				window.document.body,
+			)
+		: null;
 };

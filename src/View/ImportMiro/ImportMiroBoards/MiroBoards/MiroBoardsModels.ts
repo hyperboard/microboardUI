@@ -30,6 +30,7 @@ export enum MiroBoardItemTypes {
 	DOCUMENT = "document",
 	MINDMAP = "mindmap_node",
 	PAINT = "paint",
+	UNSUPPORTED = "unsupported",
 }
 
 export type MiroItemsTypes =
@@ -39,7 +40,8 @@ export type MiroItemsTypes =
 	| "text"
 	| "frame"
 	| "connector"
-	| "paint";
+	| "paint"
+	| "unsupported";
 
 export interface IMiroBoardItemStyle {
 	borderColor?: string;
@@ -213,6 +215,13 @@ export interface IMiroBoardItemConnector extends IMiroBoardItemBase {
 	position: IMiroPosition;
 }
 
+export interface MiroUnsupportedItem extends IMiroBoardItemBase {
+	type: MiroBoardItemTypes.UNSUPPORTED;
+	geometry: IMiroGeometry;
+	position: IMiroPosition;
+	miroData: unknown;
+}
+
 export type IMiroBoardItem =
 	| IMiroBoardItemText
 	| IMiroBoardItemShape
@@ -223,4 +232,5 @@ export type IMiroBoardItem =
 	| IMiroBoardItemMindmap
 	| IMiroBoardItemCard
 	| IMiroBoardItemDocument
-	| IMiroBoardItemPaint;
+	| IMiroBoardItemPaint
+	| MiroUnsupportedItem;

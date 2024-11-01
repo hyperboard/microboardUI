@@ -39,19 +39,12 @@ export const UserDropDown: React.FC<UserDropDownProps> = ({
 	customTop,
 }) => {
 	const dropdownRef = useRef<HTMLDivElement>(null);
-	const nav = useNavigate();
-	const account = useAccount();
 
 	const closeDropdown = (): void => {
 		setIsDropdownOpen(false);
 	};
 
 	useOutsideClickHandler(dropdownRef, closeDropdown);
-	const logout = (): void => {
-		account.logout().then(() => {
-			nav(0);
-		});
-	};
 
 	if (!isOpen) {
 		return null;
@@ -100,6 +93,7 @@ const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const userPanelRef = useRef<HTMLDivElement>(null);
 	const navigate = useNavigate();
+	const account = useAccount();
 
 	return (
 		<>
@@ -127,6 +121,7 @@ const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 				email={props.email}
 				buttons={[
 					<Button
+						type="button"
 						key="userDropDown1"
 						onClick={() => {
 							props.setIsModalOpen(true);
@@ -137,10 +132,11 @@ const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 						<ChangePassword /> Change password
 					</Button>,
 					<Button
+						type="button"
 						key="userDropDown2"
 						pattern="ghost"
 						onClick={async () => {
-							app.account.logout();
+							await account.logout();
 							navigate(0);
 						}}
 					>

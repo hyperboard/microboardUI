@@ -8,9 +8,12 @@ import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
-import { ConnectionLineWidths } from "../../../Board/Items/Connector/Connector";
-import { STEP_STROKE_WIDTH } from "../../Tools/AddShape";
-import { SliderPicker } from "../../Pickers/SliderPicker";
+import { ConnectionLineWidths } from "../../../../Board/Items/Connector/Connector";
+import { STEP_STROKE_WIDTH } from "../../../Tools/AddShape";
+import { SliderPicker } from "../../../Pickers/SliderPicker";
+import { StrokeStylePicker } from "../../../Pickers/StrokeStylePicker";
+import styles from "./ConnectorType.module.css";
+import { BorderStyle } from "../../../../Board/Items/Path";
 
 const MENU_NAME = "ConnectorType";
 
@@ -23,12 +26,18 @@ export function ConnectorType(): React.ReactElement | null {
 
 	const connectorType = board.selection.getConnectorLineStyle();
 	const connectorLineWidth = board.selection.getConnectorLineWidth();
+	const borderStyle = board.selection.getBorderStyle();
+
 	const handleClick = (): void => {
 		toggleMenu(MENU_NAME);
 	};
 	const handlePick = (type: ConnectorLineStyle): void => {
 		board.selection.setConnectorLineStyle(type);
-		app.storage.setConnectorLineStyle(type);
+		toggleMenu("None");
+	};
+
+	const handleStrokeStylePick = (style: BorderStyle) => {
+		board.selection.setStrokeStyle(style);
 		toggleMenu("None");
 	};
 
@@ -78,12 +87,20 @@ export function ConnectorType(): React.ReactElement | null {
 						showLabel
 						id="connector-line-width"
 					/>
-					<ConnectorLineStylePicker
-						onPick={handlePick}
-						selected={connectorType}
-						onSliderChange={handleSliderChange}
-						lineWidth={connectorLineWidth}
-					/>
+					<div className={styles.panel}>
+						<ConnectorLineStylePicker
+							onPick={handlePick}
+							selected={connectorType}
+							onSliderChange={handleSliderChange}
+							lineWidth={connectorLineWidth}
+						/>
+					</div>
+					<div className={styles.panel}>
+						<StrokeStylePicker
+							stroke={borderStyle}
+							onPick={handleStrokeStylePick}
+						/>
+					</div>
 				</UiPanel>
 			)}
 		</ButtonWithMenu>

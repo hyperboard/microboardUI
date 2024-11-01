@@ -3,7 +3,12 @@ import { useBoardsList } from "App/useBoardsList";
 import { useAppSubscription } from "Board/useBoardSubscription";
 import clsx from "clsx";
 import { useForceUpdate } from "lib/useForceUpdate";
-import { type ChangeEventHandler, default as React, useState } from "react";
+import {
+	type ChangeEventHandler,
+	MouseEventHandler,
+	default as React,
+	useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
 import { BoardRename } from "View/BoardName";
@@ -13,6 +18,7 @@ import { UiPanel } from "View/Ui/UiPanel";
 import { UiSeparator } from "View/Ui/UiSeparator";
 import { Icon, Logo } from "../Icon";
 import style from "./TitlePanel.module.css";
+import { ViewModeGuard } from "View/ViewModeGuard";
 
 const MAX_BOARD_TITLE_LENGTH = 32;
 
@@ -45,7 +51,7 @@ export function TitlePanel(): JSX.Element | null {
 		setNewBoardName(event.currentTarget.value);
 	};
 
-	const handleRenameCancel = () => {
+	const handleRenameCancel = (): void => {
 		setIsRenaming(false);
 	};
 
@@ -54,19 +60,19 @@ export function TitlePanel(): JSX.Element | null {
 		"boards",
 		boardId ?? "",
 	);
-	const handleBoardRenameStart: MouseEventHandler = event => {
-		if (!canRename || isBlank) {
+	const handleBoardRenameStart: MouseEventHandler = _event => {
+		if (!canRename || isBlank || board.interfaceType === "view") {
 			return;
 		}
 		setIsRenaming(true);
 		setNewBoardName(boardName);
 	};
 
-	const handleRenameConfirm = () => {
+	const handleRenameConfirm = (): void => {
 		boardsList.rename(boardId, newBoardName);
 	};
 
-	const openExport = () => {
+	const openExport = (): void => {
 		board.tools.export();
 	};
 
@@ -76,19 +82,25 @@ export function TitlePanel(): JSX.Element | null {
 	const strippedName =
 		(boardName?.length ?? 0) > MAX_BOARD_TITLE_LENGTH
 			? `${boardName?.slice(0, MAX_BOARD_TITLE_LENGTH)}...`
-			: boardName ?? "";
+			: (boardName ?? "");
 	return (
 		<UiPanel className={style.panel} padding={0} zIndex={10}>
-			<SidePanelButton
-				isOpen={isOpen}
-				toggle={toggleSideMenu}
-				className={style.menuButton}
-			/>
-			<UiSeparator vertical className={style.mobileHide} />
+			<ViewModeGuard>
+				<SidePanelButton
+					isOpen={isOpen}
+					toggle={toggleSideMenu}
+					className={style.menuButton}
+				/>
+				<UiSeparator vertical className={style.mobileHide} />
+			</ViewModeGuard>
 			<UiButton
 				rounded="none"
 				variant="secondary"
-				className={clsx(style.mobileHide, style.logoWrapper)}
+				className={clsx(
+					style.mobileHide,
+					style.logoWrapper,
+					board.interfaceType === "view" && style.viewMode,
+				)}
 			>
 				{isMicroboard ? (
 					<div className={style.logo}>
@@ -106,7 +118,10 @@ export function TitlePanel(): JSX.Element | null {
 				variant="secondary"
 				rounded="none"
 				onDoubleClick={handleBoardRenameStart}
-				className={style.tabletHide}
+				className={clsx(
+					style.tabletHide,
+					board.interfaceType === "view" && style.viewMode,
+				)}
 				onClick={evt => {
 					evt.preventDefault();
 					evt.stopPropagation();
@@ -127,17 +142,19 @@ export function TitlePanel(): JSX.Element | null {
 					</span>
 				)}
 			</UiButton>
-			<UiSeparator vertical className={style.tabletHide} />
-			<UiButton
-				className={style.tabletHide}
-				onClick={openExport}
-				variant="secondary"
-				rounded="right"
-				tooltip={t("export.tooltip")}
-				tooltipPosition="bottom"
-			>
-				<Icon iconName="Export" />
-			</UiButton>
+			<ViewModeGuard>
+				<UiSeparator vertical className={style.tabletHide} />
+				<UiButton
+					className={style.tabletHide}
+					onClick={openExport}
+					variant="secondary"
+					rounded="right"
+					tooltip={t("export.tooltip")}
+					tooltipPosition="bottom"
+				>
+					<Icon iconName="Export" />
+				</UiButton>
+			</ViewModeGuard>
 		</UiPanel>
 	);
 }

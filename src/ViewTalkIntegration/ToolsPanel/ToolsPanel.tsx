@@ -2,7 +2,7 @@ import { App } from "App";
 import { Board } from "Board";
 import { useAppSubscription } from "Board/useBoardSubscription";
 import { useForceUpdate } from "lib/useForceUpdate";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel/UiPanel";
 import { UiSeparator } from "ViewTalkIntegration/Ui/UiSeparator/UiSeparator";
 import { AddConnector } from "./Buttons/AddConnector";
@@ -15,6 +15,7 @@ import { Redo } from "./Buttons/Redo/Redo";
 import { Select } from "./Buttons/Select";
 import { Undo } from "./Buttons/Undo/Undo";
 import { PanelContext } from "./PanelContext";
+import { EventList } from "View/ToolsPanel/Buttons/EventList";
 
 type Props = {
 	app: App;
@@ -33,6 +34,8 @@ export function ToolsPanel({ app, board }: Props) {
 	const toggleMenu = (menu: string) =>
 		setOpenedMenu(prev => (prev === menu ? "None" : menu));
 	const isExport = board.tools.getExport();
+
+	useEffect(() => {}, [window.showDebug]);
 
 	if (isExport) {
 		return null;
@@ -60,6 +63,7 @@ export function ToolsPanel({ app, board }: Props) {
 				<Undo />
 				<Redo />
 			</UiPanel>
+			{window.showDebug && <EventList />}
 		</PanelContext.Provider>
 	);
 }

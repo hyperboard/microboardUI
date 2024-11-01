@@ -34,7 +34,10 @@ export function AddConnector(): React.ReactElement {
 		const tool = board.tools.getAddConnector();
 		if (tool) {
 			tool.setLineStyle(lineStyle);
-			app.sessionStorage.setConnectorLineStyle(lineStyle);
+			app.sessionStorage.setConnectorLineStyle(
+				lineStyle,
+				board.getBoardId(),
+			);
 			setIsActive(false);
 		}
 	};
@@ -46,7 +49,11 @@ export function AddConnector(): React.ReactElement {
 			button={
 				<UiButton
 					id={"tool-add-connector"}
-					tooltip={t("toolsPanel.addConnector.tooltip")}
+					tooltip={
+						isActive
+							? undefined
+							: t("toolsPanel.addConnector.tooltip")
+					}
 					hotkey={getHotkeyLabel("connector")}
 					active={isActive || !!addTool}
 					onClick={handleClick}

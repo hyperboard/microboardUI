@@ -1,0 +1,5 @@
+.panel {
+	position: absolute;
+	bottom: 0%;
+	z-index: 1;
+}

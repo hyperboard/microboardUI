@@ -33,7 +33,9 @@ export function AddFrame() {
 			button={
 				<UiButton
 					id={"tool-frame"}
-					tooltip={t("toolsPanel.addFrame.tooltip")}
+					tooltip={
+						isActive ? undefined : t("toolsPanel.addFrame.tooltip")
+					}
 					hotkey={getHotkeyLabel("frame")}
 					onClick={handleClick}
 					active={isActive}

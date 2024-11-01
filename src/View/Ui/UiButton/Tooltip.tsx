@@ -1,4 +1,4 @@
-import React, { CSSProperties } from "react";
+import React, { CSSProperties, forwardRef } from "react";
 import style from "./UiButton.module.css";
 import clsx from "clsx";
 
@@ -17,42 +17,61 @@ interface TooltipProps {
 		| "bottom-left";
 	tooltipAlign?: "center" | "left";
 	inlineStyle?: CSSProperties;
+	borderRadius?: "radiusMd";
+	padding?: "paddingMd";
+	[key: string]: unknown;
 }
 
-export const Tooltip = ({
-	tooltip,
-	tooltipPosition = "right",
-	tooltipAlign = "center",
-	hotkey,
-	inlineStyle,
-	...props
-}: TooltipProps): JSX.Element => {
-	return (
-		<div
-			className={clsx(style.tipContainer, {
-				[style.right]: tooltipPosition === "right",
-				[style.top]: tooltipPosition === "top",
-				[style.topRight]: tooltipPosition === "top-right",
-				[style.topLeft]: tooltipPosition === "top-left",
-				[style.topCenterFixed]: tooltipPosition === "top-center-fixed",
-				[style.topRightFixed]: tooltipPosition === "top-right-fixed",
-				[style.bottom]: tooltipPosition === "bottom",
-				[style.bottomRight]: tooltipPosition === "bottom-right",
-				[style.bottomLeft]: tooltipPosition === "bottom-left",
-			})}
-			style={inlineStyle}
-			{...props}
-		>
-			<div className={clsx(style.tip)}>
-				<span
-					className={clsx(style.tipText, {
-						[style.center]: tooltipAlign === "center",
-						[style.left]: tooltipAlign === "left",
-					})}
-					dangerouslySetInnerHTML={{ __html: tooltip }}
-				/>
-				{hotkey && <span className={style.hotkey}>{hotkey}</span>}
+// eslint-disable-next-line react/display-name
+export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
+	(
+		{
+			tooltip,
+			tooltipPosition = "right",
+			tooltipAlign = "center",
+			hotkey,
+			borderRadius,
+			padding,
+			inlineStyle,
+			...props
+		},
+		ref,
+	): JSX.Element => {
+		return (
+			<div
+				ref={ref}
+				className={clsx(style.tipContainer, {
+					[style.right]: tooltipPosition === "right",
+					[style.top]: tooltipPosition === "top",
+					[style.topRight]: tooltipPosition === "top-right",
+					[style.topCenterFixed]:
+						tooltipPosition === "top-center-fixed",
+					[style.topRightFixed]:
+						tooltipPosition === "top-right-fixed",
+					[style.bottom]: tooltipPosition === "bottom",
+					[style.bottomRight]: tooltipPosition === "bottom-right",
+					[style.bottomLeft]: tooltipPosition === "bottom-left",
+				})}
+				style={inlineStyle}
+				{...props}
+			>
+				<div
+					className={clsx(
+						style.tip,
+						borderRadius && style[borderRadius],
+						padding && style[padding],
+					)}
+				>
+					<span
+						className={clsx(style.tipText, {
+							[style.center]: tooltipAlign === "center",
+							[style.left]: tooltipAlign === "left",
+						})}
+						dangerouslySetInnerHTML={{ __html: tooltip }}
+					/>
+					{hotkey && <span className={style.hotkey}>{hotkey}</span>}
+				</div>
 			</div>
-		</div>
-	);
-};
+		);
+	},
+);

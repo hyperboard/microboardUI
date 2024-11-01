@@ -18,7 +18,7 @@ export function AddText() {
 	return (
 		<UiButton
 			id={"tool-add-text"}
-			tooltip={t("toolsPanel.addText.tooltip")}
+			tooltip={isActive ? undefined : t("toolsPanel.addText.tooltip")}
 			hotkey={getHotkeyLabel("text")}
 			onClick={handleClick}
 			active={isActive}

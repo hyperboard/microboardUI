@@ -1,6 +1,7 @@
 .sidePanels {
 	display: flex;
-	gap: 8px;
+	/*grid-template-columns: auto 48px;*/
+	gap: var(--absolute-position-panel-padding);
 	position: absolute;
 	height: calc(100% - 84px);
 	top: 72px;

@@ -10,8 +10,8 @@ import { isSafari } from "./isSafari";
 import { prepareImage } from "Board/Items/Image/ImageHelpers";
 import { HotkeysMap } from "Board/Keyboard/types";
 import { pasteMiroClipboard } from "../View/ImportMiro/ImportMiroBoards/ImportBoardItem/MiroClipboardTransformer";
-import { getGlobalShowModal } from "View/Modal/ModalProvider";
 import { App } from "./App";
+import { getGlobalModalFunctions } from "View/Modal/ModalProvider";
 
 export interface Controller {
 	onWheel: (event: WheelEvent) => void;
@@ -95,6 +95,10 @@ export function getController(
 				cb: () => board.tools.addDrawing(true),
 				selectionContext: ["SelectUnderPointer", "None"],
 			},
+			eraser: {
+				cb: () => board.tools.eraser(true),
+				selectionContext: ["SelectUnderPointer", "None"],
+			},
 			frame: {
 				cb: () => board.tools.addFrame(true),
 				selectionContext: ["SelectUnderPointer", "None"],
@@ -144,7 +148,9 @@ export function getController(
 				],
 			},
 			textStrike: {
-				cb: () => board.selection.setFontStyle("line-through"),
+				/* TODO uncomment when dropflow can text-decoration, prevents default to prevent slate from adding same style */
+				// cb: () => board.selection.setFontStyle("line-through"),
+				cb: event => event?.preventDefault(),
 				selectionContext: [
 					"EditTextUnderPointer",
 					"EditUnderPointer",
@@ -152,7 +158,9 @@ export function getController(
 				],
 			},
 			textUnderline: {
-				cb: () => board.selection.setFontStyle("underline"),
+				/* TODO uncomment when dropflow can text-decoration, prevents default to prevent slate from adding same style */
+				// cb: () => board.selection.setFontStyle("underline"),
+				cb: event => event?.preventDefault(),
 				selectionContext: [
 					"EditTextUnderPointer",
 					"EditUnderPointer",
@@ -580,7 +588,7 @@ export function getController(
 					const miroData = JSON.parse(decoded);
 
 					if (!app.account.isLoggedIn && miroData !== null) {
-						const showModal = getGlobalShowModal();
+						const { showModal } = getGlobalModalFunctions();
 						showModal?.("authClipboardMiro");
 						return;
 					}

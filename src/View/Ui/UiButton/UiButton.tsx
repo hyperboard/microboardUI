@@ -92,3 +92,62 @@ export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
 		);
 	},
 );
+
+export const UiDivButton = forwardRef<
+	HTMLDivElement,
+	Omit<UiButtonProps, "disabled">
+>(
+	(
+		{
+			children,
+			className,
+			active = false,
+			disabled = false,
+			tooltip,
+			tooltipPosition = "right",
+			hotkey,
+			variant = "default",
+			size = "lg",
+			radius = "xl",
+			rounded = "full",
+			...props
+		},
+		ref,
+	) => {
+		return (
+			<div
+				className={clsx(
+					style.button,
+					active && style.active,
+					style[variant],
+					style[size],
+					{
+						[style.topRounded]: rounded === "top",
+						[style.bottomRounded]: rounded === "bottom",
+						[style.fullRounded]: rounded === "full",
+						[style.leftRounded]: rounded === "left",
+						[style.rightRounded]: rounded === "right",
+						[style.fullRounded]: rounded === "full",
+					},
+					{
+						[style.radiusXl]: radius === "xl",
+						[style.radiusMd]: radius === "md",
+						[style.radiusSm]: radius === "sm",
+					},
+					className,
+				)}
+				ref={ref}
+				{...props}
+			>
+				{children}
+				{tooltip && (
+					<Tooltip
+						tooltip={tooltip}
+						tooltipPosition={tooltipPosition}
+						hotkey={hotkey}
+					/>
+				)}
+			</div>
+		);
+	},
+);

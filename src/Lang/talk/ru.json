@@ -74,6 +74,10 @@
 			"text": "Копировать"
 		}
 	},
+	"notifications": {
+		"connectionLostHeader": "Нет соединения. Подключаемся...",
+		"connectionReestablished": "Нет соединения. Подключаемся..."
+	},
 	"toolsPanel": {
 		"select": {
 			"tooltip": "Выделение"

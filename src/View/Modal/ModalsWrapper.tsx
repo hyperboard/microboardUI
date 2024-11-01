@@ -9,11 +9,11 @@ type Props = {
 
 const ModalsWrapper: React.FC<Props> = ({ children }) => {
 	return (
-		<ModalProvider>
-			<ConfirmModalProvider>
+		<ConfirmModalProvider>
+			<ModalProvider>
 				<InfoModalProvider>{children}</InfoModalProvider>
-			</ConfirmModalProvider>
-		</ModalProvider>
+			</ModalProvider>
+		</ConfirmModalProvider>
 	);
 };
 

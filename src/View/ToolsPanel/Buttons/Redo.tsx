@@ -31,8 +31,8 @@ export function Redo() {
 			hotkey={getHotkeyLabel("redo")}
 			onClick={handleClick}
 			disabled={!canRedo}
-			rounded="bottom"
 			variant="secondary"
+			rounded="bottom"
 		>
 			<Icon iconName="Redo" />
 		</UiButton>

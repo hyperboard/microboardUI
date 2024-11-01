@@ -9,6 +9,8 @@ import { shouldShow } from "lib/queryStringParser";
 import { useAppContext } from "View/AppContext";
 import { isIframe } from "lib/isIframe";
 import { useBoardRenameContext } from "View/BoardName";
+import { ViewModeGuard } from "View/ViewModeGuard";
+import { EventList } from "View/ToolsPanel/Buttons/EventList";
 import { ShapesPanel, ShapesPanelContextProvider } from "../ShapesPanel";
 
 interface SidePanelsContainerProps {
@@ -34,13 +36,15 @@ export const SidePanelsContainer = memo(
 					{(shouldShow("titlePanel") || !isIframe()) && (
 						<TitlePanel />
 					)}
-					<div className={style.hidingPanels}>
-						<SidePanel />
-						<ShapesPanel />
-					</div>
-					<InactiveBoardHidder>
-						<ToolsPanel />
-					</InactiveBoardHidder>
+					<ViewModeGuard>
+						<div className={style.hidingPanels}>
+							<SidePanel />
+							<ShapesPanel />
+						</div>
+						<InactiveBoardHidder>
+							<ToolsPanel />
+						</InactiveBoardHidder>
+					</ViewModeGuard>
 				</div>
 			</ShapesPanelContextProvider>
 		);
