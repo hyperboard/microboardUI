@@ -150,7 +150,7 @@ export function getController(
 			textStrike: {
 				/* TODO uncomment when dropflow can text-decoration, prevents default to prevent slate from adding same style */
 				// cb: () => board.selection.setFontStyle("line-through"),
-				cb: (event) => event?.preventDefault(),
+				cb: event => event?.preventDefault(),
 				selectionContext: [
 					"EditTextUnderPointer",
 					"EditUnderPointer",
@@ -160,7 +160,7 @@ export function getController(
 			textUnderline: {
 				/* TODO uncomment when dropflow can text-decoration, prevents default to prevent slate from adding same style */
 				// cb: () => board.selection.setFontStyle("underline"),
-				cb: (event) => event?.preventDefault(),
+				cb: event => event?.preventDefault(),
 				selectionContext: [
 					"EditTextUnderPointer",
 					"EditUnderPointer",
@@ -198,8 +198,8 @@ export function getController(
 			event.key === "Enter" &&
 			context === "EditTextUnderPointer"
 		) {
-			event.preventDefault();
 			board.selection.setContext("EditUnderPointer");
+			event.stopPropagation();
 		}
 
 		const isTextEditStarted =
@@ -517,7 +517,7 @@ export function getController(
 				const reader = new FileReader();
 				reader.onload = event => {
 					prepareImage(event.target?.result)
-						.then((imageData) => {
+						.then(imageData => {
 							const image = new ImageItem(imageData);
 							image.transformation.translateTo(
 								board.pointer.point.x,
