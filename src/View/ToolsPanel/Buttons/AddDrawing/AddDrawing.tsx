@@ -61,7 +61,11 @@ export function AddDrawing() {
 				button={
 					<UiButton
 						id={"tool-add-drawing"}
-						tooltip={t("toolsPanel.addDrawing.addPen.tooltip")}
+						tooltip={
+							isActive
+								? undefined
+								: t("toolsPanel.addDrawing.addPen.tooltip")
+						}
 						active={isActive}
 						variant="secondary"
 						rounded="none"

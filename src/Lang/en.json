@@ -274,7 +274,9 @@
 			"buttons": {
 				"choosePreview": "Choose preview",
 				"save": "Save",
-				"translate": "Translate"
+				"translate": "Translate",
+				"Preview": "Preview",
+				"Use": "Use"
 			}
 		},
 		"category": {
@@ -430,6 +432,12 @@
 			"description": "To import the board from Miro, you need to authorize. Please log in to save your progress.",
 			"authBtn": "Sign In"
 		},
+		"imgAuthClipboardModal": {
+			"title": "You copied the images",
+			"description": "Miro does not allow importing images without authorization. Please sign in to continue.",
+			"authBtn": "Sign In",
+			"continueBtn": "Continue without images"
+		},
 		"importMiro": "Import from Miro",
 		"importMiroBtn": "Import from Miro",
 		"authTooltip": "Sign up to access all features of Microboard",
@@ -475,8 +483,11 @@
 		"copy": "Copy of "
 	},
 	"template": {
-		"create": "Create template",
-		"update": "Update template"
+		"save": "Save template",
+		"saveSuccess": "Template updated",
+		"saveError": "Error while saving template",
+		"createSuccess": "Template created",
+		"createError": "Error while creating template"
 	},
 	"itemTooltips": {
 		"placeholder": "This type of object isn’t<br /> supported yet,<br /> <span style='opacity: 60%'>but we’re working on it.<br /> It will be available soon!</span>"

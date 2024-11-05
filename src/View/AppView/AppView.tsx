@@ -19,7 +19,7 @@ import style from "./AppView.module.css";
 import { InactiveBoardHidder } from "./InactiveBoardHidder";
 import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
-import { ImportMiroStartModal, AuthClipboardModal } from "View/ImportMiro";
+import { ImportMiroStartModal } from "View/ImportMiro";
 import { ItemTooltip } from "View/ItemTooltip";
 import { ToastProvider } from "View/ToastProvider";
 
@@ -133,11 +133,9 @@ export function AppView() {
 				<ContextMenu />
 				<ItemTooltip />
 			</ExportVisible>
-			<ViewModeGuard>
-				<ExportVisible>
-					{shouldShow("userPanel") && <UserPanel app={app} />}
-				</ExportVisible>
-			</ViewModeGuard>
+			<ExportVisible>
+				{shouldShow("userPanel") && <UserPanel app={app} />}
+			</ExportVisible>
 			<InactiveBoardHidder>
 				<ZoomPanel />
 			</InactiveBoardHidder>
@@ -149,7 +147,6 @@ export function AppView() {
 			<ToastProvider />
 			<ImportMiroBoards />
 			<ImportMiroStartModal />
-			<AuthClipboardModal />
 		</div>
 	);
 }

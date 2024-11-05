@@ -1,5 +1,7 @@
 import type { ConnectorAnchorColors } from "Board/Items/Connector/types";
+import type { BorderStyle } from "Board/Items/Path";
 
+export const CONNECTOR_BORDER_STYLE: BorderStyle = "solid";
 export const CONNECTOR_COLOR = "#868686";
 export const CONNECTOR_LINE_WIDTH = 3;
 export const DEFAULT_END_POINTER = "AngleTalk";

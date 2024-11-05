@@ -120,7 +120,11 @@ export function AddHighlighter() {
 			button={
 				<UiButton
 					id={"tool-add-highlighter"}
-					tooltip={t("toolsPanel.addDrawing.addHighlighter.tooltip")}
+					tooltip={
+						isActive
+							? undefined
+							: t("toolsPanel.addDrawing.addHighlighter.tooltip")
+					}
 					active={isActive}
 					variant="secondary"
 					rounded="none"

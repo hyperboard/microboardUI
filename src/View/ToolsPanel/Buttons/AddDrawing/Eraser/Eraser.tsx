@@ -30,7 +30,11 @@ export function Eraser() {
 	return (
 		<UiButton
 			id={"tool-add-eraser"}
-			tooltip={t("toolsPanel.addDrawing.addEraser.tooltip")}
+			tooltip={
+				isActive
+					? undefined
+					: t("toolsPanel.addDrawing.addEraser.tooltip")
+			}
 			hotkey={getHotkeyLabel("eraser")}
 			active={isActive || !!addTool}
 			onClick={handleClick}

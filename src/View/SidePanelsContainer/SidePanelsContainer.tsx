@@ -10,6 +10,7 @@ import { useAppContext } from "View/AppContext";
 import { isIframe } from "lib/isIframe";
 import { useBoardRenameContext } from "View/BoardName";
 import { ViewModeGuard } from "View/ViewModeGuard";
+import { EventList } from "View/ToolsPanel/Buttons/EventList";
 
 interface SidePanelsContainerProps {
 	isBlank: boolean;

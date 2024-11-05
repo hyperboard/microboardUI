@@ -95,6 +95,7 @@ export const SelectTemplateModal = (): JSX.Element => {
 			onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) =>
 				e.stopPropagation()
 			}
+			modalName="selectTemplate"
 		>
 			<div className={styles.wrapper}>
 				<div className={styles.sidebar}>
@@ -116,8 +117,8 @@ export const SelectTemplateModal = (): JSX.Element => {
 							snapshot={presentedTemplate.snapshot}
 							setPresentedTemplate={setPresentedTemplate}
 							tags={presentedTemplate.tags}
-							viewLinkId={presentedTemplate.uniq_id}
-							relatedTemplates={templates}
+							viewLinkId={presentedTemplate.uniqId}
+							relatedTemplates={templates.filter(t => t.uniqId !== presentedTemplate.uniqId)}
 						/>
 					) : (
 						<>
@@ -151,9 +152,7 @@ export const SelectTemplateModal = (): JSX.Element => {
 								</div>
 								<Input
 									id="search-template"
-									placeholder={t(
-										"modalTemplate.UI.inputs.search",
-									)}
+									placeholder={t("modalTemplate.UI.inputs.search")}
 									onChange={handleInputChange}
 									prefixIcon={
 										<Icon

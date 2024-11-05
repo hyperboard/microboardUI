@@ -1,7 +1,7 @@
 .panel {
 	position: absolute;
 	top: -60px;
-	left: 12px;
+	left: var(--absolute-position-panel-padding);
 }
 
 .logoWrapper.viewMode {

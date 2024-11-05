@@ -45,7 +45,11 @@ export function AddSticker() {
 			button={
 				<UiButton
 					id={"tool-add-sticker"}
-					tooltip={t("toolsPanel.addSticker.tooltip")}
+					tooltip={
+						isActive
+							? undefined
+							: t("toolsPanel.addSticker.tooltip")
+					}
 					hotkey={getHotkeyLabel("sticker")}
 					active={isActive || !!addTool}
 					onClick={handleClick}

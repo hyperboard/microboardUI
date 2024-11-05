@@ -1,7 +1,7 @@
 .panel {
 	position: absolute;
-	bottom: 1.2rem;
-	right: 1.2rem;
+	bottom: var(--absolute-position-panel-padding);
+	right: var(--absolute-position-panel-padding);
 }
 
 .zoom {

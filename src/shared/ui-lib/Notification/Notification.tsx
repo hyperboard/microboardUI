@@ -20,7 +20,7 @@ interface NotificationProps {
 	infoColor?: InfoColor;
 }
 
-export const NotificationBase: React.FC<NotificationProps> = (
+export const Notification: React.FC<NotificationProps> = (
 	props: NotificationProps,
 ) => {
 	const {
@@ -34,39 +34,38 @@ export const NotificationBase: React.FC<NotificationProps> = (
 		...rest
 	} = props;
 
-	return (
-		<div
-			className={clsx(
-				styles.notification,
-				{ [styles.open]: isOpen, [styles.withCross]: cross },
-				[className],
-			)}
-			{...rest}
-		>
-			{infoIcon && (
-				<Icon
-					iconName={"Notification"}
-					className={styles.notificationIcon}
-					width={20}
-					height={20}
-					style={{ color: infoColor }}
-				/>
-			)}
-			{cross && (
-				<div onClick={setIsOpen}>
-					<Icon
-						iconName={"modalCross"}
-						className={styles.cross}
-						width={11}
-						height={11}
-					/>
-				</div>
-			)}
-			{children}
-		</div>
-	);
-};
-
-export const Notification = (props: any) => {
-	return createPortal(<NotificationBase {...props} />, window.document.body);
+	return isOpen
+		? createPortal(
+				<div
+					className={clsx(
+						styles.notification,
+						{ [styles.open]: isOpen, [styles.withCross]: cross },
+						[className],
+					)}
+					{...rest}
+				>
+					{infoIcon && (
+						<Icon
+							iconName={"Notification"}
+							className={styles.notificationIcon}
+							width={20}
+							height={20}
+							style={{ color: infoColor }}
+						/>
+					)}
+					{cross && (
+						<div onClick={setIsOpen}>
+							<Icon
+								iconName={"modalCross"}
+								className={styles.cross}
+								width={11}
+								height={11}
+							/>
+						</div>
+					)}
+					{children}
+				</div>,
+				window.document.body,
+		  )
+		: null;
 };

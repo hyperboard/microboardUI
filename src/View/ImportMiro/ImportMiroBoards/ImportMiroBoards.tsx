@@ -3,17 +3,8 @@ import { MiroBoards } from "./MiroBoards/MiroBoards";
 import React from "react";
 import { ImportBoardItem } from "./ImportBoardItem";
 import { useSearchParams } from "react-router-dom";
-import {
-	IMiroBoard,
-	IMiroBoardItem,
-	MiroBoardItemTypes,
-} from "./MiroBoards/MiroBoardsModels";
-import {
-	ErrorNotification,
-	LoadingNotification,
-	SuccessNotification,
-	WarnClipboardNotification,
-} from "./Notifications";
+import { IMiroBoard, IMiroBoardItem } from "./MiroBoards/MiroBoardsModels";
+import { ErrorNotification } from "./Notifications";
 import { useModal } from "View/Modal/ModalProvider";
 
 export interface MiroItemsInfo {
@@ -32,10 +23,11 @@ export function ImportMiroBoards(): React.ReactElement | null {
 	const [searchParams] = useSearchParams();
 	const codeSearch = searchParams.get("code");
 	const teamIdSearch = searchParams.get("team_id");
-	const isOpenMiroBoards = codeSearch && teamIdSearch;
+	const isClipboard = searchParams.get("clipboard");
+	const isOpenMiroBoards = codeSearch && teamIdSearch && !isClipboard;
 
 	const [stage, setStage] = useState<number>(1);
-	const [open, setOpen] = useState<boolean | null>(!!isOpenMiroBoards);
+	const [open, setOpen] = useState<boolean>(!!isOpenMiroBoards);
 	const [boardInfo, setBoardInfo] = useState<Pick<IMiroBoard, "id" | "name">>(
 		{
 			id: "",
@@ -50,14 +42,6 @@ export function ImportMiroBoards(): React.ReactElement | null {
 
 	const [boardItems, setBoardItems] = useState<IMiroBoardItem[]>([]);
 
-	const isWarnMessageOpen = (): boolean =>
-		boardItems.some(
-			item =>
-				item.type === MiroBoardItemTypes.CARD ||
-				item.type === MiroBoardItemTypes.DOCUMENT ||
-				item.type === MiroBoardItemTypes.MINDMAP,
-		);
-
 	const loadingPercentage =
 		Math.ceil(
 			(boardItems.length /
@@ -67,14 +51,11 @@ export function ImportMiroBoards(): React.ReactElement | null {
 
 	useEffect(() => {
 		setModalData?.(loadingPercentage);
-	}, [setModalData]);
+	}, [setModalData, loadingPercentage]);
 
 	return (
 		<>
-			<LoadingNotification />
-			<SuccessNotification isWarn={isWarnMessageOpen()} />
 			<ErrorNotification setStage={setStage} setModalOpen={setOpen} />
-			<WarnClipboardNotification />
 			{stage === 1 ? (
 				<MiroBoards
 					isOpen={open}

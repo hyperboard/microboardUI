@@ -171,6 +171,7 @@ const CONNECTOR_STYLES = {
 export const useCopyBoardItems = (
 	board: Board,
 	miroItems?: IMiroBoardItem[],
+	withoutImgs?: boolean,
 ): void => {
 	const boardMiroId: { [key: string]: string } = {};
 	const searchParams = new URLSearchParams(window.location.search);
@@ -337,11 +338,7 @@ export const useCopyBoardItems = (
 	};
 
 	const getMiroItemById = (id: string): IMiroBoardItem | undefined => {
-		const sessionMiroItems = sessionStorage.getItem(`miroItems`);
-		const miroBoardItems = sessionMiroItems
-			? JSON.parse(sessionMiroItems)
-			: miroItems;
-
+		const miroBoardItems = getMiroBoardItems();
 		return miroBoardItems.find((item: IMiroBoardItem) => item.id === id);
 	};
 
@@ -529,7 +526,7 @@ export const useCopyBoardItems = (
 	const copyShape = (item: IMiroBoardItemShape): void | null => {
 		const { id, style, position, data, geometry, parent } = item;
 		if (!position || !geometry) {
-			return null;
+			return;
 		}
 
 		const shapePosition = getItemPosition(position, geometry, parent);
@@ -587,7 +584,7 @@ export const useCopyBoardItems = (
 		const stickerPosition = getItemPosition(position, geometry, parent);
 		const { fillColor, textAlignVertical } = style;
 		if (!fillColor) {
-			return null;
+			return ;
 		}
 		const color = STICKER_COLOR[fillColor];
 		const sticker = new Sticker(undefined, id, color);
@@ -659,7 +656,7 @@ export const useCopyBoardItems = (
 		);
 
 		prepareImage(imgBase64).then(imageData => {
-			const imgItem = new ImageItem(imageData).setId(id);
+			const imgItem = new ImageItem(imageData, board).setId(id);
 
 			// Calculate scale based on the desired geometry and the actual image dimensions
 			const scaleX = geometry.width / imageData.imageDimension.width;
@@ -853,7 +850,7 @@ export const useCopyBoardItems = (
 		setTransformation(boardRichText, item, scale);
 	};
 
-	const copyFrame = (item: IMiroBoardItemFrame): void => {
+	const copyFrame = async (item: IMiroBoardItemFrame): Promise<void> => {
 		const { style, id, data } = item;
 		const { fillColor } = style;
 		const { format } = data;
@@ -903,9 +900,9 @@ export const useCopyBoardItems = (
 	};
 
 	const copyUnsupportedItem = (item: MiroUnsupportedItem): void => {
-		const { position, geometry } = item;
+		const { position, geometry, parent } = item;
 
-		const shapePosition = getItemPosition(position, geometry);
+		const shapePosition = getItemPosition(position, geometry, parent);
 		const placeholder = new Placeholder(
 			undefined,
 			item,
@@ -925,15 +922,8 @@ export const useCopyBoardItems = (
 	};
 
 	const getMiroToken = (): void => {
-		sessionStorage.setItem(`miroItems`, JSON.stringify(miroItems));
-		const clientId = "3458764589599848573";
-		const redirectUrl = window.location.origin + "/boards?clipboard=true";
-
-		window.location.href =
-			"https://miro.com/oauth/authorize?response_type=code&client_id=" +
-			clientId +
-			"&redirect_uri=" +
-			redirectUrl;
+		const { showModal } = getGlobalModalFunctions();
+		showModal?.("imgAuthClipboardNotification");
 	};
 
 	const itemsTypes: {
@@ -949,30 +939,53 @@ export const useCopyBoardItems = (
 		unsupported: copyUnsupportedItem,
 	};
 
+	const getMiroBoardItems = (): IMiroBoardItem[] => {
+		miroItems &&
+			localStorage.setItem("miroItems", JSON.stringify(miroItems));
+		const storageMiroItems = localStorage.getItem("miroItems");
+		const storageItemsParsed =
+			storageMiroItems && storageMiroItems !== "undefined"
+				? JSON.parse(storageMiroItems)
+				: null;
+
+		const miroBoardItems = miroItems || storageItemsParsed || [];
+
+		return miroBoardItems;
+	};
+
 	const copyBoardItems = (): void => {
 		const { showModal, hideModal, setModalData } =
 			getGlobalModalFunctions();
-		const sessionMiroItems = sessionStorage.getItem(`miroItems`);
-		const sessionMiroItemsParsed =
-			sessionMiroItems && sessionMiroItems !== "undefined"
-				? JSON.parse(sessionMiroItems)
-				: null;
 
-		const miroBoardItems = miroItems || sessionMiroItemsParsed || [];
+		const miroBoardItems = getMiroBoardItems();
 		const token = Cookies.get("miro_accessToken");
 
 		if (
-			!token &&
+			(!token || token === "undefined") &&
 			miroBoardItems.some(item => item.type === "image") &&
-			isClipboard
+			isClipboard &&
+			!withoutImgs
 		) {
 			getMiroToken();
 			return;
 		}
 
+		if (isClipboard) {
+			showModal?.("loadingNotification");
+		}
+
 		miroBoardItems.forEach((item: IMiroBoardItem, index: number) => {
 			const type = item.type as MiroItemsTypes;
-			setModalData?.((miroBoardItems.length / 50 / index) * 100);
+			isClipboard &&
+				setModalData?.(
+					Math.floor(
+						50 + ((index / miroBoardItems.length) * 100) / 2,
+					),
+				);
+
+			if (withoutImgs && type === MiroBoardItemTypes.IMAGE) {
+				return;
+			}
 
 			if (
 				item.type !== MiroBoardItemTypes.CONNECTOR &&
@@ -986,23 +999,38 @@ export const useCopyBoardItems = (
 			.filter(item => item.type === MiroBoardItemTypes.CONNECTOR)
 			.forEach(copyConnector);
 
-		sessionMiroItemsParsed && sessionStorage.removeItem(`miroItems`);
+		localStorage.removeItem(`miroItems`);
+
 		if (!isClipboard) {
 			zoomToFit();
+
+			const isWarnMessageOpen = miroBoardItems.some(
+				item =>
+					item.type === MiroBoardItemTypes.CARD ||
+					item.type === MiroBoardItemTypes.DOCUMENT ||
+					item.type === MiroBoardItemTypes.MINDMAP,
+			);
+
+			if (isWarnMessageOpen) {
+				showModal?.("warnNotification");
+			} else {
+				showModal?.("successNotification");
+			}
 		}
 
 		if (isClipboard) {
-			hideModal?.("loadingNotification");
-
 			const hasUnsupportedItems = miroBoardItems.some(
 				item => item.type === MiroBoardItemTypes.UNSUPPORTED,
 			);
 
+			hideModal?.("loadingNotification");
 			if (hasUnsupportedItems) {
 				showModal?.("warnClipboardNotification");
 			} else {
 				showModal?.("successNotification");
 			}
+
+			searchParams.delete("clipboard");
 		}
 	};
 

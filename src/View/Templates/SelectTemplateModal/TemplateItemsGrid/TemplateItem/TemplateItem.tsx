@@ -1,10 +1,13 @@
 import React from "react";
 import styles from "./templateItem.module.css";
-import { Button } from "../../../../../shared/ui-lib/Button";
-import { useAppContext } from "../../../../AppContext";
-import { pasteSnapshot } from "../../../../../utils";
-import { Template } from "../../../../Tools/Template";
-import { useModal } from "../../../../Modal/ModalProvider";
+import { Button } from "shared/ui-lib/Button/Button";
+import { useAppContext } from "View/AppContext";
+import { pasteSnapshot } from "utils";
+import { Template } from "View/Tools/Template";
+import { useModal } from "View/Modal/ModalProvider";
+import PlaceholderImg from "shared/assets/imgs/no-img-icon.svg";
+import clsx from "clsx";
+import {useTranslation} from "react-i18next";
 
 interface TemplateItemProps {
 	template: Template;
@@ -17,6 +20,7 @@ export const TemplateItem = ({
 }: TemplateItemProps) => {
 	const { board } = useAppContext();
 	const { hideModal } = useModal();
+	const {t} = useTranslation()
 
 	const pasteSnapshotAndClose = () => {
 		setPresentedTemplate(null);
@@ -29,8 +33,8 @@ export const TemplateItem = ({
 			<div className={styles.imageBox}>
 				<img
 					onClick={() => setPresentedTemplate(template)}
-					className={styles.image}
-					src={template.preview}
+					className={clsx(styles.image, !template.preview && styles.noImage)}
+					src={template.preview || PlaceholderImg}
 					alt={template.name}
 				/>
 				<div
@@ -42,13 +46,13 @@ export const TemplateItem = ({
 							onClick={() => setPresentedTemplate(template)}
 							pattern="tertiary"
 						>
-							Preview
+							{t("modalTemplate.UI.buttons.Preview")}
 						</Button>
 						<Button
 							onClick={pasteSnapshotAndClose}
 							pattern="quaternary"
 						>
-							Use
+							{t("modalTemplate.UI.buttons.Use")}
 						</Button>
 					</div>
 				</div>

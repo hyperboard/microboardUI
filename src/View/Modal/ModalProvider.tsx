@@ -1,4 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { AuthClipboardModal, ImgAuthClipboardModal } from "View/ImportMiro";
+import {
+	LoadingNotification,
+	SuccessNotification,
+	WarnClipboardNotification,
+	WarnNotification,
+} from "View/ImportMiro/ImportMiroBoards/Notifications";
 
 export type ModalName =
 	| "startImportMiro"
@@ -7,6 +14,8 @@ export type ModalName =
 	| "errorNotification"
 	| "successNotification"
 	| "warnClipboardNotification"
+	| "warnNotification"
+	| "imgAuthClipboardNotification"
 	| "createTemplate"
 	| "selectTemplate";
 
@@ -23,10 +32,12 @@ const ModalContext = createContext<ModalContextType>({
 	modals: {
 		startImportMiro: false,
 		authClipboardMiro: false,
-		loadingNotification: false,
+		loadingNotification: true,
 		errorNotification: false,
 		successNotification: false,
 		warnClipboardNotification: false,
+		imgAuthClipboardNotification: false,
+		warnNotification: false,
 		selectTemplate: false,
 		createTemplate: false,
 	},
@@ -71,6 +82,8 @@ export const ModalProvider = ({ children }) => {
 		errorNotification: false,
 		successNotification: false,
 		warnClipboardNotification: false,
+		imgAuthClipboardNotification: false,
+		warnNotification: false,
 		selectTemplate: false,
 		createTemplate: false,
 	});
@@ -122,6 +135,12 @@ export const ModalProvider = ({ children }) => {
 			}}
 		>
 			{children}
+			<AuthClipboardModal />
+			<ImgAuthClipboardModal />
+			<LoadingNotification />
+			<WarnClipboardNotification />
+			<SuccessNotification />
+			<WarnNotification />
 		</ModalContext.Provider>
 	);
 };

@@ -2,7 +2,6 @@ import { useTranslation } from "react-i18next";
 import React, { useEffect } from "react";
 import Cookies from "js-cookie";
 import { IMiroBoard, IMiroBoardItem } from "../MiroBoards/MiroBoardsModels";
-import { App } from "App";
 import { useCopyBoardItems } from "./useCopyBoardItems";
 import { getApiUrl } from "Config";
 import { Modal } from "shared/ui-lib/Modal";
@@ -17,7 +16,7 @@ import { useModal } from "View/Modal/ModalProvider";
 import { useAppContext } from "View/AppContext";
 
 interface IImportBoardItem {
-	isOpen: boolean | null;
+	isOpen: boolean;
 	setIsOpen: (isOpen: boolean) => void;
 	boardInfo: Pick<IMiroBoard, "id" | "name">;
 	boardItems: IMiroBoardItem[];
@@ -96,7 +95,7 @@ export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 			console.error(error);
 			onCloseModal();
 			hideModal("loadingNotification");
-			hideModal("errorNotification");
+			showModal("errorNotification");
 		}
 	};
 
@@ -141,7 +140,7 @@ export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 			console.error(error);
 			onCloseModal();
 			hideModal("loadingNotification");
-			hideModal("errorNotification");
+			showModal("errorNotification");
 		}
 	};
 

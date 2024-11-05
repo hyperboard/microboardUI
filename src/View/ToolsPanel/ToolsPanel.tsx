@@ -2,7 +2,7 @@ import { useAppSubscription } from "Board/useBoardSubscription";
 import { useAppContext } from "View/AppContext";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import { useForceUpdate } from "lib/useForceUpdate";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AddConnector } from "./Buttons/AddConnector";
 import { AddDrawing } from "./Buttons/AddDrawing/AddDrawing";
 import { AddFrame } from "./Buttons/AddFrame";
@@ -16,11 +16,12 @@ import { Undo } from "./Buttons/Undo";
 import { PanelContext } from "./PanelContext";
 import style from "./ToolsPanel.module.css";
 import { AddTemplate } from "./Buttons/AddTemplate";
+import { EventList } from "./Buttons/EventList";
 
-export function ToolsPanel() {
+export function ToolsPanel(): JSX.Element {
 	const [openedMenu, setOpenedMenu] = useState("None");
 
-	const toggleMenu = (menu: string) =>
+	const toggleMenu = (menu: string): void =>
 		setOpenedMenu(prev => (prev === menu ? "None" : menu));
 
 	const { app } = useAppContext();
@@ -29,6 +30,8 @@ export function ToolsPanel() {
 		subjects: ["tools"],
 		observer: forceUpdate,
 	});
+
+	useEffect(() => {}, [window.showDebug]);
 
 	return (
 		<PanelContext.Provider value={{ toggleMenu, openedMenu }}>
@@ -48,6 +51,7 @@ export function ToolsPanel() {
 					<Undo />
 					<Redo />
 				</UiPanel>
+				{window.showDebug && <EventList />}
 			</div>
 		</PanelContext.Provider>
 	);

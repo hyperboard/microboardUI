@@ -14,18 +14,20 @@ export enum ModalSize {
 interface ModalProps {
 	className?: string;
 	isOpen: boolean;
-	hideModal: (modalName: ModalName) => void;
-	modalName: ModalName;
+	hideModal?: (modalName: ModalName) => void;
+	setIsOpen?: (isOpen: boolean) => void;
+	modalName?: ModalName;
 	children: ReactNode;
 	size?: ModalSize;
 	wrClassName?: string;
 }
 
-const ModalBase = (props: ModalProps) => {
+export const Modal = (props: ModalProps) => {
 	const {
 		className,
 		isOpen,
 		hideModal,
+		setIsOpen,
 		modalName,
 		children,
 		size = ModalSize.S,
@@ -33,32 +35,39 @@ const ModalBase = (props: ModalProps) => {
 		...otherProps
 	} = props;
 
-	const onCloseModal = () => hideModal(modalName);
+	const onCloseModal = (): void =>
+		modalName && hideModal ? hideModal?.(modalName) : setIsOpen?.(false);
 
-	return (
-		<div
-			className={clsx(styles.modal, isOpen && styles.open, className)}
-			onClick={onCloseModal}
-			{...otherProps}
-		>
-			<div
-				className={clsx(styles.wr, size && styles[size], wrClassName)}
-				onClick={event => event.stopPropagation()}
-			>
-				<div className={styles.modalCross} onClick={onCloseModal}>
-					<Icon
-						iconName={"modalCross"}
-						width="13"
-						height="13"
-						className={styles.modalCrossIcon}
-					/>
-				</div>
-				{children}
-			</div>
-		</div>
-	);
-};
-
-export const Modal = (props: any) => {
-	return createPortal(<ModalBase {...props} />, window.document.body);
+	return isOpen
+		? createPortal(
+				<div
+					className={clsx(
+						styles.modal,
+						isOpen && styles.open,
+						className,
+					)}
+					onClick={onCloseModal}
+					{...otherProps}
+				>
+					<div
+						className={clsx(styles.wr, size && styles[size], wrClassName)}
+						onClick={event => event.stopPropagation()}
+					>
+						<div
+							className={styles.modalCross}
+							onClick={onCloseModal}
+						>
+							<Icon
+								iconName={"modalCross"}
+								width="13"
+								height="13"
+								className={styles.modalCrossIcon}
+							/>
+						</div>
+						{children}
+					</div>
+				</div>,
+				window.document.body,
+		  )
+		: null;
 };

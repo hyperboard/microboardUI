@@ -14,6 +14,7 @@ import { detectLanguage } from "../../../utils";
 import { useModal } from "../../Modal/ModalProvider";
 import Selector, { SelectorHandle } from "../../Ui/Selector/Selector";
 import { useForceUpdate } from "../../../lib/useForceUpdate";
+import {notify} from "View/Ui/Toast/notify";
 
 interface TranslatableInput {
 	id: string;
@@ -352,12 +353,17 @@ export const CreateTemplateModal = (): JSX.Element => {
 				languagesSelectorRef.current?.setSelectedOptions([
 					languages[0],
 				]);
+				notify({
+					body: t("template.createSuccess"),
+					variant: "info",
+					duration: 3000,
+				})
 				setSubmitDisabled(false);
 				setIsSubmitLoading(false);
 				hideModal("createTemplate");
 			})
 			.catch(() => {
-				setErrors(["Error while creating template"]);
+				setErrors([t("template.createError")]);
 			})
 			.finally(() => {
 				setSubmitDisabled(false);

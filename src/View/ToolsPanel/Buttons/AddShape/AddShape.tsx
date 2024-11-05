@@ -52,7 +52,9 @@ export function AddShape() {
 			button={
 				<UiButton
 					id={"tool-add-shape"}
-					tooltip={t("toolsPanel.addShape.tooltip")}
+					tooltip={
+						isActive ? undefined : t("toolsPanel.addShape.tooltip")
+					}
 					hotkey={getHotkeyLabel("shape")}
 					active={isActive}
 					onClick={handleClick}

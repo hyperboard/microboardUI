@@ -7,7 +7,7 @@
 	gap: 16px;
 	font-family: "Manrope", "Arial";
 	color: rgba(20, 21, 26, 1);
-	height: fit-content;
+	height: auto;
 }
 
 .imageBox {
@@ -20,12 +20,12 @@
 	position: absolute;
 	width: 100%;
 	background-color: rgba(217, 217, 217, 0.8);
-	top: 25%;
 	display: flex;
 	visibility: hidden;
 	height: 75%;
-	border-radius: 10px;
-	animation-direction: reverse;
+	bottom: 0;
+	border-radius: 16px;
+	animation-direction: alternate;
 }
 
 .buttonsBox > div {
@@ -38,7 +38,7 @@
 .imageBox:hover > .buttonsBox {
 	justify-content: center;
 	align-items: center;
-	animation: openButtons 250ms ease-out;
+	animation: showButtons 250ms ease-out alternate;
 	animation-fill-mode: both;
 }
 
@@ -48,6 +48,11 @@
 	border-radius: 16px;
 	aspect-ratio: 1/0.6;
 	object-fit: cover;
+	background-color: rgba(217, 217, 217, 0.8);
+}
+
+.noImage {
+	object-fit: contain;
 }
 
 .info {
@@ -60,9 +65,9 @@
 	word-break: break-word;
 }
 
-@keyframes openButtons {
+@keyframes showButtons {
 	0% {
-		top: 25%;
+		bottom: 0;
 		height: 75%;
 		visibility: hidden;
 	}
@@ -72,6 +77,5 @@
 	100% {
 		visibility: visible;
 		height: 100%;
-		transform: translateY(-25%);
 	}
 }

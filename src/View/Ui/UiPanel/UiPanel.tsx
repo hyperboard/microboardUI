@@ -64,3 +64,4 @@ export const UiPanel = forwardRef<HTMLDivElement, UiPanelProps>(
 		);
 	},
 );
+UiPanel.displayName = "UiPanel";

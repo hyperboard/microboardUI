@@ -1,7 +1,7 @@
-import { BoardSnapshot } from "../../Board/Board";
+import { BoardSnapshot } from "Board/Board";
 
 export interface Template {
-	uniq_id: string;
+	uniqId: string;
 	preview: string;
 	desc: string;
 	lan: string;

@@ -19,7 +19,7 @@ export const TemplateItemsGrid = ({
 		<div className={clsx(styles.templatesGrid, className)}>
 			{templates.map(template => (
 				<TemplateItem
-					key={template.uniq_id}
+					key={template.uniqId}
 					template={template}
 					setPresentedTemplate={setPresentedTemplate}
 				/>

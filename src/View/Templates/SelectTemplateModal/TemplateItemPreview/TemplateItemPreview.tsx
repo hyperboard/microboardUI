@@ -54,7 +54,7 @@ export const TemplateItemPreview = ({
 				<div className={styles.mainSection}>
 					<iframe
 						className={styles.frame}
-						src={`${import.meta.env.BASE_URL}/boards/${viewLinkId}`}
+						src={`${window.location.origin}/boards/${viewLinkId}`}
 					></iframe>
 					<div className={styles.infoBox}>
 						<h2>{name}</h2>
@@ -63,7 +63,7 @@ export const TemplateItemPreview = ({
 							pattern="quaternary"
 							onClick={pasteSnapshotAndClose}
 						>
-							Use
+							{t("modalTemplate.UI.buttons.Use")}
 						</Button>
 					</div>
 				</div>

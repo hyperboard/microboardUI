@@ -610,10 +610,11 @@ export const transformUnsupportedItems = (
 		x: number;
 		y: number;
 	},
-): MiroUnsupportedItem => {
+	clipboardItems: MiroClipboardItem[],
+): MiroUnsupportedItem | null => {
 	const json = item.widgetData?.json;
 	if (!json) {
-		return;
+		return null;
 	}
 
 	const transformUnsupportedItem: MiroUnsupportedItem = {
@@ -637,6 +638,15 @@ export const transformUnsupportedItems = (
 		},
 	};
 
+	if (json._parent) {
+		transformUnsupportedItem.parent = {
+			id: clipboardItems[json._parent.index].initialId,
+			links: {
+				self: "",
+			},
+		};
+	}
+
 	return transformUnsupportedItem;
 };
 
@@ -648,7 +658,7 @@ export const parseItem = (
 	},
 	clipboardItems: MiroClipboardItem[],
 	boardId: string,
-): SupportedMiroType | MiroUnsupportedItem => {
+): SupportedMiroType | MiroUnsupportedItem | null => {
 	switch (item.widgetData?.type) {
 		case "shape":
 			return transformShape(item, cursorPosition, clipboardItems);
@@ -670,7 +680,11 @@ export const parseItem = (
 		case "frame":
 			return transformFrame(item, cursorPosition, clipboardItems);
 		default:
-			return transformUnsupportedItems(item, cursorPosition);
+			return transformUnsupportedItems(
+				item,
+				cursorPosition,
+				clipboardItems,
+			);
 	}
 };
 
@@ -702,7 +716,7 @@ export const pasteMiroClipboard = (board: Board, clipboardJson: any): any => {
 		if (transformedItem) {
 			acc.push(transformedItem);
 		}
-		setModalData?.(((index / clipboardItems.length) * 100) / 2);
+		setModalData?.(Math.floor(((index / clipboardItems.length) * 100) / 2));
 		return acc;
 	}, [] as IMiroBoardItem[]);
 	const miroConnectors = clipboardItems.reduce((acc, item) => {
