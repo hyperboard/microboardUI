@@ -22,6 +22,20 @@
       "when": 1730279930434,
       "tag": "0002_light_magma",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1730561938658,
+      "tag": "0003_icy_omega_red",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1730784267217,
+      "tag": "0004_perpetual_masked_marvel",
+      "breakpoints": true
     }
   ]
 }
