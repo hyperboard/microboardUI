@@ -147,7 +147,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
                     enforceViewMode(ws, msg.boardId);
                 }
 
-                await sendInitialDataToClient(ws, msg.boardId);
+                await sendInitialDataToClient(ws, msg.boardId, msg.index);
             } else {
                 sendError(ws, "Access denied: Subscribe to board events.", { denidedBoardId: msg.boardId });
             }
@@ -235,9 +235,13 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         );
     }
 
-    async function sendInitialDataToClient(ws: WebSocket, boardId: string) {
-        const lastSnapshotEvent = await sendLatestSnapshot(ws, boardId);
-        await sendBoardEvents(ws, boardId, lastSnapshotEvent);
+    async function sendInitialDataToClient(ws: WebSocket, boardId: string, startIndex: number) {
+        if (!startIndex) {
+            const lastSnapshotEvent = await sendLatestSnapshot(ws, boardId);
+            await sendBoardEvents(ws, boardId, lastSnapshotEvent);
+        } else {
+            await sendBoardEvents(ws, boardId, startIndex);
+        }
     }
 
     async function sendLatestSnapshot(ws: WebSocket, boardId: string): Promise<number> {
