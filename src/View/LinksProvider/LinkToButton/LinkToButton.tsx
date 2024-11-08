@@ -32,7 +32,7 @@ interface Props {
 	handleClick: (item: Item) => void;
 }
 
-export const LinkToButton = memo(({ item, handleClick }: Props) => {
+export const LinkToButton = ({ item, handleClick }: Props) => {
 	const linkToButtonRef = useRef<HTMLButtonElement | null>(null);
 	const [iconUrl, setIconUrl] = useState<string | undefined>(
 		item.getLinkTo()
@@ -98,4 +98,4 @@ export const LinkToButton = memo(({ item, handleClick }: Props) => {
 			)}
 		</UiButton>
 	);
-});
+};
