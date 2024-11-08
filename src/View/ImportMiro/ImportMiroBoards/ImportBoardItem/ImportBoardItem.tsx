@@ -151,7 +151,6 @@ export function ImportBoardItem(props: IImportBoardItem): React.ReactElement {
 
 			const board = app.getBoard();
 			useCopyBoardItems(board, boardItems);
-			showModal("successNotification");
 		}).catch(console.error);
 		// TODO notify user;
 	};
