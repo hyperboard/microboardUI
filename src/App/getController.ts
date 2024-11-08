@@ -198,8 +198,8 @@ export function getController(
 			event.key === "Enter" &&
 			context === "EditTextUnderPointer"
 		) {
-			event.preventDefault();
 			board.selection.setContext("EditUnderPointer");
+			event.stopPropagation();
 		}
 
 		const isTextEditStarted =

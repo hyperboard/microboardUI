@@ -149,15 +149,15 @@ export function createApp(isHistory = true): App {
 			storage.hardClean();
 			if (boardId && boardId !== "blank") {
 				await openBoard(boardId);
-				router.navigate(`/boards/${boardId}`);
+				router.navigate(`/boards/${boardId}${window.location.search}`);
 			} else {
-				router.navigate(`/`);
+				router.navigate(`/${window.location.search}`);
 			}
 			await boardsList.loadBoards();
 			account.subject.publish(account.info);
 		});
 		account.setOnSessionExpired(() => {
-			router.navigate("/auth/sign-in");
+			router.navigate(`/auth/sign-in${window.location.search}`);
 			notify({
 				body: i18next.t("auth.sessionExpired"),
 				variant: "error",

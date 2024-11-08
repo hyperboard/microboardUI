@@ -285,7 +285,8 @@ export function ContextPanel() {
 				)}
 				{isDifferentItems &&
 					!isSelectUnderPointer &&
-					!isHoverUnderPointer && (
+					!isHoverUnderPointer &&
+					!lockedFrames.length && (
 						<RestOptionsMenu rounded="full">
 							<BringToFront />
 							<SendToBack />

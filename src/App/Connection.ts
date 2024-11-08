@@ -115,6 +115,7 @@ export interface Connection {
 	subscribe(
 		boardId: string,
 		callback: (serverMessage: EventsMsg) => void,
+		lastOrder: number,
 	): void;
 	unsubscribe(
 		boardId: string,
@@ -288,13 +289,14 @@ export function createConnection(getBoard: () => Board): Connection {
 	function subscribe(
 		boardId: string,
 		callback: (serverMessage: EventsMsg) => void,
+		lastOrder: number,
 	): void {
 		const subject = subscriptions.get(boardId);
 		if (subject) {
 			return;
 		}
 
-		const offset = 0;
+		const offset = lastOrder;
 		const onOpen = (): void => {
 			ws.send({
 				type: "Subscribe",

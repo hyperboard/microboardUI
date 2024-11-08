@@ -21,8 +21,8 @@ export interface Subscription {
 }
 
 export interface Subscriptions {
-	add(sub: Subscription): void;
-	remove(sub: Subscription): void;
+	add(sub: Subscription): Promise<void>;
+	remove(sub: Subscription): Promise<void>;
 	setBoard(board: Board): void;
 }
 
@@ -85,17 +85,20 @@ export function getSubscriptions(getBoard: () => Board): Subscriptions {
 		return -1;
 	}
 
-	function subscribe(subscription: Subscription): void {
+	async function subscribe(subscription: Subscription): Promise<void> {
 		const index = findSubscription(subscription);
 		if (index === -1) {
 			subscriptions.push(subscription);
 		} else {
 			subscriptions[index] = subscription;
 		}
-		activateSubscription(subscription);
+		await activateSubscription(subscription);
 	}
 
-	function activateSubscription(subscription: Subscription): void {
+	async function activateSubscription(
+		subscription: Subscription,
+	): Promise<void> {
+		await board.connecting;
 		for (const name of subscription.subjects) {
 			const subject = subjects.get(name);
 			if (!subject) {
@@ -112,15 +115,18 @@ export function getSubscriptions(getBoard: () => Board): Subscriptions {
 		}
 	}
 
-	function unsubscribe(subscription: Subscription): void {
+	async function unsubscribe(subscription: Subscription): Promise<void> {
 		const index = findSubscription(subscription);
 		if (index !== -1) {
 			subscriptions.splice(index, 1);
 		}
-		deactivateSubscription(subscription);
+		await deactivateSubscription(subscription);
 	}
 
-	function deactivateSubscription(subscription: Subscription): void {
+	async function deactivateSubscription(
+		subscription: Subscription,
+	): Promise<void> {
+		await board.connecting;
 		for (const name of subscription.subjects) {
 			const subject = subjects.get(name);
 			if (!subject) {

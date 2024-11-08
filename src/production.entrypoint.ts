@@ -3,7 +3,6 @@ textInit();
 
 import { createApp } from "App/App";
 import "./index.css";
-import { isMicroboard } from "lib/isMicroboard";
 
 declare global {
 	interface Window {
@@ -11,7 +10,7 @@ declare global {
 	}
 }
 // eslint-disable-next-line no-var
-var showDebug = isMicroboard() ? true : false;
+var showDebug = false;
 window.showDebug = showDebug;
 
 const app = createApp();
