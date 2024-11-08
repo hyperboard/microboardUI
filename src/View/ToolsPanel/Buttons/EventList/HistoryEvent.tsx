@@ -11,6 +11,7 @@ const EventComponent: React.FC<EventProps> = ({ event }) => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [firstSpan, setFirstSpan] = useState<null | HTMLSpanElement>(null);
 	const [spanStyle, setSpanStyle] = useState<React.CSSProperties>({});
+	console.log(event);
 
 	useEffect(() => {
 		if (!containerRef.current) {
