@@ -121,9 +121,11 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
     }
 
     function handlePingMsg(_msg: PingMsg, ws: WebSocket): void {
-        ws.send(JSON.stringify({
-            type: "ping",
-        }));
+        ws.send(
+            JSON.stringify({
+                type: "ping",
+            })
+        );
     }
 
     const clientBoardSequences = new Map<WebSocket, Map<string, number>>();
@@ -286,7 +288,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
                     return sendError(ws, "Access denied: edit board.");
                 }
 
-                const eventData = eventsManager.processEvent(msg.boardId, msg.event.body, {
+                const eventData = await eventsManager.processEvent(msg.boardId, msg.event.body, {
                     startTime: startTime,
                     queueTime: process.hrtime.bigint(),
                 });
@@ -509,7 +511,15 @@ export type EventsMsg =
     | SnapshotResponseMsg
     | SubscribeConfirmationMsg;
 
-export type SocketMsg = EventsMsg | AuthMsg | SubscribeMsg | UnsubscribeMsg | ErrorMsg | ViewModeMsg | ConfirmationMsg | PingMsg;
+export type SocketMsg =
+    | EventsMsg
+    | AuthMsg
+    | SubscribeMsg
+    | UnsubscribeMsg
+    | ErrorMsg
+    | ViewModeMsg
+    | ConfirmationMsg
+    | PingMsg;
 
 type BoardEventBody = any;
 
@@ -562,13 +572,14 @@ export class EventsManager {
         }
     }
 
-    processEvent(boardId: string, eventBody: BoardEventBody, metadata: EventMetadata): BoardEventData {
-        const actualBoardUuid = this.boardUuidMap.get(boardId) || boardId;
-        const newOrder = (this.lastEventOrders.get(actualBoardUuid) || 0) + 1;
-        this.lastEventOrders.set(actualBoardUuid, newOrder);
+    async processEvent(boardId: string, eventBody: BoardEventBody, metadata: EventMetadata): Promise<BoardEventData> {
+        const boardUuid = await this.getBoardUuid(boardId);
+        const oldOrder = await this.getLastEventOrder(boardUuid);
+        const newOrder = oldOrder + 1;
+        this.lastEventOrders.set(boardUuid, newOrder);
 
-        const queue = this.queues[actualBoardUuid] || {
-            boardId: actualBoardUuid,
+        const queue = this.queues[boardUuid] || {
+            boardId: boardUuid,
             events: [],
         };
         const data = { ...eventBody, order: newOrder };
@@ -576,14 +587,36 @@ export class EventsManager {
             data,
             metadata,
         });
-        this.queues[actualBoardUuid] = queue;
+        this.queues[boardUuid] = queue;
 
-        const currentCount = this.eventCountSinceLastSnapshot.get(actualBoardUuid) || 0;
-        this.eventCountSinceLastSnapshot.set(actualBoardUuid, currentCount + 1);
+        const currentCount = this.eventCountSinceLastSnapshot.get(boardUuid) || 0;
+        this.eventCountSinceLastSnapshot.set(boardUuid, currentCount + 1);
 
         this.checkAndRequestSnapshot(boardId);
 
         return data;
+    }
+
+    async getBoardUuid(boardId: string): Promise<string> {
+        let boardUuid = this.boardUuidMap.get(boardId);
+        if (!boardUuid) {
+            const details = await this.boards.getBoardDetails(boardId);
+            if (!details) {
+                throw new Error(`Error processing event: board ${boardId} not found`);
+            }
+            boardUuid = details.uniq_id;
+            this.boardUuidMap.set(boardId, boardUuid);
+        }
+        return boardUuid;
+    }
+
+    async getLastEventOrder(boardUuid: string): Promise<number> {
+        let order = this.lastEventOrders.get(boardUuid);
+        if (!order) {
+            order = 0;
+            this.lastEventOrders.set(boardUuid, order);
+        }
+        return order;
     }
 
     private checkAndRequestSnapshot(boardId: string) {
