@@ -1826,7 +1826,7 @@
 	},
 	"a8c90af2-2ff5-40bd-91a4-040d2c735098": {
 		"itemType": "Image",
-		"storageLink": "https://development.microboard.io/api/v1/media/87a4dd964eff190a2f4e869578182baac176f41b686702dfe0149142a66b6d31",
+		"storageLink": "https://alpha.microboard.io/api/v1/media/87a4dd964eff190a2f4e869578182baac176f41b686702dfe0149142a66b6d31",
 		"imageDimension": { "width": 1765.2934898612593, "height": 1920 },
 		"transformation": {
 			"translateX": 3913.6502094642087,
