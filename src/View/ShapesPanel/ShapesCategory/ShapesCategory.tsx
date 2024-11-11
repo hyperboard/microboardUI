@@ -7,6 +7,9 @@ import { ShapeCategoryName } from "../../Tools/AddShape";
 import { Icon } from "../../Icon";
 import { UiButton } from "../../Ui/UiButton";
 import clsx from "clsx";
+import { useAppContext } from "View/AppContext";
+import { useForceUpdate } from "lib/useForceUpdate";
+import { useAppSubscription } from "Board/useBoardSubscription";
 
 interface Props {
 	handlePick: (
@@ -19,6 +22,12 @@ interface Props {
 
 export const ShapesCategory = ({ handlePick, categoryName }: Props) => {
 	const [isPickerShown, setIsPickerShown] = useState(true);
+	const { board, app } = useAppContext();
+	const forceUpdate = useForceUpdate();
+	useAppSubscription(app, {
+		subjects: ["tools"],
+		observer: forceUpdate,
+	});
 	const { t } = useTranslation();
 
 	return (
@@ -33,7 +42,11 @@ export const ShapesCategory = ({ handlePick, categoryName }: Props) => {
 					size={"sm"}
 				>
 					<Icon
-						iconName={isPickerShown ? "Minus" : "Plus"}
+						iconName={
+							isPickerShown
+								? "StrokeChevronUp"
+								: "StrokeChevronDown"
+						}
 						width={16}
 						height={16}
 					/>
@@ -49,6 +62,7 @@ export const ShapesCategory = ({ handlePick, categoryName }: Props) => {
 					categoryName={categoryName}
 					onPick={handlePick}
 					buttonSize="lg"
+					selected={board.tools.getAddShape()?.type}
 				/>
 			</div>
 		</div>

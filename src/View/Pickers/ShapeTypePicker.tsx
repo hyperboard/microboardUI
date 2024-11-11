@@ -64,7 +64,12 @@ export function ShapePicker({
 					onMouseEnter={() => setToolTipStyle(getToolTipStyle(shape))}
 					toolTipStyle={toolTipStyle}
 				>
-					<ShapeIcon iconName={shape} width={20} height={20} />
+					<ShapeIcon
+						style={{ objectFit: "cover" }}
+						iconName={shape}
+						width={20}
+						height={20}
+					/>
 				</UiButton>
 			))}
 		</>

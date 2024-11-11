@@ -79,7 +79,9 @@ export type IconId =
 	| "ArrowLeft1"
 	| "BoxedPlus"
 	| "SignIn"
-	| "Info";
+	| "Info"
+	| "StrokeChevronDown"
+	| "StrokeChevronUp";
 
 type Props = {
 	iconName: IconId;
