@@ -345,7 +345,7 @@ export const transformConnector = (
 					content: c.text || "",
 					position: "center",
 					textAlignVertical: "middle",
-			  }))
+				}))
 			: [],
 		shape: LINE_TYPE[style.lt] || "straight",
 		startItem: json.primary
@@ -359,7 +359,7 @@ export const transformConnector = (
 						y: (json.primary?.point?.y || 0) * 100 + "%",
 					},
 					links: { self: "" },
-			  }
+				}
 			: undefined,
 		endItem: json.secondary
 			? {
@@ -373,7 +373,7 @@ export const transformConnector = (
 						y: (json.secondary?.point?.y || 0) * 100 + "%",
 					},
 					links: { self: "" },
-			  }
+				}
 			: undefined,
 	};
 

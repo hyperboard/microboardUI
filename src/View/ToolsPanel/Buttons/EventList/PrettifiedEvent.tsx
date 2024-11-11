@@ -40,12 +40,12 @@ const PrettifiedEvent: React.FC<Props> = ({ event, style }) => {
 			"item" in operation
 				? operation.item
 				: "items" in operation
-				? operation.items
-				: "itemsMap" in operation
-				? operation.itemsMap
-				: "itemsOps" in operation
-				? operation.itemsOps.map(op => op.item)
-				: undefined;
+					? operation.items
+					: "itemsMap" in operation
+						? operation.itemsMap
+						: "itemsOps" in operation
+							? operation.itemsOps.map(op => op.item)
+							: undefined;
 
 		if (typeof items === "string") {
 			return [items];

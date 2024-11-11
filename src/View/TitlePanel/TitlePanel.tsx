@@ -82,7 +82,7 @@ export function TitlePanel(): JSX.Element | null {
 	const strippedName =
 		(boardName?.length ?? 0) > MAX_BOARD_TITLE_LENGTH
 			? `${boardName?.slice(0, MAX_BOARD_TITLE_LENGTH)}...`
-			: boardName ?? "";
+			: (boardName ?? "");
 	return (
 		<UiPanel className={style.panel} padding={0} zIndex={10}>
 			<ViewModeGuard>

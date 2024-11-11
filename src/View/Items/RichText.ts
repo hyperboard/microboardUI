@@ -1,6 +1,6 @@
 import { DefaultTextStyles } from "Board/Items/RichText/RichText";
 import { getApiUrl } from "Config";
-import * as flow from 'dropflow';
+import * as flow from "dropflow";
 
 export const DEFAULT_TEXT_STYLES: DefaultTextStyles = {
 	fontFamily: "Arial",
@@ -15,8 +15,16 @@ export const DEFAULT_TEXT_STYLES: DefaultTextStyles = {
 };
 
 export async function loadFonts() {
-	await flow.registerFont(new URL(`${getApiUrl()}/fonts/Arial.ttf`, import.meta.url));
-	await flow.registerFont(new URL(`${getApiUrl()}/fonts/Arial_Bold.ttf`, import.meta.url));
-	await flow.registerFont(new URL(`${getApiUrl()}/fonts/Arial_Italic.ttf`, import.meta.url));
-	await flow.registerFont(new URL(`${getApiUrl()}/fonts/Arial_Bold_Italic.ttf`, import.meta.url));
+	await flow.registerFont(
+		new URL(`${getApiUrl()}/fonts/Arial.ttf`, import.meta.url),
+	);
+	await flow.registerFont(
+		new URL(`${getApiUrl()}/fonts/Arial_Bold.ttf`, import.meta.url),
+	);
+	await flow.registerFont(
+		new URL(`${getApiUrl()}/fonts/Arial_Italic.ttf`, import.meta.url),
+	);
+	await flow.registerFont(
+		new URL(`${getApiUrl()}/fonts/Arial_Bold_Italic.ttf`, import.meta.url),
+	);
 }

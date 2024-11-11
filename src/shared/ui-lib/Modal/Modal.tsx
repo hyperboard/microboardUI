@@ -66,6 +66,6 @@ export const Modal = (props: ModalProps) => {
 					</div>
 				</div>,
 				window.document.body,
-		  )
+			)
 		: null;
 };
