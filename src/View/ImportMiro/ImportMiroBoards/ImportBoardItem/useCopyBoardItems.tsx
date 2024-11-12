@@ -620,6 +620,7 @@ export const useCopyBoardItems = (
 
 			if (img.status === 401) {
 				getMiroToken();
+				Cookies.remove('miro_accessToken')
 			}
 
 			return img;
@@ -945,7 +946,7 @@ export const useCopyBoardItems = (
 
 	const getMiroBoardItems = (): IMiroBoardItem[] => {
 		const storageMiroItems = localStorage.getItem("miroItems");
-		if (miroItems && !storageMiroItems && isClipboard) {
+		if (miroItems && !storageMiroItems) {
 			localStorage.setItem("miroItems", JSON.stringify(miroItems));
 		}
 
