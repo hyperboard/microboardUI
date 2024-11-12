@@ -262,12 +262,13 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
     }
 
     async function sendBoardEvents(ws: WebSocket, boardId: string, offset = 0) {
-        const events = await boards.getBoardEvents(boardId, offset);
+        const savedEvents = await boards.getBoardEvents(boardId, offset);
+        const enqueuedEvents = await eventsManager.getEnqueuedEvents(boardId);
         ws.send(
             JSON.stringify({
                 type: "BoardEventList",
                 boardId: boardId,
-                events: events,
+                events: savedEvents.concat(enqueuedEvents),
             })
         );
     }
@@ -743,6 +744,16 @@ export class EventsManager {
             console.log(`[DEBUG] Event ${index} total latency: ${totalLatency}`);
         });
         */
+    }
+
+    async getEnqueuedEvents(boardId: string): Promise<any[]> {
+        const boardUuid = await this.getBoardUuid(boardId);
+        const queue = this.queues[boardUuid];
+        let events = [];
+        if (queue) {
+            events = queue.events;
+        }
+        return events;
     }
 
     requestSnapshotCallback(boardId: string, sinceLast: number): void {}
