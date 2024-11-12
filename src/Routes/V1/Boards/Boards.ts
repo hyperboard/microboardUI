@@ -716,6 +716,26 @@ export class Boards {
             throw error;
         }
     }
+
+    async getLastEventOrderForBoard(boardUuid: string): Promise<number> {
+        try {
+            validateUUID(boardUuid, "boardUuid");
+            const result = await this.database.query<{ last_order: number }>(
+                "SELECT get_last_event_order_for_board($1) AS last_order",
+                [boardUuid]
+            );
+
+            if (result.rows.length === 0) {
+                throw new Error(`Failed to get last event order for board ${boardUuid}`);
+            }
+
+            const lastOrder = result.rows[0].last_order;
+            return lastOrder;
+        } catch (error) {
+            this.logger.error(`Error getting last event order for board ${boardUuid}: ${error}`);
+            throw error;
+        }
+    }
 }
 
 interface LinkDetail {

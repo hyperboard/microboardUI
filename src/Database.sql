@@ -1672,3 +1672,27 @@ BEGIN
     RETURN;
 END;
 $$ LANGUAGE plpgsql;
+
+DROP FUNCTION IF EXISTS get_last_event_order_for_board(UUID);
+
+CREATE OR REPLACE FUNCTION get_last_event_order_for_board(board_uuid UUID)
+RETURNS INTEGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    board_id INTEGER;
+    last_order INTEGER;
+BEGIN
+    -- Найти ID доски по UUID
+    SELECT id INTO board_id FROM boards WHERE uniq_id = board_uuid;
+    
+    IF board_id IS NULL THEN
+        RAISE EXCEPTION 'Board with UUID % not found', board_uuid;
+    END IF;
+
+    -- Получить последний порядковый номер
+    EXECUTE format('SELECT COALESCE(MAX(logid), 0) FROM board%s', board_id) INTO last_order;
+
+    RETURN last_order;
+END;
+$$;

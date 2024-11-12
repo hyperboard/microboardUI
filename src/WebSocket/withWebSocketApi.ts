@@ -274,52 +274,13 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
 
     const eventsManager = new EventsManager(boards, logger);
 
-    eventsManager.initialize();
+    // TODO: delete commented
+    // eventsManager.initialize(); skip unnecessary initialization
 
     async function handleBoardEventMsg(msg: BoardEventMsg, ws: WebSocket): Promise<void> {
         const expectedSequence = clientBoardSequences.get(ws)?.get(msg.boardId) || 1;
 
-        if (msg.sequenceNumber === expectedSequence) {
-            const startTime = process.hrtime.bigint();
-
-            try {
-                const canEdit = await canEditBoard(ws, msg.boardId);
-                if (!canEdit) {
-                    return sendError(ws, "Access denied: edit board.");
-                }
-
-                const eventData = await eventsManager.processEvent(msg.boardId, msg.event.body, {
-                    startTime: startTime,
-                    queueTime: process.hrtime.bigint(),
-                });
-
-                broadcastBoardEvent(msg.boardId, {
-                    type: msg.type,
-                    boardId: msg.boardId,
-                    event: { body: eventData, order: eventData.order },
-                    sequenceNumber: msg.sequenceNumber,
-                    messageId: msg.messageId,
-                });
-
-                clientBoardSequences.get(ws)!.set(msg.boardId, expectedSequence + 1);
-
-                ws.send(
-                    JSON.stringify({
-                        type: "Confirmation",
-                        messageId: msg.messageId,
-                        boardId: msg.boardId,
-                        sequenceNumber: msg.sequenceNumber,
-                        order: eventData.order,
-                    })
-                );
-
-                const totalEndTime = process.hrtime.bigint();
-                const totalLatency = Number(totalEndTime - startTime);
-                boardEventTotalLatency.observe(totalLatency);
-            } catch (error) {
-                return sendError(ws, "Failed to process board event.");
-            }
-        } else {
+        if (msg.sequenceNumber !== expectedSequence) {
             sendError(
                 ws,
                 "Unexpected sequence number" +
@@ -329,6 +290,46 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
                         boardId: msg.boardId,
                     })
             );
+            return;
+        }
+        const startTime = process.hrtime.bigint();
+
+        try {
+            const canEdit = await canEditBoard(ws, msg.boardId);
+            if (!canEdit) {
+                return sendError(ws, "Access denied: edit board.");
+            }
+
+            const eventData = await eventsManager.processEvent(msg.boardId, msg.event.body, {
+                startTime: startTime,
+                queueTime: process.hrtime.bigint(),
+            });
+
+            broadcastBoardEvent(msg.boardId, {
+                type: msg.type,
+                boardId: msg.boardId,
+                event: { body: eventData, order: eventData.order },
+                sequenceNumber: msg.sequenceNumber,
+                messageId: msg.messageId,
+            });
+
+            clientBoardSequences.get(ws)!.set(msg.boardId, expectedSequence + 1);
+
+            ws.send(
+                JSON.stringify({
+                    type: "Confirmation",
+                    messageId: msg.messageId,
+                    boardId: msg.boardId,
+                    sequenceNumber: msg.sequenceNumber,
+                    order: eventData.order,
+                })
+            );
+
+            const totalEndTime = process.hrtime.bigint();
+            const totalLatency = Number(totalEndTime - startTime);
+            boardEventTotalLatency.observe(totalLatency);
+        } catch (error) {
+            return sendError(ws, "Failed to process board event." + JSON.stringify(error));
         }
     }
 
@@ -550,6 +551,7 @@ export class EventsManager {
         }, SAVE_EVENTS_INTERVAL);
     }
 
+    // TODO: delete unused initialize function
     async initialize() {
         try {
             const boardLastOrders = await this.boards.getAllBoardLastEventOrders();
@@ -574,25 +576,15 @@ export class EventsManager {
 
     async processEvent(boardId: string, eventBody: BoardEventBody, metadata: EventMetadata): Promise<BoardEventData> {
         const boardUuid = await this.getBoardUuid(boardId);
-        const oldOrder = await this.getLastEventOrder(boardUuid);
-        const newOrder = oldOrder + 1;
-        this.lastEventOrders.set(boardUuid, newOrder);
+        const newOrder = await this.incrementLastEventOrder(boardUuid);
 
-        const queue = this.queues[boardUuid] || {
-            boardId: boardUuid,
-            events: [],
-        };
-        const data = { ...eventBody, order: newOrder };
-        queue.events.push({
-            data,
-            metadata,
-        });
-        this.queues[boardUuid] = queue;
+        const data = this.enqueueEventForSaving(boardUuid, eventBody, metadata, newOrder);
 
-        const currentCount = this.eventCountSinceLastSnapshot.get(boardUuid) || 0;
-        this.eventCountSinceLastSnapshot.set(boardUuid, currentCount + 1);
+        const eventCount = await this.incrementEventCountSinceSnapshot(boardUuid);
 
-        this.checkAndRequestSnapshot(boardId);
+        if (eventCount >= SNAPSHOT_EVENTS_TO_REQUEST) {
+            this.requestSnapshotIfNotAlreadyRequested(boardId);
+        }
 
         return data;
     }
@@ -610,27 +602,66 @@ export class EventsManager {
         return boardUuid;
     }
 
+    async incrementLastEventOrder(boardUuid: string): Promise<number> {
+        const oldOrder = await this.getLastEventOrder(boardUuid);
+        const newOrder = oldOrder + 1;
+        this.lastEventOrders.set(boardUuid, newOrder);
+        return newOrder;
+    }
+
     async getLastEventOrder(boardUuid: string): Promise<number> {
         let order = this.lastEventOrders.get(boardUuid);
         if (!order) {
-            order = 0;
+            order = await this.boards.getLastEventOrderForBoard(boardUuid);
+            if (!isNaturalNumber(order)) {
+                throw new Error(`Error processing event: board ${boardUuid} not found`);
+            }
             this.lastEventOrders.set(boardUuid, order);
         }
         return order;
     }
 
-    private checkAndRequestSnapshot(boardId: string) {
-        const actualBoardUuid = this.boardUuidMap.get(boardId) || boardId;
-
-        const eventCount = this.eventCountSinceLastSnapshot.get(actualBoardUuid) || 0;
-
-        if (eventCount >= SNAPSHOT_EVENTS_TO_REQUEST) {
-            this.requestSnapshotIfNeeded(boardId);
-        }
+    enqueueEventForSaving(
+        boardUuid: string,
+        eventBody: BoardEventBody,
+        metadata: EventMetadata,
+        newOrder: number
+    ): BoardEventData {
+        const queue = this.queues[boardUuid] || {
+            boardId: boardUuid,
+            events: [],
+        };
+        const data = { ...eventBody, order: newOrder };
+        queue.events.push({
+            data,
+            metadata,
+        });
+        this.queues[boardUuid] = queue;
+        return data;
     }
 
-    private requestSnapshotIfNeeded(boardId: string): void {
-        // Clear any existing timers
+    async incrementEventCountSinceSnapshot(boardUuid: string): Promise<number> {
+        const currentCount = await this.getEventCountSinceLastSnapshot(boardUuid);
+        const newCount = currentCount + 1;
+        this.eventCountSinceLastSnapshot.set(boardUuid, newCount);
+        return newCount;
+    }
+
+    async getEventCountSinceLastSnapshot(boardUuid: string): Promise<number> {
+        let eventCount = this.eventCountSinceLastSnapshot.get(boardUuid);
+        if (!eventCount) {
+            eventCount = await this.boards.getEventCountSinceLastSnapshot(boardUuid);
+            if (!isNaturalNumber(eventCount)) {
+                throw new Error(`Error processing event: board ${boardUuid} not found`);
+            }
+            this.eventCountSinceLastSnapshot.set(boardUuid, eventCount);
+        }
+        return eventCount;
+    }
+
+    // TODO use boardUuid
+    // here boardId is either boardUuid or one of edit links
+    private requestSnapshotIfNotAlreadyRequested(boardId: string): void {
         if (this.snapshotRequestTimers.has(boardId)) {
             clearTimeout(this.snapshotRequestTimers.get(boardId));
             this.snapshotRequestTimers.delete(boardId);
@@ -719,4 +750,8 @@ export class EventsManager {
     isBoardReady(boardId: string): boolean {
         return !this.processing.includes(boardId);
     }
+}
+
+function isNaturalNumber(order: number): boolean {
+    return typeof order === "number" && order >= 0 && Number.isInteger(order);
 }
