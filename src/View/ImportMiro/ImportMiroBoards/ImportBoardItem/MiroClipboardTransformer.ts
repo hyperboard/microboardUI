@@ -617,6 +617,14 @@ export const transformUnsupportedItems = (
 		return null;
 	}
 
+	if (
+		json._parent &&
+		clipboardItems[json._parent.index].widgetData.type === "usm"
+	) {
+		return null;
+	}
+
+	const { x: offsetX = 0, y: offsetY = 0 } = json._position?.offsetPx || {};
 	const transformUnsupportedItem: MiroUnsupportedItem = {
 		...createBaseItem(item),
 		type: MiroBoardItemTypes.UNSUPPORTED,
@@ -625,8 +633,8 @@ export const transformUnsupportedItems = (
 			height: json.size?.height || 100,
 		},
 		position: {
-			x: (json._position?.offsetPx?.x || 0) + cursorPosition.x,
-			y: (json._position?.offsetPx?.y || 0) + cursorPosition.y,
+			x: json._parent ? offsetX : offsetX + cursorPosition.x,
+			y: json._parent ? offsetY : offsetY + cursorPosition.y,
 			origin: "center",
 			relativeTo: json._parent
 				? MiroRelativeTo.frame
@@ -680,11 +688,15 @@ export const parseItem = (
 		case "frame":
 			return transformFrame(item, cursorPosition, clipboardItems);
 		default:
-			return transformUnsupportedItems(
-				item,
-				cursorPosition,
-				clipboardItems,
-			);
+			if (item.widgetData?.type !== "line") {
+				return transformUnsupportedItems(
+					item,
+					cursorPosition,
+					clipboardItems,
+				);
+			}
+
+			return null;
 	}
 };
 

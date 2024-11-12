@@ -367,7 +367,6 @@ export const useCopyBoardItems = (
 			return null;
 		}
 		const framePosition = getItemPosition(frame.position, frame.geometry);
-
 		if (!framePosition) {
 			console.error("Unable to find frame position");
 			return null;
@@ -664,30 +663,28 @@ export const useCopyBoardItems = (
 			return;
 		}
 
-		await prepareImage(imgBase64)
-			.then(imageData => {
-				const imgItem = new ImageItem(imageData, board).setId(id);
+		await prepareImage(imgBase64).then(imageData => {
+			const imgItem = new ImageItem(imageData, board).setId(id);
 
-				// Calculate scale based on the desired geometry and the actual image dimensions
-				const scaleX = geometry.width / imageData.imageDimension.width;
-				const scaleY =
-					geometry.height / imageData.imageDimension.height;
-				const scale = Math.min(scaleX, scaleY); // Use the smaller scale to maintain aspect ratio
+			// Calculate scale based on the desired geometry and the actual image dimensions
+			const scaleX = geometry.width / imageData.imageDimension.width;
+			const scaleY = geometry.height / imageData.imageDimension.height;
+			const scale = Math.min(scaleX, scaleY); // Use the smaller scale to maintain aspect ratio
 
-				const imgPosition = getItemPosition(position, geometry, parent);
+			const imgPosition = getItemPosition(position, geometry, parent);
 
-				imgPosition &&
-					imgItem.transformation.translateTo(
-						imgPosition.x,
-						imgPosition.y,
-					);
+			imgPosition &&
+				imgItem.transformation.translateTo(
+					imgPosition.x,
+					imgPosition.y,
+				);
 
-				// Use a single scale value to maintain aspect ratio
-				imgItem.transformation.scaleTo(scale, scale);
+			// Use a single scale value to maintain aspect ratio
+			imgItem.transformation.scaleTo(scale, scale);
 
-				board.add(imgItem);
-				setBoardMiroId(id);
-			});
+			board.add(imgItem);
+			setBoardMiroId(id);
+		});
 	};
 
 	const getConnectorPoint = (
@@ -907,25 +904,18 @@ export const useCopyBoardItems = (
 	};
 
 	const copyUnsupportedItem = (item: MiroUnsupportedItem): void => {
-		const { position, geometry, parent } = item;
+		const { id } = item;
 
-		const shapePosition = getItemPosition(position, geometry, parent);
-		const placeholder = new Placeholder(
+		const placeholder = board.add<Placeholder>(new Placeholder(
 			undefined,
 			item,
 			item.id,
 			undefined,
 			undefined,
-		);
+		));
 
 		setTransformation(placeholder, item);
-		shapePosition &&
-			placeholder.transformation.translateTo(
-				shapePosition.x,
-				shapePosition.y,
-			);
-
-		board.add<Placeholder>(placeholder);
+		setBoardMiroId(id);
 	};
 
 	const getMiroToken = (): void => {
