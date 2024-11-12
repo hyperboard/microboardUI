@@ -620,7 +620,7 @@ export const useCopyBoardItems = (
 
 			if (img.status === 401) {
 				getMiroToken();
-				Cookies.remove('miro_accessToken')
+				Cookies.remove("miro_accessToken");
 			}
 
 			return img;
@@ -664,28 +664,30 @@ export const useCopyBoardItems = (
 			return;
 		}
 
-		prepareImage(imgBase64).then(imageData => {
-			const imgItem = new ImageItem(imageData, board).setId(id);
+		await prepareImage(imgBase64)
+			.then(imageData => {
+				const imgItem = new ImageItem(imageData, board).setId(id);
 
-			// Calculate scale based on the desired geometry and the actual image dimensions
-			const scaleX = geometry.width / imageData.imageDimension.width;
-			const scaleY = geometry.height / imageData.imageDimension.height;
-			const scale = Math.min(scaleX, scaleY); // Use the smaller scale to maintain aspect ratio
+				// Calculate scale based on the desired geometry and the actual image dimensions
+				const scaleX = geometry.width / imageData.imageDimension.width;
+				const scaleY =
+					geometry.height / imageData.imageDimension.height;
+				const scale = Math.min(scaleX, scaleY); // Use the smaller scale to maintain aspect ratio
 
-			const imgPosition = getItemPosition(position, geometry, parent);
+				const imgPosition = getItemPosition(position, geometry, parent);
 
-			imgPosition &&
-				imgItem.transformation.translateTo(
-					imgPosition.x,
-					imgPosition.y,
-				);
+				imgPosition &&
+					imgItem.transformation.translateTo(
+						imgPosition.x,
+						imgPosition.y,
+					);
 
-			// Use a single scale value to maintain aspect ratio
-			imgItem.transformation.scaleTo(scale, scale);
+				// Use a single scale value to maintain aspect ratio
+				imgItem.transformation.scaleTo(scale, scale);
 
-			board.add(imgItem);
-			setBoardMiroId(id);
-		});
+				board.add(imgItem);
+				setBoardMiroId(id);
+			});
 	};
 
 	const getConnectorPoint = (
