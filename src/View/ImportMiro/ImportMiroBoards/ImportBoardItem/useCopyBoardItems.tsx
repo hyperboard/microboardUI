@@ -346,7 +346,6 @@ export const useCopyBoardItems = (
 		position: IMiroPosition,
 		geometry: IMiroGeometry,
 		parent?: IMiroParent,
-		itemType?: string,
 	): { x: number; y: number } | null => {
 		const { x, y, relativeTo } = position;
 		const { height, width } = geometry;
@@ -370,14 +369,6 @@ export const useCopyBoardItems = (
 		if (!framePosition) {
 			console.error("Unable to find frame position");
 			return null;
-		}
-
-		if (itemType === "paint") {
-			const pointer = board.pointer.point;
-			return {
-				x: x - width / 2 + framePosition.x - pointer.x,
-				y: y - height / 2 + framePosition.y - pointer.y,
-			};
 		}
 
 		return {
@@ -477,7 +468,6 @@ export const useCopyBoardItems = (
 			position,
 			miroItem.geometry,
 			parent,
-			miroItem.type,
 		);
 
 		if (itemPosition) {
@@ -969,6 +959,7 @@ export const useCopyBoardItems = (
 		showModal?.("loadingNotification");
 
 		for (const [index, item] of miroBoardItems.entries()) {
+			console.log('item', item)
 			const type = item.type as MiroItemsTypes;
 			setModalData?.(
 				Math.floor(50 + ((index / miroBoardItems.length) * 100) / 2),

@@ -565,6 +565,7 @@ const transformDrawing = (
 	const style = parseStyle(json.style);
 	const strokeWidth =
 		style.t > MAX_DRAWING_STROKE_WIDTH ? MAX_DRAWING_STROKE_WIDTH : style.t;
+	const { x: offsetX = 0, y: offsetY = 0 } = json._position?.offsetPx || {};
 
 	const transformDrawing: IMiroBoardItemPaint = {
 		...createBaseItem(paint),
@@ -583,8 +584,8 @@ const transformDrawing = (
 			scale: json.scale,
 		},
 		position: {
-			x: (json._position?.offsetPx?.x || 0) + cursorPosition.x,
-			y: (json._position?.offsetPx?.y || 0) + cursorPosition.y,
+			x: json._parent ? offsetX : offsetX + cursorPosition.x,
+			y: json._parent ? offsetY : offsetY + cursorPosition.y,
 			origin: "center",
 			relativeTo: json._parent
 				? MiroRelativeTo.frame
@@ -613,13 +614,10 @@ export const transformUnsupportedItems = (
 	clipboardItems: MiroClipboardItem[],
 ): MiroUnsupportedItem | null => {
 	const json = item.widgetData?.json;
-	if (!json) {
-		return null;
-	}
-
 	if (
-		json._parent &&
-		clipboardItems[json._parent.index].widgetData.type === "usm"
+		!json ||
+		(json._parent &&
+			clipboardItems[json._parent.index].widgetData.type === "usm")
 	) {
 		return null;
 	}
