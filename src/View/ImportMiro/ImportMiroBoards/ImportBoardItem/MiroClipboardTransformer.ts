@@ -319,7 +319,7 @@ export const transformConnector = (
 		type: MiroBoardItemTypes.CONNECTOR,
 		style: {
 			strokeColor: getColor(style.lc),
-			strokeWidth: style.brw?.toString() || "1",
+			strokeWidth: style.t?.toString() || "1",
 			strokeStyle: BORDER_STYLES[style.brs] || "solid",
 			startStrokeCap: CONNECTOR_STYLES[style.a_start] || "none",
 			endStrokeCap: CONNECTOR_STYLES[style.a_end] || "none",
