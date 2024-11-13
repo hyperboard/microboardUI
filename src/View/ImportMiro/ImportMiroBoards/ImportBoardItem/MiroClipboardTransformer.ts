@@ -159,13 +159,22 @@ const parseStyle = (styleString: string): Record<string, any> => {
 	return JSON.parse(styleString.replace(/'/g, '"'));
 };
 
-const getColor = (colorCode: number): string => {
+const getColor = (colorCode: number, opacity?: number): string => {
 	if (!colorCode) {
 		return "#000000";
 	}
 	if (colorCode.toString().includes("-1")) {
 		return "#000000";
 	}
+
+	// hex with alpha
+	if (opacity) {
+		return (
+			`#${colorCode.toString(16).padStart(6, "0")}` +
+			Math.round(opacity * 255).toString(16).padStart(2, "0")
+		);
+	}
+
 	return `#${colorCode.toString(16).padStart(6, "0")}`;
 };
 
@@ -575,7 +584,7 @@ const transformDrawing = (
 			height: json.size.height || 100,
 		},
 		style: {
-			color: getColor(style.lc),
+			color: getColor(style.lc, style.lo),
 			strokeWidth: strokeWidth || INITIAL_DRAWING_STROKE_WIDTH,
 			strokeOpacity: style.lo,
 		},
