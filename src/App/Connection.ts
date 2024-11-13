@@ -13,7 +13,7 @@ import {
 } from "Board/Events/Events";
 
 const WS_RECONNECT_TIMEOUT = 5000;
-const WS_PING_INTERVAL = 30000;
+const WS_PING_INTERVAL = 10000;
 
 export interface AuthMsg {
 	type: "Auth";
@@ -144,12 +144,11 @@ export function createConnection(getBoard: () => Board): Connection {
 	let pingNotificationId: string | null = null;
 	let changedViewMode = false;
 
-	// const beforeUnloadListener = (event: BeforeUnloadEvent): void => {
-	// 	event.preventDefault();
-	// 	event.returnValue = "Do not leave the page to avoid losing data";
-	// };
-
 	const onConnectionLost = (): void => {
+		const notificationId = getBoard().events?.getNotificationId();
+		if (notificationId) {
+			toast.dismiss(notificationId);
+		}
 		if (!pingNotificationId) {
 			pingNotificationId = notify({
 				header: i18next.t("notifications.connectionLostHeader"),
@@ -158,7 +157,6 @@ export function createConnection(getBoard: () => Board): Connection {
 				unclosable: true,
 				position: "bottom-center",
 			});
-			// window.addEventListener('beforeunload', beforeUnloadListener);
 		}
 		const board = getBoard();
 		if (board.getBoardId() !== "blank" && board.interfaceType !== "view") {
@@ -193,10 +191,11 @@ export function createConnection(getBoard: () => Board): Connection {
 	};
 
 	const setConnectionErrorTimeout = (): void => {
-		pingTimeout = setTimeout(onConnectionLost, WS_PING_INTERVAL);
+		pingTimeout = setTimeout(onConnectionLost, WS_PING_INTERVAL + 1);
 	};
 
 	function clearConnectionError(): void {
+		getBoard().events?.removeBeforeUnloadListener();
 		if (pingTimeout) {
 			clearTimeout(pingTimeout);
 			pingTimeout = null;
@@ -210,7 +209,6 @@ export function createConnection(getBoard: () => Board): Connection {
 				position: "bottom-center",
 				unclosable: true,
 			});
-			// window.removeEventListener('beforeunload', beforeUnloadListener);
 		}
 		if (changedViewMode) {
 			getBoard().interfaceType = "edit";

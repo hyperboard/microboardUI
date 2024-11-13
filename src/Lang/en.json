@@ -433,7 +433,9 @@
 	},
 	"notifications": {
 		"connectionLostHeader": "You are offline. Reconnecting...",
-		"connectionReestablished": "Connection restored."
+		"connectionReestablished": "Connection restored.",
+		"restoringConnectionHeader": "Restoring connection.",
+		"restoringConnectionBody": "Do not refresh the page or close the tab to avoid losing your progress"
 	},
 	"landing": {
 		"menu": {
