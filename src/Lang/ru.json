@@ -1,7 +1,8 @@
 {
 	"common": {
 		"and": "и",
-		"backToMain": "Вернуться в главное меню"
+		"backToMain": "Вернуться в главное меню",
+		"confirm": "Принять"
 	},
 	"contextPanel": {
 		"connectorAddText": {
@@ -89,7 +90,7 @@
 		"frameColor": {
 			"tooltip": "Цвет фрейма"
 		},
-		"copyFrameLink": {
+		"copyItemLink": {
 			"text": "Копировать ссылку",
 			"error": {
 				"title": "Ошибка копирования ссылки",
@@ -98,6 +99,12 @@
 			"success": {
 				"description": "Ссылка скопирована в буфер обмена"
 			}
+		},
+		"setLinkTo": {
+			"text": "Прикрепить ссылку"
+		},
+		"removeLinkTo": {
+			"text": "Открепить ссылку"
 		},
 		"delete": {
 			"text": "Удалить",
@@ -154,7 +161,7 @@
 			"tooltip": "Добавить изображение"
 		},
 		"addFrame": {
-			"tooltip": "Добавить фрейм"
+			"tooltip": "Фрейм"
 		}
 	},
 	"shapesPanel": {
@@ -277,6 +284,18 @@
 			"description": "Вы уверены, что хотите удалить доску",
 			"delete": "Удалить",
 			"cancel": "Отменить"
+		}
+	},
+	"modalLinkTo": {
+		"error": "Некорректная ссылка",
+		"title": "Прикрепить ссылку",
+		"input": "Ссылка"
+	},
+	"linkToToast": {
+		"noItem": "Этот объект был удален с доски",
+		"error": {
+			"title": "Ошибка при переходе по ссылке",
+			"description": "Ошибка возникла во время перехода по ссылке"
 		}
 	},
 	"ok": "Ок",
@@ -437,7 +456,9 @@
 	},
 	"notifications": {
 		"connectionLostHeader": "Доска в оффлайн-режиме. Восстанавливаем соединение...",
-		"connectionReestablished": "Соедение восстановлено."
+		"connectionReestablished": "Соедение восстановлено.",
+		"restoringConnectionHeader": "Восстанавливаем соединение с сервером.",
+		"restoringConnectionBody": "Не обновляйте страницу и не закрывайте вкладку, чтобы не потерять прогресс"
 	},
 	"landing": {
 		"menu": {

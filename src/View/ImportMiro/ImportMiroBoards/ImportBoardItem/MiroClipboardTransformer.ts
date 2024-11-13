@@ -159,13 +159,24 @@ const parseStyle = (styleString: string): Record<string, any> => {
 	return JSON.parse(styleString.replace(/'/g, '"'));
 };
 
-const getColor = (colorCode: number): string => {
+const getColor = (colorCode: number, opacity?: number): string => {
 	if (!colorCode) {
 		return "#000000";
 	}
 	if (colorCode.toString().includes("-1")) {
 		return "#000000";
 	}
+
+	// hex with alpha
+	if (opacity) {
+		return (
+			`#${colorCode.toString(16).padStart(6, "0")}` +
+			Math.round(opacity * 255)
+				.toString(16)
+				.padStart(2, "0")
+		);
+	}
+
 	return `#${colorCode.toString(16).padStart(6, "0")}`;
 };
 
@@ -319,7 +330,7 @@ export const transformConnector = (
 		type: MiroBoardItemTypes.CONNECTOR,
 		style: {
 			strokeColor: getColor(style.lc),
-			strokeWidth: style.brw?.toString() || "1",
+			strokeWidth: style.t?.toString() || "1",
 			strokeStyle: BORDER_STYLES[style.brs] || "solid",
 			startStrokeCap: CONNECTOR_STYLES[style.a_start] || "none",
 			endStrokeCap: CONNECTOR_STYLES[style.a_end] || "none",
@@ -565,6 +576,7 @@ const transformDrawing = (
 	const style = parseStyle(json.style);
 	const strokeWidth =
 		style.t > MAX_DRAWING_STROKE_WIDTH ? MAX_DRAWING_STROKE_WIDTH : style.t;
+	const { x: offsetX = 0, y: offsetY = 0 } = json._position?.offsetPx || {};
 
 	const transformDrawing: IMiroBoardItemPaint = {
 		...createBaseItem(paint),
@@ -574,7 +586,7 @@ const transformDrawing = (
 			height: json.size.height || 100,
 		},
 		style: {
-			color: getColor(style.lc),
+			color: getColor(style.lc, style.lo),
 			strokeWidth: strokeWidth || INITIAL_DRAWING_STROKE_WIDTH,
 			strokeOpacity: style.lo,
 		},
@@ -583,8 +595,8 @@ const transformDrawing = (
 			scale: json.scale,
 		},
 		position: {
-			x: (json._position?.offsetPx?.x || 0) + cursorPosition.x,
-			y: (json._position?.offsetPx?.y || 0) + cursorPosition.y,
+			x: json._parent ? offsetX : offsetX + cursorPosition.x,
+			y: json._parent ? offsetY : offsetY + cursorPosition.y,
 			origin: "center",
 			relativeTo: json._parent
 				? MiroRelativeTo.frame
@@ -613,10 +625,15 @@ export const transformUnsupportedItems = (
 	clipboardItems: MiroClipboardItem[],
 ): MiroUnsupportedItem | null => {
 	const json = item.widgetData?.json;
-	if (!json) {
+	if (
+		!json ||
+		(json._parent &&
+			clipboardItems[json._parent.index].widgetData.type === "usm")
+	) {
 		return null;
 	}
 
+	const { x: offsetX = 0, y: offsetY = 0 } = json._position?.offsetPx || {};
 	const transformUnsupportedItem: MiroUnsupportedItem = {
 		...createBaseItem(item),
 		type: MiroBoardItemTypes.UNSUPPORTED,
@@ -625,8 +642,8 @@ export const transformUnsupportedItems = (
 			height: json.size?.height || 100,
 		},
 		position: {
-			x: (json._position?.offsetPx?.x || 0) + cursorPosition.x,
-			y: (json._position?.offsetPx?.y || 0) + cursorPosition.y,
+			x: json._parent ? offsetX : offsetX + cursorPosition.x,
+			y: json._parent ? offsetY : offsetY + cursorPosition.y,
 			origin: "center",
 			relativeTo: json._parent
 				? MiroRelativeTo.frame
@@ -680,11 +697,15 @@ export const parseItem = (
 		case "frame":
 			return transformFrame(item, cursorPosition, clipboardItems);
 		default:
-			return transformUnsupportedItems(
-				item,
-				cursorPosition,
-				clipboardItems,
-			);
+			if (item.widgetData?.type !== "line") {
+				return transformUnsupportedItems(
+					item,
+					cursorPosition,
+					clipboardItems,
+				);
+			}
+
+			return null;
 	}
 };
 

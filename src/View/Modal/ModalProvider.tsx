@@ -15,7 +15,8 @@ export type ModalName =
 	| "successNotification"
 	| "warnClipboardNotification"
 	| "warnNotification"
-	| "imgAuthClipboardNotification";
+	| "imgAuthClipboardNotification"
+	| "setLinkTo";
 
 interface ModalContextType {
 	modals: Record<ModalName, boolean>;

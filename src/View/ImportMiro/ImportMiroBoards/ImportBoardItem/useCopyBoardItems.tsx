@@ -30,7 +30,6 @@ import { Sticker } from "Board/Items/Sticker";
 import { ImageItem } from "Board/Items/Image";
 import Cookies from "js-cookie";
 import { ConnectionLineWidths } from "Board/Items/Connector/Connector";
-import { CONNECTOR_LINE_WIDTH } from "View/Items/Connector";
 import { prepareImage } from "Board/Items/Image/ImageHelpers";
 import { FixedPoint } from "Board/Items/Connector";
 import { Descendant } from "slate";
@@ -346,7 +345,6 @@ export const useCopyBoardItems = (
 		position: IMiroPosition,
 		geometry: IMiroGeometry,
 		parent?: IMiroParent,
-		itemType?: string,
 	): { x: number; y: number } | null => {
 		const { x, y, relativeTo } = position;
 		const { height, width } = geometry;
@@ -367,18 +365,9 @@ export const useCopyBoardItems = (
 			return null;
 		}
 		const framePosition = getItemPosition(frame.position, frame.geometry);
-
 		if (!framePosition) {
 			console.error("Unable to find frame position");
 			return null;
-		}
-
-		if (itemType === "paint") {
-			const pointer = board.pointer.point;
-			return {
-				x: x - width / 2 + framePosition.x - pointer.x,
-				y: y - height / 2 + framePosition.y - pointer.y,
-			};
 		}
 
 		return {
@@ -478,7 +467,6 @@ export const useCopyBoardItems = (
 			position,
 			miroItem.geometry,
 			parent,
-			miroItem.type,
 		);
 
 		if (itemPosition) {
@@ -620,6 +608,7 @@ export const useCopyBoardItems = (
 
 			if (img.status === 401) {
 				getMiroToken();
+				Cookies.remove("miro_accessToken");
 			}
 
 			return img;
@@ -663,28 +652,36 @@ export const useCopyBoardItems = (
 			return;
 		}
 
-		prepareImage(imgBase64).then(imageData => {
-			const imgItem = new ImageItem(imageData, board).setId(id);
+		await prepareImage(imgBase64)
+			.then(imageData => {
+				const imgItem = new ImageItem(imageData, board).setId(id);
 
-			// Calculate scale based on the desired geometry and the actual image dimensions
-			const scaleX = geometry.width / imageData.imageDimension.width;
-			const scaleY = geometry.height / imageData.imageDimension.height;
-			const scale = Math.min(scaleX, scaleY); // Use the smaller scale to maintain aspect ratio
+				// Calculate scale based on the desired geometry and the actual image dimensions
+				const scaleX = geometry.width / imageData.imageDimension.width;
+				const scaleY =
+					geometry.height / imageData.imageDimension.height;
+				const scale = Math.min(scaleX, scaleY); // Use the smaller scale to maintain aspect ratio
 
-			const imgPosition = getItemPosition(position, geometry, parent);
+				const imgPosition = getItemPosition(position, geometry, parent);
 
-			imgPosition &&
-				imgItem.transformation.translateTo(
-					imgPosition.x,
-					imgPosition.y,
-				);
+				imgPosition &&
+					imgItem.transformation.translateTo(
+						imgPosition.x,
+						imgPosition.y,
+					);
 
-			// Use a single scale value to maintain aspect ratio
-			imgItem.transformation.scaleTo(scale, scale);
+				// Use a single scale value to maintain aspect ratio
+				imgItem.transformation.scaleTo(scale, scale);
 
-			board.add(imgItem);
-			setBoardMiroId(id);
-		});
+				board.add(imgItem);
+				setBoardMiroId(id);
+			})
+			.catch(() => {
+				const { showModal, hideModal } = getGlobalModalFunctions();
+
+				hideModal?.("loadingNotification");
+				showModal?.("errorNotification");
+			});
 	};
 
 	const getConnectorPoint = (
@@ -814,7 +811,7 @@ export const useCopyBoardItems = (
 
 		const {
 			strokeColor,
-			strokeWidth: miroStrokeWidth,
+			strokeWidth: miroStrokeWidth = "1",
 			startStrokeCap,
 			endStrokeCap,
 		} = style;
@@ -823,11 +820,10 @@ export const useCopyBoardItems = (
 		const connectorType = CONNECTOR_TYPES[shape];
 		connectorType && connector.setLineStyle(connectorType);
 
-		const strokeWidth =
-			miroStrokeWidth &&
-			ConnectionLineWidths.find(width => width === +miroStrokeWidth);
 		connector.setLineWidth(
-			strokeWidth ? strokeWidth : CONNECTOR_LINE_WIDTH,
+			+miroStrokeWidth > ConnectionLineWidths[7]
+				? ConnectionLineWidths[7]
+				: ConnectionLineWidths[+miroStrokeWidth],
 		);
 
 		setConnectorsStyles(connector, startStrokeCap, endStrokeCap);
@@ -904,25 +900,14 @@ export const useCopyBoardItems = (
 	};
 
 	const copyUnsupportedItem = (item: MiroUnsupportedItem): void => {
-		const { position, geometry, parent } = item;
+		const { id } = item;
 
-		const shapePosition = getItemPosition(position, geometry, parent);
-		const placeholder = new Placeholder(
-			undefined,
-			item,
-			item.id,
-			undefined,
-			undefined,
+		const placeholder = board.add<Placeholder>(
+			new Placeholder(undefined, item, item.id, undefined, undefined),
 		);
 
 		setTransformation(placeholder, item);
-		shapePosition &&
-			placeholder.transformation.translateTo(
-				shapePosition.x,
-				shapePosition.y,
-			);
-
-		board.add<Placeholder>(placeholder);
+		setBoardMiroId(id);
 	};
 
 	const getMiroToken = (): void => {
@@ -945,7 +930,7 @@ export const useCopyBoardItems = (
 
 	const getMiroBoardItems = (): IMiroBoardItem[] => {
 		const storageMiroItems = localStorage.getItem("miroItems");
-		if (miroItems && !storageMiroItems && isClipboard) {
+		if (miroItems && !storageMiroItems) {
 			localStorage.setItem("miroItems", JSON.stringify(miroItems));
 		}
 

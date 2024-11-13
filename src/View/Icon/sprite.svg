@@ -623,6 +623,10 @@
       fill="currentColor" />
   </symbol>
 
+  <symbol id="linkTo" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M7 0V2H2V16H16V11H18V17C18 17.2652 17.8946 17.5196 17.7071 17.7071C17.5196 17.8946 17.2652 18 17 18H1C0.734784 18 0.48043 17.8946 0.292893 17.7071C0.105357 17.5196 0 17.2652 0 17V1C0 0.734784 0.105357 0.48043 0.292893 0.292893C0.48043 0.105357 0.734784 0 1 0H7ZM14.707 4.707L9 10.414L7.586 9L13.293 3.293L10 0H18V8L14.707 4.707Z" fill="#924FE8"/>
+  </symbol>
+
   <symbol id="miro" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g clip-path="url(#clip0_2301_3887)">
       <path
