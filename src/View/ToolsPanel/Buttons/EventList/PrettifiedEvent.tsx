@@ -11,7 +11,7 @@ type EventTypeMap = {
 
 interface Props {
 	event: BoardEvent;
-	style: CSSProperties;
+	style?: CSSProperties;
 }
 
 const PrettifiedEvent: React.FC<Props> = ({ event, style }) => {

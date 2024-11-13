@@ -69,7 +69,7 @@ export const EventList = React.memo(function EventList(): JSX.Element {
 						display: "flex",
 						flexDirection: "column",
 						maxHeight: "90vh",
-						width: "50vw",
+						width: "40vw",
 						padding: "6px",
 						overflowY: "auto",
 						transform: getPanelTransform(),
