@@ -159,13 +159,22 @@ const parseStyle = (styleString: string): Record<string, any> => {
 	return JSON.parse(styleString.replace(/'/g, '"'));
 };
 
-const getColor = (colorCode: number): string => {
+const getColor = (colorCode: number, opacity?: number): string => {
 	if (!colorCode) {
 		return "#000000";
 	}
 	if (colorCode.toString().includes("-1")) {
 		return "#000000";
 	}
+
+	// hex with alpha
+	if (opacity) {
+		return (
+			`#${colorCode.toString(16).padStart(6, "0")}` +
+			Math.round(opacity * 255).toString(16).padStart(2, "0")
+		);
+	}
+
 	return `#${colorCode.toString(16).padStart(6, "0")}`;
 };
 
@@ -319,7 +328,7 @@ export const transformConnector = (
 		type: MiroBoardItemTypes.CONNECTOR,
 		style: {
 			strokeColor: getColor(style.lc),
-			strokeWidth: style.brw?.toString() || "1",
+			strokeWidth: style.t?.toString() || "1",
 			strokeStyle: BORDER_STYLES[style.brs] || "solid",
 			startStrokeCap: CONNECTOR_STYLES[style.a_start] || "none",
 			endStrokeCap: CONNECTOR_STYLES[style.a_end] || "none",
@@ -471,6 +480,7 @@ export const transformImage = (
 			imageUrl: `https://api.miro.com/v2/boards/${boardId}/resources/images/${
 				json.resource?.id || 0
 			}?format=preview&redirect=false`,
+			scale: json.scale.scale,
 		},
 		style: {
 			borderColor: getColor(style.brc),
@@ -565,6 +575,7 @@ const transformDrawing = (
 	const style = parseStyle(json.style);
 	const strokeWidth =
 		style.t > MAX_DRAWING_STROKE_WIDTH ? MAX_DRAWING_STROKE_WIDTH : style.t;
+	const { x: offsetX = 0, y: offsetY = 0 } = json._position?.offsetPx || {};
 
 	const transformDrawing: IMiroBoardItemPaint = {
 		...createBaseItem(paint),
@@ -574,22 +585,23 @@ const transformDrawing = (
 			height: json.size.height || 100,
 		},
 		style: {
-			color: getColor(style.lc),
+			color: getColor(style.lc, style.lo),
 			strokeWidth: strokeWidth || INITIAL_DRAWING_STROKE_WIDTH,
 			strokeOpacity: style.lo,
 		},
 		data: {
 			points: json.points,
-			scale: json.scale,
+			scale: json.scale.scale,
 		},
 		position: {
-			x: (json._position?.offsetPx?.x || 0) + cursorPosition.x,
-			y: (json._position?.offsetPx?.y || 0) + cursorPosition.y,
+			x: json._parent ? offsetX : offsetX + cursorPosition.x,
+			y: json._parent ? offsetY : offsetY + cursorPosition.y,
 			origin: "center",
 			relativeTo: json._parent
 				? MiroRelativeTo.frame
 				: MiroRelativeTo.board,
 		},
+		relativeScale: json.relativeScale
 	};
 
 	if (json._parent) {
@@ -613,13 +625,10 @@ export const transformUnsupportedItems = (
 	clipboardItems: MiroClipboardItem[],
 ): MiroUnsupportedItem | null => {
 	const json = item.widgetData?.json;
-	if (!json) {
-		return null;
-	}
-
 	if (
-		json._parent &&
-		clipboardItems[json._parent.index].widgetData.type === "usm"
+		!json ||
+		(json._parent &&
+			clipboardItems[json._parent.index].widgetData.type === "usm")
 	) {
 		return null;
 	}
@@ -728,7 +737,6 @@ export const pasteMiroClipboard = (board: Board, clipboardJson: any): any => {
 		if (transformedItem) {
 			acc.push(transformedItem);
 		}
-		setModalData?.(Math.floor(((index / clipboardItems.length) * 100) / 2));
 		return acc;
 	}, [] as IMiroBoardItem[]);
 	const miroConnectors = clipboardItems.reduce((acc, item) => {

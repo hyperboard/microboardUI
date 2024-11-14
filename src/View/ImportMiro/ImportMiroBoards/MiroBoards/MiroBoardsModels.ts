@@ -161,6 +161,7 @@ export interface IMiroBoardItemImage extends IMiroBoardItemBase {
 	type: MiroBoardItemTypes.IMAGE;
 	data: {
 		imageUrl: string;
+		scale: number;
 	};
 	geometry: IMiroGeometry;
 	position: IMiroPosition;
@@ -186,6 +187,7 @@ export interface IMiroBoardItemPaint extends IMiroBoardItemBase {
 	};
 	geometry: IMiroGeometry;
 	position: IMiroPosition;
+	relativeScale: number;
 }
 
 interface IMiroBoardConnectionsPoints {
