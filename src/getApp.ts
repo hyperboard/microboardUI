@@ -28,8 +28,10 @@ import { migrateData } from "drizzle/scripts/board-events-table.migration";
 export async function getApp(): Promise<http.Server> {
     const app = express();
 
-    await runMigration();
+    console.log('getApp', process.env);
 
+    await runMigration();
+    
     if (process.env.MIGRATE_EVENTS) {
         await migrateData().catch(console.error);
     }
