@@ -128,28 +128,38 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         );
     }
 
-    const clientBoardSequences = new Map<WebSocket, Map<string, number>>();
+    const socketsBoardsSeqNums = new Map<WebSocket, Map<string, number>>();
 
     async function handleSubscribeMsg(msg: SubscribeMsg, ws: WebSocket): Promise<void> {
         try {
-            const details = await boards.getLinkDetails(msg.boardId);
-            const isPublic = await boards.isBoardPublic(msg.boardId);
+            const boardId = msg.boardId;
+            const details = await boards.getLinkDetails(boardId);
+            const isPublic = await boards.isBoardPublic(boardId);
 
             if (
                 details?.type === "view" ||
                 details?.type === "edit" ||
-                (await hasSubscribeRights(ws, msg.boardId)) ||
+                (await hasSubscribeRights(ws, boardId)) ||
                 isPublic
             ) {
-                await subscribeClientToBoard(ws, msg.boardId);
+                await subscribeClientToBoard(ws, boardId);
 
-                confirmSubscriptionWithSeqNum(ws, msg);
-
-                if (details?.type === "view") {
-                    enforceViewMode(ws, msg.boardId);
-                }
-
-                await sendInitialDataToClient(ws, msg.boardId, msg.index);
+                const initialSequenceNumber = getInitialSeqNum(ws, boardId);
+                const mode = details?.type || "edit";
+                const snapshot = await boards.getLatestBoardSnapshot(boardId);
+                const lastSnapshotEventOrder = snapshot?.lastIndex || 0;
+                const eventsSinceLastSnapshot = await getEventsSinceLastSnapshot(boardId, lastSnapshotEventOrder);
+                ws.send(
+                    JSON.stringify({
+                        type: "BoardSubscriptionCompleted",
+                        boardId,
+                        mode,
+                        snapshot,
+                        lastSnapshotEventOrder,
+                        eventsSinceLastSnapshot,
+                        initialSequenceNumber,
+                    })
+                );
             } else {
                 sendError(ws, "Access denied: Subscribe to board events.", { denidedBoardId: msg.boardId });
             }
@@ -159,22 +169,21 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         }
     }
 
-    function confirmSubscriptionWithSeqNum(ws: WebSocket, msg: SubscribeMsg) {
-        // Генерируем начальный порядковый номер для этой подписки
+    function getInitialSeqNum(ws: WebSocket, boardId: string): number {
         const initialSequenceNumber = 1;
-        if (!clientBoardSequences.has(ws)) {
-            clientBoardSequences.set(ws, new Map());
+        let socketBoardsSeqNums = socketsBoardsSeqNums.get(ws);
+        if (!socketBoardsSeqNums) {
+            socketBoardsSeqNums = new Map();
+            socketsBoardsSeqNums.set(ws, socketBoardsSeqNums);
         }
-        clientBoardSequences.get(ws)!.set(msg.boardId, initialSequenceNumber);
+        socketBoardsSeqNums.set(boardId, initialSequenceNumber);
+        return initialSequenceNumber;
+    }
 
-        // Отправляем подтверждение подписки с начальным порядковым номером
-        ws.send(
-            JSON.stringify({
-                type: "SubscribeConfirmation",
-                boardId: msg.boardId,
-                initialSequenceNumber: initialSequenceNumber,
-            })
-        );
+    async function getEventsSinceLastSnapshot(boardId: string, offset: number): Promise<any[]> {
+        const savedEvents = await boards.getBoardEvents(boardId, offset);
+        const enqueuedEvents = await eventsManager.getEnqueuedEvents(boardId);
+        return savedEvents.concat(enqueuedEvents);
     }
 
     async function hasSubscribeRights(ws: WebSocket, boardId: string): Promise<boolean> {
@@ -228,58 +237,13 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         boardClients.set(boardId, clients);
     }
 
-    function enforceViewMode(ws: WebSocket, boardId: string) {
-        ws.send(
-            JSON.stringify({
-                type: "ViewMode",
-                boardId: boardId,
-            })
-        );
-    }
-
-    async function sendInitialDataToClient(ws: WebSocket, boardId: string, startIndex: number) {
-        if (!startIndex) {
-            const lastSnapshotEvent = await sendLatestSnapshot(ws, boardId);
-            await sendBoardEvents(ws, boardId, lastSnapshotEvent);
-        } else {
-            await sendBoardEvents(ws, boardId, startIndex);
-        }
-    }
-
-    async function sendLatestSnapshot(ws: WebSocket, boardId: string): Promise<number> {
-        const snapshot = await boards.getLatestBoardSnapshot(boardId);
-        if (!snapshot) {
-            return 0;
-        }
-        ws.send(
-            JSON.stringify({
-                type: "BoardSnapshot",
-                boardId: boardId,
-                snapshot,
-            })
-        );
-        return snapshot.lastIndex;
-    }
-
-    async function sendBoardEvents(ws: WebSocket, boardId: string, offset = 0) {
-        const savedEvents = await boards.getBoardEvents(boardId, offset);
-        const enqueuedEvents = await eventsManager.getEnqueuedEvents(boardId);
-        ws.send(
-            JSON.stringify({
-                type: "BoardEventList",
-                boardId: boardId,
-                events: savedEvents.concat(enqueuedEvents),
-            })
-        );
-    }
-
     const eventsManager = new EventsManager(boards, logger);
 
     // TODO: delete commented
     // eventsManager.initialize(); skip unnecessary initialization
 
     async function handleBoardEventMsg(msg: BoardEventMsg, ws: WebSocket): Promise<void> {
-        const expectedSequence = clientBoardSequences.get(ws)?.get(msg.boardId) || 1;
+        const expectedSequence = socketsBoardsSeqNums.get(ws)?.get(msg.boardId) || 1;
 
         if (msg.sequenceNumber !== expectedSequence) {
             sendError(
@@ -314,7 +278,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
                 messageId: msg.messageId,
             });
 
-            clientBoardSequences.get(ws)!.set(msg.boardId, expectedSequence + 1);
+            socketsBoardsSeqNums.get(ws)!.set(msg.boardId, expectedSequence + 1);
 
             ws.send(
                 JSON.stringify({
