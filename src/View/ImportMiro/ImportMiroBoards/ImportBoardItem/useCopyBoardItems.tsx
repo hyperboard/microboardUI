@@ -360,19 +360,23 @@ export const useCopyBoardItems = (
 			return null;
 		}
 
-		const frame = getMiroItemById(parent?.id) as IMiroBoardItemFrame;
-		if (!frame) {
+		const parentItem = getMiroItemById(parent?.id);
+		if (!parentItem) {
 			return null;
 		}
-		const framePosition = getItemPosition(frame.position, frame.geometry);
-		if (!framePosition) {
+
+		const parentItemPosition = getItemPosition(
+			parentItem.position,
+			parentItem.geometry,
+		);
+		if (!parentItemPosition) {
 			console.error("Unable to find frame position");
 			return null;
 		}
 
 		return {
-			x: x - width / 2 + framePosition.x,
-			y: y - height / 2 + framePosition.y,
+			x: x - width / 2 + parentItemPosition.x,
+			y: y - height / 2 + parentItemPosition.y,
 		};
 	};
 
@@ -380,6 +384,7 @@ export const useCopyBoardItems = (
 		geometry: IMiroGeometry,
 		itemType: string,
 		shapeType?: string,
+		scale?: number,
 	): { width: number; height: number } => {
 		const { width, height } = geometry;
 
@@ -399,6 +404,13 @@ export const useCopyBoardItems = (
 			height: 1,
 		};
 
+		if (scale) {
+			return {
+				width: (width / initialGeometry.width) * scale,
+				height: (height / initialGeometry.height) * scale,
+			};
+		}
+
 		return {
 			width: width / initialGeometry.width,
 			height: height / initialGeometry.height,
@@ -417,6 +429,7 @@ export const useCopyBoardItems = (
 			geometry,
 			miroItem.type,
 			shapeType,
+			scale,
 		);
 
 		if (item.itemType === "RichText") {
@@ -518,7 +531,6 @@ export const useCopyBoardItems = (
 		}
 
 		const shapePosition = getItemPosition(position, geometry, parent);
-
 		const miroShapeType = data?.shape ?? "rectangle";
 		const shapeType = SHAPE_TYPES[miroShapeType];
 
@@ -654,24 +666,31 @@ export const useCopyBoardItems = (
 
 		await prepareImage(imgBase64)
 			.then(imageData => {
+				// remove placeholder
+				const placeholder = board.items.getById(boardMiroId[id]);
+				if(placeholder) {
+					board.remove(placeholder);
+				}
+
 				const imgItem = new ImageItem(imageData, board).setId(id);
 
-				// Calculate scale based on the desired geometry and the actual image dimensions
-				const scaleX = geometry.width / imageData.imageDimension.width;
-				const scaleY =
-					geometry.height / imageData.imageDimension.height;
-				const scale = Math.min(scaleX, scaleY); // Use the smaller scale to maintain aspect ratio
+				const transformedGeometry = {
+					width: geometry.width * data.scale,
+					height: geometry.height * data.scale,
+				};
 
-				const imgPosition = getItemPosition(position, geometry, parent);
-
+				const imgPosition = getItemPosition(
+					position,
+					transformedGeometry,
+					parent,
+				);
 				imgPosition &&
 					imgItem.transformation.translateTo(
 						imgPosition.x,
 						imgPosition.y,
 					);
 
-				// Use a single scale value to maintain aspect ratio
-				imgItem.transformation.scaleTo(scale, scale);
+				imgItem.transformation.scaleBy(data.scale, data.scale);
 
 				board.add(imgItem);
 				setBoardMiroId(id);
@@ -682,6 +701,41 @@ export const useCopyBoardItems = (
 				hideModal?.("loadingNotification");
 				showModal?.("errorNotification");
 			});
+	};
+
+	const addImagePlaceholder = (item: IMiroBoardItemImage) => {
+		const { id, geometry, data, position, parent } = item;
+
+		const placeholder = new Placeholder(
+			undefined,
+			item,
+			item.id,
+			undefined,
+			undefined,
+		);
+
+		const transformedGeometry = {
+			width: geometry.width * data.scale,
+			height: geometry.height * data.scale,
+		};
+
+		const imgPosition = getItemPosition(
+			position,
+			transformedGeometry,
+			parent,
+		);
+		imgPosition &&
+			placeholder.transformation.translateTo(
+				imgPosition.x,
+				imgPosition.y,
+			);
+
+		placeholder.transformation.scaleTo(
+			transformedGeometry.width / 100,
+			transformedGeometry.height / 100,
+		);
+		board.add<Placeholder>(placeholder);
+		setBoardMiroId(id);
 	};
 
 	const getConnectorPoint = (
@@ -863,7 +917,6 @@ export const useCopyBoardItems = (
 		setTransformation(frame, item);
 
 		board.add(frame);
-
 		setBoardMiroId(id);
 	};
 
@@ -877,11 +930,10 @@ export const useCopyBoardItems = (
 	};
 
 	const copyPaint = (item: IMiroBoardItemPaint): void => {
-		if (!item.data) {
+		const { style, data, id } = item;
+		if (!data) {
 			return;
 		}
-
-		const { style, data, id } = item;
 
 		const drawing = new Drawing([]);
 		data.points.forEach(point =>
@@ -960,11 +1012,13 @@ export const useCopyBoardItems = (
 
 		showModal?.("loadingNotification");
 
+		miroBoardItems
+			.filter(item => item.type === MiroBoardItemTypes.IMAGE)
+			.forEach(item => addImagePlaceholder(item));
+
 		for (const [index, item] of miroBoardItems.entries()) {
 			const type = item.type as MiroItemsTypes;
-			setModalData?.(
-				Math.floor(50 + ((index / miroBoardItems.length) * 100) / 2),
-			);
+			setModalData?.(Math.floor((index / miroBoardItems.length) * 100));
 
 			if (withoutImgs && type === MiroBoardItemTypes.IMAGE) {
 				continue;

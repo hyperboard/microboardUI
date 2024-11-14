@@ -480,6 +480,7 @@ export const transformImage = (
 			imageUrl: `https://api.miro.com/v2/boards/${boardId}/resources/images/${
 				json.resource?.id || 0
 			}?format=preview&redirect=false`,
+			scale: json.scale.scale,
 		},
 		style: {
 			borderColor: getColor(style.brc),
@@ -590,7 +591,7 @@ const transformDrawing = (
 		},
 		data: {
 			points: json.points,
-			scale: json.scale,
+			scale: json.scale.scale,
 		},
 		position: {
 			x: json._parent ? offsetX : offsetX + cursorPosition.x,
@@ -600,6 +601,7 @@ const transformDrawing = (
 				? MiroRelativeTo.frame
 				: MiroRelativeTo.board,
 		},
+		relativeScale: json.relativeScale
 	};
 
 	if (json._parent) {
@@ -735,7 +737,6 @@ export const pasteMiroClipboard = (board: Board, clipboardJson: any): any => {
 		if (transformedItem) {
 			acc.push(transformedItem);
 		}
-		setModalData?.(Math.floor(((index / clipboardItems.length) * 100) / 2));
 		return acc;
 	}, [] as IMiroBoardItem[]);
 	const miroConnectors = clipboardItems.reduce((acc, item) => {
