@@ -168,7 +168,8 @@ export function getAuthRouter(
                 await authService.logout(userId);
                 res.clearCookie(REFRESH_TOKEN_COOKIE_NAME, {
                     httpOnly: true,
-                    secure: true
+                    secure: true,
+                    sameSite: 'none'
                 })
                 res.json({ message: "User logged out" });
             } catch (err) {

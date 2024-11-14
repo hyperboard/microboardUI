@@ -20,7 +20,6 @@ import { board1eventsJson } from "./events/board1";
 import { board2eventsJson } from "./events/board2";
 import { snapshot1 } from "./events/snapshot1";
 import { and, eq } from "drizzle-orm";
-import "dotenv/config";
 import { snapshot2 } from "./events/snapshot2";
 
 const BOARD_UUID1 = "00000000-0000-0000-0000-000000000001";

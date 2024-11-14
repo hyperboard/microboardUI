@@ -104,6 +104,12 @@ export function getV1Router(
         "font/ttf"
     );
 
+    createFileRoute(router, `${apiBase}/fonts/LabGrotesqueK.ttf`, "./fonts/LabGrotesqueK.ttf", logger, "font/ttf");
+    createFileRoute(router, `${apiBase}/fonts/LabGrotesqueK_Bold.ttf`, "./fonts/LabGrotesqueK_Bold.ttf", logger, "font/ttf");
+    createFileRoute(router, `${apiBase}/fonts/LabGrotesqueK_Italic.ttf`, "./fonts/LabGrotesqueK_Italic.ttf", logger, "font/ttf");
+    createFileRoute(router, `${apiBase}/fonts/LabGrotesqueK_Bold_Italic.ttf`, "./fonts/LabGrotesqueK_Bold_Italic.ttf", logger, "font/ttf");
+
+
     router.get("/api/v1/healthcheck", (req, res) => {
         res.status(200).json({ status: "OK", message: "Server is up and running" });
     });

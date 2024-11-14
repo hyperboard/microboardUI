@@ -1,4 +1,7 @@
 import { getApp } from "./getApp";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 getApp().then((app) => {
     app.listen(process.env.PORT, () => {

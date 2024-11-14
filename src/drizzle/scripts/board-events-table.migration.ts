@@ -131,7 +131,7 @@ async function migrateSingleBoard(client: PoolClient, db: any, tableName: string
     }
 }
 
-async function migrateData() {
+export async function migrateData() {
     const pool = new Pool({
         user: DB_USER || "postgres",
         database: DB_NAME || "postgres",
@@ -226,4 +226,3 @@ async function migrateData() {
     }
 }
 
-migrateData().catch(console.error);

@@ -1,5 +1,4 @@
 import { TriggerClient } from "@trigger.dev/sdk";
-import "dotenv/config";
 
 export const client = new TriggerClient({
     id: process.env.TRIGGER_PROJECT_ID!,

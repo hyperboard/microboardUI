@@ -53,7 +53,7 @@ CREATE SCHEMA public
 Get access to the test_app-1 container bash and run the migration:
 
 ```bash
-`npm run migrate;`
+npm run migrate;
 ```
 
 # Some problems with db filling. 

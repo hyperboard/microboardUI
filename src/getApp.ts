@@ -23,12 +23,19 @@ import { createMiddleware } from "@trigger.dev/express";
 import { client } from "trigger";
 import cors from "cors";
 import { runMigration } from "drizzle/scripts/migrate";
+import { migrateData } from "drizzle/scripts/board-events-table.migration";
 import {Templates} from "./Routes/V1/Templates";
 
 export async function getApp(): Promise<http.Server> {
     const app = express();
 
+    console.log('getApp', process.env);
+
     await runMigration();
+
+    if (process.env.MIGRATE_EVENTS) {
+        await migrateData().catch(console.error);
+    }
 
     app.use(morgan("combined"));
     if (process.env.NODE_ENV !== "production") {
