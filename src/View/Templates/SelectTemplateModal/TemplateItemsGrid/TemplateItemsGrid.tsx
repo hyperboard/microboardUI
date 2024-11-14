@@ -1,4 +1,4 @@
-import React from "react";
+import React, {ReactNode} from "react";
 import styles from "./TemplateItemsGrid.module.css";
 import { TemplateItem } from "./TemplateItem/TemplateItem";
 import clsx from "clsx";
@@ -15,6 +15,15 @@ export const TemplateItemsGrid = ({
 	setPresentedTemplate,
 	className,
 }: TemplateItemsGridProps) => {
+	let placeholders: ReactNode[] | undefined;
+
+	if (templates.length < 3 && templates.length > 0) {
+		placeholders = []
+		for (let i = templates.length; i < 3; i++) {
+			placeholders.push(<div key={i}></div>)
+		}
+	}
+
 	return (
 		<div className={clsx(styles.templatesGrid, className)}>
 			{templates.map(template => (
@@ -24,6 +33,7 @@ export const TemplateItemsGrid = ({
 					setPresentedTemplate={setPresentedTemplate}
 				/>
 			))}
+			{placeholders && placeholders}
 		</div>
 	);
 };
