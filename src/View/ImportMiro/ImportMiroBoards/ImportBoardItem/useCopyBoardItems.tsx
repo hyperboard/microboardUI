@@ -345,6 +345,7 @@ export const useCopyBoardItems = (
 		position: IMiroPosition,
 		geometry: IMiroGeometry,
 		parent?: IMiroParent,
+		scale?: number,
 	): { x: number; y: number } | null => {
 		const { x, y, relativeTo } = position;
 		const { height, width } = geometry;
@@ -365,13 +366,30 @@ export const useCopyBoardItems = (
 			return null;
 		}
 
+		const parentScale =
+			parentItem.type === MiroBoardItemTypes.IMAGE
+				? parentItem.data?.scale
+				: 1;
+
+		const transformedGeometry = {
+			width: parentItem.geometry.width * parentScale,
+			height: parentItem.geometry.height * parentScale,
+		};
+
 		const parentItemPosition = getItemPosition(
 			parentItem.position,
-			parentItem.geometry,
+			transformedGeometry,
 		);
 		if (!parentItemPosition) {
 			console.error("Unable to find frame position");
 			return null;
+		}
+
+		if (scale) {
+			return {
+				x: x / scale - width / 2 + parentItemPosition.x,
+				y: y / scale - height / 2 + parentItemPosition.y,
+			};
 		}
 
 		return {
@@ -458,6 +476,7 @@ export const useCopyBoardItems = (
 			position,
 			{ width, height },
 			parent,
+			scale,
 		);
 
 		itemPosition &&
@@ -480,6 +499,9 @@ export const useCopyBoardItems = (
 			position,
 			miroItem.geometry,
 			parent,
+			miroItem.type === MiroBoardItemTypes.PAINT
+				? miroItem.relativeScale
+				: undefined,
 		);
 
 		if (itemPosition) {
@@ -668,30 +690,39 @@ export const useCopyBoardItems = (
 			.then(imageData => {
 				// remove placeholder
 				const placeholder = board.items.getById(boardMiroId[id]);
-				if(placeholder) {
+				if (placeholder) {
 					board.remove(placeholder);
 				}
 
-				const imgItem = new ImageItem(imageData, board).setId(id);
-
-				const transformedGeometry = {
-					width: geometry.width * data.scale,
-					height: geometry.height * data.scale,
-				};
+				const imgItem = new ImageItem(
+					imageData,
+					board,
+				).setId(id);
 
 				const imgPosition = getItemPosition(
 					position,
-					transformedGeometry,
+					{
+						width: geometry.width  * data.scale,
+						height: geometry.height  * data.scale,
+					},
 					parent,
 				);
+
+				const transformedGeometry = {
+					width: geometry.width / imageData.imageDimension.width * data.scale,
+					height: geometry.height / imageData.imageDimension.height * data.scale,
+				};
+
 				imgPosition &&
 					imgItem.transformation.translateTo(
 						imgPosition.x,
 						imgPosition.y,
 					);
 
-				imgItem.transformation.scaleBy(data.scale, data.scale);
-
+				imgItem.transformation.scaleBy(
+					transformedGeometry.width,
+					transformedGeometry.height,
+				);
 				board.add(imgItem);
 				setBoardMiroId(id);
 			})
@@ -703,7 +734,7 @@ export const useCopyBoardItems = (
 			});
 	};
 
-	const addImagePlaceholder = (item: IMiroBoardItemImage) => {
+	const addImagePlaceholder = (item: IMiroBoardItemImage): void => {
 		const { id, geometry, data, position, parent } = item;
 
 		const placeholder = new Placeholder(
@@ -730,7 +761,7 @@ export const useCopyBoardItems = (
 				imgPosition.y,
 			);
 
-		placeholder.transformation.scaleTo(
+		placeholder.transformation.scaleBy(
 			transformedGeometry.width / 100,
 			transformedGeometry.height / 100,
 		);
@@ -936,13 +967,15 @@ export const useCopyBoardItems = (
 		}
 
 		const drawing = new Drawing([]);
+		INITIAL_GEOMETRY.paint.width = 1000;
+		INITIAL_GEOMETRY.paint.height = 1000;
+
 		data.points.forEach(point =>
 			drawing.addPoint(new Point(point.x, point.y)),
 		);
-		INITIAL_GEOMETRY.paint.width = data.scale * 100;
-		INITIAL_GEOMETRY.paint.height = data.scale * 100;
 		setTransformation(drawing, item);
 
+		drawing.transformation.scaleTo(data.scale, data.scale);
 		drawing.setStrokeColor(style.color);
 		drawing.setStrokeWidth(Number(style.strokeWidth));
 		drawing.setStrokeOpacity(style.strokeOpacity || 1);
