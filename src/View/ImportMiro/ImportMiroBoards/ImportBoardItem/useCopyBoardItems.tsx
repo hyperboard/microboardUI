@@ -1080,8 +1080,10 @@ export const useCopyBoardItems = (
 				: "successNotification",
 		);
 
-		searchParams.delete("clipboard");
 		localStorage.removeItem("miroItems");
+		const url = new URL(window.location.href);
+		url.searchParams.delete("clipboard");
+    window.history.replaceState({}, document.title, url);
 	};
 
 	const copyItems = async (): Promise<void> => {
