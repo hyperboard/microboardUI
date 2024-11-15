@@ -30,7 +30,7 @@ export async function getApp(): Promise<http.Server> {
 
     await runMigration();
     
-    if (process.env.MIGRATE_EVENTS) {
+    if (process.env.MIGRATE_EVENTS === "true") {
         await migrateData().catch(console.error);
     }
 
