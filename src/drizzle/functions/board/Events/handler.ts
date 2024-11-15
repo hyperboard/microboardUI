@@ -101,7 +101,6 @@ export async function getEventsCountSinceLastSnapshot(boardOrLinkUUID: string) {
     FROM event_counts
   `);
 
-    console.log('getEventCountQuery', result.rows[0]);
     const res = result.rows[0]?.event_count;
     return parseInt(res as string);
 }

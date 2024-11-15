@@ -345,8 +345,6 @@ export class Boards {
             const order = result.boardId;
             const event = { order, body: eventBody };
 
-            console.log("event", event);
-
             this.onEventSave(boardId, {
                 type: "BoardEvent",
                 boardId,

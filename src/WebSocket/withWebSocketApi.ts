@@ -185,7 +185,6 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
     async function getEventsSinceLastSnapshot(boardId: string, offset: number): Promise<any[]> {
         const savedEvents = await boards.getBoardEvents(boardId, offset);
         const enqueuedEvents = await eventsManager.getEnqueuedEvents(boardId);
-        console.log('eventsSinceSnapshot', savedEvents, enqueuedEvents)
         return savedEvents.concat(enqueuedEvents);
     }
 
@@ -626,7 +625,6 @@ export class EventsManager {
         let eventCount = this.eventCountSinceLastSnapshot.get(boardUuid);
         if (!eventCount) {
             eventCount = await this.boards.getEventCountSinceLastSnapshot(boardUuid);
-            console.log('getEventCount', eventCount);
             if (!isNaturalNumber(eventCount)) {
                 throw new Error(`Error processing event: board ${boardUuid} not found`);
             }
@@ -739,6 +737,5 @@ export class EventsManager {
 }
 
 function isNaturalNumber(order: number): boolean {
-    console.log('isNatNumber', order);
     return typeof order === "number" && order >= 0 && Number.isInteger(order);
 }
