@@ -122,9 +122,11 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
 
     function handlePingMsg(_msg: PingMsg, ws: WebSocket): void {
         ws.send(
+
             JSON.stringify({
                 type: "ping",
             })
+
         );
     }
 
@@ -183,6 +185,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
     async function getEventsSinceLastSnapshot(boardId: string, offset: number): Promise<any[]> {
         const savedEvents = await boards.getBoardEvents(boardId, offset);
         const enqueuedEvents = await eventsManager.getEnqueuedEvents(boardId);
+        console.log('eventsSinceSnapshot', savedEvents, enqueuedEvents)
         return savedEvents.concat(enqueuedEvents);
     }
 
@@ -217,14 +220,17 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
 
     async function subscribeClientToBoard(ws: WebSocket, boardId: string): Promise<void> {
         const board = await boards.getBoardByLink(boardId);
+        if (!board?.id) {
+            throw new Error(`Board ${boardId} not found`);
+        }
         if (board) {
-            const mapped = boardIdToLinks.get(board.boardId) ?? [];
+            const mapped = boardIdToLinks.get(`${board.id}`) ?? [];
             if (!mapped.includes(boardId)) {
                 mapped.push(boardId);
             }
-            boardIdToLinks.set(board.boardId, mapped);
+            boardIdToLinks.set(`${board.id}`, mapped);
 
-            linkToBoardId.set(boardId, board.boardId);
+            linkToBoardId.set(boardId, `${board.id}`);
         } else {
             const mappedIds = boardIdToLinks.get(boardId);
             if (!mappedIds) {
@@ -249,11 +255,11 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
             sendError(
                 ws,
                 "Unexpected sequence number" +
-                    JSON.stringify({
-                        expectedSequence,
-                        receivedSequence: msg.sequenceNumber,
-                        boardId: msg.boardId,
-                    })
+                JSON.stringify({
+                    expectedSequence,
+                    receivedSequence: msg.sequenceNumber,
+                    boardId: msg.boardId,
+                })
             );
             return;
         }
@@ -294,6 +300,7 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
             const totalLatency = Number(totalEndTime - startTime);
             boardEventTotalLatency.observe(totalLatency);
         } catch (error) {
+            console.log(error);
             return sendError(ws, "Failed to process board event." + JSON.stringify(error));
         }
     }
@@ -520,6 +527,9 @@ export class EventsManager {
     async initialize() {
         try {
             const boardLastOrders = await this.boards.getAllBoardLastEventOrders();
+            if (!boardLastOrders) {
+                throw new Error("Error finding last event orders");
+            }
             for (const { board_uuid, edit_link_uuids, last_order } of boardLastOrders) {
                 this.lastEventOrders.set(board_uuid, last_order);
                 this.boardUuidMap.set(board_uuid, board_uuid);
@@ -561,7 +571,7 @@ export class EventsManager {
             if (!details) {
                 throw new Error(`Error processing event: board ${boardId} not found`);
             }
-            boardUuid = details.uniq_id;
+            boardUuid = details.boardId;
             this.boardUuidMap.set(boardId, boardUuid);
         }
         return boardUuid;
@@ -616,6 +626,7 @@ export class EventsManager {
         let eventCount = this.eventCountSinceLastSnapshot.get(boardUuid);
         if (!eventCount) {
             eventCount = await this.boards.getEventCountSinceLastSnapshot(boardUuid);
+            console.log('getEventCount', eventCount);
             if (!isNaturalNumber(eventCount)) {
                 throw new Error(`Error processing event: board ${boardUuid} not found`);
             }
@@ -720,7 +731,7 @@ export class EventsManager {
         return events;
     }
 
-    requestSnapshotCallback(boardId: string, sinceLast: number): void {}
+    requestSnapshotCallback(boardId: string, sinceLast: number): void { }
 
     isBoardReady(boardId: string): boolean {
         return !this.processing.includes(boardId);
@@ -728,5 +739,6 @@ export class EventsManager {
 }
 
 function isNaturalNumber(order: number): boolean {
+    console.log('isNatNumber', order);
     return typeof order === "number" && order >= 0 && Number.isInteger(order);
 }

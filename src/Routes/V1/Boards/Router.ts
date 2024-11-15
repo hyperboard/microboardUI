@@ -115,24 +115,24 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
                 const boardsData = await boards.getBoards(+req.token.sub);
                 return res.status(200).json({
                     author: boardsData.author.map((b) => ({
-                        id: b.uniq_id,
-                        title: b.boardname,
-                        isPublic: b.is_public,
+                        id: b.uniqId,
+                        title: b.title,
+                        isPublic: b.isPublic,
                     })),
                     canView: boardsData.canView.map((b) => ({
-                        id: b.uniq_id,
+                        id: b.uniqId,
                         title: b.boardname,
-                        isPublic: b.is_public,
+                        isPublic: b.isPublic,
                     })),
                     canEdit: boardsData.canEdit.map((b) => ({
-                        id: b.uniq_id,
-                        title: b.boardname,
-                        isPublic: b.is_public,
+                        id: b.boardUUID,
+                        title: b.title,
+                        isPublic: b.isPublic,
                     })),
                     shared: boardsData.shared.map((b) => ({
                         id: b.id,
                         title: b.boardname,
-                        isPublic: b.is_public,
+                        isPublic: b.isPublic,
                     })),
                 });
             } catch (err) {
@@ -144,8 +144,8 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
 
     // Getting board details
     router.get(
-        "/boards/:boardId/details",
-        param("boardId").isUUID(),
+        "/boards/:boardLinkUUID/details",
+        param("boardLinkUUID").isUUID(),
         catchAsync(async (req: Request, res: Response) => {
             try {
                 const errors = validationResult(req);
@@ -153,17 +153,17 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
                     return res.status(400).json({ errors: errors.array() });
                 }
 
-                const boardId = req.params.boardId;
+                const boardLinkUUID = req.params.boardLinkUUID;
 
-                const boardDetails = await boards.getBoardDetails(boardId);
+                const boardDetails = await boards.getBoardDetails(boardLinkUUID);
 
                 if (!boardDetails) {
                     return res.status(404).json({ message: "Board not found" });
                 }
 
                 return res.status(200).json({
-                    id: boardId,
-                    title: boardDetails.boardname,
+                    id: boardLinkUUID,
+                    title: boardDetails.title,
                     isPublic: boardDetails.is_public,
                 });
             } catch (err) {
@@ -172,34 +172,6 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
             }
         }, logger)
     );
-
-    if (process.env.IS_PUBLIC_BOARDS_ENABLED) {
-        // Creating a new public board
-        router.post(
-            "/public-boards",
-            body("title").optional().isString(),
-            catchAsync(async (req: Request, res: Response) => {
-                try {
-                    const boardId = uuidv4();
-                    const editLink = uuidv4();
-
-                    const title: string = req.body.title || `${editLink}`;
-                    const publicBoard = (await boards.createBoard(title, undefined, true)) as AnonymousBoard;
-                    await boards.createLink(boardId, "edit", editLink);
-
-                    return res.status(201).json({
-                        boardId: boardId,
-                        linkId: editLink,
-                        linkUri: `/boards/${editLink}`,
-                        authorKey: publicBoard.author_key,
-                    });
-                } catch (err) {
-                    logger.error(err);
-                    return internalError(res, err);
-                }
-            }, logger)
-        );
-    }
 
     router.post(
         "/boards/claim",
@@ -288,7 +260,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
             } catch (err) {
                 console.error(err);
                 logger.error(`Error removing visited link: ${err}`);
-                return internalError(res, err);
+                return res.status(500).send("Server error");
             }
         }, logger)
     );
@@ -316,7 +288,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
                 return res.status(204).send();
             } catch (err) {
                 logger.error(err);
-                return internalError(res, err);
+                return res.status(500).send("Server error");
             }
         }, logger)
     );

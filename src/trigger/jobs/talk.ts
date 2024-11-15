@@ -1,5 +1,4 @@
 import { invokeTrigger, IO } from "@trigger.dev/sdk";
-import { getDatabase } from "Database";
 import { Boards } from "Routes/V1/Boards";
 import { s3 } from "s3";
 import { client } from "trigger";
@@ -110,7 +109,6 @@ export const talkIntegrationJob = client.defineJob({
 
         try {
             const winstonLogger = createLogger();
-            const database = await getDatabase(winstonLogger);
             const newBoardId = v4();
 
             const talktaskJsonTask = await io.try(
@@ -354,7 +352,7 @@ export const talkIntegrationJob = client.defineJob({
                 date: new Date().toISOString(),
             });
 
-            const boards = new Boards(database, winstonLogger);
+            const boards = new Boards(winstonLogger);
             const createdBoard = await boards.saveBoardData(transformedBoard);
 
             if (createdBoard) {

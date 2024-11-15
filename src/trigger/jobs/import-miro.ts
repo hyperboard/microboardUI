@@ -2,7 +2,6 @@ import { invokeTrigger } from "@trigger.dev/sdk";
 import { z } from "zod";
 import { Boards } from "../../Routes/V1/Boards";
 import { client } from "..";
-import { getDatabase } from "../../Database";
 import { createLogger } from "winston";
 import { Board, MiroApi } from "@mirohq/miro-api";
 import { BUCKET_NAME, minioClient } from "Routes/V1/Media/MinioClient";
@@ -33,7 +32,6 @@ export const importMiroBoard = client.defineJob({
         const { boardId, accessToken, userId } = payload;
         try {
             const winstonLogger = createLogger();
-            const database = await getDatabase(winstonLogger);
             const miroApi = new MiroApi(accessToken);
             await io.logger.info(`Starting import job for Miro board: ${boardId}`);
 
@@ -159,7 +157,7 @@ export const importMiroBoard = client.defineJob({
                 transformedBoard: transformedBoardTask.data,
             });
 
-            const boards = new Boards(database, winstonLogger);
+            const boards = new Boards(winstonLogger);
             const savedBoard = await boards.saveBoardData(transformedBoardTask.data);
 
             await io.logger.info(`Saved board: `, {
@@ -242,7 +240,7 @@ export const importMiroBoard = client.defineJob({
                 error,
             });
 
-            throw error;
+            // throw error;
         }
     },
 });

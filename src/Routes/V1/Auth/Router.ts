@@ -232,11 +232,7 @@ export function getAuthRouter(
             }
 
             try {
-                const result = await authService.changePassword(
-                    userId,
-                    oldPassword,
-                    newPassword
-                );
+                const result = await authService.changePassword(userId, oldPassword, newPassword);
 
                 return res.status(HttpStatus.OK).json({
                     status: HttpStatus.OK,
@@ -251,11 +247,7 @@ export function getAuthRouter(
     return router;
 }
 
-function validateRequest(
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-) {
+function validateRequest(req: express.Request, res: express.Response, next: express.NextFunction) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(HttpStatus.BAD_REQUEST).json({
@@ -266,11 +258,7 @@ function validateRequest(
     next();
 }
 
-function handleError(
-    res: express.Response,
-    error: any,
-    defaultStatus = HttpStatus.INTERNAL_SERVER_ERROR
-) {
+function handleError(res: express.Response, error: any, defaultStatus = HttpStatus.INTERNAL_SERVER_ERROR) {
     const status = error.status || defaultStatus;
 
     return res.status(status).json({
