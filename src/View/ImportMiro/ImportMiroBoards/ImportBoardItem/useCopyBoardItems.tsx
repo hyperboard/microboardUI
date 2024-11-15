@@ -476,7 +476,6 @@ export const useCopyBoardItems = (
 			position,
 			{ width, height },
 			parent,
-			scale,
 		);
 
 		itemPosition &&
