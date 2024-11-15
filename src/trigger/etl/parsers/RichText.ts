@@ -275,7 +275,7 @@ export const parseText = (payload: TextPayload): Array<any | null> => {
         copiedItem.geometry!.width = calculatedWidth;
     }
 
-    const pos = getItemPosition(copiedItem, parent);
+    const pos = getItemPosition(copiedItem as TextItem, parent);
 
     const event = {
         userId: userId,
@@ -364,7 +364,7 @@ export const parseTextFromSticker = (sticker: StickyNoteItem): TextToInject => {
 
     return {
         rawHtml: sticker.data?.content!,
-        text: html.text(),
+        text: (html as any)?.text() || "",
         maxHeight: maxHeight,
         fontSize: 14,
         fontColor: fontColor || "black",

@@ -1,3 +1,4 @@
+import * as Drizzle from "drizzle";
 import winston from "winston";
 import { decode, verify } from "jsonwebtoken";
 import * as bcrypt from "bcryptjs";
@@ -6,103 +7,52 @@ import { HttpStatus } from "shared/enums/http-status.enum";
 import { Config } from "shared/config/config";
 import { Mailer } from "shared/modules/mailer/mailer";
 import { AuthHelper } from "./AuthHelper";
-import { Pool } from "pg";
 import { AccessToken } from "Interface";
-import { Permissions } from "./types";
+import {
+    LoginPayload,
+    Permissions,
+    RefreshPayload,
+    RegisterPayload,
+    ResendEmailPayload,
+    VerifyEmailPayload,
+} from "./types";
 import { verifyToken } from "Tokens";
 import * as crypto from "crypto";
-import { getBoardIds } from "Database";
 // import { publicKey } from "shared/config/keys";
-
-type RegisterPayload = {
-    email: string;
-    password: string;
-};
-
-type LoginPayload = {
-    email: string;
-    password: string;
-};
-
-type RefreshPayload = {
-    refreshToken: string;
-};
-
-type VerifyEmailPayload = {
-    passcode: string;
-    email: string;
-};
-
-type ResendEmailPayload = {
-    email: string;
-};
 
 export class Auth {
     private authHelper: AuthHelper;
 
-    constructor(
-        private database: Pool,
-        private logger: winston.Logger,
-        private config: Config,
-        private mailer: Mailer
-    ) {
+    constructor(private logger: winston.Logger, private config: Config, private mailer: Mailer) {
         this.authHelper = new AuthHelper(this.config);
     }
 
-    async login(payload: LoginPayload): Promise<{
-        accessToken: string;
-        refreshToken: string;
-    } | null> {
-        const user = await this.database.query<{
-            id: number;
-            email: string;
-            password: string;
-            activated: boolean;
-        }>(
-            `
-                select users.id               as id,
-                       users.email            as email,
-                       users.activated        as activated,
-                       user_password.password as password
-                from users
-                         left join user_password on users.id = user_password.user_id
-                where email = $1
-            `,
-            [payload.email]
-        );
+    async login(payload: LoginPayload): Promise<{ accessToken: string; refreshToken: string } | null> {
+        const user = await Drizzle.getUserAuthInfo(payload.email);
 
-        if (!user.rows[0]) {
+        if (!user) {
             throw new HttpException(HttpStatus.NOT_FOUND, "Invalid email or password");
         }
 
-        const isValidPassword = await bcrypt.compare(payload.password, user.rows[0].password);
+        if (!user.activated) {
+            throw new HttpException(HttpStatus.UNAUTHORIZED, "User not activated");
+        }
+
+        this.logger.log("info", user.password!, payload.password);
+        const isValidPassword = await bcrypt.compare(payload.password, user.password!);
 
         if (!isValidPassword) {
             throw new HttpException(HttpStatus.NOT_FOUND, "Invalid email or password");
         }
 
-        if (!user.rows[0].activated) {
-            throw new HttpException(HttpStatus.UNAUTHORIZED, "User not activated");
-        }
+        const permissions = await this.getPermissions(user.id);
 
-        const permissions = await this.getPermissions(user.rows[0].id);
-
-        const { accessToken, refreshToken } = await this.authHelper.generateTokens(user.rows[0].id, { ...permissions });
+        const { accessToken, refreshToken } = await this.authHelper.generateTokens(user.id, { ...permissions });
 
         const salt = await bcrypt.genSalt(10);
         const refreshTokenHash = await bcrypt.hash(refreshToken, salt);
 
-        try {
-            await this.database.query(
-                `
-                select save_token($1, $2)
-                `,
-                [user.rows[0].id, refreshTokenHash]
-            );
-        } catch (e) {
-            this.logger.error(`save_token error: ${e}`);
-            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred when saving refresh token");
-        }
+        this.trySaveToken(user.id, refreshTokenHash);
 
         return {
             accessToken,
@@ -111,35 +61,20 @@ export class Auth {
     }
 
     async register(payload: RegisterPayload): Promise<{ email: string; id: number } | null> {
-        const user = await this.database.query<{ email: string; id: number }>(
-            "select email, id from users where email = $1",
-            [payload.email]
-        );
+        const user = await Drizzle.getUserByEmail(payload.email);
 
-        const existedUser = user.rows[0];
-
-        if (existedUser) {
+        if (user) {
             throw new HttpException(HttpStatus.CONFLICT, "User already exists");
         }
 
         try {
-            await this.database.query("select add_user($1)", [payload.email]);
+            await Drizzle.addUser(payload.email);
         } catch (e) {
             this.logger.error(`add_user error: ${e}`);
             throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred when creating new user");
         }
 
-        const createdUser = await this.database.query<{
-            id: number;
-            email: string;
-        }>(
-            `
-                select id, email
-                from users
-                where email = $1
-            `,
-            [payload.email]
-        );
+        const createdUser = await Drizzle.getUserByEmail(payload.email);
 
         if (!createdUser) {
             throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred when creating new user");
@@ -149,7 +84,7 @@ export class Auth {
         const password = await bcrypt.hash(payload.password, salt);
 
         try {
-            await this.database.query("select add_password($1, $2)", [createdUser.rows[0].id, password]);
+            await Drizzle.addPassword(createdUser.userId, password);
         } catch (e) {
             this.logger.error(`add_user_password error: ${e}`);
             throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred when setting new user password");
@@ -158,31 +93,26 @@ export class Auth {
         const passcode = this.authHelper.generatePasscode();
 
         try {
-            await this.database.query(
-                `
-            select add_passcode($1, $2)
-            `,
-                [createdUser.rows[0].id, passcode]
-            );
+            await Drizzle.addPasscode(createdUser.userId, passcode);
         } catch (e) {
             this.logger.error(`add_user_passcode error: ${e}`);
             throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred when setting new user passcode");
         }
 
         try {
-            await this.mailer.sendMail(createdUser.rows[0].email, "Confirm Your Email Address", {
+            await this.mailer.sendMail(createdUser.userEmail!, "Confirm Your Email Address", {
                 template: "verify-email",
                 context: {
                     passcode: encodeURIComponent(passcode),
-                    userId: encodeURIComponent(createdUser.rows[0].id),
-                    email: encodeURIComponent(createdUser.rows[0].email),
+                    userId: encodeURIComponent(createdUser.userId),
+                    email: encodeURIComponent(createdUser.userEmail!),
                 },
             });
         } catch (e) {
             this.logger.error(`sendMail error: ${e}`);
         }
 
-        return createdUser.rows[0];
+        return { id: createdUser.userId, email: createdUser.userEmail! };
     }
 
     async refresh(payload: RefreshPayload): Promise<{
@@ -190,19 +120,9 @@ export class Auth {
         refreshToken: string;
     } | null> {
         const claims: AccessToken = decode(payload.refreshToken) as AccessToken;
+        const savedRefreshTokenHash = await Drizzle.getRefreshToken(+claims.sub);
 
-        const savedRefreshTokenHash = await this.database.query<{
-            refresh_token: string;
-        }>(
-            `
-                select refresh_token
-                from users
-                where id = $1
-            `,
-            [claims.sub]
-        );
-
-        if (!savedRefreshTokenHash.rows[0]) {
+        if (!savedRefreshTokenHash) {
             throw new HttpException(HttpStatus.UNAUTHORIZED, "Refresh token is invalid or expired");
         }
 
@@ -210,16 +130,13 @@ export class Auth {
         but refresh token in DB updates every time so
         I expect: false with the same token in Auth header
         when it send more then once */
-        const isRefreshTokensEqual = await bcrypt.compare(
-            payload.refreshToken,
-            savedRefreshTokenHash.rows[0].refresh_token
-        );
+        const isRefreshTokensEqual = await bcrypt.compare(payload.refreshToken, savedRefreshTokenHash);
 
         if (!isRefreshTokensEqual) {
             throw new HttpException(HttpStatus.UNAUTHORIZED, "Refresh token is invalid or expired");
         }
 
-        const verifiedUser = verifyToken(payload.refreshToken, 'refresh');
+        const verifiedUser = verifyToken(payload.refreshToken, "refresh");
 
         if (!verifiedUser) {
             throw new HttpException(HttpStatus.UNAUTHORIZED, "Refresh token is invalid or expired");
@@ -236,17 +153,7 @@ export class Auth {
         const salt = await bcrypt.genSalt(10);
         const refreshTokenHash = await bcrypt.hash(refreshToken, salt);
 
-        try {
-            await this.database.query(
-                `
-                select save_token($1, $2)
-                `,
-                [claims.sub, refreshTokenHash]
-            );
-        } catch (e) {
-            this.logger.error(`save_token error: ${e}`);
-            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred when saving refresh token");
-        }
+        this.trySaveToken(+claims.sub, refreshTokenHash);
 
         return {
             accessToken,
@@ -254,55 +161,42 @@ export class Auth {
         };
     }
 
-    async verifyEmail(payload: VerifyEmailPayload) {
-        const user = await this.database.query(`select id from users where email = $1`, [payload.email]);
+    async verifyEmail(payload: VerifyEmailPayload): Promise<any> {
+        const { userId } = await Drizzle.getUserByEmail(payload.email);
 
-        const userId = user?.rows[0]?.id;
         if (!userId) {
             throw new HttpException(HttpStatus.NOT_FOUND, "User not found");
         }
 
-        const checkPasscode = await this.database.query(`select check_passcode($1, $2)`, [payload.passcode, userId]);
+        const checkPasscode = await Drizzle.checkPasscode(payload.passcode, userId);
+        const lastPasscode = await Drizzle.getLastPasscode(userId);
 
-        const lastPasscode = await this.database.query(
-            `select * from user_passcode where user_id = $1 order by created desc limit 1`,
-            [userId]
-        );
-        if (lastPasscode.rows.length === 0) {
+        if (!lastPasscode) {
             throw new HttpException(HttpStatus.UNAUTHORIZED, "Passcode not found");
         }
 
         const HOURS_24 = 24 * 60 * 60 * 1000;
-        if (lastPasscode.rows[0].created < Date.now() - HOURS_24) {
+
+        if (+lastPasscode.created! < Date.now() - HOURS_24) {
             throw new HttpException(HttpStatus.UNAUTHORIZED, "Passcode expired");
         }
-        if (lastPasscode.rows[0].remaining_attempts <= 0) {
+        if (+lastPasscode.remainingAttempts <= 0) {
             throw new HttpException(HttpStatus.UNAUTHORIZED, "PASSCODE_ATTEMPTS_EXCEEDED");
         }
 
-        if (!checkPasscode.rows[0].check_passcode) {
+        if (!checkPasscode) {
             throw new HttpException(HttpStatus.UNAUTHORIZED, "Invalid passcode");
         }
 
-        const updateUser = await this.database.query<{
-            id: number;
-            email: string;
-        }>(
-            `
-            update users
-            set activated = true
-            where id = $1 returning id, email
-        `,
-            [userId]
-        );
+        const updateUser = await Drizzle.updateUserActiveStatus(userId);
 
         if (!updateUser) {
             throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred when activating user");
         }
 
-        const permissions = await this.getPermissions(updateUser.rows[0].id);
+        const permissions = await this.getPermissions(updateUser.userId);
 
-        const tokens = await this.authHelper.generateTokens(updateUser.rows[0].id, {
+        const tokens = await this.authHelper.generateTokens(updateUser.userId, {
             owns: { ...permissions.owns },
             edits: { ...permissions.edits },
             reads: { ...permissions.reads },
@@ -311,122 +205,177 @@ export class Auth {
         const salt = await bcrypt.genSalt(10);
         const refreshTokenHash = await bcrypt.hash(tokens.refreshToken, salt);
 
-        try {
-            await this.database.query(
-                `
-                select save_token($1, $2)
-                `,
-                [updateUser.rows[0].id, refreshTokenHash]
-            );
-        } catch (e) {
-            this.logger.error(`save_token error: ${e}`);
-            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred when saving refresh token");
-        }
+        this.trySaveToken(updateUser.userId, refreshTokenHash);
 
         return tokens;
     }
 
     async checkVerificationCodes({ email }: { email: string }): Promise<string> {
-        const user = await this.database.query(`select id from users where email = $1`, [email]);
-        const userId = user?.rows[0]?.id;
-        if (!userId) {
+        const user = await Drizzle.getUserByEmail(email);
+
+        if (!user) {
             throw new HttpException(HttpStatus.NOT_FOUND, "User not found");
         }
 
-        if (user.rows[0].activated) {
-            return "USER_ALREADY_ACTIVATED";
-        }
-
-        const lastPasscode = await this.database.query(
-            `select * from user_passcode where user_id = $1 order by created desc limit 1`,
-            [userId]
-        );
+        const passcode = this.authHelper.generatePasscode();
+        const lastPasscode = await Drizzle.getLastPasscode(user.userId);
 
         const HOURS_24 = 24 * 60 * 60 * 1000;
-        const passcode = this.authHelper.generatePasscode();
-        if (lastPasscode.rows.length > 0 && lastPasscode.rows[0].created < Date.now() - HOURS_24) {
-            await this.database.query(
-                `
-            select add_passcode($1, $2)
-            `,
-                [userId, passcode]
-            );
 
-            try {
-                await this.mailer.sendMail(email, "Confirm Your Email Address", {
-                    template: "verify-email",
-                    context: {
-                        passcode: passcode,
-                        userId: "" + userId,
-                        email: email,
-                    },
-                });
-
-                return "PASSCODE_SENDED";
-            } catch (e) {
-                this.logger.error(`sendMail error: ${e}`);
-                throw new HttpException(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Error occurred when sending verification email"
-                );
-            }
+        if (lastPasscode && +lastPasscode.created! < Date.now() - HOURS_24) {
+            await Drizzle.addPasscode(user.userId, passcode);
         }
-        return `PASSCODE_NOT_SENDED: ${lastPasscode.rows[0].created - (Date.now() - 3 * 60 * 1000)}`;
+
+        return await this.trySendVerifyMail(user.userId, email, passcode);
     }
 
     async resendEmail(payload: ResendEmailPayload): Promise<any> {
-        const user = await this.database.query(`select id from users where email = $1`, [payload.email]);
-        const userId = user?.rows[0]?.id;
+        const { userId } = await Drizzle.getUserByEmail(payload.email);
+
         if (!userId) {
             throw new HttpException(HttpStatus.NOT_FOUND, "User not found");
         }
-        const passcode = this.authHelper.generatePasscode();
-        const lastPasscode = await this.database.query(
-            `select * from user_passcode where user_id = $1 order by created desc limit 1`,
-            [userId]
-        );
 
-        if (!lastPasscode.rows[0]) {
+        const passcode = this.authHelper.generatePasscode();
+        const lastPasscode = await Drizzle.getLastPasscode(userId);
+
+        if (!lastPasscode) {
             throw new HttpException(HttpStatus.UNAUTHORIZED, "Passcode not found");
         }
 
-        if (lastPasscode.rows.length > 1 && lastPasscode.rows[0].created > Date.now() - 3 * 60 * 1000) {
+        const MINUTES_3 = 3 * 60 * 1000;
+
+        if (lastPasscode && +lastPasscode.created! > Date.now() - MINUTES_3) {
             throw new HttpException(
                 HttpStatus.UNAUTHORIZED,
-                `Can retry after 3 minutes: ${lastPasscode.rows[0].created - (Date.now() - 3 * 60 * 1000)}`
+                `Can retry after 3 minutes: ${+lastPasscode.created! - (Date.now() - MINUTES_3)}`
             );
         }
 
         try {
-            await this.database.query(
-                `
-                select add_passcode($1, $2)
-                `,
-                [userId, passcode]
-            );
+            await Drizzle.addPasscode(userId, passcode);
         } catch (e) {
             this.logger.error(`add_user_passcode error: ${e}`);
             throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred when setting new user passcode");
         }
 
+        return await this.trySendVerifyMail(userId, payload.email, passcode);
+    }
+
+    async logout(userId: number) {
         try {
-            await this.mailer.sendMail(payload.email, "Confirm Your Email Address", {
-                template: "verify-email",
+            await Drizzle.updateRefreshToken(userId);
+        } catch (err) {
+            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred when logging out");
+        }
+
+        return true;
+    }
+
+    async requestPasswordRestoration(email: string): Promise<void> {
+        const user = await Drizzle.getUserByEmail(email);
+
+        if (!user) {
+            throw new HttpException(HttpStatus.NOT_FOUND, "User not found");
+        }
+
+        const token = crypto.randomBytes(32).toString("hex");
+        const HOURS_24 = 24 * 60 * 60 * 1000;
+
+        // 24 hours from now
+        const expirationTime = new Date(Date.now() + HOURS_24).toISOString();
+
+        try {
+            await Drizzle.createPasswordResetRequests(user.userId, `${token}`, new Date(expirationTime));
+        } catch (err) {
+            throw new HttpException(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Error occurred when requesting password restoration"
+            );
+        }
+
+        try {
+            await this.mailer.sendMail(email, "Password Reset Request", {
+                template: "restore-password",
                 context: {
-                    passcode: passcode,
-                    userId: "" + userId,
-                    email: payload.email,
+                    token: token,
                 },
             });
         } catch (e) {
             this.logger.error(`sendMail error: ${e}`);
-            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred when sending verification email");
+        }
+    }
+
+    async restorePassword(token: string, newPassword: string) {
+        const { userId } = await Drizzle.getPasswordResetRequests(token);
+
+        if (!userId) {
+            throw new HttpException(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Error occurred when restoring password: invalid token or expired"
+            );
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = bcrypt.hashSync(newPassword, salt);
+
+        const oldPassword = await Drizzle.getPassword(userId);
+
+        const isSamePassword = await bcrypt.compare(newPassword, oldPassword!);
+
+        if (isSamePassword) {
+            throw new HttpException(HttpStatus.CONFLICT, "New password is the same as the old one");
+        }
+
+        try {
+            await Drizzle.deletePassword(userId);
+            await Drizzle.addPassword(userId, hashedPassword);
+        } catch (e) {
+            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred when restoring password");
+        }
+
+        try {
+            await Drizzle.deletePasswordResetRequests(userId);
+        } catch (error) {
+            this.logger.error(`Error deleting password reset request: ${error}`);
+        }
+    }
+
+    async changePassword(userId: number, oldPassword: string, newPassword: string): Promise<void> {
+        const hashedPassword = await Drizzle.getPassword(userId);
+
+        if (!hashedPassword) {
+            throw new HttpException(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Error occurred when changing password: user not found"
+            );
+        }
+
+        const isSamePassword = await bcrypt.compare(oldPassword, hashedPassword);
+
+        if (!isSamePassword) {
+            throw new HttpException(HttpStatus.UNAUTHORIZED, "Wrong password");
+        }
+
+        const isNewSameAsOld = await bcrypt.compare(newPassword, hashedPassword);
+
+        if (isNewSameAsOld) {
+            throw new HttpException(HttpStatus.CONFLICT, "ERROR_SAME_PASSWORD");
+        }
+
+        const newHash = await bcrypt.hash(newPassword, 10);
+
+        try {
+            await Drizzle.deletePassword(userId!);
+            await Drizzle.addPassword(userId!, newHash);
+        } catch (err) {
+            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred when changing password");
         }
     }
 
     private async getPermissions(userId: number): Promise<Permissions> {
-        const { author, canEdit, canView } = await getBoardIds(this.database, userId + "");
-        // TODO: Уточнить по правам каталога
+        const { author, canEdit, canView } = await Drizzle.getUserBoards(userId);
+
         const permissions: Permissions = {
             owns: {
                 boards: author,
@@ -445,160 +394,30 @@ export class Auth {
         return permissions;
     }
 
-    async logout(userId: number) {
+    private async trySaveToken(userId: number, refreshTokenHash: string) {
         try {
-            await this.database.query(
-                `
-            UPDATE users
-            SET refresh_token = ''
-            WHERE id = $1;
-            `,
-                [userId]
-            );
-        } catch (err) {
-            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred when logging out");
+            await Drizzle.saveToken(userId, refreshTokenHash);
+        } catch (e) {
+            this.logger.error(`save_token error: ${e}`);
+            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred when saving refresh token");
         }
-
-        return true;
     }
 
-    async requestPasswordRestoration(email: string): Promise<void> {
-        const user = await this.database.query(`SELECT id from users where email = $1`, [email]);
-
-        if (!user.rows[0]) {
-            throw new HttpException(HttpStatus.NOT_FOUND, "User not found");
-        }
-
-        const token = crypto.randomBytes(32).toString("hex");
-        const expirationTime = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24 hours from now
-
+    private async trySendVerifyMail(userId: number, userEmail: string, passcode: string) {
         try {
-            await this.database.query(
-                `
-            INSERT INTO password_reset_requests (user_id, token, expiration_time) VALUES ($1, $2, $3)
-            `,
-                [user.rows[0].id, `${token}`, new Date(expirationTime)]
-            );
-        } catch (err) {
-            throw new HttpException(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                "Error occurred when requesting password restoration"
-            );
-        }
-
-        try {
-            await this.mailer.sendMail(email, "Password Reset Request", {
-                template: "restore-password",
+            await this.mailer.sendMail(userEmail, "Confirm Your Email Address", {
+                template: "verify-email",
                 context: {
-                    token: token,
+                    passcode: passcode,
+                    userId: "" + userId,
+                    email: userEmail,
                 },
             });
+
+            return "PASSCODE_SENDED";
         } catch (e) {
             this.logger.error(`sendMail error: ${e}`);
-        }
-
-        return;
-    }
-
-    async restorePassword(token: string, newPassword: string) {
-        const request = await this.database.query(
-            `
-            SELECT * FROM password_reset_requests WHERE expiration_time >= NOW() AND token = $1
-            `,
-            [token]
-        );
-
-        if (!request.rows[0]) {
-            throw new HttpException(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                "Error occurred when restoring password: invalid token or expired"
-            );
-        }
-
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = bcrypt.hashSync(newPassword, salt);
-        const userId = request.rows[0].user_id;
-
-        const oldPassword = await this.database.query(
-            `
-            SELECT password FROM user_password WHERE user_id = $1
-            `,
-            [userId]
-        );
-
-        const isSamePassword = await bcrypt.compare(newPassword, oldPassword.rows[0].password);
-
-        if (isSamePassword) {
-            throw new HttpException(HttpStatus.CONFLICT, "New password is the same as the old one");
-        }
-
-        try {
-            await this.database.query(
-                `
-                DELETE FROM user_password WHERE user_id = $1
-            `,
-                [userId]
-            );
-            await this.database.query(
-                `
-                SELECT add_password($1, $2)
-                `,
-                [userId, hashedPassword]
-            );
-        } catch (e) {
-            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred when restoring password");
-        }
-
-        try {
-            await this.database.query(
-                `
-                DELETE FROM password_reset_requests WHERE user_id = $1
-            `,
-                [userId]
-            );
-        } catch (error) {
-            this.logger.error(`Error deleting password reset request: ${error}`);
-            // throw new HttpException(
-            //     HttpStatus.INTERNAL_SERVER_ERROR,
-            //     "Error occurred when restoring password"
-            // );
-        }
-    }
-
-    async changePassword(userId: number, oldPassword: string, newPassword: string): Promise<void> {
-        const hashedPassword = await this.database.query(
-            `
-            SELECT password FROM user_password WHERE user_id = $1
-            `,
-            [userId]
-        );
-
-        if (!hashedPassword.rows[0]) {
-            throw new HttpException(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                "Error occurred when changing password: user not found"
-            );
-        }
-
-        const isSamePassword = await bcrypt.compare(oldPassword, hashedPassword.rows[0].password);
-
-        if (!isSamePassword) {
-            throw new HttpException(HttpStatus.UNAUTHORIZED, "Wrong password");
-        }
-
-        const isNewSameAsOld = await bcrypt.compare(newPassword, hashedPassword.rows[0].password);
-
-        if (isNewSameAsOld) {
-            throw new HttpException(HttpStatus.CONFLICT, "ERROR_SAME_PASSWORD");
-        }
-
-        const newHash = await bcrypt.hash(newPassword, 10);
-
-        try {
-            await this.database.query(`DELETE FROM user_password WHERE user_id = $1`, [userId]);
-            await this.database.query(`SELECT add_password($1, $2)`, [userId, newHash]);
-        } catch (err) {
-            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred when changing password");
+            throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred when sending verification email");
         }
     }
 }

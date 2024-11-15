@@ -62,11 +62,11 @@ export const uploadToTheStorage = async (hash: string, dataURL: string): Promise
                 "Content-Type": mimeType,
                 "X-Image-Id": hash,
             },
+            // @ts-ignore
             body: blob,
         });
 
         if (response.status !== 200) {
-            console.error("HTTP status:", response.status);
             return null;
         }
 
@@ -123,7 +123,7 @@ export async function fetchAndProcessItems(
         let nextLink: string | null = `https://api.miro.com/v2/boards/${boardId}/items?limit=50`;
 
         while (nextLink) {
-            const response = await fetchItemsWithRetry(nextLink, accessToken, io);
+            const response: any = await fetchItemsWithRetry(nextLink, accessToken, io);
             const processedItems = await processItems(response.data, newBoardId, userId, accessToken, io);
             items.push(...processedItems);
             nextLink = response.links.next || null;
@@ -196,7 +196,10 @@ export async function processItems(
     }
 }
 
-export async function processImageItem(item: ImageItem, accessToken: string, io: any): Promise<ImageItem> {
+type ImageWOFunctions = Omit<ImageItem, "update" | "delete" | "updateUsingFile" | "updateUsingUrl"> & {
+    dimensions?: { width: number; height: number } | any;
+};
+export async function processImageItem(item: ImageItem, accessToken: string, io: any): Promise<ImageWOFunctions> {
     try {
         const url = item.data!.imageUrl!.split("?")[0] + "?format=original&redirect=false";
         const img = await fetchImageWithRetry(url, accessToken, io);
@@ -247,7 +250,7 @@ export async function processImageItem(item: ImageItem, accessToken: string, io:
             }
         }
 
-        const copiedItem: any = { ...item };
+        const copiedItem: ImageWOFunctions = { ...item };
         copiedItem.data!.imageUrl! = src;
         copiedItem.dimensions = dimensions;
         return copiedItem;

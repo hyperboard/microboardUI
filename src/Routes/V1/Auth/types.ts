@@ -15,3 +15,26 @@ export interface Permissions {
       groups?: Array<string>;
   };
 }
+
+export type RegisterPayload = {
+    email: string;
+    password: string;
+};
+
+export type LoginPayload = {
+    email: string;
+    password: string;
+};
+
+export type RefreshPayload = {
+    refreshToken: string;
+};
+
+export type VerifyEmailPayload = {
+    passcode: string;
+    email: string;
+};
+
+export type ResendEmailPayload = {
+    email: string;
+};

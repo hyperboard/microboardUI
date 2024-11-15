@@ -1,0 +1,1 @@
+export { addBoardOwner } from './handler';

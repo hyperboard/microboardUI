@@ -193,9 +193,7 @@ interface AuthResendPasscodeReqEmail {
     email: string;
 }
 
-type AuthResendPasscodeReq =
-    | AuthResendPasscodeReqPhone
-    | AuthResendPasscodeReqEmail;
+type AuthResendPasscodeReq = AuthResendPasscodeReqPhone | AuthResendPasscodeReqEmail;
 
 interface AuthLoginReqEmailPassword {
     type: "EmailPassword";
@@ -349,13 +347,13 @@ interface CatalogDeleteElementReq {
     elementId: string;
 }
 
+type CatalogElementsListRes = any; // TODO: make this a proper type
+
 interface CatalogAPI {
     create(req: CatalogCreateReq): Promise<CatalogCreationRes | ErrorRes>;
     delete(req: CatalogDeleteReq): Promise<void | ErrorRes>;
     rename(req: CatalogRenameReq): Promise<void | ErrorRes>;
-    listElements(
-        req: CatalogListElementsReq
-    ): Promise<CatalogElementsListRes | ErrorRes>;
+    listElements(req: CatalogListElementsReq): Promise<CatalogElementsListRes | ErrorRes>;
     addElement(req: CatalogAddElementReq): Promise<void | ErrorRes>;
     deleteElement(req: CatalogDeleteElementReq): Promise<void | ErrorRes>;
 }
