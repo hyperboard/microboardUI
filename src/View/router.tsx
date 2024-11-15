@@ -85,16 +85,16 @@ export function getRender(app: App) {
 				},
 			],
 		},
-		// {
-		// 	path: "/test",
-		// 	element: <ProtectedRoute isPublic={true} />,
-		// 	children: [
-		// 		{
-		// 			path: "",
-		// 			element: <TestComponent />,
-		// 		},
-		// 	],
-		// },
+		{
+			path: "/test",
+			element: <ProtectedRoute isPublic={true} />,
+			children: [
+				{
+					path: "",
+					element: <TestComponent />,
+				},
+			],
+		},
 		{
 			path: "/selectBoard",
 			element: <ProtectedRoute isPublic={true} />,
