@@ -20,6 +20,10 @@ export class SessionStorage {
 		return JSON.parse(item) as T;
 	}
 
+	remove(key: string) {
+		sessionStorage.removeItem(key);
+	}
+
 	setConnectorPointer(
 		type: ConnectorPointerStyle,
 		edge: ConnectorEdge,
