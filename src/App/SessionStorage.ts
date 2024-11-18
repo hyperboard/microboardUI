@@ -188,12 +188,12 @@ import type { StickerData } from "Board/Items/Sticker/StickerOperation";
 
 export class SessionStorage {
 	private set<T>(key: string, value: T) {
-		const boardId = window.app.getBoard().getBoardId();
+		const boardId = window.app ? window.app.getBoard().getBoardId() : "";
 		sessionStorage.setItem(boardId + "_" + key, JSON.stringify(value));
 	}
 
 	private get<T>(key: string) {
-		const boardId = window.app.getBoard().getBoardId();
+		const boardId = window.app ? window.app.getBoard().getBoardId() : "";
 		const item = sessionStorage.getItem(boardId + "_" + key);
 
 		if (!item) {
@@ -204,7 +204,7 @@ export class SessionStorage {
 	}
 
 	remove(key: string) {
-		const boardId = window.app.getBoard().getBoardId();
+		const boardId = window.app ? window.app.getBoard().getBoardId() : "";
 		sessionStorage.removeItem(boardId + "_" + key);
 	}
 
