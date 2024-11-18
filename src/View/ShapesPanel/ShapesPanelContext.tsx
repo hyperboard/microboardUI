@@ -19,8 +19,8 @@ export function useShapesPanelContext(): ShapesPanelContext {
 	return useStrictContext(ShapesPanelContext);
 }
 
-const getInitialShapeCategory = (boardId: string): ShapeCategoryName => {
-	const savedShapeData = tempStorage.getShapeData(boardId);
+const getInitialShapeCategory = (): ShapeCategoryName => {
+	const savedShapeData = tempStorage.getShapeData();
 
 	if (savedShapeData) {
 		const splitted = savedShapeData.shapeType.split("_");
@@ -35,14 +35,13 @@ export function ShapesPanelContextProvider({
 	children,
 }: PropsWithChildren<{}>): JSX.Element {
 	const [isOpen, setIsOpen] = useState(false);
-	const { board } = useAppContext();
 	const [selectedCategory, setSelectedCategory] = useState<ShapeCategoryName>(
-		getInitialShapeCategory(board.getBoardId()),
+		getInitialShapeCategory(),
 	);
 	const location = useLocation();
 
 	useEffect(() => {
-		setSelectedCategory(getInitialShapeCategory(board.getBoardId()));
+		setSelectedCategory(getInitialShapeCategory());
 	}, [location]);
 
 	const closePanel = (): void => {
