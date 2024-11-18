@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import React, { CSSProperties, forwardRef } from "react";
 import style from "./UiButton.module.css";
 import clsx from "clsx";
 
@@ -11,10 +11,12 @@ interface TooltipProps {
 		| "top-left"
 		| "top-right"
 		| "top-center-fixed"
+		| "top-right-fixed"
 		| "bottom"
 		| "bottom-right"
 		| "bottom-left";
 	tooltipAlign?: "center" | "left";
+	inlineStyle?: CSSProperties;
 	borderRadius?: "radiusMd";
 	padding?: "paddingMd";
 	[key: string]: unknown;
@@ -30,6 +32,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
 			hotkey,
 			borderRadius,
 			padding,
+			inlineStyle,
 			...props
 		},
 		ref,
@@ -43,10 +46,13 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
 					[style.topRight]: tooltipPosition === "top-right",
 					[style.topCenterFixed]:
 						tooltipPosition === "top-center-fixed",
+					[style.topRightFixed]:
+						tooltipPosition === "top-right-fixed",
 					[style.bottom]: tooltipPosition === "bottom",
 					[style.bottomRight]: tooltipPosition === "bottom-right",
 					[style.bottomLeft]: tooltipPosition === "bottom-left",
 				})}
+				style={inlineStyle}
 				{...props}
 			>
 				<div

@@ -176,6 +176,12 @@
 	z-index: 100;
 }
 
+.top-right-fixed {
+	position: fixed;
+	/*pass position with inline styles*/
+	z-index: 100;
+}
+
 @media screen and (hover: hover) {
 	button:hover .tip-container {
 		display: flex;
@@ -233,6 +239,12 @@
 	transform: rotate(180deg);
 }
 
+.tip-container.top-right-fixed .tip::before {
+	left: 0.5rem;
+	bottom: -0.6rem;
+	transform: rotate(180deg);
+}
+
 .tip-container.right .tip::before {
 	left: -0.8rem;
 	transform: rotate(-90deg);
@@ -263,6 +275,18 @@
 .tip-container.top-right {
 	bottom: calc(100% + 1.2rem);
 	right: -1rem;
+}
+
+.tip-container.top-left .tip::before {
+	left: 2.5rem;
+	margin-right: -0.7rem;
+	bottom: -0.6rem;
+	transform: rotate(180deg);
+}
+
+.tip-container.top-left {
+	bottom: calc(100% + 1.2rem);
+	left: -1rem;
 }
 
 .tip-container.bottom-right .tip::before {

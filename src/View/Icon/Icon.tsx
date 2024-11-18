@@ -80,7 +80,9 @@ export type IconId =
 	| "BoxedPlus"
 	| "SignIn"
 	| "Info"
-	| "linkTo";
+	| "linkTo"
+	| "StrokeChevronDown"
+	| "StrokeChevronUp";
 
 type Props = {
 	iconName: IconId;

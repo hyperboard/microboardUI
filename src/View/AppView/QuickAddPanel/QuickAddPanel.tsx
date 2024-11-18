@@ -1,6 +1,6 @@
 import React from "react";
 import { Icon, ShapeIcon } from "View/Icon";
-import { SHAPE_TYPES } from "View/Tools/AddShape";
+import { BASIC_SHAPES } from "View/Tools/AddShape";
 import { UiButton } from "View/Ui/UiButton/UiButton";
 import { useAppContext } from "View/AppContext";
 import { useAppSubscription } from "Board/useBoardSubscription";
@@ -9,7 +9,7 @@ import { UiPanel } from "View/Ui/UiPanel";
 import { UiAccordion } from "View/Ui/UiAccordion";
 import { useTranslation } from "react-i18next";
 import style from "./QuickAddPanel.module.css";
-import { ShapeType } from "Board/Items/Shape/Basic";
+import { ShapeType } from "Board/Items/Shape";
 import { quickAddItem } from "Board/Selection/QuickAddButtons";
 import { getHotkeyLabel } from "Board/Keyboard";
 
@@ -94,7 +94,7 @@ export function QuickAddPanel(): React.ReactElement | null {
 					</UiButton>
 				)}
 			>
-				{SHAPE_TYPES.map(shape => (
+				{BASIC_SHAPES.map(shape => (
 					<UiButton
 						id={`quickAdd-${shape}`}
 						onClick={() => handlePick(shape)}

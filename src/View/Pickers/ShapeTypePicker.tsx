@@ -1,27 +1,75 @@
-import { ShapeType } from "Board/Items/Shape/Basic";
-import React from "react";
+import { ShapeType } from "Board/Items/Shape";
+import React, { CSSProperties, useRef, useState } from "react";
 import { ShapeIcon } from "View/Icon";
-import { SHAPE_TYPES } from "View/Tools/AddShape";
+import { ShapeCategoryName, SHAPES_CATEGORIES } from "View/Tools/AddShape";
 import { UiButton } from "View/Ui/UiButton/UiButton";
+import { useTranslation } from "react-i18next";
 
 type Props = {
-	onPick: (type: ShapeType) => void;
+	onPick: (
+		type: ShapeType,
+		category?: ShapeCategoryName,
+		e?: MouseEvent,
+	) => void;
 	selected?: ShapeType | "None";
+	categoryName: ShapeCategoryName;
+	buttonSize?: "lg" | "md" | "sm";
 };
 
-export function ShapePicker({ onPick, selected }: Props): React.ReactElement {
+export function ShapePicker({
+	onPick,
+	selected,
+	categoryName,
+	buttonSize = "md",
+}: Props): React.ReactElement {
+	const [toolTipStyle, setToolTipStyle] = useState<CSSProperties | undefined>(
+		undefined,
+	);
+	const refs = useRef({});
+	const { t } = useTranslation();
+
+	const shapes = SHAPES_CATEGORIES.find(
+		category => category.name === categoryName,
+	)!.shapes as ShapeType[];
+
+	const getToolTipStyle = (shape: ShapeType): CSSProperties => {
+		const { left, top } = refs.current[shape].getBoundingClientRect();
+		return {
+			left: `calc(${left + 24}px - 1rem)`,
+			bottom: `calc(100% - ${top}px + 0.6rem)`,
+		};
+	};
+
+	const setRef = (name: ShapeType) => (el: HTMLButtonElement) => {
+		refs.current[name] = el;
+	};
+
 	return (
 		<>
-			{SHAPE_TYPES.map(shape => (
+			{shapes.map((shape: ShapeType) => (
 				<UiButton
+					ref={setRef(shape)}
+					tooltipPosition={"top-right-fixed"}
+					tooltip={
+						categoryName !== "basicShapes"
+							? t(`shapePicker.${categoryName}.${shape}`)
+							: undefined
+					}
 					id={`shape-${shape}`}
-					onClick={() => onPick(shape)}
+					onClick={e => onPick(shape, categoryName, e)}
 					key={shape}
-					size="md"
+					size={buttonSize}
 					variant="secondary"
 					active={selected === shape}
+					onMouseEnter={() => setToolTipStyle(getToolTipStyle(shape))}
+					toolTipStyle={toolTipStyle}
 				>
-					<ShapeIcon iconName={shape} width={24} height={24} />
+					<ShapeIcon
+						style={{ objectFit: "cover" }}
+						iconName={shape}
+						width={20}
+						height={20}
+					/>
 				</UiButton>
 			))}
 		</>
