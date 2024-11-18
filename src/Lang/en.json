@@ -435,12 +435,12 @@
 		},
 		"authClipboardModal": {
 			"title": "Import Error",
-			"description": "To import the board from Miro, you need to authorize. Please log in to save your progress.",
+			"description": "To import the board from Miro, you need to sign in. Please log in to save your progress.",
 			"authBtn": "Sign In"
 		},
 		"imgAuthClipboardModal": {
 			"title": "You copied the images",
-			"description": "Miro does not allow importing images without authorization. Please sign in to continue.",
+			"description": "Miro does not allow importing images without sign in. Please sign in to continue.",
 			"authBtn": "Sign In",
 			"continueBtn": "Continue without images"
 		},
