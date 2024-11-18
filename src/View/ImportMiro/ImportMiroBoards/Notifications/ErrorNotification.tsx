@@ -17,7 +17,7 @@ export const ErrorNotification = ({
 	setModalOpen,
 }: ErrorNotificationProps): React.ReactElement => {
 	const { t } = useTranslation();
-	const { isModalOpen, hideModal } = useModal();
+	const { isModalOpen, hideModal, data: modalData } = useModal();
 
 	const onClickChooseBoard = (): void => {
 		hideModal("errorNotification");
@@ -48,13 +48,15 @@ export const ErrorNotification = ({
 					>
 						{t("miro.notifications.okBtn")}
 					</Button>
-					<Button
-						pattern="primary"
-						onClick={onClickChooseBoard}
-						className={styles.notificationBtn}
-					>
-						{t("miro.notifications.chooseBoardBtn")}
-					</Button>
+					{modalData !== "clipboard" && (
+						<Button
+							pattern="primary"
+							onClick={onClickChooseBoard}
+							className={styles.notificationBtn}
+						>
+							{t("miro.notifications.chooseBoardBtn")}
+						</Button>
+					)}
 				</div>
 			</div>
 		</Notification>
