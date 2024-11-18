@@ -123,7 +123,30 @@ export function fitOnLeftOrRightOfItem(
 		fit.bottom = view.bottom - offset;
 		fit.top = view.bottom - (offset + height);
 	}
+
 	return fit;
+}
+
+export function fitLinkToBtn(
+	itemMbr: Mbr,
+	view: Mbr,
+	panel: Mbr,
+	verticalOffset = -2,
+	horizontalOffset = -2,
+): Mbr {
+	const panelHeight = panel.getHeight();
+	const newPanel = new Mbr();
+
+	newPanel.top = itemMbr.top - panelHeight - verticalOffset;
+
+	newPanel.top = newPanel.top + panelHeight;
+	newPanel.bottom = newPanel.top + panelHeight * 2;
+
+	const panelWidth = panel.getWidth();
+
+	newPanel.left = itemMbr.right - panelWidth + horizontalOffset;
+
+	return newPanel;
 }
 
 export function fitOnTopOrBottomOfItem(

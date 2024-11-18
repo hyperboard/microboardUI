@@ -1,6 +1,7 @@
 import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
 import { useAppContext } from "View/AppContext";
 import { PanelContext } from "View/ContextPanel/PanelContext";
+import { MiroBoardItemTypes } from "View/ImportMiro/ImportMiroBoards/MiroBoards/MiroBoardsModels";
 import { Tooltip } from "View/Ui/UiButton/Tooltip";
 import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -14,7 +15,12 @@ export function ItemTooltip(): JSX.Element {
 
 	const placeholders = items
 		.getUnderPointer()
-		.filter(item => item.itemType === "Placeholder");
+		.filter(
+			item =>
+				item.itemType === "Placeholder" &&
+				item.getMiroData()?.type !== MiroBoardItemTypes.IMAGE,
+		);
+
 	const mbr = useDomMbr({
 		app,
 		board,
@@ -23,7 +29,7 @@ export function ItemTooltip(): JSX.Element {
 		targetMbr: placeholders[0]?.getMbr(),
 	});
 
-	const toggleMenu = (menu: string) => {
+	const toggleMenu = (menu: string): void => {
 		setOpenedMenu(prev => (prev === menu ? "HoverUnderPointer" : menu));
 	};
 

@@ -10,6 +10,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import style from "./ZoomPanel.module.css";
 import clsx from "clsx";
+import { Mbr } from "Board/Items/Mbr/Mbr";
 
 export function ZoomPanel() {
 	const { app, board } = useAppContext();
@@ -21,9 +22,10 @@ export function ZoomPanel() {
 	const { t } = useTranslation();
 
 	const zoomToFit = (): void => {
-		const items = board.items.listAll();
+		const items = [...board.items.listAll(), ...board.items.listFrames()];
 		if (items.length > 0) {
-			const rect = board.items.getMbr();
+			const rect = new Mbr(1000_000, 1000_000, -1000_000, -1000_000);
+			items.forEach(item => rect.combine([item.getMbr()]));
 			board.camera.zoomToFit(rect);
 		}
 	};

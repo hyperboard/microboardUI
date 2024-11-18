@@ -1,7 +1,8 @@
 {
 	"common": {
 		"and": "and",
-		"backToMain": "Back to main menu"
+		"backToMain": "Back to main menu",
+		"confirm": "Confirm"
 	},
 	"contextPanel": {
 		"connectorAddText": {
@@ -89,15 +90,21 @@
 		"frameColor": {
 			"tooltip": "Frame color"
 		},
-		"copyFrameLink": {
+		"copyItemLink": {
 			"text": "Copy link",
 			"error": {
 				"title": "Copy link error",
-				"description": "An error occurred while copying the frame link"
+				"description": "An error occurred while copying link"
 			},
 			"success": {
 				"description": "Link copied to clipboard"
 			}
+		},
+		"setLinkTo": {
+			"text": "Link to"
+		},
+		"removeLinkTo": {
+			"text": "Remove Link To"
 		},
 		"delete": {
 			"text": "Delete",
@@ -257,6 +264,18 @@
 			"description": "Are you sure you want to delete board",
 			"delete": "Delete",
 			"cancel": "Cancel"
+		}
+	},
+	"modalLinkTo": {
+		"error": "Incorrect link",
+		"title": "Link to Object",
+		"input": "Paste link"
+	},
+	"linkToToast": {
+		"noItem": "The linked item has been deleted from this board",
+		"error": {
+			"title": "Error when following the link",
+			"description": "An error occurred while following the link"
 		}
 	},
 	"modalTemplate": {
@@ -429,12 +448,12 @@
 		},
 		"authClipboardModal": {
 			"title": "Import Error",
-			"description": "To import the board from Miro, you need to authorize. Please log in to save your progress.",
+			"description": "To import the board from Miro, you need to sign in. Please log in to save your progress.",
 			"authBtn": "Sign In"
 		},
 		"imgAuthClipboardModal": {
 			"title": "You copied the images",
-			"description": "Miro does not allow importing images without authorization. Please sign in to continue.",
+			"description": "Miro does not allow importing images without sign in. Please sign in to continue.",
 			"authBtn": "Sign In",
 			"continueBtn": "Continue without images"
 		},
@@ -452,7 +471,9 @@
 	},
 	"notifications": {
 		"connectionLostHeader": "You are offline. Reconnecting...",
-		"connectionReestablished": "Connection restored."
+		"connectionReestablished": "Connection restored.",
+		"restoringConnectionHeader": "Restoring connection.",
+		"restoringConnectionBody": "Do not refresh the page or close the tab to avoid losing your progress"
 	},
 	"landing": {
 		"menu": {

@@ -5,10 +5,17 @@ import { getApiUrl } from "Config";
 import { getWebsocketUrl } from "../Config";
 import { Subject } from "Subject";
 import { Board, BoardSnapshot } from "Board/Board";
-import { BoardEvent, BoardEventPack } from "Board/Events/Events";
+import {
+	BoardEvent,
+	BoardEventPack,
+	SyncBoardEvent,
+	SyncEvent,
+} from "Board/Events/Events";
 
-const WS_RECONNECT_TIMEOUT = 5000;
-const WS_PING_INTERVAL = 30000;
+const SECOND = 1000;
+const WS_RECONNECT_TIMEOUT = 5 * SECOND;
+const WS_PING_INTERVAL = 10 * SECOND;
+const SUBSCRIBE_TIMEOUT = 4 * SECOND;
 
 export interface AuthMsg {
 	type: "Auth";
@@ -18,7 +25,8 @@ export interface AuthMsg {
 export interface BoardEventMsg {
 	type: "BoardEvent";
 	boardId: string;
-	event: BoardEvent | BoardEventPack;
+	// event: BoardEvent | BoardEventPack;
+	event: SyncEvent;
 	messageId: string;
 	sequenceNumber: number;
 }
@@ -34,7 +42,8 @@ export interface ConfirmationMsg {
 export interface BoardEventListMsg {
 	type: "BoardEventList";
 	boardId: string;
-	events: BoardEvent[];
+	// events: BoardEvent[];
+	events: SyncBoardEvent[];
 }
 
 export interface SubscribeMsg {
@@ -83,6 +92,16 @@ export interface PingMsg {
 	type: "ping";
 }
 
+export interface BoardSubscriptionCompletedMsg {
+	type: "BoardSubscriptionCompleted";
+	boardId: string;
+	mode: "view" | "edit";
+	snapshot: BoardSnapshot | null;
+	lastSnapshotEventOrder: number;
+	eventsSinceLastSnapshot: SyncBoardEvent[];
+	initialSequenceNumber: number;
+}
+
 export type EventsMsg =
 	| ViewModeMsg
 	| BoardEventMsg
@@ -90,7 +109,8 @@ export type EventsMsg =
 	| SnapshotRequestMsg
 	| SnapshotResponseMsg
 	| SubscribeConfirmationMsg
-	| ConfirmationMsg;
+	| ConfirmationMsg
+	| BoardSubscriptionCompletedMsg;
 
 export type SocketMsg =
 	| EventsMsg
@@ -108,6 +128,7 @@ export interface Connection {
 	subscribe(
 		boardId: string,
 		callback: (serverMessage: EventsMsg) => void,
+		getLastOrder: () => number,
 	): void;
 	unsubscribe(
 		boardId: string,
@@ -115,7 +136,8 @@ export interface Connection {
 	): void;
 	publishBoardEvent(
 		boardId: string,
-		event: BoardEventPack,
+		// event: BoardEventPack,
+		event: SyncEvent,
 		sequenceNumber: number,
 	): void;
 	publishAuth(jwt: string): void;
@@ -135,12 +157,11 @@ export function createConnection(getBoard: () => Board): Connection {
 	let pingNotificationId: string | null = null;
 	let changedViewMode = false;
 
-	// const beforeUnloadListener = (event: BeforeUnloadEvent): void => {
-	// 	event.preventDefault();
-	// 	event.returnValue = "Do not leave the page to avoid losing data";
-	// };
-
 	const onConnectionLost = (): void => {
+		const notificationId = getBoard().events?.getNotificationId();
+		if (notificationId) {
+			toast.dismiss(notificationId);
+		}
 		if (!pingNotificationId) {
 			pingNotificationId = notify({
 				header: i18next.t("notifications.connectionLostHeader"),
@@ -149,7 +170,6 @@ export function createConnection(getBoard: () => Board): Connection {
 				unclosable: true,
 				position: "bottom-center",
 			});
-			// window.addEventListener('beforeunload', beforeUnloadListener);
 		}
 		const board = getBoard();
 		if (board.getBoardId() !== "blank" && board.interfaceType !== "view") {
@@ -159,13 +179,7 @@ export function createConnection(getBoard: () => Board): Connection {
 			changedViewMode = true;
 			board.tools.publish();
 		}
-		window.parent.postMessage(
-			{
-				pattern: "connectionState",
-				payload: "disconnected",
-			},
-			"*",
-		);
+		postDisconnectedMsg();
 	};
 
 	const onErorr = (error: unknown): void => {
@@ -184,10 +198,16 @@ export function createConnection(getBoard: () => Board): Connection {
 	};
 
 	const setConnectionErrorTimeout = (): void => {
-		pingTimeout = setTimeout(onConnectionLost, WS_PING_INTERVAL);
+		pingTimeout = setTimeout(onConnectionLost, WS_PING_INTERVAL + 1);
 	};
 
+	const subscribeTimeouts = new Map<
+		string,
+		{ timeout: NodeJS.Timeout; time: number }
+	>();
+
 	function clearConnectionError(): void {
+		getBoard().events?.removeBeforeUnloadListener();
 		if (pingTimeout) {
 			clearTimeout(pingTimeout);
 			pingTimeout = null;
@@ -201,7 +221,6 @@ export function createConnection(getBoard: () => Board): Connection {
 				position: "bottom-center",
 				unclosable: true,
 			});
-			// window.removeEventListener('beforeunload', beforeUnloadListener);
 		}
 		if (changedViewMode) {
 			getBoard().interfaceType = "edit";
@@ -220,6 +239,12 @@ export function createConnection(getBoard: () => Board): Connection {
 			case "BoardSnapshot":
 			case "ViewMode":
 			case "CreateSnapshotRequest":
+			case "BoardSubscriptionCompleted":
+				const subscribeTimeout = subscribeTimeouts.get(msg.boardId);
+				if (subscribeTimeout) {
+					clearTimeout(subscribeTimeout.timeout);
+					subscribeTimeouts.delete(msg.boardId);
+				}
 				const subscription = subscriptions.get(msg.boardId);
 				if (!subscription) {
 					console.warn(
@@ -242,13 +267,7 @@ export function createConnection(getBoard: () => Board): Connection {
 
 	async function connect(): Promise<void> {
 		try {
-			window.parent.postMessage(
-				{
-					pattern: "connectionState",
-					payload: "connecting",
-				},
-				"*",
-			);
+			postConnectingMsg();
 			const response = await fetch(`${getApiUrl()}/connection`, {
 				method: "GET",
 				mode: "cors",
@@ -263,13 +282,7 @@ export function createConnection(getBoard: () => Board): Connection {
 			if (!response.ok) {
 				throw new Error("response not OK");
 			}
-			window.parent.postMessage(
-				{
-					pattern: "connectionState",
-					payload: "connected",
-				},
-				"*",
-			);
+			postConnectedMsg();
 			const data = await response.json();
 			connectionId = data.connection;
 		} catch (error) {
@@ -280,45 +293,63 @@ export function createConnection(getBoard: () => Board): Connection {
 	function subscribe(
 		boardId: string,
 		callback: (serverMessage: EventsMsg) => void,
+		getLastOrder: () => number,
 	): void {
 		const subject = subscriptions.get(boardId);
 		if (subject) {
 			return;
 		}
 
-		const offset = 0;
-		const onOpen = (): void => {
+		function onSocketOpen(): void {
+			sendSubscribeMsg();
+		}
+
+		function subscribe(): void {
+			ws.onOpenSubject.subscribe(onSocketOpen);
+			sendSubscribeMsg();
+		}
+
+		function sendSubscribeMsg(): void {
+			let subscribeTimeout = subscribeTimeouts.get(boardId);
+			if (!subscribeTimeout) {
+				subscribeTimeout = {
+					timeout: setTimeout(sendSubscribeMsg, SUBSCRIBE_TIMEOUT),
+					time: SUBSCRIBE_TIMEOUT,
+				};
+			} else {
+				clearTimeout(subscribeTimeout.timeout);
+				subscribeTimeout.time *= 2;
+				subscribeTimeout.timeout = setTimeout(
+					sendSubscribeMsg,
+					subscribeTimeout.time,
+				);
+			}
+			subscribeTimeouts.set(boardId, subscribeTimeout);
+
 			ws.send({
 				type: "Subscribe",
 				boardId,
-				index: offset,
+				index: getLastOrder(),
 			});
-		};
+		}
 
-		const subscribe = (): void => {
-			ws.onOpenSubject.subscribe(onOpen);
-			onOpen();
-		};
+		function unsubscribe(): void {
+			ws.onOpenSubject.unsubscribe(onSocketOpen);
+			sendUnsubscribeMsg();
+			postDisconnectedMsg();
+		}
 
-		const unsubscribe = (): void => {
-			ws.onOpenSubject.unsubscribe(onOpen);
+		function sendUnsubscribeMsg(): void {
 			ws.send({ type: "Unsubscribe", boardId: boardId });
-			window.parent.postMessage(
-				{
-					pattern: "connectionState",
-					payload: "disconnected",
-				},
-				"*",
-			);
-		};
-
-		subscribe();
+		}
 
 		subscriptions.set(boardId, {
 			publish: callback,
 			subscribe,
 			unsubscribe,
 		});
+
+		subscribe();
 	}
 
 	function unsubscribe(boardId: string): void {
@@ -347,7 +378,7 @@ export function createConnection(getBoard: () => Board): Connection {
 
 	function publishBoardEvent(
 		boardId: string,
-		event: BoardEventPack,
+		event: SyncEvent,
 		sequenceNumber: number,
 	): void {
 		const messageId = generateMessageId();
@@ -405,6 +436,36 @@ interface WsClient {
 }
 
 type SocketMsgHandler = (message: SocketMsg) => void;
+
+function postConnectingMsg(): void {
+	window.parent.postMessage(
+		{
+			pattern: "connectionState",
+			payload: "connecting",
+		},
+		"*",
+	);
+}
+
+function postConnectedMsg(): void {
+	window.parent.postMessage(
+		{
+			pattern: "connectionState",
+			payload: "connected",
+		},
+		"*",
+	);
+}
+
+function postDisconnectedMsg(): void {
+	window.parent.postMessage(
+		{
+			pattern: "connectionState",
+			payload: "disconnected",
+		},
+		"*",
+	);
+}
 
 export function createWsClient(
 	msgHandler: SocketMsgHandler,

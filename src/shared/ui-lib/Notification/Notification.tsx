@@ -66,6 +66,6 @@ export const Notification: React.FC<NotificationProps> = (
 					{children}
 				</div>,
 				window.document.body,
-		  )
+			)
 		: null;
 };

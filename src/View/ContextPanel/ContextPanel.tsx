@@ -21,7 +21,6 @@ import { ItemType } from "./Buttons/ItemType/ItemType";
 import { RestOptionsMenu } from "./Buttons/RestOptionsMenu";
 import {
 	BringToFront,
-	CopyFrameLink,
 	ExportFrame,
 	SendToBack,
 } from "./Buttons/RestOptionsMenu/Items";
@@ -40,6 +39,9 @@ import { ConnectorFontStyle } from "./Buttons/ConnectorFontStyle";
 import { ConnectorFontSize } from "./Buttons/FontSize";
 import { ConnectorTextColor } from "./Buttons/ConnectorTextColor";
 import { ConnectorTextHighlight } from "./Buttons/ConnectorTextHighlight";
+import { CopyItemLink } from "./Buttons/RestOptionsMenu/Items/CopyItemLink";
+import { SetLinkTo } from "./Buttons/RestOptionsMenu/Items/SetLinkTo";
+import { RemoveLinkTo } from "./Buttons/RestOptionsMenu/Items/RemoveLinkTo";
 
 export function ContextPanel() {
 	const { app, board } = useAppContext();
@@ -80,6 +82,11 @@ export function ContextPanel() {
 
 	const isHoverUnderPointer =
 		board.selection.getContext() === "HoverUnderPointer";
+
+	const hasLinkTo = () => {
+		const items = board.selection.items.list();
+		return !!(items.length === 1 && items[0].getLinkTo());
+	};
 
 	const isText = board.selection.items.isAllItemsType("RichText");
 	const isSticker = board.selection.items.isAllItemsType("Sticker");
@@ -149,6 +156,9 @@ export function ContextPanel() {
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
+							<CopyItemLink />
+							<SetLinkTo />
+							{hasLinkTo() && <RemoveLinkTo />}
 						</RestOptionsMenu>
 					</>
 				)}
@@ -169,6 +179,9 @@ export function ContextPanel() {
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
+							<CopyItemLink />
+							<SetLinkTo />
+							{hasLinkTo() && <RemoveLinkTo />}
 						</RestOptionsMenu>
 					</>
 				)}
@@ -192,6 +205,9 @@ export function ContextPanel() {
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
+							<CopyItemLink />
+							<SetLinkTo />
+							{hasLinkTo() && <RemoveLinkTo />}
 						</RestOptionsMenu>
 					</>
 				)}
@@ -214,6 +230,9 @@ export function ContextPanel() {
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
+							<CopyItemLink />
+							<SetLinkTo />
+							{hasLinkTo() && <RemoveLinkTo />}
 						</RestOptionsMenu>
 					</>
 				)}
@@ -228,6 +247,9 @@ export function ContextPanel() {
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
+							<CopyItemLink />
+							<SetLinkTo />
+							{hasLinkTo() && <RemoveLinkTo />}
 						</RestOptionsMenu>
 					</>
 				)}
@@ -239,6 +261,9 @@ export function ContextPanel() {
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
+							<CopyItemLink />
+							<SetLinkTo />
+							{hasLinkTo() && <RemoveLinkTo />}
 						</RestOptionsMenu>
 					</>
 				)}
@@ -255,7 +280,9 @@ export function ContextPanel() {
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
-							<CopyFrameLink />
+							<CopyItemLink />
+							<SetLinkTo />
+							{hasLinkTo() && <RemoveLinkTo />}
 							<ExportFrame />
 						</RestOptionsMenu>
 					</>
@@ -268,7 +295,7 @@ export function ContextPanel() {
 						/>
 						{lockedFrames.length <= 1 ? (
 							<RestOptionsMenu rounded="right">
-								<CopyFrameLink />
+								<CopyItemLink />
 								<ExportFrame />
 							</RestOptionsMenu>
 						) : null}
@@ -276,7 +303,8 @@ export function ContextPanel() {
 				)}
 				{isDifferentItems &&
 					!isSelectUnderPointer &&
-					!isHoverUnderPointer && (
+					!isHoverUnderPointer &&
+					!lockedFrames.length && (
 						<RestOptionsMenu rounded="full">
 							<BringToFront />
 							<SendToBack />

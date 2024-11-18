@@ -54,7 +54,7 @@ export const UiPanel = forwardRef<HTMLDivElement, UiPanelProps>(
 								zIndex,
 								padding,
 								gap,
-						  }
+							}
 						: { ...inlineStyle, zIndex, padding, gap }
 				}
 				{...props}

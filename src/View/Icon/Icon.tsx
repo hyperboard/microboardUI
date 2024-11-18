@@ -80,6 +80,7 @@ export type IconId =
 	| "BoxedPlus"
 	| "SignIn"
 	| "Info"
+	| "linkTo"
 	| "AllTemplates"
 	| "ResearchAnalysis"
 	| "Diagramming"

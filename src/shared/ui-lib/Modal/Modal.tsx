@@ -50,7 +50,11 @@ export const Modal = (props: ModalProps) => {
 					{...otherProps}
 				>
 					<div
-						className={clsx(styles.wr, size && styles[size], wrClassName)}
+						className={clsx(
+							styles.wr,
+							size && styles[size],
+							wrClassName,
+						)}
 						onClick={event => event.stopPropagation()}
 					>
 						<div
@@ -68,6 +72,6 @@ export const Modal = (props: ModalProps) => {
 					</div>
 				</div>,
 				window.document.body,
-		  )
+			)
 		: null;
 };

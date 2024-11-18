@@ -22,6 +22,8 @@ import { QuickAddPanel } from "./QuickAddPanel";
 import { ImportMiroStartModal } from "View/ImportMiro";
 import { ItemTooltip } from "View/ItemTooltip";
 import { ToastProvider } from "View/ToastProvider";
+import { SetLinkToModal } from "../Modal/SetLinkToModal";
+import { LinksProvider } from "../LinksProvider/LinksProvider";
 
 export function AppView() {
 	const { app, board } = useAppContext();
@@ -140,6 +142,7 @@ export function AppView() {
 				<ZoomPanel />
 			</InactiveBoardHidder>
 			<ViewModeGuard>
+				<LinksProvider />
 				<ContextPanel />
 				<QuickAddPanel />
 				<ExportPanel />
@@ -147,6 +150,7 @@ export function AppView() {
 			<ToastProvider />
 			<ImportMiroBoards />
 			<ImportMiroStartModal />
+			<SetLinkToModal />
 		</div>
 	);
 }

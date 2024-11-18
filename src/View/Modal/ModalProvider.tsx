@@ -16,6 +16,7 @@ export type ModalName =
 	| "warnClipboardNotification"
 	| "warnNotification"
 	| "imgAuthClipboardNotification"
+	| "setLinkTo"
 	| "createTemplate"
 	| "selectTemplate";
 

@@ -1,0 +1,17 @@
+.btn {
+	min-width: 20px;
+	min-height: 20px;
+	padding: 0;
+	background-color: transparent;
+}
+
+.btn:hover {
+	background-color: transparent;
+}
+
+.icon {
+	display: block;
+	width: 20px;
+	height: 20px;
+	background: none;
+}

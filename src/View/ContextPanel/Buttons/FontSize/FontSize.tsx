@@ -30,11 +30,15 @@ type Props = {
 export function FontSize({ rounded = "none" }: Props) {
 	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
 		usePanelContext();
+	const { t } = useTranslation();
 	const { board } = useAppContext();
 	const [fontSizeInputValue, setFontSizeInputValue] = useState<
 		number | string
-	>(board.selection.getAutosize() ? "auto" : board.selection.getFontSize());
-	const { t } = useTranslation();
+	>(
+		board.selection.getAutosize()
+			? t("contextPanel.fontSize.auto")
+			: board.selection.getFontSize(),
+	);
 	const chevronRef = useRef<HTMLSpanElement>(null);
 	const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -46,7 +50,7 @@ export function FontSize({ rounded = "none" }: Props) {
 			setFontSizeInputValue(fontSize);
 		}
 		if (board.selection.getAutosize()) {
-			setFontSizeInputValue("auto");
+			setFontSizeInputValue(t("contextPanel.fontSize.auto"));
 		}
 		if (
 			selectionContext === "EditUnderPointer" &&
