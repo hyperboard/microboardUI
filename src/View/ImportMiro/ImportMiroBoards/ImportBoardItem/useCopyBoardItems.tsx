@@ -693,23 +693,24 @@ export const useCopyBoardItems = (
 					board.remove(placeholder);
 				}
 
-				const imgItem = new ImageItem(
-					imageData,
-					board,
-				).setId(id);
+				const imgItem = new ImageItem(imageData, board).setId(id);
 
 				const imgPosition = getItemPosition(
 					position,
 					{
-						width: geometry.width  * data.scale,
-						height: geometry.height  * data.scale,
+						width: geometry.width * data.scale,
+						height: geometry.height * data.scale,
 					},
 					parent,
 				);
 
 				const transformedGeometry = {
-					width: geometry.width / imageData.imageDimension.width * data.scale,
-					height: geometry.height / imageData.imageDimension.height * data.scale,
+					width:
+						(geometry.width / imageData.imageDimension.width) *
+						data.scale,
+					height:
+						(geometry.height / imageData.imageDimension.height) *
+						data.scale,
 				};
 
 				imgPosition &&
@@ -726,10 +727,12 @@ export const useCopyBoardItems = (
 				setBoardMiroId(id);
 			})
 			.catch(() => {
-				const { showModal, hideModal } = getGlobalModalFunctions();
+				const { showModal, hideModal, setModalData } =
+					getGlobalModalFunctions();
 
 				hideModal?.("loadingNotification");
 				showModal?.("errorNotification");
+				setModalData?.("clipboard");
 			});
 	};
 
@@ -1027,7 +1030,7 @@ export const useCopyBoardItems = (
 	};
 
 	const copyClipboardItems = async (): Promise<void> => {
-		const { showModal, hideModal, setModalData } =
+		const { isModalOpen, showModal, hideModal, setModalData } =
 			getGlobalModalFunctions();
 
 		const miroBoardItems = getMiroBoardItems();
@@ -1052,6 +1055,11 @@ export const useCopyBoardItems = (
 			const type = item.type as MiroItemsTypes;
 			setModalData?.(Math.floor((index / miroBoardItems.length) * 100));
 
+			if (!!isModalOpen?.("errorNotification")) {
+				setModalData?.("clipboard");
+				return;
+			}
+
 			if (withoutImgs && type === MiroBoardItemTypes.IMAGE) {
 				continue;
 			}
@@ -1062,6 +1070,10 @@ export const useCopyBoardItems = (
 			) {
 				await itemsTypes[type](item);
 			}
+		}
+
+		if (!!isModalOpen?.("errorNotification")) {
+			return;
 		}
 
 		miroBoardItems
@@ -1081,8 +1093,10 @@ export const useCopyBoardItems = (
 
 		localStorage.removeItem("miroItems");
 		const url = new URL(window.location.href);
-		url.searchParams.delete("clipboard");
-    window.history.replaceState({}, document.title, url);
+		if (url.searchParams.has("clipboard")) {
+			url.searchParams.delete("clipboard");
+			window.history.replaceState({}, document.title, url);
+		}
 	};
 
 	const copyItems = async (): Promise<void> => {
