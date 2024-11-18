@@ -11,14 +11,14 @@ declare global {
 		app: App;
 		useHTTPSubscription: boolean;
 		showDebug: boolean;
-		enableTemplateCreating: boolean
+		enableTemplateCreating: boolean;
 	}
 }
 
 // eslint-disable-next-line no-var
 var showDebug = isMicroboard() ? true : false;
 window.showDebug = showDebug;
-window.enableTemplateCreating = false
+window.enableTemplateCreating = false;
 
 window.app = createApp();
 window.app.connection.connect().then(() => {
