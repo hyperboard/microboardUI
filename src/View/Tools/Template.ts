@@ -3,7 +3,7 @@ import { BoardSnapshot } from "Board/Board";
 export interface Template {
 	uniqId: string;
 	preview: string;
-	desc: string;
+	description: string;
 	lan: string;
 	tags: string[];
 	snapshot: BoardSnapshot;
@@ -30,4 +30,9 @@ export const CATEGORIES: TemplateCategory[] = [
 	"Agile Workflow",
 	"Icebreaker & Game",
 	"Education",
+];
+
+export const LANGUAGES: { value: string; label: string }[] = [
+	{ value: "en", label: "English" },
+	{ value: "ru", label: "Russian" },
 ];

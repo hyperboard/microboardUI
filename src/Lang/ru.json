@@ -2,7 +2,11 @@
 	"common": {
 		"and": "и",
 		"backToMain": "Вернуться в главное меню",
-		"confirm": "Принять"
+		"confirm": "Принять",
+		"languages": {
+			"ru": "Русский",
+			"en": "Английский"
+		}
 	},
 	"contextPanel": {
 		"connectorAddText": {
@@ -290,6 +294,7 @@
 			},
 			"buttons": {
 				"choosePreview": "Выбор изображения",
+				"previewChosen": "Изображение выбрано",
 				"save": "Сохранить",
 				"translate": "Перевести на выбранные языки",
 				"Preview": "Предпросмотр",

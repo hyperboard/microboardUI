@@ -137,12 +137,6 @@ export function ContextMenu() {
 							? t("contextMenu.deleteShared")
 							: t("contextMenu.delete")}
 					</ContextMenuItem>
-					<ContextMenuItem
-						onClick={handleRenameBoard}
-						icon={<Icon iconName="Rename" width={20} height={20} />}
-					>
-						Создать шаблон
-					</ContextMenuItem>
 				</>
 			) : (
 				<ContextMenuItem

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import clsx from "clsx";
 import { Icon } from "../../../Icon";
-import { Chevron } from "../../../../shared/ui-lib/Dropdown/Chevron";
-import i18next from "i18next";
+import { Chevron } from "shared/ui-lib/Dropdown/Chevron";
 import styles from "./LanguagesDropdown.module.css";
+import { LANGUAGES } from "View/Tools/Template";
+import { useTranslation } from "react-i18next";
 
 // This component will be removed after the dropdown from ui lib could be customized
 
@@ -17,6 +18,7 @@ export const LanguagesDropdown = ({
 	selectedLanguage,
 }: Props) => {
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+	const { t } = useTranslation();
 
 	const toggleDropdown = (): void => {
 		setIsDropdownOpen(!isDropdownOpen);
@@ -37,18 +39,18 @@ export const LanguagesDropdown = ({
 			</button>
 			{isDropdownOpen && (
 				<ul className={styles.dropdownMenu}>
-					{i18next.languages.map((item, index) => (
+					{LANGUAGES.map(({ value }) => (
 						<li
-							key={index}
+							key={value}
 							className={clsx(
 								styles.dropdownItem,
-								selectedLanguage === item &&
+								selectedLanguage === value &&
 									styles.dropdownItemActive,
 							)}
-							onClick={() => setSelectedLanguage(item)}
+							onClick={() => setSelectedLanguage(value)}
 						>
-							{item}
-							{selectedLanguage === item && (
+							{t(`common.languages.${value}`)}
+							{selectedLanguage === value && (
 								<Icon
 									iconName="checkMark"
 									width={20}

@@ -2,19 +2,19 @@ import { Modal } from "shared/ui-lib/Modal";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./SelectTemplateModal.module.css";
-import { ModalSize } from "../../../shared/ui-lib/Modal/Modal";
+import { ModalSize } from "shared/ui-lib/Modal/Modal";
 import { TemplateItemPreview } from "./TemplateItemPreview/TemplateItemPreview";
-import { getApiUrl } from "../../../Config";
+import { getApiUrl } from "Config";
 import { Icon } from "../../Icon";
-import { Input } from "../../../shared/ui-lib/Input";
+import { Input } from "shared/ui-lib/Input/Input";
 import clsx from "clsx";
 import { CategoriesMenu } from "./CategoriesMenu/CategoriesMenu";
 import i18next from "i18next";
-import { useDebounce } from "../../../shared/hooks/useDebounce";
+import { useDebounce } from "shared/hooks/useDebounce";
 import { TemplateItemsGrid } from "./TemplateItemsGrid/TemplateItemsGrid";
-import { Template, TemplateCategory } from "../../Tools/Template";
+import { Template, TemplateCategory } from "View/Tools/Template";
 import { LanguagesDropdown } from "./LanguagesDropdown/LanguagesDropdown";
-import { useModal } from "../../Modal/ModalProvider";
+import { useModal } from "View/Modal/ModalProvider";
 
 export const SelectTemplateModal = (): JSX.Element => {
 	const { t } = useTranslation();
@@ -113,12 +113,14 @@ export const SelectTemplateModal = (): JSX.Element => {
 						<TemplateItemPreview
 							name={presentedTemplate.name}
 							language={presentedTemplate.lan}
-							description={presentedTemplate.desc}
+							description={presentedTemplate.description}
 							snapshot={presentedTemplate.snapshot}
 							setPresentedTemplate={setPresentedTemplate}
 							tags={presentedTemplate.tags}
 							viewLinkId={presentedTemplate.uniqId}
-							relatedTemplates={templates.filter(t => t.uniqId !== presentedTemplate.uniqId)}
+							relatedTemplates={templates.filter(
+								t => t.uniqId !== presentedTemplate.uniqId,
+							)}
 						/>
 					) : (
 						<>
@@ -152,7 +154,9 @@ export const SelectTemplateModal = (): JSX.Element => {
 								</div>
 								<Input
 									id="search-template"
-									placeholder={t("modalTemplate.UI.inputs.search")}
+									placeholder={t(
+										"modalTemplate.UI.inputs.search",
+									)}
 									onChange={handleInputChange}
 									prefixIcon={
 										<Icon

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./templateItem.module.css";
 import { Button } from "shared/ui-lib/Button/Button";
 import { useAppContext } from "View/AppContext";
@@ -7,7 +7,7 @@ import { Template } from "View/Tools/Template";
 import { useModal } from "View/Modal/ModalProvider";
 import PlaceholderImg from "shared/assets/imgs/no-img-icon.svg";
 import clsx from "clsx";
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 interface TemplateItemProps {
 	template: Template;
@@ -18,9 +18,18 @@ export const TemplateItem = ({
 	template,
 	setPresentedTemplate,
 }: TemplateItemProps) => {
+	const [isLoading, setIsLoading] = useState(true);
 	const { board } = useAppContext();
 	const { hideModal } = useModal();
-	const {t} = useTranslation()
+	const { t } = useTranslation();
+
+	const handleImageLoad = () => {
+		setIsLoading(false);
+	};
+
+	const handleImageError = () => {
+		setIsLoading(false);
+	};
 
 	const pasteSnapshotAndClose = () => {
 		setPresentedTemplate(null);
@@ -33,9 +42,14 @@ export const TemplateItem = ({
 			<div className={styles.imageBox}>
 				<img
 					onClick={() => setPresentedTemplate(template)}
-					className={clsx(styles.image, !template.preview && styles.noImage)}
-					src={template.preview || PlaceholderImg}
+					className={clsx(
+						styles.image,
+						!template.preview && styles.noImage,
+					)}
+					src={isLoading ? PlaceholderImg : template.preview}
 					alt={template.name}
+					onLoad={handleImageLoad}
+					onError={handleImageError}
 				/>
 				<div
 					className={styles.buttonsBox}

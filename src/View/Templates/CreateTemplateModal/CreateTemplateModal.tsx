@@ -1,20 +1,19 @@
 import { Modal } from "shared/ui-lib/Modal";
 import React, { ChangeEventHandler, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Input } from "../../../shared/ui-lib/Input";
-import { Button } from "../../../shared/ui-lib/Button";
-import { useAppContext } from "../../AppContext";
-import { getApiUrl } from "../../../Config";
+import { Input } from "shared/ui-lib/Input/Input";
+import { Button } from "shared/ui-lib/Button/Button";
+import { useAppContext } from "View/AppContext";
+import { getApiUrl } from "Config";
 import Cookies from "js-cookie";
 import styles from "./CreateTemplateModal.module.css";
-import { TemplateCategory, CATEGORIES } from "../../Tools/Template";
-import i18next from "i18next";
+import { CATEGORIES, LANGUAGES } from "View/Tools/Template";
 import { useTolgee } from "@tolgee/react";
-import { detectLanguage } from "../../../utils";
-import { useModal } from "../../Modal/ModalProvider";
+import { detectLanguage } from "utils";
+import { useModal } from "View/Modal/ModalProvider";
 import Selector, { SelectorHandle } from "../../Ui/Selector/Selector";
-import { useForceUpdate } from "../../../lib/useForceUpdate";
-import {notify} from "View/Ui/Toast/notify";
+import { useForceUpdate } from "lib/useForceUpdate";
+import { notify } from "View/Ui/Toast/notify";
 
 interface TranslatableInput {
 	id: string;
@@ -34,7 +33,7 @@ export const CreateTemplateModal = (): JSX.Element => {
 	const formRef = useRef<HTMLFormElement>(null);
 	const categoriesSelectorRef = useRef<SelectorHandle<true>>(null);
 	const languagesSelectorRef = useRef<SelectorHandle<true>>(null);
-	const imageSrc = useRef<null | string>(null);
+	const [imageSrc, setImageSrc] = useState<string | null>(null);
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const [submitDisabled, setSubmitDisabled] = useState<boolean>(false);
 	const [translateDisabled, setTranslateDisabled] = useState<boolean>(false);
@@ -58,14 +57,10 @@ export const CreateTemplateModal = (): JSX.Element => {
 		};
 	});
 
-	const languages = i18next.languages.map(lan => {
-		return { value: lan, label: lan };
-	});
-
 	const hideModalAndResetForm = () => {
 		formRef.current?.reset();
 		categoriesSelectorRef.current?.setSelectedOptions([categories[0]]);
-		languagesSelectorRef.current?.setSelectedOptions([languages[0]]);
+		languagesSelectorRef.current?.setSelectedOptions([LANGUAGES[0]]);
 		hideModal("createTemplate");
 	};
 
@@ -139,7 +134,7 @@ export const CreateTemplateModal = (): JSX.Element => {
 		fetch(getApiUrl("/media"), requestOptions)
 			.then(response => response.json())
 			.then(result => {
-				imageSrc.current = result.src;
+				setImageSrc(result.src);
 			})
 			.finally(() => setSubmitDisabled(false));
 	};
@@ -271,22 +266,22 @@ export const CreateTemplateModal = (): JSX.Element => {
 			}
 		}
 		Promise.all(promises).finally(() => {
-			setNameInputs(prevState => {
-				prevState[0] = {
-					id: "templateName" + nameLanguage,
-					placeholder: prevState[0].placeholder,
-					defaultValue: formRef.current[prevState[0].id].value,
-				};
-				return prevState;
-			});
-			setDescriptionInputs(prevState => {
-				prevState[0] = {
-					id: "description" + descriptionLanguage,
-					placeholder: prevState[0].placeholder,
-					defaultValue: formRef.current[prevState[0].id].value,
-				};
-				return prevState;
-			});
+			// setNameInputs(prevState => {
+			// 	prevState[0] = {
+			// 		id: "templateName" + nameLanguage,
+			// 		placeholder: prevState[0].placeholder,
+			// 		defaultValue: formRef.current[prevState[0].id].value,
+			// 	};
+			// 	return prevState;
+			// });
+			// setDescriptionInputs(prevState => {
+			// 	prevState[0] = {
+			// 		id: "description" + descriptionLanguage,
+			// 		placeholder: prevState[0].placeholder,
+			// 		defaultValue: formRef.current[prevState[0].id].value,
+			// 	};
+			// 	return prevState;
+			// });
 			setSubmitDisabled(false);
 		});
 	};
@@ -309,10 +304,13 @@ export const CreateTemplateModal = (): JSX.Element => {
 			] = form?.description.value;
 		} else {
 			descriptionInputs.forEach(desc => {
-				console.log(desc.id);
 				const value = form[desc.id].value as string;
-				multilanguageDescription[desc.id.split("description")[1]] =
-					value;
+				let language = desc.id.split("description")[1];
+				if (!language) {
+					language = detectLanguage(value);
+				}
+
+				multilanguageDescription[language] = value;
 			});
 		}
 		if (nameInputs.length === 1) {
@@ -322,7 +320,12 @@ export const CreateTemplateModal = (): JSX.Element => {
 		} else {
 			nameInputs.forEach(name => {
 				const value = form[name.id].value as string;
-				multilanguageName[name.id.split("templateName")[1]] = value;
+				let language = name.id.split("templateName")[1];
+				if (!language) {
+					language = detectLanguage(value);
+				}
+
+				multilanguageName[language] = value;
 			});
 		}
 		const tags = categoriesSelectorRef
@@ -341,7 +344,7 @@ export const CreateTemplateModal = (): JSX.Element => {
 			tags,
 			snapshot,
 			name: multilanguageName,
-			preview: imageSrc.current,
+			preview: imageSrc,
 		});
 
 		await createTemplate(body)
@@ -351,13 +354,13 @@ export const CreateTemplateModal = (): JSX.Element => {
 					categories[0],
 				]);
 				languagesSelectorRef.current?.setSelectedOptions([
-					languages[0],
+					LANGUAGES[0],
 				]);
 				notify({
 					body: t("template.createSuccess"),
 					variant: "info",
 					duration: 3000,
-				})
+				});
 				setSubmitDisabled(false);
 				setIsSubmitLoading(false);
 				hideModal("createTemplate");
@@ -400,11 +403,13 @@ export const CreateTemplateModal = (): JSX.Element => {
 					style={{ display: "none" }}
 				/>
 				<Button onClick={handleChangeImageClick}>
-					{t("modalTemplate.UI.buttons.choosePreview")}
+					{t(
+						`modalTemplate.UI.buttons.${imageSrc ? "previewChosen" : "choosePreview"}`,
+					)}
 				</Button>
 				<Selector
 					multiselect={true}
-					options={languages}
+					options={LANGUAGES}
 					ref={languagesSelectorRef}
 					onChange={forceUpdate}
 					containerClassName={styles.languagesSelector}

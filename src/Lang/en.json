@@ -2,7 +2,11 @@
 	"common": {
 		"and": "and",
 		"backToMain": "Back to main menu",
-		"confirm": "Confirm"
+		"confirm": "Confirm",
+		"languages": {
+			"ru": "Russian",
+			"en": "English"
+		}
 	},
 	"contextPanel": {
 		"connectorAddText": {
@@ -292,6 +296,7 @@
 			},
 			"buttons": {
 				"choosePreview": "Choose preview",
+				"previewChosen": "Preview selected",
 				"save": "Save",
 				"translate": "Translate",
 				"Preview": "Preview",
