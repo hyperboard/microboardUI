@@ -386,14 +386,18 @@ export class Boards {
             }
 
             await db.insert(boardEvents).values(
-                events.map((event) => ({
-                    boardId: board.id,
-                    eventId: (event.eventId.split(":")[0] || Date.now().toString()) + ":" + event.order,
-                    eventBody: {
-                        ...event,
-                        eventId: (event.eventId.split(":")[0] || Date.now().toString()) + ":" + event.order,
-                    },
-                }))
+                events.map((event) => {
+                    const eventId = (event.eventId.split(":")[0] || Date.now().toString()) + ":" + event.order;
+                    return {
+                        boardId: board.id,
+                        logId: event.order,
+                        eventId,
+                        eventBody: {
+                            ...event,
+                            eventId,
+                        },
+                    };
+                })
             );
 
             const endDbWrite = process.hrtime.bigint();
@@ -639,10 +643,9 @@ export class Boards {
             validateUUID(boardUuid, "boardUuid");
             const result = await Drizzle.getLastEventOrderForBoard(boardUuid);
 
-            if (typeof result === 'undefined') {
+            if (typeof result === "undefined") {
                 throw new Error(`Failed to get last event order for board ${boardUuid}`);
             }
-
             return result;
         } catch (error) {
             this.logger.error(`Error getting last event order for board ${boardUuid}: ${error}`);

@@ -122,11 +122,9 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
 
     function handlePingMsg(_msg: PingMsg, ws: WebSocket): void {
         ws.send(
-
             JSON.stringify({
                 type: "ping",
             })
-
         );
     }
 
@@ -254,11 +252,11 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
             sendError(
                 ws,
                 "Unexpected sequence number" +
-                JSON.stringify({
-                    expectedSequence,
-                    receivedSequence: msg.sequenceNumber,
-                    boardId: msg.boardId,
-                })
+                    JSON.stringify({
+                        expectedSequence,
+                        receivedSequence: msg.sequenceNumber,
+                        boardId: msg.boardId,
+                    })
             );
             return;
         }
@@ -729,7 +727,7 @@ export class EventsManager {
         return events;
     }
 
-    requestSnapshotCallback(boardId: string, sinceLast: number): void { }
+    requestSnapshotCallback(boardId: string, sinceLast: number): void {}
 
     isBoardReady(boardId: string): boolean {
         return !this.processing.includes(boardId);

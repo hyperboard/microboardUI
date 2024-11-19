@@ -173,6 +173,7 @@ async function index() {
         db.insert(boardEvents).values(
             json1.map((json) => ({
                 boardId: board1[0].id,
+                logId: json?.order || 0,
                 eventId: `${user1[0].id}:${json?.order || 0}`,
                 eventBody: json.body,
             }))
@@ -180,6 +181,7 @@ async function index() {
         db.insert(boardEvents).values(
             json2.map((json) => ({
                 boardId: board2[0].id,
+                logId: json?.order || 0,
                 eventId: `${user2[0].id}:${json?.order || 0}`,
                 eventBody: json.body,
             }))

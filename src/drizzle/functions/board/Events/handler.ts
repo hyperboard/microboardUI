@@ -1,19 +1,7 @@
 import { eq, and, max, sql, between, asc, gt } from "drizzle-orm";
 import { getBoardId, getBoardByLink } from "../Boards";
 import { db } from "drizzle/db";
-import { getBoardLink } from "../Links";
-import { boardEditLink, boardEvents, boards, boardSnapshots } from "drizzle/entities";
-
-/**
- * Function to add a new event at the end of the log of events in a board table.
- * Does not add the event if the event id is already in the table.
- * @returns Returns the offset of the new event.
- */
-export async function addBoardEvent(boardId: number, eventUUID: string, eventBody: object) {
-    const result = await db.insert(boardEvents).values({ boardId, eventId: eventUUID, eventBody }).returning();
-
-    return { boardId: result[0].boardId, eventUUID: result[0].eventId };
-}
+import { boardEditLink, boardEvents, boards } from "drizzle/entities";
 
 /**
  * Function to add a new event at the end of the log of events in a board table.
@@ -21,22 +9,35 @@ export async function addBoardEvent(boardId: number, eventUUID: string, eventBod
  * @returns Returns the offset of the new event.
  */
 export async function addBoardEventUsingUUID(boardOrEditLinkUUID: string, eventUUID: string, eventBody: object) {
-    let boardId = await getBoardId(boardOrEditLinkUUID);
+    return await db.transaction(async (tx) => {
+        let boardId = await getBoardId(boardOrEditLinkUUID);
 
-    if (!boardId) {
-        const [boardRecords] = await db
-            .select({ boardId: boardEditLink.boardId })
-            .from(boardEditLink)
-            .where(eq(boardEditLink.editLinkUUID, boardOrEditLinkUUID));
+        if (!boardId) {
+            const [boardRecords] = await tx
+                .select({ boardId: boardEditLink.boardId })
+                .from(boardEditLink)
+                .where(eq(boardEditLink.editLinkUUID, boardOrEditLinkUUID));
 
-        boardId = boardRecords?.boardId || boardId;
-    }
+            boardId = boardRecords?.boardId || boardId;
+        }
 
-    if (!boardId) {
-        throw new Error("Board UUID or Edit Link UUID does not exist");
-    }
+        if (!boardId) {
+            throw new Error("Board UUID or Edit Link UUID does not exist");
+        }
 
-    return await addBoardEvent(boardId, eventUUID, eventBody);
+        // Find the last logId and insert the new event atomically
+        const result = await tx
+            .insert(boardEvents)
+            .values({
+                boardId,
+                logId: sql`COALESCE((SELECT MAX(log_id) FROM board_events WHERE board_id = ${boardId}), 0) + 1`,
+                eventId: eventUUID,
+                eventBody,
+            })
+            .returning();
+
+        return { boardId: result[0].boardId, eventUUID: result[0].eventId, logId: result[0].logId };
+    });
 }
 
 /**
@@ -46,7 +47,7 @@ export async function addBoardEventUsingUUID(boardOrEditLinkUUID: string, eventU
 export async function getBoardEvents(boardOrLinkUUID: string, afterLogid: number) {
     const board = await getBoardByLink(boardOrLinkUUID);
 
-    const boardId = board?.id
+    const boardId = board?.id;
 
     if (!boardId) {
         throw new Error(`Board UUID or Link UUID does not exist`);
@@ -107,88 +108,17 @@ export async function getEventsCountSinceLastSnapshot(boardOrLinkUUID: string) {
 
 export async function getLastEventOrderForBoard(boardUuid: string): Promise<number> {
     try {
-        // Find the board ID by UUID
-        const boardId = await getBoardId(boardUuid);
-
-        if (!boardId) {
-            throw new Error(`Board with UUID ${boardUuid} not found`);
-        }
-
-        // Get the last order number
         const [result] = await db
-            .select({ lastOrder: sql<number>`MAX(${boardEvents.logId})` })
+            .select({
+                lastOrder: sql<string>`COALESCE(MAX(${boardEvents.logId}), 0)`,
+            })
             .from(boardEvents)
-            .where(eq(boardEvents.boardId, boardId))
-        return result?.lastOrder || 0;
+            .innerJoin(boards, eq(boards.id, boardEvents.boardId))
+            .where(eq(boards.boardUUID, boardUuid));
+
+        return parseInt(typeof result?.lastOrder === "string" ? result.lastOrder : "0");
     } catch (error) {
         console.error(`Error getting last event order for board ${boardUuid}: ${error}`);
         throw error;
     }
 }
-
-/**
- * ? no usage
- * ? search boards between startId and endId???
- * FIXME: remove or rewrite
- */
-// export async function getBoardLastEventOrders(startId: number, endId: number) {
-//     const tempResult: Array<{
-//         boardId: number;
-//         boardUUID: string | null;
-//         boardEditLinkUUIDs: string[];
-//         lastOrder: number;
-//     }> = [];
-
-//     const result = await db
-//         .select({
-//             boardId: boards.id,
-//             boardUUID: boards.boardUUID,
-//             boardEditLinkUUIDs: boardEditLink.editLinkUUID,
-//         })
-//         .from(boards)
-//         .leftJoin(boardEditLink, eq(boardEditLink.boardId, boards.id))
-//         .where(between(boards.id, startId, endId))
-//         .execute();
-
-//     result.forEach((item) => {
-//         if (item.boardId in tempResult) {
-//             tempResult[item.boardId].boardEditLinkUUIDs.push(item.boardEditLinkUUIDs || "");
-//         } else {
-//             tempResult[item.boardId] = {
-//                 boardId: item.boardId,
-//                 boardUUID: item.boardUUID,
-//                 boardEditLinkUUIDs: [item.boardEditLinkUUIDs || ""],
-//                 lastOrder: 0,
-//             };
-//         }
-//     });
-
-//     let currentBatch = "";
-
-//     for (let i = startId; i <= endId; i++) {
-//         const query = sql.raw(`SELECT 1 from information_schema.tables where table_name = ${"board" + i}`);
-//         const result = await db.execute(query);
-
-//         if (result.rows.length > 0) {
-//             if (currentBatch !== "") {
-//                 currentBatch += " UNION ALL ";
-//             }
-
-//             if (i in tempResult) {
-//                 currentBatch += sql.raw(`
-// 				SELECT ${i} AS boardId, COALESCE(MAX(logid), 0) AS maxLogid FROM board${i}
-// 			`);
-//             }
-//         }
-//     }
-
-//     let currentBatchResult = await db.execute(sql`${currentBatch}`);
-
-//     if (currentBatchResult.rows.length > 0) {
-//         tempResult.forEach((item) => {
-//             item.lastOrder = currentBatchResult.rows[0].maxLogid as number;
-//         });
-//     }
-
-//     return tempResult;
-// }

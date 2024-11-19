@@ -10,19 +10,18 @@ export const runMigration = async () => {
 
     if (!migrationsFolder || !dbUrl) {
         if (!migrationsFolder) {
-            console.error('MIGRATIONS_FOLDER env variable is not set.')
+            console.error("MIGRATIONS_FOLDER env variable is not set.");
         }
 
         if (!dbUrl) {
-            console.error('DATABASE_URL env variable is not set.')
+            console.error("DATABASE_URL env variable is not set.");
         }
-        console.error('Terminate migration...')
+        console.error("Terminate migration...");
         return;
     }
 
     console.log("mig folder: ", migrationsFolder);
     console.log("DB URL: ", dbUrl);
-
 
     const sql = new pg.Client({
         connectionString: dbUrl,
@@ -35,9 +34,11 @@ export const runMigration = async () => {
     try {
         console.log("Migrating...");
 
+        const migrationsFolderPath = path.resolve(dirname(__filename), migrationsFolder);
+        console.log("Migrations Folder Path:", migrationsFolderPath);
         await migrate(db, {
             migrationsSchema: "public",
-            migrationsFolder: path.resolve(dirname(__filename), migrationsFolder),
+            migrationsFolder: migrationsFolderPath,
         });
 
         console.log("Migration successful");
@@ -50,4 +51,3 @@ export const runMigration = async () => {
 
     return true;
 };
-
