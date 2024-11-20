@@ -111,7 +111,8 @@ const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 				}}
 			>
 				<div className={styles.userPic}>
-					<Icon iconName="UserPic" width={12} height={15} />
+					{/* <Icon iconName="UserPic" width={12} height={15} /> */}
+					<img src={account.info?.avatar} />
 				</div>
 			</div>
 			<UserDropDown
