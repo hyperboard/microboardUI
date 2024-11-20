@@ -27,7 +27,7 @@ export class Auth {
         this.authHelper = new AuthHelper(this.config);
     }
 
-    async login(payload: LoginPayload): Promise<{ accessToken: string; refreshToken: string } | null> {
+    async login(payload: LoginPayload): Promise<{ accessToken: string; refreshToken: string, userId: number } | null> {
         const user = await Drizzle.getUserAuthInfo(payload.email);
 
         if (!user) {
@@ -55,12 +55,14 @@ export class Auth {
         this.trySaveToken(user.id, refreshTokenHash);
 
         return {
+            userId: user.id,
             accessToken,
             refreshToken,
         };
     }
 
-    async register(payload: RegisterPayload): Promise<{ email: string; id: number } | null> {
+    async register(payload: RegisterPayload): Promise<{ email: string; id: number, name: string } | null> {
+        console.log(payload);
         const user = await Drizzle.getUserByEmail(payload.email);
 
         if (user) {
@@ -75,6 +77,7 @@ export class Auth {
         }
 
         const createdUser = await Drizzle.getUserByEmail(payload.email);
+        await Drizzle.addUsername(createdUser.userId, payload.name)
 
         if (!createdUser) {
             throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred when creating new user");
@@ -112,7 +115,7 @@ export class Auth {
             this.logger.error(`sendMail error: ${e}`);
         }
 
-        return { id: createdUser.userId, email: createdUser.userEmail! };
+        return { id: createdUser.userId, email: createdUser.userEmail!, name: createdUser.name! };
     }
 
     async refresh(payload: RefreshPayload): Promise<{
@@ -207,7 +210,7 @@ export class Auth {
 
         this.trySaveToken(updateUser.userId, refreshTokenHash);
 
-        return tokens;
+        return {...tokens, userId: updateUser.userId};
     }
 
     async checkVerificationCodes({ email }: { email: string }): Promise<string> {

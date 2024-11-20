@@ -8,6 +8,7 @@ import { jwtMiddleware } from "Middlewares/jwt.middleware";
 import { REFRESH_TOKEN_EXPIRY } from "./AuthHelper";
 
 import { catchAsync } from "shared/lib/catchAsync";
+import type { Users } from "../Users";
 export const REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
 function setCookies(res: Response, refreshToken: string) {
@@ -22,6 +23,7 @@ function setCookies(res: Response, refreshToken: string) {
 
 export function getAuthRouter(
     authService: Auth,
+    userService: Users,
     logger: winston.Logger
 ): express.Router {
     const router = express.Router();
@@ -41,8 +43,9 @@ export function getAuthRouter(
                         message: "Unauthorized",
                     });
                 }
+                await userService.uploadAvatar(jwts.userId);
                 setCookies(res, jwts.refreshToken);
-                return res.json(jwts);
+                return res.json({ refreshToken: jwts.refreshToken, accessToken: jwts.accessToken });
             } catch (err: HttpException | any) {
                 return handleError(res, err);
             }
@@ -51,18 +54,21 @@ export function getAuthRouter(
 
     router.post(
         "/auth/register",
+        body("name").isString().isLength({ min: 1 }),
         body("email").isEmail(),
         body("password").isLength({ min: 6 }),
         validateRequest,
         catchAsync(async (req, res) => {
             try {
-                const { email, password } = req.body;
+                const { email, password, name } = req.body;
                 const user = await authService.register({
                     email,
                     password,
+                    name
                 });
                 return res.json(user);
             } catch (err: HttpException | any) {
+                console.log(err);
                 return handleError(res, err);
             }
         }, logger)
@@ -114,9 +120,12 @@ export function getAuthRouter(
                     });
                 }
 
+                await userService.uploadAvatar(tokens.userId);
+
                 setCookies(res, tokens.refreshToken)
-                res.json(tokens);
+                res.json({ refreshToken: tokens.refreshToken, accessToken: tokens.accessToken });
             } catch (err) {
+                console.log(err);
                 return handleError(res, err);
             }
         }, logger

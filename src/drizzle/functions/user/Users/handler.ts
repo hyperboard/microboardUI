@@ -1,6 +1,7 @@
 import { and, eq, isNotNull } from "drizzle-orm";
 import { db } from "drizzle/db";
 import { boardOwner, boardPermissions, boards, userNames, userPasswords, users } from "drizzle/entities";
+import { userAvatars } from "drizzle/entities/userAvatars";
 
 /**
  * Function to add new user.
@@ -32,8 +33,10 @@ export async function getUser(userId: number) {
             userId: users.id,
             userEmail: users.email,
             userName: userNames.name,
+            avatar: userAvatars.avatar,
         })
         .from(users)
+        .leftJoin(userAvatars, eq(users.id, userAvatars.userId))
         .leftJoin(userNames, eq(users.id, userNames.userId))
         .where(and(isNotNull(users.email), eq(users.id, userId)))
         .execute();
