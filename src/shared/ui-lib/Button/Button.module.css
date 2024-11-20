@@ -104,6 +104,21 @@
 	border: 1px solid rgba(146, 79, 232, 1);
 }
 
+.quaternary {
+	background-color: #924fe8;
+	border: 1px solid transparent;
+	color: #ffffff;
+}
+
+.quaternary:active {
+	outline: 2px solid rgba(200, 178, 255, 0.5);
+}
+
+.quaternary:hover {
+	background-color: #1f2228;
+	color: #ffffff;
+}
+
 /* GHOST */
 
 .ghost {

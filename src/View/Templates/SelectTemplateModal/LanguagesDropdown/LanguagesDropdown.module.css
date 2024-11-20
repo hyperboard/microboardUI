@@ -17,6 +17,8 @@
 	height: 32px;
 	width: 112px;
 	background: none;
+	border-radius: 8px;
+	color: #0f132499;
 }
 
 .dropdownButton:hover {
@@ -32,7 +34,7 @@
 	width: 180px;
 	z-index: 1;
 	border: 1px solid rgba(222, 224, 227, 1);
-	border-radius: 12px;
+	border-radius: 8px;
 	box-shadow: 0px 3px 6px -2px rgba(20, 21, 26, 0.05);
 	box-shadow: 0px 10px 16px -3px rgba(20, 21, 26, 0.08);
 }
@@ -42,7 +44,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	border-radius: 12px;
+	border-radius: 6px;
 	width: 100%;
 	padding: 4px;
 	cursor: pointer;
@@ -54,8 +56,4 @@
 
 .dropdownItem:hover {
 	background-color: rgba(10, 15, 41, 0.04);
-}
-
-.dropdownActive svg:last-child {
-	transform: rotate(180deg);
 }

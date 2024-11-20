@@ -71,6 +71,8 @@ const Selector = forwardRef<SelectorHandle<true | false>, SelectorProps>(
 			}
 		}, [selectedOptions]);
 
+		const clickOutsideRef = useClickOutside(() => setIsOpen(false));
+
 		const handleOptionClick = (option: {
 			value: string;
 			label: React.ReactNode;
@@ -93,7 +95,10 @@ const Selector = forwardRef<SelectorHandle<true | false>, SelectorProps>(
 		};
 
 		return (
-			<div className={clsx(style.selectorContainer, containerClassName)}>
+			<div
+				ref={clickOutsideRef}
+				className={clsx(style.selectorContainer, containerClassName)}
+			>
 				{label && (
 					<>
 						<label className={style.label}>{label}</label>
@@ -115,7 +120,7 @@ const Selector = forwardRef<SelectorHandle<true | false>, SelectorProps>(
 												selectedOptions.length - 1 &&
 												", "}
 										</span>
-								  ))
+									))
 								: customSelectorClassName}
 						</span>
 						<span className={style.arrow}></span>

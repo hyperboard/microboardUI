@@ -5,6 +5,7 @@ import { Chevron } from "shared/ui-lib/Dropdown/Chevron";
 import styles from "./LanguagesDropdown.module.css";
 import { LANGUAGES } from "View/Tools/Template";
 import { useTranslation } from "react-i18next";
+import { useClickOutside } from "lib/useClickOutside";
 
 // This component will be removed after the dropdown from ui lib could be customized
 
@@ -24,18 +25,25 @@ export const LanguagesDropdown = ({
 		setIsDropdownOpen(!isDropdownOpen);
 	};
 
+	const handleSelectLanguage = (language: string): void => {
+		setSelectedLanguage(language);
+		setIsDropdownOpen(false);
+	};
+
+	const ref = useClickOutside(() => setIsDropdownOpen(false), []);
+
 	return (
-		<div className={styles.dropdown}>
-			<button
-				onClick={toggleDropdown}
-				className={clsx(
-					styles.dropdownButton,
-					isDropdownOpen && styles.dropdownActive,
-				)}
-			>
+		<div ref={ref} className={styles.dropdown}>
+			<button onClick={toggleDropdown} className={styles.dropdownButton}>
 				<Icon width={16} height={16} iconName="Planet" />
-				{selectedLanguage}
-				<Chevron />
+				{t(`common.languages.${selectedLanguage}`)}
+				<Icon
+					iconName={
+						isDropdownOpen ? "StrokeChevronUp" : "StrokeChevronDown"
+					}
+					width={14}
+					height={14}
+				/>
 			</button>
 			{isDropdownOpen && (
 				<ul className={styles.dropdownMenu}>
@@ -47,7 +55,7 @@ export const LanguagesDropdown = ({
 								selectedLanguage === value &&
 									styles.dropdownItemActive,
 							)}
-							onClick={() => setSelectedLanguage(value)}
+							onClick={() => handleSelectLanguage(value)}
 						>
 							{t(`common.languages.${value}`)}
 							{selectedLanguage === value && (

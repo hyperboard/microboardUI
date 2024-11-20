@@ -58,7 +58,7 @@ export const TemplateItemPreview = ({
 					></iframe>
 					<div className={styles.infoBox}>
 						<h2>{name}</h2>
-						<p>{description}</p>
+						<p className={styles.description}>{description}</p>
 						<Button
 							pattern="quaternary"
 							onClick={pasteSnapshotAndClose}

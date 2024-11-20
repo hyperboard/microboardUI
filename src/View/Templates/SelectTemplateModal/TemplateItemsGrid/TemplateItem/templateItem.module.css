@@ -17,15 +17,21 @@
 }
 
 .buttonsBox {
-	position: absolute;
 	width: 100%;
-	background-color: rgba(217, 217, 217, 0.8);
+	background-color: rgba(217, 217, 217, 1);
 	display: flex;
-	visibility: hidden;
-	height: 75%;
-	bottom: 0;
+	justify-content: center;
+	align-items: center;
 	border-radius: 16px;
-	animation-direction: alternate;
+	position: absolute;
+	bottom: 0;
+	/*visibility: hidden;*/
+	/*height: 75%;*/
+	/*bottom: 0;*/
+	/*animation-direction: alternate;*/
+	height: 100%;
+	opacity: 0;
+	transition: opacity 0.3s;
 }
 
 .buttonsBox > div {
@@ -36,10 +42,9 @@
 }
 
 .imageBox:hover > .buttonsBox {
-	justify-content: center;
-	align-items: center;
-	animation: showButtons 250ms ease-out alternate;
-	animation-fill-mode: both;
+	/*animation: showButtons 250ms ease-out alternate;*/
+	/*animation-fill-mode: both;*/
+	opacity: 1;
 }
 
 .image {
@@ -65,17 +70,17 @@
 	word-break: break-word;
 }
 
-@keyframes showButtons {
-	0% {
-		bottom: 0;
-		height: 75%;
-		visibility: hidden;
-	}
-	10% {
-		visibility: visible;
-	}
-	100% {
-		visibility: visible;
-		height: 100%;
-	}
-}
+/*@keyframes showButtons {*/
+/*	0% {*/
+/*		bottom: 0;*/
+/*		height: 75%;*/
+/*		visibility: hidden;*/
+/*	}*/
+/*	10% {*/
+/*		visibility: visible;*/
+/*	}*/
+/*	100% {*/
+/*		visibility: visible;*/
+/*		height: 100%;*/
+/*	}*/
+/*}*/

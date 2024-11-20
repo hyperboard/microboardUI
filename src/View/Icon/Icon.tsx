@@ -92,7 +92,9 @@ export type IconId =
 	| "Education"
 	| "Template"
 	| "Planet"
-	| "BackArrow";
+	| "BackArrow"
+	| "StrokeChevronDown"
+	| "StrokeChevronUp";
 
 type Props = {
 	iconName: IconId;

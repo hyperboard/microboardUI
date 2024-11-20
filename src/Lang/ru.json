@@ -144,7 +144,7 @@
 			"tooltip": "Стикер"
 		},
 		"addTemplate": {
-			"tooltip": "Шаблон"
+			"tooltip": "Шаблоны"
 		},
 		"addShape": {
 			"tooltip": "Фигура"
@@ -286,6 +286,11 @@
 		"createTemplate": "Создать шаблон",
 		"backToTemplates": "Вернуться к выбору шаблонов",
 		"relatedTemplates": "Похожие шаблоны",
+		"searchResults": {
+			"one": "результат",
+			"few": "результата",
+			"many": "результатов"
+		},
 		"UI": {
 			"inputs": {
 				"search": "Поиск",

@@ -1,5 +1,5 @@
 .modal {
-	padding: 0 16px;
+	padding: 0 4px 0 16px;
 }
 
 .wrapper {
@@ -23,7 +23,7 @@
 	align-items: center;
 	column-gap: 8px;
 	font-size: 16px;
-	font-weight: 500;
+	font-weight: 400;
 	line-height: 24px;
 	letter-spacing: -0.01em;
 }
@@ -40,6 +40,7 @@
 }
 
 .searchOptions {
+	padding-right: 12px;
 	display: flex;
 	justify-content: space-between;
 	margin-top: 32px;
@@ -53,6 +54,7 @@
 }
 
 .templatesContainerHeader {
+	padding-right: 12px;
 	display: flex;
 	gap: 12px;
 	height: 40px;
@@ -73,7 +75,23 @@
 .templatesGrid {
 	max-height: calc(90vh - 152px);
 	overflow-y: auto;
-	padding-right: 16px;
+	padding-right: 8px;
+	scrollbar-gutter: stable;
+}
+
+.templatesGrid::-webkit-scrollbar {
+	appearance: none;
+	width: 4px;
+}
+
+.templatesGrid::-webkit-scrollbar-button {
+	display: none;
+}
+
+.templatesGrid::-webkit-scrollbar-thumb {
+	display: block;
+	background-color: rgba(222, 225, 232, 1);
+	border-radius: 4px;
 }
 
 .noTemplatesText {

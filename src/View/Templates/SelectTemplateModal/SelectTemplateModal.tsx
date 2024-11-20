@@ -15,6 +15,7 @@ import { TemplateItemsGrid } from "./TemplateItemsGrid/TemplateItemsGrid";
 import { Template, TemplateCategory } from "View/Tools/Template";
 import { LanguagesDropdown } from "./LanguagesDropdown/LanguagesDropdown";
 import { useModal } from "View/Modal/ModalProvider";
+import { getCorrectEnding } from "utils";
 
 export const SelectTemplateModal = (): JSX.Element => {
 	const { t } = useTranslation();
@@ -170,9 +171,11 @@ export const SelectTemplateModal = (): JSX.Element => {
 							</div>
 							<div className={styles.searchOptions}>
 								<p>
-									{t(
-										`modalTemplate.category.useCaseItems.${selectedCategory}`,
-									)}
+									{inputValue
+										? `${templates.length} \"${inputValue}\" ${t("modalTemplate.searchResults." + getCorrectEnding(templates.length))}`
+										: t(
+												`modalTemplate.category.useCaseItems.${selectedCategory}`,
+											)}
 								</p>
 								<LanguagesDropdown
 									setSelectedLanguage={setSelectedLanguage}

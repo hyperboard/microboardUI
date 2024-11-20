@@ -146,7 +146,7 @@
 			"tooltip": "Sticker"
 		},
 		"addTemplate": {
-			"tooltip": "Template"
+			"tooltip": "Templates"
 		},
 		"addShape": {
 			"tooltip": "Shape"
@@ -288,6 +288,11 @@
 		"createTemplate": "Create template",
 		"backToTemplates": "Back to template center",
 		"relatedTemplates": "Related templates",
+		"searchResults": {
+			"one": "result",
+			"few": "results",
+			"many": "results"
+		},
 		"UI": {
 			"inputs": {
 				"search": "Search",
