@@ -617,10 +617,8 @@ export class Boards {
                         GROUP BY board_id
                     )
                     SELECT b.uniq_id AS board_uuid, 
-                        array_agg(bel.edit_link_uuid::uuid) AS edit_link_uuids,
                         lo.last_order
                     FROM boards b
-                    JOIN board_edit_link bel ON b.id = bel.board_id
                     JOIN last_order_per_board lo ON b.id = lo.board_id
                     GROUP BY b.uniq_id, lo.last_order
                 `;

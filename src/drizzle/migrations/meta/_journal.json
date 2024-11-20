@@ -15,6 +15,13 @@
       "when": 1731962558742,
       "tag": "0001_conscious_echo",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1732105023875,
+      "tag": "0002_adorable_doctor_strange",
+      "breakpoints": true
     }
   ]
 }

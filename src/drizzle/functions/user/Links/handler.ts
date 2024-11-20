@@ -102,6 +102,7 @@ export async function userVisited(userId: number, linkUUID: string) {
     }
 
 
+
     const editLink = await db.select().from(boardEditLink).where(eq(boardEditLink.editLinkUUID, linkUUID)).execute();
 
     if (editLink.length > 0) {

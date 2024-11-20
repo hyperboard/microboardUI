@@ -62,7 +62,7 @@ export function getV1Router(
     const router = express.Router();
     const authMiddleware = jwtMiddleware(logger);
     const apiBase = "/api/v1";
-    router.use(apiBase, getAuthRouter(auth, logger));
+    router.use(apiBase, getAuthRouter(auth, users, logger));
     router.use(apiBase, getBoardsRouter(boards, logger));
     router.use(
         apiBase,
