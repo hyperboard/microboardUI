@@ -10,16 +10,27 @@ import { Tail } from "View/AuthView/Tail";
 import { EmailIcon } from "./EmailIcon";
 import { LockIcon } from "./LockIcon";
 import styles from "./SignupView.module.css";
+import { PeopleIcon } from "./PeopleIcon";
 
 export const SignupView = (): React.ReactElement => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const formRef = React.useRef<HTMLFormElement>(null);
+	const [showNameInput, setShowNameInput] = useState(true);
+	const [username, setUsername] = useState("");
 	const [isDisabled, setIsDisabled] = useState(true);
 	const [isSubmitLoading, setIsSubmitLoading] = useState(false);
 	const [error, setError] = useState<string>("");
 	const [emailError, setEmailError] = useState<string>("");
 	const account = useAccount();
+
+	const next = () => {
+		if (isDisabled) {
+			return;
+		}
+
+		setShowNameInput(false);
+	};
 
 	const checkEmail = (): boolean => {
 		const email = formRef.current?.email.value;
@@ -67,6 +78,17 @@ export const SignupView = (): React.ReactElement => {
 		return true;
 	};
 
+	const checkName = (val: string) => {
+		if (val.length < 1) {
+			console.log(error);
+			setError("Name length too short, minimum 1 symbol");
+			setIsDisabled(true);
+			return;
+		}
+		setIsDisabled(false);
+		setError("");
+	};
+
 	const onSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
 	): Promise<void> => {
@@ -83,6 +105,7 @@ export const SignupView = (): React.ReactElement => {
 			.register(
 				event.currentTarget.email.value,
 				event.currentTarget.password.value,
+				username,
 			)
 			.then(res => res.data)
 			.catch(error => {
@@ -119,34 +142,64 @@ export const SignupView = (): React.ReactElement => {
 		<div className={styles.wrapper}>
 			<form className={styles.form} onSubmit={onSubmit} ref={formRef}>
 				<h1 className={styles.title}>{t("auth.signUpForFree")}</h1>
-				<Input
-					prefixIcon={<EmailIcon />}
-					id="email"
-					type="text"
-					placeholder={t("auth.emailPlaceholder")}
-					onBlur={checkForm}
-					hasError={!!emailError}
-					errorText={emailError}
-				/>
-				<Input
-					prefixIcon={<LockIcon />}
-					id="password"
-					errorText={error}
-					password
-					hasError={!!error}
-					placeholder={t("auth.passwordPlaceholder")}
-					helperText={t("auth.passwordAtLeast")}
-					onInput={checkForm}
-				/>
+				{showNameInput ? (
+					<Input
+						id="name"
+						onChange={ev => {
+							setUsername(ev.target.value);
+							checkName(ev.target.value);
+						}}
+						prefixIcon={<PeopleIcon />}
+						placeholder={t("auth.name")}
+						hasError={!!error}
+						errorText={error}
+					/>
+				) : (
+					<>
+						<Input
+							prefixIcon={<EmailIcon />}
+							id="email"
+							type="text"
+							placeholder={t("auth.emailPlaceholder")}
+							onBlur={checkForm}
+							hasError={!!emailError}
+							errorText={emailError}
+						/>
+						<Input
+							prefixIcon={<LockIcon />}
+							id="password"
+							errorText={error}
+							password
+							hasError={!!error}
+							placeholder={t("auth.passwordPlaceholder")}
+							helperText={t("auth.passwordAtLeast")}
+							onInput={checkForm}
+						/>
+					</>
+				)}
+
 				<div className={styles.btns}>
-					<Button
-						type="submit"
-						disabled={isDisabled}
-						loading={isSubmitLoading}
-					>
-						{t("auth.submit")}
-						<Tail />
-					</Button>
+					{showNameInput ? (
+						<Button
+							disabled={isDisabled}
+							type="button"
+							onClick={ev => {
+								ev.preventDefault();
+								next();
+							}}
+						>
+							{t("auth.next")}
+						</Button>
+					) : (
+						<Button
+							type="submit"
+							disabled={isDisabled}
+							loading={isSubmitLoading}
+						>
+							{t("auth.submit")}
+							<Tail />
+						</Button>
+					)}
 					<Button
 						pattern="ghost"
 						onClick={() => {

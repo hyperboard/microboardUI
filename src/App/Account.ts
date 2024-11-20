@@ -8,6 +8,8 @@ import { Storage } from "./Storage";
 type AccountInfo = {
 	id: number;
 	email: string;
+	name: string;
+	avatar: string;
 };
 
 type TokenData = {
@@ -31,7 +33,10 @@ export class Account {
 	private onLogout: (() => void) | null = null;
 	private onLogin: (() => void) | null = null;
 
-	constructor(storage: Storage, private readonly connection: Connection) {
+	constructor(
+		storage: Storage,
+		private readonly connection: Connection,
+	) {
 		this.permissions = new Permissions(this, storage);
 	}
 
@@ -88,8 +93,8 @@ export class Account {
 		this.onLogin?.();
 	}
 
-	register(email: string, password: string) {
-		return authApi.register({ email, password });
+	register(email: string, password: string, name: string) {
+		return authApi.register({ email, password, name });
 	}
 
 	async refreshTokens(): Promise<void> {

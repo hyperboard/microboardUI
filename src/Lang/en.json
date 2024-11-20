@@ -212,6 +212,9 @@
 		}
 	},
 	"auth": {
+		"name": "Name",
+		"nameDesc": "We will display your name on the board while you're working on it",
+		"next": "Next",
 		"backToBoard": "Back to the board",
 		"backToBoardSelection": "Back to the board selection",
 		"checkEmail": "Check for an email with a pass code.",
