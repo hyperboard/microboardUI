@@ -409,7 +409,10 @@ export const CreateTemplateModal = (): JSX.Element => {
 				</Button>
 				<Selector
 					multiselect={true}
-					options={LANGUAGES}
+					options={LANGUAGES.map(item => {
+						item.label = t(`common.languages.${item.value}`);
+						return item;
+					})}
 					ref={languagesSelectorRef}
 					onChange={forceUpdate}
 					containerClassName={styles.languagesSelector}
