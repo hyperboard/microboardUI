@@ -71,7 +71,7 @@ const Selector = forwardRef<SelectorHandle<true | false>, SelectorProps>(
 			}
 		}, [selectedOptions]);
 
-		const clickOutsideRef = useClickOutside(() => setIsOpen(false));
+		const selectorContainerRef = useClickOutside(() => setIsOpen(false));
 
 		const handleOptionClick = (option: {
 			value: string;
@@ -96,7 +96,7 @@ const Selector = forwardRef<SelectorHandle<true | false>, SelectorProps>(
 
 		return (
 			<div
-				ref={clickOutsideRef}
+				ref={selectorContainerRef}
 				className={clsx(style.selectorContainer, containerClassName)}
 			>
 				{label && (

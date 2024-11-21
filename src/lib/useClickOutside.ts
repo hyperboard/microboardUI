@@ -22,9 +22,9 @@ export const useClickOutside = (
 	};
 
 	useEffect(() => {
-		document.addEventListener("click", handleClickOutside);
+		document.body.addEventListener("click", handleClickOutside);
 		return () => {
-			document.removeEventListener("click", handleClickOutside);
+			document.body.removeEventListener("click", handleClickOutside);
 		};
 	}, [callback]);
 

@@ -282,7 +282,7 @@
 	},
 	"modalTemplate": {
 		"templates": "Шаблоны",
-		"noTemplates": "Шаблоны из данной категории отсутствуют",
+		"noTemplates": "Мы не смогли найти подходящий шаблон.",
 		"createTemplate": "Создать шаблон",
 		"backToTemplates": "Вернуться к выбору шаблонов",
 		"relatedTemplates": "Похожие шаблоны",

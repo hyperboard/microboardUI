@@ -95,8 +95,13 @@
 }
 
 .noTemplatesText {
-	text-align: center;
-	margin-top: 25%;
+	color: #0f132499;
+	margin-top: 12px;
+	font-family: Manrope;
+	font-size: 24px;
+	font-weight: 500;
+	line-height: 32px;
+	letter-spacing: -0.014em;
 }
 
 @media (max-width: 768px) {

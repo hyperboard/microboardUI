@@ -284,7 +284,7 @@
 	},
 	"modalTemplate": {
 		"templates": "Templates",
-		"noTemplates": "There are no templates from this category",
+		"noTemplates": "We couldn’t find a matching template.",
 		"createTemplate": "Create template",
 		"backToTemplates": "Back to template center",
 		"relatedTemplates": "Related templates",

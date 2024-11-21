@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import clsx from "clsx";
 import { Icon } from "../../../Icon";
-import { Chevron } from "shared/ui-lib/Dropdown/Chevron";
 import styles from "./LanguagesDropdown.module.css";
 import { LANGUAGES } from "View/Tools/Template";
 import { useTranslation } from "react-i18next";
@@ -19,6 +18,7 @@ export const LanguagesDropdown = ({
 	selectedLanguage,
 }: Props) => {
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+	const dropdownRef = useClickOutside(() => setIsDropdownOpen(false));
 	const { t } = useTranslation();
 
 	const toggleDropdown = (): void => {
@@ -30,10 +30,8 @@ export const LanguagesDropdown = ({
 		setIsDropdownOpen(false);
 	};
 
-	const ref = useClickOutside(() => setIsDropdownOpen(false), []);
-
 	return (
-		<div ref={ref} className={styles.dropdown}>
+		<div ref={dropdownRef} className={styles.dropdown}>
 			<button onClick={toggleDropdown} className={styles.dropdownButton}>
 				<Icon width={16} height={16} iconName="Planet" />
 				{t(`common.languages.${selectedLanguage}`)}
