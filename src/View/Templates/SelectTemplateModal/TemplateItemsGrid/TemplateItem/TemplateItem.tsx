@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { SyntheticEvent, useState } from "react";
 import styles from "./templateItem.module.css";
 import { Button } from "shared/ui-lib/Button/Button";
 import { useAppContext } from "View/AppContext";
@@ -27,7 +27,8 @@ export const TemplateItem = ({
 		setIsLoading(false);
 	};
 
-	const handleImageError = () => {
+	const handleImageError = (e: SyntheticEvent<HTMLImageElement, Event>) => {
+		e.currentTarget.src = PlaceholderImg;
 		setIsLoading(false);
 	};
 
