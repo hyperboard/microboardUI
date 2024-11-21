@@ -93,7 +93,12 @@ export const SignupView = (): React.ReactElement => {
 		event: React.FormEvent<HTMLFormElement>,
 	): Promise<void> => {
 		event.preventDefault();
-
+		checkName(username);
+		if (!username || error) {
+			return;
+		} else {
+			setShowNameInput(false);
+		}
 		if (!checkForm()) {
 			return;
 		}
@@ -202,10 +207,12 @@ export const SignupView = (): React.ReactElement => {
 					)}
 					<Button
 						pattern="ghost"
-						onClick={() => {
+						onClick={ev => {
+							ev.preventDefault();
 							navigate(`/auth/sign-in${location.search}`);
 						}}
 						className={styles.login}
+						type="button"
 					>
 						{t("auth.signIn")}
 					</Button>

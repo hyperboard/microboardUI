@@ -19,6 +19,7 @@ import { ChangePassword } from "./icons/ChangePassword";
 import { Logout } from "./icons/Logout";
 import styles from "./UserPanel.module.css";
 import { useAppContext } from "View/AppContext";
+import { getEmailPrefix } from "lib/getEmailPrefix";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	email?: string;
@@ -111,8 +112,11 @@ const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 				}}
 			>
 				<div className={styles.userPic}>
-					{/* <Icon iconName="UserPic" width={12} height={15} /> */}
-					<img src={account.info?.avatar} />
+					{account.info?.avatar ? (
+						<img src={account.info?.avatar} />
+					) : (
+						<Icon iconName="UserPic" width={12} height={15} />
+					)}
 				</div>
 			</div>
 			<UserDropDown
@@ -518,9 +522,14 @@ export const UserPanel: React.FC<{ app: App }> = ({ app }) => {
 				{/* TODO: remove temporarily inline style */}
 				<div style={{ padding: "8px 6px" }}>
 					<UserPic
-						email={account.info?.email ?? ""}
+						email={
+							account.info?.name ??
+							getEmailPrefix(
+								account.info?.email ?? "",
+								"Anonymous",
+							)
+						}
 						setIsModalOpen={setIsModalOpen}
-						app={app}
 					/>
 				</div>
 			</UiPanel>
