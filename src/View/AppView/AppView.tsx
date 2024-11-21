@@ -46,8 +46,14 @@ export function AppView() {
 	};
 
 	useEffect(() => {
-		const handlePaste = (event: ClipboardEvent) => {
+		const handlePaste = (event: ClipboardEvent): void => {
 			controller.onPaste(event, app);
+		};
+
+		const handleCtrlWheel = (ev: WheelEvent): void => {
+			if (ev.ctrlKey) {
+				ev.preventDefault();
+			}
 		};
 
 		app.boardSubject.subscribe(update);
@@ -59,6 +65,9 @@ export function AppView() {
 			});
 			container.addEventListener("wheel", controller.onWheel, {
 				capture: true,
+				passive: false,
+			});
+			document.addEventListener("wheel", handleCtrlWheel, {
 				passive: false,
 			});
 			window.addEventListener("resize", controller.onResize);
@@ -93,6 +102,7 @@ export function AppView() {
 			if (container) {
 				document.removeEventListener("touchmove", preventDefault);
 				container.removeEventListener("wheel", controller.onWheel);
+				document.removeEventListener("wheel", handleCtrlWheel);
 				window.removeEventListener("resize", controller.onResize);
 				container.removeEventListener(
 					"contextmenu",
