@@ -19,6 +19,7 @@ export const TemplateItem = ({
 	setPresentedTemplate,
 }: TemplateItemProps) => {
 	const [isLoading, setIsLoading] = useState(true);
+	const [isImageError, setIsImageError] = useState(!template.preview);
 	const { board } = useAppContext();
 	const { hideModal } = useModal();
 	const { t } = useTranslation();
@@ -28,8 +29,8 @@ export const TemplateItem = ({
 	};
 
 	const handleImageError = (e: SyntheticEvent<HTMLImageElement, Event>) => {
-		e.currentTarget.src = PlaceholderImg;
 		setIsLoading(false);
+		setIsImageError(true);
 	};
 
 	const pasteSnapshotAndClose = () => {
@@ -45,9 +46,13 @@ export const TemplateItem = ({
 					onClick={() => setPresentedTemplate(template)}
 					className={clsx(
 						styles.image,
-						!template.preview && styles.noImage,
+						isImageError && styles.noImage,
 					)}
-					src={isLoading ? PlaceholderImg : template.preview}
+					src={
+						isLoading || isImageError
+							? PlaceholderImg
+							: template.preview
+					}
 					alt={template.name}
 					onLoad={handleImageLoad}
 					onError={handleImageError}
