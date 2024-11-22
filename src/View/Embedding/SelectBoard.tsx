@@ -18,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { api, boardsApi } from "shared/api";
 import { useBoardsList } from "App/useBoardsList";
 import { useAccount } from "App/useAccount";
+import { Logout } from "View/UserPanel/icons/Logout";
 
 const customHeader: CSSProperties = {
 	padding: "6px",
@@ -106,8 +107,8 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 			const url = app.account.isLoggedIn
 				? authedUrl
 				: authorKey
-				? unauthedUrl
-				: "";
+					? unauthedUrl
+					: "";
 			if (!url) {
 				throw new Error("unable to create link");
 			}
@@ -207,15 +208,6 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 					setLoading(false);
 					// selected.notFound = true;
 					// TODO fixed not found boards
-					if (
-						boardsList.publicBoards.some(
-							shared => shared.id === selected.id,
-						)
-					) {
-						// app.storage.setPublicBoard(selected);
-					} else {
-						// app.storage.setPublicBoard(selected, false);
-					}
 					setSelected({ ...selected, notFound: true });
 					boardsList.subject.publish();
 					// app.storage.subject.publish();
@@ -250,8 +242,39 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 						<div className={style.headerTitle}>Microboard</div>
 					</div>
 					{isAuth ? (
-						<div className={style.profile}>
-							<Icon iconName="UserPic" width={16} height={16} />
+						<div
+							ref={userPanelRef}
+							className={style.profile}
+							onClick={() => setIsDropdownOpen(prev => !prev)}
+						>
+							{account.info?.avatar ? (
+								<img src={account.info?.avatar} />
+							) : (
+								<Icon
+									iconName="UserPic"
+									width={16}
+									height={16}
+								/>
+							)}
+							<UserDropDown
+								openerRef={userPanelRef}
+								isOpen={isDropdownOpen}
+								setIsDropdownOpen={setIsDropdownOpen}
+								customTop={50}
+								email={account.info?.email}
+								buttons={[
+									<Button
+										key="userDropDown2"
+										pattern="ghost"
+										onClick={async () => {
+											await account.logout();
+											await boardsList.loadBoards();
+										}}
+									>
+										<Logout /> {t("auth.logout")}
+									</Button>,
+								]}
+							/>
 						</div>
 					) : (
 						<div

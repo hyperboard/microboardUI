@@ -242,6 +242,7 @@
 		"rememberPassword": "Помните свой пароль?",
 		"loginHere": "Войдите здесь",
 		"login": "Войти",
+		"logout": "Выйти",
 		"restorePassword": "Восстановления пароля",
 		"checkInbox": "Проверьте свой email",
 		"weSentCode": "Мы выслали код верификации по адресу",

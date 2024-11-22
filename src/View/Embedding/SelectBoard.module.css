@@ -144,12 +144,12 @@
 	align-items: center;
 	justify-content: center;
 	overflow: hidden;
+	cursor: pointer;
 }
 
 .profile.unAuth {
 	background-color: #717684;
 	color: white;
-	cursor: pointer;
 }
 
 .selectorsContainer {
