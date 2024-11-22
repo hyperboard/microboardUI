@@ -241,92 +241,75 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 						<Logo id="logo" />
 						<div className={style.headerTitle}>Microboard</div>
 					</div>
-					{isAuth ? (
-						<div
-							ref={userPanelRef}
-							className={style.profile}
-							onClick={() => setIsDropdownOpen(prev => !prev)}
-						>
-							{account.info?.avatar ? (
-								<img src={account.info?.avatar} />
-							) : (
-								<Icon
-									iconName="UserPic"
-									width={16}
-									height={16}
-								/>
-							)}
-							<UserDropDown
-								openerRef={userPanelRef}
-								isOpen={isDropdownOpen}
-								setIsDropdownOpen={setIsDropdownOpen}
-								customTop={50}
-								email={account.info?.email}
-								buttons={[
-									<Button
-										key="userDropDown2"
-										pattern="ghost"
-										onClick={async () => {
-											await account.logout();
-											await boardsList.loadBoards();
-										}}
-									>
-										<Logout /> {t("auth.logout")}
-									</Button>,
-								]}
-							/>
-						</div>
-					) : (
-						<div
-							ref={userPanelRef}
-							className={`${style.profile} ${style.unAuth}`}
-							onClick={() => setIsDropdownOpen(prev => !prev)}
-						>
+					<div
+						ref={userPanelRef}
+						className={`${style.profile} ${!isAuth && style.unAuth}`}
+						onClick={() => setIsDropdownOpen(prev => !prev)}
+					>
+						{isAuth && account.info?.avatar ? (
+							<img src={account.info?.avatar} />
+						) : (
 							<Icon iconName="UserPic" width={16} height={16} />
-							<UserDropDown
-								openerRef={userPanelRef}
-								isOpen={isDropdownOpen}
-								setIsDropdownOpen={setIsDropdownOpen}
-								customTop={50}
-								buttons={[
-									<Button
-										key="userDropDown1"
-										onClick={() => {
-											setIsDropdownOpen(false);
-											navigate(
-												"/auth/sign-in?backToSelect=true",
-											);
-										}}
-										pattern="ghost"
-									>
-										<Icon
-											iconName="SignIn"
-											width={20}
-											height={20}
-										/>{" "}
-										{t("auth.signIn")}
-									</Button>,
-									<Button
-										key="userDropDown2"
-										pattern="ghost"
-										onClick={() => {
-											setIsDropdownOpen(false);
-											navigate(
-												"/auth/sign-up?backToSelect=true",
-											);
-										}}
-									>
-										<Icon
-											iconName="BoxedPlus"
-											width={20}
-											height={20}
-										/>{" "}
-										{t("auth.signUp")}
-									</Button>,
-								]}
-							/>
-						</div>
-					)}
+						)}
+						<UserDropDown
+							openerRef={userPanelRef}
+							isOpen={isDropdownOpen}
+							setIsDropdownOpen={setIsDropdownOpen}
+							customTop={50}
+							email={account.info?.email}
+							buttons={
+								isAuth
+									? [
+											<Button
+												key="userDropDown2"
+												pattern="ghost"
+												onClick={async () => {
+													await account.logout();
+													await boardsList.loadBoards();
+												}}
+											>
+												<Logout /> {t("auth.logout")}
+											</Button>,
+										]
+									: [
+											<Button
+												key="userDropDown1"
+												onClick={() => {
+													setIsDropdownOpen(false);
+													navigate(
+														"/auth/sign-in?backToSelect=true",
+													);
+												}}
+												pattern="ghost"
+											>
+												<Icon
+													iconName="SignIn"
+													width={20}
+													height={20}
+												/>{" "}
+												{t("auth.signIn")}
+											</Button>,
+											<Button
+												key="userDropDown2"
+												pattern="ghost"
+												onClick={() => {
+													setIsDropdownOpen(false);
+													navigate(
+														"/auth/sign-up?backToSelect=true",
+													);
+												}}
+											>
+												<Icon
+													iconName="BoxedPlus"
+													width={20}
+													height={20}
+												/>{" "}
+												{t("auth.signUp")}
+											</Button>,
+										]
+							}
+						/>
+					</div>
 				</div>
 				<div className={style.title}>
 					{!selected && t("embedding.title")}
