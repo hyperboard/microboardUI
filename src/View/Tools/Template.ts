@@ -33,6 +33,6 @@ export const CATEGORIES: TemplateCategory[] = [
 ];
 
 export const LANGUAGES: { value: string; label: string }[] = [
-	{ value: "en", label: "English" },
 	{ value: "ru", label: "Russian" },
+	{ value: "en", label: "English" },
 ];

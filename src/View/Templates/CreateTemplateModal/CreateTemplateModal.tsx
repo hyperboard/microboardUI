@@ -14,6 +14,7 @@ import { useModal } from "View/Modal/ModalProvider";
 import Selector, { SelectorHandle } from "../../Ui/Selector/Selector";
 import { useForceUpdate } from "lib/useForceUpdate";
 import { notify } from "View/Ui/Toast/notify";
+import { TolgeeProviderProvider } from "../TolgeeProvider.tsx";
 
 interface TranslatableInput {
 	id: string;
@@ -22,14 +23,7 @@ interface TranslatableInput {
 	defaultValue?: string;
 }
 
-const TOLGEE_API_KEY =
-	import.meta.env.TOLGEE_API_KEY ||
-	"tgpak_geydamzsl4zw4ntogvrgcmbvgnwxm5trmnstmmtnmjwxkntlozuq";
-const TOLGEE_API_URL =
-	import.meta.env.TOLGEE_API_URL || "https://app.tolgee.io";
-const TOLGEE_PROJECT_ID = import.meta.env.TOLGEE_PROJECT_ID || "10032";
-
-export const CreateTemplateModal = (): JSX.Element => {
+const CreateTemplate = (): JSX.Element => {
 	const formRef = useRef<HTMLFormElement>(null);
 	const categoriesSelectorRef = useRef<SelectorHandle<true>>(null);
 	const languagesSelectorRef = useRef<SelectorHandle<true>>(null);
@@ -70,12 +64,12 @@ export const CreateTemplateModal = (): JSX.Element => {
 			maxBodyLength: Infinity,
 			headers: {
 				Accept: "application/json",
-				"X-API-Key": TOLGEE_API_KEY,
+				"X-API-Key": import.meta.env.TOLGEE_API_KEY,
 			},
 		};
 		try {
 			const response = await fetch(
-				`${TOLGEE_API_URL}/v2/projects/${TOLGEE_PROJECT_ID}/languages`,
+				`${import.meta.env.TOLGEE_API_URL}/v2/projects/${import.meta.env.TOLGEE_PROJECT_ID}/languages`,
 				requestOptions,
 			);
 			return (await response.json())._embedded.languages as {
@@ -97,13 +91,13 @@ export const CreateTemplateModal = (): JSX.Element => {
 			headers: {
 				"Content-Type": "application/json",
 				Accept: "application/json",
-				"X-API-Key": TOLGEE_API_KEY,
+				"X-API-Key": import.meta.env.TOLGEE_API_KEY,
 			},
 			body: data,
 		};
 		try {
 			const response = await fetch(
-				`${TOLGEE_API_URL}/v2/projects/${TOLGEE_PROJECT_ID}/suggest/machine-translations`,
+				`${import.meta.env.TOLGEE_API_URL}/v2/projects/${import.meta.env.TOLGEE_PROJECT_ID}/suggest/machine-translations`,
 				requestOptions,
 			);
 			return await response.json();
@@ -139,15 +133,6 @@ export const CreateTemplateModal = (): JSX.Element => {
 			.finally(() => setSubmitDisabled(false));
 	};
 
-	const handleChangeImageClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-		e.preventDefault();
-		const input = inputRef.current;
-		if (!input) {
-			return;
-		}
-		input.click();
-	};
-
 	async function createTemplate(body: string) {
 		const response = await fetch(
 			`${getApiUrl()}/templates/${board.getBoardId()}`,
@@ -171,6 +156,15 @@ export const CreateTemplateModal = (): JSX.Element => {
 	}
 
 	const tolgee = useTolgee();
+
+	const handleChangeImageClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+		e.preventDefault();
+		const input = inputRef.current;
+		if (!input) {
+			return;
+		}
+		input.click();
+	};
 
 	const handleTranslateClick = async (
 		e: React.MouseEvent<HTMLButtonElement>,
@@ -197,91 +191,72 @@ export const CreateTemplateModal = (): JSX.Element => {
 
 		const promises: Promise<void>[] = [];
 
+		const updateInputs = (
+			language: string,
+			type: "description" | "name",
+		) => {
+			let targetLanguage = nameLanguage;
+			translationData.baseText = name;
+			if (type === "description") {
+				targetLanguage = descriptionLanguage;
+				translationData.baseText = description;
+			}
+			console.log(language, targetLanguage);
+			if (language !== targetLanguage) {
+				const languageToTranslate = languages.find(lan => {
+					return language === tolgee.getLanguage()
+						? lan.tag === targetLanguage
+						: lan.tag === language;
+				});
+				if (!languageToTranslate) {
+					return;
+				}
+				translationData.targetLanguageId = languageToTranslate.id;
+
+				const res = createTranslationRequest(
+					JSON.stringify(translationData),
+				).then(data => {
+					const finalLang =
+						languageToTranslate.tag === targetLanguage
+							? tolgee.getLanguage()
+							: languageToTranslate.tag;
+					const defaultValue = data.result.TOLGEE.output as string;
+					let label: string = "";
+					if (type === "name") {
+						label = `Template name ${finalLang}`;
+						setNameInputs([
+							...nameInputs,
+							{
+								defaultValue,
+								label,
+								placeholder: label,
+								id: `templateName${finalLang}`,
+							},
+						]);
+					} else if (type === "description") {
+						label = `Description ${finalLang}`;
+						setDescriptionInputs([
+							...descriptionInputs,
+							{
+								defaultValue,
+								label,
+								placeholder: label,
+								id: `description${finalLang}`,
+							},
+						]);
+					}
+				});
+				promises.push(res);
+			}
+		};
+
 		for (const language of languagesSelectorRef
 			.current!.getSelectedOptions()
 			.map(o => o.value)) {
-			if (language !== nameLanguage) {
-				const languageToTranslate = languages.find(lan => {
-					return language === tolgee.getLanguage()
-						? lan.tag === nameLanguage
-						: lan.tag === language;
-				});
-				if (!languageToTranslate) {
-					return;
-				}
-				translationData.targetLanguageId = languageToTranslate.id;
-				translationData.baseText = name;
-				const res = createTranslationRequest(
-					JSON.stringify(translationData),
-				).then(data => {
-					const finalLang =
-						languageToTranslate.tag === nameLanguage
-							? tolgee.getLanguage()
-							: languageToTranslate.tag;
-					const defaultValue = data.result.TOLGEE.output as string;
-					const label = `Template name ${finalLang}`;
-					setNameInputs([
-						...nameInputs,
-						{
-							defaultValue,
-							label,
-							placeholder: label,
-							id: `templateName${finalLang}`,
-						},
-					]);
-				});
-				promises.push(res);
-			}
-			if (language !== descriptionLanguage) {
-				const languageToTranslate = languages.find(lan => {
-					return language === tolgee.getLanguage()
-						? lan.tag === descriptionLanguage
-						: lan.tag === language;
-				});
-				if (!languageToTranslate) {
-					return;
-				}
-				translationData.targetLanguageId = languageToTranslate.id;
-				translationData.baseText = description;
-				const res = createTranslationRequest(
-					JSON.stringify(translationData),
-				).then(data => {
-					const finalLang =
-						languageToTranslate.tag === descriptionLanguage
-							? tolgee.getLanguage()
-							: languageToTranslate.tag;
-					const defaultValue = data.result.TOLGEE.output as string;
-					const label = `Description ${finalLang}`;
-					setDescriptionInputs([
-						...descriptionInputs,
-						{
-							defaultValue,
-							label,
-							placeholder: label,
-							id: `description${finalLang}`,
-						},
-					]);
-				});
-				promises.push(res);
-			}
+			updateInputs(language, "name");
+			updateInputs(language, "description");
 		}
 		Promise.all(promises).finally(() => {
-			// setNameInputs(prevState => {
-			// 	prevState[0] = {
-			// 		id: "templateName" + nameLanguage,
-			// 		placeholder: prevState[0].placeholder,
-			// 		defaultValue: formRef.current[prevState[0].id].value,
-			// 	};
-			// 	return prevState;
-			// });
-			// setDescriptionInputs(prevState => {
-			// 	prevState[0] = {
-			// 		id: "description" + descriptionLanguage,
-			// 		placeholder: prevState[0].placeholder,
-			// 		defaultValue: formRef.current[prevState[0].id].value,
-			// 	};
-			// 	return prevState;
-			// });
 			setSubmitDisabled(false);
 		});
 	};
@@ -294,7 +269,7 @@ export const CreateTemplateModal = (): JSX.Element => {
 
 		const form = formRef.current;
 		if (!form) {
-			return setErrors(["Unexpeced error, no form ref"]);
+			return setErrors(["Unexpeced error"]);
 		}
 		const multilanguageDescription: Record<string, string> = {};
 		const multilanguageName: Record<string, string> = {};
@@ -463,5 +438,13 @@ export const CreateTemplateModal = (): JSX.Element => {
 				) : undefined}
 			</form>
 		</Modal>
+	);
+};
+
+export const CreateTemplateModal = () => {
+	return (
+		<TolgeeProviderProvider>
+			<CreateTemplate />
+		</TolgeeProviderProvider>
 	);
 };

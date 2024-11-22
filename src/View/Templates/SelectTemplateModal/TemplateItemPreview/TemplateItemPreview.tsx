@@ -54,7 +54,7 @@ export const TemplateItemPreview = ({
 				<div className={styles.mainSection}>
 					<iframe
 						className={styles.frame}
-						src={`${window.location.origin}/boards/${viewLinkId}`}
+						src={`${window.location.origin}/boards/${viewLinkId}?userPanel=false`}
 					></iframe>
 					<div className={styles.infoBox}>
 						<h2>{name}</h2>

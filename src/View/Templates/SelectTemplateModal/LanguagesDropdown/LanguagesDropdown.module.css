@@ -1,10 +1,6 @@
 .dropdown {
 	position: relative;
 	display: inline-block;
-	font-size: 14px;
-	font-weight: 400;
-	line-height: 20px;
-	letter-spacing: -0.005em;
 	text-align: left;
 	color: rgba(15, 19, 36, 0.6);
 }
@@ -19,6 +15,11 @@
 	background: none;
 	border-radius: 8px;
 	color: #0f132499;
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 20px;
+	letter-spacing: -0.005em;
+	font-family: "Manrope", "Arial";
 }
 
 .dropdownButton:hover {

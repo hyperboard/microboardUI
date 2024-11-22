@@ -41,6 +41,7 @@ const ModalContext = createContext<ModalContextType>({
 		warnNotification: false,
 		selectTemplate: false,
 		createTemplate: false,
+		setLinkTo: false,
 	},
 	showModal: modalName => {},
 	hideModal: modalName => {},
@@ -87,6 +88,7 @@ export const ModalProvider = ({ children }) => {
 		warnNotification: false,
 		selectTemplate: false,
 		createTemplate: false,
+		setLinkTo: false,
 	});
 	const [data, setModalData] = useState<unknown>();
 
