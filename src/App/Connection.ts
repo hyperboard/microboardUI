@@ -27,13 +27,11 @@ export interface BoardEventMsg {
 	boardId: string;
 	// event: BoardEvent | BoardEventPack;
 	event: SyncEvent;
-	messageId: string;
 	sequenceNumber: number;
 }
 
 export interface ConfirmationMsg {
 	type: "Confirmation";
-	messageId: string;
 	boardId: string;
 	sequenceNumber: number;
 	order: number;
@@ -381,13 +379,10 @@ export function createConnection(getBoard: () => Board): Connection {
 		event: SyncEvent,
 		sequenceNumber: number,
 	): void {
-		const messageId = generateMessageId();
-
 		const message: BoardEventMsg = {
 			type: "BoardEvent",
 			boardId,
 			event,
-			messageId,
 			sequenceNumber,
 		};
 
