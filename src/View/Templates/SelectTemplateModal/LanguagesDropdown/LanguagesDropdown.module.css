@@ -11,7 +11,8 @@
 	justify-content: space-around;
 	border: none;
 	height: 32px;
-	width: 112px;
+	padding: 8px;
+	gap: 8px;
 	background: none;
 	border-radius: 8px;
 	color: #0f132499;

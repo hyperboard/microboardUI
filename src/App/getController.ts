@@ -191,17 +191,6 @@ export function getController(
 		);
 
 		const isSingleItemInSelection = board.selection.items.isSingle();
-		const isFrame = board.selection.items.getSingle()?.itemType === "Frame";
-
-		if (
-			isFrame &&
-			event.key === "Enter" &&
-			context === "EditTextUnderPointer"
-		) {
-			board.selection.setContext("EditUnderPointer");
-			event.stopPropagation();
-		}
-
 		const isTextEditStarted =
 			!isHotkeyTriggered &&
 			context !== "EditTextUnderPointer" &&

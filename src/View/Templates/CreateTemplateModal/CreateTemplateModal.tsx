@@ -15,6 +15,7 @@ import Selector, { SelectorHandle } from "../../Ui/Selector/Selector";
 import { useForceUpdate } from "lib/useForceUpdate";
 import { notify } from "View/Ui/Toast/notify";
 import { TolgeeProviderProvider } from "../TolgeeProvider.tsx";
+import { getTolgeeApiUrl } from "View/Templates/config";
 
 interface TranslatableInput {
 	id: string;
@@ -59,19 +60,14 @@ const CreateTemplate = (): JSX.Element => {
 	};
 
 	const getLanguages = async () => {
-		const requestOptions = {
-			method: "get",
-			maxBodyLength: Infinity,
-			headers: {
-				Accept: "application/json",
-				"X-API-Key": import.meta.env.TOLGEE_API_KEY,
-			},
-		};
 		try {
-			const response = await fetch(
-				`${import.meta.env.TOLGEE_API_URL}/v2/projects/${import.meta.env.TOLGEE_PROJECT_ID}/languages`,
-				requestOptions,
-			);
+			const response = await fetch(getTolgeeApiUrl("/languages"), {
+				method: "get",
+				headers: {
+					Accept: "application/json",
+					"X-API-Key": import.meta.env.TOLGEE_API_KEY,
+				},
+			});
 			return (await response.json())._embedded.languages as {
 				id: number;
 				name: string;
@@ -85,74 +81,58 @@ const CreateTemplate = (): JSX.Element => {
 	};
 
 	const createTranslationRequest = async (data: string) => {
-		const requestOptions = {
+		return fetch(getTolgeeApiUrl("/suggest/machine-translations"), {
 			method: "post",
-			maxBodyLength: Infinity,
 			headers: {
 				"Content-Type": "application/json",
 				Accept: "application/json",
 				"X-API-Key": import.meta.env.TOLGEE_API_KEY,
 			},
 			body: data,
-		};
-		try {
-			const response = await fetch(
-				`${import.meta.env.TOLGEE_API_URL}/v2/projects/${import.meta.env.TOLGEE_PROJECT_ID}/suggest/machine-translations`,
-				requestOptions,
-			);
-			return await response.json();
-		} catch (error) {
-			console.log(error);
-		}
+		})
+			.then(response => response.json())
+			.catch(error => console.log(error));
 	};
 
-	const handleFileChange: ChangeEventHandler<HTMLInputElement> = e => {
-		const input = e.target;
-		const file = input.files?.[0];
+	const handleFileChange: ChangeEventHandler<HTMLInputElement> = async e => {
+		const file = e.target.files?.[0];
 		if (!file) {
 			return;
 		}
+		setErrors([]);
 
 		const headers = new Headers();
 		headers.append("content-type", "image/png");
 		headers.append("x-image-id", Date.now().toString());
 
-		const requestOptions = {
+		setSubmitDisabled(true);
+
+		const response = await fetch(getApiUrl("/media"), {
 			method: "POST",
 			headers,
 			body: file,
-		};
-
-		setSubmitDisabled(true);
-
-		fetch(getApiUrl("/media"), requestOptions)
-			.then(response => response.json())
-			.then(result => {
-				setImageSrc(result.src);
-			})
-			.finally(() => setSubmitDisabled(false));
+		});
+		if (!response.ok) {
+			setErrors(["Error while uploading image"]);
+		}
+		setImageSrc((await response.json()).src);
+		setSubmitDisabled(false);
 	};
 
 	async function createTemplate(body: string) {
-		const response = await fetch(
-			`${getApiUrl()}/templates/${board.getBoardId()}`,
-			{
-				method: "POST",
-				mode: "cors",
-				cache: "no-cache",
-				credentials: "same-origin",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${Cookies.get("accessToken")}`,
-				},
-				body,
-				redirect: "follow",
-				referrerPolicy: "no-referrer",
+		await fetch(`${getApiUrl()}/templates/${board.getBoardId()}`, {
+			method: "POST",
+			mode: "cors",
+			cache: "no-cache",
+			credentials: "same-origin",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${Cookies.get("accessToken")}`,
 			},
-		);
-		if (!response.ok) {
-			throw new Error("response not OK");
-		}
+			body,
+			redirect: "follow",
+			referrerPolicy: "no-referrer",
+		});
 	}
 
 	const tolgee = useTolgee();
@@ -191,6 +171,18 @@ const CreateTemplate = (): JSX.Element => {
 
 		const promises: Promise<void>[] = [];
 
+		const getInputConfig = (type: string, finalLang: string = "") =>
+			({
+				name: {
+					label: `Template name ${finalLang}`,
+					id: `templateName${finalLang}`,
+				},
+				description: {
+					label: `Description ${finalLang}`,
+					id: `description${finalLang}`,
+				},
+			})[type];
+
 		const updateInputs = (
 			language: string,
 			type: "description" | "name",
@@ -201,7 +193,7 @@ const CreateTemplate = (): JSX.Element => {
 				targetLanguage = descriptionLanguage;
 				translationData.baseText = description;
 			}
-			console.log(language, targetLanguage);
+
 			if (language !== targetLanguage) {
 				const languageToTranslate = languages.find(lan => {
 					return language === tolgee.getLanguage()
@@ -221,29 +213,21 @@ const CreateTemplate = (): JSX.Element => {
 							? tolgee.getLanguage()
 							: languageToTranslate.tag;
 					const defaultValue = data.result.TOLGEE.output as string;
-					let label: string = "";
-					if (type === "name") {
-						label = `Template name ${finalLang}`;
-						setNameInputs([
-							...nameInputs,
-							{
-								defaultValue,
-								label,
-								placeholder: label,
-								id: `templateName${finalLang}`,
-							},
-						]);
-					} else if (type === "description") {
-						label = `Description ${finalLang}`;
-						setDescriptionInputs([
-							...descriptionInputs,
-							{
-								defaultValue,
-								label,
-								placeholder: label,
-								id: `description${finalLang}`,
-							},
-						]);
+					const config = getInputConfig(type, finalLang);
+					if (config) {
+						const newInput = {
+							defaultValue,
+							label: config.label,
+							placeholder: config.label,
+							id: config.id,
+						};
+
+						type === "name"
+							? setNameInputs(inputs => [...inputs, newInput])
+							: setDescriptionInputs(inputs => [
+									...inputs,
+									newInput,
+								]);
 					}
 				});
 				promises.push(res);
@@ -377,7 +361,10 @@ const CreateTemplate = (): JSX.Element => {
 					type="file"
 					style={{ display: "none" }}
 				/>
-				<Button onClick={handleChangeImageClick}>
+				<Button
+					disabled={submitDisabled}
+					onClick={handleChangeImageClick}
+				>
 					{t(
 						`modalTemplate.UI.buttons.${imageSrc ? "previewChosen" : "choosePreview"}`,
 					)}
@@ -433,9 +420,9 @@ const CreateTemplate = (): JSX.Element => {
 				>
 					{t("modalTemplate.UI.buttons.save")}
 				</Button>
-				{errors.length ? (
+				{errors.length > 0 && (
 					<p className={styles.errorText}>{errors[0]}</p>
-				) : undefined}
+				)}
 			</form>
 		</Modal>
 	);

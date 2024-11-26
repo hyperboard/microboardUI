@@ -1,4 +1,4 @@
-import type { ShapeType } from "Board/Items/Shape/Basic";
+import type { ShapeType } from "Board/Items/Shape";
 
 export const ADD_TO_SELECTION = true;
 export const DEFAULT_SHAPE: ShapeType | "None" = "Rectangle";
@@ -7,7 +7,7 @@ export const MAX_STROKE_WIDTH = 12;
 export const STEP_STROKE_WIDTH = 1;
 export const SHAPE_LAST_TYPE_KEY = "lastShapeType";
 
-export const SHAPE_TYPES = [
+export const BASIC_SHAPES = [
 	"Rectangle",
 	"RoundedRectangle",
 	"Circle",
@@ -30,6 +30,38 @@ export const SHAPE_TYPES = [
 	"Hexagon",
 	"Pentagon",
 ] as const;
+
+export const BPMN_SHAPES = [
+	"BPMN_Gateway",
+	"BPMN_DataStore",
+	"BPMN_GatewayParallel",
+	"BPMN_GatewayXOR",
+	"BPMN_EndEvent",
+	"BPMN_StartEvent",
+	"BPMN_StartEventNoneInterrupting",
+	"BPMN_IntermediateEvent",
+	"BPMN_IntermediateEventNoneInterrupting",
+	"BPMN_Group",
+	"BPMN_Participant",
+	"BPMN_Task",
+	"BPMN_Transaction",
+	"BPMN_EventSubprocess",
+	"BPMN_Annotation",
+	"BPMN_DataObject",
+];
+
+export const SHAPES_CATEGORIES = [
+	{
+		name: "basicShapes",
+		shapes: BASIC_SHAPES,
+	},
+	{
+		name: "BPMN",
+		shapes: BPMN_SHAPES,
+	},
+] as const;
+
+export type ShapeCategoryName = (typeof SHAPES_CATEGORIES)[number]["name"];
 
 export const STROKE_COLORS = [
 	"rgb(255, 255, 255)",

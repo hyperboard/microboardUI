@@ -1,4 +1,4 @@
-import type { ShapeType } from "Board/Items/Shape/Basic";
+import type { ShapeType } from "Board/Items/Shape";
 import React from "react";
 import sprite from "./sprite.svg";
 

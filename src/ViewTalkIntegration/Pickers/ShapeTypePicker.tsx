@@ -1,4 +1,4 @@
-import { ShapeType } from "Board/Items/Shape/Basic";
+import { ShapeType } from "Board/Items/Shape";
 import React from "react";
 import { Icon } from "ViewTalkIntegration/Icon";
 import { UiButton } from "ViewTalkIntegration/Ui/UiButton/UiButton";

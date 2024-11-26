@@ -39,7 +39,7 @@ export const SelectTemplateModal = (): JSX.Element => {
 					? undefined
 					: selectedCategory;
 			const term = inputValue || undefined;
-			geTemplates({ language: selectedLanguage, tag, term }).then(
+			getTemplates({ language: selectedLanguage, tag, term }).then(
 				templates => setTemplates(templates),
 			);
 		}
@@ -55,29 +55,53 @@ export const SelectTemplateModal = (): JSX.Element => {
 			setInputValue(e.target.value),
 	);
 
-	const geTemplates = async (params: {
+	// const geTemplates = async (params: {
+	//     term?: string;
+	//     language?: string;
+	//     tag?: TemplateCategory;
+	// }): Promise<Template[]> => {
+	//     const searchParams = new URLSearchParams();
+	//     params.language && searchParams.set("language", params.language);
+	//     params.term && searchParams.set("term", params.term);
+	//     params.tag && searchParams.set("tag", params.tag);
+	//     const stringifiedParams = searchParams.toString();
+	//     return fetch(
+	//         `${getApiUrl()}/templates${
+	//             stringifiedParams && "?" + stringifiedParams
+	//         }`,
+	//         {
+	//             method: "GET",
+	//         },
+	//     )
+	//         .then(response => response.json())
+	//         .catch(error => {
+	//             console.error(error);
+	//             return [];
+	//         });
+	// };
+
+	const getTemplates = async ({
+		term,
+		language,
+		tag,
+	}: {
 		term?: string;
-		language?: string;
+		language: string;
 		tag?: TemplateCategory;
-	}): Promise<Template[]> => {
-		const searchParams = new URLSearchParams();
-		params.language && searchParams.set("language", params.language);
-		params.term && searchParams.set("term", params.term);
-		params.tag && searchParams.set("tag", params.tag);
-		const stringifiedParams = searchParams.toString();
-		return fetch(
-			`${getApiUrl()}/templates${
-				stringifiedParams && "?" + stringifiedParams
-			}`,
-			{
+	}) => {
+		const params = new URLSearchParams(
+			Object.entries({ term, language, tag }).filter(([_, v]) => v),
+		);
+
+		try {
+			const response = await fetch(`${getApiUrl()}/templates?${params}`, {
 				method: "GET",
-			},
-		)
-			.then(response => response.json())
-			.catch(error => {
-				console.error(error);
-				return [];
 			});
+			return await response.json();
+		} catch (error) {
+			console.error(error);
+			return [];
+		}
 	};
 
 	const hideModalAndReset = () => {

@@ -189,16 +189,25 @@ export function ContextPanel() {
 					<>
 						<ItemType />
 						<UiSeparator vertical />
-						<FontSize />
-						<UiSeparator vertical />
-						<FontStyle />
-						<TextAlignment />
-						<UiSeparator vertical />
-						<TextColor />
-						<TextHighlight />
-						<UiSeparator vertical />
+						{board.selection.items
+							.getItemsByItemTypes(["Shape"])[0]
+							.getIsShapeWithText() && (
+							<>
+								<FontSize />
+								<UiSeparator vertical />
+								<FontStyle />
+								<TextAlignment />
+								<UiSeparator vertical />
+								<TextColor />
+								<TextHighlight />
+								<UiSeparator vertical />
+							</>
+						)}
 						<StrokeStyle />
-						<FillStyle />
+						{board.selection.items
+							.getItemsByItemTypes(["Shape"])[0]
+							.getPath()
+							.isClosed() && <FillStyle />}
 						<UiSeparator vertical />
 						<Duplicate />
 						<Delete />

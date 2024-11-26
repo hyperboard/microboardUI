@@ -83,6 +83,8 @@ export class TextEditor extends React.Component<
 	onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>): void => {
 		if (event.key === "Enter" && this.props.text.insideOf === "Frame") {
 			event.preventDefault();
+			event.stopPropagation();
+			this.props.board.selection.setContext("EditUnderPointer");
 		}
 	};
 

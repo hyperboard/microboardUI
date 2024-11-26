@@ -6,8 +6,6 @@ import { LANGUAGES } from "View/Tools/Template";
 import { useTranslation } from "react-i18next";
 import { useClickOutside } from "lib/useClickOutside";
 
-// This component will be removed after the dropdown from ui lib could be customized
-
 interface Props {
 	setSelectedLanguage: (lan: string) => void;
 	selectedLanguage: string;

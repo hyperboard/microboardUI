@@ -7,11 +7,13 @@ import type { StickerData } from "Board/Items/Sticker/StickerOperation";
 
 export class SessionStorage {
 	private set<T>(key: string, value: T) {
-		sessionStorage.setItem(key, JSON.stringify(value));
+		const boardId = this.getBoardId() || "";
+		sessionStorage.setItem(boardId + "_" + key, JSON.stringify(value));
 	}
 
 	private get<T>(key: string) {
-		const item = sessionStorage.getItem(key);
+		const boardId = this.getBoardId() || "";
+		const item = sessionStorage.getItem(boardId + "_" + key);
 
 		if (!item) {
 			return;
@@ -21,7 +23,8 @@ export class SessionStorage {
 	}
 
 	remove(key: string) {
-		sessionStorage.removeItem(key);
+		const boardId = this.getBoardId() || "";
+		sessionStorage.removeItem(boardId + "_" + key);
 	}
 
 	setConnectorPointer(
@@ -142,6 +145,10 @@ export class SessionStorage {
 
 	clear() {
 		sessionStorage.clear();
+	}
+
+	private getBoardId() {
+		return window.location.href.split("/").pop()?.split("?")[0];
 	}
 }
 

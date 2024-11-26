@@ -138,9 +138,9 @@ const FRAME_TYPE = {
 // a_start, a_end from connector styles
 const CONNECTOR_STYLES = {
 	0: "none", // null
-	9: "filled_triangle", // rounded arrow
+	9: "arrow", // rounded arrow
 	1: "arrow", // thick arrow
-	7: "arrow", // backgroundless arrow
+	7: "filled_triangle", // backgroundless arrow
 	8: "arrow", // background arrow
 	6: "arrow", // hollow arrow
 	3: "filled_diamond", // rhombus
@@ -596,8 +596,8 @@ const transformDrawing = (
 			scale: json.scale.scale,
 		},
 		position: {
-			x: json._parent ? offsetX : offsetX + cursorPosition.x,
-			y: json._parent ? offsetY : offsetY + cursorPosition.y,
+			x: offsetX + (json._parent ? 0 : cursorPosition.x),
+			y: offsetY + (json._parent ? 0 : cursorPosition.y),
 			origin: "center",
 			relativeTo: json._parent
 				? MiroRelativeTo.frame
@@ -644,8 +644,8 @@ export const transformUnsupportedItems = (
 			height: json.size?.height || 100,
 		},
 		position: {
-			x: json._parent ? offsetX : offsetX + cursorPosition.x,
-			y: json._parent ? offsetY : offsetY + cursorPosition.y,
+			x: offsetX + (json._parent ? 0 : cursorPosition.x),
+			y: offsetY + (json._parent ? 0 : cursorPosition.y),
 			origin: "center",
 			relativeTo: json._parent
 				? MiroRelativeTo.frame
