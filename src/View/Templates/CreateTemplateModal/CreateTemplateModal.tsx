@@ -171,7 +171,7 @@ const CreateTemplate = (): JSX.Element => {
 
 		const promises: Promise<void>[] = [];
 
-		const getInputConfig = (type: string, finalLang: string = "") =>
+		const getInputConfig = (type: string, finalLang = "") =>
 			({
 				name: {
 					label: `Template name ${finalLang}`,
