@@ -280,7 +280,6 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
                 boardId: msg.boardId,
                 event: { body: eventData, order: eventData.order },
                 sequenceNumber: msg.sequenceNumber,
-                messageId: msg.messageId,
             });
 
             socketsBoardsSeqNums.get(ws)!.set(msg.boardId, expectedSequence + 1);
@@ -288,7 +287,6 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
             ws.send(
                 JSON.stringify({
                     type: "Confirmation",
-                    messageId: msg.messageId,
                     boardId: msg.boardId,
                     sequenceNumber: msg.sequenceNumber,
                     order: eventData.order,
@@ -410,13 +408,11 @@ export interface BoardEventMsg {
     type: "BoardEvent";
     boardId: string;
     event: any;
-    messageId: string;
     sequenceNumber: number;
 }
 
 export interface ConfirmationMsg {
     type: "Confirmation";
-    messageId: string;
     boardId: string;
     sequenceNumber: number;
     order: number;
