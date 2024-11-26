@@ -14,7 +14,6 @@ export async function userVisitedEditLink(userId: number, editLinkUUID: string) 
         .where(and(eq(boardEditLink.editLinkUUID, editLinkUUID), eq(boardOwner.ownerId, userId)))
         .execute();
 
-    console.log("authorRecords", authorRecords);
 
     if (authorRecords.length === 0) {
         return;
@@ -35,7 +34,6 @@ export async function userVisitedViewLink(userId: number, viewLinkUUID: string) 
         .where(and(eq(boardViewLink.viewLinkUUID, viewLinkUUID), eq(boardOwner.ownerId, userId)))
         .execute();
 
-    console.log("authorRecords", authorRecords);
 
     if (authorRecords.length === 0) {
         return;
@@ -81,7 +79,6 @@ export async function userVisited(userId: number, linkUUID: string) {
         return;
     }
 
-    console.log("editLinkVisitedRecords", editLinkVisitedRecords);
 
     const viewLinkVisitedRecords = await db
         .select()
@@ -93,7 +90,6 @@ export async function userVisited(userId: number, linkUUID: string) {
         return;
     }
 
-    console.log("viewLinkVisitedRecords", viewLinkVisitedRecords);
 
     const boardIdVisited = await db
         .select()

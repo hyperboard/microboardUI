@@ -252,9 +252,9 @@ export class Boards {
             }
 
             return {
-                boardId: board.boardUUID!,
-                created: board.created!,
-                title: board.boardName!,
+                boardId: board.boardUUID,
+                created: board.created,
+                title: board.title,
                 is_public: board.isPublic,
             };
         } catch (error) {
@@ -344,8 +344,6 @@ export class Boards {
             const result = await Drizzle.addBoardEventUsingUUID(boardId, eventId, eventBody);
             const order = result.boardId;
             const event = { order, body: eventBody };
-
-            console.log("event", event);
 
             this.onEventSave(boardId, {
                 type: "BoardEvent",
@@ -566,7 +564,7 @@ export class Boards {
 
             if (result?.length === 0) {
                 // throw new Error(`No snapshot found for board or link UUID ${boardUuidOrEditLink}`);
-                return [];
+                return null;
             }
 
             return result;
@@ -633,6 +631,22 @@ export class Boards {
         } catch (error) {
             console.error(`Error processing boards last_orders: ${error}`);
             return null;
+        }
+    }
+
+    async getLastEventOrderForBoard(boardUuid: string): Promise<number> {
+        try {
+            validateUUID(boardUuid, "boardUuid");
+            const result = await Drizzle.getLastEventOrderForBoard(boardUuid);
+
+            if (typeof result === 'undefined') {
+                throw new Error(`Failed to get last event order for board ${boardUuid}`);
+            }
+
+            return result;
+        } catch (error) {
+            this.logger.error(`Error getting last event order for board ${boardUuid}: ${error}`);
+            throw error;
         }
     }
 }

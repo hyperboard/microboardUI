@@ -4,8 +4,6 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-console.log('dbIndex', process.env);
-
 export const pool = new Pool({
     host: process.env.DB_HOST || "postgres_test",
     port: parseInt(process.env.DB_PORT || "5435"),

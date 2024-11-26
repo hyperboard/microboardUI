@@ -1,9 +1,57 @@
 {
-  "id": "8491fdd0-f497-4185-9f8d-0040633dbb64",
-  "prevId": "37b3bacd-dd5e-4973-9c6c-50d2608288ce",
+  "id": "a792a3d7-fbe2-4603-80f0-39690e5bbf52",
+  "prevId": "32ab2c0b-a23f-4989-a09b-c8c5a0085c54",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.board_events": {
+      "name": "board_events",
+      "schema": "",
+      "columns": {
+        "log_id": {
+          "name": "log_id",
+          "type": "bigserial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "board_id": {
+          "name": "board_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_id": {
+          "name": "event_id",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "event_body": {
+          "name": "event_body",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "board_events_board_id_boards_id_fk": {
+          "name": "board_events_board_id_boards_id_fk",
+          "tableFrom": "board_events",
+          "tableTo": "boards",
+          "columnsFrom": [
+            "board_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.board_edit_link": {
       "name": "board_edit_link",
       "schema": "",
@@ -218,7 +266,7 @@
           "name": "uniq_id",
           "type": "uuid",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "gen_random_uuid()"
         },
         "created": {
@@ -239,6 +287,13 @@
           "type": "uuid",
           "primaryKey": false,
           "notNull": false
+        },
+        "is_public": {
+          "name": "is_public",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         }
       },
       "indexes": {},
@@ -254,13 +309,55 @@
         }
       }
     },
+    "public.user_board_id": {
+      "name": "user_board_id",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "board_uuid": {
+          "name": "board_uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_board_id_user_id_users_id_fk": {
+          "name": "user_board_id_user_id_users_id_fk",
+          "tableFrom": "user_board_id",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.board_snapshots": {
       "name": "board_snapshots",
       "schema": "",
       "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
         "board_id": {
           "name": "board_id",
-          "type": "uuid",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
@@ -308,15 +405,15 @@
         }
       },
       "foreignKeys": {
-        "board_snapshots_board_id_boards_uniq_id_fk": {
-          "name": "board_snapshots_board_id_boards_uniq_id_fk",
+        "board_snapshots_board_id_boards_id_fk": {
+          "name": "board_snapshots_board_id_boards_id_fk",
           "tableFrom": "board_snapshots",
           "tableTo": "boards",
           "columnsFrom": [
             "board_id"
           ],
           "columnsTo": [
-            "uniq_id"
+            "id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -347,6 +444,42 @@
         "user_edit_link_user_id_users_id_fk": {
           "name": "user_edit_link_user_id_users_id_fk",
           "tableFrom": "user_edit_link",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.user_view_link": {
+      "name": "user_view_link",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "view_link_uuid": {
+          "name": "view_link_uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_view_link_user_id_users_id_fk": {
+          "name": "user_view_link_user_id_users_id_fk",
+          "tableFrom": "user_view_link",
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
@@ -545,42 +678,6 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.user_view_link": {
-      "name": "user_view_link",
-      "schema": "",
-      "columns": {
-        "user_id": {
-          "name": "user_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "view_link_uuid": {
-          "name": "view_link_uuid",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "user_view_link_user_id_users_id_fk": {
-          "name": "user_view_link_user_id_users_id_fk",
-          "tableFrom": "user_view_link",
-          "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
     "public.users": {
       "name": "users",
       "schema": "",
@@ -593,7 +690,7 @@
         },
         "email": {
           "name": "email",
-          "type": "varchar(100)",
+          "type": "varchar(254)",
           "primaryKey": false,
           "notNull": false
         },
@@ -613,6 +710,91 @@
       },
       "indexes": {},
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.templates": {
+      "name": "templates",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uniq_id": {
+          "name": "uniq_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "board_id": {
+          "name": "board_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created": {
+          "name": "created",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "languages": {
+          "name": "languages",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "preview": {
+          "name": "preview",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tags": {
+          "name": "tags",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "snapshot": {
+          "name": "snapshot",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "templates_board_id_boards_id_fk": {
+          "name": "templates_board_id_boards_id_fk",
+          "tableFrom": "templates",
+          "tableTo": "boards",
+          "columnsFrom": [
+            "board_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     }

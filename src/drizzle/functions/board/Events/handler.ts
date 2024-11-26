@@ -65,22 +65,11 @@ export async function getBoardEvents(boardOrLinkUUID: string, afterLogid: number
  * Function to get count of events since last snapshot.
  */
 export async function getEventsCountSinceLastSnapshot(boardOrLinkUUID: string) {
-    let boardId = await getBoardId(boardOrLinkUUID);
-
-    if (!boardId) {
-        const boardRecords = await getBoardLink(boardOrLinkUUID);
-        boardId = boardRecords.boardId || boardId;
-    }
+    const boardId = await getBoardId(boardOrLinkUUID);
 
     if (!boardId) {
         throw new Error(`Board UUID or Link UUID does not exist`);
     }
-
-    const sq = db
-        .select({ events: max(boardSnapshots.lastEventOrder) })
-        .from(boardSnapshots)
-        .where(eq(boardSnapshots.boardUUID, boardOrLinkUUID))
-        .as("sq");
 
     const result = await db.execute(sql`
     WITH last_snapshot AS (
@@ -112,7 +101,29 @@ export async function getEventsCountSinceLastSnapshot(boardOrLinkUUID: string) {
     FROM event_counts
   `);
 
-    return result.rows[0]?.event_count || 0;
+    const res = result.rows[0]?.event_count;
+    return parseInt(res as string);
+}
+
+export async function getLastEventOrderForBoard(boardUuid: string): Promise<number> {
+    try {
+        // Find the board ID by UUID
+        const boardId = await getBoardId(boardUuid);
+
+        if (!boardId) {
+            throw new Error(`Board with UUID ${boardUuid} not found`);
+        }
+
+        // Get the last order number
+        const [result] = await db
+            .select({ lastOrder: sql<number>`MAX(${boardEvents.logId})` })
+            .from(boardEvents)
+            .where(eq(boardEvents.boardId, boardId))
+        return result?.lastOrder || 0;
+    } catch (error) {
+        console.error(`Error getting last event order for board ${boardUuid}: ${error}`);
+        throw error;
+    }
 }
 
 /**

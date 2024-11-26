@@ -1,1 +1,0 @@
-ALTER TABLE "boards" ALTER COLUMN "boardname" SET DATA TYPE text;

@@ -88,11 +88,16 @@ export async function createPrivateBoard(boardName: string, ownerId: number) {
  * @returns boardId.
  */
 export async function getBoardId(boardUUID: string) {
-    const [boardRecords] = await db
-        .select({ id: boards.id })
+        const [boardRecords] = await db
+        .select({
+            id: boards.id,
+        })
         .from(boards)
-        .where(eq(boards.boardUUID, boardUUID))
-        .execute();
+        .leftJoin(boardEditLink, eq(boards.id, boardEditLink.boardId))
+        .leftJoin(boardViewLink, eq(boards.id, boardViewLink.boardId))
+        .where(or(eq(boardEditLink.editLinkUUID, boardUUID), eq(boardViewLink.viewLinkUUID, boardUUID), eq(boards.boardUUID, boardUUID)))
+        .limit(1);
+
 
     if (!boardRecords) {
         throw new Error(`Board not found with UUID ${boardUUID}`);
@@ -124,10 +129,11 @@ export const getBoardByLink = async (link: string) => {
     try {
         const result = await db
             .select({
-                boardId: boards.id,
+                id: boards.id,
                 boardUUID: boards.boardUUID,
                 created: boards.created,
                 title: boards.boardName,
+                isPublic: boards.isPublic
             })
             .from(boards)
             .leftJoin(boardEditLink, eq(boards.id, boardEditLink.boardId))
@@ -139,18 +145,7 @@ export const getBoardByLink = async (link: string) => {
             return null;
         }
 
-        const [boardRecords] = await db
-            .select()
-            .from(boards)
-            .where(eq(boards.boardUUID, result[0].boardUUID))
-            .limit(1)
-            .execute();
-
-        if (!boardRecords) {
-            throw new Error(`Could not find board by ${result[0].boardUUID} UUID`);
-        }
-
-        return boardRecords;
+        return result[0];
     } catch (error) {
         console.error(`Error getting board by link: ${error}`);
         return null;

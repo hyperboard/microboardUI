@@ -8,6 +8,13 @@
       "when": 1730972439819,
       "tag": "0000_flippant_nightcrawler",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1731925374797,
+      "tag": "0001_illegal_veda",
+      "breakpoints": true
     }
   ]
 }

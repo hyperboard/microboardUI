@@ -29,11 +29,9 @@ import {Templates} from "./Routes/V1/Templates";
 export async function getApp(): Promise<http.Server> {
     const app = express();
 
-    console.log('getApp', process.env);
-
     await runMigration();
 
-    if (process.env.MIGRATE_EVENTS) {
+    if (process.env.MIGRATE_EVENTS === "true") {
         await migrateData().catch(console.error);
     }
 
