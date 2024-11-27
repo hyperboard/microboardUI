@@ -9,6 +9,9 @@ import styles from "./LinkToButton.module.css";
 async function getFavicon(url: string) {
 	try {
 		const response = await fetch(url);
+		if (!response.ok) {
+			return undefined;
+		}
 		const text = await response.text();
 		const parser = new DOMParser();
 		const doc = parser.parseFromString(text, "text/html");
@@ -64,11 +67,16 @@ export const LinkToButton = ({ item, handleClick }: Props) => {
 	}, [item.getLinkTo()]);
 
 	const setIcon = async () => {
-		setIconUrl(undefined);
-		if (!item.getLinkTo()) {
+		if (!item.getLinkTo() || !iconUrl) {
 			return;
 		}
-		setIconUrl(await getFavicon(new URL(item.getLinkTo()!).origin));
+		const favicon = await getFavicon(new URL(item.getLinkTo()!).origin);
+
+		if (favicon && favicon !== iconUrl) {
+			setIconUrl(favicon);
+		} else {
+			setIconUrl(undefined);
+		}
 	};
 
 	return (
