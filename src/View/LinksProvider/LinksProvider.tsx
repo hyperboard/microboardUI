@@ -3,7 +3,7 @@ import { useAppSubscription } from "../../Board/useBoardSubscription";
 import { useForceUpdate } from "../../lib/useForceUpdate";
 import { useAppContext } from "../AppContext";
 import { LinkToButton } from "./LinkToButton/LinkToButton";
-import { Item, Mbr } from "../../Board/Items";
+import { Item } from "../../Board/Items";
 import { notify } from "View/Ui/Toast/notify";
 import { useTranslation } from "react-i18next";
 
@@ -66,23 +66,8 @@ export const LinksProvider = () => {
 
 	return (
 		<>
-			{[...board.items.listAll(), ...board.items.listFrames()]
-				.filter(item => {
-					const itemMbr = item.getMbr();
-					const camera = board.camera.getMbr();
-					return (
-						item.getLinkTo() &&
-						item.isInView(
-							new Mbr(
-								camera.left,
-								camera.top + itemMbr.getHeight() - 22,
-								camera.right - itemMbr.getWidth() + 22,
-								camera.bottom,
-							),
-						)
-					);
-				})
-				.map(item => {
+			{[...board.items.listAll(), ...board.items.listFrames()].map(
+				item => {
 					return (
 						<LinkToButton
 							item={item}
@@ -90,7 +75,8 @@ export const LinksProvider = () => {
 							handleClick={handleClick}
 						/>
 					);
-				})}
+				},
+			)}
 		</>
 	);
 };
