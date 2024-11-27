@@ -9,6 +9,7 @@ import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
+import { convertHexToRGBA } from "utils";
 
 const MENU_NAME = "TextColor";
 
@@ -29,7 +30,8 @@ export function TextColor(): React.ReactElement | null {
 	};
 
 	const handleCustomPick = (color: string) => {
-		board.selection.setFontColor(color);
+		const rgbColor = convertHexToRGBA(color, false);
+		board.selection.setFontColor(rgbColor);
 	};
 
 	const isPredefinedColor = TEXT_COLORS.some(color => color === fontColor);
@@ -71,7 +73,6 @@ export function TextColor(): React.ReactElement | null {
 						onChange={handleCustomPick}
 						color={isPredefinedColor ? "none" : fontColor}
 						isActive={fontColor !== "none" && !isPredefinedColor}
-						toggleMenu={toggleMenu}
 					/>
 				</UiPanel>
 			)}

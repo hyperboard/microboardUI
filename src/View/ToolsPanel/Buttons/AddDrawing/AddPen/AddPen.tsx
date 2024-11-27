@@ -16,7 +16,7 @@ import { UiColorInput } from "View/Ui/UiColorInput";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import { ButtonWithMenu } from "../../ButtonWithMenu";
 import style from "./AddPen.module.css";
-import { AddDrawingContext, useAddDrawingContext } from "../AddDrawingContext";
+import { useAddDrawingContext } from "../AddDrawingContext";
 
 export function AddPen() {
 	const [isColorSelected, setIsColorSelected] = useState(false);

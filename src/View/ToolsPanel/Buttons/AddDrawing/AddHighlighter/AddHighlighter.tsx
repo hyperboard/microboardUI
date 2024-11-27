@@ -19,39 +19,7 @@ import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import { ButtonWithMenu } from "../../ButtonWithMenu";
 import style from "./AddHighlighter.module.css";
 import { useAddDrawingContext } from "../AddDrawingContext";
-
-const convertHexToRGBA = (hex: string, alpha = 0.5) => {
-	const tempHex = hex.replace("#", "");
-	const r = parseInt(tempHex.substring(0, 2), 16);
-	const g = parseInt(tempHex.substring(2, 4), 16);
-	const b = parseInt(tempHex.substring(4, 6), 16);
-
-	return `rgba(${r},${g},${b},${alpha})`;
-};
-
-function rgbToRgba(rgbColor: string, alpha = 0.5) {
-	const rgb = rgbColor.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-	if (!rgb) {
-		return DEFAULT_HIGHLIGHTER_COLOR;
-	}
-	const [r, g, b] = rgb.slice(1);
-	return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
-
-function rgbaToRgb(rgbaColor: string) {
-	try {
-		const rgba = rgbaColor.match(
-			/^rgba\((\d+),\s*(\d+),\s*(\d+),\s*(\d+(?:\.\d+)?)\)$/,
-		);
-		if (!rgba) {
-			return DEFAULT_PEN_COLOR;
-		}
-		const [r, g, b, a] = rgba.slice(1);
-		return `rgb(${r}, ${g}, ${b})`;
-	} catch {
-		return DEFAULT_PEN_COLOR;
-	}
-}
+import { convertHexToRGBA, rgbaToRgb, rgbToRgba } from "utils";
 
 export function AddHighlighter() {
 	const [isColorSelected, setIsColorSelected] = useState(false);
@@ -97,15 +65,17 @@ export function AddHighlighter() {
 
 	const handleColorPick = (color: string): void => {
 		if (addHighlighter) {
-			setSelectedColor(rgbToRgba(color));
-			addHighlighter.setStrokeColor(rgbToRgba(color));
+			setSelectedColor(rgbToRgba(color, 0.5, DEFAULT_HIGHLIGHTER_COLOR));
+			addHighlighter.setStrokeColor(
+				rgbToRgba(color, 0.5, DEFAULT_HIGHLIGHTER_COLOR),
+			);
 			setIsColorSelected(true);
 		}
 	};
 
 	const handleCustomColorPick = (color: string): void => {
 		if (addHighlighter) {
-			const RGBA = convertHexToRGBA(color);
+			const RGBA = convertHexToRGBA(color, true);
 			setSelectedColor(RGBA);
 			addHighlighter.setStrokeColor(RGBA);
 		}
@@ -149,7 +119,8 @@ export function AddHighlighter() {
 				<div className={style.colors}>
 					<ColorPicker
 						selectedColor={
-							selectedColor && rgbaToRgb(selectedColor)
+							selectedColor &&
+							rgbaToRgb(selectedColor, DEFAULT_PEN_COLOR)
 						}
 						onPick={handleColorPick}
 						colors={PEN_COLORS}
