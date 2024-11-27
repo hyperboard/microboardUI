@@ -62,15 +62,15 @@ export function FontSize({ rounded = "none" }: Props) {
 		}
 	}, [fontSize, selectionContext, openedMenu]);
 
-	const handleFocus = (e: React.FocusEvent<HTMLInputElement>): void => {
-		e.currentTarget.select();
+	const handleFocus = (ev: React.FocusEvent<HTMLInputElement>): void => {
+		ev.currentTarget.select();
 		if (openedMenu !== MENU_NAME) {
 			toggleMenu(MENU_NAME);
 		}
 	};
 
-	const handleInputClick = (e: React.MouseEvent<HTMLInputElement>) => {
-		e.stopPropagation();
+	const handleInputClick = (ev: React.MouseEvent<HTMLInputElement>) => {
+		ev.stopPropagation();
 		if (openedMenu !== MENU_NAME) {
 			toggleMenu(MENU_NAME);
 		}
@@ -101,12 +101,14 @@ export function FontSize({ rounded = "none" }: Props) {
 		}
 	};
 
-	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const fontSize = Number(e.target.value);
+	const handleInputChange = (
+		ev: React.ChangeEvent<HTMLInputElement>,
+	): void => {
+		const fontSize = Number(ev.target.value);
 		if (!!fontSize && fontSize >= 1) {
-			board.selection.setFontSize(fontSize);
+			board.selection.setFontSize(fontSize > 6 ? fontSize : 6);
 		}
-		setFontSizeInputValue(e.target.value);
+		setFontSizeInputValue(ev.target.value);
 	};
 
 	return (
@@ -140,7 +142,7 @@ export function FontSize({ rounded = "none" }: Props) {
 							onClick={handleInputClick}
 							onChange={handleInputChange}
 							onFocus={handleFocus}
-							onKeyDown={e => e.stopPropagation()}
+							onKeyDown={ev => ev.stopPropagation()}
 							value={fontSizeInputValue}
 							maxLength={3}
 						/>
