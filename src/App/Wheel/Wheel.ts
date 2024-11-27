@@ -3,7 +3,7 @@ import { isSafari } from "../isSafari";
 
 export const DeltaModes = ["pixel", "line", "page"] as const;
 
-export type DeltaMode = typeof DeltaModes[number];
+export type DeltaMode = (typeof DeltaModes)[number];
 
 interface ChromeWheelEvent extends WheelEvent {
 	wheelDelta?: number;
@@ -74,8 +74,8 @@ export function createWheel(event: ChromeWheelEvent): Wheel {
 		return isDeltaY
 			? -deltaY
 			: isWheelDeltaY
-			? wheelDeltaY / 3
-			: wheelDelta / 3;
+				? wheelDeltaY / 3
+				: wheelDelta / 3;
 	}
 
 	function getTouchpadPinchMultiplier(): number {
@@ -86,8 +86,8 @@ export function createWheel(event: ChromeWheelEvent): Wheel {
 		const delta = isWheelDelta
 			? Math.abs(wheelDelta) * 0.001 + 1
 			: isDeltaY
-			? Math.abs(deltaY) * 0.02 + 1
-			: Math.abs(deltaX) * 0.02 + 1;
+				? Math.abs(deltaY) * 0.02 + 1
+				: Math.abs(deltaX) * 0.02 + 1;
 		const isIn = isWheelDelta ? wheelDelta > 0 : deltaY < 0;
 		return isIn ? delta : 1 / delta;
 	}
@@ -102,7 +102,8 @@ export function createWheel(event: ChromeWheelEvent): Wheel {
 
 	function isProbablyMouseWheel(): boolean {
 		const isChromeMouseWheel = !isCtrlKey && detector.isMouseWheel;
-		const isSafariMouseWheel = isSafari() && wheelDelta !== -deltaY * 3;
+		const isSafariMouseWheel =
+			isSafari() && wheelDelta !== -deltaY * 3 && deltaY !== 0;
 		return isWheelDelta
 			? isChromeMouseWheel || isSafariMouseWheel
 			: deltaMode !== "pixel";
