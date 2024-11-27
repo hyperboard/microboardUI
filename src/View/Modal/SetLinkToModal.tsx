@@ -1,5 +1,5 @@
 import { Modal } from "shared/ui-lib/Modal";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./SetLinkToModal.module.css";
 import { useModal } from "View/Modal/ModalProvider";
@@ -18,16 +18,17 @@ export const SetLinkToModal = (): JSX.Element => {
 		event.preventDefault();
 		const form = formRef.current;
 		const item = board.selection.items.getSingle();
+		const inputValue = form?.linkToInput.value;
 		if (
-			!form?.linkTo.value ||
+			!inputValue ||
 			!(import.meta.env.NODE_ENV === "production"
-				? form?.linkTo.value.startsWith("https://")
-				: form?.linkTo.value.startsWith("http"))
+				? inputValue.startsWith("https://")
+				: inputValue.startsWith("http"))
 		) {
 			return setError("modalLinkTo.error");
 		}
-		if (item) {
-			item.linkTo.setLinkTo(form?.linkTo.value);
+		if (item && item.itemType !== "Placeholder") {
+			item.linkTo.setLinkTo(inputValue);
 		}
 		form.reset();
 		hideModal("setLinkTo");
@@ -59,11 +60,12 @@ export const SetLinkToModal = (): JSX.Element => {
 			>
 				<p className={styles.title}>{t("modalLinkTo.title")}</p>
 				<Input
-					id="linkTo"
+					id="linkToInput"
 					onChange={removeError}
 					placeholder={t("modalLinkTo.input")}
+					shouldFocus={true}
 				/>
-				<Button className={styles.submitBtn} type="submit" size="sm">
+				<Button className={styles.submitBtn} type="submit">
 					{t("common.confirm")}
 				</Button>
 				{error && <p className={styles.error}>{t(error)}</p>}

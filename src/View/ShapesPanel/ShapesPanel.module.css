@@ -41,4 +41,5 @@
 	--min-width: 28px;
 	--min-height: 28px;
 	color: var(--text-base-primary);
+	border-radius: 12px;
 }

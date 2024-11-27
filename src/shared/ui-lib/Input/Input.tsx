@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./Input.css";
 import { EyeOpen } from "./EyeOpen";
 import { EyeClose } from "./EyeClose";
@@ -17,6 +17,7 @@ interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
 	keyhint?: string;
 	password?: boolean;
 	hasError?: boolean;
+	shouldFocus?: boolean;
 }
 
 export const Input: React.FC<Props> = ({
@@ -30,6 +31,7 @@ export const Input: React.FC<Props> = ({
 	password,
 	type,
 	hasError,
+	shouldFocus,
 	...props
 }) => {
 	const [inputType, setInputType] = useState<string>(() => {
@@ -38,10 +40,17 @@ export const Input: React.FC<Props> = ({
 		}
 		return type || "text";
 	});
+	const inputRef = useRef<HTMLInputElement>(null);
 
 	const togglePassword = (): void => {
 		setInputType(inputType === "text" ? "password" : "text");
 	};
+
+	useEffect(() => {
+		if (shouldFocus && inputRef.current) {
+			inputRef.current.focus();
+		}
+	}, []);
 
 	return (
 		<div className="InputWrapper">
@@ -59,6 +68,7 @@ export const Input: React.FC<Props> = ({
 						<span className="InputPrefix">{prefixIcon}</span>
 					)}
 					<input
+						ref={inputRef}
 						onPaste={e => e.stopPropagation()}
 						onCopy={e => e.stopPropagation()}
 						id={id}

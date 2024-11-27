@@ -66,8 +66,9 @@ export const LinksProvider = () => {
 
 	return (
 		<>
-			{[...board.items.listAll(), ...board.items.listFrames()].map(
-				item => {
+			{[...board.items.listAll(), ...board.items.listFrames()]
+				.filter(item => item.getLinkTo())
+				.map(item => {
 					return (
 						<LinkToButton
 							item={item}
@@ -75,8 +76,7 @@ export const LinksProvider = () => {
 							handleClick={handleClick}
 						/>
 					);
-				},
-			)}
+				})}
 		</>
 	);
 };
