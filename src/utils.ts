@@ -1,3 +1,6 @@
+import { Board } from "./Board";
+import { BoardSnapshot } from "./Board/Board";
+
 export function isFiniteNumber(value: unknown): boolean {
 	return typeof value === "number" && isFinite(value);
 }
@@ -156,3 +159,74 @@ export function omitDefaultProperties<Type>(
 	}
 	return partialObject;
 }
+
+export function detectLanguage(text: string) {
+	const scores = {};
+
+	const regexes = {
+		en: /[\u0000-\u007F]/gi,
+		zh: /[\u3000\u3400-\u4DBF\u4E00-\u9FFF]/gi,
+		hi: /[\u0900-\u097F]/gi,
+		ar: /[\u0621-\u064A\u0660-\u0669]/gi,
+		bn: /[\u0995-\u09B9\u09CE\u09DC-\u09DF\u0985-\u0994\u09BE-\u09CC\u09D7\u09BC]/gi,
+		he: /[\u0590-\u05FF]/gi,
+		ru: /[\u0400-\u04FF]/gi,
+	};
+	for (const [lang, regex] of Object.entries(regexes)) {
+		// detect occurances of lang in a word
+		const matches = text.match(regex) || [];
+		const score = matches.length / text.length;
+		if (score) {
+			// high percentage, return result
+			if (score > 0.85) {
+				return lang;
+			}
+			scores[lang] = score;
+		}
+	}
+	// not detected
+	if (Object.keys(scores).length == 0) {
+		return "en";
+	}
+	// pick lang with highest percentage
+	return Object.keys(scores).reduce((a, b) =>
+		scores[a] > scores[b] ? a : b,
+	);
+}
+
+export const pasteSnapshot = ({
+	board,
+	snapshot,
+}: {
+	board: Board;
+	snapshot: BoardSnapshot;
+}) => {
+	if (board.events && snapshot) {
+		board.paste(snapshot.items, true);
+		if (!board.tools.getSelect()) {
+			board.tools.select();
+		}
+		const itemsMbr = board.items.getMbr();
+		board.camera.zoomToFit(itemsMbr);
+	}
+};
+
+export const getCorrectEnding = (number: number): "one" | "few" | "many" => {
+	const cases = [
+		"many", // 0, 5-9, 11-14
+		"one", // 1
+		"few", // 2-4
+	];
+
+	const n = number % 100;
+	const index =
+		n > 4 && n < 20
+			? 0
+			: n % 10 === 1
+				? 1
+				: n % 10 >= 2 && n % 10 <= 4
+					? 2
+					: 0;
+
+	return cases[index];
+};

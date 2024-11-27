@@ -44,8 +44,13 @@
 	position: absolute;
 	top: 20px;
 	right: 20px;
-	padding: 6px;
+	padding: 6px 12px;
 	cursor: pointer;
+	border-radius: 12px;
+}
+
+.modalCross:hover {
+	background-color: #0a0f290a;
 }
 
 .modalCrossIcon {

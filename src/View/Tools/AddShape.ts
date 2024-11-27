@@ -61,7 +61,7 @@ export const SHAPES_CATEGORIES = [
 	},
 ] as const;
 
-export type ShapeCategoryName = typeof SHAPES_CATEGORIES[number]["name"];
+export type ShapeCategoryName = (typeof SHAPES_CATEGORIES)[number]["name"];
 
 export const STROKE_COLORS = [
 	"rgb(255, 255, 255)",

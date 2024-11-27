@@ -81,6 +81,18 @@ export type IconId =
 	| "SignIn"
 	| "Info"
 	| "linkTo"
+	| "AllTemplates"
+	| "ResearchAnalysis"
+	| "Diagramming"
+	| "MeetingWorkshop"
+	| "StrategyPlanning"
+	| "Brainstorming"
+	| "AgileWorkflow"
+	| "IcebreakerGame"
+	| "Education"
+	| "Template"
+	| "Planet"
+	| "BackArrow"
 	| "StrokeChevronDown"
 	| "StrokeChevronUp";
 

@@ -19,12 +19,18 @@ import { UiSeparator } from "View/Ui/UiSeparator";
 import { Icon, Logo } from "../Icon";
 import style from "./TitlePanel.module.css";
 import { ViewModeGuard } from "View/ViewModeGuard";
+import { CreateTemplateModal } from "../Templates";
+import { getApiUrl } from "../../Config";
+import { useModal } from "../Modal/ModalProvider";
+import Cookies from "js-cookie";
+import { notify } from "View/Ui/Toast/notify";
 
 const MAX_BOARD_TITLE_LENGTH = 32;
 
 export function TitlePanel(): JSX.Element | null {
 	const forceUpdate = useForceUpdate();
 	const { t } = useTranslation();
+	const { showModal } = useModal();
 	const { app, board } = useAppContext();
 	const { isOpen, toggleSideMenu } = useSidePanelContext();
 	useAppSubscription(app, { observer: forceUpdate, subjects: ["tools"] });
@@ -75,6 +81,45 @@ export function TitlePanel(): JSX.Element | null {
 	const openExport = (): void => {
 		board.tools.export();
 	};
+
+	const saveTemplate = () => {
+		const body = JSON.stringify({ snapshot: board.getSnapshot() });
+		saveTemplateReq(body);
+	};
+
+	async function saveTemplateReq(body: any) {
+		try {
+			const response = await fetch(
+				`${getApiUrl()}/templates/${board.getBoardId()}`,
+				{
+					method: "PATCH",
+					mode: "cors",
+					cache: "no-cache",
+					credentials: "same-origin",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${Cookies.get("accessToken")}`,
+					},
+					body,
+					redirect: "follow",
+					referrerPolicy: "no-referrer",
+				},
+			);
+			if (!response.ok) {
+				if (response.status === 404) {
+					return showModal("createTemplate");
+				}
+				throw new Error("response not OK");
+			}
+			notify({
+				body: t("template.saveSuccess"),
+				variant: "info",
+				duration: 3000,
+			});
+		} catch (error) {
+			console.error("Failed to create template.", error);
+		}
+	}
 
 	// @ts-expect-error import.meta object didn't exists in common-js modules
 	const isMicroboard = import.meta.env.INTEGRATION_UI === "microboard";
@@ -154,6 +199,22 @@ export function TitlePanel(): JSX.Element | null {
 				>
 					<Icon iconName="Export" />
 				</UiButton>
+				{window.enableTemplateCreating && (
+					<>
+						<UiSeparator vertical className={style.tabletHide} />
+						<UiButton
+							className={style.tabletHide}
+							onClick={saveTemplate}
+							variant="secondary"
+							rounded="right"
+							tooltip={t("template.save")}
+							tooltipPosition="bottom"
+						>
+							<Icon iconName="Pen" />
+						</UiButton>
+						<CreateTemplateModal />
+					</>
+				)}
 			</ViewModeGuard>
 		</UiPanel>
 	);

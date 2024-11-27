@@ -2,7 +2,11 @@
 	"common": {
 		"and": "и",
 		"backToMain": "Вернуться в главное меню",
-		"confirm": "Принять"
+		"confirm": "Принять",
+		"languages": {
+			"ru": "Русский",
+			"en": "Английский"
+		}
 	},
 	"contextPanel": {
 		"connectorAddText": {
@@ -138,6 +142,9 @@
 		},
 		"addSticker": {
 			"tooltip": "Стикер"
+		},
+		"addTemplate": {
+			"tooltip": "Шаблоны"
 		},
 		"addShape": {
 			"tooltip": "Фигура"
@@ -300,6 +307,47 @@
 		"error": {
 			"title": "Ошибка при переходе по ссылке",
 			"description": "Ошибка возникла во время перехода по ссылке"
+		}
+	},
+	"modalTemplate": {
+		"templates": "Шаблоны",
+		"noTemplates": "Мы не смогли найти подходящий шаблон.",
+		"createTemplate": "Создать шаблон",
+		"backToTemplates": "Вернуться к выбору шаблонов",
+		"relatedTemplates": "Похожие шаблоны",
+		"searchResults": {
+			"one": "результат",
+			"few": "результата",
+			"many": "результатов"
+		},
+		"UI": {
+			"inputs": {
+				"search": "Поиск",
+				"name": "Название шаблона",
+				"description": "Описание"
+			},
+			"buttons": {
+				"choosePreview": "Выбор изображения",
+				"previewChosen": "Изображение выбрано",
+				"save": "Сохранить",
+				"translate": "Перевести на выбранные языки",
+				"Preview": "Предпросмотр",
+				"Use": "Использовать"
+			}
+		},
+		"category": {
+			"useCases": "Варианты использования",
+			"useCaseItems": {
+				"All templates": "Все шаблоны",
+				"Research & Analysis": "Исследования и анализ",
+				"Diagramming": "Диаграммы",
+				"Meeting & Workshop": "Встречи и семинары",
+				"Strategy & Planning": "Стратегии и планирование",
+				"Brainstorming": "Мозговой штурм",
+				"Agile Workflow": "Гибкий рабочий процесс",
+				"Icebreaker & Game": "Игры",
+				"Education": "Образование"
+			}
 		}
 	},
 	"ok": "Ок",
@@ -491,6 +539,13 @@
 	},
 	"frame": {
 		"copy": "Копия "
+	},
+	"template": {
+		"save": "Сохранить шаблон",
+		"saveSuccess": "Шаблон обновлен",
+		"saveError": "Ошибка при обновлении шаблона",
+		"createSuccess": "Шаблон создан",
+		"createError": "Ошибка при создании шаблона"
 	},
 	"itemTooltips": {
 		"placeholder": "Этот тип объектов пока<br /> не поддерживается<br /> <span style='opacity: 60%'>Но мы уже работаем над этим.<br /> Скоро все будет доступно!</span>"

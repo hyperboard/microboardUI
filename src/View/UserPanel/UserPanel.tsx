@@ -416,7 +416,7 @@ export const UserPanel: React.FC<{ app: App }> = ({ app }) => {
 					{/* </span> */}
 
 					<div className={styles.unauthBtns}>
-						{/* <Dropdown */}
+						{/* <LanguagesDropdown */}
 						{/* 	items={[ */}
 						{/* 		<div key={1}> */}
 						{/* 			<p */}

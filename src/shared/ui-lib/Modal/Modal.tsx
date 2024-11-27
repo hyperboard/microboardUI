@@ -19,6 +19,7 @@ interface ModalProps {
 	modalName?: ModalName;
 	children: ReactNode;
 	size?: ModalSize;
+	wrClassName?: string;
 }
 
 export const Modal = (props: ModalProps) => {
@@ -30,6 +31,7 @@ export const Modal = (props: ModalProps) => {
 		modalName,
 		children,
 		size = ModalSize.S,
+		wrClassName,
 		...otherProps
 	} = props;
 
@@ -48,7 +50,11 @@ export const Modal = (props: ModalProps) => {
 					{...otherProps}
 				>
 					<div
-						className={clsx(styles.wr, size && styles[size])}
+						className={clsx(
+							styles.wr,
+							size && styles[size],
+							wrClassName,
+						)}
 						onClick={event => event.stopPropagation()}
 					>
 						<div

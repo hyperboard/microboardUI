@@ -23,7 +23,7 @@ export function Select() {
 			onClick={handleClick}
 			active={isActive}
 			variant="secondary"
-			rounded="top"
+			rounded="none"
 		>
 			<Icon iconName="Select" />
 		</UiButton>

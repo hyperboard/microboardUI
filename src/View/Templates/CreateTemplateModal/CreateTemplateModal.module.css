@@ -1,0 +1,21 @@
+.form {
+	display: flex;
+	flex-wrap: nowrap;
+	flex-direction: column;
+	gap: 12px;
+	align-items: center;
+	overflow-y: auto;
+	max-height: calc(90vh - 64px);
+}
+
+.errorText {
+	color: red;
+}
+
+.categoriesSelector {
+	width: 100%;
+}
+
+.languagesSelector {
+	width: 50%;
+}

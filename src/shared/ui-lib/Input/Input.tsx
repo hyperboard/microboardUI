@@ -58,7 +58,13 @@ export const Input: React.FC<Props> = ({
 					{prefixIcon && (
 						<span className="InputPrefix">{prefixIcon}</span>
 					)}
-					<input id={id} type={inputType} {...props} />
+					<input
+						onPaste={e => e.stopPropagation()}
+						onCopy={e => e.stopPropagation()}
+						id={id}
+						type={inputType}
+						{...props}
+					/>
 					{password && inputType === "text" && (
 						<div className="Eye">
 							<EyeClose onClick={togglePassword} />

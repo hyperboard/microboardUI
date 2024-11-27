@@ -1,31 +1,53 @@
 import { useClickOutside } from "lib/useClickOutside";
 import React, {
 	forwardRef,
+	useEffect,
 	useImperativeHandle,
 	useRef,
 	useState,
 } from "react";
 import { Icon } from "View/Icon";
 import style from "./Selector.module.css";
+import clsx from "clsx";
 
 interface SelectorProps {
 	label?: string;
 	options: { value: string; label: React.ReactNode }[];
 	customOpener?: React.ReactNode;
 	customSelectorClassName?: string;
+	containerClassName?: string;
+	multiselect?: boolean;
+	onChange?: () => void;
 }
 
-export interface SelectorHandle {
-	getSelectedOption: () => { value: string; label: React.ReactNode };
-	setSelectedOption: (option: {
-		value: string;
-		label: React.ReactNode;
-	}) => void;
+export interface SelectorHandle<T extends boolean> {
+	getSelectedOptions: () => T extends true
+		? { value: string; label: React.ReactNode }[]
+		: { value: string; label: React.ReactNode };
+	setSelectedOptions: (
+		options: {
+			value: string;
+			label: React.ReactNode;
+		}[],
+	) => void;
 }
 
-const Selector = forwardRef<SelectorHandle, SelectorProps>(
-	({ label, options, customOpener, customSelectorClassName }, ref) => {
-		const [selectedOption, setSelectedOption] = useState(options[0]);
+const Selector = forwardRef<SelectorHandle<true | false>, SelectorProps>(
+	(
+		{
+			label,
+			options,
+			customOpener,
+			customSelectorClassName,
+			multiselect = false,
+			onChange,
+			containerClassName,
+		},
+		ref,
+	) => {
+		const [selectedOptions, setSelectedOptions] = useState<
+			{ value: string; label: React.ReactNode }[]
+		>([options[0]]);
 		const selectorOpenerRef = useRef<HTMLSpanElement>(null);
 		const dropdownRef = useClickOutside(() => {
 			setIsOpen(false);
@@ -33,23 +55,50 @@ const Selector = forwardRef<SelectorHandle, SelectorProps>(
 		const [isOpen, setIsOpen] = useState(false);
 
 		useImperativeHandle(ref, () => ({
-			getSelectedOption: () => selectedOption,
-			setSelectedOption: (option: {
-				value: string;
-				label: React.ReactNode;
-			}) => setSelectedOption(option),
+			getSelectedOptions: () =>
+				multiselect ? selectedOptions : selectedOptions[0],
+			setSelectedOptions: (
+				options: {
+					value: string;
+					label: React.ReactNode;
+				}[],
+			) => setSelectedOptions(options),
 		}));
+
+		useEffect(() => {
+			if (onChange) {
+				onChange();
+			}
+		}, [selectedOptions]);
+
+		const selectorContainerRef = useClickOutside(() => setIsOpen(false));
 
 		const handleOptionClick = (option: {
 			value: string;
 			label: React.ReactNode;
 		}): void => {
-			setSelectedOption(option);
-			setIsOpen(false);
+			if (multiselect) {
+				const isSelected = selectedOptions.find(
+					o => o.value === option.value,
+				);
+				if (isSelected) {
+					setSelectedOptions(
+						selectedOptions.filter(o => o.value !== option.value),
+					);
+				} else {
+					setSelectedOptions([...selectedOptions, option]);
+				}
+			} else {
+				setSelectedOptions([option]);
+				setIsOpen(false);
+			}
 		};
 
 		return (
-			<div className={style.selectorContainer}>
+			<div
+				ref={selectorContainerRef}
+				className={clsx(style.selectorContainer, containerClassName)}
+			>
 				{label && (
 					<>
 						<label className={style.label}>{label}</label>
@@ -64,7 +113,14 @@ const Selector = forwardRef<SelectorHandle, SelectorProps>(
 					>
 						<span className={style.selectorText}>
 							{!customSelectorClassName
-								? selectedOption.label
+								? selectedOptions.map((option, index) => (
+										<span key={index}>
+											{option.label}
+											{index <
+												selectedOptions.length - 1 &&
+												", "}
+										</span>
+									))
 								: customSelectorClassName}
 						</span>
 						<span className={style.arrow}></span>
@@ -85,7 +141,9 @@ const Selector = forwardRef<SelectorHandle, SelectorProps>(
 							<div
 								key={option.value}
 								className={`${style.option} ${
-									option.value === selectedOption.value
+									selectedOptions.find(
+										o => o.value === option.value,
+									)
 										? style.selected
 										: ""
 								}`}

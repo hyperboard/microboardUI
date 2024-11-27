@@ -1,0 +1,42 @@
+.navigation {
+	margin-top: 8px;
+	padding-top: 8px;
+	width: 100%;
+}
+
+.categoryName {
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 16px;
+	color: rgba(15, 19, 36, 0.6);
+}
+
+.categoryList {
+	margin-top: 8px;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.categoryItem {
+	display: flex;
+	align-items: center;
+	height: 36px;
+	border-radius: 10px;
+	column-gap: 8px;
+	padding-left: 8px;
+	transform: translateX(-8px);
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 20px;
+	letter-spacing: -0.005em;
+	cursor: pointer;
+}
+
+.categoryItem:hover {
+	background-color: rgba(10, 15, 41, 0.04);
+}
+
+.activeCategoryItem {
+	background-color: rgba(10, 15, 41, 0.04);
+}

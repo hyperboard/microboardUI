@@ -2,7 +2,11 @@
 	"common": {
 		"and": "and",
 		"backToMain": "Back to main menu",
-		"confirm": "Confirm"
+		"confirm": "Confirm",
+		"languages": {
+			"ru": "Russian",
+			"en": "English"
+		}
 	},
 	"contextPanel": {
 		"connectorAddText": {
@@ -140,6 +144,9 @@
 		},
 		"addSticker": {
 			"tooltip": "Sticker"
+		},
+		"addTemplate": {
+			"tooltip": "Templates"
 		},
 		"addShape": {
 			"tooltip": "Shape"
@@ -302,6 +309,47 @@
 		"error": {
 			"title": "Error when following the link",
 			"description": "An error occurred while following the link"
+		}
+	},
+	"modalTemplate": {
+		"templates": "Templates",
+		"noTemplates": "We couldn’t find a matching template.",
+		"createTemplate": "Create template",
+		"backToTemplates": "Back to template center",
+		"relatedTemplates": "Related templates",
+		"searchResults": {
+			"one": "result",
+			"few": "results",
+			"many": "results"
+		},
+		"UI": {
+			"inputs": {
+				"search": "Search",
+				"name": "Template name",
+				"description": "Description"
+			},
+			"buttons": {
+				"choosePreview": "Choose preview",
+				"previewChosen": "Preview selected",
+				"save": "Save",
+				"translate": "Translate",
+				"Preview": "Preview",
+				"Use": "Use"
+			}
+		},
+		"category": {
+			"useCases": "Use cases",
+			"useCaseItems": {
+				"All templates": "All templates",
+				"Research & Analysis": "Research & Analysis",
+				"Diagramming": "Diagramming",
+				"Meeting & Workshop": "Meeting & Workshop",
+				"Strategy & Planning": "Strategy & Planning",
+				"Brainstorming": "Brainstorming",
+				"Agile Workflow": "Agile Workflow",
+				"Icebreaker & Game": "Icebreaker & Game",
+				"Education": "Education"
+			}
 		}
 	},
 	"ok": "Ok",
@@ -493,6 +541,13 @@
 	},
 	"frame": {
 		"copy": "Copy of "
+	},
+	"template": {
+		"save": "Save template",
+		"saveSuccess": "Template updated",
+		"saveError": "Error while saving template",
+		"createSuccess": "Template created",
+		"createError": "Error while creating template"
 	},
 	"itemTooltips": {
 		"placeholder": "This type of object isn’t<br /> supported yet,<br /> <span style='opacity: 60%'>but we’re working on it.<br /> It will be available soon!</span>"

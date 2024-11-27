@@ -12,7 +12,10 @@ export const Dropdown: React.FC<DropdownProps> = ({ items, label }) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const ref = useRef<HTMLUListElement>(null);
 
-	const toggleDropdown = (): void => setIsOpen(!isOpen);
+	const toggleDropdown = (e: React.MouseEvent<HTMLButtonElement>): void => {
+		e.preventDefault();
+		setIsOpen(!isOpen);
+	};
 
 	const closeDropdown = (): void => setIsOpen(false);
 

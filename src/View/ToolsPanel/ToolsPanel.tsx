@@ -15,7 +15,9 @@ import { Select } from "./Buttons/Select";
 import { Undo } from "./Buttons/Undo";
 import { PanelContext } from "./PanelContext";
 import style from "./ToolsPanel.module.css";
+import { AddTemplate } from "./Buttons/AddTemplate";
 import { EventList } from "./Buttons/EventList";
+import { UiSeparator } from "View/Ui/UiSeparator/UiSeparator";
 
 export function ToolsPanel(): JSX.Element {
 	const [openedMenu, setOpenedMenu] = useState("None");
@@ -36,6 +38,8 @@ export function ToolsPanel(): JSX.Element {
 		<PanelContext.Provider value={{ toggleMenu, openedMenu }}>
 			<div className={style.wrapper}>
 				<UiPanel vertical padding={0} zIndex={20}>
+					<AddTemplate />
+					<UiSeparator vertical={false} />
 					<Select />
 					<AddDrawing />
 					<AddText />
