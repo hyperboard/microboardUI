@@ -8,7 +8,7 @@ type Props = {
 	rounded?: "left" | "right" | "none" | "full";
 };
 
-export function Delete({ rounded = "right" }: Props) {
+export function Delete({ rounded = "none" }: Props) {
 	const { board } = useAppContext();
 	const { t } = useTranslation();
 	const handleClick = () => {
