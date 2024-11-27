@@ -71,11 +71,9 @@ export function ContextPanel() {
 		return null;
 	}
 
-	const lockedFrames = board.selection.items
+	const isLocked = board.selection.items
 		.list()
-		.filter(
-			item => item.transformation.isLocked && item.itemType === "Frame",
-		);
+		.filter(item => item.transformation.isLocked).length;
 
 	const isSelectUnderPointer =
 		board.selection.getContext() === "SelectUnderPointer";
@@ -105,6 +103,7 @@ export function ContextPanel() {
 		!isImage &&
 		!isFrame &&
 		!isPlaceholder;
+
 	return (
 		<PanelContext.Provider
 			value={{
@@ -124,7 +123,7 @@ export function ContextPanel() {
 				padding={0}
 				id="ContextPanel"
 			>
-				{isSelectUnderPointer && !lockedFrames.length && (
+				{isSelectUnderPointer && !isLocked && (
 					<>
 						<Edit />
 						<RestOptionsMenu rounded="right">
@@ -133,16 +132,18 @@ export function ContextPanel() {
 						</RestOptionsMenu>
 					</>
 				)}
-				{isPlaceholder && !isSelectUnderPointer && (
+				{isPlaceholder && !isSelectUnderPointer && !isLocked && (
 					<>
-						<Delete rounded="left" />
+						<Lock rounded="left" />
+						<UiSeparator vertical />
+						<Delete />
 						<RestOptionsMenu rounded="right">
 							<BringToFront />
 							<SendToBack />
 						</RestOptionsMenu>
 					</>
 				)}
-				{isText && !isSelectUnderPointer && (
+				{isText && !isSelectUnderPointer && !isLocked && (
 					<>
 						<FontSize rounded="left" />
 						<FontStyle />
@@ -150,6 +151,8 @@ export function ContextPanel() {
 						<UiSeparator vertical />
 						<TextColor />
 						<TextHighlight />
+						<UiSeparator vertical />
+						<Lock />
 						<UiSeparator vertical />
 						<Duplicate />
 						<Delete />
@@ -162,7 +165,7 @@ export function ContextPanel() {
 						</RestOptionsMenu>
 					</>
 				)}
-				{isSticker && !isSelectUnderPointer && (
+				{isSticker && !isSelectUnderPointer && !isLocked && (
 					<>
 						<FontSize rounded="left" />
 						<UiSeparator vertical />
@@ -173,9 +176,11 @@ export function ContextPanel() {
 						<TextHighlight />
 						<UiSeparator vertical />
 						<StickerFillStyle />
+						<UiSeparator vertical />
+						<Lock />
+						<UiSeparator vertical />
 						<Duplicate />
 						<Delete />
-						<UiSeparator vertical />
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
@@ -185,7 +190,7 @@ export function ContextPanel() {
 						</RestOptionsMenu>
 					</>
 				)}
-				{isShape && !isSelectUnderPointer && (
+				{isShape && !isSelectUnderPointer && !isLocked && (
 					<>
 						<ItemType />
 						<UiSeparator vertical />
@@ -209,6 +214,8 @@ export function ContextPanel() {
 							.getPath()
 							.isClosed() && <FillStyle />}
 						<UiSeparator vertical />
+						<Lock />
+						<UiSeparator vertical />
 						<Duplicate />
 						<Delete />
 						<RestOptionsMenu>
@@ -220,7 +227,7 @@ export function ContextPanel() {
 						</RestOptionsMenu>
 					</>
 				)}
-				{isConnector && !isSelectUnderPointer && (
+				{isConnector && !isSelectUnderPointer && !isLocked && (
 					<>
 						<StartPointer />
 						<SwitchPointers />
@@ -234,6 +241,9 @@ export function ContextPanel() {
 						<ConnectorFontStyle />
 						<ConnectorTextColor />
 						<ConnectorTextHighlight />
+						<UiSeparator vertical />
+						<Lock />
+						<UiSeparator vertical />
 						<Duplicate />
 						<Delete />
 						<RestOptionsMenu>
@@ -245,12 +255,14 @@ export function ContextPanel() {
 						</RestOptionsMenu>
 					</>
 				)}
-				{isPen && !isSelectUnderPointer && (
+				{isPen && !isSelectUnderPointer && !isLocked && (
 					<>
 						<DrawStrokeWidth />
 						<UiSeparator vertical />
 						<DrawFillStyle />
 						<UiSeparator vertical />
+						<Lock />
+						<UiSeparator vertical />
 						<Duplicate />
 						<Delete />
 						<RestOptionsMenu>
@@ -262,9 +274,11 @@ export function ContextPanel() {
 						</RestOptionsMenu>
 					</>
 				)}
-				{isImage && !isSelectUnderPointer && (
+				{isImage && !isSelectUnderPointer && !isLocked && (
 					<>
-						<Duplicate rounded="left" />
+						<Lock rounded="left" />
+						<UiSeparator vertical />
+						<Duplicate />
 						<Delete />
 						<UiSeparator vertical />
 						<RestOptionsMenu>
@@ -276,16 +290,17 @@ export function ContextPanel() {
 						</RestOptionsMenu>
 					</>
 				)}
-				{isFrame && !isSelectUnderPointer && !lockedFrames.length && (
+				{isFrame && !isSelectUnderPointer && !isLocked && (
 					<>
 						<FrameRatio />
 						<ToggleFrameRatio />
 						<UiSeparator vertical />
 						<FrameFill />
 						<UiSeparator vertical />
+						<Lock />
+						<UiSeparator vertical />
 						<Duplicate />
 						<Delete />
-						<Lock />
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
@@ -296,13 +311,12 @@ export function ContextPanel() {
 						</RestOptionsMenu>
 					</>
 				)}
-				{!!lockedFrames.length && (
+				{!isDifferentItems && !!isLocked && (
 					<>
 						<Lock rounded="left" />
-						<Duplicate
-							rounded={lockedFrames.length > 1 ? "right" : "none"}
-						/>
-						{lockedFrames.length <= 1 ? (
+						<UiSeparator vertical />
+						<Duplicate rounded={isLocked > 1 ? "right" : "none"} />
+						{isLocked <= 1 ? (
 							<RestOptionsMenu rounded="right">
 								<CopyItemLink />
 								<ExportFrame />
@@ -312,12 +326,15 @@ export function ContextPanel() {
 				)}
 				{isDifferentItems &&
 					!isSelectUnderPointer &&
-					!isHoverUnderPointer &&
-					!lockedFrames.length && (
-						<RestOptionsMenu rounded="full">
-							<BringToFront />
-							<SendToBack />
-						</RestOptionsMenu>
+					!isHoverUnderPointer && (
+						<>
+							<Lock rounded="left" />
+							<UiSeparator vertical />
+							<RestOptionsMenu rounded="full">
+								<BringToFront />
+								<SendToBack />
+							</RestOptionsMenu>
+						</>
 					)}
 			</UiPanel>
 		</PanelContext.Provider>

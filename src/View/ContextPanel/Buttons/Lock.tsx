@@ -1,9 +1,9 @@
+import { Group } from "Board/Items/Group";
 import { useAppContext } from "View/AppContext";
 import { Icon } from "View/Icon";
 import { UiButton } from "View/Ui/UiButton";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Frame } from "Board/Items";
 
 type Props = {
 	rounded?: "none" | "left";
@@ -14,22 +14,61 @@ export const Lock = ({
 }: Props): React.ReactElement | null => {
 	const { t } = useTranslation();
 	const { board } = useAppContext();
-	const selectedFrames = board.selection.list() as Frame[];
+	const selectedItems = board.selection.list();
 	let isLocked = false;
 
-	if (selectedFrames.length > 1) {
-		isLocked = !selectedFrames.some(
-			frame => !frame.transformation.isLocked,
-		);
-	} else if (selectedFrames.length === 1) {
-		isLocked = selectedFrames[0].transformation.isLocked;
+	if (selectedItems.length > 1) {
+		isLocked = !selectedItems.some(item => !item.transformation.isLocked);
+	} else if (selectedItems.length === 1) {
+		isLocked = selectedItems[0].transformation.isLocked;
 	}
 
 	const handleClick = (): void => {
-		selectedFrames.forEach(frame => {
-			const isLockedFrame = frame.transformation.isLocked;
-			frame.transformation.setIsLocked(!isLockedFrame);
-		});
+		if (
+			selectedItems.length > 1 ||
+			(selectedItems.length === 1 && selectedItems[0] instanceof Group)
+		) {
+			const isLocked = selectedItems.every(
+				item => item.transformation.isLocked,
+			);
+
+			if (!isLocked) {
+				const lockedIds = selectedItems.map(item => item.getId());
+				const group = board.addLockedGroup(
+					new Group(board, undefined, lockedIds, undefined),
+				);
+				group.setBoard(board);
+
+				board.tools.getSelect()?.toHighlight.clear();
+				if (
+					board.selection.items.getSingle()?.itemType !== "Connector"
+				) {
+					board.selection.setContext("None");
+				}
+				return;
+			}
+
+			const groupId = selectedItems[0].getId();
+			const group = board.items.getById(groupId);
+
+			if (!(group instanceof Group)) {
+				return;
+			}
+			
+			board.removeLockedGroup(group);
+			return;
+		}
+
+		const item = selectedItems[0];
+		const isLocked = item.transformation.isLocked;
+		item.transformation.setIsLocked(!isLocked);
+
+		if (isLocked) {
+			board.tools.getSelect()?.toHighlight.clear();
+			if (board.selection.items.getSingle()?.itemType !== "Connector") {
+				board.selection.setContext("None");
+			}
+		}
 	};
 
 	const tooltip = isLocked
