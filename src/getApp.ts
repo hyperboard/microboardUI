@@ -26,6 +26,8 @@ import { runMigration } from "drizzle/scripts/migrate";
 import { migrateData } from "drizzle/scripts/board-events-table.migration";
 import { Templates } from "./Routes/V1/Templates";
 import { getRedis } from "Redis";
+import { OpenAI } from "ai/openai";
+import { AI } from "Routes/V1/AI/AI";
 
 export async function getApp(): Promise<http.Server> {
     const app = express();
@@ -113,12 +115,14 @@ export async function getApp(): Promise<http.Server> {
     app.use(nocache);
 
     const config = new Config();
+    const openai = new OpenAI(process.env.OPENAI_API_KEY!);
     const mailer = new Mailer(config, logger, process.env.BASE_URL ?? "example");
     const redis = await getRedis(logger);
     const boards = new Boards(logger);
     const templates = new Templates(logger);
     withWebSocketApi(wss, boards, logger, redis);
     const auth = new Auth(logger, config, mailer);
+    const ai = new AI(openai);
 
     app.get("/", (request, response) => {
         response.status(200).json({});
@@ -132,7 +136,7 @@ export async function getApp(): Promise<http.Server> {
     const media = process.env.MINIO_ENABLED === "true" ? createMinioMediaDAL(logger) : createBarrelMediaDAL(logger);
     const users = new Users(media, logger);
 
-    app.use("/", getV1Router(config, mailer, boards, templates, logger, auth, users, media, wss, redis));
+    app.use("/", getV1Router(config, mailer, boards, templates, logger, auth, users, media, wss, redis, ai));
 
     app.use((req, res, next) => {
         if (req.path.includes("favicon.svg")) {
