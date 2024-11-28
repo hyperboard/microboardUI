@@ -18,12 +18,8 @@ export function ImportMiro(): React.ReactElement | null {
 
 	const fetchToken = async () => {
 		try {
-			// TODO using ENV after transferring to the client
-			// const clientId = import.meta.env.MIRO_CLIENT_ID;
-			// const clientSecret = import.meta.env.MIRO_CLIENT_SECRET;
-			// const baseURl = import.meta.env.BASE_URL
-			const clientId = "3458764589599848573";
-			const clientSecret = "RWatK9uBMqwxXlCKRpBhwxivQXmP12Je";
+			const clientId = import.meta.env.MIRO_CLIENT_ID;
+			const clientSecret = import.meta.env.MIRO_CLIENT_SECRET;
 			const redirectRoute = "/boards/blank?clipboard=true";
 			const redirectUrl = window.location.origin + redirectRoute;
 

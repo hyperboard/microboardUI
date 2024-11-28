@@ -16,9 +16,9 @@ export const ImgAuthClipboardModal = (): JSX.Element => {
 	const onAuthClick = (): void => {
 		hideModal("imgAuthClipboardNotification");
 
-		const clientId = "3458764589599848573";
-		const redirectUrl =
-			window.location.origin + "/boards/blank?clipboard=true";
+		const clientId = import.meta.env.MIRO_CLIENT_ID;
+		const redirectRoute = "/boards/blank?clipboard=true";
+		const redirectUrl = window.location.origin + redirectRoute;
 
 		window.location.href =
 			"https://miro.com/oauth/authorize?response_type=code&client_id=" +
