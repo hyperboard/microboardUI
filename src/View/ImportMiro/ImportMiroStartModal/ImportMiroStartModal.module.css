@@ -1,7 +1,7 @@
 .title {
 	font-size: 36px;
 	line-height: 1.22;
-	margin-bottom: 16px;
+	margin-bottom: 8px;
 }
 
 .text {
@@ -10,18 +10,17 @@
 	margin-bottom: 16px;
 }
 
-.img {
-	width: 100%;
-	margin-bottom: 16px;
-	max-height: 270px;
-	min-height: 212px;
-	height: calc(90vh - 671px);
-	position: relative;
-	text-align: left;
+.btnsWr {
+	display: flex;
 }
 
-.img img {
-	width: 100%;
-	height: 100%;
-	object-fit: contain;
+.cancelBtn,
+.goToMiroBtn {
+	max-width: max-content;
+	padding: 10px 12px;
+}
+
+.cancelBtn {
+	margin-right: 1rem;
+	font-weight: 400;
 }

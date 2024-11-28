@@ -496,11 +496,15 @@
 			"authBtn": "Sign In",
 			"continueBtn": "Continue without images"
 		},
+		"startModal": {
+			"text": "Copy the objects (Ctrl+C) in Miro and paste them onto the board (Ctrl+V). Some objects are not supported yet, but over time, all elements will be displayed correctly.",
+			"cancel": "Cancel",
+			"goToMiroBtn": "Switch to Miro"
+		},
 		"importMiro": "Import from Miro",
 		"importMiroBtn": "Import from Miro",
 		"authTooltip": "Sign up to access all features of Microboard",
-		"tooltipClipboardImport": "Аnother way to import<br /> a board from Miro<br /> <span style='opacity: 60%'>Copy the objects (Ctrl+C) in Miro<br /> and paste them onto the board<br /> (Ctrl+V). Some objects<br /> are not supported yet,<br /> but over time, all elements<br /> will be displayed correctly.</span",
-		"startModalText": "Log in to Miro and select the team whose board you want to import to Microboard.",
+		"tooltipClipboardImport": "Аnother way to import<br /> a board from Miro<br /> <span style='opacity: 60%'>Copy the objects (Ctrl+C) in Miro<br /> and paste them onto the board<br /> (Ctrl+V). Some objects<br /> are not supported yet,<br /> but over time, all elements<br /> will be displayed correctly.</span>",
 		"miroError": "An error has occurred. Try importing again",
 		"loading": "Loading...",
 		"nextStepBtn": "Сontinue"
