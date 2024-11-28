@@ -12,6 +12,8 @@ import { HotkeysMap } from "Board/Keyboard/types";
 import { pasteMiroClipboard } from "../View/ImportMiro/ImportMiroBoards/ImportBoardItem/MiroClipboardTransformer";
 import { App } from "./App";
 import { getGlobalModalFunctions } from "View/Modal/ModalProvider";
+import { throttle } from "shared/utils";
+import { PRESENCE_CURSOR_THROTTLE } from "Board/Presence/Presence";
 
 export interface Controller {
 	onWheel: (event: WheelEvent) => void;
@@ -296,6 +298,15 @@ export function getController(
 		}
 	}
 
+	const sendPresencePointer = throttle((board: Board, timestamp: number) => {
+		const pointer = board.pointer;
+		board.presence.emit({
+			method: "PointerMove",
+			position: { x: pointer.point.x, y: pointer.point.y },
+			timestamp,
+		});
+	}, PRESENCE_CURSOR_THROTTLE);
+
 	function onPointerMove(event: PointerEvent): boolean {
 		const currentTime = Date.now();
 		if (currentTime - pointerDownTime < pointerMoveDelay) {
@@ -306,6 +317,7 @@ export function getController(
 			return false;
 		}
 
+		sendPresencePointer(board, currentTime);
 		const { camera, tools } = board;
 
 		camera.updateDownEvent(event);
@@ -640,7 +652,7 @@ export function getController(
 	return {
 		onWheel,
 		onPointerDown,
-		onPointerMove: throttle(onPointerMove, 16), // 16 мс ~ 60 fps,
+		onPointerMove, // throttlePointerEvent(onPointerMove, 16), // 16 мс ~ 60 fps,
 		onPointerUp,
 		onPointerLeave,
 		onPointerCancel,
@@ -735,10 +747,9 @@ function serializeKeyboardEvent(event: KeyboardEvent): SerializedKeyboardEvent {
 }
 
 // Декоратор для троттлинга событий движения указателя
-function throttle<T extends (event: PointerEvent, ...args: any[]) => any>(
-	func: T,
-	limit: number,
-): T {
+function throttlePointerEvent<
+	T extends (event: PointerEvent, ...args: any[]) => any,
+>(func: T, limit: number): T {
 	let lastCallTime = 0;
 	let lastEvent: PointerEvent | null = null;
 

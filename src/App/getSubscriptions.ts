@@ -13,7 +13,8 @@ export type SubjectName =
 	| "tools"
 	| "events"
 	| "syncLog"
-	| "pointer";
+	| "pointer"
+	| "presence";
 
 export interface Subscription {
 	subjects: SubjectName[];
@@ -40,6 +41,7 @@ export function getSubscriptions(getBoard: () => Board): Subscriptions {
 		["events", () => board.events?.subject as Subject<BoardEvent>],
 		["syncLog", () => board.events?.syncLogSubject as SyncLogSubject],
 		["pointer", () => board.pointer.subject],
+		["presence", () => board.presence.subject],
 	];
 
 	const subjects: Map<string, () => Subject<any>> = new Map(

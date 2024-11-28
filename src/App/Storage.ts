@@ -1,4 +1,5 @@
 import type { boardsApi } from "shared/api";
+import { v4 } from "uuid";
 
 export class Storage {
 	createdBoards = `${location.host}/createdBoards`;
@@ -87,5 +88,23 @@ export class Storage {
 
 		target.title = title;
 		this.setCreatedBoards(boards);
+	}
+
+	setUser() {
+		const uuid = v4();
+		localStorage.setItem(`currentUser`, uuid);
+		return uuid;
+	}
+
+	getUser() {
+		return localStorage.getItem(`currentUser`);
+	}
+
+	setUserColor(color: string) {
+		localStorage.setItem(`userColor`, color);
+	}
+
+	getUserColor() {
+		return localStorage.getItem(`userColor`);
 	}
 }

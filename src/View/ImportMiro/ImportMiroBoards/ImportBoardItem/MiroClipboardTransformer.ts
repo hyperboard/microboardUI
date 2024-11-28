@@ -90,7 +90,7 @@ const BORDER_STYLES = {
 // sbc from styles
 // It is hex colors. Miro can transform shape with custom background to sticker.
 const STICKER_COLORS = {
-	16119544: "white", // white
+	16119544: "gray", // white
 	16775601: "light_yellow", // light yellow
 	16109864: "yellow", // yellow
 	16751944: "orange", // orange

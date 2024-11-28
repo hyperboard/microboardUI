@@ -5,12 +5,9 @@ import { getApiUrl } from "Config";
 import { getWebsocketUrl } from "../Config";
 import { Subject } from "Subject";
 import { Board, BoardSnapshot } from "Board/Board";
-import {
-	BoardEvent,
-	BoardEventPack,
-	SyncBoardEvent,
-	SyncEvent,
-} from "Board/Events/Events";
+import { SyncBoardEvent, SyncEvent } from "Board/Events/Events";
+import { Account } from "./Account";
+import { Storage } from "./Storage";
 
 const SECOND = 1000;
 const WS_RECONNECT_TIMEOUT = 5 * SECOND;
@@ -47,6 +44,7 @@ export interface BoardEventListMsg {
 export interface SubscribeMsg {
 	type: "Subscribe";
 	boardId: string;
+	userId: string;
 	index: number;
 }
 
@@ -99,6 +97,77 @@ export interface BoardSubscriptionCompletedMsg {
 	eventsSinceLastSnapshot: SyncBoardEvent[];
 	initialSequenceNumber: number;
 }
+export interface PointerMoveEvent {
+	method: "PointerMove";
+	position: { x: number; y: number };
+	timestamp: number;
+}
+
+export interface SelectionEvent {
+	method: "Selection";
+	selectedItems: string[];
+	timestamp: number;
+}
+
+export interface SetUserColorEvent {
+	method: "SetUserColor";
+	timestamp: number;
+	color: string;
+}
+
+export interface DrawSelectEvent {
+	method: "DrawSelect";
+	timestamp: number;
+	size: {
+		left: number;
+		top: number;
+		right: number;
+		bottom: number;
+	};
+}
+
+export interface CancelDrawSelectEvent {
+	method: "CancelDrawSelect";
+	timestamp: number;
+}
+
+export interface CameraEvent {
+	method: "Camera";
+	timestamp: number;
+	translateX: number;
+	translateY: number;
+	scaleX: number;
+	scaleY: number;
+	shearX: number;
+	shearY: number;
+}
+
+export type PresenceEventType =
+	| PointerMoveEvent
+	| SelectionEvent
+	| SetUserColorEvent
+	| DrawSelectEvent
+	| CancelDrawSelectEvent
+	| CameraEvent;
+
+export interface UserJoinMsg {
+	type: "UserJoin";
+	timestamp: number;
+	userId: number;
+	boardId: string;
+	events: PresenceEventMsg<PresenceEventType>[];
+}
+
+export interface PresenceEventMsg<T = PresenceEventType> {
+	type: "PresenceEvent";
+	boardId: string;
+	event: T;
+	userId: string;
+	messageId: string;
+	nickname: string;
+	color: string | null;
+	avatar: string | null;
+}
 
 export type EventsMsg =
 	| ViewModeMsg
@@ -108,11 +177,13 @@ export type EventsMsg =
 	| SnapshotResponseMsg
 	| SubscribeConfirmationMsg
 	| ConfirmationMsg
-	| BoardSubscriptionCompletedMsg;
+	| BoardSubscriptionCompletedMsg
+	| PresenceEventMsg;
 
 export type SocketMsg =
 	| EventsMsg
 	| AuthMsg
+	| UserJoinMsg
 	| SubscribeMsg
 	| UnsubscribeMsg
 	| ErrorMsg
@@ -138,6 +209,7 @@ export interface Connection {
 		event: SyncEvent,
 		sequenceNumber: number,
 	): void;
+	publishPresenceEvent(boardId: string, event: PresenceEventType): void;
 	publishAuth(jwt: string): void;
 	publishSnapshot(boardId: string, snapshot: BoardSnapshot): void;
 	wsClient: WsClient;
@@ -149,7 +221,11 @@ interface Subscription {
 	unsubscribe: () => void;
 }
 
-export function createConnection(getBoard: () => Board): Connection {
+export function createConnection(
+	getBoard: () => Board,
+	getAccount: () => Account,
+	getStorage: () => Storage,
+): Connection {
 	const subscriptions = new Map<string, Subscription>();
 	let pingTimeout: NodeJS.Timeout | null = null;
 	let pingNotificationId: string | null = null;
@@ -228,6 +304,7 @@ export function createConnection(getBoard: () => Board): Connection {
 	}
 
 	function onMessage(msg: SocketMsg): void {
+		const board = getBoard();
 		clearConnectionError();
 		switch (msg.type) {
 			case "SubscribeConfirmation":
@@ -251,6 +328,16 @@ export function createConnection(getBoard: () => Board): Connection {
 					return;
 				}
 				subscription.publish(msg);
+				break;
+			case "UserJoin":
+				if (board) {
+					board.presence.join(msg);
+				}
+				break;
+			case "PresenceEvent":
+				if (board) {
+					board.presence.push(msg);
+				}
 				break;
 			case "Subscribe":
 			case "Unsubscribe":
@@ -324,10 +411,16 @@ export function createConnection(getBoard: () => Board): Connection {
 			}
 			subscribeTimeouts.set(boardId, subscribeTimeout);
 
+			const storage = getStorage();
+			const generatedClientId = storage.getUser()
+				? storage.getUser()!
+				: storage.setUser();
+
 			ws.send({
 				type: "Subscribe",
 				boardId,
 				index: getLastOrder(),
+				userId: generatedClientId,
 			});
 		}
 
@@ -389,6 +482,37 @@ export function createConnection(getBoard: () => Board): Connection {
 		ws.send(message);
 	}
 
+	function publishPresenceEvent(
+		boardId: string,
+		event: PresenceEventType,
+	): void {
+		const messageId = generateMessageId();
+
+		const storage = getStorage();
+		const generatedClientId = storage.getUser()
+			? storage.getUser()!
+			: storage.setUser();
+		const account = getAccount();
+		const generatedNickname = account.isLoggedIn
+			? account.info?.name || account.info?.email || "Wild Cat"
+			: "Анонимный пользователь";
+		const generatedColor =
+			storage.getUserColor() ||
+			getBoard().presence.generateUserColor(false);
+		const message: PresenceEventMsg = {
+			type: "PresenceEvent",
+			boardId,
+			event,
+			messageId,
+			userId: generatedClientId,
+			nickname: generatedNickname,
+			color: generatedColor,
+			avatar: account.info?.avatar || null,
+		};
+
+		ws.send(message);
+	}
+
 	function generateMessageId(): string {
 		return Date.now().toString(36) + Math.random().toString(36).substr(2);
 	}
@@ -414,6 +538,7 @@ export function createConnection(getBoard: () => Board): Connection {
 		subscribe,
 		unsubscribe,
 		publishBoardEvent,
+		publishPresenceEvent,
 		publishSnapshot,
 		wsClient: ws,
 		publishAuth,
