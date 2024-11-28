@@ -1,7 +1,7 @@
 import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
 import { useAppContext } from "View/AppContext";
 import { PanelContext } from "View/ContextPanel/PanelContext";
-import { MiroBoardItemTypes } from "View/ImportMiro/ImportMiroBoards/MiroBoards/MiroBoardsModels";
+import { MiroBoardItemTypes } from "View/ImportMiro/ImportMiroBoards/MiroModels";
 import { Tooltip } from "View/Ui/UiButton/Tooltip";
 import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";

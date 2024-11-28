@@ -10,7 +10,7 @@ import {
 	MiroBoardItemTypes,
 	MiroRelativeTo,
 	MiroUnsupportedItem,
-} from "../MiroBoards/MiroBoardsModels";
+} from "../MiroModels";
 import { Board } from "Board";
 import { useCopyBoardItems } from "./useCopyBoardItems";
 import {

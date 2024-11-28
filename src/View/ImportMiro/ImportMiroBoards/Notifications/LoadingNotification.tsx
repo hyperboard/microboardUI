@@ -1,6 +1,6 @@
 import { Notification } from "shared/ui-lib/Notification";
 import { useTranslation } from "react-i18next";
-import styles from "../ImportMiroBoards.module.css";
+import styles from "../ImportMiro.module.css";
 import React from "react";
 import { Loader } from "shared/ui-lib/Loader/Loader";
 import { useModal } from "View/Modal/ModalProvider";

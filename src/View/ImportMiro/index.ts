@@ -2,4 +2,4 @@ export { ImportMiroStartModal } from "./ImportMiroStartModal/ImportMiroStartModa
 export { AuthClipboardModal } from "./AuthClipboardModal/AuthClipboardModal";
 export { ImgAuthClipboardModal } from "./ImgAuthClipboardModal/ImgAuthClipboardModal";
 
-export { ImportMiroBoards } from "./ImportMiroBoards/ImportMiroBoards";
+export { ImportMiro } from "./ImportMiroBoards/ImportMiro";

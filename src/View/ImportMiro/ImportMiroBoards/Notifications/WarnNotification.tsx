@@ -1,4 +1,4 @@
-import styles from "../ImportMiroBoards.module.css";
+import styles from "../ImportMiro.module.css";
 import { useTranslation } from "react-i18next";
 import React, { useEffect } from "react";
 import { Button } from "shared/ui-lib/Button";

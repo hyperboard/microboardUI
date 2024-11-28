@@ -1,14 +1,19 @@
 import { shouldShow } from "lib/queryStringParser";
 import { useForceUpdate } from "lib/useForceUpdate";
 import React, { useEffect, useRef } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+	useLocation,
+	useNavigate,
+	useParams,
+	useSearchParams,
+} from "react-router-dom";
 import { useAppContext } from "View/AppContext";
 import { Canvas } from "View/Canvas";
 import { ContextMenu } from "View/ContextMenu";
 import { ContextPanel } from "View/ContextPanel";
 import { ExportPanel } from "View/ExportPanel";
 import { ExportVisible } from "View/ExportPanel/ExportVisible";
-import { ImportMiroBoards } from "View/ImportMiro";
+import { ImportMiro } from "View/ImportMiro";
 import { LandingMenu, MobileLandingMenu } from "View/LandingMenu";
 import { SidePanelsContainer } from "View/SidePanelsContainer";
 import { TextEditors } from "View/TextEditor/TextEditor";
@@ -33,6 +38,9 @@ export function AppView() {
 	const forceUpdate = useForceUpdate();
 	const animationId = useRef<number | null>(null);
 	const containerRef = useRef<HTMLDivElement | null>(null);
+	const [searchParams] = useSearchParams();
+	const authCode = searchParams.get("code");
+	const teamIdSearch =  searchParams.get("team_id");
 
 	const update = () => {
 		if (animationId.current) {
@@ -158,7 +166,7 @@ export function AppView() {
 				<ExportPanel />
 			</ViewModeGuard>
 			<ToastProvider />
-			<ImportMiroBoards />
+			{authCode && teamIdSearch ? <ImportMiro /> : null}
 			<ImportMiroStartModal />
 			<SetLinkToModal />
 		</div>

@@ -1,4 +1,4 @@
-import styles from "../ImportMiroBoards.module.css";
+import styles from "../ImportMiro.module.css";
 import { useTranslation } from "react-i18next";
 import React from "react";
 import { Button } from "shared/ui-lib/Button";
@@ -7,23 +7,13 @@ import { useModal } from "View/Modal/ModalProvider";
 
 interface ErrorNotificationProps {
 	className?: string;
-	setStage: (stage: number) => void;
-	setModalOpen: (modalOpen: boolean) => void;
 }
 
 export const ErrorNotification = ({
 	className,
-	setStage,
-	setModalOpen,
 }: ErrorNotificationProps): React.ReactElement => {
 	const { t } = useTranslation();
-	const { isModalOpen, hideModal, data: modalData } = useModal();
-
-	const onClickChooseBoard = (): void => {
-		hideModal("errorNotification");
-		setStage(1);
-		setModalOpen(true);
-	};
+	const { isModalOpen, hideModal } = useModal();
 
 	return (
 		<Notification
@@ -48,15 +38,6 @@ export const ErrorNotification = ({
 					>
 						{t("miro.notifications.okBtn")}
 					</Button>
-					{modalData !== "clipboard" && (
-						<Button
-							pattern="primary"
-							onClick={onClickChooseBoard}
-							className={styles.notificationBtn}
-						>
-							{t("miro.notifications.chooseBoardBtn")}
-						</Button>
-					)}
 				</div>
 			</div>
 		</Notification>

@@ -16,7 +16,7 @@ import {
 	MiroItemsTypes,
 	MiroRelativeTo,
 	MiroUnsupportedItem,
-} from "../MiroBoards/MiroBoardsModels";
+} from "../MiroModels";
 import {
 	Connector,
 	Frame,
@@ -173,10 +173,6 @@ export const useCopyBoardItems = (
 	withoutImgs?: boolean,
 ): void => {
 	const boardMiroId: { [key: string]: string } = {};
-	const searchParams = new URLSearchParams(window.location.search);
-	const isClipboard =
-		searchParams.get("clipboard") ||
-		!(searchParams.get("code") && searchParams.get("team_id"));
 
 	const setBoardMiroId = (id: string): void => {
 		boardMiroId[id] =
@@ -813,10 +809,6 @@ export const useCopyBoardItems = (
 		const endItemMiro = board.items.getById(boardMiroId[endItem.id]);
 
 		if (!startItemMiro || !endItemMiro) {
-			if (!isClipboard) {
-				return null;
-			}
-
 			const startItemPosition = startItem.position;
 			const endItemPosition = endItem.position;
 			const pointer = board.pointer.point;
@@ -953,15 +945,6 @@ export const useCopyBoardItems = (
 		setBoardMiroId(id);
 	};
 
-	const zoomToFit = (): void => {
-		const items = board.items.listAll();
-		if (items.length > 0) {
-			const rect = board.items.getMbr();
-			// TODO: fix zoom to fit bug
-			board.camera.zoomToFit(rect);
-		}
-	};
-
 	const copyPaint = (item: IMiroBoardItemPaint): void => {
 		const { style, data, id } = item;
 		if (!data) {
@@ -1029,7 +1012,7 @@ export const useCopyBoardItems = (
 		return miroItems || storageItemsParsed || [];
 	};
 
-	const copyClipboardItems = async (): Promise<void> => {
+	const copyBoardItems = async (): Promise<void> => {
 		const { isModalOpen, showModal, hideModal, setModalData } =
 			getGlobalModalFunctions();
 
@@ -1096,48 +1079,6 @@ export const useCopyBoardItems = (
 		if (url.searchParams.has("clipboard")) {
 			url.searchParams.delete("clipboard");
 			window.history.replaceState({}, document.title, url);
-		}
-	};
-
-	const copyItems = async (): Promise<void> => {
-		const { showModal } = getGlobalModalFunctions();
-
-		const miroBoardItems = getMiroBoardItems();
-
-		for (const item of miroBoardItems) {
-			const type = item.type as MiroItemsTypes;
-
-			if (
-				item.type !== MiroBoardItemTypes.CONNECTOR &&
-				itemsTypes[type]
-			) {
-				await itemsTypes[type](item);
-			}
-		}
-
-		miroBoardItems
-			.filter(item => item.type === MiroBoardItemTypes.CONNECTOR)
-			.forEach(copyConnector);
-
-		zoomToFit();
-
-		const isWarnMessageOpen = miroBoardItems.some(
-			item =>
-				item.type === MiroBoardItemTypes.CARD ||
-				item.type === MiroBoardItemTypes.DOCUMENT ||
-				item.type === MiroBoardItemTypes.MINDMAP,
-		);
-
-		showModal?.(
-			isWarnMessageOpen ? "warnNotification" : "successNotification",
-		);
-	};
-
-	const copyBoardItems = (): void => {
-		if (isClipboard) {
-			copyClipboardItems();
-		} else {
-			copyItems();
 		}
 	};
 
