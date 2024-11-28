@@ -55,31 +55,6 @@ export const SelectTemplateModal = (): JSX.Element => {
 			setInputValue(e.target.value),
 	);
 
-	// const geTemplates = async (params: {
-	//     term?: string;
-	//     language?: string;
-	//     tag?: TemplateCategory;
-	// }): Promise<Template[]> => {
-	//     const searchParams = new URLSearchParams();
-	//     params.language && searchParams.set("language", params.language);
-	//     params.term && searchParams.set("term", params.term);
-	//     params.tag && searchParams.set("tag", params.tag);
-	//     const stringifiedParams = searchParams.toString();
-	//     return fetch(
-	//         `${getApiUrl()}/templates${
-	//             stringifiedParams && "?" + stringifiedParams
-	//         }`,
-	//         {
-	//             method: "GET",
-	//         },
-	//     )
-	//         .then(response => response.json())
-	//         .catch(error => {
-	//             console.error(error);
-	//             return [];
-	//         });
-	// };
-
 	const getTemplates = async ({
 		term,
 		language,

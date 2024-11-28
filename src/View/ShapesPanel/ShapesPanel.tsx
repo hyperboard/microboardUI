@@ -50,15 +50,17 @@ export function ShapesPanel(): JSX.Element {
 					<Icon iconName="Close" />
 				</UiButton>
 			</div>
-			{SHAPES_CATEGORIES.map(category => {
-				return (
-					<ShapesCategory
-						categoryName={category.name}
-						handlePick={handlePick}
-						key={category.name}
-					/>
-				);
-			})}
+			<div className={styles.scrollContainer}>
+				{SHAPES_CATEGORIES.map(category => {
+					return (
+						<ShapesCategory
+							categoryName={category.name}
+							handlePick={handlePick}
+							key={category.name}
+						/>
+					);
+				})}
+			</div>
 		</UiPanel>
 	);
 }

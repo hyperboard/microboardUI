@@ -1,5 +1,5 @@
 .navigation {
-	margin-top: 8px;
+	margin-top: 24px;
 	padding-top: 8px;
 	width: 100%;
 }
@@ -39,4 +39,10 @@
 
 .activeCategoryItem {
 	background-color: rgba(10, 15, 41, 0.04);
+}
+
+@media (max-width: 768px) {
+	.navigation {
+		margin-top: 0;
+	}
 }

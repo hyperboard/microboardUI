@@ -12,19 +12,20 @@
 }
 
 .shapesPanel.open {
-	width: 288px;
+	width: 292px;
 	visibility: visible;
 	box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
 	border: 1px solid var(--border-action-normal);
 	margin-left: 12px;
 	gap: 12px;
-	padding: 8px !important;
+	padding: 8px 4px !important;
 }
 
 .header {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+	padding: 0 4px;
 }
 
 .title {
@@ -37,9 +38,30 @@
 
 .close {
 	--padding: 4px;
-	--radius: 0;
 	--min-width: 28px;
 	--min-height: 28px;
 	color: var(--text-base-primary);
 	border-radius: 12px;
+}
+
+.scrollContainer {
+	overflow-y: auto;
+	scrollbar-gutter: stable;
+	width: 100%;
+	padding: 0 4px;
+}
+
+.scrollContainer::-webkit-scrollbar {
+	appearance: none;
+	width: 2px;
+}
+
+.scrollContainer::-webkit-scrollbar-button {
+	display: none;
+}
+
+.scrollContainer::-webkit-scrollbar-thumb {
+	display: block;
+	background-color: rgba(222, 225, 232, 1);
+	border-radius: 2px;
 }
