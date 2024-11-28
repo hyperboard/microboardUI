@@ -1,0 +1,26 @@
+.wrapper {
+	/* position: fixed; */
+	/* bottom: var(--absolute-position-panel-padding); */
+	/* left: 80px; */
+}
+
+.panelButton {
+	padding: 12px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: none;
+	border: none;
+	transition: all 0.5s ease;
+}
+
+.panelButton:hover {
+	background-color: rgba(0, 0, 0, 0.05);
+	border-radius: 8px;
+}
+
+.panelIcon {
+	width: 24px;
+	height: 24px;
+}

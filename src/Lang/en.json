@@ -555,5 +555,15 @@
 	},
 	"itemTooltips": {
 		"placeholder": "This type of object isn’t<br /> supported yet,<br /> <span style='opacity: 60%'>but we’re working on it.<br /> It will be available soon!</span>"
+	},
+	"ai": {
+		"flowChart": "Flow chart",
+		"database": "Database",
+		"cloudArch": "Cloud architecture",
+		"chatPlaceholder": "Enter your idea... for example, 'How to play rock, paper, scissors'",
+		"enterIdea": "Enter your idea for generating charts on the board",
+		"generateAiChart": "Generate AI charts",
+		"symbols": "characters",
+		"processingIdea": "Processing your idea..."
 	}
 }

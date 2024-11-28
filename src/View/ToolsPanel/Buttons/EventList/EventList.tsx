@@ -43,7 +43,7 @@ export const EventList = React.memo(function EventList(): JSX.Element {
 	};
 
 	return (
-		<UiPanel className={style.panel} vertical padding={0} zIndex={101}>
+		<UiPanel vertical padding={0} zIndex={101}>
 			<ButtonWithMenu
 				ref={buttonWithMenuRef}
 				button={
