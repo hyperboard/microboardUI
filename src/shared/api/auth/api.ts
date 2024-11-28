@@ -21,7 +21,6 @@ export function changePassword(body: ChangePasswordPayload) {
 }
 
 export function login(body: LoginPayload) {
-	console.log("body", body);
 	return api.post<Tokens>("/auth/login", body);
 }
 

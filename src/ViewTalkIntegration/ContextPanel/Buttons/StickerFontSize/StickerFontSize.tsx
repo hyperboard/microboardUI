@@ -41,7 +41,6 @@ export function StickerFontSize() {
 		e.stopPropagation();
 
 		if (!chevronRef.current) {
-			console.log("return");
 			return;
 		}
 		const rect = chevronRef.current.getBoundingClientRect();

@@ -64,7 +64,6 @@ export function SidePanel(): JSX.Element {
 
 	const handleContextMenuOpen: MouseEventHandler = event => {
 		event.preventDefault();
-		console.log("open");
 		close();
 		open(event.clientX, event.clientY);
 	};
