@@ -766,7 +766,10 @@ export const useCopyBoardItems = (
 		board.add<Placeholder>(placeholder);
 		setBoardMiroId(id);
 	};
-
+	//
+	// startItemX,
+	// 	startDimensions.width,
+	// 	startItem.position?.x,
 	const getConnectorPoint = (
 		position: number,
 		geometry?: number,
