@@ -11,6 +11,7 @@ export interface Props extends WithRouterProps {
 export class CanvasBase extends React.Component<Props> {
 	stageRef = React.createRef<HTMLDivElement>();
 	canvasRef = React.createRef<HTMLCanvasElement>();
+	cursorsCanvasRef = React.createRef<HTMLCanvasElement>();
 	options = {
 		pointerdown: {},
 		pointerup: {},
@@ -26,21 +27,29 @@ export class CanvasBase extends React.Component<Props> {
 
 	renderToContext = (): void => {
 		const canvas = this.canvasRef.current;
-		if (!canvas) {
+		const cursorsCanvas = this.cursorsCanvasRef.current;
+		if (!canvas || !cursorsCanvas) {
 			return;
 		}
 		const ctx = canvas.getContext("2d");
-		if (!ctx) {
+		const cursorsCtx = cursorsCanvas.getContext("2d");
+		if (!ctx || !cursorsCtx) {
 			return;
 		}
-		const context = new DrawingContext(this.props.board.camera, ctx);
+		const context = new DrawingContext(
+			this.props.board.camera,
+			ctx,
+			cursorsCtx,
+		);
 		const { board } = this.props;
 
 		context.setCamera(board.camera);
 		context.clear();
+		context.clearCursor();
 		board.items.render(context);
 		board.selection.render(context);
 		board.tools.render(context);
+		board.presence.render(context);
 	};
 
 	initCanvasRendering = (): void => {
@@ -121,12 +130,12 @@ export class CanvasBase extends React.Component<Props> {
 		observer: () => {
 			this.renderToContext();
 		},
-		subjects: ["camera", "items", "tools", "selection"],
+		subjects: ["camera", "items", "tools", "selection", "presence"],
 	};
 
 	cursorSubscription = {
 		observer: this.updateCursor,
-		subjects: ["pointer"],
+		subjects: ["pointer", "presence"],
 	};
 
 	resizeSubscription = {
@@ -175,6 +184,7 @@ export class CanvasBase extends React.Component<Props> {
 						height: `${height}px`,
 					}}
 				/>
+
 				<canvas
 					width={Math.floor(width * window.devicePixelRatio)}
 					height={Math.floor(height * window.devicePixelRatio)}
@@ -190,6 +200,26 @@ export class CanvasBase extends React.Component<Props> {
 						position: "absolute",
 						width: `${width}px`,
 						height: `${height}px`,
+					}}
+				/>
+
+				<canvas
+					ref={this.cursorsCanvasRef}
+					width={Math.floor(width * window.devicePixelRatio)}
+					height={Math.floor(height * window.devicePixelRatio)}
+					className="NoContextMenu"
+					style={{
+						padding: "0px",
+						margin: "0px",
+						border: "0px",
+						background: "transparent",
+						top: "0px",
+						left: "0px",
+						position: "absolute",
+						display: "block",
+						width: `${width}px`,
+						height: `${height}px`,
+						pointerEvents: "none",
 					}}
 				/>
 			</div>

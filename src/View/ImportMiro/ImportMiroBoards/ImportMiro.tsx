@@ -75,8 +75,8 @@ export function ImportMiro(): React.ReactElement | null {
 	useEffect(() => {
 		const token = Cookies.get("miro_accessToken");
 
-		if(!authCode && !teamIdSearch) {
-			return
+		if (!authCode && !teamIdSearch) {
+			return;
 		}
 
 		if (!token || token === "undefined") {

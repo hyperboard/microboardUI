@@ -19,6 +19,8 @@ import { ChangePassword } from "./icons/ChangePassword";
 import { Logout } from "./icons/Logout";
 import styles from "./UserPanel.module.css";
 import { useAppContext } from "View/AppContext";
+import { PresenceUsers } from "View/Presence/PresenceUsers/PresenceUsers";
+import { shouldShow } from "lib/queryStringParser";
 import { getEmailPrefix } from "lib/getEmailPrefix";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -536,5 +538,14 @@ export const UserPanel: React.FC<{ app: App }> = ({ app }) => {
 
 			<Modal isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
 		</>
+	);
+};
+
+export const UserPanelLayout: React.FC<{ app: App }> = ({ app }) => {
+	return (
+		<div className={styles.layoutWrapper}>
+			<PresenceUsers board={app.getBoard()} />
+			{shouldShow("userPanel") && <UserPanel app={app} />}
+		</div>
 	);
 };

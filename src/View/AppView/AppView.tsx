@@ -17,7 +17,7 @@ import { ImportMiro } from "View/ImportMiro";
 import { LandingMenu, MobileLandingMenu } from "View/LandingMenu";
 import { SidePanelsContainer } from "View/SidePanelsContainer";
 import { TextEditors } from "View/TextEditor/TextEditor";
-import { UserPanel } from "View/UserPanel/UserPanel";
+import { UserPanelLayout } from "View/UserPanel/UserPanel";
 import { ViewModeGuard } from "View/ViewModeGuard";
 import { ZoomPanel } from "View/ZoomPanel";
 import style from "./AppView.module.css";
@@ -29,6 +29,7 @@ import { ItemTooltip } from "View/ItemTooltip";
 import { ToastProvider } from "View/ToastProvider";
 import { SetLinkToModal } from "../Modal/SetLinkToModal";
 import { LinksProvider } from "../LinksProvider/LinksProvider";
+import { UserTracking } from "View/Presence/UserTracking/UserTracking";
 
 export function AppView() {
 	const { app, board } = useAppContext();
@@ -40,7 +41,7 @@ export function AppView() {
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const [searchParams] = useSearchParams();
 	const authCode = searchParams.get("code");
-	const teamIdSearch =  searchParams.get("team_id");
+	const teamIdSearch = searchParams.get("team_id");
 
 	const update = () => {
 		if (animationId.current) {
@@ -154,7 +155,10 @@ export function AppView() {
 				<ItemTooltip />
 			</ExportVisible>
 			<ExportVisible>
-				{shouldShow("userPanel") && <UserPanel app={app} />}
+				<UserPanelLayout app={app} />
+			</ExportVisible>
+			<ExportVisible>
+				<UserTracking board={board} />
 			</ExportVisible>
 			<InactiveBoardHidder>
 				<ZoomPanel />
