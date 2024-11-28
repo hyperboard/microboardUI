@@ -231,11 +231,7 @@ export const getCorrectEnding = (number: number): "one" | "few" | "many" => {
 	return cases[index];
 };
 
-export const convertHexToRGBA = (
-	hex: string,
-	rgba: boolean = true,
-	alpha = 0.5,
-) => {
+export const convertHexToRGBA = (hex: string, rgba = true, alpha = 0.5) => {
 	const tempHex = hex.replace("#", "");
 	const r = parseInt(tempHex.substring(0, 2), 16);
 	const g = parseInt(tempHex.substring(2, 4), 16);
