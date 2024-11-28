@@ -398,7 +398,7 @@ export class Boards {
                         },
                     };
                 })
-            );
+            ).onConflictDoNothing();
 
             const endDbWrite = process.hrtime.bigint();
             const dbWriteLatency = Number(endDbWrite - startDbWrite);
