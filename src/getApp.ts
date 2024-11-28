@@ -24,7 +24,8 @@ import { client } from "trigger";
 import cors from "cors";
 import { runMigration } from "drizzle/scripts/migrate";
 import { migrateData } from "drizzle/scripts/board-events-table.migration";
-import {Templates} from "./Routes/V1/Templates";
+import { Templates } from "./Routes/V1/Templates";
+import { getRedis } from "Redis";
 
 export async function getApp(): Promise<http.Server> {
     const app = express();
@@ -113,9 +114,10 @@ export async function getApp(): Promise<http.Server> {
 
     const config = new Config();
     const mailer = new Mailer(config, logger, process.env.BASE_URL ?? "example");
+    const redis = await getRedis(logger);
     const boards = new Boards(logger);
     const templates = new Templates(logger);
-    withWebSocketApi(wss, boards, logger);
+    withWebSocketApi(wss, boards, logger, redis);
     const auth = new Auth(logger, config, mailer);
 
     app.get("/", (request, response) => {
@@ -130,8 +132,7 @@ export async function getApp(): Promise<http.Server> {
     const media = process.env.MINIO_ENABLED === "true" ? createMinioMediaDAL(logger) : createBarrelMediaDAL(logger);
     const users = new Users(media, logger);
 
-
-    app.use("/", getV1Router(config, mailer, boards, templates, logger, auth, users, media, wss));
+    app.use("/", getV1Router(config, mailer, boards, templates, logger, auth, users, media, wss, redis));
 
     app.use((req, res, next) => {
         if (req.path.includes("favicon.svg")) {

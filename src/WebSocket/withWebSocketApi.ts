@@ -1,9 +1,11 @@
 import { AccessToken } from "Interface";
 import { boardEventTotalLatency, websocketEventQueueSize } from "Metrics/metrics";
+import { Redis, REDIS_HASH } from "Redis";
 import { BoardEventData, Boards } from "Routes/V1/Boards";
 import { verifyToken } from "Tokens";
 import winston from "winston";
 import WebSocket, { WebSocketServer } from "ws";
+import { Presence } from "./Presence";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
@@ -14,12 +16,13 @@ const SNAPSHOT_EVENTS_TO_REQUEST = 100;
 const SNAPSHOT_RETRY_TIMEOUT = 2 * MINUTE;
 const SNAPSHOT_REQUEST_TIMEOUT = 10 * SECOND;
 
-export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: winston.Logger): void {
+export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: winston.Logger, redis: Redis): void {
     const boardClients = new Map<string, WebSocket.WebSocket[]>();
     const boardIdToLinks = new Map<string, string[]>();
     const linkToBoardId = new Map<string, string>();
     const wsTokens = new Map<WebSocket, AccessToken[]>();
     const snapshotRequestTimers = new Map<string, NodeJS.Timeout>();
+    const presence = new Presence(redis);
 
     wss.on("connection", (ws) => {
         setupSocketErrorHandling(ws);
@@ -77,6 +80,8 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
                 return await handleUnsubscribeMsg(msg, ws);
             case "BoardEvent":
                 return await handleBoardEventMsg(msg, ws);
+            case "PresenceEvent":
+                return await handlePresenceEventMsg(msg, ws);
             case "BoardSnapshot":
                 return await handleSnapshotMsg(msg, ws);
             case "ping":
@@ -122,11 +127,9 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
 
     function handlePingMsg(_msg: PingMsg, ws: WebSocket): void {
         ws.send(
-
             JSON.stringify({
                 type: "ping",
             })
-
         );
     }
 
@@ -160,6 +163,16 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
                         lastSnapshotEventOrder,
                         eventsSinceLastSnapshot,
                         initialSequenceNumber,
+                    })
+                );
+                const presenceEvents = await presence.getBoardEvents(boardId);
+                ws.send(
+                    JSON.stringify({
+                        type: "UserJoin",
+                        boardId: boardId,
+                        userId: msg.userId,
+                        events: presenceEvents,
+                        timestamp: Date.now(),
                     })
                 );
             } else {
@@ -254,11 +267,11 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
             sendError(
                 ws,
                 "Unexpected sequence number" +
-                JSON.stringify({
-                    expectedSequence,
-                    receivedSequence: msg.sequenceNumber,
-                    boardId: msg.boardId,
-                })
+                    JSON.stringify({
+                        expectedSequence,
+                        receivedSequence: msg.sequenceNumber,
+                        boardId: msg.boardId,
+                    })
             );
             return;
         }
@@ -299,6 +312,38 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
         } catch (error) {
             return sendError(ws, "Failed to process board event." + JSON.stringify(error));
         }
+    }
+
+    async function handlePresenceEventMsg(msg: PresenceEventMsg, ws: WebSocket): Promise<void> {
+        try {
+            presence.saveEvent(msg);
+
+            const clients = boardClients.get(msg.boardId) || [];
+
+            sendMessageToClients(
+                {
+                    type: "PresenceEvent",
+                    boardId: msg.boardId,
+                    event: msg.event,
+                    userId: msg.userId,
+                    messageId: msg.messageId,
+                    nickname: msg.nickname,
+                    color: msg.color,
+                    avatar: msg.avatar,
+                },
+                clients
+            );
+        } catch (error) {
+            logger.error("Failed to process presence event:", error);
+            return sendError(ws, "Failed to process presence event.");
+        }
+    }
+
+    async function canViewBoard(ws: WebSocket, boardId: string): Promise<boolean> {
+        const hasDirectLinkViewPermission = await isValidLink(boardId, ["view", "edit"]);
+        const isPublic = await boards.isBoardPublic(boardId);
+        const hasTokenViewPermission = hasAnyRightInTokens(ws, boardId, ["reads", "edits", "owns"]);
+        return hasDirectLinkViewPermission || hasTokenViewPermission || isPublic;
     }
 
     async function canEditBoard(ws: WebSocket, boardId: string): Promise<boolean> {
@@ -427,6 +472,7 @@ export interface BoardEventListMsg {
 export interface SubscribeMsg {
     type: "Subscribe";
     boardId: string;
+    userId: string;
     index: number;
 }
 
@@ -470,17 +516,78 @@ export interface PingMsg {
     type: "ping";
 }
 
+export interface PointerMoveEvent {
+    method: "PointerMove";
+    position: { x: number; y: number };
+    timestamp: number;
+}
+
+export interface SelectionEvent {
+    method: "Selection";
+    selectedItems: string[];
+    timestamp: number;
+}
+
+export interface SetUserColorEvent {
+    method: "SetUserColor";
+    timestamp: number;
+    color: string;
+}
+
+export interface DrawSelectEvent {
+    method: "DrawSelect";
+    timestamp: number;
+    size: {
+        left: number;
+        top: number;
+        right: number;
+        bottom: number;
+    };
+}
+
+export interface CancelDrawSelectEvent {
+    method: "CancelDrawSelect";
+    timestamp: number;
+}
+
+export type PresenceEventType =
+    | PointerMoveEvent
+    | SelectionEvent
+    | SetUserColorEvent
+    | DrawSelectEvent
+    | CancelDrawSelectEvent;
+
+export interface UserJoinMsg {
+    type: "UserJoin";
+    timestamp: number;
+    userId: number;
+    boardId: string;
+    events: PresenceEventType[];
+}
+
+export interface PresenceEventMsg<T = PresenceEventType> {
+    type: "PresenceEvent";
+    boardId: string;
+    event: T;
+    userId: string;
+    messageId: string;
+    nickname: string;
+    color: string | null;
+    avatar: string | null;
+}
 export type EventsMsg =
     | ViewModeMsg
     | BoardEventMsg
     | BoardEventListMsg
     | SnapshotRequestMsg
     | SnapshotResponseMsg
-    | SubscribeConfirmationMsg;
+    | SubscribeConfirmationMsg
+    | PresenceEventMsg;
 
 export type SocketMsg =
     | EventsMsg
     | AuthMsg
+    | UserJoinMsg
     | SubscribeMsg
     | UnsubscribeMsg
     | ErrorMsg
@@ -502,6 +609,7 @@ export class EventsManager {
     private boardUuidMap: Map<string, string> = new Map();
     private eventCountSinceLastSnapshot: Map<string, number> = new Map();
     private snapshotRequestTimers: Map<string, NodeJS.Timeout> = new Map();
+    private presenceEventHandlers: Map<string, (event: PresenceEventType) => void> = new Map();
 
     private queues: {
         [boardId: string]: {
@@ -724,7 +832,7 @@ export class EventsManager {
         return events;
     }
 
-    requestSnapshotCallback(boardId: string, sinceLast: number): void { }
+    requestSnapshotCallback(boardId: string, sinceLast: number): void {}
 
     isBoardReady(boardId: string): boolean {
         return !this.processing.includes(boardId);
