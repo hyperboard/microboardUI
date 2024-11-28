@@ -1,6 +1,6 @@
 {
-  "id": "a01503e3-6206-4500-bfb7-4cb93dd49064",
-  "prevId": "32ab2c0b-a23f-4989-a09b-c8c5a0085c54",
+  "id": "e78609cf-db0a-470d-a834-9a2f5bc2fdb5",
+  "prevId": "a01503e3-6206-4500-bfb7-4cb93dd49064",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -742,6 +742,50 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
+    },
+    "public.user_avatars": {
+      "name": "user_avatars",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "avatar": {
+          "name": "avatar",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_avatars_user_id_users_id_fk": {
+          "name": "user_avatars_user_id_users_id_fk",
+          "tableFrom": "user_avatars",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "user_avatars_user_id_unique": {
+          "name": "user_avatars_user_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_id"
+          ]
+        }
+      }
     }
   },
   "enums": {},

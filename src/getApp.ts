@@ -35,6 +35,10 @@ export async function getApp(): Promise<http.Server> {
         await migrateData().catch(console.error);
     }
 
+    if (process.env.MIGRATE_EVENTS) {
+        await migrateData().catch(console.error);
+    }
+
     app.use(morgan("combined"));
     if (process.env.NODE_ENV !== "production") {
         app.use(cors());
@@ -113,7 +117,6 @@ export async function getApp(): Promise<http.Server> {
     const templates = new Templates(logger);
     withWebSocketApi(wss, boards, logger);
     const auth = new Auth(logger, config, mailer);
-    const users = new Users(logger);
 
     app.get("/", (request, response) => {
         response.status(200).json({});
@@ -125,6 +128,8 @@ export async function getApp(): Promise<http.Server> {
     });
 
     const media = process.env.MINIO_ENABLED === "true" ? createMinioMediaDAL(logger) : createBarrelMediaDAL(logger);
+    const users = new Users(media, logger);
+
 
     app.use("/", getV1Router(config, mailer, boards, templates, logger, auth, users, media, wss));
 

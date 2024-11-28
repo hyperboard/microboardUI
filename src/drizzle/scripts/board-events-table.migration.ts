@@ -103,6 +103,7 @@ async function migrateSingleBoard(client: PoolClient, db: any, tableName: string
             await db.insert(boardEvents).values(
                 events.rows.map((event) => ({
                     boardId,
+                    logId: event.logid,
                     eventId: event.eventid,
                     eventBody: event.eventbody,
                 }))
@@ -225,4 +226,3 @@ export async function migrateData() {
         await pool.end();
     }
 }
-

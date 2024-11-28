@@ -299,7 +299,6 @@ export function withWebSocketApi(wss: WebSocketServer, boards: Boards, logger: w
             const totalLatency = Number(totalEndTime - startTime);
             boardEventTotalLatency.observe(totalLatency);
         } catch (error) {
-            console.log(error);
             return sendError(ws, "Failed to process board event." + JSON.stringify(error));
         }
     }
