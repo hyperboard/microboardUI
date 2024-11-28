@@ -10,3 +10,4 @@ export * from "./userPasswordResetRequests";
 export * from "./userPasswords";
 export * from "./users";
 export * from "./boardEvents";
+export * from "./templates"

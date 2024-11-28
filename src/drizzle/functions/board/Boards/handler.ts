@@ -97,7 +97,7 @@ export async function getBoardId(boardUUID: string) {
         .leftJoin(boardViewLink, eq(boards.id, boardViewLink.boardId))
         .where(or(eq(boardEditLink.editLinkUUID, boardUUID), eq(boardViewLink.viewLinkUUID, boardUUID), eq(boards.boardUUID, boardUUID)))
         .limit(1);
-        
+
 
     if (!boardRecords) {
         throw new Error(`Board not found with UUID ${boardUUID}`);

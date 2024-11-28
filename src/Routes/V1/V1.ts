@@ -18,6 +18,7 @@ import { MediaDAL } from "./Media/MediaDAL";
 import { createMediaRouter } from "./Media";
 import fs from "fs";
 import { internalError } from "shared/lib/routing";
+import {getTemplatesRouter, Templates} from "./Templates";
 
 function createFileRoute(
     router: express.Router,
@@ -53,6 +54,7 @@ export function getV1Router(
     config: Config,
     mailer: Mailer,
     boards: Boards,
+    templates: Templates,
     logger: winston.Logger,
     auth: Auth,
     users: Users,
@@ -64,6 +66,7 @@ export function getV1Router(
     const apiBase = "/api/v1";
     router.use(apiBase, getAuthRouter(auth, users, logger));
     router.use(apiBase, getBoardsRouter(boards, logger));
+    router.use(apiBase, getTemplatesRouter(templates, logger))
     router.use(
         apiBase,
         process.env.MINIO_ENABLED === "true"

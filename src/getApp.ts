@@ -24,12 +24,13 @@ import { client } from "trigger";
 import cors from "cors";
 import { runMigration } from "drizzle/scripts/migrate";
 import { migrateData } from "drizzle/scripts/board-events-table.migration";
+import {Templates} from "./Routes/V1/Templates";
 
 export async function getApp(): Promise<http.Server> {
     const app = express();
 
     await runMigration();
-    
+
     if (process.env.MIGRATE_EVENTS === "true") {
         await migrateData().catch(console.error);
     }
@@ -113,6 +114,7 @@ export async function getApp(): Promise<http.Server> {
     const config = new Config();
     const mailer = new Mailer(config, logger, process.env.BASE_URL ?? "example");
     const boards = new Boards(logger);
+    const templates = new Templates(logger);
     withWebSocketApi(wss, boards, logger);
     const auth = new Auth(logger, config, mailer);
 
@@ -129,7 +131,7 @@ export async function getApp(): Promise<http.Server> {
     const users = new Users(media, logger);
 
 
-    app.use("/", getV1Router(config, mailer, boards, logger, auth, users, media, wss));
+    app.use("/", getV1Router(config, mailer, boards, templates, logger, auth, users, media, wss));
 
     app.use((req, res, next) => {
         if (req.path.includes("favicon.svg")) {

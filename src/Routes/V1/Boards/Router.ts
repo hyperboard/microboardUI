@@ -11,7 +11,7 @@ import { HttpStatus } from "shared/enums/http-status.enum";
 import { catchAsync } from "shared/lib/catchAsync";
 import { internalError } from "shared/lib/routing";
 
-function checkPermissions(
+export function checkPermissions(
     jwt: AccessToken,
     action: "owns" | "edits" | "reads",
     resource: "boards" | "catalogs" | "groups",
@@ -23,7 +23,7 @@ function checkPermissions(
     return jwt[action]![resource]?.includes(resourceId) ?? false;
 }
 
-function forbidden(res: Response): void {
+export function forbidden(res: Response): void {
     res.status(403).json({
         message: "Forbidden - User does not have the necessary permissions for the resource",
     });
