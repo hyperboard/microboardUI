@@ -1,6 +1,10 @@
 import React from "react";
 
-export const Chevron = () => {
+interface Props {
+	fill?: string;
+}
+
+export const Chevron: React.FC<Props> = ({ fill = "#14151A" }) => {
 	return (
 		<svg
 			width="16"
@@ -11,7 +15,7 @@ export const Chevron = () => {
 		>
 			<path
 				d="M8.00054 9.99985L5.17188 7.17118L6.11521 6.22852L8.00054 8.11452L9.88588 6.22852L10.8292 7.17118L8.00054 9.99985Z"
-				fill="#14151A"
+				fill={fill}
 			/>
 		</svg>
 	);

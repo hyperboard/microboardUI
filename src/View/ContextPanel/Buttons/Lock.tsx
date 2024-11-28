@@ -54,7 +54,7 @@ export const Lock = ({
 			if (!(group instanceof Group)) {
 				return;
 			}
-			
+
 			board.removeLockedGroup(group);
 			return;
 		}

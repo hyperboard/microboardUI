@@ -41,7 +41,7 @@ export interface App {
 }
 
 export function createApp(isHistory = true): App {
-	const connection = createConnection(getBoard);
+	const connection = createConnection(getBoard, getAccount, getStorage);
 	const clipboard = new Clipboard();
 	const location = new Location();
 	const storage = new Storage();
@@ -55,6 +55,14 @@ export function createApp(isHistory = true): App {
 
 	function getBoard(): Board {
 		return board;
+	}
+
+	function getAccount(): Account {
+		return account;
+	}
+
+	function getStorage(): Storage {
+		return storage;
 	}
 
 	const controller = getController(getBoard, clipboard);

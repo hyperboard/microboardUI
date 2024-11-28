@@ -1,0 +1,151 @@
+.container {
+	/* background-color: #1a1a1a; */
+	border-radius: 8px;
+	/* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+	padding: 9px 16px;
+}
+
+.userList {
+	display: flex;
+	align-items: center;
+	/* gap: 4px; */
+}
+
+.userWrapper {
+	position: relative;
+	margin-left: -2px;
+	cursor: pointer;
+	background-color: white;
+	border-radius: 50%;
+}
+
+.userList > .userWrapper:nth-child(n) {
+	z-index: calc(
+		100 + var(--index)
+	); /* Higher index for elements on the right */
+}
+
+.userWrapper:not(:first-child) {
+	margin-left: -8px;
+}
+
+.userAvatar {
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	border: 2px solid transparent;
+	background-color: #ddd4fd;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #14151a;
+	font-size: 14px;
+	font-weight: 500;
+}
+
+.userCounter {
+	color: #14151a;
+	background-color: #f7f7f8;
+	border: 2px solid #dee0e3;
+}
+
+.selectedAvatar {
+	/* border: 2px solid #22c55e; */
+	outline: solid 2px #22c55e;
+	outline-offset: 2px;
+}
+
+.tooltip {
+	position: absolute;
+	bottom: -48px;
+	left: 50%;
+	transform: translateX(-50%);
+	display: none;
+	background-color: white;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	color: #1a1a1a;
+	font-size: 12px;
+	padding: 4px 8px;
+	border-radius: 4px;
+	white-space: nowrap;
+}
+
+.userWrapper:hover .tooltip {
+	display: block;
+}
+
+.toggleButton {
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	background-color: #924fe8;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-left: 4px;
+	cursor: pointer;
+	border: none;
+}
+
+.toggleButton:hover {
+	background-color: #1f2228;
+}
+
+.toggleButton:focus {
+	outline: none;
+	ring: 2px solid #525252;
+}
+
+.dropdown {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	margin-top: 8px;
+	width: 240px;
+	max-width: 296px;
+	overflow: auto;
+	background-color: white;
+	border-radius: 8px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	padding: 4px 0;
+}
+
+.dropdownItem {
+	padding: 8px 12px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	cursor: pointer;
+}
+
+.dropdownItem:hover {
+	background-color: #ececec;
+}
+
+.dropdownAvatar {
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: white;
+	font-size: 12px;
+}
+
+.dropdownSelectedAvatar {
+	border: 2px solid #22c55e;
+}
+
+.userName {
+	color: #1f2228;
+	font-size: 14px;
+}
+
+.selectedIndicator {
+	margin-left: auto;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background-color: #22c55e;
+}

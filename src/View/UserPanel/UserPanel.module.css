@@ -1,4 +1,6 @@
-.wrapper {
+.layoutWrapper {
+	display: flex;
+	gap: 12px;
 	top: var(--absolute-position-panel-padding);
 	right: var(--absolute-position-panel-padding);
 	position: absolute;

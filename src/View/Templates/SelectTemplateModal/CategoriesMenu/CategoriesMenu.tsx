@@ -27,11 +27,13 @@ export const CategoriesMenu = ({
 	setSelectedCategory,
 	selectedCategory,
 }: CategoriesMenuProps) => {
-	const {t} = useTranslation()
+	const { t } = useTranslation();
 
 	return (
 		<nav className={styles.navigation}>
-			<h4 className={styles.categoryName}>{t("modalTemplate.category.useCases")}</h4>
+			<h4 className={styles.categoryName}>
+				{t("modalTemplate.category.useCases")}
+			</h4>
 			<ul className={styles.categoryList}>
 				{USE_CASE_CATEGORIES.map(item => {
 					return (
@@ -49,7 +51,11 @@ export const CategoriesMenu = ({
 								height={20}
 								iconName={item.iconName}
 							/>
-							<p>{t(`modalTemplate.category.useCaseItems.${item.value}`)}</p>
+							<p>
+								{t(
+									`modalTemplate.category.useCaseItems.${item.value}`,
+								)}
+							</p>
 						</li>
 					);
 				})}
