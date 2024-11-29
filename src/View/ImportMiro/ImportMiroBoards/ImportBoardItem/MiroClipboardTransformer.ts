@@ -29,6 +29,9 @@ type SupportedMiroType =
 	| IMiroBoardItemPaint;
 
 interface MiroClipboardItem {
+	"ns:gotoLink"?: {
+		link: string;
+	};
 	widgetData: {
 		json?: Record<string, any>;
 		type:
@@ -243,6 +246,7 @@ export const transformShape = (
 			shape: SHAPE_TYPES[json.shape] || "rectangle",
 			content: json.text || "",
 		},
+		linkTo: shape["ns:gotoLink"]?.link
 	};
 
 	if (json._parent) {
@@ -300,6 +304,7 @@ export const transformText = (
 				: MiroRelativeTo.board,
 		},
 		scale: json.scale.scale,
+		linkTo: text["ns:gotoLink"]?.link
 	};
 
 	if (json._parent) {
@@ -445,6 +450,7 @@ export const transformSticker = (
 				? MiroRelativeTo.frame
 				: MiroRelativeTo.board,
 		},
+		linkTo: sticker["ns:gotoLink"]?.link
 	};
 
 	if (json._parent) {
@@ -507,6 +513,7 @@ export const transformImage = (
 				? MiroRelativeTo.frame
 				: MiroRelativeTo.board,
 		},
+		linkTo: image["ns:gotoLink"]?.link
 	};
 
 	if (json._parent) {
@@ -560,6 +567,7 @@ export const transformFrame = (
 			origin: "center",
 			relativeTo: MiroRelativeTo.board,
 		},
+		linkTo: frame["ns:gotoLink"]?.link
 	};
 
 	return transformedFrame;
@@ -604,6 +612,7 @@ const transformDrawing = (
 				: MiroRelativeTo.board,
 		},
 		relativeScale: json.relativeScale,
+		linkTo: paint["ns:gotoLink"]?.link
 	};
 
 	if (json._parent) {

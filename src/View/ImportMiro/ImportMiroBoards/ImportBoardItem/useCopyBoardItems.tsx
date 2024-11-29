@@ -180,6 +180,25 @@ export const useCopyBoardItems = (
 			"";
 	};
 
+	const getMiroToken = (): void => {
+		const { showModal } = getGlobalModalFunctions();
+		showModal?.("imgAuthClipboardNotification");
+	};
+
+	const getMiroBoardItems = (): IMiroBoardItem[] => {
+		const storageMiroItems = localStorage.getItem("miroItems");
+		if (miroItems && !storageMiroItems) {
+			localStorage.setItem("miroItems", JSON.stringify(miroItems));
+		}
+
+		const storageItemsParsed =
+			storageMiroItems && storageMiroItems !== "undefined"
+				? JSON.parse(storageMiroItems)
+				: null;
+
+		return miroItems || storageItemsParsed || [];
+	};
+
 	const parseTextData = (text: string): Element[] => {
 		const parser = new DOMParser();
 		const parsedText = parser.parseFromString(text, "text/html");
@@ -559,7 +578,7 @@ export const useCopyBoardItems = (
 	};
 
 	const copyShape = (item: IMiroBoardItemShape): void => {
-		const { id, style, position, data, geometry, parent } = item;
+		const { id, style, position, data, geometry, parent, linkTo } = item;
 		if (!position || !geometry) {
 			return;
 		}
@@ -605,7 +624,15 @@ export const useCopyBoardItems = (
 			);
 		data?.content && setItemText(newShape, data.content, style);
 
-		board.add(newShape);
+		if (linkTo) {
+			newShape.linkTo.setLinkTo(linkTo);
+		}
+
+		const shapeInBoard = board.add(newShape);
+
+		if (linkTo) {
+			shapeInBoard.linkTo.setLinkTo(linkTo);
+		}
 		setBoardMiroId(id);
 
 		if (style?.textAlignVertical) {
@@ -614,7 +641,7 @@ export const useCopyBoardItems = (
 	};
 
 	const copySticker = (item: IMiroBoardItemSticker): void => {
-		const { id, style, data, geometry, parent, position } = item;
+		const { id, style, data, geometry, parent, position, linkTo } = item;
 		const stickerPosition = getItemPosition(position, geometry, parent);
 		const { fillColor, textAlignVertical } = style;
 		if (!fillColor) {
@@ -634,9 +661,12 @@ export const useCopyBoardItems = (
 			fontSize: style.fontSize === "0" ? "14" : style.fontSize,
 		});
 
-		board.add(sticker);
-		setBoardMiroId(id);
+		const stickerInBoard = board.add(sticker);
 
+		if (linkTo) {
+			stickerInBoard.linkTo.setLinkTo(linkTo);
+		}
+		setBoardMiroId(id);
 		if (textAlignVertical) {
 			setVerticalAlignment(textAlignVertical);
 		}
@@ -685,7 +715,7 @@ export const useCopyBoardItems = (
 	};
 
 	const copyImage = async (item: IMiroBoardItemImage): Promise<void> => {
-		const { id, position, data, geometry, parent } = item;
+		const { id, position, data, geometry, parent, linkTo } = item;
 		const prepareImgUrl =
 			data.imageUrl.split("?")[0] + "?format=original&redirect=false";
 		const img = await getImage(prepareImgUrl);
@@ -736,7 +766,12 @@ export const useCopyBoardItems = (
 					transformedGeometry.width,
 					transformedGeometry.height,
 				);
-				board.add(imgItem);
+
+				const imgInBoard = board.add(imgItem);
+				if (linkTo) {
+					imgInBoard.linkTo.setLinkTo(linkTo);
+				}
+
 				setBoardMiroId(id);
 			})
 			.catch(() => {
@@ -781,6 +816,7 @@ export const useCopyBoardItems = (
 			transformedGeometry.height / 100,
 		);
 		board.add<Placeholder>(placeholder);
+
 		setBoardMiroId(id);
 	};
 	//
@@ -933,24 +969,28 @@ export const useCopyBoardItems = (
 	};
 
 	const copyText = (item: IMiroBoardItemText): void => {
-		const { id, style, data, geometry, scale } = item;
+		const { id, style, data, geometry, scale, linkTo } = item;
 
 		const richtext = new RichText(new Mbr(), id);
 
 		const richTextWidth = geometry?.width ?? RICH_TEXT_MAX_WIDTH;
 		richtext.setMaxWidth(richTextWidth);
 		setItemText(richtext, data.content, style);
+		if (linkTo) {
+			richtext.linkTo.setLinkTo(linkTo);
+		}
 
-		board.add(richtext);
+		const boardRichText = board.add(richtext);
 		setBoardMiroId(id);
 
-		const boardRichText =
-			board.items.listAll()[board.items.listAll().length - 1];
+		if (linkTo) {
+			boardRichText.linkTo.setLinkTo(linkTo);
+		}
 		setTransformation(boardRichText, item, scale);
 	};
 
 	const copyFrame = async (item: IMiroBoardItemFrame): Promise<void> => {
-		const { style, id, data } = item;
+		const { style, id, data, linkTo } = item;
 		const { fillColor } = style;
 		const { format } = data;
 		const title = data.title || `Frame ${id}`;
@@ -961,12 +1001,20 @@ export const useCopyBoardItems = (
 
 		setTransformation(frame, item);
 
-		board.add(frame);
+		if (linkTo) {
+			frame.linkTo.setLinkTo(linkTo);
+		}
+
+		const frameInBoard = board.add(frame);
+
+		if (linkTo) {
+			frameInBoard.linkTo.setLinkTo(linkTo);
+		}
 		setBoardMiroId(id);
 	};
 
 	const copyPaint = (item: IMiroBoardItemPaint): void => {
-		const { style, data, id } = item;
+		const { style, data, id, linkTo } = item;
 		if (!data) {
 			return;
 		}
@@ -985,7 +1033,15 @@ export const useCopyBoardItems = (
 		drawing.setStrokeWidth(Number(style.strokeWidth));
 		drawing.setStrokeOpacity(style.strokeOpacity || 1);
 
-		board.add(drawing);
+		if (linkTo) {
+			drawing.linkTo.setLinkTo(linkTo);
+		}
+
+		const drawingInBoard = board.add(drawing);
+
+		if (linkTo) {
+			drawingInBoard.linkTo.setLinkTo(linkTo);
+		}
 		setBoardMiroId(id);
 	};
 
@@ -1000,11 +1056,6 @@ export const useCopyBoardItems = (
 		setBoardMiroId(id);
 	};
 
-	const getMiroToken = (): void => {
-		const { showModal } = getGlobalModalFunctions();
-		showModal?.("imgAuthClipboardNotification");
-	};
-
 	const itemsTypes: {
 		[key in MiroItemsTypes]: (item: any) => Promise<void> | void;
 	} = {
@@ -1016,20 +1067,6 @@ export const useCopyBoardItems = (
 		connector: copyConnector,
 		paint: copyPaint,
 		unsupported: copyUnsupportedItem,
-	};
-
-	const getMiroBoardItems = (): IMiroBoardItem[] => {
-		const storageMiroItems = localStorage.getItem("miroItems");
-		if (miroItems && !storageMiroItems) {
-			localStorage.setItem("miroItems", JSON.stringify(miroItems));
-		}
-
-		const storageItemsParsed =
-			storageMiroItems && storageMiroItems !== "undefined"
-				? JSON.parse(storageMiroItems)
-				: null;
-
-		return miroItems || storageItemsParsed || [];
 	};
 
 	const copyBoardItems = async (): Promise<void> => {

@@ -114,6 +114,7 @@ export interface IMiroBoardItemMindmap extends IMiroBoardItemBase {
 	type: MiroBoardItemTypes.MINDMAP;
 	geometry: IMiroGeometry;
 	position: IMiroPosition;
+	linkTo?: string;
 }
 
 export interface IMiroBoardItemCard extends IMiroBoardItemBase {
@@ -123,6 +124,7 @@ export interface IMiroBoardItemCard extends IMiroBoardItemBase {
 	};
 	geometry: IMiroGeometry;
 	position: IMiroPosition;
+	linkTo?: string;
 }
 
 export interface IMiroBoardItemDocument extends IMiroBoardItemBase {
@@ -133,6 +135,7 @@ export interface IMiroBoardItemDocument extends IMiroBoardItemBase {
 	};
 	geometry: IMiroGeometry;
 	position: IMiroPosition;
+	linkTo?: string;
 }
 
 export interface IMiroBoardItemText extends IMiroBoardItemBase {
@@ -141,6 +144,7 @@ export interface IMiroBoardItemText extends IMiroBoardItemBase {
 	geometry: IMiroGeometry;
 	position: IMiroPosition;
 	scale: number;
+	linkTo?: string;
 }
 
 export interface IMiroBoardItemShape extends IMiroBoardItemBase {
@@ -148,6 +152,7 @@ export interface IMiroBoardItemShape extends IMiroBoardItemBase {
 	data: IMiroData & { shape: string };
 	geometry: IMiroGeometry;
 	position: IMiroPosition;
+	linkTo?: string;
 }
 
 export interface IMiroBoardItemSticker extends IMiroBoardItemBase {
@@ -155,6 +160,7 @@ export interface IMiroBoardItemSticker extends IMiroBoardItemBase {
 	data: IMiroData & { shape: string };
 	geometry: IMiroGeometry;
 	position: IMiroPosition;
+	linkTo?: string;
 }
 
 export interface IMiroBoardItemImage extends IMiroBoardItemBase {
@@ -165,6 +171,7 @@ export interface IMiroBoardItemImage extends IMiroBoardItemBase {
 	};
 	geometry: IMiroGeometry;
 	position: IMiroPosition;
+	linkTo?: string;
 }
 
 export interface IMiroBoardItemFrame extends IMiroBoardItemBase {
@@ -177,6 +184,7 @@ export interface IMiroBoardItemFrame extends IMiroBoardItemBase {
 	};
 	geometry: IMiroGeometry;
 	position: IMiroPosition;
+	linkTo?: string;
 }
 
 export interface IMiroBoardItemPaint extends IMiroBoardItemBase {
@@ -188,6 +196,7 @@ export interface IMiroBoardItemPaint extends IMiroBoardItemBase {
 	geometry: IMiroGeometry;
 	position: IMiroPosition;
 	relativeScale: number;
+	linkTo?: string;
 }
 
 interface IMiroBoardConnectionsPoints {
@@ -224,6 +233,7 @@ export interface MiroUnsupportedItem extends IMiroBoardItemBase {
 	miroData: unknown;
 	scale: number;
 	relativeScale: number;
+	linkTo?: string;
 }
 
 export type IMiroBoardItem =
