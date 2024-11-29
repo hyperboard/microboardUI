@@ -94,7 +94,8 @@ export type IconId =
 	| "Planet"
 	| "BackArrow"
 	| "StrokeChevronDown"
-	| "StrokeChevronUp";
+	| "StrokeChevronUp"
+	| "human";
 
 type Props = {
 	iconName: IconId;

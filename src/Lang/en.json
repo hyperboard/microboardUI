@@ -220,7 +220,7 @@
 	},
 	"auth": {
 		"name": "Name",
-		"nameDesc": "We will display your name on the board while you're working on it",
+		"nameDesc": "It is displayed during your work on the board",
 		"next": "Next",
 		"backToBoard": "Back to the board",
 		"backToBoardSelection": "Back to the board selection",
