@@ -19,3 +19,7 @@
 .languagesSelector {
 	width: 50%;
 }
+
+.btn {
+	min-height: 40px;
+}

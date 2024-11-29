@@ -35,4 +35,8 @@ export const CATEGORIES: TemplateCategory[] = [
 export const LANGUAGES: { value: string; label: string }[] = [
 	{ value: "ru", label: "Russian" },
 	{ value: "en", label: "English" },
+	{ value: "de", label: "German" },
+	{ value: "es", label: "Spanish" },
+	{ value: "fr", label: "French" },
+	{ value: "zh", label: "Chinese" },
 ];

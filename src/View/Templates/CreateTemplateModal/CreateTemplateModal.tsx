@@ -364,6 +364,7 @@ const CreateTemplate = (): JSX.Element => {
 				<Button
 					disabled={submitDisabled}
 					onClick={handleChangeImageClick}
+					className={styles.btn}
 				>
 					{t(
 						`modalTemplate.UI.buttons.${imageSrc ? "previewChosen" : "choosePreview"}`,
@@ -407,6 +408,7 @@ const CreateTemplate = (): JSX.Element => {
 					languagesSelectorRef.current.getSelectedOptions().length >
 						1 && (
 						<Button
+							className={styles.btn}
 							disabled={submitDisabled || translateDisabled}
 							onClick={handleTranslateClick}
 						>
@@ -414,6 +416,7 @@ const CreateTemplate = (): JSX.Element => {
 						</Button>
 					)}
 				<Button
+					className={styles.btn}
 					type="submit"
 					disabled={submitDisabled && translateDisabled}
 					loading={isSubmitLoading}

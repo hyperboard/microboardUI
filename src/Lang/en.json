@@ -5,7 +5,11 @@
 		"confirm": "Confirm",
 		"languages": {
 			"ru": "Russian",
-			"en": "English"
+			"en": "English",
+			"de": "German",
+			"es": "Spanish",
+			"fr": "French",
+			"zh": "Chinese"
 		}
 	},
 	"contextPanel": {
