@@ -18,7 +18,9 @@ export function ImportMiro(): React.ReactElement | null {
 
 	const fetchToken = async () => {
 		try {
+			// @ts-expect-error import.meta object didn't exists in common-js modules
 			const clientId = import.meta.env.MIRO_CLIENT_ID;
+			// @ts-expect-error import.meta object didn't exists in common-js modules
 			const clientSecret = import.meta.env.MIRO_CLIENT_SECRET;
 			const redirectRoute = "/boards/blank?clipboard=true";
 			const redirectUrl = window.location.origin + redirectRoute;

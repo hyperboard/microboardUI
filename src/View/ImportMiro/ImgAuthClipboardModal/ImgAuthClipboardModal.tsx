@@ -16,6 +16,7 @@ export const ImgAuthClipboardModal = (): JSX.Element => {
 	const onAuthClick = (): void => {
 		hideModal("imgAuthClipboardNotification");
 
+		// @ts-expect-error import.meta object didn't exists in common-js modules
 		const clientId = import.meta.env.MIRO_CLIENT_ID;
 		const redirectRoute = "/boards/blank?clipboard=true";
 		const redirectUrl = window.location.origin + redirectRoute;
