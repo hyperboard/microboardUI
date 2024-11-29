@@ -13,7 +13,7 @@
 	box-sizing: border-box;
 	display: flex;
 	flex-direction: column;
-	gap: 16px;
+	gap: 10px;
 	width: 100%;
 }
 
@@ -172,4 +172,9 @@
 		height: 2px;
 		background-color: transparent;
 	}
+}
+
+.nameMsg {
+	font-size: 14px;
+	color: rgba(13, 17, 38, 0.4);
 }

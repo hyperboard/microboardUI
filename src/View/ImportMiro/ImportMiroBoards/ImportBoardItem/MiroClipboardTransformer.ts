@@ -655,6 +655,8 @@ export const transformUnsupportedItems = (
 		style: {
 			color: "",
 		},
+		scale: json.scale.scale,
+		relativeScale: json.relativeScale,
 	};
 
 	if (json._parent) {

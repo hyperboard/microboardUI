@@ -11,6 +11,7 @@ import { EmailIcon } from "./EmailIcon";
 import { LockIcon } from "./LockIcon";
 import styles from "./SignupView.module.css";
 import { PeopleIcon } from "./PeopleIcon";
+import { Icon } from "View/Icon";
 
 export const SignupView = (): React.ReactElement => {
 	const { t } = useTranslation();
@@ -153,7 +154,10 @@ export const SignupView = (): React.ReactElement => {
 							setUsername(ev.target.value);
 							checkName(ev.target.value);
 						}}
-						prefixIcon={<PeopleIcon />}
+						prefixIcon={
+							<Icon iconName="human" width={20} height={20} />
+						}
+						iconColor="rgba(13, 17, 38, 0.4)"
 						placeholder={t("auth.name")}
 						hasError={!!error}
 						errorText={error}
@@ -184,16 +188,21 @@ export const SignupView = (): React.ReactElement => {
 
 				<div className={styles.btns}>
 					{showNameInput ? (
-						<Button
-							disabled={isDisabled}
-							type="button"
-							onClick={ev => {
-								ev.preventDefault();
-								next();
-							}}
-						>
-							{t("auth.next")}
-						</Button>
+						<div>
+							<p className={styles.nameMsg}>
+								{t("auth.nameDesc")}
+							</p>
+							<Button
+								disabled={isDisabled}
+								type="button"
+								onClick={ev => {
+									ev.preventDefault();
+									next();
+								}}
+							>
+								{t("auth.next")}
+							</Button>
+						</div>
 					) : (
 						<Button
 							type="submit"

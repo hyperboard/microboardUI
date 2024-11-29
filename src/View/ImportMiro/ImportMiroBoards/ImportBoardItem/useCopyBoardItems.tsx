@@ -342,6 +342,7 @@ export const useCopyBoardItems = (
 		geometry: IMiroGeometry,
 		parent?: IMiroParent,
 		scale?: number,
+		itemType?: MiroItemsTypes
 	): { x: number; y: number } | null => {
 		const { x, y, relativeTo } = position;
 		const { height, width } = geometry;
@@ -381,7 +382,14 @@ export const useCopyBoardItems = (
 			return null;
 		}
 
-		if (scale) {
+		if (scale && itemType === MiroBoardItemTypes.UNSUPPORTED) {
+			return {
+				x: x - (width * scale) / 2 + parentItemPosition.x,
+				y: y - (height * scale) / 2 + parentItemPosition.y,
+			};
+		}
+
+		if (scale && itemType === MiroBoardItemTypes.PAINT) {
 			return {
 				x: x / scale - width / 2 + parentItemPosition.x,
 				y: y / scale - height / 2 + parentItemPosition.y,
@@ -447,7 +455,13 @@ export const useCopyBoardItems = (
 		);
 
 		if (item.itemType === "RichText") {
-			applyRichTextTransformation(item, position, parent, scale);
+			applyRichTextTransformation(
+				item,
+				position,
+				itemGeometry,
+				parent,
+				scale,
+			);
 		} else {
 			applyStandardTransformation(
 				item,
@@ -462,15 +476,16 @@ export const useCopyBoardItems = (
 	const applyRichTextTransformation = (
 		item: RichText,
 		position: IMiroPosition,
+		itemGeometry: IMiroGeometry,
 		parent?: IMiroParent,
 		scale?: number,
 	): void => {
 		scale && item.transformation.scaleBy(scale, scale);
 
-		const { width, height } = getItemDimensions(item);
+		const { height } = getItemDimensions(item);
 		const itemPosition = getItemPosition(
 			position,
-			{ width, height },
+			{ width: itemGeometry.width, height },
 			parent,
 		);
 
@@ -480,7 +495,7 @@ export const useCopyBoardItems = (
 
 	const applyStandardTransformation = (
 		item: Item,
-		itemGeometry: { width: number; height: number },
+		itemGeometry: IMiroGeometry,
 		miroItem: IMiroBoardItem,
 		position: IMiroPosition,
 		parent?: IMiroParent,
@@ -494,9 +509,11 @@ export const useCopyBoardItems = (
 			position,
 			miroItem.geometry,
 			parent,
-			miroItem.type === MiroBoardItemTypes.PAINT
+			miroItem.type === MiroBoardItemTypes.PAINT ||
+				miroItem.type === MiroBoardItemTypes.UNSUPPORTED
 				? miroItem.relativeScale
 				: undefined,
+			miroItem.type,
 		);
 
 		if (itemPosition) {
@@ -973,13 +990,13 @@ export const useCopyBoardItems = (
 	};
 
 	const copyUnsupportedItem = (item: MiroUnsupportedItem): void => {
-		const { id } = item;
+		const { id, scale } = item;
 
 		const placeholder = board.add<Placeholder>(
 			new Placeholder(undefined, item, item.id, undefined, undefined),
 		);
 
-		setTransformation(placeholder, item);
+		setTransformation(placeholder, item, scale);
 		setBoardMiroId(id);
 	};
 

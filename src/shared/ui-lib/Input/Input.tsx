@@ -13,6 +13,7 @@ interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
 	tab?: string;
 	postTab?: string;
 	prefixIcon?: React.ReactNode;
+	iconColor?: string;
 	postfix?: string;
 	keyhint?: string;
 	password?: boolean;
@@ -31,6 +32,7 @@ export const Input: React.FC<Props> = ({
 	password,
 	type,
 	hasError,
+	iconColor,
 	shouldFocus,
 	...props
 }) => {
@@ -65,7 +67,12 @@ export const Input: React.FC<Props> = ({
 					className={clsx("InputContainer", hasError && "InputError")}
 				>
 					{prefixIcon && (
-						<span className="InputPrefix">{prefixIcon}</span>
+						<span
+							style={{ color: iconColor }}
+							className="InputPrefix"
+						>
+							{prefixIcon}
+						</span>
 					)}
 					<input
 						ref={inputRef}

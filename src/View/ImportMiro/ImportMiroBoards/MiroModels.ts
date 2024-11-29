@@ -222,6 +222,8 @@ export interface MiroUnsupportedItem extends IMiroBoardItemBase {
 	geometry: IMiroGeometry;
 	position: IMiroPosition;
 	miroData: unknown;
+	scale: number;
+	relativeScale: number;
 }
 
 export type IMiroBoardItem =
