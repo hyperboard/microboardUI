@@ -342,7 +342,7 @@ export const useCopyBoardItems = (
 		geometry: IMiroGeometry,
 		parent?: IMiroParent,
 		scale?: number,
-		itemType?: MiroItemsTypes
+		itemType?: MiroItemsTypes,
 	): { x: number; y: number } | null => {
 		const { x, y, relativeTo } = position;
 		const { height, width } = geometry;

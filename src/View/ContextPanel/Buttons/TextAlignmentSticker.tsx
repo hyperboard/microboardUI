@@ -56,8 +56,8 @@ export function TextAlignmentSticker(): React.ReactElement | null {
 							horizontalAlignment === "center"
 								? "Center"
 								: horizontalAlignment === "left"
-								? "Left"
-								: "Right"
+									? "Left"
+									: "Right"
 						}`}
 						width={16}
 						height={16}

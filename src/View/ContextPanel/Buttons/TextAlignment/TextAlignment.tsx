@@ -61,8 +61,8 @@ export function TextAlignment(): React.ReactElement | null {
 							alignment === "center"
 								? "Center"
 								: alignment === "left"
-								? "Left"
-								: "Right"
+									? "Left"
+									: "Right"
 						}`}
 					/>
 				</UiButton>

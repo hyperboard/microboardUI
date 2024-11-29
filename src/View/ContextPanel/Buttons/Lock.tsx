@@ -39,7 +39,7 @@ export const Lock = ({
 				);
 				group.setBoard(board);
 
-				board.tools.getSelect()?.toHighlight.clear();
+				board.tools.getSelect()?.nestingHighlighter.clear();
 				if (
 					board.selection.items.getSingle()?.itemType !== "Connector"
 				) {
@@ -64,7 +64,7 @@ export const Lock = ({
 		item.transformation.setIsLocked(!isLocked);
 
 		if (isLocked) {
-			board.tools.getSelect()?.toHighlight.clear();
+			board.tools.getSelect()?.nestingHighlighter.clear();
 			if (board.selection.items.getSingle()?.itemType !== "Connector") {
 				board.selection.setContext("None");
 			}

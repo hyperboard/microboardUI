@@ -126,7 +126,7 @@ export function MobileLandingMenu() {
 							</UiPanel>
 						</div>,
 						document.getElementById("modal")!,
-				  )
+					)
 				: null}
 		</UiPanel>
 	);
