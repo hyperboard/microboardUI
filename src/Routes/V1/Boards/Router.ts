@@ -3,13 +3,13 @@ import winston from "winston";
 import { v4 as uuidv4 } from "uuid";
 import { body, validationResult, param, query } from "express-validator";
 import { Boards, type AnonymousBoard, type OwnedBoard } from "./Boards";
-import { authenticate } from "Middlewares";
 import { AccessToken } from "Interface";
 import { jwtMiddleware } from "Middlewares/jwt.middleware";
 import validator from "validator";
 import { HttpStatus } from "shared/enums/http-status.enum";
 import { catchAsync } from "shared/lib/catchAsync";
 import { internalError } from "shared/lib/routing";
+import { authenticate } from "../Auth/middlewares";
 
 export function checkPermissions(
     jwt: AccessToken,
@@ -46,7 +46,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
     // Creating a new board
     router.post(
         "/boards",
-        authenticate,
+        authenticate(),
         body("catalogId").optional().custom(isUUIDOrRoot),
         body("isPublic").optional().isBoolean(),
         body("title").optional().isString(),
@@ -109,7 +109,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
 
     router.get(
         "/boards",
-        authenticate,
+        authenticate(),
         catchAsync(async (req: Request, res: Response) => {
             try {
                 const boardsData = await boards.getBoards(+req.token.sub);
@@ -139,7 +139,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
                 logger.error(`Error fetching boards: ${err}`);
                 return internalError(res, err, "Error fetching boards");
             }
-        }, logger)
+        })
     );
 
     // Getting board details
@@ -175,7 +175,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
 
     router.post(
         "/boards/claim",
-        authenticate,
+        authenticate(),
         catchAsync(async (req, res) => {
             const { authorKeys, visited } = req.body;
             if ((authorKeys && authorKeys.length < 0) || (visited && visited.length < 0)) {
@@ -204,7 +204,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
     // Deleting a board
     router.delete(
         "/boards/:boardId",
-        authenticate,
+        authenticate(),
         param("boardId").isUUID(),
         body("catalogId").optional().custom(isUUIDOrRoot),
         catchAsync(async (req: Request, res: Response) => {
@@ -243,7 +243,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
     // Removing a visited link
     router.delete(
         "/boards/:linkId/visited",
-        authenticate,
+        authenticate(),
         param("linkId").isUUID(),
         catchAsync(async (req: Request, res: Response) => {
             try {
@@ -296,7 +296,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
     // Duplicating a board
     router.post(
         "/boards/:boardId/duplicate",
-        authenticate,
+        authenticate(),
         body("catalogId").optional().custom(isUUIDOrRoot),
         param("boardId").isUUID(),
         catchAsync(async (req: Request, res: Response) => {
@@ -325,13 +325,13 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
                 logger.error(err);
                 return internalError(res, err);
             }
-        }, logger)
+        })
     );
 
     // Renaming a board
     router.patch(
         "/boards/:boardId",
-        authenticate,
+        authenticate(),
         param("boardId").isUUID(),
         body("newTitle").isString(),
         catchAsync(async (req: Request, res: Response) => {
@@ -366,7 +366,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
                 logger.error(err);
                 return internalError(res, err);
             }
-        }, logger)
+        })
     );
 
     // Renaming a board without authentication but with authorKey
@@ -378,7 +378,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
         catchAsync(async (req: Request, res: Response) => {
             try {
                 const { boardId, authorKey } = req.params;
-                const { newTitle } = req.body;
+                const {newTitle} = req.body;
 
                 const isBoardExist = await boards.isBoardExists(boardId);
                 if (!isBoardExist) {
@@ -396,13 +396,13 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
                 logger.error(err);
                 return internalError(res, err);
             }
-        }, logger)
+        })
     );
 
     // Adding an event to a board
     router.post(
         "/boards/:boardId/events",
-        authenticate,
+        authenticate(),
         param("boardId").isUUID(),
         body("eventId").isUUID(),
         body("eventBody").isObject(),
@@ -430,13 +430,13 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
                 logger.error(err);
                 return internalError(res, err);
             }
-        }, logger)
+        })
     );
 
     // Retrieving board events
     router.get(
         "/boards/:boardId/events",
-        authenticate,
+        authenticate(),
         param("boardId").isUUID(),
         query("page").optional().isInt({ min: 1 }),
         query("limit").optional().isInt({ min: 1, max: 100 }),
@@ -465,7 +465,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
                 logger.error(err);
                 return internalError(res, err);
             }
-        }, logger)
+        })
     );
 
     // Creating a link to a board for reading or editing unauthed
@@ -506,13 +506,13 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
                 logger.error(err);
                 return internalError(res, err);
             }
-        }, logger)
+        })
     );
 
     // Creating a link to a board for reading or editing
     router.post(
         "/boards/:boardId/links",
-        authenticate,
+        authenticate(),
         param("boardId").isUUID(),
         body("type").isIn(["edit", "view"]),
         catchAsync(async (req: Request, res: Response) => {
@@ -541,7 +541,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
 
                 await boards.createLink(boardId, type, linkId);
 
-                const linkUri = `./boards/${linkId}`;
+                const linkUri = `./boards/${boardId}?accessKey=${linkId}&type=${type}`;
                 return res.status(201).json({
                     linkId: linkId,
                     linkUri: linkUri,
@@ -550,12 +550,12 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
                 logger.error(err);
                 return internalError(res, err);
             }
-        }, logger)
+        })
     );
 
     router.get(
         "/boards/:boardId/links/:linkId/details",
-        authenticate,
+        authenticate(),
         param("boardId").isUUID(),
         param("linkId").isUUID(),
         catchAsync(async (req: Request, res: Response) => {
@@ -587,13 +587,13 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
                 logger.error(err);
                 return internalError(res, err);
             }
-        }, logger)
+        })
     );
 
     // Remove link to a board
     router.delete(
         "/boards/:boardId/links/:linkId",
-        authenticate,
+        authenticate(),
         param("boardId").isUUID(),
         param("linkId").isUUID(),
         catchAsync(async (req: Request, res: Response) => {
@@ -648,7 +648,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
             };
             response.json(json);
             response.end();
-        }, logger)
+        })
     );
 
     router.get(
@@ -677,7 +677,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
                 logger.error(`Error checking UUID existence: ${err}`);
                 return res.status(404).send("Not found");
             }
-        }, logger)
+        })
     );
 
     return router;

@@ -1,18 +1,20 @@
-import { boolean, integer, pgTable, serial, text, timestamp, uuid } from "drizzle-orm/pg-core";
-import { users } from "./users";
+import { boolean, pgEnum, pgTable, serial, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { enumToPgEnum } from 'shared/lib/enumToPgEnum';
 
-export const boards = pgTable("boards", {
-    id: serial("id").primaryKey(),
-    boardUUID: uuid("uniq_id").notNull().defaultRandom().unique(),
-    created: timestamp("created").defaultNow(),
-    boardName: text("boardname"),
-    authorUUID: uuid("author_key"),
-    isPublic: boolean("is_public").notNull().default(false),
-});
+export enum DirectAccessType {
+	VIEW = 'view',
+	EDIT = 'edit',
+}
 
-export const userBoardId = pgTable("user_board_id", {
-    userId: integer("user_id")
-        .notNull()
-        .references(() => users.id, { onDelete: "cascade" }),
-    boardUuid: uuid("board_uuid"),
+export const directAccessTypes = pgEnum('direct_access_type', enumToPgEnum(DirectAccessType));
+
+
+export const boards = pgTable('boards', {
+	id: serial('id').primaryKey(),
+	createdAt: timestamp('created').defaultNow(),
+	title: text('boardname').default(''),
+	uniqId: uuid('uniq_id').defaultRandom().notNull().unique(),
+	authorUUID: uuid('author_key'),
+	isPublic: boolean('is_public').default(false).notNull(),
+	directAccessType: directAccessTypes('direct_access_type').notNull().default(DirectAccessType.EDIT)
 });

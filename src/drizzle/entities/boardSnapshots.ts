@@ -1,4 +1,4 @@
-import { pgTable, uuid, jsonb, integer, timestamp, uniqueIndex, serial } from "drizzle-orm/pg-core";
+import { integer, jsonb, pgTable, serial, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
 import { boards } from "./boards";
 
 export const boardSnapshots = pgTable(

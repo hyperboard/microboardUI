@@ -1,18 +1,11 @@
 import * as Drizzle from "drizzle";
 import { AccessToken } from "Interface";
-import { db, pool } from "../../../drizzle/db";
-import { boardEditLink, boardEvents, boards, boardViewLink } from "../../../drizzle/entities";
-import { eq, or, sql } from "drizzle-orm";
-import { boardEventDbWriteLatency, snapshotReadLatency, snapshotSaveLatency } from "Metrics/metrics";
+import { boardEventDbWriteLatency } from "Metrics/metrics";
 import { v4 as uuidv4 } from "uuid";
 import validator from "validator";
 import winston from "winston";
-
-function validateUUID(id: string, idName: string): void {
-    if (!validator.isUUID(id)) {
-        throw new Error(`Invalid ${idName}: ${id}`);
-    }
-}
+import { db, pool } from "../../../drizzle/db";
+import { boardEvents } from "../../../drizzle/entities";
 
 export interface BoardEventData {
     eventId: string;
@@ -37,9 +30,18 @@ export type OwnedBoard = Board & {
 };
 
 export class Boards {
-    constructor(private logger: winston.Logger) {}
+    private onModeChange?: (((boardUUID: string, mode: 'view' | 'edit', ignoreUserId: number) => void) | null)
+    private onPrivacyChange?: (((boardUUID: string, isPublic: boolean, ignoreUserId: number) => void) | null)
+    constructor(private logger: winston.Logger) { }
 
-    onEventSave(boardId: string, boardEvent: any): void {}
+    setOnModeChange(onModeChange?: ((boardUUID: string, mode: 'view' | 'edit', ignoreUserId: number) => void)) {
+        this.onModeChange = onModeChange;
+    }
+
+    setOnPrivacyChange(onPrivacyChange?: ((boardUUID: string, isPublic: boolean, ignoreUserId: number) => void)) {
+        this.onPrivacyChange = onPrivacyChange;
+    }
+    onEventSave(boardId: string, boardEvent: any): void { }
 
     async saveBoardData(transformedData: {
         id: string;
@@ -167,26 +169,39 @@ export class Boards {
         }
     }
 
-    async setOwner(user: AccessToken, authorKey: string): Promise<void> {
+    async setOwner(userId: number, authorKey: string): Promise<void> {
         try {
             this.validateUUID(authorKey, "boardId");
 
-            await Drizzle.addBoardOwner(authorKey, +user.sub);
-            this.logger.info(`Succesfully Set owner ${user.sub}`);
+            await Drizzle.addBoardOwner(authorKey, userId);
+            this.logger.info(`Succesfully Set owner ${userId}`);
         } catch (error) {
-            this.logger.error(`Error setting owner for ${user.sub}: ${error}`);
+            this.logger.error(`Error setting owner for ${userId}: ${error}`);
             throw error;
         }
     }
 
-    async userVisited(user: AccessToken, linkId: string): Promise<void> {
+    async getOwner(boardUUID: string) {
         try {
-            this.validateUUID(linkId, "linkId");
+            this.validateUUID(boardUUID, "boardUUID");
 
-            await Drizzle.userVisited(+user.sub, linkId);
-            this.logger.info(`Succesfully set visited ${user.sub} ${linkId}`);
+            const res = await Drizzle.getBoardOwner(boardUUID);
+            this.logger.info(`Succesfully get owner ${boardUUID}`);
+            return res;
         } catch (error) {
-            this.logger.error(`Error recording user visit for link ${linkId}: ${error}`);
+            this.logger.error(`Error getting owner for ${boardUUID}: ${error}`);
+            throw error;
+        }
+    }
+
+    async userVisited(userId: number, linkUUID: string): Promise<void> {
+        try {
+            this.validateUUID(linkUUID, "linkUUID");
+            console.log('visited', linkUUID, userId)
+            await Drizzle.addUserVisitedBoard(userId, linkUUID);
+            this.logger.info(`Succesfully set visited ${userId} ${linkUUID}`);
+        } catch (error) {
+            this.logger.error(`Error recording user visit for link ${linkUUID}: ${error}`);
             throw error;
         }
     }
@@ -214,7 +229,7 @@ export class Boards {
         }
     }
 
-    async getCanViewBoards(userId: number) {
+    async getBoard(boardUUID: string) {
         try {
             return await Drizzle.getBoardsUserCanView(userId);
         } catch (error) {
@@ -227,7 +242,7 @@ export class Boards {
         try {
             return await Drizzle.getCanEditUserBoards(userId);
         } catch (error) {
-            this.logger.error(`Error fetching boards for user ${userId}: ${error}`);
+            this.logger.error(`Error fetching board details for board ${boardUUID}: ${error}`);
             throw error;
         }
     }
@@ -256,6 +271,7 @@ export class Boards {
                 created: board.created,
                 title: board.title,
                 is_public: board.isPublic,
+                type: board.type
             };
         } catch (error) {
             this.logger.error(`Error fetching board details for board ID ${boardId}: ${error}`);
@@ -277,22 +293,19 @@ export class Boards {
 
     async isValidAuthorKey(boardId: string, authorKey: string): Promise<boolean> {
         try {
-            this.validateUUID(boardId, "boardId");
             this.validateUUID(authorKey, "authorKey");
 
-            return await Drizzle.checkBoardAuthor(boardId, authorKey);
+            return await Drizzle.checkBoardAuthor(boardUUID, authorKey);
         } catch (error) {
             this.logger.error(`Error checking if author key is valid: ${error}`);
             throw error;
         }
     }
 
-    async deleteBoard(boardId: string): Promise<void> {
+    async deleteBoard(boardUUID: string): Promise<void> {
         try {
-            this.validateUUID(boardId, "boardId");
-
-            await Drizzle.deleteBoard(boardId);
-            this.logger.info(`Succesfully deleted ${boardId}`);
+            await Drizzle.deleteBoard(boardUUID);
+            this.logger.info(`Succesfully deleted ${boardUUID}`);
         } catch (error) {
             this.logger.error(`Error deleting board: ${error}`);
             throw error;
@@ -314,23 +327,18 @@ export class Boards {
         }
     }
 
-    async duplicateBoard(originalBoardId: string, newBoardId: string): Promise<any> {
+    async duplicateBoard(originalBoardUUID: string, appendTitle?: string) {
         try {
-            this.validateUUID(originalBoardId, "originalBoardId");
-            this.validateUUID(newBoardId, "newBoardId");
-
-            return await Drizzle.duplicateBoard(originalBoardId, newBoardId);
+            return await Drizzle.duplicateBoard(originalBoardUUID, appendTitle);
         } catch (error) {
             this.logger.error(`Error duplicating board: ${error}`);
             throw error;
         }
     }
 
-    async renameBoard(boardId: string, newTitle: string): Promise<void> {
+    async renameBoard(boardUUID: string, newTitle: string): Promise<void> {
         try {
-            this.validateUUID(boardId, "boardId");
-
-            await Drizzle.renameBoard(boardId, newTitle);
+            await Drizzle.renameBoard(boardUUID, newTitle);
         } catch (error) {
             this.logger.error(`Error renaming board: ${error}`);
             throw error;
@@ -361,30 +369,11 @@ export class Boards {
     async addEventsToBoard(boardId: string, events: Array<BoardEventData>): Promise<void> {
         try {
             const startDbWrite = process.hrtime.bigint();
-
             // Find the board
-            let board: any = await db
-                .select({ id: boards.id })
-                .from(boards)
-                .where(eq(boards.boardUUID, boardId))
-                .limit(1)
-                .then((res) => res[0]);
-
+            const board = await this.getBoard(boardId);
             if (!board) {
-                const editLink = await db
-                    .select({ boardId: boardEditLink.boardId })
-                    .from(boardEditLink)
-                    .where(eq(boardEditLink.editLinkUUID, boardId))
-                    .limit(1)
-                    .then((res) => res[0]);
-
-                if (!editLink) {
-                    throw new Error(`Board with UUID ${boardId} does not exist`);
-                }
-
-                board = { id: editLink.boardId };
+                return;
             }
-
             await db.insert(boardEvents).values(
                 events.map((event) => {
                     const eventId = (event.eventId.split(":")[0] || Date.now().toString()) + ":" + event.order;
@@ -416,8 +405,6 @@ export class Boards {
 
     async getBoardEvents(boardId: string, offset = 0, page?: number, limit?: number): Promise<any[]> {
         try {
-            this.validateUUID(boardId, "boardId");
-
             const events = await Drizzle.getBoardEvents(boardId, offset);
 
             const eventBodies = events.map<{ order: number; body: any }>((event) => ({
@@ -472,7 +459,7 @@ export class Boards {
         }
     }
 
-    async isValidLink(linkId: string, linkTypes: ("view" | "edit")[]): Promise<boolean> {
+    async isValidLink(linkId: string, linkTypes: ("view" | "edit" | "direct")[]): Promise<boolean> {
         try {
             this.validateUUID(linkId, "linkId");
 
@@ -499,13 +486,9 @@ export class Boards {
         }
     }
 
-    async getLinkDetails(linkId: string): Promise<{
-        linkId: string;
-        boardId: string;
-        type: "edit" | "view";
-    } | null> {
+    async getLinkDetails(linkUUID: string) {
         try {
-            this.validateUUID(linkId, "linkId");
+            this.validateUUID(linkUUID, "linkId");
 
             const link = await Drizzle.getBoardLink(linkId);
 
@@ -515,11 +498,7 @@ export class Boards {
 
             const board = await Drizzle.getBoardById(link.boardId);
 
-            return {
-                linkId: link.linkUUID,
-                type: link.linkType,
-                boardId: board.boardUUID!,
-            };
+            return link;
         } catch (error) {
             this.logger.error(`Error getting link details: ${error}`);
             return null;
@@ -560,11 +539,10 @@ export class Boards {
         }
     }
 
-    async getLatestBoardSnapshot(boardUuidOrEditLink: string): Promise<any> {
+    async getLatestBoardSnapshot(boardId: string): Promise<any> {
         try {
-            this.validateUUID(boardUuidOrEditLink, "boardUuidOrEditLink");
             // FIXME: proper type
-            const result: any[] = (await Drizzle.getLatestBoardSnapshot(boardUuidOrEditLink)) as any[];
+            const result: any[] = (await Drizzle.getLatestBoardSnapshot(boardId)) as any[];
 
             if (result?.length === 0) {
                 // throw new Error(`No snapshot found for board or link UUID ${boardUuidOrEditLink}`);
@@ -573,7 +551,7 @@ export class Boards {
 
             return result;
         } catch (error) {
-            this.logger.error(`Error retrieving latest snapshot for board ${boardUuidOrEditLink}: ${error}`);
+            this.logger.error(`Error retrieving latest snapshot for board ${boardId}: ${error}`);
             throw error;
         }
     }
@@ -638,7 +616,7 @@ export class Boards {
 
     async getLastEventOrderForBoard(boardUuid: string): Promise<number> {
         try {
-            validateUUID(boardUuid, "boardUuid");
+            this.validateUUID(boardUuid, "boardUuid");
             const result = await Drizzle.getLastEventOrderForBoard(boardUuid);
 
             if (typeof result === "undefined") {

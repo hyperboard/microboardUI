@@ -18,7 +18,6 @@ import {
 } from "./types";
 import { verifyToken } from "Tokens";
 import * as crypto from "crypto";
-// import { publicKey } from "shared/config/keys";
 
 export class Auth {
     private authHelper: AuthHelper;

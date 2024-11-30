@@ -1,7 +1,7 @@
-import { eq, and, max, sql, between, asc, gt } from "drizzle-orm";
-import { getBoardId, getBoardByLink } from "../Boards";
+import { and, asc, eq, gt, sql } from "drizzle-orm";
 import { db } from "drizzle/db";
 import { boardEditLink, boardEvents, boards } from "drizzle/entities";
+import { getBoardId, getBoardByLink } from "../Boards";
 
 /**
  * Function to add a new event at the end of the log of events in a board table.
@@ -56,19 +56,20 @@ export async function getBoardEvents(boardOrLinkUUID: string, afterLogid: number
     const events = await db
         .select()
         .from(boardEvents)
-        .where(and(eq(boardEvents.boardId, boardId), gt(boardEvents.logId, afterLogid)))
+        .where(and(eq(boardEvents.boardId, board.id), gt(boardEvents.logId, afterLogid)))
         .orderBy(asc(boardEvents.logId));
 
     return events || [];
 }
 
+
 /**
  * Function to get count of events since last snapshot.
  */
 export async function getEventsCountSinceLastSnapshot(boardOrLinkUUID: string) {
-    const boardId = await getBoardId(boardOrLinkUUID);
+    const board = await getBoardByLink(boardOrLinkUUID);
 
-    if (!boardId) {
+    if (!board) {
         throw new Error(`Board UUID or Link UUID does not exist`);
     }
 
@@ -76,7 +77,7 @@ export async function getEventsCountSinceLastSnapshot(boardOrLinkUUID: string) {
     WITH last_snapshot AS (
     SELECT last_event_order
     FROM board_snapshots
-    WHERE board_id = ${boardId}
+    WHERE board_id = ${board.id}
     ORDER BY last_event_order DESC
     LIMIT 1
     ),
@@ -85,7 +86,7 @@ export async function getEventsCountSinceLastSnapshot(boardOrLinkUUID: string) {
             board_id,
             CAST(split_part(event_id, ':', 2) AS INTEGER) AS event_order
         FROM board_events
-        WHERE board_id = ${boardId}
+        WHERE board_id = ${board.id}
     ),
     event_counts AS (
         SELECT 
@@ -114,7 +115,7 @@ export async function getLastEventOrderForBoard(boardUuid: string): Promise<numb
             })
             .from(boardEvents)
             .innerJoin(boards, eq(boards.id, boardEvents.boardId))
-            .where(eq(boards.boardUUID, boardUuid));
+            .where(eq(boards.uniqId, boardUuid));
 
         return parseInt(typeof result?.lastOrder === "string" ? result.lastOrder : "0");
     } catch (error) {

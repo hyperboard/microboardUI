@@ -11,6 +11,14 @@ import { BUCKET_NAME, minioClient } from '../Media/MinioClient';
 export class Users {
     constructor(private media: MediaDAL, private logger: winston.Logger) { }
 
+    async getUsers(
+        searchTerm?: string
+    ) {
+        const users = await Drizzle.getUsersByEmail(searchTerm);
+
+        return users;
+    }
+
     async getUser(
         userId: number
     ): Promise<{ id: number; email: string, name: string, avatar: string } | null> {

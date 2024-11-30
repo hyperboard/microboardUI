@@ -1,7 +1,7 @@
 import { desc, eq } from "drizzle-orm";
-import { getBoardId, getBoardByLink } from "../Boards";
 import { db } from "drizzle/db";
-import { boardEditLink, boardSnapshots, boardViewLink } from "drizzle/entities";
+import { boardSnapshots } from "drizzle/entities";
+import { getBoardByLink } from "../Boards";
 
 /**
  * Function to create a board snapshot.
