@@ -6,6 +6,44 @@
 	position: absolute;
 }
 
+.container {
+	padding: 6px 8px;
+	display: flex;
+	gap: 4px;
+	align-items: center;
+	justify-content: center;
+}
+
+.shareButton {
+	width: auto;
+	padding: 6px 10px;
+	color: #fff;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 20px;
+	height: 32px;
+}
+
+.shareButtonDark {
+	height: 32px;
+	width: auto;
+	padding: 6px 10px;
+	color: rgba(20, 21, 26, 1);
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 20px;
+}
+
+.unauthMsg {
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 20px;
+	font-family: Manrope;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
 .unauthWrapper {
 	display: flex;
 	gap: 8px;
@@ -27,6 +65,7 @@
 
 .unauthBtns {
 	display: flex;
+	align-items: stretch;
 	gap: 8px;
 }
 
@@ -60,7 +99,6 @@
 }
 
 .signUpBtn {
-	height: 32px;
 	padding: 6px 16px;
 	background-color: #924fe8;
 	border: 1px solid transparent;
@@ -80,7 +118,6 @@
 }
 
 .logInBtn {
-	height: 32px;
 	padding: 6px 16px;
 	background-color: white;
 	border: 1px solid #dee0e3;
@@ -215,6 +252,18 @@
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
+	border-radius: 50%;
+	position: relative;
+}
+
+.userPic.owner {
+	outline: 1px solid rgba(244, 142, 47, 1);
+}
+
+.crown {
+	position: absolute;
+	bottom: -2px;
+	right: -2px;
 }
 
 .userPic > img {

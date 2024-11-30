@@ -1,5 +1,8 @@
 .sidePanel {
-	transition: max-width 0.3s, outline 0.3s 0.35s, box-shadow 0.3s 0.35s;
+	transition:
+		max-width 0.3s,
+		outline 0.3s 0.35s,
+		box-shadow 0.3s 0.35s;
 	overflow: hidden;
 	max-width: 0;
 	display: block;
@@ -33,7 +36,9 @@
 }
 
 .content {
-	padding: 8px 0;
+	display: grid;
+	grid-template-rows: max-content minmax(0, 1fr) max-content;
+	padding: 8px 8px;
 	padding-right: 3px;
 	min-width: 100%;
 	display: flex;
@@ -45,6 +50,7 @@
 .folders {
 	flex: 1 1 50vh;
 	overflow: auto;
+	width: 100%;
 	height: calc(100% - 100px);
 }
 
@@ -97,8 +103,10 @@
 .bottom {
 	padding: 14px 16px;
 	display: flex;
+	flex-direction: column;
 	justify-content: stretch;
 	align-items: center;
+	gap: 6px;
 }
 .add {
 	display: flex;

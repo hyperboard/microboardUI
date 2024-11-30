@@ -22,8 +22,14 @@
 	color: #696b76;
 }
 
+.item:disabled,
+.item:disabled .icon {
+	color: rgba(10, 15, 41, 0.25);
+	cursor: not-allowed;
+}
+
 @media (hover: hover) {
-	.item:hover {
+	.item:hover:not(:disabled) {
 		background-color: rgba(10, 15, 41, 0.04);
 	}
 }

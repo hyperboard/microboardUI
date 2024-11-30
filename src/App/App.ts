@@ -17,6 +17,7 @@ import { getAuthInterceptor } from "./AuthInterceptor";
 import { notify } from "View/Ui/Toast";
 import i18next from "i18next";
 import { SessionStorage } from "./SessionStorage";
+import { apiV2 } from "shared/apiV2/base";
 
 export const LAST_BOARD_KEY = "lastSeenBoard";
 export const LAST_BOARD_KEY_QS = LAST_BOARD_KEY.concat("Wqs");
@@ -71,7 +72,9 @@ export function createApp(isHistory = true): App {
 	const boards = new Map();
 	const boardSubject = new Subject();
 
-	api.interceptors.addRequestInterceptor(getAuthInterceptor(account));
+	const authInterceptor = getAuthInterceptor(account);
+	api.interceptors.addRequestInterceptor(authInterceptor);
+	apiV2.interceptors.addRequestInterceptor(authInterceptor);
 
 	async function openBoard(id: string): Promise<void> {
 		app.getBoard()?.selection.quickAddButtons.clear();
@@ -98,11 +101,7 @@ export function createApp(isHistory = true): App {
 				`${id}${window.location.search}`,
 			);
 		}
-		if (
-			!boardsList.publicBoards.some(b => b.id === id) &&
-			!boardsList.sharedBoards.some(b => b.id === id) &&
-			id !== "blank"
-		) {
+		if (id !== "blank") {
 			boardsList.visitBoard(id);
 		}
 		// sessionStorage.clear();

@@ -18,6 +18,7 @@ import { ContextMenuContextProvider } from "./ContextMenu";
 import { useModalInfoContext } from "./Modal/InfoModal";
 import ModalsWrapper from "./Modal/ModalsWrapper";
 import { SidePanelContextProvider } from "./SidePanel/SidePanelContext";
+import { RenameContextProvider } from "./Rename/RenameContext";
 // import "./index.css";
 type Props = {
 	app: App;
@@ -95,9 +96,11 @@ const BoardView = ({ app }: Props): JSX.Element => {
 			<ModalsWrapper>
 				<ContextMenuContextProvider>
 					<BoardRenameContextProvider>
-						<SidePanelContextProvider>
-							<AppView />
-						</SidePanelContextProvider>
+						<RenameContextProvider>
+							<SidePanelContextProvider>
+								<AppView />
+							</SidePanelContextProvider>
+						</RenameContextProvider>
 					</BoardRenameContextProvider>
 				</ContextMenuContextProvider>
 			</ModalsWrapper>

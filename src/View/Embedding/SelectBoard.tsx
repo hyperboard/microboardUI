@@ -1,23 +1,22 @@
-import React, { CSSProperties, useEffect, useRef, useState } from "react";
-import { FolderItem, Folders } from "View/Folder";
-import { Icon, Logo } from "../Icon";
-import style from "./SelectBoard.module.css";
-import { BoardName } from "View/BoardName";
 import { App } from "App";
-import { useTranslation } from "react-i18next";
+import { useAccount } from "App/useAccount";
+import { useBoardsList } from "App/useBoardsList";
+import { getApiUrl } from "Config";
 import { TFunction } from "i18next";
 import Selector, { SelectorHandle } from "../Ui/Selector/Selector";
 import { getEmbedUrl } from "lib/getEmbedUrl";
-import { getApiUrl } from "Config";
-import { UiButton } from "View/Ui/UiButton";
 import { useForceUpdate } from "lib/useForceUpdate";
-import Cookies from "js-cookie";
-import { UserDropDown } from "View/UserPanel/UserPanel";
-import { Button } from "shared/ui-lib/Button";
+import React, { CSSProperties, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { api, boardsApi } from "shared/api";
-import { useBoardsList } from "App/useBoardsList";
-import { useAccount } from "App/useAccount";
+import { Button } from "shared/ui-lib/Button";
+import { BoardName } from "View/BoardName";
+import { FolderItem } from "View/Folder";
+import { UiButton } from "View/Ui/UiButton";
+import { UserDropDown } from "View/UserPanel/UserPanel";
+import { Icon, Logo } from "../Icon";
+import style from "./SelectBoard.module.css";
 import { Logout } from "View/UserPanel/icons/Logout";
 
 const customHeader: CSSProperties = {

@@ -12,6 +12,7 @@ import { useBoardRenameContext } from "View/BoardName";
 import { ViewModeGuard } from "View/ViewModeGuard";
 import { EventList } from "View/ToolsPanel/Buttons/EventList";
 import { ShapesPanel, ShapesPanelContextProvider } from "../ShapesPanel";
+import { ViewToolsPanel } from "View/ToolsPanel/ViewToolsPanel";
 
 interface SidePanelsContainerProps {
 	isBlank: boolean;
@@ -36,13 +37,15 @@ export const SidePanelsContainer = memo(
 					{(shouldShow("titlePanel") || !isIframe()) && (
 						<TitlePanel />
 					)}
-					<ViewModeGuard>
+					<ViewModeGuard iframe>
 						<div className={style.hidingPanels}>
 							<SidePanel />
 							<ShapesPanel />
 						</div>
 						<InactiveBoardHidder>
-							<ToolsPanel />
+							<ViewModeGuard fallback={<ViewToolsPanel />}>
+								<ToolsPanel />
+							</ViewModeGuard>
 						</InactiveBoardHidder>
 					</ViewModeGuard>
 				</div>

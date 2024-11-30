@@ -1,13 +1,13 @@
-import i18next from "i18next";
-import { boardsApi } from "shared/api";
+import i18next, { t } from "i18next";
+import { boardsApiV2, foldersApi } from "shared/apiV2";
 import { Subject } from "Subject";
 import { Account } from "./Account";
 import { Storage } from "./Storage";
 
 export class BoardsList {
 	subject = new Subject<void>();
-	sharedBoards: boardsApi.Board[] = [];
-	publicBoards: boardsApi.Board[] = [];
+	private sharedFolder: foldersApi.Folder | null = null;
+	private rootFolder: foldersApi.Folder | null = null;
 	showedErrorModals: { [boardId: string]: boolean } = {};
 
 	constructor(
@@ -15,16 +15,42 @@ export class BoardsList {
 		private readonly account: Account,
 	) {
 		account.setOnLogin(async () => {
+			await foldersApi.initFolders();
 			await this.claim();
 			this.storage.softClean();
 			this.subject.publish();
 		});
 	}
 
-	async createBoard(name?: string, isPublic = true): Promise<string> {
+	getSharedFolder() {
+		return this.sharedFolder;
+	}
+
+	getRootFolder() {
+		return this.rootFolder;
+	}
+
+	async createFolder(title?: string, parentFolder?: number) {
+		if (!this.account.isLoggedIn) {
+			return;
+		}
+
+		await foldersApi.createFolder({ parentFolder, title });
+		await this.loadBoards();
+	}
+
+	async createBoard(
+		name?: string,
+		isPublic = false,
+		parentFolder?: number,
+	): Promise<string> {
 		return await this.action(
 			async () => {
-				const { data } = await boardsApi.createBoard(name, isPublic);
+				const { data } = await boardsApiV2.createBoard({
+					title: name,
+					parentFolder,
+					isPublic,
+				});
 				if (!data) {
 					throw new Error("Board creation error");
 				}
@@ -32,7 +58,11 @@ export class BoardsList {
 				return data.id;
 			},
 			async () => {
-				const { data } = await boardsApi.createBoardUnAuthed(name);
+				const { data } = await boardsApiV2.createBoard({
+					title: name,
+					isPublic: true,
+					parentFolder,
+				});
 				if (!data) {
 					throw new Error("Board creation error");
 				}
@@ -43,34 +73,185 @@ export class BoardsList {
 		);
 	}
 
-	getBoardInfo(id: string | null) {
-		if (!id) {
-			return;
+	getBoardInfo(boardId: string | null): foldersApi.NestedBoard | null {
+		if (!boardId) {
+			return null;
 		}
-		const sharedBoard = this.sharedBoards.find(board => board.id === id);
-		const publicBoard = this.publicBoards.find(board => board.id === id);
+		const searchFolder = (
+			folder: foldersApi.Folder | null,
+		): foldersApi.NestedBoard | null => {
+			if (!folder) {
+				return null;
+			}
+			for (const item of folder.items) {
+				if (item.itemType === "board" && item.id === boardId) {
+					return item;
+				}
+				if (item.itemType === "folder") {
+					const found = searchFolder(item as foldersApi.Folder);
+					if (found) {
+						return found;
+					}
+				}
+			}
+			return null;
+		};
 
-		return sharedBoard || publicBoard;
+		return searchFolder(this.rootFolder) || searchFolder(this.sharedFolder);
+	}
+
+	getFolder(
+		folderId: number | null,
+	): foldersApi.Folder | foldersApi.NestedFolder | null {
+		if (!folderId) {
+			return null;
+		}
+		if (this.rootFolder?.id === folderId) {
+			return this.rootFolder;
+		}
+		if (this.sharedFolder?.id === folderId) {
+			return this.sharedFolder;
+		}
+		const searchFolder = (
+			folder: foldersApi.Folder | null,
+		): foldersApi.Folder | null => {
+			if (!folder) {
+				return null;
+			}
+			for (const item of folder.items) {
+				if (item.itemType === "folder" && item.id === folderId) {
+					return item;
+				}
+				if (item.itemType === "folder") {
+					const found = searchFolder(item);
+					if (found) {
+						return item;
+					}
+				}
+			}
+			return null;
+		};
+
+		return searchFolder(this.rootFolder) || searchFolder(this.sharedFolder);
+	}
+
+	getFolderByType(
+		folderType: foldersApi.FolderType,
+	): foldersApi.Folder | foldersApi.NestedFolder | null {
+		const searchFolderByType = (
+			folder: foldersApi.Folder | null,
+		): foldersApi.Folder | null => {
+			if (!folder) {
+				return null;
+			}
+			for (const item of folder.items) {
+				if (item.itemType === "folder" && item.type === folderType) {
+					return item;
+				}
+				if (item.itemType === "folder") {
+					const found = searchFolderByType(item);
+					if (found) {
+						return found;
+					}
+				}
+			}
+			return null;
+		};
+
+		return (
+			searchFolderByType(this.rootFolder) ||
+			searchFolderByType(this.sharedFolder)
+		);
 	}
 
 	async loadBoards() {
 		if (this.account.isLoggedIn) {
-			const { data } = await boardsApi.getBoards();
-			this.publicBoards = data?.author ?? [];
-			this.sharedBoards = data?.shared ?? [];
+			const { data: rootFolder } = await foldersApi.getRootFolder();
+			const { data: sharedFolder } = await foldersApi.getRootFolder(
+				foldersApi.FolderType.VISITED,
+			);
+			if (!rootFolder) {
+				throw new Error("Failed to load folders");
+			}
+			if (!sharedFolder) {
+				throw new Error("Failed to load folders");
+			}
+			this.rootFolder = rootFolder;
+			this.sharedFolder = sharedFolder;
+			this.updateEmptyTitles(this.rootFolder);
+			this.updateEmptyTitles(this.sharedFolder);
+			this.rootFolder.title = t("sidePanel.folders.myBoards");
+			this.sharedFolder.title = t("sidePanel.folders.sharedBoards");
+
+			const publicDrafts = this.getFolderByType(
+				foldersApi.FolderType.DRAFTS,
+			);
+			if (!publicDrafts) {
+				throw new Error("Failed to load folders");
+			}
+			publicDrafts.title = t("sidePanel.folders.publicDrafts");
+
 			this.subject.publish();
 		} else {
-			this.publicBoards = this.storage.listCreatedBoards();
-			this.sharedBoards = this.storage.listVisitedBoards();
+			this.rootFolder = {
+				id: -1,
+				items: this.storage.listCreatedBoards().map(b => ({
+					...b,
+					itemType: "board",
+					title: b.title || t("board.untitled"),
+				})),
+				title: t("sidePanel.folders.publicDrafts"),
+				type: foldersApi.FolderType.DRAFTS,
+			};
+			this.sharedFolder = {
+				id: -2,
+				items: this.storage.listVisitedBoards().map(b => ({
+					...b,
+					itemType: "board" as const,
+					title: b.title || t("board.untitled"),
+				})),
+				title: t("sidePanel.folders.sharedBoards"),
+				type: foldersApi.FolderType.VISITED,
+			};
 			await this.updateDetails();
 			this.subject.publish();
+		}
+	}
+
+	async updatePrivacySettings(
+		boardId: string,
+		isPublic: boolean,
+		mode: boardsApiV2.DirectAccessType,
+	) {
+		if (!this.account.isLoggedIn) {
+			return;
+		}
+
+		await boardsApiV2.editBoard(boardId, {
+			isPublic,
+			directAccessType: mode,
+		});
+		await this.updateList();
+	}
+
+	private updateEmptyTitles(folder: foldersApi.Folder | null) {
+		if (!folder) {
+			return;
+		}
+		for (const item of folder.items) {
+			if (!item.title) {
+				item.title = t("board.untitled");
+			}
+			if (item.itemType === "folder") {
+				this.updateEmptyTitles(item as foldersApi.Folder);
+			}
 		}
 	}
 
 	async visitBoard(id: string) {
 		return await this.action(
 			async () => {
-				await boardsApi.claim({ visited: [id] });
+				await boardsApiV2.claimBoards({ visited: [id] });
 				await this.updateList();
 			},
 			async () => {
@@ -80,7 +261,7 @@ export class BoardsList {
 				) {
 					return;
 				}
-				const { data } = await boardsApi.getBoardDetails(id);
+				const { data } = await boardsApiV2.getBoard(id);
 				if (data) {
 					this.storage.addVisitedBoard(data);
 					await this.updateList();
@@ -98,8 +279,10 @@ export class BoardsList {
 			return;
 		}
 		try {
-			await boardsApi.claim({
-				authorKeys: publicBoards.map(({ authorKey }) => authorKey),
+			await boardsApiV2.claimBoards({
+				authorKeys: publicBoards
+					.map(({ authorKey }) => authorKey)
+					.filter(ak => ak !== null),
 				visited: sharedBoards.map(({ id }) => id),
 			});
 		} catch {
@@ -113,33 +296,26 @@ export class BoardsList {
 		if (name === i18next.t("board.untitled")) {
 			return;
 		}
-		const publicBoard = this.publicBoards.find(b => b.id === boardId);
-		const sharedBoard = this.sharedBoards.find(b => b.id === boardId);
 
-		if (publicBoard) {
-			publicBoard.title = name;
+		const board = this.getBoardInfo(boardId);
+		if (!board) {
+			return;
 		}
 
-		if (sharedBoard) {
-			sharedBoard.title = name;
-		}
+		board.title = name || t("board.untitled");
+
 		this.subject.publish();
 
 		await this.action(
 			async () => {
-				await boardsApi.renameBoard(boardId, name);
+				await boardsApiV2.editBoard(boardId, { title: name });
 				await this.updateList();
 			},
 			async () => {
-				const board = this.storage.getCreatedBoard(boardId);
-				if (!board) {
-					return;
-				}
-
-				await boardsApi.renameBoardUnauthed(
-					board.id,
+				await boardsApiV2.editBoard(
+					boardId,
+					{ title: name },
 					board.authorKey,
-					name,
 				);
 				this.storage.renameCreatedBoard(board.id, name);
 				await this.updateList();
@@ -147,24 +323,42 @@ export class BoardsList {
 		);
 	}
 
-	async remove(boardId: string) {
+	async renameFolder(folderId: number, name: string) {
+		if (!this.account.isLoggedIn) {
+			return;
+		}
+
+		if (name === i18next.t("board.untitled")) {
+			return;
+		}
+
+		const folder = this.getFolder(folderId);
+
+		if (!folder) {
+			return;
+		}
+
+		folder.title = name || t("board.untitled");
+
+		this.subject.publish();
+
+		await foldersApi.editFolder(folderId, {
+			title: name,
+		});
+
+		await this.updateList();
+	}
+	async removeBoard(boardId: string) {
 		await this.action(
 			async () => {
-				const sharedBoard = this.sharedBoards.find(
-					({ id }) => id === boardId,
-				);
-				if (sharedBoard) {
-					await boardsApi.unvisitBoard(sharedBoard.id);
-				} else {
-					await boardsApi.deleteBoard(boardId);
-				}
+				await boardsApiV2.deleteBoard(boardId);
 				await this.updateList();
 			},
 			async () => {
 				const createdBoard = this.storage.getCreatedBoard(boardId);
 				if (createdBoard) {
 					try {
-						await boardsApi.deleteBoardUnauthed(
+						await boardsApiV2.deleteBoard(
 							createdBoard.id,
 							createdBoard.authorKey,
 						);
@@ -179,6 +373,26 @@ export class BoardsList {
 		);
 	}
 
+	async removeBoardFromFolder(folderId: number, boardId: string) {
+		if (!this.account.isLoggedIn) {
+			return;
+		}
+
+		await foldersApi.deleteFolderContent(folderId, {
+			nestedBoardId: boardId,
+		});
+		await this.updateList();
+	}
+
+	async removeFolder(folderId: number) {
+		if (!this.account.isLoggedIn) {
+			return;
+		}
+
+		await foldersApi.deleteFolder(folderId);
+		await this.updateList();
+	}
+
 	private async updateDetails() {
 		if (this.account.isLoggedIn) {
 			return;
@@ -188,12 +402,12 @@ export class BoardsList {
 		try {
 			const detailsRes = await Promise.all(
 				visitedBoards.map(
-					async ({ id }) => await boardsApi.getBoardDetails(id),
+					async ({ id }) => await boardsApiV2.getBoard(id),
 				),
 			);
 			const details = detailsRes
 				.map(({ data }) => data)
-				.filter(data => data !== null) as boardsApi.Board[];
+				.filter(data => data !== null);
 			this.storage.setVisitedBoards(details);
 		} catch {
 			console.error("Can't fetch board details");
@@ -202,6 +416,7 @@ export class BoardsList {
 	}
 
 	private async updateList() {
+		await this.account.refreshTokens();
 		await this.loadBoards();
 		this.subject.publish();
 	}

@@ -1,88 +1,148 @@
+import { useAccount } from "App/useAccount";
+import { useBoardsList } from "App/useBoardsList";
+import { useClickOutside } from "lib/useClickOutside";
 import React, {
-	MouseEvent,
 	type MouseEventHandler,
 	type PropsWithChildren,
 	type ReactNode,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
-import { useAppContext } from "View/AppContext";
-import { useBoardRenameContext } from "View/BoardName";
 import { Icon } from "View/Icon";
 import { UiPanel } from "View/Ui/UiPanel";
 import style from "./ContextMenu.module.css";
 import { useContextMenuContext } from "./ContextMenuContext";
+import { useRenameContext } from "View/Rename";
 import { useConfirmModalContext } from "View/Modal/ConfirmModal";
-import { useBoardsList } from "App/useBoardsList";
-import { useAccount } from "App/useAccount";
+import { UiSeparator } from "View/Ui/UiSeparator";
+import { foldersApi } from "shared/apiV2";
+import { useUiModalContext } from "View/Ui/UiModal";
+import { SHARE_MODAL_ID } from "View/ShareModal/ShareModal";
 
 export function ContextMenu() {
-	const { isOpen, boardId, x, y, close } = useContextMenuContext();
-	const { openModalConfirm } = useConfirmModalContext();
-	const navigate = useNavigate();
-	const { t } = useTranslation();
-	const { setRenamingBoardId, setNewBoardName } = useBoardRenameContext();
+	const { boardId, x, y, isOpen, folderId, close } = useContextMenuContext();
+	const { setNewName, setRenamingId } = useRenameContext();
 	const boardsList = useBoardsList();
 	const account = useAccount();
-	const { app } = useAppContext();
+	const { t } = useTranslation();
+	const { openModalConfirm } = useConfirmModalContext();
+	const { openModal } = useUiModalContext();
+	const menuRef = useClickOutside(() => {
+		close();
+	});
 
-	if (!isOpen) {
-		return null;
-	}
-	const boardName =
-		boardsList.getBoardInfo(boardId)?.title || t("board.untitled");
+	const boardInfo = boardsList.getBoardInfo(boardId);
+	const folderInfo = boardsList.getFolder(folderId);
 
-	const handleCreateBoard: MouseEventHandler = async (ev: MouseEvent) => {
+	const hasOwnerRights = boardId
+		? account.permissions.checkPermissions("owns", "boards", boardId)
+		: false;
+	const isFolderEditable = folderInfo
+		? folderInfo.type === foldersApi.FolderType.NESTED
+		: false;
+	const isFolderExtendable = folderInfo
+		? folderInfo.type !== foldersApi.FolderType.TRASH &&
+			folderInfo.type !== foldersApi.FolderType.DRAFTS &&
+			folderInfo.type !== foldersApi.FolderType.VISITED
+		: false;
+
+	const isBoardMenu = boardId && folderId;
+	const isFolderMenu = !boardId && folderId && isFolderEditable;
+
+	const handleCreateBoard: MouseEventHandler = async ev => {
 		ev.preventDefault();
 		ev.stopPropagation();
-		const boardId = await boardsList.createBoard();
-		await app.openBoard(boardId);
-		navigate(`/boards/${boardId}`, {
-			replace: true,
-		});
-		setNewBoardName(boardName);
-		setRenamingBoardId(boardId);
+		const boardId = await boardsList.createBoard(
+			undefined,
+			undefined,
+			folderId ?? undefined,
+		);
+		close();
+		const boardInfo = boardsList.getBoardInfo(boardId);
+		setRenamingId(boardId);
+		setNewName(boardInfo?.title ?? "");
+	};
+
+	const handleCreateFolder: MouseEventHandler = async ev => {
+		if (!account.isLoggedIn) {
+			return;
+		}
+		ev.preventDefault();
+		ev.stopPropagation();
+		await boardsList.createFolder(undefined, folderId ?? undefined);
 		close();
 	};
 
-	const handleDeleteBoard: MouseEventHandler = async (ev): Promise<void> => {
+	const handleRename: MouseEventHandler = ev => {
 		ev.preventDefault();
 		ev.stopPropagation();
-		if (!boardId) {
-			throw new Error("Can't delete board with id null");
+
+		if (isFolderMenu && folderInfo) {
+			setRenamingId(folderId);
+			setNewName(folderInfo?.title);
 		}
-		const removingCurr = boardId === app.getBoard()?.getBoardId();
-		boardsList.remove(boardId);
-		if (removingCurr) {
-			navigate("/boards");
-			await app.openBoard("blank");
+
+		if (boardId && boardInfo) {
+			setRenamingId(boardId);
+			setNewName(boardInfo?.title);
 		}
 		close();
-		return Promise.resolve();
 	};
 
-	const handleRenameBoard: MouseEventHandler = event => {
-		event.preventDefault();
-		event.stopPropagation();
+	const handleDeleteBoard: MouseEventHandler = ev => {
+		ev.preventDefault();
+		ev.stopPropagation();
+		openModalConfirm(
+			"Deleting document",
+			`Are you sure you want to delete the board "${boardInfo?.title}"`,
+			async () => {
+				if (!boardId || !folderId) {
+					return;
+				}
+
+				if (hasOwnerRights) {
+					await boardsList.removeBoard(boardId);
+				} else {
+					await boardsList.removeBoardFromFolder(folderId, boardId);
+				}
+				close();
+				Promise.resolve();
+			},
+		);
+	};
+
+	const handleDeleteFolder: MouseEventHandler = ev => {
+		ev.preventDefault();
+		ev.stopPropagation();
+		openModalConfirm(
+			"Deleting document",
+			`Are you sure you want to delete the folder "${folderInfo?.title}"`,
+			async () => {
+				if (!folderId) {
+					return;
+				}
+
+				boardsList.removeFolder(folderId);
+				close();
+				Promise.resolve();
+			},
+		);
+	};
+
+	const handleSharingModalOpen: MouseEventHandler = ev => {
+		ev.preventDefault();
+		ev.stopPropagation();
 
 		if (!boardId) {
 			return;
 		}
 
-		setNewBoardName(boardName);
-		setRenamingBoardId(boardId);
+		openModal(SHARE_MODAL_ID);
 		close();
 	};
 
-	const canRename = account.permissions.checkPermissions(
-		"owns",
-		"boards",
-		boardId ?? "",
-	);
-
-	const isSharedBoard = Boolean(
-		boardsList.sharedBoards.find(b => b.id === boardId),
-	);
+	if (!isOpen) {
+		return null;
+	}
 
 	return (
 		<UiPanel
@@ -91,8 +151,104 @@ export function ContextMenu() {
 			vertical
 			padding={6}
 			zIndex={100}
+			ref={menuRef}
 		>
-			{boardId ? (
+			{!boardId && !folderId && (
+				<>
+					<ContextMenuItem
+						onClick={handleCreateBoard}
+						icon={
+							<Icon
+								iconName="EmbedBoardIcon"
+								width={20}
+								height={20}
+							/>
+						}
+					>
+						New board
+					</ContextMenuItem>
+					<ContextMenuItem
+						disabled={!account.isLoggedIn}
+						onClick={handleCreateFolder}
+						icon={<Icon iconName="Folder" width={20} height={20} />}
+					>
+						New folder
+					</ContextMenuItem>
+				</>
+			)}
+			{isFolderExtendable && (
+				<>
+					<ContextMenuItem
+						onClick={handleCreateBoard}
+						icon={
+							<Icon
+								iconName="EmbedBoardIcon"
+								width={20}
+								height={20}
+							/>
+						}
+					>
+						New board
+					</ContextMenuItem>
+					<ContextMenuItem
+						disabled={!account.isLoggedIn}
+						onClick={handleCreateFolder}
+						icon={<Icon iconName="Folder" width={20} height={20} />}
+					>
+						New folder
+					</ContextMenuItem>
+				</>
+			)}
+			{isBoardMenu && (
+				<>
+					<UiSeparator />
+					<ContextMenuItem
+						onClick={handleSharingModalOpen}
+						icon={<Icon iconName="People" />}
+					>
+						Manage sharing
+					</ContextMenuItem>
+					<UiSeparator />
+					{hasOwnerRights && (
+						<ContextMenuItem
+							onClick={handleRename}
+							icon={
+								<Icon
+									iconName="Rename"
+									width={20}
+									height={20}
+								/>
+							}
+						>
+							Rename
+						</ContextMenuItem>
+					)}
+					<ContextMenuItem
+						onClick={handleDeleteBoard}
+						icon={<Icon iconName="Delete" width={20} height={20} />}
+					>
+						{hasOwnerRights ? "Delete" : "Remove from my list"}
+					</ContextMenuItem>
+				</>
+			)}
+			{isFolderMenu && (
+				<>
+					<UiSeparator />
+					<ContextMenuItem
+						onClick={handleRename}
+						icon={<Icon iconName="Rename" width={20} height={20} />}
+					>
+						Rename
+					</ContextMenuItem>
+					<ContextMenuItem
+						onClick={handleDeleteFolder}
+						icon={<Icon iconName="Delete" width={20} height={20} />}
+					>
+						Delete
+					</ContextMenuItem>
+				</>
+			)}
+			{/* {boardId ? (
 				<>
 					{canRename && (
 						<ContextMenuItem
@@ -145,7 +301,7 @@ export function ContextMenu() {
 				>
 					{t("contextMenu.addNew")}
 				</ContextMenuItem>
-			)}
+			)} */}
 		</UiPanel>
 	);
 }
@@ -153,11 +309,17 @@ export function ContextMenu() {
 type ItemProps = PropsWithChildren<{
 	icon: ReactNode;
 	onClick: MouseEventHandler;
+	disabled?: boolean;
 }>;
 
-function ContextMenuItem({ children, icon, onClick }: ItemProps) {
+function ContextMenuItem({
+	children,
+	icon,
+	onClick,
+	disabled = false,
+}: ItemProps) {
 	return (
-		<button className={style.item} onClick={onClick}>
+		<button disabled={disabled} className={style.item} onClick={onClick}>
 			<span className={style.icon}>{icon}</span>
 			<span>{children}</span>
 		</button>

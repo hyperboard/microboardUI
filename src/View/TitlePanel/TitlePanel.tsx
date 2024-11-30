@@ -16,9 +16,9 @@ import { useSidePanelContext } from "View/SidePanel/SidePanelContext";
 import { UiButton } from "View/Ui/UiButton";
 import { UiPanel } from "View/Ui/UiPanel";
 import { UiSeparator } from "View/Ui/UiSeparator";
+import { ViewModeGuard } from "View/ViewModeGuard";
 import { Icon, Logo } from "../Icon";
 import style from "./TitlePanel.module.css";
-import { ViewModeGuard } from "View/ViewModeGuard";
 import { CreateTemplateModal } from "../Templates";
 import { getApiUrl } from "../../Config";
 import { useModal } from "../Modal/ModalProvider";
@@ -130,7 +130,7 @@ export function TitlePanel(): JSX.Element | null {
 			: (boardName ?? "");
 	return (
 		<UiPanel className={style.panel} padding={0} zIndex={10}>
-			<ViewModeGuard>
+			<ViewModeGuard iframe>
 				<SidePanelButton
 					isOpen={isOpen}
 					toggle={toggleSideMenu}

@@ -1,0 +1,117 @@
+.heading {
+	font-size: 30px;
+	font-weight: 600;
+	margin-bottom: 8px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	max-width: 100%;
+}
+
+.notAuth {
+	font-size: 14px;
+	line-height: 20px;
+}
+
+.modalContainer {
+	max-width: 800px;
+}
+
+.wrapper {
+	width: 100%;
+	padding: 20px 52px;
+}
+
+.settings {
+	padding-top: 20px;
+}
+
+.settingsHeading {
+	font-size: 14px;
+	font-weight: 700;
+}
+
+.publicMsg {
+	font-size: 12px;
+}
+
+.selectors {
+	display: grid;
+	grid-template-columns: minmax(max-content, 60%) minmax(190px, 1fr);
+	gap: 16px;
+	padding-top: 20px;
+	padding-bottom: 8px;
+}
+
+.btns {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	padding-top: 24px;
+	gap: 16px;
+}
+
+.btns .btn {
+	width: auto;
+	padding: 10px 12px;
+}
+
+.grantedUser {
+	display: flex;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.userInfo {
+	display: flex;
+	gap: 12px;
+}
+
+.avatar {
+	width: 40px;
+	height: 40px;
+}
+
+.avatar img {
+	width: 100%;
+	height: auto;
+	object-fit: cover;
+	object-position: center;
+}
+
+.userStatus {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+}
+
+.userName {
+	font-size: 14px;
+	font-weight: 400;
+	max-width: 100%;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.userEmail {
+	font-size: 14px;
+	font-weight: 400;
+	color: rgba(13, 17, 38, 0.4);
+	max-width: 100%;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.usersList {
+	padding-top: 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.ownerLabel {
+	font-size: 14px;
+	font-weight: 500;
+	color: rgba(13, 17, 38, 0.4);
+}

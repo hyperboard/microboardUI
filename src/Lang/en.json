@@ -132,6 +132,9 @@
 		}
 	},
 	"toolsPanel": {
+		"grab": {
+			"tooltip": "Grab"
+		},
 		"select": {
 			"tooltip": "Select"
 		},
@@ -569,5 +572,32 @@
 		"generateAiChart": "Generate AI charts",
 		"symbols": "characters",
 		"processingIdea": "Processing your idea..."
+	},
+	"sharing": {
+		"share": "Share",
+		"publicBoard": "This is a public board. It is accessible to everyone on the Internet.",
+		"copyLink": {
+			"label": "Copy link",
+			"success": "The link to the board has been successfully copied",
+			"error": "Error copying link"
+		},
+		"owner": "Owner",
+		"notAuthMsg": "To restrict the circle of people who can view and edit the board,",
+		"login": "sign in",
+		"or": "or",
+		"register": "sign up",
+		"publicAccess": "Public access",
+		"itsYou": "yes, it's you",
+		"accessOptions": {
+			"edit": "Edit",
+			"view": "View",
+			"noAccess": "Revoke access"
+		},
+		"privacyOptions": {
+			"public": "Everyone with the link",
+			"private": "Access restricted"
+		},
+		"grantedUsers": "Users with access",
+		"submit": "Submit"
 	}
 }

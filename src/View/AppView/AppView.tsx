@@ -13,25 +13,26 @@ import { ContextMenu } from "View/ContextMenu";
 import { ContextPanel } from "View/ContextPanel";
 import { ExportPanel } from "View/ExportPanel";
 import { ExportVisible } from "View/ExportPanel/ExportVisible";
-import { ImportMiro } from "View/ImportMiro";
+import { ImportMiro, ImportMiroStartModal } from "View/ImportMiro";
+import { ItemTooltip } from "View/ItemTooltip";
 import { LandingMenu, MobileLandingMenu } from "View/LandingMenu";
+import { ShareModal } from "View/ShareModal";
 import { SidePanelsContainer } from "View/SidePanelsContainer";
 import { TextEditors } from "View/TextEditor/TextEditor";
+import { ToastProvider } from "View/ToastProvider";
 import { UserPanelLayout } from "View/UserPanel/UserPanel";
 import { ViewModeGuard } from "View/ViewModeGuard";
 import { ZoomPanel } from "View/ZoomPanel";
+import { LinksProvider } from "../LinksProvider/LinksProvider";
+import { SetLinkToModal } from "../Modal/SetLinkToModal";
 import style from "./AppView.module.css";
 import { InactiveBoardHidder } from "./InactiveBoardHidder";
 import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
-import { ImportMiroStartModal } from "View/ImportMiro";
-import { ItemTooltip } from "View/ItemTooltip";
-import { ToastProvider } from "View/ToastProvider";
-import { SetLinkToModal } from "../Modal/SetLinkToModal";
-import { LinksProvider } from "../LinksProvider/LinksProvider";
+import { UiModalBackground, UiModalContextProvider } from "View/Ui/UiModal";
 import { UserTracking } from "View/Presence/UserTracking/UserTracking";
 
-export function AppView() {
+export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
 	const location = useLocation();
 	const navigate = useNavigate();
@@ -43,7 +44,7 @@ export function AppView() {
 	const authCode = searchParams.get("code");
 	const teamIdSearch = searchParams.get("team_id");
 
-	const update = () => {
+	function update(): void {
 		if (animationId.current) {
 			return; // Function already scheduled to run
 		}
@@ -52,7 +53,7 @@ export function AppView() {
 			forceUpdate();
 			animationId.current = null;
 		});
-	};
+	}
 
 	useEffect(() => {
 		const handlePaste = (event: ClipboardEvent): void => {
@@ -134,49 +135,54 @@ export function AppView() {
 
 	return (
 		<div className={style.wrapper}>
-			{shouldShow("titlePanel") && <LandingMenu />}
-			{shouldShow("titlePanel") && <MobileLandingMenu />}
-			<InactiveBoardHidder>
-				<div ref={containerRef}>
-					<Canvas
-						router={{ location, navigate, params }}
-						app={app}
-						board={board}
+			<UiModalContextProvider>
+				{shouldShow("titlePanel") && <LandingMenu />}
+				{shouldShow("titlePanel") && <MobileLandingMenu />}
+				<InactiveBoardHidder>
+					<div ref={containerRef}>
+						<Canvas
+							router={{ location, navigate, params }}
+							app={app}
+							board={board}
+						/>
+						<TextEditors app={app} board={board} />
+					</div>
+				</InactiveBoardHidder>
+				{appBoard.getBoardId() === "blank" && <NoBoardIsOpen />}
+				<ExportVisible>
+					<SidePanelsContainer
+						isBlank={appBoard.getBoardId() === "blank"}
 					/>
-					<TextEditors app={app} board={board} />
-				</div>
-			</InactiveBoardHidder>
-			{appBoard.getBoardId() === "blank" && <NoBoardIsOpen />}
-			<ExportVisible>
-				<SidePanelsContainer
-					isBlank={appBoard.getBoardId() === "blank"}
-				/>
-				<ContextMenu />
-				<ItemTooltip />
-			</ExportVisible>
-			<ExportVisible>
-				<UserPanelLayout app={app} />
-			</ExportVisible>
-			<ExportVisible>
-				<UserTracking board={board} />
-			</ExportVisible>
-			<InactiveBoardHidder>
-				<ZoomPanel />
-			</InactiveBoardHidder>
-			<ViewModeGuard>
-				<LinksProvider />
-				<ContextPanel />
-				<QuickAddPanel />
-				<ExportPanel />
-			</ViewModeGuard>
-			<ToastProvider />
-			{authCode && teamIdSearch ? <ImportMiro /> : null}
-			<ImportMiroStartModal />
-			<SetLinkToModal />
+					<ContextMenu />
+					<ItemTooltip />
+				</ExportVisible>
+				<ExportVisible>
+					<UserPanelLayout app={app} />
+				</ExportVisible>
+				<ExportVisible>
+					<UserTracking board={board} />
+				</ExportVisible>
+				<InactiveBoardHidder>
+					<ZoomPanel />
+				</InactiveBoardHidder>
+				<ViewModeGuard>
+					<LinksProvider />
+					<ContextPanel />
+					<QuickAddPanel />
+					<ExportPanel />
+				</ViewModeGuard>
+				<ToastProvider />
+				{authCode && teamIdSearch ? <ImportMiro /> : null}
+				<ImportMiroStartModal />
+				<SetLinkToModal />
+				<UiModalBackground>
+					<ShareModal />
+				</UiModalBackground>
+			</UiModalContextProvider>
 		</div>
 	);
 }
 
-function preventDefault(event: TouchEvent) {
+function preventDefault(event: TouchEvent): void {
 	event.preventDefault();
 }

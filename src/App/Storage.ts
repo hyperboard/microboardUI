@@ -1,4 +1,4 @@
-import type { boardsApi } from "shared/api";
+import type { boardsApiV2 } from "shared/apiV2";
 import { v4 } from "uuid";
 
 export class Storage {
@@ -6,7 +6,7 @@ export class Storage {
 	visitedBoards = `${location.host}/visitedBoards`;
 
 	/* Returns ids of visited public boards stored in the local storage */
-	listCreatedBoards(): boardsApi.AnonymousBoard[] {
+	listCreatedBoards(): boardsApiV2.Board[] {
 		const createdBoards = localStorage.getItem(this.createdBoards);
 		if (createdBoards) {
 			return JSON.parse(createdBoards);
@@ -15,7 +15,7 @@ export class Storage {
 		}
 	}
 
-	listVisitedBoards(): boardsApi.Board[] {
+	listVisitedBoards(): boardsApiV2.Board[] {
 		const visitedBoards = localStorage.getItem(this.visitedBoards);
 		if (visitedBoards) {
 			return JSON.parse(visitedBoards);
@@ -24,62 +24,62 @@ export class Storage {
 		}
 	}
 
-	setCreatedBoards(boards: boardsApi.AnonymousBoard[]) {
+	setCreatedBoards(boards: boardsApiV2.Board[]): void {
 		localStorage.setItem(this.createdBoards, JSON.stringify(boards));
 	}
 
-	setVisitedBoards(boards: boardsApi.Board[]) {
+	setVisitedBoards(boards: boardsApiV2.Board[]): void {
 		localStorage.setItem(this.visitedBoards, JSON.stringify(boards));
 	}
 
-	private filterCreatedBoards(boardId: string) {
+	private filterCreatedBoards(boardId: string): boardsApiV2.Board[] {
 		const boards = this.listCreatedBoards();
-		return boards.filter(b => b.id !== boardId);
+		return boards.filter(board => board.id !== boardId);
 	}
 
-	private filterVisitedBoards(boardId: string) {
+	private filterVisitedBoards(boardId: string): boardsApiV2.Board[] {
 		const boards = this.listVisitedBoards();
-		return boards.filter(b => b.id !== boardId);
+		return boards.filter(board => board.id !== boardId);
 	}
 
-	addCreatedBoard(board: boardsApi.AnonymousBoard) {
+	addCreatedBoard(board: boardsApiV2.Board): void {
 		const filteredBoards = this.filterCreatedBoards(board.id);
 		this.setCreatedBoards([board, ...filteredBoards]);
 	}
 
-	getCreatedBoard(boardId: string) {
-		return this.listCreatedBoards().find(b => b.id === boardId);
+	getCreatedBoard(boardId: string): boardsApiV2.Board | undefined {
+		return this.listCreatedBoards().find(board => board.id === boardId);
 	}
 
-	removeCreatedBoard(boardId: string) {
+	removeCreatedBoard(boardId: string): void {
 		const filteredBoards = this.filterCreatedBoards(boardId);
 		this.setCreatedBoards(filteredBoards);
 	}
 
-	addVisitedBoard(board: boardsApi.Board) {
+	addVisitedBoard(board: boardsApiV2.Board): void {
 		const filteredBoards = this.filterVisitedBoards(board.id);
 		this.setVisitedBoards([board, ...filteredBoards]);
 	}
 
-	getVisitedBoard(boardId: string) {
-		return this.listVisitedBoards().find(b => b.id === boardId);
+	getVisitedBoard(boardId: string): boardsApiV2.Board | undefined {
+		return this.listVisitedBoards().find(board => board.id === boardId);
 	}
 
-	removeVisitedBoard(boardId: string) {
+	removeVisitedBoard(boardId: string): void {
 		const filteredBoards = this.filterVisitedBoards(boardId);
 		this.setVisitedBoards(filteredBoards);
 	}
 
-	hardClean() {
+	hardClean(): void {
 		localStorage.clear();
 	}
 
-	softClean() {
+	softClean(): void {
 		localStorage.removeItem(this.createdBoards);
 		localStorage.removeItem(this.visitedBoards);
 	}
 
-	renameCreatedBoard(boardId: string, title: string) {
+	renameCreatedBoard(boardId: string, title: string): void {
 		const boards = this.listCreatedBoards();
 		const target = boards.find(({ id }) => id === boardId);
 		if (!target) {
@@ -90,21 +90,21 @@ export class Storage {
 		this.setCreatedBoards(boards);
 	}
 
-	setUser() {
+	setUser(): string {
 		const uuid = v4();
 		localStorage.setItem(`currentUser`, uuid);
 		return uuid;
 	}
 
-	getUser() {
+	getUser(): string | null {
 		return localStorage.getItem(`currentUser`);
 	}
 
-	setUserColor(color: string) {
+	setUserColor(color: string): void {
 		localStorage.setItem(`userColor`, color);
 	}
 
-	getUserColor() {
+	getUserColor(): string | null {
 		return localStorage.getItem(`userColor`);
 	}
 }
