@@ -30,8 +30,8 @@ export class Account {
 	onSessionExpired: (() => void) | null = null;
 	readonly permissions: Permissions;
 	private _accessToken: string | null = null;
-	private onLogout: (() => void) | null = null;
-	private onLogin: (() => void) | null = null;
+	private onLogout: (() => Promise<void>) | null = null;
+	private onLogin: (() => Promise<void>) | null = null;
 
 	constructor(
 		storage: Storage,
@@ -90,7 +90,7 @@ export class Account {
 		}
 
 		await this.fetchAccountInfo();
-		this.onLogin?.();
+		await this.onLogin?.();
 	}
 
 	register(email: string, password: string, name: string) {
@@ -104,7 +104,7 @@ export class Account {
 
 			if (data?.accessToken) {
 				this._accessToken = data.accessToken;
-				// 	this.connection.publishAuth(data.accessToken);
+				this.connection.publishAuth(data.accessToken);
 			}
 
 			this.updateTokenData();
@@ -122,7 +122,7 @@ export class Account {
 	async logout(): Promise<void> {
 		await authApi.logout();
 		this.cleanup();
-		this.onLogout?.();
+		await this.onLogout?.();
 		this.subject.publish(null);
 	}
 
@@ -132,7 +132,7 @@ export class Account {
 		this._accessToken = data?.accessToken ?? null;
 
 		await this.fetchAccountInfo();
-		this.onLogin?.();
+		await this.onLogin?.();
 		return data;
 	}
 
@@ -157,11 +157,11 @@ export class Account {
 		await authApi.restorePassword({ token, newPassword });
 	}
 
-	setOnLogout(cb: () => void) {
+	setOnLogout(cb: () => Promise<void>) {
 		this.onLogout = cb;
 	}
 
-	setOnLogin(cb: () => void) {
+	setOnLogin(cb: () => Promise<void>) {
 		this.onLogin = cb;
 	}
 }

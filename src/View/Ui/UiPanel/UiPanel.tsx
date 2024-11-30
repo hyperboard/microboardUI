@@ -46,10 +46,10 @@ export const UiPanel = forwardRef<HTMLDivElement, UiPanelProps>(
 						? {
 								gridTemplateColumns: columns
 									? `repeat(${columns}, 1fr)`
-									: "auto",
+									: undefined,
 								gridTemplateRows: rows
 									? `repeat(${rows}, 1fr)`
-									: "auto",
+									: undefined,
 								...inlineStyle,
 								zIndex,
 								padding,

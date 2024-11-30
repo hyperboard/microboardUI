@@ -5,13 +5,15 @@ import { UiButton } from "View/Ui/UiButton";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-export function Select() {
+type Props = { rounded?: "top" | "bottom" };
+
+export function Select({ rounded = "top" }: Props): JSX.Element {
 	const { board } = useAppContext();
 	const { t } = useTranslation();
 
-	const handleClick = () => {
+	function handleClick(): void {
 		board.tools.select(true);
-	};
+	}
 
 	const isActive = Boolean(board.tools.getSelect());
 
@@ -23,7 +25,7 @@ export function Select() {
 			onClick={handleClick}
 			active={isActive}
 			variant="secondary"
-			rounded="none"
+			rounded={rounded}
 		>
 			<Icon iconName="Select" />
 		</UiButton>

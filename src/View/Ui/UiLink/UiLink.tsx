@@ -1,24 +1,30 @@
 import clsx from "clsx";
-import React, { AnchorHTMLAttributes, forwardRef } from "react";
+import React, {
+	AnchorHTMLAttributes,
+	forwardRef,
+	type PropsWithChildren,
+} from "react";
 import style from "./UiLink.module.css";
 
-type UiLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> & {
-	active?: boolean;
-	disabled?: boolean;
-	variant?: "default" | "secondary" | "tertiary";
-	size?: "lg" | "md" | "sm";
-	rounded?:
-		| "top"
-		| "bottom"
-		| "left"
-		| "right"
-		| "full"
-		| "none"
-		| "bottom-left"
-		| "bottom-right";
-	radius?: "xl" | "md" | "sm";
-	className?: string;
-};
+type UiLinkProps = PropsWithChildren<
+	AnchorHTMLAttributes<HTMLAnchorElement> & {
+		active?: boolean;
+		disabled?: boolean;
+		variant?: "default" | "secondary" | "tertiary";
+		size?: "lg" | "md" | "sm";
+		rounded?:
+			| "top"
+			| "bottom"
+			| "left"
+			| "right"
+			| "full"
+			| "none"
+			| "bottom-left"
+			| "bottom-right";
+		radius?: "xl" | "md" | "sm";
+		className?: string;
+	}
+>;
 
 export const UiLink = forwardRef<HTMLAnchorElement, UiLinkProps>(
 	(
@@ -62,3 +68,5 @@ export const UiLink = forwardRef<HTMLAnchorElement, UiLinkProps>(
 		);
 	},
 );
+
+UiLink.displayName = "UiLink";

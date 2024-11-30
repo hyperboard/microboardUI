@@ -79,9 +79,12 @@ export interface SnapshotResponseMsg {
 	lastEventOrder: number;
 }
 
-export interface ViewModeMsg {
-	type: "ViewMode";
+export type ViewMode = "view" | "edit";
+
+export interface ModeMsg {
+	type: "Mode";
 	boardId: string;
+	mode: ViewMode;
 }
 
 export interface PingMsg {
@@ -170,7 +173,7 @@ export interface PresenceEventMsg<T = PresenceEventType> {
 }
 
 export type EventsMsg =
-	| ViewModeMsg
+	| ModeMsg
 	| BoardEventMsg
 	| BoardEventListMsg
 	| SnapshotRequestMsg
@@ -187,7 +190,7 @@ export type SocketMsg =
 	| SubscribeMsg
 	| UnsubscribeMsg
 	| ErrorMsg
-	| ViewModeMsg
+	| ModeMsg
 	| PingMsg;
 
 export interface Connection {
@@ -312,7 +315,7 @@ export function createConnection(
 			case "BoardEvent":
 			case "BoardEventList":
 			case "BoardSnapshot":
-			case "ViewMode":
+			case "Mode":
 			case "CreateSnapshotRequest":
 			case "BoardSubscriptionCompleted":
 				const subscribeTimeout = subscribeTimeouts.get(msg.boardId);

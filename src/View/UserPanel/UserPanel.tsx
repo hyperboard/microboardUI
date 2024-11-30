@@ -1,8 +1,13 @@
-import type { App } from "App";
 import { useAccount } from "App/useAccount";
 import clsx from "clsx";
 import { isMicroboardIframe } from "lib/isMicroboardIframe";
-import React, { RefObject, useEffect, useRef, useState } from "react";
+import React, {
+	RefObject,
+	useEffect,
+	useRef,
+	useState,
+	type MouseEventHandler,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useOutsideClickHandler } from "shared/hooks/useOutsideClickHandler";
@@ -10,9 +15,13 @@ import { Button } from "shared/ui-lib/Button";
 import { Input } from "shared/ui-lib/Input";
 import { Tail } from "View/AuthView/Tail";
 import { Icon } from "View/Icon";
+// import { useShareModal } from "View/ShareModal";
+import { useContextMenuContext } from "View/ContextMenu";
+import { SHARE_MODAL_ID } from "View/ShareModal/ShareModal";
 import { LockIcon } from "View/SignupView/LockIcon";
 import { UiButton } from "View/Ui/UiButton";
 import { UiLink } from "View/Ui/UiLink";
+import { useUiModalContext } from "View/Ui/UiModal";
 import { UiPanel } from "View/Ui/UiPanel";
 import { PasswordChanged } from "View/Widgets/form-notifications/password-changed";
 import { ChangePassword } from "./icons/ChangePassword";
@@ -22,6 +31,7 @@ import { useAppContext } from "View/AppContext";
 import { PresenceUsers } from "View/Presence/PresenceUsers/PresenceUsers";
 import { shouldShow } from "lib/queryStringParser";
 import { getEmailPrefix } from "lib/getEmailPrefix";
+import { App } from "App";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	email?: string;
@@ -92,11 +102,17 @@ type TUserPicProps = UserPicProps &
 
 // TODO each file for each component
 const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
-	const { app } = useAppContext();
+	const { board } = useAppContext();
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const userPanelRef = useRef<HTMLDivElement>(null);
 	const navigate = useNavigate();
 	const account = useAccount();
+	const boardId = board.getBoardId();
+	const isOwner = account.permissions.checkPermissions(
+		"owns",
+		"boards",
+		boardId,
+	);
 
 	return (
 		<>
@@ -113,11 +129,19 @@ const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 					}
 				}}
 			>
-				<div className={styles.userPic}>
+				<div className={clsx(styles.userPic, isOwner && styles.owner)}>
 					{account.info?.avatar ? (
 						<img src={account.info?.avatar} />
 					) : (
 						<Icon iconName="UserPic" width={12} height={15} />
+					)}
+					{isOwner && (
+						<Icon
+							className={styles.crown}
+							iconName="Crown"
+							width={12}
+							height={12}
+						/>
 					)}
 				</div>
 			</div>
@@ -393,8 +417,47 @@ const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
 	);
 };
 
-export const UserPanel: React.FC<{ app: App }> = ({ app }) => {
+const ShareBtn = () => {
+	const { setIds } = useContextMenuContext();
+	const { openModal } = useUiModalContext();
+	const { board } = useAppContext();
+	const account = useAccount();
+	const { t } = useTranslation();
+
+	const boardId = board.getBoardId();
+
+	const handleShare: MouseEventHandler = ev => {
+		ev.preventDefault();
+		ev.stopPropagation();
+		setIds(boardId);
+		openModal(SHARE_MODAL_ID);
+	};
+
+	const isOwner = account.permissions.checkPermissions(
+		"owns",
+		"boards",
+		boardId,
+	);
+
+	return (
+		<Button
+			onClick={handleShare}
+			pattern={isOwner ? "primary" : "ghostFilled"}
+			className={isOwner ? styles.shareButton : styles.shareButtonDark}
+		>
+			<Icon
+				width={16}
+				height={16}
+				iconName={isOwner ? "publicDrafts" : "lock"}
+			/>
+			{t("sharing.share")}
+		</Button>
+	);
+};
+
+export const UserPanel: React.FC = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
+
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const account = useAccount();
@@ -456,6 +519,9 @@ export const UserPanel: React.FC<{ app: App }> = ({ app }) => {
 						{/* /> */}
 						{isMicroboardIframe() && insideOfMicroboard ? (
 							<>
+								<p className={styles.unauthMsg}>
+									Don&apos;t lose your progress.
+								</p>
 								<UiLink
 									variant="secondary"
 									className={styles.logInBtn}
@@ -476,9 +542,13 @@ export const UserPanel: React.FC<{ app: App }> = ({ app }) => {
 								>
 									{t("auth.signUpForFree")}
 								</UiLink>
+								<ShareBtn />
 							</>
 						) : (
 							<>
+								<p className={styles.unauthMsg}>
+									Don&apos;t lose your progress.
+								</p>
 								<UiButton
 									variant="secondary"
 									className={styles.logInBtn}
@@ -494,6 +564,7 @@ export const UserPanel: React.FC<{ app: App }> = ({ app }) => {
 								>
 									{t("auth.signUpForFree")}
 								</UiButton>
+								<ShareBtn />
 							</>
 						)}
 					</div>
@@ -522,7 +593,8 @@ export const UserPanel: React.FC<{ app: App }> = ({ app }) => {
 				</Button> */}
 
 				{/* TODO: remove temporarily inline style */}
-				<div style={{ padding: "8px 6px" }}>
+				<div className={styles.container}>
+					<ShareBtn />
 					<UserPic
 						email={
 							account.info?.name ??

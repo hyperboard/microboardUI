@@ -10,3 +10,10 @@ export function getWebsocketUrl(): string {
 		location.host
 	}/ws`;
 }
+
+export function getApiUrlV2(path?: string): string {
+	if (!path) {
+		path = "";
+	}
+	return `${location.protocol}//${location.host}/api/v2${path}`;
+}

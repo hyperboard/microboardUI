@@ -246,7 +246,7 @@ export const transformShape = (
 			shape: SHAPE_TYPES[json.shape] || "rectangle",
 			content: json.text || "",
 		},
-		linkTo: shape["ns:gotoLink"]?.link
+		linkTo: shape["ns:gotoLink"]?.link,
 	};
 
 	if (json._parent) {
@@ -304,7 +304,7 @@ export const transformText = (
 				: MiroRelativeTo.board,
 		},
 		scale: json.scale.scale,
-		linkTo: text["ns:gotoLink"]?.link
+		linkTo: text["ns:gotoLink"]?.link,
 	};
 
 	if (json._parent) {
@@ -450,7 +450,7 @@ export const transformSticker = (
 				? MiroRelativeTo.frame
 				: MiroRelativeTo.board,
 		},
-		linkTo: sticker["ns:gotoLink"]?.link
+		linkTo: sticker["ns:gotoLink"]?.link,
 	};
 
 	if (json._parent) {
@@ -513,7 +513,7 @@ export const transformImage = (
 				? MiroRelativeTo.frame
 				: MiroRelativeTo.board,
 		},
-		linkTo: image["ns:gotoLink"]?.link
+		linkTo: image["ns:gotoLink"]?.link,
 	};
 
 	if (json._parent) {
@@ -567,7 +567,7 @@ export const transformFrame = (
 			origin: "center",
 			relativeTo: MiroRelativeTo.board,
 		},
-		linkTo: frame["ns:gotoLink"]?.link
+		linkTo: frame["ns:gotoLink"]?.link,
 	};
 
 	return transformedFrame;
@@ -612,7 +612,7 @@ const transformDrawing = (
 				: MiroRelativeTo.board,
 		},
 		relativeScale: json.relativeScale,
-		linkTo: paint["ns:gotoLink"]?.link
+		linkTo: paint["ns:gotoLink"]?.link,
 	};
 
 	if (json._parent) {

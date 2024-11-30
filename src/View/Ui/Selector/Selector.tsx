@@ -79,11 +79,13 @@ const Selector = forwardRef<SelectorHandle<true | false>, SelectorProps>(
 		}): void => {
 			if (multiselect) {
 				const isSelected = selectedOptions.find(
-					o => o.value === option.value,
+					selOpt => selOpt.value === option.value,
 				);
 				if (isSelected) {
 					setSelectedOptions(
-						selectedOptions.filter(o => o.value !== option.value),
+						selectedOptions.filter(
+							selOpt => selOpt.value !== option.value,
+						),
 					);
 				} else {
 					setSelectedOptions([...selectedOptions, option]);
@@ -142,7 +144,7 @@ const Selector = forwardRef<SelectorHandle<true | false>, SelectorProps>(
 								key={option.value}
 								className={`${style.option} ${
 									selectedOptions.find(
-										o => o.value === option.value,
+										selOpt => selOpt.value === option.value,
 									)
 										? style.selected
 										: ""

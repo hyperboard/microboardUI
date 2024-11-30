@@ -37,16 +37,16 @@ export class HTTP {
 			return key;
 		});
 	}
-
 	getUrl(
 		path = "",
 		params?: ParamsRecord,
 		query?: URLSearchParamsInit,
 	): string {
+		const queryString = this.getQuery(query);
 		return `${this.baseURL}${this.replacePathParams(
 			path,
 			params,
-		)}${this.getQuery(query)}`;
+		)}${queryString ? `?${queryString}` : ""}`;
 	}
 
 	private async $fetch<
@@ -170,13 +170,18 @@ export class HTTP {
 		R,
 		Q extends URLSearchParamsInit = URLSearchParamsInit,
 		P extends ParamsRecord = ParamsRecord,
+		B extends MutationRequestBody = MutationRequestBody,
 	>(
 		path: string,
 		config?: HTTPRequestConfig<Q, P>,
+		body?: B,
 	): Promise<HTTPResponse<R>> {
+		const stringifiedBody = JSON.stringify(body);
+
 		return this.$fetch<R>(path, {
 			method: "DELETE",
 			...config,
+			body: stringifiedBody,
 		});
 	}
 }

@@ -1,34 +1,70 @@
-.folder {
-	display: grid;
-	grid-template-rows: 32px 0fr;
-	padding: 0 8px;
-	flex: 1 1 30%;
-	transition: 0.3s;
-	transform-origin: top;
-}
-
-.folder.open {
-	grid-template-rows: 32px 1fr;
-}
-
 .header {
 	display: flex;
+	gap: 8px;
+	color: rgba(20, 21, 26, 1);
+	font-size: 14px;
 	align-items: center;
-	gap: 4px;
+	font-weight: 500;
 	padding: 6px 8px;
 	cursor: pointer;
-	background: none;
+	transition: background 0.3s ease;
+	border-radius: 10px;
+	width: 100%;
+	min-width: 265px;
 }
 
-.title {
-	font-size: 1.4rem;
-	line-height: 2rem;
+@media screen and (hover: hover) {
+	.header:hover {
+		background-color: rgba(10, 15, 41, 0.04);
+	}
+}
+
+.icon {
+	color: rgb(105, 107, 117);
+	display: grid;
+	place-items: center;
+}
+
+.noContent {
+	color: rgba(10, 15, 41, 0.25);
 	font-weight: 500;
+	font-size: 14px;
 }
 
-.list {
-	list-style: none;
-	border-left: 1px solid rgb(222, 223, 227);
-	margin-left: 18px;
-	overflow: hidden;
+.contentWrapper {
+	padding-left: 18px;
+	padding-right: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+
+.content {
+	border-left: 1px solid #dee0e3;
+	padding-left: 6px;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.fadeEnter {
+	opacity: 0;
+	transform: translateX(-6px);
+}
+.fadeEnterActive {
+	opacity: 1;
+	transform: translateX(0px);
+	transition:
+		opacity 500ms,
+		transform 500ms;
+}
+.fadeExit {
+	opacity: 1;
+	transform: translateX(0);
+}
+.fadeExitActive {
+	opacity: 0;
+	transform: translateX(-6px);
+	transition:
+		opacity 500ms,
+		transform 500ms;
 }

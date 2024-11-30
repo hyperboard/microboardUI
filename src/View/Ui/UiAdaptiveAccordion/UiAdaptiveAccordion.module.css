@@ -1,0 +1,13 @@
+.accordion {
+	display: grid;
+	grid-template-rows: max-content 0fr;
+	transition: grid-template-rows 0.3s ease;
+}
+
+.content {
+	overflow: hidden;
+}
+
+.open {
+	grid-template-rows: max-content 1fr;
+}

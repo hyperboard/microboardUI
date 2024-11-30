@@ -95,7 +95,15 @@ export type IconId =
 	| "BackArrow"
 	| "StrokeChevronDown"
 	| "StrokeChevronUp"
-	| "human";
+	| "human"
+	| "ThreeDots"
+	| "ArrowUp"
+	| "ArrowDown"
+	| "People"
+	| "Crown"
+	| "mark"
+	| "drawingPen"
+	| "Hand";
 
 type Props = {
 	iconName: IconId;

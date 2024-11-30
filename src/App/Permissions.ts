@@ -13,8 +13,11 @@ export class Permissions {
 	checkPermissions(
 		action: Action,
 		resource: Resource,
-		resourceId: string,
+		resourceId: string | null,
 	): boolean {
+		if (resourceId === null) {
+			return false;
+		}
 		if (
 			action === "owns" &&
 			!this.account.isLoggedIn &&
