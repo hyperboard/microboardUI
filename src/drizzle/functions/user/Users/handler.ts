@@ -1,4 +1,4 @@
-import { and, eq, isNotNull } from "drizzle-orm";
+import { and, eq, ilike, isNotNull, sql } from "drizzle-orm";
 import { db } from "drizzle/db";
 import { boardOwner, boardPermissions, boards, userNames, userPasswords, users } from "drizzle/entities";
 import { userAvatars } from "drizzle/entities/userAvatars";
@@ -52,12 +52,36 @@ export async function getUserByEmail(userEmail: string) {
         .select({
             userId: users.id,
             userEmail: users.email,
+            userName: userNames.name,
+            avatar: userAvatars.avatar,
         })
         .from(users)
+        .leftJoin(userAvatars, eq(users.id, userAvatars.userId))
+        .leftJoin(userNames, eq(users.id, userNames.userId))
         .where(eq(users.email, userEmail))
         .limit(1);
 
     return user;
+}
+
+/**
+ * Fucntion to get users info by email
+ */
+export async function getUsersByEmail(userEmail: string = '') {
+    const userRecords = await db
+        .select({
+            id: users.id,
+            email: users.email,
+            name: userNames.name,
+            avatar: userAvatars.avatar,
+        })
+        .from(users)
+        .leftJoin(userAvatars, eq(users.id, userAvatars.userId))
+        .leftJoin(userNames, eq(users.id, userNames.userId))
+        .where(ilike(users.email, `${userEmail}%`))
+        .limit(20);
+
+    return userRecords;
 }
 
 /**
@@ -110,7 +134,7 @@ export async function getUserBoards(userId: number) {
  */
 export async function getAuthorizedUserBoards(userId: number) {
     return await db
-        .select({ boardUUID: boards.boardUUID })
+        .select({ boardUUID: boards.uniqId })
         .from(boards)
         .innerJoin(boardOwner, eq(boards.id, boardOwner.boardId))
         .where(eq(boardOwner.ownerId, userId))
@@ -123,7 +147,7 @@ export async function getAuthorizedUserBoards(userId: number) {
  */
 export async function getCanEditUserBoards(userId: number) {
     return await db
-        .select({ boardUUID: boards.boardUUID, title: boards.boardName, isPublic: boards.isPublic })
+        .select({ boardUUID: boards.uniqId, title: boards.title, isPublic: boards.isPublic })
         .from(boards)
         .innerJoin(boardPermissions, eq(boards.id, boardPermissions.boardId))
         .where(and(eq(boardPermissions.userId, userId), eq(boardPermissions.canEdit, true)))
@@ -136,7 +160,7 @@ export async function getCanEditUserBoards(userId: number) {
  */
 export async function getCanViewUserBoards(userId: number) {
     return await db
-        .select({ boardUUID: boards.boardUUID })
+        .select({ boardUUID: boards.uniqId })
         .from(boards)
         .innerJoin(boardPermissions, eq(boards.id, boardPermissions.boardId))
         .where(and(eq(boardPermissions.userId, userId), eq(boardPermissions.canView, true)))

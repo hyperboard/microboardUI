@@ -5,7 +5,7 @@ import { HttpStatus } from "shared/enums/http-status.enum";
 import winston from "winston";
 import { jwtMiddleware } from "Middlewares/jwt.middleware";
 import { catchAsync } from "shared/lib/catchAsync";
-import { body, param } from "express-validator";
+import { body, param, query } from "express-validator";
 import { Readable } from "stream";
 
 export function getUsersRouter(
@@ -46,44 +46,44 @@ export function getUsersRouter(
             }
 
             response.end();
-        }, logger
+        }
         ));
-    
-        router.patch(
-            "/users/me",
-            jwtMiddleware(logger),
-            body('name').isString().isLength({min: 1}).optional(),
-            catchAsync(async (request, response) => {
-                const { token } = request;
-                const userToken = await token;
-                const userId = parseInt(userToken?.sub);
-                if (!token || userToken === null) {
-                    response
-                        .status(HttpStatus.UNAUTHORIZED)
-                        .json({
-                            status: HttpStatus.UNAUTHORIZED,
-                            message: "Unauthorized",
-                        })
-                        .end();
-                    return;
-                }
-                let user = null;
-                try {
-                    user = await usersService.editUser(userId, request.body.name);
-                    response.json(user).end();
-                } catch (e: HttpException | any) {
-                    response
-                        .status(e.status || HttpStatus.INTERNAL_SERVER_ERROR)
-                        .json({
-                            status: e.status || HttpStatus.INTERNAL_SERVER_ERROR,
-                            message: e.message,
-                        })
-                        .end();
-                }
-    
-                response.end();
-            }, logger
-            ));
+
+    router.patch(
+        "/users/me",
+        jwtMiddleware(logger),
+        body('name').isString().isLength({ min: 1 }).optional(),
+        catchAsync(async (request, response) => {
+            const { token } = request;
+            const userToken = await token;
+            const userId = parseInt(userToken?.sub);
+            if (!token || userToken === null) {
+                response
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .json({
+                        status: HttpStatus.UNAUTHORIZED,
+                        message: "Unauthorized",
+                    })
+                    .end();
+                return;
+            }
+            let user = null;
+            try {
+                user = await usersService.editUser(userId, request.body.name);
+                response.json(user).end();
+            } catch (e: HttpException | any) {
+                response
+                    .status(e.status || HttpStatus.INTERNAL_SERVER_ERROR)
+                    .json({
+                        status: e.status || HttpStatus.INTERNAL_SERVER_ERROR,
+                        message: e.message,
+                    })
+                    .end();
+            }
+
+            response.end();
+        }
+        ));
 
 
     router.post(
@@ -174,7 +174,7 @@ export function getUsersRouter(
                     })
                     .end();
             });
-        }, logger
+        }
         ));
 
     router.get(
@@ -197,7 +197,31 @@ export function getUsersRouter(
             }
 
             response.end();
-        }, logger
+        }
+        ));
+
+    router.get(
+        "/users",
+        query('search').isString().optional(),
+        catchAsync(async (request, response) => {
+            const search = request.query.search;
+            console.log(search, 'searchQuery')
+
+            try {
+                const users = await usersService.getUsers(typeof search === 'string' ? search : undefined);
+                response.json(users).end();
+            } catch (e: HttpException | any) {
+                response
+                    .status(e.status || HttpStatus.INTERNAL_SERVER_ERROR)
+                    .json({
+                        status: e.status || HttpStatus.INTERNAL_SERVER_ERROR,
+                        message: e.message,
+                    })
+                    .end();
+            }
+
+            response.end();
+        }
         ));
 
     return router;

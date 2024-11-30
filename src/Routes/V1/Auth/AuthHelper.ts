@@ -1,7 +1,7 @@
-import { AccessToken } from "Interface";
 import { Config } from "shared/config/config";
 import { createToken } from "Tokens";
 import { Permissions } from "./types";
+import type { AccessToken } from "Interface";
 
 export const REFRESH_TOKEN_EXPIRY = 60 * 60 * 24 * 30; // 30 days
 export const ACCESS_TOKEN_EXPIRY = 1 * 60 * 60; // 1 hour

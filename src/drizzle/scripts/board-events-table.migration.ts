@@ -3,7 +3,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool, PoolClient } from "pg";
 import { boardEvents, boards } from "../entities";
 
-const { DB_USER, DB_PASSWORD, DB_NAME, DB_PORT, DB_HOST } = process.env;
+const { DB_USER, DB_PASSWORD, DB_NAME, DB_PORT } = process.env;
 
 async function verifyBoardMigration(client: PoolClient, boardTable: string) {
     const boardId = parseInt(boardTable.replace("board", ""));

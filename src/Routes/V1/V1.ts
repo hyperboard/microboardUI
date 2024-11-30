@@ -1,23 +1,21 @@
 import express from "express";
-import { getBoardsRouter, Boards } from "Routes/V1/Boards";
-import { getAuthRouter, Auth } from "Routes/V1/Auth";
-import { Users } from "Routes/V1/Users";
-import winston from "winston";
-import { jwtMiddleware } from "Middlewares/jwt.middleware";
-import { getUsersRouter } from "./Users";
-import { Config } from "shared/config/config";
-import { Mailer } from "shared/modules/mailer/mailer";
-import { getMiroRouter } from "./Miro";
-import { createJobsRouter } from "./Jobs";
-import { createTalkRouter } from "./Talk";
-import { WebSocketServer } from "ws";
-import path from "path";
-import { BarrelMediaDAL } from "./MediaTalk/MediaDAL";
-import { getMediaRouter } from "./MediaTalk";
-import { MediaDAL } from "./Media/MediaDAL";
-import { createMediaRouter } from "./Media";
 import fs from "fs";
+import path from "path";
+import { Auth, getAuthRouter } from "Routes/V1/Auth";
+import { Boards, getBoardsRouter } from "Routes/V1/Boards";
+import { getUsersRouter, Users } from "Routes/V1/Users";
+import { Config } from "shared/config/config";
 import { internalError } from "shared/lib/routing";
+import { Mailer } from "shared/modules/mailer/mailer";
+import winston from "winston";
+import { WebSocketServer } from "ws";
+import { createJobsRouter } from "./Jobs";
+import { createMediaRouter } from "./Media";
+import { MediaDAL } from "./Media/MediaDAL";
+import { getMediaRouter } from "./MediaTalk";
+import { BarrelMediaDAL } from "./MediaTalk/MediaDAL";
+import { getMiroRouter } from "./Miro";
+import { createTalkRouter } from "./Talk";
 import { getTemplatesRouter, Templates } from "./Templates";
 import { createHealthRouter } from "./Health";
 import { Redis } from "Redis";
@@ -54,21 +52,32 @@ function createFileRoute(
     });
 }
 
-export function getV1Router(
-    config: Config,
-    mailer: Mailer,
-    boards: Boards,
-    templates: Templates,
-    logger: winston.Logger,
-    auth: Auth,
-    users: Users,
-    media: BarrelMediaDAL | MediaDAL,
-    wss: WebSocketServer,
-    redis: Redis,
-    ai: AI
-): express.Router {
+export function getV1Router({
+    config,
+    mailer,
+    boards,
+    templates,
+    logger,
+    auth,
+    users,
+    media,
+    wss,
+    redis,
+    ai,
+}: {
+    config: Config;
+    mailer: Mailer;
+    boards: Boards;
+    templates: Templates;
+    logger: winston.Logger;
+    auth: Auth;
+    users: Users;
+    media: BarrelMediaDAL | MediaDAL;
+    wss: WebSocketServer;
+    redis: Redis;
+    ai: AI;
+}): express.Router {
     const router = express.Router();
-    const authMiddleware = jwtMiddleware(logger);
     const apiBase = "/api/v1";
     router.use(apiBase, createHealthRouter(logger, redis));
     router.use(apiBase, getAuthRouter(auth, users, logger));

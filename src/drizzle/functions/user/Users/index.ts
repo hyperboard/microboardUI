@@ -12,5 +12,6 @@ export {
 	getCanEditUserBoards,
 	getCanViewUserBoards,
 	getBoardsByUser,
-	updateRefreshToken
+	updateRefreshToken,
+	getUsersByEmail
 } from './handler';

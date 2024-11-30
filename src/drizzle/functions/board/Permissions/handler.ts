@@ -1,7 +1,7 @@
 import { and, eq } from "drizzle-orm";
-import { getBoardId } from "../Boards";
 import { db } from 'drizzle/db';
 import { boardPermissions } from "drizzle/entities";
+import { getBoardId } from "../Boards";
 
 /**
  * Function to add user to the board.

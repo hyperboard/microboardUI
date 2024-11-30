@@ -1,10 +1,11 @@
-import {db} from "../../../db";
-import {templates} from "../../../entities";
-import {and, eq, arrayContains, sql, SQLWrapper} from "drizzle-orm";
-import {createBoardViewLink, getBoardViewLink} from "../Links";
-import {v4 as uuidv4} from "uuid";
-import {getBoardByLink} from "../Boards";
-import {HttpException} from "../../../../shared/exceptions/http-exception";
+import { db } from "../../../db";
+import { templates } from "../../../entities";
+import { and, eq, arrayContains, sql, SQLWrapper } from "drizzle-orm";
+import { v4 as uuidv4 } from "uuid";
+import { getBoardByLink } from "../Boards";
+import { HttpException } from "../../../../shared/exceptions/http-exception";
+import { createAccessKey, getBoardViewLink } from "../AccessKeys";
+import { AccessKeyType } from "../AccessKeys/types";
 
 export async function createTemplate(
     boardUUID: string,
@@ -13,22 +14,22 @@ export async function createTemplate(
     languages: string[],
     tags: string[],
     snapshot: object,
-    preview?: string,
+    preview?: string
 ) {
-    const board = await getBoardByLink(boardUUID)
+    const board = await getBoardByLink(boardUUID);
 
     if (!board) {
         throw new Error(`Could not find board by ${boardUUID} UUID`);
     }
 
-    let viewLink
+    let viewLink: string;
 
-    try {
-        viewLink = await getBoardViewLink(boardUUID)
-    } catch {
-        const linkId = uuidv4()
-        await createBoardViewLink(board.id, linkId)
-        viewLink = linkId
+    const existingViewLink = await getBoardViewLink(boardUUID);
+    if (existingViewLink) {
+        viewLink = existingViewLink;
+    } else {
+        const key = await createAccessKey(board.id, AccessKeyType.VIEW);
+        viewLink = key.keyUUID;
     }
 
     const [insertedRecords] = await db
@@ -41,7 +42,7 @@ export async function createTemplate(
             uniqId: viewLink,
             preview,
             tags,
-            snapshot
+            snapshot,
         })
         .returning()
         .execute();
@@ -51,11 +52,8 @@ export async function createTemplate(
     }
 }
 
-export async function updateTemplateSnapshot(
-    boardUUID: string,
-    snapshot: object,
-) {
-    const board = await getBoardByLink(boardUUID)
+export async function updateTemplateSnapshot(boardUUID: string, snapshot: object) {
+    const board = await getBoardByLink(boardUUID);
 
     if (!board) {
         throw new Error(`Could not find board by ${boardUUID} UUID`);
@@ -73,20 +71,19 @@ export async function updateTemplateSnapshot(
     }
 }
 
-export async function getTemplates(
-    language: string,
-    term?: string,
-    tag?: string
-) {
+export async function getTemplates(language: string, term?: string, tag?: string) {
     const filters: SQLWrapper[] = [];
 
     filters.push(arrayContains(templates.languages, [language]));
     if (term) {
-        filters.push(sql`${templates.name} ->> ${language} ILIKE '%' || ${term} || '%'`)
+        filters.push(sql`${templates.name} ->> ${language} ILIKE '%' || ${term} || '%'`);
     }
     if (tag) {
-        filters.push(arrayContains(templates.tags, [tag]))
+        filters.push(arrayContains(templates.tags, [tag]));
     }
 
-    return db.select().from(templates).where(and(...filters));
+    return db
+        .select()
+        .from(templates)
+        .where(and(...filters));
 }

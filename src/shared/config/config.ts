@@ -1,6 +1,6 @@
-export const environment = {
-    DB_NAME: process.env.DB_NAME,
-} as const;
+// export const environment = {
+//     DB_NAME: process.env.DB_NAME,
+// } as const;
 
 // FIXME: remove or rewrite
 export class Config {

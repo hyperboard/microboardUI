@@ -1,10 +1,10 @@
 import express, { type Response } from "express";
+import { body, validationResult } from "express-validator";
+import { jwtMiddleware } from "Middlewares/jwt.middleware";
+import { HttpStatus } from "shared/enums/http-status.enum";
+import { HttpException } from "shared/exceptions/http-exception";
 import winston from "winston";
 import { Auth } from "./Auth";
-import { body, validationResult } from "express-validator";
-import { HttpException } from "shared/exceptions/http-exception";
-import { HttpStatus } from "shared/enums/http-status.enum";
-import { jwtMiddleware } from "Middlewares/jwt.middleware";
 import { REFRESH_TOKEN_EXPIRY } from "./AuthHelper";
 
 import { catchAsync } from "shared/lib/catchAsync";
@@ -49,7 +49,7 @@ export function getAuthRouter(
             } catch (err: HttpException | any) {
                 return handleError(res, err);
             }
-        }, logger
+        }
         ));
 
     router.post(
@@ -71,7 +71,7 @@ export function getAuthRouter(
                 console.log(err);
                 return handleError(res, err);
             }
-        }, logger)
+        },)
     );
 
     router.post("/auth/refresh", catchAsync(async (req, res) => {
@@ -99,11 +99,11 @@ export function getAuthRouter(
         } catch (err) {
             return handleError(res, err);
         }
-    }, logger));
+    }));
 
     router.post(
         "/auth/verify",
-        body("email").not().isEmpty(),
+        body("email").isEmail().not().isEmpty(),
         body("passcode").not().isEmpty(),
         validateRequest,
         catchAsync(async (req, res) => {
@@ -128,7 +128,7 @@ export function getAuthRouter(
                 console.log(err);
                 return handleError(res, err);
             }
-        }, logger
+        }
         ));
 
     router.post(
@@ -146,7 +146,7 @@ export function getAuthRouter(
             } catch (err) {
                 return handleError(res, err);
             }
-        }, logger)
+        })
     );
 
     router.post(
@@ -162,7 +162,7 @@ export function getAuthRouter(
             } catch (err) {
                 return handleError(res, err);
             }
-        }, logger)
+        })
     );
 
     router.put(
@@ -184,7 +184,7 @@ export function getAuthRouter(
             } catch (err) {
                 return handleError(res, err);
             }
-        }, logger)
+        })
     );
 
     router.post(
@@ -202,7 +202,7 @@ export function getAuthRouter(
             } catch (err) {
                 return handleError(res, err);
             }
-        }, logger)
+        })
     );
 
     router.post(
@@ -218,7 +218,7 @@ export function getAuthRouter(
             } catch (err) {
                 return handleError(res, err);
             }
-        }, logger)
+        })
     );
 
     router.patch(
@@ -250,7 +250,7 @@ export function getAuthRouter(
             } catch (err) {
                 return handleError(res, err);
             }
-        }, logger)
+        })
     );
 
     return router;

@@ -1,11 +1,10 @@
-import { integer, jsonb, pgTable, text, timestamp, uuid, serial} from "drizzle-orm/pg-core";
-import {boards} from "./boards";
-import {boardViewLink} from "./boardLinks";
+import { integer, jsonb, pgTable, text, timestamp, uuid, serial } from "drizzle-orm/pg-core";
+import { boards } from "./boards";
 
 export const templates = pgTable("templates", {
     id: serial("id").primaryKey(),
     uniqId: uuid("uniq_id").notNull(),
-    boardId: integer('board_id').references(() => boards.id, { onDelete: 'cascade' }),
+    boardId: integer("board_id").references(() => boards.id, { onDelete: "cascade" }),
     name: jsonb("name").notNull(),
     description: jsonb("description").notNull(),
     created: timestamp("created").defaultNow(),
