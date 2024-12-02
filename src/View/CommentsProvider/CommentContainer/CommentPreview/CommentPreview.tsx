@@ -1,0 +1,79 @@
+import React from "react";
+import clsx from "clsx";
+import { formatDate, getCorrectEnding } from "utils";
+import { Icon } from "View/Icon/Icon";
+import { Commentator, Message } from "Board/Items/Comment/Comment";
+import styles from "./CommentPreview.module.css";
+import { useTranslation } from "react-i18next";
+import { Avatar } from "View/UserPanel/Avatar/Avatar.tsx";
+
+interface Props {
+	commentators: Commentator[];
+	firstMessage: Message;
+	messagesCount: number;
+	handleClick: () => void;
+}
+
+export const CommentPreview = ({
+	commentators,
+	firstMessage,
+	messagesCount,
+	handleClick,
+}: Props) => {
+	const { t } = useTranslation();
+
+	return (
+		<div onClick={handleClick} className={styles.preview}>
+			<div
+				className={clsx(
+					commentators.length > 1 ? styles.wrap : styles.noWrap,
+				)}
+			>
+				{commentators.length === 1 ? (
+					<Avatar
+						key={commentators[0].username}
+						avatar={commentators[0].avatar}
+						width={32}
+						height={32}
+					/>
+				) : (
+					<div className={styles.avatarsMap}>
+						{commentators.slice(0, 5).map(commentator => {
+							return (
+								<Avatar
+									key={commentator.username}
+									avatar={commentator.avatar}
+									width={32}
+									height={32}
+								/>
+							);
+						})}
+					</div>
+				)}
+				<div>
+					<div className={clsx(styles.noWrap, styles.spaceBetween)}>
+						<p className={styles.username}>
+							{commentators[0].username}
+						</p>
+						<p className={styles.smallText}>
+							{formatDate(new Date(firstMessage.date))}
+						</p>
+					</div>
+					<p className={styles.message}>{firstMessage.text}</p>
+				</div>
+			</div>
+			<Icon
+				width={18}
+				height={8}
+				iconName={"CommentTippy"}
+				className={styles.commentTippy}
+			/>
+			{!!messagesCount && (
+				<p className={clsx(styles.smallText, styles.fullWidth)}>
+					{messagesCount}{" "}
+					{t(`comment.answer.${getCorrectEnding(messagesCount)}`)}
+				</p>
+			)}
+		</div>
+	);
+};

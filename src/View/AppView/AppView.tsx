@@ -33,6 +33,8 @@ import { UiModalBackground, UiModalContextProvider } from "View/Ui/UiModal";
 import { UserTracking } from "View/Presence/UserTracking/UserTracking";
 import { ProfileSettingsModal } from "View/ProfileSettingsModal";
 import { ChangePasswordModal } from "View/ChangePasswordModal";
+import { CommentsContextProvider, CommentsProvider } from "../CommentsProvider";
+import { BoardMenu } from "../BoardMenu/BoardMenu";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -159,7 +161,11 @@ export function AppView(): JSX.Element {
 					<ItemTooltip />
 				</ExportVisible>
 				<ExportVisible>
-					<UserPanelLayout app={app} />
+					<CommentsContextProvider>
+						<UserPanelLayout app={app} />
+						<CommentsProvider />
+						<BoardMenu />
+					</CommentsContextProvider>
 				</ExportVisible>
 				<ExportVisible>
 					<UserTracking board={board} />

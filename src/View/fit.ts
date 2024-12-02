@@ -124,6 +124,7 @@ export function fitOnLeftOrRightOfItem(
 		fit.top = view.bottom - (offset + height);
 	}
 
+
 	return fit;
 }
 
@@ -145,6 +146,79 @@ export function fitLinkToBtn(
 	const panelWidth = panel.getWidth();
 
 	newPanel.left = itemMbr.right - panelWidth + horizontalOffset;
+
+	return newPanel;
+}
+
+export function fitComment(
+	anchor: Mbr,
+	panel: Mbr,
+	verticalOffset = 0,
+	horizontalOffset = 0,
+): Mbr {
+	const panelHeight = panel.getHeight();
+	const newPanel = new Mbr();
+	newPanel.top = anchor.top - panelHeight - verticalOffset;
+	newPanel.bottom = newPanel.top + panelHeight;
+	const panelWidth = panel.getWidth();
+	newPanel.left = anchor.left - panelWidth / 2 - horizontalOffset;
+	newPanel.right = newPanel.left + panelWidth;
+
+	return newPanel;
+}
+
+export function fitBoardMenu(
+	anchor: Mbr,
+	view: Mbr,
+	panel: Mbr,
+	verticalOffset = 20,
+	horizontalOffset = 20,
+): Mbr {
+	const panelHeight = panel.getHeight();
+	const panelWidth = panel.getWidth();
+	const newPanel = new Mbr();
+	newPanel.top = anchor.top;
+	newPanel.bottom = newPanel.top + panelHeight;
+	if (newPanel.bottom > view.bottom - verticalOffset) {
+		newPanel.bottom = view.bottom - verticalOffset;
+		newPanel.top = newPanel.bottom - panelHeight;
+	}
+
+	newPanel.left = anchor.left;
+	newPanel.right = newPanel.left + panelWidth;
+	if (newPanel.right > view.right - horizontalOffset) {
+		newPanel.right = view.right - horizontalOffset;
+		newPanel.left = newPanel.right - panelWidth;
+	}
+
+	return newPanel;
+}
+
+export function fitThreadPanel(
+	anchor: Mbr,
+	view: Mbr,
+	panel: Mbr,
+	verticalOffset = 50,
+	horizontalOffset = 50,
+): Mbr {
+	const panelHeight = panel.getHeight();
+	const panelWidth = panel.getWidth();
+	const newPanel = new Mbr();
+	newPanel.top = anchor.top - panelHeight / 2;
+	if (newPanel.top < view.top + verticalOffset) {
+		newPanel.top = view.top + verticalOffset;
+	}
+	newPanel.bottom = newPanel.top + panelHeight;
+	if (newPanel.bottom > view.bottom - verticalOffset) {
+		newPanel.bottom = view.bottom - verticalOffset;
+		newPanel.top = newPanel.bottom - panelHeight;
+	}
+	newPanel.left = anchor.left;
+	newPanel.right = newPanel.left + panelWidth;
+	if (newPanel.right > view.right - horizontalOffset) {
+		newPanel.right = anchor.right;
+		newPanel.left = newPanel.right - panelWidth;
+	}
 
 	return newPanel;
 }

@@ -31,6 +31,18 @@ import { useUiModalContext } from "View/Ui/UiModal";
 import { UiPanel } from "View/Ui/UiPanel";
 import { PasswordChanged } from "View/Widgets/form-notifications/password-changed";
 import styles from "./UserPanel.module.css";
+import { useAppContext } from "View/AppContext";
+import { PresenceUsers } from "View/Presence/PresenceUsers/PresenceUsers";
+import { shouldShow } from "lib/queryStringParser";
+import { AddComment } from "./Buttons/AddComment/AddComment.tsx";
+import { getEmailPrefix } from "lib/getEmailPrefix";
+import { App } from "App";
+import {
+	CommentsPanelContextProvider,
+	useCommentsPanelContext,
+} from "View/UserPanel/CommentsPanel/CommentsPanelContext";
+import { CommentsPanel } from "View/UserPanel/CommentsPanel/CommentsPanel";
+import { useCommentsContext } from "View/CommentsProvider/CommentsContext";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	email?: string;
@@ -137,6 +149,7 @@ type TUserPicProps = UserPicProps &
 // TODO each file for each component
 const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 	const { board } = useAppContext();
+	const { setIsPanelOpen } = useCommentsPanelContext();
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const userPanelRef = useRef<HTMLDivElement>(null);
 	const account = useAccount();
@@ -164,8 +177,10 @@ const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 					event.stopPropagation();
 					if (!isDropdownOpen) {
 						setIsDropdownOpen(true);
+						setIsPanelOpen(false);
 					} else {
 						setIsDropdownOpen(false);
+						setIsPanelOpen(false);
 					}
 				}}
 			>
@@ -587,8 +602,8 @@ export const UserPanel: React.FC = () => {
 	}
 
 	return (
-		<>
-			<UiPanel padding={0} className={styles.wrapper}>
+		<CommentsPanelContextProvider>
+			<UiPanel zIndex={10} padding={0} className={styles.wrapper}>
 				{/* <div className={styles.icons}>
 					<button className={styles.icon}>
 						<Click />
@@ -606,6 +621,7 @@ export const UserPanel: React.FC = () => {
 				</Button> */}
 
 				{/* TODO: remove temporarily inline style */}
+				{(account.info?.name || account.info?.email) && <AddComment />}
 				<div className={styles.container}>
 					<ShareBtn />
 					<UserPic
@@ -620,9 +636,10 @@ export const UserPanel: React.FC = () => {
 					/>
 				</div>
 			</UiPanel>
+			<CommentsPanel />
 
 			<Modal isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
-		</>
+		</CommentsPanelContextProvider>
 	);
 };
 

@@ -1,0 +1,63 @@
+.message {
+	width: 100%;
+	color: #14151a;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	margin-top: 16px;
+}
+
+.shortedMessage {
+	margin-top: 6px;
+	gap: 0;
+}
+
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.headerInfo {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+.username {
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 20px;
+	letter-spacing: -0.005em;
+}
+
+.date {
+	font-size: 12px;
+	font-weight: 500;
+	line-height: 16px;
+	color: #0f132499;
+}
+
+.text {
+	font-size: 18px;
+	font-weight: 500;
+	line-height: 26px;
+	letter-spacing: -0.012em;
+	word-break: break-word;
+}
+
+.dotsBtn {
+	max-width: 20px;
+	max-height: 20px;
+	min-width: 20px;
+	min-height: 20px;
+	padding: 0;
+}
+
+.invisible {
+	opacity: 0;
+}
+
+.visible {
+	opacity: 1;
+}

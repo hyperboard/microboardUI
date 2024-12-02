@@ -225,6 +225,52 @@
 			"close": "Close board list"
 		}
 	},
+	"userPanel": {
+		"comment": "Comment"
+	},
+	"boardMenu": {
+		"showResolved": "Show Resolved",
+		"hideResolved": "Hide Resolved",
+		"resolveAll": "Resolve all comments"
+	},
+	"comment": {
+		"create": "Add a comment",
+		"closeThread": "Close thread",
+		"openThread": "Open thread",
+		"reply": "Leave a reply",
+		"edit": "Edit comment",
+		"answer": {
+			"one": "Answer",
+			"few": "Answers",
+			"many": "Answers"
+		},
+		"panel": {
+			"title": "Comments",
+			"showComments": {
+				"all": "All comments",
+				"replies": "Replies"
+			},
+			"showResolved": "Show Resolved",
+			"showCommentsOnBoard": "Show comments on board",
+			"groupComments": "Group comments",
+			"markAllAsRead": "Mark all as read",
+			"card": {
+				"hideComments": "Hide comments",
+				"showNew": "Show {{count}}",
+				"showMore": "Show {{count}} more",
+				"comments": {
+					"one": "comment",
+					"few": "comments",
+					"many": "comments"
+				},
+				"new": {
+					"one": "new",
+					"few": "new",
+					"many": "new"
+				}
+			}
+		}
+	},
 	"auth": {
 		"name": "Name",
 		"nameDesc": "It is displayed during your work on the board",

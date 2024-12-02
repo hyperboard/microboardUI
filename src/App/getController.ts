@@ -252,7 +252,7 @@ export function getController(
 		if (!board) {
 			return false;
 		}
-
+		board.isBoardMenuOpen = false;
 		const { tools, camera, selection } = board;
 		const transformerTool = selection.tool;
 		camera.saveDownEvent(event);
@@ -358,6 +358,7 @@ export function getController(
 		if (!board) {
 			return false;
 		}
+		board.isBoardMenuOpen = false;
 		const { tools, selection, camera } = board;
 		camera.removeDownEvent(event);
 		if (isSafari()) {
@@ -401,6 +402,7 @@ export function getController(
 				case 1:
 					return tools.middleButtonUp();
 				case 2:
+					board.isBoardMenuOpen = true;
 					return tools.rightButtonUp();
 				default:
 					return tools.leftButtonUp();
@@ -420,6 +422,7 @@ export function getController(
 		if (!board) {
 			return false;
 		}
+		board.isBoardMenuOpen = false;
 		const { tools, selection } = board;
 		const transformerTool = selection.tool;
 		switch (event.button) {

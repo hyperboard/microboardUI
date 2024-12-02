@@ -1,0 +1,59 @@
+import { useAppContext } from "View/AppContext";
+import { Icon } from "View/Icon/index";
+import { UiButton } from "View/Ui/UiButton/index";
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { useForceUpdate } from "lib/useForceUpdate";
+import { useAppSubscription } from "Board/useBoardSubscription";
+import { useCommentsPanelContext } from "View/UserPanel/CommentsPanel/CommentsPanelContext";
+import styles from "./AddComment.module.css";
+
+export function AddComment() {
+	const { board, app } = useAppContext();
+	const { t } = useTranslation();
+	const { setIsPanelOpen } = useCommentsPanelContext();
+	const isActive = Boolean(board.tools.getAddComment());
+
+	const forceUpdate = useForceUpdate();
+	useAppSubscription(app, {
+		subjects: ["tools", "items"],
+		observer: forceUpdate,
+	});
+
+	const username = app.account.info?.name || app.account.info?.email;
+
+	let showBadge = !!username;
+	if (username) {
+		showBadge = board.items.getComments().some(comment => {
+			return (
+				comment.getIsThreadMarkedAsUnread(username) ||
+				comment.getUnreadMessages(username)
+			);
+		});
+	}
+
+	const handleClick = () => {
+		if (isActive) {
+			setIsPanelOpen(false);
+		} else {
+			setIsPanelOpen(true);
+		}
+		board.tools.addComment(true);
+	};
+
+	return (
+		<UiButton
+			className={styles.btn}
+			id={"tool-add-comment"}
+			tooltipPosition={"bottom"}
+			tooltip={isActive ? undefined : t("userPanel.comment")}
+			onClick={handleClick}
+			active={isActive}
+			variant="secondary"
+			rounded="left"
+		>
+			<Icon iconName="Comment" width={20} height={20} />
+			{showBadge && <div className={styles.badge}></div>}
+		</UiButton>
+	);
+}

@@ -94,8 +94,24 @@
 	margin-right: 8px;
 }
 
+.InputPostfix {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
 .InputWrapper .Eye {
 	cursor: pointer;
 	width: 20px;
+	height: 20px;
+}
+
+.textarea {
+	font-family: "Manrope", Arial;
+	outline: none;
+	font-size: 14px;
+	width: 100%;
+	resize: none;
+	overflow: hidden;
 	height: 20px;
 }

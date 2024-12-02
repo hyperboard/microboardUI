@@ -1,0 +1,55 @@
+.messageInfo {
+	gap: 12px;
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.wrap {
+	gap: 12px;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.username {
+	font-family: Manrope;
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 24px;
+	letter-spacing: -0.01em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 132px;
+}
+
+.smallText {
+	font-family: Manrope;
+	font-weight: 500;
+	font-size: 14px;
+	line-height: 20px;
+	word-break: break-word;
+}
+
+.clipText {
+	max-height: 60px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+}
+
+.date {
+	white-space: nowrap;
+	color: #0f132499;
+}
+
+.message {
+	display: flex;
+	gap: 8px;
+}
+
+.fullWidth {
+	width: 100%;
+}

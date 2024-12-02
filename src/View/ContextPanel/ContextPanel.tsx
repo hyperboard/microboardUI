@@ -119,6 +119,7 @@ export function ContextPanel() {
 					left: mbr.left,
 					top: mbr.top,
 				}}
+				zIndex={3}
 				ref={panelRef}
 				padding={0}
 				id="ContextPanel"

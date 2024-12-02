@@ -80,6 +80,12 @@ export type IconId =
 	| "BoxedPlus"
 	| "SignIn"
 	| "Info"
+	| "SendArrow"
+	| "CommentTippy"
+	| "Comment"
+	| "ArrowClock"
+	| "MarkAsUnreadComment"
+	| "MarkAsReadComment"
 	| "linkTo"
 	| "AllTemplates"
 	| "ResearchAnalysis"
@@ -103,7 +109,8 @@ export type IconId =
 	| "Crown"
 	| "mark"
 	| "drawingPen"
-	| "Hand";
+	| "Hand"
+	| "GearStroke";
 
 type Props = {
 	iconName: IconId;
