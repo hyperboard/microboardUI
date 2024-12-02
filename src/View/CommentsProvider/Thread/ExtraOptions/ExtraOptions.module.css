@@ -1,0 +1,33 @@
+.container {
+	position: relative;
+}
+
+.panelContainer {
+	width: 150px;
+	position: absolute;
+	top: 100%;
+	padding-top: 8px;
+	z-index: 3;
+}
+
+.panel {
+	width: 100%;
+	padding: 4px !important;
+}
+
+.btn {
+	display: flex;
+	align-items: center;
+	padding: 6px;
+	gap: 6px;
+	background-color: #ffffff;
+	border-radius: 6px;
+	width: 100%;
+	border: none;
+	outline: none;
+	cursor: pointer;
+}
+
+.btn:hover {
+	background-color: #f7f7f8;
+}

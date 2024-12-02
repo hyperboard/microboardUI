@@ -1,0 +1,63 @@
+.submitBtn {
+	min-width: 20px;
+	min-height: 20px;
+	padding: 0;
+	margin-left: 10px;
+	background: none;
+}
+
+.submitBtnWrapper {
+	position: relative;
+}
+
+.submitBtnSeparator {
+	position: absolute;
+	height: 40px;
+	top: -10px;
+}
+
+.wrapper {
+	width: 100%;
+}
+
+.InputContainer {
+	border: none;
+	border-radius: 0;
+	box-shadow: none;
+	background-color: #0A0F290A;
+}
+
+.InputContainer:focus-within {
+	outline: none;
+	border: none;
+}
+
+.editModeButtons {
+	display: flex;
+	justify-content: space-between;
+}
+
+.editModeButtons > div {
+	display: flex;
+	gap: 12px;
+}
+
+.editModeButtons button {
+	border: none;
+	outline: none;
+	background: none;
+	font-family: Manrope;
+	font-size: 16px;
+	font-weight: 500;
+	line-height: 24px;
+	color: #14151A;
+	cursor: pointer;
+}
+
+.saveBtn {
+	color: #4778F5 !important;
+}
+
+.deleteBtn {
+	color: #E6483D !important;
+}

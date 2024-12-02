@@ -16,10 +16,13 @@ interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
 	postTab?: string;
 	prefixIcon?: React.ReactNode;
 	iconColor?: string;
+	postfixButton?: React.ReactNode;
 	postfix?: string;
 	keyhint?: string;
 	password?: boolean;
 	hasError?: boolean;
+	multiline?: boolean;
+	inputContainerClassName?: string;
 	shouldFocus?: boolean;
 }
 
@@ -36,6 +39,9 @@ export const Input: React.FC<Props> = ({
 	isSuccess,
 	hasError,
 	iconColor,
+	postfixButton,
+	multiline = false,
+	inputContainerClassName,
 	shouldFocus,
 	successText,
 	...props
@@ -47,16 +53,34 @@ export const Input: React.FC<Props> = ({
 		return type || "text";
 	});
 	const inputRef = useRef<HTMLInputElement>(null);
+	const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-	const togglePassword = (): void => {
-		setInputType(inputType === "text" ? "password" : "text");
+	const handleInput = () => {
+		if (
+			textareaRef.current &&
+			textareaRef.current.textLength >=
+				Number(textareaRef.current.style.width)
+		) {
+			textareaRef.current.style.height = "auto";
+			textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+		}
 	};
+
+	useEffect(() => {
+		if (multiline) {
+			handleInput();
+		}
+	}, [textareaRef.current?.textLength === 0]);
 
 	useEffect(() => {
 		if (shouldFocus && inputRef.current) {
 			inputRef.current.focus();
 		}
 	}, []);
+
+	const togglePassword = (): void => {
+		setInputType(inputType === "text" ? "password" : "text");
+	};
 
 	return (
 		<div className="InputWrapper">
@@ -72,6 +96,7 @@ export const Input: React.FC<Props> = ({
 						"InputContainer",
 						hasError && "InputError",
 						isSuccess && "InputSuccess",
+						inputContainerClassName,
 					)}
 				>
 					{prefixIcon && (
@@ -82,14 +107,30 @@ export const Input: React.FC<Props> = ({
 							{prefixIcon}
 						</span>
 					)}
-					<input
-						ref={inputRef}
-						onPaste={e => e.stopPropagation()}
-						onCopy={e => e.stopPropagation()}
-						id={id}
-						type={inputType}
-						{...props}
-					/>
+					{multiline ? (
+						<textarea
+							ref={textareaRef}
+							className="textarea"
+							id={id}
+							rows={1}
+							{...props}
+							onInput={() => {
+								handleInput();
+								if (props.onInput) {
+									props.onInput();
+								}
+							}}
+						/>
+					) : (
+						<input
+							ref={inputRef}
+							onPaste={e => e.stopPropagation()}
+							onCopy={e => e.stopPropagation()}
+							id={id}
+							type={inputType}
+							{...props}
+						/>
+					)}
 					{password && inputType === "text" && (
 						<div className="Eye">
 							<EyeClose onClick={togglePassword} />
@@ -99,6 +140,9 @@ export const Input: React.FC<Props> = ({
 						<div className="Eye">
 							<EyeOpen onClick={togglePassword} />
 						</div>
+					)}
+					{postfixButton && (
+						<span className="InputPostfix">{postfixButton}</span>
 					)}
 					{keyhint && <div className="InputKeyHint">{keyhint}</div>}
 				</div>

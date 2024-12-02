@@ -1,0 +1,21 @@
+.panel {
+	width: 150px;
+	position: absolute;
+	padding: 4px !important;
+}
+
+.btn {
+	display: flex;
+	align-items: center;
+	padding: 6px;
+	background-color: #ffffff;
+	border-radius: 6px;
+	width: 100%;
+	border: none;
+	outline: none;
+	cursor: pointer;
+}
+
+.btn:hover {
+	background-color: #f7f7f8;
+}

@@ -102,7 +102,6 @@ export const UiDivButton = forwardRef<
 			children,
 			className,
 			active = false,
-			disabled = false,
 			tooltip,
 			tooltipPosition = "right",
 			hotkey,
