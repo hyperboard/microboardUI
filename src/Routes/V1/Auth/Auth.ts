@@ -18,11 +18,12 @@ import {
 } from "./types";
 import { verifyToken } from "Tokens";
 import * as crypto from "crypto";
+import type { Users } from "../Users";
 
 export class Auth {
     private authHelper: AuthHelper;
 
-    constructor(private logger: winston.Logger, private config: Config, private mailer: Mailer) {
+    constructor(private logger: winston.Logger, private userService: Users, private config: Config, private mailer: Mailer) {
         this.authHelper = new AuthHelper(this.config);
     }
 
@@ -52,7 +53,10 @@ export class Auth {
         const refreshTokenHash = await bcrypt.hash(refreshToken, salt);
 
         this.trySaveToken(user.id, refreshTokenHash);
+        if (user.avatarGenerated) {
+            await this.userService.uploadAvatar(user.id);
 
+        }
         return {
             userId: user.id,
             accessToken,

@@ -118,8 +118,11 @@ export async function getApp(): Promise<http.Server> {
     const boardsService = new BoardsService(db, logger);
     const foldersService = new FoldersService(db, boardsService);
     withWebSocketApi({ wss, boards, accessKeysService, logger, redis, boardsService });
-    const auth = new Auth(logger, config, mailer);
+    const media = createMinioMediaDAL(logger);
+    const users = new Users(media, logger);
+    const auth = new Auth(logger, users, config, mailer);
     const ai = new AI(openai);
+
 
     app.get("/", (request, response) => {
         response.status(200).json({});
@@ -130,8 +133,6 @@ export async function getApp(): Promise<http.Server> {
         response.status(200).json({ connection: timestamp });
     });
 
-    const media = createMinioMediaDAL(logger);
-    const users = new Users(media, logger);
 
     const v1Router = getV1Router({
         config,

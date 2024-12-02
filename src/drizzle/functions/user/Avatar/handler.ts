@@ -6,18 +6,18 @@ import { userAvatars } from "drizzle/entities/userAvatars";
 /**
  * Function to add username.
  */
-export async function addAvatar(userId: number, avatar: string) {
+export async function addAvatar(userId: number, avatar: string, generated = false) {
   await db.insert(userAvatars)
     .values({ userId, avatar })
     .onConflictDoUpdate({
       target: userAvatars.userId,
-      set: { avatar }
+      set: { avatar, generated }
     })
     .execute();
 }
 
 /**
- * Function to change username.
+ * Function to change avatar.
  */
 export async function changeAvatar(userId: number, avatar: string) {
   await db.update(userAvatars)

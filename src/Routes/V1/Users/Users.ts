@@ -21,7 +21,7 @@ export class Users {
 
     async getUser(
         userId: number
-    ): Promise<{ id: number; email: string, name: string, avatar: string } | null> {
+    ): Promise<{ id: number; email: string, name: string, avatar: string, avatarGenerated: boolean } | null> {
         const user = await Drizzle.getUser(userId);
 
         if (!user) {
@@ -29,24 +29,34 @@ export class Users {
             throw new HttpException(HttpStatus.NOT_FOUND, "User not found");
         }
 
-        return { id: user.userId, email: user.userEmail!, name: user.userName!, avatar: user.avatar! };
+        return { id: user.userId, email: user.userEmail!, name: user.userName!, avatar: user.avatar!, avatarGenerated: user.avatarGenerated ?? true };
     }
 
     async editUser(userId: number, name: string) {
         await Drizzle.changeUsername(userId, name);
     }
 
-    async uploadAvatar(userId: number, avatar?: internal.Readable, type?: string, ext: string = 'svg') {
-        const id = `${userId}-avatar.${ext}`;
+    async uploadAvatar(userId: number, avatar?: internal.Readable, type?: string) {
+        const id = `${userId}-avatar${avatar ? '' : '.svg'}`;
         const src = `${process.env.STORAGE_URL}/${id}`
+        let generated = false;
+        const user = await Drizzle.getUser(userId);
+        if (!user) {
+            return;
+        }
 
         if (!avatar) {
+            generated = true;
             const generatedAvatar = this.generateAvatar();
             await minioClient?.putObject(BUCKET_NAME, id, generatedAvatar, undefined, { 'content-type': 'image/svg+xml' })
-        } else {
-            await minioClient?.putObject(BUCKET_NAME, id, avatar, undefined, { 'content-type': type })
+            await Drizzle.addAvatar(userId, src, generated)
         }
-        await Drizzle.addAvatar(userId, src)
+
+        if (avatar) {
+            await minioClient?.putObject(BUCKET_NAME, id, avatar, undefined, { 'content-type': type })
+            await Drizzle.addAvatar(userId, src, generated)
+        }
+
         return { avatar: id }
     }
 

@@ -180,7 +180,6 @@ export function withWebSocketApi({
             const boardId = msg.boardId;
             const canView = await canViewBoard(ws, msg.boardId);
             const canEdit = await canEditBoard(ws, msg.boardId);
-            console.log("handleSubscribe", canEdit, canView);
 
             if (canEdit || canView) {
                 await subscribeClientToBoard(ws, boardId);

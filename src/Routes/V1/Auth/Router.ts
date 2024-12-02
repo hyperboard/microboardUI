@@ -43,7 +43,6 @@ export function getAuthRouter(
                         message: "Unauthorized",
                     });
                 }
-                await userService.uploadAvatar(jwts.userId);
                 setCookies(res, jwts.refreshToken);
                 return res.json({ refreshToken: jwts.refreshToken, accessToken: jwts.accessToken });
             } catch (err: HttpException | any) {

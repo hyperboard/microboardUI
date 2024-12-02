@@ -43,6 +43,13 @@
       "when": 1732997561992,
       "tag": "0005_open_boomer",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1733118470720,
+      "tag": "0006_skinny_nova",
+      "breakpoints": true
     }
   ]
 }

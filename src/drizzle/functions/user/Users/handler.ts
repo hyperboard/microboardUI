@@ -34,6 +34,7 @@ export async function getUser(userId: number) {
             userEmail: users.email,
             userName: userNames.name,
             avatar: userAvatars.avatar,
+            avatarGenerated: userAvatars.generated
         })
         .from(users)
         .leftJoin(userAvatars, eq(users.id, userAvatars.userId))
@@ -94,9 +95,11 @@ export async function getUserAuthInfo(userEmail: string) {
             email: users.email,
             activated: users.activated,
             password: userPasswords.password,
+            avatarGenerated: userAvatars.generated,
         })
         .from(users)
         .leftJoin(userPasswords, eq(users.id, userPasswords.userId))
+        .leftJoin(userAvatars, eq(users.id, userAvatars.userId))
         .where(eq(users.email, userEmail))
         .execute();
 
