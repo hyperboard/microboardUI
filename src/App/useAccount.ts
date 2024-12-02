@@ -10,7 +10,7 @@ export function useAccount() {
 		app.account.subject.subscribe(forceUpdate);
 
 		return () => {
-			app.account.subject.subscribe(forceUpdate);
+			app.account.subject.unsubscribe(forceUpdate);
 		};
 	}, []);
 

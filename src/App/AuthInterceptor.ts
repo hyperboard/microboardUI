@@ -13,6 +13,7 @@ export function getAuthInterceptor(account: Account) {
 
 		config.headers = {
 			Authorization: `Bearer ${account.accessToken}`,
+			...config.headers,
 		};
 
 		return config;

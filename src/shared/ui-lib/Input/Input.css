@@ -32,6 +32,11 @@
 	color: #e6483d;
 }
 
+.InputWrapper .InputSuccessText {
+	font-size: 14px;
+	color: rgba(38, 189, 108, 1);
+}
+
 .InputContainer {
 	display: flex;
 	border: 1px solid #dee0e3;
@@ -51,7 +56,12 @@
 	width: 100%;
 }
 
-.InputContainer:focus-within {
+.InputContainer.InputSuccess {
+	border: 1px solid rgba(38, 189, 108, 1);
+	outline: none;
+}
+
+.InputContainer:focus-within:not(.InputSuccess) {
 	outline: 2px solid rgba(200, 178, 255, 0.5);
 	border: 1px solid #b78af0;
 }
@@ -60,7 +70,7 @@
 	font-family: "Manrope", Arial;
 }
 
-.InputContainer input:focus {
+.InputContainer input:focus:not(.InputSuccess) {
 	border-color: #b78af0;
 }
 

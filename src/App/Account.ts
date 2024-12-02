@@ -1,4 +1,5 @@
 import { jwtDecode } from "jwt-decode";
+import { getEmailPrefix } from "lib/getEmailPrefix";
 import { authApi, usersApi } from "shared/api";
 import { Subject } from "Subject";
 import { Connection } from "./Connection";
@@ -10,6 +11,7 @@ type AccountInfo = {
 	email: string;
 	name: string;
 	avatar: string;
+	avatarGenerated: boolean;
 };
 
 type TokenData = {
@@ -78,8 +80,21 @@ export class Account {
 	async fetchAccountInfo(): Promise<void> {
 		const { data } = await usersApi.getMe();
 
-		this.info = data;
+		this.info = {
+			...data,
+			name: data?.name || getEmailPrefix(data?.email ?? "", "Anonymous"),
+		};
 		this.subject.publish(this.info);
+	}
+
+	async uploadAvatar(avatar: File) {
+		await usersApi.uploadAvatar(avatar);
+		await this.fetchAccountInfo();
+	}
+
+	async removeAvatar() {
+		await usersApi.removeAvatar();
+		await this.fetchAccountInfo();
 	}
 
 	async login(email: string, password: string): Promise<void> {
@@ -155,6 +170,11 @@ export class Account {
 
 	async restorePassword(token: string, newPassword: string) {
 		await authApi.restorePassword({ token, newPassword });
+	}
+
+	async changeInfo(payload: usersApi.UpdateUserPayload) {
+		await usersApi.updateMe(payload);
+		await this.fetchAccountInfo();
 	}
 
 	setOnLogout(cb: () => Promise<void>) {

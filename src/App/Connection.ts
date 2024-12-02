@@ -46,6 +46,7 @@ export interface SubscribeMsg {
 	boardId: string;
 	userId: string;
 	index: number;
+	accessKey?: string;
 }
 
 export interface SubscribeConfirmationMsg {
@@ -201,6 +202,7 @@ export interface Connection {
 		boardId: string,
 		callback: (serverMessage: EventsMsg) => void,
 		getLastOrder: () => number,
+		accessKey?: string,
 	): void;
 	unsubscribe(
 		boardId: string,
@@ -382,6 +384,7 @@ export function createConnection(
 		boardId: string,
 		callback: (serverMessage: EventsMsg) => void,
 		getLastOrder: () => number,
+		accessKey?: string,
 	): void {
 		const subject = subscriptions.get(boardId);
 		if (subject) {
@@ -424,6 +427,7 @@ export function createConnection(
 				boardId,
 				index: getLastOrder(),
 				userId: generatedClientId,
+				accessKey,
 			});
 		}
 

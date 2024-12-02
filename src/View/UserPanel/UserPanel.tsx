@@ -16,7 +16,13 @@ import { Input } from "shared/ui-lib/Input";
 import { Tail } from "View/AuthView/Tail";
 import { Icon } from "View/Icon";
 // import { useShareModal } from "View/ShareModal";
+import { App } from "App";
+import { getEmailPrefix } from "lib/getEmailPrefix";
+import { shouldShow } from "lib/queryStringParser";
+import { useAppContext } from "View/AppContext";
 import { useContextMenuContext } from "View/ContextMenu";
+import { PresenceUsers } from "View/Presence/PresenceUsers/PresenceUsers";
+import { PROFILE_SETTINGS_MODAL_ID } from "View/ProfileSettingsModal";
 import { SHARE_MODAL_ID } from "View/ShareModal/ShareModal";
 import { LockIcon } from "View/SignupView/LockIcon";
 import { UiButton } from "View/Ui/UiButton";
@@ -24,14 +30,7 @@ import { UiLink } from "View/Ui/UiLink";
 import { useUiModalContext } from "View/Ui/UiModal";
 import { UiPanel } from "View/Ui/UiPanel";
 import { PasswordChanged } from "View/Widgets/form-notifications/password-changed";
-import { ChangePassword } from "./icons/ChangePassword";
-import { Logout } from "./icons/Logout";
 import styles from "./UserPanel.module.css";
-import { useAppContext } from "View/AppContext";
-import { PresenceUsers } from "View/Presence/PresenceUsers/PresenceUsers";
-import { shouldShow } from "lib/queryStringParser";
-import { getEmailPrefix } from "lib/getEmailPrefix";
-import { App } from "App";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	email?: string;
@@ -71,7 +70,8 @@ export const UserDropDown: React.FC<UserDropDownProps> = ({
 		>
 			{email && (
 				<div className={styles.userInfo}>
-					<p className={styles.userEmail}>{email}</p>
+					<UserAvatar width={40} height={40} />
+					<p className={styles.userName}>{email}</p>
 				</div>
 			)}
 			<div className={styles.dropdownBtns}>
@@ -85,6 +85,40 @@ export const UserDropDown: React.FC<UserDropDownProps> = ({
 					);
 				})}
 			</div>
+		</div>
+	);
+};
+
+type UserAvatarProps = {
+	isOwner?: boolean;
+	width?: number;
+	height?: number;
+};
+
+export const UserAvatar = ({
+	isOwner = false,
+	width,
+	height,
+}: UserAvatarProps) => {
+	const account = useAccount();
+	return (
+		<div
+			style={{ width, height }}
+			className={clsx(styles.userPic, isOwner && styles.owner)}
+		>
+			{account.info?.avatar ? (
+				<img width={width} height={height} src={account.info?.avatar} />
+			) : (
+				<Icon iconName="UserPic" width={12} height={15} />
+			)}
+			{isOwner && (
+				<Icon
+					className={styles.crown}
+					iconName="Crown"
+					width={12}
+					height={12}
+				/>
+			)}
 		</div>
 	);
 };
@@ -105,14 +139,20 @@ const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 	const { board } = useAppContext();
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const userPanelRef = useRef<HTMLDivElement>(null);
-	const navigate = useNavigate();
 	const account = useAccount();
+	const { openModal } = useUiModalContext();
 	const boardId = board.getBoardId();
 	const isOwner = account.permissions.checkPermissions(
 		"owns",
 		"boards",
 		boardId,
 	);
+
+	const handleOpenProfileSettings: MouseEventHandler = ev => {
+		ev.preventDefault();
+		ev.stopPropagation();
+		openModal(PROFILE_SETTINGS_MODAL_ID);
+	};
 
 	return (
 		<>
@@ -129,21 +169,7 @@ const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 					}
 				}}
 			>
-				<div className={clsx(styles.userPic, isOwner && styles.owner)}>
-					{account.info?.avatar ? (
-						<img src={account.info?.avatar} />
-					) : (
-						<Icon iconName="UserPic" width={12} height={15} />
-					)}
-					{isOwner && (
-						<Icon
-							className={styles.crown}
-							iconName="Crown"
-							width={12}
-							height={12}
-						/>
-					)}
-				</div>
+				<UserAvatar isOwner={isOwner} />
 			</div>
 			<UserDropDown
 				openerRef={userPanelRef}
@@ -154,24 +180,11 @@ const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 					<Button
 						type="button"
 						key="userDropDown1"
-						onClick={() => {
-							props.setIsModalOpen(true);
-							setIsDropdownOpen(false);
-						}}
+						onClick={handleOpenProfileSettings}
 						pattern="ghost"
 					>
-						<ChangePassword /> Change password
-					</Button>,
-					<Button
-						type="button"
-						key="userDropDown2"
-						pattern="ghost"
-						onClick={async () => {
-							await account.logout();
-							navigate(0);
-						}}
-					>
-						<Logout /> Log out
+						<Icon width={20} height={20} iconName="human" /> Profile
+						settings
 					</Button>,
 				]}
 			/>

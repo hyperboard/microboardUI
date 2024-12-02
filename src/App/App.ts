@@ -32,7 +32,7 @@ export interface App {
 	boardsList: BoardsList;
 	boardSubject: Subject<unknown>;
 	subscriptions: Subscriptions;
-	openBoard: (id: string) => Promise<void>;
+	openBoard: (id: string, accessKey?: string) => Promise<void>;
 	getBoard: () => Board;
 	getLastBoardId: () => string | null;
 	render: () => void;
@@ -76,7 +76,7 @@ export function createApp(isHistory = true): App {
 	api.interceptors.addRequestInterceptor(authInterceptor);
 	apiV2.interceptors.addRequestInterceptor(authInterceptor);
 
-	async function openBoard(id: string): Promise<void> {
+	async function openBoard(id: string, accessKey?: string): Promise<void> {
 		app.getBoard()?.selection.quickAddButtons.clear();
 		if (id === "boards") {
 			return;

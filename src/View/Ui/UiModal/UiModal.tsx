@@ -37,24 +37,26 @@ export function UiModal({
 
 	return (
 		<OpacityTransition inProp={modalId === openedModalId} unmountOnExit>
-			<UiPanel className={clsx(styles.panel, className)}>
-				<div className={styles.closeBtnWrapper}>
-					{closeButton ? (
-						closeButton(handleClose)
-					) : (
-						<UiButton
-							variant="secondary"
-							className={styles.closeBtn}
-							onClick={handleClose}
-						>
-							<Icon width={28} height={28} iconName="Close" />
-						</UiButton>
-					)}
-				</div>
-				<div ref={ref} className={styles.content}>
-					{children}
-				</div>
-			</UiPanel>
+			<div className={styles.modalWrapper}>
+				<UiPanel className={clsx(styles.panel, className)}>
+					<div className={styles.closeBtnWrapper}>
+						{closeButton ? (
+							closeButton(handleClose)
+						) : (
+							<UiButton
+								variant="secondary"
+								className={styles.closeBtn}
+								onClick={handleClose}
+							>
+								<Icon width={28} height={28} iconName="Close" />
+							</UiButton>
+						)}
+					</div>
+					<div ref={ref} className={styles.content}>
+						{children}
+					</div>
+				</UiPanel>
+			</div>
 		</OpacityTransition>
 	);
 }

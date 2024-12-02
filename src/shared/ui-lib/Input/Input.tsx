@@ -9,7 +9,9 @@ interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
 	placeholder?: string;
 	label?: string;
 	helperText?: string;
+	successText?: string;
 	errorText?: string;
+	isSuccess?: boolean;
 	tab?: string;
 	postTab?: string;
 	prefixIcon?: React.ReactNode;
@@ -31,9 +33,11 @@ export const Input: React.FC<Props> = ({
 	helperText,
 	password,
 	type,
+	isSuccess,
 	hasError,
 	iconColor,
 	shouldFocus,
+	successText,
 	...props
 }) => {
 	const [inputType, setInputType] = useState<string>(() => {
@@ -64,7 +68,11 @@ export const Input: React.FC<Props> = ({
 			<div className="InputTabWrapper">
 				{tab && <span className="InputTab">{tab}</span>}
 				<div
-					className={clsx("InputContainer", hasError && "InputError")}
+					className={clsx(
+						"InputContainer",
+						hasError && "InputError",
+						isSuccess && "InputSuccess",
+					)}
 				>
 					{prefixIcon && (
 						<span
@@ -99,6 +107,9 @@ export const Input: React.FC<Props> = ({
 			{errorText && <span className="InputErrorText">{errorText}</span>}
 			{helperText && (
 				<span className="InputHelperText">{helperText}</span>
+			)}
+			{successText && (
+				<span className="InputSuccessText">{successText}</span>
 			)}
 		</div>
 	);

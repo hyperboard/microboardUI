@@ -31,6 +31,8 @@ import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
 import { UiModalBackground, UiModalContextProvider } from "View/Ui/UiModal";
 import { UserTracking } from "View/Presence/UserTracking/UserTracking";
+import { ProfileSettingsModal } from "View/ProfileSettingsModal";
+import { ChangePasswordModal } from "View/ChangePasswordModal";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -177,6 +179,8 @@ export function AppView(): JSX.Element {
 				<SetLinkToModal />
 				<UiModalBackground>
 					<ShareModal />
+					<ProfileSettingsModal />
+					<ChangePasswordModal />
 				</UiModalBackground>
 			</UiModalContextProvider>
 		</div>

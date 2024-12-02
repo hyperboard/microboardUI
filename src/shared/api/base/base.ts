@@ -57,14 +57,15 @@ export class HTTP {
 		try {
 			const modifiedConfig =
 				await this.interceptors.triggerRequestInterceptors(config);
-
+			console.log(config);
 			const response = await fetch(
 				this.getUrl(path, config.params, config.query),
 				{
 					...modifiedConfig,
 					headers: {
-						...modifiedConfig.headers,
 						...this.headers,
+						...modifiedConfig.headers,
+						...config.headers,
 					},
 					credentials: "include",
 				},
@@ -145,6 +146,21 @@ export class HTTP {
 			method: "PATCH",
 			body: stringifiedBody,
 			...config,
+		});
+	}
+
+	patchRaw<R, P extends ParamsRecord = ParamsRecord>(
+		path: string,
+		file: File,
+		config?: HTTPRequestConfig<URLSearchParamsInit, P>,
+	): Promise<HTTPResponse<R>> {
+		return this.$fetch<R>(path, {
+			method: "PATCH",
+			body: file,
+			...config,
+			headers: {
+				"Content-Type": file.type,
+			},
 		});
 	}
 
