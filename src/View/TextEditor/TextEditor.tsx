@@ -10,6 +10,7 @@ import { DEFAULT_TEXT_STYLES } from "View/Items/RichText";
 import styles from "./TextEditor.module.css";
 import clsx from "clsx";
 import { Icon } from "View/Icon";
+import { Transforms } from "slate";
 
 export class TextEditors extends React.Component<
 	{
@@ -85,6 +86,17 @@ export class TextEditor extends React.Component<
 			event.preventDefault();
 			event.stopPropagation();
 			this.props.board.selection.setContext("EditUnderPointer");
+		}
+	};
+
+	onPaste = (event): void => {
+		const text = this.props.text;
+
+		if (text.insideOf === "Frame") {
+			event.preventDefault();
+			const newText = event.clipboardData.getData("text/plain");
+			const singleParagraph = newText.replace(/\n+/g, " ").trim();
+			Transforms.insertText(text.editor.editor, singleParagraph);
 		}
 	};
 
@@ -287,6 +299,7 @@ export class TextEditor extends React.Component<
 								isInsideOfFrame ? styles.scrollContainer : ""
 							}
 							onKeyDown={this.onKeyDown}
+							onPaste={this.onPaste}
 							// placeholder={text.placeholderText}
 							// renderPlaceholder={({ children, attributes }) => (
 							// 	<span
