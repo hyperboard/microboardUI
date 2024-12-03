@@ -8,6 +8,11 @@ import { Board, BoardSnapshot } from "Board/Board";
 import { SyncBoardEvent, SyncEvent } from "Board/Events/Events";
 import { Account } from "./Account";
 import { Storage } from "./Storage";
+import {
+	PresenceEventMsg,
+	PresenceEventType,
+	UserJoinMsg,
+} from "Board/Presence/Events";
 
 const SECOND = 1000;
 const WS_RECONNECT_TIMEOUT = 5 * SECOND;
@@ -100,77 +105,6 @@ export interface BoardSubscriptionCompletedMsg {
 	lastSnapshotEventOrder: number;
 	eventsSinceLastSnapshot: SyncBoardEvent[];
 	initialSequenceNumber: number;
-}
-export interface PointerMoveEvent {
-	method: "PointerMove";
-	position: { x: number; y: number };
-	timestamp: number;
-}
-
-export interface SelectionEvent {
-	method: "Selection";
-	selectedItems: string[];
-	timestamp: number;
-}
-
-export interface SetUserColorEvent {
-	method: "SetUserColor";
-	timestamp: number;
-	color: string;
-}
-
-export interface DrawSelectEvent {
-	method: "DrawSelect";
-	timestamp: number;
-	size: {
-		left: number;
-		top: number;
-		right: number;
-		bottom: number;
-	};
-}
-
-export interface CancelDrawSelectEvent {
-	method: "CancelDrawSelect";
-	timestamp: number;
-}
-
-export interface CameraEvent {
-	method: "Camera";
-	timestamp: number;
-	translateX: number;
-	translateY: number;
-	scaleX: number;
-	scaleY: number;
-	shearX: number;
-	shearY: number;
-}
-
-export type PresenceEventType =
-	| PointerMoveEvent
-	| SelectionEvent
-	| SetUserColorEvent
-	| DrawSelectEvent
-	| CancelDrawSelectEvent
-	| CameraEvent;
-
-export interface UserJoinMsg {
-	type: "UserJoin";
-	timestamp: number;
-	userId: number;
-	boardId: string;
-	events: PresenceEventMsg<PresenceEventType>[];
-}
-
-export interface PresenceEventMsg<T = PresenceEventType> {
-	type: "PresenceEvent";
-	boardId: string;
-	event: T;
-	userId: string;
-	messageId: string;
-	nickname: string;
-	color: string | null;
-	avatar: string | null;
 }
 
 export type EventsMsg =
@@ -348,6 +282,8 @@ export function createConnection(
 			case "Unsubscribe":
 			case "Error":
 			case "ping":
+				console.log("ping message");
+				board.presence.ping();
 				break;
 			default:
 				console.warn("Debug: Received unknown message type:", msg.type);
@@ -502,7 +438,7 @@ export function createConnection(
 		const account = getAccount();
 		const generatedNickname = account.isLoggedIn
 			? account.info?.name || account.info?.email || "Wild Cat"
-			: "Анонимный пользователь";
+			: "Anonymous";
 		const generatedColor =
 			storage.getUserColor() ||
 			getBoard().presence.generateUserColor(false);

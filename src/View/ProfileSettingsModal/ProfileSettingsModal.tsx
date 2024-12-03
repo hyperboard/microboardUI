@@ -107,7 +107,11 @@ export function ProfileSettingsModal() {
 			<div className={styles.container}>
 				<h1 className={styles.heading}>Profile settings</h1>
 				<div className={styles.avatar}>
-					<UserAvatar width={56} height={56} />
+					<UserAvatar
+						src={account.info?.avatar}
+						width={56}
+						height={56}
+					/>
 					<input
 						type="file"
 						accept="image/jpeg,image/png,image/svg+xml"

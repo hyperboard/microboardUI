@@ -994,7 +994,14 @@ export const useCopyBoardItems = (
 		const { fillColor } = style;
 		const { format } = data;
 		const title = data.title || `Frame ${id}`;
-		const frame = new Frame(undefined, id, title).setId(id).setBoard(board);
+		const frame = new Frame(
+			board.items.getById.bind(board.items),
+			undefined,
+			id,
+			title,
+		)
+			.setId(id)
+			.setBoard(board);
 
 		fillColor && frame.setBackgroundColor(fillColor);
 		frame.setFrameType(FRAME_TYPES[format]);

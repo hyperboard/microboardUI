@@ -124,7 +124,6 @@ export function fitOnLeftOrRightOfItem(
 		fit.top = view.bottom - (offset + height);
 	}
 
-
 	return fit;
 }
 

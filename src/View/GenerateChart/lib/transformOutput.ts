@@ -273,7 +273,12 @@ function transformShape(data: AiShape, board: Board): void {
 }
 
 function transformFrame(data: AiFrame, board: Board): void {
-	const frame = new Frame(undefined, undefined, data.title || "Frame");
+	const frame = new Frame(
+		board.items.getById.bind(board.items),
+		undefined,
+		undefined,
+		data.title || "Frame",
+	);
 	frame.setId(board.getNewItemId());
 
 	// Apply transformations
@@ -291,7 +296,7 @@ function transformFrame(data: AiFrame, board: Board): void {
 				return;
 			}
 			if (item) {
-				frame.addChild(item.getId());
+				frame.emitAddChild(item);
 			}
 		});
 	}

@@ -1,8 +1,12 @@
+.wrapper {
+}
+
 .container {
 	/* background-color: #1a1a1a; */
 	border-radius: 8px;
 	/* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
-	padding: 9px 16px;
+	padding: 9px 0 9px 16px;
+	display: flex;
 }
 
 .userList {
@@ -20,9 +24,7 @@
 }
 
 .userList > .userWrapper:nth-child(n) {
-	z-index: calc(
-		100 + var(--index)
-	); /* Higher index for elements on the right */
+	z-index: calc(100 + var(--index));
 }
 
 .userWrapper:not(:first-child) {
@@ -30,8 +32,10 @@
 }
 
 .userAvatar {
-	width: 30px;
-	height: 30px;
+	position: relative;
+	box-sizing: border-box;
+	width: 32px;
+	height: 32px;
 	border-radius: 50%;
 	border: 2px solid transparent;
 	background-color: #ddd4fd;
@@ -43,6 +47,21 @@
 	font-weight: 500;
 }
 
+.trackedUserOverlay {
+	position: absolute;
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
+
+.idle {
+	opacity: 50%;
+}
+
 .userCounter {
 	color: #14151a;
 	background-color: #f7f7f8;
@@ -51,26 +70,37 @@
 
 .selectedAvatar {
 	/* border: 2px solid #22c55e; */
-	outline: solid 2px #22c55e;
-	outline-offset: 2px;
+	/* outline: solid 2px #22c55e;
+	outline-offset: 2px; */
 }
 
 .tooltip {
 	position: absolute;
 	bottom: -48px;
-	left: 50%;
-	transform: translateX(-50%);
+	right: 0;
 	display: none;
-	background-color: white;
+	background-color: #0b0c0e;
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-	color: #1a1a1a;
+	color: #ffffff;
 	font-size: 12px;
+	line-height: 16px;
 	padding: 4px 8px;
-	border-radius: 4px;
+	border-radius: 6px;
 	white-space: nowrap;
 }
 
+.tippy {
+	position: absolute;
+	display: none;
+	bottom: -29px;
+	right: 10px;
+}
+
 .userWrapper:hover .tooltip {
+	display: block;
+}
+
+.userWrapper:hover .tippy {
 	display: block;
 }
 
@@ -148,4 +178,128 @@
 	height: 8px;
 	border-radius: 50%;
 	background-color: #22c55e;
+}
+
+.followingCounter {
+	position: fixed;
+	top: 54px;
+	right: var(--absolute-position-panel-padding);
+	z-index: 1000;
+}
+
+.followingCounterIcon {
+	display: flex;
+	gap: 4px;
+	padding: 4px 6px;
+	background-color: #f48e2f;
+	border-radius: 500px;
+	color: white;
+	font-size: 12px;
+	z-index: 1000;
+	cursor: pointer;
+}
+
+.followersTooltip {
+	position: absolute;
+	width: 205px;
+	padding: 12px 16px;
+	display: none;
+	flex-direction: column;
+
+	top: 32px;
+	right: 0px;
+
+	background-color: #0b0c0e;
+	border-radius: 8px;
+	font-size: 12px;
+}
+
+.followersMe {
+	color: white;
+}
+
+.followersBoard {
+	display: block;
+	color: rgba(255, 255, 255, 0.6);
+}
+
+.followersTooltipTitle {
+	color: #1f2228;
+	font-size: 14px;
+	font-weight: 500;
+}
+
+.followersHr {
+	margin-top: 8px;
+	width: 100%;
+	height: 1px;
+	background-color: rgba(255, 255, 255, 0.18);
+}
+
+.followersList {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	margin-top: 8px;
+}
+
+.followersItem {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	max-width: 100%;
+	color: white;
+}
+
+.followersVisible {
+	display: flex;
+}
+
+.btn {
+	padding: 0 8px;
+	height: 32px;
+	margin-left: 8px;
+}
+
+.shareModal {
+	position: fixed;
+	right: var(--absolute-position-panel-padding);
+	top: 72px;
+	width: 300px;
+	padding: 12px 16px;
+	background-color: white;
+	border-radius: 12px;
+	border: 1px solid var(--border-action-normal);
+	box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.shareUser {
+	display: flex;
+	gap: 8px;
+	padding: 6px 8px;
+	align-items: center;
+
+	font-size: 14px;
+	line-height: 20px;
+	font-weight: 500;
+}
+
+.shareUserPic {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-transform: uppercase;
+}
+
+.shareList {
+	border-bottom: 1px solid #dee0e3;
 }

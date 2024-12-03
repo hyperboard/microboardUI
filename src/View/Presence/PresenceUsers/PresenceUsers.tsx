@@ -1,73 +1,230 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./PresenceUsers.module.css";
-import { Board } from "Board";
-import { UiPanel } from "View/Ui/UiPanel";
-import { Presence, PresenceUser } from "Board/Presence/Presence";
-// import { mockUsers } from "./mock";
+import {
+	Presence,
+	PRESENCE_CLEANUP_IDLE_TIMER,
+	PresenceUser,
+} from "Board/Presence/Presence";
+import { UserAvatar } from "./UserAvatar";
+import { Dropdown } from "./Dropdown";
+import { EyeIcon } from "./EyeIcon";
+import { App } from "App";
 import clsx from "clsx";
-import { rgbToRgba } from "Board/Presence/helpers";
+import { useOutsideClickHandler } from "shared/hooks/useOutsideClickHandler";
+import { Button } from "shared/ui-lib/Button";
+import { UserShare } from "View/UserPanel/icons/UserShare";
+import { Input } from "shared/ui-lib/Input";
+import { Icon } from "View/Icon";
+import { useTranslation } from "react-i18next";
 
 export interface User {
 	id: string;
 	name: string;
 	color: string;
 	avatar: string | null;
+	idle: boolean;
 }
 
 interface Props {
-	board: Board;
+	app: App;
 }
 
-export const PresenceUsers: React.FC<Props> = ({ board }) => {
+export const FollowingUsersCount: React.FC<{
+	followers: PresenceUser[];
+	app: App;
+}> = ({ followers, app }) => {
+	const { t } = useTranslation();
+	const [isOpen, setIsOpen] = useState(false);
+	const tooltipRef = useRef<HTMLDivElement>(null);
+
+	useOutsideClickHandler(tooltipRef, () => {
+		setIsOpen(false);
+	});
+	if (!followers.length) {
+		return null;
+	}
+
+	return (
+		<div className={styles.followingCounter}>
+			<div
+				className={styles.followingCounterIcon}
+				onClick={() => {
+					if (isOpen) {
+						return;
+					}
+					setIsOpen(!isOpen);
+				}}
+			>
+				<EyeIcon fill={"white"} />
+				<span>{followers.length}</span>
+			</div>
+			<div
+				ref={tooltipRef}
+				className={clsx(
+					styles.followersTooltip,
+					isOpen && styles.followersVisible,
+				)}
+			>
+				<p className={styles.followersMe}>
+					{app.account.info?.email} {t("presence.(you)")}
+				</p>
+				<span className={styles.followersBoard}>
+					{t("presence.yourBoard")}
+				</span>
+				<div className={styles.followersHr} />
+				<div className={styles.followersList}>
+					{followers.map((follower, index) => (
+						<span
+							key={follower.userId}
+							className={styles.followersItem}
+						>
+							{follower.nickname} {t("presence.following")}
+						</span>
+					))}
+				</div>
+			</div>
+		</div>
+	);
+};
+
+const ShareModal: React.FC<{
+	setIsShareModalOpen: (isOpen: boolean) => void;
+	followers: PresenceUser[];
+	app: App;
+	users: User[];
+}> = ({ setIsShareModalOpen, followers, app, users }) => {
+	const { t } = useTranslation();
+	const modalRef = useRef<HTMLDivElement>(null);
+
+	useOutsideClickHandler(modalRef, () => {
+		setIsShareModalOpen(false);
+	});
+	return (
+		<div className={styles.shareModal} ref={modalRef}>
+			<Input
+				id="searchNicknameId"
+				placeholder="Search by name"
+				prefixIcon={<Icon iconName="Search" height={16} width={16} />}
+				onKeyDown={ev => {
+					ev.stopPropagation();
+				}}
+			/>
+			<div className={styles.shareList}>
+				{users.map(user => (
+					<div key={user.id} className={styles.shareUser}>
+						{user?.avatar ? (
+							<img
+								src={user.avatar}
+								className={styles.shareUserPic}
+							/>
+						) : (
+							<div
+								className={styles.shareUserPic}
+								style={{ backgroundColor: user.color }}
+							>
+								{user.name.charAt(0).toUpperCase()}
+							</div>
+						)}
+
+						<span>{user.name}</span>
+					</div>
+				))}
+			</div>
+			<Button
+				onClick={() => {
+					const presence = app.getBoard().presence;
+					const allUsers = presence.getUsers(true);
+					if (allUsers.length > 0) {
+						presence.emit({
+							method: "BringToMe",
+							timestamp: Date.now(),
+							users: allUsers.map(user => user.userId),
+						});
+					}
+				}}
+			>
+				{t("presence.bringToMe")}
+			</Button>
+			{followers.length > 0 && (
+				<Button
+					pattern="secondary"
+					onClick={() => {
+						const presence = app.getBoard().presence;
+						presence.emit({
+							method: "StopFollowing",
+							timestamp: Date.now(),
+							users: followers.map(follower => follower.userId),
+						});
+					}}
+				>
+					{t("presence.stop")} {followers.length}{" "}
+					{followers?.length > 1
+						? t("presence.followers")
+						: t("presence.follower")}
+				</Button>
+			)}
+		</div>
+	);
+};
+
+const USERS_IN_ROW = 2;
+export const PresenceUsers: React.FC<Props> = ({ app }) => {
+	const board = app.getBoard();
+	const { t } = useTranslation();
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
 	const [users, setUsers] = useState<User[]>([]);
+	const [followers, setFollowers] = useState<PresenceUser[]>([]);
 	const [trackedUser, setTrackedUser] = useState<PresenceUser | null>(null);
+	const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+	const [sortedUsers, setSortedUsers] = useState(users);
+	const [displayUsers, setDisplayUsers] = useState(users);
+	const dropdownRef = useRef<HTMLDivElement>(null);
 
-	const needsCollapse = users.length > 3;
-
-	// Sort users to show selected ones first
-	const sortedUsers = [...users].sort((first, second) => {
-		const aSelected = selectedUsers.has(first.id);
-		const bSelected = selectedUsers.has(second.id);
-		if (aSelected === bSelected) {
-			return 0;
-		}
-		return aSelected ? -1 : 1;
+	useOutsideClickHandler(dropdownRef, () => {
+		setIsDropdownOpen(false);
 	});
 
-	const displayUsers = sortedUsers.slice(0, 2);
+	const needsCollapse = users.length > USERS_IN_ROW;
+	useEffect(() => {
+		// eslint-disable-next-line id-length
+		const sortedUsers = [...users].sort((a, b) =>
+			selectedUsers.has(a.id) === selectedUsers.has(b.id)
+				? 0
+				: selectedUsers.has(a.id)
+					? -1
+					: 1,
+		);
+		setSortedUsers(sortedUsers);
+		setDisplayUsers(sortedUsers.slice(0, USERS_IN_ROW));
+	}, [users]);
 
 	const selectUser = (userId: string): void => {
 		board.presence.enableTracking(userId);
-
 		setSelectedUsers(new Set([userId]));
 		setIsDropdownOpen(false);
 	};
 
-	useEffect(() => {
+	const updateUsers = (): void => {
+		const now = Date.now();
 		setUsers(
 			board.presence.getUsers(true).map(user => ({
 				id: user.userId,
-				color: user.color,
 				name: user.nickname,
+				color: user.color,
 				avatar: user.avatar,
+				idle: user.lastActivity < now - PRESENCE_CLEANUP_IDLE_TIMER,
 			})),
 		);
+
+		setFollowers(board.presence.getFollowers());
+	};
+
+	useEffect(() => {
+		updateUsers();
 		board.presence.subject.subscribe((presence: Presence) => {
-			setUsers(
-				board.presence.getUsers(true).map(user => ({
-					id: user.userId,
-					color: user.color,
-					name: user.nickname,
-					avatar: user.avatar,
-				})),
-			);
-			if (presence.trackedUser) {
-				setTrackedUser(presence.trackedUser);
-			} else {
-				setTrackedUser(null);
-			}
+			updateUsers();
+			setTrackedUser(presence.trackedUser || null);
 		});
 	}, []);
 
@@ -76,97 +233,69 @@ export const PresenceUsers: React.FC<Props> = ({ board }) => {
 	}
 
 	return (
-		<UiPanel padding={0} className={styles.wrapper}>
+		<div className={styles.wrapper}>
 			<div className={styles.container}>
 				<div className={styles.userList}>
 					{displayUsers.map((user, index) => (
-						<div
+						<UserAvatar
 							key={user.id}
-							className={styles.userWrapper}
-							style={{ "--index": index }}
+							user={user}
+							trackedUser={trackedUser}
+							index={index}
 							onClick={() => selectUser(user.id)}
-						>
-							{user?.avatar ? (
-								<img
-									src={user.avatar}
-									width={32}
-									height={32}
-									style={{ borderColor: user.color }}
-									className={`${styles.userAvatar} ${trackedUser?.userId === user.id ? styles.selectedAvatar : ""}`}
-								/>
-							) : (
-								<div
-									className={`${styles.userAvatar} ${trackedUser?.userId === user.id ? styles.selectedAvatar : ""}`}
-									style={{
-										borderColor: user.color,
-										backgroundColor:
-											rgbToRgba(user.color, 0.5) ||
-											user.color,
-									}}
-								>
-									{user.name.charAt(0)}
-								</div>
-							)}
-							<div className={styles.tooltip}>{user.name}</div>
-						</div>
+						/>
 					))}
-
 					{needsCollapse && (
 						<button
 							onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-							style={{ "--index": displayUsers.length }}
-							className={clsx(styles.userWrapper)}
+							style={
+								{
+									"--index": displayUsers.length,
+								} as React.CSSProperties
+							}
+							className={styles.userWrapper}
 						>
 							<div
-								className={clsx(
-									styles.userAvatar,
-									styles.userCounter,
-								)}
+								className={`${styles.userAvatar} ${styles.userCounter}`}
 							>
 								{users.length}
 							</div>
 						</button>
 					)}
 				</div>
-
+				{/* <Button
+					className={styles.btn}
+					pattern="primary"
+					onClick={() => {
+						if (isShareModalOpen) {
+							return;
+						}
+						setIsShareModalOpen(true);
+					}}
+				>
+					<UserShare />
+					{t("presence.share")}
+				</Button> */}
+				{isShareModalOpen && (
+					<ShareModal
+						setIsShareModalOpen={setIsShareModalOpen}
+						followers={followers}
+						users={users}
+						app={app}
+					/>
+				)}
 				{isDropdownOpen && needsCollapse && (
-					<div className={styles.dropdown}>
-						{users.map(user => (
-							<div
-								key={user.id}
-								className={styles.dropdownItem}
-								onClick={() => selectUser(user.id)}
-							>
-								{user?.avatar ? (
-									<img
-										src={user.avatar}
-										width={32}
-										height={32}
-										className={`${styles.dropdownAvatar} ${trackedUser?.userId === user.id ? styles.dropdownSelectedAvatar : ""}`}
-									/>
-								) : (
-									<div
-										className={`${styles.dropdownAvatar} ${trackedUser?.userId === user.id ? styles.dropdownSelectedAvatar : ""}`}
-										style={{
-											backgroundColor:
-												rgbToRgba(user.color, 0.5) ||
-												user.color,
-										}}
-									>
-										{user.name.charAt(0)}
-									</div>
-								)}
-								<span className={styles.userName}>
-									{user.name}
-								</span>
-								{selectedUsers.has(user.id) && (
-									<div className={styles.selectedIndicator} />
-								)}
-							</div>
-						))}
-					</div>
+					<Dropdown
+						ref={dropdownRef}
+						users={users}
+						trackedUser={trackedUser}
+						selectedUsers={selectedUsers}
+						onUserSelect={selectUser}
+						setIsOpen={setIsDropdownOpen}
+					/>
 				)}
 			</div>
-		</UiPanel>
+			<FollowingUsersCount followers={followers} app={app} />
+		</div>
 	);
 };

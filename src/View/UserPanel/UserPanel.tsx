@@ -3,7 +3,6 @@ import clsx from "clsx";
 import { isMicroboardIframe } from "lib/isMicroboardIframe";
 import React, {
 	RefObject,
-	useEffect,
 	useRef,
 	useState,
 	type MouseEventHandler,
@@ -12,11 +11,9 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useOutsideClickHandler } from "shared/hooks/useOutsideClickHandler";
 import { Button } from "shared/ui-lib/Button";
-import { Input } from "shared/ui-lib/Input";
-import { Tail } from "View/AuthView/Tail";
 import { Icon } from "View/Icon";
-// import { useShareModal } from "View/ShareModal";
 import { App } from "App";
+import { useBoardsList } from "App/useBoardsList.ts";
 import { getEmailPrefix } from "lib/getEmailPrefix";
 import { shouldShow } from "lib/queryStringParser";
 import { useAppContext } from "View/AppContext";
@@ -24,25 +21,20 @@ import { useContextMenuContext } from "View/ContextMenu";
 import { PresenceUsers } from "View/Presence/PresenceUsers/PresenceUsers";
 import { PROFILE_SETTINGS_MODAL_ID } from "View/ProfileSettingsModal";
 import { SHARE_MODAL_ID } from "View/ShareModal/ShareModal";
-import { LockIcon } from "View/SignupView/LockIcon";
 import { UiButton } from "View/Ui/UiButton";
 import { UiLink } from "View/Ui/UiLink";
 import { useUiModalContext } from "View/Ui/UiModal";
 import { UiPanel } from "View/Ui/UiPanel";
 import { PasswordChanged } from "View/Widgets/form-notifications/password-changed";
 import styles from "./UserPanel.module.css";
-import { useAppContext } from "View/AppContext";
-import { PresenceUsers } from "View/Presence/PresenceUsers/PresenceUsers";
-import { shouldShow } from "lib/queryStringParser";
 import { AddComment } from "./Buttons/AddComment/AddComment.tsx";
-import { getEmailPrefix } from "lib/getEmailPrefix";
-import { App } from "App";
 import {
 	CommentsPanelContextProvider,
 	useCommentsPanelContext,
 } from "View/UserPanel/CommentsPanel/CommentsPanelContext";
 import { CommentsPanel } from "View/UserPanel/CommentsPanel/CommentsPanel";
 import { useCommentsContext } from "View/CommentsProvider/CommentsContext";
+import { Click } from "./icons/Click.tsx";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	email?: string;
@@ -59,10 +51,10 @@ export const UserDropDown: React.FC<UserDropDownProps> = ({
 	isOpen,
 	buttons,
 	email,
-	openerRef,
 	customTop,
 }) => {
 	const dropdownRef = useRef<HTMLDivElement>(null);
+	const account = useAccount();
 
 	const closeDropdown = (): void => {
 		setIsDropdownOpen(false);
@@ -82,7 +74,11 @@ export const UserDropDown: React.FC<UserDropDownProps> = ({
 		>
 			{email && (
 				<div className={styles.userInfo}>
-					<UserAvatar width={40} height={40} />
+					<UserAvatar
+						src={account.info?.avatar}
+						width={40}
+						height={40}
+					/>
 					<p className={styles.userName}>{email}</p>
 				</div>
 			)}
@@ -105,21 +101,26 @@ type UserAvatarProps = {
 	isOwner?: boolean;
 	width?: number;
 	height?: number;
+	tooltip?: boolean;
+	src?: string;
+	name?: string;
 };
 
 export const UserAvatar = ({
 	isOwner = false,
+	src,
 	width,
 	height,
+	tooltip = false,
+	name,
 }: UserAvatarProps) => {
-	const account = useAccount();
 	return (
 		<div
 			style={{ width, height }}
 			className={clsx(styles.userPic, isOwner && styles.owner)}
 		>
-			{account.info?.avatar ? (
-				<img width={width} height={height} src={account.info?.avatar} />
+			{src ? (
+				<img width={width} height={height} src={src} />
 			) : (
 				<Icon iconName="UserPic" width={12} height={15} />
 			)}
@@ -131,20 +132,26 @@ export const UserAvatar = ({
 					height={12}
 				/>
 			)}
+			{tooltip && (
+				<div className={styles.tooltipWrapper}>
+					<div className={styles.tooltip}>
+						<span className={styles.tooltipName}>{name} (you)</span>
+						{isOwner && (
+							<span className={styles.tooltipMsg}>
+								Your board
+							</span>
+						)}
+					</div>
+				</div>
+			)}
 		</div>
 	);
 };
 
-interface UserPicProps extends React.HTMLAttributes<HTMLDivElement> {
-	avatar?: string;
-	setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-type TUserPicProps = UserPicProps &
-	Omit<
-		UserDropDownProps,
-		"isOpen" | "setIsDropdownOpen" | "buttons" | "openerRef" | "customTop"
-	>;
+type TUserPicProps = Omit<
+	UserDropDownProps,
+	"isOpen" | "setIsDropdownOpen" | "buttons" | "openerRef" | "customTop"
+>;
 
 // TODO each file for each component
 const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
@@ -184,7 +191,12 @@ const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 					}
 				}}
 			>
-				<UserAvatar isOwner={isOwner} />
+				<UserAvatar
+					src={account.info?.avatar}
+					isOwner={isOwner}
+					tooltip
+					name={account.info?.name}
+				/>
 			</div>
 			<UserDropDown
 				openerRef={userPanelRef}
@@ -207,252 +219,15 @@ const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 	);
 };
 
-interface ModalProps extends React.HTMLAttributes<HTMLDivElement> {
-	isOpen: boolean;
-	setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-// TODO each file for each component
-const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
-	const modalRef = useRef<HTMLDivElement>(null);
-	const formRef = useRef<HTMLFormElement>(null);
-	const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
-	const [isSubmitLoading, setIsSubmitLoading] = useState(false);
-	const [error, setError] = useState("");
-	const { t } = useTranslation();
-	const [isPasswordChanged, setIsPasswordChanged] = useState(false);
-	const account = useAccount();
-	// const navigate = useNavigate();
-
-	// const [currentPassword, setCurrentPassword] = useState("");
-	// const [newPassword, setNewPassword] = useState("");
-	// const [confirmPassword, setConfirmPassword] = useState("");
-
-	const closeModal = (): void => {
-		setIsOpen(false);
-		const form = formRef.current;
-		if (!form) {
-			return;
-		}
-
-		form.reset();
-		setIsSubmitDisabled(true);
-		setError("");
-	};
-
-	const onSubmit = (event: React.FormEvent): void => {
-		event.preventDefault();
-		const form = formRef.current;
-		if (!form) {
-			return;
-		}
-
-		setIsSubmitDisabled(true);
-		setIsSubmitLoading(true);
-
-		account
-			.changePassword(
-				formRef.current.currentPassword.value,
-				formRef.current.newPassword.value,
-			)
-			.then(() => {
-				setIsPasswordChanged(true);
-			})
-			.catch(error => {
-				if (error?.message === "Wrong password") {
-					setError(t("auth.currentPasswordIsIncorrect"));
-					return;
-				}
-				if (error?.message === "ERROR_SAME_PASSWORD") {
-					setError(t("auth.passwordMustBeDifferent"));
-					return;
-				}
-				// different error?
-				setError(t("auth.passwordDoNotMatch"));
-			})
-			.finally(() => {
-				setIsSubmitDisabled(false);
-				setIsSubmitLoading(false);
-			});
-	};
-
-	const checkForm = (): void => {
-		const form = formRef.current;
-		if (!form) {
-			return;
-		}
-		const currentPassword = form.currentPassword.value;
-		const newPassword = form.newPassword.value;
-		const confirmPassword = form.confirmPassword.value;
-
-		if (
-			currentPassword === "" ||
-			newPassword === "" ||
-			confirmPassword === ""
-		) {
-			setError("");
-			setIsSubmitDisabled(true);
-			return;
-		}
-
-		const MIN_PASSWORD_LENGTH = 8;
-		if (
-			newPassword.length < MIN_PASSWORD_LENGTH ||
-			confirmPassword.length < MIN_PASSWORD_LENGTH
-		) {
-			setError("");
-			setIsSubmitDisabled(true);
-			return;
-		}
-
-		if (confirmPassword.length < newPassword.length) {
-			setError("");
-			setIsSubmitDisabled(true);
-			return;
-		}
-
-		if (newPassword === currentPassword) {
-			setError(t("auth.passwordMustBeDifferent"));
-			setIsSubmitDisabled(true);
-			return;
-		}
-
-		if (newPassword !== confirmPassword) {
-			setError(t("auth.passwordDoNotMatch"));
-			setIsSubmitDisabled(true);
-			return;
-		}
-
-		function checkLength(str: string): boolean {
-			if (str.length < 8) {
-				return false;
-			}
-			return true;
-		}
-
-		if (!checkLength(newPassword) || !checkLength(confirmPassword)) {
-			setError("");
-			return;
-		}
-
-		setError("");
-		setIsSubmitDisabled(false);
-	};
-
-	const dbCheckForm = checkForm;
-
-	useOutsideClickHandler(modalRef, closeModal);
-
-	useEffect(() => {
-		setError("");
-		setIsPasswordChanged(false);
-	}, [isOpen]);
-
-	if (!isOpen) {
-		return null;
-	}
-
-	if (isPasswordChanged) {
-		return (
-			<div className={styles.modalWrapper}>
-				<div ref={modalRef} className={styles.modal}>
-					<PasswordChanged />
-					<div className={styles.passwordChangedGap}></div>
-				</div>
-			</div>
-		);
-	}
-
-	return (
-		<div className={styles.modalWrapper}>
-			<div ref={modalRef} className={styles.modal}>
-				<h2 className={styles.modalTitle}>Change password</h2>
-				<form
-					className={styles.modalForm}
-					ref={formRef}
-					onSubmit={onSubmit}
-				>
-					<div className={styles.modalInputs}>
-						<Input
-							prefixIcon={<LockIcon />}
-							id="currentPassword"
-							password
-							placeholder="Current password"
-							// hasError={!!error.length}
-							// onInput={event => {
-							// 	dbCheckForm(event);
-							// }}
-							onKeyDown={event => {
-								event.stopPropagation();
-								dbCheckForm();
-							}}
-							// onInput={event => {
-							// 	setCurrentPassword(event.target.value);
-							// }}
-							onBlur={dbCheckForm}
-						/>
-						<Input
-							prefixIcon={<LockIcon />}
-							id="newPassword"
-							password
-							placeholder="New password"
-							// hasError={!!error.length}
-							// onInput={dbCheckForm}
-							onKeyDown={event => {
-								event.stopPropagation();
-								dbCheckForm();
-							}}
-							// onInput={event => {
-							// 	setNewPassword(event.target.value);
-							// }}
-							onBlur={dbCheckForm}
-						/>
-						<Input
-							prefixIcon={<LockIcon />}
-							id="confirmPassword"
-							password
-							placeholder="Repeat new password"
-							helperText="The password must be at least 8 characters long"
-							hasError={!!error.length}
-							onInput={dbCheckForm}
-							errorText={error}
-							onKeyDown={event => {
-								event.stopPropagation();
-								// dbCheckForm();
-							}}
-							// onInput={event => {
-							// 	setConfirmPassword(event.target.value);
-							// }}
-							onBlur={dbCheckForm}
-						/>
-					</div>
-
-					<div className={styles.modalBtns}>
-						<Button
-							type="submit"
-							disabled={isSubmitDisabled}
-							loading={isSubmitLoading}
-						>
-							{t("auth.submit")} <Tail />
-						</Button>
-						<Button pattern="ghost" onClick={closeModal}>
-							{t("auth.cancel")}
-						</Button>
-					</div>
-				</form>
-			</div>
-		</div>
-	);
-};
-
 const ShareBtn = () => {
 	const { setIds } = useContextMenuContext();
 	const { openModal } = useUiModalContext();
 	const { board } = useAppContext();
-	const account = useAccount();
 	const { t } = useTranslation();
+	const boardsList = useBoardsList();
 
 	const boardId = board.getBoardId();
+	const boardInfo = boardsList.getBoardInfo(boardId);
 
 	const handleShare: MouseEventHandler = ev => {
 		ev.preventDefault();
@@ -461,22 +236,16 @@ const ShareBtn = () => {
 		openModal(SHARE_MODAL_ID);
 	};
 
-	const isOwner = account.permissions.checkPermissions(
-		"owns",
-		"boards",
-		boardId,
-	);
-
 	return (
 		<Button
 			onClick={handleShare}
-			pattern={isOwner ? "primary" : "ghostFilled"}
-			className={isOwner ? styles.shareButton : styles.shareButtonDark}
+			pattern="primary"
+			className={styles.shareButton}
 		>
 			<Icon
 				width={16}
 				height={16}
-				iconName={isOwner ? "publicDrafts" : "lock"}
+				iconName={boardInfo?.isPublic ? "publicDrafts" : "People"}
 			/>
 			{t("sharing.share")}
 		</Button>
@@ -484,11 +253,10 @@ const ShareBtn = () => {
 };
 
 export const UserPanel: React.FC = () => {
-	const [isModalOpen, setIsModalOpen] = useState(false);
-
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const account = useAccount();
+	const [cursorsActive, setCursorsActive] = useState(true);
 
 	const insideOfMicroboard =
 		document.referrer.includes("https://microboard.io/") ||
@@ -604,21 +372,36 @@ export const UserPanel: React.FC = () => {
 	return (
 		<CommentsPanelContextProvider>
 			<UiPanel zIndex={10} padding={0} className={styles.wrapper}>
-				{/* <div className={styles.icons}>
-					<button className={styles.icon}>
+				<div className={styles.icons}>
+					<button
+						className={clsx(
+							styles.icon,
+							cursorsActive && styles.iconActive,
+						)}
+						onClick={() => {
+							const cursorsEnabled = app
+								.getBoard()
+								.presence.toggleCursorsRendering();
+
+							setCursorsActive(cursorsEnabled);
+						}}
+					>
 						<Click />
 					</button>
-					<button className={styles.icon}>
+					{/* <button className={styles.icon}>
 						<Thumb />
 					</button>
 					<button className={styles.icon}>
 						<Ring />
-					</button>
+					</button>  */}
 				</div>
-				<Button className={styles.btn} pattern="primary">
+
+				<PresenceUsers app={app} />
+
+				{/* <Button className={styles.btn} pattern="primary">
 					<UserShare />
 					Share
-				</Button> */}
+				</Button> 
 
 				{/* TODO: remove temporarily inline style */}
 				{(account.info?.name || account.info?.email) && <AddComment />}
@@ -632,13 +415,10 @@ export const UserPanel: React.FC = () => {
 								"Anonymous",
 							)
 						}
-						setIsModalOpen={setIsModalOpen}
 					/>
 				</div>
 			</UiPanel>
 			<CommentsPanel />
-
-			<Modal isOpen={isModalOpen} setIsOpen={setIsModalOpen} />
 		</CommentsPanelContextProvider>
 	);
 };
@@ -646,7 +426,6 @@ export const UserPanel: React.FC = () => {
 export const UserPanelLayout: React.FC<{ app: App }> = ({ app }) => {
 	return (
 		<div className={styles.layoutWrapper}>
-			<PresenceUsers board={app.getBoard()} />
 			{shouldShow("userPanel") && <UserPanel app={app} />}
 		</div>
 	);

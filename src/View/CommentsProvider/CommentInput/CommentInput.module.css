@@ -24,7 +24,7 @@
 	border: none;
 	border-radius: 0;
 	box-shadow: none;
-	background-color: #0A0F290A;
+	background-color: #0a0f290a;
 }
 
 .InputContainer:focus-within {
@@ -50,14 +50,14 @@
 	font-size: 16px;
 	font-weight: 500;
 	line-height: 24px;
-	color: #14151A;
+	color: #14151a;
 	cursor: pointer;
 }
 
 .saveBtn {
-	color: #4778F5 !important;
+	color: #4778f5 !important;
 }
 
 .deleteBtn {
-	color: #E6483D !important;
+	color: #e6483d !important;
 }

@@ -35,3 +35,5 @@ i18n.use(initReactI18next)
 			escapeValue: false,
 		},
 	});
+
+export default i18n;
