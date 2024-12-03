@@ -16,6 +16,8 @@ import { useForceUpdate } from "lib/useForceUpdate";
 import { notify } from "View/Ui/Toast/notify";
 import { TolgeeProviderProvider } from "../TolgeeProvider.tsx";
 import { getTolgeeApiUrl } from "View/Templates/config";
+import { createAccessKey } from "shared/apiV2/boards/api";
+import { AccessKeyType } from "shared/apiV2/boards/types";
 
 interface TranslatableInput {
 	id: string;
@@ -119,8 +121,19 @@ const CreateTemplate = (): JSX.Element => {
 		setSubmitDisabled(false);
 	};
 
-	async function createTemplate(body: string) {
-		await fetch(`${getApiUrl()}/templates/${board.getBoardId()}`, {
+	async function createTemplate(body: any) {
+		const boardId = board.getBoardId();
+		const viewLink = (
+			await createAccessKey(boardId, {
+				boardUUID: boardId,
+				keyType: AccessKeyType.VIEW,
+			})
+		).data?.accessKey;
+		if (!viewLink) {
+			throw new Error("Can not create access key.");
+		}
+
+		await fetch(`${getApiUrl()}/templates/${boardId}`, {
 			method: "POST",
 			mode: "cors",
 			cache: "no-cache",
@@ -129,7 +142,7 @@ const CreateTemplate = (): JSX.Element => {
 				"Content-Type": "application/json",
 				Authorization: `Bearer ${Cookies.get("accessToken")}`,
 			},
-			body,
+			body: JSON.stringify({ ...body, viewLink }),
 			redirect: "follow",
 			referrerPolicy: "no-referrer",
 		});
@@ -295,7 +308,7 @@ const CreateTemplate = (): JSX.Element => {
 		setIsSubmitLoading(true);
 		setSubmitDisabled(true);
 
-		const body = JSON.stringify({
+		const body = {
 			description: multilanguageDescription,
 			languages: languagesSelectorRef
 				.current!.getSelectedOptions()
@@ -304,7 +317,7 @@ const CreateTemplate = (): JSX.Element => {
 			snapshot,
 			name: multilanguageName,
 			preview: imageSrc,
-		});
+		};
 
 		await createTemplate(body)
 			.then(res => {

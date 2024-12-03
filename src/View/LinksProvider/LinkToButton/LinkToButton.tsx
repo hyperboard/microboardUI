@@ -37,11 +37,7 @@ interface Props {
 
 export const LinkToButton = ({ item, handleClick }: Props) => {
 	const linkToButtonRef = useRef<HTMLButtonElement | null>(null);
-	const [iconUrl, setIconUrl] = useState<string | undefined>(
-		item.getLinkTo()
-			? `${new URL(item.getLinkTo()!).origin}/favicon.ico`
-			: undefined,
-	);
+	const [iconUrl, setIconUrl] = useState<string | undefined>(undefined);
 	const imgRef = useRef<HTMLImageElement | null>(null);
 	const { app, board } = useAppContext();
 
@@ -58,9 +54,12 @@ export const LinkToButton = ({ item, handleClick }: Props) => {
 	});
 
 	useEffect(() => {
-		const url = item.getLinkTo()
-			? `${new URL(item.getLinkTo()!).origin}/favicon.ico`
-			: undefined;
+		let url: string | undefined = undefined;
+		try {
+			console.log(item.getLinkTo());
+			url = `${new URL(item.getLinkTo()!).origin}/favicon.ico`;
+		} catch {}
+
 		if (url !== iconUrl) {
 			setIconUrl(url);
 		}

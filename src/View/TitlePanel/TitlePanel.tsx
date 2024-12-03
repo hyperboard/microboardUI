@@ -105,10 +105,12 @@ export function TitlePanel(): JSX.Element | null {
 					referrerPolicy: "no-referrer",
 				},
 			);
+
+			if (response.status === 204) {
+				return showModal("createTemplate");
+			}
+
 			if (!response.ok) {
-				if (response.status === 404) {
-					return showModal("createTemplate");
-				}
 				throw new Error("response not OK");
 			}
 			notify({

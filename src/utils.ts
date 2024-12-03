@@ -202,8 +202,10 @@ export const pasteSnapshot = ({
 	snapshot: BoardSnapshot;
 }) => {
 	const itemsMap = {};
-	for (const itemData in snapshot.items) {
-		itemsMap[itemData.id] = board.createItem(itemData.id, itemData);
+	for (const itemData of snapshot.items) {
+		const id = itemData.id;
+		delete itemData.id;
+		itemsMap[id] = itemData;
 	}
 	if (board.events && snapshot) {
 		board.paste(itemsMap, true);
