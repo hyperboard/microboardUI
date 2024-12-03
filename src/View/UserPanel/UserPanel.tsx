@@ -255,6 +255,7 @@ const ShareBtn = () => {
 export const UserPanel: React.FC = () => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
+	const { app } = useAppContext();
 	const account = useAccount();
 	const [cursorsActive, setCursorsActive] = useState(true);
 
