@@ -18,6 +18,7 @@ import { useCommentsContext } from "../CommentsContext.tsx";
 import { useTranslation } from "react-i18next";
 import { useIntersectionObserver } from "View/CommentsProvider/useIntersectionObserver";
 import { Avatar } from "View/UserPanel/Avatar/Avatar.tsx";
+import { useAccount } from "App/useAccount.ts";
 
 interface MessageOptionsData {
 	top: number;
@@ -42,6 +43,7 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 		>(undefined);
 		const { setOpenedThreadId, setTargetMessageId, targetMessageId } =
 			useCommentsContext();
+		const account = useAccount();
 
 		useAppSubscription(app, {
 			subjects: ["selection", "pointer"],
@@ -51,7 +53,7 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 		});
 
 		const { t } = useTranslation();
-		const accountInfo = app.account.info;
+		const accountInfo = account.info;
 		const username = accountInfo?.name || accountInfo?.email;
 
 		useIntersectionObserver({ comment, refs, username });
@@ -130,7 +132,7 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 
 		const thread = comment.getThread();
 		const canEditThread: boolean =
-			app.account.permissions.checkPermissions(
+			account.permissions.checkPermissions(
 				"owns",
 				"boards",
 				board.getBoardId(),
@@ -257,3 +259,5 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 		);
 	},
 );
+
+ThreadPanel.displayName = "ThreadPanel";

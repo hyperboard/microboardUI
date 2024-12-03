@@ -5,6 +5,7 @@ import { Comment } from "Board/Items/Comment/Comment";
 import styles from "./CreateComment.module.css";
 import clsx from "clsx";
 import { CommentInput } from "../CommentInput/CommentInput";
+import { useAccount } from "App/useAccount";
 
 interface Props {
 	comment: Comment;
@@ -15,6 +16,7 @@ export const CreateComment = ({ comment, className }: Props) => {
 	const formRef = useRef<null | HTMLDivElement>(null);
 	const [value, setValue] = useState("");
 	const { app, board } = useAppContext();
+	const account = useAccount();
 	const mbr = useDomMbr({
 		app,
 		board,
@@ -25,7 +27,7 @@ export const CreateComment = ({ comment, className }: Props) => {
 	});
 
 	const handleSubmit = () => {
-		const accountInfo = app.account.info;
+		const accountInfo = account.info;
 		comment.saveMessage(
 			value,
 			accountInfo?.name || accountInfo?.email,

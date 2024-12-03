@@ -48,7 +48,7 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 	// const { isAuth } = useAuth(app);
 	const boardsList = useBoardsList();
 	const account = useAccount();
-	const isAuth = app.account.isLoggedIn;
+	const isAuth = account.isLoggedIn;
 	const searchRef = useRef<HTMLInputElement>(null);
 	const newBoardRef = useRef<HTMLInputElement>(null);
 	const selectorRef = useRef<SelectorHandle<false>>(null);
@@ -103,7 +103,7 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 		if (selectorRef.current?.getSelectedOptions().value === "view") {
 			const authedUrl = `/boards/${boardId}/links`;
 			const unauthedUrl = `/boards/${boardId}/links/unauthed`;
-			const url = app.account.isLoggedIn
+			const url = account.isLoggedIn
 				? authedUrl
 				: authorKey
 					? unauthedUrl

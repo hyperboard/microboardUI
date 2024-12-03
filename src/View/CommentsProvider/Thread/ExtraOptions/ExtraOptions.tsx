@@ -1,10 +1,11 @@
+import { useAccount } from "App/useAccount";
+import { Comment } from "Board/Items/Comment/Comment";
 import React, { useState } from "react";
-import { UiButton } from "../../../Ui/UiButton";
+import { useAppContext } from "View/AppContext";
 import { Icon } from "../../../Icon";
+import { UiButton } from "../../../Ui/UiButton";
 import { UiPanel } from "../../../Ui/UiPanel";
 import styles from "./ExtraOptions.module.css";
-import { useAppContext } from "View/AppContext";
-import { Comment } from "Board/Items/Comment/Comment";
 
 interface Props {
 	comment: Comment;
@@ -14,9 +15,10 @@ interface Props {
 export const ExtraOptions = ({ comment, canEdit }: Props) => {
 	const [isCursorOnButton, setIsCursorOnButton] = useState(false);
 	const [isCursorOnMenu, setIsCursorOnMenu] = useState(false);
-	const { board, app } = useAppContext();
+	const { board } = useAppContext();
+	const account = useAccount();
 
-	const username = app.account.info?.name || app.account.info?.email;
+	const username = account.info?.name || account.info?.email;
 
 	const handleRemove = () => {
 		board.remove(comment);

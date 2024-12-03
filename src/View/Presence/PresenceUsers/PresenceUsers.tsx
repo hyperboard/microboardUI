@@ -1,21 +1,21 @@
-import React, { useEffect, useRef, useState } from "react";
-import styles from "./PresenceUsers.module.css";
+import { App } from "App";
+import { useAccount } from "App/useAccount";
 import {
 	Presence,
 	PRESENCE_CLEANUP_IDLE_TIMER,
 	PresenceUser,
 } from "Board/Presence/Presence";
-import { UserAvatar } from "./UserAvatar";
-import { Dropdown } from "./Dropdown";
-import { EyeIcon } from "./EyeIcon";
-import { App } from "App";
 import clsx from "clsx";
+import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useOutsideClickHandler } from "shared/hooks/useOutsideClickHandler";
 import { Button } from "shared/ui-lib/Button";
-import { UserShare } from "View/UserPanel/icons/UserShare";
 import { Input } from "shared/ui-lib/Input";
 import { Icon } from "View/Icon";
-import { useTranslation } from "react-i18next";
+import { Dropdown } from "./Dropdown";
+import { EyeIcon } from "./EyeIcon";
+import styles from "./PresenceUsers.module.css";
+import { UserAvatar } from "./UserAvatar";
 
 export interface User {
 	id: string;
@@ -31,12 +31,11 @@ interface Props {
 
 export const FollowingUsersCount: React.FC<{
 	followers: PresenceUser[];
-	app: App;
-}> = ({ followers, app }) => {
+}> = ({ followers }) => {
 	const { t } = useTranslation();
 	const [isOpen, setIsOpen] = useState(false);
 	const tooltipRef = useRef<HTMLDivElement>(null);
-
+	const account = useAccount();
 	useOutsideClickHandler(tooltipRef, () => {
 		setIsOpen(false);
 	});
@@ -66,7 +65,7 @@ export const FollowingUsersCount: React.FC<{
 				)}
 			>
 				<p className={styles.followersMe}>
-					{app.account.info?.email} {t("presence.(you)")}
+					{account.info?.email} {t("presence.(you)")}
 				</p>
 				<span className={styles.followersBoard}>
 					{t("presence.yourBoard")}

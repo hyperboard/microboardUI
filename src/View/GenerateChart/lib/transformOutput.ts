@@ -310,8 +310,7 @@ const transformers = {
 	Sticker: transformSticker,
 };
 
-export function transformAiOutput(output: AiItem[]): void {
-	const board = window.app.getBoard();
+export function transformAiOutput(output: AiItem[], board: Board): void {
 	itemsById.clear(); // Clear previous items map
 
 	// First pass: create all non-connector items

@@ -6,6 +6,7 @@ import { Comment } from "Board/Items/Comment/Comment";
 import { Mbr } from "Board/Items/Mbr/Mbr";
 import { Icon } from "View/Icon/Icon";
 import clsx from "clsx";
+import { useAccount } from "App/useAccount";
 
 interface Props {
 	comments: Comment[];
@@ -14,6 +15,7 @@ interface Props {
 export const Cluster = ({ comments }: Props) => {
 	const clusterRef = useRef<HTMLDivElement>(null);
 	const { board, app } = useAppContext();
+	const account = useAccount();
 
 	const mbr = useDomMbr({
 		app,
@@ -52,9 +54,7 @@ export const Cluster = ({ comments }: Props) => {
 	};
 
 	const hasUnreadMessages = comments.some(comment =>
-		comment.getUnreadMessages(
-			app.account.info?.name || app.account.info?.email,
-		),
+		comment.getUnreadMessages(account.info?.name || account.info?.email),
 	);
 
 	return (

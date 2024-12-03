@@ -17,11 +17,10 @@ interface Props {
 export const CommentCard = ({ comment }: Props) => {
 	const [showMoreComments, setShowMoreComments] = useState(false);
 	const refs = useRef<Record<string, HTMLDivElement>>({});
-	const { board, app } = useAppContext();
+	const { board } = useAppContext();
 	const account = useAccount();
 	const { t } = useTranslation();
 	const { setOpenedThreadId } = useCommentsContext();
-
 	const username = account.info?.name || account.info?.email;
 	const messages = comment.getThread();
 	const unreadMessages = comment
@@ -31,7 +30,7 @@ export const CommentCard = ({ comment }: Props) => {
 	useIntersectionObserver({
 		comment,
 		refs,
-		username: app.account.info?.email,
+		username: account.info?.email,
 		deps: [showMoreComments],
 		disabled: !showMoreComments,
 	});

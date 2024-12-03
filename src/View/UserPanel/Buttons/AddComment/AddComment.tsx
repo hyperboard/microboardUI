@@ -7,12 +7,14 @@ import { useForceUpdate } from "lib/useForceUpdate";
 import { useAppSubscription } from "Board/useBoardSubscription";
 import { useCommentsPanelContext } from "View/UserPanel/CommentsPanel/CommentsPanelContext";
 import styles from "./AddComment.module.css";
+import { useAccount } from "App/useAccount";
 
 export function AddComment() {
 	const { board, app } = useAppContext();
 	const { t } = useTranslation();
 	const { setIsPanelOpen } = useCommentsPanelContext();
 	const isActive = Boolean(board.tools.getAddComment());
+	const account = useAccount();
 
 	const forceUpdate = useForceUpdate();
 	useAppSubscription(app, {
@@ -20,7 +22,7 @@ export function AddComment() {
 		observer: forceUpdate,
 	});
 
-	const username = app.account.info?.name || app.account.info?.email;
+	const username = account.info?.name || account.info?.email;
 
 	let showBadge = !!username;
 	if (username) {

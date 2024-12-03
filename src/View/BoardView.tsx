@@ -54,7 +54,7 @@ const BoardView = ({ app }: Props): JSX.Element => {
 				t("modalInfo.accessDenied.description"),
 			);
 			if (!account.isLoggedIn) {
-				await boardsList.remove(board.getBoardId());
+				await boardsList.removeBoard(board.getBoardId());
 			}
 			navigate("/boards");
 			await app.openBoard("blank");

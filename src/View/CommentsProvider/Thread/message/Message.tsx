@@ -7,6 +7,7 @@ import { useAppContext } from "View/AppContext";
 import { CommentInput } from "../../CommentInput/CommentInput";
 import { formatDate } from "utils";
 import { Avatar } from "View/UserPanel/Avatar/Avatar.tsx";
+import { useAccount } from "App/useAccount";
 
 interface Props {
 	text: string;
@@ -41,13 +42,12 @@ export const Message = forwardRef<HTMLDivElement, Props>(
 		}: Props,
 		ref,
 	) => {
-		const { app } = useAppContext();
 		const [value, setValue] = useState(text);
 		const [isOptionsBtnVisible, setIsOptionsBtnVisible] = useState(false);
+		const account = useAccount();
 
 		const canEdit =
-			app.account.info?.name === username ||
-			app.account.info?.email === username;
+			account.info?.name === username || account.info?.email === username;
 		const handleEditClick = () => {
 			setTextUnderEditor(undefined);
 			handleEditMessage(value, id);
@@ -134,3 +134,5 @@ export const Message = forwardRef<HTMLDivElement, Props>(
 		);
 	},
 );
+
+Message.displayName = "Message";

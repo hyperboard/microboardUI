@@ -12,6 +12,7 @@ import { useForceUpdate } from "lib/useForceUpdate";
 import { Point } from "Board/Items/Point/Point";
 import { CommentPreview } from "./CommentPreview/CommentPreview";
 import { Avatar } from "View/UserPanel/Avatar/Avatar.tsx";
+import { useAccount } from "App/useAccount.ts";
 
 interface Props {
 	comment: Comment;
@@ -33,6 +34,7 @@ export const CommentContainer = ({ comment }: Props) => {
 		movingComment,
 	} = useCommentsContext();
 	const isThreadOpen = openedThreadId === comment.getId();
+	const account = useAccount();
 
 	const mbr = useDomMbr({
 		app,
@@ -110,7 +112,7 @@ export const CommentContainer = ({ comment }: Props) => {
 		}
 	};
 
-	const username = app.account.info?.name || app.account.info?.email;
+	const username = account.info?.name || account.info?.email;
 	const unreadMessages = comment.getUnreadMessages(username);
 	const isUnread = Boolean(
 		unreadMessages ||

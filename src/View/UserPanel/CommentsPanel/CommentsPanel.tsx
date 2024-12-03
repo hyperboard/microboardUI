@@ -14,6 +14,7 @@ import { useForceUpdate } from "lib/useForceUpdate";
 import { useAppSubscription } from "Board/useBoardSubscription";
 import { useClickOutside } from "lib/useClickOutside";
 import { useCommentsPanelContext } from "View/UserPanel/CommentsPanel/CommentsPanelContext";
+import { useAccount } from "App/useAccount";
 
 export const CommentsPanel = () => {
 	const [isOptionsPanelOpen, setIsOptionsPanelOpen] = useState(false);
@@ -35,7 +36,7 @@ export const CommentsPanel = () => {
 	const forceUpdate = useForceUpdate();
 	const optionsPanelRef = useRef<HTMLDivElement>(null);
 	const filtersPanelRef = useRef<HTMLDivElement>(null);
-
+	const account = useAccount();
 	useAppSubscription(app, {
 		subjects: ["items"],
 		observer: () => {
@@ -43,7 +44,7 @@ export const CommentsPanel = () => {
 		},
 	});
 
-	const username = app.account.info?.name || app.account.info?.email;
+	const username = account.info?.name || account.info?.email;
 
 	const closePanels = () => {
 		setIsOptionsPanelOpen(false);
@@ -112,7 +113,7 @@ export const CommentsPanel = () => {
 	};
 
 	const canViewResolvedComments: boolean =
-		app.account.permissions.checkPermissions(
+		account.permissions.checkPermissions(
 			"owns",
 			"boards",
 			board.getBoardId(),

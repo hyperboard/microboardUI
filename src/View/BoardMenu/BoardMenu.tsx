@@ -9,6 +9,7 @@ import { useAppSubscription } from "../../Board/useBoardSubscription";
 import styles from "./BoardMenu.module.css";
 import { useCommentsContext } from "../CommentsProvider";
 import { useTranslation } from "react-i18next";
+import { useAccount } from "App/useAccount";
 
 export const BoardMenu = () => {
 	const menuRef = useRef<HTMLDivElement>(null);
@@ -17,7 +18,8 @@ export const BoardMenu = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const { setShowResolved, showResolved } = useCommentsContext();
 	const { t } = useTranslation();
-	const isOwner = app.account.permissions.checkPermissions(
+	const account = useAccount();
+	const isOwner = account.permissions.checkPermissions(
 		"owns",
 		"boards",
 		board.getBoardId(),
@@ -63,7 +65,7 @@ export const BoardMenu = () => {
 	};
 
 	const resolveAllComments = () => {
-		const username = app.account.info?.email;
+		const username = account.info?.email;
 		if (!username) {
 			return;
 		}
