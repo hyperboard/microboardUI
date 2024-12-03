@@ -10,6 +10,7 @@ import style from "./EndPointer.module.css";
 import { useAppContext } from "View/AppContext";
 import { ConnectorPointerStyle } from "Board/Items/Connector/Pointers/Pointers";
 import { ConnectorPointerType } from "View/Icon/ConnectorPointerIcon";
+import { SessionStorage } from "App/SessionStorage";
 
 const MENU_NAME = "EndPointer";
 
@@ -25,7 +26,7 @@ export function EndPointer(): React.ReactElement | null {
 	};
 	const handlePick = (type: ConnectorPointerStyle): void => {
 		board.selection.setEndPointerStyle(type);
-		app.storage.setConnectorPointer(type, "end");
+		app.sessionStorage.setConnectorPointer(type, "end");
 		toggleMenu("None");
 	};
 	return (

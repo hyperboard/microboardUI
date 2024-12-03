@@ -34,10 +34,7 @@ export function AddConnector(): React.ReactElement {
 		const tool = board.tools.getAddConnector();
 		if (tool) {
 			tool.setLineStyle(lineStyle);
-			app.sessionStorage.setConnectorLineStyle(
-				lineStyle,
-				board.getBoardId(),
-			);
+			app.sessionStorage.setConnectorLineStyle(lineStyle);
 			setIsActive(false);
 		}
 	};

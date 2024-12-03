@@ -11,6 +11,7 @@ import { useAppContext } from "View/AppContext";
 import clsx from "clsx";
 import { ConnectorPointerStyle } from "Board/Items/Connector/Pointers/Pointers";
 import { ConnectorPointerType } from "View/Icon/ConnectorPointerIcon";
+import { SessionStorage } from "App/SessionStorage";
 
 const MENU_NAME = "StartPointer";
 
@@ -26,7 +27,7 @@ export function StartPointer(): React.ReactElement | null {
 	};
 	const handlePick = (type: ConnectorPointerStyle): void => {
 		board.selection.setStartPointerStyle(type);
-		app.storage.setConnectorPointer(type, "start");
+		app.sessionStorage.setConnectorPointer(type, "start");
 		toggleMenu("None");
 	};
 	return (

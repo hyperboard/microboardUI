@@ -7,19 +7,22 @@ import { UiButton } from "ViewTalkIntegration/Ui/UiButton/UiButton";
 import { ButtonWithMenu } from "ViewTalkIntegration/ContextPanel/Buttons/ButtonWithMenu";
 import { UiPanel } from "ViewTalkIntegration/Ui/UiPanel/UiPanel";
 import { useTalkTranslation } from "ViewTalkIntegration/useTalkTranslation";
+import { useAppContext } from "View/AppContext";
 
 const MENU_NAME = "ConnectorType";
 
 export function ConnectorType(): React.ReactElement | null {
 	const { board, toggleMenu, openedMenu, panelMbr, windowHeight } =
 		usePanelContext();
+	const { app } = useAppContext();
 	const { t } = useTalkTranslation();
 
 	const connectorType = board.selection.getConnectorLineStyle();
-	const handleClick = () => {
+	const handleClick = (): void => {
 		toggleMenu(MENU_NAME);
 	};
-	const handlePick = (type: ConnectorLineStyle) => {
+	const handlePick = (type: ConnectorLineStyle): void => {
+		app.sessionStorage.setConnectorLineStyle(type);
 		board.selection.setConnectorLineStyle(type);
 		toggleMenu("None");
 	};

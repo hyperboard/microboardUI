@@ -6,12 +6,12 @@ import type { TextStyle } from "Board/Items/RichText";
 import type { StickerData } from "Board/Items/Sticker/StickerOperation";
 
 export class SessionStorage {
-	private set<T>(key: string, value: T) {
+	private set<T>(key: string, value: T): void {
 		const boardId = this.getBoardId() || "";
 		sessionStorage.setItem(boardId + "_" + key, JSON.stringify(value));
 	}
 
-	private get<T>(key: string) {
+	private get<T>(key: string): T | undefined {
 		const boardId = this.getBoardId() || "";
 		const item = sessionStorage.getItem(boardId + "_" + key);
 
@@ -22,7 +22,7 @@ export class SessionStorage {
 		return JSON.parse(item) as T;
 	}
 
-	remove(key: string) {
+	remove(key: string): void {
 		const boardId = this.getBoardId() || "";
 		sessionStorage.removeItem(boardId + "_" + key);
 	}
@@ -50,81 +50,83 @@ export class SessionStorage {
 	}
 
 	getConnectorLineStyle(): ConnectorLineStyle | undefined {
-		return this.get("connectorLineStyle");
+		return this.get<ConnectorLineStyle>("connectorLineStyle");
 	}
 
-	setShapeData(data: Partial<ShapeData>) {
+	setShapeData(data: Partial<ShapeData>): void {
 		this.set("lastShapeData", data);
 	}
 
-	getShapeData() {
+	getShapeData(): ShapeData | undefined {
 		return this.get<ShapeData>("lastShapeData");
 	}
 
-	setStickerData(data: Partial<StickerData>) {
+	setStickerData(data: Partial<StickerData>): void {
 		this.set("lastSticker", data);
 	}
 
-	getStickerData() {
+	getStickerData(): StickerData | undefined {
 		return this.get<StickerData>("lastSticker");
 	}
 
-	setShapeWidth(width: number) {
+	setShapeWidth(width: number): void {
 		this.set("shapeWidth", width);
 	}
 
-	getShapeWidth() {
+	getShapeWidth(): number | undefined {
 		return this.get<number>("shapeWidth");
 	}
 
-	setShapeHeight(height: number) {
+	setShapeHeight(height: number): void {
 		this.set("shapeHeight", height);
 	}
 
-	getShapeHeight() {
+	getShapeHeight(): number | undefined {
 		return this.get<number>("shapeHeight");
 	}
 
-	setFontSize(itemType: string, size: number | "auto") {
+	setFontSize(itemType: string, size: number | "auto"): void {
 		this.set(`fontSize_${itemType}`, size);
 	}
 
-	getFontSize(itemType: string) {
+	getFontSize(itemType: string): number | "auto" | undefined {
 		return this.get<number | "auto">(`fontSize_${itemType}`);
 	}
 
-	setFontStyles(itemType: string, styles: TextStyle[]) {
+	setFontStyles(itemType: string, styles: TextStyle[]): void {
 		this.set(`fontStyles_${itemType}`, styles);
 	}
 
-	getFontStyles(itemType: string) {
+	getFontStyles(itemType: string): TextStyle[] | undefined {
 		return this.get<TextStyle[]>(`fontStyles_${itemType}`);
 	}
 
-	setFontColor(itemType: string, color: string) {
+	setFontColor(itemType: string, color: string): void {
 		this.set(`fontColor_${itemType}`, color);
 	}
 
-	getFontColor(itemType: string) {
+	getFontColor(itemType: string): string | undefined {
 		return this.get<string>(`fontColor_${itemType}`);
 	}
 
-	setFontHighlight(itemType: string, highlightColor: string) {
+	setFontHighlight(itemType: string, highlightColor: string): void {
 		this.set(`fontHighlightColor_${itemType}`, highlightColor);
 	}
 
-	getFontHighlight(itemType: string) {
+	getFontHighlight(itemType: string): string | undefined {
 		return this.get<string>(`fontHighlightColor_${itemType}`);
 	}
 
 	setHorizontalAlignment(
 		itemType: string,
 		horizontalAlignment: "left" | "center" | "right",
-	) {
+	): void {
 		this.set(`fontHorizontalAlignment_${itemType}`, horizontalAlignment);
 	}
 
-	getHorizontalAlignment(itemType: string) {
+	getHorizontalAlignment(
+		itemType: string,
+	): "left" | "center" | "right" | undefined {
 		return this.get<"left" | "center" | "right">(
 			`fontHorizontalAlignment_${itemType}`,
 		);
@@ -133,21 +135,23 @@ export class SessionStorage {
 	setVerticalAlignment(
 		itemType: string,
 		verticalAlignment: "top" | "center" | "bottom",
-	) {
+	): void {
 		this.set(`fontVerticalAlignment_${itemType}`, verticalAlignment);
 	}
 
-	getVerticalAlignment(itemType: string) {
+	getVerticalAlignment(
+		itemType: string,
+	): "top" | "center" | "bottom" | undefined {
 		return this.get<"top" | "center" | "bottom">(
 			`fontVerticalAlignment_${itemType}`,
 		);
 	}
 
-	clear() {
+	clear(): void {
 		sessionStorage.clear();
 	}
 
-	private getBoardId() {
+	private getBoardId(): string | undefined {
 		return window.location.href.split("/").pop()?.split("?")[0];
 	}
 }

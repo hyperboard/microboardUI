@@ -33,10 +33,11 @@ export function ConnectorType(): React.ReactElement | null {
 	};
 	const handlePick = (type: ConnectorLineStyle): void => {
 		board.selection.setConnectorLineStyle(type);
+		app.sessionStorage.setConnectorLineStyle(type);
 		toggleMenu("None");
 	};
 
-	const handleStrokeStylePick = (style: BorderStyle) => {
+	const handleStrokeStylePick = (style: BorderStyle): void => {
 		board.selection.setStrokeStyle(style);
 		toggleMenu("None");
 	};
