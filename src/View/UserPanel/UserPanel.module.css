@@ -206,6 +206,10 @@
 	transition: all 0.3s ease;
 }
 
+.iconActive {
+	background-color: #f7f7f8;
+}
+
 .icon:first-child {
 	border-radius: 12px 0 0 12px;
 }
@@ -223,7 +227,7 @@
 	transform: scale(0.9);
 }
 
-.icon:focus {
+.icon:active {
 	box-shadow: inset 0px 0px 0px 2px #b78af0;
 }
 

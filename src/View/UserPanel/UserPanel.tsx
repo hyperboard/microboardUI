@@ -31,18 +31,14 @@ import { useUiModalContext } from "View/Ui/UiModal";
 import { UiPanel } from "View/Ui/UiPanel";
 import { PasswordChanged } from "View/Widgets/form-notifications/password-changed";
 import styles from "./UserPanel.module.css";
-import { useAppContext } from "View/AppContext";
-import { PresenceUsers } from "View/Presence/PresenceUsers/PresenceUsers";
-import { shouldShow } from "lib/queryStringParser";
 import { AddComment } from "./Buttons/AddComment/AddComment.tsx";
-import { getEmailPrefix } from "lib/getEmailPrefix";
-import { App } from "App";
 import {
 	CommentsPanelContextProvider,
 	useCommentsPanelContext,
 } from "View/UserPanel/CommentsPanel/CommentsPanelContext";
 import { CommentsPanel } from "View/UserPanel/CommentsPanel/CommentsPanel";
 import { useCommentsContext } from "View/CommentsProvider/CommentsContext";
+import { Click } from "./icons/Click.tsx";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	email?: string;
@@ -483,12 +479,13 @@ const ShareBtn = () => {
 	);
 };
 
-export const UserPanel: React.FC = () => {
+export const UserPanel: React.FC<{ app: App }> = ({ app }) => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const account = useAccount();
+	const [cursorsActive, setCursorsActive] = useState(true);
 
 	const insideOfMicroboard =
 		document.referrer.includes("https://microboard.io/") ||
@@ -604,21 +601,36 @@ export const UserPanel: React.FC = () => {
 	return (
 		<CommentsPanelContextProvider>
 			<UiPanel zIndex={10} padding={0} className={styles.wrapper}>
-				{/* <div className={styles.icons}>
-					<button className={styles.icon}>
+				<div className={styles.icons}>
+					<button
+						className={clsx(
+							styles.icon,
+							cursorsActive && styles.iconActive,
+						)}
+						onClick={() => {
+							const cursorsEnabled = app
+								.getBoard()
+								.presence.toggleCursorsRendering();
+
+							setCursorsActive(cursorsEnabled);
+						}}
+					>
 						<Click />
 					</button>
-					<button className={styles.icon}>
+					{/* <button className={styles.icon}>
 						<Thumb />
 					</button>
 					<button className={styles.icon}>
 						<Ring />
-					</button>
+					</button>  */}
 				</div>
-				<Button className={styles.btn} pattern="primary">
+
+				<PresenceUsers app={app} />
+
+				{/* <Button className={styles.btn} pattern="primary">
 					<UserShare />
 					Share
-				</Button> */}
+				</Button> 
 
 				{/* TODO: remove temporarily inline style */}
 				{(account.info?.name || account.info?.email) && <AddComment />}
@@ -646,7 +658,6 @@ export const UserPanel: React.FC = () => {
 export const UserPanelLayout: React.FC<{ app: App }> = ({ app }) => {
 	return (
 		<div className={styles.layoutWrapper}>
-			<PresenceUsers board={app.getBoard()} />
 			{shouldShow("userPanel") && <UserPanel app={app} />}
 		</div>
 	);

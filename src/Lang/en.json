@@ -645,5 +645,18 @@
 		},
 		"grantedUsers": "Users with access",
 		"submit": "Submit"
+	},
+	"presence": {
+		"anonymous": "Anonymous",
+		"followingUser": "Following user",
+		"stop": "Stop",
+		"bringToMe": "Bring everyone to me",
+		"bringAllToMe": "Bring everyone to me",
+		"follower": "follower",
+		"followers": "followers",
+		"following": "following",
+		"yourBoard": "Your board",
+		"(you)": "(you)",
+		"share": "Share"
 	}
 }
