@@ -90,7 +90,7 @@ export function createApp(isHistory = true): App {
 		}
 		let currentBoard = boards.get(id);
 		if (!currentBoard) {
-			currentBoard = new Board(id);
+			currentBoard = new Board(id, accessKey);
 			currentBoard.connect(connection);
 			boards.set(id, currentBoard);
 		}

@@ -35,7 +35,9 @@ export type AccessKey = {
 	accessKey: string;
 };
 
-export type AccessKeyPayload = Partial<Omit<AccessKey, "accessKey">>;
+export type AccessKeyPayload = Partial<
+	Omit<AccessKey, "accessKey" | "boardId">
+>;
 
 export enum UserAccessType {
 	View = "view",

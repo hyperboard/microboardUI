@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
 import { App } from "App";
-import { LAST_BOARD_KEY } from "App/App";
 import { useAccount } from "App/useAccount";
 import { useBoardsList } from "App/useBoardsList";
 import React, { useLayoutEffect } from "react";
@@ -27,7 +26,6 @@ type Props = {
 const BoardView = ({ app }: Props): JSX.Element => {
 	const board = app.getBoard();
 	const params = useParams<{ boardId: string }>();
-	const { pathname } = useLocation();
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const [searchParams] = useSearchParams();
@@ -67,7 +65,10 @@ const BoardView = ({ app }: Props): JSX.Element => {
 		account.init().finally(() => {
 			boardsList.loadBoards().then(() => {
 				if (params.boardId) {
-					app.openBoard(params.boardId).then(() => {
+					app.openBoard(
+						params.boardId,
+						searchParams.get("accessKey") ?? undefined,
+					).then(() => {
 						navigate(`/boards/${params.boardId}?${searchParams}`, {
 							replace: true,
 						});
