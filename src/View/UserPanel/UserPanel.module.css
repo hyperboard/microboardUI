@@ -414,3 +414,47 @@
 		display: none;
 	}
 }
+
+.tooltip {
+	box-shadow:
+		0px 10px 16px -3px rgba(20, 21, 26, 0.05),
+		0px 3px 10px -2px rgba(20, 21, 26, 0.02);
+	border-radius: 8px;
+	background-color: #0b0c0e;
+	display: none;
+	position: relative;
+}
+
+.tooltipWrapper {
+	position: absolute;
+	top: calc(100% + 8px);
+	right: 0;
+}
+
+.tooltip::before {
+	content: "";
+	background-image: url("data:image/svg+xml,%3Csvg width='14' height='4' viewBox='0 0 14 4' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6.9372 0C6.9372 0 3.40535 3.99848 0.0980963 3.99963C-1.46344 4.00017 16.1695 4.00007 13.7763 3.99963C10.2587 3.99898 6.9372 0 6.9372 0Z' fill='%230B0C0E'/%3E%3C/svg%3E%0A");
+	position: absolute;
+	top: -4px;
+	right: 10px;
+	height: 4px;
+	width: 14px;
+}
+
+.userPic:hover .tooltip {
+	display: grid;
+	grid-template-rows: repeat(2, 1fr);
+	gap: 4px;
+	grid-template-columns: max-content;
+	padding: 12px 16px;
+	font-size: 12px;
+	font-weight: 400;
+}
+
+.tooltipName {
+	color: rgba(255, 255, 255);
+}
+
+.tooltipMsg {
+	color: rgba(255, 255, 255, 0.6);
+}

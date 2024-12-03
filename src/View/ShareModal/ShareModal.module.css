@@ -1,7 +1,6 @@
 .heading {
 	font-size: 30px;
 	font-weight: 600;
-	margin-bottom: 8px;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	max-width: 100%;
@@ -38,7 +37,7 @@
 	display: grid;
 	grid-template-columns: minmax(max-content, 60%) minmax(190px, 1fr);
 	gap: 16px;
-	padding-top: 20px;
+	padding-top: 12px;
 	padding-bottom: 8px;
 }
 
@@ -105,6 +104,7 @@
 
 .usersList {
 	padding-top: 12px;
+	padding-bottom: 8px;
 	display: flex;
 	flex-direction: column;
 	gap: 20px;
@@ -114,4 +114,19 @@
 	font-size: 14px;
 	font-weight: 500;
 	color: rgba(13, 17, 38, 0.4);
+}
+
+.grantedUsers {
+	padding-top: 24px;
+}
+
+.copyBtn {
+	color: rgba(20, 21, 26, 1);
+	font-weight: 500;
+}
+
+.copyIcon {
+	color: rgba(105, 107, 118, 1);
+	display: grid;
+	place-items: center;
 }

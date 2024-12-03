@@ -229,11 +229,11 @@ export class TextEditor extends React.Component<
 					left: `${left}px`,
 					top: `${top}px`,
 
-					maxWidth: `${editorMaxWidth}px`,
+					maxWidth: `${Math.ceil(editorMaxWidth)}px`,
 					maxHeight: `${editorMaxHeight}px`,
 					// width: `${maxWidth}px`,
 					// height: `${maxHeight}px`,
-					width: `${editorWidth}px`,
+					width: `${Math.ceil(editorWidth) + 10}px`,
 					height: `${editorHeight}px`,
 
 					transformOrigin: "left top",
