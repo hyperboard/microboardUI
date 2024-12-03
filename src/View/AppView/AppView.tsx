@@ -60,10 +60,6 @@ export function AppView(): JSX.Element {
 	}
 
 	useEffect(() => {
-		const handlePaste = (event: ClipboardEvent): void => {
-			controller.onPaste(event, app);
-		};
-
 		const handleCtrlWheel = (ev: WheelEvent): void => {
 			if (ev.ctrlKey) {
 				ev.preventDefault();
@@ -103,7 +99,7 @@ export function AppView(): JSX.Element {
 			window.addEventListener("keydown", controller.onKeyDown);
 			window.addEventListener("keyup", controller.onKeyUp);
 			window.addEventListener("copy", controller.onCopy);
-			window.addEventListener("paste", handlePaste);
+			window.addEventListener("paste", controller.onPaste);
 			window.addEventListener("drop", controller.onDrop);
 			window.addEventListener("dragover", event =>
 				event.preventDefault(),
@@ -129,7 +125,7 @@ export function AppView(): JSX.Element {
 				window.removeEventListener("keydown", controller.onKeyDown);
 				window.removeEventListener("keyup", controller.onKeyUp);
 				window.removeEventListener("copy", controller.onCopy);
-				window.removeEventListener("paste", handlePaste);
+				window.removeEventListener("paste", controller.onPaste);
 				window.removeEventListener("drop", controller.onDrop);
 			}
 		};

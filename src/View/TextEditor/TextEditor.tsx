@@ -11,6 +11,7 @@ import styles from "./TextEditor.module.css";
 import clsx from "clsx";
 import { Icon } from "View/Icon";
 import { Transforms } from "slate";
+import { tryToPasteAsItemOrReturnText } from "App/Paste";
 
 export class TextEditors extends React.Component<
 	{
@@ -90,14 +91,25 @@ export class TextEditor extends React.Component<
 	};
 
 	onPaste = (event): void => {
-		const text = this.props.text;
+		const board = this.props.board;
 
-		if (text.insideOf === "Frame") {
-			event.preventDefault();
-			const newText = event.clipboardData.getData("text/plain");
-			const singleParagraph = newText.replace(/\n+/g, " ").trim();
-			Transforms.insertText(text.editor.editor, singleParagraph);
+		// TODO: actually check login
+		let text = tryToPasteAsItemOrReturnText(event, board, true);
+
+		event.preventDefault();
+		event.stopPropagation();
+
+		if (!text) {
+			return;
 		}
+
+		const richText = this.props.text;
+
+		if (richText.insideOf === "Frame") {
+			text = text.replace(/\n+/g, " ").trim();
+		}
+
+		Transforms.insertText(richText.editor.editor, text);
 	};
 
 	render(): React.ReactElement | null {

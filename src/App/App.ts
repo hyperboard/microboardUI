@@ -7,7 +7,8 @@ import { Account } from "./Account";
 import { BoardsList } from "./BoardsList";
 import { Clipboard } from "./Clipboard";
 import { Connection, createConnection } from "./Connection";
-import { Controller, getController } from "./getController";
+import { Controller } from "./getController";
+import { getController } from "./getController";
 import { Subscriptions, getSubscriptions } from "./getSubscriptions";
 import { Location } from "./Location";
 import { Storage } from "./Storage";
@@ -66,7 +67,11 @@ export function createApp(isHistory = true): App {
 		return storage;
 	}
 
-	const controller = getController(getBoard, clipboard);
+	function isLoggedIn(): boolean {
+		return account.isLoggedIn;
+	}
+
+	const controller = getController(getBoard, clipboard, isLoggedIn);
 	const subscriptions = getSubscriptions(getBoard);
 
 	const boards = new Map();

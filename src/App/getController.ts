@@ -1,19 +1,14 @@
 import { Board } from "Board";
-import { Mbr } from "Board/Items";
 import { ImageItem } from "Board/Items/Image";
-import { RichText } from "Board/Items/RichText/RichText";
 import { checkHotkeys, isControlCharacter } from "Board/Keyboard";
-import { validateItemsMap } from "Board/Validators";
 import { Clipboard } from "./Clipboard";
 import { createWheel } from "./Wheel/Wheel";
 import { isSafari } from "./isSafari";
 import { prepareImage } from "Board/Items/Image/ImageHelpers";
 import { HotkeysMap } from "Board/Keyboard/types";
-import { pasteMiroClipboard } from "../View/ImportMiro/ImportMiroBoards/ImportBoardItem/MiroClipboardTransformer";
-import { App } from "./App";
-import { getGlobalModalFunctions } from "View/Modal/ModalProvider";
 import { throttle } from "shared/utils";
 import { PRESENCE_CURSOR_THROTTLE } from "Board/Presence/Presence";
+import { pasteTextToTheBoard, tryToPasteAsItemOrReturnText } from "./Paste";
 
 export interface Controller {
 	onWheel: (event: WheelEvent) => void;
@@ -29,13 +24,14 @@ export interface Controller {
 	onResize: () => void;
 	onContextMenu: (event: MouseEvent) => void;
 	onCopy: (event: ClipboardEvent) => void;
-	onPaste: (event: ClipboardEvent, app: App) => void;
+	onPaste: (event: ClipboardEvent) => void;
 	onDrop: (event: DragEvent) => void;
 }
 
 export function getController(
 	getBoard: () => Board,
 	clipboard: Clipboard,
+	isLoggedIn: () => boolean,
 ): Controller {
 	function onWheel(event: WheelEvent): void {
 		event.preventDefault();
@@ -489,138 +485,17 @@ export function getController(
 		event.preventDefault();
 	}
 
-	function onPaste(event: ClipboardEvent, app: App): void {
+	function onPaste(event: ClipboardEvent): void {
 		const board = getBoard();
 		if (!board) {
 			return;
 		}
-		if (board.selection.getContext() === "EditTextUnderPointer") {
-			const text = event.clipboardData?.getData("text/plain") || "";
-			try {
-				const data = JSON.parse(text);
-				const isDataValid = validateItemsMap(data);
-				if (isDataValid) {
-					board.paste(data);
-					event.preventDefault();
-					event.stopPropagation();
-					return;
-				} else {
-					throw new Error();
-				}
-			} catch (error) {}
-			return;
-		}
 
-		let didAttempImage = false;
-		const items = event.clipboardData?.items;
-		// @ts-expect-error iterates just fine
-		for (const item of items) {
-			if (item.type.indexOf("image") !== -1) {
-				didAttempImage = true;
-				const file = item.getAsFile();
-				const reader = new FileReader();
-				reader.onload = event => {
-					prepareImage(event.target?.result)
-						.then(imageData => {
-							const image = new ImageItem(imageData);
-							image.transformation.translateTo(
-								board.pointer.point.x,
-								board.pointer.point.y,
-							);
-							board.add(image);
-						})
-						.catch(er => {
-							console.error("Could not create image:", er);
-							// TODO notification
-						});
-				};
+		const text = tryToPasteAsItemOrReturnText(event, board, isLoggedIn());
 
-				reader.readAsDataURL(file);
-			}
-		}
-		if (didAttempImage) {
-			return;
-		}
-
-		function adjustBytes(byteArray: Uint8Array, adjustment: number): void {
-			for (let i = 0; i < byteArray.length; i++) {
-				const byte = byteArray[i];
-				if (byte < 256) {
-					byteArray[i] = (byte + adjustment) % 256;
-				}
-			}
-		}
-
-		function getVersionSuffix(version: number): string {
-			return version > 0 ? `-v${version}` : "";
-		}
-
-		function decodeData(encodedData: string): string | null {
-			return (function (
-				encodedString: string,
-				adjustment: number,
-			): string {
-				const decodedBase64 = atob(encodedString);
-				const byteArray = new Uint8Array(decodedBase64.length);
-
-				for (let i = 0; i < byteArray.length; i++) {
-					byteArray[i] = decodedBase64.charCodeAt(i);
-				}
-
-				adjustBytes(byteArray, 197);
-				return new TextDecoder().decode(byteArray);
-			})(
-				(function (data: string, version = 1): string | null {
-					const versionSuffix = getVersionSuffix(version);
-					const regex = new RegExp(
-						`<--\\(miro-data${versionSuffix}\\)(.*)(\\(\\/miro-data${versionSuffix}\\)-->)`,
-						"gi",
-					);
-					const match = regex.exec(data);
-					return match ? match[1] : null;
-				})(encodedData) || encodedData,
-				0,
-			);
-		}
-
-		const html = event?.clipboardData?.getData("text/html");
-		if (html && /miro/i.test(html.substring(0, 100))) {
-			try {
-				const decoded = decodeData(html);
-
-				if (decoded !== null) {
-					const miroData = JSON.parse(decoded);
-
-					if (!app.account.isLoggedIn && miroData !== null) {
-						const { showModal } = getGlobalModalFunctions();
-						showModal?.("authClipboardMiro");
-						return;
-					}
-
-					pasteMiroClipboard(board, miroData || []);
-
-					return;
-				}
-			} catch (err) {
-				console.error(err);
-				// TODO: notification/ toast?
-			}
-		}
-
-		const text = event?.clipboardData?.getData("text/plain") || "";
-		try {
-			const data = JSON.parse(text);
-			const isDataValid = validateItemsMap(data);
-			if (isDataValid) {
-				board.paste(data);
-			} else {
-				throw new Error();
-			}
-		} catch (error) {
+		if (text) {
 			pasteTextToTheBoard(board, text);
 		}
-
-		event.preventDefault();
 	}
 
 	function onDrop(event): void {
@@ -636,7 +511,7 @@ export function getController(
 		reader.onload = function (event) {
 			prepareImage(event.target?.result)
 				.then(imageData => {
-					const image = new ImageItem(imageData);
+					const image = new ImageItem(imageData, board);
 					image.transformation.translateTo(
 						board.pointer.point.x,
 						board.pointer.point.y,
@@ -655,7 +530,7 @@ export function getController(
 	return {
 		onWheel,
 		onPointerDown,
-		onPointerMove, // throttlePointerEvent(onPointerMove, 16), // 16 мс ~ 60 fps,
+		onPointerMove,
 		onPointerUp,
 		onPointerLeave,
 		onPointerCancel,
@@ -685,21 +560,7 @@ function isTextInput(element): boolean {
 	}
 }
 
-function pasteTextToTheBoard(board: Board, text: string): void {
-	const richText = new RichText(new Mbr());
-	richText.transformation.translateTo(
-		board.pointer.point.x,
-		board.pointer.point.y,
-	);
-	richText.transformation.scaleBy(1, 1);
-	richText.editor.setMaxWidth(600);
-	richText.editor.setSelectionHorisontalAlignment("left");
-	richText.insideOf = richText.itemType;
-	richText.editor.insertText(text);
-	board.add(richText);
-}
-
-function postKeyboardEvent(event: KeyboardEvent): void {
+export function postKeyboardEvent(event: KeyboardEvent): void {
 	if (!isTextInput(event.target)) {
 		window.parent.postMessage(serializeKeyboardEvent(event), "*");
 	}
@@ -747,32 +608,4 @@ function serializeKeyboardEvent(event: KeyboardEvent): SerializedKeyboardEvent {
 			which: event.which,
 		},
 	};
-}
-
-// Декоратор для троттлинга событий движения указателя
-function throttlePointerEvent<
-	T extends (event: PointerEvent, ...args: any[]) => any,
->(func: T, limit: number): T {
-	let lastCallTime = 0;
-	let lastEvent: PointerEvent | null = null;
-
-	return function (this: any, ...args: Parameters<T>): ReturnType<T> {
-		const currentTime = Date.now();
-		const event = args[0] as PointerEvent;
-
-		// Обновляем lastEvent каждый раз, когда получаем новое событие
-		lastEvent = event;
-
-		if (currentTime - lastCallTime >= limit) {
-			lastCallTime = currentTime;
-			const result = func.apply(this, [
-				lastEvent,
-				...args.slice(1),
-			] as Parameters<T>);
-			lastEvent = null;
-			return result;
-		}
-
-		return undefined as ReturnType<T>;
-	} as T;
 }
