@@ -19,7 +19,7 @@ export const CommentsProvider = () => {
 	let showCreateComment = false;
 
 	useAppSubscription(app, {
-		subjects: ["items", "camera", "tools", "selectionItems"],
+		subjects: ["items", "camera", "tools", "selectionItems", "selection"],
 		observer: () => {
 			forceUpdate();
 		},
@@ -35,7 +35,10 @@ export const CommentsProvider = () => {
 	});
 
 	const { clusters, singleComments } = useCommentsMerge(
-		comments.filter(comment => comment !== movingComment),
+		comments.filter(
+			comment =>
+				comment !== movingComment && !comment.transformationRenderBlock,
+		),
 		board.camera.getScale(),
 	);
 

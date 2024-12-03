@@ -331,6 +331,8 @@ export function ContextPanel() {
 						<>
 							<Lock rounded="left" />
 							<UiSeparator vertical />
+							<Duplicate />
+							<Delete />
 							<RestOptionsMenu rounded="full">
 								<BringToFront />
 								<SendToBack />

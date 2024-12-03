@@ -3,7 +3,7 @@ import { useAppSubscription } from "../../Board/useBoardSubscription";
 import { useForceUpdate } from "../../lib/useForceUpdate";
 import { useAppContext } from "../AppContext";
 import { LinkToButton } from "./LinkToButton/LinkToButton";
-import { Item } from "../../Board/Items";
+import { Item } from "Board/Items/Item";
 import { notify } from "View/Ui/Toast/notify";
 import { useTranslation } from "react-i18next";
 
@@ -13,7 +13,7 @@ export const LinksProvider = () => {
 	const forceUpdate = useForceUpdate();
 
 	useAppSubscription(app, {
-		subjects: ["items", "camera"],
+		subjects: ["items", "camera", "selection"],
 		observer: () => {
 			forceUpdate();
 		},
@@ -67,7 +67,9 @@ export const LinksProvider = () => {
 	return (
 		<>
 			{[...board.items.listAll(), ...board.items.listFrames()]
-				.filter(item => item.getLinkTo())
+				.filter(
+					item => item.getLinkTo() && !item.transformationRenderBlock,
+				)
 				.map(item => {
 					return (
 						<LinkToButton
