@@ -47,6 +47,7 @@
 	left: 12px;
 	top: 50%;
 	transform: translateY(-50%);
+	color: rgba(13, 17, 38, 0.4);
 }
 
 .optionsListWrapper {

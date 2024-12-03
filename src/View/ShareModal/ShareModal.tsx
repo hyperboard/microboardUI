@@ -20,6 +20,9 @@ import { UiModal } from "View/Ui/UiModal/UiModal";
 import { UiSelector, type Option } from "View/Ui/UiSelector";
 import { SearchInput } from "./SearchInput";
 import styles from "./ShareModal.module.css";
+import { UserAvatar } from "View/UserPanel/UserPanel";
+import { UiSeparator } from "View/Ui/UiSeparator";
+import clsx from "clsx";
 
 export const SHARE_MODAL_ID = Symbol("shareModal");
 
@@ -181,7 +184,7 @@ export function ShareModal() {
 										value: user.email,
 										label: user.email,
 										icon: (
-											<img
+											<UserAvatar
 												width={20}
 												height={20}
 												src={user.avatar}
@@ -191,12 +194,13 @@ export function ShareModal() {
 							/>
 							<UiSelector
 								options={MODE_SELECTOR_OPTIONS}
+								iconColor="rgba(105, 107, 118, 1)"
 								onChange={val =>
 									setUsersMode(val as UserAccessType)
 								}
 							/>
 						</div>
-						<div>
+						<div className={styles.grantedUsers}>
 							<h2 className={styles.settingsHeading}>
 								{t("sharing.grantedUsers")}
 							</h2>
@@ -209,6 +213,7 @@ export function ShareModal() {
 									/>
 								))}
 							</div>
+							<UiSeparator />
 						</div>
 					</>
 				)}
@@ -257,10 +262,12 @@ export function ShareModal() {
 				<div className={styles.btns}>
 					<Button
 						onClick={handleCopy}
-						className={styles.btn}
+						className={clsx(styles.btn, styles.copyBtn)}
 						pattern="ghostFilled"
 					>
-						<Icon iconName="CopyLink" />{" "}
+						<span className={styles.copyIcon}>
+							<Icon iconName="CopyLink" />{" "}
+						</span>
 						<span>{t("sharing.copyLink.label")}</span>
 					</Button>
 					<Button
