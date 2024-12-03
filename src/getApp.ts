@@ -123,7 +123,6 @@ export async function getApp(): Promise<http.Server> {
     const auth = new Auth(logger, users, config, mailer);
     const ai = new AI(openai);
 
-
     app.get("/", (request, response) => {
         response.status(200).json({});
     });
@@ -132,7 +131,6 @@ export async function getApp(): Promise<http.Server> {
         const timestamp = new Date().getTime();
         response.status(200).json({ connection: timestamp });
     });
-
 
     const v1Router = getV1Router({
         config,

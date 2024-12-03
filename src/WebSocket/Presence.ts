@@ -1,9 +1,38 @@
 import { Redis } from "Redis";
 import { PresenceEventMsg, PresenceEventType } from "./withWebSocketApi";
 
+export interface PresenceUser {
+    nickname: string;
+    userId: string;
+    color: string; // rgb
+    colorChangeable: boolean;
+    lastActivity: number;
+    lastPing: number;
+    selection: string[];
+    pointer: {
+        x: number;
+        y: number;
+    };
+    avatar: string | null;
+    select?: {
+        left: number;
+        top: number;
+        right: number;
+        bottom: number;
+    };
+    camera: {
+        translateX: number;
+        translateY: number;
+        scaleX: number;
+        scaleY: number;
+        shearX: number;
+        shearY: number;
+    } | null;
+}
+
 export class Presence {
     private redis: Redis;
-    private readonly EVENT_TTL = 30; // in seconds
+    private readonly EVENT_TTL = 180; // in seconds
 
     constructor(redisClient: Redis) {
         this.redis = redisClient;
@@ -21,27 +50,30 @@ export class Presence {
         return `user:${userId}:events`;
     }
 
-    async saveEvent(event: PresenceEventMsg): Promise<void> {
-        const eventKey = this.getEventKey(event.messageId);
-        const boardKey = this.getBoardKey(event.boardId);
-        const userKey = this.getUserKey(event.userId);
+    async saveEvent(msg: PresenceEventMsg): Promise<void> {
+        const eventKey = this.getEventKey(msg.messageId);
+        const boardKey = this.getBoardKey(msg.boardId);
+        const userKey = this.getUserKey(msg.userId);
 
         const multi = this.redis.client.multi();
 
         multi.hset(eventKey, {
-            type: event.type,
-            boardId: event.boardId,
-            userId: event.userId,
-            messageId: event.messageId,
-            event: JSON.stringify(event.event),
-            timestamp: event.event.timestamp,
+            type: msg.type,
+            boardId: msg.boardId,
+            userId: msg.userId,
+            messageId: msg.messageId,
+            event: JSON.stringify(msg.event),
+            timestamp: msg.event.timestamp,
+            avatar: msg.avatar,
+            color: msg.color,
+            nickname: msg.nickname,
         });
         multi.expire(eventKey, this.EVENT_TTL);
 
-        multi.zadd(boardKey, event.event.timestamp, event.messageId);
+        multi.zadd(boardKey, msg.event.timestamp, msg.messageId);
         multi.expire(boardKey, this.EVENT_TTL);
 
-        multi.zadd(userKey, event.event.timestamp, event.messageId);
+        multi.zadd(userKey, msg.event.timestamp, msg.messageId);
         multi.expire(userKey, this.EVENT_TTL);
 
         await multi.exec();
@@ -110,5 +142,114 @@ export class Presence {
         });
 
         await multi.exec();
+    }
+
+    async createPresenceUserSnapshot(userId: string): Promise<PresenceUser | null> {
+        const events = await this.getUserEvents(userId);
+
+        if (events.length === 0) return null;
+        const snapshot: PresenceUser = {
+            userId,
+            nickname: userId,
+            color: "rgb(128,128,128)", // fixme first color initialization
+            colorChangeable: true,
+            lastActivity: 0,
+            lastPing: 0,
+            selection: [],
+            pointer: { x: 0, y: 0 },
+            avatar: null,
+            select: undefined,
+            camera: null,
+        };
+        const sortedEvents = events.sort((a, b) => (a.event.timestamp || 0) - (b.event.timestamp || 0));
+        function setMetaInfo(msg: PresenceEventMsg) {
+            snapshot.avatar = msg.avatar;
+            snapshot.color = msg.color || "rgb(128,128,128)";
+            snapshot.nickname = msg.nickname;
+        }
+        for (const msg of sortedEvents) {
+            const event = msg.event;
+            setMetaInfo(msg);
+
+            snapshot.lastActivity = Math.max(snapshot.lastActivity, event.timestamp || 0);
+
+            if (msg.nickname) {
+                snapshot.nickname = msg.nickname;
+            }
+
+            if (msg.color) {
+                snapshot.color = msg.color;
+            }
+
+            switch (event.method) {
+                case "PointerMove":
+                    snapshot.pointer = event.position;
+                    break;
+
+                case "Selection":
+                    snapshot.selection = event.selectedItems;
+                    break;
+
+                case "SetUserColor":
+                    snapshot.color = event.color;
+                    break;
+
+                case "DrawSelect":
+                    snapshot.select = {
+                        left: event.size.left,
+                        top: event.size.top,
+                        right: event.size.right,
+                        bottom: event.size.bottom,
+                    };
+                    break;
+
+                case "CancelDrawSelect":
+                    snapshot.select = undefined;
+                    break;
+
+                case "Camera":
+                    snapshot.camera = {
+                        translateX: event.translateX,
+                        translateY: event.translateY,
+                        scaleX: event.scaleX,
+                        scaleY: event.scaleY,
+                        shearX: event.shearX,
+                        shearY: event.shearY,
+                    };
+                    break;
+
+                case "Ping":
+                    snapshot.lastPing = event.timestamp;
+                    break;
+            }
+        }
+
+        const firstMsg = sortedEvents[0];
+        snapshot.avatar = firstMsg?.avatar || null;
+
+        return snapshot;
+    }
+
+    async createBoardPresenceSnapshots(boardId: string): Promise<Record<string, PresenceUser>> {
+        const boardEvents = await this.getBoardEvents(boardId);
+
+        const eventsByUser: Record<string, PresenceEventMsg[]> = {};
+        boardEvents.forEach((event) => {
+            if (!eventsByUser[event.userId]) {
+                eventsByUser[event.userId] = [];
+            }
+            eventsByUser[event.userId].push(event);
+        });
+
+        const snapshots: Record<string, PresenceUser> = {};
+
+        for (const userId of Object.keys(eventsByUser)) {
+            const snapshot = await this.createPresenceUserSnapshot(userId);
+            if (snapshot) {
+                snapshots[userId] = snapshot;
+            }
+        }
+
+        return snapshots;
     }
 }

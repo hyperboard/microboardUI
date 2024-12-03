@@ -83,6 +83,7 @@ export function getV1Router({
     router.use(apiBase, getAuthRouter(auth, users, logger));
     router.use(apiBase, getBoardsRouter(boards, logger));
     router.use(apiBase, getTemplatesRouter(templates, logger), getAIRouter(ai, logger));
+    router.use(apiBase, getAIRouter(ai, logger));
     router.use(
         apiBase,
         process.env.MINIO_ENABLED === "true"

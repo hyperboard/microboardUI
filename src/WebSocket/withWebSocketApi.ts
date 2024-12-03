@@ -200,13 +200,15 @@ export function withWebSocketApi({
                         initialSequenceNumber,
                     })
                 );
-                const presenceEvents = await presence.getBoardEvents(boardId);
+                // const presenceEvents = await presence.getBoardEvents(boardId);
+                const presenceSnapshots = await presence.createBoardPresenceSnapshots(boardId);
                 ws.send(
                     JSON.stringify({
                         type: "UserJoin",
                         boardId: boardId,
                         userId: msg.userId,
-                        events: presenceEvents,
+                        // events: presenceEvents,
+                        snapshots: presenceSnapshots,
                         timestamp: Date.now(),
                     })
                 );
@@ -590,19 +592,47 @@ export interface CancelDrawSelectEvent {
     timestamp: number;
 }
 
+export interface CameraEvent {
+    method: "Camera";
+    timestamp: number;
+    translateX: number;
+    translateY: number;
+    scaleX: number;
+    scaleY: number;
+    shearX: number;
+    shearY: number;
+}
+
+export interface PresencePingEvent {
+    method: "Ping";
+    timestamp: number;
+}
+
+export interface BringToMeEvent {
+    method: "BringToMe";
+    timestamp: number;
+    users: (number | string)[];
+}
+
+export interface PresenceUserSnapshot {}
+
 export type PresenceEventType =
     | PointerMoveEvent
     | SelectionEvent
     | SetUserColorEvent
     | DrawSelectEvent
-    | CancelDrawSelectEvent;
+    | CancelDrawSelectEvent
+    | CameraEvent
+    | PresencePingEvent
+    | BringToMeEvent;
 
 export interface UserJoinMsg {
     type: "UserJoin";
     timestamp: number;
     userId: number;
     boardId: string;
-    events: PresenceEventType[];
+    snapshots: Record<string, PresenceUserSnapshot>;
+    // events: PresenceEventMsg<PresenceEventType>[];
 }
 
 export interface PresenceEventMsg<T = PresenceEventType> {
@@ -615,6 +645,7 @@ export interface PresenceEventMsg<T = PresenceEventType> {
     color: string | null;
     avatar: string | null;
 }
+
 export type EventsMsg =
     | ModeMsg
     | BoardEventMsg
