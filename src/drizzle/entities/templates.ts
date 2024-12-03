@@ -3,7 +3,7 @@ import { boards } from "./boards";
 
 export const templates = pgTable("templates", {
     id: serial("id").primaryKey(),
-    uniqId: uuid("uniq_id").notNull(),
+    uniqId: text("uniq_id").notNull(),
     boardId: integer("board_id").references(() => boards.id, { onDelete: "cascade" }),
     name: jsonb("name").notNull(),
     description: jsonb("description").notNull(),

@@ -2,7 +2,7 @@ import { db } from "../../../db";
 import { templates } from "../../../entities";
 import { and, eq, arrayContains, sql, SQLWrapper } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
-import { getBoardByLink } from "../Boards";
+import {getBoardByLink, getBoardInfo} from "../Boards";
 import { HttpException } from "../../../../shared/exceptions/http-exception";
 import { createAccessKey, getBoardViewLink } from "../AccessKeys";
 import { AccessKeyType } from "../AccessKeys/types";
@@ -14,23 +14,16 @@ export async function createTemplate(
     languages: string[],
     tags: string[],
     snapshot: object,
+    viewLink: string,
     preview?: string
 ) {
-    const board = await getBoardByLink(boardUUID);
+    const board = await getBoardInfo(boardUUID);
 
     if (!board) {
         throw new Error(`Could not find board by ${boardUUID} UUID`);
     }
 
-    let viewLink: string;
-
-    const existingViewLink = await getBoardViewLink(boardUUID);
-    if (existingViewLink) {
-        viewLink = existingViewLink;
-    } else {
-        const key = await createAccessKey(board.id, AccessKeyType.VIEW);
-        viewLink = key.keyUUID;
-    }
+    const uniqId = `boards/${boardUUID}?accessKey=${viewLink}`
 
     const [insertedRecords] = await db
         .insert(templates)
@@ -39,7 +32,7 @@ export async function createTemplate(
             description,
             name,
             languages,
-            uniqId: viewLink,
+            uniqId,
             preview,
             tags,
             snapshot,
@@ -52,8 +45,8 @@ export async function createTemplate(
     }
 }
 
-export async function updateTemplateSnapshot(boardUUID: string, snapshot: object) {
-    const board = await getBoardByLink(boardUUID);
+export async function updateTemplateSnapshot(boardUUID: string, snapshot: object): Promise<"updated" | "create"> {
+    const board = await getBoardInfo(boardUUID);
 
     if (!board) {
         throw new Error(`Could not find board by ${boardUUID} UUID`);
@@ -67,8 +60,10 @@ export async function updateTemplateSnapshot(boardUUID: string, snapshot: object
         .execute();
 
     if (!updatedRecords) {
-        throw new HttpException(404, `Board not found with UUID ${boardUUID}`);
+        return "create"
     }
+
+    return "updated"
 }
 
 export async function getTemplates(language: string, term?: string, tag?: string) {

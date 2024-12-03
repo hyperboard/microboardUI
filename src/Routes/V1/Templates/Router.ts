@@ -63,9 +63,14 @@ export function getTemplatesRouter(
                     return forbidden(res);
                 }
 
-                await templates.saveTemplateSnapshot(boardId, snapshot);
+                const status = await templates.saveTemplateSnapshot(boardId, snapshot);
 
-                return res.status(201).send();
+                if (status === "updated") {
+                    return res.status(200).send();
+                }
+                if (status === "create") {
+                    return res.status(204).send();
+                }
             } catch (err) {
                 logger.error(`Error while saving Template for boardId: ${req.params.boardId}: ${err}`);
                 if (err instanceof HttpException && err.status === 404) {
@@ -84,6 +89,7 @@ export function getTemplatesRouter(
         body("description").isObject(),
         body("tags").isArray(),
         body("name").isObject(),
+        body("viewLink").isString(),
         catchAsync(async (req: Request, res: Response) => {
                 try {
                     const errors = validationResult(req);
@@ -92,7 +98,7 @@ export function getTemplatesRouter(
                     }
 
                     const boardId = req.params.boardId;
-                    const {snapshot, languages, description, tags, preview, name} = req.body
+                    const {snapshot, languages, description, tags, preview, name, viewLink} = req.body
 
                     if (
                         checkPermissions(req.token, "owns", "boards", boardId)
@@ -100,7 +106,7 @@ export function getTemplatesRouter(
                         return forbidden(res);
                     }
 
-                    await templates.createTemplate(boardId, description, name, languages, tags, snapshot, preview);
+                    await templates.createTemplate(boardId, description, name, languages, tags, snapshot, viewLink, preview);
 
                     return res.status(201).send();
                 } catch (err) {

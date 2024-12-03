@@ -12,6 +12,7 @@ export class Templates {
         languages: string[],
         tags: string[],
         snapshot: object,
+        viewLink: string,
         preview?: string,
     ) {
         await Drizzle.createTemplate(
@@ -21,6 +22,7 @@ export class Templates {
             languages,
             tags,
             snapshot,
+            viewLink,
             preview
         );
     }
@@ -29,7 +31,7 @@ export class Templates {
         boardUUID: string,
         snapshot: object,
     ) {
-        await Drizzle.updateTemplateSnapshot(
+        return Drizzle.updateTemplateSnapshot(
             boardUUID,
             snapshot
         );
