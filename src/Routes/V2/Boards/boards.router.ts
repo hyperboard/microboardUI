@@ -7,12 +7,12 @@ import type { AccessKeysService } from "./access-keys.service";
 import { getBoardsController } from "./boards.controller";
 import { BoardsService } from "./boards.service";
 import { authenticateBoardAuthor } from "./middlewares";
-import { accessKeyUUIDSchema, boardUUIDSchema, getGrantedUsersSchema } from "./schema";
+import { accessKeyUUIDSchema, boardUUIDSchema } from "./schema";
 import { claimSchema } from "./schema/claim.schema";
-import { createBoardSchema } from "./schema/create-board.schema";
-import { ACCESS_KEY_PARAM, BOARD_UUID_PARAM } from "./types";
 import { createAccessKeySchema } from "./schema/create-access-key.schema";
+import { createBoardSchema } from "./schema/create-board.schema";
 import { grantAccessSchema } from "./schema/grant-access.schema";
+import { ACCESS_KEY_PARAM, BOARD_UUID_PARAM } from "./types";
 
 export function getBoardsRouter(boardsService: BoardsService, foldersService: FoldersService, accessKeysService: AccessKeysService) {
   const boardsController = getBoardsController(boardsService, foldersService, accessKeysService);
