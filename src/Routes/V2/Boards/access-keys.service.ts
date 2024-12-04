@@ -28,12 +28,12 @@ export class AccessKeysService {
     const [key] = await this.db
       .select({ ...getTableColumns(boardAccessKeys), boardUUID: boards.uniqId })
       .from(boardAccessKeys)
-      .innerJoin(boards, eq(boardAccessKeys.boardId, boardId))
+      .innerJoin(boards, eq(boardAccessKeys.boardId, boards.id))
       .where(and(
         eq(boardAccessKeys.keyUUID, keyUUID),
-        eq(boardAccessKeys.id, boardId)
+        eq(boardAccessKeys.boardId, boardId)
       ))
-
+      console.log('accessKey get', key, boardId, keyUUID);
     return key;
   }
 

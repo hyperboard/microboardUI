@@ -94,7 +94,7 @@ export function getAuthRouter(
                 });
             }
             setCookies(res, jwtTokens.refreshToken)
-            return res.json(jwtTokens);
+            return res.status(HttpStatus.CREATED).json(jwtTokens);
         } catch (err) {
             return handleError(res, err);
         }

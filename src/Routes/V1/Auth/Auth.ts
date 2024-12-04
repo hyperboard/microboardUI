@@ -65,7 +65,6 @@ export class Auth {
     }
 
     async register(payload: RegisterPayload): Promise<{ email: string; id: number, name: string } | null> {
-        console.log(payload);
         const user = await Drizzle.getUserByEmail(payload.email);
 
         if (user) {

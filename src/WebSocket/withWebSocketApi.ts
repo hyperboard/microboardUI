@@ -77,15 +77,9 @@ export function withWebSocketApi({
 
         await Promise.all(
             clients.map(async (client) => {
-                const canEdit = await canEditBoard(client, boardUUID);
-                const canView = await canViewBoard(client, boardUUID);
-                console.log("invalidate", canEdit, canView);
-                if (!canEdit && canView) {
-                    return enforceMode(client, boardUUID, "view");
-                }
-
-                if (canEdit) {
-                    return enforceMode(client, boardUUID, "edit");
+                const mode = await getMode(client, boardUUID);
+                if (mode) {
+                    return enforceMode(client, boardUUID, mode);
                 }
 
                 sendError(client, "Access denied: Subscribe to board events.", { denidedBoardId: boardUUID });
@@ -178,14 +172,12 @@ export function withWebSocketApi({
                 wsAccessKeys.set(ws, msg.accessKey);
             }
             const boardId = msg.boardId;
-            const canView = await canViewBoard(ws, msg.boardId);
-            const canEdit = await canEditBoard(ws, msg.boardId);
+            const mode = await getMode(ws, msg.boardId);
 
-            if (canEdit || canView) {
+            if (mode) {
                 await subscribeClientToBoard(ws, boardId);
 
                 const initialSequenceNumber = getInitialSeqNum(ws, boardId);
-                const mode = canEdit ? "edit" : "view";
                 const snapshot = await boards.getLatestBoardSnapshot(boardId);
                 const lastSnapshotEventOrder = snapshot?.lastIndex || 0;
                 const eventsSinceLastSnapshot = await getEventsSinceLastSnapshot(boardId, lastSnapshotEventOrder);
@@ -275,7 +267,7 @@ export function withWebSocketApi({
         boardClients.set(boardId, clients);
     }
 
-    function enforceMode(ws: WebSocket, boardId: string, mode: "view" | "edit") {
+    function enforceMode(ws: WebSocket, boardId: string, mode: ViewMode) {
         console.log("Enforce", mode);
         ws.send(
             JSON.stringify({
@@ -290,15 +282,13 @@ export function withWebSocketApi({
 
     async function handleBoardEventMsg(msg: BoardEventMsg, ws: WebSocket): Promise<void> {
         try {
-            const canEdit = await canEditBoard(ws, msg.boardId);
-            const canView = await canViewBoard(ws, msg.boardId);
-            if (!canEdit && canView) {
-                return enforceMode(ws, msg.boardId, "view");
+            const mode = await getMode(ws, msg.boardId);
+            if (mode) {
+                enforceMode(ws, msg.boardId, mode);
             }
-            if (!canEdit && !canView) {
+            if (!mode) {
                 return sendError(ws, "Access denied: edit board.");
             }
-            enforceMode(ws, msg.boardId, "edit");
         } catch (err) {
             console.error(err);
             return sendError(ws, "Access denied: edit board.");
@@ -312,17 +302,17 @@ export function withWebSocketApi({
                 sendError(
                     ws,
                     "Unexpected sequence number" +
-                        JSON.stringify({
-                            expectedSequence,
-                            receivedSequence: msg.sequenceNumber,
-                            boardId: msg.boardId,
-                        })
+                    JSON.stringify({
+                        expectedSequence,
+                        receivedSequence: msg.sequenceNumber,
+                        boardId: msg.boardId,
+                    })
                 );
                 return;
             }
             try {
-                const canEdit = await canEditBoard(ws, msg.boardId);
-                if (!canEdit) {
+                const mode = await getMode(ws, msg.boardId);
+                if (mode !== 'edit') {
                     return sendError(ws, "Access denied: edit board.");
                 }
 
@@ -395,21 +385,50 @@ export function withWebSocketApi({
         return accessKeyData?.keyType === accessType;
     }
 
-    async function canEditBoard(ws: WebSocket, boardId: string): Promise<boolean> {
+    async function getMode(ws: WebSocket, boardId: string): Promise<ViewMode | null> {
         const board = await boardsService.get(boardId);
-        const hasEditPublicAccess = board?.isPublic && board?.directAccessType === DirectAccessType.EDIT;
-        const hasTokenEditPermission = hasAnyRightInTokens(ws, boardId, ["edits", "owns"]);
-        const hasAccessKeyPermissions = await hasAccessKeyRights(ws, board?.id, AccessKeyType.EDIT);
-        return hasEditPublicAccess || hasTokenEditPermission || hasAccessKeyPermissions;
-    }
+        if (!board) {
+            return null;
+        }
+        const accessKey = wsAccessKeys.get(ws);
+        if (accessKey) {
+            const hasAccessKeyEditPermission = await hasAccessKeyRights(ws, board.id, AccessKeyType.EDIT);
+            if (hasAccessKeyEditPermission) {
+                return 'edit';
+            }
+            const hasAccessKeyViewPermission = await hasAccessKeyRights(ws, board.id, AccessKeyType.VIEW);
+            if (hasAccessKeyViewPermission) {
+                return 'view';
+            }
 
-    async function canViewBoard(ws: WebSocket, boardId: string) {
-        const board = await boardsService.get(boardId);
-        const hasViewPublicAccess = board?.isPublic && board?.directAccessType === DirectAccessType.VIEW;
-        const hasTokenViewPermission = hasAnyRightInTokens(ws, boardId, ["reads"]);
-        const hasAccessKeyPermissions = await hasAccessKeyRights(ws, board?.id, AccessKeyType.VIEW);
-        return hasTokenViewPermission || hasViewPublicAccess || hasAccessKeyPermissions;
-    }
+            return null;
+        }
+
+        const userToken = wsTokens.get(ws);
+        if (userToken) {
+            const hasTokenEditPermission = hasAnyRightInTokens(ws, board.uniqId, ["owns", "edits"]);
+            if (hasTokenEditPermission) {
+                return 'edit'
+            }
+
+            const hasTokenViewPermission = hasAnyRightInTokens(ws, board.uniqId, ["reads"]);
+            if (hasTokenViewPermission) {
+                return 'view';
+            }
+        }
+
+        if (board.isPublic) {
+            if (board.directAccessType === DirectAccessType.EDIT) {
+                return 'edit';
+            }
+
+            if (board.directAccessType === DirectAccessType.VIEW) {
+                return 'view';
+            }
+        }
+
+        return null;
+    };
 
     function handleUnsubscribeMsg(msg: UnsubscribeMsg, ws: WebSocket): void {
         const clients = boardClients.get(msg.boardId) ?? [];
@@ -548,10 +567,12 @@ export interface SnapshotResponseMsg {
     lastEventOrder: number;
 }
 
+export type ViewMode = 'view' | 'edit';
+
 export interface ModeMsg {
     type: "Mode";
     boardId: string;
-    mode: "view" | "edit";
+    mode: ViewMode;
 }
 
 export interface PingMsg {
@@ -860,7 +881,7 @@ export class EventsManager {
         return events;
     }
 
-    requestSnapshotCallback(boardId: string, sinceLast: number): void {}
+    requestSnapshotCallback(boardId: string, sinceLast: number): void { }
 
     isBoardReady(boardId: string): boolean {
         return !this.processing.includes(boardId);
