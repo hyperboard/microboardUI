@@ -57,7 +57,6 @@ export class HTTP {
 		try {
 			const modifiedConfig =
 				await this.interceptors.triggerRequestInterceptors(config);
-			console.log(config);
 			const response = await fetch(
 				this.getUrl(path, config.params, config.query),
 				{

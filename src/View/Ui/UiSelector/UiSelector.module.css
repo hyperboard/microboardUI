@@ -2,13 +2,12 @@
 	display: flex;
 	align-items: center;
 	padding: 10px 12px;
-	border-radius: 12px;
-	border: 1px solid #dee0e3;
 	gap: 8px;
 	font-size: 14px;
 	position: relative;
 	padding-right: 36px;
 	cursor: pointer;
+	height: 100%;
 }
 
 .disabled .selectedOption {
@@ -18,6 +17,10 @@
 .selectorWrapper {
 	position: relative;
 	z-index: 500;
+	border-radius: 12px;
+	border: 1px solid #dee0e3;
+	overflow: hidden;
+	min-height: 40px;
 }
 
 .icon {

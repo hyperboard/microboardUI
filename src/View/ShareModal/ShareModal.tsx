@@ -236,6 +236,7 @@ export function ShareModal() {
 						)}
 					>
 						<UiSelector
+							isLoading={boardsList.isLoading}
 							disabled={disabled}
 							iconColor="rgba(105, 107, 118, 1)"
 							options={PRIVACY_SELECTOR_OPTIONS}
@@ -248,6 +249,7 @@ export function ShareModal() {
 						/>
 
 						<UiSelector
+							isLoading={boardsList.isLoading}
 							disabled={disabled}
 							iconColor="rgba(105, 107, 118, 1)"
 							options={MODE_SELECTOR_OPTIONS}

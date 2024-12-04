@@ -8,7 +8,7 @@ export class BoardsList {
 	subject = new Subject<void>();
 	private sharedFolder: foldersApi.Folder | null = null;
 	private rootFolder: foldersApi.Folder | null = null;
-	// showedErrorModals: { [boardId: string]: boolean } = {};
+	isLoading = true;
 
 	constructor(
 		private readonly storage: Storage,
@@ -165,6 +165,7 @@ export class BoardsList {
 	}
 
 	async loadBoards() {
+		this.isLoading = true;
 		if (this.account.isLoggedIn) {
 			const { data: rootFolder } = await foldersApi.getRootFolder();
 			const { data: sharedFolder } = await foldersApi.getRootFolder(
@@ -190,7 +191,7 @@ export class BoardsList {
 				throw new Error("Failed to load folders");
 			}
 			publicDrafts.title = t("sidePanel.folders.publicDrafts");
-
+			this.isLoading = false;
 			this.subject.publish();
 		} else {
 			this.rootFolder = {
@@ -214,6 +215,7 @@ export class BoardsList {
 				type: foldersApi.FolderType.VISITED,
 			};
 			await this.updateDetails();
+			this.isLoading = false;
 			this.subject.publish();
 		}
 	}
@@ -226,6 +228,7 @@ export class BoardsList {
 		if (!this.account.isLoggedIn) {
 			return;
 		}
+		this.isLoading = true;
 
 		await boardsApiV2.editBoard(boardId, {
 			isPublic,
@@ -416,8 +419,10 @@ export class BoardsList {
 	}
 
 	private async updateList() {
+		this.isLoading = true;
 		await this.account.refreshTokens();
 		await this.loadBoards();
+		this.isLoading = false;
 		this.subject.publish();
 	}
 

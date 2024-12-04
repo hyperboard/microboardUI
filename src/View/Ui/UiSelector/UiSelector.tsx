@@ -5,6 +5,7 @@ import React, { useState, type MouseEventHandler, type ReactNode } from "react";
 import { TopFade } from "../Transitions/TopFade";
 import styles from "./UiSelector.module.css";
 import { createPortal } from "react-dom";
+import { UiSkeleton } from "../UiSkeleton";
 
 export type Option = {
 	label: string;
@@ -19,6 +20,7 @@ type Props = {
 	iconColor?: string;
 	onChange?: (value: string | number) => void;
 	disabled?: boolean;
+	isLoading?: boolean;
 };
 
 export function UiSelector({
@@ -28,6 +30,7 @@ export function UiSelector({
 	iconColor,
 	onChange,
 	disabled,
+	isLoading,
 }: Props) {
 	const [selectedOption, setSelectedOption] = useState(() =>
 		initialValue
@@ -39,7 +42,7 @@ export function UiSelector({
 	const ref = useClickOutside(() => setIsOpen(false));
 
 	const handleSelectedOptionClick: MouseEventHandler = () => {
-		if (disabled) {
+		if (disabled || isLoading) {
 			return;
 		}
 		setIsOpen(prev => !prev);
@@ -74,32 +77,45 @@ export function UiSelector({
 			className={clsx(
 				styles.selectorWrapper,
 				isOpen && styles.open,
-				disabled && styles.disabled,
+				(disabled || isLoading) && styles.disabled,
 			)}
 		>
-			<div
-				className={styles.selectedOption}
-				onClick={handleSelectedOptionClick}
-			>
-				{selectedOption?.icon && (
-					<div className={styles.icon} style={{ color: iconColor }}>
-						{selectedOption.icon}
+			{isLoading ? (
+				<UiSkeleton />
+			) : (
+				<div
+					className={styles.selectedOption}
+					onClick={handleSelectedOptionClick}
+				>
+					{selectedOption?.icon && (
+						<div
+							className={styles.icon}
+							style={{ color: iconColor }}
+						>
+							{selectedOption.icon}
+						</div>
+					)}
+					{icon && !selectedOption?.icon && (
+						<div
+							className={styles.icon}
+							style={{ color: iconColor }}
+						>
+							{icon}
+						</div>
+					)}
+					<p className={styles.selectedOptionText}>
+						{selectedOption?.label}
+					</p>
+					<div className={styles.mark}>
+						<Icon width={20} height={20} iconName="mark" />
 					</div>
-				)}
-				{icon && !selectedOption?.icon && (
-					<div className={styles.icon} style={{ color: iconColor }}>
-						{icon}
-					</div>
-				)}
-				<p className={styles.selectedOptionText}>
-					{selectedOption?.label}
-				</p>
-				<div className={styles.mark}>
-					<Icon width={20} height={20} iconName="mark" />
 				</div>
-			</div>
+			)}
 			{createPortal(
-				<TopFade inProp={isOpen} unmountOnExit>
+				<TopFade
+					inProp={isOpen && !disabled && !isLoading}
+					unmountOnExit
+				>
 					<div className={styles.optionsListWrapper} style={position}>
 						<ul className={styles.optionsList}>
 							{options.map(opt => (
