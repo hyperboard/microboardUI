@@ -243,9 +243,7 @@ export class TextEditor extends React.Component<
 
 					maxWidth: `${Math.ceil(editorMaxWidth)}px`,
 					maxHeight: `${editorMaxHeight}px`,
-					// width: `${maxWidth}px`,
-					// height: `${maxHeight}px`,
-					width: `${Math.ceil(editorWidth) + 10}px`,
+					width: `${Math.ceil(editorWidth) + ((text.shouldShrink() && 5) || 0)}px`,
 					height: `${editorHeight}px`,
 
 					transformOrigin: "left top",
