@@ -27,7 +27,6 @@ export interface AuthMsg {
 export interface BoardEventMsg {
 	type: "BoardEvent";
 	boardId: string;
-	// event: BoardEvent | BoardEventPack;
 	event: SyncEvent;
 	sequenceNumber: number;
 }
@@ -42,7 +41,6 @@ export interface ConfirmationMsg {
 export interface BoardEventListMsg {
 	type: "BoardEventList";
 	boardId: string;
-	// events: BoardEvent[];
 	events: SyncBoardEvent[];
 }
 
@@ -144,7 +142,6 @@ export interface Connection {
 	): void;
 	publishBoardEvent(
 		boardId: string,
-		// event: BoardEventPack,
 		event: SyncEvent,
 		sequenceNumber: number,
 	): void;
@@ -166,32 +163,8 @@ export function createConnection(
 	getStorage: () => Storage,
 ): Connection {
 	const subscriptions = new Map<string, Subscription>();
-	let pingTimeout: NodeJS.Timeout | null = null;
-	let pingNotificationId: string | null = null;
-	let changedViewMode = false;
 
 	const onConnectionLost = (): void => {
-		const notificationId = getBoard().events?.getNotificationId();
-		if (notificationId) {
-			toast.dismiss(notificationId);
-		}
-		if (!pingNotificationId) {
-			pingNotificationId = notify({
-				header: i18next.t("notifications.connectionLostHeader"),
-				variant: "black",
-				duration: Infinity,
-				unclosable: true,
-				position: "bottom-center",
-			});
-		}
-		const board = getBoard();
-		if (board.getBoardId() !== "blank" && board.interfaceType !== "view") {
-			board.selection.removeAll();
-			board.interfaceType = "view";
-			board.tools.navigate();
-			changedViewMode = true;
-			board.tools.publish();
-		}
 		postDisconnectedMsg();
 	};
 
@@ -211,7 +184,7 @@ export function createConnection(
 	};
 
 	const setConnectionErrorTimeout = (): void => {
-		pingTimeout = setTimeout(onConnectionLost, WS_PING_INTERVAL + 1);
+		setTimeout(onConnectionLost, WS_PING_INTERVAL + 1);
 	};
 
 	const subscribeTimeouts = new Map<
@@ -221,25 +194,6 @@ export function createConnection(
 
 	function clearConnectionError(): void {
 		getBoard().events?.removeBeforeUnloadListener();
-		if (pingTimeout) {
-			clearTimeout(pingTimeout);
-			pingTimeout = null;
-		}
-		if (pingNotificationId) {
-			toast.dismiss(pingNotificationId);
-			pingNotificationId = null;
-			notify({
-				header: i18next.t("notifications.connectionReestablished"),
-				variant: "black",
-				position: "bottom-center",
-				unclosable: true,
-			});
-		}
-		if (changedViewMode) {
-			getBoard().interfaceType = "edit";
-			changedViewMode = false;
-			getBoard().tools.publish();
-		}
 	}
 
 	function onMessage(msg: SocketMsg): void {
