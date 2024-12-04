@@ -35,10 +35,16 @@
 
 .selectors {
 	display: grid;
-	grid-template-columns: minmax(max-content, 60%) minmax(190px, 1fr);
+	grid-template-columns: 1fr 0px;
 	gap: 16px;
 	padding-top: 12px;
 	padding-bottom: 8px;
+	transition: grid-template-columns 0.3s ease;
+	overflow: hidden;
+}
+
+.selectors.modeVisible {
+	grid-template-columns: 1fr 230px;
 }
 
 .btns {

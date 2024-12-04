@@ -4,20 +4,16 @@ import { useAccount } from "App/useAccount";
 import { useBoardsList } from "App/useBoardsList";
 import React, { useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
-import {
-	useLocation,
-	useNavigate,
-	useParams,
-	useSearchParams,
-} from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { AppView } from "View/AppView";
 import { AppContext } from "./AppContext";
 import { BoardRenameContextProvider } from "./BoardName";
 import { ContextMenuContextProvider } from "./ContextMenu";
-import { useModalInfoContext } from "./Modal/InfoModal";
 import ModalsWrapper from "./Modal/ModalsWrapper";
-import { SidePanelContextProvider } from "./SidePanel/SidePanelContext";
 import { RenameContextProvider } from "./Rename/RenameContext";
+import { SidePanelContextProvider } from "./SidePanel/SidePanelContext";
+import { useUiModalContext } from "./Ui/UiModal";
+import { ACCESS_DENIED_MODAL } from "./AccessDeniedModal";
 // import "./index.css";
 type Props = {
 	app: App;
@@ -34,8 +30,7 @@ const BoardView = ({ app }: Props): JSX.Element => {
 	const isOpenMiroBoards = codeSearch && teamIdSearch;
 	const boardsList = useBoardsList();
 	const account = useAccount();
-
-	const { openModalInfo } = useModalInfoContext();
+	const { openModal } = useUiModalContext();
 
 	app.connection.wsClient.onAccessDenied = async (
 		deniedBoardId: string,
@@ -43,21 +38,15 @@ const BoardView = ({ app }: Props): JSX.Element => {
 	) => {
 		if (
 			forceUpdate ||
-			(deniedBoardId === board.getBoardId() &&
-				!app.boardsList.showedErrorModals[deniedBoardId] &&
-				!isOpenMiroBoards)
+			(deniedBoardId === board.getBoardId() && !isOpenMiroBoards)
 		) {
-			openModalInfo(
-				t("modalInfo.accessDenied.title"),
-				t("modalInfo.accessDenied.description"),
-			);
+			openModal(ACCESS_DENIED_MODAL);
 			if (!account.isLoggedIn) {
 				await boardsList.removeBoard(board.getBoardId());
 			}
 			navigate("/boards");
 			await app.openBoard("blank");
 			app.render();
-			app.boardsList.showedErrorModals[deniedBoardId] = true;
 		}
 	};
 

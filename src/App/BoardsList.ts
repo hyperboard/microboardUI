@@ -8,7 +8,7 @@ export class BoardsList {
 	subject = new Subject<void>();
 	private sharedFolder: foldersApi.Folder | null = null;
 	private rootFolder: foldersApi.Folder | null = null;
-	showedErrorModals: { [boardId: string]: boolean } = {};
+	// showedErrorModals: { [boardId: string]: boolean } = {};
 
 	constructor(
 		private readonly storage: Storage,

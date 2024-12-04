@@ -113,11 +113,6 @@ export function createApp(isHistory = true): App {
 		subscriptions.setBoard(currentBoard);
 		boardSubject.publish(currentBoard);
 		board = currentBoard;
-		if (boardsList.showedErrorModals[id]) {
-			boardsList.showedErrorModals[id] = false;
-			app.connection.wsClient.onAccessDenied(id, true);
-			return;
-		}
 	}
 
 	function getLastBoardId(): string | null {

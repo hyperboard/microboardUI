@@ -4,6 +4,7 @@ import { useClickOutside } from "lib/useClickOutside";
 import React, { useState, type MouseEventHandler, type ReactNode } from "react";
 import { TopFade } from "../Transitions/TopFade";
 import styles from "./UiSelector.module.css";
+import { createPortal } from "react-dom";
 
 export type Option = {
 	label: string;
@@ -34,6 +35,7 @@ export function UiSelector({
 			: options[0],
 	);
 	const [isOpen, setIsOpen] = useState(false);
+	const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
 	const ref = useClickOutside(() => setIsOpen(false));
 
 	const handleSelectedOptionClick: MouseEventHandler = () => {
@@ -41,11 +43,23 @@ export function UiSelector({
 			return;
 		}
 		setIsOpen(prev => !prev);
+		if (!isOpen) {
+			const rect = ref.current?.getBoundingClientRect();
+			if (rect) {
+				setPosition({
+					top: rect.bottom + 8,
+					left: rect.left,
+					width: rect.width,
+				});
+			}
+		}
 	};
 
 	const handleOptionClick =
 		(option: Option): MouseEventHandler =>
-		() => {
+		ev => {
+			ev.stopPropagation();
+			ev.preventDefault();
 			if (disabled) {
 				return;
 			}
@@ -84,44 +98,48 @@ export function UiSelector({
 					<Icon width={20} height={20} iconName="mark" />
 				</div>
 			</div>
-			<TopFade inProp={isOpen} unmountOnExit>
-				<div className={styles.optionsListWrapper}>
-					<ul className={styles.optionsList}>
-						{options.map(opt => (
-							<li
-								className={styles.optionWrapper}
-								key={opt.value}
-							>
-								<button
-									onClick={handleOptionClick(opt)}
-									className={clsx(
-										styles.optionBtn,
-										opt.value === selectedOption?.value &&
-											styles.selected,
-									)}
+			{createPortal(
+				<TopFade inProp={isOpen} unmountOnExit>
+					<div className={styles.optionsListWrapper} style={position}>
+						<ul className={styles.optionsList}>
+							{options.map(opt => (
+								<li
+									className={styles.optionWrapper}
+									key={opt.value}
 								>
-									<span
-										style={{ color: iconColor }}
-										className={styles.optionIcon}
+									<button
+										onClick={handleOptionClick(opt)}
+										className={clsx(
+											styles.optionBtn,
+											opt.value ===
+												selectedOption?.value &&
+												styles.selected,
+										)}
 									>
-										{opt.icon}
-									</span>
-									<span className={styles.optionText}>
-										{opt.label}
-									</span>
-									<span className={styles.checkMark}>
-										<Icon
-											width={20}
-											height={20}
-											iconName="checkMark"
-										/>
-									</span>
-								</button>
-							</li>
-						))}
-					</ul>
-				</div>
-			</TopFade>
+										<span
+											style={{ color: iconColor }}
+											className={styles.optionIcon}
+										>
+											{opt.icon}
+										</span>
+										<span className={styles.optionText}>
+											{opt.label}
+										</span>
+										<span className={styles.checkMark}>
+											<Icon
+												width={20}
+												height={20}
+												iconName="checkMark"
+											/>
+										</span>
+									</button>
+								</li>
+							))}
+						</ul>
+					</div>
+				</TopFade>,
+				document.getElementById("selector")!,
+			)}
 		</div>
 	);
 }

@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import { useAppContext } from "View/AppContext";
 import { Canvas } from "View/Canvas";
+import { ChangePasswordModal } from "View/ChangePasswordModal";
 import { ContextMenu } from "View/ContextMenu";
 import { ContextPanel } from "View/ContextPanel";
 import { ExportPanel } from "View/ExportPanel";
@@ -16,25 +17,25 @@ import { ExportVisible } from "View/ExportPanel/ExportVisible";
 import { ImportMiro, ImportMiroStartModal } from "View/ImportMiro";
 import { ItemTooltip } from "View/ItemTooltip";
 import { LandingMenu, MobileLandingMenu } from "View/LandingMenu";
+import { UserTracking } from "View/Presence/UserTracking/UserTracking";
+import { ProfileSettingsModal } from "View/ProfileSettingsModal";
 import { ShareModal } from "View/ShareModal";
 import { SidePanelsContainer } from "View/SidePanelsContainer";
 import { TextEditors } from "View/TextEditor/TextEditor";
 import { ToastProvider } from "View/ToastProvider";
+import { UiModalBackground } from "View/Ui/UiModal";
 import { UserPanelLayout } from "View/UserPanel/UserPanel";
 import { ViewModeGuard } from "View/ViewModeGuard";
 import { ZoomPanel } from "View/ZoomPanel";
+import { BoardMenu } from "../BoardMenu/BoardMenu";
+import { CommentsContextProvider, CommentsProvider } from "../CommentsProvider";
 import { LinksProvider } from "../LinksProvider/LinksProvider";
 import { SetLinkToModal } from "../Modal/SetLinkToModal";
 import style from "./AppView.module.css";
 import { InactiveBoardHidder } from "./InactiveBoardHidder";
 import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
-import { UiModalBackground, UiModalContextProvider } from "View/Ui/UiModal";
-import { UserTracking } from "View/Presence/UserTracking/UserTracking";
-import { ProfileSettingsModal } from "View/ProfileSettingsModal";
-import { ChangePasswordModal } from "View/ChangePasswordModal";
-import { CommentsContextProvider, CommentsProvider } from "../CommentsProvider";
-import { BoardMenu } from "../BoardMenu/BoardMenu";
+import { AccessDeniedModal } from "View/AccessDeniedModal";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -135,56 +136,55 @@ export function AppView(): JSX.Element {
 
 	return (
 		<div className={style.wrapper}>
-			<UiModalContextProvider>
-				{shouldShow("titlePanel") && <LandingMenu />}
-				{shouldShow("titlePanel") && <MobileLandingMenu />}
-				<InactiveBoardHidder>
-					<div ref={containerRef}>
-						<Canvas
-							router={{ location, navigate, params }}
-							app={app}
-							board={board}
-						/>
-						<TextEditors app={app} board={board} />
-					</div>
-				</InactiveBoardHidder>
-				{appBoard.getBoardId() === "blank" && <NoBoardIsOpen />}
-				<ExportVisible>
-					<SidePanelsContainer
-						isBlank={appBoard.getBoardId() === "blank"}
+			{shouldShow("titlePanel") && <LandingMenu />}
+			{shouldShow("titlePanel") && <MobileLandingMenu />}
+			<InactiveBoardHidder>
+				<div ref={containerRef}>
+					<Canvas
+						router={{ location, navigate, params }}
+						app={app}
+						board={board}
 					/>
-					<ContextMenu />
-					<ItemTooltip />
-				</ExportVisible>
-				<ExportVisible>
-					<CommentsContextProvider>
-						<UserPanelLayout app={app} />
-						<CommentsProvider />
-						<BoardMenu />
-					</CommentsContextProvider>
-				</ExportVisible>
-				<ExportVisible>
-					<UserTracking board={board} />
-				</ExportVisible>
-				<InactiveBoardHidder>
-					<ZoomPanel />
-				</InactiveBoardHidder>
-				<ViewModeGuard>
-					<LinksProvider />
-					<ContextPanel />
-					<QuickAddPanel />
-					<ExportPanel />
-				</ViewModeGuard>
-				<ToastProvider />
-				{authCode && teamIdSearch ? <ImportMiro /> : null}
-				<ImportMiroStartModal />
-				<SetLinkToModal />
-				<UiModalBackground>
-					<ShareModal />
-					<ProfileSettingsModal />
-					<ChangePasswordModal />
-				</UiModalBackground>
-			</UiModalContextProvider>
+					<TextEditors app={app} board={board} />
+				</div>
+			</InactiveBoardHidder>
+			{appBoard.getBoardId() === "blank" && <NoBoardIsOpen />}
+			<ExportVisible>
+				<SidePanelsContainer
+					isBlank={appBoard.getBoardId() === "blank"}
+				/>
+				<ContextMenu />
+				<ItemTooltip />
+			</ExportVisible>
+			<ExportVisible>
+				<CommentsContextProvider>
+					<UserPanelLayout app={app} />
+					<CommentsProvider />
+					<BoardMenu />
+				</CommentsContextProvider>
+			</ExportVisible>
+			<ExportVisible>
+				<UserTracking board={board} />
+			</ExportVisible>
+			<InactiveBoardHidder>
+				<ZoomPanel />
+			</InactiveBoardHidder>
+			<ViewModeGuard>
+				<LinksProvider />
+				<ContextPanel />
+				<QuickAddPanel />
+				<ExportPanel />
+			</ViewModeGuard>
+			<ToastProvider />
+			{authCode && teamIdSearch ? <ImportMiro /> : null}
+			<ImportMiroStartModal />
+			<SetLinkToModal />
+			<UiModalBackground>
+				<ShareModal />
+				<ProfileSettingsModal />
+				<ChangePasswordModal />
+				<AccessDeniedModal />
+			</UiModalBackground>
 		</div>
 	);
 }

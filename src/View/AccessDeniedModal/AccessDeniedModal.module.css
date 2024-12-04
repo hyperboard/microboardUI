@@ -1,0 +1,27 @@
+.wrapper {
+	padding: 60px 52px;
+	display: flex;
+	flex-direction: column;
+}
+
+.heading {
+	font-family: Manrope;
+	font-size: 30px;
+	font-style: normal;
+	font-weight: 600;
+	margin-top: 8px;
+}
+
+.msg {
+	font-family: Manrope;
+	font-size: 14px;
+	font-style: normal;
+	font-weight: 500;
+}
+
+.btn {
+	margin-top: 32px;
+	align-self: flex-start;
+	width: auto;
+	padding: 10px 16px;
+}

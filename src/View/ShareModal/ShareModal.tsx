@@ -126,7 +126,7 @@ export function ShareModal() {
 		await boardsList.updatePrivacySettings(
 			boardId,
 			isPublic ?? boardInfo?.isPublic,
-			mode,
+			isPublic ? mode : DirectAccessType.EDIT,
 		);
 
 		const filteredGrantedUsers = grantedUsers.filter(user => !user.isOwner);
@@ -229,7 +229,12 @@ export function ShareModal() {
 					<h2 className={styles.settingsHeading}>
 						{t("sharing.publicAccess")}
 					</h2>
-					<div className={styles.selectors}>
+					<div
+						className={clsx(
+							styles.selectors,
+							isPublic && styles.modeVisible,
+						)}
+					>
 						<UiSelector
 							disabled={disabled}
 							iconColor="rgba(105, 107, 118, 1)"
@@ -241,6 +246,7 @@ export function ShareModal() {
 									: PRIVACY_SELECTOR_OPTIONS[1].value
 							}
 						/>
+
 						<UiSelector
 							disabled={disabled}
 							iconColor="rgba(105, 107, 118, 1)"
@@ -325,7 +331,11 @@ function GrantedUser({
 		<div className={styles.grantedUser}>
 			<div className={styles.userInfo}>
 				<div className={styles.avatar}>
-					<img src={avatar} />
+					<UserAvatar
+						width={40}
+						height={40}
+						src={avatar ?? undefined}
+					/>
 				</div>
 				<div className={styles.userInfoText}>
 					<h3 className={styles.userName}>

@@ -1,35 +1,36 @@
-import { createStrictContext, useStrictContext } from "lib/strictContext";
-import React, { useState, type PropsWithChildren } from "react";
+import { useForceUpdate } from "lib/useForceUpdate";
+import { useLayoutEffect } from "react";
+import { Subject } from "Subject";
 
 export type ModalId = string | symbol | null;
 
-type UiModalContextPayload = {
-	openedModalId: ModalId;
-	openModal: (modalId: ModalId) => void;
-	closeModal: () => void;
-};
+class UiModalState {
+	openedModalId: ModalId = null;
+	subject = new Subject<void>();
 
-const UiModalContext = createStrictContext<UiModalContextPayload>();
-
-export const useUiModalContext = () => useStrictContext(UiModalContext);
-
-export function UiModalContextProvider({ children }: PropsWithChildren<{}>) {
-	const [openedModalId, setOpenedModalId] = useState<ModalId>(null);
-
-	const openModal = (modalId: ModalId) => {
-		console.log("openModal", modalId);
-		setOpenedModalId(modalId);
+	openModal = (modalId: ModalId) => {
+		this.openedModalId = modalId;
+		console.log(modalId, this.openedModalId);
+		this.subject.publish();
 	};
 
-	const closeModal = () => {
-		setOpenedModalId(null);
+	closeModal = () => {
+		this.openedModalId = null;
+		this.subject.publish();
 	};
-
-	return (
-		<UiModalContext.Provider
-			value={{ openedModalId, closeModal, openModal }}
-		>
-			{children}
-		</UiModalContext.Provider>
-	);
 }
+
+const UiModalStateInstance = new UiModalState();
+
+export const useUiModalContext = () => {
+	const forceUpdate = useForceUpdate();
+	useLayoutEffect(() => {
+		UiModalStateInstance.subject.subscribe(forceUpdate);
+
+		return () => {
+			UiModalStateInstance.subject.unsubscribe(forceUpdate);
+		};
+	}, [forceUpdate]);
+
+	return UiModalStateInstance;
+};
