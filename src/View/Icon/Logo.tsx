@@ -1,91 +1,23 @@
 import React from "react";
 
-export function Logo({ id }: { id: string }) {
+export function Logo({ id }: { id: string }): JSX.Element {
 	return (
 		<svg
-			id={id}
-			width="20"
-			height="20"
-			viewBox="0 0 20 20"
+			width="24"
+			height="24"
+			viewBox="0 0 24 24"
 			fill="none"
+			version="1.1"
+			id={id}
 			xmlns="http://www.w3.org/2000/svg"
 		>
-			<g id="Group 827">
-				<path
-					id="Vector 58"
-					d="M6.86133 17.5C15.8647 17.4994 13.0944 3.82447 13.0944 1.79292"
-					stroke="url(#paint0_linear_3005_9992)"
-					strokeWidth="4.16824"
-					strokeLinecap="round"
-				/>
-				<path
-					id="Vector 59"
-					d="M17.5 6.58374C17.4994 15.5869 3.82407 12.8166 1.79247 12.8166"
-					stroke="url(#paint1_linear_3005_9992)"
-					strokeWidth="4.16824"
-					strokeLinecap="round"
-				/>
-				<path
-					id="Vector 60"
-					d="M12.9766 1.66675C3.97316 1.66739 6.74349 15.3423 6.74349 17.3738"
-					stroke="url(#paint2_linear_3005_9992)"
-					strokeWidth="4.16824"
-					strokeLinecap="round"
-				/>
-				<path
-					id="Vector 61"
-					d="M1.66602 12.699C1.66665 3.69583 15.3419 6.46608 17.3735 6.46608"
-					stroke="url(#paint3_linear_3005_9992)"
-					strokeWidth="4.16824"
-					strokeLinecap="round"
-				/>
-			</g>
-			<defs>
-				<linearGradient
-					id="paint0_linear_3005_9992"
-					x1="8.21037"
-					y1="23.2627"
-					x2="6.39234"
-					y2="2.8309"
-					gradientUnits="userSpaceOnUse"
-				>
-					<stop stopColor="#8041FF" />
-					<stop offset="1" stopColor="#C03AFF" />
-				</linearGradient>
-				<linearGradient
-					id="paint1_linear_3005_9992"
-					x1="23.2628"
-					y1="7.93274"
-					x2="2.83049"
-					y2="6.11456"
-					gradientUnits="userSpaceOnUse"
-				>
-					<stop stopColor="white" />
-					<stop offset="1" stopColor="#C03AFF" />
-				</linearGradient>
-				<linearGradient
-					id="paint2_linear_3005_9992"
-					x1="11.6275"
-					y1="-4.09591"
-					x2="13.4455"
-					y2="16.3358"
-					gradientUnits="userSpaceOnUse"
-				>
-					<stop stopColor="#B48EFF" />
-					<stop offset="1" stopColor="#C03AFF" />
-				</linearGradient>
-				<linearGradient
-					id="paint3_linear_3005_9992"
-					x1="-4.09681"
-					y1="11.35"
-					x2="16.3355"
-					y2="13.1682"
-					gradientUnits="userSpaceOnUse"
-				>
-					<stop stopColor="white" />
-					<stop offset="1" stopColor="#C03AFF" />
-				</linearGradient>
-			</defs>
+			<path
+				fillRule="evenodd"
+				clipRule="evenodd"
+				d="m 12,2 c 3,1 5,3.8 4.5,7 l 4.5,1.5 c 0.7,0.2 1.2,0.8 1,1.5 -0.9,3.2 -3.8,5 -7,4.5 L 13.5,21 C 13.3,21.7 12.7,22.2 12,22 8.8,21.1 7,18.2 7.5,15 L 3,13.5 C 2.3,13.3 1.8,12.7 2,12 2.9,8.8 5.8,7 9,7.5 L 10.5,3 C 10.7,2.3 11.3,1.8 12,2 Z m 1.5,9 c -0.8,-0.8 -2.2,-0.8 -3,0 -0.8,0.8 -0.8,1.8 0,2.5 0.8,0.8 2.25,0.75 3,0 0.75,-0.75 0.75,-1.75 0,-2.5 z"
+				fill="#8041FF"
+				id="path1"
+			/>
 		</svg>
 	);
 }
