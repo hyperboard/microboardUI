@@ -351,22 +351,7 @@ export function withWebSocketApi({
     async function handlePresenceEventMsg(msg: PresenceEventMsg, ws: WebSocket): Promise<void> {
         try {
             presence.saveEvent(msg);
-
-            const clients = boardClients.get(msg.boardId) || [];
-
-            sendMessageToClients(
-                {
-                    type: "PresenceEvent",
-                    boardId: msg.boardId,
-                    event: msg.event,
-                    userId: msg.userId,
-                    messageId: msg.messageId,
-                    nickname: msg.nickname,
-                    color: msg.color,
-                    avatar: msg.avatar,
-                },
-                clients
-            );
+            broadcastPresenceEvent(msg.boardId, msg);
         } catch (error) {
             logger.error("Failed to process presence event:", error);
             return sendError(ws, "Failed to process presence event.");
@@ -450,6 +435,23 @@ export function withWebSocketApi({
     function broadcastBoardEvent(boardUUID: string, message: BoardEventMsg | BoardEventListMsg | ModeMsg): void {
         const clients = boardClients.get(boardUUID) ?? [];
         sendMessageToClients(message, clients);
+    }
+
+    function broadcastPresenceEvent(boardUUID: string, msg: PresenceEventMsg): void {
+        const clients = boardClients.get(boardUUID) ?? [];
+        sendMessageToClients(
+            {
+                type: "PresenceEvent",
+                boardId: msg.boardId,
+                event: msg.event,
+                userId: msg.userId,
+                messageId: msg.messageId,
+                nickname: msg.nickname,
+                color: msg.color,
+                avatar: msg.avatar,
+            },
+            clients
+        );
     }
 
     function requestSnapshotFromClient(boardId: string, sinceLast: number): void {

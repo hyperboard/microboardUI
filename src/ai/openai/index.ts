@@ -32,9 +32,8 @@ export class OpenAI {
             temperature?: number;
             maxTokens?: number;
         } = {}
-    ) {
+    ): Promise<string | null> {
         const { model = this.defaultModel, temperature = 0.7, maxTokens = this.defaultMaxTokens } = options;
-        let buffer = "";
 
         try {
             const response = await this.client.chat.completions.create({
@@ -42,19 +41,12 @@ export class OpenAI {
                 messages,
                 temperature,
                 max_completion_tokens: 4096,
-                stream: true,
             });
 
-            for await (const chunk of response) {
-                const content = chunk.choices[0]?.delta?.content;
-                if (content) {
-                    buffer += content;
-                }
-            }
-
-            return buffer;
+            return response.choices[0].message.content;
         } catch (err) {
             console.log("Server openai error", err);
+            return null;
         }
     }
 
