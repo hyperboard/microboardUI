@@ -622,7 +622,9 @@
 		"enterIdea": "Enter your idea for generating charts on the board",
 		"generateAiChart": "Generate AI charts",
 		"symbols": "characters",
-		"processingIdea": "Processing your idea..."
+		"processingIdea": "Processing your idea...",
+		"generating": "Generating...",
+		"generate": "Generate"
 	},
 	"sharing": {
 		"share": "Share",
@@ -662,6 +664,16 @@
 		"following": "following",
 		"yourBoard": "Your board",
 		"(you)": "(you)",
-		"share": "Share"
+		"share": "Share",
+		"bringToMe...": "Bring to me ...",
+		"followUser": "Follow user",
+		"noUsersFound": "No users found matching",
+		"noUsersFoundPostfix": "",
+		"searchByName": "Search by name",
+		"idle": "idle",
+		"hideCursors": "Hide cursors",
+		"showCursors": "Show cursors",
+		"bringNotify1": "You brought",
+		"bringNotify2": "to your board"
 	}
 }

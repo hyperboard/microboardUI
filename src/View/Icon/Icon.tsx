@@ -110,7 +110,11 @@ export type IconId =
 	| "mark"
 	| "drawingPen"
 	| "Hand"
-	| "GearStroke";
+	| "GearStroke"
+	| "ToggleCursors"
+	| "FollowUser"
+	| "BringToMe"
+	| "EyeDashed";
 
 type Props = {
 	iconName: IconId;

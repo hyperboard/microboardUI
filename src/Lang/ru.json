@@ -620,7 +620,9 @@
 		"enterIdea": "Введите свою идею для генерации графика на доске",
 		"generateAiChart": "Генерация графиков",
 		"symbols": "символов",
-		"processingIdea": "Обработка идеи..."
+		"processingIdea": "Обработка идеи...",
+		"generating": "Генерируем...",
+		"generate": "Сгенерировать"
 	},
 	"sharing": {
 		"share": "Поделиться",
@@ -653,13 +655,23 @@
 		"anonymous": "Анонимный пользователь",
 		"followingUser": "Слежение за",
 		"stop": "Остановить",
-		"bringToMe": "Прикрепить все к себе",
-		"bringAllToMe": "Прикрепить всех к себе",
+		"bringToMe": "Притянуть всех к себе",
+		"bringAllToMe": "Притянуть всех к себе",
 		"follower": "наблюдателя",
 		"followers": "наблюдателей",
 		"following": "наблюдает",
 		"yourBoard": "Ваша доска",
 		"(you)": "(Вы)",
-		"share": "Поделиться"
+		"share": "Поделиться",
+		"bringToMe...": "Притянуть к себе...",
+		"followUser": "Следить",
+		"noUsersFound": "Пользователи с именем",
+		"noUsersFoundPostfix": "не найдены",
+		"searchByName": "Поиск по имени",
+		"idle": "отошёл",
+		"hideCursors": "Скрыть курсоры",
+		"showCursors": "Показать курсоры",
+		"bringNotify1": "Вы притянули",
+		"bringNotify2": "на свой экран"
 	}
 }
