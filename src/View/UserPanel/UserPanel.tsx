@@ -403,7 +403,7 @@ export const UserPanel: React.FC = () => {
 				{/* <Button className={styles.btn} pattern="primary">
 					<UserShare />
 					Share
-				</Button> 
+				</Button> */}
 
 				{/* TODO: remove temporarily inline style */}
 				{(account.info?.name || account.info?.email) && <AddComment />}

@@ -277,10 +277,16 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 					</>
 				)}
 				{selected && selected !== "addNew" && (
-					<FolderItem
-						key={selected.id}
-						board={{ ...selected, itemType: "board" }}
-					/>
+					<div className={style.selected}>
+						<span className={style.selectedIcon}>
+							<Icon
+								iconName="EmbedBoardIcon"
+								width={20}
+								height={20}
+							/>
+						</span>
+						<span>{selected.title}</span>
+					</div>
 				)}
 				{selected === "addNew" && (
 					<div className={style.search}>

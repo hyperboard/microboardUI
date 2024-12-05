@@ -231,3 +231,17 @@
 	background-color: #fdf2f1;
 	color: #e6483d;
 }
+
+.selected {
+	display: flex;
+	gap: 6px;
+	padding: 6px 8px;
+	background-color: rgb(246, 241, 252);
+	border-radius: 10px;
+}
+
+.selectedIcon {
+	color: rgb(105, 107, 117);
+	display: grid;
+	place-items: center;
+}

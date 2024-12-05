@@ -6,15 +6,11 @@ import React, { useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { AppView } from "View/AppView";
-import { AppContext } from "./AppContext";
-import { BoardRenameContextProvider } from "./BoardName";
-import { ContextMenuContextProvider } from "./ContextMenu";
-import ModalsWrapper from "./Modal/ModalsWrapper";
-import { RenameContextProvider } from "./Rename/RenameContext";
-import { SidePanelContextProvider } from "./SidePanel/SidePanelContext";
-import { useUiModalContext } from "./Ui/UiModal";
 import { ACCESS_DENIED_MODAL } from "./AccessDeniedModal";
-// import "./index.css";
+import { AppContext } from "./AppContext";
+import ModalsWrapper from "./Modal/ModalsWrapper";
+import { useUiModalContext } from "./Ui/UiModal";
+
 type Props = {
 	app: App;
 };

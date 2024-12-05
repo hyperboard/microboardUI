@@ -1,12 +1,6 @@
-import { getApiUrl } from "Config";
-import Cookies from "js-cookie";
+import { useAccount } from "App/useAccount";
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
-
-type Tokens = {
-	accessToken: string;
-	refreshToken: string;
-};
 
 type TProtectedRoute = {
 	allowRoles?: EUserRole[];
@@ -24,68 +18,11 @@ export enum EUserRole {
 	guest = "Guest",
 }
 
-export async function refreshTokens(refreshToken: string): Promise<void> {
-	fetch(getApiUrl("/auth/refresh"), {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			Authorization: `Bearer ${refreshToken}`,
-		},
-	})
-		.then(response => {
-			if (response.ok) {
-				return response.json();
-			}
-			throw new Error("Failed to refresh tokens");
-		})
-		.then((data: Tokens) => {
-			Cookies.set("accessToken", data.accessToken, {
-				secure: true,
-				sameSite: "none",
-			});
-			Cookies.set("refreshToken", data.refreshToken, {
-				secure: true,
-				sameSite: "none",
-			});
-		});
-}
-
-async function getUser() {
-	const accessToken = Cookies.get("accessToken");
-	fetch(getApiUrl("/users/me"), {
-		method: "GET",
-		headers: {
-			"Content-Type": "application/json",
-			Authorization: `Bearer ${accessToken}`,
-		},
-	}).then(response => {
-		if (response.ok) {
-			return response.json();
-		} else {
-			return Promise.reject(new Error("Get current user error"));
-		}
-	});
-}
-
 export const ProtectedRoute: React.FC<TProtectedRoute> = ({
 	// allowRoles,
 	isPublic = false,
 }) => {
-	const [isLoggedIn, setIsLoggedIn] = React.useState(true);
-	React.useEffect(() => {
-		const accessToken = Cookies.get("accessToken");
-		const refreshToken = Cookies.get("refreshToken");
-
-		if (accessToken && refreshToken) {
-			setIsLoggedIn(true);
-			refreshTokens(refreshToken);
-			getUser().then(() => {
-				setIsLoggedIn(true);
-			});
-		} else {
-			setIsLoggedIn(false);
-		}
-	}, []);
+	const account = useAccount();
 
 	// TODO: implement role model on backend
 	// if (!allowRoles.includes(user.role as EUserRole)) {
@@ -94,5 +31,5 @@ export const ProtectedRoute: React.FC<TProtectedRoute> = ({
 	if (isPublic) {
 		return <Outlet />;
 	}
-	return isLoggedIn ? <Outlet /> : <Navigate to="/auth/sign-in" />;
+	return account.isLoggedIn ? <Outlet /> : <Navigate to="/auth/sign-in" />;
 };
