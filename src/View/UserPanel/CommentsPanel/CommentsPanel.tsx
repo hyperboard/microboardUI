@@ -119,6 +119,9 @@ export const CommentsPanel = () => {
 			board.getBoardId(),
 		);
 
+	if (board.getBoardId() === "blank") {
+		return null;
+	}
 	return (
 		<UiPanel
 			style={isPanelOpen ? { padding: "0 4px" } : { padding: "0" }}

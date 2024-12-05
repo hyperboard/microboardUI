@@ -236,6 +236,9 @@ const ShareBtn = () => {
 		setIds(boardId);
 		openModal(SHARE_MODAL_ID);
 	};
+	if (boardId === "blank") {
+		return null;
+	}
 
 	return (
 		<Button
@@ -256,13 +259,14 @@ const ShareBtn = () => {
 export const UserPanel: React.FC = () => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
-	const { app } = useAppContext();
+	const { app, board } = useAppContext();
 	const account = useAccount();
 	const [cursorsActive, setCursorsActive] = useState(true);
 
 	const insideOfMicroboard =
 		document.referrer.includes("https://microboard.io/") ||
 		document.referrer.includes("https://microboard.ru/");
+	const isBoardOpen = board.getBoardId() !== "blank";
 
 	if (!account.isLoggedIn) {
 		return (
@@ -374,31 +378,29 @@ export const UserPanel: React.FC = () => {
 	return (
 		<CommentsPanelContextProvider>
 			<UiPanel zIndex={10} padding={0} className={styles.wrapper}>
-				<div className={styles.icons}>
-					<button
-						className={clsx(
-							styles.icon,
-							cursorsActive && styles.iconActive,
-						)}
-						onClick={() => {
-							const cursorsEnabled = app
-								.getBoard()
-								.presence.toggleCursorsRendering();
+				{isBoardOpen && (
+					<>
+						<div className={styles.icons}>
+							<button
+								className={clsx(
+									styles.icon,
+									cursorsActive && styles.iconActive,
+								)}
+								onClick={() => {
+									const cursorsEnabled = app
+										.getBoard()
+										.presence.toggleCursorsRendering();
 
-							setCursorsActive(cursorsEnabled);
-						}}
-					>
-						<Click />
-					</button>
-					{/* <button className={styles.icon}>
-						<Thumb />
-					</button>
-					<button className={styles.icon}>
-						<Ring />
-					</button>  */}
-				</div>
+									setCursorsActive(cursorsEnabled);
+								}}
+							>
+								<Click />
+							</button>
+						</div>
 
-				<PresenceUsers app={app} />
+						<PresenceUsers app={app} />
+					</>
+				)}
 
 				{/* <Button className={styles.btn} pattern="primary">
 					<UserShare />
@@ -406,7 +408,9 @@ export const UserPanel: React.FC = () => {
 				</Button> */}
 
 				{/* TODO: remove temporarily inline style */}
-				{(account.info?.name || account.info?.email) && <AddComment />}
+				{(account.info?.name || account.info?.email) && isBoardOpen && (
+					<AddComment />
+				)}
 				<div className={styles.container}>
 					<ShareBtn />
 					<UserPic
