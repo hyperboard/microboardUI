@@ -83,17 +83,7 @@ const BoardView = ({ app }: Props): JSX.Element => {
 
 	return (
 		<AppContext.Provider value={{ app, board }}>
-			<ModalsWrapper>
-				<ContextMenuContextProvider>
-					<BoardRenameContextProvider>
-						<RenameContextProvider>
-							<SidePanelContextProvider>
-								<AppView />
-							</SidePanelContextProvider>
-						</RenameContextProvider>
-					</BoardRenameContextProvider>
-				</ContextMenuContextProvider>
-			</ModalsWrapper>
+			<AppView />
 		</AppContext.Provider>
 	);
 };

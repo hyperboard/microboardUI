@@ -1,6 +1,6 @@
 import React from "react";
 
-export function Logo({ id }: { id: string }): JSX.Element {
+export function Logo({ id }: { id?: string }): JSX.Element {
 	return (
 		<svg
 			width="24"

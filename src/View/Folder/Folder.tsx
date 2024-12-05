@@ -1,5 +1,5 @@
 import React, { type MouseEventHandler } from "react";
-import { foldersApi } from "shared/apiV2";
+import { foldersApi, type boardsApiV2 } from "shared/apiV2";
 import { Icon } from "View/Icon";
 import type { IconId } from "View/Icon/Icon";
 import { UiAdaptiveAccordion } from "View/Ui/UiAdaptiveAccordion";
@@ -13,6 +13,7 @@ import { useContextMenuContext } from "View/ContextMenu";
 
 type Props = {
 	folder: foldersApi.Folder | null;
+	handleOpenBoard?: (board: boardsApiV2.Board) => void;
 };
 
 // @ts-expect-error TODO add icons for all folder types
@@ -23,7 +24,7 @@ const folderIcons: Record<foldersApi.FolderType, IconId> = {
 	[foldersApi.FolderType.NESTED]: "Folder",
 };
 
-export function Folder({ folder }: Props) {
+export function Folder({ folder, handleOpenBoard }: Props) {
 	const { handlePointerEnter, handlePointerLeave, isHover } = useHoverState();
 	const { open } = useContextMenuContext();
 	const { setNewName, setRenamingId, renamingId } = useRenameContext();
@@ -105,6 +106,9 @@ export function Folder({ folder }: Props) {
 												folder={folder}
 												key={i.id}
 												board={i}
+												handleOpenBoard={
+													handleOpenBoard
+												}
 											/>
 										) : (
 											<Folder key={i.id} folder={i} />

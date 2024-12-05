@@ -114,12 +114,13 @@ export const UserAvatar = ({
 	tooltip = false,
 	name,
 }: UserAvatarProps) => {
+	const account = useAccount();
 	return (
 		<div
 			style={{ width, height }}
 			className={clsx(styles.userPic, isOwner && styles.owner)}
 		>
-			{src ? (
+			{account.isLoggedIn && src ? (
 				<img width={width} height={height} src={src} />
 			) : (
 				<Icon iconName="UserPic" width={12} height={15} />

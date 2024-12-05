@@ -3,9 +3,9 @@ import { IframeModule } from "lib/IframeModule";
 import React from "react";
 import ReactDOM from "react-dom";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { AppContext } from "./AppContext";
-import AuthView from "./AuthView/AuthView";
 import { BoardView } from "View/BoardView";
+import AuthView from "./AuthView/AuthView";
+import { ContextWrapper } from "./ContextWrapper";
 import SelectBoard from "./Embedding/SelectBoard";
 import TestComponent from "./Embedding/Test";
 import { ForgotPassword } from "./ForgotPassword/ForgotPassword";
@@ -14,7 +14,6 @@ import RootView from "./RootView/RootView";
 import { ProtectedRoute } from "./Routes/ProtectedRoute";
 import { SigninView } from "./SigninView/SigninView";
 import { SignupView } from "./SignupView/SignupView";
-import { ToastProvider } from "View/ToastProvider";
 import { VerifyMailView } from "./VerifyMailView/VerifyMailView";
 import { WelcomeBoard } from "./WelcomeBoard";
 
@@ -26,82 +25,88 @@ export function getRender(app: App) {
 	const router = createBrowserRouter([
 		{
 			path: "/",
-			element: <RootView app={app} />,
-			children: [],
-		},
-		{
-			path: "/auth",
-			element: <AuthView />,
+			element: <ContextWrapper app={app} board={board} />,
 			children: [
 				{
-					path: "sign-up",
-					element: <SignupView />,
+					path: "/",
+					element: <RootView app={app} />,
+					children: [],
 				},
 				{
-					path: "sign-in",
-					element: <SigninView app={app} />,
+					path: "/auth",
+					element: <AuthView />,
+					children: [
+						{
+							path: "sign-up",
+							element: <SignupView />,
+						},
+						{
+							path: "sign-in",
+							element: <SigninView app={app} />,
+						},
+						{
+							path: "verify",
+							element: <VerifyMailView app={app} />,
+						},
+						{
+							path: "restore-password",
+							element: <RestorePassword />,
+						},
+						{
+							path: "forgot-password",
+							element: <ForgotPassword />,
+						},
+					],
 				},
 				{
-					path: "verify",
-					element: <VerifyMailView app={app} />,
+					path: "/welcome",
+					element: <ProtectedRoute isPublic={true} />,
+					children: [
+						{
+							path: "",
+							element: <WelcomeBoard app={app} />,
+						},
+					],
 				},
 				{
-					path: "restore-password",
-					element: <RestorePassword />,
+					path: "/boards/:boardId",
+					element: <ProtectedRoute isPublic={true} />,
+					children: [
+						{
+							path: "",
+							element: <BoardView app={app} />,
+						},
+					],
 				},
 				{
-					path: "forgot-password",
-					element: <ForgotPassword />,
+					path: "/boards",
+					element: <ProtectedRoute isPublic={true} />,
+					children: [
+						{
+							path: "",
+							element: <BoardView app={app} />,
+						},
+					],
 				},
-			],
-		},
-		{
-			path: "/welcome",
-			element: <ProtectedRoute isPublic={true} />,
-			children: [
 				{
-					path: "",
-					element: <WelcomeBoard app={app} />,
+					path: "/test",
+					element: <ProtectedRoute isPublic={true} />,
+					children: [
+						{
+							path: "",
+							element: <TestComponent />,
+						},
+					],
 				},
-			],
-		},
-		{
-			path: "/boards/:boardId",
-			element: <ProtectedRoute isPublic={true} />,
-			children: [
 				{
-					path: "",
-					element: <BoardView app={app} />,
-				},
-			],
-		},
-		{
-			path: "/boards",
-			element: <ProtectedRoute isPublic={true} />,
-			children: [
-				{
-					path: "",
-					element: <BoardView app={app} />,
-				},
-			],
-		},
-		{
-			path: "/test",
-			element: <ProtectedRoute isPublic={true} />,
-			children: [
-				{
-					path: "",
-					element: <TestComponent />,
-				},
-			],
-		},
-		{
-			path: "/selectBoard",
-			element: <ProtectedRoute isPublic={true} />,
-			children: [
-				{
-					path: "",
-					element: <SelectBoard app={app} />,
+					path: "/selectBoard",
+					element: <ProtectedRoute isPublic={true} />,
+					children: [
+						{
+							path: "",
+							element: <SelectBoard app={app} />,
+						},
+					],
 				},
 			],
 		},
@@ -110,10 +115,7 @@ export function getRender(app: App) {
 	return {
 		render: function () {
 			ReactDOM.render(
-				<AppContext.Provider value={{ app, board }}>
-					<RouterProvider router={router} />
-					<ToastProvider />
-				</AppContext.Provider>,
+				<RouterProvider router={router} />,
 				document.getElementById("root") as HTMLDivElement,
 			);
 		},

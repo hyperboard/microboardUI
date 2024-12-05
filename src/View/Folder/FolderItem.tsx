@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { handleClickDetection } from "lib/handleClickDetection";
 import React, { type MouseEventHandler } from "react";
 import { useNavigate } from "react-router-dom";
-import type { foldersApi } from "shared/apiV2";
+import type { boardsApiV2, foldersApi } from "shared/apiV2";
 import { useAppContext } from "View/AppContext";
 import { useContextMenuContext } from "View/ContextMenu";
 import { Icon } from "View/Icon";
@@ -12,17 +12,18 @@ import { useAccount } from "App/useAccount";
 
 type Props = {
 	board: foldersApi.NestedBoard;
-	folder: foldersApi.Folder | foldersApi.NestedFolder;
+	folder?: foldersApi.Folder | foldersApi.NestedFolder;
+	handleOpenBoard?: (board: boardsApiV2.Board) => void;
 };
 
-export function FolderItem({ board, folder }: Props) {
+export function FolderItem({ board, folder, handleOpenBoard }: Props) {
 	const { app, board: currentBoard } = useAppContext();
 	const navigate = useNavigate();
 	const { open } = useContextMenuContext();
 	const { setRenamingId, setNewName, renamingId } = useRenameContext();
 	const account = useAccount();
 
-	const currentBoardId = currentBoard.getBoardId();
+	const currentBoardId = currentBoard?.getBoardId();
 	const isActive = currentBoardId === board.id;
 	const isRenaming = board.id === renamingId;
 	const hasOwnerRights = account.permissions.checkPermissions(
@@ -33,6 +34,9 @@ export function FolderItem({ board, folder }: Props) {
 
 	const handleClick = handleClickDetection(
 		async () => {
+			if (handleOpenBoard) {
+				return handleOpenBoard(board);
+			}
 			await app.openBoard(board.id);
 			navigate(`/boards/${board.id}`);
 		},
@@ -48,7 +52,7 @@ export function FolderItem({ board, folder }: Props) {
 	const handleContextMenuOpen: MouseEventHandler = ev => {
 		ev.preventDefault();
 		ev.stopPropagation();
-		open(ev.clientX, ev.clientY, board.id, folder.id);
+		open(ev.clientX, ev.clientY, board.id, folder?.id);
 	};
 
 	return (
