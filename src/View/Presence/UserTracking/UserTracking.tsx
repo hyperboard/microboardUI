@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import styles from "./UserTracking.module.css";
-import clsx from "clsx";
 import { Board } from "Board";
 import { Presence, PresenceUser } from "Board/Presence/Presence";
 import { rgbToRgba } from "Board/Presence/helpers";
@@ -19,13 +18,25 @@ export const UserTracking: React.FC<Props> = ({ board }) => {
 	};
 
 	useEffect(() => {
-		board.presence.subject.subscribe((presence: Presence) => {
+		const observer = (presence: Presence): void => {
 			if (presence.trackedUser) {
-				setTrackedUser(presence.trackedUser);
+				const updatedUser = presence.users.get(
+					presence.trackedUser.userId,
+				);
+				if (updatedUser) {
+					setTrackedUser(updatedUser);
+				} else {
+					setTrackedUser(presence.trackedUser);
+				}
 			} else {
 				setTrackedUser(null);
 			}
-		});
+		};
+		board.presence.subject.subscribe(observer);
+
+		return () => {
+			board.presence.subject.unsubscribe(observer);
+		};
 	}, []);
 
 	if (!trackedUser) {

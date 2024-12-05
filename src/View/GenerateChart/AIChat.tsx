@@ -1,27 +1,57 @@
-import React, { useState } from "react";
-import styles from "./Chat.module.css";
+import React, { useState, useEffect } from "react";
+import styles from "./AIChat.module.css";
 import { LayoutEngine } from "View/GenerateChart/lib/engine/index";
 import { generateChart } from "shared/api/ai";
 import { Board } from "Board";
 import { useOutsideClickHandler } from "shared/hooks/useOutsideClickHandler";
 import { useTranslation } from "react-i18next";
+import { Button } from "shared/ui-lib/Button";
 
 const CHARACTER_LIMIT = 500;
+
+export type ChartType = "Flow chart" | "Cloud architecture" | "Database";
 
 interface Props {
 	board: Board;
 	onClose: () => void;
+	initialPrompt?: string;
+	initialChartType?: ChartType;
+	onSavePrompt: (prompt: string, chartType: ChartType) => void;
 }
 
-export const Chat: React.FC<Props> = ({ board, onClose }) => {
+export const AIChat: React.FC<Props> = ({
+	board,
+	onClose,
+	initialPrompt = "",
+	initialChartType = "Flow chart",
+	onSavePrompt,
+}) => {
 	const { t } = useTranslation();
-	const [prompt, setPrompt] = useState("");
-	const [chartType, setChartType] = useState<
-		"Flow chart" | "Cloud architecture" | "Database"
-	>("Flow chart");
+	const [prompt, setPrompt] = useState(initialPrompt);
+	const [chartType, setChartType] = useState<ChartType>(initialChartType);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const ref = React.useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		return () => {
+			onSavePrompt(prompt, chartType);
+		};
+	}, [prompt, chartType, onSavePrompt]);
+
+	useEffect(() => {
+		const escapeHandler = (ev: KeyboardEvent): void => {
+			if (ev.key === "Escape") {
+				onClose();
+			}
+		};
+
+		window.addEventListener("keydown", escapeHandler);
+
+		return () => {
+			window.removeEventListener("keydown", escapeHandler);
+		};
+	});
 
 	const handleInputChange = (
 		ev: React.ChangeEvent<HTMLTextAreaElement>,
@@ -33,13 +63,19 @@ export const Chat: React.FC<Props> = ({ board, onClose }) => {
 	const handleChartTypeChange = (
 		ev: React.ChangeEvent<HTMLSelectElement>,
 	): void => {
-		setChartType(
-			ev.target.value as "Flow chart" | "Cloud architecture" | "Database",
-		);
+		setChartType(ev.target.value as ChartType);
 		setError(null);
 	};
 
-	const handleSubmit = async (): Promise<void> => {
+	const handleSubmit = async (ev?: React.FormEvent): Promise<void> => {
+		if (ev) {
+			ev.preventDefault();
+		}
+
+		if (!prompt) {
+			return;
+		}
+
 		setIsLoading(true);
 		setError(null);
 		try {
@@ -78,6 +114,9 @@ export const Chat: React.FC<Props> = ({ board, onClose }) => {
 			onPaste={ev => {
 				ev.stopPropagation();
 			}}
+			onCopy={ev => {
+				ev.stopPropagation();
+			}}
 		>
 			<div className={styles.header}>
 				<div className={styles.flexTitle}>
@@ -102,7 +141,7 @@ export const Chat: React.FC<Props> = ({ board, onClose }) => {
 				</button>
 			</div>
 			<p className={styles.description}>{t("ai.enterIdea")}</p>
-			<div className={styles.inputContainer}>
+			<form onSubmit={handleSubmit} className={styles.inputContainer}>
 				<select
 					className={styles.select}
 					onChange={handleChartTypeChange}
@@ -123,21 +162,27 @@ export const Chat: React.FC<Props> = ({ board, onClose }) => {
 					placeholder={t("ai.chatPlaceholder")}
 					disabled={isLoading}
 					value={prompt}
-					onKeyDown={handleKeydown}
+					onKeyDown={ev => {
+						handleKeydown(ev);
+						if (ev.key === "Enter" && !ev.shiftKey) {
+							ev.preventDefault();
+							handleSubmit();
+						}
+						if (ev.key === "Escape") {
+							onClose();
+						}
+					}}
 					onPaste={ev => ev.stopPropagation()}
+					onCopy={ev => ev.stopPropagation()}
 					maxLength={CHARACTER_LIMIT}
 				/>
 				<div className={styles.charCount}>
 					{prompt.length} / {CHARACTER_LIMIT} {t("ai.symbols")}
 				</div>
-				<button
-					className={styles.button}
-					onClick={handleSubmit}
-					disabled={isLoading || !prompt}
-				>
-					{isLoading ? "Generating..." : "Generate"}
-				</button>
-			</div>
+				<Button type="submit" pattern="primary" disabled={isLoading}>
+					{isLoading ? t("ai.generating") : t("ai.generate")}
+				</Button>
+			</form>
 			{error && <div className={styles.errorMessage}>{error}</div>}
 			{isLoading && (
 				<div className={styles.loadingMessage}>

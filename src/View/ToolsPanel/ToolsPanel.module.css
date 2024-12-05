@@ -9,7 +9,7 @@
 }
 
 .bottomLeftWrapper {
-	z-index: 1;
+	z-index: 150;
 
 	display: flex;
 	gap: 8px;

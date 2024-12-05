@@ -114,6 +114,7 @@ export type EventsMsg =
 	| SubscribeConfirmationMsg
 	| ConfirmationMsg
 	| BoardSubscriptionCompletedMsg
+	| UserJoinMsg
 	| PresenceEventMsg;
 
 export type SocketMsg =
@@ -208,6 +209,8 @@ export function createConnection(
 			case "Mode":
 			case "CreateSnapshotRequest":
 			case "BoardSubscriptionCompleted":
+			case "UserJoin":
+			case "PresenceEvent":
 				const subscribeTimeout = subscribeTimeouts.get(msg.boardId);
 				if (subscribeTimeout) {
 					clearTimeout(subscribeTimeout.timeout);
@@ -222,21 +225,10 @@ export function createConnection(
 				}
 				subscription.publish(msg);
 				break;
-			case "UserJoin":
-				if (board) {
-					board.presence.join(msg);
-				}
-				break;
-			case "PresenceEvent":
-				if (board) {
-					board.presence.push(msg);
-				}
-				break;
 			case "Subscribe":
 			case "Unsubscribe":
 			case "Error":
 			case "ping":
-				console.log("ping message");
 				board.presence.ping();
 				break;
 			default:

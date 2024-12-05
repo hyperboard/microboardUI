@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { isMicroboardIframe } from "lib/isMicroboardIframe";
 import React, {
 	RefObject,
+	useEffect,
 	useRef,
 	useState,
 	type MouseEventHandler,
@@ -11,30 +12,29 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useOutsideClickHandler } from "shared/hooks/useOutsideClickHandler";
 import { Button } from "shared/ui-lib/Button";
+import { Input } from "shared/ui-lib/Input";
+import { Tail } from "View/AuthView/Tail";
 import { Icon } from "View/Icon";
+// import { useShareModal } from "View/ShareModal";
 import { App } from "App";
 import { useBoardsList } from "App/useBoardsList.ts";
-import { getEmailPrefix } from "lib/getEmailPrefix";
 import { shouldShow } from "lib/queryStringParser";
 import { useAppContext } from "View/AppContext";
 import { useContextMenuContext } from "View/ContextMenu";
-import { PresenceUsers } from "View/Presence/PresenceUsers/PresenceUsers";
-import { PROFILE_SETTINGS_MODAL_ID } from "View/ProfileSettingsModal";
+import { PresenceUsers, User } from "View/Presence/PresenceUsers/PresenceUsers";
 import { SHARE_MODAL_ID } from "View/ShareModal/ShareModal";
+import { LockIcon } from "View/SignupView/LockIcon";
 import { UiButton } from "View/Ui/UiButton";
 import { UiLink } from "View/Ui/UiLink";
 import { useUiModalContext } from "View/Ui/UiModal";
 import { UiPanel } from "View/Ui/UiPanel";
 import { PasswordChanged } from "View/Widgets/form-notifications/password-changed";
 import styles from "./UserPanel.module.css";
-import { AddComment } from "./Buttons/AddComment/AddComment.tsx";
-import {
-	CommentsPanelContextProvider,
-	useCommentsPanelContext,
-} from "View/UserPanel/CommentsPanel/CommentsPanelContext";
+import { CommentsPanelContextProvider } from "View/UserPanel/CommentsPanel/CommentsPanelContext";
 import { CommentsPanel } from "View/UserPanel/CommentsPanel/CommentsPanel";
-import { useCommentsContext } from "View/CommentsProvider/CommentsContext";
-import { Click } from "./icons/Click.tsx";
+import { BringToMe } from "View/Presence/BringToMe/BringToMe.tsx";
+import { PresenceUser } from "Board/Presence/Presence.ts";
+import { ActionButtons } from "./ActionButtons/ActionButtons.tsx";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	email?: string;
@@ -43,6 +43,8 @@ interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	buttons: React.ReactNode[];
 	openerRef?: RefObject<HTMLDivElement>;
 	customTop?: number;
+	followers: PresenceUser[];
+	presenceUsers: User[];
 }
 
 // TODO each file for each component
@@ -51,7 +53,10 @@ export const UserDropDown: React.FC<UserDropDownProps> = ({
 	isOpen,
 	buttons,
 	email,
+	openerRef,
 	customTop,
+	followers,
+	presenceUsers,
 }) => {
 	const dropdownRef = useRef<HTMLDivElement>(null);
 	const account = useAccount();
@@ -92,6 +97,9 @@ export const UserDropDown: React.FC<UserDropDownProps> = ({
 						},
 					);
 				})}
+				{presenceUsers.length > 0 && (
+					<BringToMe followers={followers} users={presenceUsers} />
+				)}
 			</div>
 		</div>
 	);
@@ -149,74 +157,241 @@ export const UserAvatar = ({
 	);
 };
 
-type TUserPicProps = Omit<
-	UserDropDownProps,
-	"isOpen" | "setIsDropdownOpen" | "buttons" | "openerRef" | "customTop"
->;
+interface ModalProps extends React.HTMLAttributes<HTMLDivElement> {
+	isOpen: boolean;
+	setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
 // TODO each file for each component
-const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
-	const { board } = useAppContext();
-	const { setIsPanelOpen } = useCommentsPanelContext();
-	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-	const userPanelRef = useRef<HTMLDivElement>(null);
+const Modal: React.FC<ModalProps> = ({ isOpen, setIsOpen }) => {
+	const modalRef = useRef<HTMLDivElement>(null);
+	const formRef = useRef<HTMLFormElement>(null);
+	const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
+	const [isSubmitLoading, setIsSubmitLoading] = useState(false);
+	const [error, setError] = useState("");
+	const { t } = useTranslation();
+	const [isPasswordChanged, setIsPasswordChanged] = useState(false);
 	const account = useAccount();
-	const { openModal } = useUiModalContext();
-	const boardId = board.getBoardId();
-	const isOwner = account.permissions.checkPermissions(
-		"owns",
-		"boards",
-		boardId,
-	);
+	// const navigate = useNavigate();
 
-	const handleOpenProfileSettings: MouseEventHandler = ev => {
-		ev.preventDefault();
-		ev.stopPropagation();
-		openModal(PROFILE_SETTINGS_MODAL_ID);
+	// const [currentPassword, setCurrentPassword] = useState("");
+	// const [newPassword, setNewPassword] = useState("");
+	// const [confirmPassword, setConfirmPassword] = useState("");
+
+	const closeModal = (): void => {
+		setIsOpen(false);
+		const form = formRef.current;
+		if (!form) {
+			return;
+		}
+
+		form.reset();
+		setIsSubmitDisabled(true);
+		setError("");
 	};
 
-	return (
-		<>
-			<div
-				className={styles.userPicWrapper}
-				{...props}
-				ref={userPanelRef}
-				onMouseDown={event => {
-					event.stopPropagation();
-					if (!isDropdownOpen) {
-						setIsDropdownOpen(true);
-						setIsPanelOpen(false);
-					} else {
-						setIsDropdownOpen(false);
-						setIsPanelOpen(false);
-					}
-				}}
-			>
-				<UserAvatar
-					src={account.info?.avatar}
-					isOwner={isOwner}
-					tooltip
-					name={account.info?.name}
-				/>
+	const onSubmit = (event: React.FormEvent): void => {
+		event.preventDefault();
+		const form = formRef.current;
+		if (!form) {
+			return;
+		}
+
+		setIsSubmitDisabled(true);
+		setIsSubmitLoading(true);
+
+		account
+			.changePassword(
+				formRef.current.currentPassword.value,
+				formRef.current.newPassword.value,
+			)
+			.then(() => {
+				setIsPasswordChanged(true);
+			})
+			.catch(error => {
+				if (error?.message === "Wrong password") {
+					setError(t("auth.currentPasswordIsIncorrect"));
+					return;
+				}
+				if (error?.message === "ERROR_SAME_PASSWORD") {
+					setError(t("auth.passwordMustBeDifferent"));
+					return;
+				}
+				// different error?
+				setError(t("auth.passwordDoNotMatch"));
+			})
+			.finally(() => {
+				setIsSubmitDisabled(false);
+				setIsSubmitLoading(false);
+			});
+	};
+
+	const checkForm = (): void => {
+		const form = formRef.current;
+		if (!form) {
+			return;
+		}
+		const currentPassword = form.currentPassword.value;
+		const newPassword = form.newPassword.value;
+		const confirmPassword = form.confirmPassword.value;
+
+		if (
+			currentPassword === "" ||
+			newPassword === "" ||
+			confirmPassword === ""
+		) {
+			setError("");
+			setIsSubmitDisabled(true);
+			return;
+		}
+
+		const MIN_PASSWORD_LENGTH = 8;
+		if (
+			newPassword.length < MIN_PASSWORD_LENGTH ||
+			confirmPassword.length < MIN_PASSWORD_LENGTH
+		) {
+			setError("");
+			setIsSubmitDisabled(true);
+			return;
+		}
+
+		if (confirmPassword.length < newPassword.length) {
+			setError("");
+			setIsSubmitDisabled(true);
+			return;
+		}
+
+		if (newPassword === currentPassword) {
+			setError(t("auth.passwordMustBeDifferent"));
+			setIsSubmitDisabled(true);
+			return;
+		}
+
+		if (newPassword !== confirmPassword) {
+			setError(t("auth.passwordDoNotMatch"));
+			setIsSubmitDisabled(true);
+			return;
+		}
+
+		function checkLength(str: string): boolean {
+			if (str.length < 8) {
+				return false;
+			}
+			return true;
+		}
+
+		if (!checkLength(newPassword) || !checkLength(confirmPassword)) {
+			setError("");
+			return;
+		}
+
+		setError("");
+		setIsSubmitDisabled(false);
+	};
+
+	const dbCheckForm = checkForm;
+
+	useOutsideClickHandler(modalRef, closeModal);
+
+	useEffect(() => {
+		setError("");
+		setIsPasswordChanged(false);
+	}, [isOpen]);
+
+	if (!isOpen) {
+		return null;
+	}
+
+	if (isPasswordChanged) {
+		return (
+			<div className={styles.modalWrapper}>
+				<div ref={modalRef} className={styles.modal}>
+					<PasswordChanged />
+					<div className={styles.passwordChangedGap}></div>
+				</div>
 			</div>
-			<UserDropDown
-				openerRef={userPanelRef}
-				isOpen={isDropdownOpen}
-				setIsDropdownOpen={setIsDropdownOpen}
-				email={props.email}
-				buttons={[
-					<Button
-						type="button"
-						key="userDropDown1"
-						onClick={handleOpenProfileSettings}
-						pattern="ghost"
-					>
-						<Icon width={20} height={20} iconName="human" /> Profile
-						settings
-					</Button>,
-				]}
-			/>
-		</>
+		);
+	}
+
+	return (
+		<div className={styles.modalWrapper}>
+			<div ref={modalRef} className={styles.modal}>
+				<h2 className={styles.modalTitle}>Change password</h2>
+				<form
+					className={styles.modalForm}
+					ref={formRef}
+					onSubmit={onSubmit}
+				>
+					<div className={styles.modalInputs}>
+						<Input
+							prefixIcon={<LockIcon />}
+							id="currentPassword"
+							password
+							placeholder="Current password"
+							// hasError={!!error.length}
+							// onInput={event => {
+							// 	dbCheckForm(event);
+							// }}
+							onKeyDown={event => {
+								event.stopPropagation();
+								dbCheckForm();
+							}}
+							// onInput={event => {
+							// 	setCurrentPassword(event.target.value);
+							// }}
+							onBlur={dbCheckForm}
+						/>
+						<Input
+							prefixIcon={<LockIcon />}
+							id="newPassword"
+							password
+							placeholder="New password"
+							// hasError={!!error.length}
+							// onInput={dbCheckForm}
+							onKeyDown={event => {
+								event.stopPropagation();
+								dbCheckForm();
+							}}
+							// onInput={event => {
+							// 	setNewPassword(event.target.value);
+							// }}
+							onBlur={dbCheckForm}
+						/>
+						<Input
+							prefixIcon={<LockIcon />}
+							id="confirmPassword"
+							password
+							placeholder="Repeat new password"
+							helperText="The password must be at least 8 characters long"
+							hasError={!!error.length}
+							onInput={dbCheckForm}
+							errorText={error}
+							onKeyDown={event => {
+								event.stopPropagation();
+								// dbCheckForm();
+							}}
+							// onInput={event => {
+							// 	setConfirmPassword(event.target.value);
+							// }}
+							onBlur={dbCheckForm}
+						/>
+					</div>
+
+					<div className={styles.modalBtns}>
+						<Button
+							type="submit"
+							disabled={isSubmitDisabled}
+							loading={isSubmitLoading}
+						>
+							{t("auth.submit")} <Tail />
+						</Button>
+						<Button pattern="ghost" onClick={closeModal}>
+							{t("auth.cancel")}
+						</Button>
+					</div>
+				</form>
+			</div>
+		</div>
 	);
 };
 
@@ -224,6 +399,7 @@ const ShareBtn = () => {
 	const { setIds } = useContextMenuContext();
 	const { openModal } = useUiModalContext();
 	const { board } = useAppContext();
+	const account = useAccount();
 	const { t } = useTranslation();
 	const boardsList = useBoardsList();
 
@@ -259,14 +435,12 @@ const ShareBtn = () => {
 export const UserPanel: React.FC = () => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
-	const { app, board } = useAppContext();
+	const { app } = useAppContext();
 	const account = useAccount();
-	const [cursorsActive, setCursorsActive] = useState(true);
 
 	const insideOfMicroboard =
 		document.referrer.includes("https://microboard.io/") ||
 		document.referrer.includes("https://microboard.ru/");
-	const isBoardOpen = board.getBoardId() !== "blank";
 
 	if (!account.isLoggedIn) {
 		return (
@@ -378,50 +552,10 @@ export const UserPanel: React.FC = () => {
 	return (
 		<CommentsPanelContextProvider>
 			<UiPanel zIndex={10} padding={0} className={styles.wrapper}>
-				{isBoardOpen && (
-					<>
-						<div className={styles.icons}>
-							<button
-								className={clsx(
-									styles.icon,
-									cursorsActive && styles.iconActive,
-								)}
-								onClick={() => {
-									const cursorsEnabled = app
-										.getBoard()
-										.presence.toggleCursorsRendering();
-
-									setCursorsActive(cursorsEnabled);
-								}}
-							>
-								<Click />
-							</button>
-						</div>
-
-						<PresenceUsers app={app} />
-					</>
-				)}
-
-				{/* <Button className={styles.btn} pattern="primary">
-					<UserShare />
-					Share
-				</Button> */}
-
-				{/* TODO: remove temporarily inline style */}
-				{(account.info?.name || account.info?.email) && isBoardOpen && (
-					<AddComment />
-				)}
+				<ActionButtons />
+				<PresenceUsers app={app} />
 				<div className={styles.container}>
 					<ShareBtn />
-					<UserPic
-						email={
-							account.info?.name ??
-							getEmailPrefix(
-								account.info?.email ?? "",
-								"Anonymous",
-							)
-						}
-					/>
 				</div>
 			</UiPanel>
 			<CommentsPanel />
@@ -429,10 +563,10 @@ export const UserPanel: React.FC = () => {
 	);
 };
 
-export const UserPanelLayout: React.FC<{ app: App }> = ({ app }) => {
+export const UserPanelLayout: React.FC<{ app: App }> = () => {
 	return (
 		<div className={styles.layoutWrapper}>
-			{shouldShow("userPanel") && <UserPanel app={app} />}
+			{shouldShow("userPanel") && <UserPanel />}
 		</div>
 	);
 };

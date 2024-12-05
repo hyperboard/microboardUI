@@ -1,11 +1,12 @@
 .wrapper {
+	padding-left: 12px;
 }
 
 .container {
 	/* background-color: #1a1a1a; */
 	border-radius: 8px;
 	/* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
-	padding: 9px 0 9px 16px;
+	padding: 9px 0 9px 0;
 	display: flex;
 }
 
@@ -21,6 +22,31 @@
 	cursor: pointer;
 	background-color: white;
 	border-radius: 50%;
+}
+
+.usersOverflowWrapper {
+	background-color: #e9eaec;
+	border-radius: 1000px;
+	height: 32px;
+	margin-left: -24px;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 0 6px 0 0;
+	font-weight: 500;
+	outline: 1px solid #e9eaec;
+	cursor: pointer;
+}
+
+.usersOverflowGap {
+	width: 26px;
+	height: 24px;
+}
+
+.usersOverflowCounter {
+	display: flex;
+	align-items: center;
+	gap: 4px;
 }
 
 .userList > .userWrapper:nth-child(n) {
@@ -181,16 +207,16 @@
 }
 
 .followingCounter {
-	position: fixed;
-	top: 54px;
-	right: var(--absolute-position-panel-padding);
+	position: absolute;
+	top: 32px;
+	left: 0;
 	z-index: 1000;
 }
 
 .followingCounterIcon {
 	display: flex;
 	gap: 4px;
-	padding: 4px 6px;
+	padding: 2px 6px;
 	background-color: #f48e2f;
 	border-radius: 500px;
 	color: white;
@@ -263,18 +289,16 @@
 }
 
 .shareModal {
-	position: fixed;
-	right: var(--absolute-position-panel-padding);
-	top: 72px;
-	width: 300px;
-	padding: 12px 16px;
+	width: 100%;
+	/* padding: 12px 16px; */
 	background-color: white;
 	border-radius: 12px;
-	border: 1px solid var(--border-action-normal);
-	box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+	/* border: 1px solid var(--border-action-normal); */
+	/* box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25); */
 	display: flex;
 	flex-direction: column;
 	gap: 12px;
+	padding: 6px 10px 10px;
 }
 
 .shareUser {
@@ -286,20 +310,36 @@
 	font-size: 14px;
 	line-height: 20px;
 	font-weight: 500;
+
+	position: relative;
 }
 
 .shareUserPic {
 	width: 32px;
 	height: 32px;
 	border-radius: 50%;
+	color: white;
+	cursor: pointer;
 
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 	text-transform: uppercase;
+	flex-shrink: 0;
+}
+
+.shareEye {
+	color: black;
+	z-index: 100;
+	width: 32px;
+	height: 32px;
+	position: absolute;
+	top: 6px;
+	left: 8px;
 }
 
 .shareList {
 	border-bottom: 1px solid #dee0e3;
+	max-height: 350px;
 }

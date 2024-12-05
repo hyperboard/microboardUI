@@ -18,7 +18,7 @@ import style from "./ToolsPanel.module.css";
 import { AddTemplate } from "./Buttons/AddTemplate";
 import { EventList } from "./Buttons/EventList";
 import { UiSeparator } from "View/Ui/UiSeparator/UiSeparator";
-import ChatPanel from "View/GenerateChart/ChatPanel";
+import AIChatPanel from "View/GenerateChart/AIChatPanel";
 
 export function ToolsPanel(): JSX.Element {
 	const [openedMenu, setOpenedMenu] = useState("None");
@@ -56,7 +56,7 @@ export function ToolsPanel(): JSX.Element {
 				</UiPanel>
 				<div className={style.bottomLeftWrapper}>
 					{window.showDebug && <EventList />}
-					<ChatPanel board={app.getBoard()} />
+					<AIChatPanel board={app.getBoard()} />
 				</div>
 			</div>
 		</PanelContext.Provider>
