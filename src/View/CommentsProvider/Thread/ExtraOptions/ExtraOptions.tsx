@@ -6,6 +6,8 @@ import { Icon } from "../../../Icon";
 import { UiButton } from "../../../Ui/UiButton";
 import { UiPanel } from "../../../Ui/UiPanel";
 import styles from "./ExtraOptions.module.css";
+import { notify } from "View/Ui/Toast/notify";
+import { useTranslation } from "react-i18next";
 
 interface Props {
 	comment: Comment;
@@ -17,6 +19,7 @@ export const ExtraOptions = ({ comment, canEdit }: Props) => {
 	const [isCursorOnMenu, setIsCursorOnMenu] = useState(false);
 	const { board } = useAppContext();
 	const account = useAccount();
+	const { t } = useTranslation();
 
 	const username = account.info?.name || account.info?.email;
 
@@ -34,6 +37,24 @@ export const ExtraOptions = ({ comment, canEdit }: Props) => {
 		}
 		if (element === "menu") {
 			setIsCursorOnMenu(false);
+		}
+	};
+
+	const handleCopyLink = async () => {
+		try {
+			await navigator.clipboard.writeText(comment.getLink());
+			notify({
+				body: t("contextPanel.copyItemLink.success.description"),
+				variant: "success",
+				duration: 3000,
+			});
+		} catch (err) {
+			console.error(err);
+			notify({
+				header: t("contextPanel.copyItemLink.error.title"),
+				body: t("contextPanel.copyItemLink.error.description"),
+				variant: "error",
+			});
 		}
 	};
 
@@ -69,30 +90,31 @@ export const ExtraOptions = ({ comment, canEdit }: Props) => {
 										width={20}
 										height={20}
 									/>
-									Mark as unread
+									{t("comment.markAsUnread")}
 								</button>
 							)}
+						<button onClick={handleCopyLink} className={styles.btn}>
+							<Icon
+								iconName={"CopyLink"}
+								width={20}
+								height={20}
+							/>
+							{t("comment.copyLink")}
+						</button>
 						{canEdit && (
 							<button
 								className={styles.btn}
 								onClick={handleRemove}
 							>
 								<Icon
+									style={{ color: "#696B76" }}
 									iconName={"Delete"}
 									width={20}
 									height={20}
 								/>
-								Remove
+								{t("comment.deleteThread")}
 							</button>
 						)}
-						<button className={styles.btn}>
-							<Icon
-								iconName={"CopyLink"}
-								width={20}
-								height={20}
-							/>
-							Copy link
-						</button>
 					</UiPanel>
 				</div>
 			)}

@@ -3,6 +3,7 @@ export const MAX_DRAWING_STROKE_WIDTH = 12;
 export const STEP_DRAWING_STROKE_WIDTH = 1;
 export const INITIAL_DRAWING_STROKE_WIDTH = 6;
 export const INITIAL_HIGHLIGHTER_STROKE_WIDTH = 9;
+export const MAX_HIGHLIGHTER_STROKE_WIDTH = 24;
 export const ERASER_STROKE_WIDTH = 12;
 export const RENDER_POINTER_CIRCLE = true;
 export const DRAWING_STROKE_STYLE = "solid";

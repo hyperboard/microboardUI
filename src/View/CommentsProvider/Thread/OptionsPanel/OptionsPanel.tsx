@@ -1,6 +1,7 @@
 import React, { CSSProperties } from "react";
 import { UiPanel } from "../../../Ui/UiPanel";
 import styles from "./OptionsPanel.module.css";
+import { useTranslation } from "react-i18next";
 
 interface Props {
 	canRemove: boolean;
@@ -15,15 +16,17 @@ export const OptionsPanel = ({
 	style,
 	setTextUnderEditor,
 }: Props) => {
+	const { t } = useTranslation();
+
 	return (
 		<UiPanel className={styles.panel} vertical={true} style={style}>
 			{canRemove && (
 				<button className={styles.btn} onClick={handleRemove}>
-					Delete comment
+					{t("comment.deleteMessage")}
 				</button>
 			)}
 			<button onClick={setTextUnderEditor} className={styles.btn}>
-				Edit...
+				{t("comment.editMessage")}
 			</button>
 		</UiPanel>
 	);

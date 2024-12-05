@@ -11,6 +11,7 @@ import { AddHighlighter } from "./AddHighlighter/AddHighlighter";
 import { AddPen } from "./AddPen/AddPen";
 import { Eraser } from "./Eraser/Eraser";
 import { useAppContext } from "../../../AppContext";
+import { getHotkeyLabel } from "Board/Keyboard/getHotkeyLabel";
 
 export function AddDrawing() {
 	const [lastOpenedMenu, setLastOpenedMenu] = useState<DrawingTool | null>(
@@ -19,15 +20,14 @@ export function AddDrawing() {
 	const { board } = useAppContext();
 	const [selectedColor, setSelectedColor] = useState<string>("none");
 	const { t } = useTranslation();
+
 	const isActive = Boolean(
 		board.tools.getAddDrawing() ||
 			board.tools.getAddHighlighter() ||
 			board.tools.getEraser(),
 	);
+
 	const handleClick = () => {
-		if (isActive) {
-			return;
-		}
 		switch (lastOpenedMenu) {
 			case "Pen": {
 				board.tools.addDrawing(true);
@@ -49,6 +49,26 @@ export function AddDrawing() {
 		setLastOpenedMenu(lastOpenedMenu || "Pen");
 	};
 
+	const getTooltip = () => {
+		if (isActive) {
+			return undefined;
+		}
+		switch (lastOpenedMenu) {
+			case "Pen": {
+				return t("toolsPanel.addDrawing.addPen.tooltip");
+			}
+			case "Highlighter": {
+				return t("toolsPanel.addDrawing.addHighlighter.tooltip");
+			}
+			case "Eraser": {
+				return t("toolsPanel.addDrawing.addEraser.tooltip");
+			}
+			default: {
+				return t("toolsPanel.addDrawing.addPen.tooltip");
+			}
+		}
+	};
+
 	return (
 		<AddDrawingContext.Provider
 			value={{
@@ -61,10 +81,12 @@ export function AddDrawing() {
 				button={
 					<UiButton
 						id={"tool-add-drawing"}
-						tooltip={
-							isActive
-								? undefined
-								: t("toolsPanel.addDrawing.addPen.tooltip")
+						tooltip={getTooltip()}
+						hotkey={
+							lastOpenedMenu !== "Eraser" &&
+							lastOpenedMenu !== "Highlighter"
+								? getHotkeyLabel("pen")
+								: undefined
 						}
 						active={isActive}
 						variant="secondary"

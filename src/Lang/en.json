@@ -237,6 +237,11 @@
 		"create": "Add a comment",
 		"closeThread": "Close thread",
 		"openThread": "Open thread",
+		"deleteThread": "Delete",
+		"markAsUnread": "Mark as unread",
+		"copyLink": "Copy link",
+		"deleteMessage": "Delete",
+		"editMessage": "Edit...",
 		"reply": "Leave a reply",
 		"edit": "Edit comment",
 		"answer": {

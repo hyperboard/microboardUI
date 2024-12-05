@@ -160,7 +160,6 @@ export function AppView(): JSX.Element {
 				<CommentsContextProvider>
 					<UserPanelLayout app={app} />
 					<CommentsProvider />
-					<BoardMenu />
 				</CommentsContextProvider>
 			</ExportVisible>
 			<ExportVisible>

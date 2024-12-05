@@ -5,13 +5,13 @@ import { Icon } from "View/Icon";
 import { ColorPicker } from "View/Pickers/ColorPicker/ColorPicker";
 import { SliderPicker } from "View/Pickers/SliderPicker/SliderPicker";
 import {
-	MAX_DRAWING_STROKE_WIDTH,
 	MIN_DRAWING_STROKE_WIDTH,
 	STEP_DRAWING_STROKE_WIDTH,
 	PEN_COLORS,
 	HIGHLIGHTER_COLORS,
 	DEFAULT_PEN_COLOR,
 	DEFAULT_HIGHLIGHTER_COLOR,
+	MAX_HIGHLIGHTER_STROKE_WIDTH,
 } from "View/Tools/AddDrawing";
 import { UiButton } from "View/Ui/UiButton";
 import { UiColorInput } from "View/Ui/UiColorInput";
@@ -110,7 +110,7 @@ export function AddHighlighter() {
 					<SliderPicker
 						onPick={handleSliderPick}
 						min={MIN_DRAWING_STROKE_WIDTH}
-						max={MAX_DRAWING_STROKE_WIDTH}
+						max={MAX_HIGHLIGHTER_STROKE_WIDTH}
 						step={STEP_DRAWING_STROKE_WIDTH}
 						value={strokeWidth}
 						showLabel

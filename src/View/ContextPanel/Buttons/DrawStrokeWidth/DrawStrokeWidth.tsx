@@ -1,6 +1,7 @@
 import { SliderPicker } from "View/Pickers/SliderPicker/SliderPicker";
 import {
 	MAX_DRAWING_STROKE_WIDTH,
+	MAX_HIGHLIGHTER_STROKE_WIDTH,
 	MIN_DRAWING_STROKE_WIDTH,
 	STEP_DRAWING_STROKE_WIDTH,
 } from "View/Tools/AddDrawing";
@@ -24,7 +25,11 @@ export function DrawStrokeWidth() {
 				value={width}
 				onPick={handleSliderPick}
 				min={MIN_DRAWING_STROKE_WIDTH}
-				max={MAX_DRAWING_STROKE_WIDTH}
+				max={
+					width > MAX_DRAWING_STROKE_WIDTH
+						? MAX_HIGHLIGHTER_STROKE_WIDTH
+						: MAX_DRAWING_STROKE_WIDTH
+				}
 				step={STEP_DRAWING_STROKE_WIDTH}
 			/>
 		</div>

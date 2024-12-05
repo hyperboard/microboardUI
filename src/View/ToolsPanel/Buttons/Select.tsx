@@ -5,7 +5,7 @@ import { UiButton } from "View/Ui/UiButton";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-type Props = { rounded?: "top" | "bottom" };
+type Props = { rounded?: "top" | "bottom" | "none" };
 
 export function Select({ rounded = "top" }: Props): JSX.Element {
 	const { board } = useAppContext();
