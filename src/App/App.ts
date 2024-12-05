@@ -87,12 +87,6 @@ export function createApp(isHistory = true): App {
 			return;
 		}
 
-		if (account.isLoggedIn) {
-			await account.refreshTokens();
-			if (account.accessToken) {
-				connection.publishAuth(account.accessToken);
-			}
-		}
 		let currentBoard = boards.get(id);
 		if (!currentBoard) {
 			currentBoard = new Board(id, accessKey);

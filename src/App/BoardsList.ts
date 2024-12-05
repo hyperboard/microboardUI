@@ -291,7 +291,6 @@ export class BoardsList {
 		} catch {
 			console.error("Error claiming boards");
 		}
-		await this.account.refreshTokens();
 		await this.updateList();
 	}
 

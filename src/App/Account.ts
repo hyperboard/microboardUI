@@ -43,7 +43,6 @@ export class Account {
 	}
 
 	async init() {
-		await this.refreshTokens();
 		this.subject.publish(this.info);
 	}
 
@@ -119,7 +118,7 @@ export class Account {
 
 			if (data?.accessToken) {
 				this._accessToken = data.accessToken;
-				this.connection.publishAuth(data.accessToken);
+				this.connection.publishAuth();
 			}
 
 			this.updateTokenData();

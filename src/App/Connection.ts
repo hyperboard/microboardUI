@@ -146,7 +146,7 @@ export interface Connection {
 		sequenceNumber: number,
 	): void;
 	publishPresenceEvent(boardId: string, event: PresenceEventType): void;
-	publishAuth(jwt: string): void;
+	publishAuth(): void;
 	publishSnapshot(boardId: string, snapshot: BoardSnapshot): void;
 	wsClient: WsClient;
 }
@@ -290,7 +290,10 @@ export function createConnection(
 			sendSubscribeMsg();
 		}
 
-		function sendSubscribeMsg(): void {
+		async function sendSubscribeMsg(): Promise<void> {
+			const account = getAccount();
+			await account.refreshTokens();
+			publishAuth();
 			let subscribeTimeout = subscribeTimeouts.get(boardId);
 			if (!subscribeTimeout) {
 				subscribeTimeout = {
@@ -357,7 +360,12 @@ export function createConnection(
 		);
 	}
 
-	function publishAuth(jwt: string): void {
+	function publishAuth(): void {
+		const account = getAccount();
+		const jwt = account.accessToken;
+		if (!jwt) {
+			return;
+		}
 		ws.send({
 			type: "Auth",
 			jwt,
