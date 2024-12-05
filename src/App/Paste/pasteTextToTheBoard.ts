@@ -12,6 +12,6 @@ export function pasteTextToTheBoard(board: Board, text: string): void {
 	richText.editor.setMaxWidth(600);
 	richText.editor.setSelectionHorisontalAlignment("left");
 	richText.insideOf = richText.itemType;
-	richText.editor.insertText(text);
+	richText.editor.insertCopiedText(text);
 	board.add(richText);
 }

@@ -10,7 +10,6 @@ import { DEFAULT_TEXT_STYLES } from "View/Items/RichText";
 import styles from "./TextEditor.module.css";
 import clsx from "clsx";
 import { Icon } from "View/Icon";
-import { Transforms } from "slate";
 import { tryToPasteAsItemOrReturnText } from "App/Paste";
 
 export class TextEditors extends React.Component<
@@ -108,8 +107,7 @@ export class TextEditor extends React.Component<
 		if (richText.insideOf === "Frame") {
 			text = text.replace(/\n+/g, " ").trim();
 		}
-
-		Transforms.insertText(richText.editor.editor, text);
+		richText.editor.insertText(text);
 	};
 
 	render(): React.ReactElement | null {
