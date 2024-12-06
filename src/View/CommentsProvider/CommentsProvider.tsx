@@ -59,7 +59,7 @@ export const CommentsProvider = () => {
 				);
 			})}
 			return (
-			{showCreateComment && (
+			{showCreateComment && commentToAdd && (
 				<CreateComment
 					className={styles.createComment}
 					comment={commentToAdd}
