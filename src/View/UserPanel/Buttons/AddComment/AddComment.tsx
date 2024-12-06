@@ -52,7 +52,7 @@ export function AddComment() {
 			onClick={handleClick}
 			active={isActive}
 			variant="secondary"
-			rounded="none"
+			rounded="left"
 		>
 			<Icon iconName="Comment" width={20} height={20} />
 			{showBadge && <div className={styles.badge}></div>}
