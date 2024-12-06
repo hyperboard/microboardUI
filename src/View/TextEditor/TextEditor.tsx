@@ -256,7 +256,7 @@ export class TextEditor extends React.Component<
 					fontFamily: DEFAULT_TEXT_STYLES.fontFamily,
 					fontSize: `${DEFAULT_TEXT_STYLES.fontSize}px`,
 					lineHeight:
-						text.getAutosize() && text.getAutoSizeScale() < 1
+						text.isAutosize() && text.getAutoSizeScale() < 1
 							? DEFAULT_TEXT_STYLES.lineHeight *
 								text.getAutoSizeScale()
 							: DEFAULT_TEXT_STYLES.lineHeight,
@@ -337,11 +337,11 @@ export class TextEditor extends React.Component<
 								// overflowWrap: "break-word",
 								// wordBreak: "normal",
 								width: "100%",
-								maxHeight: !text.getAutosize()
+								maxHeight: !text.isAutosize()
 									? `${editorMaxHeight}px`
 									: "none",
 								// overflow: `${text.frameMbr ? 'hidden' : 'unset'}`,
-								overflowY: !text.getAutosize()
+								overflowY: !text.isAutosize()
 									? "auto"
 									: "visible",
 								// fontSize: "inherit",

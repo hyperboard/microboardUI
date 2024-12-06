@@ -22,7 +22,7 @@ export function StickerFontSize() {
 	const fontSize = board.selection.getFontSize();
 	const text = board.selection.getText();
 	const maxFontSize = text?.getMaxFontSize();
-	const isAuto = text?.getAutosize();
+	const isAuto = text?.isAutosize();
 
 	const handleClick = () => {
 		toggleMenu(MENU_NAME);
