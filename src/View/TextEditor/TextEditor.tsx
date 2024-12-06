@@ -241,7 +241,8 @@ export class TextEditor extends React.Component<
 
 					maxWidth: `${Math.ceil(editorMaxWidth)}px`,
 					maxHeight: `${editorMaxHeight}px`,
-					width: `${Math.ceil(editorWidth) + ((text.shouldShrink() && 10) || 0)}px`,
+					// width: `${Math.ceil(editorWidth) + ((text.shouldShrink() && 10) || 0)}px`,
+					width: `${Math.ceil(editorWidth)}px`,
 					height: `${editorHeight}px`,
 
 					transformOrigin: "left top",
@@ -337,9 +338,7 @@ export class TextEditor extends React.Component<
 								// overflowWrap: "break-word",
 								// wordBreak: "normal",
 								width: "100%",
-								maxHeight: !text.isAutosize()
-									? `${editorMaxHeight}px`
-									: "none",
+								maxHeight: `${editorMaxHeight}px`,
 								// overflow: `${text.frameMbr ? 'hidden' : 'unset'}`,
 								overflowY: !text.isAutosize()
 									? "auto"
