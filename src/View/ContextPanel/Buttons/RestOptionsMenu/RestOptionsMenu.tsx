@@ -17,15 +17,17 @@ export function RestOptionsMenu({
 	rounded = "right",
 	children,
 }: Props): React.ReactElement | null {
-	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
+	const { toggleMenu, openedMenu, panelMbr, windowHeight, windowWidth } =
 		usePanelContext();
 
-	const handleClick = () => toggleMenu(MENU_NAME);
+	const handleClick = (): void => toggleMenu(MENU_NAME);
+	const isOptionsInTop = panelMbr.top < windowHeight;
 
 	return (
 		<ButtonWithMenu
 			panelMbr={panelMbr}
 			windowHeight={windowHeight}
+			windowWidth={windowWidth}
 			openedMenu={openedMenu}
 			menuName={MENU_NAME}
 			align="left"
@@ -48,7 +50,13 @@ export function RestOptionsMenu({
 		>
 			{verticalAlign => (
 				<UiPanel
-					rounded={verticalAlign === "bottom" ? "bottom" : "full"}
+					rounded={
+						verticalAlign === "bottom"
+							? "bottom"
+							: isOptionsInTop
+								? "top"
+								: "full"
+					}
 					vertical
 					className={style.menu}
 					padding={6}

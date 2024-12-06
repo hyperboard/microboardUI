@@ -5,7 +5,7 @@ export function fitContextPanel(
 	view: Mbr,
 	panel: Mbr,
 	verticalOffset = 40,
-	horizontalOffset = 40,
+	horizontalOffset = 80,
 	richTextSelection?: RichText,
 ): Mbr {
 	const topSpace = selectionMbr.top - view.top;

@@ -31,6 +31,10 @@
 	right: calc(100% + var(--offset));
 }
 
+.offset-center {
+	right: 0;
+}
+
 .middle {
 	top: 50%;
 	transform: translateY(-50%);
