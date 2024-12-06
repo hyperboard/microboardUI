@@ -161,8 +161,7 @@ export class BoardsService {
           const [isOwned] = await tx.select({ ownerId: boardOwner.ownerId })
             .from(boardOwner)
             .where(and(eq(boardOwner.ownerId, userId), eq(boardOwner.boardId, board.id)))
-
-          if (!isExistsInFolder && !isOwned && board?.id) {
+          if (!isExistsInFolder && !isOwned?.ownerId && board?.id) {
             await insertQuery.execute({ boardId: board.id })
           }
         }))

@@ -269,7 +269,11 @@ function validateRequest(req: express.Request, res: express.Response, next: expr
 function handleError(res: express.Response, error: any, defaultStatus = HttpStatus.INTERNAL_SERVER_ERROR) {
     const status = error.status || defaultStatus;
 
-    return res.status(status).json({
+    return res.clearCookie(REFRESH_TOKEN_COOKIE_NAME, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none'
+    }).status(status).json({
         status,
         message: error.message,
     });
