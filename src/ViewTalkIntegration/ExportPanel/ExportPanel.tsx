@@ -16,7 +16,7 @@ export function ExportPanel({ board, app }: Props) {
 	const [isLoading, setIsLoading] = useState(false);
 
 	const forceUpdate = useForceUpdate();
-	useAppSubscription(app, { observer: forceUpdate, subjects: ["tools"] });
+	useAppSubscription({ observer: forceUpdate, subjects: ["tools"] });
 	const { t } = useTalkTranslation();
 	const exportTool = board.tools.getExport();
 

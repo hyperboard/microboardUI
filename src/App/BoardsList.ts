@@ -46,6 +46,7 @@ export class BoardsList {
 	): Promise<string> {
 		return await this.action(
 			async () => {
+				console.log("create authed");
 				const { data } = await boardsApiV2.createBoard({
 					title: name,
 					parentFolder,
@@ -58,6 +59,7 @@ export class BoardsList {
 				return data.id;
 			},
 			async () => {
+				console.log("create unauthed");
 				const { data } = await boardsApiV2.createBoard({
 					title: name,
 					isPublic: true,

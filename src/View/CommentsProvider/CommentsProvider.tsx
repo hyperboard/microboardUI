@@ -18,7 +18,7 @@ export const CommentsProvider = () => {
 	const commentToAdd = board.tools.getAddComment()?.comment;
 	let showCreateComment = false;
 
-	useAppSubscription(app, {
+	useAppSubscription({
 		subjects: ["items", "camera", "tools", "selectionItems", "selection"],
 		observer: () => {
 			forceUpdate();

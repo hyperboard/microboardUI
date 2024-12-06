@@ -12,7 +12,7 @@ import { SyncJournal } from "./SyncJournal";
 import style from "./EventList.module.css";
 
 export const EventList = React.memo(function EventList(): JSX.Element {
-	const { board, app } = useAppContext();
+	const { board } = useAppContext();
 	const { t } = useTranslation();
 	const [opened, setOpened] = useState(false);
 	const forceUpdate = useForceUpdate();
@@ -21,7 +21,7 @@ export const EventList = React.memo(function EventList(): JSX.Element {
 		"history",
 	);
 
-	useAppSubscription(app, {
+	useAppSubscription({
 		subjects: ["syncLog"],
 		observer: forceUpdate,
 	});

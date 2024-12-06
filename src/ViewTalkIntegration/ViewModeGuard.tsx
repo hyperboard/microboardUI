@@ -1,19 +1,16 @@
-import { App } from "App";
 import { useAppSubscription } from "Board/useBoardSubscription";
 import { useForceUpdate } from "lib/useForceUpdate";
 import React, { PropsWithChildren } from "react";
+import { useAppContext } from "View/AppContext";
 
-type Props = PropsWithChildren<{ app: App }>;
-export function ViewModeGuard({ children, app }: Props) {
+export function ViewModeGuard({ children }: PropsWithChildren<{}>) {
+	const { board } = useAppContext();
 	const forceUpdate = useForceUpdate();
-	useAppSubscription(app, {
+	useAppSubscription({
 		subjects: ["tools"],
-		observer: () => {
-			forceUpdate();
-		},
+		observer: forceUpdate,
 	});
-	const board = app.getBoard();
-	if (board.interfaceType === "view") {
+	if (board.getInterfaceType() === "view") {
 		return null;
 	}
 

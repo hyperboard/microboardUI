@@ -10,14 +10,14 @@ import styles from "./AddComment.module.css";
 import { useAccount } from "App/useAccount";
 
 export function AddComment() {
-	const { board, app } = useAppContext();
+	const { board } = useAppContext();
 	const { t } = useTranslation();
 	const { setIsPanelOpen } = useCommentsPanelContext();
 	const isActive = Boolean(board.tools.getAddComment());
 	const account = useAccount();
 
 	const forceUpdate = useForceUpdate();
-	useAppSubscription(app, {
+	useAppSubscription({
 		subjects: ["tools", "items"],
 		observer: forceUpdate,
 	});

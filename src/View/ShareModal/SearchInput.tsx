@@ -1,15 +1,19 @@
 import React, {
 	useEffect,
+	useLayoutEffect,
 	useRef,
 	useState,
+	type ChangeEventHandler,
 	type FocusEventHandler,
 	type MouseEventHandler,
 	type ReactNode,
+	type SyntheticEvent,
 } from "react";
 import styles from "./SearchInput.module.css";
 import clsx from "clsx";
 import { Icon } from "View/Icon";
 import { TopFade } from "View/Ui/Transitions/TopFade";
+import { createPortal } from "react-dom";
 
 const PLACEHOLDER = "Добавить пользователей";
 
@@ -23,33 +27,59 @@ type Props = {
 	onInput: (value: string) => void;
 	options: SearchOption[];
 	onValueAdd: (values: string[]) => void;
+	isLoading?: boolean;
 };
 
-export function SearchInput({ onInput, options, onValueAdd }: Props) {
+export function SearchInput({
+	onInput,
+	options,
+	onValueAdd,
+	isLoading,
+}: Props) {
 	const [addedValues, setAddedValues] = useState<string[]>([]);
-	const [currValue, setCurrValue] = useState(PLACEHOLDER);
+	const [currValue, setCurrValue] = useState("");
 	const [isFocused, setIsFocused] = useState(false);
-	const inputRef = useRef<HTMLParagraphElement>(null);
+	const inputRef = useRef<HTMLDivElement>(null);
+	const htmlInputRef = useRef<HTMLInputElement>(null);
+	const [optionsListPosition, setOptionsListPosition] = useState<
+		Record<"top" | "left" | "width", number>
+	>({ left: 0, top: 0, width: 0 });
+
+	const filteredOptions = options.filter(
+		op => !addedValues.includes(op.value),
+	);
 
 	const handleFocus: FocusEventHandler = () => {
-		setCurrValue("");
 		setIsFocused(true);
+		onInput(currValue);
 	};
 
 	const handleBlur: FocusEventHandler = () => {
-		if (addedValues.length === 0 && !currValue) {
-			setCurrValue(PLACEHOLDER);
-		}
 		setIsFocused(false);
 	};
 
-	const handleInput = () => {
-		const text = inputRef.current?.textContent || "";
+	const handleInputClick: MouseEventHandler = () =>
+		htmlInputRef.current?.focus();
+
+	useLayoutEffect(() => {
+		const inputRect = inputRef.current?.getBoundingClientRect();
+		if (!inputRect) {
+			return;
+		}
+		setOptionsListPosition({
+			top: inputRect.bottom + 12,
+			left: inputRect.left,
+			width: inputRect.width,
+		});
+	}, [isFocused, filteredOptions.length]);
+
+	const handleInput: ChangeEventHandler<HTMLInputElement> = ev => {
+		const text = ev.target.value;
 		setCurrValue(text);
 		onInput(text);
 	};
 
-	const handleKey = (evt: React.KeyboardEvent<HTMLDivElement>) => {
+	const stopPropagation = (evt: SyntheticEvent) => {
 		evt.stopPropagation();
 	};
 
@@ -59,7 +89,7 @@ export function SearchInput({ onInput, options, onValueAdd }: Props) {
 			evt.preventDefault();
 			if (
 				currValue.trim() &&
-				options.find(opt => opt.value === currValue)
+				filteredOptions.find(opt => opt.value === currValue)
 			) {
 				const values = [...addedValues, currValue.trim()];
 				setAddedValues(values);
@@ -73,69 +103,106 @@ export function SearchInput({ onInput, options, onValueAdd }: Props) {
 
 	const handleOptionClick =
 		(opt: SearchOption): MouseEventHandler =>
-		() => {
+		ev => {
+			ev.preventDefault();
+			ev.stopPropagation();
 			const values = [...addedValues, opt.value.trim()];
 			setAddedValues(values);
 			setCurrValue("");
 			onValueAdd(values);
 		};
 
-	useEffect(() => {
-		if (inputRef.current) {
-			inputRef.current.textContent = currValue;
-		}
-	}, [currValue]);
+	const handleAddedValueClick =
+		(val: string): MouseEventHandler =>
+		ev => {
+			ev.stopPropagation();
+			ev.preventDefault();
+
+			setAddedValues(prev => prev.filter(item => item !== val));
+			onValueAdd(addedValues.filter(item => item !== val));
+		};
 
 	return (
 		<div className={styles.wrapper}>
 			<div className={styles.icon}>
 				<Icon width={20} height={20} iconName="People" />
 			</div>
-			<div className={styles.input}>
+			<div
+				ref={inputRef}
+				className={styles.input}
+				onClick={handleInputClick}
+			>
 				{addedValues.map(val => (
-					<span className={styles.item} key={val}>
-						{val}
-					</span>
+					<div
+						className={styles.item}
+						key={val}
+						onClick={handleAddedValueClick(val)}
+					>
+						<span>{val}</span>
+						<Icon width={14} height={14} iconName="Close" />
+					</div>
 				))}
-				<p
-					ref={inputRef}
-					onInput={handleInput}
-					onKeyUp={handleKeyPress}
-					onKeyDown={handleKey}
-					onKeyPress={handleKey}
+				<input
+					className={styles.nativeInput}
 					onFocus={handleFocus}
 					onBlur={handleBlur}
-					contentEditable
-					className={clsx(
-						styles.editable,
-						currValue === PLACEHOLDER && styles.placeholder,
-					)}
+					onChange={handleInput}
+					onKeyDown={handleKeyPress}
+					onKeyUp={stopPropagation}
+					onKeyPress={stopPropagation}
+					value={currValue}
+					ref={htmlInputRef}
 				/>
 			</div>
-			<TopFade inProp={options.length > 0 && isFocused} unmountOnExit>
-				<div className={styles.optionsListWrapper}>
-					<ul className={styles.optionsList}>
-						{options.map(opt => (
-							<li
-								className={styles.optionWrapper}
-								key={opt.value}
-							>
-								<button
-									onClick={handleOptionClick(opt)}
-									className={styles.optionBtn}
-								>
-									<span className={styles.optionIcon}>
-										{opt.icon}
-									</span>
-									<span className={styles.optionText}>
-										{opt.label}
-									</span>
-								</button>
-							</li>
-						))}
-					</ul>
-				</div>
-			</TopFade>
+			{createPortal(
+				<TopFade inProp={isFocused} unmountOnExit>
+					<div
+						style={optionsListPosition}
+						className={styles.optionsListWrapper}
+						onClick={stopPropagation}
+					>
+						{isLoading && (
+							<p className={styles.notFound}>Loading...</p>
+						)}
+						{!isLoading &&
+							(filteredOptions.length > 0 ? (
+								<ul className={styles.optionsList}>
+									{filteredOptions.map(opt => (
+										<li
+											className={styles.optionWrapper}
+											key={opt.value}
+										>
+											<button
+												onClick={handleOptionClick(opt)}
+												className={styles.optionBtn}
+											>
+												<span
+													className={
+														styles.optionIcon
+													}
+												>
+													{opt.icon}
+												</span>
+												<span
+													className={
+														styles.optionText
+													}
+												>
+													{opt.label}
+												</span>
+											</button>
+										</li>
+									))}
+								</ul>
+							) : (
+								<p className={styles.notFound}>
+									Нет подходящих результатов
+								</p>
+							))}
+					</div>
+				</TopFade>,
+				document.getElementById("selector")!,
+			)}
 		</div>
 	);
 }

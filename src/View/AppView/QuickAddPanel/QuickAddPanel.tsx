@@ -17,7 +17,7 @@ export function QuickAddPanel(): React.ReactElement | null {
 	const { app } = useAppContext();
 	const { t } = useTranslation();
 	const forceUpdate = useForceUpdate();
-	useAppSubscription(app, {
+	useAppSubscription({
 		subjects: ["selection", "camera"],
 		observer: () => {
 			forceUpdate();

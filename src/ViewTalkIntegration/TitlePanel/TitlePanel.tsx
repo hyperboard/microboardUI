@@ -2,18 +2,16 @@ import { useAppSubscription } from "Board/useBoardSubscription";
 import { useForceUpdate } from "lib/useForceUpdate";
 // import { useTranslation } from "react-i18next";
 import { Board } from "Board";
-import { App } from "App";
 
 type Props = {
 	board: Board;
-	app: App;
 };
 
-export function TitlePanel({ board, app }: Props): null {
+export function TitlePanel({ board }: Props): null {
 	const forceUpdate = useForceUpdate();
 	// const { t } = useTranslation();
 
-	useAppSubscription(app, { observer: forceUpdate, subjects: ["tools"] });
+	useAppSubscription({ observer: forceUpdate, subjects: ["tools"] });
 
 	const isExport = board.tools.getExport();
 	if (isExport) {

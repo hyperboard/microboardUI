@@ -43,6 +43,7 @@ export class Account {
 	}
 
 	async init() {
+		this.refreshTokens();
 		this.subject.publish(this.info);
 	}
 
@@ -111,26 +112,37 @@ export class Account {
 		return authApi.register({ email, password, name });
 	}
 
+	private refreshTokensPromise: Promise<void> | null = null;
+
 	async refreshTokens(): Promise<void> {
-		try {
-			this.isTokenLoading = true;
-			const { data } = await authApi.refreshTokens();
-
-			if (data?.accessToken) {
-				this._accessToken = data.accessToken;
-				this.connection.publishAuth();
-			}
-
-			this.updateTokenData();
-			await this.fetchAccountInfo();
-		} catch (error) {
-			if (this.isLoggedIn) {
-				this.cleanup();
-				this.onSessionExpired?.();
-			}
-		} finally {
-			this.isTokenLoading = false;
+		if (this.refreshTokensPromise) {
+			return this.refreshTokensPromise;
 		}
+
+		this.refreshTokensPromise = (async () => {
+			try {
+				this.isTokenLoading = true;
+				const { data } = await authApi.refreshTokens();
+
+				if (data?.accessToken) {
+					this._accessToken = data.accessToken;
+					this.connection.publishAuth();
+				}
+
+				this.updateTokenData();
+				await this.fetchAccountInfo();
+			} catch (error) {
+				if (this.isLoggedIn) {
+					this.cleanup();
+					this.onSessionExpired?.();
+				}
+			} finally {
+				this.isTokenLoading = false;
+				this.refreshTokensPromise = null; // Reset the promise after completion
+			}
+		})();
+
+		return this.refreshTokensPromise;
 	}
 
 	async logout(): Promise<void> {

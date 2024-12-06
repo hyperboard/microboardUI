@@ -11,13 +11,12 @@ import React from "react";
 import style from "./ZoomPanel.module.css";
 
 type Props = {
-	app: App;
 	board: Board;
 };
 
-export function ZoomPanel({ app, board }: Props) {
+export function ZoomPanel({ board }: Props) {
 	const forceUpdate = useForceUpdate();
-	useAppSubscription(app, {
+	useAppSubscription({
 		subjects: ["camera"],
 		observer: forceUpdate,
 	});

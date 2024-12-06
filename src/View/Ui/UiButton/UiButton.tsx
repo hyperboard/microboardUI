@@ -1,38 +1,45 @@
 import clsx from "clsx";
-import React, { CSSProperties, forwardRef, HTMLAttributes } from "react";
+import React, {
+	CSSProperties,
+	forwardRef,
+	HTMLAttributes,
+	type PropsWithChildren,
+} from "react";
 import style from "./UiButton.module.css";
 import { Tooltip } from "./Tooltip";
 
-type UiButtonProps = HTMLAttributes<HTMLButtonElement> & {
-	active?: boolean;
-	disabled?: boolean;
-	tooltip?: string;
-	hotkey?: string;
-	tooltipPosition?:
-		| "right"
-		| "top"
-		| "top-left"
-		| "top-right"
-		| "top-center-fixed"
-		| "top-right-fixed"
-		| "bottom"
-		| "bottom-right"
-		| "bottom-left";
-	variant?: "default" | "secondary" | "tertiary";
-	size?: "lg" | "md" | "sm";
-	rounded?:
-		| "top"
-		| "bottom"
-		| "left"
-		| "right"
-		| "full"
-		| "none"
-		| "bottom-left"
-		| "bottom-right";
-	radius?: "xl" | "md" | "sm";
-	className?: string;
-	toolTipStyle?: CSSProperties;
-};
+type UiButtonProps = PropsWithChildren<
+	HTMLAttributes<HTMLButtonElement> & {
+		active?: boolean;
+		disabled?: boolean;
+		tooltip?: string;
+		hotkey?: string;
+		tooltipPosition?:
+			| "right"
+			| "top"
+			| "top-left"
+			| "top-right"
+			| "top-center-fixed"
+			| "top-right-fixed"
+			| "bottom"
+			| "bottom-right"
+			| "bottom-left";
+		variant?: "default" | "secondary" | "tertiary";
+		size?: "lg" | "md" | "sm";
+		rounded?:
+			| "top"
+			| "bottom"
+			| "left"
+			| "right"
+			| "full"
+			| "none"
+			| "bottom-left"
+			| "bottom-right";
+		radius?: "xl" | "md" | "sm";
+		className?: string;
+		toolTipStyle?: CSSProperties;
+	}
+>;
 
 export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
 	(
@@ -150,3 +157,6 @@ export const UiDivButton = forwardRef<
 		);
 	},
 );
+
+UiButton.displayName = "UiButton";
+UiDivButton.displayName = "UiDivButton";

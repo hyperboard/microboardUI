@@ -60,13 +60,11 @@ const BoardView = ({ app }: Props): JSX.Element => {
 						app.render();
 					});
 				} else {
-					boardsList.createBoard().then(boardId => {
-						app.openBoard(boardId).then(() => {
-							navigate(`/boards/${boardId}?${searchParams}`, {
-								replace: true,
-							});
-							app.render();
+					app.openBoard("blank").then(() => {
+						navigate(`/boards/blank`, {
+							replace: true,
 						});
+						app.render();
 					});
 				}
 			});

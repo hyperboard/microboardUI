@@ -1,7 +1,12 @@
 import { useAccount } from "App/useAccount";
 import { useBoardsList } from "App/useBoardsList";
 import i18next from "i18next";
-import React, { useEffect, useState } from "react";
+import React, {
+	useCallback,
+	useEffect,
+	useState,
+	type ChangeEventHandler,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { usersApi } from "shared/api";
 import { boardsApiV2 } from "shared/apiV2";
@@ -23,6 +28,9 @@ import styles from "./ShareModal.module.css";
 import { UserAvatar } from "View/UserPanel/UserPanel";
 import { UiSeparator } from "View/Ui/UiSeparator";
 import clsx from "clsx";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
+import { UiSkeleton } from "View/Ui/UiSkeleton";
+import { debounce } from "lib/debounce";
 
 export const SHARE_MODAL_ID = Symbol("shareModal");
 
@@ -61,10 +69,12 @@ export function ShareModal() {
 	const [usersMode, setUsersMode] = useState<UserAccessType>(
 		UserAccessType.Edit,
 	);
+	const [isGrantedUsersLoading, setIsGrantedUsersLoading] = useState(true);
 	const [grantedUsers, setGrantedUsers] = useState<boardsApiV2.GrantedUser[]>(
 		[],
 	);
 	const [searchOptions, setSearchOptions] = useState<usersApi.User[]>([]);
+	const [isSearchOptionsLoading, setIsSearchOptionsLoading] = useState(false);
 	const { t } = useTranslation();
 
 	useEffect(() => {
@@ -73,7 +83,8 @@ export function ShareModal() {
 		}
 		boardsApiV2
 			.getGrantedUsers(boardId)
-			.then(({ data }) => setGrantedUsers(data ?? []));
+			.then(({ data }) => setGrantedUsers(data ?? []))
+			.finally(() => setIsGrantedUsersLoading(false));
 	}, [boardId]);
 
 	const boardInfo = boardsList.getBoardInfo(boardId);
@@ -118,6 +129,24 @@ export function ShareModal() {
 		}
 	};
 
+	const handleSearchInput = async (val: string) => {
+		const { data } = await usersApi.getUsers(val);
+		if (data) {
+			setSearchOptions(data);
+		}
+		setIsSearchOptionsLoading(false);
+	};
+
+	const debouncedHandleInputSearch = useCallback(
+		debounce(handleSearchInput, 1500),
+		[usersApi],
+	);
+
+	const handleInputChange = (val: string) => {
+		setIsSearchOptionsLoading(true);
+		debouncedHandleInputSearch(val);
+	};
+
 	const handleSubmit = async () => {
 		closeModal();
 		if (!mode || typeof isPublic !== "boolean" || !boardId) {
@@ -157,24 +186,19 @@ export function ShareModal() {
 				<h1 className={styles.heading}>
 					{t("sharing.share")} - {boardInfo?.title}
 				</h1>
-				{account.isLoggedIn && (
+				{account.isLoggedIn && isOwner && (
 					<>
 						<div className={styles.selectors}>
 							<SearchInput
+								isLoading={isSearchOptionsLoading}
 								onValueAdd={val => {
 									setUserEmails(val);
 								}}
-								onInput={async val => {
-									const { data } =
-										await usersApi.getUsers(val);
-									if (data) {
-										setSearchOptions(data);
-									}
-								}}
+								onInput={handleInputChange}
 								options={searchOptions
 									.filter(
 										user =>
-											user.id !== account.info?.id ||
+											user.id !== account.info?.id &&
 											!grantedUsers.find(
 												granted =>
 													granted.id === user.id,
@@ -205,13 +229,33 @@ export function ShareModal() {
 								{t("sharing.grantedUsers")}
 							</h2>
 							<div className={styles.usersList}>
-								{grantedUsers.map(user => (
-									<GrantedUser
-										onChange={handleUserAccessChange}
-										{...user}
-										key={user.id}
-									/>
-								))}
+								{isGrantedUsersLoading ? (
+									<GrantedUserSkeleton />
+								) : (
+									<TransitionGroup component={null}>
+										{grantedUsers.map(user => (
+											<CSSTransition
+												key={user.id}
+												timeout={500}
+												classNames={{
+													enter: styles.fadeEnter,
+													enterActive:
+														styles.fadeEnterActive,
+													exit: styles.fadeExit,
+													exitActive:
+														styles.fadeExitActive,
+												}}
+											>
+												<GrantedUser
+													onChange={
+														handleUserAccessChange
+													}
+													{...user}
+												/>
+											</CSSTransition>
+										))}
+									</TransitionGroup>
+								)}
 							</div>
 							<UiSeparator />
 						</div>
@@ -364,6 +408,33 @@ function GrantedUser({
 						}
 					/>
 				)}
+			</div>
+		</div>
+	);
+}
+
+function GrantedUserSkeleton() {
+	return (
+		<div className={styles.grantedUser}>
+			<div className={styles.userInfo}>
+				<div className={styles.avatar}>
+					<UiSkeleton
+						className={styles.skeletonAvatar}
+						width={40}
+						height={40}
+					/>
+				</div>
+				<div className={styles.userInfoText}>
+					<h3 className={styles.userName}>
+						<UiSkeleton className={styles.skeletonInfo} />
+					</h3>
+					<span className={styles.userEmail}>
+						<UiSkeleton className={styles.skeletonInfo} />
+					</span>
+				</div>
+			</div>
+			<div className={styles.userStatus}>
+				<UiSkeleton className={styles.skeletonSelector} />
 			</div>
 		</div>
 	);

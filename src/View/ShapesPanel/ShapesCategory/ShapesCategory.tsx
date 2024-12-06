@@ -22,9 +22,9 @@ interface Props {
 
 export const ShapesCategory = ({ handlePick, categoryName }: Props) => {
 	const [isPickerShown, setIsPickerShown] = useState(true);
-	const { board, app } = useAppContext();
+	const { board } = useAppContext();
 	const forceUpdate = useForceUpdate();
-	useAppSubscription(app, {
+	useAppSubscription({
 		subjects: ["tools"],
 		observer: forceUpdate,
 	});

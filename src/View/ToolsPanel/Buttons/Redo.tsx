@@ -8,12 +8,12 @@ import { Icon } from "View/Icon";
 import { UiButton } from "View/Ui/UiButton";
 
 export function Redo() {
-	const { board, app } = useAppContext();
+	const { board } = useAppContext();
 	const { t } = useTranslation();
 
 	const forceUpdate = useForceUpdate();
 
-	useAppSubscription(app, {
+	useAppSubscription({
 		subjects: ["events"],
 		observer: forceUpdate,
 	});

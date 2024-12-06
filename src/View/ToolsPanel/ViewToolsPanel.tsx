@@ -1,18 +1,16 @@
 import { useAppSubscription } from "Board/useBoardSubscription";
-import { useAppContext } from "View/AppContext";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
+import { UiSeparator } from "View/Ui/UiSeparator";
 import { useForceUpdate } from "lib/useForceUpdate";
 import React, { useEffect } from "react";
 import { EventList } from "./Buttons/EventList";
 import { Grab } from "./Buttons/Grab";
 import { Select } from "./Buttons/Select";
 import style from "./ToolsPanel.module.css";
-import { UiSeparator } from "View/Ui/UiSeparator";
 
 export function ViewToolsPanel(): JSX.Element {
-	const { app } = useAppContext();
 	const forceUpdate = useForceUpdate();
-	useAppSubscription(app, {
+	useAppSubscription({
 		subjects: ["tools"],
 		observer: forceUpdate,
 	});

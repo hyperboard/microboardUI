@@ -13,9 +13,9 @@ import clsx from "clsx";
 import { Mbr } from "Board/Items/Mbr/Mbr";
 
 export function ZoomPanel() {
-	const { app, board } = useAppContext();
+	const { board } = useAppContext();
 	const forceUpdate = useForceUpdate();
-	useAppSubscription(app, {
+	useAppSubscription({
 		subjects: ["camera"],
 		observer: forceUpdate,
 	});

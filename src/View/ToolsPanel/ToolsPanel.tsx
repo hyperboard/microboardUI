@@ -28,7 +28,7 @@ export function ToolsPanel(): JSX.Element {
 
 	const { app } = useAppContext();
 	const forceUpdate = useForceUpdate();
-	useAppSubscription(app, {
+	useAppSubscription({
 		subjects: ["tools"],
 		observer: forceUpdate,
 	});

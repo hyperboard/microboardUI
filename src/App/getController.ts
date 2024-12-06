@@ -183,7 +183,9 @@ export function getController(
 			zoomDefault: () => board.camera.zoomToViewCenter(1),
 		};
 		const isHotkeyTriggered = checkHotkeys(
-			board.interfaceType === "edit" ? editModeHotkeys : viewModeHotkeys,
+			board.getInterfaceType() === "edit"
+				? editModeHotkeys
+				: viewModeHotkeys,
 			event,
 			board,
 		);

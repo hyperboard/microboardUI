@@ -4,9 +4,9 @@ import React, { PropsWithChildren } from "react";
 import { useAppContext } from "View/AppContext";
 
 export function ExportVisible({ children }: PropsWithChildren<{}>) {
-	const { board, app } = useAppContext();
+	const { board } = useAppContext();
 	const forceUpdate = useForceUpdate();
-	useAppSubscription(app, { observer: forceUpdate, subjects: ["tools"] });
+	useAppSubscription({ observer: forceUpdate, subjects: ["tools"] });
 
 	const isExport = board.tools.getExport();
 	if (isExport) {

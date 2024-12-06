@@ -8,11 +8,11 @@ import { useAppSubscription } from "Board/useBoardSubscription";
 import { useForceUpdate } from "lib/useForceUpdate";
 
 export function Undo() {
-	const { board, app } = useAppContext();
+	const { board } = useAppContext();
 	const { t } = useTranslation();
 	const forceUpdate = useForceUpdate();
 
-	useAppSubscription(app, {
+	useAppSubscription({
 		subjects: ["events"],
 		observer: forceUpdate,
 	});

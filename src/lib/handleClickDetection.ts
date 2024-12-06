@@ -1,8 +1,8 @@
-import type { MouseEventHandler } from "react";
+import type { MouseEvent, MouseEventHandler } from "react";
 
 export function handleClickDetection(
-	singleClickCb: () => void,
-	doubleClickCb: () => void,
+	singleClickCb: (ev: MouseEvent) => void,
+	doubleClickCb: (ev: MouseEvent) => void,
 	threshold = 300,
 ): MouseEventHandler {
 	let clickTimeout: NodeJS.Timeout | null = null;
@@ -14,10 +14,10 @@ export function handleClickDetection(
 		if (clickTimeout) {
 			clearTimeout(clickTimeout);
 			clickTimeout = null;
-			doubleClickCb();
+			doubleClickCb(ev);
 		} else {
 			clickTimeout = setTimeout(() => {
-				singleClickCb();
+				singleClickCb(ev);
 				clickTimeout = null;
 			}, threshold);
 		}

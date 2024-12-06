@@ -46,7 +46,7 @@ export const CommentContainer = ({ comment }: Props) => {
 	});
 	const forceUpdate = useForceUpdate();
 
-	useAppSubscription(app, {
+	useAppSubscription({
 		subjects: ["tools", "items", "selectionItems"],
 		observer: () => {
 			forceUpdate();

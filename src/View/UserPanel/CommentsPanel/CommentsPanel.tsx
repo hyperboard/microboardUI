@@ -32,12 +32,12 @@ export const CommentsPanel = () => {
 		setEnableClusters,
 	} = useCommentsContext();
 	const { setIsPanelOpen, isPanelOpen } = useCommentsPanelContext();
-	const { board, app } = useAppContext();
+	const { board } = useAppContext();
 	const forceUpdate = useForceUpdate();
 	const optionsPanelRef = useRef<HTMLDivElement>(null);
 	const filtersPanelRef = useRef<HTMLDivElement>(null);
 	const account = useAccount();
-	useAppSubscription(app, {
+	useAppSubscription({
 		subjects: ["items"],
 		observer: () => {
 			forceUpdate();

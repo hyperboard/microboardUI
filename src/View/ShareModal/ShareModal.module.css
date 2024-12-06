@@ -71,6 +71,13 @@
 	gap: 12px;
 }
 
+.userInfoText {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 2px;
+}
+
 .avatar {
 	width: 40px;
 	height: 40px;
@@ -135,4 +142,41 @@
 	color: rgba(105, 107, 118, 1);
 	display: grid;
 	place-items: center;
+}
+
+.fadeEnter {
+	opacity: 0;
+	transform: translateX(-6px);
+}
+.fadeEnterActive {
+	opacity: 1;
+	transform: translateX(0px);
+	transition:
+		opacity 500ms,
+		transform 500ms;
+}
+.fadeExit {
+	opacity: 1;
+	transform: translateX(0);
+}
+.fadeExitActive {
+	opacity: 0;
+	transform: translateX(-6px);
+	transition:
+		opacity 500ms,
+		transform 500ms;
+}
+
+.skeletonAvatar {
+	border-radius: 50%;
+}
+
+.skeletonInfo {
+	width: 200px;
+	height: 14px;
+}
+
+.skeletonSelector {
+	width: 200px;
+	height: 40px;
 }

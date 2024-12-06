@@ -34,7 +34,7 @@ interface Props {
 export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 	({ comment, mbr }: Props, ref) => {
 		const [value, setValue] = useState("");
-		const { app, board } = useAppContext();
+		const { board } = useAppContext();
 		const [messageOptionsData, setMessageOptionsData] =
 			useState<null | MessageOptionsData>(null);
 		const refs = useRef<Record<string, HTMLDivElement>>({});
@@ -45,7 +45,7 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 			useCommentsContext();
 		const account = useAccount();
 
-		useAppSubscription(app, {
+		useAppSubscription({
 			subjects: ["selection", "pointer"],
 			observer: () => {
 				setOpenedThreadId(undefined);

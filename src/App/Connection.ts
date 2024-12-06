@@ -83,7 +83,7 @@ export interface SnapshotResponseMsg {
 	lastEventOrder: number;
 }
 
-export type ViewMode = "view" | "edit";
+export type ViewMode = "view" | "edit" | "loading";
 
 export interface ModeMsg {
 	type: "Mode";

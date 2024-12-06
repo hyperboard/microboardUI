@@ -52,7 +52,7 @@ export function ContextPanel() {
 		board,
 		ref: panelRef,
 	});
-	useAppSubscription(app, {
+	useAppSubscription({
 		subjects: ["selectionItems"],
 		observer: () => {
 			setOpenedMenu("None");

@@ -31,9 +31,9 @@ export function TitlePanel(): JSX.Element | null {
 	const forceUpdate = useForceUpdate();
 	const { t } = useTranslation();
 	const { showModal } = useModal();
-	const { app, board } = useAppContext();
+	const { board } = useAppContext();
 	const { isOpen, toggleSideMenu } = useSidePanelContext();
-	useAppSubscription(app, { observer: forceUpdate, subjects: ["tools"] });
+	useAppSubscription({ observer: forceUpdate, subjects: ["tools"] });
 	const boardsList = useBoardsList();
 	const account = useAccount();
 
@@ -67,7 +67,7 @@ export function TitlePanel(): JSX.Element | null {
 		boardId ?? "",
 	);
 	const handleBoardRenameStart: MouseEventHandler = _event => {
-		if (!canRename || isBlank || board.interfaceType === "view") {
+		if (!canRename || isBlank || board.getInterfaceType() === "view") {
 			return;
 		}
 		setIsRenaming(true);
@@ -146,7 +146,7 @@ export function TitlePanel(): JSX.Element | null {
 				className={clsx(
 					style.mobileHide,
 					style.logoWrapper,
-					board.interfaceType === "view" && style.viewMode,
+					board.getInterfaceType() === "view" && style.viewMode,
 				)}
 			>
 				{isMicroboard ? (
@@ -160,35 +160,37 @@ export function TitlePanel(): JSX.Element | null {
 					</span>
 				)}
 			</UiButton>
-			<UiSeparator vertical className={style.tabletHide} />
-			<UiButton
-				variant="secondary"
-				rounded="none"
-				onDoubleClick={handleBoardRenameStart}
-				className={clsx(
-					style.tabletHide,
-					board.interfaceType === "view" && style.viewMode,
-				)}
-				onClick={evt => {
-					evt.preventDefault();
-					evt.stopPropagation();
-				}}
-			>
-				{isRenaming ? (
-					<BoardRename
-						width={newBoardName.length}
-						value={newBoardName}
-						onCancel={handleRenameCancel}
-						onChange={handleBoardRename}
-						onConfirm={handleRenameConfirm}
-						className={style.rename}
-					/>
-				) : (
-					<span className={style.name}>
-						{isBlank ? t("noBoard.title") : strippedName}
-					</span>
-				)}
-			</UiButton>
+			<ViewModeGuard mode={["edit", "view"]}>
+				<UiSeparator vertical className={style.tabletHide} />
+				<UiButton
+					variant="secondary"
+					rounded="none"
+					onDoubleClick={handleBoardRenameStart}
+					className={clsx(
+						style.tabletHide,
+						board.getInterfaceType() === "view" && style.viewMode,
+					)}
+					onClick={evt => {
+						evt.preventDefault();
+						evt.stopPropagation();
+					}}
+				>
+					{isRenaming ? (
+						<BoardRename
+							width={newBoardName.length}
+							value={newBoardName}
+							onCancel={handleRenameCancel}
+							onChange={handleBoardRename}
+							onConfirm={handleRenameConfirm}
+							className={style.rename}
+						/>
+					) : (
+						<span className={style.name}>
+							{isBlank ? t("noBoard.title") : strippedName}
+						</span>
+					)}
+				</UiButton>
+			</ViewModeGuard>
 			<ViewModeGuard>
 				<UiSeparator vertical className={style.tabletHide} />
 				<UiButton

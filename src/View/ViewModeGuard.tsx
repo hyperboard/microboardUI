@@ -3,24 +3,43 @@ import { isIframe } from "lib/isIframe";
 import { useForceUpdate } from "lib/useForceUpdate";
 import React, { PropsWithChildren, type ReactNode } from "react";
 import { useAppContext } from "./AppContext";
+import type { ViewMode } from "App/Connection";
+import type { InterfaceType } from "Board/Board";
 
-type Props = PropsWithChildren<{
+type Props = {
 	iframe?: boolean;
 	fallback?: ReactNode;
-}>;
-export function ViewModeGuard({ children, iframe, fallback }: Props) {
-	const { app, board } = useAppContext();
+	mode?: ViewMode | ViewMode[];
+	children?: ReactNode | ((interfaceType: InterfaceType) => ReactNode);
+};
+export function ViewModeGuard({
+	children,
+	iframe,
+	fallback,
+	mode = "edit",
+}: Props) {
+	const { board } = useAppContext();
 	const forceUpdate = useForceUpdate();
-	useAppSubscription(app, {
+	useAppSubscription({
 		subjects: ["tools"],
-		observer: () => {
-			forceUpdate();
-		},
+		observer: forceUpdate,
 	});
 
-	if (board.interfaceType === "view" && (!iframe || isIframe())) {
+	const interfaceType = board.getInterfaceType();
+
+	if (
+		((!Array.isArray(mode) && interfaceType !== mode) ||
+			(Array.isArray(mode) && !mode.includes(interfaceType))) &&
+		(!iframe || isIframe())
+	) {
 		return <>{fallback}</>;
 	}
 
-	return <>{children}</>;
+	return (
+		<>
+			{typeof children === "function"
+				? children(interfaceType)
+				: children}
+		</>
+	);
 }

@@ -17,18 +17,23 @@ import { UiSeparator } from "View/Ui/UiSeparator";
 import { foldersApi } from "shared/apiV2";
 import { useUiModalContext } from "View/Ui/UiModal";
 import { SHARE_MODAL_ID } from "View/ShareModal/ShareModal";
+import { useAppContext } from "View/AppContext";
+import { useNavigate } from "react-router-dom";
 
 export function ContextMenu() {
 	const { boardId, x, y, isOpen, folderId, close } = useContextMenuContext();
 	const { setNewName, setRenamingId } = useRenameContext();
 	const boardsList = useBoardsList();
 	const account = useAccount();
+	const { board } = useAppContext();
 	const { t } = useTranslation();
 	const { openModalConfirm } = useConfirmModalContext();
 	const { openModal } = useUiModalContext();
 	const menuRef = useClickOutside(() => {
 		close();
 	});
+	const navigate = useNavigate();
+	const currentBoardId = board.getBoardId();
 
 	const boardInfo = boardsList.getBoardInfo(boardId);
 	const folderInfo = boardsList.getFolder(folderId);
@@ -51,6 +56,7 @@ export function ContextMenu() {
 	const handleCreateBoard: MouseEventHandler = async ev => {
 		ev.preventDefault();
 		ev.stopPropagation();
+		console.log("parent folder", folderId);
 		const boardId = await boardsList.createBoard(
 			undefined,
 			undefined,
@@ -99,10 +105,14 @@ export function ContextMenu() {
 					return;
 				}
 
+				if (boardId === currentBoardId) {
+					navigate("/boards/blank");
+				}
+
 				if (hasOwnerRights) {
-					await boardsList.removeBoard(boardId);
+					boardsList.removeBoard(boardId);
 				} else {
-					await boardsList.removeBoardFromFolder(folderId, boardId);
+					boardsList.removeBoardFromFolder(folderId, boardId);
 				}
 				close();
 				Promise.resolve();

@@ -1,18 +1,16 @@
+import { isIframe } from "lib/isIframe";
+import { shouldShow } from "lib/queryStringParser";
 import { useClickOutside } from "lib/useClickOutside";
 import React, { memo, useEffect } from "react";
+import { InactiveBoardHidder } from "View/AppView/InactiveBoardHidder";
+import { useBoardRenameContext } from "View/BoardName";
 import { SidePanel, useSidePanelContext } from "View/SidePanel";
 import { TitlePanel } from "View/TitlePanel";
-import { ToolsPanel } from "View/ToolsPanel";
-import style from "./SidePanelsContainer.module.css";
-import { InactiveBoardHidder } from "View/AppView/InactiveBoardHidder";
-import { shouldShow } from "lib/queryStringParser";
-import { useAppContext } from "View/AppContext";
-import { isIframe } from "lib/isIframe";
-import { useBoardRenameContext } from "View/BoardName";
 import { ViewModeGuard } from "View/ViewModeGuard";
-import { EventList } from "View/ToolsPanel/Buttons/EventList";
 import { ShapesPanel, ShapesPanelContextProvider } from "../ShapesPanel";
+import style from "./SidePanelsContainer.module.css";
 import { ViewToolsPanel } from "View/ToolsPanel/ViewToolsPanel";
+import { ToolsPanel } from "View/ToolsPanel";
 
 interface SidePanelsContainerProps {
 	isBlank: boolean;
@@ -22,15 +20,13 @@ export const SidePanelsContainer = memo(
 	({ isBlank }: SidePanelsContainerProps) => {
 		const { toggleSideMenu, isOpen } = useSidePanelContext();
 		const { renamingBoardId } = useBoardRenameContext();
-		const { app } = useAppContext();
-		const interfaceType = app.getBoard().interfaceType;
 		const containerRef = useClickOutside(() => {
 			if (isOpen && !renamingBoardId) {
 				toggleSideMenu();
 			}
 		});
 
-		useEffect(() => {}, [isBlank, interfaceType]);
+		useEffect(() => {}, [isBlank]);
 		return (
 			<ShapesPanelContextProvider>
 				<div ref={containerRef} className={style.sidePanels}>
@@ -43,8 +39,17 @@ export const SidePanelsContainer = memo(
 							<ShapesPanel />
 						</div>
 						<InactiveBoardHidder>
-							<ViewModeGuard fallback={<ViewToolsPanel />}>
-								<ToolsPanel />
+							<ViewModeGuard mode={["edit", "view"]}>
+								{interfaceType => {
+									switch (interfaceType) {
+										case "view":
+											return <ViewToolsPanel />;
+										case "edit":
+											return <ToolsPanel />;
+										default:
+											return null;
+									}
+								}}
 							</ViewModeGuard>
 						</InactiveBoardHidder>
 					</ViewModeGuard>

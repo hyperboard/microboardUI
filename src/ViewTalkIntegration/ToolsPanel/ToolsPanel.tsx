@@ -18,15 +18,14 @@ import { PanelContext } from "./PanelContext";
 import { EventList } from "View/ToolsPanel/Buttons/EventList";
 
 type Props = {
-	app: App;
 	board: Board;
 };
 
-export function ToolsPanel({ app, board }: Props) {
+export function ToolsPanel({ board }: Props) {
 	const [openedMenu, setOpenedMenu] = useState("None");
 	const forceUpdate = useForceUpdate();
 
-	useAppSubscription(app, {
+	useAppSubscription({
 		subjects: ["tools", "camera", "events"],
 		observer: forceUpdate,
 	});

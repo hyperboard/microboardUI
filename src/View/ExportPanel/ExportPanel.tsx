@@ -11,10 +11,10 @@ import style from "./ExportPanel.module.css";
 
 export function ExportPanel() {
 	const [isLoading, setIsLoading] = useState(false);
-	const { board, app } = useAppContext();
+	const { board } = useAppContext();
 	const { t } = useTranslation();
 	const forceUpdate = useForceUpdate();
-	useAppSubscription(app, { observer: forceUpdate, subjects: ["tools"] });
+	useAppSubscription({ observer: forceUpdate, subjects: ["tools"] });
 	const exportTool = board.tools.getExport();
 
 	useEffect(() => {

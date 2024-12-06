@@ -33,14 +33,18 @@ export function FolderItem({ board, folder, handleOpenBoard }: Props) {
 	);
 
 	const handleClick = handleClickDetection(
-		async () => {
+		async ev => {
+			ev.preventDefault();
+			ev.stopPropagation();
 			if (handleOpenBoard) {
 				return handleOpenBoard(board);
 			}
 			await app.openBoard(board.id);
 			navigate(`/boards/${board.id}`);
 		},
-		() => {
+		ev => {
+			ev.preventDefault();
+			ev.stopPropagation();
 			if (!hasOwnerRights) {
 				return;
 			}

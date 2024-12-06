@@ -12,7 +12,7 @@ export const LinksProvider = () => {
 
 	const forceUpdate = useForceUpdate();
 
-	useAppSubscription(app, {
+	useAppSubscription({
 		subjects: ["items", "camera", "selection"],
 		observer: () => {
 			forceUpdate();
