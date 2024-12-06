@@ -575,7 +575,7 @@
 	"notifications": {
 		"connectionLostHeader": "Доска в оффлайн-режиме. Восстанавливаем соединение...",
 		"connectionReestablished": "Соединие восстановлено.",
-		"restoringConnectionHeader": "Восстанавливаем соединение с сервером.",
+		"restoringConnectionHeader": "Восстанавливаем соединение",
 		"restoringConnectionBody": "Не обновляйте страницу и не закрывайте вкладку, чтобы не потерять прогресс"
 	},
 	"landing": {
