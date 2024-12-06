@@ -58,10 +58,11 @@ export function ContextPanel() {
 			setOpenedMenu("None");
 		},
 	});
-	const toggleMenu = (menu: string) =>
+	const toggleMenu = (menu: string): void =>
 		setOpenedMenu(prev => (prev === menu ? "None" : menu));
 
 	const windowHeight = board.camera.window.height;
+	const windowWidth = board.camera.window.width;
 
 	const isInvisible =
 		board.selection.getContext() === "None" ||
@@ -111,6 +112,7 @@ export function ContextPanel() {
 				panelMbr: mbr,
 				toggleMenu,
 				windowHeight,
+				windowWidth
 			}}
 		>
 			<UiPanel

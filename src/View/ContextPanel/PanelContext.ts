@@ -6,6 +6,7 @@ export const PanelContext = createStrictContext<{
 	openedMenu: string;
 	panelMbr: Mbr;
 	windowHeight: number;
+	windowWidth?: number;
 }>();
 
 export function usePanelContext() {

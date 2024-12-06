@@ -12,8 +12,9 @@ type Props = {
 	openedMenu: string;
 	panelMbr: Mbr;
 	windowHeight: number;
+	windowWidth?: number;
 	align?: "center" | "left" | "right";
-	offset?: "Left" | "Right";
+	offset?: "Left" | "Right" | "Center";
 };
 
 export function ButtonWithMenu({
@@ -23,27 +24,57 @@ export function ButtonWithMenu({
 	children,
 	panelMbr,
 	windowHeight,
+	windowWidth,
 	align = "center",
 	offset,
-}: Props) {
+}: Props): React.ReactElement | null {
 	const menuRef = useRef<HTMLDivElement>(null);
-	const [verticalAlign, setVerticalAlign] = useState<"bottom" | "middle">(
-		"bottom",
-	);
+	const [verticalAlign, setVerticalAlign] = useState<
+		"bottom" | "middle" | "top"
+	>("bottom");
+	const [horizontalAlign, setHorizontalAlign] = useState<
+		"Left" | "Right" | "Center" | "None"
+	>(offset || "Left");
 
-	useEffect(() => {
+	const setMenuVerticalAlign = (): void => {
 		const menu = menuRef.current;
 		if (!menu) {
 			return;
 		}
 		const menuHeight = menu.getBoundingClientRect().height;
+
 		if (panelMbr.bottom + menuHeight < windowHeight) {
 			setVerticalAlign("bottom");
 			return;
 		}
 
+		if (panelMbr.top < windowHeight) {
+			setVerticalAlign("top");
+			return;
+		}
+
 		setVerticalAlign("middle");
-	}, [panelMbr, windowHeight]);
+	};
+
+	const setMenuHorizontalAlign = (): void => {
+		const menu = menuRef.current;
+		if (!menu) {
+			return;
+		}
+
+		const menuWidth = menu.getBoundingClientRect().width;
+		if (windowWidth && panelMbr.right + menuWidth > windowWidth) {
+			setHorizontalAlign("Center");
+			return;
+		}
+
+		setHorizontalAlign("None");
+	};
+
+	useEffect(() => {
+		setMenuHorizontalAlign();
+		setMenuVerticalAlign();
+	}, [panelMbr, windowHeight, windowWidth]);
 
 	return (
 		<div className={style.container}>
@@ -55,9 +86,10 @@ export function ButtonWithMenu({
 					style[verticalAlign],
 					style[align],
 					style[openedMenu === menuName ? "opened" : "closed"],
-					offset &&
-						verticalAlign === "middle" &&
-						style[`offset${offset}`],
+					// offset &&
+					// 	verticalAlign === "middle" &&
+					// 	style[`offset${offset}`],
+					style[`offset${horizontalAlign}`],
 				])}
 			>
 				{typeof children === "function"
