@@ -10,27 +10,23 @@ import { useAppContext } from "../AppContext";
 export const SetLinkToModal = (): JSX.Element => {
 	const { t } = useTranslation();
 	const { board } = useAppContext();
-	const { isModalOpen, hideModal } = useModal();
+	const { isModalOpen, hideModal, setModalData, data } = useModal();
 	const formRef = useRef<HTMLFormElement | null>(null);
 	const [error, setError] = useState<undefined | string>(undefined);
+	const item = board.selection.items.getSingle();
 
 	const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		const form = formRef.current;
-		const item = board.selection.items.getSingle();
 		const inputValue = form?.linkToInput.value;
-		if (
-			!inputValue ||
-			!(import.meta.env.NODE_ENV === "production"
-				? inputValue.startsWith("https://")
-				: inputValue.startsWith("http"))
-		) {
+		if (!inputValue || !inputValue.startsWith("http://")) {
 			return setError("modalLinkTo.error");
 		}
 		if (item && item.itemType !== "Placeholder") {
 			item.linkTo.setLinkTo(inputValue);
 		}
 		form.reset();
+		setModalData(undefined);
 		hideModal("setLinkTo");
 	};
 
@@ -40,10 +36,24 @@ export const SetLinkToModal = (): JSX.Element => {
 		}
 	};
 
+	const handleRemoveLink = (ev: React.MouseEvent<HTMLButtonElement>) => {
+		ev.preventDefault();
+		if (item && item.itemType !== "Placeholder") {
+			item.linkTo.removeLinkTo();
+			setModalData(undefined);
+			hideModal("setLinkTo");
+		}
+	};
+
+	const handleCloseModal = () => {
+		setModalData(undefined);
+		hideModal("setLinkTo");
+	};
+
 	return (
 		<Modal
 			isOpen={isModalOpen("setLinkTo")}
-			hideModal={hideModal}
+			hideModal={handleCloseModal}
 			modalName="setLinkTo"
 			onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) =>
 				e.stopPropagation()
@@ -59,15 +69,30 @@ export const SetLinkToModal = (): JSX.Element => {
 				id="setLinkToForm"
 			>
 				<p className={styles.title}>{t("modalLinkTo.title")}</p>
+				<p className={styles.text}>{t("modalLinkTo.text")}</p>
 				<Input
 					id="linkToInput"
+					inputContainerClassName={styles.input}
 					onChange={removeError}
 					placeholder={t("modalLinkTo.input")}
 					shouldFocus={true}
+					defaultValue={typeof data === "string" ? data : undefined}
 				/>
-				<Button className={styles.submitBtn} type="submit">
-					{t("common.confirm")}
-				</Button>
+				<div className={styles.buttonsBox}>
+					<Button className={styles.btn} type="submit">
+						{t("modalLinkTo.submit")}
+					</Button>
+					{data && (
+						<Button
+							className={styles.btn}
+							pattern="tertiary"
+							onClick={ev => handleRemoveLink(ev)}
+							type="button"
+						>
+							{t("modalLinkTo.deleteLink")}
+						</Button>
+					)}
+				</div>
 				{error && <p className={styles.error}>{t(error)}</p>}
 			</form>
 		</Modal>

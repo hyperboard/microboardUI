@@ -1,12 +1,9 @@
 .btn {
-	min-width: 20px;
-	min-height: 20px;
+	min-width: 24px;
+	min-height: 24px;
+	background-color: #ffffff;
 	padding: 0;
-	background-color: transparent;
-}
-
-.btn:hover {
-	background-color: transparent;
+	border-radius: 2px;
 }
 
 .icon {
@@ -14,4 +11,17 @@
 	width: 20px;
 	height: 20px;
 	background: none;
+}
+
+.tooltip {
+	border-radius: 12px;
+	padding: 12px;
+	box-shadow: 0px 10px 16px -3px rgba(20, 21, 26, 0.08);
+	position: absolute;
+	color: rgba(71, 120, 245, 1);
+	text-decoration: underline;
+	top: 30px;
+	left: 0;
+	background-color: #ffffff;
+	white-space: nowrap;
 }

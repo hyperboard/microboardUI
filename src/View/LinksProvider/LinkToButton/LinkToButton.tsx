@@ -1,7 +1,7 @@
-import React, { memo, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Connector, Item } from "../../../Board/Items";
-import { useDomMbr } from "../../../Board/Items/Mbr/useDomMbr";
-import { useAppContext } from "../../AppContext";
+import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
+import { useAppContext } from "View/AppContext";
 import { UiButton } from "../../Ui/UiButton";
 import { Icon } from "../../Icon";
 import styles from "./LinkToButton.module.css";
@@ -37,6 +37,7 @@ interface Props {
 
 export const LinkToButton = ({ item, handleClick }: Props) => {
 	const linkToButtonRef = useRef<HTMLButtonElement | null>(null);
+	const [isTooltipShown, setIsTooltipShown] = useState(false);
 	const [iconUrl, setIconUrl] = useState<string | undefined>(undefined);
 	const imgRef = useRef<HTMLImageElement | null>(null);
 	const { app, board } = useAppContext();
@@ -56,7 +57,6 @@ export const LinkToButton = ({ item, handleClick }: Props) => {
 	useEffect(() => {
 		let url: string | undefined = undefined;
 		try {
-			console.log(item.getLinkTo());
 			url = `${new URL(item.getLinkTo()!).origin}/favicon.ico`;
 		} catch {}
 
@@ -85,9 +85,10 @@ export const LinkToButton = ({ item, handleClick }: Props) => {
 				left: mbr.left,
 				top: mbr.top,
 			}}
+			onMouseEnter={() => setIsTooltipShown(true)}
+			onMouseLeave={() => setIsTooltipShown(false)}
 			className={styles.btn}
 			ref={linkToButtonRef}
-			tooltip={item.getLinkTo()}
 			onClick={() => handleClick(item)}
 			variant="secondary"
 			rounded="none"
@@ -102,6 +103,9 @@ export const LinkToButton = ({ item, handleClick }: Props) => {
 				/>
 			) : (
 				<Icon iconName="linkTo" width={20} height={20} />
+			)}
+			{isTooltipShown && (
+				<div className={styles.tooltip}>{item.getLinkTo()}</div>
 			)}
 		</UiButton>
 	);

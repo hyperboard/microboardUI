@@ -109,10 +109,11 @@
 			}
 		},
 		"setLinkTo": {
-			"text": "Link to"
+			"add": "Add link...",
+			"edit": "Edit link..."
 		},
 		"removeLinkTo": {
-			"text": "Remove Link To"
+			"text": "Remove Link"
 		},
 		"delete": {
 			"text": "Delete",
@@ -360,7 +361,10 @@
 	"modalLinkTo": {
 		"error": "Incorrect link",
 		"title": "Link to Object",
-		"input": "Paste link"
+		"text": "Paste a link to an object on the board or a URL link:",
+		"input": "Paste a link",
+		"deleteLink": "Delete link",
+		"submit": "Submit"
 	},
 	"linkToToast": {
 		"noItem": "The linked item has been deleted from this board",
