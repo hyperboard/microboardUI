@@ -62,5 +62,11 @@ export function Element(props: RenderElementProps): React.ReactElement {
 			);
 		case "list-item":
 			return <li {...attributes}>{children}</li>;
+		case "hyper-link":
+			return (
+				<a href={element.url} {...attributes}>
+					{children}
+				</a>
+			);
 	}
 }

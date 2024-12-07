@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { MouseEventHandler, useEffect, useRef, useState } from "react";
 import { ButtonWithMenu } from "View/ContextPanel/Buttons/ButtonWithMenu";
 import { Icon } from "View/Icon";
 import { UiButton } from "View/Ui/UiButton/UiButton";
@@ -7,71 +7,127 @@ import style from "./Hyperlink.module.css";
 import { useAppContext } from "View/AppContext";
 import { useTranslation } from "react-i18next";
 import { usePanelContext } from "View/ContextPanel/PanelContext";
+type HyperlinkProps = {
+	isReady: boolean;
+};
 
 const MENU_NAME = "Hyperlink";
-export const Hyperlink = (): React.ReactElement | null => {
+export const Hyperlink = ({
+	isReady,
+}: HyperlinkProps): React.ReactElement | null => {
 	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
 		usePanelContext();
 	const { board } = useAppContext();
 	const { t } = useTranslation();
-
+	const inputRef = useRef<HTMLInputElement | null>(null);
 	const [url, setUrl] = useState("");
-	const selectedText = board.selection.getText();
+
+	const selectionContext = board.selection.getContext();
 
 	const handleClick = () => {
 		toggleMenu(MENU_NAME);
 	};
 
-	const handleApplyLink = () => {
-		if (selectedText && url) {
-			const linkedText = `<a href="${url}" target="_blank">${selectedText}</a>`;
-			board.selection.setText(linkedText);
-			setUrl("");
-			toggleMenu("None");
+	useEffect(() => {
+		if (
+			selectionContext === "EditUnderPointer" &&
+			openedMenu === MENU_NAME
+		) {
+			setTimeout(() => {
+				inputRef.current?.focus();
+				const selection = board.selection
+					.getTextToEdit()[0]
+					?.editor.getSelection();
+				if (selection) {
+					setUrl(JSON.stringify(selection));
+				}
+			}, 80);
+		}
+	}, [selectionContext, openedMenu]);
+
+	const handleFocus = (ev: React.FocusEvent<HTMLInputElement>): void => {
+		ev.currentTarget.select();
+		if (openedMenu !== MENU_NAME) {
+			toggleMenu(MENU_NAME);
 		}
 	};
 
-	return (
-		<ButtonWithMenu
-			menuName={MENU_NAME}
-			openedMenu={openedMenu}
-			panelMbr={panelMbr}
-			windowHeight={windowHeight}
-			align="left"
-			button={
-				<UiButton
-					id="Hyperlink"
-					tooltip={t("contextPanel.hyperLink.tooltip")}
-					tooltipPosition="top"
-					onClick={handleClick}
-					variant="secondary"
-					active={openedMenu === MENU_NAME}
-					rounded="none"
-				>
-					<Icon iconName={`Hyperlink`} />
-				</UiButton>
+	const handleInputClick = (ev: React.MouseEvent<HTMLInputElement>) => {
+		ev.stopPropagation();
+		if (openedMenu !== MENU_NAME) {
+			toggleMenu(MENU_NAME);
+		}
+		if (selectionContext === "EditTextUnderPointer") {
+			board.selection.setContext("EditUnderPointer");
+		}
+	};
+
+	const handleApplyHyperlink = () => {
+		const { board } = useAppContext();
+		const richTextItems = board.selection.getTextToEdit();
+		console.log("richTextItems", richTextItems);
+
+		if (richTextItems.length > 0) {
+			const textItem = richTextItems[0];
+			const selection = textItem.editor.getSelection();
+			if (selection) {
+				textItem.editor.applyHyperlink(url, selection);
 			}
-		>
-			<UiPanel rounded="full" vertical padding={12} gap={8}>
-				<div
-					className={style.section}
-					style={{ display: "flex", alignItems: "center" }}
+		}
+		setUrl("");
+		toggleMenu(MENU_NAME);
+	};
+
+	return (
+		<>
+			{isReady && (
+				<ButtonWithMenu
+					menuName={MENU_NAME}
+					openedMenu={openedMenu}
+					panelMbr={panelMbr}
+					windowHeight={windowHeight}
+					align="left"
+					button={
+						<UiButton
+							id="Hyperlink"
+							tooltip={t("contextPanel.hyperLink.tooltip")}
+							tooltipPosition="top"
+							onClick={handleClick}
+							variant="secondary"
+							active={openedMenu === MENU_NAME}
+							rounded="none"
+						>
+							<Icon iconName={`Hyperlink`} />
+						</UiButton>
+					}
 				>
-					<input
-						type="text"
-						placeholder="Paste a link"
-						value={url}
-						onChange={e => setUrl(e.target.value)}
-						className={style.input}
-					/>
-					<button
-						onClick={handleApplyLink}
-						className={style.applyButton}
-					>
-						Apply
-					</button>
-				</div>
-			</UiPanel>
-		</ButtonWithMenu>
+					<UiPanel rounded="full" vertical padding={12} gap={8}>
+						<div
+							className={style.section}
+							style={{ display: "flex", alignItems: "center" }}
+						>
+							<input
+								type="text"
+								placeholder="Paste a link"
+								value={url}
+								ref={inputRef}
+								onClick={handleInputClick}
+								onChange={e => setUrl(e.target.value)}
+								onFocus={handleFocus}
+								onKeyDown={ev => ev.stopPropagation()}
+								onPaste={ev => ev.stopPropagation()}
+								className={style.input}
+							/>
+							<button
+								onClick={handleApplyHyperlink}
+								className={style.applyButton}
+							>
+								Apply
+							</button>
+						</div>
+					</UiPanel>
+				</ButtonWithMenu>
+			)}
+		</>
 	);
 };

@@ -41,6 +41,9 @@ import { ConnectorTextColor } from "./Buttons/ConnectorTextColor";
 import { ConnectorTextHighlight } from "./Buttons/ConnectorTextHighlight";
 import { CopyItemLink } from "./Buttons/RestOptionsMenu/Items/CopyItemLink";
 import { SetLinkTo } from "./Buttons/RestOptionsMenu/Items/SetLinkTo";
+import { Hyperlink } from "./Buttons/Hyperlink";
+
+const isReady = false;
 
 export function ContextPanel() {
 	const { app, board } = useAppContext();
@@ -106,7 +109,7 @@ export function ContextPanel() {
 				panelMbr: mbr,
 				toggleMenu,
 				windowHeight,
-				windowWidth
+				windowWidth,
 			}}
 		>
 			<UiPanel
@@ -145,6 +148,7 @@ export function ContextPanel() {
 						<FontSize rounded="left" />
 						<FontStyle />
 						<TextAlignment />
+						<Hyperlink isReady={isReady} />
 						<UiSeparator vertical />
 						<TextColor />
 						<TextHighlight />
@@ -167,6 +171,7 @@ export function ContextPanel() {
 						<UiSeparator vertical />
 						<FontStyle />
 						<TextAlignment />
+						<Hyperlink isReady={isReady} />
 						<UiSeparator vertical />
 						<TextColor />
 						<TextHighlight />
@@ -197,6 +202,7 @@ export function ContextPanel() {
 								<UiSeparator vertical />
 								<FontStyle />
 								<TextAlignment />
+								<Hyperlink isReady={isReady} />
 								<UiSeparator vertical />
 								<TextColor />
 								<TextHighlight />

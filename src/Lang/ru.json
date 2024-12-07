@@ -63,6 +63,9 @@
 			"top": "Верх",
 			"bottom": "Низ"
 		},
+		"hyperLink": {
+			"tooltip": "Гиперссылка"
+		},
 		"textColor": {
 			"tooltip": "Цвет текста"
 		},

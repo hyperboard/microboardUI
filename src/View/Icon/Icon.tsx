@@ -115,7 +115,8 @@ export type IconId =
 	| "FollowUser"
 	| "BringToMe"
 	| "EyeDashed"
-	| "addLink";
+	| "addLink"
+	| "Hyperlink";
 
 type Props = {
 	iconName: IconId;
