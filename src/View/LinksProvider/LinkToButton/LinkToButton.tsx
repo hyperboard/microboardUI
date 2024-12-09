@@ -102,7 +102,7 @@ export const LinkToButton = ({ item, handleClick }: Props) => {
 					onError={setIcon}
 				/>
 			) : (
-				<Icon iconName="linkTo" width={20} height={20} />
+				<Icon iconName="linkTo" width={16} height={16} />
 			)}
 			{isTooltipShown && (
 				<div className={styles.tooltip}>{item.getLinkTo()}</div>
