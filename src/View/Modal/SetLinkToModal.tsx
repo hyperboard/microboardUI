@@ -1,5 +1,5 @@
 import { Modal } from "shared/ui-lib/Modal";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./SetLinkToModal.module.css";
 import { useModal } from "View/Modal/ModalProvider";
@@ -19,7 +19,10 @@ export const SetLinkToModal = (): JSX.Element => {
 		event.preventDefault();
 		const form = formRef.current;
 		const inputValue = form?.linkToInput.value;
-		if (!inputValue || !inputValue.startsWith("http://")) {
+		if (
+			!inputValue ||
+			(!inputValue.startsWith("http") && !inputValue.startsWith("www"))
+		) {
 			return setError("modalLinkTo.error");
 		}
 		if (item && item.itemType !== "Placeholder") {
