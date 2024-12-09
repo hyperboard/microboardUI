@@ -10,10 +10,13 @@ export const ActionButtons: React.FC = () => {
 	const account = useAccount();
 
 	const isBoardOpen = board.getBoardId() !== "blank";
+	if (!isBoardOpen) {
+		return null;
+	}
 	return (
 		<div className={styles.wrapper}>
 			{(account.info?.name || account.info?.email) && <AddComment />}
-			{isBoardOpen && <TogglePresenceRender />}
+			<TogglePresenceRender />
 		</div>
 	);
 };
