@@ -72,19 +72,12 @@ export function withWebSocketApi({
         });
     }
 
-    async function invalidateBoardRights(boardUUID: string) {
-        const clients = boardClients.get(boardUUID) ?? [];
-
-        await Promise.all(
-            clients.map(async (client) => {
-                const mode = await getMode(client, boardUUID);
-                if (mode) {
-                    return enforceMode(client, boardUUID, mode);
-                }
-
-                sendError(client, "Access denied: Subscribe to board events.", { denidedBoardId: boardUUID });
-            })
-        );
+    async function invalidateBoardRights(boardUUID: string, byUser = false) {
+        broadcastBoardEvent(boardUUID, {
+            type: "InvalidateRights",
+            boardId: boardUUID,
+            byUser
+        })
     }
     boardsService.setInvalidateBoardRights(invalidateBoardRights);
 
@@ -117,6 +110,8 @@ export function withWebSocketApi({
                 return await handlePresenceEventMsg(msg, ws);
             case "BoardSnapshot":
                 return await handleSnapshotMsg(msg, ws);
+            case "GetMode":
+                return await handleGetModeMsg(msg, ws);
             case "ping":
                 return await handlePingMsg(msg, ws);
         }
@@ -141,7 +136,7 @@ export function withWebSocketApi({
     async function handleAuthMsg(msg: AuthMsg, ws: WebSocket): Promise<void> {
         const token = await verifyToken(msg.jwt, "access");
         if (token) {
-            return saveToken(ws, token);
+           return saveToken(ws, token);
         } else {
             return sendError(ws, "Invalid or expired token");
         }
@@ -162,6 +157,16 @@ export function withWebSocketApi({
                 type: "ping",
             })
         );
+    }
+
+    async function handleGetModeMsg(msg: GetModeMsg, ws: WebSocket) {
+        const mode = await getMode(ws, msg.boardId);
+            if (mode) {
+                enforceMode(ws, msg.boardId, mode);
+            }
+            if (!mode) {
+                return sendError(ws, "Access denied: edit board.");
+            }
     }
 
     const socketsBoardsSeqNums = new Map<WebSocket, Map<string, number>>();
@@ -432,7 +437,7 @@ export function withWebSocketApi({
         }
     }
 
-    function broadcastBoardEvent(boardUUID: string, message: BoardEventMsg | BoardEventListMsg | ModeMsg): void {
+    function broadcastBoardEvent(boardUUID: string, message: BoardEventMsg | BoardEventListMsg | ModeMsg | InvalidateRightsMsg): void {
         const clients = boardClients.get(boardUUID) ?? [];
         sendMessageToClients(message, clients);
     }
@@ -508,6 +513,18 @@ export function withWebSocketApi({
 export interface AuthMsg {
     type: "Auth";
     jwt: string;
+    connectedBoardId?: string;
+}
+
+export interface InvalidateRightsMsg {
+    type: "InvalidateRights";
+    boardId: string;
+    byUser: boolean;
+}
+
+export interface GetModeMsg {
+    type: "GetMode";
+    boardId: string;
 }
 
 export interface BoardEventMsg {
@@ -637,7 +654,7 @@ export interface BringToMeEvent {
     users: (number | string)[];
 }
 
-export interface PresenceUserSnapshot {}
+export interface PresenceUserSnapshot { }
 
 export type PresenceEventType =
     | PointerMoveEvent
@@ -687,7 +704,9 @@ export type SocketMsg =
     | ErrorMsg
     | ModeMsg
     | ConfirmationMsg
-    | PingMsg;
+    | PingMsg
+    | InvalidateRightsMsg
+    | GetModeMsg;
 
 type BoardEventBody = any;
 

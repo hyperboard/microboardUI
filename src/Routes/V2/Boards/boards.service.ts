@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, getTableColumns, gt, isNull, sql } from "drizzle-orm";
+import { and, asc, desc, eq, getTableColumns, gt, isNull, or, sql } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { boardEvents, boardOwner, boardPermissions, boards, boardSnapshots, userNames, users } from "drizzle/entities";
 import { folders, foldersToBoards, folderType, FolderType } from "drizzle/entities/folders";
@@ -12,11 +12,11 @@ import { userAvatars } from "drizzle/entities/userAvatars";
 export class BoardsService {
   constructor(private readonly db: NodePgDatabase, private readonly logger: winston.Logger) { }
 
-  private invalidateBoardRights = (boardUUID: string): Promise<void> => {
+  private invalidateBoardRights = (boardUUID: string, byUser: boolean): Promise<void> => {
     throw new Error('Method not implemented');
   };
 
-  setInvalidateBoardRights(fn: (boardUUID: string) => Promise<void>) {
+  setInvalidateBoardRights(fn: (boardUUID: string, byUser: boolean) => Promise<void>) {
     this.invalidateBoardRights = fn;
   }
 
@@ -56,7 +56,7 @@ export class BoardsService {
       .where(eq(boards.id, boardId))
       .returning()
 
-    await this.invalidateBoardRights(updatedBoard.uniqId);
+    await this.invalidateBoardRights(updatedBoard.uniqId, true);
 
     return updatedBoard;
   }
@@ -355,8 +355,8 @@ export class BoardsService {
           canEdit: sql.raw(`excluded.${boardPermissions.canEdit.name}`)
         }
       })
-    
-      await this.invalidateBoardRights(boardUUID);
+
+    await this.invalidateBoardRights(boardUUID, true);
   }
 
   async getGrantedUsers(boardId: number) {
@@ -370,7 +370,6 @@ export class BoardsService {
         CASE 
             WHEN ${boardPermissions.canEdit} = true THEN 'edit'
             WHEN ${boardPermissions.canView} = true THEN 'view'
-            ELSE 'noAccess'
           END
         `
       })
@@ -378,7 +377,10 @@ export class BoardsService {
       .innerJoin(users, eq(boardPermissions.userId, users.id))
       .leftJoin(userAvatars, eq(userAvatars.userId, boardPermissions.userId))
       .leftJoin(userNames, eq(userNames.userId, boardPermissions.userId))
-      .where(eq(boardPermissions.boardId, boardId))
+      .where(and(
+        eq(boardPermissions.boardId, boardId),
+        or(eq(boardPermissions.canView, true), eq(boardPermissions.canEdit, true))
+      ))
 
     const owner = await this.db
       .select({
