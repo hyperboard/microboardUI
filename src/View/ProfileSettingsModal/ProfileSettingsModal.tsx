@@ -161,7 +161,9 @@ export function ProfileSettingsModal() {
 							updateState === "success" ? t("profile.saved") : ""
 						}
 						helperText={
-							updateState === "idle" ? t("profile.msg") : ""
+							updateState === "idle" || updateState === "loading"
+								? t("profile.msg")
+								: ""
 						}
 					/>
 				</div>

@@ -6,6 +6,17 @@
 	position: absolute;
 }
 
+.imgWrapper {
+	border-radius: 50%;
+	object-fit: cover;
+	object-position: center;
+	overflow: hidden;
+}
+
+.imgWrapper img {
+	width: 100%;
+}
+
 .container {
 	padding: 6px 8px;
 	display: flex;
