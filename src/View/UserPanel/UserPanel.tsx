@@ -44,7 +44,7 @@ interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	openerRef?: RefObject<HTMLDivElement>;
 	customTop?: number;
 	followers: PresenceUser[];
-	presenceUsers: User[];
+	presenceUsers?: User[];
 }
 
 // TODO each file for each component
@@ -97,7 +97,7 @@ export const UserDropDown: React.FC<UserDropDownProps> = ({
 						},
 					);
 				})}
-				{presenceUsers.length > 0 && (
+				{presenceUsers && presenceUsers.length > 0 && (
 					<BringToMe followers={followers} users={presenceUsers} />
 				)}
 			</div>
