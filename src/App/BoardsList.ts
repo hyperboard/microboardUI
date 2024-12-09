@@ -13,14 +13,7 @@ export class BoardsList {
 	constructor(
 		private readonly storage: Storage,
 		private readonly account: Account,
-	) {
-		account.setOnLogin(async () => {
-			await foldersApi.initFolders();
-			await this.claim();
-			this.storage.softClean();
-			this.subject.publish();
-		});
-	}
+	) {}
 
 	getSharedFolder() {
 		return this.sharedFolder;

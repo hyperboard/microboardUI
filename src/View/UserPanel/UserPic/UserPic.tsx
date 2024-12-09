@@ -13,6 +13,7 @@ import {
 	FollowingUsersCount,
 	User,
 } from "View/Presence/PresenceUsers/PresenceUsers";
+import { useTranslation } from "react-i18next";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	email?: string;
@@ -44,6 +45,7 @@ export const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 	const account = useAccount();
 	const { openModal } = useUiModalContext();
 	const boardId = board.getBoardId();
+	const { t } = useTranslation();
 	const isOwner = account.permissions.checkPermissions(
 		"owns",
 		"boards",
@@ -96,8 +98,8 @@ export const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 						onClick={handleOpenProfileSettings}
 						pattern="ghost"
 					>
-						<Icon width={20} height={20} iconName="human" /> Profile
-						settings
+						<Icon width={20} height={20} iconName="human" />{" "}
+						{t("profile.title")}
 					</Button>,
 				]}
 			/>

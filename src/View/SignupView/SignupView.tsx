@@ -161,6 +161,7 @@ export const SignupView = (): React.ReactElement => {
 						placeholder={t("auth.name")}
 						hasError={!!error}
 						errorText={error}
+						helperText={t("auth.nameDesc")}
 					/>
 				) : (
 					<>
@@ -189,9 +190,6 @@ export const SignupView = (): React.ReactElement => {
 				<div className={styles.btns}>
 					{showNameInput ? (
 						<div>
-							<p className={styles.nameMsg}>
-								{t("auth.nameDesc")}
-							</p>
 							<Button
 								disabled={isDisabled}
 								type="button"

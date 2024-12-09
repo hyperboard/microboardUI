@@ -19,6 +19,7 @@ import { notify } from "View/Ui/Toast";
 import i18next from "i18next";
 import { SessionStorage } from "./SessionStorage";
 import { apiV2 } from "shared/apiV2/base";
+import { foldersApi } from "shared/apiV2";
 
 export const LAST_BOARD_KEY = "lastSeenBoard";
 export const LAST_BOARD_KEY_QS = LAST_BOARD_KEY.concat("Wqs");
@@ -143,6 +144,19 @@ export function createApp(isHistory = true): App {
 	function render(): void {
 		const { render, router } = getRender(app);
 		boardSubject.subscribe(() => {
+			boardsList.subject.publish();
+		});
+		account.setOnLogin(async () => {
+			await foldersApi.initFolders();
+			await boardsList.claim();
+			storage.softClean();
+			const boardId = board.getBoardId();
+			if (boardId && boardId !== "blank") {
+				await openBoard(boardId);
+				router.navigate(`/boards/${boardId}${window.location.search}`);
+			} else {
+				router.navigate(`/${window.location.search}`);
+			}
 			boardsList.subject.publish();
 		});
 		account.setOnLogout(async () => {

@@ -680,5 +680,21 @@
 		"showCursors": "Показать курсоры",
 		"bringNotify1": "Вы притянули",
 		"bringNotify2": "на свой экран"
+	},
+	"profile": {
+		"title": "Настройки профиля",
+		"upload": "Загрузить",
+		"remove": "Удалить",
+		"saved": "Имя сохранено",
+		"msg": "Отображается во время вашей работы на доске",
+		"changePassword": "Изменить пароль",
+		"logout": "Выйти",
+		"name": "Имя",
+		"currentPassword": "Текущий пароль",
+		"newPassword": "Новый пароль",
+		"repeatPassword": "Повторите новый пароль",
+		"passwordConstraint": "Пароль должен содержать не менее 8 символов",
+		"savePassword": "Сохранить",
+		"cancelPassword": "Отменить"
 	}
 }

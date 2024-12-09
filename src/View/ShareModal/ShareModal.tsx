@@ -1,13 +1,11 @@
 import { useAccount } from "App/useAccount";
 import { useBoardsList } from "App/useBoardsList";
+import clsx from "clsx";
 import i18next from "i18next";
-import React, {
-	useCallback,
-	useEffect,
-	useState,
-	type ChangeEventHandler,
-} from "react";
+import { debounce } from "lib/debounce";
+import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { usersApi } from "shared/api";
 import { boardsApiV2 } from "shared/apiV2";
 import {
@@ -23,14 +21,11 @@ import { notify } from "View/Ui/Toast";
 import { useUiModalContext } from "View/Ui/UiModal";
 import { UiModal } from "View/Ui/UiModal/UiModal";
 import { UiSelector, type Option } from "View/Ui/UiSelector";
+import { UiSeparator } from "View/Ui/UiSeparator";
+import { UiSkeleton } from "View/Ui/UiSkeleton";
+import { UserAvatar } from "View/UserPanel/UserPanel";
 import { SearchInput } from "./SearchInput";
 import styles from "./ShareModal.module.css";
-import { UserAvatar } from "View/UserPanel/UserPanel";
-import { UiSeparator } from "View/Ui/UiSeparator";
-import clsx from "clsx";
-import { CSSTransition, TransitionGroup } from "react-transition-group";
-import { UiSkeleton } from "View/Ui/UiSkeleton";
-import { debounce } from "lib/debounce";
 
 export const SHARE_MODAL_ID = Symbol("shareModal");
 
@@ -66,9 +61,14 @@ export function ShareModal() {
 	const boardsList = useBoardsList();
 	const account = useAccount();
 	const [userEmails, setUserEmails] = useState<string[]>([]);
+	const [userEmails2, setUserEmails2] = useState<string[]>([]);
 	const [usersMode, setUsersMode] = useState<UserAccessType>(
 		UserAccessType.Edit,
 	);
+	const [usersMode2, setUsersMode2] = useState<UserAccessType>(
+		UserAccessType.View,
+	);
+	const [isSecondInputVisible, setIsSecondInputVisible] = useState(false);
 	const [isGrantedUsersLoading, setIsGrantedUsersLoading] = useState(true);
 	const [grantedUsers, setGrantedUsers] = useState<boardsApiV2.GrantedUser[]>(
 		[],
@@ -179,6 +179,16 @@ export function ShareModal() {
 				})),
 			);
 		}
+		if (userEmails2.length > 0) {
+			await boardsApiV2.grantAccess(
+				boardId,
+				userEmails2.map(email => ({
+					userId: searchOptions.find(user => user.email === email)
+						?.id!,
+					accessType: usersMode2,
+				})),
+			);
+		}
 	};
 	return (
 		<UiModal className={styles.modalContainer} modalId={SHARE_MODAL_ID}>
@@ -188,7 +198,12 @@ export function ShareModal() {
 				</h1>
 				{account.isLoggedIn && isOwner && (
 					<>
-						<div className={styles.selectors}>
+						<div
+							className={clsx(
+								styles.selectors,
+								userEmails.length > 0 && styles.modeVisible,
+							)}
+						>
 							<SearchInput
 								isLoading={isSearchOptionsLoading}
 								onValueAdd={val => {
@@ -216,14 +231,77 @@ export function ShareModal() {
 										),
 									}))}
 							/>
-							<UiSelector
-								options={MODE_SELECTOR_OPTIONS}
-								iconColor="rgba(105, 107, 118, 1)"
-								onChange={val =>
-									setUsersMode(val as UserAccessType)
-								}
-							/>
+							<div className={styles.selector}>
+								<UiSelector
+									options={MODE_SELECTOR_OPTIONS}
+									iconColor="rgba(105, 107, 118, 1)"
+									onChange={val =>
+										setUsersMode(val as UserAccessType)
+									}
+								/>
+							</div>
 						</div>
+						{isSecondInputVisible && (
+							<div
+								className={clsx(
+									styles.selectors,
+									userEmails2.length > 0 &&
+										styles.modeVisible,
+								)}
+							>
+								<SearchInput
+									isLoading={isSearchOptionsLoading}
+									onValueAdd={val => {
+										setUserEmails2(val);
+									}}
+									onInput={handleInputChange}
+									options={searchOptions
+										.filter(
+											user =>
+												user.id !== account.info?.id &&
+												!grantedUsers.find(
+													granted =>
+														granted.id === user.id,
+												),
+										)
+										.map(user => ({
+											value: user.email,
+											label: user.email,
+											icon: (
+												<UserAvatar
+													width={20}
+													height={20}
+													src={user.avatar}
+												/>
+											),
+										}))}
+								/>
+								<div className={styles.selector}>
+									<UiSelector
+										options={MODE_SELECTOR_OPTIONS}
+										initialValue={
+											MODE_SELECTOR_OPTIONS[1].value
+										}
+										iconColor="rgba(105, 107, 118, 1)"
+										onChange={val =>
+											setUsersMode2(val as UserAccessType)
+										}
+									/>
+								</div>
+							</div>
+						)}
+						{!isSecondInputVisible && userEmails.length > 0 && (
+							<button
+								className={styles.secondInputBtn}
+								onClick={ev => {
+									ev.stopPropagation();
+									setIsSecondInputVisible(true);
+								}}
+							>
+								<Icon iconName="Plus" width={20} height={20} />{" "}
+								Добавить еще один уровень доступа
+							</button>
+						)}
 						<div className={styles.grantedUsers}>
 							<h2 className={styles.settingsHeading}>
 								{t("sharing.grantedUsers")}
@@ -291,19 +369,22 @@ export function ShareModal() {
 									: PRIVACY_SELECTOR_OPTIONS[1].value
 							}
 						/>
-
-						<UiSelector
-							isLoading={boardsList.isLoading}
-							disabled={disabled}
-							iconColor="rgba(105, 107, 118, 1)"
-							options={MODE_SELECTOR_OPTIONS}
-							onChange={opt => setMode(opt as DirectAccessType)}
-							initialValue={
-								mode === boardsApiV2.DirectAccessType.EDIT
-									? MODE_SELECTOR_OPTIONS[0].value
-									: MODE_SELECTOR_OPTIONS[1].value
-							}
-						/>
+						<div className={styles.selector}>
+							<UiSelector
+								isLoading={boardsList.isLoading}
+								disabled={disabled}
+								iconColor="rgba(105, 107, 118, 1)"
+								options={MODE_SELECTOR_OPTIONS}
+								onChange={opt =>
+									setMode(opt as DirectAccessType)
+								}
+								initialValue={
+									mode === boardsApiV2.DirectAccessType.EDIT
+										? MODE_SELECTOR_OPTIONS[0].value
+										: MODE_SELECTOR_OPTIONS[1].value
+								}
+							/>
+						</div>
 					</div>
 					{boardInfo?.isPublic && (
 						<p className={styles.publicMsg}>

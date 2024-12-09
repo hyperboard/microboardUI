@@ -682,5 +682,21 @@
 		"showCursors": "Show cursors",
 		"bringNotify1": "You brought",
 		"bringNotify2": "to your board"
+	},
+	"profile": {
+		"title": "Profile settings",
+		"upload": "Upload",
+		"remove": "Remove",
+		"saved": "Name saved successfully",
+		"msg": "It is displayed during your work on the board",
+		"changePassword": "Change Password",
+		"logout": "Logout",
+		"name": "Name",
+		"currentPassword": "Current password",
+		"newPassword": "New password",
+		"repeatPassword": "Repeat new password",
+		"passwordConstraint": "The password must be at least 8 characters long",
+		"savePassword": "Save",
+		"cancelPassword": "Cancel"
 	}
 }

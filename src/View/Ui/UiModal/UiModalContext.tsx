@@ -6,21 +6,25 @@ export type ModalId = string | symbol | null;
 
 class UiModalState {
 	openedModalId: ModalId = null;
+	isTransition = false;
 	subject = new Subject<void>();
 
 	openModal = (modalId: ModalId) => {
+		if (this.openedModalId && modalId) {
+			this.isTransition = true;
+		}
 		this.openedModalId = modalId;
-		console.log(modalId, this.openedModalId);
 		this.subject.publish();
 	};
 
 	closeModal = () => {
 		this.openedModalId = null;
+		this.isTransition = false;
 		this.subject.publish();
 	};
 }
 
-const UiModalStateInstance = new UiModalState();
+export const UiModalStateInstance = new UiModalState();
 
 export const useUiModalContext = () => {
 	const forceUpdate = useForceUpdate();

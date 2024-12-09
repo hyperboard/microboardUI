@@ -22,6 +22,10 @@
 /* .InputWrapper .InputLabel {
 } */
 
+.InputWrapper .Text {
+	min-height: 20px;
+}
+
 .InputWrapper .InputHelperText {
 	font-size: 14px;
 	color: rgba(15, 19, 36, 0.6);

@@ -11,6 +11,7 @@ import styles from "./UiModal.module.css";
 import { useUiModalContext, type ModalId } from "./UiModalContext";
 import clsx from "clsx";
 import { useClickOutside } from "lib/useClickOutside";
+import { CSSTransition } from "react-transition-group";
 
 type Props = PropsWithChildren<{
 	modalId: ModalId;
@@ -26,7 +27,7 @@ export function UiModal({
 	className,
 	onClose,
 }: Props) {
-	const { closeModal, openedModalId } = useUiModalContext();
+	const { closeModal, openedModalId, isTransition } = useUiModalContext();
 
 	const handleClose = () => {
 		closeModal();
@@ -36,7 +37,21 @@ export function UiModal({
 	const ref = useClickOutside(handleClose);
 
 	return (
-		<OpacityTransition inProp={modalId === openedModalId} unmountOnExit>
+		<CSSTransition
+			in={modalId === openedModalId}
+			timeout={300}
+			classNames={{
+				enter: isTransition
+					? styles.opacityEnterTransition
+					: styles.opacityEnter,
+				enterActive: styles.opacityEnterActive,
+				exit: styles.opacityExit,
+				exitActive: isTransition
+					? styles.opacityExitActiveTransition
+					: styles.opacityExitActive,
+			}}
+			unmountOnExit
+		>
 			<div className={styles.modalWrapper}>
 				<UiPanel className={clsx(styles.panel, className)}>
 					<div className={styles.closeBtnWrapper}>
@@ -57,6 +72,6 @@ export function UiModal({
 					</div>
 				</UiPanel>
 			</div>
-		</OpacityTransition>
+		</CSSTransition>
 	);
 }

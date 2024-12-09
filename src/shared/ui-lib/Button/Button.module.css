@@ -36,11 +36,11 @@
 	box-shadow: 0 1px 2px rgba(20, 21, 26, 0.05);
 }
 
-.primary:hover {
+.primary:hover:not(:disabled) {
 	background-color: #1f2228;
 }
 
-.primary:active {
+.primary:active:not(:disabled) {
 	outline: 2px solid rgba(200, 178, 255, 0.5);
 }
 
@@ -68,13 +68,13 @@
 	background-color: rgba(10, 15, 41, 0.04);
 }
 
-.secondary:hover {
+.secondary:hover:not(:disabled) {
 	color: #14151a;
 	background-color: rgba(10, 15, 41, 0.08);
 }
 
-.secondary:active,
-.tertiary:active {
+.secondary:active:not(:disabled),
+.tertiary:active:not(:disabled) {
 	border: 1px solid #b78af0;
 	outline: 2px solid rgba(200, 178, 255, 0.5);
 }
@@ -87,7 +87,7 @@
 	border: 1px solid #dee0e3;
 }
 
-.tertiary:hover {
+.tertiary:hover:not(:disabled) {
 	background-color: #f7f7f8;
 }
 

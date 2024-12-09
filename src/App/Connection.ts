@@ -22,6 +22,18 @@ const SUBSCRIBE_TIMEOUT = 4 * SECOND;
 export interface AuthMsg {
 	type: "Auth";
 	jwt: string;
+	connectedBoardId?: string;
+}
+
+export interface InvalidateRightsMsg {
+	type: "InvalidateRights";
+	boardId: string;
+	byUser: boolean;
+}
+
+export interface GetModeMsg {
+	type: "GetMode";
+	boardId: string;
 }
 
 export interface BoardEventMsg {
@@ -120,6 +132,8 @@ export type EventsMsg =
 export type SocketMsg =
 	| EventsMsg
 	| AuthMsg
+	| GetModeMsg
+	| InvalidateRightsMsg
 	| UserJoinMsg
 	| SubscribeMsg
 	| UnsubscribeMsg
@@ -147,7 +161,8 @@ export interface Connection {
 		sequenceNumber: number,
 	): void;
 	publishPresenceEvent(boardId: string, event: PresenceEventType): void;
-	publishAuth(): void;
+	publishAuth(): Promise<void>;
+	publishGetMode(): void;
 	publishSnapshot(boardId: string, snapshot: BoardSnapshot): void;
 	wsClient: WsClient;
 }
@@ -210,6 +225,7 @@ export function createConnection(
 			case "CreateSnapshotRequest":
 			case "BoardSubscriptionCompleted":
 			case "UserJoin":
+			case "InvalidateRights":
 			case "PresenceEvent":
 				const subscribeTimeout = subscribeTimeouts.get(msg.boardId);
 				if (subscribeTimeout) {
@@ -283,9 +299,7 @@ export function createConnection(
 		}
 
 		async function sendSubscribeMsg(): Promise<void> {
-			const account = getAccount();
-			await account.refreshTokens();
-			publishAuth();
+			await publishAuth();
 			let subscribeTimeout = subscribeTimeouts.get(boardId);
 			if (!subscribeTimeout) {
 				subscribeTimeout = {
@@ -352,8 +366,11 @@ export function createConnection(
 		);
 	}
 
-	function publishAuth(): void {
+	async function publishAuth(): Promise<void> {
 		const account = getAccount();
+		const board = getBoard();
+		const boardId = board?.getBoardId();
+		await account.refreshTokens();
 		const jwt = account.accessToken;
 		if (!jwt) {
 			return;
@@ -361,6 +378,23 @@ export function createConnection(
 		ws.send({
 			type: "Auth",
 			jwt,
+			connectedBoardId: boardId,
+		});
+	}
+
+	function publishGetMode(): void {
+		const account = getAccount();
+		if (account.isLoggedIn) {
+			return;
+		}
+		const board = getBoard();
+		const boardId = board?.getBoardId();
+		if (!boardId) {
+			return;
+		}
+		ws.send({
+			type: "GetMode",
+			boardId,
 		});
 	}
 
@@ -430,6 +464,7 @@ export function createConnection(
 		get connectionId() {
 			return connectionId;
 		},
+		publishGetMode,
 		userId,
 		connect,
 		subscribe,

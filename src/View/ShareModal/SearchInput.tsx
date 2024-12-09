@@ -1,5 +1,6 @@
+import { Icon } from "View/Icon";
+import { TopFade } from "View/Ui/Transitions/TopFade";
 import React, {
-	useEffect,
 	useLayoutEffect,
 	useRef,
 	useState,
@@ -9,13 +10,9 @@ import React, {
 	type ReactNode,
 	type SyntheticEvent,
 } from "react";
+import { createPortal } from "react-dom";
 import styles from "./SearchInput.module.css";
 import clsx from "clsx";
-import { Icon } from "View/Icon";
-import { TopFade } from "View/Ui/Transitions/TopFade";
-import { createPortal } from "react-dom";
-
-const PLACEHOLDER = "Добавить пользователей";
 
 export type SearchOption = {
 	value: string;
@@ -41,6 +38,9 @@ export function SearchInput({
 	const [isFocused, setIsFocused] = useState(false);
 	const inputRef = useRef<HTMLDivElement>(null);
 	const htmlInputRef = useRef<HTMLInputElement>(null);
+	const [highlightedIndex, setHighlightedIndex] = useState<number | null>(
+		null,
+	);
 	const [optionsListPosition, setOptionsListPosition] = useState<
 		Record<"top" | "left" | "width", number>
 	>({ left: 0, top: 0, width: 0 });
@@ -50,6 +50,9 @@ export function SearchInput({
 	);
 
 	const handleFocus: FocusEventHandler = () => {
+		if (isFocused) {
+			return;
+		}
 		setIsFocused(true);
 		onInput(currValue);
 	};
@@ -58,8 +61,14 @@ export function SearchInput({
 		setIsFocused(false);
 	};
 
-	const handleInputClick: MouseEventHandler = () =>
+	const handleInputClick: MouseEventHandler = ev => {
+		ev.preventDefault();
+		ev.stopPropagation();
+		if (isFocused) {
+			return;
+		}
 		htmlInputRef.current?.focus();
+	};
 
 	useLayoutEffect(() => {
 		const inputRect = inputRef.current?.getBoundingClientRect();
@@ -75,6 +84,7 @@ export function SearchInput({
 
 	const handleInput: ChangeEventHandler<HTMLInputElement> = ev => {
 		const text = ev.target.value;
+		setHighlightedIndex(null);
 		setCurrValue(text);
 		onInput(text);
 	};
@@ -83,21 +93,71 @@ export function SearchInput({
 		evt.stopPropagation();
 	};
 
+	const preventDefault = (evt: SyntheticEvent) => {
+		evt.stopPropagation();
+		evt.preventDefault();
+	};
+
 	const handleKeyPress = (evt: React.KeyboardEvent<HTMLDivElement>) => {
 		evt.stopPropagation();
-		if (evt.key === "Enter") {
-			evt.preventDefault();
-			if (
-				currValue.trim() &&
-				filteredOptions.find(opt => opt.value === currValue)
-			) {
-				const values = [...addedValues, currValue.trim()];
-				setAddedValues(values);
-				setCurrValue("");
-				onValueAdd(values);
+		switch (evt.key) {
+			case "Enter": {
+				if (
+					currValue.trim() &&
+					filteredOptions.find(opt => opt.value === currValue) &&
+					highlightedIndex === null
+				) {
+					const values = [...addedValues, currValue.trim()];
+					setAddedValues(values);
+					setCurrValue("");
+					onValueAdd(values);
+				}
+
+				if (highlightedIndex !== null) {
+					const highlightedValue =
+						filteredOptions[highlightedIndex].value;
+					const values = [...addedValues, highlightedValue];
+					setAddedValues(values);
+					setCurrValue("");
+					setHighlightedIndex(null);
+					onValueAdd(values);
+				}
+				break;
 			}
-		} else if (evt.key === "Backspace" && !currValue) {
-			setAddedValues(prev => prev.slice(0, -1));
+			case "Backspace": {
+				if (!currValue) {
+					setAddedValues(prev => prev.slice(0, -1));
+				}
+				break;
+			}
+			case "Escape": {
+				evt.stopPropagation();
+				if (isFocused) {
+					htmlInputRef.current?.blur();
+				}
+				break;
+			}
+			case "ArrowDown": {
+				setHighlightedIndex(prev => {
+					if (prev === null || prev === filteredOptions.length - 1) {
+						return 0;
+					}
+					return prev + 1;
+				});
+				break;
+			}
+			case "ArrowUp": {
+				setHighlightedIndex(prev => {
+					if (prev === null) {
+						return filteredOptions.length - 1;
+					}
+					if (prev === 0) {
+						return null;
+					}
+					return prev - 1;
+				});
+				break;
+			}
 		}
 	};
 
@@ -129,8 +189,10 @@ export function SearchInput({
 			</div>
 			<div
 				ref={inputRef}
-				className={styles.input}
+				className={clsx(styles.input, isFocused && styles.inputFocused)}
 				onClick={handleInputClick}
+				onPointerDown={preventDefault}
+				onPointerUp={preventDefault}
 			>
 				{addedValues.map(val => (
 					<div
@@ -152,53 +214,65 @@ export function SearchInput({
 					onKeyPress={stopPropagation}
 					value={currValue}
 					ref={htmlInputRef}
+					placeholder={
+						addedValues.length === 0 ? "Добавьте пользователей" : ""
+					}
 				/>
 			</div>
 			{createPortal(
 				<TopFade inProp={isFocused} unmountOnExit>
 					<div
+						onClick={preventDefault}
 						style={optionsListPosition}
-						className={styles.optionsListWrapper}
-						onClick={stopPropagation}
+						className={styles.optionsListContainer}
 					>
-						{isLoading && (
-							<p className={styles.notFound}>Loading...</p>
-						)}
-						{!isLoading &&
-							(filteredOptions.length > 0 ? (
-								<ul className={styles.optionsList}>
-									{filteredOptions.map(opt => (
-										<li
-											className={styles.optionWrapper}
-											key={opt.value}
-										>
-											<button
-												onClick={handleOptionClick(opt)}
-												className={styles.optionBtn}
+						<div className={styles.optionsListWrapper}>
+							{isLoading && (
+								<p className={styles.notFound}>Loading...</p>
+							)}
+							{!isLoading &&
+								(filteredOptions.length > 0 ? (
+									<ul className={styles.optionsList}>
+										{filteredOptions.map((opt, idx) => (
+											<li
+												className={styles.optionWrapper}
+												key={opt.value}
 											>
-												<span
-													className={
-														styles.optionIcon
-													}
+												<button
+													onClick={handleOptionClick(
+														opt,
+													)}
+													className={clsx(
+														styles.optionBtn,
+														idx ===
+															highlightedIndex &&
+															styles.highlighted,
+													)}
 												>
-													{opt.icon}
-												</span>
-												<span
-													className={
-														styles.optionText
-													}
-												>
-													{opt.label}
-												</span>
-											</button>
-										</li>
-									))}
-								</ul>
-							) : (
-								<p className={styles.notFound}>
-									Нет подходящих результатов
-								</p>
-							))}
+													<span
+														className={
+															styles.optionIcon
+														}
+													>
+														{opt.icon}
+													</span>
+													<span
+														className={
+															styles.optionText
+														}
+													>
+														{opt.label}
+													</span>
+												</button>
+											</li>
+										))}
+									</ul>
+								) : (
+									<p className={styles.notFound}>
+										Нет подходящих результатов
+									</p>
+								))}
+						</div>
 					</div>
 				</TopFade>,
 				document.getElementById("selector")!,

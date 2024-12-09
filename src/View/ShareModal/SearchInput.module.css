@@ -9,31 +9,15 @@
 	padding-left: 40px;
 	cursor: text;
 	min-height: 42px;
+	transition:
+		border 0.3s ease,
+		outline 0.5s ease;
 }
 
 .nativeInput {
 	min-width: 150px;
 	outline: none;
 	flex-grow: 1;
-}
-
-.editable {
-	flex: 1;
-	height: 20px;
-	min-width: 5ch;
-	outline: none;
-	white-space: nowrap;
-	overflow-x: auto;
-	overflow-y: hidden;
-	scrollbar-width: none;
-}
-
-.editable::-webkit-scrollbar {
-	display: none;
-}
-
-.placeholder {
-	color: rgba(13, 17, 38, 0.4);
 }
 
 .wrapper {
@@ -63,18 +47,40 @@
 	color: rgba(13, 17, 38, 0.4);
 }
 
-.optionsListWrapper {
+.optionsListContainer {
+	position: absolute;
 	box-shadow:
 		0px 10px 16px -3px rgba(20, 21, 26, 0.08),
 		0px 3px 6px -2px rgba(20, 21, 26, 0.05);
-	position: absolute;
-	width: 100%;
 	background-color: #fff;
 	border-radius: 12px;
 	border: 1px solid #dee0e3;
-	padding: 6px;
 	z-index: 1000;
+	padding-right: 2px;
+	padding-left: 2px;
 	max-height: 224px;
+	overflow: hidden;
+}
+
+.optionsListWrapper {
+	padding: 6px;
+	max-height: 224px;
+	overflow-y: auto;
+}
+
+.optionsListWrapper::-webkit-scrollbar {
+	appearance: none;
+	width: 2px;
+}
+
+.optionsListWrapper::-webkit-scrollbar-button {
+	display: none;
+}
+
+.optionsListWrapper::-webkit-scrollbar-thumb {
+	display: block;
+	background-color: rgba(222, 225, 232, 1);
+	border-radius: 2px;
 }
 
 .optionsList {
@@ -82,6 +88,7 @@
 	flex-direction: column;
 	list-style: none;
 	gap: 2px;
+	max-height: 100%;
 }
 
 .optionWrapper {
@@ -98,7 +105,9 @@
 	flex: 1 0;
 	padding: 6px;
 	cursor: pointer;
-	transition: background 0.3s ease;
+	transition:
+		background 0.3s ease,
+		transform 0.3s ease;
 	gap: 8px;
 	border-radius: 6px;
 	padding-right: 30px;
@@ -109,6 +118,11 @@
 	.optionBtn:hover {
 		background-color: rgba(10, 15, 41, 0.04);
 	}
+}
+
+.optionBtn.highlighted {
+	background-color: rgba(10, 15, 41, 0.04);
+	transform: scale(1.01);
 }
 
 .optionBtn.selected {
@@ -139,4 +153,9 @@
 	padding: 6px;
 	font-size: 14px;
 	color: rgba(13, 17, 38, 0.4);
+}
+
+.inputFocused {
+	border: 1px solid rgb(176, 140, 234);
+	box-shadow: 0px 0px 0px 2px rgba(200, 178, 255, 0.5);
 }

@@ -36,15 +36,32 @@
 .selectors {
 	display: grid;
 	grid-template-columns: 1fr 0px;
-	gap: 16px;
 	padding-top: 12px;
 	padding-bottom: 8px;
 	transition: grid-template-columns 0.3s ease;
+	align-items: stretch;
+}
+
+.selector {
 	overflow: hidden;
+}
+
+.secondInputBtn {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	cursor: pointer;
+	border: none;
+	background: none;
+	margin-top: 12px;
+	font-size: 16px;
+	color: #4778f5;
+	font-weight: 500;
 }
 
 .selectors.modeVisible {
 	grid-template-columns: 1fr 230px;
+	gap: 16px;
 }
 
 .btns {

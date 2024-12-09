@@ -157,7 +157,9 @@ export function ChangePasswordModal() {
 	return (
 		<UiModal modalId={CHANGE_PASSWORD_MODAL}>
 			<div className={styles.modal}>
-				<h2 className={styles.modalTitle}>Change password</h2>
+				<h2 className={styles.modalTitle}>
+					{t("profile.changePassword")}
+				</h2>
 				<form
 					className={styles.modalForm}
 					ref={formRef}
@@ -168,7 +170,7 @@ export function ChangePasswordModal() {
 							prefixIcon={<LockIcon />}
 							id="currentPassword"
 							password
-							placeholder="Current password"
+							placeholder={t("profile.currentPassword")}
 							// hasError={!!error.length}
 							// onInput={event => {
 							// 	dbCheckForm(event);
@@ -186,7 +188,7 @@ export function ChangePasswordModal() {
 							prefixIcon={<LockIcon />}
 							id="newPassword"
 							password
-							placeholder="New password"
+							placeholder={t("profile.newPassword")}
 							// hasError={!!error.length}
 							// onInput={dbCheckForm}
 							onKeyDown={event => {
@@ -202,8 +204,8 @@ export function ChangePasswordModal() {
 							prefixIcon={<LockIcon />}
 							id="confirmPassword"
 							password
-							placeholder="Repeat new password"
-							helperText="The password must be at least 8 characters long"
+							placeholder={t("profile.repeatPassword")}
+							helperText={t("profile.passwordConstraint")}
 							hasError={!!error.length}
 							onInput={dbCheckForm}
 							errorText={error}
@@ -224,7 +226,7 @@ export function ChangePasswordModal() {
 							disabled={isSubmitDisabled}
 							loading={isSubmitLoading}
 						>
-							{t("auth.submit")} <Tail />
+							{t("profile.savePassword")} <Tail />
 						</Button>
 						<Button pattern="ghost" onClick={closeModal}>
 							{t("auth.cancel")}

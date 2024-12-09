@@ -82,6 +82,8 @@ export const Input: React.FC<Props> = ({
 		setInputType(inputType === "text" ? "password" : "text");
 	};
 
+	console.log(helperText);
+
 	return (
 		<div className="InputWrapper">
 			{label && (
@@ -148,13 +150,17 @@ export const Input: React.FC<Props> = ({
 				</div>
 				<span className="InputPostTab">{props.postTab}</span>
 			</div>
-			{errorText && <span className="InputErrorText">{errorText}</span>}
-			{helperText && (
-				<span className="InputHelperText">{helperText}</span>
-			)}
-			{successText && (
-				<span className="InputSuccessText">{successText}</span>
-			)}
+			<div className="Text">
+				{errorText && (
+					<span className="InputErrorText">{errorText}</span>
+				)}
+				{helperText && (
+					<span className="InputHelperText">{helperText}</span>
+				)}
+				{successText && (
+					<span className="InputSuccessText">{successText}</span>
+				)}
+			</div>
 		</div>
 	);
 };

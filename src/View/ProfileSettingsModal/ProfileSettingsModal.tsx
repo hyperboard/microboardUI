@@ -1,5 +1,11 @@
+import { useAccount } from "App/useAccount";
+import { CHANGE_PASSWORD_MODAL } from "View/ChangePasswordModal";
+import { useUiModalContext } from "View/Ui/UiModal";
 import { UiModal } from "View/Ui/UiModal/UiModal";
 import { UserAvatar } from "View/UserPanel/UserPanel";
+import { ChangePassword } from "View/UserPanel/icons/ChangePassword";
+import { Logout } from "View/UserPanel/icons/Logout";
+import { debounce } from "lib/debounce";
 import React, {
 	useCallback,
 	useRef,
@@ -8,17 +14,11 @@ import React, {
 	type KeyboardEventHandler,
 	type MouseEventHandler,
 } from "react";
-import { Button } from "shared/ui-lib/Button";
-import styles from "./ProfileSettingsModal.module.css";
-import { Input } from "shared/ui-lib/Input";
-import { useAccount } from "App/useAccount";
-import { debounce } from "lib/debounce";
-import { useUiModalContext } from "View/Ui/UiModal";
-import { CHANGE_PASSWORD_MODAL } from "View/ChangePasswordModal";
-import { UiSeparator } from "View/Ui/UiSeparator";
-import { ChangePassword } from "View/UserPanel/icons/ChangePassword";
-import { Logout } from "View/UserPanel/icons/Logout";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { Button } from "shared/ui-lib/Button";
+import { Input } from "shared/ui-lib/Input";
+import styles from "./ProfileSettingsModal.module.css";
 
 export const PROFILE_SETTINGS_MODAL_ID = Symbol("profileSettingsModal");
 
@@ -30,6 +30,7 @@ export function ProfileSettingsModal() {
 	>("idle");
 	const { openModal, closeModal } = useUiModalContext();
 	const navigate = useNavigate();
+	const { t } = useTranslation();
 	const avatarInputRef = useRef<HTMLInputElement>(null);
 
 	const debouncedChangeInfo = useCallback(
@@ -105,7 +106,7 @@ export function ProfileSettingsModal() {
 	return (
 		<UiModal modalId={PROFILE_SETTINGS_MODAL_ID}>
 			<div className={styles.container}>
-				<h1 className={styles.heading}>Profile settings</h1>
+				<h1 className={styles.heading}>{t("profile.title")}</h1>
 				<div className={styles.avatar}>
 					<UserAvatar
 						src={account.info?.avatar}
@@ -125,7 +126,7 @@ export function ProfileSettingsModal() {
 							className={styles.avatarBtn}
 							pattern="tertiary"
 						>
-							Upload
+							{t("profile.upload")}
 						</Button>
 						<Button
 							className={styles.avatarBtn}
@@ -133,20 +134,21 @@ export function ProfileSettingsModal() {
 							onClick={handleAvatarRemove}
 							disabled={account.info?.avatarGenerated}
 						>
-							Remove
+							{t("profile.remove")}
 						</Button>
 					</div>
 				</div>
 				<div className={styles.inputs}>
-					<Input
+					{/* <Input
 						label="Email"
 						value={account.info?.email}
 						autoFocus={false}
 						disabled
 						id="email"
-					/>
+					/> */}
+					<p className={styles.email}>{account.info?.email}</p>
 					<Input
-						label="Name"
+						label={t("profile.name")}
 						value={name}
 						id="name"
 						onChange={handleNameChange}
@@ -156,14 +158,10 @@ export function ProfileSettingsModal() {
 						autoFocus={false}
 						isSuccess={updateState === "success"}
 						successText={
-							updateState === "success"
-								? "Name saved successfully"
-								: ""
+							updateState === "success" ? t("profile.saved") : ""
 						}
 						helperText={
-							updateState === "idle"
-								? "Отображается во время вашей работы на доске"
-								: ""
+							updateState === "idle" ? t("profile.msg") : ""
 						}
 					/>
 				</div>
@@ -174,16 +172,15 @@ export function ProfileSettingsModal() {
 						pattern="ghost"
 						className={styles.btn}
 					>
-						<ChangePassword /> Change password
+						<ChangePassword /> {t("profile.changePassword")}
 					</Button>
-					<UiSeparator />
 					<Button
 						type="button"
 						onClick={handleLogout}
 						pattern="ghost"
 						className={styles.btn}
 					>
-						<Logout /> Logout
+						<Logout /> {t("profile.logout")}
 					</Button>
 				</div>
 			</div>
