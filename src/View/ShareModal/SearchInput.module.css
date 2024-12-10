@@ -15,9 +15,10 @@
 }
 
 .nativeInput {
-	min-width: 150px;
+	resize: none;
 	outline: none;
 	flex-grow: 1;
+	overflow: hidden;
 }
 
 .wrapper {

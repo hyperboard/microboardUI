@@ -1,5 +1,5 @@
 import { Icon } from "View/Icon";
-import clsx from "clsx";
+import clsx, { type ClassArray, type ClassValue } from "clsx";
 import { useClickOutside } from "lib/useClickOutside";
 import React, { useState, type MouseEventHandler, type ReactNode } from "react";
 import { TopFade } from "../Transitions/TopFade";
@@ -21,6 +21,7 @@ type Props = {
 	onChange?: (value: string | number) => void;
 	disabled?: boolean;
 	isLoading?: boolean;
+	className?: ClassValue;
 };
 
 export function UiSelector({
@@ -31,6 +32,7 @@ export function UiSelector({
 	onChange,
 	disabled,
 	isLoading,
+	className,
 }: Props) {
 	const [selectedOption, setSelectedOption] = useState(() =>
 		initialValue
@@ -78,6 +80,7 @@ export function UiSelector({
 				styles.selectorWrapper,
 				isOpen && styles.open,
 				(disabled || isLoading) && styles.disabled,
+				className,
 			)}
 		>
 			{isLoading ? (

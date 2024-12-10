@@ -1,15 +1,15 @@
-import { getApiUrl } from "Config";
-import { getWebsocketUrl } from "../Config";
-import { Subject } from "Subject";
 import { Board, BoardSnapshot } from "Board/Board";
 import { SyncBoardEvent, SyncEvent } from "Board/Events/Events";
-import { Account } from "./Account";
-import { Storage } from "./Storage";
 import {
 	PresenceEventMsg,
 	PresenceEventType,
 	UserJoinMsg,
 } from "Board/Presence/Events";
+import { getApiUrl } from "Config";
+import { Subject } from "Subject";
+import { getWebsocketUrl } from "../Config";
+import { Account } from "./Account";
+import { Storage } from "./Storage";
 
 const SECOND = 1000;
 const WS_RECONNECT_TIMEOUT = 5 * SECOND;
@@ -100,6 +100,10 @@ export interface ModeMsg {
 	mode: ViewMode;
 }
 
+export interface AuthConfirmationMsg {
+	type: "AuthConfirmation";
+}
+
 export interface PingMsg {
 	type: "ping";
 }
@@ -129,6 +133,7 @@ export type EventsMsg =
 export type SocketMsg =
 	| EventsMsg
 	| AuthMsg
+	| AuthConfirmationMsg
 	| GetModeMsg
 	| InvalidateRightsMsg
 	| UserJoinMsg
@@ -218,11 +223,10 @@ export function createConnection(
 			case "BoardEvent":
 			case "BoardEventList":
 			case "BoardSnapshot":
-			case "Mode":
 			case "CreateSnapshotRequest":
 			case "BoardSubscriptionCompleted":
 			case "UserJoin":
-			case "InvalidateRights":
+			case "Mode":
 			case "PresenceEvent":
 				const subscribeTimeout = subscribeTimeouts.get(msg.boardId);
 				if (subscribeTimeout) {
@@ -243,6 +247,18 @@ export function createConnection(
 			case "Error":
 			case "ping":
 				board.presence.ping();
+				break;
+			case "AuthConfirmation":
+				console.log("recieve AuthConfirmation");
+				publishGetMode();
+				break;
+			case "InvalidateRights":
+				const account = getAccount();
+				if (account.isLoggedIn) {
+					publishAuth();
+				} else {
+					publishGetMode();
+				}
 				break;
 			default:
 				console.warn("Debug: Received unknown message type:", msg.type);
@@ -296,7 +312,9 @@ export function createConnection(
 		}
 
 		async function sendSubscribeMsg(): Promise<void> {
+			console.log("send subscribe msg");
 			await publishAuth();
+			console.log("send subscribe after auth");
 			let subscribeTimeout = subscribeTimeouts.get(boardId);
 			if (!subscribeTimeout) {
 				subscribeTimeout = {
@@ -325,6 +343,8 @@ export function createConnection(
 				userId: generatedClientId,
 				accessKey,
 			});
+
+			console.log("send subscribe msg end");
 		}
 
 		function unsubscribe(): void {
@@ -364,26 +384,23 @@ export function createConnection(
 	}
 
 	async function publishAuth(): Promise<void> {
-		const account = getAccount();
-		const board = getBoard();
-		const boardId = board?.getBoardId();
-		await account.refreshTokens();
-		const jwt = account.accessToken;
-		if (!jwt) {
-			return;
+		try {
+			const account = getAccount();
+			await account.refreshTokens();
+			const jwt = account.accessToken;
+			if (!jwt) {
+				return;
+			}
+			ws.send({
+				type: "Auth",
+				jwt,
+			});
+		} catch {
+			console.info("Unauthorized");
 		}
-		ws.send({
-			type: "Auth",
-			jwt,
-			connectedBoardId: boardId,
-		});
 	}
 
 	function publishGetMode(): void {
-		const account = getAccount();
-		if (account.isLoggedIn) {
-			return;
-		}
 		const board = getBoard();
 		const boardId = board?.getBoardId();
 		if (!boardId) {
@@ -551,8 +568,8 @@ export function createWsClient(
 				throw new Error(
 					"Error received: " +
 						json.message +
-						(json.denidedBoardId &&
-							`. deniedBoardId: ${json.denidedBoardId}`),
+						(json.deniedBoardId &&
+							`. deniedBoardId: ${json.deniedBoardId}`),
 				);
 			}
 			msgHandler(json);

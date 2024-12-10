@@ -3,7 +3,7 @@ import { useBoardsList } from "App/useBoardsList";
 import clsx from "clsx";
 import i18next from "i18next";
 import { debounce } from "lib/debounce";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { usersApi } from "shared/api";
@@ -76,15 +76,27 @@ export function ShareModal() {
 	const [searchOptions, setSearchOptions] = useState<usersApi.User[]>([]);
 	const [isSearchOptionsLoading, setIsSearchOptionsLoading] = useState(false);
 	const { t } = useTranslation();
+	const inputContainerRef = useRef<HTMLDivElement>(null);
+	const inputContainerRef2 = useRef<HTMLDivElement>(null);
 
-	useEffect(() => {
+	const loadInfo = async () => {
 		if (!boardId) {
 			return;
 		}
-		boardsApiV2
-			.getGrantedUsers(boardId)
-			.then(({ data }) => setGrantedUsers(data ?? []))
-			.finally(() => setIsGrantedUsersLoading(false));
+		try {
+			const { data } = await boardsApiV2.getGrantedUsers(boardId);
+			setGrantedUsers(data ?? []);
+		} catch {
+			setGrantedUsers([]);
+		} finally {
+			setIsGrantedUsersLoading(false);
+		}
+
+		await boardsList.loadBoards();
+	};
+
+	useEffect(() => {
+		loadInfo();
 	}, [boardId]);
 
 	const boardInfo = boardsList.getBoardInfo(boardId);
@@ -152,43 +164,30 @@ export function ShareModal() {
 		if (!mode || typeof isPublic !== "boolean" || !boardId) {
 			return;
 		}
-		await boardsList.updatePrivacySettings(
-			boardId,
-			isPublic ?? boardInfo?.isPublic,
-			isPublic ? mode : DirectAccessType.EDIT,
-		);
 
 		const filteredGrantedUsers = grantedUsers.filter(user => !user.isOwner);
-		if (filteredGrantedUsers.length > 0) {
-			await boardsApiV2.grantAccess(
-				boardId,
-				filteredGrantedUsers.map(user => ({
+		await boardsApiV2.manageAccess(boardId, {
+			users: [
+				...filteredGrantedUsers.map(user => ({
 					userId: user.id,
 					accessType: user.accessType,
 				})),
-			);
-		}
-
-		if (userEmails.length > 0) {
-			await boardsApiV2.grantAccess(
-				boardId,
-				userEmails.map(email => ({
+				...userEmails.map(email => ({
 					userId: searchOptions.find(user => user.email === email)
 						?.id!,
 					accessType: usersMode,
 				})),
-			);
-		}
-		if (userEmails2.length > 0) {
-			await boardsApiV2.grantAccess(
-				boardId,
-				userEmails2.map(email => ({
+				...userEmails2.map(email => ({
 					userId: searchOptions.find(user => user.email === email)
 						?.id!,
 					accessType: usersMode2,
 				})),
-			);
-		}
+			],
+			directAccessType: mode,
+			isPublic,
+		});
+
+		await loadInfo();
 	};
 	return (
 		<UiModal className={styles.modalContainer} modalId={SHARE_MODAL_ID}>
@@ -204,33 +203,35 @@ export function ShareModal() {
 								userEmails.length > 0 && styles.modeVisible,
 							)}
 						>
-							<SearchInput
-								isLoading={isSearchOptionsLoading}
-								onValueAdd={val => {
-									setUserEmails(val);
-								}}
-								onInput={handleInputChange}
-								options={searchOptions
-									.filter(
-										user =>
-											user.id !== account.info?.id &&
-											!grantedUsers.find(
-												granted =>
-													granted.id === user.id,
+							<div>
+								<SearchInput
+									isLoading={isSearchOptionsLoading}
+									onValuesChange={val => {
+										setUserEmails(val);
+									}}
+									onInput={handleInputChange}
+									options={searchOptions
+										.filter(
+											user =>
+												user.id !== account.info?.id &&
+												!grantedUsers.find(
+													granted =>
+														granted.id === user.id,
+												),
+										)
+										.map(user => ({
+											value: user.email,
+											label: user.email,
+											icon: (
+												<UserAvatar
+													width={20}
+													height={20}
+													src={user.avatar}
+												/>
 											),
-									)
-									.map(user => ({
-										value: user.email,
-										label: user.email,
-										icon: (
-											<UserAvatar
-												width={20}
-												height={20}
-												src={user.avatar}
-											/>
-										),
-									}))}
-							/>
+										}))}
+								/>
+							</div>
 							<div className={styles.selector}>
 								<UiSelector
 									options={MODE_SELECTOR_OPTIONS}
@@ -251,7 +252,7 @@ export function ShareModal() {
 							>
 								<SearchInput
 									isLoading={isSearchOptionsLoading}
-									onValueAdd={val => {
+									onValuesChange={val => {
 										setUserEmails2(val);
 									}}
 									onInput={handleInputChange}
@@ -478,6 +479,7 @@ function GrantedUser({
 					</span>
 				) : (
 					<UiSelector
+						className={styles.grantedUserSelector}
 						iconColor="rgba(105, 107, 118, 1)"
 						options={USER_ACCESS_SELECTOR_OPTIONS}
 						initialValue={accessType}

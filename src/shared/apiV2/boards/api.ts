@@ -8,6 +8,7 @@ import {
 	type ClaimBoardsPayload,
 	type GrantAccessPayload,
 	type GrantedUser,
+	type ManageAccessPayload,
 } from "./types";
 
 export function createBoard(body: BoardPayload) {
@@ -128,4 +129,15 @@ export function grantAccess(boardId: string, users: GrantAccessPayload[]) {
 			},
 		},
 	);
+}
+
+export function manageAccess(
+	boardId: string,
+	manageAccess: ManageAccessPayload,
+) {
+	return apiV2.post("/boards/:boardId/manage-access", manageAccess, {
+		params: {
+			boardId,
+		},
+	});
 }

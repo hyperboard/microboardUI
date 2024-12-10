@@ -1,6 +1,7 @@
 import { Icon } from "View/Icon";
 import { TopFade } from "View/Ui/Transitions/TopFade";
 import React, {
+	useEffect,
 	useLayoutEffect,
 	useRef,
 	useState,
@@ -23,31 +24,45 @@ export type SearchOption = {
 type Props = {
 	onInput: (value: string) => void;
 	options: SearchOption[];
-	onValueAdd: (values: string[]) => void;
+	onValuesChange: (values: string[]) => void;
 	isLoading?: boolean;
 };
 
 export function SearchInput({
 	onInput,
 	options,
-	onValueAdd,
+	onValuesChange,
 	isLoading,
 }: Props) {
 	const [addedValues, setAddedValues] = useState<string[]>([]);
 	const [currValue, setCurrValue] = useState("");
 	const [isFocused, setIsFocused] = useState(false);
 	const inputRef = useRef<HTMLDivElement>(null);
-	const htmlInputRef = useRef<HTMLInputElement>(null);
+	const htmlInputRef = useRef<HTMLTextAreaElement>(null);
 	const [highlightedIndex, setHighlightedIndex] = useState<number | null>(
 		null,
 	);
 	const [optionsListPosition, setOptionsListPosition] = useState<
 		Record<"top" | "left" | "width", number>
 	>({ left: 0, top: 0, width: 0 });
+	const [inputWidth, setInputWidth] = useState(20);
+	const [maxWidth, setMaxWidth] = useState<number>(0);
 
 	const filteredOptions = options.filter(
 		op => !addedValues.includes(op.value),
 	);
+
+	const calcOptionsListPosition = () => {
+		const inputRect = inputRef.current?.getBoundingClientRect();
+		if (!inputRect) {
+			return;
+		}
+		setOptionsListPosition({
+			top: inputRect.bottom + 12,
+			left: inputRect.left,
+			width: inputRect.width,
+		});
+	};
 
 	const handleFocus: FocusEventHandler = () => {
 		if (isFocused) {
@@ -71,22 +86,61 @@ export function SearchInput({
 	};
 
 	useLayoutEffect(() => {
-		const inputRect = inputRef.current?.getBoundingClientRect();
-		if (!inputRect) {
-			return;
-		}
-		setOptionsListPosition({
-			top: inputRect.bottom + 12,
-			left: inputRect.left,
-			width: inputRect.width,
-		});
+		calcOptionsListPosition();
 	}, [isFocused, filteredOptions.length]);
 
-	const handleInput: ChangeEventHandler<HTMLInputElement> = ev => {
+	useEffect(() => {
+		const observer = new ResizeObserver(nodes => {
+			nodes.forEach(node => {
+				if (node.target === inputRef.current) {
+					const size = node.borderBoxSize[0];
+					if (size) {
+						setOptionsListPosition(prev => ({
+							...prev,
+							width: size.inlineSize,
+						}));
+					}
+					const contentSize = node.contentBoxSize[0];
+					if (contentSize) {
+						setMaxWidth(contentSize.inlineSize);
+					}
+				}
+			});
+		});
+
+		if (inputRef.current) {
+			observer.observe(inputRef.current);
+		}
+
+		return () => observer.disconnect();
+	}, []);
+
+	const handleInput: ChangeEventHandler<HTMLTextAreaElement> = ev => {
 		const text = ev.target.value;
 		setHighlightedIndex(null);
 		setCurrValue(text);
 		onInput(text);
+
+		if (!htmlInputRef.current) {
+			return;
+		}
+		htmlInputRef.current.style.height = "auto";
+		htmlInputRef.current.style.height = `${htmlInputRef.current.scrollHeight}px`;
+
+		calcOptionsListPosition();
+
+		const span = document.createElement("span");
+		span.style.visibility = "hidden";
+		span.style.whiteSpace = "pre";
+		span.style.font = window.getComputedStyle(htmlInputRef.current).font;
+		span.textContent = text || " ";
+		document.body.appendChild(span);
+		console.log(maxWidth);
+		setInputWidth(
+			span.offsetWidth >= maxWidth ? maxWidth : span.offsetWidth,
+		);
+
+		document.body.removeChild(span);
 	};
 
 	const stopPropagation = (evt: SyntheticEvent) => {
@@ -98,10 +152,11 @@ export function SearchInput({
 		evt.preventDefault();
 	};
 
-	const handleKeyPress = (evt: React.KeyboardEvent<HTMLDivElement>) => {
+	const handleKeyPress = (evt: React.KeyboardEvent) => {
 		evt.stopPropagation();
 		switch (evt.key) {
 			case "Enter": {
+				evt.preventDefault();
 				if (
 					currValue.trim() &&
 					filteredOptions.find(opt => opt.value === currValue) &&
@@ -110,7 +165,7 @@ export function SearchInput({
 					const values = [...addedValues, currValue.trim()];
 					setAddedValues(values);
 					setCurrValue("");
-					onValueAdd(values);
+					onValuesChange(values);
 				}
 
 				if (highlightedIndex !== null) {
@@ -120,13 +175,17 @@ export function SearchInput({
 					setAddedValues(values);
 					setCurrValue("");
 					setHighlightedIndex(null);
-					onValueAdd(values);
+					onValuesChange(values);
 				}
 				break;
 			}
 			case "Backspace": {
 				if (!currValue) {
-					setAddedValues(prev => prev.slice(0, -1));
+					setAddedValues(prev => {
+						const newValues = prev.slice(0, -1);
+						onValuesChange(newValues);
+						return newValues;
+					});
 				}
 				break;
 			}
@@ -169,7 +228,7 @@ export function SearchInput({
 			const values = [...addedValues, opt.value.trim()];
 			setAddedValues(values);
 			setCurrValue("");
-			onValueAdd(values);
+			onValuesChange(values);
 		};
 
 	const handleAddedValueClick =
@@ -179,7 +238,7 @@ export function SearchInput({
 			ev.preventDefault();
 
 			setAddedValues(prev => prev.filter(item => item !== val));
-			onValueAdd(addedValues.filter(item => item !== val));
+			onValuesChange(addedValues.filter(item => item !== val));
 		};
 
 	return (
@@ -204,7 +263,8 @@ export function SearchInput({
 						<Icon width={14} height={14} iconName="Close" />
 					</div>
 				))}
-				<input
+				<textarea
+					rows={1}
 					className={styles.nativeInput}
 					onFocus={handleFocus}
 					onBlur={handleBlur}
@@ -214,6 +274,7 @@ export function SearchInput({
 					onKeyPress={stopPropagation}
 					value={currValue}
 					ref={htmlInputRef}
+					style={{ width: inputWidth }}
 					placeholder={
 						addedValues.length === 0 ? "Добавьте пользователей" : ""
 					}

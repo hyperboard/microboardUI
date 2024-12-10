@@ -46,6 +46,10 @@
 	overflow: hidden;
 }
 
+.grantedUserSelector {
+	min-width: 190px;
+}
+
 .secondInputBtn {
 	display: flex;
 	align-items: center;

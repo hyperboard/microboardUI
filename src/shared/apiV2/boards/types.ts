@@ -56,3 +56,9 @@ export type GrantAccessPayload = {
 	userId: number;
 	accessType: UserAccessType;
 };
+
+export type ManageAccessPayload = {
+	users: GrantAccessPayload[];
+	directAccessType: DirectAccessType;
+	isPublic: boolean;
+};
