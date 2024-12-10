@@ -21,11 +21,11 @@ import { notify } from "View/Ui/Toast";
 import { useUiModalContext } from "View/Ui/UiModal";
 import { UiModal } from "View/Ui/UiModal/UiModal";
 import { UiSelector, type Option } from "View/Ui/UiSelector";
-import { UiSeparator } from "View/Ui/UiSeparator";
 import { UiSkeleton } from "View/Ui/UiSkeleton";
-import { UserAvatar } from "View/UserPanel/UserPanel";
 import { SearchInput } from "./SearchInput";
 import styles from "./ShareModal.module.css";
+import { UserAvatar } from "View/UserPanel/UserAvatar/UserAvatar";
+import { UiSeparator } from "View/Ui/UiSeparator";
 
 export const SHARE_MODAL_ID = Symbol("shareModal");
 

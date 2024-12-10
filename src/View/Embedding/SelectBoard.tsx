@@ -13,12 +13,14 @@ import { Button } from "shared/ui-lib/Button";
 import { BoardName } from "View/BoardName";
 import { Folder, FolderItem } from "View/Folder";
 import { UiButton } from "View/Ui/UiButton";
-import { UserAvatar, UserDropDown } from "View/UserPanel/UserPanel";
+// import { UserAvatar, UserDropDown } from "View/UserPanel/UserPanel";
 import { Icon, Logo } from "../Icon";
 import style from "./SelectBoard.module.css";
 import { Logout } from "View/UserPanel/icons/Logout";
 import { boardsApiV2 } from "shared/apiV2";
 import { AccessKeyType } from "shared/apiV2/boards";
+import { UserAvatar } from "View/UserPanel/UserAvatar/UserAvatar";
+import { UserDropDown } from "View/UserPanel/UserDropdown/UserDropdown";
 
 const customHeader: CSSProperties = {
 	padding: "6px",

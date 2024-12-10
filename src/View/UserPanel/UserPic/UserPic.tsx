@@ -5,7 +5,6 @@ import { useAccount } from "App/useAccount";
 import { useUiModalContext } from "View/Ui/UiModal";
 import { PROFILE_SETTINGS_MODAL_ID } from "View/ProfileSettingsModal";
 import styles from "../UserPanel.module.css";
-import { UserAvatar, UserDropDown } from "../UserPanel";
 import { Button } from "shared/ui-lib/Button";
 import { Icon } from "View/Icon";
 import { PresenceUser } from "Board/Presence/Presence";
@@ -14,6 +13,8 @@ import {
 	User,
 } from "View/Presence/PresenceUsers/PresenceUsers";
 import { useTranslation } from "react-i18next";
+import { UserAvatar } from "../UserAvatar/UserAvatar";
+import { UserDropDown } from "../UserDropdown/UserDropdown";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	email?: string;
@@ -39,13 +40,13 @@ type TUserPicProps = UserPicProps &
 	>;
 
 export const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
+	const { t } = useTranslation();
 	const { board } = useAppContext();
 	const { setIsPanelOpen } = useCommentsPanelContext();
 	const userPanelRef = useRef<HTMLDivElement>(null);
 	const account = useAccount();
 	const { openModal } = useUiModalContext();
 	const boardId = board.getBoardId();
-	const { t } = useTranslation();
 	const isOwner = account.permissions.checkPermissions(
 		"owns",
 		"boards",
@@ -78,7 +79,7 @@ export const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 				<UserAvatar
 					src={account.info?.avatar}
 					isOwner={isOwner}
-					tooltip
+					tooltip={!props.isDropdownOpen}
 					name={account.info?.name}
 				/>
 				<FollowingUsersCount followers={props.followers} />
@@ -99,7 +100,9 @@ export const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 						pattern="ghost"
 					>
 						<Icon width={20} height={20} iconName="human" />{" "}
-						{t("profile.title")}
+						<span className={styles.userDropDownButton}>
+							{t("profile.title")}
+						</span>
 					</Button>,
 				]}
 			/>

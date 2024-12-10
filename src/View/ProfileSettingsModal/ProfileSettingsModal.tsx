@@ -2,7 +2,6 @@ import { useAccount } from "App/useAccount";
 import { CHANGE_PASSWORD_MODAL } from "View/ChangePasswordModal";
 import { useUiModalContext } from "View/Ui/UiModal";
 import { UiModal } from "View/Ui/UiModal/UiModal";
-import { UserAvatar } from "View/UserPanel/UserPanel";
 import { ChangePassword } from "View/UserPanel/icons/ChangePassword";
 import { Logout } from "View/UserPanel/icons/Logout";
 import { debounce } from "lib/debounce";
@@ -19,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "shared/ui-lib/Button";
 import { Input } from "shared/ui-lib/Input";
 import styles from "./ProfileSettingsModal.module.css";
+import { UserAvatar } from "View/UserPanel/UserAvatar/UserAvatar";
 
 export const PROFILE_SETTINGS_MODAL_ID = Symbol("profileSettingsModal");
 

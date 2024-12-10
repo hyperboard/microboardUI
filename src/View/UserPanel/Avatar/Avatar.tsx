@@ -11,13 +11,13 @@ interface Props {
 	classname?: string;
 }
 
-export const Avatar = ({
+export const Avatar: React.FC<Props> = ({
 	avatar,
 	width = 20,
 	height = 20,
 	style,
 	classname,
-}: Props) => {
+}) => {
 	const [isAvatar, setIsAvatar] = useState<boolean>(!!avatar);
 
 	return (

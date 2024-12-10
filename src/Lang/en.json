@@ -230,7 +230,10 @@
 		}
 	},
 	"userPanel": {
-		"comment": "Comment"
+		"comment": "Comment",
+		"profileSettings": "Profile settings",
+		"nameDescription": "It is displayed while you are working on the board",
+		"yourBoard": "Your board"
 	},
 	"boardMenu": {
 		"showResolved": "Show Resolved",
@@ -625,9 +628,9 @@
 		"flowChart": "Flow chart",
 		"database": "Database",
 		"cloudArch": "Cloud architecture",
-		"chatPlaceholder": "Enter your idea... for example, 'How to play rock, paper, scissors'",
-		"enterIdea": "Enter your idea for generating charts on the board",
-		"generateAiChart": "Generate AI charts",
+		"chatPlaceholder": "How to play Rock, Paper, Scissors?",
+		"enterIdea": "Suggest an idea for generating a diagram",
+		"generateAiChart": "Ai Charts",
 		"symbols": "characters",
 		"processingIdea": "Processing your idea...",
 		"generating": "Generating...",
@@ -662,7 +665,7 @@
 	},
 	"presence": {
 		"anonymous": "Anonymous",
-		"followingUser": "Following user",
+		"followingUser": "Following",
 		"stop": "Stop",
 		"bringToMe": "Bring everyone to me",
 		"bringAllToMe": "Bring everyone to me",
@@ -672,7 +675,7 @@
 		"yourBoard": "Your board",
 		"(you)": "(you)",
 		"share": "Share",
-		"bringToMe...": "Bring to me ...",
+		"bringToMe...": "Bring to me",
 		"followUser": "Follow user",
 		"noUsersFound": "No users found matching",
 		"noUsersFoundPostfix": "",
@@ -681,7 +684,8 @@
 		"hideCursors": "Hide cursors",
 		"showCursors": "Show cursors",
 		"bringNotify1": "You brought",
-		"bringNotify2": "to your board"
+		"bringNotify2": "to your board",
+		"bringAllNotify": "You brought everyone to your board"
 	},
 	"profile": {
 		"title": "Profile settings",

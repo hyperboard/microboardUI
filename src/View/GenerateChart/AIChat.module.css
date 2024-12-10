@@ -118,6 +118,24 @@
 	margin-bottom: 12px;
 	background-color: white;
 	color: #333;
+	/* 
+	padding-right: 32px;
+	outline: 1px solid #ddd;
+	border-right: 12px solid transparent; */
+}
+
+.select:focus {
+	outline-color: 1px solid #b78af0;
+	/* outline:
+		1px solid #b78af0,
+		2px solid rgba(200, 178, 255, 0.5); */
+}
+
+.select:active {
+	outline-color: #b78af0;
+	/* outline:
+		1px solid #b78af0,
+		2px solid rgba(200, 178, 255, 0.5); */
 }
 
 .select:focus {

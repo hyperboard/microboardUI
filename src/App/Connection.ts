@@ -1,6 +1,3 @@
-import toast from "react-hot-toast";
-import i18next from "i18next";
-import { notify } from "View/Ui/Toast";
 import { getApiUrl } from "Config";
 import { getWebsocketUrl } from "../Config";
 import { Subject } from "Subject";
@@ -436,6 +433,8 @@ export function createConnection(
 			event,
 			messageId,
 			userId: generatedClientId,
+			hardId: storage.getUserId(),
+			softId: storage.getUser(),
 			nickname: generatedNickname,
 			color: generatedColor,
 			avatar: account.info?.avatar || null,

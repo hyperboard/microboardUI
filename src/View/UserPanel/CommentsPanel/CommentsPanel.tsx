@@ -16,7 +16,7 @@ import { useClickOutside } from "lib/useClickOutside";
 import { useCommentsPanelContext } from "View/UserPanel/CommentsPanel/CommentsPanelContext";
 import { useAccount } from "App/useAccount";
 
-export const CommentsPanel = () => {
+export const CommentsPanel: React.FC = () => {
 	const [isOptionsPanelOpen, setIsOptionsPanelOpen] = useState(false);
 	const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
 	const [showCommentsFilter, setShowCommentsFilter] = useState<

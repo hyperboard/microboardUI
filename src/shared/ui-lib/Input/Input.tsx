@@ -82,8 +82,6 @@ export const Input: React.FC<Props> = ({
 		setInputType(inputType === "text" ? "password" : "text");
 	};
 
-	console.log(helperText);
-
 	return (
 		<div className="InputWrapper">
 			{label && (

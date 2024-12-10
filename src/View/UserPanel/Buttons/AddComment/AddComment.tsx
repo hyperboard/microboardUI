@@ -34,7 +34,7 @@ export function AddComment() {
 		});
 	}
 
-	const handleClick = () => {
+	const handleClick = (): void => {
 		if (isActive) {
 			setIsPanelOpen(false);
 		} else {

@@ -473,3 +473,8 @@
 .tooltipMsg {
 	color: rgba(255, 255, 255, 0.6);
 }
+
+.userDropDownButton {
+	color: #14151a;
+	font-weight: 400;
+}

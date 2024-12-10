@@ -16,7 +16,7 @@ import { useCommentsPanelContext } from "View/UserPanel/CommentsPanel/CommentsPa
 import { Icon } from "View/Icon";
 import { EyeIcon } from "./EyeIcon";
 import styles from "./PresenceUsers.module.css";
-import { UserAvatar } from "./UserAvatar";
+import { PresenceUserAvatar } from "./PresenceUserAvatar";
 
 export interface User {
 	id: string;
@@ -130,24 +130,36 @@ export const PresenceUsers: React.FC<Props> = () => {
 		setSelectedUsers(new Set([userId]));
 	};
 
-	const updateUsers = (): void => {
+	const updateUsers = (presence: Presence): void => {
 		const now = Date.now();
-		setUsers(
-			board.presence.getUsers(board.getBoardId(), true).map(user => ({
+		const pUsers = presence
+			.getUsers(board.getBoardId(), true)
+			.map(user => ({
 				id: user.userId,
+				hardId: user.hardId,
 				name: user.nickname,
 				color: user.color,
 				avatar: user.avatar,
 				idle: user.lastActivity < now - PRESENCE_CLEANUP_IDLE_TIMER,
-			})),
-		);
+			}));
+
+		const uniqueUsersByHardId = [
+			...new Map(
+				pUsers
+					.filter(user => user.hardId !== null)
+					.map(user => [user.hardId, user]),
+			).values(),
+			...pUsers.filter(user => user.hardId === null),
+		];
+
+		setUsers(uniqueUsersByHardId);
 
 		setFollowers(board.presence.getFollowers());
 	};
 
 	useEffect(() => {
 		const observer = (presence: Presence): void => {
-			updateUsers();
+			updateUsers(presence);
 			setTrackedUser(presence.trackedUser || null);
 		};
 
@@ -163,7 +175,7 @@ export const PresenceUsers: React.FC<Props> = () => {
 			<div className={styles.container}>
 				<div className={styles.userList}>
 					{displayUsers.map((user, index) => (
-						<UserAvatar
+						<PresenceUserAvatar
 							key={user.id}
 							user={user}
 							trackedUser={trackedUser}

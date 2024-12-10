@@ -7,12 +7,12 @@ import commonStyles from "../PresenceUsers/PresenceUsers.module.css";
 import styles from "./BringToMe.module.css";
 import { Input } from "shared/ui-lib/Input";
 import { Icon } from "View/Icon";
-import { EyeOpen } from "shared/ui-lib/Input/EyeOpen";
 import { rgbToRgba } from "Board/Presence/helpers";
 import { UiButton } from "View/Ui/UiButton";
 import clsx from "clsx";
 import { notify } from "View/Ui/Toast";
 import i18next from "i18next";
+import { EyeIcon } from "../PresenceUsers/EyeIcon";
 
 interface UserActionsDropdownProps {
 	userId: string;
@@ -69,7 +69,7 @@ export const UserActionsDropdown: React.FC<UserActionsDropdownProps> = ({
 				" " +
 				i18next.t("presence.bringNotify2"),
 			variant: "black",
-			duration: 10_000,
+			duration: 3_000,
 			unclosable: true,
 			position: "bottom-center",
 		});
@@ -88,7 +88,12 @@ export const UserActionsDropdown: React.FC<UserActionsDropdownProps> = ({
 					ev.stopPropagation();
 				}}
 			>
-				<Icon iconName="FollowUser" width={16} height={16} />
+				<Icon
+					iconName="FollowUser"
+					width={16}
+					height={16}
+					className={styles.icon}
+				/>
 				<span>{t("presence.followUser")}</span>
 			</UiButton>
 			<UiButton
@@ -101,7 +106,12 @@ export const UserActionsDropdown: React.FC<UserActionsDropdownProps> = ({
 					ev.stopPropagation();
 				}}
 			>
-				<Icon iconName="BringToMe" width={16} height={16} />
+				<Icon
+					iconName="BringToMe"
+					width={16}
+					height={16}
+					className={styles.icon}
+				/>
 				<span>{t("presence.bringToMe...")}</span>
 			</UiButton>
 		</div>
@@ -141,18 +151,28 @@ export const BringToMe: React.FC<{
 
 	return (
 		<div className={commonStyles.shareModal} ref={modalRef}>
-			<Input
-				id="searchNicknameId"
-				placeholder={t("presence.searchByName")}
-				prefixIcon={<Icon iconName="Search" height={16} width={16} />}
-				onKeyDown={ev => {
-					ev.stopPropagation();
-				}}
-				onChange={ev => {
-					setSearchTerm(ev.target.value);
-					setOpenDropdownUserId(null);
-				}}
-			/>
+			<div className={commonStyles.shareModalSearch}>
+				<Input
+					id="searchNicknameId"
+					placeholder={t("presence.searchByName")}
+					prefixIcon={
+						<Icon
+							iconName="Search"
+							height={16}
+							width={16}
+							className={commonStyles.shareModalSearchIcon}
+						/>
+					}
+					onKeyDown={ev => {
+						ev.stopPropagation();
+					}}
+					onChange={ev => {
+						setSearchTerm(ev.target.value);
+						setOpenDropdownUserId(null);
+					}}
+				/>
+			</div>
+
 			<div className={commonStyles.shareList}>
 				{filteredUsers.map(user => (
 					<div
@@ -176,6 +196,14 @@ export const BringToMe: React.FC<{
 									commonStyles.shareUserPic,
 									user.idle && styles.idleAvatar,
 								)}
+								style={{
+									border: `1px solid ${
+										trackedUser &&
+										trackedUser.userId === user.id
+											? user.color
+											: "transparent"
+									}`,
+								}}
 							/>
 						) : (
 							<div
@@ -185,6 +213,12 @@ export const BringToMe: React.FC<{
 								)}
 								style={{
 									backgroundColor: rgbToRgba(user.color, 0.5),
+									border: `1px solid ${
+										trackedUser &&
+										trackedUser.userId === user.id
+											? user.color
+											: "transparent"
+									}`,
 								}}
 							>
 								{user.name.charAt(0).toUpperCase()}
@@ -192,7 +226,9 @@ export const BringToMe: React.FC<{
 						)}
 
 						{trackedUser && trackedUser.userId === user.id && (
-							<EyeOpen className={commonStyles.shareEye} />
+							<div className={commonStyles.shareEye}>
+								<EyeIcon />
+							</div>
 						)}
 
 						<span className={styles.nickname}>
@@ -251,11 +287,26 @@ export const BringToMe: React.FC<{
 						board.getBoardId(),
 						true,
 					);
-					if (allUsers.length > 0) {
+					const uniqueUsersByHardId = [
+						...new Map(
+							allUsers
+								.filter(user => user.hardId !== null)
+								.map(user => [user.hardId, user]),
+						).values(),
+						...allUsers.filter(user => user.hardId === null),
+					];
+					if (uniqueUsersByHardId.length > 0) {
 						presence.emit({
 							method: "BringToMe",
 							timestamp: Date.now(),
-							users: allUsers.map(user => user.userId),
+							users: uniqueUsersByHardId.map(user => user.userId),
+						});
+						notify({
+							header: t("presence.bringAllNotify"),
+							variant: "black",
+							duration: 3_000,
+							unclosable: true,
+							position: "bottom-center",
 						});
 					}
 				}}

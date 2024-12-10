@@ -36,10 +36,10 @@ export class Account {
 	private onLogin: (() => Promise<void>) | null = null;
 
 	constructor(
-		storage: Storage,
+		private readonly storage: Storage,
 		private readonly connection: Connection,
 	) {
-		this.permissions = new Permissions(this, storage);
+		this.permissions = new Permissions(this, this.storage);
 	}
 
 	async init() {
@@ -51,6 +51,7 @@ export class Account {
 		this._accessToken = null;
 		this.tokenData = null;
 		this.info = null;
+		this.storage.clearUserId();
 	}
 
 	get accessToken(): string | null {
@@ -79,6 +80,11 @@ export class Account {
 
 	async fetchAccountInfo(): Promise<void> {
 		const { data } = await usersApi.getMe();
+		if (data?.id) {
+			this.storage.setUserId(`${data?.id}`);
+		} else {
+			this.storage.clearUserId();
+		}
 
 		this.info = {
 			...data,

@@ -96,6 +96,18 @@ export class Storage {
 		return uuid;
 	}
 
+	setUserId(id: string): void {
+		localStorage.setItem(`userId`, id);
+	}
+
+	clearUserId(): void {
+		localStorage.removeItem(`userId`);
+	}
+
+	getUserId(): string | null {
+		return localStorage.getItem(`userId`);
+	}
+
 	getUser(): string | null {
 		return localStorage.getItem(`currentUser`);
 	}

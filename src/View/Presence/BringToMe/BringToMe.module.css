@@ -2,10 +2,33 @@
 	margin-left: auto;
 	position: relative;
 	z-index: 10;
+	color: #696b76;
+	background-color: rgba(10, 15, 41, 0.04);
+	visibility: hidden;
+	transition: 0.25s;
+	opacity: 0%;
+}
+
+.btn:hover,
+.btn:active,
+.btn:focus {
+	color: #696b76;
+	background-color: rgba(10, 15, 41, 0.04);
 }
 
 .userListItem {
+	border-radius: 10px;
 	position: relative;
+	transition: 0.25s;
+}
+
+.userListItem:hover {
+	background-color: #f5f6f7;
+}
+
+.userListItem:hover .btn {
+	visibility: visible;
+	opacity: 100%;
 }
 
 .userActionsContainer {
@@ -76,4 +99,12 @@
 .nickname {
 	word-wrap: break-word;
 	word-break: break-all;
+}
+
+.icon {
+	color: #696b76;
+}
+
+.tracked {
+	border: 1px solid;
 }

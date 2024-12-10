@@ -8,7 +8,7 @@ interface Context {
 
 export const CommentsPanelContext = createStrictContext<Context>();
 
-export function useCommentsPanelContext() {
+export function useCommentsPanelContext(): Context {
 	return useStrictContext(CommentsPanelContext);
 }
 

@@ -93,23 +93,36 @@ export class LayoutEngine {
 			return startX;
 		}
 
-		const startXPercent =
-			options.label?.toLowerCase() === "yes"
-				? "0%"
-				: options.label?.toLowerCase() === "no"
-					? "100%"
-					: "50%";
-		const startYPercent =
-			options.label?.toLowerCase() === "yes"
-				? "50%"
-				: options.label?.toLowerCase() === "no"
-					? "50%"
-					: "100%";
-		const startX = getConnectorPoint(startItemX, startWidth, startXPercent);
+		const isYes =
+			options.label?.toLowerCase() === "yes" ||
+			options.label?.toLowerCase() === "да";
+
+		const isNo =
+			options.label?.toLowerCase() === "no" ||
+			options.label?.toLowerCase() === "нет";
+
+		const startPosPercentages = {
+			x: "50%",
+			y: "100%",
+		};
+		if (isYes) {
+			startPosPercentages.x = "0%";
+			startPosPercentages.y = "50%";
+		}
+		if (isNo) {
+			startPosPercentages.x = "100%";
+			startPosPercentages.y = "50%";
+		}
+
+		const startX = getConnectorPoint(
+			startItemX,
+			startWidth,
+			startPosPercentages.x,
+		);
 		const startY = getConnectorPoint(
 			startItemY,
 			startHeight,
-			startYPercent,
+			startPosPercentages.y,
 		);
 		const endX = getConnectorPoint(endItemX, endWidth, "50%");
 		const endY = getConnectorPoint(endItemY, endHeight, "0%");
@@ -542,6 +555,10 @@ export class LayoutEngine {
 				if (nodeMatch) {
 					const [, nodeName, attrString] = nodeMatch;
 					const attrs = parseAttributes(attrString);
+
+					if (nodeName.toLowerCase() === "node") {
+						continue;
+					}
 
 					if (!idMap.has(nodeName)) {
 						idMap.set(nodeName, currentId++);

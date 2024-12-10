@@ -301,6 +301,18 @@
 	padding: 6px 10px 10px;
 }
 
+.shareModalSearchIcon {
+	color: #696b76;
+}
+
+.shareModal input {
+	color: #14151a;
+}
+
+.shareModal input::placeholder {
+	color: #14151a;
+}
+
 .shareUser {
 	display: flex;
 	gap: 8px;
@@ -331,15 +343,16 @@
 
 .shareEye {
 	color: black;
-	z-index: 100;
-	width: 32px;
-	height: 32px;
+	z-index: 5;
+	width: 16px;
+	height: 16px;
 	position: absolute;
-	top: 6px;
-	left: 8px;
+	top: 14px;
+	left: 16px;
 }
 
 .shareList {
 	border-bottom: 1px solid #dee0e3;
 	max-height: 350px;
+	padding-bottom: 5px;
 }
