@@ -46,8 +46,17 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 		const account = useAccount();
 
 		useAppSubscription({
-			subjects: ["selection", "pointer"],
+			subjects: ["pointer"],
 			observer: () => {
+				const pointer = board.pointer.point;
+				const commentAnchor = comment.getAnchorPoint();
+				console.log(pointer, commentAnchor);
+				if (
+					pointer.x === commentAnchor.x &&
+					pointer.y === commentAnchor.y
+				) {
+					return;
+				}
 				setOpenedThreadId(undefined);
 			},
 		});

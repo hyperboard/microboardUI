@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
 import { useAppContext } from "View/AppContext";
 import styles from "./Cluster.module.css";
@@ -26,8 +26,30 @@ export const Cluster = ({ comments }: Props) => {
 		fit: "comment",
 	});
 
+	useEffect(() => {
+		if (clusterRef.current) {
+			clusterRef.current.addEventListener(
+				"wheel",
+				app.controller.onWheel,
+				{
+					capture: true,
+					passive: false,
+				},
+			);
+		}
+
+		return () => {
+			if (clusterRef.current) {
+				clusterRef.current.removeEventListener(
+					"wheel",
+					app.controller.onWheel,
+				);
+			}
+		};
+	}, []);
+
 	// TODO const
-	const mergeDistance = 60;
+	// const mergeDistance = 60;
 
 	const handleClick = () => {
 		const mbrToFit = new Mbr();

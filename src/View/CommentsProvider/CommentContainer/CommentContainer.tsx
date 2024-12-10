@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, WheelEvent } from "react";
 import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
 import { useAppContext } from "View/AppContext";
 import { Icon } from "../../Icon";
@@ -21,6 +21,7 @@ interface Props {
 export const CommentContainer = ({ comment }: Props) => {
 	const commentContainerRef = useRef<HTMLDivElement | null>(null);
 	const threadPanelRef = useRef<HTMLDivElement | null>(null);
+	const commentRef = useRef<HTMLDivElement | null>(null);
 	const [isDragging, setIsDragging] = useState(false);
 	const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 	const [initialCommentPosition, setInitialCommentPosition] = useState<Point>(
@@ -63,21 +64,43 @@ export const CommentContainer = ({ comment }: Props) => {
 			isThreadOpen
 		) {
 			const commentAnchor = comment.getAnchorPoint();
+			setIsDragging(false);
+			setMovingComment(null);
 			if (
 				commentAnchor.x === initialCommentPosition.x &&
-				commentAnchor.y === initialCommentPosition.y
+				commentAnchor.y === initialCommentPosition.y &&
+				!isThreadOpen
 			) {
 				setOpenedThreadId(comment.getId());
 			}
-			setIsDragging(false);
-			setMovingComment(null);
 		}
 	}, [
-		isDragging,
 		board.tools.getSelect()?.isDownOnUnselectedItem,
 		isThreadOpen,
 		initialCommentPosition,
 	]);
+
+	useEffect(() => {
+		if (commentRef.current) {
+			commentRef.current.addEventListener(
+				"wheel",
+				app.controller.onWheel,
+				{
+					capture: true,
+					passive: false,
+				},
+			);
+		}
+
+		return () => {
+			if (commentRef.current) {
+				commentRef.current.removeEventListener(
+					"wheel",
+					app.controller.onWheel,
+				);
+			}
+		};
+	}, [isThreadOpen]);
 
 	const togglePreview = () => {
 		if (!isDragging) {
@@ -87,7 +110,7 @@ export const CommentContainer = ({ comment }: Props) => {
 
 	const handleMouseUp = () => {
 		if (isDragging) {
-			setIsDragging(false);
+			return setIsDragging(false);
 		}
 		setOpenedThreadId(comment.getId());
 	};
@@ -139,6 +162,7 @@ export const CommentContainer = ({ comment }: Props) => {
 				<ThreadPanel comment={comment} ref={threadPanelRef} mbr={mbr} />
 			) : (
 				<div
+					ref={commentRef}
 					onMouseEnter={togglePreview}
 					onMouseLeave={togglePreview}
 					onMouseDown={handleMouseDown}

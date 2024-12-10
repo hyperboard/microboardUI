@@ -36,7 +36,7 @@ const mergeComments = (
 				otherComment.getAnchorPoint(),
 			);
 
-			if (distance <= threshold) {
+			if (distance <= threshold && distance > 5) {
 				if (existingClusters) {
 					const targetCluster = existingClusters.find(cluster =>
 						cluster.includes(otherComment),
