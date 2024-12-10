@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState, WheelEvent } from "react";
+import React, {
+	TouchEventHandler,
+	useEffect,
+	useRef,
+	useState,
+	WheelEvent,
+} from "react";
 import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
 import { useAppContext } from "View/AppContext";
 import { Icon } from "../../Icon";
@@ -115,11 +121,17 @@ export const CommentContainer = ({ comment }: Props) => {
 		setOpenedThreadId(comment.getId());
 	};
 
-	const handleMouseDown = (e: MouseEvent) => {
+	const handleMouseDown = (
+		e: MouseEvent | TouchEventHandler<HTMLDivElement>,
+	) => {
+		if ("touches" in e) {
+			return;
+		}
+
 		setIsPreviewOpen(false);
 		board.selection.removeAll();
-		board.isBoardMenuOpen = false;
-		if (isThreadOpen || e.button === 2) {
+
+		if (isThreadOpen || (e instanceof MouseEvent && e.button === 2)) {
 			return;
 		}
 		const select = board.tools.getSelect();
@@ -166,6 +178,8 @@ export const CommentContainer = ({ comment }: Props) => {
 					onMouseEnter={togglePreview}
 					onMouseLeave={togglePreview}
 					onMouseDown={handleMouseDown}
+					onTouchStart={handleMouseDown}
+					onTouchEnd={handleMouseUp}
 					onMouseUp={handleMouseUp}
 				>
 					<div
