@@ -10,6 +10,8 @@ import { verifyToken } from "Tokens";
 import winston from "winston";
 import WebSocket, { WebSocketServer } from "ws";
 import { Presence } from "./Presence";
+import { isUUID } from "validator";
+import { string } from "zod";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
@@ -136,7 +138,10 @@ export function withWebSocketApi({
     async function handleAuthMsg(msg: AuthMsg, ws: WebSocket): Promise<void> {
         const token = await verifyToken(msg.jwt, "access");
         if (token) {
-            return saveToken(ws, token);
+             saveToken(ws, token);
+            return ws.send(JSON.stringify({
+                type: "AuthConfirmation",
+            }))
         } else {
             return sendError(ws, "Invalid or expired token");
         }
@@ -162,17 +167,21 @@ export function withWebSocketApi({
     async function handleGetModeMsg(msg: GetModeMsg, ws: WebSocket) {
         const mode = await getMode(ws, msg.boardId);
         if (mode) {
-            enforceMode(ws, msg.boardId, mode);
+            return enforceMode(ws, msg.boardId, mode);
         }
-        if (!mode) {
-            return sendError(ws, "Access denied: edit board.");
-        }
+        unsubscribeClient(msg.boardId, ws)
+        return sendError(ws, "Access denied: edit board.", { deniedBoardId: msg.boardId });
     }
 
     const socketsBoardsSeqNums = new Map<WebSocket, Map<string, number>>();
 
     async function handleSubscribeMsg(msg: SubscribeMsg, ws: WebSocket): Promise<void> {
         try {
+            console.log('subscribeUUID', msg.boardId)
+            if (!isUUID(msg.boardId)) {
+                console.log('subscribe wrong uuid', msg.boardId)
+                return sendError(ws, "Access denied: Subscribe to board events.", { deniedBoardId: msg.boardId });
+            }
             if (msg.accessKey) {
                 wsAccessKeys.set(ws, msg.accessKey);
             }
@@ -180,6 +189,7 @@ export function withWebSocketApi({
             const mode = await getMode(ws, msg.boardId);
 
             if (mode) {
+                console.log('subscribe mode', msg.boardId, mode);
                 await subscribeClientToBoard(ws, boardId);
 
                 const initialSequenceNumber = getInitialSeqNum(ws, boardId);
@@ -210,10 +220,14 @@ export function withWebSocketApi({
                     })
                 );
             } else {
-                sendError(ws, "Access denied: Subscribe to board events.", { denidedBoardId: msg.boardId });
+                console.log('subscribe else', msg.boardId, mode);
+                unsubscribeClient(msg.boardId, ws);
+                return sendError(ws, "Access denied: Subscribe to board events.", { deniedBoardId: msg.boardId });
             }
         } catch (error) {
+            console.log('subscribe error', msg.boardId);
             logger.error("Failed to subscribe to board events:", error);
+            unsubscribeClient(msg.boardId, ws);
             return sendError(ws, "Failed to subscribe to board events.");
         }
     }
@@ -292,11 +306,13 @@ export function withWebSocketApi({
                 enforceMode(ws, msg.boardId, mode);
             }
             if (!mode) {
-                return sendError(ws, "Access denied: edit board.");
+                unsubscribeClient(msg.boardId, ws);
+                return sendError(ws, "Access denied: edit board.", { deniedBoardId: msg.boardId });
             }
         } catch (err) {
             console.error(err);
-            return sendError(ws, "Access denied: edit board.");
+            unsubscribeClient(msg.boardId, ws);
+            return sendError(ws, "Access denied: edit board.", { deniedBoardId: msg.boardId });
         }
         const expectedSequence = socketsBoardsSeqNums.get(ws)?.get(msg.boardId) || 1;
         if (msg.sequenceNumber === expectedSequence) {
@@ -421,12 +437,16 @@ export function withWebSocketApi({
     }
 
     function handleUnsubscribeMsg(msg: UnsubscribeMsg, ws: WebSocket): void {
-        const clients = boardClients.get(msg.boardId) ?? [];
+        unsubscribeClient(msg.boardId, ws);
+    }
+
+    function unsubscribeClient(boardId: string, ws: WebSocket) {
+        const clients = boardClients.get(boardId) ?? [];
         const index = clients.indexOf(ws);
         if (index !== -1) {
             clients.splice(index, 1);
         }
-        boardClients.set(msg.boardId, clients);
+        boardClients.set(boardId, clients);
         wsAccessKeys.delete(ws);
     }
 
@@ -518,7 +538,10 @@ export function withWebSocketApi({
 export interface AuthMsg {
     type: "Auth";
     jwt: string;
-    connectedBoardId?: string;
+}
+
+export interface AuthConfirmationMsg {
+    type: "AuthConfirmation";
 }
 
 export interface InvalidateRightsMsg {
