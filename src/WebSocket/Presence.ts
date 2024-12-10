@@ -3,7 +3,10 @@ import { PresenceEventMsg, PresenceEventType } from "./withWebSocketApi";
 
 export interface PresenceUser {
     nickname: string;
+    boardId?: string;
     userId: string;
+    softId: string | null;
+    hardId: string | null;
     color: string; // rgb
     colorChangeable: boolean;
     lastActivity: number;
@@ -122,6 +125,8 @@ export class Presence {
                     nickname: (data as any).nickname || "Anonymous",
                     color: (data as any).color,
                     avatar: (data as any)?.avatar || null,
+                    hardId: (data as any)?.hardId || null,
+                    softId: (data as any)?.softId || null,
                 };
 
                 return event;
@@ -150,6 +155,7 @@ export class Presence {
         if (events.length === 0) return null;
         const snapshot: PresenceUser = {
             userId,
+            boardId: undefined,
             nickname: userId,
             color: "rgb(128,128,128)", // fixme first color initialization
             colorChangeable: true,
@@ -160,12 +166,15 @@ export class Presence {
             avatar: null,
             select: undefined,
             camera: null,
+            hardId: null,
+            softId: null,
         };
         const sortedEvents = events.sort((a, b) => (a.event.timestamp || 0) - (b.event.timestamp || 0));
         function setMetaInfo(msg: PresenceEventMsg) {
             snapshot.avatar = msg.avatar;
             snapshot.color = msg.color || "rgb(128,128,128)";
             snapshot.nickname = msg.nickname;
+            snapshot.boardId = msg.boardId;
         }
         for (const msg of sortedEvents) {
             const event = msg.event;

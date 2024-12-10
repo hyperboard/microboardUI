@@ -81,13 +81,16 @@ const getFlowChartDotPrompt = () => {
     
     Use this guidelines:
     - Do not use subgraphs.
+    - Define shapes for each node separately. Do not use general shape definition like node [shape=circle];.
     - For start and end nodes use circle shape.
     - For decision - diamond shape.
     - For common node - rectangle shape.
     - Graph direction - TB (top-bottom).
+    - The nodes that come from the answer "Yes" are placed first, from "No" - the second.
+    - Prefer user language. English or Russian allowed.
     
     Respond with only the generated diagram in DOT notation and no additional explanations or comments.
-    `
-}
+    `;
+};
 
-export {getGenerateFlowchartVisualizationPrompt, getFlowChartDotPrompt};
+export { getGenerateFlowchartVisualizationPrompt, getFlowChartDotPrompt };
