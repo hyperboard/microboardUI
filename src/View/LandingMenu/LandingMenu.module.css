@@ -41,7 +41,13 @@
 	--padding: 12px 24px;
 }
 
-@media screen and (max-width: 1170px) {
+@media screen and (max-width: 1620px) {
+	.menuPanel {
+		transform: translateX(-24%);
+	}
+}
+
+@media screen and (max-width: 1360px) {
 	.menuPanel {
 		display: none;
 	}

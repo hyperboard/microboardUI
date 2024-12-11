@@ -524,7 +524,10 @@
 		"delete": "Delete",
 		"deleteShared": "Remove from my list",
 		"addNew": "Add new",
-		"rename": "Rename"
+		"rename": "Rename",
+		"newBoard": "New board",
+		"newFolder": "New folder",
+		"manageSharing": "Manage sharing"
 	},
 	"miro": {
 		"boards": {

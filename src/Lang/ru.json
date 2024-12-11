@@ -522,7 +522,10 @@
 		"delete": "Удалить",
 		"deleteShared": "Убрать из списка",
 		"addNew": "Добавить",
-		"rename": "Переименовать"
+		"rename": "Переименовать",
+		"newBoard": "Новая доска",
+		"newFolder": "Новая папка",
+		"manageSharing": "Управление доступом"
 	},
 	"miro": {
 		"boards": {

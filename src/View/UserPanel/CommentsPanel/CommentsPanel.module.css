@@ -1,7 +1,7 @@
 .panel {
 	transition: width 0.3s;
 	position: fixed;
-	right: 12px;
+	right: var(--absolute-position-panel-padding);
 	top: 72px;
 	width: 0;
 	height: calc(100% - 142px);

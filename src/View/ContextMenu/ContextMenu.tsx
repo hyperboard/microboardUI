@@ -175,14 +175,14 @@ export function ContextMenu() {
 							/>
 						}
 					>
-						New board
+						{t("contextMenu.newBoard")}
 					</ContextMenuItem>
 					<ContextMenuItem
 						disabled={!account.isLoggedIn}
 						onClick={handleCreateFolder}
 						icon={<Icon iconName="Folder" width={20} height={20} />}
 					>
-						New folder
+						{t("contextMenu.newFolder")}
 					</ContextMenuItem>
 				</>
 			)}
@@ -198,14 +198,14 @@ export function ContextMenu() {
 							/>
 						}
 					>
-						New board
+						{t("contextMenu.newBoard")}
 					</ContextMenuItem>
 					<ContextMenuItem
 						disabled={!account.isLoggedIn}
 						onClick={handleCreateFolder}
 						icon={<Icon iconName="Folder" width={20} height={20} />}
 					>
-						New folder
+						{t("contextMenu.newFolder")}
 					</ContextMenuItem>
 				</>
 			)}
@@ -216,7 +216,7 @@ export function ContextMenu() {
 						onClick={handleSharingModalOpen}
 						icon={<Icon iconName="People" />}
 					>
-						Manage sharing
+						{t("contextMenu.manageSharing")}
 					</ContextMenuItem>
 					<UiSeparator />
 					{hasOwnerRights && (
@@ -230,14 +230,16 @@ export function ContextMenu() {
 								/>
 							}
 						>
-							Rename
+							{t("contextMenu.rename")}
 						</ContextMenuItem>
 					)}
 					<ContextMenuItem
 						onClick={handleDeleteBoard}
 						icon={<Icon iconName="Delete" width={20} height={20} />}
 					>
-						{hasOwnerRights ? "Delete" : "Remove from my list"}
+						{hasOwnerRights
+							? t("contextMenu.delete")
+							: t("contextMenu.deleteShared")}
 					</ContextMenuItem>
 				</>
 			)}
@@ -248,13 +250,13 @@ export function ContextMenu() {
 						onClick={handleRename}
 						icon={<Icon iconName="Rename" width={20} height={20} />}
 					>
-						Rename
+						{t("contextMenu.rename")}
 					</ContextMenuItem>
 					<ContextMenuItem
 						onClick={handleDeleteFolder}
 						icon={<Icon iconName="Delete" width={20} height={20} />}
 					>
-						Delete
+						{t("contextMenu.delete")}
 					</ContextMenuItem>
 				</>
 			)}
