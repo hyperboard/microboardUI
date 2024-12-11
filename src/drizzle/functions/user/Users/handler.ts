@@ -55,6 +55,7 @@ export async function getUserByEmail(userEmail: string) {
             userEmail: users.email,
             userName: userNames.name,
             avatar: userAvatars.avatar,
+            activated: users.activated
         })
         .from(users)
         .leftJoin(userAvatars, eq(users.id, userAvatars.userId))
