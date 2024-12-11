@@ -9,7 +9,11 @@ interface LoaderProps {
 	height?: number;
 }
 
-export const Loader = ({ className, width = 32, height = 32 }: LoaderProps) => {
+export const Loader: React.FC<LoaderProps> = ({
+	className,
+	width = 32,
+	height = 32,
+}: LoaderProps) => {
 	return (
 		<Icon
 			iconName={"loader"}

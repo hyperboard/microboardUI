@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactPortal } from "react";
 import { ReactNode } from "react";
 import clsx from "clsx";
 import styles from "./Modal.module.css";
@@ -22,7 +22,7 @@ interface ModalProps {
 	wrClassName?: string;
 }
 
-export const Modal = (props: ModalProps) => {
+export const Modal = (props: ModalProps): ReactPortal | null => {
 	const {
 		className,
 		isOpen,

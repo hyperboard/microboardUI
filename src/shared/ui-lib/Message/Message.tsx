@@ -14,7 +14,7 @@ interface MessageProps {
 	isOpen: boolean;
 }
 
-export const Message = (props: MessageProps) => {
+export const Message: React.FC<MessageProps> = (props: MessageProps) => {
 	const {
 		className,
 		position = MessagePosition.BOTTOM,

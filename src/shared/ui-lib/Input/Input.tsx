@@ -55,7 +55,7 @@ export const Input: React.FC<Props> = ({
 	const inputRef = useRef<HTMLInputElement>(null);
 	const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-	const handleInput = () => {
+	const handleInput = (): void => {
 		if (
 			textareaRef.current &&
 			textareaRef.current.textLength >=
@@ -113,19 +113,19 @@ export const Input: React.FC<Props> = ({
 							className="textarea"
 							id={id}
 							rows={1}
-							{...props}
 							onInput={() => {
 								handleInput();
 								if (props.onInput) {
 									props.onInput();
 								}
 							}}
+							{...props}
 						/>
 					) : (
 						<input
 							ref={inputRef}
-							onPaste={e => e.stopPropagation()}
-							onCopy={e => e.stopPropagation()}
+							onPaste={event => event.stopPropagation()}
+							onCopy={event => event.stopPropagation()}
 							id={id}
 							type={inputType}
 							{...props}
