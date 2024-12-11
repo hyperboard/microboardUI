@@ -15,17 +15,19 @@ const BoardRenameContext = createStrictContext<{
 	rename: () => void;
 }>();
 
-export const useBoardRenameContext = () => {
+export const useBoardRenameContext = (): React.ContextType<
+	typeof BoardRenameContext
+> => {
 	return useStrictContext(BoardRenameContext);
 };
 
 export function BoardRenameContextProvider({
 	children,
-}: PropsWithChildren<{}>) {
+}: PropsWithChildren<{}>): JSX.Element {
 	const [renamingBoardId, setRenamingBoardId] = useState<string | null>(null);
 	const [newBoardName, setNewBoardName] = useState<string>("");
 	const boardsList = useBoardsList();
-	const rename = () => {
+	const rename = (): void => {
 		if (!renamingBoardId) {
 			return;
 		}
