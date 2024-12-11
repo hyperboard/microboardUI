@@ -15,15 +15,15 @@ export class BoardsList {
 		private readonly account: Account,
 	) {}
 
-	getSharedFolder() {
+	getSharedFolder(): foldersApi.Folder | null {
 		return this.sharedFolder;
 	}
 
-	getRootFolder() {
+	getRootFolder(): foldersApi.Folder | null {
 		return this.rootFolder;
 	}
 
-	async createFolder(title?: string, parentFolder?: number) {
+	async createFolder(title?: string, parentFolder?: number): Promise<void> {
 		if (!this.account.isLoggedIn) {
 			return;
 		}
@@ -159,7 +159,7 @@ export class BoardsList {
 		);
 	}
 
-	async loadBoards() {
+	async loadBoards(): Promise<void> {
 		this.isLoading = true;
 		if (this.account.isLoggedIn) {
 			const { data: rootFolder } = await foldersApi.getRootFolder();
@@ -191,20 +191,20 @@ export class BoardsList {
 		} else {
 			this.rootFolder = {
 				id: -1,
-				items: this.storage.listCreatedBoards().map(b => ({
-					...b,
+				items: this.storage.listCreatedBoards().map(board => ({
+					...board,
 					itemType: "board",
-					title: b.title || t("board.untitled"),
+					title: board.title || t("board.untitled"),
 				})),
 				title: t("sidePanel.folders.publicDrafts"),
 				type: foldersApi.FolderType.DRAFTS,
 			};
 			this.sharedFolder = {
 				id: -2,
-				items: this.storage.listVisitedBoards().map(b => ({
-					...b,
+				items: this.storage.listVisitedBoards().map(board => ({
+					...board,
 					itemType: "board" as const,
-					title: b.title || t("board.untitled"),
+					title: board.title || t("board.untitled"),
 				})),
 				title: t("sidePanel.folders.sharedBoards"),
 				type: foldersApi.FolderType.VISITED,
@@ -219,7 +219,7 @@ export class BoardsList {
 		boardId: string,
 		isPublic: boolean,
 		mode: boardsApiV2.DirectAccessType,
-	) {
+	): Promise<void> {
 		if (!this.account.isLoggedIn) {
 			return;
 		}
@@ -232,7 +232,7 @@ export class BoardsList {
 		await this.updateList();
 	}
 
-	private updateEmptyTitles(folder: foldersApi.Folder | null) {
+	private updateEmptyTitles(folder: foldersApi.Folder | null): void {
 		if (!folder) {
 			return;
 		}
@@ -246,7 +246,7 @@ export class BoardsList {
 		}
 	}
 
-	async visitBoard(id: string) {
+	async visitBoard(id: string): Promise<Promise<void>> {
 		return await this.action(
 			async () => {
 				await boardsApiV2.claimBoards({ visited: [id] });
@@ -270,7 +270,7 @@ export class BoardsList {
 		);
 	}
 
-	async claim() {
+	async claim(): Promise<void> {
 		const publicBoards = this.storage.listCreatedBoards();
 		const sharedBoards = this.storage.listVisitedBoards();
 		if (publicBoards.length === 0 && sharedBoards.length === 0) {
@@ -289,7 +289,7 @@ export class BoardsList {
 		await this.updateList();
 	}
 
-	async rename(boardId: string, name: string) {
+	async rename(boardId: string, name: string): Promise<void> {
 		if (name === i18next.t("board.untitled")) {
 			return;
 		}
@@ -320,7 +320,7 @@ export class BoardsList {
 		);
 	}
 
-	async renameFolder(folderId: number, name: string) {
+	async renameFolder(folderId: number, name: string): Promise<void> {
 		if (!this.account.isLoggedIn) {
 			return;
 		}
@@ -345,7 +345,8 @@ export class BoardsList {
 
 		await this.updateList();
 	}
-	async removeBoard(boardId: string) {
+
+	async removeBoard(boardId: string): Promise<void> {
 		await this.action(
 			async () => {
 				await boardsApiV2.deleteBoard(boardId);
@@ -370,7 +371,7 @@ export class BoardsList {
 		);
 	}
 
-	async removeBoardFromFolder(folderId: number, boardId: string) {
+	async removeBoardFromFolder(folderId: number, boardId: string): Promise<void> {
 		if (!this.account.isLoggedIn) {
 			return;
 		}
@@ -381,7 +382,7 @@ export class BoardsList {
 		await this.updateList();
 	}
 
-	async removeFolder(folderId: number) {
+	async removeFolder(folderId: number): Promise<void> {
 		if (!this.account.isLoggedIn) {
 			return;
 		}
@@ -390,7 +391,7 @@ export class BoardsList {
 		await this.updateList();
 	}
 
-	private async updateDetails() {
+	private async updateDetails(): Promise<void> {
 		if (this.account.isLoggedIn) {
 			return;
 		}
@@ -412,7 +413,7 @@ export class BoardsList {
 		this.subject.publish();
 	}
 
-	private async updateList() {
+	private async updateList(): Promise<void> {
 		this.isLoading = true;
 		await this.account.refreshTokens();
 		await this.loadBoards();
