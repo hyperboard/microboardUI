@@ -22,14 +22,14 @@ type Props = {
 	children: ReactNode;
 };
 
-export function ContextMenuContextProvider({ children }: Props) {
+export function ContextMenuContextProvider({ children }: Props): JSX.Element {
 	const [x, setX] = useState(0);
 	const [y, setY] = useState(0);
 	const [isOpen, setIsOpen] = useState(false);
 	const [boardId, setBoardId] = useState<null | string>(null);
 	const [folderId, setFolderId] = useState<null | number>(null);
 
-	const setIds = (boardId?: string, folderId?: number) => {
+	const setIds = (boardId?: string, folderId?: number): void => {
 		if (boardId && !folderId) {
 			setBoardId(boardId);
 			setFolderId(null);
@@ -53,14 +53,14 @@ export function ContextMenuContextProvider({ children }: Props) {
 		y: number,
 		boardId?: string,
 		folderId?: number,
-	) => {
+	): void => {
 		setIds(boardId, folderId);
 		setX(x);
 		setY(y);
 		setIsOpen(true);
 	};
 
-	const close = () => {
+	const close = (): void => {
 		setX(0);
 		setY(0);
 		setIsOpen(false);

@@ -20,7 +20,7 @@ import { SHARE_MODAL_ID } from "View/ShareModal/ShareModal";
 import { useAppContext } from "View/AppContext";
 import { useNavigate } from "react-router-dom";
 
-export function ContextMenu() {
+export function ContextMenu(): JSX.Element | null {
 	const { boardId, x, y, isOpen, folderId, close } = useContextMenuContext();
 	const { setNewName, setRenamingId } = useRenameContext();
 	const boardsList = useBoardsList();
@@ -329,7 +329,7 @@ function ContextMenuItem({
 	icon,
 	onClick,
 	disabled = false,
-}: ItemProps) {
+}: ItemProps): JSX.Element {
 	return (
 		<button disabled={disabled} className={style.item} onClick={onClick}>
 			<span className={style.icon}>{icon}</span>
