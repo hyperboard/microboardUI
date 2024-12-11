@@ -1,7 +1,7 @@
 import { useAppSubscription } from "Board/useBoardSubscription";
 import { isIframe } from "lib/isIframe";
 import { useForceUpdate } from "lib/useForceUpdate";
-import React, { PropsWithChildren, type ReactNode } from "react";
+import React, { type ReactNode } from "react";
 import { useAppContext } from "./AppContext";
 import type { ViewMode } from "App/Connection";
 import type { InterfaceType } from "Board/Board";
@@ -11,12 +11,15 @@ type Props = {
 	fallback?: ReactNode;
 	mode?: ViewMode | ViewMode[];
 	children?: ReactNode | ((interfaceType: InterfaceType) => ReactNode);
+	callback?: () => void;
 };
+
 export function ViewModeGuard({
 	children,
 	iframe,
 	fallback,
 	mode = "edit",
+	callback,
 }: Props) {
 	const { board } = useAppContext();
 	const forceUpdate = useForceUpdate();
@@ -33,6 +36,10 @@ export function ViewModeGuard({
 		(!iframe || isIframe())
 	) {
 		return <>{fallback}</>;
+	}
+
+	if (callback) {
+		callback();
 	}
 
 	return (

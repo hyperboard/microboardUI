@@ -44,6 +44,7 @@ export function TitlePanel(): JSX.Element | null {
 
 	const [isRenaming, setIsRenaming] = useState(false);
 	const [newBoardName, setNewBoardName] = useState(boardName);
+	const [isBoardRenameBtnShown, setIsBoardRenameBtnShown] = useState(false);
 
 	const isExport = board.tools.getExport();
 	if (isExport) {
@@ -141,7 +142,7 @@ export function TitlePanel(): JSX.Element | null {
 				<UiSeparator vertical className={style.mobileHide} />
 			</ViewModeGuard>
 			<UiButton
-				rounded="none"
+				rounded={isBoardRenameBtnShown ? "none" : "right"}
 				variant="secondary"
 				className={clsx(
 					style.mobileHide,
@@ -160,7 +161,10 @@ export function TitlePanel(): JSX.Element | null {
 					</span>
 				)}
 			</UiButton>
-			<ViewModeGuard mode={["edit", "view"]}>
+			<ViewModeGuard
+				mode={["edit", "view"]}
+				callback={() => setIsBoardRenameBtnShown(true)}
+			>
 				<UiSeparator vertical className={style.tabletHide} />
 				<UiButton
 					variant="secondary"
