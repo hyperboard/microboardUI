@@ -136,14 +136,19 @@ export function withWebSocketApi({
     }
 
     async function handleAuthMsg(msg: AuthMsg, ws: WebSocket): Promise<void> {
-        const token = await verifyToken(msg.jwt, "access");
-        if (token) {
-             saveToken(ws, token);
-            return ws.send(JSON.stringify({
-                type: "AuthConfirmation",
-            }))
-        } else {
-            return sendError(ws, "Invalid or expired token");
+        try {
+            const token = await verifyToken(msg.jwt, "access");
+            if (token) {
+                saveToken(ws, token);
+                return ws.send(JSON.stringify({
+                    type: "AuthConfirmation",
+                }))
+            } else {
+                return sendError(ws, "Invalid or expired token");
+            }
+        } catch (err) {
+            logger.error(err);
+            return sendError(ws, "Invalid token");
         }
     }
 
@@ -165,21 +170,28 @@ export function withWebSocketApi({
     }
 
     async function handleGetModeMsg(msg: GetModeMsg, ws: WebSocket) {
-        const mode = await getMode(ws, msg.boardId);
-        if (mode) {
-            return enforceMode(ws, msg.boardId, mode);
+        try {
+            if (!isUUID(msg.boardId)) {
+                return sendError(ws, "Access denied: Subscribe to board events.", { deniedBoardId: msg.boardId });
+            }
+            const mode = await getMode(ws, msg.boardId);
+            if (mode) {
+                return enforceMode(ws, msg.boardId, mode);
+            }
+            unsubscribeClient(msg.boardId, ws)
+            return sendError(ws, "Access denied: edit board.", { deniedBoardId: msg.boardId });
+        } catch (err) {
+            logger.error(err);
+            unsubscribeClient(msg.boardId, ws)
+            return sendError(ws, "Access denied: edit board.", { deniedBoardId: msg.boardId });
         }
-        unsubscribeClient(msg.boardId, ws)
-        return sendError(ws, "Access denied: edit board.", { deniedBoardId: msg.boardId });
     }
 
     const socketsBoardsSeqNums = new Map<WebSocket, Map<string, number>>();
 
     async function handleSubscribeMsg(msg: SubscribeMsg, ws: WebSocket): Promise<void> {
         try {
-            console.log('subscribeUUID', msg.boardId)
             if (!isUUID(msg.boardId)) {
-                console.log('subscribe wrong uuid', msg.boardId)
                 return sendError(ws, "Access denied: Subscribe to board events.", { deniedBoardId: msg.boardId });
             }
             if (msg.accessKey) {
@@ -189,7 +201,6 @@ export function withWebSocketApi({
             const mode = await getMode(ws, msg.boardId);
 
             if (mode) {
-                console.log('subscribe mode', msg.boardId, mode);
                 await subscribeClientToBoard(ws, boardId);
 
                 const initialSequenceNumber = getInitialSeqNum(ws, boardId);
@@ -220,12 +231,10 @@ export function withWebSocketApi({
                     })
                 );
             } else {
-                console.log('subscribe else', msg.boardId, mode);
                 unsubscribeClient(msg.boardId, ws);
                 return sendError(ws, "Access denied: Subscribe to board events.", { deniedBoardId: msg.boardId });
             }
         } catch (error) {
-            console.log('subscribe error', msg.boardId);
             logger.error("Failed to subscribe to board events:", error);
             unsubscribeClient(msg.boardId, ws);
             return sendError(ws, "Failed to subscribe to board events.");
@@ -287,7 +296,6 @@ export function withWebSocketApi({
     }
 
     function enforceMode(ws: WebSocket, boardId: string, mode: ViewMode) {
-        console.log("Enforce", mode);
         ws.send(
             JSON.stringify({
                 type: "Mode",
@@ -323,11 +331,11 @@ export function withWebSocketApi({
                 sendError(
                     ws,
                     "Unexpected sequence number" +
-                        JSON.stringify({
-                            expectedSequence,
-                            receivedSequence: msg.sequenceNumber,
-                            boardId: msg.boardId,
-                        })
+                    JSON.stringify({
+                        expectedSequence,
+                        receivedSequence: msg.sequenceNumber,
+                        boardId: msg.boardId,
+                    })
                 );
                 return;
             }
@@ -682,7 +690,7 @@ export interface BringToMeEvent {
     users: (number | string)[];
 }
 
-export interface PresenceUserSnapshot {}
+export interface PresenceUserSnapshot { }
 
 export type PresenceEventType =
     | PointerMoveEvent
@@ -932,7 +940,7 @@ export class EventsManager {
         return events;
     }
 
-    requestSnapshotCallback(boardId: string, sinceLast: number): void {}
+    requestSnapshotCallback(boardId: string, sinceLast: number): void { }
 
     isBoardReady(boardId: string): boolean {
         return !this.processing.includes(boardId);
