@@ -249,7 +249,6 @@ export function createConnection(
 				board.presence.ping();
 				break;
 			case "AuthConfirmation":
-				console.log("recieve AuthConfirmation");
 				publishGetMode();
 				break;
 			case "InvalidateRights":

@@ -76,8 +76,6 @@ export function ShareModal() {
 	const [searchOptions, setSearchOptions] = useState<usersApi.User[]>([]);
 	const [isSearchOptionsLoading, setIsSearchOptionsLoading] = useState(false);
 	const { t } = useTranslation();
-	const inputContainerRef = useRef<HTMLDivElement>(null);
-	const inputContainerRef2 = useRef<HTMLDivElement>(null);
 
 	const loadInfo = async () => {
 		if (!boardId) {
@@ -230,6 +228,7 @@ export function ShareModal() {
 												/>
 											),
 										}))}
+									placeholder={t("sharing.addUsers")}
 								/>
 							</div>
 							<div className={styles.selector}>
@@ -276,6 +275,7 @@ export function ShareModal() {
 												/>
 											),
 										}))}
+									placeholder={t("sharing.addUsers")}
 								/>
 								<div className={styles.selector}>
 									<UiSelector

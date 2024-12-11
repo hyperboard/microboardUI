@@ -3,6 +3,8 @@
 		"and": "and",
 		"backToMain": "Back to main menu",
 		"confirm": "Confirm",
+		"loading": "Loading...",
+		"notFound": "Not found",
 		"languages": {
 			"ru": "Russian",
 			"en": "English",
@@ -660,8 +662,19 @@
 			"public": "Everyone with the link",
 			"private": "Access restricted"
 		},
+		"addUsers": "Add users",
 		"grantedUsers": "Users with access",
-		"submit": "Submit"
+		"submit": "Submit",
+		"settingsChanged": {
+			"heading": "The owner has changed the access settings",
+			"bodyView": "You can now view the board",
+			"bodyEdit": "You can now view and edit the board"
+		},
+		"privateBoard": "This is a private board. The owner of the board has restricted access to viewing and editing.",
+		"requestAccess": "Request access",
+		"requestAccessMsg": "Request access or log in to a permissioned account.",
+		"loggedIn": "You are logged in to your {{account}} account.",
+		"accessDenied": "Access denied"
 	},
 	"presence": {
 		"anonymous": "Anonymous",

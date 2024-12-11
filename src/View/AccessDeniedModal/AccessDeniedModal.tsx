@@ -17,17 +17,20 @@ export function AccessDeniedModal() {
 	return (
 		<UiModal modalId={ACCESS_DENIED_MODAL}>
 			<div className={styles.wrapper}>
-				<h1 className={styles.heading}>Нет доступа</h1>
+				<h1 className={styles.heading}>{t("sharing.accessDenied")}</h1>
 				<div className={styles.msg}>
 					<p>
-						Это приватная доска. Владелец доски ограничил доступ
-						к просмотру и редактированию.{" "}
+						{t("sharing.privateBoard")}{" "}
 						{account.isLoggedIn
-							? "Запросите доступ или войдите в аккаунт с правом доступа."
+							? t("sharing.requestAccessMsg")
 							: ""}
 					</p>
 					{account.isLoggedIn ? (
-						<p>Вы авторизованы в аккаунте {account.info?.email}</p>
+						<p>
+							{t("sharing.loggedIn", {
+								account: account.info?.email,
+							})}
+						</p>
 					) : (
 						<p>
 							{t("sharing.notAuthMsg")}{" "}
@@ -41,13 +44,15 @@ export function AccessDeniedModal() {
 					)}
 				</div>
 				{account.isLoggedIn ? (
-					<Button className={styles.btn}>Запросить доступ</Button>
+					<Button className={styles.btn}>
+						{t("sharing.requestAccess")}
+					</Button>
 				) : (
 					<Button
 						className={styles.btn}
 						onClick={() => navigate("/auth/sign-in")}
 					>
-						Войти
+						{t("auth.signIn")}
 					</Button>
 				)}
 			</div>

@@ -14,6 +14,7 @@ import React, {
 import { createPortal } from "react-dom";
 import styles from "./SearchInput.module.css";
 import clsx from "clsx";
+import { useTranslation } from "react-i18next";
 
 export type SearchOption = {
 	value: string;
@@ -26,6 +27,7 @@ type Props = {
 	options: SearchOption[];
 	onValuesChange: (values: string[]) => void;
 	isLoading?: boolean;
+	placeholder?: string;
 };
 
 export function SearchInput({
@@ -33,7 +35,9 @@ export function SearchInput({
 	options,
 	onValuesChange,
 	isLoading,
+	placeholder,
 }: Props) {
+	const { t } = useTranslation();
 	const [addedValues, setAddedValues] = useState<string[]>([]);
 	const [currValue, setCurrValue] = useState("");
 	const [isFocused, setIsFocused] = useState(false);
@@ -275,9 +279,7 @@ export function SearchInput({
 					value={currValue}
 					ref={htmlInputRef}
 					style={{ width: inputWidth }}
-					placeholder={
-						addedValues.length === 0 ? "Добавьте пользователей" : ""
-					}
+					placeholder={addedValues.length === 0 ? placeholder : ""}
 				/>
 			</div>
 			{createPortal(
@@ -289,7 +291,9 @@ export function SearchInput({
 					>
 						<div className={styles.optionsListWrapper}>
 							{isLoading && (
-								<p className={styles.notFound}>Loading...</p>
+								<p className={styles.notFound}>
+									{t("common.loading")}
+								</p>
 							)}
 							{!isLoading &&
 								(filteredOptions.length > 0 ? (
@@ -330,7 +334,7 @@ export function SearchInput({
 									</ul>
 								) : (
 									<p className={styles.notFound}>
-										Нет подходящих результатов
+										{t("common.notFound")}
 									</p>
 								))}
 						</div>
