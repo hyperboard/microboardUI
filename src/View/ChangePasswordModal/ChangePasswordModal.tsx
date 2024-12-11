@@ -13,7 +13,7 @@ import { PROFILE_SETTINGS_MODAL_ID } from "View/ProfileSettingsModal";
 
 export const CHANGE_PASSWORD_MODAL = Symbol("ChangePasswordModal");
 
-export function ChangePasswordModal() {
+export function ChangePasswordModal(): JSX.Element {
 	const formRef = useRef<HTMLFormElement>(null);
 	const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
 	const [isSubmitLoading, setIsSubmitLoading] = useState(false);

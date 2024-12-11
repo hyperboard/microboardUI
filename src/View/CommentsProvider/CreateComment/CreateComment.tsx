@@ -12,7 +12,7 @@ interface Props {
 	className?: string;
 }
 
-export const CreateComment = ({ comment, className }: Props) => {
+export const CreateComment = ({ comment, className }: Props): JSX.Element => {
 	const formRef = useRef<null | HTMLDivElement>(null);
 	const [value, setValue] = useState("");
 	const { app, board } = useAppContext();
@@ -26,16 +26,16 @@ export const CreateComment = ({ comment, className }: Props) => {
 		fit: "threadPanel",
 	});
 
-	const handleSubmit = () => {
+	const handleSubmit = (): void => {
 		const accountInfo = account.info;
 		comment.saveMessage(
 			value,
-			accountInfo?.name || accountInfo?.email,
+			accountInfo?.name || accountInfo?.email || '',
 			accountInfo?.avatar,
 		);
 	};
 
-	const handleReject = () => {
+	const handleReject = (): void => {
 		return board.tools.addComment(true);
 	};
 

@@ -27,7 +27,7 @@ interface Props {
 	children: React.ReactNode;
 }
 
-export const CommentsContextProvider = ({ children }: Props) => {
+export const CommentsContextProvider = ({ children }: Props): JSX.Element => {
 	const [openedThreadId, setOpenedThreadId] = useState<string | undefined>(
 		undefined,
 	);

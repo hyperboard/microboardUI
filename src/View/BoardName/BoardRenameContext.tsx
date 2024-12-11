@@ -15,9 +15,7 @@ const BoardRenameContext = createStrictContext<{
 	rename: () => void;
 }>();
 
-export const useBoardRenameContext = (): React.ContextType<
-	typeof BoardRenameContext
-> => {
+export const useBoardRenameContext = () => {
 	return useStrictContext(BoardRenameContext);
 };
 

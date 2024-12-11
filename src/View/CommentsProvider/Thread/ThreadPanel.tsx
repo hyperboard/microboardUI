@@ -69,7 +69,7 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 
 		const canRemove =
 			comment.getThread()[0].id !== messageOptionsData?.messageId;
-		const handleRemoveMessage = (id?: string) => {
+		const handleRemoveMessage = (id?: string): void => {
 			if (!messageOptionsData && !id) {
 				return;
 			}
@@ -81,7 +81,7 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 			setMessageOptionsData(null);
 		};
 
-		const handleSetEditor = () => {
+		const handleSetEditor = (): void => {
 			if (!messageOptionsData) {
 				return;
 			}
@@ -93,7 +93,7 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 			refs.current[id] = el;
 		};
 
-		const handleMessageOptionsClick = (messageId: string) => {
+		const handleMessageOptionsClick = (messageId: string): void => {
 			if (
 				messageOptionsData &&
 				messageId === messageOptionsData.messageId
@@ -122,20 +122,20 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 			}
 		}, [username, targetMessageId]);
 
-		const handleClose = () => {
+		const handleClose = (): void => {
 			setOpenedThreadId(undefined);
 		};
 
-		const toggleResolved = () => {
+		const toggleResolved = (): void => {
 			comment.setResolved(!comment.getResolved());
 		};
 
-		const handleCreateMessage = () => {
-			comment.saveMessage(value, username, accountInfo?.avatar);
+		const handleCreateMessage = (): void => {
+			comment.saveMessage(value, username || "", accountInfo?.avatar);
 			setValue("");
 		};
 
-		const handleEditMessage = (newValue: string, id: string) => {
+		const handleEditMessage = (newValue: string, id: string): void => {
 			comment.editMessage(newValue, id);
 		};
 

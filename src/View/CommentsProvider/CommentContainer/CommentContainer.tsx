@@ -1,10 +1,4 @@
-import React, {
-	TouchEventHandler,
-	useEffect,
-	useRef,
-	useState,
-	WheelEvent,
-} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
 import { useAppContext } from "View/AppContext";
 import { Icon } from "../../Icon";
@@ -24,7 +18,7 @@ interface Props {
 	comment: Comment;
 }
 
-export const CommentContainer = ({ comment }: Props) => {
+export const CommentContainer = ({ comment }: Props): JSX.Element => {
 	const commentContainerRef = useRef<HTMLDivElement | null>(null);
 	const threadPanelRef = useRef<HTMLDivElement | null>(null);
 	const commentRef = useRef<HTMLDivElement | null>(null);
@@ -108,30 +102,31 @@ export const CommentContainer = ({ comment }: Props) => {
 		};
 	}, [isThreadOpen]);
 
-	const togglePreview = () => {
+	const togglePreview = (): void => {
 		if (!isDragging) {
 			setIsPreviewOpen(!isPreviewOpen);
 		}
 	};
 
-	const handleMouseUp = () => {
+	const handleMouseUp = (): void => {
 		if (isDragging) {
 			return setIsDragging(false);
 		}
 		setOpenedThreadId(comment.getId());
 	};
 
-	const handleMouseDown = (
-		e: MouseEvent | TouchEventHandler<HTMLDivElement>,
-	) => {
-		if ("touches" in e) {
+	const handleMouseDown = (event): void => {
+		if ("touches" in event) {
 			return;
 		}
 
 		setIsPreviewOpen(false);
 		board.selection.removeAll();
 
-		if (isThreadOpen || (e instanceof MouseEvent && e.button === 2)) {
+		if (
+			isThreadOpen ||
+			(event instanceof MouseEvent && event.button === 2)
+		) {
 			return;
 		}
 		const select = board.tools.getSelect();
@@ -231,7 +226,7 @@ export const CommentContainer = ({ comment }: Props) => {
 								comment.getIsThreadMarkedAsUnread(username) ? (
 									<div className={styles.badgeDot}></div>
 								) : (
-									unreadMessages.length
+									unreadMessages?.length
 								)}
 							</div>
 						)}

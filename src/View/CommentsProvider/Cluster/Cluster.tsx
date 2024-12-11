@@ -12,7 +12,7 @@ interface Props {
 	comments: Comment[];
 }
 
-export const Cluster = ({ comments }: Props) => {
+export const Cluster = ({ comments }: Props): JSX.Element => {
 	const clusterRef = useRef<HTMLDivElement>(null);
 	const { board, app } = useAppContext();
 	const account = useAccount();
@@ -51,7 +51,7 @@ export const Cluster = ({ comments }: Props) => {
 	// TODO const
 	// const mergeDistance = 60;
 
-	const handleClick = () => {
+	const handleClick = (): void => {
 		const mbrToFit = new Mbr();
 		comments.forEach(comment => {
 			const anchor = comment.getAnchorPoint();

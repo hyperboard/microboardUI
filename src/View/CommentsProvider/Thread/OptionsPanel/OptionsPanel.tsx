@@ -15,7 +15,7 @@ export const OptionsPanel = ({
 	handleRemove,
 	style,
 	setTextUnderEditor,
-}: Props) => {
+}: Props): JSX.Element => {
 	const { t } = useTranslation();
 
 	return (

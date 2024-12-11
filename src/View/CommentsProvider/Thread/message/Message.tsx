@@ -3,7 +3,6 @@ import clsx from "clsx";
 import styles from "./Message.module.css";
 import { UiButton } from "../../../Ui/UiButton";
 import { Icon } from "../../../Icon";
-import { useAppContext } from "View/AppContext";
 import { CommentInput } from "../../CommentInput/CommentInput";
 import { formatDate } from "utils";
 import { Avatar } from "View/UserPanel/Avatar/Avatar.tsx";
@@ -48,17 +47,17 @@ export const Message = forwardRef<HTMLDivElement, Props>(
 
 		const canEdit =
 			account.info?.name === username || account.info?.email === username;
-		const handleEditClick = () => {
+		const handleEditClick = (): void => {
 			setTextUnderEditor(undefined);
 			handleEditMessage(value, id);
 		};
 
-		const handleReject = () => {
+		const handleReject = (): void => {
 			setTextUnderEditor(undefined);
 			setValue(text);
 		};
 
-		const setEditor = () => {
+		const setEditor = (): void => {
 			if (canEdit) {
 				setTextUnderEditor(id);
 			}

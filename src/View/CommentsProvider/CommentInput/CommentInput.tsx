@@ -25,19 +25,19 @@ export const CommentInput = ({
 	mode,
 	handleReject,
 	onInput,
-}: Props) => {
+}: Props): JSX.Element => {
 	const [showSeparator, setShowSeparator] = useState(true);
 
-	const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-		e.stopPropagation();
-		if (e.key === "Enter" && !value.trim()) {
-			return e.preventDefault();
+	const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>): void => {
+		event.stopPropagation();
+		if (event.key === "Enter" && !value.trim()) {
+			return event.preventDefault();
 		}
-		if (e.key === "Enter" && !!value.trim() && !e.shiftKey) {
-			e.preventDefault();
+		if (event.key === "Enter" && !!value.trim() && !event.shiftKey) {
+			event.preventDefault();
 			return handleSubmit();
 		}
-		if (e.key === "Escape") {
+		if (event.key === "Escape") {
 			if (handleReject) {
 				return handleReject();
 			}
@@ -53,8 +53,8 @@ export const CommentInput = ({
 		input?.focus();
 	}, []);
 
-	const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-		const target = e.target;
+	const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+		const target = event.target;
 		setValue(target.value);
 		if (target.scrollHeight > 20) {
 			setShowSeparator(false);
@@ -76,8 +76,8 @@ export const CommentInput = ({
 				}
 				multiline={true}
 				onKeyDown={onKeyDown}
-				onPaste={e => e.stopPropagation()}
-				onCopy={e => e.stopPropagation()}
+				onPaste={event => event.stopPropagation()}
+				onCopy={event => event.stopPropagation()}
 				onChange={handleChange}
 				postfixButton={
 					(mode === "create" || mode === "reply") && (

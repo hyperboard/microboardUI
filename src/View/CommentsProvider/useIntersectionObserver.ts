@@ -15,7 +15,7 @@ export const useIntersectionObserver = ({
 	username,
 	deps = [],
 	disabled = false,
-}: Args) => {
+}: Args): void => {
 	useEffect(() => {
 		const unreadMessages = comment.getUnreadMessages(username);
 
