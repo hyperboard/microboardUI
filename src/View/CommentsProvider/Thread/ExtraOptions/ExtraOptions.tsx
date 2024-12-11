@@ -14,7 +14,7 @@ interface Props {
 	canEdit: boolean;
 }
 
-export const ExtraOptions = ({ comment, canEdit }: Props) => {
+export const ExtraOptions = ({ comment, canEdit }: Props): JSX.Element => {
 	const [isCursorOnButton, setIsCursorOnButton] = useState(false);
 	const [isCursorOnMenu, setIsCursorOnMenu] = useState(false);
 	const { board } = useAppContext();
@@ -23,15 +23,15 @@ export const ExtraOptions = ({ comment, canEdit }: Props) => {
 
 	const username = account.info?.name || account.info?.email;
 
-	const handleRemove = () => {
+	const handleRemove = (): void => {
 		board.remove(comment);
 	};
 
-	const handleMarkAsUnread = () => {
+	const handleMarkAsUnread = (): void => {
 		comment.markThreadAsUnread(username!);
 	};
 
-	const handleMouseLeave = (element: "menu" | "btn") => {
+	const handleMouseLeave = (element: "menu" | "btn"): void => {
 		if (element === "btn") {
 			setIsCursorOnButton(false);
 		}
@@ -40,7 +40,7 @@ export const ExtraOptions = ({ comment, canEdit }: Props) => {
 		}
 	};
 
-	const handleCopyLink = async () => {
+	const handleCopyLink = async (): Promise<void> => {
 		try {
 			await navigator.clipboard.writeText(comment.getLink());
 			notify({

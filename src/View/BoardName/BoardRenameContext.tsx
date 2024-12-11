@@ -21,11 +21,11 @@ export const useBoardRenameContext = () => {
 
 export function BoardRenameContextProvider({
 	children,
-}: PropsWithChildren<{}>) {
+}: PropsWithChildren<{}>): JSX.Element {
 	const [renamingBoardId, setRenamingBoardId] = useState<string | null>(null);
 	const [newBoardName, setNewBoardName] = useState<string>("");
 	const boardsList = useBoardsList();
-	const rename = () => {
+	const rename = (): void => {
 		if (!renamingBoardId) {
 			return;
 		}

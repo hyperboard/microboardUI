@@ -1,8 +1,9 @@
 import { useForceUpdate } from "lib/useForceUpdate";
 import { useLayoutEffect } from "react";
 import { useAppContext } from "View/AppContext";
+import { Account } from "./Account";
 
-export function useAccount() {
+export function useAccount(): Account {
 	const { app } = useAppContext();
 	const forceUpdate = useForceUpdate();
 

@@ -1,12 +1,14 @@
 import { Comment } from "../../Board/Items/Comment";
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
+
+type MergeComments = { clusters: Comment[][]; singleComments: Comment[] };
 
 const mergeComments = (
 	comments: Comment[],
 	threshold: number,
 	existingClusters?: Comment[][],
 	scale: number,
-) => {
+): MergeComments => {
 	const clusters: Comment[][] = [];
 	const singleComments: Comment[] = [];
 	const processed: Set<Comment> = new Set();
@@ -68,7 +70,10 @@ const mergeComments = (
 	return { clusters, singleComments };
 };
 
-export const useCommentsMerge = (comments: Comment[], cameraScale: number) => {
+export const useCommentsMerge = (
+	comments: Comment[],
+	cameraScale: number,
+): MergeComments => {
 	const prevScale = useRef<number>(cameraScale);
 	const existingClusters = useRef<Comment[][]>([]);
 	const { clusters, singleComments } = mergeComments(

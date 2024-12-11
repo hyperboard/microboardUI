@@ -19,7 +19,7 @@ export const CommentPreview = ({
 	firstMessage,
 	messagesCount,
 	handleClick,
-}: Props) => {
+}: Props): JSX.Element => {
 	const { t } = useTranslation();
 
 	return (

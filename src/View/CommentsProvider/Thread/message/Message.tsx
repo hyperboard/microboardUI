@@ -47,17 +47,17 @@ export const Message = forwardRef<HTMLDivElement, Props>(
 
 		const canEdit =
 			account.info?.name === username || account.info?.email === username;
-		const handleEditClick = () => {
+		const handleEditClick = (): void => {
 			setTextUnderEditor(undefined);
 			handleEditMessage(value, id);
 		};
 
-		const handleReject = () => {
+		const handleReject = (): void => {
 			setTextUnderEditor(undefined);
 			setValue(text);
 		};
 
-		const setEditor = () => {
+		const setEditor = (): void => {
 			if (canEdit) {
 				setTextUnderEditor(id);
 			}

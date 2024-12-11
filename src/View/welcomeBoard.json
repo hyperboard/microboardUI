@@ -2234,7 +2234,7 @@
 							"type": "text",
 							"fontSize": 14,
 							"fontColor": "black",
-							"fontFamily": "Arial",
+							"fontFamily": "Open Sans",
 							"lineHeight": 1.4,
 							"fontHighlight": ""
 						}
@@ -2287,7 +2287,7 @@
 							"type": "text",
 							"fontSize": 14,
 							"fontColor": "black",
-							"fontFamily": "Arial",
+							"fontFamily": "Open Sans",
 							"lineHeight": 1.4,
 							"fontHighlight": ""
 						}

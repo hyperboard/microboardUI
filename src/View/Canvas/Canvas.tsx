@@ -1,4 +1,5 @@
 import { App } from "App";
+import { Subscription } from "App/getSubscriptions";
 import { Board } from "Board";
 import { DrawingContext } from "Board/Items/DrawingContext";
 import { WithRouterProps, withRouter } from "lib/withRouter";
@@ -126,19 +127,19 @@ export class CanvasBase extends React.Component<Props> {
 		this.props.app.subscriptions.remove(this.resizeSubscription);
 	}
 
-	drawingContextSubscription = {
+	drawingContextSubscription: Subscription = {
 		observer: () => {
 			this.renderToContext();
 		},
 		subjects: ["camera", "items", "tools", "selection", "presence"],
 	};
 
-	cursorSubscription = {
+	cursorSubscription: Subscription = {
 		observer: this.updateCursor,
 		subjects: ["pointer", "presence"],
 	};
 
-	resizeSubscription = {
+	resizeSubscription: Subscription = {
 		observer: () => {
 			this.forceUpdate();
 		},

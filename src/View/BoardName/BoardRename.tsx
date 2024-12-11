@@ -28,7 +28,7 @@ export function BoardRename({
 	value,
 	className,
 	width,
-}: Props) {
+}: Props): JSX.Element {
 	const inputRef = useRef<HTMLInputElement | null>(null);
 
 	useEffect(() => {
@@ -57,7 +57,7 @@ export function BoardRename({
 		}
 	};
 
-	const handleBlur: FocusEventHandler = event => {
+	const handleBlur: FocusEventHandler = () => {
 		onConfirm();
 
 		setTimeout(() => {

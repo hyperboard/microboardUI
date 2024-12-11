@@ -9,8 +9,8 @@ import { Cluster } from "./Cluster/Cluster";
 import { useCommentsMerge } from "./useCommentsMerge";
 import { useCommentsContext } from "View/CommentsProvider/CommentsContext";
 
-export const CommentsProvider = () => {
-	const { app, board } = useAppContext();
+export const CommentsProvider = (): JSX.Element => {
+	const { board } = useAppContext();
 	const { showResolved, showComments, enableClusters, movingComment } =
 		useCommentsContext();
 
