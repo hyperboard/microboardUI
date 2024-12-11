@@ -5,6 +5,7 @@ const mergeComments = (
 	comments: Comment[],
 	threshold: number,
 	existingClusters?: Comment[][],
+	scale: number,
 ) => {
 	const clusters: Comment[][] = [];
 	const singleComments: Comment[] = [];
@@ -36,7 +37,10 @@ const mergeComments = (
 				otherComment.getAnchorPoint(),
 			);
 
-			if (distance <= threshold && distance > 5) {
+			if (
+				distance <= threshold &&
+				(distance > 5 || (distance <= 5 && scale < 5))
+			) {
 				if (existingClusters) {
 					const targetCluster = existingClusters.find(cluster =>
 						cluster.includes(otherComment),
@@ -71,6 +75,7 @@ export const useCommentsMerge = (comments: Comment[], cameraScale: number) => {
 		comments,
 		56 / cameraScale,
 		prevScale.current > cameraScale ? existingClusters.current : undefined,
+		cameraScale,
 	);
 	existingClusters.current = clusters;
 	prevScale.current = cameraScale;

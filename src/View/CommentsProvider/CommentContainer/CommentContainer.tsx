@@ -1,10 +1,4 @@
-import React, {
-	TouchEventHandler,
-	useEffect,
-	useRef,
-	useState,
-	WheelEvent,
-} from "react";
+import React, { TouchEventHandler, useEffect, useRef, useState } from "react";
 import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
 import { useAppContext } from "View/AppContext";
 import { Icon } from "../../Icon";
@@ -28,11 +22,8 @@ export const CommentContainer = ({ comment }: Props) => {
 	const commentContainerRef = useRef<HTMLDivElement | null>(null);
 	const threadPanelRef = useRef<HTMLDivElement | null>(null);
 	const commentRef = useRef<HTMLDivElement | null>(null);
-	const [isDragging, setIsDragging] = useState(false);
 	const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-	const [initialCommentPosition, setInitialCommentPosition] = useState<Point>(
-		comment.getAnchorPoint(),
-	);
+	const initialCommentPosition = useRef<Point>(comment.getAnchorPoint());
 	const { app, board } = useAppContext();
 	const {
 		openedThreadId,
@@ -40,6 +31,7 @@ export const CommentContainer = ({ comment }: Props) => {
 		setMovingComment,
 		movingComment,
 	} = useCommentsContext();
+	const movingCommentRef = useRef<Comment | null>(movingComment);
 	const isThreadOpen = openedThreadId === comment.getId();
 	const account = useAccount();
 
@@ -54,37 +46,27 @@ export const CommentContainer = ({ comment }: Props) => {
 	const forceUpdate = useForceUpdate();
 
 	useAppSubscription({
-		subjects: ["tools", "items", "selectionItems"],
+		subjects: ["tools", "pointer", "items", "selectionItems", "selection"],
 		observer: () => {
+			const select = board.tools.getSelect();
+			if (movingCommentRef.current && select && !select.isLeftDown) {
+				setMovingComment(null);
+				movingCommentRef.current = null;
+				if (
+					initialCommentPosition.current.x ===
+						comment.getAnchorPoint().x &&
+					initialCommentPosition.current.y ===
+						comment.getAnchorPoint().y
+				) {
+					return setOpenedThreadId(comment.getId());
+				}
+			}
 			forceUpdate();
 		},
 	});
 
 	const commentators = comment.getCommentators();
 	const width = 12 + 24 + 18 * (commentators.length - 1);
-
-	useEffect(() => {
-		const select = board.tools.getSelect();
-		if (
-			(isDragging && (!select || !select.isDownOnUnselectedItem)) ||
-			isThreadOpen
-		) {
-			const commentAnchor = comment.getAnchorPoint();
-			setIsDragging(false);
-			setMovingComment(null);
-			if (
-				commentAnchor.x === initialCommentPosition.x &&
-				commentAnchor.y === initialCommentPosition.y &&
-				!isThreadOpen
-			) {
-				setOpenedThreadId(comment.getId());
-			}
-		}
-	}, [
-		board.tools.getSelect()?.isDownOnUnselectedItem,
-		isThreadOpen,
-		initialCommentPosition,
-	]);
 
 	useEffect(() => {
 		if (commentRef.current) {
@@ -109,15 +91,12 @@ export const CommentContainer = ({ comment }: Props) => {
 	}, [isThreadOpen]);
 
 	const togglePreview = () => {
-		if (!isDragging) {
+		if (!movingComment) {
 			setIsPreviewOpen(!isPreviewOpen);
 		}
 	};
 
 	const handleMouseUp = () => {
-		if (isDragging) {
-			return setIsDragging(false);
-		}
 		setOpenedThreadId(comment.getId());
 	};
 
@@ -139,11 +118,11 @@ export const CommentContainer = ({ comment }: Props) => {
 			const commentAnchor = comment.getAnchorPoint();
 			comment.setItemToFollow(undefined);
 			setMovingComment(comment);
+			movingCommentRef.current = comment;
 			select.leftButtonDown(comment);
-			board.pointer.pointTo(commentAnchor.x, commentAnchor.y);
-			setInitialCommentPosition(commentAnchor);
+			initialCommentPosition.current = commentAnchor;
 			setIsPreviewOpen(false);
-			setIsDragging(true);
+			board.pointer.pointTo(commentAnchor.x, commentAnchor.y);
 		}
 	};
 
@@ -166,7 +145,7 @@ export const CommentContainer = ({ comment }: Props) => {
 				zIndex,
 				left: mbr.left,
 				top: mbr.top,
-				pointerEvents: isDragging || !!movingComment ? "none" : "auto",
+				pointerEvents: movingComment ? "none" : "auto",
 			}}
 			id={`comment-${comment.getId()}`}
 		>

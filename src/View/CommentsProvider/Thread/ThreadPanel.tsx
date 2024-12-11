@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next";
 import { useIntersectionObserver } from "View/CommentsProvider/useIntersectionObserver";
 import { Avatar } from "View/UserPanel/Avatar/Avatar.tsx";
 import { useAccount } from "App/useAccount.ts";
+import { useClickOutside } from "lib/useClickOutside";
 
 interface MessageOptionsData {
 	top: number;
@@ -41,25 +42,17 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 		const [textUnderEditorId, setTextUnderEditorId] = useState<
 			undefined | string
 		>(undefined);
-		const { setOpenedThreadId, setTargetMessageId, targetMessageId } =
-			useCommentsContext();
+		const {
+			setOpenedThreadId,
+			setTargetMessageId,
+			targetMessageId,
+			openedThreadId,
+		} = useCommentsContext();
 		const account = useAccount();
+		const openedThreadIdRef = useRef<string | undefined>(openedThreadId);
+		openedThreadIdRef.current = openedThreadId;
 
-		useAppSubscription({
-			subjects: ["pointer"],
-			observer: () => {
-				const pointer = board.pointer.point;
-				const commentAnchor = comment.getAnchorPoint();
-				console.log(pointer, commentAnchor);
-				if (
-					pointer.x === commentAnchor.x &&
-					pointer.y === commentAnchor.y
-				) {
-					return;
-				}
-				setOpenedThreadId(undefined);
-			},
-		});
+		const threadRef = useClickOutside(() => setOpenedThreadId(undefined));
 
 		const { t } = useTranslation();
 		const accountInfo = account.info;
@@ -154,6 +147,7 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 						styles.header,
 						!canEditThread && styles.noPermission,
 					)}
+					ref={threadRef}
 				>
 					{canEditThread && (
 						<Button

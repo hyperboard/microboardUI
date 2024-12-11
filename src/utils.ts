@@ -48,7 +48,7 @@ interface MapStringUnknown {
 }
 
 /*
-	Returns true if isObject and toObject have the same properties. 
+	Returns true if isObject and toObject have the same properties.
 */
 
 export function isShallowEqualTo(
@@ -91,7 +91,7 @@ export function isShallowEqualTo(
 }
 
 /*
-	Returns true if isObject has all the properties that toObject has. 
+	Returns true if isObject has all the properties that toObject has.
 */
 
 export function isShallowSimilarTo(
@@ -270,7 +270,7 @@ export function formatDate(date: Date) {
 	const hours = String(date.getHours()).padStart(2, "0"); // ЧЧ
 	const minutes = String(date.getMinutes()).padStart(2, "0"); // ММ
 
-	return `${days} ${month} ${hours}.${minutes}`;
+	return `${days} ${month} ${hours}:${minutes}`;
 }
 
 export const getCorrectEnding = (number: number): "one" | "few" | "many" => {
