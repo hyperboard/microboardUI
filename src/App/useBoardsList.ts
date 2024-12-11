@@ -1,8 +1,9 @@
 import { useForceUpdate } from "lib/useForceUpdate";
 import { useEffect } from "react";
 import { useAppContext } from "View/AppContext";
+import { BoardsList } from "./BoardsList";
 
-export function useBoardsList() {
+export function useBoardsList(): BoardsList {
 	const { app } = useAppContext();
 	const forceUpdate = useForceUpdate();
 
