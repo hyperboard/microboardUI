@@ -1,6 +1,6 @@
 import { shouldShow } from "lib/queryStringParser";
 import { useForceUpdate } from "lib/useForceUpdate";
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import {
 	useLocation,
 	useNavigate,
@@ -27,7 +27,6 @@ import { UiModalBackground } from "View/Ui/UiModal";
 import { UserPanelLayout } from "View/UserPanel/UserPanel";
 import { ViewModeGuard } from "View/ViewModeGuard";
 import { ZoomPanel } from "View/ZoomPanel";
-import { BoardMenu } from "../BoardMenu/BoardMenu";
 import { CommentsContextProvider, CommentsProvider } from "../CommentsProvider";
 import { LinksProvider } from "../LinksProvider/LinksProvider";
 import { SetLinkToModal } from "../Modal/SetLinkToModal";
@@ -48,6 +47,7 @@ export function AppView(): JSX.Element {
 	const [searchParams] = useSearchParams();
 	const authCode = searchParams.get("code");
 	const teamIdSearch = searchParams.get("team_id");
+	let canPasteAgain = true;
 
 	function update(): void {
 		if (animationId.current) {
@@ -65,6 +65,19 @@ export function AppView(): JSX.Element {
 			if (ev.ctrlKey) {
 				ev.preventDefault();
 			}
+		};
+
+		const handlerOnKeyUp = (event: KeyboardEvent): void => {
+			controller.onKeyUp(event);
+			canPasteAgain = true;
+		};
+
+		const handlerOnPaste = (event: ClipboardEvent): void => {
+			if (!canPasteAgain) {
+				return;
+			}
+			controller.onPaste(event);
+			canPasteAgain = false;
 		};
 
 		app.boardSubject.subscribe(update);
@@ -98,9 +111,9 @@ export function AppView(): JSX.Element {
 				},
 			);
 			window.addEventListener("keydown", controller.onKeyDown);
-			window.addEventListener("keyup", controller.onKeyUp);
+			window.addEventListener("keyup", handlerOnKeyUp);
 			window.addEventListener("copy", controller.onCopy);
-			window.addEventListener("paste", controller.onPaste);
+			window.addEventListener("paste", handlerOnPaste);
 			window.addEventListener("drop", controller.onDrop);
 			window.addEventListener("dragover", event =>
 				event.preventDefault(),
@@ -124,9 +137,9 @@ export function AppView(): JSX.Element {
 					controller.onPointerMove,
 				);
 				window.removeEventListener("keydown", controller.onKeyDown);
-				window.removeEventListener("keyup", controller.onKeyUp);
+				window.removeEventListener("keyup", handlerOnKeyUp);
 				window.removeEventListener("copy", controller.onCopy);
-				window.removeEventListener("paste", controller.onPaste);
+				window.removeEventListener("paste", handlerOnPaste);
 				window.removeEventListener("drop", controller.onDrop);
 			}
 		};
