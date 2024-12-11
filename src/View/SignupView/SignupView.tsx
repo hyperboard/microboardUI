@@ -85,6 +85,11 @@ export const SignupView = (): React.ReactElement => {
 			setIsDisabled(true);
 			return;
 		}
+		if (val.length > 50) {
+			setError("Please enter a name no longer than 50 characters");
+			setIsDisabled(true);
+			return;
+		}
 		setIsDisabled(false);
 		setError("");
 	};
@@ -161,7 +166,7 @@ export const SignupView = (): React.ReactElement => {
 						placeholder={t("auth.name")}
 						hasError={!!error}
 						errorText={error}
-						helperText={t("auth.nameDesc")}
+						helperText={error ? "" : t("auth.nameDesc")}
 					/>
 				) : (
 					<>

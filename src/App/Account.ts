@@ -32,8 +32,8 @@ export class Account {
 	onSessionExpired: (() => void) | null = null;
 	readonly permissions: Permissions;
 	private _accessToken: string | null = null;
-	private onLogout: (() => Promise<void>) | null = null;
-	private onLogin: (() => Promise<void>) | null = null;
+	onLogout: (() => Promise<void>) | null = null;
+	onLogin: (() => Promise<void>) | null = null;
 
 	constructor(
 		private readonly storage: Storage,
@@ -163,13 +163,11 @@ export class Account {
 
 		this._accessToken = data?.accessToken ?? null;
 
-		await this.fetchAccountInfo();
-		await this.onLogin?.();
 		return data;
 	}
 
-	async resendMail(email: string): Promise<void> {
-		await authApi.resendMail({ email });
+	async resendMail(email: string) {
+		return await authApi.resendMail({ email });
 	}
 
 	async checkVerificationCodes(email: string) {

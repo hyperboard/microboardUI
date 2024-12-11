@@ -150,7 +150,7 @@ export function createApp(isHistory = true): App {
 			await foldersApi.initFolders();
 			await boardsList.claim();
 			storage.softClean();
-			const boardId = board.getBoardId();
+			const boardId = board?.getBoardId();
 			if (boardId && boardId !== "blank") {
 				await openBoard(boardId);
 				router.navigate(`/boards/${boardId}${window.location.search}`);

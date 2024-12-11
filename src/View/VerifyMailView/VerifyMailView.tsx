@@ -39,6 +39,9 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 	const boardsList = useBoardsList();
 
 	const onSuccess = async (): Promise<void> => {
+		console.log("success");
+		await account.fetchAccountInfo();
+		await account.onLogin?.();
 		if (searchParams.get("backToSelect") === "true") {
 			navigate("/selectBoard");
 		} else if (localStorage.getItem(LAST_BOARD_KEY_QS)) {
@@ -67,6 +70,7 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 				.verifyMail(searchParams.get("email") ?? "", passcode)
 				.then(onSuccess)
 				.catch(error => {
+					console.log("error", error);
 					if (error?.message === "PASSCODE_ATTEMPTS_EXCEEDED") {
 						setIsAttemptsExceeded(true);
 						setError(t("auth.errorVerificationCodeAttempts"));
@@ -171,9 +175,17 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 					console.log("here");
 
 					try {
+						const dateString = data?.message.split(": ")[1];
+						const resendDate = new Date(dateString);
+						const currentTime = new Date();
 						const timeToResend =
-							+data?.message.split(":")[1] / 1000;
-						setRetryCount(parseInt(timeToResend.toFixed(0)));
+							Math.abs(
+								resendDate.getTime() +
+									60 * 3000 -
+									currentTime.getTime(),
+							) / 1000;
+						console.log(timeToResend, data?.message);
+						setRetryCount(Math.max(0, Math.round(timeToResend)));
 					} catch (_) {
 						setRetryCount(60 * 3);
 					}

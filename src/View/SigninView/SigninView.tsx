@@ -66,6 +66,7 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 			})
 			.catch(error => {
 				// setErrorMessage(error.message);
+				console.log(error);
 				console.log(
 					"sign in error:",
 					error?.message === "User not activated",
