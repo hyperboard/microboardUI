@@ -9,7 +9,7 @@ import styles from "./AccessDeniedModal.module.css";
 
 export const ACCESS_DENIED_MODAL = Symbol("accessDeniedModal");
 
-export function AccessDeniedModal() {
+export function AccessDeniedModal(): JSX.Element {
 	const account = useAccount();
 	const { t } = useTranslation();
 	const navigate = useNavigate();

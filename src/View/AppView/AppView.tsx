@@ -1,6 +1,6 @@
 import { shouldShow } from "lib/queryStringParser";
 import { useForceUpdate } from "lib/useForceUpdate";
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import {
 	useLocation,
 	useNavigate,
