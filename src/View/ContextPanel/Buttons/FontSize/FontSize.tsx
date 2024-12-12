@@ -27,7 +27,7 @@ type Props = {
 	rounded?: "none" | "left";
 };
 
-export function FontSize({ rounded = "none" }: Props) {
+export function FontSize({ rounded = "none" }: Props): React.ReactElement {
 	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
 		usePanelContext();
 	const { t } = useTranslation();
@@ -69,7 +69,7 @@ export function FontSize({ rounded = "none" }: Props) {
 		}
 	};
 
-	const handleInputClick = (ev: React.MouseEvent<HTMLInputElement>) => {
+	const handleInputClick = (ev: React.MouseEvent<HTMLInputElement>): void => {
 		ev.stopPropagation();
 		if (openedMenu !== MENU_NAME) {
 			toggleMenu(MENU_NAME);
