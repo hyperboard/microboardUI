@@ -720,6 +720,8 @@
 		"repeatPassword": "Repeat new password",
 		"passwordConstraint": "The password must be at least 8 characters long",
 		"savePassword": "Save",
-		"cancelPassword": "Cancel"
+		"cancelPassword": "Cancel",
+		"avatarUploadError": "Avatar upload error",
+		"avatarSizeConstraint": "Maximum image size is 10 MB"
 	}
 }

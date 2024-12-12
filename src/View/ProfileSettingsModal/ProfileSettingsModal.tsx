@@ -19,8 +19,10 @@ import { Button } from "shared/ui-lib/Button";
 import { Input } from "shared/ui-lib/Input";
 import styles from "./ProfileSettingsModal.module.css";
 import { UserAvatar } from "View/UserPanel/UserAvatar/UserAvatar";
+import { notify } from "View/Ui/Toast";
 
 export const PROFILE_SETTINGS_MODAL_ID = Symbol("profileSettingsModal");
+const MAX_AVATAR_SIZE = 10 * 1024 * 1024; // 10MB
 
 export function ProfileSettingsModal() {
 	const account = useAccount();
@@ -74,10 +76,20 @@ export function ProfileSettingsModal() {
 	> = async ev => {
 		ev.preventDefault();
 		const file = ev.target.files?.[0];
-
-		if (file) {
+		if (!file) {
+			return;
+		}
+		if (file.size > MAX_AVATAR_SIZE) {
+			notify({
+				variant: "error",
+				header: t("profile.avatarUploadError"),
+				body: t("profile.avatarSizeConstraint"),
+			});
+		} else {
 			await account.uploadAvatar(file);
 		}
+
+		ev.target.value = "";
 	};
 
 	const handleAvatarSelectOpen: MouseEventHandler = ev => {

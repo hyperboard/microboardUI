@@ -718,6 +718,8 @@
 		"repeatPassword": "Повторите новый пароль",
 		"passwordConstraint": "Пароль должен содержать не менее 8 символов",
 		"savePassword": "Сохранить",
-		"cancelPassword": "Отменить"
+		"cancelPassword": "Отменить",
+		"avatarUploadError": "Ошибка загрузки аватара",
+		"avatarSizeConstraint": "Максимальный размер изображения - 10 Мб"
 	}
 }
