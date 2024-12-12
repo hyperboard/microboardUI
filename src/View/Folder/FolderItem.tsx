@@ -16,7 +16,11 @@ type Props = {
 	handleOpenBoard?: (board: boardsApiV2.Board) => void;
 };
 
-export function FolderItem({ board, folder, handleOpenBoard }: Props) {
+export function FolderItem({
+	board,
+	folder,
+	handleOpenBoard,
+}: Props): React.ReactElement {
 	const { app, board: currentBoard } = useAppContext();
 	const navigate = useNavigate();
 	const { open } = useContextMenuContext();

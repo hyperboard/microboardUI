@@ -24,7 +24,7 @@ const folderIcons: Record<foldersApi.FolderType, IconId> = {
 	[foldersApi.FolderType.NESTED]: "Folder",
 };
 
-export function Folder({ folder, handleOpenBoard }: Props) {
+export function Folder({ folder, handleOpenBoard }: Props): React.ReactElement | null {
 	const { handlePointerEnter, handlePointerLeave, isHover } = useHoverState();
 	const { open } = useContextMenuContext();
 	const { setNewName, setRenamingId, renamingId } = useRenameContext();
@@ -36,7 +36,7 @@ export function Folder({ folder, handleOpenBoard }: Props) {
 	const isRenameAllowed = folder.type === foldersApi.FolderType.NESTED;
 	const isRenaming = renamingId === folder.id;
 
-	const handleClick = (toggle: () => void) =>
+	const handleClick = (toggle: () => void): MouseEventHandler =>
 		handleClickDetection(
 			() => {
 				toggle();
