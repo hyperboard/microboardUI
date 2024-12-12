@@ -20,16 +20,16 @@ export function TextColor(): React.ReactElement | null {
 	const { t } = useTranslation();
 	const fontColor = board.selection.getFontColor();
 
-	const handleClick = () => {
+	const handleClick = (): void => {
 		toggleMenu(MENU_NAME);
 	};
 
-	const handlePick = (color: string) => {
+	const handlePick = (color: string): void => {
 		board.selection.setFontColor(color);
 		toggleMenu("None");
 	};
 
-	const handleCustomPick = (color: string) => {
+	const handleCustomPick = (color: string): void => {
 		const rgbColor = convertHexToRGBA(color, false);
 		board.selection.setFontColor(rgbColor);
 	};

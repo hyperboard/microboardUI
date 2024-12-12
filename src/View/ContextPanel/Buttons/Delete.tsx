@@ -8,10 +8,10 @@ type Props = {
 	rounded?: "left" | "right" | "none" | "full";
 };
 
-export function Delete({ rounded = "none" }: Props) {
+export function Delete({ rounded = "none" }: Props): React.ReactElement {
 	const { board } = useAppContext();
 	const { t } = useTranslation();
-	const handleClick = () => {
+	const handleClick = (): void => {
 		board.selection.removeFromBoard();
 	};
 

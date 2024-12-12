@@ -21,7 +21,7 @@ export function ConnectorAddText(): React.ReactElement | null {
 		return null;
 	}
 
-	const handleClick = () => {
+	const handleClick = (): void => {
 		if (board.selection.getContext() === "EditTextUnderPointer") {
 			board.selection.setContext("EditUnderPointer");
 			board.items.subject.publish(board.items);

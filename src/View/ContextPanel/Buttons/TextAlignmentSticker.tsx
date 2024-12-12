@@ -23,16 +23,16 @@ export function TextAlignmentSticker(): React.ReactElement | null {
 	const verticalAlignment =
 		board.selection.getText()?.getVerticalAlignment() ?? "center";
 
-	const handleClick = () => {
+	const handleClick = (): void => {
 		toggleMenu(MENU_NAME);
 	};
 
-	const handleHorisontalAlignmentPick = (alignment: HorisontalAlignment) => {
+	const handleHorisontalAlignmentPick = (alignment: HorisontalAlignment): void => {
 		board.selection.setHorisontalAlignment(alignment);
 		toggleMenu("None");
 	};
 
-	const handleVerticalAlignmentPick = (alignment: VerticalAlignment) => {
+	const handleVerticalAlignmentPick = (alignment: VerticalAlignment): void => {
 		board.selection.setVerticalAlignment(alignment);
 		toggleMenu("None");
 	};

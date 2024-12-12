@@ -25,16 +25,16 @@ export function TextAlignment(): React.ReactElement | null {
 	const vertical =
 		board.selection.getText()?.getVerticalAlignment() ?? "center";
 
-	const handleClick = () => {
+	const handleClick = (): void => {
 		toggleMenu(MENU_NAME);
 	};
 
-	const handleHorizontalPick = (alignment: HorisontalAlignment) => {
+	const handleHorizontalPick = (alignment: HorisontalAlignment): void => {
 		board.selection.setHorisontalAlignment(alignment);
 		toggleMenu("None");
 	};
 
-	const handleVerticalPick = (alignment: VerticalAlignment) => {
+	const handleVerticalPick = (alignment: VerticalAlignment): void => {
 		board.selection.setVerticalAlignment(alignment);
 		toggleMenu("None");
 	};

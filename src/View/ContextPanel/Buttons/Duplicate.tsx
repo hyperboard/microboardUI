@@ -9,11 +9,11 @@ type Props = {
 	rounded?: "none" | "left" | "right";
 };
 
-export function Duplicate({ rounded = "none" }: Props) {
+export function Duplicate({ rounded = "none" }: Props): React.ReactElement {
 	const { board } = useAppContext();
 	const { t } = useTranslation();
 
-	const handleClick = () => {
+	const handleClick = (): void => {
 		board.selection.duplicate();
 	};
 	return (

@@ -21,16 +21,16 @@ export function ConnectorLineColor(): React.ReactElement | null {
 
 	const connectorLineColor = board.selection.getConnectorLineColor();
 
-	const handleClick = () => {
+	const handleClick = (): void => {
 		toggleMenu(MENU_NAME);
 	};
 
-	const handlePick = (color: string) => {
+	const handlePick = (color: string): void => {
 		board.selection.setStrokeColor(color);
 		toggleMenu("None");
 	};
 
-	const handleCustomPick = (color: string) => {
+	const handleCustomPick = (color: string): void => {
 		board.selection.setStrokeColor(color);
 	};
 

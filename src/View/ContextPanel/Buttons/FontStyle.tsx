@@ -18,11 +18,11 @@ export function FontStyle(): React.ReactElement | null {
 
 	const fontStyles = board.selection.getText()?.getFontStyles();
 
-	const handleClick = () => {
+	const handleClick = (): void => {
 		toggleMenu(MENU_NAME);
 	};
 
-	const handlePick = (style: string) => {
+	const handlePick = (style: string): void => {
 		board.selection.setFontStyle(style);
 		toggleMenu("None");
 	};

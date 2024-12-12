@@ -5,7 +5,7 @@ import { UiButton } from "View/Ui/UiButton/UiButton";
 export function Edit(): React.ReactElement | null {
 	const { board } = useAppContext();
 
-	const handleClick = () => {
+	const handleClick = (): void => {
 		board.selection.editSelected();
 	};
 	return (

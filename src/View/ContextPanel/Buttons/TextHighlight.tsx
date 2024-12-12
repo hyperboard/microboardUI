@@ -19,14 +19,14 @@ export function TextHighlight(): React.ReactElement | null {
 	const { t } = useTranslation();
 
 	const highlightColor = board.selection.getFontHighlight();
-	const handleClick = () => {
+	const handleClick = (): void => {
 		toggleMenu(MENU_NAME);
 	};
-	const handlePick = (color: string) => {
+	const handlePick = (color: string): void => {
 		board.selection.setFontHighlight(color);
 		toggleMenu("None");
 	};
-	const handleCustomPick = (color: string) => {
+	const handleCustomPick = (color: string): void => {
 		board.selection.setFontHighlight(color);
 	};
 

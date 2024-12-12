@@ -19,10 +19,11 @@ import { useTranslation } from "react-i18next";
 import style from "./StrokeStyle.module.css";
 import { useAppContext } from "View/AppContext";
 import { Shape } from "../../../../Board/Items";
+import { ConnectionLineWidths } from "Board/Items/Connector/Connector";
 
 const MENU_NAME = "StrokeStyle";
 
-const getIsBorderStyleEditable = (shapes: Shape[]) => {
+const getIsBorderStyleEditable = (shapes: Shape[]): boolean => {
 	for (const shape of shapes) {
 		if (!shape.getIsBorderStyleEditable()) {
 			return false;
@@ -45,25 +46,25 @@ export function StrokeStyle(): React.ReactElement | null {
 		board.selection.items.getItemsByItemTypes(["Shape"]) as Shape[],
 	);
 
-	const handleClick = () => {
+	const handleClick = (): void => {
 		toggleMenu(MENU_NAME);
 	};
 
-	const handleStrokeWidthPick = (width: number) => {
-		board.selection.setStrokeWidth(width);
+	const handleStrokeWidthPick = (width: number): void => {
+		board.selection.setStrokeWidth(ConnectionLineWidths[width]);
 	};
 
-	const handleStrokeStylePick = (style: BorderStyle) => {
+	const handleStrokeStylePick = (style: BorderStyle): void => {
 		board.selection.setStrokeStyle(style);
 		toggleMenu("None");
 	};
 
-	const handleStrokeColorPick = (color: string) => {
+	const handleStrokeColorPick = (color: string): void => {
 		board.selection.setStrokeColor(color);
 		toggleMenu("None");
 	};
 
-	const handleStrokeCustomColorPick = (color: string) => {
+	const handleStrokeCustomColorPick = (color: string): void => {
 		board.selection.setStrokeColor(color);
 	};
 

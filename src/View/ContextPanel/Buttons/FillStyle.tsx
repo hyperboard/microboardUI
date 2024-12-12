@@ -21,16 +21,16 @@ export function FillStyle(): React.ReactElement | null {
 
 	const fillColor = board.selection.getFillColor();
 
-	const handleClick = () => {
+	const handleClick = (): void => {
 		toggleMenu(MENU_NAME);
 	};
 
-	const handlePick = (color: string) => {
+	const handlePick = (color: string): void => {
 		board.selection.setFillColor(color);
 		toggleMenu("None");
 	};
 
-	const handleCustomPick = (color: string) => {
+	const handleCustomPick = (color: string): void => {
 		board.selection.setFillColor(color);
 	};
 

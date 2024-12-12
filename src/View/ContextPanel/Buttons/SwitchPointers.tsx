@@ -7,7 +7,7 @@ import { UiButton } from "View/Ui/UiButton/UiButton";
 export function SwitchPointers(): React.ReactElement | null {
 	const { board } = useAppContext();
 	const { t } = useTranslation();
-	const handleClick = () => {
+	const handleClick = (): void => {
 		board.selection.switchPointers();
 	};
 
