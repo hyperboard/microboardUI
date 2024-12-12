@@ -56,6 +56,7 @@ export function ProfileSettingsModal() {
 		abortController.current.abort();
 		abortController.current = new AbortController();
 		const newName = ev.target.value;
+		setUpdateState("idle");
 		setName(newName);
 		if (setIdleTimeoutRef.current) {
 			clearTimeout(setIdleTimeoutRef.current);
