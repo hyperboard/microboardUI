@@ -3,7 +3,9 @@ import { useForceUpdate } from "lib/useForceUpdate";
 import React, { PropsWithChildren } from "react";
 import { useAppContext } from "View/AppContext";
 
-export function ExportVisible({ children }: PropsWithChildren<{}>) {
+export function ExportVisible({
+	children,
+}: PropsWithChildren<{}>): React.ReactElement | null {
 	const { board } = useAppContext();
 	const forceUpdate = useForceUpdate();
 	useAppSubscription({ observer: forceUpdate, subjects: ["tools"] });

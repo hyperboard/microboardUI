@@ -9,7 +9,7 @@ import { UiButton } from "View/Ui/UiButton";
 import { UiLoader } from "View/Ui/UiLoader";
 import style from "./ExportPanel.module.css";
 
-export function ExportPanel() {
+export function ExportPanel(): React.ReactElement | null {
 	const [isLoading, setIsLoading] = useState(false);
 	const { board } = useAppContext();
 	const { t } = useTranslation();
@@ -37,14 +37,14 @@ export function ExportPanel() {
 		}
 	}, [isLoading]);
 
-	const handleConfirm = () => {
+	const handleConfirm = (): void => {
 		if (isLoading) {
 			return;
 		}
 		setIsLoading(true);
 	};
 
-	const handleCancel = () => {
+	const handleCancel = (): void => {
 		board.tools.cancel();
 	};
 
