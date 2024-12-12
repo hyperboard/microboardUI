@@ -6,12 +6,12 @@ import React from "react";
 import { Icon } from "View/Icon";
 import { getHotkeyLabel } from "Board/Keyboard";
 
-export function SendToBack() {
+export function SendToBack(): JSX.Element {
 	const { board } = useAppContext();
 	const { toggleMenu } = usePanelContext();
 	const { t } = useTranslation();
 
-	const handleSendToBack = () => {
+	const handleSendToBack = (): void => {
 		board.selection.sendToBack();
 		toggleMenu("None");
 	};

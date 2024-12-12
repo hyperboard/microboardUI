@@ -30,10 +30,10 @@ export function ItemType(): React.ReactElement | null {
 	const { board } = useAppContext();
 	const { t } = useTranslation();
 
-	const handleClick = () => {
+	const handleClick = (): void => {
 		toggleMenu(MENU_NAME);
 	};
-	const handlePick = (type: ShapeType) => {
+	const handlePick = (type: ShapeType): void => {
 		board.selection.setShapeType(type);
 		toggleMenu("None");
 	};

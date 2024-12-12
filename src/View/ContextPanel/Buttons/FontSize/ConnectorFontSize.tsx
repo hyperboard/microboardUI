@@ -8,7 +8,7 @@ type Props = {
 	rounded?: "none" | "left";
 };
 
-export function ConnectorFontSize({ rounded = "none" }: Props) {
+export function ConnectorFontSize({ rounded = "none" }: Props): JSX.Element | null {
 	const { board } = useAppContext();
 
 	const connector = board.selection.items.getItemsByItemTypes([

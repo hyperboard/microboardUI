@@ -6,12 +6,12 @@ import React from "react";
 import { Icon } from "View/Icon";
 import { getHotkeyLabel } from "Board/Keyboard";
 
-export function BringToFront() {
+export function BringToFront(): JSX.Element {
 	const { board } = useAppContext();
 	const { toggleMenu } = usePanelContext();
 	const { t } = useTranslation();
 
-	const handleBringToFront = () => {
+	const handleBringToFront = (): void => {
 		board.selection.bringToFront();
 		toggleMenu("None");
 	};

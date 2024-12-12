@@ -10,7 +10,6 @@ import style from "./EndPointer.module.css";
 import { useAppContext } from "View/AppContext";
 import { ConnectorPointerStyle } from "Board/Items/Connector/Pointers/Pointers";
 import { ConnectorPointerType } from "View/Icon/ConnectorPointerIcon";
-import { SessionStorage } from "App/SessionStorage";
 
 const MENU_NAME = "EndPointer";
 

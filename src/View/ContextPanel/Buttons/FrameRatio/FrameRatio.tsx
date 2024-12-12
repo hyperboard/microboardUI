@@ -31,21 +31,21 @@ export function FrameRatio(): React.ReactElement | null {
 
 	const frameType = board.selection.getFrameType();
 
-	const handleClick = () => {
+	const handleClick = (): void => {
 		toggleMenu(MENU_NAME);
 	};
 
-	const handlePick = (type: FrameType) => {
+	const handlePick = (type: FrameType): void => {
 		board.selection.setFrameType(type);
 		toggleMenu("None");
 	};
 	const selectedFrames = board.selection.list() as Frame[];
-	const handlePointerEnter = (type: FrameType) => {
+	const handlePointerEnter = (type: FrameType): void => {
 		selectedFrames.forEach(frame => {
 			frame.setNewShape(type);
 		});
 	};
-	const handlePointerLeave = () => {
+	const handlePointerLeave = (): void => {
 		selectedFrames.forEach(frame => {
 			frame.setNewShape(null);
 		});

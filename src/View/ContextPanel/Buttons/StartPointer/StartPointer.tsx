@@ -11,7 +11,6 @@ import { useAppContext } from "View/AppContext";
 import clsx from "clsx";
 import { ConnectorPointerStyle } from "Board/Items/Connector/Pointers/Pointers";
 import { ConnectorPointerType } from "View/Icon/ConnectorPointerIcon";
-import { SessionStorage } from "App/SessionStorage";
 
 const MENU_NAME = "StartPointer";
 

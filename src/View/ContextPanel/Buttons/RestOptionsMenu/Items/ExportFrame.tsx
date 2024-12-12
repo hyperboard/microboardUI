@@ -6,12 +6,12 @@ import React from "react";
 import { Frame } from "Board/Items";
 import { Icon } from "View/Icon";
 
-export function ExportFrame() {
+export function ExportFrame(): JSX.Element {
 	const { board } = useAppContext();
 	const { toggleMenu } = usePanelContext();
 	const { t } = useTranslation();
 
-	const handleExportFrame = () => {
+	const handleExportFrame = (): void => {
 		const item = board.selection.items.getSingle();
 
 		if (item instanceof Frame) {

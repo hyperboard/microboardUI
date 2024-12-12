@@ -1,4 +1,4 @@
-import React, { MouseEventHandler, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ButtonWithMenu } from "View/ContextPanel/Buttons/ButtonWithMenu";
 import { Icon } from "View/Icon";
 import { UiButton } from "View/Ui/UiButton/UiButton";
@@ -24,7 +24,7 @@ export const Hyperlink = ({
 
 	const selectionContext = board.selection.getContext();
 
-	const handleClick = () => {
+	const handleClick = (): void => {
 		toggleMenu(MENU_NAME);
 	};
 
@@ -52,7 +52,7 @@ export const Hyperlink = ({
 		}
 	};
 
-	const handleInputClick = (ev: React.MouseEvent<HTMLInputElement>) => {
+	const handleInputClick = (ev: React.MouseEvent<HTMLInputElement>): void => {
 		ev.stopPropagation();
 		if (openedMenu !== MENU_NAME) {
 			toggleMenu(MENU_NAME);
@@ -62,7 +62,7 @@ export const Hyperlink = ({
 		}
 	};
 
-	const handleApplyHyperlink = () => {
+	const handleApplyHyperlink = (): void => {
 		const { board } = useAppContext();
 		const richTextItems = board.selection.getTextToEdit();
 		console.log("richTextItems", richTextItems);
@@ -112,7 +112,7 @@ export const Hyperlink = ({
 								value={url}
 								ref={inputRef}
 								onClick={handleInputClick}
-								onChange={e => setUrl(e.target.value)}
+								onChange={event => setUrl(event.target.value)}
 								onFocus={handleFocus}
 								onKeyDown={ev => ev.stopPropagation()}
 								onPaste={ev => ev.stopPropagation()}
