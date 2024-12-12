@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+	createContext,
+	useContext,
+	useState,
+	useEffect,
+	ReactNode,
+} from "react";
 import { AuthClipboardModal, ImgAuthClipboardModal } from "View/ImportMiro";
 import {
 	LoadingNotification,
@@ -29,6 +35,18 @@ interface ModalContextType {
 	setModalData: (data: unknown) => void;
 }
 
+type GlobalModalFunctionsType = {
+	showModal: ((modalName: ModalName) => void) | null;
+	hideModal: ((modalName: ModalName) => void) | null;
+	isModalOpen: ((modalName: ModalName) => boolean) | null;
+	data: unknown | null;
+	setModalData: ((data: unknown) => void) | null;
+};
+
+interface ModalProviderProps {
+	children: ReactNode;
+}
+
 const ModalContext = createContext<ModalContextType>({
 	modals: {
 		startImportMiro: false,
@@ -43,20 +61,14 @@ const ModalContext = createContext<ModalContextType>({
 		createTemplate: false,
 		setLinkTo: false,
 	},
-	showModal: modalName => {},
-	hideModal: modalName => {},
-	isModalOpen: modalName => false,
+	showModal: () => {},
+	hideModal: () => {},
+	isModalOpen: () => false,
 	data: undefined,
-	setModalData: data => {},
+	setModalData: () => {},
 });
 
-let globalModalFunctions: {
-	showModal: ((modalName: ModalName) => void) | null;
-	hideModal: ((modalName: ModalName) => void) | null;
-	isModalOpen: ((modalName: ModalName) => boolean) | null;
-	data: unknown | null;
-	setModalData: ((data: unknown) => void) | null;
-} = {
+let globalModalFunctions: GlobalModalFunctionsType = {
 	showModal: null,
 	hideModal: null,
 	isModalOpen: null,
@@ -64,19 +76,16 @@ let globalModalFunctions: {
 	setModalData: null,
 };
 
-export const setGlobalModalFunctions = (functions: {
-	showModal: ((modalName: ModalName) => void) | null;
-	hideModal: ((modalName: ModalName) => void) | null;
-	isModalOpen: ((modalName: ModalName) => boolean) | null;
-	data: unknown | null;
-	setModalData: ((data: unknown) => void) | null;
-}): void => {
+export const setGlobalModalFunctions = (
+	functions: GlobalModalFunctionsType,
+): void => {
 	globalModalFunctions = functions;
 };
 
-export const getGlobalModalFunctions = () => globalModalFunctions;
+export const getGlobalModalFunctions = (): GlobalModalFunctionsType =>
+	globalModalFunctions;
 
-export const ModalProvider = ({ children }) => {
+export const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
 	const [modals, setModals] = useState<Record<ModalName, boolean>>({
 		startImportMiro: false,
 		authClipboardMiro: false,
@@ -92,21 +101,21 @@ export const ModalProvider = ({ children }) => {
 	});
 	const [data, setModalData] = useState<unknown>();
 
-	const showModal = modalName => {
+	const showModal = (modalName: ModalName): void => {
 		setModals(prevModals => ({
 			...prevModals,
 			[modalName]: true,
 		}));
 	};
 
-	const hideModal = modalName => {
+	const hideModal = (modalName: ModalName): void => {
 		setModals(prevModals => ({
 			...prevModals,
 			[modalName]: false,
 		}));
 	};
 
-	const isModalOpen = modalName => !!modals[modalName];
+	const isModalOpen = (modalName: ModalName): boolean => !!modals[modalName];
 
 	useEffect(() => {
 		setGlobalModalFunctions({
@@ -148,4 +157,4 @@ export const ModalProvider = ({ children }) => {
 	);
 };
 
-export const useModal = () => useContext(ModalContext);
+export const useModal = (): ModalContextType => useContext(ModalContext);

@@ -20,6 +20,7 @@ interface ModalProps {
 	children: ReactNode;
 	size?: ModalSize;
 	wrClassName?: string;
+	[key: string]: unknown;
 }
 
 export const Modal = (props: ModalProps): ReactPortal | null => {

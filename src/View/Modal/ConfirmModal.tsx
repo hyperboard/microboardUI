@@ -25,7 +25,7 @@ const ConfirmModalView: React.FC<ConfirmModalProps> = ({
 	const { t } = useTranslation();
 
 	useEffect(() => {
-		const handleEscapeKey = (evt: KeyboardEvent) => {
+		const handleEscapeKey = (evt: KeyboardEvent): void => {
 			if (evt.key === "Escape") {
 				onClose();
 			}

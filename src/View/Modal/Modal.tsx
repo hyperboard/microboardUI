@@ -13,7 +13,7 @@ const ModalView = ({ boardLink, closeModal }: TModal): React.ReactElement => {
 	const textToCopyRef = React.useRef(null);
 	const { t } = useTranslation();
 
-	function copyText() {
+	function copyText(): void {
 		const span = textToCopyRef.current;
 		const range = document.createRange();
 		if (!span) {
@@ -48,6 +48,6 @@ const ModalView = ({ boardLink, closeModal }: TModal): React.ReactElement => {
 	);
 };
 
-export const Modal = (props: any) => {
+export const Modal = (props: any): React.ReactPortal => {
 	return createPortal(<ModalView {...props} />, window.document.body);
 };

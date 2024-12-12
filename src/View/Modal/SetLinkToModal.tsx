@@ -12,10 +12,12 @@ export const SetLinkToModal = (): JSX.Element => {
 	const { board } = useAppContext();
 	const { isModalOpen, hideModal, setModalData, data } = useModal();
 	const formRef = useRef<HTMLFormElement | null>(null);
-	const [error, setError] = useState<undefined | string>(undefined);
+	const [error, setError] = useState<"modalLinkTo.error" | undefined>(
+		undefined,
+	);
 	const item = board.selection.items.getSingle();
 
-	const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+	const onSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
 		event.preventDefault();
 		const form = formRef.current;
 		const inputValue = form?.linkToInput.value;
@@ -33,13 +35,15 @@ export const SetLinkToModal = (): JSX.Element => {
 		hideModal("setLinkTo");
 	};
 
-	const removeError = () => {
+	const removeError = (): void => {
 		if (error) {
 			setError(undefined);
 		}
 	};
 
-	const handleRemoveLink = (ev: React.MouseEvent<HTMLButtonElement>) => {
+	const handleRemoveLink = (
+		ev: React.MouseEvent<HTMLButtonElement>,
+	): void => {
 		ev.preventDefault();
 		if (item && item.itemType !== "Placeholder") {
 			item.linkTo.removeLinkTo();
@@ -48,7 +52,7 @@ export const SetLinkToModal = (): JSX.Element => {
 		}
 	};
 
-	const handleCloseModal = () => {
+	const handleCloseModal = (): void => {
 		setModalData(undefined);
 		hideModal("setLinkTo");
 	};
@@ -58,11 +62,11 @@ export const SetLinkToModal = (): JSX.Element => {
 			isOpen={isModalOpen("setLinkTo")}
 			hideModal={handleCloseModal}
 			modalName="setLinkTo"
-			onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) =>
-				e.stopPropagation()
+			onPaste={(event: React.KeyboardEvent<HTMLDivElement>) =>
+				event.stopPropagation()
 			}
-			onPaste={(e: React.KeyboardEvent<HTMLDivElement>) =>
-				e.stopPropagation()
+			onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) =>
+				event.stopPropagation()
 			}
 		>
 			<form
