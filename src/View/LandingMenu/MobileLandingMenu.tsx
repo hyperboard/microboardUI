@@ -10,7 +10,7 @@ import { UiPanel } from "View/Ui/UiPanel";
 import { LANDING_URL, LANDING_URL_EN } from "./const";
 import style from "./MobileLandingMenu.module.css";
 
-export function MobileLandingMenu() {
+export function MobileLandingMenu(): React.ReactElement | null {
 	const [isOpen, setIsOpen] = useState(false);
 	const { t, i18n } = useTranslation();
 	const isRu = i18n.language === "ru";
@@ -20,8 +20,8 @@ export function MobileLandingMenu() {
 		return null;
 	}
 
-	const handleOpen = () => setIsOpen(true);
-	const handleClose = () => setIsOpen(false);
+	const handleOpen = (): void => setIsOpen(true);
+	const handleClose = (): void => setIsOpen(false);
 	const isAuthorized = Cookies.get("refreshToken");
 	return (
 		<UiPanel padding={0} className={style.mobileLandingMenuWrapper}>

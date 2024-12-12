@@ -10,7 +10,7 @@ import { UiSeparator } from "View/Ui/UiSeparator";
 import { LANDING_URL, LANDING_URL_EN } from "./const";
 import style from "./LandingMenu.module.css";
 
-export function LandingMenu() {
+export function LandingMenu(): React.ReactElement | null {
 	const [isOpen, setIsOpen] = useState(true);
 	const { t, i18n } = useTranslation();
 	const isRu = i18n.language === "ru";
@@ -19,7 +19,7 @@ export function LandingMenu() {
 		return null;
 	}
 
-	const handleMenuToggle = () => setIsOpen(prev => !prev);
+	const handleMenuToggle = (): void => setIsOpen(prev => !prev);
 	return (
 		<UiPanel
 			padding={0}
