@@ -6,7 +6,7 @@ import { UiButton } from "../../Ui/UiButton";
 import { Icon } from "../../Icon";
 import styles from "./LinkToButton.module.css";
 
-async function getFavicon(url: string) {
+async function getFavicon(url: string): Promise<string | undefined> {
 	try {
 		const response = await fetch(url);
 		if (!response.ok) {
@@ -35,7 +35,7 @@ interface Props {
 	handleClick: (item: Item) => void;
 }
 
-export const LinkToButton = ({ item, handleClick }: Props) => {
+export const LinkToButton = ({ item, handleClick }: Props): JSX.Element => {
 	const linkToButtonRef = useRef<HTMLButtonElement | null>(null);
 	const [isTooltipShown, setIsTooltipShown] = useState(false);
 	const [iconUrl, setIconUrl] = useState<string | undefined>(undefined);
@@ -65,7 +65,7 @@ export const LinkToButton = ({ item, handleClick }: Props) => {
 		}
 	}, [item.getLinkTo()]);
 
-	const setIcon = async () => {
+	const setIcon = async (): Promise<void> => {
 		if (!item.getLinkTo() || !iconUrl) {
 			return;
 		}

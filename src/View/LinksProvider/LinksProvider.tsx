@@ -7,8 +7,8 @@ import { Item } from "Board/Items/Item";
 import { notify } from "View/Ui/Toast/notify";
 import { useTranslation } from "react-i18next";
 
-export const LinksProvider = () => {
-	const { app, board } = useAppContext();
+export const LinksProvider = (): JSX.Element => {
+	const { board } = useAppContext();
 
 	const forceUpdate = useForceUpdate();
 
@@ -27,7 +27,7 @@ export const LinksProvider = () => {
 			return;
 		}
 
-		const handleNotFoundItemLink = async () => {
+		const handleNotFoundItemLink = async (): Promise<void> => {
 			try {
 				notify({
 					body: t("linkToToast.noItem"),
