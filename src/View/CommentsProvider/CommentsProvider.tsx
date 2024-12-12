@@ -58,7 +58,6 @@ export const CommentsProvider = (): JSX.Element => {
 					<CommentContainer comment={comment} key={comment.getId()} />
 				);
 			})}
-			return (
 			{showCreateComment && commentToAdd && (
 				<CreateComment
 					className={styles.createComment}
