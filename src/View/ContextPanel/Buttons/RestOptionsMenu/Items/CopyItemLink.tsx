@@ -6,12 +6,12 @@ import React from "react";
 import { notify } from "View/Ui/Toast";
 import { Icon } from "View/Icon";
 
-export function CopyItemLink() {
+export function CopyItemLink(): React.ReactElement {
 	const { board } = useAppContext();
 	const { toggleMenu } = usePanelContext();
 	const { t } = useTranslation();
 
-	const handleCopyItemLink = async () => {
+	const handleCopyItemLink = async (): Promise<void> => {
 		const item = board.selection.items.getSingle();
 		if (!item) {
 			return;

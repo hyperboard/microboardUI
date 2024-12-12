@@ -6,14 +6,14 @@ import React from "react";
 import { Icon } from "View/Icon";
 import { useModal } from "../../../../Modal/ModalProvider";
 
-export function SetLinkTo() {
+export function SetLinkTo(): React.ReactElement {
 	const { toggleMenu } = usePanelContext();
 	const { t } = useTranslation();
 	const { showModal, setModalData } = useModal();
 	const { board } = useAppContext();
 	const hasLink = board.selection.items.getSingle()?.getLinkTo();
 
-	const handleClick = () => {
+	const handleClick = (): void => {
 		board.selection.setContext("EditUnderPointer");
 		setModalData(board.selection.items.getSingle()?.getLinkTo());
 		showModal("setLinkTo");
