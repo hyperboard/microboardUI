@@ -4,7 +4,7 @@ type Props = {
 	color: string;
 };
 
-export function StrokeColorIndicator({ color }: Props) {
+export function StrokeColorIndicator({ color }: Props): React.ReactElement {
 	return (
 		<svg
 			width="24"

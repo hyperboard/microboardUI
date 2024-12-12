@@ -1,6 +1,6 @@
 import React from "react";
 
-export function EyeOpened() {
+export function EyeOpened(): React.ReactElement {
 	return (
 		<svg
 			width="25"

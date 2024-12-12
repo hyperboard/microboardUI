@@ -1,6 +1,6 @@
 import React from "react";
 
-export function EyeClosed() {
+export function EyeClosed(): React.ReactElement {
 	return (
 		<svg
 			id="EyeClosed"

@@ -8,7 +8,11 @@ type Props = {
 	height?: number;
 };
 
-export function FillColorIndicator({ color, height = 20, width = 20 }: Props) {
+export function FillColorIndicator({
+	color,
+	height = 20,
+	width = 20,
+}: Props): React.ReactElement {
 	return (
 		<div
 			style={{
