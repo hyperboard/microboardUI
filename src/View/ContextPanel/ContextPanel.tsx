@@ -45,7 +45,7 @@ import { Hyperlink } from "./Buttons/Hyperlink";
 
 const isReady = false;
 
-export function ContextPanel() {
+export function ContextPanel(): React.ReactElement | null {
 	const { app, board } = useAppContext();
 	const [openedMenu, setOpenedMenu] = useState("None");
 	const panelRef = useRef<HTMLDivElement>(null);
