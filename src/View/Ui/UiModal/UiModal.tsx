@@ -27,7 +27,15 @@ export function UiModal({
 	className,
 	onClose,
 }: Props) {
-	const { closeModal, openedModalId, isTransition } = useUiModalContext();
+	const {
+		closeModal,
+		openedModalId,
+		isTransition,
+		transitionFrom,
+		transitionTo,
+	} = useUiModalContext();
+	const isCloseTransition = transitionFrom === modalId;
+	const isOpenTransition = transitionTo === modalId;
 
 	const handleClose = () => {
 		closeModal();
@@ -39,16 +47,16 @@ export function UiModal({
 	return (
 		<CSSTransition
 			in={modalId === openedModalId}
-			timeout={300}
+			timeout={isCloseTransition ? 450 : 300}
 			classNames={{
-				enter: isTransition
-					? styles.opacityEnterTransition
-					: styles.opacityEnter,
+				enter: styles.opacityEnter,
 				enterActive: styles.opacityEnterActive,
+				enterDone: styles.opacityEnterDone,
 				exit: styles.opacityExit,
-				exitActive: isTransition
+				exitActive: isCloseTransition
 					? styles.opacityExitActiveTransition
 					: styles.opacityExitActive,
+				exitDone: styles.opacityExitDone,
 			}}
 			unmountOnExit
 		>

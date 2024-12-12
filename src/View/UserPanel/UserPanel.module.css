@@ -11,10 +11,15 @@
 	object-fit: cover;
 	object-position: center;
 	overflow: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #e9eaec;
 }
 
 .imgWrapper img {
 	width: 100%;
+	height: auto;
 }
 
 .container {

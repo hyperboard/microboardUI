@@ -2,16 +2,23 @@
 	display: flex;
 	flex-wrap: wrap;
 	gap: 4px;
-	border: 1px solid #dee0e3;
 	padding: 10px 12px;
 	font-size: 14px;
-	border-radius: 12px;
 	padding-left: 40px;
 	cursor: text;
 	min-height: 42px;
 	transition:
 		border 0.3s ease,
 		outline 0.5s ease;
+	max-height: 94px;
+	overflow-y: auto;
+}
+
+.inputWrapper {
+	border: 1px solid #dee0e3;
+	border-radius: 12px;
+	padding-right: 4px;
+	overflow: hidden;
 }
 
 .nativeInput {
@@ -19,6 +26,16 @@
 	outline: none;
 	flex-grow: 1;
 	overflow: hidden;
+	font-size: 14px;
+	font-family: Manrope;
+	font-weight: 400;
+}
+
+.nativeInput::placeholder {
+	font-size: 14px;
+	font-family: Manrope;
+	font-weight: 400;
+	color: rgba(13, 17, 38, 0.4);
 }
 
 .wrapper {
@@ -69,15 +86,18 @@
 	overflow-y: auto;
 }
 
+.input::-webkit-scrollbar,
 .optionsListWrapper::-webkit-scrollbar {
 	appearance: none;
-	width: 2px;
+	width: 3px;
 }
 
+.input::-webkit-scrollbar-button,
 .optionsListWrapper::-webkit-scrollbar-button {
 	display: none;
 }
 
+.input::-webkit-scrollbar-thumb,
 .optionsListWrapper::-webkit-scrollbar-thumb {
 	display: block;
 	background-color: rgba(222, 225, 232, 1);

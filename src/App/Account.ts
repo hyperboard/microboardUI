@@ -175,8 +175,8 @@ export class Account {
 		return data;
 	}
 
-	async changePassword(oldPassword: string, newPassword: string) {
-		await authApi.changePassword({ newPassword, oldPassword });
+	changePassword(oldPassword: string, newPassword: string) {
+		return authApi.changePassword({ newPassword, oldPassword });
 	}
 
 	async forgotPassword(email: string) {
@@ -187,8 +187,12 @@ export class Account {
 		await authApi.restorePassword({ token, newPassword });
 	}
 
-	async changeInfo(payload: usersApi.UpdateUserPayload) {
-		await usersApi.updateMe(payload);
+	async changeInfo(
+		payload: usersApi.UpdateUserPayload,
+		signal?: AbortSignal,
+	) {
+		console.log("account change info");
+		await usersApi.updateMe(payload, signal);
 		await this.fetchAccountInfo();
 	}
 

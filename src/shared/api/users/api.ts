@@ -11,8 +11,10 @@ export function getUsers(search?: string) {
 	});
 }
 
-export function updateMe(payload: UpdateUserPayload) {
-	return api.patch("/users/me", payload);
+export function updateMe(payload: UpdateUserPayload, signal?: AbortSignal) {
+	return api.patch("/users/me", payload, {
+		signal,
+	});
 }
 
 export function uploadAvatar(avatar: File) {

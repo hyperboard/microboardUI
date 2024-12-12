@@ -32,14 +32,19 @@ export function ProfileSettingsModal() {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 	const avatarInputRef = useRef<HTMLInputElement>(null);
+	const setIdleTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+	const abortController = useRef(new AbortController());
 
 	const debouncedChangeInfo = useCallback(
 		debounce(async (newName: string) => {
 			setUpdateState("loading");
-			await account.changeInfo({ name: newName });
+			await account.changeInfo(
+				{ name: newName },
+				abortController.current.signal,
+			);
 			setUpdateState("success");
 
-			setTimeout(() => {
+			setIdleTimeoutRef.current = setTimeout(() => {
 				setUpdateState("idle");
 			}, 3000);
 		}, 2000),
@@ -48,9 +53,13 @@ export function ProfileSettingsModal() {
 
 	const handleNameChange: ChangeEventHandler<HTMLInputElement> = ev => {
 		ev.stopPropagation();
+		abortController.current.abort();
+		abortController.current = new AbortController();
 		const newName = ev.target.value;
 		setName(newName);
-
+		if (setIdleTimeoutRef.current) {
+			clearTimeout(setIdleTimeoutRef.current);
+		}
 		debouncedChangeInfo(newName);
 	};
 

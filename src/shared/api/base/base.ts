@@ -140,7 +140,7 @@ export class HTTP {
 		config?: HTTPRequestConfig<URLSearchParamsInit, P>,
 	): Promise<HTTPResponse<R>> {
 		const stringifiedBody = JSON.stringify(body);
-
+		console.log(config?.signal);
 		return this.$fetch<R>(path, {
 			method: "PATCH",
 			body: stringifiedBody,

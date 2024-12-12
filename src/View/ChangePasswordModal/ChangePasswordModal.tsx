@@ -17,7 +17,12 @@ export function ChangePasswordModal(): JSX.Element {
 	const formRef = useRef<HTMLFormElement>(null);
 	const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
 	const [isSubmitLoading, setIsSubmitLoading] = useState(false);
-	const [error, setError] = useState("");
+	const [currentPasswordError, setCurrentPasswordError] = useState("");
+	const [newPasswordError, setNewPasswordError] = useState("");
+	const [confirmPasswordError, setConfirmPasswordError] = useState("");
+	const [currentPasswordTouched, setCurrentPasswordTouched] = useState(false);
+	const [newPasswordTouched, setNewPasswordTouched] = useState(false);
+	const [confirmPasswordTouched, setConfirmPasswordTouched] = useState(false);
 	const { t } = useTranslation();
 	const [isPasswordChanged, setIsPasswordChanged] = useState(false);
 	const account = useAccount();
@@ -34,7 +39,9 @@ export function ChangePasswordModal(): JSX.Element {
 
 		form.reset();
 		setIsSubmitDisabled(true);
-		setError("");
+		setConfirmPasswordError("");
+		setCurrentPasswordError("");
+		setNewPasswordError("");
 	};
 
 	const onSubmit = (event: React.FormEvent): void => {
@@ -54,21 +61,20 @@ export function ChangePasswordModal(): JSX.Element {
 			)
 			.then(() => {
 				setIsPasswordChanged(true);
-				setTimeout(() => {
-					close();
-				}, 3000);
 			})
 			.catch(error => {
 				if (error?.message === "Wrong password") {
-					setError(t("auth.currentPasswordIsIncorrect"));
+					setCurrentPasswordError(
+						t("auth.currentPasswordIsIncorrect"),
+					);
 					return;
 				}
 				if (error?.message === "ERROR_SAME_PASSWORD") {
-					setError(t("auth.passwordMustBeDifferent"));
+					setNewPasswordError(t("auth.passwordMustBeDifferent"));
 					return;
 				}
 				// different error?
-				setError(t("auth.passwordDoNotMatch"));
+				setConfirmPasswordError(t("auth.passwordDoNotMatch"));
 			})
 			.finally(() => {
 				setIsSubmitDisabled(false);
@@ -76,7 +82,7 @@ export function ChangePasswordModal(): JSX.Element {
 			});
 	};
 
-	const checkForm = (): void => {
+	const checkForm = () => {
 		const form = formRef.current;
 		if (!form) {
 			return;
@@ -85,61 +91,51 @@ export function ChangePasswordModal(): JSX.Element {
 		const newPassword = form.newPassword.value;
 		const confirmPassword = form.confirmPassword.value;
 
-		if (
-			currentPassword === "" ||
-			newPassword === "" ||
-			confirmPassword === ""
-		) {
-			setError("");
+		setConfirmPasswordError("");
+		setCurrentPasswordError("");
+		setNewPasswordError("");
+		setIsSubmitDisabled(false);
+
+		if (currentPassword === "") {
+			setCurrentPasswordError("");
 			setIsSubmitDisabled(true);
-			return;
+		}
+
+		if (newPassword === "") {
+			setNewPasswordError("");
+			setIsSubmitDisabled(true);
+		}
+
+		if (confirmPassword === "") {
+			setConfirmPasswordError("");
+			setIsSubmitDisabled(true);
 		}
 
 		const MIN_PASSWORD_LENGTH = 8;
-		if (
-			newPassword.length < MIN_PASSWORD_LENGTH ||
-			confirmPassword.length < MIN_PASSWORD_LENGTH
-		) {
-			setError("");
-			setIsSubmitDisabled(true);
-			return;
-		}
-
-		if (confirmPassword.length < newPassword.length) {
-			setError("");
-			setIsSubmitDisabled(true);
-			return;
-		}
-
-		if (newPassword === currentPassword) {
-			setError(t("auth.passwordMustBeDifferent"));
-			setIsSubmitDisabled(true);
-			return;
-		}
-
-		if (newPassword !== confirmPassword) {
-			setError(t("auth.passwordDoNotMatch"));
-			setIsSubmitDisabled(true);
-			return;
-		}
-
-		function checkLength(str: string): boolean {
-			if (str.length < 8) {
-				return false;
+		if (currentPasswordTouched) {
+			if (currentPassword.length < MIN_PASSWORD_LENGTH) {
+				setCurrentPasswordError(t("profile.passwordConstraint"));
+				setIsSubmitDisabled(true);
 			}
-			return true;
+		}
+		if (newPasswordTouched) {
+			if (newPassword.length < MIN_PASSWORD_LENGTH) {
+				setNewPasswordError(t("profile.passwordConstraint"));
+				setIsSubmitDisabled(true);
+			}
+			if (newPassword === currentPassword) {
+				setNewPasswordError(t("auth.passwordMustBeDifferent"));
+				setIsSubmitDisabled(true);
+			}
 		}
 
-		if (!checkLength(newPassword) || !checkLength(confirmPassword)) {
-			setError("");
-			return;
+		if (confirmPasswordTouched) {
+			if (newPassword !== confirmPassword) {
+				setConfirmPasswordError(t("auth.passwordDoNotMatch"));
+				setIsSubmitDisabled(true);
+			}
 		}
-
-		setError("");
-		setIsSubmitDisabled(false);
 	};
-
-	const dbCheckForm = checkForm;
 
 	if (isPasswordChanged) {
 		return (
@@ -170,53 +166,49 @@ export function ChangePasswordModal(): JSX.Element {
 							prefixIcon={<LockIcon />}
 							id="currentPassword"
 							password
-							placeholder={t("profile.currentPassword")}
-							// hasError={!!error.length}
-							// onInput={event => {
-							// 	dbCheckForm(event);
-							// }}
-							onKeyDown={event => {
-								event.stopPropagation();
-								dbCheckForm();
+							onFocus={() => {
+								setCurrentPasswordTouched(true);
 							}}
-							// onInput={event => {
-							// 	setCurrentPassword(event.target.value);
-							// }}
-							onBlur={dbCheckForm}
+							hasError={!!currentPasswordError}
+							placeholder={t("profile.currentPassword")}
+							onInput={checkForm}
+							onBlur={checkForm}
 						/>
 						<Input
 							prefixIcon={<LockIcon />}
 							id="newPassword"
 							password
-							placeholder={t("profile.newPassword")}
-							// hasError={!!error.length}
-							// onInput={dbCheckForm}
-							onKeyDown={event => {
-								event.stopPropagation();
-								dbCheckForm();
+							onFocus={() => {
+								setNewPasswordTouched(true);
 							}}
-							// onInput={event => {
-							// 	setNewPassword(event.target.value);
-							// }}
-							onBlur={dbCheckForm}
+							hasError={!!newPasswordError}
+							placeholder={t("profile.newPassword")}
+							onInput={checkForm}
+							onBlur={checkForm}
 						/>
 						<Input
 							prefixIcon={<LockIcon />}
 							id="confirmPassword"
 							password
-							placeholder={t("profile.repeatPassword")}
-							helperText={t("profile.passwordConstraint")}
-							hasError={!!error.length}
-							onInput={dbCheckForm}
-							errorText={error}
-							onKeyDown={event => {
-								event.stopPropagation();
-								// dbCheckForm();
+							onFocus={() => {
+								setConfirmPasswordTouched(true);
 							}}
-							// onInput={event => {
-							// 	setConfirmPassword(event.target.value);
-							// }}
-							onBlur={dbCheckForm}
+							placeholder={t("profile.repeatPassword")}
+							onInput={checkForm}
+							onBlur={checkForm}
+							hasError={!!confirmPasswordError}
+							helperText={
+								!currentPasswordError &&
+								!newPasswordError &&
+								!confirmPasswordError
+									? t("profile.passwordConstraint")
+									: ""
+							}
+							errorText={
+								currentPasswordError ||
+								newPasswordError ||
+								confirmPasswordError
+							}
 						/>
 					</div>
 

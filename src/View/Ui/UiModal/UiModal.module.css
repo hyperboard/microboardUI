@@ -28,6 +28,7 @@
 	transform: translate(-50%, -50%);
 	min-width: 700px;
 	width: 40%;
+	z-index: 1000;
 }
 
 .closeBtnWrapper {
@@ -47,28 +48,37 @@
 
 .opacityEnter {
 	opacity: 0;
-}
-
-.opacityEnterTransition {
-	opacity: 0;
 	z-index: 1002;
 }
 
 .opacityEnterActive {
 	opacity: 1;
 	transition: opacity 300ms;
+	z-index: 1002;
+}
+
+.opacityEnterDone {
+	z-index: 1002;
 }
 
 .opacityExit {
 	opacity: 1;
+	z-index: 1001;
 }
 
 .opacityExitActive {
 	opacity: 0;
 	transition: opacity 300ms;
+	z-index: 1001;
 }
 
 .opacityExitActiveTransition {
-	opacity: 1;
+	opacity: 0;
+	z-index: 1001;
+	transition: opacity 300ms;
+	transition-delay: 150ms;
+}
+
+.opacityExitDone {
 	z-index: 1001;
 }

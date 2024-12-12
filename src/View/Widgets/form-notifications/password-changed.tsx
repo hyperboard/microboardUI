@@ -1,7 +1,9 @@
 import React from "react";
 import styles from "./password-changed.module.css";
+import { useTranslation } from "react-i18next";
 
 export const PasswordChanged: React.FC = () => {
+	const { t } = useTranslation();
 	return (
 		<div className={styles.requested}>
 			<div className={styles.requestedIcon}>
@@ -19,7 +21,7 @@ export const PasswordChanged: React.FC = () => {
 				</svg>
 			</div>
 			<h1 className={styles.resetPassword}>
-				Password changed successfully
+				{t("profile.passwordChanged")}
 			</h1>
 		</div>
 	);

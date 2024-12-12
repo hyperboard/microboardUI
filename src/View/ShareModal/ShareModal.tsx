@@ -26,6 +26,7 @@ import { SearchInput } from "./SearchInput";
 import styles from "./ShareModal.module.css";
 import { UserAvatar } from "View/UserPanel/UserAvatar/UserAvatar";
 import { UiSeparator } from "View/Ui/UiSeparator";
+import { getEmailPrefix } from "lib/getEmailPrefix";
 
 export const SHARE_MODAL_ID = Symbol("shareModal");
 
@@ -83,7 +84,16 @@ export function ShareModal() {
 		}
 		try {
 			const { data } = await boardsApiV2.getGrantedUsers(boardId);
-			setGrantedUsers(data ?? []);
+			setGrantedUsers(
+				data?.map(user => {
+					console.log(user);
+					return {
+						...user,
+						name: user.name || getEmailPrefix(user.email),
+					};
+				}) ?? [],
+			);
+			console.log(grantedUsers);
 		} catch {
 			setGrantedUsers([]);
 		} finally {
@@ -198,7 +208,8 @@ export function ShareModal() {
 						<div
 							className={clsx(
 								styles.selectors,
-								userEmails.length > 0 && styles.modeVisible,
+								userEmails.length > 0 &&
+									styles.modeVisibleShort,
 							)}
 						>
 							<div>
@@ -246,7 +257,7 @@ export function ShareModal() {
 								className={clsx(
 									styles.selectors,
 									userEmails2.length > 0 &&
-										styles.modeVisible,
+										styles.modeVisibleShort,
 								)}
 							>
 								<SearchInput
@@ -262,6 +273,10 @@ export function ShareModal() {
 												!grantedUsers.find(
 													granted =>
 														granted.id === user.id,
+												) &&
+												!userEmails.find(
+													added =>
+														added === user.email,
 												),
 										)
 										.map(user => ({
@@ -300,7 +315,7 @@ export function ShareModal() {
 								}}
 							>
 								<Icon iconName="Plus" width={20} height={20} />{" "}
-								Добавить еще один уровень доступа
+								{t("sharing.addAccessLevel")}
 							</button>
 						)}
 						<div className={styles.grantedUsers}>

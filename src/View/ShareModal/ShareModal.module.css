@@ -68,6 +68,11 @@
 	gap: 16px;
 }
 
+.selectors.modeVisibleShort {
+	grid-template-columns: 1fr 190px;
+	gap: 16px;
+}
+
 .btns {
 	display: flex;
 	align-items: center;
@@ -142,6 +147,24 @@
 	display: flex;
 	flex-direction: column;
 	gap: 20px;
+	max-height: 186px;
+	overflow-y: auto;
+	padding-right: 4px;
+}
+
+.usersList::-webkit-scrollbar {
+	appearance: none;
+	width: 3px;
+}
+
+.usersList::-webkit-scrollbar-button {
+	display: none;
+}
+
+.usersList::-webkit-scrollbar-thumb {
+	display: block;
+	background-color: rgba(222, 225, 232, 1);
+	border-radius: 2px;
 }
 
 .ownerLabel {

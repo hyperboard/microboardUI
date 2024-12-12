@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+	useEffect,
+	useRef,
+	useState,
+	type KeyboardEventHandler,
+	type MouseEventHandler,
+} from "react";
 import "./Input.css";
 import { EyeOpen } from "./EyeOpen";
 import { EyeClose } from "./EyeClose";
@@ -78,9 +84,17 @@ export const Input: React.FC<Props> = ({
 		}
 	}, []);
 
-	const togglePassword = (): void => {
+	const togglePassword: MouseEventHandler = ev => {
+		ev.stopPropagation();
+		ev.preventDefault();
 		setInputType(inputType === "text" ? "password" : "text");
 	};
+	const stopPropagation =
+		(cb?: KeyboardEventHandler): KeyboardEventHandler =>
+		ev => {
+			ev.stopPropagation();
+			cb?.(ev);
+		};
 
 	return (
 		<div className="InputWrapper">
@@ -128,6 +142,9 @@ export const Input: React.FC<Props> = ({
 							onCopy={event => event.stopPropagation()}
 							id={id}
 							type={inputType}
+							onKeyDown={stopPropagation(props.onKeyDown)}
+							onKeyUp={stopPropagation(props.onKeyUp)}
+							onKeyPress={stopPropagation(props.onKeyPress)}
 							{...props}
 						/>
 					)}

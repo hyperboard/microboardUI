@@ -81,12 +81,21 @@ export function SearchInput({
 	};
 
 	const handleInputClick: MouseEventHandler = ev => {
-		ev.preventDefault();
 		ev.stopPropagation();
 		if (isFocused) {
 			return;
 		}
 		htmlInputRef.current?.focus();
+	};
+
+	const scrollInputToBottom = () => {
+		setTimeout(() => {
+			if (!inputRef.current) {
+				return;
+			}
+			console.log("scrollHeoght", inputRef.current.scrollHeight);
+			inputRef.current.scrollTo({ top: inputRef.current.scrollHeight });
+		}, 0);
 	};
 
 	useLayoutEffect(() => {
@@ -170,6 +179,7 @@ export function SearchInput({
 					setAddedValues(values);
 					setCurrValue("");
 					onValuesChange(values);
+					scrollInputToBottom();
 				}
 
 				if (highlightedIndex !== null) {
@@ -177,6 +187,7 @@ export function SearchInput({
 						filteredOptions[highlightedIndex].value;
 					const values = [...addedValues, highlightedValue];
 					setAddedValues(values);
+					scrollInputToBottom();
 					setCurrValue("");
 					setHighlightedIndex(null);
 					onValuesChange(values);
@@ -190,6 +201,7 @@ export function SearchInput({
 						onValuesChange(newValues);
 						return newValues;
 					});
+					scrollInputToBottom();
 				}
 				break;
 			}
@@ -231,6 +243,7 @@ export function SearchInput({
 			ev.stopPropagation();
 			const values = [...addedValues, opt.value.trim()];
 			setAddedValues(values);
+			scrollInputToBottom();
 			setCurrValue("");
 			onValuesChange(values);
 		};
@@ -242,45 +255,55 @@ export function SearchInput({
 			ev.preventDefault();
 
 			setAddedValues(prev => prev.filter(item => item !== val));
+			scrollInputToBottom();
 			onValuesChange(addedValues.filter(item => item !== val));
 		};
 
 	return (
-		<div className={styles.wrapper}>
+		<div className={styles.wrapper} onClick={stopPropagation}>
 			<div className={styles.icon}>
 				<Icon width={20} height={20} iconName="People" />
 			</div>
 			<div
-				ref={inputRef}
-				className={clsx(styles.input, isFocused && styles.inputFocused)}
-				onClick={handleInputClick}
-				onPointerDown={preventDefault}
-				onPointerUp={preventDefault}
+				className={clsx(
+					styles.inputWrapper,
+					isFocused && styles.inputFocused,
+				)}
 			>
-				{addedValues.map(val => (
-					<div
-						className={styles.item}
-						key={val}
-						onClick={handleAddedValueClick(val)}
-					>
-						<span>{val}</span>
-						<Icon width={14} height={14} iconName="Close" />
-					</div>
-				))}
-				<textarea
-					rows={1}
-					className={styles.nativeInput}
-					onFocus={handleFocus}
-					onBlur={handleBlur}
-					onChange={handleInput}
-					onKeyDown={handleKeyPress}
-					onKeyUp={stopPropagation}
-					onKeyPress={stopPropagation}
-					value={currValue}
-					ref={htmlInputRef}
-					style={{ width: inputWidth }}
-					placeholder={addedValues.length === 0 ? placeholder : ""}
-				/>
+				<div
+					ref={inputRef}
+					className={styles.input}
+					onClick={handleInputClick}
+					onPointerDown={stopPropagation}
+					onPointerUp={stopPropagation}
+				>
+					{addedValues.map(val => (
+						<div
+							className={styles.item}
+							key={val}
+							onClick={handleAddedValueClick(val)}
+						>
+							<span>{val}</span>
+							<Icon width={14} height={14} iconName="Close" />
+						</div>
+					))}
+					<textarea
+						rows={1}
+						className={styles.nativeInput}
+						onFocus={handleFocus}
+						onBlur={handleBlur}
+						onChange={handleInput}
+						onKeyDown={handleKeyPress}
+						onKeyUp={stopPropagation}
+						onKeyPress={stopPropagation}
+						value={currValue}
+						ref={htmlInputRef}
+						style={{ width: inputWidth }}
+						placeholder={
+							addedValues.length === 0 ? placeholder : ""
+						}
+					/>
+				</div>
 			</div>
 			{createPortal(
 				<TopFade inProp={isFocused} unmountOnExit>

@@ -29,19 +29,21 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 			style={{ width, height }}
 			className={clsx(styles.userPic, isOwner && styles.owner)}
 		>
-			{account.isLoggedIn && src ? (
-				<img width={width} height={height} src={src} />
-			) : (
-				<Icon iconName="UserPic" width={12} height={15} />
-			)}
-			{isOwner && (
-				<Icon
-					className={styles.crown}
-					iconName="Crown"
-					width={12}
-					height={12}
-				/>
-			)}
+			<div className={styles.imgWrapper} style={{ width, height }}>
+				{account.isLoggedIn && src ? (
+					<img width={width} height={height} src={src} />
+				) : (
+					<Icon iconName="UserPic" width={12} height={15} />
+				)}
+				{isOwner && (
+					<Icon
+						className={styles.crown}
+						iconName="Crown"
+						width={12}
+						height={12}
+					/>
+				)}
+			</div>
 			{tooltip && (
 				<div className={styles.tooltipWrapper}>
 					<div className={styles.tooltip}>

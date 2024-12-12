@@ -63,6 +63,8 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 						navigate(`/boards/${boardId}`);
 					}
 				}
+				await account.fetchAccountInfo();
+				await account.onLogin?.();
 			})
 			.catch(error => {
 				// setErrorMessage(error.message);

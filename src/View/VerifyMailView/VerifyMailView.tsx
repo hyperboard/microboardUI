@@ -39,7 +39,6 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 	const boardsList = useBoardsList();
 
 	const onSuccess = async (): Promise<void> => {
-		console.log("success");
 		await account.fetchAccountInfo();
 		await account.onLogin?.();
 		if (searchParams.get("backToSelect") === "true") {

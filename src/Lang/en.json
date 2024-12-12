@@ -5,6 +5,7 @@
 		"confirm": "Confirm",
 		"loading": "Loading...",
 		"notFound": "Not found",
+		"anonymous": "Anonymous",
 		"languages": {
 			"ru": "Russian",
 			"en": "English",
@@ -677,7 +678,8 @@
 		"requestAccess": "Request access",
 		"requestAccessMsg": "Request access or log in to a permissioned account.",
 		"loggedIn": "You are logged in to your {{account}} account.",
-		"accessDenied": "Access denied"
+		"accessDenied": "Access denied",
+		"addAccessLevel": "Add one more access level"
 	},
 	"presence": {
 		"anonymous": "Anonymous",
@@ -710,6 +712,7 @@
 		"saved": "Name saved successfully",
 		"msg": "It is displayed during your work on the board",
 		"changePassword": "Change Password",
+		"passwordChanged": "Password changed successfully",
 		"logout": "Logout",
 		"name": "Name",
 		"currentPassword": "Current password",
