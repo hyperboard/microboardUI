@@ -265,8 +265,8 @@ function validateRequest(req: express.Request, res: express.Response, next: expr
     next();
 }
 
-function handleError(res: express.Response, error: any, defaultStatus = HttpStatus.INTERNAL_SERVER_ERROR) {
-    const status = error.status || defaultStatus;
+function handleError(res: express.Response, error: HttpException, defaultStatus = HttpStatus.INTERNAL_SERVER_ERROR) {
+    const status = error.statusCode || defaultStatus;
 
     return res.clearCookie(REFRESH_TOKEN_COOKIE_NAME, {
         httpOnly: true,
