@@ -10,7 +10,7 @@ type Props = {
 	onPick: (color: string) => void;
 };
 
-export function ColorItem({ color, active, onPick, id }: Props) {
+export function ColorItem({ color, active, onPick, id }: Props): React.ReactElement {
 	return (
 		<button
 			onClick={() => onPick(color)}

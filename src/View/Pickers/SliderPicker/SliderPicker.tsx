@@ -21,7 +21,7 @@ export function SliderPicker({
 	showLabel,
 	id,
 	step,
-}: Props) {
+}: Props): React.ReactElement {
 	const { t } = useTranslation();
 	return (
 		<div className={style.container}>

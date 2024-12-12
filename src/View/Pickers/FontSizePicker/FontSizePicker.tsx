@@ -39,7 +39,7 @@ export function FontSizePicker({
 					{t("contextPanel.fontSize.auto")}
 				</UiButton>
 			)}
-			{fontSizes.map((size, i) => (
+			{fontSizes.map((size) => (
 				<UiButton
 					id={id ? `${id}${size}` : ""}
 					key={`fontSize_${size}_button`}

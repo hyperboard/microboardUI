@@ -13,15 +13,15 @@ export function StrokeStylePicker({
 	stroke,
 	onPick,
 }: Props): React.ReactElement {
-	const handleSolidPick = () => {
+	const handleSolidPick = (): void => {
 		onPick("solid");
 	};
 
-	const handleDashPick = () => {
+	const handleDashPick = (): void => {
 		onPick("dash");
 	};
 
-	const handleDotPick = () => {
+	const handleDotPick = (): void => {
 		onPick("dot");
 	};
 

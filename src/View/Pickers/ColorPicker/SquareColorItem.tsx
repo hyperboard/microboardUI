@@ -9,7 +9,7 @@ type Props = {
 	id?: string;
 };
 
-export function SquareColorItem({ color, selected, onPick, id }: Props) {
+export function SquareColorItem({ color, selected, onPick, id }: Props): React.ReactElement {
 	return (
 		<button
 			onClick={() => onPick(color)}

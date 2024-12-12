@@ -1,15 +1,14 @@
 import React from "react";
-import { DrawingType } from "../../Board/Items/Drawing";
 import { UiButton } from "../Ui/UiButton";
-import { Icon, ShapeIcon } from "../Icon";
-import { DRAWING_TOOLS } from "../Tools/AddDrawing";
+import { Icon } from "../Icon";
+import { DRAWING_TOOLS, DrawingTool } from "../Tools/AddDrawing";
 
 type Props = {
-	onPick: (type: DrawingType) => void;
-	selected?: DrawingType | "None";
+	onPick: (type: DrawingTool) => void;
+	selected?: DrawingTool | "None";
 };
 
-export const DrawingToolPicker = ({ selected, onPick }: Props) => {
+export const DrawingToolPicker = ({ selected, onPick }: Props): React.ReactElement => {
 	return (
 		<>
 			{DRAWING_TOOLS.map(drawing => (

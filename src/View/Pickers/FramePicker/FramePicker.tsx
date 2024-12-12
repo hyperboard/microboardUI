@@ -17,7 +17,7 @@ export function FramePicker({
 	onPointerEnter,
 	onPointerLeave,
 	selected,
-}: Props) {
+}: Props): React.ReactElement {
 	return (
 		<>
 			{FRAME_TYPES.map(({ id, label }) => (

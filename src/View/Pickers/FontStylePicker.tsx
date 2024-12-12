@@ -16,16 +16,16 @@ export function FontStylePicker({
 }: Props): React.ReactElement {
 	const { t } = useTranslation();
 
-	const handleBoldPick = () => {
+	const handleBoldPick = (): void => {
 		onPick("bold");
 	};
-	const handleItalicsPick = () => {
+	const handleItalicsPick = (): void => {
 		onPick("italic");
 	};
-	const handleLineThroughPick = () => {
+	const handleLineThroughPick = (): void => {
 		onPick("line-through");
 	};
-	const handleUnderlinePick = () => {
+	const handleUnderlinePick = (): void => {
 		onPick("underline");
 	};
 
