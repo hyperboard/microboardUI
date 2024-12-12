@@ -8,14 +8,15 @@ import {
 import React from "react";
 import style from "./DrawStrokeWidth.module.css";
 import { useAppContext } from "View/AppContext";
+import { ConnectionLineWidths } from "Board/Items/Connector/Connector";
 
-export function DrawStrokeWidth() {
+export function DrawStrokeWidth(): React.ReactElement {
 	const { board } = useAppContext();
 
 	const width = board.selection.getStrokeWidth();
 
 	const handleSliderPick = (width: number): void => {
-		board.selection.setStrokeWidth(width);
+		board.selection.setStrokeWidth(ConnectionLineWidths[width]);
 	};
 
 	return (

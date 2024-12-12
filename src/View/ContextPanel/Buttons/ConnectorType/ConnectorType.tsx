@@ -43,7 +43,7 @@ export function ConnectorType(): React.ReactElement | null {
 	};
 
 	const handleSliderChange = (width: number): void => {
-		board.selection.setStrokeWidth(width);
+		board.selection.setStrokeWidth(ConnectionLineWidths[width]);
 	};
 
 	return (
@@ -92,8 +92,6 @@ export function ConnectorType(): React.ReactElement | null {
 						<ConnectorLineStylePicker
 							onPick={handlePick}
 							selected={connectorType}
-							onSliderChange={handleSliderChange}
-							lineWidth={connectorLineWidth}
 						/>
 					</div>
 					<div className={styles.panel}>
