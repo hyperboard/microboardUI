@@ -13,6 +13,7 @@ import type {
 export class HTTP {
 	private readonly baseURL: string;
 	private readonly headers: Record<string, string>;
+	private fetchCache = new Map<string, Promise<HTTPResponse<unknown>>>();
 	readonly interceptors = new Interceptors();
 
 	constructor(config: HTTPConfig) {
@@ -54,48 +55,61 @@ export class HTTP {
 		Q extends URLSearchParamsInit = URLSearchParamsInit,
 		P extends ParamsRecord = ParamsRecord,
 	>(path: string, config: HTTPRequestConfig<Q, P>): Promise<HTTPResponse<R>> {
-		try {
-			const modifiedConfig =
-				await this.interceptors.triggerRequestInterceptors(config);
-			const response = await fetch(
-				this.getUrl(path, config.params, config.query),
-				{
-					...modifiedConfig,
-					headers: {
-						...this.headers,
-						...modifiedConfig.headers,
-						...config.headers,
-					},
-					credentials: "include",
-				},
-			);
+		const cacheKey = `${path}:${JSON.stringify(config)}`;
 
-			if (!response.ok) {
-				const message = await response.json();
-				throw new HTTPError(
-					response.status,
-					message.message,
-					response,
-					response.url,
-				);
-			}
-
-			const customResponse = new HTTPResponse<R>(response);
-			if (customResponse.status !== 204) {
-				customResponse.data = await response.json();
-			} else {
-				customResponse.data = null;
-			}
-
-			this.interceptors.triggerResponseSuccessInterceptors(
-				customResponse,
-			);
-
-			return customResponse;
-		} catch (error) {
-			this.interceptors.triggerResponseErrorInterceptors(error);
-			throw error;
+		if (this.fetchCache.has(cacheKey)) {
+			return this.fetchCache.get(cacheKey) as Promise<HTTPResponse<R>>;
 		}
+
+		const fetchPromise = (async () => {
+			try {
+				const modifiedConfig =
+					await this.interceptors.triggerRequestInterceptors(config);
+				const response = await fetch(
+					this.getUrl(path, config.params, config.query),
+					{
+						...modifiedConfig,
+						headers: {
+							...this.headers,
+							...modifiedConfig.headers,
+							...config.headers,
+						},
+						credentials: "include",
+					},
+				);
+
+				if (!response.ok) {
+					const message = await response.json();
+					throw new HTTPError(
+						response.status,
+						message.message,
+						response,
+						response.url,
+					);
+				}
+
+				const customResponse = new HTTPResponse<R>(response);
+				if (customResponse.status !== 204) {
+					customResponse.data = await response.json();
+				} else {
+					customResponse.data = null;
+				}
+
+				this.interceptors.triggerResponseSuccessInterceptors(
+					customResponse,
+				);
+
+				return customResponse;
+			} catch (error) {
+				this.interceptors.triggerResponseErrorInterceptors(error);
+				throw error;
+			} finally {
+				this.fetchCache.delete(cacheKey);
+			}
+		})();
+
+		this.fetchCache.set(cacheKey, fetchPromise);
+		return fetchPromise;
 	}
 
 	get<
@@ -140,7 +154,6 @@ export class HTTP {
 		config?: HTTPRequestConfig<URLSearchParamsInit, P>,
 	): Promise<HTTPResponse<R>> {
 		const stringifiedBody = JSON.stringify(body);
-		console.log(config?.signal);
 		return this.$fetch<R>(path, {
 			method: "PATCH",
 			body: stringifiedBody,

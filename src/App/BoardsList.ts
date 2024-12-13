@@ -95,6 +95,50 @@ export class BoardsList {
 		return searchFolder(this.rootFolder) || searchFolder(this.sharedFolder);
 	}
 
+	private findPathToBoard(
+		boardId: string,
+		folder: foldersApi.Folder | null,
+		path: number[] = [],
+	): number[] | null {
+		if (!folder) {
+			return null;
+		}
+
+		for (const item of folder.items) {
+			if (item.itemType === "board" && item.id === boardId) {
+				return [...path, folder.id];
+			}
+			if (item.itemType === "folder") {
+				const result = this.findPathToBoard(
+					boardId,
+					item as foldersApi.Folder,
+					[...path, folder.id],
+				);
+				if (result) {
+					return result;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	getPathToBoard(boardId: string): number[] | null {
+		return (
+			this.findPathToBoard(boardId, this.rootFolder) ||
+			this.findPathToBoard(boardId, this.sharedFolder)
+		);
+	}
+
+	isFolderContainsBoard(folderId: number, boardId: string): boolean {
+		const path = this.getPathToBoard(boardId);
+		if (!path) {
+			return false;
+		}
+
+		return path.includes(folderId);
+	}
+
 	getFolder(
 		folderId: number | null,
 	): foldersApi.Folder | foldersApi.NestedFolder | null {
@@ -371,7 +415,21 @@ export class BoardsList {
 		);
 	}
 
-	async removeBoardFromFolder(folderId: number, boardId: string): Promise<void> {
+	async addBoardToFolder(folderId: number, boardId: string): Promise<void> {
+		if (!this.account.isLoggedIn) {
+			return;
+		}
+
+		await foldersApi.addToFolder(folderId, {
+			nestedBoardId: boardId,
+		});
+		await this.updateList();
+	}
+
+	async removeBoardFromFolder(
+		folderId: number,
+		boardId: string,
+	): Promise<void> {
 		if (!this.account.isLoggedIn) {
 			return;
 		}

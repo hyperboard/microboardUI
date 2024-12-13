@@ -1,1 +1,1 @@
-export { UiAdaptiveAccordion } from "./UiAdaptiveAccordion";
+export { UiAdaptiveAccordion, AccordionState } from "./UiAdaptiveAccordion";

@@ -1,8 +1,18 @@
-import React, { type MouseEventHandler } from "react";
+import React, {
+	memo,
+	useCallback,
+	useEffect,
+	useRef,
+	type MouseEventHandler,
+	type RefCallback,
+} from "react";
 import { foldersApi, type boardsApiV2 } from "shared/apiV2";
 import { Icon } from "View/Icon";
 import type { IconId } from "View/Icon/Icon";
-import { UiAdaptiveAccordion } from "View/Ui/UiAdaptiveAccordion";
+import {
+	UiAdaptiveAccordion,
+	type AccordionState,
+} from "View/Ui/UiAdaptiveAccordion";
 import styles from "./Folder.module.css";
 import { FolderItem } from "./FolderItem";
 import { useHoverState } from "lib/useHoverState";
@@ -10,6 +20,9 @@ import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { handleClickDetection } from "lib/handleClickDetection";
 import { RenameInput, useRenameContext } from "View/Rename";
 import { useContextMenuContext } from "View/ContextMenu";
+import { useBoardsList } from "App/useBoardsList";
+import { useAppContext } from "View/AppContext";
+import { useDroppable } from "@dnd-kit/core";
 
 type Props = {
 	folder: foldersApi.Folder | null;
@@ -24,10 +37,48 @@ const folderIcons: Record<foldersApi.FolderType, IconId> = {
 	[foldersApi.FolderType.NESTED]: "Folder",
 };
 
-export function Folder({ folder, handleOpenBoard }: Props): React.ReactElement | null {
+export const Folder = ({ folder, handleOpenBoard }: Props) => {
 	const { handlePointerEnter, handlePointerLeave, isHover } = useHoverState();
 	const { open } = useContextMenuContext();
 	const { setNewName, setRenamingId, renamingId } = useRenameContext();
+	const { board } = useAppContext();
+	const boardsList = useBoardsList();
+	const boardId = board.getBoardId();
+	const accordionRef = useRef<AccordionState>(null);
+	const currentBoardRef = useRef<HTMLDivElement>();
+	const { isOver, setNodeRef } = useDroppable({
+		id: folder?.id || "unknown",
+		data: folder ?? undefined,
+	});
+	const style = {
+		color: isOver ? "green" : undefined,
+	};
+
+	useEffect(() => {
+		if (!folder) {
+			return;
+		}
+		const isOpen = boardsList.isFolderContainsBoard(folder.id, boardId);
+
+		if (isOpen) {
+			accordionRef.current?.open(() => {
+				if (currentBoardRef.current) {
+					currentBoardRef.current.scrollIntoView({
+						behavior: "smooth",
+						block: "nearest",
+					});
+				}
+			});
+		} else {
+			accordionRef.current?.close();
+		}
+	}, [folder?.id]);
+
+	useEffect(() => {
+		if (isOver && !accordionRef.current?.isOpen) {
+			accordionRef.current?.open();
+		}
+	}, [isOver]);
 
 	if (!folder || folder.type === foldersApi.FolderType.TRASH) {
 		return null;
@@ -58,8 +109,11 @@ export function Folder({ folder, handleOpenBoard }: Props): React.ReactElement |
 
 	return (
 		<UiAdaptiveAccordion
+			ref={accordionRef}
+			elemRef={setNodeRef}
 			renderHeader={({ toggle, isOpen }) => (
 				<button
+					style={style}
 					className={styles.header}
 					onClick={handleClick(toggle)}
 					onPointerEnter={handlePointerEnter}
@@ -90,9 +144,9 @@ export function Folder({ folder, handleOpenBoard }: Props): React.ReactElement |
 					<div className={styles.content}>
 						{folder.items.length > 0 ? (
 							<TransitionGroup component={null}>
-								{folder.items.map(i => (
+								{folder.items.map((item, idx) => (
 									<CSSTransition
-										key={i.id}
+										key={item.id}
 										timeout={500}
 										classNames={{
 											enter: styles.fadeEnter,
@@ -101,17 +155,29 @@ export function Folder({ folder, handleOpenBoard }: Props): React.ReactElement |
 											exitActive: styles.fadeExitActive,
 										}}
 									>
-										{i.itemType === "board" ? (
+										{item.itemType === "board" ? (
 											<FolderItem
+												ref={el => {
+													if (
+														el &&
+														item.id === boardId
+													) {
+														currentBoardRef.current =
+															el;
+													}
+												}}
 												folder={folder}
-												key={i.id}
-												board={i}
+												key={item.id}
+												board={item}
 												handleOpenBoard={
 													handleOpenBoard
 												}
 											/>
 										) : (
-											<Folder key={i.id} folder={i} />
+											<Folder
+												key={item.id}
+												folder={item}
+											/>
 										)}
 									</CSSTransition>
 								))}
@@ -126,4 +192,6 @@ export function Folder({ folder, handleOpenBoard }: Props): React.ReactElement |
 			)}
 		/>
 	);
-}
+};
+
+Folder.displayName = "Folder";

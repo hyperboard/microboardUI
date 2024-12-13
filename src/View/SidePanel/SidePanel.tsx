@@ -6,7 +6,7 @@ import React, { useState, type MouseEventHandler } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "shared/ui-lib/Button";
 import { useContextMenuContext } from "View/ContextMenu";
-import { Folder } from "View/Folder";
+import { Folder, FoldersDndContext } from "View/Folder";
 import { Icon } from "View/Icon";
 import { useModal } from "View/Modal/ModalProvider";
 import { UiButton } from "View/Ui/UiButton";
@@ -15,6 +15,7 @@ import { UiPanel } from "View/Ui/UiPanel";
 import { ResizableEdge } from "./ResizableEdge";
 import style from "./SidePanel.module.css";
 import { useSidePanelContext } from "./SidePanelContext";
+import { DndContext } from "@dnd-kit/core";
 
 const MIN_PANEL_WIDTH = 280;
 
@@ -71,8 +72,10 @@ export function SidePanel(): JSX.Element {
 					</UiButton>
 				</div>
 				<div className={style.folders}>
-					<Folder folder={boardsList.getRootFolder()} />
-					<Folder folder={boardsList.getSharedFolder()} />
+					<FoldersDndContext>
+						<Folder folder={boardsList.getRootFolder()} />
+						<Folder folder={boardsList.getSharedFolder()} />
+					</FoldersDndContext>
 				</div>
 			</div>
 			<div className={style.bottom}>

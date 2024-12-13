@@ -1,54 +1,87 @@
-import React, { useState, type HTMLProps, type ReactNode } from "react";
-import styles from "./UiAdaptiveAccordion.module.css";
 import clsx from "clsx";
+import React, {
+	forwardRef,
+	useImperativeHandle,
+	useState,
+	type HTMLProps,
+	type ReactNode,
+	type Ref,
+} from "react";
+import styles from "./UiAdaptiveAccordion.module.css";
 
-type RenderPropsFunc = (payload: {
+type OnOpenCb = () => void;
+
+export type AccordionState = {
 	isOpen: boolean;
 	toggle: () => void;
-	open: () => void;
+	open: (onOpen?: OnOpenCb) => void;
 	close: () => void;
-}) => ReactNode;
+};
+type RenderPropsFunc = (payload: AccordionState) => ReactNode;
 
 type Props = HTMLProps<HTMLDivElement> & {
-	initialOpenState?: boolean;
+	initialOpenState?: boolean | (() => boolean);
 	renderHeader: RenderPropsFunc;
 	renderContent: RenderPropsFunc;
+	elemRef?: Ref<HTMLDivElement>;
 };
 
-export function UiAdaptiveAccordion({
-	initialOpenState = false,
-	renderContent,
-	renderHeader,
-	...props
-}: Props) {
-	const [isOpen, setIsOpen] = useState(initialOpenState);
+export const UiAdaptiveAccordion = forwardRef<AccordionState, Props>(
+	(
+		{
+			initialOpenState = false,
+			renderContent,
+			renderHeader,
+			elemRef,
+			...props
+		},
+		ref,
+	) => {
+		const [isOpen, setIsOpen] = useState(initialOpenState);
 
-	const toggle = () => setIsOpen(prev => !prev);
-	const close = () => setIsOpen(false);
-	const open = () => setIsOpen(true);
-	return (
-		<div
-			className={clsx(styles.accordion, {
-				[styles.open]: isOpen,
-			})}
-			{...props}
-		>
-			<header>
-				{renderHeader({
-					isOpen,
-					close,
-					open,
-					toggle,
+		const toggle = () => setIsOpen(prev => !prev);
+		const close = () => setIsOpen(false);
+		const open = (onOpen?: OnOpenCb) => {
+			setIsOpen(true);
+			setTimeout(() => {
+				onOpen?.();
+			}, 500);
+		};
+
+		useImperativeHandle(ref, () => ({
+			close,
+			isOpen,
+			open,
+			toggle,
+		}));
+
+		return (
+			<div
+				className={clsx(styles.accordion, {
+					[styles.open]: isOpen,
 				})}
-			</header>
-			<div className={styles.content}>
-				{renderContent({
-					isOpen,
-					close,
-					open,
-					toggle,
-				})}
+				ref={elemRef}
+				{...props}
+			>
+				<header>
+					{renderHeader({
+						isOpen,
+						close,
+						open,
+						toggle,
+					})}
+				</header>
+				<div className={styles.content}>
+					{renderContent({
+						isOpen,
+						close,
+						open,
+						toggle,
+					})}
+				</div>
 			</div>
-		</div>
-	);
-}
+		);
+	},
+);
+
+UiAdaptiveAccordion.displayName = "UiAdaptiveAccordion";
