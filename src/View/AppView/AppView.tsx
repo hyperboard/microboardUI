@@ -35,6 +35,7 @@ import { InactiveBoardHidder } from "./InactiveBoardHidder";
 import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
 import { AccessDeniedModal } from "View/AccessDeniedModal";
+import { AIInput } from "View/AIInput/AIInput";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -168,6 +169,7 @@ export function AppView(): JSX.Element {
 				/>
 				<ContextMenu />
 				<ItemTooltip />
+				<AIInput />
 			</ExportVisible>
 			<ExportVisible>
 				<CommentsContextProvider>

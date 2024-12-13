@@ -116,7 +116,8 @@ export type IconId =
 	| "BringToMe"
 	| "EyeDashed"
 	| "addLink"
-	| "Hyperlink";
+	| "Hyperlink"
+	| "Vector";
 
 type Props = {
 	iconName: IconId;

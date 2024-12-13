@@ -1,0 +1,122 @@
+.inputContainer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 720px;
+	min-height: 48px;
+	position: fixed;
+	bottom: 12px;
+	left: 50%;
+	padding: 0 10px 0;
+	transform: translateX(-50%);
+	background-color: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modelSelector {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+.selectedModel {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+}
+
+.selectedModel span {
+	margin-right: 8px; /* Отступ между текстом и иконкой */
+}
+
+.modelDropdown {
+	position: absolute;
+	bottom: calc(100% + 12px);
+	left: 0;
+	background-color: white;
+	border: 1px solid #ccc;
+	width: 300px;
+	z-index: 10;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.modelDropdown div {
+	padding: 10px;
+	cursor: pointer;
+}
+
+.modelDropdown div:hover {
+	background-color: #f0f0f0;
+}
+
+.modelDropdown strong {
+	display: block;
+	margin-bottom: 5px;
+}
+
+.modelDropdown p {
+	margin: 0;
+	color: #666;
+	font-size: 12px;
+}
+
+.aiInput {
+	flex-grow: 1;
+	border: none;
+	border-radius: 4px;
+	margin-left: 5px;
+	max-width: 405px;
+	resize: none;
+	font-size: 14px;
+	overflow-y: auto;
+	box-sizing: border-box;
+	max-height: 120px;
+	line-height: 1.5;
+}
+
+.aiInput::-webkit-input-placeholder {
+	position: absolute;
+	top: 0;
+	left: 0;
+	position: 0 0;
+}
+
+.aiInput:focus {
+	outline: none;
+}
+
+.aiInput::-webkit-scrollbar {
+	width: 6px;
+}
+
+.aiInput::-webkit-scrollbar-track {
+	background-color: white;
+	border-radius: 10px;
+}
+
+.aiInput::-webkit-scrollbar-thumb {
+	border-radius: 10px;
+	background-color: #e9eaec;
+}
+
+.sendButton {
+	background: none;
+	border: none;
+	cursor: pointer;
+	margin-left: 10px;
+	padding: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.selectionInfo {
+	margin-left: 10px;
+	background-color: #f0f0f0;
+	padding: 5px 10px;
+	border-radius: 8px;
+	color: #666;
+	font-size: 14px;
+}
