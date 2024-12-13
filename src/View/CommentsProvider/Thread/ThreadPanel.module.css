@@ -4,7 +4,6 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 12px;
 	z-index: 4;
 }
 
@@ -13,7 +12,7 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding: 12px 16px 0 16px;
+	padding: 12px 16px 12px 16px;
 }
 
 .noPermission {
@@ -27,18 +26,20 @@
 }
 
 .threadBtn {
-	display: flex;
 	width: fit-content;
-	padding: 0 8px;
+	height: fit-content;
+	padding: 6px 12px;
+	border-radius: 10px;
 }
 
 .messages {
 	width: 100%;
 	display: flex;
 	flex-direction: column;
-	padding: 0 16px 12px 20px;
+	padding: 0 16px 4px 20px;
 	max-height: 60vh;
 	margin-right: 4px;
+	transform: translateY(-8px);
 }
 
 .scrollContainer {

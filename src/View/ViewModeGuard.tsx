@@ -12,6 +12,7 @@ type Props = {
 	mode?: ViewMode | ViewMode[];
 	children?: ReactNode | ((interfaceType: InterfaceType) => ReactNode);
 	callback?: () => void;
+	fallbackCb?: () => void;
 };
 
 export function ViewModeGuard({
@@ -20,6 +21,7 @@ export function ViewModeGuard({
 	fallback,
 	mode = "edit",
 	callback,
+	fallbackCb,
 }: Props) {
 	const { board } = useAppContext();
 	const forceUpdate = useForceUpdate();
@@ -35,6 +37,9 @@ export function ViewModeGuard({
 			(Array.isArray(mode) && !mode.includes(interfaceType))) &&
 		(!iframe || isIframe())
 	) {
+		if (fallbackCb) {
+			fallbackCb();
+		}
 		return <>{fallback}</>;
 	}
 

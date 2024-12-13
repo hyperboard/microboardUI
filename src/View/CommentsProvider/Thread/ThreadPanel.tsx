@@ -13,7 +13,6 @@ import { useAppContext } from "View/AppContext";
 import { Mbr } from "Board/Items/Mbr/Mbr";
 import { ExtraOptions } from "./ExtraOptions/ExtraOptions";
 import { OptionsPanel } from "./OptionsPanel/OptionsPanel";
-import { useAppSubscription } from "Board/useBoardSubscription";
 import { useCommentsContext } from "../CommentsContext.tsx";
 import { useTranslation } from "react-i18next";
 import { useIntersectionObserver } from "View/CommentsProvider/useIntersectionObserver";
@@ -158,8 +157,8 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 							{!comment.getResolved() && (
 								<Icon
 									iconName="checkMark"
-									width={16}
-									height={16}
+									width={20}
+									height={20}
 								/>
 							)}
 							{comment.getResolved()

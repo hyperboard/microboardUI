@@ -164,6 +164,7 @@ export function TitlePanel(): JSX.Element | null {
 			<ViewModeGuard
 				mode={["edit", "view"]}
 				callback={() => setIsBoardRenameBtnShown(true)}
+				fallbackCb={() => setIsBoardRenameBtnShown(false)}
 			>
 				<UiSeparator vertical className={style.tabletHide} />
 				<UiButton
