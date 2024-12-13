@@ -51,7 +51,13 @@ export const CommentPreview = ({
 					</div>
 				)}
 				<div>
-					<div className={clsx(styles.noWrap, styles.spaceBetween)}>
+					<div
+						className={clsx(
+							styles.noWrap,
+							styles.spaceBetween,
+							styles.infoContainer,
+						)}
+					>
 						<p className={styles.username}>
 							{commentators[0].username}
 						</p>

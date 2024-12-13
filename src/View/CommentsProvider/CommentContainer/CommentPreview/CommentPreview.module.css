@@ -43,8 +43,8 @@
 }
 
 .infoContainer {
-	display: block;
 	max-width: 224px;
+	min-width: 220px;
 }
 
 .username {
