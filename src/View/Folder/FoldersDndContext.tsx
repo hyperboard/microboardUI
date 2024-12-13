@@ -1,7 +1,9 @@
 import {
 	DndContext,
+	PointerSensor,
+	useSensor,
+	useSensors,
 	type DragEndEvent,
-	type DragStartEvent,
 } from "@dnd-kit/core";
 import { useBoardsList } from "App/useBoardsList";
 import type { PropsWithChildren } from "react";
@@ -24,6 +26,14 @@ const isFolder = (item: unknown): item is foldersApi.NestedFolder =>
 
 export function FoldersDndContext({ children }: Props) {
 	const boardsList = useBoardsList();
+	const pointerSensor = useSensor(PointerSensor, {
+		activationConstraint: {
+			delay: 300,
+			distance: 5,
+		},
+	});
+
+	const sensors = useSensors(pointerSensor);
 	// const handleDragStart = (evt: DragStartEvent) => {
 	// 	console.log(evt);
 	// 	const board = evt.active.data;
@@ -49,5 +59,9 @@ export function FoldersDndContext({ children }: Props) {
 		await boardsList.addBoardToFolder(+targetFolderId, board.id);
 	};
 
-	return <DndContext onDragEnd={handleDragEnd}>{children}</DndContext>;
+	return (
+		<DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+			{children}
+		</DndContext>
+	);
 }

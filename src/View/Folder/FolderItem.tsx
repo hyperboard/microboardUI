@@ -38,47 +38,12 @@ export const FolderItem = forwardRef<HTMLDivElement, Props>(
 		const [originalPosition, setOriginalPosition] = useState<
 			Record<"left" | "top" | "width" | "height", number>
 		>({ left: 0, top: 0, width: 0, height: 0 });
+
 		const { attributes, listeners, setNodeRef, transform, isDragging } =
 			useDraggable({
 				id: board.id,
 				data: { ...board, parentFolderId: folder?.id },
 			});
-
-		const [mouseDownPosition, setMouseDownPosition] = useState<{
-			x: number;
-			y: number;
-		} | null>(null);
-		const [isDraggingAllowed, setIsDraggingAllowed] = useState(false);
-
-		const handleMouseDown: MouseEventHandler = ev => {
-			setMouseDownPosition({ x: ev.clientX, y: ev.clientY });
-			setIsDraggingAllowed(false);
-		};
-
-		const handleMouseMove: MouseEventHandler = ev => {
-			if (mouseDownPosition) {
-				const deltaX = Math.abs(ev.clientX - mouseDownPosition.x);
-				const deltaY = Math.abs(ev.clientY - mouseDownPosition.y);
-				const isDrag = deltaX > 5 || deltaY > 5; // Adjust threshold as needed
-
-				if (isDrag) {
-					setIsDraggingAllowed(true);
-				}
-			}
-		};
-
-		const handleMouseUp: MouseEventHandler = ev => {
-			if (mouseDownPosition) {
-				const deltaX = Math.abs(ev.clientX - mouseDownPosition.x);
-				const deltaY = Math.abs(ev.clientY - mouseDownPosition.y);
-				const isClick = deltaX < 5 && deltaY < 5; // Adjust threshold as needed
-
-				if (isClick) {
-					handleClick(ev);
-				}
-			}
-			setMouseDownPosition(null);
-		};
 
 		useEffect(() => {
 			if (isDragging && itemRef.current) {
@@ -142,7 +107,7 @@ export const FolderItem = forwardRef<HTMLDivElement, Props>(
 
 		return (
 			<DraggingWrapper
-				isDragging={isDragging && isDraggingAllowed}
+				isDragging={isDragging}
 				style={{ ...style, ...originalPosition }}
 				draggableItem={
 					<DraggingItem
@@ -182,9 +147,6 @@ export const FolderItem = forwardRef<HTMLDivElement, Props>(
 					className={styles.wrapper}
 					{...listeners}
 					{...attributes}
-					onMouseDown={handleMouseDown}
-					onMouseMove={handleMouseMove}
-					onMouseUp={handleMouseUp}
 				>
 					{!isDragging && (
 						<button
@@ -201,6 +163,9 @@ export const FolderItem = forwardRef<HTMLDivElement, Props>(
 							[styles.active]: isActive || isDragging,
 						})}
 						onContextMenu={handleContextMenuOpen}
+						onClick={handleClick}
+						onMouseDown={stopPropagation}
+						onMouseUp={stopPropagation}
 					>
 						<span className={styles.icon}>
 							<Icon
