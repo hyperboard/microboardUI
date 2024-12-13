@@ -3,42 +3,53 @@ import React, {
 	CSSProperties,
 	forwardRef,
 	HTMLAttributes,
-	type PropsWithChildren,
+	PropsWithChildren,
+	ReactNode,
 } from "react";
 import style from "./UiButton.module.css";
 import { Tooltip } from "./Tooltip";
 
+type CommonUiButtonProps = {
+	active?: boolean;
+	disabled?: boolean;
+	tooltip?: string;
+	hotkey?: string;
+	tooltipPosition?:
+		| "right"
+		| "top"
+		| "top-left"
+		| "top-right"
+		| "top-center-fixed"
+		| "top-right-fixed"
+		| "bottom"
+		| "bottom-right"
+		| "bottom-left";
+	variant?: "default" | "secondary" | "tertiary";
+	size?: "lg" | "md" | "sm";
+	rounded?:
+		| "top"
+		| "bottom"
+		| "left"
+		| "right"
+		| "full"
+		| "none"
+		| "bottom-left"
+		| "bottom-right";
+	radius?: "xl" | "md" | "sm";
+	className?: string;
+	toolTipStyle?: CSSProperties;
+	children: ReactNode;
+};
+
 type UiButtonProps = PropsWithChildren<
-	HTMLAttributes<HTMLButtonElement> & {
-		active?: boolean;
-		disabled?: boolean;
-		tooltip?: string;
-		hotkey?: string;
-		tooltipPosition?:
-			| "right"
-			| "top"
-			| "top-left"
-			| "top-right"
-			| "top-center-fixed"
-			| "top-right-fixed"
-			| "bottom"
-			| "bottom-right"
-			| "bottom-left";
-		variant?: "default" | "secondary" | "tertiary";
-		size?: "lg" | "md" | "sm";
-		rounded?:
-			| "top"
-			| "bottom"
-			| "left"
-			| "right"
-			| "full"
-			| "none"
-			| "bottom-left"
-			| "bottom-right";
-		radius?: "xl" | "md" | "sm";
-		className?: string;
-		toolTipStyle?: CSSProperties;
-	}
+	HTMLAttributes<HTMLButtonElement> &
+		CommonUiButtonProps & {
+			disabled?: boolean;
+		}
+>;
+
+type UiDivButtonProps = PropsWithChildren<
+	HTMLAttributes<HTMLDivElement> & CommonUiButtonProps
 >;
 
 export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
@@ -100,10 +111,7 @@ export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
 	},
 );
 
-export const UiDivButton = forwardRef<
-	HTMLDivElement,
-	Omit<UiButtonProps, "disabled">
->(
+export const UiDivButton = forwardRef<HTMLDivElement, UiDivButtonProps>(
 	(
 		{
 			children,
