@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Icon } from "View/Icon";
 import { StarIcon } from "./StarIcon";
 import { useAppSubscription } from "Board/useBoardSubscription";
+import { requestMap } from "shared/api/ai";
 
 export const AIInput: React.FC = () => {
 	const { t } = useTranslation();
@@ -33,17 +34,22 @@ export const AIInput: React.FC = () => {
 			setTimeout(() => inputRef.current?.focus(), 80);
 		}
 	};
-
+	// async function createChat(boardId: number) {
+	// 	const response = await api.post(requestMap.createChat.url, { boardId });
+	// 	return response.data;
+	//   }
 	const handleInputChange = (
 		event: React.ChangeEvent<HTMLTextAreaElement>,
 	) => {
 		setInputValue(event.target.value);
-		event.target.style.height = "auto"; // Сбрасываем высоту
-		event.target.style.height = `${Math.min(event.target.scrollHeight, 120)}px`; // Устанавливаем новую высоту
+		event.target.style.height = "auto";
+		event.target.style.height = `${Math.min(event.target.scrollHeight, 120)}px`;
 	};
 
 	const handleSendClick = async () => {
-		if (!inputValue.trim()) return;
+		if (!inputValue.trim()) {
+			return;
+		}
 		await sendInputData();
 	};
 
