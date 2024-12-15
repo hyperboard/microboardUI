@@ -15,6 +15,7 @@ import { createPortal } from "react-dom";
 import styles from "./SearchInput.module.css";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
+import isEmail from "validator/lib/isEmail";
 
 export type SearchOption = {
 	value: string;
@@ -93,7 +94,6 @@ export function SearchInput({
 			if (!inputRef.current) {
 				return;
 			}
-			console.log("scrollHeoght", inputRef.current.scrollHeight);
 			inputRef.current.scrollTo({ top: inputRef.current.scrollHeight });
 		}, 0);
 	};
@@ -128,32 +128,32 @@ export function SearchInput({
 		return () => observer.disconnect();
 	}, []);
 
-	const handleInput: ChangeEventHandler<HTMLTextAreaElement> = ev => {
-		const text = ev.target.value;
-		setHighlightedIndex(null);
-		setCurrValue(text);
-		onInput(text);
-
+	const calcInputSize = (text: string) => {
 		if (!htmlInputRef.current) {
 			return;
 		}
 		htmlInputRef.current.style.height = "auto";
 		htmlInputRef.current.style.height = `${htmlInputRef.current.scrollHeight}px`;
-
-		calcOptionsListPosition();
-
 		const span = document.createElement("span");
 		span.style.visibility = "hidden";
 		span.style.whiteSpace = "pre";
 		span.style.font = window.getComputedStyle(htmlInputRef.current).font;
 		span.textContent = text || " ";
 		document.body.appendChild(span);
-		console.log(maxWidth);
 		setInputWidth(
 			span.offsetWidth >= maxWidth ? maxWidth : span.offsetWidth,
 		);
 
 		document.body.removeChild(span);
+		calcOptionsListPosition();
+	};
+
+	const handleInput: ChangeEventHandler<HTMLTextAreaElement> = ev => {
+		const text = ev.target.value;
+		setHighlightedIndex(null);
+		setCurrValue(text);
+		onInput(text);
+		calcInputSize(text);
 	};
 
 	const stopPropagation = (evt: SyntheticEvent) => {
@@ -170,16 +170,26 @@ export function SearchInput({
 		switch (evt.key) {
 			case "Enter": {
 				evt.preventDefault();
+				// const isExistsInOptions = filteredOptions.find(
+				// 	opt => opt.value === currValue,
+				// );
+				const isExistsInOptions = isEmail(currValue.trim());
 				if (
 					currValue.trim() &&
-					filteredOptions.find(opt => opt.value === currValue) &&
+					isExistsInOptions &&
 					highlightedIndex === null
 				) {
 					const values = [...addedValues, currValue.trim()];
 					setAddedValues(values);
 					setCurrValue("");
+					calcInputSize("");
 					onValuesChange(values);
 					scrollInputToBottom();
+				}
+
+				if (!isExistsInOptions) {
+					setCurrValue("");
+					calcInputSize("");
 				}
 
 				if (highlightedIndex !== null) {
@@ -187,8 +197,9 @@ export function SearchInput({
 						filteredOptions[highlightedIndex].value;
 					const values = [...addedValues, highlightedValue];
 					setAddedValues(values);
-					scrollInputToBottom();
 					setCurrValue("");
+					calcInputSize("");
+					scrollInputToBottom();
 					setHighlightedIndex(null);
 					onValuesChange(values);
 				}
@@ -201,6 +212,7 @@ export function SearchInput({
 						onValuesChange(newValues);
 						return newValues;
 					});
+					calcInputSize("");
 					scrollInputToBottom();
 				}
 				break;
@@ -243,9 +255,10 @@ export function SearchInput({
 			ev.stopPropagation();
 			const values = [...addedValues, opt.value.trim()];
 			setAddedValues(values);
-			scrollInputToBottom();
-			setCurrValue("");
 			onValuesChange(values);
+			setCurrValue("");
+			calcInputSize("");
+			scrollInputToBottom();
 		};
 
 	const handleAddedValueClick =
@@ -255,8 +268,9 @@ export function SearchInput({
 			ev.preventDefault();
 
 			setAddedValues(prev => prev.filter(item => item !== val));
-			scrollInputToBottom();
 			onValuesChange(addedValues.filter(item => item !== val));
+			calcInputSize("");
+			scrollInputToBottom();
 		};
 
 	return (
@@ -305,7 +319,7 @@ export function SearchInput({
 					/>
 				</div>
 			</div>
-			{createPortal(
+			{/* {createPortal(
 				<TopFade inProp={isFocused} unmountOnExit>
 					<div
 						onClick={preventDefault}
@@ -364,7 +378,7 @@ export function SearchInput({
 					</div>
 				</TopFade>,
 				document.getElementById("selector")!,
-			)}
+			)} */}
 		</div>
 	);
 }

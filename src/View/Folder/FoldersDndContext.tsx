@@ -34,18 +34,7 @@ export function FoldersDndContext({ children }: Props) {
 	});
 
 	const sensors = useSensors(pointerSensor);
-	// const handleDragStart = (evt: DragStartEvent) => {
-	// 	console.log(evt);
-	// 	const board = evt.active.data;
-	// 	if (!isBoard(board)) {
-	// 		return;
-	// 	}
-
-	// 	// setDraggedBoard(board);
-	// };
 	const handleDragEnd = async (evt: DragEndEvent) => {
-		// setDraggedBoard(null);
-		console.log(evt);
 		const board = evt.active.data.current;
 		const targetFolderId = evt.over?.id;
 		if (

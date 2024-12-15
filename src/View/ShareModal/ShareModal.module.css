@@ -57,7 +57,8 @@
 	cursor: pointer;
 	border: none;
 	background: none;
-	margin-top: 12px;
+	margin-top: 4px;
+	margin-bottom: 8px;
 	font-size: 16px;
 	color: #4778f5;
 	font-weight: 500;
@@ -174,7 +175,7 @@
 }
 
 .grantedUsers {
-	padding-top: 24px;
+	padding-top: 16px;
 }
 
 .copyBtn {

@@ -93,7 +93,6 @@ export function ShareModal() {
 					};
 				}) ?? [],
 			);
-			console.log(grantedUsers);
 		} catch {
 			setGrantedUsers([]);
 		} finally {
@@ -150,7 +149,7 @@ export function ShareModal() {
 	};
 
 	const handleSearchInput = async (val: string) => {
-		const { data } = await usersApi.getUsers(val);
+		const { data } = await usersApi.getUsers(val, 1);
 		if (data) {
 			setSearchOptions(data);
 		}
@@ -158,7 +157,7 @@ export function ShareModal() {
 	};
 
 	const debouncedHandleInputSearch = useCallback(
-		debounce(handleSearchInput, 1500),
+		debounce(handleSearchInput, 700),
 		[usersApi],
 	);
 
@@ -226,6 +225,10 @@ export function ShareModal() {
 												!grantedUsers.find(
 													granted =>
 														granted.id === user.id,
+												) &&
+												!userEmails2.find(
+													added =>
+														added === user.email,
 												),
 										)
 										.map(user => ({
@@ -355,7 +358,7 @@ export function ShareModal() {
 						</div>
 					</>
 				)}
-				{!account.isLoggedIn && (
+				{!account.isLoggedIn && isOwner && (
 					<p className={styles.notAuth}>
 						{t("sharing.notAuthMsg")}{" "}
 						<Link to="/auth/sign-in">{t("sharing.login")}</Link>{" "}

@@ -144,7 +144,7 @@ export class Account {
 				}
 			} finally {
 				this.isTokenLoading = false;
-				this.refreshTokensPromise = null; // Reset the promise after completion
+				this.refreshTokensPromise = null;
 			}
 		})();
 

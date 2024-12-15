@@ -1,12 +1,11 @@
 .input {
 	display: flex;
+	align-items: center;
 	flex-wrap: wrap;
 	gap: 4px;
-	padding: 10px 12px;
 	font-size: 14px;
 	padding-left: 40px;
 	cursor: text;
-	min-height: 42px;
 	transition:
 		border 0.3s ease,
 		outline 0.5s ease;
@@ -17,7 +16,7 @@
 .inputWrapper {
 	border: 1px solid #dee0e3;
 	border-radius: 12px;
-	padding-right: 4px;
+	padding: 10px 5px;
 	overflow: hidden;
 }
 
@@ -29,6 +28,9 @@
 	font-size: 14px;
 	font-family: Manrope;
 	font-weight: 400;
+	display: flex;
+	align-items: center;
+	line-height: 22px;
 }
 
 .nativeInput::placeholder {
@@ -60,8 +62,7 @@
 .icon {
 	position: absolute;
 	left: 12px;
-	top: 50%;
-	transform: translateY(-50%);
+	top: 12px;
 	color: rgba(13, 17, 38, 0.4);
 }
 
