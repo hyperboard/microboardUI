@@ -7,8 +7,9 @@ import {
     boards,
     boardViewLink,
     userEditLink,
-    userViewLink
+    userViewLink,
 } from "drizzle/entities";
+import { DirectAccessType, userBoardId } from "drizzle/entities/boards";
 import { v4 as uuid } from "uuid";
 // import { createEventsTable } from "../Events";
 
@@ -53,7 +54,7 @@ export async function createBoard(boardName: string, authorUUID?: string) {
         .values({
             title: boardName,
             authorUUID: authorUUID,
-            isPublic: true
+            isPublic: true,
         })
         .returning()
         .execute();
@@ -87,7 +88,7 @@ export async function getBoardOwner(boardUUID: string) {
             .select({ ownerId: boardOwner.ownerId, boardUUID: boards.uniqId })
             .from(boardOwner)
             .innerJoin(boards, eq(boardOwner.boardId, boards.id))
-            .where(eq(boards.uniqId, boardUUID))
+            .where(eq(boards.uniqId, boardUUID));
 
         return records[0];
     } catch (err) {
@@ -107,9 +108,14 @@ export async function getBoardId(boardUUID: string) {
         .from(boards)
         .leftJoin(boardEditLink, eq(boards.id, boardEditLink.boardId))
         .leftJoin(boardViewLink, eq(boards.id, boardViewLink.boardId))
-        .where(or(eq(boardEditLink.editLinkUUID, boardUUID), eq(boardViewLink.viewLinkUUID, boardUUID), eq(boards.boardUUID, boardUUID)))
+        .where(
+            or(
+                eq(boardEditLink.editLinkUUID, boardUUID),
+                eq(boardViewLink.viewLinkUUID, boardUUID),
+                eq(boards.uniqId, boardUUID)
+            )
+        )
         .limit(1);
-
 
     if (!boardRecords) {
         throw new Error(`Board not found with UUID ${boardUUID}`);
@@ -119,12 +125,7 @@ export async function getBoardId(boardUUID: string) {
 }
 
 export async function getBoardById(boardId: number) {
-    const [boardRecords] = await db
-        .select()
-        .from(boards)
-        .where(eq(boards.id, boardId))
-        .limit(1)
-        .execute();
+    const [boardRecords] = await db.select().from(boards).where(eq(boards.id, boardId)).limit(1).execute();
 
     if (!boardRecords) {
         throw new Error(`Could not find board by ${boardId} id`);
@@ -142,12 +143,14 @@ export const getBoardByLink = async (link: string) => {
                 created: boards.createdAt,
                 title: boards.title,
                 isPublic: boards.isPublic,
-                type: boards.directAccessType
+                type: boards.directAccessType,
             })
             .from(boards)
             .leftJoin(boardEditLink, eq(boards.id, boardEditLink.boardId))
             .leftJoin(boardViewLink, eq(boards.id, boardViewLink.boardId))
-            .where(or(eq(boardEditLink.editLinkUUID, link), eq(boardViewLink.viewLinkUUID, link), eq(boards.uniqId, link)))
+            .where(
+                or(eq(boardEditLink.editLinkUUID, link), eq(boardViewLink.viewLinkUUID, link), eq(boards.uniqId, link))
+            )
             .limit(1);
 
         if (result.length === 0) {
@@ -188,7 +191,7 @@ export async function getUserOwnedBoards(userId: number) {
             createdAt: boards.createdAt,
             authorUUID: boards.authorUUID,
             directAccessType: boards.directAccessType,
-            uniqId: boards.uniqId
+            uniqId: boards.uniqId,
         })
         .from(boards)
         .innerJoin(boardOwner, eq(boards.id, boardOwner.boardId))
@@ -211,8 +214,7 @@ export async function getUserHasRightsBoards(userId: number) {
             createdAt: boards.createdAt,
             authorUUID: boards.authorUUID,
             directAccessType: boards.directAccessType,
-            uniqId: boards.uniqId
-
+            uniqId: boards.uniqId,
         })
         .from(boards)
         .innerJoin(boardPermissions, eq(boardPermissions.userId, userId))
@@ -236,8 +238,8 @@ export async function deleteBoard(boardUUID: string) {
  * Function to create duplicate record and table from original board.
  * @returns [originalBoardId, newBoardId].
  */
-export async function duplicateBoard(boardUUID: string, appendTitle: string = '(Copy)') {
-    const originalBoardRecord = await getBoardByLink(boardUUID)
+export async function duplicateBoard(boardUUID: string, appendTitle: string = "(Copy)") {
+    const originalBoardRecord = await getBoardByLink(boardUUID);
 
     if (!originalBoardRecord) {
         throw new Error("Original board does not exist");
@@ -272,7 +274,7 @@ export async function renameBoard(boardUUID: string, newTitle: string) {
     return updateRecords.id;
 }
 
-export async function changeAccessType(boardUUID: string, accessType: 'view' | 'edit') {
+export async function changeAccessType(boardUUID: string, accessType: DirectAccessType) {
     const [updateRecords] = await db
         .update(boards)
         .set({ directAccessType: accessType })
@@ -478,11 +480,11 @@ export async function getSharedLinks(userId: number) {
     const sharedBoardIds = await db
         .select({
             id: userBoardId.boardUuid,
-            boardname: boards.boardName,
+            boardname: boards.title,
             isPublic: boards.isPublic,
         })
         .from(userBoardId)
-        .innerJoin(boards, eq(userBoardId.boardUuid, boards.boardUUID))
+        .innerJoin(boards, eq(userBoardId.boardUuid, boards.uniqId))
         .where(eq(userBoardId.userId, userId));
 
     return [...sharedEditLinks, ...sharedViewLinks, ...sharedBoardIds];

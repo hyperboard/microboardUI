@@ -12,3 +12,4 @@ export * from "./templates";
 export { userNames } from "./userNames";
 export { boardEditLink, boardViewLink } from "./boardLinks";
 export { userEditLink, userViewLink } from "./userLinks";
+export * from "./ai";

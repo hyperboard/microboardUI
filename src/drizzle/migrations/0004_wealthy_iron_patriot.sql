@@ -2,7 +2,12 @@ CREATE TABLE IF NOT EXISTS "chat" (
 	"id" serial PRIMARY KEY NOT NULL
 );
 --> statement-breakpoint
-CREATE TYPE "role" AS ENUM ('ai', 'user');
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'role') THEN
+        CREATE TYPE "role" AS ENUM ('ai', 'user');
+    END IF;
+END $$;
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "message" (
 	"id" serial PRIMARY KEY NOT NULL,

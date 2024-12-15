@@ -1,22 +1,33 @@
 import { relations } from "drizzle-orm";
-import { pgEnum, pgTable, serial, text } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, serial, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { boards } from "./boards";
 
 export const chat = pgTable("chat", {
     id: serial("id").primaryKey(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    active: boolean("active").default(true).notNull(),
+    boardId: text("board_id").notNull(),
 });
 
-const messageRole = pgEnum("role", ["ai", "user"]);
 export const message = pgTable("message", {
     id: serial("id").primaryKey(),
-    chatId: serial("chat_id").references(() => chat.id, { onDelete: "cascade" }),
-    role: messageRole("role").notNull(),
-    content: text("response").notNull().default(""),
+    chatId: integer("chat_id").references(() => chat.id, { onDelete: "cascade" }),
+    role: text("role").notNull(),
+    content: text("content").notNull().default(""),
+    tokensUsed: integer("tokens_used").notNull().default(0),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    archived: boolean("archived").default(false).notNull(),
 });
 
-// RELATIONS
-
-export const chatRelations = relations(chat, ({ many }) => ({ messages: many(message) }));
+export const chatRelations = relations(chat, ({ many }) => ({
+    messages: many(message),
+}));
 
 export const messageRelations = relations(message, ({ one }) => ({
     chat: one(chat, { fields: [message.chatId], references: [chat.id] }),
 }));
+
+export type Chat = typeof chat.$inferSelect;
+export type Message = typeof message.$inferSelect;
+export type NewChat = typeof chat.$inferInsert;
+export type NewMessage = typeof message.$inferInsert;

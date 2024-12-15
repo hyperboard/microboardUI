@@ -212,7 +212,7 @@ export class Auth {
 
         this.trySaveToken(updateUser.userId, refreshTokenHash);
 
-        return { ...tokens, userId: updateUser.userId };
+        return {...tokens, userId: updateUser.userId};
     }
 
     async checkVerificationCodes({ email }: { email: string }): Promise<string> {
@@ -222,10 +222,6 @@ export class Auth {
             throw new HttpException(HttpStatus.NOT_FOUND, "User not found");
         }
 
-        if (user.activated) {
-            return 'USER_ALREADY_ACTIVATED';
-        }
-
         const passcode = this.authHelper.generatePasscode();
         const lastPasscode = await Drizzle.getLastPasscode(user.userId);
 
@@ -233,10 +229,9 @@ export class Auth {
 
         if (lastPasscode && +lastPasscode.created! < Date.now() - HOURS_24) {
             await Drizzle.addPasscode(user.userId, passcode);
-            return await this.trySendVerifyMail(user.userId, email, passcode);
         }
 
-        return `PASSCODE_NOT_SENDED: ${+lastPasscode.created! - (Date.now() - 3 * 60 * 1000)}`
+        return await this.trySendVerifyMail(user.userId, email, passcode);
     }
 
     async resendEmail(payload: ResendEmailPayload): Promise<any> {

@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import * as Drizzle from "drizzle";
 import { AccessToken } from "Interface";
 import { boardEventDbWriteLatency } from "Metrics/metrics";
@@ -5,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import validator from "validator";
 import winston from "winston";
 import { db, pool } from "../../../drizzle/db";
-import { boardEvents } from "../../../drizzle/entities";
+import { boardEvents, boards } from "../../../drizzle/entities";
 
 export interface BoardEventData {
     eventId: string;
@@ -30,18 +31,18 @@ export type OwnedBoard = Board & {
 };
 
 export class Boards {
-    private onModeChange?: (((boardUUID: string, mode: 'view' | 'edit', ignoreUserId: number) => void) | null)
-    private onPrivacyChange?: (((boardUUID: string, isPublic: boolean, ignoreUserId: number) => void) | null)
-    constructor(private logger: winston.Logger) { }
+    private onModeChange?: ((boardUUID: string, mode: "view" | "edit", ignoreUserId: number) => void) | null;
+    private onPrivacyChange?: ((boardUUID: string, isPublic: boolean, ignoreUserId: number) => void) | null;
+    constructor(private logger: winston.Logger) {}
 
-    setOnModeChange(onModeChange?: ((boardUUID: string, mode: 'view' | 'edit', ignoreUserId: number) => void)) {
+    setOnModeChange(onModeChange?: (boardUUID: string, mode: "view" | "edit", ignoreUserId: number) => void) {
         this.onModeChange = onModeChange;
     }
 
-    setOnPrivacyChange(onPrivacyChange?: ((boardUUID: string, isPublic: boolean, ignoreUserId: number) => void)) {
+    setOnPrivacyChange(onPrivacyChange?: (boardUUID: string, isPublic: boolean, ignoreUserId: number) => void) {
         this.onPrivacyChange = onPrivacyChange;
     }
-    onEventSave(boardId: string, boardEvent: any): void { }
+    onEventSave(boardId: string, boardEvent: any): void {}
 
     async saveBoardData(transformedData: {
         id: string;
@@ -134,14 +135,14 @@ export class Boards {
                 const authorKey = uuidv4();
                 const board = await Drizzle.createBoard(title || "Untitled", authorKey);
 
-                if (!board?.boardUUID) {
+                if (!board?.uniqId) {
                     throw new Error("Error creating board: create_board");
                 }
 
                 return {
                     id: board.id,
-                    uniq_id: board.boardUUID!,
-                    boardname: board.boardName,
+                    uniq_id: board.uniqId!,
+                    boardname: board.title,
                     is_public: true,
                     author_key: board.authorUUID || "", // FIXME: make not null?
                 };
@@ -150,8 +151,8 @@ export class Boards {
             const privateBoard = await Drizzle.createPrivateBoard(title || "Untitled", +ownerId);
             return {
                 id: privateBoard.id,
-                uniq_id: privateBoard.boardUUID!,
-                boardname: privateBoard.boardName,
+                uniq_id: privateBoard.uniqId!,
+                boardname: privateBoard.title,
                 is_public: false,
                 owner_id: ownerId,
             };
@@ -197,7 +198,7 @@ export class Boards {
     async userVisited(userId: number, linkUUID: string): Promise<void> {
         try {
             this.validateUUID(linkUUID, "linkUUID");
-            console.log('visited', linkUUID, userId)
+            console.log("visited", linkUUID, userId);
             await Drizzle.addUserVisitedBoard(userId, linkUUID);
             this.logger.info(`Succesfully set visited ${userId} ${linkUUID}`);
         } catch (error) {
@@ -209,11 +210,21 @@ export class Boards {
     async getBoards(userId: number) {
         try {
             const author = await this.getAuthoredBoards(userId);
+            // const canView = await this.getCanViewBoards(userId);
             const canView = await this.getCanViewBoards(userId);
             const canEdit = await this.getCanEditBoards(userId);
             const shared = await Drizzle.getSharedLinks(userId);
 
             return { author, canEdit, canView, shared };
+        } catch (error) {
+            this.logger.error(`Error fetching boards for user ${userId}: ${error}`);
+            throw error;
+        }
+    }
+
+    async getCanViewBoards(userId: number) {
+        try {
+            return await Drizzle.getBoardsUserCanView(userId);
         } catch (error) {
             this.logger.error(`Error fetching boards for user ${userId}: ${error}`);
             throw error;
@@ -230,19 +241,14 @@ export class Boards {
     }
 
     async getBoard(boardUUID: string) {
-        try {
-            return await Drizzle.getBoardsUserCanView(userId);
-        } catch (error) {
-            this.logger.error(`Error fetching boards for user ${userId}: ${error}`);
-            throw error;
-        }
+        return await db.select().from(boards).where(eq(boards.uniqId, boardUUID));
     }
 
     async getCanEditBoards(userId: number) {
         try {
             return await Drizzle.getCanEditUserBoards(userId);
         } catch (error) {
-            this.logger.error(`Error fetching board details for board ${boardUUID}: ${error}`);
+            this.logger.error(`Error fetching canEditBoards: ${error}`);
             throw error;
         }
     }
@@ -271,7 +277,7 @@ export class Boards {
                 created: board.created,
                 title: board.title,
                 is_public: board.isPublic,
-                type: board.type
+                type: board.type,
             };
         } catch (error) {
             this.logger.error(`Error fetching board details for board ID ${boardId}: ${error}`);
@@ -295,7 +301,7 @@ export class Boards {
         try {
             this.validateUUID(authorKey, "authorKey");
 
-            return await Drizzle.checkBoardAuthor(boardUUID, authorKey);
+            return await Drizzle.checkBoardAuthor(boardId, authorKey);
         } catch (error) {
             this.logger.error(`Error checking if author key is valid: ${error}`);
             throw error;
@@ -374,20 +380,23 @@ export class Boards {
             if (!board) {
                 return;
             }
-            await db.insert(boardEvents).values(
-                events.map((event) => {
-                    const eventId = (event.eventId.split(":")[0] || Date.now().toString()) + ":" + event.order;
-                    return {
-                        boardId: board.id,
-                        logId: event.order,
-                        eventId,
-                        eventBody: {
-                            ...event,
+            await db
+                .insert(boardEvents)
+                .values(
+                    events.map((event) => {
+                        const eventId = (event.eventId.split(":")[0] || Date.now().toString()) + ":" + event.order;
+                        return {
+                            boardId: board[0].id,
+                            logId: event.order,
                             eventId,
-                        },
-                    };
-                })
-            ).onConflictDoNothing();
+                            eventBody: {
+                                ...event,
+                                eventId,
+                            },
+                        };
+                    })
+                )
+                .onConflictDoNothing();
 
             const endDbWrite = process.hrtime.bigint();
             const dbWriteLatency = Number(endDbWrite - startDbWrite);
@@ -432,7 +441,7 @@ export class Boards {
             this.validateUUID(boardId, "boardId");
             this.validateUUID(linkId, "linkId");
 
-            await Drizzle.createBoardLinkByType(boardId, type, linkId);
+            await Drizzle.createBoardByLinkType(boardId, type, linkId);
         } catch (error) {
             this.logger.error("Error creating link", {
                 error: error instanceof Error ? error.message : String(error),
@@ -478,7 +487,7 @@ export class Boards {
 
     async isBoardPublic(boardId: string): Promise<boolean> {
         try {
-            validateUUID(boardId, "");
+            this.validateUUID(boardId, "");
             return await Drizzle.getBoardIsPublic(boardId);
         } catch (error) {
             this.logger.error(`Error checking valid link: ${error}`);
@@ -490,7 +499,7 @@ export class Boards {
         try {
             this.validateUUID(linkUUID, "linkId");
 
-            const link = await Drizzle.getBoardLink(linkId);
+            const link = await Drizzle.getBoardLink(linkUUID);
 
             if (!link?.boardId) {
                 return null;
@@ -518,9 +527,9 @@ export class Boards {
         }
     }
 
-    async getPrivateBoards(user: AccessToken): Promise<Array<{ get_private_boards: string | null }> | undefined> {
+    async getPrivateBoards(user: AccessToken) {
         try {
-            const privateBoards = await Drizzle.getPrivateBoards(+user.sub);
+            const privateBoards = await Drizzle.getUserOwnedBoards(+user.sub);
             return privateBoards;
         } catch (e) {
             this.logger.error("Get private boards error");

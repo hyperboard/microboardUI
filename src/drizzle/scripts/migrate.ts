@@ -41,7 +41,7 @@ export const runMigration = async () => {
             migrationsFolder: migrationsFolderPath,
         });
 
-        console.log("Migration successful");
+        console.log("Migration successful!");
     } catch (error) {
         console.error(error);
         process.exit(1);

@@ -1,6 +1,6 @@
 {
-	"id": "2cddfd89-44d1-4b0a-9901-08769038be67",
-	"prevId": "aa7f3e74-182d-4b73-b477-50e88dbe9c7d",
+	"id": "5460cb61-b743-43a6-99c0-8368a9dbfc9d",
+	"prevId": "df1ac8b8-9c34-4f19-a114-ddc421a57de2",
 	"version": "7",
 	"dialect": "postgresql",
 	"tables": {
@@ -13,6 +13,26 @@
 					"type": "serial",
 					"primaryKey": true,
 					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"active": {
+					"name": "active",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true,
+					"default": true
+				},
+				"board_id": {
+					"name": "board_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": false
 				}
 			},
 			"indexes": {},
@@ -32,23 +52,43 @@
 				},
 				"chat_id": {
 					"name": "chat_id",
-					"type": "serial",
+					"type": "integer",
 					"primaryKey": false,
-					"notNull": true
+					"notNull": false
 				},
 				"role": {
 					"name": "role",
-					"type": "role",
-					"typeSchema": "public",
+					"type": "text",
 					"primaryKey": false,
 					"notNull": true
 				},
-				"response": {
-					"name": "response",
+				"content": {
+					"name": "content",
 					"type": "text",
 					"primaryKey": false,
 					"notNull": true,
 					"default": "''"
+				},
+				"tokens_used": {
+					"name": "tokens_used",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"default": 0
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"archived": {
+					"name": "archived",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true,
+					"default": false
 				}
 			},
 			"indexes": {},
@@ -423,6 +463,38 @@
 					"columns": ["uniq_id"]
 				}
 			}
+		},
+		"public.user_board_id": {
+			"name": "user_board_id",
+			"schema": "",
+			"columns": {
+				"user_id": {
+					"name": "user_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"board_uuid": {
+					"name": "board_uuid",
+					"type": "uuid",
+					"primaryKey": false,
+					"notNull": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"user_board_id_user_id_users_id_fk": {
+					"name": "user_board_id_user_id_users_id_fk",
+					"tableFrom": "user_board_id",
+					"tableTo": "users",
+					"columnsFrom": ["user_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {}
 		},
 		"public.board_snapshots": {
 			"name": "board_snapshots",
@@ -999,7 +1071,7 @@
 				},
 				"uniq_id": {
 					"name": "uniq_id",
-					"type": "uuid",
+					"type": "text",
 					"primaryKey": false,
 					"notNull": true
 				},

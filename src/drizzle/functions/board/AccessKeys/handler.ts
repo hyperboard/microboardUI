@@ -1,8 +1,8 @@
 import { and, eq } from "drizzle-orm";
 import { db } from "drizzle/db";
 import { boardAccessKeys, boardEditLink, boardViewLink, boards } from "drizzle/entities";
-import type { AccessKeyType } from "./types";
-import { LinkTypes } from ".";
+import { AccessKeyType } from "./types";
+import { getBoardId } from "../Boards/handler";
 
 /**
  * A function to generate board link by link type
@@ -21,6 +21,15 @@ export async function deleteAccessKey(keyUUID: string) {
     await db.delete(boardAccessKeys).where(eq(boardAccessKeys.keyUUID, keyUUID)).execute();
 }
 
+export async function deleteBoardLink(boardUUID: string, linkUUID: string) {
+    const boardId = await getBoardId(boardUUID);
+
+    await db
+        .delete(boardEditLink)
+        .where(and(eq(boardEditLink.boardId, boardId), eq(boardEditLink.editLinkUUID, linkUUID)))
+        .execute();
+}
+
 export async function getAccessKey(keyUUID: string) {
     const records = await db
         .select({ keyUUID: boardAccessKeys.keyUUID, keyType: boardAccessKeys.keyType, boardUUID: boards.uniqId })
@@ -28,6 +37,37 @@ export async function getAccessKey(keyUUID: string) {
         .innerJoin(boards, eq(boards.id, boardAccessKeys.boardId))
         .where(eq(boardAccessKeys.keyUUID, keyUUID));
     return records[0];
+}
+
+export async function createBoardByLinkType(boardUUID: string, linkType: string, linkUUID: string) {
+    const boardId = await getBoardId(boardUUID);
+
+    switch (linkType) {
+        case "edit":
+            return await createBoardEditLink(boardId, linkUUID);
+
+        case "view":
+            return await createBoardViewLink(boardId, linkUUID);
+
+        default:
+            throw new Error("Invalid link type");
+    }
+}
+
+/**
+ * Function to generate a edit link for a board
+ * @returns editUUID
+ */
+export async function createBoardEditLink(boardId: number, linkUUID: string) {
+    await db.insert(boardEditLink).values({ boardId: boardId, editLinkUUID: linkUUID }).execute();
+}
+
+/**
+ * Function to generate a view link for a board
+ * @returns viewUUID
+ */
+export async function createBoardViewLink(boardId: number, linkUUID: string) {
+    await db.insert(boardViewLink).values({ boardId: boardId, viewLinkUUID: linkUUID }).execute();
 }
 
 /**
@@ -70,7 +110,7 @@ export async function getBoardViewLink(boardUUID: string) {
  * @returns if link exist return object. Keys: boardId, linkUUID, linkType.
  */
 export async function getBoardLink(linkUUID: string) {
-    let linkType: LinkTypes = LinkTypes.Edit;
+    let linkType: AccessKeyType = AccessKeyType.EDIT;
     let [record] = await db
         .select({ boardId: boardEditLink.boardId })
         .from(boardEditLink)
@@ -78,7 +118,7 @@ export async function getBoardLink(linkUUID: string) {
         .execute();
 
     if (!record) {
-        linkType = LinkTypes.View;
+        linkType = AccessKeyType.VIEW;
         [record] = await db
             .select({ boardId: boardViewLink.boardId })
             .from(boardViewLink)

@@ -1,6 +1,6 @@
 {
-	"id": "2cddfd89-44d1-4b0a-9901-08769038be67",
-	"prevId": "aa7f3e74-182d-4b73-b477-50e88dbe9c7d",
+	"id": "df1ac8b8-9c34-4f19-a114-ddc421a57de2",
+	"prevId": "9bfa4df8-6fdb-4e8b-ab5a-0da7493531de",
 	"version": "7",
 	"dialect": "postgresql",
 	"tables": {
@@ -13,10 +13,40 @@
 					"type": "serial",
 					"primaryKey": true,
 					"notNull": true
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"active": {
+					"name": "active",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true,
+					"default": true
+				},
+				"board_id": {
+					"name": "board_id",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true
 				}
 			},
 			"indexes": {},
-			"foreignKeys": {},
+			"foreignKeys": {
+				"chat_board_id_boards_id_fk": {
+					"name": "chat_board_id_boards_id_fk",
+					"tableFrom": "chat",
+					"tableTo": "boards",
+					"columnsFrom": ["board_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
 			"compositePrimaryKeys": {},
 			"uniqueConstraints": {}
 		},
@@ -32,23 +62,43 @@
 				},
 				"chat_id": {
 					"name": "chat_id",
-					"type": "serial",
+					"type": "integer",
 					"primaryKey": false,
-					"notNull": true
+					"notNull": false
 				},
 				"role": {
 					"name": "role",
-					"type": "role",
-					"typeSchema": "public",
+					"type": "text",
 					"primaryKey": false,
 					"notNull": true
 				},
-				"response": {
-					"name": "response",
+				"content": {
+					"name": "content",
 					"type": "text",
 					"primaryKey": false,
 					"notNull": true,
 					"default": "''"
+				},
+				"tokens_used": {
+					"name": "tokens_used",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"default": 0
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "timestamp",
+					"primaryKey": false,
+					"notNull": true,
+					"default": "now()"
+				},
+				"archived": {
+					"name": "archived",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true,
+					"default": false
 				}
 			},
 			"indexes": {},
@@ -999,7 +1049,7 @@
 				},
 				"uniq_id": {
 					"name": "uniq_id",
-					"type": "uuid",
+					"type": "text",
 					"primaryKey": false,
 					"notNull": true
 				},

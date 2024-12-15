@@ -10,8 +10,8 @@ import { verifyToken } from "Tokens";
 import winston from "winston";
 import WebSocket, { WebSocketServer } from "ws";
 import { Presence } from "./Presence";
-import { isUUID } from "validator";
-import { string } from "zod";
+import { AiChatMsg, handleAIChatMessage } from "./ai-chat";
+import { OpenAI } from "ai/openai";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
@@ -29,6 +29,7 @@ export function withWebSocketApi({
     logger,
     redis,
     boardsService,
+    openai,
 }: {
     wss: WebSocketServer;
     boards: Boards;
@@ -36,6 +37,7 @@ export function withWebSocketApi({
     logger: winston.Logger;
     redis: Redis;
     boardsService: BoardsService;
+    openai: OpenAI;
 }): void {
     const boardClients = new Map<string, WebSocket.WebSocket[]>();
     const wsTokens = new Map<WebSocket, AccessToken>();
@@ -108,6 +110,8 @@ export function withWebSocketApi({
                 return await handleUnsubscribeMsg(msg, ws);
             case "BoardEvent":
                 return await handleBoardEventMsg(msg, ws);
+            case "AiChat":
+                return await handleAIChatMessage({ msg, ws, openai, logger, boardClients });
             case "PresenceEvent":
                 return await handlePresenceEventMsg(msg, ws);
             case "BoardSnapshot":
@@ -118,7 +122,6 @@ export function withWebSocketApi({
                 return await handlePingMsg(msg, ws);
         }
     }
-
     function setupSocketCloseHandling(ws: WebSocket) {
         ws.on("close", () => {
             disconnectClientFromBoards(ws);
@@ -136,19 +139,11 @@ export function withWebSocketApi({
     }
 
     async function handleAuthMsg(msg: AuthMsg, ws: WebSocket): Promise<void> {
-        try {
-            const token = await verifyToken(msg.jwt, "access");
-            if (token) {
-                saveToken(ws, token);
-                return ws.send(JSON.stringify({
-                    type: "AuthConfirmation",
-                }))
-            } else {
-                return sendError(ws, "Invalid or expired token");
-            }
-        } catch (err) {
-            logger.error(err);
-            return sendError(ws, "Invalid token");
+        const token = await verifyToken(msg.jwt, "access");
+        if (token) {
+            return saveToken(ws, token);
+        } else {
+            return sendError(ws, "Invalid or expired token");
         }
     }
 
@@ -170,20 +165,12 @@ export function withWebSocketApi({
     }
 
     async function handleGetModeMsg(msg: GetModeMsg, ws: WebSocket) {
-        try {
-            if (!isUUID(msg.boardId)) {
-                return sendError(ws, "Access denied: Subscribe to board events.", { deniedBoardId: msg.boardId });
-            }
-            const mode = await getMode(ws, msg.boardId);
-            if (mode) {
-                return enforceMode(ws, msg.boardId, mode);
-            }
-            unsubscribeClient(msg.boardId, ws)
-            return sendError(ws, "Access denied: edit board.", { deniedBoardId: msg.boardId });
-        } catch (err) {
-            logger.error(err);
-            unsubscribeClient(msg.boardId, ws)
-            return sendError(ws, "Access denied: edit board.", { deniedBoardId: msg.boardId });
+        const mode = await getMode(ws, msg.boardId);
+        if (mode) {
+            enforceMode(ws, msg.boardId, mode);
+        }
+        if (!mode) {
+            return sendError(ws, "Access denied: edit board.");
         }
     }
 
@@ -191,9 +178,6 @@ export function withWebSocketApi({
 
     async function handleSubscribeMsg(msg: SubscribeMsg, ws: WebSocket): Promise<void> {
         try {
-            if (!isUUID(msg.boardId)) {
-                return sendError(ws, "Access denied: Subscribe to board events.", { deniedBoardId: msg.boardId });
-            }
             if (msg.accessKey) {
                 wsAccessKeys.set(ws, msg.accessKey);
             }
@@ -231,12 +215,10 @@ export function withWebSocketApi({
                     })
                 );
             } else {
-                unsubscribeClient(msg.boardId, ws);
-                return sendError(ws, "Access denied: Subscribe to board events.", { deniedBoardId: msg.boardId });
+                sendError(ws, "Access denied: Subscribe to board events.", { denidedBoardId: msg.boardId });
             }
         } catch (error) {
             logger.error("Failed to subscribe to board events:", error);
-            unsubscribeClient(msg.boardId, ws);
             return sendError(ws, "Failed to subscribe to board events.");
         }
     }
@@ -296,6 +278,7 @@ export function withWebSocketApi({
     }
 
     function enforceMode(ws: WebSocket, boardId: string, mode: ViewMode) {
+        console.log("Enforce", mode);
         ws.send(
             JSON.stringify({
                 type: "Mode",
@@ -314,13 +297,11 @@ export function withWebSocketApi({
                 enforceMode(ws, msg.boardId, mode);
             }
             if (!mode) {
-                unsubscribeClient(msg.boardId, ws);
-                return sendError(ws, "Access denied: edit board.", { deniedBoardId: msg.boardId });
+                return sendError(ws, "Access denied: edit board.");
             }
         } catch (err) {
             console.error(err);
-            unsubscribeClient(msg.boardId, ws);
-            return sendError(ws, "Access denied: edit board.", { deniedBoardId: msg.boardId });
+            return sendError(ws, "Access denied: edit board.");
         }
         const expectedSequence = socketsBoardsSeqNums.get(ws)?.get(msg.boardId) || 1;
         if (msg.sequenceNumber === expectedSequence) {
@@ -331,11 +312,11 @@ export function withWebSocketApi({
                 sendError(
                     ws,
                     "Unexpected sequence number" +
-                    JSON.stringify({
-                        expectedSequence,
-                        receivedSequence: msg.sequenceNumber,
-                        boardId: msg.boardId,
-                    })
+                        JSON.stringify({
+                            expectedSequence,
+                            receivedSequence: msg.sequenceNumber,
+                            boardId: msg.boardId,
+                        })
                 );
                 return;
             }
@@ -445,16 +426,12 @@ export function withWebSocketApi({
     }
 
     function handleUnsubscribeMsg(msg: UnsubscribeMsg, ws: WebSocket): void {
-        unsubscribeClient(msg.boardId, ws);
-    }
-
-    function unsubscribeClient(boardId: string, ws: WebSocket) {
-        const clients = boardClients.get(boardId) ?? [];
+        const clients = boardClients.get(msg.boardId) ?? [];
         const index = clients.indexOf(ws);
         if (index !== -1) {
             clients.splice(index, 1);
         }
-        boardClients.set(boardId, clients);
+        boardClients.set(msg.boardId, clients);
         wsAccessKeys.delete(ws);
     }
 
@@ -546,10 +523,7 @@ export function withWebSocketApi({
 export interface AuthMsg {
     type: "Auth";
     jwt: string;
-}
-
-export interface AuthConfirmationMsg {
-    type: "AuthConfirmation";
+    connectedBoardId?: string;
 }
 
 export interface InvalidateRightsMsg {
@@ -690,7 +664,7 @@ export interface BringToMeEvent {
     users: (number | string)[];
 }
 
-export interface PresenceUserSnapshot { }
+export interface PresenceUserSnapshot {}
 
 export type PresenceEventType =
     | PointerMoveEvent
@@ -731,7 +705,8 @@ export type EventsMsg =
     | SnapshotRequestMsg
     | SnapshotResponseMsg
     | SubscribeConfirmationMsg
-    | PresenceEventMsg;
+    | PresenceEventMsg
+    | AiChatMsg;
 
 export type SocketMsg =
     | EventsMsg
@@ -744,7 +719,8 @@ export type SocketMsg =
     | ConfirmationMsg
     | PingMsg
     | InvalidateRightsMsg
-    | GetModeMsg;
+    | GetModeMsg
+    | AiChatMsg;
 
 type BoardEventBody = any;
 
@@ -940,7 +916,7 @@ export class EventsManager {
         return events;
     }
 
-    requestSnapshotCallback(boardId: string, sinceLast: number): void { }
+    requestSnapshotCallback(boardId: string, sinceLast: number): void {}
 
     isBoardReady(boardId: string): boolean {
         return !this.processing.includes(boardId);

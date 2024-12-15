@@ -12,7 +12,7 @@ import { userAvatars } from "drizzle/entities/userAvatars";
 export class BoardsService {
   constructor(private readonly db: NodePgDatabase, private readonly logger: winston.Logger) { }
 
-  invalidateBoardRights = (boardUUID: string, byUser: boolean): Promise<void> => {
+  private invalidateBoardRights = (boardUUID: string, byUser: boolean): Promise<void> => {
     throw new Error('Method not implemented');
   };
 
@@ -55,6 +55,8 @@ export class BoardsService {
       .set(payload)
       .where(eq(boards.id, boardId))
       .returning()
+
+    await this.invalidateBoardRights(updatedBoard.uniqId, true);
 
     return updatedBoard;
   }
@@ -335,10 +337,8 @@ export class BoardsService {
     }
   }
 
-  async grantAccess(boardId: number, users: { userId: number, accessType: UserAccessType }[]) {
-    if (users.length === 0) {
-      return;
-    }
+  async grantAccess(boardUUID: string, boardId: number, users: { userId: number, accessType: UserAccessType }[]) {
+    console.log('grantAccess', users)
     const payload = users.map((user) => ({
       boardId,
       userId: user.userId,
@@ -355,6 +355,8 @@ export class BoardsService {
           canEdit: sql.raw(`excluded.${boardPermissions.canEdit.name}`)
         }
       })
+
+    await this.invalidateBoardRights(boardUUID, true);
   }
 
   async getGrantedUsers(boardId: number) {

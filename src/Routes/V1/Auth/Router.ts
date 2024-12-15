@@ -7,6 +7,7 @@ import winston from "winston";
 import { Auth } from "./Auth";
 import { REFRESH_TOKEN_EXPIRY } from "./AuthHelper";
 
+import { catchAsync } from "shared/lib/catchAsync";
 import type { Users } from "../Users";
 export const REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
@@ -32,7 +33,7 @@ export function getAuthRouter(
         body("email").isEmail(),
         body("password").not().isEmpty(),
         validateRequest,
-        async (req, res) => {
+        catchAsync(async (req, res) => {
             try {
                 const { email, password } = req.body;
                 const jwts = await authService.login({ email, password });
@@ -48,7 +49,7 @@ export function getAuthRouter(
                 return handleError(res, err);
             }
         }
-    );
+        ));
 
     router.post(
         "/auth/register",
@@ -56,7 +57,7 @@ export function getAuthRouter(
         body("email").isEmail(),
         body("password").isLength({ min: 6 }),
         validateRequest,
-        async (req, res) => {
+        catchAsync(async (req, res) => {
             try {
                 const { email, password, name } = req.body;
                 const user = await authService.register({
@@ -69,10 +70,10 @@ export function getAuthRouter(
                 console.log(err);
                 return handleError(res, err);
             }
-        }
+        },)
     );
 
-    router.post("/auth/refresh", async (req, res) => {
+    router.post("/auth/refresh", catchAsync(async (req, res) => {
         try {
             const refreshToken = req.cookies[REFRESH_TOKEN_COOKIE_NAME];
             if (!refreshToken) {
@@ -97,14 +98,14 @@ export function getAuthRouter(
         } catch (err) {
             return handleError(res, err);
         }
-    });
+    }));
 
     router.post(
         "/auth/verify",
         body("email").isEmail().not().isEmpty(),
         body("passcode").not().isEmpty(),
         validateRequest,
-        async (req, res) => {
+        catchAsync(async (req, res) => {
             const { email, passcode } = req.body;
             try {
                 const tokens = await authService.verifyEmail({
@@ -127,13 +128,13 @@ export function getAuthRouter(
                 return handleError(res, err);
             }
         }
-    );
+        ));
 
     router.post(
         "/auth/checkVerificationCodes",
         body("email").not().isEmpty(),
         validateRequest,
-        async (req, res) => {
+        catchAsync(async (req, res) => {
             const { email } = req.body;
             try {
                 const answer = await authService.checkVerificationCodes({
@@ -144,7 +145,7 @@ export function getAuthRouter(
             } catch (err) {
                 return handleError(res, err);
             }
-        }
+        })
     );
 
     router.post(
@@ -152,7 +153,7 @@ export function getAuthRouter(
         body("email").isEmail(),
         // body("userId").not().isEmpty(),
         validateRequest,
-        async (req, res) => {
+        catchAsync(async (req, res) => {
             const { email } = req.body;
             try {
                 await authService.resendEmail({ email });
@@ -160,14 +161,14 @@ export function getAuthRouter(
             } catch (err) {
                 return handleError(res, err);
             }
-        }
+        })
     );
 
     router.put(
         "/auth/logout",
         jwtMiddleware(logger),
         validateRequest,
-        async (req, res) => {
+        catchAsync(async (req, res) => {
             const { token } = req;
             const userId = +token.sub;
 
@@ -182,7 +183,7 @@ export function getAuthRouter(
             } catch (err) {
                 return handleError(res, err);
             }
-        }
+        })
     );
 
     router.post(
@@ -190,7 +191,7 @@ export function getAuthRouter(
         body("token").not().isEmpty(),
         body("newPassword").not().isEmpty(),
         validateRequest,
-        async (req, res) => {
+        catchAsync(async (req, res) => {
             const { newPassword, token } = req.body;
 
 
@@ -200,14 +201,14 @@ export function getAuthRouter(
             } catch (err) {
                 return handleError(res, err);
             }
-        }
+        })
     );
 
     router.post(
         "/auth/password/restore/request",
         body("email").isEmail(),
         validateRequest,
-        async (req, res) => {
+        catchAsync(async (req, res) => {
             const { email } = req.body;
 
             try {
@@ -216,7 +217,7 @@ export function getAuthRouter(
             } catch (err) {
                 return handleError(res, err);
             }
-        }
+        })
     );
 
     router.patch(
@@ -225,7 +226,7 @@ export function getAuthRouter(
         body("oldPassword").not().isEmpty(),
         body("newPassword").not().isEmpty(),
         validateRequest,
-        async (req, res) => {
+        catchAsync(async (req, res) => {
             const { newPassword, oldPassword } = req.body;
             const { token } = req;
             const userToken = await token;
@@ -248,7 +249,7 @@ export function getAuthRouter(
             } catch (err) {
                 return handleError(res, err);
             }
-        }
+        })
     );
 
     return router;
@@ -265,8 +266,8 @@ function validateRequest(req: express.Request, res: express.Response, next: expr
     next();
 }
 
-function handleError(res: express.Response, error: HttpException, defaultStatus = HttpStatus.INTERNAL_SERVER_ERROR) {
-    const status = error.statusCode || defaultStatus;
+function handleError(res: express.Response, error: any, defaultStatus = HttpStatus.INTERNAL_SERVER_ERROR) {
+    const status = error.status || defaultStatus;
 
     return res.clearCookie(REFRESH_TOKEN_COOKIE_NAME, {
         httpOnly: true,

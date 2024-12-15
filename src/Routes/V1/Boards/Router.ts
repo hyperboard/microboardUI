@@ -77,7 +77,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
                 logger.error(err);
                 return internalError(res, err);
             }
-        }, logger)
+        })
     );
 
     // Creating a new board unauthed
@@ -104,7 +104,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
                 logger.error(err);
                 return internalError(res, err);
             }
-        }, logger)
+        })
     );
 
     router.get(
@@ -119,7 +119,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
                         title: b.title,
                         isPublic: b.isPublic,
                     })),
-                    canView: boardsData.canView.map((b) => ({
+                    canView: boardsData.canView.map((b: any) => ({
                         id: b.uniqId,
                         title: b.boardname,
                         isPublic: b.isPublic,
@@ -170,7 +170,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
                 logger.error(err);
                 return internalError(res, err);
             }
-        }, logger)
+        })
     );
 
     router.post(
@@ -185,12 +185,12 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
             try {
                 if (authorKeys) {
                     await Promise.all(
-                        authorKeys.map(async (authorKey: string) => await boards.setOwner(req.token, authorKey))
+                        authorKeys.map(async (authorKey: string) => await boards.setOwner(+req.token.sub, authorKey))
                     );
                 }
                 if (visited) {
                     await Promise.all(
-                        visited.map(async (linkId: string) => await boards.userVisited(req.token, linkId))
+                        visited.map(async (linkId: string) => await boards.userVisited(+req.token.sub, linkId))
                     );
                 }
                 res.status(200).json({ message: "Boards claimed successfully" });
@@ -198,7 +198,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
                 logger.error(`Error claiming boards: ${error}`);
                 return internalError(res, error, "Error claiming boards");
             }
-        }, logger)
+        })
     );
 
     // Deleting a board
@@ -237,7 +237,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
                 logger.error(err);
                 return internalError(res, err);
             }
-        }, logger)
+        })
     );
 
     // Removing a visited link
@@ -262,7 +262,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
                 logger.error(`Error removing visited link: ${err}`);
                 return res.status(500).send("Server error");
             }
-        }, logger)
+        })
     );
 
     // Deleting a board without authentication but with authorKey
@@ -290,7 +290,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
                 logger.error(err);
                 return res.status(500).send("Server error");
             }
-        }, logger)
+        })
     );
 
     // Duplicating a board
@@ -378,7 +378,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
         catchAsync(async (req: Request, res: Response) => {
             try {
                 const { boardId, authorKey } = req.params;
-                const {newTitle} = req.body;
+                const { newTitle } = req.body;
 
                 const isBoardExist = await boards.isBoardExists(boardId);
                 if (!isBoardExist) {
@@ -628,7 +628,7 @@ export function getBoardsRouter(boards: Boards, logger: winston.Logger): express
                 logger.error(err);
                 return internalError(res, err);
             }
-        }, logger)
+        })
     );
 
     // Get private boards

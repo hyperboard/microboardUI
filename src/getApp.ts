@@ -117,7 +117,7 @@ export async function getApp(): Promise<http.Server> {
     const accessKeysService = new AccessKeysService(db);
     const boardsService = new BoardsService(db, logger);
     const foldersService = new FoldersService(db, boardsService);
-    withWebSocketApi({ wss, boards, accessKeysService, logger, redis, boardsService });
+    withWebSocketApi({ wss, boards, accessKeysService, logger, redis, boardsService, openai });
     const media = createMinioMediaDAL(logger);
     const users = new Users(media, logger);
     const auth = new Auth(logger, users, config, mailer);

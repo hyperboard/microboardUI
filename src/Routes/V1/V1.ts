@@ -110,19 +110,13 @@ export function getV1Router({
     );
 
     createFileRoute(router, `${apiBase}/dropflow.wasm`, "./dropflow.wasm", logger, "application/wasm");
+    createFileRoute(router, `${apiBase}/fonts/Arial.ttf`, "./fonts/Arial.ttf", logger, "font/ttf");
+    createFileRoute(router, `${apiBase}/fonts/Arial_Bold.ttf`, "./fonts/Arial_Bold.ttf", logger, "font/ttf");
+    createFileRoute(router, `${apiBase}/fonts/Arial_Italic.ttf`, "./fonts/Arial_Italic.ttf", logger, "font/ttf");
     createFileRoute(
         router,
-        `${apiBase}/fonts/OpenSans-Regular.ttf`,
-        "./fonts/OpenSans-Regular.ttf",
-        logger,
-        "font/ttf"
-    );
-    createFileRoute(router, `${apiBase}/fonts/OpenSans-Bold.ttf`, "./fonts/OpenSans-Bold.ttf", logger, "font/ttf");
-    createFileRoute(router, `${apiBase}/fonts/OpenSans-Italic.ttf`, "./fonts/OpenSans-Italic.ttf", logger, "font/ttf");
-    createFileRoute(
-        router,
-        `${apiBase}/fonts/OpenSans-BoldItalic.ttf`,
-        "./fonts/OpenSans-BoldItalic.ttf",
+        `${apiBase}/fonts/Arial_Bold_Italic.ttf`,
+        "./fonts/Arial_Bold_Italic.ttf",
         logger,
         "font/ttf"
     );

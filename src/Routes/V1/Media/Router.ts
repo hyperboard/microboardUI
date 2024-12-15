@@ -90,7 +90,7 @@ export function createMediaRouter(media: MediaDAL, logger: Logger) {
                     error: `Error: could not upload the image to storage`,
                 });
             }
-        }, logger)
+        })
     );
 
     router.get(
@@ -117,7 +117,7 @@ export function createMediaRouter(media: MediaDAL, logger: Logger) {
                 });
                 next(error);
             }
-        }, logger)
+        })
     );
 
     return router;
