@@ -104,6 +104,8 @@ export function withWebSocketApi({
         switch (msg.type) {
             case "Auth":
                 return await handleAuthMsg(msg, ws);
+            case "Logout":
+                return await handleLogoutMsg(msg, ws);
             case "Subscribe":
                 return await handleSubscribeMsg(msg, ws);
             case "Unsubscribe":
@@ -163,6 +165,10 @@ export function withWebSocketApi({
             })
         );
     }
+
+    function handleLogoutMsg(msg: LogoutMsg, ws: WebSocket) {
+        wsTokens.delete(ws);
+     }
 
     async function handleGetModeMsg(msg: GetModeMsg, ws: WebSocket) {
         const mode = await getMode(ws, msg.boardId);
@@ -523,7 +529,15 @@ export function withWebSocketApi({
 export interface AuthMsg {
     type: "Auth";
     jwt: string;
-    connectedBoardId?: string;
+}
+
+
+export interface AuthConfirmationMsg {
+    type: "AuthConfirmation";
+}
+
+export interface LogoutMsg {
+    type: "Logout";
 }
 
 export interface InvalidateRightsMsg {
@@ -711,6 +725,7 @@ export type EventsMsg =
 export type SocketMsg =
     | EventsMsg
     | AuthMsg
+    | LogoutMsg
     | UserJoinMsg
     | SubscribeMsg
     | UnsubscribeMsg
