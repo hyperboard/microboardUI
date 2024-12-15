@@ -137,12 +137,13 @@ export function getUsersRouter(
     router.get(
         "/users",
         query('search').isString().optional(),
+        query('limit').isInt().optional().default(20),
         catchAsync(async (request, response) => {
             const search = request.query.search;
-            console.log(search, 'searchQuery')
+            const limit = request.query.limit;
 
             try {
-                const users = await usersService.getUsers(typeof search === 'string' ? search : undefined);
+                const users = await usersService.getUsers(typeof search === 'string' ? search : undefined, typeof limit === 'string' ? +limit : undefined);
                 response.json(users).end();
             } catch (e: HttpException | any) {
                 response

@@ -68,7 +68,7 @@ export async function getUserByEmail(userEmail: string) {
 /**
  * Fucntion to get users info by email
  */
-export async function getUsersByEmail(userEmail: string = '') {
+export async function getUsersByEmail(userEmail: string = '', limit = 20) {
     const userRecords = await db
         .select({
             id: users.id,
@@ -80,7 +80,7 @@ export async function getUsersByEmail(userEmail: string = '') {
         .leftJoin(userAvatars, eq(users.id, userAvatars.userId))
         .leftJoin(userNames, eq(users.id, userNames.userId))
         .where(ilike(users.email, `${userEmail}%`))
-        .limit(20);
+        .limit(limit);
 
     return userRecords;
 }

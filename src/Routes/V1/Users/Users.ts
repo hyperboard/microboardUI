@@ -12,9 +12,10 @@ export class Users {
     constructor(private media: MediaDAL, private logger: winston.Logger) { }
 
     async getUsers(
-        searchTerm?: string
+        searchTerm?: string,
+        limit = 20
     ) {
-        const users = await Drizzle.getUsersByEmail(searchTerm);
+        const users = await Drizzle.getUsersByEmail(searchTerm, limit);
 
         return users;
     }
