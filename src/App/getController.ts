@@ -356,6 +356,10 @@ export function getController(
 		if (!board) {
 			return false;
 		}
+		board.presence.emit({
+			method: "CancelDrawSelect",
+			timestamp: Date.now(),
+		});
 		board.isBoardMenuOpen = false;
 		const { tools, selection, camera } = board;
 		camera.removeDownEvent(event);
