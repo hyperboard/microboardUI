@@ -7,7 +7,7 @@ import { Icon } from "View/Icon";
 import { StarIcon } from "./StarIcon";
 import { useAppSubscription } from "Board/useBoardSubscription";
 
-import { Mbr, RichText } from "Board/Items";
+import { Connector, Mbr, RichText } from "Board/Items";
 import { Board } from "Board";
 import { useForceUpdate } from "lib/useForceUpdate";
 import {
@@ -17,6 +17,7 @@ import {
 	OpenAIModels,
 	UserRequest,
 } from "App/Connection";
+import { BoardPoint } from "Board/Items/Connector";
 
 export const AIInput: React.FC = () => {
 	const { t } = useTranslation();
@@ -141,10 +142,13 @@ export const AIInput: React.FC = () => {
 
 	function createRichText(board: Board, inputValue: string): RichText {
 		const richText = new RichText(new Mbr());
-		richText.transformation.translateTo(
-			board.pointer.point.x,
-			board.pointer.point.y,
-		);
+		const cameraMbr = board.camera.getMbr();
+
+		const centerX = cameraMbr.getCenter().x;
+		const centerY = cameraMbr.getCenter().y;
+
+		richText.transformation.translateTo(centerX, centerY);
+
 		richText.transformation.scaleBy(1, 1);
 		richText.editor.setMaxWidth(600);
 		richText.editor.setSelectionHorisontalAlignment("left");
@@ -181,6 +185,12 @@ export const AIInput: React.FC = () => {
 			console.error("Ws no open");
 		}
 
+		const requestRichText = createRichText(board, inputValue);
+		board.add(requestRichText);
+
+		const responseRichText = createRichText(board, "");
+		board.add(responseRichText);
+
 		const message: AiChatMsg<UserRequest> = {
 			type: "AiChat",
 			boardId: board.getBoardId(),
@@ -192,13 +202,9 @@ export const AIInput: React.FC = () => {
 				model: model,
 			},
 		};
-
+		connection?.wsClient.send(message);
 		console.log("message", message);
 
-		const richText = createRichText(board, inputValue);
-		board.add(richText);
-
-		connection?.wsClient.send(message);
 		setInputValue("");
 	};
 
