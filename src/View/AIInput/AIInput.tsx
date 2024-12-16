@@ -58,10 +58,6 @@ export const AIInput: React.FC = () => {
 	const selectedItemsCount = board.selection.items.list().length;
 
 	useEffect(() => {
-		focusInputOnSelectionChange();
-	}, [board.selection.getContext()]);
-
-	useEffect(() => {
 		const connectWebSocket = () => {
 			const socket = new WebSocket("ws://localhost:8000/ws");
 
@@ -110,12 +106,6 @@ export const AIInput: React.FC = () => {
 		subjects: ["selectionItems"],
 		observer: forceUpdate,
 	});
-
-	const focusInputOnSelectionChange = () => {
-		if (board.selection.getContext() === "EditUnderPointer") {
-			setTimeout(() => inputRef.current?.focus(), 80);
-		}
-	};
 
 	const handleInputChange = (
 		event: React.ChangeEvent<HTMLTextAreaElement>,
