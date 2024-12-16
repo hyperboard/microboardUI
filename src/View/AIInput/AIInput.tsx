@@ -10,102 +10,63 @@ import { useAppSubscription } from "Board/useBoardSubscription";
 import { Mbr, RichText } from "Board/Items";
 import { Board } from "Board";
 import { useForceUpdate } from "lib/useForceUpdate";
-
-interface AiChatMsg<T = AiChatEventType> {
-	type: "AiChat";
-	event: T;
-}
-
-type AiChatEventType = UserRequest;
-
-interface UserRequest {
-	method: "UserRequest";
-	context: number[];
-	boardContext: string[];
-	idea: string;
-	model?: OpenAIModels;
-}
-
-interface ChatChunk {
-	method: "ChatChunk";
-	chatId: number;
-	type: "chunk" | "done" | "end" | "error";
-	content?: string;
-	error?: string;
-}
-
-type OpenAIModels =
-	| "gpt-3.5-turbo"
-	| "gpt-4"
-	| "gpt-4o"
-	| "gpt-4o-mini"
-	| "gpt-4-32k"
-	| "gpt-3.5-turbo-0613"
-	| "gpt-4-0613"
-	| "gpt-3.5-turbo-16k"
-	| "gpt-4-16k"
-	| "o1-mini";
+import {
+	AiChatMsg,
+	ChatChunk,
+	Connection,
+	OpenAIModels,
+	UserRequest,
+} from "App/Connection";
 
 export const AIInput: React.FC = () => {
 	const { t } = useTranslation();
-	const { board } = useAppContext();
+	const { app, board } = useAppContext();
 	const [inputValue, setInputValue] = useState("");
 	const inputRef = useRef<HTMLTextAreaElement | null>(null);
 	const [model, setModel] = useState<OpenAIModels>("gpt-4o");
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-	const socketRef = useRef<WebSocket | null>(null);
 	const forceUpdate = useForceUpdate();
 	const selectedItemsCount = board.selection.items.list().length;
+	const [currentResponseContent, setCurrentResponseContent] =
+		useState<string>("");
+	const [connection, setConnection] = useState<Connection | null>(null);
 
 	useEffect(() => {
-		const connectWebSocket = () => {
-			const socket = new WebSocket("ws://localhost:8000/ws");
+		focusInputOnSelectionChange();
+	}, [board.selection.getContext()]);
 
-			socket.onopen = () => {
-				console.log("WebSocket connection established");
-			};
-
-			socket.onmessage = event => {
+	useEffect(() => {
+		const appConnection = app.getConnection();
+		if (appConnection) {
+			appConnection.onMessage = msg => {
 				try {
-					const data = JSON.parse(event.data);
-					console.log("Received message:", data);
-
-					if (data.method === "ChatChunk") {
-						handleChatChunk(data);
+					if (msg.type === "AiChat") {
+						const event = msg.event;
+						if (event.method === "ChatChunk") {
+							handleChatChunk(event);
+						}
 					}
 				} catch (error) {
 					console.error("Error parsing message:", error);
 				}
 			};
 
-			socket.onerror = error => {
-				console.error("WebSocket error:", error);
-			};
+			appConnection.wsClient.send;
+		}
 
-			socket.onclose = () => {
-				console.log(
-					"WebSocket connection closed, attempting to reconnect...",
-				);
-				setTimeout(connectWebSocket, 5000);
-			};
-
-			socketRef.current = socket;
-		};
-
-		connectWebSocket();
-
-		return () => {
-			if (socketRef.current) {
-				socketRef.current.close();
-				console.log("WebSocket connection closed on cleanup");
-			}
-		};
-	}, []);
+		setConnection(appConnection);
+	}, [app]);
 
 	useAppSubscription({
 		subjects: ["selectionItems"],
 		observer: forceUpdate,
 	});
+
+	const focusInputOnSelectionChange = () => {
+		if (board.selection.getContext() === "EditUnderPointer") {
+			setTimeout(() => inputRef.current?.focus(), 80);
+		}
+	};
 
 	const handleInputChange = (
 		event: React.ChangeEvent<HTMLTextAreaElement>,
@@ -118,10 +79,6 @@ export const AIInput: React.FC = () => {
 	const handleSendClick = async () => {
 		if (!inputValue.trim()) {
 			return;
-		}
-
-		if (inputRef.current) {
-			inputRef.current.style.height = "auto";
 		}
 		sendInputData();
 	};
@@ -141,16 +98,29 @@ export const AIInput: React.FC = () => {
 		}
 	};
 
-	const handleChatChunk = (chunk: ChatChunk) => {
+	let finalResponse = "";
+	const handleChatChunk = (chunk: ChatChunk): void => {
+		console.log("Received chunk:", chunk);
 		switch (chunk.type) {
 			case "chunk":
-				console.log("Received chunk:", chunk.content);
+				setCurrentResponseContent(prev => prev + (chunk.content || ""));
+				finalResponse += chunk.content || "";
+				console.log({
+					content: chunk.content,
+					currentResponse: currentResponseContent,
+					finalResponse,
+				});
 				break;
 			case "done":
 				console.log("Chat is done");
 				break;
 			case "end":
-				console.log("Chat ended");
+				console.log("Generated content: ", finalResponse);
+				const richText = createRichText(board, finalResponse);
+				board.add(richText);
+				finalResponse = "";
+				setCurrentResponseContent("");
+				console.log("User's request handled");
 				break;
 			case "error":
 				console.error("Chat error:", chunk.error);
@@ -207,16 +177,13 @@ export const AIInput: React.FC = () => {
 	}
 
 	const sendInputData = () => {
-		if (
-			!socketRef.current ||
-			socketRef.current.readyState !== WebSocket.OPEN
-		) {
-			console.error("WebSocket is not open");
-			return;
+		if (!connection) {
+			console.error("Ws no open");
 		}
 
 		const message: AiChatMsg<UserRequest> = {
 			type: "AiChat",
+			boardId: board.getBoardId(),
 			event: {
 				method: "UserRequest",
 				context: [],
@@ -231,7 +198,7 @@ export const AIInput: React.FC = () => {
 		const richText = createRichText(board, inputValue);
 		board.add(richText);
 
-		socketRef.current.send(JSON.stringify(message));
+		connection?.wsClient.send(message);
 		setInputValue("");
 	};
 
@@ -269,7 +236,7 @@ export const AIInput: React.FC = () => {
 				onKeyDown={event => handleKeyDown(event)}
 				onFocus={event => event.currentTarget.select()}
 				onChange={event => handleInputChange(event)}
-				placeholder={"Select context, ask AI"}
+				placeholder={"Type your request..."}
 				className={styles.aiInput}
 				ref={inputRef}
 				rows={1}

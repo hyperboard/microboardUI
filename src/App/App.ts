@@ -36,6 +36,7 @@ export interface App {
 	subscriptions: Subscriptions;
 	openBoard: (id: string, accessKey?: string) => Promise<void>;
 	getBoard: () => Board;
+	getConnection: () => Connection;
 	getLastBoardId: () => string | null;
 	render: () => void;
 	test: TestRecorder;
@@ -55,6 +56,10 @@ export function createApp(isHistory = true): App {
 	const test = createTester(getBoard);
 
 	let board: Board;
+
+	function getConnection(): Connection {
+		return connection;
+	}
 
 	function getBoard(): Board {
 		return board;
@@ -134,6 +139,7 @@ export function createApp(isHistory = true): App {
 		subscriptions,
 		openBoard,
 		getBoard,
+		getConnection,
 		getLastBoardId,
 		render,
 		test,

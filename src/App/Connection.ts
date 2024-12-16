@@ -121,6 +121,42 @@ export interface BoardSubscriptionCompletedMsg {
 	initialSequenceNumber: number;
 }
 
+export interface AiChatMsg<T = AiChatEventType> {
+	type: "AiChat";
+	boardId: string;
+	event: T;
+}
+
+export type AiChatEventType = UserRequest | ChatChunk;
+
+export type OpenAIModels =
+	| "gpt-3.5-turbo"
+	| "gpt-4"
+	| "gpt-4o"
+	| "gpt-4o-mini"
+	| "gpt-4-32k"
+	| "gpt-3.5-turbo-0613"
+	| "gpt-4-0613"
+	| "gpt-3.5-turbo-16k"
+	| "gpt-4-16k"
+	| "o1-mini"
+	| "o1";
+export interface UserRequest {
+	method: "UserRequest";
+	context: number[];
+	boardContext: string[];
+	idea: string;
+	model?: OpenAIModels;
+}
+
+export interface ChatChunk {
+	method: "ChatChunk";
+	chatId: number;
+	type: "chunk" | "done" | "end" | "error";
+	content?: string;
+	error?: string;
+}
+
 export type EventsMsg =
 	| ModeMsg
 	| BoardEventMsg
@@ -131,7 +167,8 @@ export type EventsMsg =
 	| ConfirmationMsg
 	| BoardSubscriptionCompletedMsg
 	| UserJoinMsg
-	| PresenceEventMsg;
+	| PresenceEventMsg
+	| AiChatMsg;
 
 export type SocketMsg =
 	| EventsMsg
@@ -145,7 +182,8 @@ export type SocketMsg =
 	| UnsubscribeMsg
 	| ErrorMsg
 	| ModeMsg
-	| PingMsg;
+	| PingMsg
+	| AiChatMsg;
 
 export interface Connection {
 	connectionId: number;
@@ -172,6 +210,7 @@ export interface Connection {
 	publishGetMode(): void;
 	publishSnapshot(boardId: string, snapshot: BoardSnapshot): void;
 	wsClient: WsClient;
+	onMessage?: (msg: SocketMsg) => void;
 }
 
 interface Subscription {
@@ -220,6 +259,9 @@ export function createConnection(
 	}
 
 	function onMessage(msg: SocketMsg): void {
+		if (connection.onMessage) {
+			connection.onMessage(msg);
+		}
 		const board = getBoard();
 		clearConnectionError();
 		switch (msg.type) {
@@ -486,7 +528,7 @@ export function createConnection(
 	let connectionId = 0;
 	const userId = 0;
 
-	return {
+	const connection: Connection = {
 		get connectionId() {
 			return connectionId;
 		},
@@ -501,7 +543,10 @@ export function createConnection(
 		wsClient: ws,
 		publishAuth,
 		publishLogout,
+		onMessage: undefined,
 	};
+
+	return connection;
 }
 
 interface WsClient {
