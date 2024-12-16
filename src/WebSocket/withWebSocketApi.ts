@@ -146,16 +146,17 @@ export function withWebSocketApi({
             const token = await verifyToken(msg.jwt, "access");
             if (token) {
                 saveToken(ws, token);
-                return ws.send(JSON.stringify({
-                    type: "AuthConfirmation",
-                }))
+                return ws.send(
+                    JSON.stringify({
+                        type: "AuthConfirmation",
+                    })
+                );
             } else {
                 return sendError(ws, "Invalid or expired token");
             }
         } catch (err) {
             logger.error(err);
             return sendError(ws, "Invalid token");
-
         }
     }
 
@@ -189,11 +190,11 @@ export function withWebSocketApi({
             if (mode) {
                 return enforceMode(ws, msg.boardId, mode);
             }
-            unsubscribeClient(msg.boardId, ws)
+            unsubscribeClient(msg.boardId, ws);
             return sendError(ws, "Access denied: edit board.", { deniedBoardId: msg.boardId });
         } catch (err) {
             logger.error(err);
-            unsubscribeClient(msg.boardId, ws)
+            unsubscribeClient(msg.boardId, ws);
             return sendError(ws, "Access denied: edit board.", { deniedBoardId: msg.boardId });
         }
     }
@@ -342,11 +343,11 @@ export function withWebSocketApi({
                 sendError(
                     ws,
                     "Unexpected sequence number" +
-                    JSON.stringify({
-                        expectedSequence,
-                        receivedSequence: msg.sequenceNumber,
-                        boardId: msg.boardId,
-                    })
+                        JSON.stringify({
+                            expectedSequence,
+                            receivedSequence: msg.sequenceNumber,
+                            boardId: msg.boardId,
+                        })
                 );
                 return;
             }
@@ -459,7 +460,6 @@ export function withWebSocketApi({
         unsubscribeClient(msg.boardId, ws);
     }
 
-
     function unsubscribeClient(boardId: string, ws: WebSocket) {
         const clients = boardClients.get(boardId) ?? [];
         const index = clients.indexOf(ws);
@@ -559,7 +559,6 @@ export interface AuthMsg {
     type: "Auth";
     jwt: string;
 }
-
 
 export interface AuthConfirmationMsg {
     type: "AuthConfirmation";
@@ -707,7 +706,7 @@ export interface BringToMeEvent {
     users: (number | string)[];
 }
 
-export interface PresenceUserSnapshot { }
+export interface PresenceUserSnapshot {}
 
 export type PresenceEventType =
     | PointerMoveEvent
@@ -960,7 +959,7 @@ export class EventsManager {
         return events;
     }
 
-    requestSnapshotCallback(boardId: string, sinceLast: number): void { }
+    requestSnapshotCallback(boardId: string, sinceLast: number): void {}
 
     isBoardReady(boardId: string): boolean {
         return !this.processing.includes(boardId);

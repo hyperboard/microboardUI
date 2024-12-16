@@ -106,7 +106,9 @@ export class ChatStreamHandler {
         logger.debug("Board ID provided, fetching existing chat...");
         const [boardChat] = await db.select().from(chat).where(eq(chat.boardId, msg.boardId)).limit(1);
         if (!boardChat) {
-            await db.insert(chat).values({ boardId: msg.boardId }).returning();
+            const [newChat] = await db.insert(chat).values({ boardId: msg.boardId }).returning();
+
+            return newChat;
         }
 
         logger.debug("Existing chat found or created:", boardChat);

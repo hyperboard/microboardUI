@@ -21,7 +21,8 @@ export class OpenAI {
 
     constructor(apiKey: string) {
         this.client = new llm({
-            apiKey: apiKey,
+            apiKey: process.env.AIMLAPI_KEY,
+            baseURL: "https://api.aimlapi.com/v1",
         });
     }
 
