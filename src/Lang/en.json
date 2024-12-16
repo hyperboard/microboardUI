@@ -677,7 +677,7 @@
 		"privateBoard": "This is a private board. The owner of the board has restricted access to viewing and editing.",
 		"requestAccess": "Request access",
 		"requestAccessMsg": "Request access or log in to a permissioned account.",
-		"loggedIn": "You are logged in to your {{account}} account.",
+		"loggedIn": "You are logged in to your <1>{{account}}</1> account.",
 		"accessDenied": "Access denied",
 		"addAccessLevel": "Add one more access level"
 	},

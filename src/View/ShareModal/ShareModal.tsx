@@ -207,6 +207,7 @@ export function ShareModal() {
 						<div
 							className={clsx(
 								styles.selectors,
+								styles.searchInputWrapper,
 								userEmails.length > 0 &&
 									styles.modeVisibleShort,
 							)}
@@ -259,6 +260,7 @@ export function ShareModal() {
 							<div
 								className={clsx(
 									styles.selectors,
+									styles.searchInputWrapper,
 									userEmails2.length > 0 &&
 										styles.modeVisibleShort,
 								)}
@@ -367,9 +369,11 @@ export function ShareModal() {
 					</p>
 				)}
 				<div className={styles.settings}>
-					<h2 className={styles.settingsHeading}>
-						{t("sharing.publicAccess")}
-					</h2>
+					{account.isLoggedIn && isOwner && (
+						<h2 className={styles.settingsHeading}>
+							{t("sharing.publicAccess")}
+						</h2>
+					)}
 					<div
 						className={clsx(
 							styles.selectors,

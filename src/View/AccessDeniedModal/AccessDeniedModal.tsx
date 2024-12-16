@@ -1,11 +1,12 @@
 import { useAccount } from "App/useAccount";
 import { UiModal } from "View/Ui/UiModal/UiModal";
 import React from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Button } from "shared/ui-lib/Button";
 import { Link } from "shared/ui-lib/Link";
 import styles from "./AccessDeniedModal.module.css";
+import clsx from "clsx";
 
 export const ACCESS_DENIED_MODAL = Symbol("accessDeniedModal");
 
@@ -27,27 +28,29 @@ export function AccessDeniedModal(): JSX.Element {
 					</p>
 					{account.isLoggedIn ? (
 						<p>
-							{t("sharing.loggedIn", {
-								account: account.info?.email,
-							})}
+							<Trans t={t} i18nKey={"sharing.loggedIn"}>
+								You are logged in to your
+								<span className={styles.link}>
+									{{ account: account.info?.email }}
+								</span>{" "}
+								account.
+							</Trans>
 						</p>
 					) : (
 						<p>
 							{t("sharing.notAuthMsg")}{" "}
-							<Link to="/auth/sign-in">{t("sharing.login")}</Link>{" "}
+							<Link to="/auth/sign-in" className={styles.link}>
+								{t("sharing.login")}
+							</Link>{" "}
 							{t("sharing.or")}{" "}
-							<Link to="/auth/sign-up">
+							<Link to="/auth/sign-up" className={styles.link}>
 								{t("sharing.register")}
 							</Link>
 							.
 						</p>
 					)}
 				</div>
-				{account.isLoggedIn ? (
-					<Button className={styles.btn}>
-						{t("sharing.requestAccess")}
-					</Button>
-				) : (
+				{!account.isLoggedIn && (
 					<Button
 						className={styles.btn}
 						onClick={() => navigate("/auth/sign-in")}

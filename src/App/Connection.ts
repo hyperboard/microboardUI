@@ -19,7 +19,10 @@ const SUBSCRIBE_TIMEOUT = 4 * SECOND;
 export interface AuthMsg {
 	type: "Auth";
 	jwt: string;
-	connectedBoardId?: string;
+}
+
+export interface LogoutMsg {
+	type: "Logout";
 }
 
 export interface InvalidateRightsMsg {
@@ -134,6 +137,7 @@ export type SocketMsg =
 	| EventsMsg
 	| AuthMsg
 	| AuthConfirmationMsg
+	| LogoutMsg
 	| GetModeMsg
 	| InvalidateRightsMsg
 	| UserJoinMsg
@@ -164,6 +168,7 @@ export interface Connection {
 	): void;
 	publishPresenceEvent(boardId: string, event: PresenceEventType): void;
 	publishAuth(): Promise<void>;
+	publishLogout(): void;
 	publishGetMode(): void;
 	publishSnapshot(boardId: string, snapshot: BoardSnapshot): void;
 	wsClient: WsClient;
@@ -399,6 +404,12 @@ export function createConnection(
 		}
 	}
 
+	function publishLogout() {
+		ws.send({
+			type: "Logout",
+		});
+	}
+
 	function publishGetMode(): void {
 		const board = getBoard();
 		const boardId = board?.getBoardId();
@@ -489,6 +500,7 @@ export function createConnection(
 		publishSnapshot,
 		wsClient: ws,
 		publishAuth,
+		publishLogout,
 	};
 }
 

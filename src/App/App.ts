@@ -162,6 +162,7 @@ export function createApp(isHistory = true): App {
 		account.setOnLogout(async () => {
 			const boardId = board.getBoardId();
 			storage.hardClean();
+			connection.publishLogout();
 			if (boardId && boardId !== "blank") {
 				await openBoard(boardId);
 				router.navigate(`/boards/${boardId}${window.location.search}`);

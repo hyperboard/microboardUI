@@ -22,6 +22,13 @@
 
 .settings {
 	padding-top: 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.searchInputWrapper {
+	padding-top: 12px;
 }
 
 .settingsHeading {
@@ -36,7 +43,6 @@
 .selectors {
 	display: grid;
 	grid-template-columns: 1fr 0px;
-	padding-top: 12px;
 	padding-bottom: 8px;
 	transition: grid-template-columns 0.3s ease;
 	align-items: stretch;
