@@ -80,7 +80,7 @@ export const Folder = ({ folder, handleOpenBoard }: Props) => {
 							block: "nearest",
 						});
 					}
-				}, 300);
+				}, 0);
 			});
 		} else {
 			accordionRef.current?.close();
@@ -106,7 +106,7 @@ export const Folder = ({ folder, handleOpenBoard }: Props) => {
 							block: "nearest",
 						});
 					}
-				}, 300);
+				}, 0);
 			});
 		} else {
 			accordionRef.current?.close();

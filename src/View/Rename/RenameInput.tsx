@@ -6,6 +6,7 @@ import React, {
 	KeyboardEventHandler,
 	useEffect,
 	useRef,
+	type SyntheticEvent,
 } from "react";
 
 import style from "./RenameInput.module.css";
@@ -33,7 +34,7 @@ export function RenameInput() {
 		setRenamingId(null);
 	};
 
-	const preventPropagation: KeyboardEventHandler = event =>
+	const preventPropagation = (event: SyntheticEvent) =>
 		event.stopPropagation();
 
 	const handleCancel: KeyboardEventHandler = event => {
@@ -65,6 +66,9 @@ export function RenameInput() {
 				onChange={handleChange}
 				onKeyDown={handleCancel}
 				onKeyUp={preventPropagation}
+				onClick={preventPropagation}
+				onPointerDown={preventPropagation}
+				onPointerUp={preventPropagation}
 				onBlur={handleBlur}
 				value={newName}
 				type="text"
