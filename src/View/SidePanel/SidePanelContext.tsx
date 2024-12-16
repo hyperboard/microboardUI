@@ -35,15 +35,17 @@ export function SidePanelContextProvider({
 	const boardId = board?.getBoardId();
 
 	const toggleSideMenu = (): void => {
-		if (boardId !== "blank" && !isOpen) {
-			setBoard(boardId);
-			setFolder(null);
-		}
-		if (isOpen) {
-			setBoard(null);
-			setFolder(null);
-		}
-		setIsOpen(prev => !prev);
+		setIsOpen(prev => {
+			if (boardId !== "blank" && !prev) {
+				setBoard(boardId);
+				setFolder(null);
+			}
+			if (prev) {
+				setBoard(null);
+				setFolder(null);
+			}
+			return !prev;
+		});
 	};
 
 	useEffect(() => {
