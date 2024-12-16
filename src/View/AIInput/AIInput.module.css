@@ -76,13 +76,6 @@
 	line-height: 1.5;
 }
 
-.aiInput::-webkit-input-placeholder {
-	position: absolute;
-	top: 0;
-	left: 0;
-	position: 0 0;
-}
-
 .aiInput:focus {
 	outline: none;
 }
