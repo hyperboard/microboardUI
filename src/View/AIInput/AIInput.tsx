@@ -62,31 +62,47 @@ export const AIInput: React.FC = () => {
 	}, [board.selection.getContext()]);
 
 	useEffect(() => {
-		socketRef.current = new WebSocket("ws://localhost:8000/ws");
-		socketRef.current.onopen = () => {
-			console.log("WebSocket connection established");
-		};
-		socketRef.current.onmessage = event => {
-			try {
-				const data = JSON.parse(event.data);
-				console.log("Received message:", data);
+		const connectWebSocket = () => {
+			const socket = new WebSocket("ws://localhost:8000/ws");
 
-				if (data.method === "ChatChunk") {
-					handleChatChunk(data);
+			socket.onopen = () => {
+				console.log("WebSocket connection established");
+			};
+
+			socket.onmessage = event => {
+				try {
+					const data = JSON.parse(event.data);
+					console.log("Received message:", data);
+
+					if (data.method === "ChatChunk") {
+						handleChatChunk(data);
+					}
+				} catch (error) {
+					console.error("Error parsing message:", error);
 				}
-			} catch (error) {
-				console.error("Error parsing message:", error);
-			}
+			};
+
+			socket.onerror = error => {
+				console.error("WebSocket error:", error);
+			};
+
+			socket.onclose = () => {
+				console.log(
+					"WebSocket connection closed, attempting to reconnect...",
+				);
+				setTimeout(connectWebSocket, 5000);
+			};
+
+			socketRef.current = socket;
 		};
-		socketRef.current.onerror = error => {
-			console.error("WebSocket error:", error);
-		};
-		socketRef.current.onclose = () => {
-			console.log("WebSocket connection closed");
-		};
+
+		connectWebSocket();
 
 		return () => {
-			socketRef.current?.close();
+			if (socketRef.current) {
+				socketRef.current.close();
+				console.log("WebSocket connection closed on cleanup");
+			}
 		};
 	}, []);
 
@@ -112,6 +128,10 @@ export const AIInput: React.FC = () => {
 	const handleSendClick = async () => {
 		if (!inputValue.trim()) {
 			return;
+		}
+
+		if (inputRef.current) {
+			inputRef.current.style.height = "auto";
 		}
 		sendInputData();
 	};
@@ -259,7 +279,7 @@ export const AIInput: React.FC = () => {
 				onKeyDown={event => handleKeyDown(event)}
 				onFocus={event => event.currentTarget.select()}
 				onChange={event => handleInputChange(event)}
-				placeholder={"Type your request..."}
+				placeholder={"Select context, ask AI"}
 				className={styles.aiInput}
 				ref={inputRef}
 				rows={1}
