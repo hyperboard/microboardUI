@@ -241,7 +241,6 @@ export function ContextPanel(): React.ReactElement | null {
 						<ConnectorFontStyle />
 						<ConnectorTextColor />
 						<ConnectorTextHighlight />
-						<UiSeparator vertical />
 						<Lock />
 						<UiSeparator vertical />
 						<Duplicate />

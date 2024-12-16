@@ -43,7 +43,7 @@ export function ConnectorType(): React.ReactElement | null {
 	};
 
 	const handleSliderChange = (width: number): void => {
-		board.selection.setStrokeWidth(ConnectionLineWidths[width]);
+		board.selection.setStrokeWidth(width);
 	};
 
 	return (

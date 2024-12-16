@@ -19,7 +19,6 @@ import { useTranslation } from "react-i18next";
 import style from "./StrokeStyle.module.css";
 import { useAppContext } from "View/AppContext";
 import { Shape } from "../../../../Board/Items";
-import { ConnectionLineWidths } from "Board/Items/Connector/Connector";
 
 const MENU_NAME = "StrokeStyle";
 
@@ -51,7 +50,7 @@ export function StrokeStyle(): React.ReactElement | null {
 	};
 
 	const handleStrokeWidthPick = (width: number): void => {
-		board.selection.setStrokeWidth(ConnectionLineWidths[width]);
+		board.selection.setStrokeWidth(width);
 	};
 
 	const handleStrokeStylePick = (style: BorderStyle): void => {

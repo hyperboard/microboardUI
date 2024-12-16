@@ -31,7 +31,7 @@ export const ShapesCategory = ({ handlePick, categoryName }: Props) => {
 	const { t } = useTranslation();
 
 	return (
-		<div>
+		<div className={styles.categoryContainer}>
 			<div className={styles.categoryHeader}>
 				<p className={styles.categoryName}>
 					{t(`shapesPanel.${categoryName}`)}
@@ -40,6 +40,7 @@ export const ShapesCategory = ({ handlePick, categoryName }: Props) => {
 					onClick={() => setIsPickerShown(!isPickerShown)}
 					variant="secondary"
 					size={"sm"}
+					style={{ minWidth: "unset" }}
 				>
 					<Icon
 						iconName={

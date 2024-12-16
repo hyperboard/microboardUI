@@ -12,6 +12,7 @@ interface Props {
 	firstMessage: Message;
 	messagesCount: number;
 	handleClick: () => void;
+	isOpen: boolean;
 }
 
 export const CommentPreview = ({
@@ -19,11 +20,16 @@ export const CommentPreview = ({
 	firstMessage,
 	messagesCount,
 	handleClick,
+	isOpen,
 }: Props): JSX.Element => {
 	const { t } = useTranslation();
 
 	return (
-		<div onClick={handleClick} className={styles.preview}>
+		<div
+			onClick={handleClick}
+			className={styles.preview}
+			style={isOpen ? undefined : { display: "none" }}
+		>
 			<div
 				className={clsx(
 					commentators.length > 1 ? styles.wrap : styles.noWrap,

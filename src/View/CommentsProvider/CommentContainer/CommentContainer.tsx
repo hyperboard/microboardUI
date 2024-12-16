@@ -90,9 +90,15 @@ export const CommentContainer = ({ comment }: Props) => {
 		};
 	}, [isThreadOpen]);
 
-	const togglePreview = () => {
+	const openPreview = () => {
 		if (!movingComment) {
-			setIsPreviewOpen(!isPreviewOpen);
+			setIsPreviewOpen(true);
+		}
+	};
+
+	const closePreview = () => {
+		if (!movingComment) {
+			setIsPreviewOpen(false);
 		}
 	};
 
@@ -133,7 +139,7 @@ export const CommentContainer = ({ comment }: Props) => {
 			(username && comment.getIsThreadMarkedAsUnread(username)),
 	);
 
-	const zIndex = isThreadOpen ? 3 : 2;
+	const zIndex = isThreadOpen ? 3 : isPreviewOpen ? 2 : 1;
 
 	return (
 		<div
@@ -154,8 +160,8 @@ export const CommentContainer = ({ comment }: Props) => {
 			) : (
 				<div
 					ref={commentRef}
-					onMouseEnter={togglePreview}
-					onMouseLeave={togglePreview}
+					onMouseEnter={openPreview}
+					onMouseLeave={closePreview}
 					onMouseDown={handleMouseDown}
 					onTouchStart={handleMouseDown}
 					onTouchEnd={handleMouseUp}
@@ -194,16 +200,15 @@ export const CommentContainer = ({ comment }: Props) => {
 								height={20}
 							/>
 						)}
-						{isPreviewOpen && (
-							<CommentPreview
-								handleClick={() =>
-									setOpenedThreadId(comment.getId())
-								}
-								commentators={commentators}
-								firstMessage={comment.getThread()[0]}
-								messagesCount={comment.getThread().length - 1}
-							/>
-						)}
+						<CommentPreview
+							isOpen={isPreviewOpen}
+							handleClick={() =>
+								setOpenedThreadId(comment.getId())
+							}
+							commentators={commentators}
+							firstMessage={comment.getThread()[0]}
+							messagesCount={comment.getThread().length - 1}
+						/>
 						{isUnread && (
 							<div className={styles.badge}>
 								{username &&

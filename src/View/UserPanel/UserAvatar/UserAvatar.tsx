@@ -47,7 +47,9 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 			{tooltip && (
 				<div className={styles.tooltipWrapper}>
 					<div className={styles.tooltip}>
-						<span className={styles.tooltipName}>{name} (you)</span>
+						<span className={styles.tooltipName}>
+							{name} ({t("common.you")})
+						</span>
 						{isOwner && (
 							<span
 								style={{ color: "white" }}

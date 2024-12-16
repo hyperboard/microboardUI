@@ -6,6 +6,7 @@
 		"loading": "Загрузка...",
 		"notFound": "Не найдено",
 		"anonymous": "Аноним",
+		"you": "вы",
 		"languages": {
 			"ru": "Русский",
 			"en": "Английский",
@@ -701,7 +702,7 @@
 		"showCursors": "Показать курсоры",
 		"bringNotify1": "Вы перенесли",
 		"bringNotify2": "на ваш экран",
-		"bringAllNotify": "Вы перенесли все на ваш экран"
+		"bringAllNotify": "Вы перенесли всех на ваш экран"
 	},
 	"profile": {
 		"title": "Настройки профиля",

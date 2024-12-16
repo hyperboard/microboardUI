@@ -1,5 +1,8 @@
 .shapesPanel {
-	transition: width 0.3s;
+	transition:
+		width 0.3s,
+		max-width 0.3s,
+		min-width 0.3s;
 	overflow: hidden;
 	width: 0;
 	box-shadow: none;
@@ -12,7 +15,9 @@
 }
 
 .shapesPanel.open {
+	max-width: 35dvw;
 	width: 292px;
+	min-width: 192px;
 	visibility: visible;
 	box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
 	border: 1px solid var(--border-action-normal);
@@ -49,6 +54,9 @@
 	scrollbar-gutter: stable;
 	width: 100%;
 	padding: 0 4px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
 .scrollContainer::-webkit-scrollbar {
