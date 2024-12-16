@@ -17,7 +17,7 @@ import {
 	OpenAIModels,
 	UserRequest,
 } from "App/Connection";
-import { BoardPoint } from "Board/Items/Connector";
+import { getControlPointData } from "Board/Selection/QuickAddButtons";
 
 export const AIInput: React.FC = () => {
 	const { t } = useTranslation();
@@ -109,15 +109,19 @@ export const AIInput: React.FC = () => {
 				if (item && item.itemType === "RichText") {
 					item.editor.insertAICopiedText(chunk.content || "");
 				}
+				finalResponse += chunk.content || "";
+				console.log({
+					content: chunk.content,
+					currentResponse: currentResponseContent,
+					finalResponse,
+				});
+
 				break;
 			case "done":
 				console.log("Chat is done");
 				break;
 			case "end":
 				console.log("Generated content: ", finalResponse);
-				const richText = createRichText(board, finalResponse);
-				board.add(richText);
-				finalResponse = "";
 				setCurrentResponseContent("");
 				console.log("User's request handled");
 				break;
@@ -161,10 +165,21 @@ export const AIInput: React.FC = () => {
 		}
 
 		const requestRichText = createRichText(board, inputValue);
-		board.add(requestRichText);
+		const requestItem = board.add(requestRichText);
 		const responseRichText = createRichText(board, "");
-		const item = board.add(responseRichText);
-		const itemId = item.getId();
+		const responseItem = board.add(responseRichText);
+		const itemId = responseItem.getId();
+
+		const defaultConnector = new Connector(board);
+		const connectorData = defaultConnector.serialize();
+		connectorData.lineStyle = "orthogonal";
+
+		const startPointData = getControlPointData(requestItem, 2);
+		const endPointData = getControlPointData(responseItem, 3);
+		connectorData.startPoint = startPointData;
+		connectorData.endPoint = endPointData;
+
+		board.add(board.createItem(board.getNewItemId(), connectorData));
 
 		const message: AiChatMsg<UserRequest> = {
 			type: "AiChat",
@@ -198,7 +213,7 @@ export const AIInput: React.FC = () => {
 					{isDropdownOpen && (
 						<div className={styles.modelDropdown}>
 							<div onClick={() => selectModel("gpt-4o")}>
-								<strong>GPT-4.0</strong>
+								<strong>GPT-4o</strong>
 								<p>Отлично подходит для большинства задач</p>
 							</div>
 							<div onClick={() => selectModel("o1")}>
@@ -219,7 +234,7 @@ export const AIInput: React.FC = () => {
 					onKeyDown={event => handleKeyDown(event)}
 					onFocus={event => event.currentTarget.select()}
 					onChange={event => handleInputChange(event)}
-					placeholder={"Type your request..."}
+					placeholder={"Select context, ask AI"}
 					className={styles.aiInput}
 					ref={inputRef}
 					rows={1}
