@@ -1,22 +1,13 @@
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'access_key_type') THEN
-        CREATE TYPE "public"."access_key_type" AS ENUM('view', 'edit');
-    END IF;
+DO $$ BEGIN
+ CREATE TYPE "public"."access_key_type" AS ENUM('view', 'edit');
 EXCEPTION
-    WHEN duplicate_object THEN
-        NULL;
+ WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
-
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'direct_access_type') THEN
-        CREATE TYPE "public"."direct_access_type" AS ENUM('view', 'edit');
-    END IF;
+DO $$ BEGIN
+ CREATE TYPE "public"."direct_access_type" AS ENUM('view', 'edit');
 EXCEPTION
-    WHEN duplicate_object THEN
-        NULL;
+ WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
@@ -63,17 +54,7 @@ ALTER TABLE "board_permissions" ALTER COLUMN "board_id" SET NOT NULL;--> stateme
 ALTER TABLE "board_permissions" ALTER COLUMN "user_id" SET NOT NULL;--> statement-breakpoint
 ALTER TABLE "boards" ALTER COLUMN "boardname" SET DEFAULT '';--> statement-breakpoint
 ALTER TABLE "users" ALTER COLUMN "email" SET NOT NULL;--> statement-breakpoint
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1
-        FROM information_schema.columns
-        WHERE table_name = 'boards' AND column_name = 'direct_access_type'
-    ) THEN
-        ALTER TABLE "boards" ADD COLUMN "direct_access_type" "direct_access_type" DEFAULT 'edit' NOT NULL;
-    END IF;
-END $$;
---> statement-breakpoint
+ALTER TABLE "boards" ADD COLUMN "direct_access_type" "direct_access_type" DEFAULT 'edit' NOT NULL;--> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "access_keys" ADD CONSTRAINT "access_keys_board_id_boards_id_fk" FOREIGN KEY ("board_id") REFERENCES "public"."boards"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
@@ -118,14 +99,4 @@ END $$;
 --> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "folder_id_contains_board_id_idx" ON "folders_to_boards" USING btree ("folder_id","contains_border_id");--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "folder_id_contains_folder_id_idx" ON "folders_to_folders" USING btree ("folder_id","contains_folder_id");--> statement-breakpoint
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1
-        FROM pg_constraint
-        WHERE conname = 'users_email_unique' AND conrelid = 'users'::regclass
-    ) THEN
-        ALTER TABLE "users" ADD CONSTRAINT "users_email_unique" UNIQUE("email");
-    END IF;
-END $$;
---> statement-breakpoint
+ALTER TABLE "users" ADD CONSTRAINT "users_email_unique" UNIQUE("email");
