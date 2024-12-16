@@ -101,16 +101,14 @@ export const AIInput: React.FC = () => {
 
 	let finalResponse = "";
 	const handleChatChunk = (chunk: ChatChunk): void => {
-		console.log("Received chunk:", chunk);
+		const itemId = chunk.itemId;
 		switch (chunk.type) {
 			case "chunk":
 				setCurrentResponseContent(prev => prev + (chunk.content || ""));
-				finalResponse += chunk.content || "";
-				console.log({
-					content: chunk.content,
-					currentResponse: currentResponseContent,
-					finalResponse,
-				});
+				const item = board.items.getById(itemId);
+				if (item && item.itemType === "RichText") {
+					item.editor.insertAICopiedText(chunk.content || "");
+				}
 				break;
 			case "done":
 				console.log("Chat is done");
@@ -154,29 +152,6 @@ export const AIInput: React.FC = () => {
 		richText.editor.setSelectionHorisontalAlignment("left");
 		richText.insideOf = richText.itemType;
 		richText.editor.insertCopiedText(inputValue);
-		richText.editor.editor.children = [
-			{
-				type: "paragraph",
-				children: [
-					{
-						type: "text",
-						text: inputValue,
-						fontFamily: "Arial",
-						fontSize: 14,
-						fontColor: "black",
-						fontHighlight: "Green",
-						bold: false,
-						underline: false,
-						italic: false,
-						overline: false,
-						lineThrough: false,
-						subscript: false,
-						superscript: false,
-					},
-				],
-				horisontalAlignment: "left",
-			},
-		];
 		return richText;
 	}
 
@@ -187,9 +162,9 @@ export const AIInput: React.FC = () => {
 
 		const requestRichText = createRichText(board, inputValue);
 		board.add(requestRichText);
-
 		const responseRichText = createRichText(board, "");
-		board.add(responseRichText);
+		const item = board.add(responseRichText);
+		const itemId = item.getId();
 
 		const message: AiChatMsg<UserRequest> = {
 			type: "AiChat",
@@ -200,10 +175,11 @@ export const AIInput: React.FC = () => {
 				boardContext: [],
 				idea: inputValue,
 				model: model,
+				itemId: itemId,
 			},
 		};
+
 		connection?.wsClient.send(message);
-		console.log("message", message);
 
 		setInputValue("");
 	};

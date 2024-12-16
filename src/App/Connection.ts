@@ -147,12 +147,14 @@ export interface UserRequest {
 	boardContext: string[];
 	idea: string;
 	model?: OpenAIModels;
+	itemId: string;
 }
 
 export interface ChatChunk {
 	method: "ChatChunk";
 	chatId: number;
 	type: "chunk" | "done" | "end" | "error";
+	itemId: string;
 	content?: string;
 	error?: string;
 }
