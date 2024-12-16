@@ -36,7 +36,7 @@ export function getBoardsController(boardsService: BoardsService, foldersService
 
     res
       .status(HttpStatus.CREATED)
-      .json(new BoardDto({ ...board, authorKey: board.authorUUID, id: board.uniqId }));
+      .json(new BoardDto({ ...board, authorKey: board.authorUUID, id: board.uniqId, title: board.title ?? '' }));
   });
 
   const getBoard = catchAsync(async (req, res) => {
@@ -44,16 +44,21 @@ export function getBoardsController(boardsService: BoardsService, foldersService
 
     res
       .status(HttpStatus.OK)
-      .json(new BoardDto({ ...board, authorKey: null, id: board.uniqId }))
+      .json(new BoardDto({ ...board, authorKey: null, id: board.uniqId, title: board.title ?? '' }))
   });
 
   const editBoard = catchAsync(async (req, res) => {
     const board = await validateBoard(req);
     const updatedBoard = await boardsService.edit(board.id, req.body);
 
+    if (board.directAccessType !== updatedBoard.directAccessType || board.isPublic !== updatedBoard.isPublic) {
+      await boardsService.invalidateBoardRights(board.uniqId, true);
+    }
+
+
     res
       .status(HttpStatus.OK)
-      .json(new BoardDto({ ...updatedBoard, authorKey: null, id: updatedBoard.uniqId }));
+      .json(new BoardDto({ ...updatedBoard, authorKey: null, id: updatedBoard.uniqId, title: board.title ?? '' }));
   })
 
   const claimBoards = catchAsync(async (req, res) => {
@@ -129,11 +134,27 @@ export function getBoardsController(boardsService: BoardsService, foldersService
 
   const grantAccess = catchAsync(async (req, res) => {
     const board = await validateBoard(req);
-    console.log('grantAccessController', req.body.users);
-    await boardsService.grantAccess(board.uniqId, board.id, req.body.users);
+    await boardsService.grantAccess(board.id, req.body.users);
+    await boardsService.invalidateBoardRights(board.uniqId, true);
 
     res.status(HttpStatus.NO_CONTENT).send();
   });
+
+  const manageAccess = catchAsync(async (req, res) => {
+    const board = await validateBoard(req);
+    if (req.body.users) {
+      await boardsService.grantAccess(board.id, req.body.users);
+    }
+
+    if (req.body.directAccessType || typeof req.body.isPublic === 'boolean') {
+      await boardsService.edit(board.id, { directAccessType: req.body.directAccessType, isPublic: req.body.isPublic });
+    }
+
+    await boardsService.invalidateBoardRights(board.uniqId, true);
+
+    res.status(HttpStatus.NO_CONTENT).send();
+  });
+
 
   const getGrantedUsers = catchAsync(async (req, res) => {
     const board = await validateBoard(req);
@@ -155,6 +176,7 @@ export function getBoardsController(boardsService: BoardsService, foldersService
     getAccessKey,
     deleteAccessKey,
     grantAccess,
-    getGrantedUsers
+    getGrantedUsers,
+    manageAccess,
   }
 }

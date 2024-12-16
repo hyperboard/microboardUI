@@ -13,6 +13,7 @@ import { createAccessKeySchema } from "./schema/create-access-key.schema";
 import { createBoardSchema } from "./schema/create-board.schema";
 import { grantAccessSchema } from "./schema/grant-access.schema";
 import { ACCESS_KEY_PARAM, BOARD_UUID_PARAM } from "./types";
+import { manageAccessSchema } from "./schema/manage-access.schema";
 
 export function getBoardsRouter(boardsService: BoardsService, foldersService: FoldersService, accessKeysService: AccessKeysService) {
   const boardsController = getBoardsController(boardsService, foldersService, accessKeysService);
@@ -62,6 +63,11 @@ export function getBoardsRouter(boardsService: BoardsService, foldersService: Fo
     )
     .get(boardsController.getAccessKey)
     .delete(boardsController.deleteAccessKey)
+
+  router.route(`/boards/:${BOARD_UUID_PARAM}/manage-access`)
+    .all(validateParams(boardUUIDSchema), authenticateBoardAuthor(BOARD_UUID_PARAM, boardsService))
+    .post(validateBody(manageAccessSchema), boardsController.manageAccess)
+
 
   return router;
 }
