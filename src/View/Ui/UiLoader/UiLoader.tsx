@@ -1,6 +1,29 @@
 import React from "react";
 import styles from "./UiLoader.module.css";
 
-export function UiLoader() {
-	return <span className={styles.loader}></span>;
+type Props = {
+	size?: number;
+	rotateTime?: number;
+	strokeWidth?: number;
+	color?: string;
+};
+
+export function UiLoader({
+	size,
+	rotateTime = 2,
+	strokeWidth = 5,
+	color = "rgba(10, 15, 41, 0.25)",
+}: Props) {
+	return (
+		<span
+			style={{
+				width: size,
+				height: size,
+				"--color": color,
+				"--stroke-width": `${strokeWidth}px`,
+				"--rotate-time": `${rotateTime}s`,
+			}}
+			className={styles.loader}
+		/>
+	);
 }

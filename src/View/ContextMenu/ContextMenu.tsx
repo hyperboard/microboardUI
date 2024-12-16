@@ -2,6 +2,7 @@ import { useAccount } from "App/useAccount";
 import { useBoardsList } from "App/useBoardsList";
 import { useClickOutside } from "lib/useClickOutside";
 import React, {
+	useState,
 	type MouseEventHandler,
 	type PropsWithChildren,
 	type ReactNode,
@@ -20,6 +21,7 @@ import { SHARE_MODAL_ID } from "View/ShareModal/ShareModal";
 import { useAppContext } from "View/AppContext";
 import { useNavigate } from "react-router-dom";
 import { useOpenedFoldersContext } from "View/Folder";
+import { UiLoader } from "View/Ui/UiLoader";
 
 export function ContextMenu(): JSX.Element | null {
 	const { boardId, x, y, isOpen, folderId, close } = useContextMenuContext();
@@ -33,6 +35,11 @@ export function ContextMenu(): JSX.Element | null {
 	const menuRef = useClickOutside(() => {
 		close();
 	});
+	const [isFolderCreating, setIsFolderCreating] = useState(false);
+	const [isBoardCreating, setIsBoardCreating] = useState(false);
+	const [isBoardDeleting, setIsBoardDeleting] = useState(false);
+	const [isFolderDeleting, setIsFolderDeleting] = useState(false);
+
 	const { setBoard, setFolder } = useOpenedFoldersContext();
 	const navigate = useNavigate();
 	const currentBoardId = board.getBoardId();
@@ -58,12 +65,13 @@ export function ContextMenu(): JSX.Element | null {
 	const handleCreateBoard: MouseEventHandler = async ev => {
 		ev.preventDefault();
 		ev.stopPropagation();
-		console.log("parent folder", folderId);
+		setIsBoardCreating(true);
 		const boardId = await boardsList.createBoard(
 			undefined,
 			undefined,
 			folderId ?? undefined,
 		);
+		setIsBoardCreating(false);
 		close();
 		const boardInfo = boardsList.getBoardInfo(boardId);
 		setRenamingId(boardId);
@@ -76,12 +84,14 @@ export function ContextMenu(): JSX.Element | null {
 		if (!account.isLoggedIn) {
 			return;
 		}
+		setIsFolderCreating(true);
 		ev.preventDefault();
 		ev.stopPropagation();
 		const createdFolderId = await boardsList.createFolder(
 			undefined,
 			folderId ?? undefined,
 		);
+		setIsFolderCreating(false);
 		close();
 		setBoard(null);
 		setFolder(createdFolderId ?? null);
@@ -106,6 +116,7 @@ export function ContextMenu(): JSX.Element | null {
 	const handleDeleteBoard: MouseEventHandler = ev => {
 		ev.preventDefault();
 		ev.stopPropagation();
+		setIsBoardDeleting(true);
 		openModalConfirm(
 			"Deleting document",
 			`Are you sure you want to delete the board "${boardInfo?.title}"`,
@@ -123,6 +134,7 @@ export function ContextMenu(): JSX.Element | null {
 				} else {
 					boardsList.removeBoardFromFolder(folderId, boardId);
 				}
+				setIsBoardDeleting(false);
 				close();
 				Promise.resolve();
 			},
@@ -132,6 +144,7 @@ export function ContextMenu(): JSX.Element | null {
 	const handleDeleteFolder: MouseEventHandler = ev => {
 		ev.preventDefault();
 		ev.stopPropagation();
+		setIsFolderDeleting(true);
 		openModalConfirm(
 			"Deleting document",
 			`Are you sure you want to delete the folder "${folderInfo?.title}"`,
@@ -141,6 +154,7 @@ export function ContextMenu(): JSX.Element | null {
 				}
 
 				boardsList.removeFolder(folderId);
+				setIsFolderDeleting(false);
 				close();
 				Promise.resolve();
 			},
@@ -159,6 +173,12 @@ export function ContextMenu(): JSX.Element | null {
 		close();
 	};
 
+	const isMutationsDisabled =
+		isFolderCreating ||
+		isBoardCreating ||
+		isBoardDeleting ||
+		isFolderDeleting;
+
 	if (!isOpen) {
 		return null;
 	}
@@ -166,8 +186,6 @@ export function ContextMenu(): JSX.Element | null {
 	if (isFolderMenu && !isFolderExtendable && !isFolderEditable) {
 		return null;
 	}
-
-	console.log(isFolderMenu, isFolderExtendable, "cp");
 
 	return (
 		<UiPanel
@@ -182,6 +200,8 @@ export function ContextMenu(): JSX.Element | null {
 				<>
 					<ContextMenuItem
 						onClick={handleCreateBoard}
+						isLoading={isBoardCreating}
+						disabled={isMutationsDisabled}
 						icon={
 							<Icon
 								iconName="EmbedBoardIcon"
@@ -193,9 +213,10 @@ export function ContextMenu(): JSX.Element | null {
 						{t("contextMenu.newBoard")}
 					</ContextMenuItem>
 					<ContextMenuItem
-						disabled={!account.isLoggedIn}
+						disabled={!account.isLoggedIn || isMutationsDisabled}
 						onClick={handleCreateFolder}
 						icon={<Icon iconName="Folder" width={20} height={20} />}
+						isLoading={isFolderCreating}
 					>
 						{t("contextMenu.newFolder")}
 					</ContextMenuItem>
@@ -205,6 +226,8 @@ export function ContextMenu(): JSX.Element | null {
 				<>
 					<ContextMenuItem
 						onClick={handleCreateBoard}
+						isLoading={isBoardCreating}
+						disabled={isMutationsDisabled}
 						icon={
 							<Icon
 								iconName="EmbedBoardIcon"
@@ -216,7 +239,8 @@ export function ContextMenu(): JSX.Element | null {
 						{t("contextMenu.newBoard")}
 					</ContextMenuItem>
 					<ContextMenuItem
-						disabled={!account.isLoggedIn}
+						disabled={!account.isLoggedIn || isMutationsDisabled}
+						isLoading={isFolderCreating}
 						onClick={handleCreateFolder}
 						icon={<Icon iconName="Folder" width={20} height={20} />}
 					>
@@ -254,6 +278,7 @@ export function ContextMenu(): JSX.Element | null {
 					)}
 					<ContextMenuItem
 						onClick={handleDeleteBoard}
+						disabled={isMutationsDisabled}
 						icon={<Icon iconName="Delete" width={20} height={20} />}
 					>
 						{hasOwnerRights
@@ -281,6 +306,7 @@ export function ContextMenu(): JSX.Element | null {
 							</ContextMenuItem>
 							<ContextMenuItem
 								onClick={handleDeleteFolder}
+								disabled={isMutationsDisabled}
 								icon={
 									<Icon
 										iconName="Delete"
@@ -295,60 +321,6 @@ export function ContextMenu(): JSX.Element | null {
 					)}
 				</>
 			)}
-			{/* {boardId ? (
-				<>
-					{canRename && (
-						<ContextMenuItem
-							onClick={handleRenameBoard}
-							icon={
-								<Icon
-									iconName="Rename"
-									width={20}
-									height={20}
-								/>
-							}
-						>
-							{t("contextMenu.rename")}
-						</ContextMenuItem>
-					)}
-					<ContextMenuItem
-						onClick={event => {
-							event.preventDefault();
-							event.stopPropagation();
-							close();
-							openModalConfirm(
-								t("modalConfirm.deleteBoard.title"),
-								`${t(
-									"modalConfirm.deleteBoard.description",
-								)} "${boardName}"?`,
-								() => handleDeleteBoard(event),
-							);
-						}}
-						icon={
-							isSharedBoard ? (
-								<Icon iconName="Close" width={20} height={20} />
-							) : (
-								<Icon
-									iconName="Delete"
-									width={20}
-									height={20}
-								/>
-							)
-						}
-					>
-						{isSharedBoard
-							? t("contextMenu.deleteShared")
-							: t("contextMenu.delete")}
-					</ContextMenuItem>
-				</>
-			) : (
-				<ContextMenuItem
-					onClick={handleCreateBoard}
-					icon={<Icon iconName="Board" width={20} height={20} />}
-				>
-					{t("contextMenu.addNew")}
-				</ContextMenuItem>
-			)} */}
 		</UiPanel>
 	);
 }
@@ -357,6 +329,7 @@ type ItemProps = PropsWithChildren<{
 	icon: ReactNode;
 	onClick: MouseEventHandler;
 	disabled?: boolean;
+	isLoading?: boolean;
 }>;
 
 function ContextMenuItem({
@@ -364,11 +337,17 @@ function ContextMenuItem({
 	icon,
 	onClick,
 	disabled = false,
+	isLoading = false,
 }: ItemProps): JSX.Element {
 	return (
-		<button disabled={disabled} className={style.item} onClick={onClick}>
+		<button
+			disabled={disabled || isLoading}
+			className={style.item}
+			onClick={onClick}
+		>
 			<span className={style.icon}>{icon}</span>
 			<span>{children}</span>
+			{isLoading && <UiLoader size={20} strokeWidth={3} rotateTime={1} />}
 		</button>
 	);
 }
