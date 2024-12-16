@@ -1,3 +1,4 @@
+/* eslint-disable no-var */
 import { textInit } from "TextInit";
 textInit();
 
@@ -13,15 +14,15 @@ declare global {
 		showDebug: boolean;
 		customTextRender: boolean;
 		enableTemplateCreating: boolean;
+		// todo remove when has ui
+		exportHTML: () => string;
 	}
 }
 
-// eslint-disable-next-line no-var
 var showDebug = isMicroboard() ? true : false;
 window.showDebug = showDebug;
 window.enableTemplateCreating = false;
 
-// eslint-disable-next-line no-var
 var customTextRender = false;
 window.customTextRender = customTextRender;
 
@@ -29,5 +30,10 @@ window.app = createApp();
 window.app.connection.connect().then(() => {
 	window.app.render();
 });
+
+function exportHTML(): string {
+	return window.app.getBoard().exportHTML();
+}
+window.exportHTML = exportHTML;
 
 window.useHTTPSubscription = false;
