@@ -19,6 +19,7 @@ import { useUiModalContext } from "View/Ui/UiModal";
 import { SHARE_MODAL_ID } from "View/ShareModal/ShareModal";
 import { useAppContext } from "View/AppContext";
 import { useNavigate } from "react-router-dom";
+import { useOpenedFoldersContext } from "View/Folder";
 
 export function ContextMenu(): JSX.Element | null {
 	const { boardId, x, y, isOpen, folderId, close } = useContextMenuContext();
@@ -32,6 +33,7 @@ export function ContextMenu(): JSX.Element | null {
 	const menuRef = useClickOutside(() => {
 		close();
 	});
+	const { setBoard, setFolder } = useOpenedFoldersContext();
 	const navigate = useNavigate();
 	const currentBoardId = board.getBoardId();
 
@@ -51,7 +53,7 @@ export function ContextMenu(): JSX.Element | null {
 		: false;
 
 	const isBoardMenu = boardId && folderId;
-	const isFolderMenu = !boardId && folderId && isFolderEditable;
+	const isFolderMenu = !boardId && folderId;
 
 	const handleCreateBoard: MouseEventHandler = async ev => {
 		ev.preventDefault();
@@ -66,6 +68,8 @@ export function ContextMenu(): JSX.Element | null {
 		const boardInfo = boardsList.getBoardInfo(boardId);
 		setRenamingId(boardId);
 		setNewName(boardInfo?.title ?? "");
+		setBoard(boardId);
+		setFolder(null);
 	};
 
 	const handleCreateFolder: MouseEventHandler = async ev => {
@@ -74,8 +78,13 @@ export function ContextMenu(): JSX.Element | null {
 		}
 		ev.preventDefault();
 		ev.stopPropagation();
-		await boardsList.createFolder(undefined, folderId ?? undefined);
+		const createdFolderId = await boardsList.createFolder(
+			undefined,
+			folderId ?? undefined,
+		);
 		close();
+		setBoard(null);
+		setFolder(createdFolderId ?? null);
 	};
 
 	const handleRename: MouseEventHandler = ev => {
@@ -154,6 +163,12 @@ export function ContextMenu(): JSX.Element | null {
 		return null;
 	}
 
+	if (isFolderMenu && !isFolderExtendable && !isFolderEditable) {
+		return null;
+	}
+
+	console.log(isFolderMenu, isFolderExtendable, "cp");
+
 	return (
 		<UiPanel
 			style={{ left: x, top: y }}
@@ -209,29 +224,33 @@ export function ContextMenu(): JSX.Element | null {
 					</ContextMenuItem>
 				</>
 			)}
+			{isFolderExtendable && isBoardMenu && hasOwnerRights && (
+				<UiSeparator />
+			)}
 			{isBoardMenu && (
 				<>
-					<UiSeparator />
-					<ContextMenuItem
-						onClick={handleSharingModalOpen}
-						icon={<Icon iconName="People" />}
-					>
-						{t("contextMenu.manageSharing")}
-					</ContextMenuItem>
-					<UiSeparator />
 					{hasOwnerRights && (
-						<ContextMenuItem
-							onClick={handleRename}
-							icon={
-								<Icon
-									iconName="Rename"
-									width={20}
-									height={20}
-								/>
-							}
-						>
-							{t("contextMenu.rename")}
-						</ContextMenuItem>
+						<>
+							<ContextMenuItem
+								onClick={handleSharingModalOpen}
+								icon={<Icon iconName="People" />}
+							>
+								{t("contextMenu.manageSharing")}
+							</ContextMenuItem>
+							<UiSeparator />
+							<ContextMenuItem
+								onClick={handleRename}
+								icon={
+									<Icon
+										iconName="Rename"
+										width={20}
+										height={20}
+									/>
+								}
+							>
+								{t("contextMenu.rename")}
+							</ContextMenuItem>
+						</>
 					)}
 					<ContextMenuItem
 						onClick={handleDeleteBoard}
@@ -245,19 +264,35 @@ export function ContextMenu(): JSX.Element | null {
 			)}
 			{isFolderMenu && (
 				<>
-					<UiSeparator />
-					<ContextMenuItem
-						onClick={handleRename}
-						icon={<Icon iconName="Rename" width={20} height={20} />}
-					>
-						{t("contextMenu.rename")}
-					</ContextMenuItem>
-					<ContextMenuItem
-						onClick={handleDeleteFolder}
-						icon={<Icon iconName="Delete" width={20} height={20} />}
-					>
-						{t("contextMenu.delete")}
-					</ContextMenuItem>
+					{isFolderEditable && (
+						<>
+							<UiSeparator />
+							<ContextMenuItem
+								onClick={handleRename}
+								icon={
+									<Icon
+										iconName="Rename"
+										width={20}
+										height={20}
+									/>
+								}
+							>
+								{t("contextMenu.rename")}
+							</ContextMenuItem>
+							<ContextMenuItem
+								onClick={handleDeleteFolder}
+								icon={
+									<Icon
+										iconName="Delete"
+										width={20}
+										height={20}
+									/>
+								}
+							>
+								{t("contextMenu.delete")}
+							</ContextMenuItem>
+						</>
+					)}
 				</>
 			)}
 			{/* {boardId ? (

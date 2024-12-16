@@ -36,6 +36,7 @@ import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
 import { AccessDeniedModal } from "View/AccessDeniedModal";
 import { AIInput } from "View/AIInput/AIInput";
+import { OpenedFoldersContextProvider } from "View/Folder";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();

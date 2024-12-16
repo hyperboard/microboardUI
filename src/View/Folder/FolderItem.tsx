@@ -45,10 +45,9 @@ export const FolderItem = forwardRef<HTMLDivElement, Props>(
 				data: { ...board, parentFolderId: folder?.id },
 			});
 
-		useEffect(() => {
+		const calcOriginalPosition = () => {
 			if (isDragging && itemRef.current) {
 				const rect = itemRef.current.getBoundingClientRect();
-				console.log("rect", isDragging, itemRef.current, rect);
 				setOriginalPosition({
 					top: rect.y,
 					left: rect.x,
@@ -56,6 +55,18 @@ export const FolderItem = forwardRef<HTMLDivElement, Props>(
 					height: rect.height,
 				});
 			}
+		};
+		useEffect(() => {
+			calcOriginalPosition();
+			document.addEventListener("scroll", calcOriginalPosition, true);
+
+			return () => {
+				document.removeEventListener(
+					"scroll",
+					calcOriginalPosition,
+					true,
+				);
+			};
 		}, [isDragging]);
 
 		const style: CSSProperties | undefined = transform
@@ -179,7 +190,7 @@ export const FolderItem = forwardRef<HTMLDivElement, Props>(
 						{isRenaming ? (
 							<RenameInput />
 						) : (
-							<span>{board.title}</span>
+							<span className={styles.title}>{board.title}</span>
 						)}
 					</button>
 				</div>

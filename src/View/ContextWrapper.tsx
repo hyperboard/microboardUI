@@ -9,6 +9,7 @@ import React, { type PropsWithChildren } from "react";
 import type { Board } from "Board";
 import { ToastProvider } from "./ToastProvider";
 import { Outlet } from "react-router-dom";
+import { OpenedFoldersContextProvider } from "./Folder";
 
 type Props = {
 	app: App;
@@ -22,10 +23,12 @@ export function ContextWrapper({ app, board }: Props) {
 				<ContextMenuContextProvider>
 					<BoardRenameContextProvider>
 						<RenameContextProvider>
-							<SidePanelContextProvider>
-								<Outlet />
-								<ToastProvider />
-							</SidePanelContextProvider>
+							<OpenedFoldersContextProvider>
+								<SidePanelContextProvider>
+									<Outlet />
+									<ToastProvider />
+								</SidePanelContextProvider>
+							</OpenedFoldersContextProvider>
 						</RenameContextProvider>
 					</BoardRenameContextProvider>
 				</ContextMenuContextProvider>

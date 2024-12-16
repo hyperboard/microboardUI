@@ -3,6 +3,7 @@ import { createStrictContext, useStrictContext } from "lib/strictContext";
 import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "View/AppContext";
+import { useOpenedFoldersContext } from "View/Folder";
 
 type SidePanelContext = {
 	toggleSideMenu: () => void;
@@ -26,12 +27,22 @@ export function SidePanelContextProvider({
 	const [isOpen, setIsOpen] = useState(false);
 	const [stamp, setStamp] = useState<null | number>(null);
 	const [highlighted, setHighlighted] = useState(false);
-	const { app } = useAppContext();
+	const { app, board } = useAppContext();
 	const navigate = useNavigate();
 	const boardsList = useBoardsList();
 	const timeoutRef = useRef<NodeJS.Timeout>();
+	const { setBoard, setFolder } = useOpenedFoldersContext();
+	const boardId = board?.getBoardId();
 
 	const toggleSideMenu = (): void => {
+		if (boardId !== "blank" && !isOpen) {
+			setBoard(boardId);
+			setFolder(null);
+		}
+		if (isOpen) {
+			setBoard(null);
+			setFolder(null);
+		}
 		setIsOpen(prev => !prev);
 	};
 

@@ -23,13 +23,17 @@ export class BoardsList {
 		return this.rootFolder;
 	}
 
-	async createFolder(title?: string, parentFolder?: number): Promise<void> {
+	async createFolder(title?: string, parentFolder?: number) {
 		if (!this.account.isLoggedIn) {
 			return;
 		}
 
-		await foldersApi.createFolder({ parentFolder, title });
-		await this.loadBoards();
+		const { data: folder } = await foldersApi.createFolder({
+			parentFolder,
+			title,
+		});
+		await this.updateList();
+		return folder?.id ?? null;
 	}
 
 	async createBoard(
@@ -130,8 +134,53 @@ export class BoardsList {
 		);
 	}
 
+	private findPathToFolder(
+		folderId: number,
+		folder: foldersApi.Folder | null,
+		path: number[] = [],
+	): number[] | null {
+		if (!folder) {
+			return null;
+		}
+
+		if (folder.id === folderId) {
+			return [...path, folder.id];
+		}
+
+		for (const item of folder.items) {
+			if (item.itemType === "folder") {
+				const result = this.findPathToFolder(
+					folderId,
+					item as foldersApi.Folder,
+					[...path, folder.id],
+				);
+				if (result) {
+					return result;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	getPathToFolder(folderId: number): number[] | null {
+		return (
+			this.findPathToFolder(folderId, this.rootFolder) ||
+			this.findPathToFolder(folderId, this.sharedFolder)
+		);
+	}
+
 	isFolderContainsBoard(folderId: number, boardId: string): boolean {
 		const path = this.getPathToBoard(boardId);
+		if (!path) {
+			return false;
+		}
+
+		return path.includes(folderId);
+	}
+
+	isFolderContainsFolder(folderId: number, targetFolderId: number): boolean {
+		const path = this.getPathToFolder(targetFolderId);
 		if (!path) {
 			return false;
 		}

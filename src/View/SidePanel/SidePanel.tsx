@@ -15,7 +15,6 @@ import { UiPanel } from "View/Ui/UiPanel";
 import { ResizableEdge } from "./ResizableEdge";
 import style from "./SidePanel.module.css";
 import { useSidePanelContext } from "./SidePanelContext";
-import { DndContext } from "@dnd-kit/core";
 
 const MIN_PANEL_WIDTH = 280;
 

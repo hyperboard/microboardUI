@@ -166,6 +166,7 @@ export function createApp(isHistory = true): App {
 			if (boardId && boardId !== "blank") {
 				await openBoard(boardId);
 				router.navigate(`/boards/${boardId}${window.location.search}`);
+				connection.publishGetMode();
 			} else {
 				router.navigate(`/${window.location.search}`);
 			}

@@ -1,7 +1,9 @@
 import React, {
+	forwardRef,
 	memo,
 	useCallback,
 	useEffect,
+	useImperativeHandle,
 	useRef,
 	type MouseEventHandler,
 	type RefCallback,
@@ -23,6 +25,7 @@ import { useContextMenuContext } from "View/ContextMenu";
 import { useBoardsList } from "App/useBoardsList";
 import { useAppContext } from "View/AppContext";
 import { useDroppable } from "@dnd-kit/core";
+import { useOpenedFoldersContext } from "./OpenedFoldersContext";
 
 type Props = {
 	folder: foldersApi.Folder | null;
@@ -37,15 +40,22 @@ const folderIcons: Record<foldersApi.FolderType, IconId> = {
 	[foldersApi.FolderType.NESTED]: "Folder",
 };
 
+export type FolderRef = {
+	openFoldersContainsBoard: (boardId: string) => void;
+};
+
 export const Folder = ({ folder, handleOpenBoard }: Props) => {
 	const { handlePointerEnter, handlePointerLeave, isHover } = useHoverState();
 	const { open } = useContextMenuContext();
+	const { boardId: openedFoldersBoardId, folderId: openedFoldersFolderId } =
+		useOpenedFoldersContext();
 	const { setNewName, setRenamingId, renamingId } = useRenameContext();
 	const { board } = useAppContext();
 	const boardsList = useBoardsList();
 	const boardId = board.getBoardId();
 	const accordionRef = useRef<AccordionState>(null);
 	const currentBoardRef = useRef<HTMLDivElement>();
+	const currentFolderRef = useRef<HTMLButtonElement>(null);
 	const { isOver, setNodeRef } = useDroppable({
 		id: folder?.id || "unknown",
 		data: folder ?? undefined,
@@ -54,25 +64,62 @@ export const Folder = ({ folder, handleOpenBoard }: Props) => {
 		color: isOver ? "green" : undefined,
 	};
 
-	useEffect(() => {
-		if (!folder) {
+	const openFoldersContainsBoard = (boardId: string | null) => {
+		if (!folder || !boardId) {
 			return;
 		}
 		const isOpen = boardsList.isFolderContainsBoard(folder.id, boardId);
 
 		if (isOpen) {
 			accordionRef.current?.open(() => {
-				if (currentBoardRef.current) {
-					currentBoardRef.current.scrollIntoView({
-						behavior: "smooth",
-						block: "nearest",
-					});
-				}
+				setTimeout(() => {
+					if (currentBoardRef.current) {
+						console.log("scroll to board", openedFoldersBoardId);
+						currentBoardRef.current.scrollIntoView({
+							behavior: "smooth",
+							block: "nearest",
+						});
+					}
+				}, 300);
 			});
 		} else {
 			accordionRef.current?.close();
 		}
-	}, [folder?.id]);
+	};
+
+	const openFoldersContainsFolder = (folderId: number) => {
+		if (!folder || !folderId) {
+			return;
+		}
+		const isOpen = boardsList.isFolderContainsFolder(folder.id, folderId);
+		console.log("isOpen", isOpen);
+		if (isOpen) {
+			accordionRef.current?.open(() => {
+				setTimeout(() => {
+					if (
+						currentFolderRef.current &&
+						folder.id === openedFoldersFolderId
+					) {
+						console.log("scroll to folder", openedFoldersFolderId);
+						currentFolderRef.current.scrollIntoView({
+							behavior: "smooth",
+							block: "nearest",
+						});
+					}
+				}, 300);
+			});
+		} else {
+			accordionRef.current?.close();
+		}
+	};
+
+	useEffect(() => {
+		console.log("open folder useEffect");
+		openFoldersContainsBoard(openedFoldersBoardId);
+		if (openedFoldersFolderId) {
+			openFoldersContainsFolder(openedFoldersFolderId);
+		}
+	}, [folder?.id, openedFoldersBoardId, openedFoldersFolderId]);
 
 	useEffect(() => {
 		if (isOver && !accordionRef.current?.isOpen) {
@@ -113,6 +160,7 @@ export const Folder = ({ folder, handleOpenBoard }: Props) => {
 			elemRef={setNodeRef}
 			renderHeader={({ toggle, isOpen }) => (
 				<button
+					ref={currentFolderRef}
 					style={style}
 					className={styles.header}
 					onClick={handleClick(toggle)}

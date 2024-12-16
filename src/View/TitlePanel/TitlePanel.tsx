@@ -2,6 +2,7 @@ import { useAccount } from "App/useAccount";
 import { useBoardsList } from "App/useBoardsList";
 import { useAppSubscription } from "Board/useBoardSubscription";
 import clsx from "clsx";
+import Cookies from "js-cookie";
 import { useForceUpdate } from "lib/useForceUpdate";
 import {
 	type ChangeEventHandler,
@@ -13,17 +14,16 @@ import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
 import { BoardRename } from "View/BoardName";
 import { useSidePanelContext } from "View/SidePanel/SidePanelContext";
+import { notify } from "View/Ui/Toast/notify";
 import { UiButton } from "View/Ui/UiButton";
 import { UiPanel } from "View/Ui/UiPanel";
 import { UiSeparator } from "View/Ui/UiSeparator";
 import { ViewModeGuard } from "View/ViewModeGuard";
-import { Icon, Logo } from "../Icon";
-import style from "./TitlePanel.module.css";
-import { CreateTemplateModal } from "../Templates";
 import { getApiUrl } from "../../Config";
+import { Icon, Logo } from "../Icon";
 import { useModal } from "../Modal/ModalProvider";
-import Cookies from "js-cookie";
-import { notify } from "View/Ui/Toast/notify";
+import { CreateTemplateModal } from "../Templates";
+import style from "./TitlePanel.module.css";
 
 const MAX_BOARD_TITLE_LENGTH = 32;
 
@@ -45,7 +45,6 @@ export function TitlePanel(): JSX.Element | null {
 	const [isRenaming, setIsRenaming] = useState(false);
 	const [newBoardName, setNewBoardName] = useState(boardName);
 	const [isBoardRenameBtnShown, setIsBoardRenameBtnShown] = useState(false);
-
 	const isExport = board.tools.getExport();
 	if (isExport) {
 		return null;

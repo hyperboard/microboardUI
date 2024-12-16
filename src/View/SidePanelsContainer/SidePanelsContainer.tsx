@@ -26,7 +26,6 @@ export const SidePanelsContainer = memo(
 			}
 		});
 
-		useEffect(() => {}, [isBlank]);
 		return (
 			<ShapesPanelContextProvider>
 				<div ref={containerRef} className={style.sidePanels}>
