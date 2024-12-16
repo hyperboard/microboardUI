@@ -38,6 +38,7 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 		const [messageOptionsData, setMessageOptionsData] =
 			useState<null | MessageOptionsData>(null);
 		const refs = useRef<Record<string, HTMLDivElement>>({});
+		const messageOptionsRef = useRef<HTMLDivElement>(null);
 		const [textUnderEditorId, setTextUnderEditorId] = useState<
 			undefined | string
 		>(undefined);
@@ -51,7 +52,10 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 		const openedThreadIdRef = useRef<string | undefined>(openedThreadId);
 		openedThreadIdRef.current = openedThreadId;
 
-		const threadRef = useClickOutside(() => setOpenedThreadId(undefined));
+		const threadRef = useClickOutside(
+			() => setOpenedThreadId(undefined),
+			[messageOptionsRef],
+		);
 
 		const { t } = useTranslation();
 		const accountInfo = account.info;
@@ -140,124 +144,135 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 			) || username === comment.getCommentators()[0].username;
 
 		return (
-			<UiPanel className={styles.panel} ref={ref} zIndex={2}>
-				<div
-					className={clsx(
-						styles.header,
-						!canEditThread && styles.noPermission,
-					)}
-					ref={threadRef}
-				>
-					{canEditThread && (
-						<Button
-							className={styles.threadBtn}
-							pattern="secondary"
-							onClick={toggleResolved}
-						>
-							{!comment.getResolved() && (
-								<Icon
-									iconName="checkMark"
-									width={20}
-									height={20}
-								/>
-							)}
-							{comment.getResolved()
-								? t("comment.openThread")
-								: t("comment.closeThread")}
-						</Button>
-					)}
-					<div className={styles.headerOptions}>
-						<ExtraOptions
-							comment={comment}
-							canEdit={canEditThread}
-						/>
-						<UiButton
-							size="sm"
-							variant="secondary"
-							onClick={handleClose}
-							style={{
-								padding: 0,
-								color: "#696B76",
-							}}
-						>
-							<Icon
-								iconName="modalCross"
-								width={16}
-								height={16}
-							/>
-						</UiButton>
-					</div>
-				</div>
-				<UiSeparator />
-				<div className={clsx(styles.messages, styles.scrollContainer)}>
-					{thread.map((mes, index) => {
-						return (
-							<Message
-								ref={setRef(mes.id)}
-								key={mes.id}
-								text={mes.text}
-								date={mes.date}
-								handleEditMessage={handleEditMessage}
-								id={mes.id}
-								isTextUnderEditor={textUnderEditorId === mes.id}
-								setTextUnderEditor={setTextUnderEditorId}
-								username={mes.commentator.username}
-								avatar={mes.commentator.avatar}
-								handleOptionsClick={() =>
-									handleMessageOptionsClick(mes.id)
-								}
-								handleRemoveMessage={() =>
-									handleRemoveMessage(mes.id)
-								}
-								isShorted={
-									thread[index - 1] &&
-									thread[index - 1].commentator.username ===
-										mes.commentator.username
-								}
-								isOptionsPanelActive={Boolean(
-									messageOptionsData &&
-										messageOptionsData.messageId === mes.id,
+			<div ref={threadRef}>
+				<UiPanel className={styles.panel} ref={ref} zIndex={2}>
+					<div
+						className={clsx(
+							styles.header,
+							!canEditThread && styles.noPermission,
+						)}
+					>
+						{canEditThread && (
+							<Button
+								className={styles.threadBtn}
+								pattern="secondary"
+								onClick={toggleResolved}
+							>
+								{!comment.getResolved() && (
+									<Icon
+										iconName="checkMark"
+										width={20}
+										height={20}
+									/>
 								)}
+								{comment.getResolved()
+									? t("comment.openThread")
+									: t("comment.closeThread")}
+							</Button>
+						)}
+						<div className={styles.headerOptions}>
+							<ExtraOptions
+								comment={comment}
+								canEdit={canEditThread}
 							/>
-						);
-					})}
-				</div>
-				{username && (
-					<>
-						<UiSeparator />
-						<div className={styles.scrollContainer}>
-							<div className={styles.createMessage}>
-								<Avatar
-									avatar={accountInfo?.avatar}
-									width={20}
-									height={20}
+							<UiButton
+								size="sm"
+								variant="secondary"
+								onClick={handleClose}
+								style={{
+									padding: 0,
+									color: "#696B76",
+								}}
+							>
+								<Icon
+									iconName="modalCross"
+									width={16}
+									height={16}
 								/>
-								<CommentInput
-									mode="reply"
-									value={value}
-									setValue={setValue}
-									handleSubmit={handleCreateMessage}
-									onInput={() =>
-										comment.subject.publish(comment)
-									}
-								/>
-							</div>
+							</UiButton>
 						</div>
-					</>
-				)}
-				{messageOptionsData && (
-					<OptionsPanel
-						setTextUnderEditor={handleSetEditor}
-						canRemove={canRemove}
-						handleRemove={handleRemoveMessage}
-						style={{
-							position: "absolute",
-							top: messageOptionsData.top,
-							left: messageOptionsData.left,
-						}}
-					/>
-				)}
-			</UiPanel>
+					</div>
+					<UiSeparator />
+					<div
+						className={clsx(
+							styles.messages,
+							styles.scrollContainer,
+						)}
+					>
+						{thread.map((mes, index) => {
+							return (
+								<Message
+									ref={setRef(mes.id)}
+									key={mes.id}
+									text={mes.text}
+									date={mes.date}
+									handleEditMessage={handleEditMessage}
+									id={mes.id}
+									isTextUnderEditor={
+										textUnderEditorId === mes.id
+									}
+									setTextUnderEditor={setTextUnderEditorId}
+									username={mes.commentator.username}
+									avatar={mes.commentator.avatar}
+									handleOptionsClick={() =>
+										handleMessageOptionsClick(mes.id)
+									}
+									handleRemoveMessage={() =>
+										handleRemoveMessage(mes.id)
+									}
+									isShorted={
+										thread[index - 1] &&
+										thread[index - 1].commentator
+											.username ===
+											mes.commentator.username
+									}
+									isOptionsPanelActive={Boolean(
+										messageOptionsData &&
+											messageOptionsData.messageId ===
+												mes.id,
+									)}
+								/>
+							);
+						})}
+					</div>
+					{username && (
+						<>
+							<UiSeparator />
+							<div className={styles.scrollContainer}>
+								<div className={styles.createMessage}>
+									<Avatar
+										avatar={accountInfo?.avatar}
+										width={20}
+										height={20}
+									/>
+									<CommentInput
+										mode="reply"
+										value={value}
+										setValue={setValue}
+										handleSubmit={handleCreateMessage}
+										onInput={() =>
+											comment.subject.publish(comment)
+										}
+									/>
+								</div>
+							</div>
+						</>
+					)}
+					{messageOptionsData && (
+						<OptionsPanel
+							ref={messageOptionsRef}
+							setTextUnderEditor={handleSetEditor}
+							canRemove={canRemove}
+							handleRemove={handleRemoveMessage}
+							style={{
+								position: "absolute",
+								top: messageOptionsData.top,
+								left: messageOptionsData.left,
+							}}
+						/>
+					)}
+				</UiPanel>
+			</div>
 		);
 	},
 );
