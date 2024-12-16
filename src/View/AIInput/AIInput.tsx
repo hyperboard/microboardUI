@@ -28,8 +28,6 @@ export const AIInput: React.FC = () => {
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const forceUpdate = useForceUpdate();
 	const selectedItemsCount = board.selection.items.list().length;
-	const [currentResponseContent, setCurrentResponseContent] =
-		useState<string>("");
 	const [connection, setConnection] = useState<Connection | null>(null);
 
 	useEffect(() => {
@@ -99,30 +97,19 @@ export const AIInput: React.FC = () => {
 		}
 	};
 
-	let finalResponse = "";
 	const handleChatChunk = (chunk: ChatChunk): void => {
 		const itemId = chunk.itemId;
 		switch (chunk.type) {
 			case "chunk":
-				setCurrentResponseContent(prev => prev + (chunk.content || ""));
 				const item = board.items.getById(itemId);
 				if (item && item.itemType === "RichText") {
 					item.editor.insertAICopiedText(chunk.content || "");
 				}
-				finalResponse += chunk.content || "";
-				console.log({
-					content: chunk.content,
-					currentResponse: currentResponseContent,
-					finalResponse,
-				});
-
 				break;
 			case "done":
 				console.log("Chat is done");
 				break;
 			case "end":
-				console.log("Generated content: ", finalResponse);
-				setCurrentResponseContent("");
 				console.log("User's request handled");
 				break;
 			case "error":
@@ -175,7 +162,7 @@ export const AIInput: React.FC = () => {
 		connectorData.lineStyle = "orthogonal";
 
 		const startPointData = getControlPointData(requestItem, 2);
-		const endPointData = getControlPointData(responseItem, 3);
+		const endPointData = getControlPointData(responseItem, 0);
 		connectorData.startPoint = startPointData;
 		connectorData.endPoint = endPointData;
 
