@@ -1,7 +1,9 @@
-.wrapper {
-	/* position: fixed; */
-	/* bottom: var(--absolute-position-panel-padding); */
-	/* left: 80px; */
+@media screen and (max-height: 740px) {
+	.wrapper {
+		position: fixed;
+		bottom: calc(var(--absolute-position-panel-padding) * 2 + 48px);
+		right: 12px;
+	}
 }
 
 .panelButton {

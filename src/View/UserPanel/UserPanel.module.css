@@ -41,6 +41,12 @@
 	border-radius: 10px;
 }
 
+@media screen and (max-width: 960px) {
+	.shareButton {
+		display: none;
+	}
+}
+
 .shareButtonDark {
 	height: 32px;
 	width: auto;
@@ -59,6 +65,12 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
+}
+
+@media screen and (max-width: 960px) {
+	.unauthMsg {
+		display: none;
+	}
 }
 
 .unauthWrapper {

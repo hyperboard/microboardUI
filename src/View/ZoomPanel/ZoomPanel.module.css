@@ -10,7 +10,7 @@
 	min-width: 65px;
 }
 
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 1200px) {
 	.tableHide {
 		display: none;
 	}

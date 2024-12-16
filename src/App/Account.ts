@@ -187,8 +187,8 @@ export class Account {
 		await authApi.restorePassword({ token, newPassword });
 	}
 
-	async changeInfo(payload: usersApi.UpdateUserPayload) {
-		await usersApi.updateMe(payload);
+	async changeInfo(payload: usersApi.UpdateUserPayload, signal: AbortSignal) {
+		await usersApi.updateMe(payload, signal);
 		await this.fetchAccountInfo();
 	}
 

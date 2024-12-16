@@ -28,6 +28,9 @@ export function notify({
 	return toast.custom(
 		toastMsg => (
 			<div
+				onClick={
+					!unclosable ? () => toast.dismiss(toastMsg.id) : undefined
+				}
 				className={clsx(style.container, style[variant])}
 				style={{
 					opacity: toastMsg.visible ? 1 : 0,

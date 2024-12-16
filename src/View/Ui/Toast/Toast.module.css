@@ -12,6 +12,13 @@
 	align-items: center;
 }
 
+@media screen and (max-width: 640px) {
+	.container {
+		width: 100%;
+		height: 100%;
+	}
+}
+
 .black {
 	background-color: #000000;
 	border-radius: 0px;
@@ -83,6 +90,7 @@
 .description {
 	font-size: 14px;
 	line-height: 20px;
+	word-wrap: normal;
 	color: var(--text-base-secondary);
 }
 

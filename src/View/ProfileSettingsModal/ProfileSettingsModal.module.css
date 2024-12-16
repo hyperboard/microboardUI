@@ -54,3 +54,13 @@
 	display: flex;
 	justify-content: flex-start;
 }
+
+@media screen and (max-width: 1024px) {
+	.container {
+		padding: 16px;
+	}
+	.heading {
+		font-size: 24px;
+		align-self: flex-start;
+	}
+}

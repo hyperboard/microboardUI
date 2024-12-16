@@ -161,13 +161,6 @@ export function ProfileSettingsModal() {
 					</div>
 				</div>
 				<div className={styles.inputs}>
-					{/* <Input
-						label="Email"
-						value={account.info?.email}
-						autoFocus={false}
-						disabled
-						id="email"
-					/> */}
 					<p className={styles.email}>{account.info?.email}</p>
 					<Input
 						label={t("profile.name")}

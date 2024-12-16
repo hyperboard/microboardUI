@@ -210,54 +210,56 @@ export const AIInput: React.FC = () => {
 
 	return (
 		<div className={styles.inputContainer}>
-			<div className={styles.modelSelector}>
-				<div
-					className={styles.selectedModel}
-					onClick={toggleModelDropdown}
-				>
-					<span>{model}</span>
-					<StarIcon />
-				</div>
-				{isDropdownOpen && (
-					<div className={styles.modelDropdown}>
-						<div onClick={() => selectModel("gpt-4o")}>
-							<strong>GPT-4.0</strong>
-							<p>Отлично подходит для большинства задач</p>
-						</div>
-						<div onClick={() => selectModel("o1")}>
-							<strong>o1</strong>
-							<p>Использует продвинутые рассуждения</p>
-						</div>
-						<div onClick={() => selectModel("o1-mini")}>
-							<strong>o1-mini</strong>
-							<p>Быстрее рассуждает</p>
-						</div>
+			<div className={styles.contentWrapper}>
+				<div className={styles.modelSelector}>
+					<div
+						className={styles.selectedModel}
+						onClick={toggleModelDropdown}
+					>
+						<span>{model}</span>
+						<StarIcon />
 					</div>
-				)}
-			</div>
-			<textarea
-				value={inputValue}
-				onClick={event => handleInputClick(event)}
-				onPaste={event => event.stopPropagation()}
-				onKeyDown={event => handleKeyDown(event)}
-				onFocus={event => event.currentTarget.select()}
-				onChange={event => handleInputChange(event)}
-				placeholder={"Type your request..."}
-				className={styles.aiInput}
-				ref={inputRef}
-				rows={1}
-			/>
-			<div className={styles.selectionInfo}>
-				{"Selected:"} {selectedItemsCount} {"items"}
-			</div>
-			<button onClick={handleSendClick} className={styles.sendButton}>
-				<Icon
-					width={17}
-					height={17}
-					iconName="Vector"
-					className={styles.icon}
+					{isDropdownOpen && (
+						<div className={styles.modelDropdown}>
+							<div onClick={() => selectModel("gpt-4o")}>
+								<strong>GPT-4.0</strong>
+								<p>Отлично подходит для большинства задач</p>
+							</div>
+							<div onClick={() => selectModel("o1")}>
+								<strong>o1</strong>
+								<p>Использует продвинутые рассуждения</p>
+							</div>
+							<div onClick={() => selectModel("o1-mini")}>
+								<strong>o1-mini</strong>
+								<p>Быстрее рассуждает</p>
+							</div>
+						</div>
+					)}
+				</div>
+				<textarea
+					value={inputValue}
+					onClick={event => handleInputClick(event)}
+					onPaste={event => event.stopPropagation()}
+					onKeyDown={event => handleKeyDown(event)}
+					onFocus={event => event.currentTarget.select()}
+					onChange={event => handleInputChange(event)}
+					placeholder={"Type your request..."}
+					className={styles.aiInput}
+					ref={inputRef}
+					rows={1}
 				/>
-			</button>
+				<div className={styles.selectionInfo}>
+					{"Selected:"} {selectedItemsCount} {"items"}
+				</div>
+				<button onClick={handleSendClick} className={styles.sendButton}>
+					<Icon
+						width={17}
+						height={17}
+						iconName="Vector"
+						className={styles.icon}
+					/>
+				</button>
+			</div>
 		</div>
 	);
 };
