@@ -104,11 +104,15 @@ export class ChatStreamHandler {
 
     private async ensureChatExists(msg: AiChatMsg<UserRequest>, logger: winston.Logger): Promise<Chat> {
         logger.debug("Board ID provided, fetching existing chat...");
-        const [boardChat] = await db.select().from(chat).where(eq(chat.boardId, msg.boardId)).limit(1);
+        let [boardChat] = await db.select().from(chat).where(eq(chat.boardId, msg.boardId)).limit(1);
         if (!boardChat) {
+<<<<<<< Updated upstream
             const [newChat] = await db.insert(chat).values({ boardId: msg.boardId }).returning();
 
             return newChat;
+=======
+            [boardChat] = await db.insert(chat).values({ boardId: msg.boardId }).returning();
+>>>>>>> Stashed changes
         }
 
         logger.debug("Existing chat found or created:", boardChat);
