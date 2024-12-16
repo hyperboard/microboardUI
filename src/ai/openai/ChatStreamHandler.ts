@@ -25,6 +25,7 @@ export class ChatStreamHandler {
         boardClients: Map<string, WebSocket.WebSocket[]>;
     }) {
         const { msg, ws, logger, boardClients } = options;
+        const itemId = msg.event.itemId;
         this.boardClients = boardClients;
         logger.debug("Received user request:", msg);
         try {
@@ -80,7 +81,7 @@ export class ChatStreamHandler {
             }
 
             logger.debug("Handling stream chunks...");
-            this.handleStreamChunks(stream, ws, chat, logger);
+            this.handleStreamChunks(stream, ws, chat, logger, itemId);
         } catch (error) {
             console.error("Error in handleUserRequest:", error);
             this.sendErrorResponse(null, ws, error instanceof Error ? error.message : "Unknown error");
@@ -106,13 +107,9 @@ export class ChatStreamHandler {
         logger.debug("Board ID provided, fetching existing chat...");
         let [boardChat] = await db.select().from(chat).where(eq(chat.boardId, msg.boardId)).limit(1);
         if (!boardChat) {
-<<<<<<< Updated upstream
             const [newChat] = await db.insert(chat).values({ boardId: msg.boardId }).returning();
 
             return newChat;
-=======
-            [boardChat] = await db.insert(chat).values({ boardId: msg.boardId }).returning();
->>>>>>> Stashed changes
         }
 
         logger.debug("Existing chat found or created:", boardChat);
@@ -158,7 +155,8 @@ export class ChatStreamHandler {
         },
         ws: WebSocket,
         chat: Chat,
-        logger: winston.Logger
+        logger: winston.Logger,
+        itemId: string 
     ) {
         logger.debug("Starting to handle stream chunks...");
         let assistantResponse = "";
@@ -193,6 +191,7 @@ export class ChatStreamHandler {
                                     method: "ChatChunk",
                                     chatId: chat.id,
                                     content: content,
+                                    itemId: itemId
                                 },
                             };
                             logger.debug("Sending chunk to WebSocket:", streamChunkMsg);
@@ -206,7 +205,7 @@ export class ChatStreamHandler {
                 },
                 close: () => {
                     logger.debug("Stream closed. Finalizing response...");
-                    this.finalizeStream(ws, chat, assistantResponse, logger, usageMetadata);
+                    this.finalizeStream(ws, chat, assistantResponse, logger, itemId, usageMetadata,);
                 },
                 abort: (err) => {
                     console.error("Streaming error:", err);
@@ -221,7 +220,8 @@ export class ChatStreamHandler {
         chat: Chat,
         assistantResponse: string,
         logger: winston.Logger,
-        usageMetadata?: CompletionUsage
+        itemId: string,
+        usageMetadata?: CompletionUsage,
     ) {
         logger.debug("Finalizing stream response...");
         logger.debug("Saving assistant response to database...");
@@ -235,6 +235,7 @@ export class ChatStreamHandler {
                 type: "end",
                 usage: usageMetadata,
                 chatId: chat.id,
+                itemId: itemId
             },
         };
 
@@ -269,6 +270,7 @@ export class ChatStreamHandler {
                 error: errorMessage,
                 chatId: chat?.id || -1,
                 method: "ChatChunk",
+                itemId: ""
             },
         };
         if (chat) {

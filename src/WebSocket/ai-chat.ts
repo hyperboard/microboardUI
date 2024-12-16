@@ -32,6 +32,7 @@ export interface UserRequest {
     boardContext: string[];
     idea: string;
     model?: OpenAIModels; // default gpt-4-turbo-preview
+    itemId: string;
 }
 
 // To send
@@ -39,6 +40,7 @@ export interface ChatChunk {
     method: "ChatChunk";
     chatId: number;
     type: "chunk" | "done" | "end" | "error";
+    itemId: string;
     content?: string;
     usage?: CompletionUsage;
     error?: string;
