@@ -17,6 +17,9 @@ export const message = pgTable("message", {
     tokensUsed: integer("tokens_used").notNull().default(0),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     archived: boolean("archived").default(false).notNull(),
+    status: text("status").notNull().default("pending"),
+    updatedFrom: integer("updated_from"),
+    generatedFrom: integer("generated_from"),
 });
 
 export const chatRelations = relations(chat, ({ many }) => ({
@@ -31,3 +34,15 @@ export type Chat = typeof chat.$inferSelect;
 export type Message = typeof message.$inferSelect;
 export type NewChat = typeof chat.$inferInsert;
 export type NewMessage = typeof message.$inferInsert;
+
+export enum MessageStatus {
+    PENDING = "pending",
+    ARCHIVED = "archived",
+    INTERRUPTED = "interrupted",
+}
+
+export enum MessageRole {
+    USER = "user",
+    ASSISTANT = "assistant",
+    SYSTEM = "system",
+}

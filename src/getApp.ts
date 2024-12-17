@@ -37,7 +37,9 @@ import { FoldersService } from "Routes/V2/Foldres/folders.service";
 export async function getApp(): Promise<http.Server> {
     const app = express();
 
-    // await runMigration();
+    if (process.env.NODE_ENV?.toLocaleLowerCase() === "production") {
+        await runMigration();
+    }
 
     if (process.env.MIGRATE_EVENTS === "true") {
         await migrateData().catch(console.error);

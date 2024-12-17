@@ -13,6 +13,7 @@ import { Presence } from "./Presence";
 import { AiChatMsg, handleAIChatMessage } from "./ai-chat";
 import { OpenAI } from "ai/openai";
 import { isUUID } from "validator";
+import { ChatStreamHandler } from "ai/openai/ChatStreamHandler";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
@@ -45,6 +46,7 @@ export function withWebSocketApi({
     const wsAccessKeys = new Map<WebSocket, string>();
     const snapshotRequestTimers = new Map<string, NodeJS.Timeout>();
     const presence = new Presence(redis);
+    const chatStreamHandler = new ChatStreamHandler(openai);
 
     wss.on("connection", (ws) => {
         setupSocketErrorHandling(ws);
@@ -114,7 +116,7 @@ export function withWebSocketApi({
             case "BoardEvent":
                 return await handleBoardEventMsg(msg, ws);
             case "AiChat":
-                return await handleAIChatMessage({ msg, ws, openai, logger, boardClients });
+                return await handleAIChatMessage({ msg, ws, openai, logger, boardClients, chatStreamHandler });
             case "PresenceEvent":
                 return await handlePresenceEventMsg(msg, ws);
             case "BoardSnapshot":

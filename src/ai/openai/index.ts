@@ -11,19 +11,42 @@ export type OpenAIModels =
     | "gpt-4-0613"
     | "gpt-3.5-turbo-16k"
     | "gpt-4-16k"
-    | "o1"
+    | "o1-preview"
     | "o1-mini";
+
+function forceMaxTokens(model: OpenAIModels): number {
+    switch (model) {
+        case "gpt-4":
+        case "gpt-4o":
+            return 16_384;
+        case "gpt-4o-mini":
+            return 16_384;
+        case "o1-mini": // no streaming
+            return 32_768;
+        case "o1-preview": // no streaming
+            return 64_536;
+        default:
+            return 4096;
+    }
+}
 
 export class OpenAI {
     private client: llm;
-    private defaultModel = "gpt-4o";
+    private defaultModel: OpenAIModels = "gpt-4o";
     private defaultMaxTokens = 10000; // max 128k per completion for gpt-4o
 
     constructor(apiKey: string) {
-        this.client = new llm({
-            apiKey: process.env.AIMLAPI_KEY,
-            baseURL: "https://api.aimlapi.com/v1",
-        });
+        if (process.env.OPENAI_ENABLED === "true") {
+            this.client = new llm({
+                apiKey,
+            });
+        } else {
+            // AIMLAPI
+            this.client = new llm({
+                apiKey: process.env.AIMLAPI_KEY,
+                baseURL: "https://api.aimlapi.com/v1",
+            });
+        }
     }
 
     async generateChatCompletion(
@@ -41,7 +64,7 @@ export class OpenAI {
                 model,
                 messages,
                 temperature,
-                max_completion_tokens: 4096,
+                // max_completion_tokens: 4096,
             });
 
             return response.choices[0].message.content;
@@ -54,21 +77,27 @@ export class OpenAI {
     async generateStreamChatCompletion(
         messages: ChatCompletionMessageParam[],
         options: {
+            signal?: AbortSignal | undefined | null;
             model?: OpenAIModels;
             temperature?: number;
             maxTokens?: number;
         } = {}
     ) {
-        const { model = this.defaultModel, temperature = 0.7, maxTokens = this.defaultMaxTokens } = options;
+        const { model = this.defaultModel, temperature = 0.7, maxTokens = this.defaultMaxTokens, signal } = options;
 
         try {
-            const response = await this.client.chat.completions.create({
-                model,
-                messages,
-                temperature,
-                max_completion_tokens: 4096,
-                stream: true,
-            });
+            const response = await this.client.chat.completions.create(
+                {
+                    model,
+                    messages,
+                    temperature,
+                    // max_completion_tokens: forceMaxTokens(model),
+                    stream: true,
+                },
+                {
+                    signal: signal,
+                }
+            );
 
             return response;
         } catch (err) {
