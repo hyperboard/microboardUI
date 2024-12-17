@@ -32,10 +32,6 @@ export const AIInput: React.FC = () => {
 	const [connection, setConnection] = useState<Connection | null>(null);
 
 	useEffect(() => {
-		focusInputOnSelectionChange();
-	}, [board.selection.getContext()]);
-
-	useEffect(() => {
 		const appConnection = app.getConnection();
 		if (appConnection) {
 			appConnection.onMessage = msg => {
@@ -61,12 +57,6 @@ export const AIInput: React.FC = () => {
 		subjects: ["selectionItems"],
 		observer: forceUpdate,
 	});
-
-	const focusInputOnSelectionChange = () => {
-		if (board.selection.getContext() === "EditUnderPointer") {
-			setTimeout(() => inputRef.current?.focus(), 80);
-		}
-	};
 
 	const handleInputChange = (
 		event: React.ChangeEvent<HTMLTextAreaElement>,
