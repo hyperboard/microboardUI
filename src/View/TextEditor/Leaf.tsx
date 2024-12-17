@@ -1,8 +1,17 @@
 import React from "react";
 import { RenderLeafProps } from "slate-react";
+import { DEFAULT_TEXT_STYLES } from "View/Items/RichText";
 
-export function Leaf(props: RenderLeafProps): React.ReactElement {
-	const { attributes, leaf } = props;
+interface LeafProps extends RenderLeafProps {
+	fontSize?: number;
+}
+
+export function Leaf({
+	attributes,
+	leaf,
+	fontSize = DEFAULT_TEXT_STYLES.fontSize,
+	...props
+}: LeafProps): React.ReactElement {
 	let { children } = props;
 	const styles = new Set<string>();
 	if (leaf.bold) {
@@ -52,7 +61,7 @@ export function Leaf(props: RenderLeafProps): React.ReactElement {
 			style={{
 				color: props.text.fontColor,
 				backgroundColor: props.text.fontHighlight,
-				fontSize: props.text.fontSize,
+				fontSize,
 				/* lineHeight: lineHeight + 'px', */
 				fontFamily: props.text.fontFamily,
 			}}
