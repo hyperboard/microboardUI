@@ -261,12 +261,10 @@ export function createConnection(
 	}
 
 	function onMessage(msg: SocketMsg): void {
-		if (connection.onMessage) {
-			connection.onMessage(msg);
-		}
 		const board = getBoard();
 		clearConnectionError();
 		switch (msg.type) {
+			case "AiChat":
 			case "SubscribeConfirmation":
 			case "Confirmation":
 			case "BoardEvent":

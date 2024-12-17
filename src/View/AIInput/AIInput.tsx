@@ -10,14 +10,8 @@ import { useAppSubscription } from "Board/useBoardSubscription";
 import { Connector, Mbr, RichText } from "Board/Items";
 import { Board } from "Board";
 import { useForceUpdate } from "lib/useForceUpdate";
-import {
-	AiChatMsg,
-	ChatChunk,
-	Connection,
-	OpenAIModels,
-	UserRequest,
-} from "App/Connection";
-import { getControlPointData } from "Board/Selection/QuickAddButtons";
+import { AiChatMsg, OpenAIModels, UserRequest } from "App/Connection";
+
 import { ControlPointData } from "Board/Items/Connector/ControlPoint";
 
 export const AIInput: React.FC = () => {
@@ -29,29 +23,6 @@ export const AIInput: React.FC = () => {
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const forceUpdate = useForceUpdate();
 	const selectedItemsCount = board.selection.items.list().length;
-	const [connection, setConnection] = useState<Connection | null>(null);
-
-	useEffect(() => {
-		const appConnection = app.getConnection();
-		if (appConnection) {
-			appConnection.onMessage = msg => {
-				try {
-					if (msg.type === "AiChat") {
-						const event = msg.event;
-						if (event.method === "ChatChunk") {
-							handleChatChunk(event);
-						}
-					}
-				} catch (error) {
-					console.error("Error parsing message:", error);
-				}
-			};
-
-			appConnection.wsClient.send;
-		}
-
-		setConnection(appConnection);
-	}, [app]);
 
 	useAppSubscription({
 		subjects: ["selectionItems"],
@@ -88,29 +59,6 @@ export const AIInput: React.FC = () => {
 		}
 	};
 
-	const handleChatChunk = (chunk: ChatChunk): void => {
-		const itemId = chunk.itemId;
-		switch (chunk.type) {
-			case "chunk":
-				const item = board.items.getById(itemId);
-				if (item && item.itemType === "RichText") {
-					item.editor.insertAICopiedText(chunk.content || "");
-				}
-				break;
-			case "done":
-				console.log("Chat is done");
-				break;
-			case "end":
-				console.log("User's request handled");
-				break;
-			case "error":
-				console.error("Chat error:", chunk.error);
-				break;
-			default:
-				console.warn("Unknown chunk type:", chunk.type);
-		}
-	};
-
 	const toggleModelDropdown = () => {
 		setIsDropdownOpen(!isDropdownOpen);
 	};
@@ -142,6 +90,7 @@ export const AIInput: React.FC = () => {
 	}
 	console.log("model", model);
 	const sendInputData = () => {
+		const connection = app.getConnection();
 		if (!connection) {
 			console.error("Ws no open");
 		}
@@ -188,7 +137,7 @@ export const AIInput: React.FC = () => {
 			},
 		};
 
-		connection?.wsClient.send(message);
+		connection.wsClient.send(message);
 
 		setInputValue("");
 
