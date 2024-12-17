@@ -1,8 +1,13 @@
 import React from "react";
 import { RenderLeafProps } from "slate-react";
 
-export function Leaf(props: RenderLeafProps): React.ReactElement {
-	const { attributes, leaf } = props;
+interface LeafProps extends RenderLeafProps {
+	fontSize?: number;
+	fontColor?: string;
+}
+
+export function Leaf(props: LeafProps): React.ReactElement {
+	const { attributes, leaf, fontSize, fontColor } = props;
 	let { children } = props;
 	const styles = new Set<string>();
 	if (leaf.bold) {
@@ -46,16 +51,15 @@ export function Leaf(props: RenderLeafProps): React.ReactElement {
 		}
 	}
 
-	console.log('props.text.fontSize', props.text.fontSize)
-	console.log('props.text.fontSize', props)
-
 	return (
 		<span
 			{...attributes}
 			style={{
-				color: props.text.fontColor,
+				color:
+					props.text.text === "" ? fontColor : props.text.fontColor,
 				backgroundColor: props.text.fontHighlight,
-				fontSize: props.text.fontSize,
+				fontSize:
+					props.text.text === "" ? fontSize : props.text.fontSize,
 				/* lineHeight: lineHeight + 'px', */
 				fontFamily: props.text.fontFamily,
 			}}

@@ -304,7 +304,13 @@ export class TextEditor extends React.Component<
 					>
 						<Editable
 							renderElement={Element}
-							renderLeaf={Leaf}
+							renderLeaf={props => (
+								<Leaf
+									fontColor={text.getFontColor()}
+									fontSize={text.getFontSize()}
+									{...props}
+								/>
+							)}
 							onBlur={text.handleBlur}
 							onFocus={text.handleFocus}
 							className={
