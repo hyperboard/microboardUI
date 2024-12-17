@@ -13,6 +13,7 @@ import { useForceUpdate } from "lib/useForceUpdate";
 import { AiChatMsg, OpenAIModels, UserRequest } from "App/Connection";
 
 import { ControlPointData } from "Board/Items/Connector/ControlPoint";
+import { TEXT_HIGHLIGHT_COLORS } from "View/Tools/AddText";
 
 export const AIInput: React.FC = () => {
 	const { t } = useTranslation();
@@ -72,6 +73,7 @@ export const AIInput: React.FC = () => {
 		board: Board,
 		inputValue: string,
 		offsetY = 0,
+		needFontColor = true,
 	): RichText {
 		const richText = new RichText(new Mbr());
 		const cameraMbr = board.camera.getMbr();
@@ -85,10 +87,13 @@ export const AIInput: React.FC = () => {
 		richText.editor.setMaxWidth(600);
 		richText.editor.setSelectionHorisontalAlignment("left");
 		richText.insideOf = richText.itemType;
+		const highlightColor = TEXT_HIGHLIGHT_COLORS[11];
+		if (needFontColor) {
+			richText.editor.applySelectionFontColor(highlightColor);
+		}
 		richText.editor.insertCopiedText(inputValue);
 		return richText;
 	}
-	console.log("model", model);
 	const sendInputData = () => {
 		const connection = app.getConnection();
 		if (!connection) {
@@ -97,7 +102,7 @@ export const AIInput: React.FC = () => {
 
 		const requestRichText = createRichText(board, inputValue);
 		const requestAdded = board.add(requestRichText);
-		const responseRichText = createRichText(board, "", 100);
+		const responseRichText = createRichText(board, "", 100, false);
 		const responseAdded = board.add(responseRichText);
 		responseAdded.editor.setMaxWidth(600);
 

@@ -9,6 +9,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
 import { UiColorInput } from "View/Ui/UiColorInput";
+import { convertHexToRGBA } from "utils";
 
 const MENU_NAME = "TextHighlight";
 
@@ -27,9 +28,9 @@ export function TextHighlight(): React.ReactElement | null {
 		toggleMenu("None");
 	};
 	const handleCustomPick = (color: string): void => {
-		board.selection.setFontHighlight(color);
+		const rgbColor = convertHexToRGBA(color, false);
+		board.selection.setFontHighlight(rgbColor);
 	};
-
 	const isPredefinedColor = TEXT_HIGHLIGHT_COLORS.includes(highlightColor);
 	return (
 		<ButtonWithMenu
