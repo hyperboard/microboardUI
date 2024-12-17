@@ -129,12 +129,16 @@ export const AIInput: React.FC = () => {
 		setIsDropdownOpen(false);
 	};
 
-	function createRichText(board: Board, inputValue: string): RichText {
+	function createRichText(
+		board: Board,
+		inputValue: string,
+		offsetY: number = 0,
+	): RichText {
 		const richText = new RichText(new Mbr());
 		const cameraMbr = board.camera.getMbr();
 
 		const centerX = cameraMbr.getCenter().x;
-		const centerY = cameraMbr.getCenter().y;
+		const centerY = cameraMbr.getCenter().y + offsetY;
 
 		richText.transformation.translateTo(centerX, centerY);
 
@@ -153,7 +157,7 @@ export const AIInput: React.FC = () => {
 
 		const requestRichText = createRichText(board, inputValue);
 		const requestItem = board.add(requestRichText);
-		const responseRichText = createRichText(board, "");
+		const responseRichText = createRichText(board, "", 100);
 		const responseItem = board.add(responseRichText);
 		const itemId = responseItem.getId();
 
