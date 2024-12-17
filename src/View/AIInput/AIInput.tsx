@@ -132,7 +132,7 @@ export const AIInput: React.FC = () => {
 	function createRichText(
 		board: Board,
 		inputValue: string,
-		offsetY: number = 0,
+		offsetY = 0,
 	): RichText {
 		const richText = new RichText(new Mbr());
 		const cameraMbr = board.camera.getMbr();
@@ -149,7 +149,7 @@ export const AIInput: React.FC = () => {
 		richText.editor.insertCopiedText(inputValue);
 		return richText;
 	}
-
+	console.log("model", model);
 	const sendInputData = () => {
 		if (!connection) {
 			console.error("Ws no open");
@@ -188,6 +188,10 @@ export const AIInput: React.FC = () => {
 		connection?.wsClient.send(message);
 
 		setInputValue("");
+
+		if (inputRef.current) {
+			inputRef.current.style.height = "auto";
+		}
 	};
 
 	return (
