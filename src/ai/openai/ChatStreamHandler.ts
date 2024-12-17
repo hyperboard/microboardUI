@@ -196,7 +196,7 @@ export class ChatStreamHandler {
                             };
                             logger.debug("Sending chunk to WebSocket:", streamChunkMsg);
                             this.broadcastChunkToBoardClients(this.boardClients, chat.boardId, streamChunkMsg);
-                            ws.send(JSON.stringify(streamChunkMsg));
+                            // ws.send(JSON.stringify(streamChunkMsg));
                         }
                     } catch (error) {
                         console.error("Error processing stream chunk:", error);
