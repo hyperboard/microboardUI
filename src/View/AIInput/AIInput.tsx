@@ -18,6 +18,7 @@ import {
 	UserRequest,
 } from "App/Connection";
 import { getControlPointData } from "Board/Selection/QuickAddButtons";
+import { ControlPointData } from "Board/Items/Connector/ControlPoint";
 
 export const AIInput: React.FC = () => {
 	const { t } = useTranslation();
@@ -156,17 +157,29 @@ export const AIInput: React.FC = () => {
 		}
 
 		const requestRichText = createRichText(board, inputValue);
-		const requestItem = board.add(requestRichText);
+		const requestAdded = board.add(requestRichText);
 		const responseRichText = createRichText(board, "", 100);
-		const responseItem = board.add(responseRichText);
-		const itemId = responseItem.getId();
+		const responseAdded = board.add(responseRichText);
+		responseAdded.editor.setMaxWidth(600);
 
 		const defaultConnector = new Connector(board);
 		const connectorData = defaultConnector.serialize();
 		connectorData.lineStyle = "orthogonal";
 
-		const startPointData = getControlPointData(requestItem, 2);
-		const endPointData = getControlPointData(responseItem, 0);
+		const startPointData: ControlPointData = {
+			pointType: "Fixed",
+			itemId: requestAdded.getId(),
+			relativeY:
+				requestRichText.getTransformedContainer().getHeight() * 5, // ffs - for some reason relative point of rt must be 5 times more, than its actual height (e.g. instaed of 19.6 it must be 100)
+			relativeX: requestRichText.getTransformedContainer().getWidth() / 3, // ffs
+		};
+		const endPointData: ControlPointData = {
+			pointType: "Fixed",
+			itemId: responseAdded.getId(),
+			relativeY: 0,
+			relativeX:
+				responseRichText.getTransformedContainer().getWidth() / 3, // ffs
+		};
 		connectorData.startPoint = startPointData;
 		connectorData.endPoint = endPointData;
 
@@ -180,8 +193,8 @@ export const AIInput: React.FC = () => {
 				context: [],
 				boardContext: [],
 				idea: inputValue,
-				model: model,
-				itemId: itemId,
+				model,
+				itemId: responseAdded.getId(),
 			},
 		};
 
