@@ -23,7 +23,7 @@ interface Props {
 }
 
 export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	// const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [submitDisabled, setSubmitDisabled] = useState(true);
 	const [isSubmitLoading, setIsSubmitLoading] = useState(false);
@@ -193,14 +193,22 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 			<div className={styles.policy}>
 				{t("auth.policyWith")}{" "}
 				<OuterLink
-					href="https://microboard.ru/terms"
+					href={
+						i18n.language === "ru"
+							? "https://microboard.ru/terms"
+							: "https://microboard.io/terms"
+					}
 					className={styles.policyLink}
 				>
 					{t("auth.termsAndConditions")}
 				</OuterLink>{" "}
 				{t("common.and")}{" "}
 				<OuterLink
-					href="https://microboard.ru/personal"
+					href={
+						i18n.language === "ru"
+							? "https://microboard.ru/personal"
+							: "https://microboard.io/privacy-policy"
+					}
 					className={styles.policyLink}
 				>
 					{t("auth.privacyPolicy")}

@@ -7,14 +7,13 @@ import { Input } from "shared/ui-lib/Input/Input";
 import { OuterLink } from "shared/ui-lib/OuterLink";
 import isEmail from "validator/lib/isEmail";
 import { Tail } from "View/AuthView/Tail";
+import { Icon } from "View/Icon";
 import { EmailIcon } from "./EmailIcon";
 import { LockIcon } from "./LockIcon";
 import styles from "./SignupView.module.css";
-import { PeopleIcon } from "./PeopleIcon";
-import { Icon } from "View/Icon";
 
 export const SignupView = (): React.ReactElement => {
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const navigate = useNavigate();
 	const formRef = React.useRef<HTMLFormElement>(null);
 	const [showNameInput, setShowNameInput] = useState(true);
@@ -232,14 +231,22 @@ export const SignupView = (): React.ReactElement => {
 			<div className={styles.policy}>
 				{t("auth.policyWith")}{" "}
 				<OuterLink
-					href="https://microboard.ru/terms"
+					href={
+						i18n.language === "ru"
+							? "https://microboard.ru/terms"
+							: "https://microboard.io/terms"
+					}
 					className={styles.policyLink}
 				>
 					{t("auth.termsAndConditions")}
 				</OuterLink>{" "}
 				{t("common.and")}{" "}
 				<OuterLink
-					href="https://microboard.ru/personal"
+					href={
+						i18n.language === "ru"
+							? "https://microboard.ru/personal"
+							: "https://microboard.io/privacy-policy"
+					}
 					className={styles.policyLink}
 				>
 					{t("auth.privacyPolicy")}

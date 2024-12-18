@@ -1,15 +1,15 @@
 import { App } from "App";
+import { LAST_BOARD_KEY_QS } from "App/App";
 import { useAccount } from "App/useAccount";
+import { useBoardsList } from "App/useBoardsList";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "shared/ui-lib/Button";
 import { Input } from "shared/ui-lib/Input/Input";
 import { Tail } from "View/AuthView/Tail";
-import { LAST_BOARD_KEY_QS } from "App/App";
-import styles from "./VerifyMailView.module.css";
 import { LockIcon } from "View/SignupView/LockIcon";
-import { useBoardsList } from "App/useBoardsList";
+import styles from "./VerifyMailView.module.css";
 
 const secondsToHumanReadable = (seconds: number): string => {
 	const minutes = Math.floor(seconds / 60);
@@ -174,17 +174,17 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 					console.log("here");
 
 					try {
-						const dateString = data?.message.split(": ")[1];
-						const resendDate = new Date(dateString);
-						const currentTime = new Date();
-						const timeToResend =
-							Math.abs(
-								resendDate.getTime() +
-									60 * 3000 -
-									currentTime.getTime(),
-							) / 1000;
-						console.log(timeToResend, data?.message);
-						setRetryCount(Math.max(0, Math.round(timeToResend)));
+						// const dateString = data?.message.split(": ")[1];
+						// const resendDate = new Date(dateString);
+						// const currentTime = new Date();
+						// const timeToResend =
+						// 	Math.abs(
+						// 		resendDate.getTime() +
+						// 			60 * 3000 -
+						// 			currentTime.getTime(),
+						// 	) / 1000;
+						// console.log(timeToResend, data?.message);
+						setRetryCount(0);
 					} catch (_) {
 						setRetryCount(60 * 3);
 					}

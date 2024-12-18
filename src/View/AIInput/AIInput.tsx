@@ -1,19 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./AIInput.module.css";
 
-import { useAppContext } from "View/AppContext";
+import { useAppSubscription } from "Board/useBoardSubscription";
 import { useTranslation } from "react-i18next";
+import { useAppContext } from "View/AppContext";
 import { Icon } from "View/Icon";
 import { StarIcon } from "./StarIcon";
-import { useAppSubscription } from "Board/useBoardSubscription";
 
-import { Connector, Mbr, RichText } from "Board/Items";
-import { Board } from "Board";
-import { useForceUpdate } from "lib/useForceUpdate";
 import { AiChatMsg, OpenAIModels, UserRequest } from "App/Connection";
+import { Board } from "Board";
+import { Connector, Mbr, RichText } from "Board/Items";
+import { useForceUpdate } from "lib/useForceUpdate";
 
 import { ControlPointData } from "Board/Items/Connector/ControlPoint";
+import { Chevron } from "shared/ui-lib/Dropdown/Chevron";
 import { TEXT_HIGHLIGHT_COLORS } from "View/Tools/AddText";
+import { UiPanel } from "View/Ui/UiPanel";
 
 export const AIInput: React.FC = () => {
 	const { t } = useTranslation();
@@ -24,6 +26,21 @@ export const AIInput: React.FC = () => {
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const forceUpdate = useForceUpdate();
 	const selectedItemsCount = board.selection.items.list().length;
+
+	const isPhoneScreenCheck = () =>
+		matchMedia("screen and (max-width: 640px)").matches;
+	const [isPhoneScreen, setIsPhoneScreen] = useState(isPhoneScreenCheck);
+	useEffect(() => {
+		const setScreen = () => {
+			setIsPhoneScreen(isPhoneScreenCheck());
+		};
+
+		window.addEventListener("resize", setScreen);
+
+		return () => {
+			window.removeEventListener("resize", setScreen);
+		};
+	});
 
 	useAppSubscription({
 		subjects: ["selectionItems"],
@@ -152,15 +169,19 @@ export const AIInput: React.FC = () => {
 	};
 
 	return (
-		<div className={styles.inputContainer}>
+		<UiPanel padding={0} className={styles.inputContainer}>
 			<div className={styles.contentWrapper}>
 				<div className={styles.modelSelector}>
 					<div
 						className={styles.selectedModel}
 						onClick={toggleModelDropdown}
 					>
-						<span>{model}</span>
-						<StarIcon />
+						{model !== "gpt-4o" && <span>{model}</span>}
+						{model === "gpt-4o" && (
+							<span>{isPhoneScreen ? "4o" : model}</span>
+						)}
+						<StarIcon className={styles.starIcon} />
+						<Chevron />
 					</div>
 					{isDropdownOpen && (
 						<div className={styles.modelDropdown}>
@@ -203,6 +224,6 @@ export const AIInput: React.FC = () => {
 					/>
 				</button>
 			</div>
-		</div>
+		</UiPanel>
 	);
 };

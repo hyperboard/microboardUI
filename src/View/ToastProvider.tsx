@@ -1,5 +1,5 @@
-import { Toaster } from "react-hot-toast";
 import React, { useEffect, useState } from "react";
+import { Toaster } from "react-hot-toast";
 
 export function ToastProvider() {
 	const isPhoneScreenCheck = () =>
@@ -7,7 +7,6 @@ export function ToastProvider() {
 	const [isPhoneScreen, setIsPhoneScreen] = useState(isPhoneScreenCheck);
 	useEffect(() => {
 		const setScreen = () => {
-			console.log("matches", isPhoneScreenCheck());
 			setIsPhoneScreen(isPhoneScreenCheck());
 		};
 

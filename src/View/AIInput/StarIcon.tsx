@@ -1,10 +1,12 @@
 import React from "react";
 
-export const StarIcon: React.FC<{ width?: number; height?: number }> = ({
-	width = 24,
-	height = 24,
-}) => (
+export const StarIcon: React.FC<{
+	width?: number;
+	height?: number;
+	className?: string;
+}> = ({ width = 24, height = 24, className }) => (
 	<svg
+		className={className}
 		width={width}
 		height={height}
 		viewBox="0 0 24 24"
