@@ -170,6 +170,10 @@ export const PresenceUsers: React.FC<Props> = () => {
 		};
 	}, [board]);
 
+	useEffect(() => {
+		updateUsers(board.presence);
+	}, [board.getInterfaceType()]);
+
 	return (
 		<div className={styles.wrapper}>
 			<div className={styles.container}>

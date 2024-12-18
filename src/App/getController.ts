@@ -67,6 +67,8 @@ export function getController(
 			return;
 		}
 
+		board.presence.disableTracking();
+
 		const context = board.selection.getContext();
 		const editModeHotkeys: HotkeysMap = {
 			select: {
@@ -398,6 +400,7 @@ export function getController(
 					);
 			}
 		} else {
+			board.presence.disableTracking();
 			switch (event.button) {
 				case 0:
 					return tools.leftButtonUp();
