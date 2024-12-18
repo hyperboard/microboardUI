@@ -1,45 +1,42 @@
+import { createMiddleware } from "@trigger.dev/express";
+import { OpenAI } from "ai/openai";
 import bodyParser from "body-parser";
 import compression from "compression";
 import cookieParser from "cookie-parser";
-import express from "express";
-import helmet from "helmet";
-import http from "http";
-import path from "path";
-import { WebSocketServer } from "ws";
-import { nocache } from "./nocache";
-import { Auth } from "./Routes/V1/Auth";
-import { Boards } from "./Routes/V1/Boards";
-import { Users } from "./Routes/V1/Users";
-import { createMiddleware } from "@trigger.dev/express";
 import cors from "cors";
 import { db } from "drizzle/db";
 import { migrateData } from "drizzle/scripts/board-events-table.migration";
 import { runMigration } from "drizzle/scripts/migrate";
+import express from "express";
+import helmet from "helmet";
+import http from "http";
 import { exceptionMiddleware } from "Middlewares/exception.middleware";
 import morgan from "morgan";
+import path from "path";
+import { getRedis } from "Redis";
+import { AI } from "Routes/V1/AI/AI";
 import { createMinioMediaDAL } from "Routes/V1/Media";
-import { createBarrelMediaDAL } from "Routes/V1/MediaTalk/Media";
 import { AccessKeysService } from "Routes/V2/Boards/access-keys.service";
+import { BoardsService } from "Routes/V2/Boards/boards.service";
+import { FoldersService } from "Routes/V2/Foldres/folders.service";
 import { getV2Router } from "Routes/V2/V2";
 import { client } from "trigger";
 import winston from "winston";
+import { WebSocketServer } from "ws";
+import { nocache } from "./nocache";
 import { getV1Router } from "./Routes";
+import { Auth } from "./Routes/V1/Auth";
+import { Boards } from "./Routes/V1/Boards";
+import { Templates } from "./Routes/V1/Templates";
+import { Users } from "./Routes/V1/Users";
 import { Config } from "./shared/config/config";
 import { Mailer } from "./shared/modules/mailer/mailer";
 import { withWebSocketApi } from "./WebSocket";
-import { Templates } from "./Routes/V1/Templates";
-import { getRedis } from "Redis";
-import { OpenAI } from "ai/openai";
-import { AI } from "Routes/V1/AI/AI";
-import { BoardsService } from "Routes/V2/Boards/boards.service";
-import { FoldersService } from "Routes/V2/Foldres/folders.service";
 
 export async function getApp(): Promise<http.Server> {
     const app = express();
 
-    if (process.env.NODE_ENV?.toLocaleLowerCase() === "production") {
-        await runMigration();
-    }
+    await runMigration();
 
     if (process.env.MIGRATE_EVENTS === "true") {
         await migrateData().catch(console.error);

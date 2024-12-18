@@ -1,13 +1,13 @@
 import { and, asc, desc, eq, getTableColumns, gt, isNull, or, sql } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { boardEvents, boardOwner, boardPermissions, boards, boardSnapshots, userNames, users } from "drizzle/entities";
-import { folders, foldersToBoards, folderType, FolderType } from "drizzle/entities/folders";
+import { folders, foldersToBoards, FolderType } from "drizzle/entities/folders";
+import { userAvatars } from "drizzle/entities/userAvatars";
 import { boardEventDbWriteLatency } from "Metrics/metrics";
 import type { BoardEventData } from "Routes/V1/Boards";
 import { v4 } from "uuid";
 import type winston from "winston";
 import { BoardPayload, BoardSnapshotPayload, UserAccessType } from "./types";
-import { userAvatars } from "drizzle/entities/userAvatars";
 
 export class BoardsService {
     constructor(private readonly db: NodePgDatabase, private readonly logger: winston.Logger) {}
@@ -338,7 +338,7 @@ export class BoardsService {
         }
     }
 
-    async grantAccess(boardUUID: string, boardId: number, users: { userId: number; accessType: UserAccessType }[]) {
+    async grantAccess(boardId: number, users: { userId: number; accessType: UserAccessType }[]) {
         if (users.length === 0) {
             return;
         }
