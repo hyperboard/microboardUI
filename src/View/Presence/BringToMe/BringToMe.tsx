@@ -27,6 +27,9 @@ export const UserActionsDropdown: React.FC<UserActionsDropdownProps> = ({
 	const { board } = useAppContext();
 	const { t } = useTranslation();
 
+	const notifyPosition =
+		window.innerWidth < 768 ? "top-center" : "bottom-center";
+
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent): void => {
 			if (
@@ -51,6 +54,7 @@ export const UserActionsDropdown: React.FC<UserActionsDropdownProps> = ({
 
 	const handleBringToMe = (ev): void => {
 		ev.stopPropagation();
+		board.presence.disableTracking();
 		board.presence.emit({
 			method: "BringToMe",
 			users: [userId],
@@ -71,7 +75,7 @@ export const UserActionsDropdown: React.FC<UserActionsDropdownProps> = ({
 			variant: "black",
 			duration: 3_000,
 			unclosable: true,
-			position: "bottom-center",
+			position: notifyPosition,
 		});
 		onClose();
 	};
@@ -130,6 +134,9 @@ export const BringToMe: React.FC<{
 		null,
 	);
 	const [searchTerm, setSearchTerm] = useState<string>("");
+
+	const notifyPosition =
+		window.innerWidth < 768 ? "top-center" : "bottom-center";
 
 	useEffect(() => {
 		const observer = (presence: Presence): void => {
@@ -306,7 +313,7 @@ export const BringToMe: React.FC<{
 							variant: "black",
 							duration: 3_000,
 							unclosable: true,
-							position: "bottom-center",
+							position: notifyPosition,
 						});
 					}
 				}}

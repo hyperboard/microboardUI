@@ -703,8 +703,8 @@
 		"hideCursors": "Hide cursors",
 		"showCursors": "Show cursors",
 		"bringNotify1": "You brought",
-		"bringNotify2": "to your board",
-		"bringAllNotify": "You brought everyone to your board"
+		"bringNotify2": "to your screen",
+		"bringAllNotify": "You brought everyone to your screen"
 	},
 	"profile": {
 		"title": "Profile settings",

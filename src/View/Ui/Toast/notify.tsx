@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { ReactNode } from "react";
+import React, { CSSProperties, ReactNode } from "react";
 import toast, { ToastPosition } from "react-hot-toast";
 import { Icon } from "View/Icon";
 import { UiButton } from "../UiButton";
@@ -13,6 +13,7 @@ type Props = {
 	variant?: "success" | "error" | "info" | "warning" | "black";
 	position?: ToastPosition;
 	unclosable?: boolean;
+	inlineStyle?: CSSProperties;
 };
 
 /** Triggers toast notification and returns notification id */
@@ -24,6 +25,7 @@ export function notify({
 	variant = "info",
 	unclosable = false,
 	position = "top-right",
+	inlineStyle,
 }: Props): string {
 	return toast.custom(
 		toastMsg => (
@@ -71,6 +73,6 @@ export function notify({
 				)}
 			</div>
 		),
-		{ duration, position },
+		{ duration, position, style: inlineStyle },
 	);
 }

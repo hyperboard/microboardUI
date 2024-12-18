@@ -51,8 +51,7 @@ export const UserTracking: React.FC<Props> = ({ board }) => {
 			<div
 				className={styles.header}
 				style={{
-					backgroundColor:
-						rgbToRgba(trackedUser.color, 0.6) || "#fff",
+					backgroundColor: trackedUser.color || "#fff",
 				}}
 			>
 				<span>
