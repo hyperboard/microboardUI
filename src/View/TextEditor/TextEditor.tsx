@@ -306,8 +306,8 @@ export class TextEditor extends React.Component<
 							renderElement={Element}
 							renderLeaf={props => (
 								<Leaf
-									fontColor={text.getFontColor()}
 									fontSize={text.getFontSize()}
+									isAutoSize={text.isAutosize()}
 									{...props}
 								/>
 							)}

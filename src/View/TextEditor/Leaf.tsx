@@ -3,11 +3,11 @@ import { RenderLeafProps } from "slate-react";
 
 interface LeafProps extends RenderLeafProps {
 	fontSize?: number;
-	fontColor?: string;
+	isAutoSize: boolean;
 }
 
 export function Leaf(props: LeafProps): React.ReactElement {
-	const { attributes, leaf, fontSize, fontColor } = props;
+	const { attributes, leaf, fontSize, isAutoSize } = props;
 	let { children } = props;
 	const styles = new Set<string>();
 	if (leaf.bold) {
@@ -55,11 +55,13 @@ export function Leaf(props: LeafProps): React.ReactElement {
 		<span
 			{...attributes}
 			style={{
-				color:
-					props.text.text === "" ? fontColor : props.text.fontColor,
+				color: props.text.fontColor,
 				backgroundColor: props.text.fontHighlight,
 				fontSize:
-					props.text.text === "" ? fontSize : props.text.fontSize,
+					props.text.text === "" && !isAutoSize
+						? fontSize
+						: props.text.fontSize,
+				// fontSize: props.text.fontSize,
 				/* lineHeight: lineHeight + 'px', */
 				fontFamily: props.text.fontFamily,
 			}}
