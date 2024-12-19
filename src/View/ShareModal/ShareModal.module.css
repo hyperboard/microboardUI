@@ -13,6 +13,7 @@
 
 .modalContainer {
 	max-width: 800px;
+	overflow: hidden;
 }
 
 @media screen and (min-width: 960px) {
@@ -23,7 +24,7 @@
 
 .wrapper {
 	width: 100%;
-	padding: 20px 52px;
+	padding: 32px 64px;
 }
 
 .settings {
@@ -236,4 +237,35 @@
 .skeletonSelector {
 	width: 200px;
 	height: 40px;
+}
+
+.loader {
+	width: calc(100% + 24px);
+	height: 4px;
+	overflow: hidden;
+	position: relative;
+}
+
+.loader::after {
+	content: "";
+	background-color: #924fe8;
+	display: block;
+	width: 30%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: -30%;
+	animation: loading 1.5s linear infinite;
+}
+
+@keyframes loading {
+	0% {
+		left: -30%;
+	}
+	50% {
+		left: 100%;
+	}
+	100% {
+		left: 100%;
+	}
 }

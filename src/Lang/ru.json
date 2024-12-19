@@ -721,6 +721,7 @@
 		"savePassword": "Сохранить",
 		"cancelPassword": "Отменить",
 		"avatarUploadError": "Ошибка загрузки аватара",
-		"avatarSizeConstraint": "Максимальный размер изображения - 10 Мб"
+		"avatarSizeConstraint": "Максимальный размер изображения - 10 Мб",
+		"avatarTypeConstraint": "Изображение должно быть в формате jpeg, png или svg"
 	}
 }

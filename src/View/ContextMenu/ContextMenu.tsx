@@ -28,7 +28,7 @@ export function ContextMenu(): JSX.Element | null {
 	const { setNewName, setRenamingId } = useRenameContext();
 	const boardsList = useBoardsList();
 	const account = useAccount();
-	const { board } = useAppContext();
+	const { board, app } = useAppContext();
 	const { t } = useTranslation();
 	const { openModalConfirm } = useConfirmModalContext();
 	const { openModal } = useUiModalContext();
@@ -127,6 +127,8 @@ export function ContextMenu(): JSX.Element | null {
 
 				if (boardId === currentBoardId) {
 					navigate("/boards/blank");
+					await app.openBoard("blank");
+					board.disconnect();
 				}
 
 				if (hasOwnerRights) {

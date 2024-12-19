@@ -455,7 +455,7 @@ export function createConnection(
 	function publishGetMode(): void {
 		const board = getBoard();
 		const boardId = board?.getBoardId();
-		if (!boardId) {
+		if (!boardId || boardId === "blank") {
 			return;
 		}
 		ws.send({

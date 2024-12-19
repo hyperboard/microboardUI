@@ -61,6 +61,7 @@ export function ShareModal() {
 	const { closeModal } = useUiModalContext();
 	const boardsList = useBoardsList();
 	const account = useAccount();
+	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [userEmails, setUserEmails] = useState<string[]>([]);
 	const [userEmails2, setUserEmails2] = useState<string[]>([]);
 	const [usersMode, setUsersMode] = useState<UserAccessType>(
@@ -86,7 +87,6 @@ export function ShareModal() {
 			const { data } = await boardsApiV2.getGrantedUsers(boardId);
 			setGrantedUsers(
 				data?.map(user => {
-					console.log(user);
 					return {
 						...user,
 						name: user.name || getEmailPrefix(user.email),
@@ -98,8 +98,6 @@ export function ShareModal() {
 		} finally {
 			setIsGrantedUsersLoading(false);
 		}
-
-		await boardsList.loadBoards();
 	};
 
 	useEffect(() => {
@@ -120,7 +118,13 @@ export function ShareModal() {
 		boardId,
 	);
 
-	const disabled = !account.isLoggedIn || !isOwner;
+	useEffect(() => {
+		console.log(boardInfo, "info effect");
+		setIsPublic(boardInfo?.isPublic ?? true);
+		setMode(boardInfo?.directAccessType ?? DirectAccessType.EDIT);
+	}, [boardInfo]);
+
+	const disabled = !account.isLoggedIn || !isOwner || isSubmitting;
 
 	const handleUserAccessChange = (info: {
 		userId: number;
@@ -167,13 +171,14 @@ export function ShareModal() {
 	};
 
 	const handleSubmit = async () => {
-		closeModal();
 		if (!mode || typeof isPublic !== "boolean" || !boardId) {
 			return;
 		}
 
+		setIsSubmitting(true);
+
 		const filteredGrantedUsers = grantedUsers.filter(user => !user.isOwner);
-		await boardsApiV2.manageAccess(boardId, {
+		await boardsList.manageAccess(boardId, {
 			users: [
 				...filteredGrantedUsers.map(user => ({
 					userId: user.id,
@@ -195,6 +200,8 @@ export function ShareModal() {
 		});
 
 		await loadInfo();
+		closeModal();
+		setIsSubmitting(false);
 	};
 	return (
 		<UiModal className={styles.modalContainer} modalId={SHARE_MODAL_ID}>
@@ -248,6 +255,7 @@ export function ShareModal() {
 							</div>
 							<div className={styles.selector}>
 								<UiSelector
+									value={usersMode}
 									options={MODE_SELECTOR_OPTIONS}
 									iconColor="rgba(105, 107, 118, 1)"
 									onChange={val =>
@@ -300,9 +308,7 @@ export function ShareModal() {
 								<div className={styles.selector}>
 									<UiSelector
 										options={MODE_SELECTOR_OPTIONS}
-										initialValue={
-											MODE_SELECTOR_OPTIONS[1].value
-										}
+										value={usersMode2}
 										iconColor="rgba(105, 107, 118, 1)"
 										onChange={val =>
 											setUsersMode2(val as UserAccessType)
@@ -386,7 +392,7 @@ export function ShareModal() {
 							iconColor="rgba(105, 107, 118, 1)"
 							options={PRIVACY_SELECTOR_OPTIONS}
 							onChange={opt => setIsPublic(opt === "public")}
-							initialValue={
+							value={
 								isPublic
 									? PRIVACY_SELECTOR_OPTIONS[0].value
 									: PRIVACY_SELECTOR_OPTIONS[1].value
@@ -401,7 +407,7 @@ export function ShareModal() {
 								onChange={opt =>
 									setMode(opt as DirectAccessType)
 								}
-								initialValue={
+								value={
 									mode === boardsApiV2.DirectAccessType.EDIT
 										? MODE_SELECTOR_OPTIONS[0].value
 										: MODE_SELECTOR_OPTIONS[1].value
@@ -435,6 +441,7 @@ export function ShareModal() {
 					</Button>
 				</div>
 			</div>
+			{isSubmitting && <div className={styles.loader} />}
 		</UiModal>
 	);
 }
@@ -504,7 +511,7 @@ function GrantedUser({
 						className={styles.grantedUserSelector}
 						iconColor="rgba(105, 107, 118, 1)"
 						options={USER_ACCESS_SELECTOR_OPTIONS}
-						initialValue={accessType}
+						value={accessType}
 						onChange={type =>
 							onChange({
 								accessType: type as UserAccessType,

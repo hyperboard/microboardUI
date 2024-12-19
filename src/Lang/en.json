@@ -723,6 +723,7 @@
 		"savePassword": "Save",
 		"cancelPassword": "Cancel",
 		"avatarUploadError": "Avatar upload error",
-		"avatarSizeConstraint": "Maximum image size is 10 MB"
+		"avatarSizeConstraint": "Maximum image size is 10 MB",
+		"avatarTypeConstraint": "The image must be in jpeg, png or svg format"
 	}
 }

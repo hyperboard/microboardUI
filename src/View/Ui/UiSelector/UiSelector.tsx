@@ -14,7 +14,7 @@ export type Option = {
 };
 
 type Props = {
-	initialValue?: string | number;
+	value: string | number;
 	options: Option[];
 	icon?: ReactNode;
 	iconColor?: string;
@@ -25,7 +25,6 @@ type Props = {
 };
 
 export function UiSelector({
-	initialValue,
 	options,
 	icon,
 	iconColor,
@@ -33,12 +32,9 @@ export function UiSelector({
 	disabled,
 	isLoading,
 	className,
+	value,
 }: Props) {
-	const [selectedOption, setSelectedOption] = useState(() =>
-		initialValue
-			? options.find(opt => opt.value === initialValue)
-			: options[0],
-	);
+	const selectedOption = options.find(opt => opt.value === value);
 	const [isOpen, setIsOpen] = useState(false);
 	const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
 	const ref = useClickOutside(() => setIsOpen(false));
@@ -68,7 +64,6 @@ export function UiSelector({
 			if (disabled) {
 				return;
 			}
-			setSelectedOption(option);
 			setIsOpen(false);
 			onChange?.(option.value);
 		};
@@ -84,7 +79,7 @@ export function UiSelector({
 			)}
 		>
 			{isLoading ? (
-				<UiSkeleton />
+				<UiSkeleton className={styles.skeleton} />
 			) : (
 				<div
 					className={styles.selectedOption}

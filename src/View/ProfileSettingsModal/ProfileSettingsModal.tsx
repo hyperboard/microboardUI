@@ -23,6 +23,7 @@ import { notify } from "View/Ui/Toast";
 
 export const PROFILE_SETTINGS_MODAL_ID = Symbol("profileSettingsModal");
 const MAX_AVATAR_SIZE = 10 * 1024 * 1024; // 10MB
+const ACCEPTED_AVATAR_TYPES = ["image/jpeg", "image/png", "image/svg+xml"];
 
 export function ProfileSettingsModal() {
 	const account = useAccount();
@@ -85,10 +86,19 @@ export function ProfileSettingsModal() {
 				header: t("profile.avatarUploadError"),
 				body: t("profile.avatarSizeConstraint"),
 			});
-		} else {
-			await account.uploadAvatar(file);
+			return;
 		}
 
+		if (!ACCEPTED_AVATAR_TYPES.includes(file.type)) {
+			notify({
+				variant: "error",
+				header: t("profile.avatarUploadError"),
+				body: t("profile.avatarTypeConstraint"),
+			});
+			return;
+		}
+
+		await account.uploadAvatar(file);
 		ev.target.value = "";
 	};
 
@@ -137,7 +147,7 @@ export function ProfileSettingsModal() {
 					/>
 					<input
 						type="file"
-						accept="image/jpeg,image/png,image/svg+xml"
+						accept={ACCEPTED_AVATAR_TYPES.join(",")}
 						style={{ display: "none" }}
 						ref={avatarInputRef}
 						onChange={handleAvatarChange}

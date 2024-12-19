@@ -7,6 +7,8 @@ import {
 	useParams,
 	useSearchParams,
 } from "react-router-dom";
+import { AccessDeniedModal } from "View/AccessDeniedModal";
+import { AIInput } from "View/AIInput/AIInput";
 import { useAppContext } from "View/AppContext";
 import { Canvas } from "View/Canvas";
 import { ChangePasswordModal } from "View/ChangePasswordModal";
@@ -34,10 +36,6 @@ import style from "./AppView.module.css";
 import { InactiveBoardHidder } from "./InactiveBoardHidder";
 import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
-import { AccessDeniedModal } from "View/AccessDeniedModal";
-import { AIInput } from "View/AIInput/AIInput";
-import { OpenedFoldersContextProvider } from "View/Folder";
-import { notify } from "View/Ui/Toast";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();

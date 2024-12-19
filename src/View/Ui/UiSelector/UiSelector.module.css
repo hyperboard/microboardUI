@@ -137,3 +137,7 @@
 .selected .checkMark {
 	opacity: 1;
 }
+
+.skeleton {
+	min-height: 40px;
+}

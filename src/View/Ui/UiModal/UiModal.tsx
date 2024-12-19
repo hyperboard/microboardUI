@@ -27,15 +27,8 @@ export function UiModal({
 	className,
 	onClose,
 }: Props) {
-	const {
-		closeModal,
-		openedModalId,
-		isTransition,
-		transitionFrom,
-		transitionTo,
-	} = useUiModalContext();
+	const { closeModal, openedModalId, transitionFrom } = useUiModalContext();
 	const isCloseTransition = transitionFrom === modalId;
-	const isOpenTransition = transitionTo === modalId;
 
 	const handleClose = () => {
 		closeModal();
@@ -61,7 +54,7 @@ export function UiModal({
 			unmountOnExit
 		>
 			<div className={styles.modalWrapper}>
-				<UiPanel className={clsx(styles.panel, className)}>
+				<UiPanel padding={0} className={clsx(styles.panel, className)}>
 					<div className={styles.closeBtnWrapper}>
 						{closeButton ? (
 							closeButton(handleClose)

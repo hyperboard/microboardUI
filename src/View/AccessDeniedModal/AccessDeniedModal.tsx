@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "shared/ui-lib/Button";
 import { Link } from "shared/ui-lib/Link";
 import styles from "./AccessDeniedModal.module.css";
-import clsx from "clsx";
 
 export const ACCESS_DENIED_MODAL = Symbol("accessDeniedModal");
 

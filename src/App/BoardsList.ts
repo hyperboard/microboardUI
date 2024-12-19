@@ -317,6 +317,7 @@ export class BoardsList {
 			return;
 		}
 		this.isLoading = true;
+		this.subject.publish();
 
 		await boardsApiV2.editBoard(boardId, {
 			isPublic,
@@ -520,8 +521,20 @@ export class BoardsList {
 		this.subject.publish();
 	}
 
+	async manageAccess(
+		boardId: string,
+		payload: boardsApiV2.ManageAccessPayload,
+	) {
+		this.isLoading = true;
+		this.subject.publish();
+
+		await boardsApiV2.manageAccess(boardId, payload);
+		this.loadBoards();
+	}
+
 	private async updateList(): Promise<void> {
 		this.isLoading = true;
+		this.subject.publish();
 		await this.account.refreshTokens();
 		await this.loadBoards();
 		this.isLoading = false;
