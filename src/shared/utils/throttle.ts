@@ -28,11 +28,9 @@ export function throttle<T extends (...args: unknown[]) => unknown>(
 	};
 }
 
-export function throttleWithDebounce<T extends (...args: unknown[]) => void>(
-	fn: T,
-	throttleDelay: number,
-	debounceDelay: number,
-): T {
+export function throttleWithDebounce<
+	T extends (...args: Parameters<T>) => void,
+>(fn: T, throttleDelay: number, debounceDelay: number): T {
 	let lastThrottleTime = 0;
 	let debounceTimeout: NodeJS.Timeout | number | null = null;
 	let lastArgs: Parameters<T> | null = null;
@@ -53,7 +51,7 @@ export function throttleWithDebounce<T extends (...args: unknown[]) => void>(
 		}
 		debounceTimeout = setTimeout(() => {
 			if (lastArgs) {
-				fn(...lastArgs);
+				fn(...(lastArgs as Parameters<T>));
 				lastArgs = null;
 			}
 		}, debounceDelay);
