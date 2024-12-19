@@ -20,7 +20,12 @@ export class Users {
     async getUser(
         userId: number
     ): Promise<{ id: number; email: string; name: string; avatar: string; avatarGenerated: boolean } | null> {
-        const user = await Drizzle.getUser(userId);
+        let user = await Drizzle.getUser(userId);
+
+        if (user && !user.avatar) {
+            await this.uploadAvatar(userId);
+            user = await Drizzle.getUser(userId);
+        }
 
         if (!user) {
             this.logger.error(`User not found: ${userId}`);
