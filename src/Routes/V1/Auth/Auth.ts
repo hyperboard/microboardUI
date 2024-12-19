@@ -1,13 +1,16 @@
-import * as Drizzle from "drizzle";
-import winston from "winston";
-import { decode, verify } from "jsonwebtoken";
-import * as bcrypt from "bcryptjs";
-import { HttpException } from "shared/exceptions/http-exception";
-import { HttpStatus } from "shared/enums/http-status.enum";
-import { Config } from "shared/config/config";
-import { Mailer } from "shared/modules/mailer/mailer";
-import { AuthHelper } from "./AuthHelper";
 import { AccessToken } from "Interface";
+import { verifyToken } from "Tokens";
+import * as bcrypt from "bcryptjs";
+import * as crypto from "crypto";
+import * as Drizzle from "drizzle";
+import { decode } from "jsonwebtoken";
+import { Config } from "shared/config/config";
+import { HttpStatus } from "shared/enums/http-status.enum";
+import { HttpException } from "shared/exceptions/http-exception";
+import { Mailer } from "shared/modules/mailer/mailer";
+import winston from "winston";
+import type { Users } from "../Users";
+import { AuthHelper } from "./AuthHelper";
 import {
     LoginPayload,
     Permissions,
@@ -16,18 +19,20 @@ import {
     ResendEmailPayload,
     VerifyEmailPayload,
 } from "./types";
-import { verifyToken } from "Tokens";
-import * as crypto from "crypto";
-import type { Users } from "../Users";
 
 export class Auth {
     private authHelper: AuthHelper;
 
-    constructor(private logger: winston.Logger, private userService: Users, private config: Config, private mailer: Mailer) {
+    constructor(
+        private logger: winston.Logger,
+        private userService: Users,
+        private config: Config,
+        private mailer: Mailer
+    ) {
         this.authHelper = new AuthHelper(this.config);
     }
 
-    async login(payload: LoginPayload): Promise<{ accessToken: string; refreshToken: string, userId: number } | null> {
+    async login(payload: LoginPayload): Promise<{ accessToken: string; refreshToken: string; userId: number } | null> {
         const user = await Drizzle.getUserAuthInfo(payload.email);
 
         if (!user) {
@@ -55,7 +60,6 @@ export class Auth {
         this.trySaveToken(user.id, refreshTokenHash);
         if (user.avatarGenerated) {
             await this.userService.uploadAvatar(user.id);
-
         }
         return {
             userId: user.id,
@@ -64,7 +68,7 @@ export class Auth {
         };
     }
 
-    async register(payload: RegisterPayload): Promise<{ email: string; id: number, name: string } | null> {
+    async register(payload: RegisterPayload): Promise<{ email: string; id: number; name: string } | null> {
         const user = await Drizzle.getUserByEmail(payload.email);
 
         if (user) {
@@ -79,7 +83,7 @@ export class Auth {
         }
 
         const createdUser = await Drizzle.getUserByEmail(payload.email);
-        await Drizzle.addUsername(createdUser.userId, payload.name)
+        await Drizzle.addUsername(createdUser.userId, payload.name);
 
         if (!createdUser) {
             throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred when creating new user");
@@ -117,7 +121,7 @@ export class Auth {
             this.logger.error(`sendMail error: ${e}`);
         }
 
-        return { id: createdUser.userId, email: createdUser.userEmail!, name: createdUser.name! };
+        return { id: createdUser.userId, email: createdUser.userEmail!, name: createdUser.userName! };
     }
 
     async refresh(payload: RefreshPayload): Promise<{
@@ -219,9 +223,8 @@ export class Auth {
         const user = await Drizzle.getUserByEmail(email);
 
         if (user.activated) {
-            return 'USER_ALREADY_ACTIVATED';
+            return "USER_ALREADY_ACTIVATED";
         }
-
 
         const passcode = this.authHelper.generatePasscode();
         const lastPasscode = await Drizzle.getLastPasscode(user.userId);
@@ -233,7 +236,7 @@ export class Auth {
             return await this.trySendVerifyMail(user.userId, email, passcode);
         }
 
-        return `PASSCODE_NOT_SENDED: ${+lastPasscode.created! - (Date.now() - 3 * 60 * 1000)}`
+        return `PASSCODE_NOT_SENDED: ${+lastPasscode.created! - (Date.now() - 3 * 60 * 1000)}`;
     }
 
     async resendEmail(payload: ResendEmailPayload): Promise<any> {

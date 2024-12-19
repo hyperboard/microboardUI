@@ -1,14 +1,18 @@
 import express from "express";
 import fs from "fs";
 import path from "path";
+import { Redis } from "Redis";
 import { Auth, getAuthRouter } from "Routes/V1/Auth";
-import { Boards, getBoardsRouter } from "Routes/V1/Boards";
+// import { Boards } from "Routes/V1/Boards";
 import { getUsersRouter, Users } from "Routes/V1/Users";
 import { Config } from "shared/config/config";
 import { internalError } from "shared/lib/routing";
 import { Mailer } from "shared/modules/mailer/mailer";
 import winston from "winston";
 import { WebSocketServer } from "ws";
+import { AI } from "./AI/AI";
+import { getAIRouter } from "./AI/Router";
+import { createHealthRouter } from "./Health";
 import { createJobsRouter } from "./Jobs";
 import { createMediaRouter } from "./Media";
 import { MediaDAL } from "./Media/MediaDAL";
@@ -17,10 +21,6 @@ import { BarrelMediaDAL } from "./MediaTalk/MediaDAL";
 import { getMiroRouter } from "./Miro";
 import { createTalkRouter } from "./Talk";
 import { getTemplatesRouter, Templates } from "./Templates";
-import { createHealthRouter } from "./Health";
-import { Redis } from "Redis";
-import { getAIRouter } from "./AI/Router";
-import { AI } from "./AI/AI";
 
 function createFileRoute(
     router: express.Router,
@@ -55,7 +55,7 @@ function createFileRoute(
 export function getV1Router({
     config,
     mailer,
-    boards,
+    // boards,
     templates,
     logger,
     auth,
@@ -67,7 +67,7 @@ export function getV1Router({
 }: {
     config: Config;
     mailer: Mailer;
-    boards: Boards;
+    // boards: Boards;
     templates: Templates;
     logger: winston.Logger;
     auth: Auth;
@@ -81,7 +81,7 @@ export function getV1Router({
     const apiBase = "/api/v1";
     router.use(apiBase, createHealthRouter(logger, redis));
     router.use(apiBase, getAuthRouter(auth, users, logger));
-    router.use(apiBase, getBoardsRouter(boards, logger));
+    // router.use(apiBase, getBoardsRouter(boards, logger));
     router.use(apiBase, getTemplatesRouter(templates, logger), getAIRouter(ai, logger));
     router.use(apiBase, getAIRouter(ai, logger));
     router.use(

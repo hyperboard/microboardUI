@@ -134,7 +134,6 @@ export async function getApp(): Promise<http.Server> {
     const v1Router = getV1Router({
         config,
         mailer,
-        boards,
         templates,
         logger,
         auth,

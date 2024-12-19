@@ -1,19 +1,19 @@
+import { OpenAI } from "ai/openai";
+import { ChatStreamHandler } from "ai/openai/ChatStreamHandler";
 import { AccessKeyType } from "drizzle/entities/boardAccessKeys";
 import { DirectAccessType } from "drizzle/entities/boards";
 import { AccessToken } from "Interface";
 import { boardEventTotalLatency, websocketEventQueueSize } from "Metrics/metrics";
-import { Redis, REDIS_HASH } from "Redis";
+import { Redis } from "Redis";
 import { BoardEventData, Boards } from "Routes/V1/Boards";
 import type { AccessKeysService } from "Routes/V2/Boards/access-keys.service";
 import type { BoardsService } from "Routes/V2/Boards/boards.service";
 import { verifyToken } from "Tokens";
+import { isUUID } from "validator";
 import winston from "winston";
 import WebSocket, { WebSocketServer } from "ws";
-import { Presence } from "./Presence";
 import { AiChatMsg, handleAIChatMessage } from "./ai-chat";
-import { OpenAI } from "ai/openai";
-import { isUUID } from "validator";
-import { ChatStreamHandler } from "ai/openai/ChatStreamHandler";
+import { Presence } from "./Presence";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;

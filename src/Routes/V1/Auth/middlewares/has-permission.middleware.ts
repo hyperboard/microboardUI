@@ -8,26 +8,34 @@ type Actions = "owns" | "edits" | "reads";
 type Resources = "boards" | "catalogs" | "groups";
 
 export function checkPermissions(
-  jwt: AccessToken,
-  action: Actions,
-  resource: Resources,
-  resourceId: string
+    jwt: AccessToken,
+    action: Actions | Actions[],
+    resource: Resources,
+    resourceId: string
 ): boolean {
-  if (!jwt || !jwt[action]?.[resource]) {
-    return false;
-  }
-  return jwt[action]![resource]?.includes(resourceId) ?? false;
+    if (Array.isArray(action)) {
+        return action.some((act) => jwt[act]?.[resource]?.includes(resourceId) ?? false);
+    } else {
+        if (!jwt || !jwt[action]?.[resource]) {
+            return false;
+        }
+        return jwt[action]![resource]?.includes(resourceId) ?? false;
+    }
 }
 
-export function hasPermission(action: Actions, resource: Resources, getResourceId: (req: Request) => string) {
-  return catchAsync(async (req: Request, _: Response, next: NextFunction) => {
-    const resourceId = getResourceId(req);
-    const token = req.token
-    
-    if (checkPermissions(token, action, resource, resourceId)) {
-      return next()
-    }
+export function hasPermission(
+    action: Actions | Actions[],
+    resource: Resources,
+    getResourceId: (req: Request) => string
+) {
+    return catchAsync(async (req, _, next) => {
+        const resourceId = getResourceId(req);
+        const token = req.token;
 
-    throw new HttpException(HttpStatus.UNAUTHORIZED, 'Not authorized');
-  });
+        if (checkPermissions(token, action, resource, resourceId)) {
+            return next();
+        }
+
+        throw new HttpException(HttpStatus.UNAUTHORIZED, "Not authorized");
+    });
 }

@@ -8,7 +8,7 @@ const config = {
     secretKey: process.env.MINIO_SECRET_KEY || "",
 };
 
-export const minioClient = process.env.MINIO_ENABLED === "true" ? new Client(config) : null;
+export const minioClient = (process.env.MINIO_ENABLED === "true" ? new Client(config) : null) as Client;
 
 // Check if the bucket exists, if not create it
 const MAX_RETRIES = 5; // Define the maximum number of retries
@@ -60,17 +60,10 @@ const ensureBucketExists = async (retries: number = 0) => {
 
             // Check and update the bucket policy if needed
             try {
-                const currentPolicy = await minioClient.getBucketPolicy(
-                    BUCKET_NAME
-                );
-                console.log(
-                    `Existing policies for ${BUCKET_NAME}: `,
-                    currentPolicy
-                );
+                const currentPolicy = await minioClient.getBucketPolicy(BUCKET_NAME);
+                console.log(`Existing policies for ${BUCKET_NAME}: `, currentPolicy);
             } catch (error) {
-                console.log(
-                    `Bucket policy does not exist. Setting new policy.`
-                );
+                console.log(`Bucket policy does not exist. Setting new policy.`);
                 await ensureBucketPolicy();
             }
         }
@@ -78,17 +71,11 @@ const ensureBucketExists = async (retries: number = 0) => {
         console.error(`Error ensuring bucket exists: ${error}`);
 
         if (retries < MAX_RETRIES) {
-            console.log(
-                `Retrying in 5 seconds... (Attempt ${
-                    retries + 1
-                }/${MAX_RETRIES})`
-            );
+            console.log(`Retrying in 5 seconds... (Attempt ${retries + 1}/${MAX_RETRIES})`);
             await delay(5000); // Wait for 5 seconds before retrying
             await ensureBucketExists(retries + 1); // Retry
         } else {
-            console.error(
-                `Failed to ensure bucket exists after ${MAX_RETRIES} attempts.`
-            );
+            console.error(`Failed to ensure bucket exists after ${MAX_RETRIES} attempts.`);
             process.exit(1); // Exit with failure if all retries are exhausted
         }
     }

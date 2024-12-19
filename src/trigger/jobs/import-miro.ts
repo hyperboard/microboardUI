@@ -17,16 +17,19 @@ interface ExtractedBoard {
 const INTERNAL_SERVER_URL = process.env.INTERNAL_SERVER_URL || "http://localhost:8000";
 const NOTIFY_URL = `${INTERNAL_SERVER_URL}/api/v1/jobs/notify`;
 
+const boardSchema = z.object({
+    boardId: z.string(),
+    accessToken: z.string(),
+    userId: z.string(),
+});
+
 export const importMiroBoard = client.defineJob({
     id: "import-miro-board",
     name: "Import Miro Board",
     version: "0.0.1",
     trigger: invokeTrigger({
-        schema: z.object({
-            boardId: z.string(),
-            accessToken: z.string(),
-            userId: z.string(),
-        }),
+        // @ts-expect-error IDK
+        schema: boardSchema,
     }),
     run: async (payload, io, ctx) => {
         const { boardId, accessToken, userId } = payload;

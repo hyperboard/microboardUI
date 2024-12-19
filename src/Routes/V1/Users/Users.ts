@@ -1,4 +1,4 @@
-import avatar from "animal-avatar-generator";
+import avatar from "shared/lib/animalAvatarGenerator";
 import * as Drizzle from "drizzle";
 import { HttpStatus } from "shared/enums/http-status.enum";
 import { HttpException } from "shared/exceptions/http-exception";

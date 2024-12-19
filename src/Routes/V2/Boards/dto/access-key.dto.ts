@@ -1,13 +1,13 @@
 import type { AccessKeyType } from "drizzle/entities/boardAccessKeys";
 
 export class AccessKeyDto {
-  boardId: string;
-  accessKey: string;
-  keyType: AccessKeyType;
+    boardId: string;
+    accessKey: string;
+    keyType: AccessKeyType;
 
-  constructor(payload: BoardDto) {
-    this.boardId = payload.boardId;
-    this.accessKey = payload.accessKey;
-    this.keyType = payload.keyType;
-  }
+    constructor(payload: AccessKeyDto) {
+        this.boardId = payload.boardId;
+        this.accessKey = payload.accessKey;
+        this.keyType = payload.keyType;
+    }
 }

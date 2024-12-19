@@ -1,8 +1,11 @@
-import request from "supertest";
-import http from "http";
-import { beforeAll, afterEach, describe, it, expect } from "@jest/globals";
+import { beforeAll, describe, expect, it } from "@jest/globals";
 import dotenv from "dotenv";
+import { AccessKeyType } from "drizzle/entities/boardAccessKeys";
+import { DirectAccessType } from "drizzle/entities/boards";
 import { getApp } from "getApp";
+import http from "http";
+import { BOARD_AUTHOR_KEY_HEADER } from "Routes/V2/Boards/middlewares";
+import request from "supertest";
 import { createToken } from "Tokens";
 
 let server: http.Server;
@@ -17,669 +20,671 @@ afterAll(() => {
 });
 
 async function createTestToken(userId: string, permissions: any) {
-    return createToken(
-        permissions,
-        userId,
-        24 * 60 * 60,
-        "Whiteboard",
-        "Whiteboard"
-    );
+    return createToken(userId, 24 * 60 * 60, "Whiteboard", "Whiteboard", "access", permissions);
 }
 
 describe("Board routes", () => {
     describe("Create a board", () => {
-        const userId = "user-123";
+        const userId = "123";
 
-        it("should create a new board", async () => {
+        it("should create a new private board", async () => {
             const token = await createTestToken(userId, {
                 owns: { catalogs: ["root"] },
             });
 
             await request(server)
-                .post("/api/v1/boards/")
+                .post("/api/v2/boards")
                 .set("Authorization", `Bearer ${token}`)
                 .send({ title: "Test Board" })
                 .expect(201)
                 .then((response) => {
-                    expect(response.body).toHaveProperty("boardId");
-                    expect(response.body).toHaveProperty("boardUrl");
+                    expect(response.body).toHaveProperty("id");
+                    expect(response.body).toHaveProperty("title");
+                    expect(response.body.isPublic).toEqual(false);
+                    expect(response.body.directAccessType).toEqual(DirectAccessType.VIEW);
                 });
         });
 
-        it("should fail to create a new board without a token", async () => {
+        it("should create a new public board", async () => {
             await request(server)
-                .post("/api/v1/boards")
+                .post("/api/v2/boards")
                 .send({ title: "Test Board" })
-                .expect(401);
-        });
-
-        it("should create a new board with 'root' catalogId", async () => {
-            const token = await createTestToken(userId, {
-                owns: { catalogs: ["root"] },
-            });
-
-            await request(server)
-                .post("/api/v1/boards/")
-                .set("Authorization", `Bearer ${token}`)
-                .send({
-                    title: "Test Board with root catalog",
-                    catalogId: "root",
-                })
                 .expect(201)
                 .then((response) => {
-                    expect(response.body).toHaveProperty("boardId");
-                    expect(response.body).toHaveProperty("boardUrl");
+                    expect(response.body).toHaveProperty("id");
+                    expect(response.body).toHaveProperty("title");
+                    expect(response.body).toHaveProperty("authorKey");
+                    expect(response.body.isPublic).toEqual(true);
+                    expect(response.body.directAccessType).toEqual(DirectAccessType.EDIT);
                 });
-        });
-
-        it("should fail to create a new board with invalid catalogId", async () => {
-            const token = await createTestToken(userId, {
-                owns: { catalogs: ["root"] },
-            });
-
-            await request(server)
-                .post("/api/v1/boards/")
-                .set("Authorization", `Bearer ${token}`)
-                .send({
-                    title: "Test Board with invalid catalog",
-                    catalogId: "invalid-catalog-id",
-                })
-                .expect(400); // Expecting a 400 Bad Request due to invalid catalogId
         });
     });
 
     describe("Get board details", () => {
-        const userId = "user-123";
         let boardId: any;
-        let token: string;
-
         beforeAll(async () => {
-            // Create token with root catalog permissions
-            token = await createTestToken(userId, {
-                owns: { catalogs: ["root"] },
-            });
-
             // Create a new board
             const createResponse = await request(server)
-                .post("/api/v1/boards")
-                .set("Authorization", `Bearer ${token}`)
+                .post("/api/v2/boards")
                 .send({ title: "Board for Detail Test" })
                 .expect(201);
-            expect(createResponse.body).toHaveProperty("boardId");
-            boardId = createResponse.body.boardId;
+            expect(createResponse.body).toHaveProperty("id");
+            boardId = createResponse.body.id;
         });
 
         it("should return the details of an existing board", async () => {
-            const readToken = await createTestToken(userId, {
-                reads: { boards: [boardId] },
-            });
-
             await request(server)
-                .get(`/api/v1/boards/${boardId}/details`)
-                .set("Authorization", `Bearer ${readToken}`)
+                .get(`/api/v2/board/${boardId}`)
                 .expect(200)
                 .then((response) => {
-                    expect(response.body).toHaveProperty("boardId");
-                    expect(response.body.boardId).toEqual(boardId);
+                    expect(response.body).toHaveProperty("id");
+                    expect(response.body.id).toEqual(boardId);
                     expect(response.body).toHaveProperty("title");
                 });
         });
-
-        it("should return 401 if unauthorized", async () => {
-            await request(server)
-                .get(`/api/v1/boards/${boardId}/details`)
-                .expect(401); // Unauthorized
-        });
-
-        it("should return 403 if user does not have permission to read the board details", async () => {
-            const forbiddenToken = await createTestToken(userId, {
-                reads: { boards: [] }, // Empty permissions
-            });
-
-            await request(server)
-                .get(`/api/v1/boards/${boardId}/details`)
-                .set("Authorization", `Bearer ${forbiddenToken}`)
-                .expect(403); // Forbidden
-        });
-
-        it("should return 404 if board does not exist", async () => {
-            const nonExistentBoardId = "00000000-0000-0000-0000-000000000000";
-
-            await request(server)
-                .get(`/api/v1/boards/${nonExistentBoardId}/details`)
-                .set("Authorization", `Bearer ${token}`)
-                .expect(404); // Not found
-        });
     });
 
-    describe("Create public board", () => {
-        it("should create a new public board", async () => {
-            await request(server)
-                .post("/api/v1/public-boards")
-                .send({ title: "Public Test Board" })
-                .expect(201)
-                .then((response) => {
-                    expect(response.body).toHaveProperty("boardId");
-                    expect(response.body).toHaveProperty("linkId");
-                    expect(response.body).toHaveProperty("linkUri");
-                    expect(response.body.linkUri).toContain(
-                        response.body.linkId
-                    );
-                });
-        });
-    });
-
-    describe("Delete a board", () => {
-        const userId = "user-123";
-
-        it("should delete a board", async () => {
-            const tokenToCreate = await createTestToken(userId, {
+    describe("Edit board (authorized user)", () => {
+        let boardId: any;
+        const userId = "123";
+        beforeAll(async () => {
+            const token = await createTestToken(userId, {
                 owns: { catalogs: ["root"] },
             });
-            let boardId;
-            const createResponce = await request(server)
-                .post("/api/v1/boards")
-                .set("Authorization", `Bearer ${tokenToCreate}`)
-                .send({ title: "Test Board" })
+            // Create a new board
+            const createResponse = await request(server)
+                .post("/api/v2/boards")
+                .set("Authorization", `Bearer ${token}`)
+                .send({ title: "Board for Detail Test" })
                 .expect(201);
+            expect(createResponse.body).toHaveProperty("id");
+            boardId = createResponse.body.id;
+        });
 
-            expect(createResponce.body).toHaveProperty("boardId");
-            expect(createResponce.body).toHaveProperty("boardUrl");
-            boardId = createResponce.body.boardId;
-
-            const tokenToDelete = await createTestToken(userId, {
-                owns: { boards: [boardId] },
+        it("should modify board", async () => {
+            const token = await createTestToken(userId, {
+                owns: { catalogs: ["root"], boards: [boardId] },
             });
 
-            const deleteResponse = await request(server)
-                .delete(`/api/v1/boards/${boardId}/`)
-                .set("Authorization", `Bearer ${tokenToDelete}`)
+            await request(server)
+                .patch(`/api/v2/board/${boardId}`)
+                .set("Authorization", `Bearer ${token}`)
+                .send({
+                    title: "New Title",
+                    isPublic: true,
+                })
+                .expect(204);
+
+            const getResponse = await request(server).get(`/api/v2/board/${boardId}`);
+            expect(getResponse.body.title).toEqual("New Title");
+            expect(getResponse.body.isPublic).toEqual(true);
+        });
+
+        it("should return 403 status code", async () => {
+            await request(server)
+                .patch(`/api/v2/board/${boardId}`)
+                .send({
+                    title: "New Title",
+                    isPublic: true,
+                })
+                .expect(403);
+        });
+    });
+
+    describe("Edit board (unauthorized user)", () => {
+        let boardId: any;
+        let authorKey: any;
+        beforeAll(async () => {
+            // Create a new board
+            const createResponse = await request(server)
+                .post("/api/v2/boards")
+                .send({ title: "Board for Detail Test" })
+                .expect(201);
+            expect(createResponse.body).toHaveProperty("id");
+            expect(createResponse.body).toHaveProperty("authorKey");
+            boardId = createResponse.body.id;
+            authorKey = createResponse.body.authorKey;
+        });
+
+        it("should modify board", async () => {
+            await request(server)
+                .patch(`/api/v2/board/${boardId}`)
+                .set(BOARD_AUTHOR_KEY_HEADER, authorKey)
+                .send({
+                    title: "New Title",
+                    isPublic: true,
+                })
+                .expect(204);
+
+            const getResponse = await request(server).get(`/api/v2/board/${boardId}`);
+            expect(getResponse.body.title).toEqual("New Title");
+            expect(getResponse.body.isPublic).toEqual(true);
+        });
+
+        it("should return 403 status code", async () => {
+            await request(server)
+                .patch(`/api/v2/board/${boardId}`)
+                .send({
+                    title: "New Title",
+                    isPublic: true,
+                })
+                .expect(403);
+        });
+    });
+
+    describe("Delete a board (authorized user)", () => {
+        const userId = "123";
+        let boardId: any;
+
+        beforeAll(async () => {
+            const token = await createTestToken(userId, {
+                owns: { catalogs: ["root"] },
+            });
+            // Create a new board
+            const createResponse = await request(server)
+                .post("/api/v2/boards")
+                .set("Authorization", `Bearer ${token}`)
+                .send({ title: "Board for Detail Test" })
+                .expect(201);
+            expect(createResponse.body).toHaveProperty("id");
+            boardId = createResponse.body.id;
+        });
+
+        it("should delete a board", async () => {
+            const token = await createTestToken(userId, {
+                owns: { catalogs: ["root"], boards: [boardId] },
+            });
+            await request(server)
+                .delete(`/api/v2/boards/${boardId}/`)
+                .set("Authorization", `Bearer ${token}`)
                 .expect(204);
         });
 
-        it("should delete a board with 'root' catalog ownership without owning the board", async () => {
-            const tokenToCreateBoard = await createTestToken(userId, {
-                owns: { catalogs: ["root"] }, // User owns 'root' catalog
-            });
-
-            let boardId;
-            const createResponse = await request(server)
-                .post("/api/v1/boards")
-                .set("Authorization", `Bearer ${tokenToCreateBoard}`)
-                .send({ title: "Board to Delete With Root Catalog" })
-                .expect(201);
-
-            expect(createResponse.body).toHaveProperty("boardId");
-            boardId = createResponse.body.boardId;
-
-            const tokenToDeleteBoard = await createTestToken(userId, {
-                owns: { catalogs: ["root"] }, // User can delete any board within the root catalog
-            });
-
-            await request(server)
-                .delete(`/api/v1/boards/${boardId}`)
-                .set("Authorization", `Bearer ${tokenToDeleteBoard}`)
-                .expect(204); // Board deletion should be successful
+        it("should not delete a board", async () => {
+            await request(server).delete(`/api/v2/boards/${boardId}/`).expect(403);
         });
 
         it("should return 204 on successive deletes for the same board", async () => {
-            const tokenToCreate = await createTestToken(userId, {
-                owns: { catalogs: ["root"] },
-            });
-
-            const createResponse = await request(server)
-                .post("/api/v1/boards")
-                .set("Authorization", `Bearer ${tokenToCreate}`)
-                .send({ title: "Board to test delete idempotency" })
-                .expect(201);
-
-            const boardIdToDelete = createResponse.body.boardId;
-            const tokenToDelete = await createTestToken(userId, {
-                owns: { boards: [boardIdToDelete] },
-            });
-
-            // First DELETE request
-            await request(server)
-                .delete(`/api/v1/boards/${boardIdToDelete}`)
-                .set("Authorization", `Bearer ${tokenToDelete}`)
-                .expect(204);
-
-            // Subsequent DELETE request (should also return 204 ensuring idempotence)
-            await request(server)
-                .delete(`/api/v1/boards/${boardIdToDelete}`)
-                .set("Authorization", `Bearer ${tokenToDelete}`)
-                .expect(204);
-        });
-    });
-
-    describe("Duplicate a Board", () => {
-        const userId = "user-123";
-
-        it("should duplicate a board", async () => {
-            const tokenToCreate = await createTestToken(userId, {
-                owns: { catalogs: ["root"] },
-            });
-
-            const createResponse = await request(server)
-                .post("/api/v1/boards")
-                .set("Authorization", `Bearer ${tokenToCreate}`)
-                .send({ title: "Board to Duplicate" })
-                .expect(201);
-
-            expect(createResponse.body).toHaveProperty("boardId");
-            const originalBoardId = createResponse.body.boardId;
-
-            const tokenToDuplicate = await createTestToken(userId, {
-                owns: { boards: [originalBoardId] },
-            });
-
-            const duplicateResponse = await request(server)
-                .post(`/api/v1/boards/${originalBoardId}/duplicate`)
-                .set("Authorization", `Bearer ${tokenToDuplicate}`)
-                .expect(200);
-
-            expect(duplicateResponse.body).toHaveProperty("newBoardId");
-
-            expect(duplicateResponse.body.newBoardId).not.toEqual(
-                originalBoardId
-            );
-        });
-    });
-
-    describe("Rename a Board)", () => {
-        const userId = "user-123";
-        let token: string;
-        let boardId: any;
-
-        beforeAll(async () => {
-            token = await createTestToken(userId, {
-                owns: { boards: [], catalogs: ["root"] },
-            });
-
-            const createResponse = await request(server)
-                .post("/api/v1/boards")
-                .set("Authorization", `Bearer ${token}`)
-                .send({
-                    title: "Board To Rename. Very long title. Like a poem. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.",
-                })
-                .expect(201);
-            boardId = createResponse.body.boardId;
-
-            token = await createTestToken(userId, {
-                owns: { boards: [boardId] },
-            });
-        });
-
-        it("should rename an existing board", async () => {
-            const newTitle =
-                "Renamed Board. . Very long title. Like a poem. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.";
-            await request(server)
-                .patch(`/api/v1/boards/${boardId}`)
-                .set("Authorization", `Bearer ${token}`)
-                .send({ newTitle: newTitle })
-                .expect(200);
-        });
-
-        it("should not rename a board with an invalid boardId", async () => {
-            const newTitle = "Renamed Board Invalid ID";
-            await request(server)
-                .patch(`/api/v1/boards/invalid-board-id`)
-                .set("Authorization", `Bearer ${token}`)
-                .send({ newTitle: newTitle })
-                .expect(400);
-        });
-
-        it("should not rename a board without the required permissions", async () => {
-            const tokenWithoutPermission = await createTestToken(userId, {
-                owns: { boards: [] },
-            });
-
-            const newTitle = "Renamed Board No Permission";
-            await request(server)
-                .patch(`/api/v1/boards/${boardId}`)
-                .set("Authorization", `Bearer ${tokenWithoutPermission}`)
-                .send({ newTitle: newTitle })
-                .expect(403);
-        });
-
-        it("should return 404 for non-existent boardId", async () => {
-            const nonExistentBoardId = "00000000-0000-0000-0000-000000000000";
-            token = await createTestToken(userId, {
-                owns: { boards: [nonExistentBoardId] },
-            });
-            const newTitle = "Renamed Board Non Existent";
-            await request(server)
-                .patch(`/api/v1/boards/${nonExistentBoardId}`)
-                .set("Authorization", `Bearer ${token}`)
-                .send({ newTitle: newTitle })
-                .expect(404);
-        });
-
-        it("should rename a board with 'root' catalog ownership without owning the board", async () => {
-            // Create a new board to rename later.
-            const boardCreationToken = await createTestToken(userId, {
-                owns: { catalogs: ["root"] },
-            });
-
-            const createResponse = await request(server)
-                .post("/api/v1/boards")
-                .set("Authorization", `Bearer ${boardCreationToken}`)
-                .send({ title: "Board to Rename with Root Catalog" });
-
-            expect(createResponse.body).toHaveProperty("boardId");
-            const boardToRenameId = createResponse.body.boardId;
-
-            // Token with 'root' catalog ownership to rename the board.
-            const tokenWithRootCatalog = await createTestToken(userId, {
-                owns: { catalogs: ["root"] },
-            });
-
-            // Attempt to rename the board with a different token that has root catalog ownership.
-            const newTitle = "Renamed Board with Root Catalog";
-            await request(server)
-                .patch(`/api/v1/boards/${boardToRenameId}`)
-                .set("Authorization", `Bearer ${tokenWithRootCatalog}`)
-                .send({ newTitle: newTitle })
-                .expect(200); // Board renaming should succeed.
-        });
-    });
-
-    describe("Create a Link", () => {
-        const userId = "user-123";
-        let boardId: any;
-
-        beforeAll(async () => {
-            const token = await createTestToken(userId, {
-                owns: { catalogs: ["root"] },
-            });
-
-            await request(server)
-                .post("/api/v1/boards")
-                .set("Authorization", `Bearer ${token}`)
-                .send({ title: "Board for Links" })
-                .expect(201)
-                .then((response) => {
-                    expect(response.body).toHaveProperty("boardId");
-                    boardId = response.body.boardId;
-                });
-        });
-
-        it("should create a new read link for the board", async () => {
-            const token = await createTestToken(userId, {
-                owns: { boards: [boardId] },
-            });
-
-            await request(server)
-                .post(`/api/v1/boards/${boardId}/links`)
-                .set("Authorization", `Bearer ${token}`)
-                .send({ type: "view" })
-                .expect(201)
-                .then((response) => {
-                    expect(response.body).toHaveProperty("linkId");
-                    expect(response.body).toHaveProperty("linkUri");
-                });
-        });
-
-        it("should create a new edit link for the board", async () => {
-            const token = await createTestToken(userId, {
-                owns: { boards: [boardId] },
-            });
-
-            await request(server)
-                .post(`/api/v1/boards/${boardId}/links`)
-                .set("Authorization", `Bearer ${token}`)
-                .send({ type: "edit" })
-                .expect(201)
-                .then((response) => {
-                    expect(response.body).toHaveProperty("linkId");
-                    expect(response.body).toHaveProperty("linkUri");
-                });
-        });
-
-        it("should fail to create a new link without proper permissions", async () => {
-            const token = await createTestToken(userId, {
-                owns: { boards: [] },
-            });
-
-            await request(server)
-                .post(`/api/v1/boards/${boardId}/links`)
-                .set("Authorization", `Bearer ${token}`)
-                .send({ type: "view" })
-                .expect(403); // Forbidden
-        });
-
-        it("should create a new link for the board with 'root' catalog ownership without owning the board", async () => {
-            // Create a new board to create links for later.
-            const boardCreationToken = await createTestToken(userId, {
-                owns: { catalogs: ["root"] },
-            });
-
-            const createResponse = await request(server)
-                .post("/api/v1/boards")
-                .set("Authorization", `Bearer ${boardCreationToken}`)
-                .send({ title: "Board to Create Links with Root Catalog" });
-
-            expect(createResponse.body).toHaveProperty("boardId");
-            const boardToCreateLinkId = createResponse.body.boardId;
-
-            // Token with 'root' catalog ownership to create the link.
-            const tokenWithRootCatalog = await createTestToken(userId, {
-                owns: { catalogs: ["root"] },
-            });
-
-            // Attempt to create a new link on the board with a token that has root catalog ownership.
-            await request(server)
-                .post(`/api/v1/boards/${boardToCreateLinkId}/links`)
-                .set("Authorization", `Bearer ${tokenWithRootCatalog}`)
-                .send({ type: "view" }) // You can change to "edit" if needed
-                .expect(201)
-                .then((response) => {
-                    expect(response.body).toHaveProperty("linkId");
-                    expect(response.body).toHaveProperty("linkUri");
-                }); // Link creation should succeed.
-        });
-    });
-
-    describe("Get link details", () => {
-        const userId = "user-123";
-        let boardId: any;
-        let linkId: any;
-        let token: string;
-
-        beforeAll(async () => {
-            // Create token with root catalog permissions
-            token = await createTestToken(userId, {
-                owns: { catalogs: ["root"] },
-            });
-
-            // Create a new board
-            const boardResponse = await request(server)
-                .post("/api/v1/boards")
-                .set("Authorization", `Bearer ${token}`)
-                .send({ title: "Board for Link Details Test" })
-                .expect(201);
-            expect(boardResponse.body).toHaveProperty("boardId");
-            boardId = boardResponse.body.boardId;
-
-            // Create a new link for the board
-            const linkResponse = await request(server)
-                .post(`/api/v1/boards/${boardId}/links`)
-                .set("Authorization", `Bearer ${token}`)
-                .send({ type: "edit" })
-                .expect(201);
-            expect(linkResponse.body).toHaveProperty("linkId");
-            linkId = linkResponse.body.linkId;
-        });
-
-        it("should return the details of an existing link", async () => {
-            await request(server)
-                .get(`/api/v1/boards/${boardId}/links/${linkId}/details`)
-                .set("Authorization", `Bearer ${token}`)
-                .expect(200)
-                .then((response) => {
-                    expect(response.body).toHaveProperty("linkId");
-                    expect(response.body).toHaveProperty("type");
-                    expect(response.body.type).toBe("edit");
-                });
-        });
-
-        it("should return 401 if unauthorized", async () => {
-            await request(server)
-                .get(`/api/v1/boards/${boardId}/links/${linkId}/details`)
-                .expect(401); // Unauthorized
-        });
-
-        it("should return 403 if user does not have permission to read the link details", async () => {
-            const forbiddenToken = await createTestToken(userId, {
-                reads: { boards: [] }, // Empty permissions
-            });
-
-            await request(server)
-                .get(`/api/v1/boards/${boardId}/links/${linkId}/details`)
-                .set("Authorization", `Bearer ${forbiddenToken}`)
-                .expect(403); // Forbidden
-        });
-
-        it("should return 404 if link does not exist", async () => {
-            const nonExistentLinkId = "00000000-0000-0000-0000-000000000000";
-
-            await request(server)
-                .get(
-                    `/api/v1/boards/${boardId}/links/${nonExistentLinkId}/details`
-                )
-                .set("Authorization", `Bearer ${token}`)
-                .expect(404); // Not found
-        });
-
-        it("should return 404 if board does not exist", async () => {
-            const nonExistentBoardId = "00000000-0000-0000-0000-000000000000";
-
-            await request(server)
-                .get(
-                    `/api/v1/board/${nonExistentBoardId}/links/${linkId}/details`
-                )
-                .set("Authorization", `Bearer ${token}`)
-                .expect(404); // Not found
-        });
-    });
-
-    describe("Delete a Link", () => {
-        const userId = "user-123";
-        let boardId: any;
-        let linkId: any;
-        let deletionToken: string;
-
-        beforeAll(async () => {
-            const creationToken = await createTestToken(userId, {
-                owns: { catalogs: ["root"] },
-            });
-
-            const boardCreationResponse = await request(server)
-                .post("/api/v1/boards")
-                .set("Authorization", `Bearer ${creationToken}`)
-                .send({ title: "Test Board for Link Deletion" });
-            boardId = boardCreationResponse.body.boardId;
-
-            const linkCreationToken = await createTestToken(userId, {
-                owns: { boards: [boardId] },
-            });
-            const linkCreationResponse = await request(server)
-                .post(`/api/v1/boards/${boardId}/links`)
-                .set("Authorization", `Bearer ${linkCreationToken}`)
-                .send({ type: "edit" }); // или type: "read"
-            linkId = linkCreationResponse.body.linkId;
-
-            deletionToken = await createTestToken(userId, {
-                owns: { boards: [boardId] },
-            });
-        });
-
-        it("should delete a link from a board", async () => {
-            await request(server)
-                .delete(`/api/v1/boards/${boardId}/links/${linkId}`)
-                .set("Authorization", `Bearer ${deletionToken}`)
-                .expect(204);
-        });
-
-        it("should delete a link from a board with 'root' catalog ownership without owning the board", async () => {
-            // Create a new board and link to be deleted later.
-            const boardCreationToken = await createTestToken(userId, {
-                owns: { catalogs: ["root"] },
-            });
-
-            // Create a new board which will have a link to delete
-            const createResponse = await request(server)
-                .post("/api/v1/boards")
-                .set("Authorization", `Bearer ${boardCreationToken}`)
-                .send({ title: "Board for Link Deletion with Root Catalog" });
-            expect(createResponse.body).toHaveProperty("boardId");
-            const boardToDeleteLinkId = createResponse.body.boardId;
-
-            // Create the link
-            const linkCreationToken = await createTestToken(userId, {
-                owns: { catalogs: ["root"] },
-            });
-            const linkCreationResponse = await request(server)
-                .post(`/api/v1/boards/${boardToDeleteLinkId}/links`)
-                .set("Authorization", `Bearer ${linkCreationToken}`)
-                .send({ type: "edit" });
-            expect(linkCreationResponse.body).toHaveProperty("linkId");
-            const linkIdToDelete = linkCreationResponse.body.linkId;
-
-            // Token with 'root' catalog ownership to delete the link.
-            const tokenWithRootCatalogToDelete = await createTestToken(userId, {
-                owns: { catalogs: ["root"] },
-            });
-
-            // Attempt to delete the link with a token that has root catalog ownership.
-            await request(server)
-                .delete(
-                    `/api/v1/boards/${boardToDeleteLinkId}/links/${linkIdToDelete}`
-                )
-                .set("Authorization", `Bearer ${tokenWithRootCatalogToDelete}`)
-                .expect(204); // Link deletion should succeed.
-        });
-
-        it("should return 204 on successive deletes for the same link ensuring idempotency", async () => {
-            // Create token with permissions to create and delete a board
-            let token = await createTestToken(userId, {
-                owns: { catalogs: ["root"] },
-            });
-
-            // Create a new board
-            const boardResponse = await request(server)
-                .post("/api/v1/boards")
-                .set("Authorization", `Bearer ${token}`)
-                .send({ title: "Board for Link Deletion Test" })
-                .expect(201);
-            expect(boardResponse.body).toHaveProperty("boardId");
-            boardId = boardResponse.body.boardId;
-
-            // Create a new link for the board
-            const linkResponse = await request(server)
-                .post(`/api/v1/boards/${boardId}/links`)
-                .set("Authorization", `Bearer ${token}`)
-                .send({ type: "edit" })
-                .expect(201);
-            expect(linkResponse.body).toHaveProperty("linkId");
-            linkId = linkResponse.body.linkId;
-
-            // Create a token with permissions to delete the newly created link
-            const tokenWithRootCatalogToDelete = await createTestToken(userId, {
+            const deleteToken = await createTestToken(userId, {
                 owns: { catalogs: ["root"], boards: [boardId] },
             });
 
             // First DELETE request
             await request(server)
-                .delete(`/api/v1/boards/${boardId}/links/${linkId}`)
-                .set("Authorization", `Bearer ${tokenWithRootCatalogToDelete}`)
+                .delete(`/api/v1/boards/${boardId}`)
+                .set("Authorization", `Bearer ${deleteToken}`)
                 .expect(204);
 
-            // Subsequent DELETE request (should also return 204 ensuring idempotency)
+            // Subsequent DELETE request (should also return 204 ensuring idempotence)
             await request(server)
-                .delete(`/api/v1/boards/${boardId}/links/${linkId}`)
-                .set("Authorization", `Bearer ${tokenWithRootCatalogToDelete}`)
+                .delete(`/api/v1/boards/${boardId}`)
+                .set("Authorization", `Bearer ${deleteToken}`)
                 .expect(204);
+        });
+    });
+
+    describe("Delete a board (unauthorized user)", () => {
+        let boardId: any;
+        let authorKey: any;
+
+        beforeAll(async () => {
+            // Create a new board
+            const createResponse = await request(server)
+                .post("/api/v2/boards")
+                .send({ title: "Board for Detail Test" })
+                .expect(201);
+            expect(createResponse.body).toHaveProperty("id");
+            expect(createResponse.body).toHaveProperty("authorKey");
+            boardId = createResponse.body.id;
+            authorKey = createResponse.body.authorKey;
+        });
+
+        it("should delete a board", async () => {
+            await request(server)
+                .delete(`/api/v2/boards/${boardId}`)
+                .set(BOARD_AUTHOR_KEY_HEADER, authorKey)
+                .expect(204);
+        });
+
+        it("should not delete a board", async () => {
+            await request(server).delete(`/api/v2/boards/${boardId}`).expect(403);
+        });
+    });
+
+    describe("Create a access key (authorized user)", () => {
+        const userId = "123";
+        let boardId: any;
+        beforeAll(async () => {
+            const token = await createTestToken(userId, {
+                owns: { catalogs: ["root"] },
+            });
+            // Create a new board
+            const createResponse = await request(server)
+                .post("/api/v2/boards")
+                .set("Authorization", `Bearer ${token}`)
+                .send({ title: "Board for Detail Test" })
+                .expect(201);
+            expect(createResponse.body).toHaveProperty("id");
+            boardId = createResponse.body.id;
+        });
+
+        it("should create a new access key", async () => {
+            const token = await createTestToken(userId, {
+                owns: { catalogs: ["root"], boards: [boardId] },
+            });
+
+            await request(server)
+                .post(`/api/v2/boards/${boardId}/access-key`)
+                .set("Authorization", `Bearer ${token}`)
+                .send({ keyType: AccessKeyType.EDIT })
+                .expect(201)
+                .then((response) => {
+                    expect(response.body).toHaveProperty("accessKey");
+                    expect(response.body.boardId).toEqual(boardId);
+                    expect(response.body.keyType).toEqual(AccessKeyType.EDIT);
+                });
+        });
+
+        it("should not create a new access key", async () => {
+            const token = await createTestToken(userId, {
+                owns: { catalogs: ["root"] },
+            });
+
+            await request(server)
+                .post(`/api/v2/boards/${boardId}/access-key`)
+                .set("Authorization", `Bearer ${token}`)
+                .send({ keyType: AccessKeyType.EDIT })
+                .expect(403);
+        });
+    });
+
+    describe("Create a access key (unauthorized user)", () => {
+        let boardId: any;
+        let authorKey: any;
+        beforeAll(async () => {
+            // Create a new board
+            const createResponse = await request(server)
+                .post("/api/v2/boards")
+                .send({ title: "Board for Detail Test" })
+                .expect(201);
+            expect(createResponse.body).toHaveProperty("id");
+            expect(createResponse.body).toHaveProperty("authorKey");
+            boardId = createResponse.body.id;
+            authorKey = createResponse.body.authorKey;
+        });
+
+        it("should create a new access key", async () => {
+            await request(server)
+                .post(`/api/v2/boards/${boardId}/access-key`)
+                .set(BOARD_AUTHOR_KEY_HEADER, authorKey)
+                .send({ keyType: AccessKeyType.EDIT })
+                .expect(201)
+                .then((response) => {
+                    expect(response.body).toHaveProperty("accessKey");
+                    expect(response.body.boardId).toEqual(boardId);
+                    expect(response.body.keyType).toEqual(AccessKeyType.EDIT);
+                });
+        });
+
+        it("should not create a new access key", async () => {
+            await request(server)
+                .post(`/api/v2/boards/${boardId}/access-key`)
+                .send({ keyType: AccessKeyType.EDIT })
+                .expect(403);
+        });
+    });
+
+    describe("Get access keys for board (authorized user)", () => {
+        const userId = "123";
+        let boardId: any;
+        beforeAll(async () => {
+            const token = await createTestToken(userId, {
+                owns: { catalogs: ["root"] },
+            });
+            // Create a new board
+            const createResponse = await request(server)
+                .post("/api/v2/boards")
+                .set("Authorization", `Bearer ${token}`)
+                .send({ title: "Board for Detail Test" })
+                .expect(201);
+            expect(createResponse.body).toHaveProperty("id");
+            boardId = createResponse.body.id;
+
+            await request(server)
+                .post(`/api/v2/boards/${boardId}/access-key`)
+                .set("Authorization", `Bearer ${token}`)
+                .send({ keyType: AccessKeyType.EDIT })
+                .expect(201)
+                .then((response) => {
+                    expect(response.body).toHaveProperty("accessKey");
+                    expect(response.body.boardId).toEqual(boardId);
+                    expect(response.body.keyType).toEqual(AccessKeyType.EDIT);
+                });
+        });
+
+        it("should get a access keys list", async () => {
+            const token = await createTestToken(userId, {
+                owns: { catalogs: ["root"], boards: [boardId] },
+            });
+
+            await request(server)
+                .get(`/api/v2/boards/${boardId}/access-key`)
+                .set("Authorization", `Bearer ${token}`)
+                .expect(200)
+                .then((response) => {
+                    expect(response.body).toHaveLength(1);
+                });
+        });
+
+        it("should not get a access keys list", async () => {
+            const token = await createTestToken(userId, {
+                owns: { catalogs: ["root"] },
+            });
+
+            await request(server)
+                .get(`/api/v2/boards/${boardId}/access-key`)
+                .set("Authorization", `Bearer ${token}`)
+                .expect(403);
+        });
+    });
+
+    describe("Get access keys for board (unauthorized user)", () => {
+        let boardId: any;
+        let authorKey: any;
+        beforeAll(async () => {
+            // Create a new board
+            const createResponse = await request(server)
+                .post("/api/v2/boards")
+                .send({ title: "Board for Detail Test" })
+                .expect(201);
+            expect(createResponse.body).toHaveProperty("id");
+            boardId = createResponse.body.id;
+            authorKey = createResponse.body.authorKey;
+
+            await request(server)
+                .post(`/api/v2/boards/${boardId}/access-key`)
+                .set(BOARD_AUTHOR_KEY_HEADER, authorKey)
+                .send({ keyType: AccessKeyType.EDIT })
+                .expect(201)
+                .then((response) => {
+                    expect(response.body).toHaveProperty("accessKey");
+                    expect(response.body.boardId).toEqual(boardId);
+                    expect(response.body.keyType).toEqual(AccessKeyType.EDIT);
+                });
+        });
+
+        it("should get a access keys list", async () => {
+            await request(server)
+                .get(`/api/v2/boards/${boardId}/access-key`)
+                .set(BOARD_AUTHOR_KEY_HEADER, authorKey)
+                .expect(200)
+                .then((response) => {
+                    expect(response.body).toHaveLength(1);
+                });
+        });
+
+        it("should not get a access keys list", async () => {
+            await request(server)
+                .get(`/api/v2/boards/${boardId}/access-key`)
+                .set(BOARD_AUTHOR_KEY_HEADER, authorKey)
+                .expect(403);
+        });
+    });
+
+    describe("Get single access key for board (authorized user)", () => {
+        const userId = "123";
+        let boardId: any;
+        let accessKey: any;
+        beforeAll(async () => {
+            const token = await createTestToken(userId, {
+                owns: { catalogs: ["root"] },
+            });
+            // Create a new board
+            const createResponse = await request(server)
+                .post("/api/v2/boards")
+                .set("Authorization", `Bearer ${token}`)
+                .send({ title: "Board for Detail Test" })
+                .expect(201);
+            expect(createResponse.body).toHaveProperty("id");
+            boardId = createResponse.body.id;
+
+            const accessKeyResponse = await request(server)
+                .post(`/api/v2/boards/${boardId}/access-key`)
+                .set("Authorization", `Bearer ${token}`)
+                .send({ keyType: AccessKeyType.EDIT })
+                .expect(201);
+            expect(accessKeyResponse.body).toHaveProperty("accessKey");
+            expect(accessKeyResponse.body.boardId).toEqual(boardId);
+            expect(accessKeyResponse.body.keyType).toEqual(AccessKeyType.EDIT);
+
+            accessKey = accessKeyResponse.body.accessKey;
+        });
+
+        it("should get a access key", async () => {
+            const token = await createTestToken(userId, {
+                owns: { catalogs: ["root"], boards: [boardId] },
+            });
+
+            await request(server)
+                .get(`/api/v2/boards/${boardId}/access-key/${accessKey}`)
+                .set("Authorization", `Bearer ${token}`)
+                .expect(200)
+                .then((response) => {
+                    expect(response.body.keyType).toEqual(AccessKeyType.EDIT);
+                });
+        });
+
+        it("should not get a access key", async () => {
+            const token = await createTestToken(userId, {
+                owns: { catalogs: ["root"] },
+            });
+
+            await request(server)
+                .get(`/api/v2/boards/${boardId}/access-key/${accessKey}`)
+                .set("Authorization", `Bearer ${token}`)
+                .expect(200)
+                .then((response) => {
+                    expect(response.body.keyType).toEqual(AccessKeyType.EDIT);
+                });
+        });
+    });
+
+    describe("Get single access key for board (unauthorized user)", () => {
+        let boardId: any;
+        let authorKey: any;
+        let accessKey: any;
+        beforeAll(async () => {
+            // Create a new board
+            const createResponse = await request(server)
+                .post("/api/v2/boards")
+                .send({ title: "Board for Detail Test" })
+                .expect(201);
+            expect(createResponse.body).toHaveProperty("id");
+            boardId = createResponse.body.id;
+            authorKey = createResponse.body.authorKey;
+
+            const accessKeyResponse = await request(server)
+                .post(`/api/v2/boards/${boardId}/access-key`)
+                .set(BOARD_AUTHOR_KEY_HEADER, authorKey)
+                .send({ keyType: AccessKeyType.EDIT })
+                .expect(201);
+            expect(accessKeyResponse.body).toHaveProperty("accessKey");
+            expect(accessKeyResponse.body.boardId).toEqual(boardId);
+            expect(accessKeyResponse.body.keyType).toEqual(AccessKeyType.EDIT);
+
+            accessKey = accessKeyResponse.body.accessKey;
+        });
+
+        it("should get a access key", async () => {
+            await request(server)
+                .get(`/api/v2/boards/${boardId}/access-key/${accessKey}`)
+                .set(BOARD_AUTHOR_KEY_HEADER, authorKey)
+                .expect(200)
+                .then((response) => {
+                    expect(response.body.keyType).toEqual(AccessKeyType.EDIT);
+                });
+        });
+
+        it("should not get a access key", async () => {
+            await request(server).get(`/api/v2/boards/${boardId}/access-key/${accessKey}`).expect(403);
+        });
+    });
+
+    describe("Delete single access key for board (authorized user)", () => {
+        const userId = "123";
+        let boardId: any;
+        let accessKey: any;
+        beforeAll(async () => {
+            const token = await createTestToken(userId, {
+                owns: { catalogs: ["root"] },
+            });
+            // Create a new board
+            const createResponse = await request(server)
+                .post("/api/v2/boards")
+                .set("Authorization", `Bearer ${token}`)
+                .send({ title: "Board for Detail Test" })
+                .expect(201);
+            expect(createResponse.body).toHaveProperty("id");
+            boardId = createResponse.body.id;
+
+            const accessKeyResponse = await request(server)
+                .post(`/api/v2/boards/${boardId}/access-key`)
+                .set("Authorization", `Bearer ${token}`)
+                .send({ keyType: AccessKeyType.EDIT })
+                .expect(201);
+            expect(accessKeyResponse.body).toHaveProperty("accessKey");
+            expect(accessKeyResponse.body.boardId).toEqual(boardId);
+            expect(accessKeyResponse.body.keyType).toEqual(AccessKeyType.EDIT);
+
+            accessKey = accessKeyResponse.body.accessKey;
+        });
+
+        it("should get a access key", async () => {
+            const token = await createTestToken(userId, {
+                owns: { catalogs: ["root"], boards: [boardId] },
+            });
+
+            await request(server)
+                .delete(`/api/v2/boards/${boardId}/access-key/${accessKey}`)
+                .set("Authorization", `Bearer ${token}`)
+                .expect(204);
+        });
+    });
+
+    describe("Delete single access key for board (unauthorized user)", () => {
+        let boardId: any;
+        let authorKey: any;
+        let accessKey: any;
+        beforeAll(async () => {
+            // Create a new board
+            const createResponse = await request(server)
+                .post("/api/v2/boards")
+                .send({ title: "Board for Detail Test" })
+                .expect(201);
+            expect(createResponse.body).toHaveProperty("id");
+            boardId = createResponse.body.id;
+            authorKey = createResponse.body.authorKey;
+
+            const accessKeyResponse = await request(server)
+                .post(`/api/v2/boards/${boardId}/access-key`)
+                .set(BOARD_AUTHOR_KEY_HEADER, authorKey)
+                .send({ keyType: AccessKeyType.EDIT })
+                .expect(201);
+            expect(accessKeyResponse.body).toHaveProperty("accessKey");
+            expect(accessKeyResponse.body.boardId).toEqual(boardId);
+            expect(accessKeyResponse.body.keyType).toEqual(AccessKeyType.EDIT);
+
+            accessKey = accessKeyResponse.body.accessKey;
+        });
+
+        it("should get a access key", async () => {
+            await request(server)
+                .delete(`/api/v2/boards/${boardId}/access-key/${accessKey}`)
+                .set(BOARD_AUTHOR_KEY_HEADER, authorKey)
+                .expect(204);
+        });
+    });
+
+    describe("Manage board access (authorized user)", () => {
+        let boardId: any;
+        const userId = "123";
+        beforeAll(async () => {
+            const token = await createTestToken(userId, {
+                owns: { catalogs: ["root"] },
+            });
+            // Create a new board
+            const createResponse = await request(server)
+                .post("/api/v2/boards")
+                .set("Authorization", `Bearer ${token}`)
+                .send({ title: "Board for Detail Test" })
+                .expect(201);
+            expect(createResponse.body).toHaveProperty("id");
+            boardId = createResponse.body.id;
+        });
+
+        it("should make board public", async () => {
+            const token = await createTestToken(userId, {
+                owns: { catalogs: ["root"], boards: [boardId] },
+            });
+
+            await request(server)
+                .post(`/api/v2/board/${boardId}/manage-access`)
+                .set("Authorization", `Bearer ${token}`)
+                .send({
+                    isPublic: true,
+                })
+                .expect(204);
+
+            const getResponse = await request(server).get(`/api/v2/board/${boardId}`);
+            expect(getResponse.body.isPublic).toEqual(true);
+        });
+
+        it("should return 403 status code", async () => {
+            await request(server)
+                .post(`/api/v2/board/${boardId}/manage-access`)
+                .send({
+                    isPublic: true,
+                })
+                .expect(403);
+        });
+    });
+
+    describe("Manage board access (unauthorized user)", () => {
+        let boardId: any;
+        let authorKey: any;
+        beforeAll(async () => {
+            // Create a new board
+            const createResponse = await request(server)
+                .post("/api/v2/boards")
+                .send({ title: "Board for Detail Test" })
+                .expect(201);
+            expect(createResponse.body).toHaveProperty("id");
+            expect(createResponse.body).toHaveProperty("authorKey");
+            boardId = createResponse.body.id;
+            authorKey = createResponse.body.authorKey;
+        });
+
+        it("should modify board", async () => {
+            await request(server)
+                .post(`/api/v2/board/${boardId}/manage-access`)
+                .set(BOARD_AUTHOR_KEY_HEADER, authorKey)
+                .send({
+                    isPublic: false,
+                })
+                .expect(204);
+
+            const getResponse = await request(server).get(`/api/v2/board/${boardId}`);
+            expect(getResponse.body.isPublic).toEqual(false);
+        });
+
+        it("should return 403 status code", async () => {
+            await request(server)
+                .post(`/api/v2/board/${boardId}/manage-access`)
+                .send({
+                    title: "New Title",
+                    isPublic: true,
+                })
+                .expect(403);
         });
     });
 });

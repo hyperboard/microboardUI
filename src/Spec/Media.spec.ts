@@ -2,8 +2,8 @@ import request from "supertest";
 import http from "http";
 import { beforeAll, afterAll, describe, it, expect } from "@jest/globals";
 import dotenv from "dotenv";
-import { getApp } from "getApp";
 import { createToken } from "Tokens";
+import { getApp } from "getApp";
 
 let server: http.Server;
 
@@ -21,12 +21,12 @@ const sendImage = async (
     imageData: string,
     imageType: string,
     expectedCode: number,
-    expectedString: string,
+    expectedString: string
 ) => {
     const base64String = imageData;
     const mimeType = imageType;
     const binaryString = Buffer.from(base64String, "base64").toString("binary");
-    const bytes = Uint8Array.from(binaryString, char => char.charCodeAt(0));
+    const bytes = Uint8Array.from(binaryString, (char) => char.charCodeAt(0));
     const blob = new Blob([bytes], { type: mimeType });
 
     const CHUNK_SIZE = 1024 * 1024; // 1MB chunks
@@ -48,7 +48,7 @@ const sendImage = async (
                 expect(response.body.message).toBe(expectedString);
             });
     }
-}
+};
 
 describe("Media routes", () => {
     const imageId = "test-image-id";
@@ -60,7 +60,7 @@ describe("Media routes", () => {
     const unsupportedImageType = "image/gif";
 
     const largeImageId = "large-image-id";
-    const largeImageData = "iVBORw0K"+"a".repeat(5 * 1024 * 1024 + 1); // String larger than 5 MB
+    const largeImageData = "iVBORw0K" + "a".repeat(5 * 1024 * 1024 + 1); // String larger than 5 MB
     const largeImageType = "image/png";
 
     describe("POST /media:id", () => {
@@ -70,7 +70,8 @@ describe("Media routes", () => {
                 imageData,
                 imageType,
                 200,
-                "Image with ID test-image-id successfully saved." || "Image with ID test-image-id already exists.",
+                "Image with ID test-image-id successfully saved."
+                // || "Image with ID test-image-id already exists.",
             );
         });
 
@@ -80,7 +81,7 @@ describe("Media routes", () => {
                 unsupportedImageData,
                 unsupportedImageType,
                 400,
-                "Error: image format is not supported.",
+                "Error: image format is not supported."
             );
         });
 
@@ -90,11 +91,10 @@ describe("Media routes", () => {
                 largeImageData,
                 largeImageType,
                 400,
-                "Error: Stream exceeds the allowed size limit",
+                "Error: Stream exceeds the allowed size limit"
             );
         });
     });
-
 
     describe("GET /media/:id", () => {
         it("should retrieve the image", async () => {
@@ -113,9 +113,10 @@ describe("Media routes", () => {
                 .get(`/api/v1/media/non-existent-id`)
                 .expect(404)
                 .then((response) => {
-                    expect(response.body).toEqual("Error: could not get the image with id non-existent-id from the storage");
+                    expect(response.body).toEqual(
+                        "Error: could not get the image with id non-existent-id from the storage"
+                    );
                 });
-
         });
     });
 });

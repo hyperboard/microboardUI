@@ -39,7 +39,7 @@ export const createJobsRouter = (logger: winston.Logger, wss: WebSocketServer) =
                 logger.error("Error importing boards:", e);
                 return internalError(res, e, "Error to start importing boards jobs");
             }
-        }, logger)
+        })
     );
 
     router.post(
@@ -53,7 +53,7 @@ export const createJobsRouter = (logger: winston.Logger, wss: WebSocketServer) =
             } catch (e) {
                 return internalError(res, e, "Error to notify clients");
             }
-        }, logger)
+        })
     );
 
     router.get(
@@ -70,7 +70,7 @@ export const createJobsRouter = (logger: winston.Logger, wss: WebSocketServer) =
             } catch (e) {
                 return internalError(res, e, "Error to invoke test job endpoint");
             }
-        }, logger)
+        })
     );
 
     return router;
