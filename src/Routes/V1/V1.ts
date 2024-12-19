@@ -16,10 +16,7 @@ import { createHealthRouter } from "./Health";
 import { createJobsRouter } from "./Jobs";
 import { createMediaRouter } from "./Media";
 import { MediaDAL } from "./Media/MediaDAL";
-import { getMediaRouter } from "./MediaTalk";
-import { BarrelMediaDAL } from "./MediaTalk/MediaDAL";
 import { getMiroRouter } from "./Miro";
-import { createTalkRouter } from "./Talk";
 import { getTemplatesRouter, Templates } from "./Templates";
 
 function createFileRoute(
@@ -72,7 +69,7 @@ export function getV1Router({
     logger: winston.Logger;
     auth: Auth;
     users: Users;
-    media: BarrelMediaDAL | MediaDAL;
+    media: MediaDAL;
     wss: WebSocketServer;
     redis: Redis;
     ai: AI;
@@ -84,14 +81,8 @@ export function getV1Router({
     // router.use(apiBase, getBoardsRouter(boards, logger));
     router.use(apiBase, getTemplatesRouter(templates, logger), getAIRouter(ai, logger));
     router.use(apiBase, getAIRouter(ai, logger));
-    router.use(
-        apiBase,
-        process.env.MINIO_ENABLED === "true"
-            ? createMediaRouter(media as MediaDAL, logger)
-            : getMediaRouter(media as BarrelMediaDAL, logger)
-    );
+    router.use(apiBase, createMediaRouter(media as MediaDAL, logger));
     router.use(apiBase, createJobsRouter(logger, wss));
-    router.use(apiBase, createTalkRouter());
     // BUG: Миддлвар блокирует запрос GET boards/:id без токена по edit/view ссылке
     // router.use(authMiddleware);
     router.use(apiBase, getUsersRouter(users, logger));

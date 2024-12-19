@@ -2,8 +2,7 @@ import winston from "winston";
 import * as Drizzle from "../../../drizzle";
 
 export class Templates {
-    constructor(private logger: winston.Logger) {
-    }
+    constructor(private logger: winston.Logger) {}
 
     async createTemplate(
         boardUUID: string,
@@ -13,44 +12,22 @@ export class Templates {
         tags: string[],
         snapshot: object,
         viewLink: string,
-        preview?: string,
+        preview?: string
     ) {
-        await Drizzle.createTemplate(
-            boardUUID,
-            description,
-            name,
-            languages,
-            tags,
-            snapshot,
-            viewLink,
-            preview
-        );
+        await Drizzle.createTemplate(boardUUID, description, name, languages, tags, snapshot, viewLink, preview);
     }
 
-    async saveTemplateSnapshot(
-        boardUUID: string,
-        snapshot: object,
-    ) {
-        return Drizzle.updateTemplateSnapshot(
-            boardUUID,
-            snapshot
-        );
+    async saveTemplateSnapshot(boardUUID: string, snapshot: object) {
+        return Drizzle.updateTemplateSnapshot(boardUUID, snapshot);
     }
 
-    async getTemplates(
-        language: string,
-        term?: string,
-        tag?: string,
-    ) {
-        const templates = await Drizzle.getTemplates(
-            language,
-            term,
-            tag
-        );
+    async getTemplates(language: string, term?: string, tag?: string) {
+        const templates = await Drizzle.getTemplates(language, term, tag);
         return templates.map((template) => {
-            template.name = template.name[language]
-            template.description = template.description[language]
-            return template
+            // TODO remove any write types
+            template.name = (template.name as any)[language];
+            template.description = (template.description as any)[language];
+            return template;
         });
     }
 }

@@ -211,13 +211,13 @@ describe("Board routes", () => {
 
             // First DELETE request
             await request(server)
-                .delete(`/api/v1/boards/${boardId}`)
+                .delete(`/api/v2/boards/${boardId}`)
                 .set("Authorization", `Bearer ${deleteToken}`)
                 .expect(204);
 
             // Subsequent DELETE request (should also return 204 ensuring idempotence)
             await request(server)
-                .delete(`/api/v1/boards/${boardId}`)
+                .delete(`/api/v2/boards/${boardId}`)
                 .set("Authorization", `Bearer ${deleteToken}`)
                 .expect(204);
         });
