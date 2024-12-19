@@ -157,7 +157,7 @@ export function withWebSocketApi({
                 return sendError(ws, "Invalid or expired token");
             }
         } catch (err) {
-            logger.error(err);
+            logger.error("Error (handleAuthMsg)", err);
             return sendError(ws, "Invalid token");
         }
     }
@@ -195,7 +195,7 @@ export function withWebSocketApi({
             unsubscribeClient(msg.boardId, ws);
             return sendError(ws, "Access denied: edit board.", { deniedBoardId: msg.boardId });
         } catch (err) {
-            logger.error(err);
+            logger.error("Access denied: edit board. (handleGetModeMsg)", err);
             unsubscribeClient(msg.boardId, ws);
             return sendError(ws, "Access denied: edit board.", { deniedBoardId: msg.boardId });
         }
@@ -333,6 +333,7 @@ export function withWebSocketApi({
                 return sendError(ws, "Access denied: edit board.", { deniedBoardId: msg.boardId });
             }
         } catch (err) {
+            logger.error("Access denied: edit board. (handleBoardEventMsg)", err);
             unsubscribeClient(msg.boardId, ws);
             return sendError(ws, "Access denied: edit board.", { deniedBoardId: msg.boardId });
         }
@@ -386,6 +387,7 @@ export function withWebSocketApi({
                 const totalLatency = Number(totalEndTime - startTime);
                 boardEventTotalLatency.observe(totalLatency);
             } catch (error) {
+                logger.error("Failed to process board event.", error);
                 return sendError(ws, "Failed to process board event." + JSON.stringify(error));
             }
         }
