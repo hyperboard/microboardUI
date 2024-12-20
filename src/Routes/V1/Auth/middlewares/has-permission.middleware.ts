@@ -36,6 +36,10 @@ export function hasPermission(
             return next();
         }
 
-        throw new HttpException(HttpStatus.UNAUTHORIZED, "Not authorized");
+        if (!token) {
+            throw new HttpException(HttpStatus.UNAUTHORIZED, "Not authorized");
+        } else {
+            throw new HttpException(HttpStatus.FORBIDDEN, "Not enough rights");
+        }
     });
 }

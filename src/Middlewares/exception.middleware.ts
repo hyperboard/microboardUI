@@ -5,12 +5,13 @@ import { HttpException } from "shared/exceptions/http-exception";
 import type { Logger } from "winston";
 
 export function exceptionMiddleware(logger: Logger) {
-  return function (err: unknown, req: Request, res: Response, next: NextFunction) {
-    if (err instanceof HttpException) {
-      return res.status(err.statusCode).json(new ExceptionResponse(err.status, err.message, err.data))
-    }
-
-    logger.error(err);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(new ExceptionResponse('error', 'Unknown server error'));
-  }
+    return function (err: unknown, req: Request, res: Response, next: NextFunction) {
+        if (err instanceof HttpException) {
+            return res.status(err.statusCode).json(new ExceptionResponse(err.status, err.message, err.data));
+        }
+        logger.error(err);
+        return res
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .json(new ExceptionResponse("error", "Unknown server error"));
+    };
 }

@@ -4,45 +4,36 @@ import { boardAccessKeys, boards } from "drizzle/entities";
 import type { AccessKeyType } from "drizzle/entities/boardAccessKeys";
 
 export class AccessKeysService {
-  constructor(private readonly db: NodePgDatabase) { }
+    constructor(private readonly db: NodePgDatabase) {}
 
-  async createAccessKey(boardId: number, keyType: AccessKeyType) {
-    const [key] = await this.db
-      .insert(boardAccessKeys)
-      .values({ boardId, keyType })
-      .returning()
+    async createAccessKey(boardId: number, keyType: AccessKeyType) {
+        const [key] = await this.db.insert(boardAccessKeys).values({ boardId, keyType }).returning();
 
-    return key;
-  }
+        return key;
+    }
 
-  async getAccessKeys(boardId: number) {
-    const keys = await this.db
-      .select({ ...getTableColumns(boardAccessKeys), boardUUID: boards.uniqId })
-      .from(boardAccessKeys)
-      .where(eq(boardAccessKeys.id, boardId))
+    async getAccessKeys(boardId: number) {
+        const keys = await this.db
+            .select({ ...getTableColumns(boardAccessKeys), boardUUID: boards.uniqId })
+            .from(boardAccessKeys)
+            .innerJoin(boards, eq(boardAccessKeys.boardId, boards.id))
+            .where(eq(boardAccessKeys.boardId, boardId));
 
-    return keys;
-  }
+        return keys;
+    }
 
-  async getAccessKey(boardId: number, keyUUID: string) {
-    const [key] = await this.db
-      .select({ ...getTableColumns(boardAccessKeys), boardUUID: boards.uniqId })
-      .from(boardAccessKeys)
-      .innerJoin(boards, eq(boardAccessKeys.boardId, boards.id))
-      .where(and(
-        eq(boardAccessKeys.keyUUID, keyUUID),
-        eq(boardAccessKeys.boardId, boardId)
-      ))
-      console.log('accessKey get', key, boardId, keyUUID);
-    return key;
-  }
+    async getAccessKey(boardId: number, keyUUID: string) {
+        const [key] = await this.db
+            .select({ ...getTableColumns(boardAccessKeys), boardUUID: boards.uniqId })
+            .from(boardAccessKeys)
+            .innerJoin(boards, eq(boardAccessKeys.boardId, boards.id))
+            .where(and(eq(boardAccessKeys.keyUUID, keyUUID), eq(boardAccessKeys.boardId, boardId)));
+        return key;
+    }
 
-  async deleteAccessKey(boardId: number, keyUUID: string) {
-    await this.db
-      .delete(boardAccessKeys)
-      .where(and(
-        eq(boardAccessKeys.boardId, boardId),
-        eq(boardAccessKeys.keyUUID, keyUUID),
-      ))
-  }
+    async deleteAccessKey(boardId: number, keyUUID: string) {
+        await this.db
+            .delete(boardAccessKeys)
+            .where(and(eq(boardAccessKeys.boardId, boardId), eq(boardAccessKeys.keyUUID, keyUUID)));
+    }
 }

@@ -15,59 +15,55 @@ import { grantAccessSchema } from "./schema/grant-access.schema";
 import { ACCESS_KEY_PARAM, BOARD_UUID_PARAM } from "./types";
 import { manageAccessSchema } from "./schema/manage-access.schema";
 
-export function getBoardsRouter(boardsService: BoardsService, foldersService: FoldersService, accessKeysService: AccessKeysService) {
-  const boardsController = getBoardsController(boardsService, foldersService, accessKeysService);
+export function getBoardsRouter(
+    boardsService: BoardsService,
+    foldersService: FoldersService,
+    accessKeysService: AccessKeysService
+) {
+    const boardsController = getBoardsController(boardsService, foldersService, accessKeysService);
 
-  const router = Router();
+    const router = Router();
 
-  router.post('/boards',
-    authenticate(true),
-    validateBody(createBoardSchema),
-    boardsController.createBoard
-  )
+    router.post("/boards", authenticate(true), validateBody(createBoardSchema), boardsController.createBoard);
 
-  router.post('/boards/claim',
-    authenticate(),
-    validateBody(claimSchema),
-    boardsController.claimBoards
-  )
+    router.post("/boards/claim", authenticate(), validateBody(claimSchema), boardsController.claimBoards);
 
-  router.route(`/boards/:${BOARD_UUID_PARAM}`)
-    .all(validateParams(boardUUIDSchema))
-    .get(boardsController.getBoard)
-    .patch(
-      authenticateBoardAuthor(BOARD_UUID_PARAM, boardsService),
-      validateBody(createBoardSchema),
-      boardsController.editBoard
-    )
-    .delete(
-      authenticateBoardAuthor(BOARD_UUID_PARAM, boardsService),
-      boardsController.deleteBoard
-    );
+    router
+        .route(`/boards/:${BOARD_UUID_PARAM}`)
+        .all(validateParams(boardUUIDSchema))
+        .get(boardsController.getBoard)
+        .patch(
+            authenticateBoardAuthor(BOARD_UUID_PARAM, boardsService),
+            validateBody(createBoardSchema),
+            boardsController.editBoard
+        )
+        .delete(authenticateBoardAuthor(BOARD_UUID_PARAM, boardsService), boardsController.deleteBoard);
 
-  router.route(`/boards/:${BOARD_UUID_PARAM}/grant-access`)
-    .all(validateParams(boardUUIDSchema), authenticateBoardAuthor(BOARD_UUID_PARAM, boardsService))
-    .post(validateBody(grantAccessSchema), boardsController.grantAccess)
-    .get(boardsController.getGrantedUsers);
+    router
+        .route(`/boards/:${BOARD_UUID_PARAM}/grant-access`)
+        .all(validateParams(boardUUIDSchema), authenticateBoardAuthor(BOARD_UUID_PARAM, boardsService))
+        .post(validateBody(grantAccessSchema), boardsController.grantAccess)
+        .get(boardsController.getGrantedUsers);
 
-  router.route(`/boards/:${BOARD_UUID_PARAM}/access-key`)
-    .all(validateParams(boardUUIDSchema), authenticateBoardAuthor(BOARD_UUID_PARAM, boardsService))
-    .post(validateBody(createAccessKeySchema), boardsController.createAccessKey)
-    .get(boardsController.getAccessKeys)
+    router
+        .route(`/boards/:${BOARD_UUID_PARAM}/access-key`)
+        .all(validateParams(boardUUIDSchema), authenticateBoardAuthor(BOARD_UUID_PARAM, boardsService))
+        .post(validateBody(createAccessKeySchema), boardsController.createAccessKey)
+        .get(boardsController.getAccessKeys);
 
-  router.route(`/boards/:${BOARD_UUID_PARAM}/access-key/:${ACCESS_KEY_PARAM}`)
-    .all(
-      validateParams(boardUUIDSchema),
-      validateParams(accessKeyUUIDSchema),
-      authenticateBoardAuthor(BOARD_UUID_PARAM, boardsService)
-    )
-    .get(boardsController.getAccessKey)
-    .delete(boardsController.deleteAccessKey)
+    router
+        .route(`/boards/:${BOARD_UUID_PARAM}/access-key/:${ACCESS_KEY_PARAM}`)
+        .all(
+            validateParams(boardUUIDSchema.merge(accessKeyUUIDSchema)),
+            authenticateBoardAuthor(BOARD_UUID_PARAM, boardsService)
+        )
+        .get(boardsController.getAccessKey)
+        .delete(boardsController.deleteAccessKey);
 
-  router.route(`/boards/:${BOARD_UUID_PARAM}/manage-access`)
-    .all(validateParams(boardUUIDSchema), authenticateBoardAuthor(BOARD_UUID_PARAM, boardsService))
-    .post(validateBody(manageAccessSchema), boardsController.manageAccess)
+    router
+        .route(`/boards/:${BOARD_UUID_PARAM}/manage-access`)
+        .all(validateParams(boardUUIDSchema), authenticateBoardAuthor(BOARD_UUID_PARAM, boardsService))
+        .post(validateBody(manageAccessSchema), boardsController.manageAccess);
 
-
-  return router;
+    return router;
 }

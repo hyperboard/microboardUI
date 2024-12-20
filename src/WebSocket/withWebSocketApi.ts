@@ -310,7 +310,6 @@ export function withWebSocketApi({
     }
 
     function enforceMode(ws: WebSocket, boardId: string, mode: ViewMode) {
-        console.log("Enforce", mode);
         ws.send(
             JSON.stringify({
                 type: "Mode",

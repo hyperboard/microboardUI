@@ -1,21 +1,18 @@
-import { Request, Response, NextFunction } from 'express';
-import { HttpStatus } from 'shared/enums/http-status.enum';
-import { HttpException } from 'shared/exceptions/http-exception';
-import { catchAsync } from 'shared/lib/catchAsync';
-import { ZodSchema, ZodError } from 'zod';
+import { Request, Response, NextFunction } from "express";
+import { HttpStatus } from "shared/enums/http-status.enum";
+import { HttpException } from "shared/exceptions/http-exception";
+import { catchAsync } from "shared/lib/catchAsync";
+import { ZodSchema, ZodError } from "zod";
 
 export function validateParams(schema: ZodSchema) {
     return catchAsync(async (req: Request, _: Response, next: NextFunction) => {
         try {
-            console.log(req.params)
-            console.log(typeof req.params.folderId)
-            
             req.params = schema.parse(req.params);
             next();
         } catch (error) {
             if (error instanceof ZodError) {
-              const flattenedErrors = error.flatten().fieldErrors;
-                throw new HttpException(HttpStatus.BAD_REQUEST, 'Validation error', flattenedErrors)
+                const flattenedErrors = error.flatten().fieldErrors;
+                throw new HttpException(HttpStatus.BAD_REQUEST, "Validation error", flattenedErrors);
             }
             next(error);
         }
