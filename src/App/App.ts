@@ -42,6 +42,7 @@ export interface App {
 	test: TestRecorder;
 	getSnapshot(boardId: string): BoardSnapshot | null;
 	sessionStorage: SessionStorage;
+	getConnectedBoard: (boardId: string) => Board | null;
 }
 
 export function createApp(isHistory = true): App {
@@ -80,7 +81,7 @@ export function createApp(isHistory = true): App {
 	const controller = getController(getBoard, clipboard, isLoggedIn);
 	const subscriptions = getSubscriptions(getBoard);
 
-	const boards = new Map();
+	const boards = new Map<string, Board>();
 	const boardSubject = new Subject();
 
 	const authInterceptor = getAuthInterceptor(account);
@@ -127,6 +128,10 @@ export function createApp(isHistory = true): App {
 		return board.getSnapshot();
 	}
 
+	function getConnectedBoard(boardId: string) {
+		return boards.get(boardId);
+	}
+
 	const app = {
 		connection,
 		clipboard,
@@ -145,6 +150,7 @@ export function createApp(isHistory = true): App {
 		test,
 		getSnapshot,
 		sessionStorage,
+		getConnectedBoard,
 	};
 
 	function render(): void {

@@ -37,6 +37,10 @@ const BoardView = ({ app }: Props): JSX.Element => {
 			(deniedBoardId === board.getBoardId() && !isOpenMiroBoards)
 		) {
 			openModal(ACCESS_DENIED_MODAL);
+			const deniedBoard = app.getConnectedBoard(deniedBoardId);
+			if (deniedBoard) {
+				deniedBoard.disconnect();
+			}
 			if (!account.isLoggedIn) {
 				await boardsList.removeBoard(board.getBoardId());
 			}
