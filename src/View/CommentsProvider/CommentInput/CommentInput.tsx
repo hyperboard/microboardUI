@@ -3,7 +3,7 @@ import styles from "./CommentInput.module.css";
 import { UiSeparator } from "../../Ui/UiSeparator";
 import { UiButton } from "../../Ui/UiButton";
 import { Icon } from "../../Icon";
-import { Input } from "../../../shared/ui-lib/Input";
+import { Input } from "shared/ui-lib/Input/Input";
 import { useTranslation } from "react-i18next";
 
 interface Props {

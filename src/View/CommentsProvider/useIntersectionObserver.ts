@@ -37,7 +37,7 @@ export const useIntersectionObserver = ({
 				}
 			},
 			{
-				threshold: 1.0,
+				threshold: 0.9,
 			},
 		);
 

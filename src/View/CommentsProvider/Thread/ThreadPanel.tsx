@@ -19,6 +19,7 @@ import { useIntersectionObserver } from "View/CommentsProvider/useIntersectionOb
 import { Avatar } from "View/UserPanel/Avatar/Avatar.tsx";
 import { useAccount } from "App/useAccount.ts";
 import { useClickOutside } from "lib/useClickOutside";
+import { useScrollToUnreadMessage } from "View/CommentsProvider/useScrollToUnreadMessage";
 
 interface MessageOptionsData {
 	top: number;
@@ -60,8 +61,15 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 		const { t } = useTranslation();
 		const accountInfo = account.info;
 		const username = accountInfo?.name || accountInfo?.email;
+		const unreadMessages = comment.getUnreadMessages(username);
 
-		useIntersectionObserver({ comment, refs, username });
+		useIntersectionObserver({
+			comment,
+			refs,
+			username,
+			deps: [unreadMessages && unreadMessages.length],
+		});
+		useScrollToUnreadMessage({ unreadMessages, refs });
 
 		const canRemove =
 			comment.getThread()[0].id !== messageOptionsData?.messageId;

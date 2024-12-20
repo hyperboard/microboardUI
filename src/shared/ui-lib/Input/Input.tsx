@@ -62,6 +62,10 @@ export const Input: React.FC<Props> = ({
 	const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
 	const handleInput = (): void => {
+		console.log(
+			textareaRef.current?.textLength,
+			Number(textareaRef.current?.style.width),
+		);
 		if (
 			textareaRef.current &&
 			textareaRef.current.textLength >=
@@ -127,13 +131,13 @@ export const Input: React.FC<Props> = ({
 							className="textarea"
 							id={id}
 							rows={1}
+							{...props}
 							onInput={() => {
 								handleInput();
 								if (props.onInput) {
 									props.onInput();
 								}
 							}}
-							{...props}
 						/>
 					) : (
 						<input

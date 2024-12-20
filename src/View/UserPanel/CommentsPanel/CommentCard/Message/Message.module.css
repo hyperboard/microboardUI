@@ -48,6 +48,19 @@
 .message {
 	display: flex;
 	gap: 8px;
+	padding: 8px 12px;
+}
+
+.firstMessage {
+	display: flex;
+	gap: 8px;
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px;
+	padding: 16px 12px 0 12px;
+}
+
+.message:hover {
+	background-color: #0a0f290a;
 }
 
 .fullWidth {

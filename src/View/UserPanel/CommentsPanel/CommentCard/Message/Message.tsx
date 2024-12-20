@@ -10,11 +10,12 @@ interface Props {
 	message: IMessage;
 	clipText?: boolean;
 	handleClick?: () => void;
+	isFirstMessage?: boolean;
 }
 
 export const Message = forwardRef(
 	(
-		{ message, handleClick, clipText = false }: Props,
+		{ message, handleClick, clipText = false, isFirstMessage }: Props,
 		ref: ForwardedRef<HTMLDivElement>,
 	) => {
 		const { setTargetMessageId } = useCommentsContext();
@@ -29,7 +30,13 @@ export const Message = forwardRef(
 		};
 
 		return (
-			<div onClick={onClick} ref={ref} className={styles.message}>
+			<div
+				onClick={onClick}
+				ref={ref}
+				className={
+					isFirstMessage ? styles.firstMessage : styles.message
+				}
+			>
 				<Avatar avatar={commentator.avatar} width={32} height={32} />
 				<div className={styles.fullWidth}>
 					<div className={styles.messageInfo}>

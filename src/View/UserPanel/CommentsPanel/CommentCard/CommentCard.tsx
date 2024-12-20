@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import { getCorrectEnding } from "utils";
 import { useIntersectionObserver } from "View/CommentsProvider/useIntersectionObserver";
 import { useCommentsContext } from "View/CommentsProvider";
+import { useScrollToUnreadMessage } from "View/CommentsProvider/useScrollToUnreadMessage";
 
 interface Props {
 	comment: Comment;
@@ -23,16 +24,19 @@ export const CommentCard = ({ comment }: Props) => {
 	const { setOpenedThreadId } = useCommentsContext();
 	const username = account.info?.name || account.info?.email;
 	const messages = comment.getThread();
-	const unreadMessages = comment
-		.getUnreadMessages(username)
-		?.filter(message => message.id !== messages[0].id);
+	const unreadMessages = comment.getUnreadMessages(username);
 
 	useIntersectionObserver({
 		comment,
 		refs,
 		username: account.info?.name || account.info?.email,
-		deps: [showMoreComments],
+		deps: [showMoreComments, unreadMessages && unreadMessages.length],
 		disabled: !showMoreComments,
+	});
+	useScrollToUnreadMessage({
+		unreadMessages,
+		refs,
+		deps: [showMoreComments],
 	});
 
 	const handleCardClick = () => {
@@ -44,7 +48,7 @@ export const CommentCard = ({ comment }: Props) => {
 		board.camera.zoomToFit(item.getMbr());
 	};
 
-	const handleBtnClick = (e: MouseEvent<HTMLButtonElement>) => {
+	const handleShowBtnClick = (e: MouseEvent<HTMLButtonElement>) => {
 		e.stopPropagation();
 		setShowMoreComments(!showMoreComments);
 	};
@@ -72,6 +76,7 @@ export const CommentCard = ({ comment }: Props) => {
 		<div className={styles.card} onClick={handleCardClick}>
 			<div className={clsx(styles.firstMessage)}>
 				<Message
+					isFirstMessage
 					ref={setRef(messages[0].id)}
 					message={messages[0]}
 					clipText={!showMoreComments && messages.length > 1}
@@ -82,7 +87,7 @@ export const CommentCard = ({ comment }: Props) => {
 							styles.btn,
 							unreadMessages && styles.highlighted,
 						)}
-						onClick={handleBtnClick}
+						onClick={handleShowBtnClick}
 					>
 						{!showMoreComments
 							? showMoreText
@@ -91,7 +96,7 @@ export const CommentCard = ({ comment }: Props) => {
 				)}
 			</div>
 			{showMoreComments &&
-				messages.slice(1).map(mes => {
+				messages.slice(1).map((mes, index) => {
 					return (
 						<Message
 							handleClick={handleMessageClick}
