@@ -64,12 +64,7 @@ export const PresenceUserAvatar: React.FC<Props> = ({
 				}}
 			>
 				{user.avatar ? (
-					<img
-						src={user.avatar}
-						width={30}
-						height={30}
-						alt={user.name}
-					/>
+					<img src={user.avatar} alt={user.name} />
 				) : (
 					user.name.charAt(0)
 				)}

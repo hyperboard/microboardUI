@@ -73,6 +73,12 @@
 	font-weight: 500;
 }
 
+.userAvatar > img {
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+}
+
 .trackedUserOverlay {
 	position: absolute;
 	width: 30px;
