@@ -30,7 +30,7 @@ export const CommentCard = ({ comment }: Props) => {
 	useIntersectionObserver({
 		comment,
 		refs,
-		username: account.info?.email,
+		username: account.info?.name || account.info?.email,
 		deps: [showMoreComments],
 		disabled: !showMoreComments,
 	});
