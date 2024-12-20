@@ -97,7 +97,9 @@ export function createApp(isHistory = true): App {
 		let currentBoard = boards.get(id);
 		if (!currentBoard) {
 			currentBoard = new Board(id, accessKey);
-			currentBoard.connect(connection);
+			if (id !== "blank") {
+				currentBoard.connect(connection);
+			}
 			boards.set(id, currentBoard);
 		}
 		if (id !== "blank") {
@@ -106,8 +108,6 @@ export function createApp(isHistory = true): App {
 				LAST_BOARD_KEY_QS,
 				`${id}${window.location.search}`,
 			);
-		}
-		if (id !== "blank") {
 			boardsList.visitBoard(id);
 		}
 		// sessionStorage.clear();
