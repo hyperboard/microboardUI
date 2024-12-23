@@ -72,7 +72,7 @@ export const AIInput: React.FC = () => {
 
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
 		event.stopPropagation();
-		if (event.key === "Enter") {
+		if (event.key === "Enter" && !event.shiftKey) {
 			event.preventDefault();
 			handleSendClick();
 		}
