@@ -14,9 +14,9 @@
 
 .contentWrapper {
 	width: 100%;
-	padding: 0 10px 0;
+	padding: 14px 10px;
 	display: flex;
-	align-items: center;
+	align-items: flex-start;
 	justify-content: space-between;
 	background-color: white;
 	position: relative;
@@ -32,10 +32,11 @@
 .selectedModel {
 	display: flex;
 	align-items: center;
+	justify-content: center;
 	cursor: pointer;
 	background-color: #f0f0f0;
 	border-radius: 8px;
-	padding: 4px;
+	padding: 0 4px;
 }
 
 .modelDropdown {
@@ -79,6 +80,7 @@
 	flex-grow: 1;
 	border: none;
 	margin-left: 5px;
+	margin-top: 2px;
 	max-width: 405px;
 	resize: none;
 	font-size: 14px;
@@ -121,12 +123,14 @@
 .selectionInfo {
 	margin-left: 10px;
 	background-color: #f0f0f0;
-	padding: 5px 10px;
+	padding: 2px;
 	border-radius: 8px;
 	color: #666;
 	font-size: 14px;
 }
-
+.icon {
+	margin-top: 3px;
+}
 .starIcon {
 	margin-left: 5px;
 }
