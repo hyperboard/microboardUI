@@ -87,6 +87,22 @@ export const AIInput: React.FC = () => {
 		setIsDropdownOpen(false);
 	};
 
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				dropdownRef.current &&
+				!dropdownRef.current.contains(event.target as Node)
+			) {
+				setIsDropdownOpen(false);
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, [dropdownRef]);
+
 	function createRichText(
 		board: Board,
 		inputValue: string,
@@ -112,6 +128,7 @@ export const AIInput: React.FC = () => {
 		richText.editor.insertCopiedText(inputValue);
 		return richText;
 	}
+
 	const sendInputData = () => {
 		const connection = app.getConnection();
 		if (!connection) {
@@ -170,13 +187,16 @@ export const AIInput: React.FC = () => {
 	};
 
 	return (
-		<UiPanel padding={0} className={styles.inputContainer}>
+		<UiPanel
+			padding={0}
+			className={styles.inputContainer}
+			ref={dropdownRef}
+		>
 			<div className={styles.contentWrapper}>
 				<div className={styles.modelSelector}>
 					<div
 						className={styles.selectedModel}
 						onClick={toggleModelDropdown}
-						ref={dropdownRef}
 					>
 						{model !== "gpt-4o" && <span>{model}</span>}
 						{model === "gpt-4o" && (
@@ -222,7 +242,7 @@ export const AIInput: React.FC = () => {
 						width={17}
 						height={17}
 						iconName="Vector"
-						className={styles.icon}
+						className={`${styles.icon} ${styles.vectorIcon}`}
 					/>
 				</button>
 			</div>

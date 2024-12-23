@@ -59,13 +59,13 @@
 }
 
 .modelDropdown div:hover {
-	background-color: #0a0f290a; /* Highlight color */
+	background-color: #0a0f290a;
 }
 
 .modelDropdown strong {
 	display: block;
 	margin-bottom: 5px;
-	font-weight: normal; /* Normal weight */
+	font-weight: normal;
 	color: black;
 }
 
@@ -78,7 +78,6 @@
 .aiInput {
 	flex-grow: 1;
 	border: none;
-	border-radius: 12px;
 	margin-left: 5px;
 	max-width: 405px;
 	resize: none;
