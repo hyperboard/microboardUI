@@ -128,7 +128,7 @@ export const AIInput: React.FC = () => {
 		richText.editor.insertCopiedText(inputValue);
 		return richText;
 	}
-
+	
 	const sendInputData = () => {
 		const connection = app.getConnection();
 		if (!connection) {
