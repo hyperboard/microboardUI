@@ -182,9 +182,9 @@ export const AIInput: React.FC = () => {
 						{model === "gpt-4o" && (
 							<span>{isPhoneScreen ? "4o" : model}</span>
 						)}
-						<StarIcon className={styles.starIcon} />
 						<Chevron />
 					</div>
+					<StarIcon className={styles.starIcon} />
 					{isDropdownOpen && (
 						<div className={styles.modelDropdown}>
 							<div onClick={() => selectModel("gpt-4o")}>
