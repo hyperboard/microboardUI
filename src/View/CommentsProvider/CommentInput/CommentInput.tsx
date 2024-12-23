@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styles from "./CommentInput.module.css";
 import { UiSeparator } from "../../Ui/UiSeparator";
 import { UiButton } from "../../Ui/UiButton";
@@ -46,13 +46,6 @@ export const CommentInput = ({
 	};
 	const { t } = useTranslation();
 
-	useEffect(() => {
-		const input: HTMLTextAreaElement | null = document.querySelector(
-			`#comment-message-input-${mode}`,
-		);
-		input?.focus();
-	}, []);
-
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
 		const target = event.target;
 		setValue(target.value);
@@ -74,6 +67,8 @@ export const CommentInput = ({
 				inputContainerClassName={
 					mode === "edit" ? styles.inputContainer : undefined
 				}
+				shouldFocus={true}
+				shouldSelect={mode === "edit"}
 				multiline={true}
 				onKeyDown={onKeyDown}
 				onPaste={event => event.stopPropagation()}
@@ -94,9 +89,10 @@ export const CommentInput = ({
 								active={!!value}
 								disabled={!value}
 								onClick={handleSubmit}
+								style={{ backgroundColor: "transparent" }}
 							>
 								<Icon
-									iconName="SendArrow"
+									iconName="Vector"
 									width={20}
 									height={20}
 								/>

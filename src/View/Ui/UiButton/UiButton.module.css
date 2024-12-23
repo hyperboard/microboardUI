@@ -145,6 +145,10 @@
 	color: var(--content-active-color);
 }
 
+.disableBg {
+	background-color: transparent;
+}
+
 .button:disabled {
 	color: var(--content-disabled-color);
 	background-color: var(--background-disabled-color);

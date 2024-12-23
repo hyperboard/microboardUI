@@ -74,8 +74,18 @@ export const CommentCard = ({ comment }: Props) => {
 
 	return (
 		<div className={styles.card} onClick={handleCardClick}>
-			<div className={clsx(styles.firstMessage)}>
+			<div
+				className={clsx(
+					styles.firstMessage,
+					!!unreadMessages &&
+						!!unreadMessages.find(
+							message => message.id === messages[0].id,
+						) &&
+						styles.unread,
+				)}
+			>
 				<Message
+					isUnread={false}
 					isFirstMessage
 					ref={setRef(messages[0].id)}
 					message={messages[0]}
@@ -99,6 +109,12 @@ export const CommentCard = ({ comment }: Props) => {
 				messages.slice(1).map((mes, index) => {
 					return (
 						<Message
+							isUnread={
+								!!unreadMessages &&
+								!!unreadMessages.find(
+									message => message.id === mes.id,
+								)
+							}
 							handleClick={handleMessageClick}
 							ref={setRef(mes.id)}
 							key={mes.id}

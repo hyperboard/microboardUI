@@ -66,7 +66,8 @@ export const CommentContainer = ({ comment }: Props) => {
 	});
 
 	const commentators = comment.getCommentators();
-	const width = 12 + 24 + 18 * (commentators.length - 1);
+	const width =
+		12 + 24 + 18 * (commentators.length > 3 ? 2 : commentators.length - 1);
 
 	useEffect(() => {
 		if (commentRef.current) {
@@ -116,7 +117,7 @@ export const CommentContainer = ({ comment }: Props) => {
 		setIsPreviewOpen(false);
 		board.selection.removeAll();
 
-		if (isThreadOpen || (e instanceof MouseEvent && e.button === 2)) {
+		if (isThreadOpen || (e as MouseEvent).button === 2) {
 			return;
 		}
 		const select = board.tools.getSelect();

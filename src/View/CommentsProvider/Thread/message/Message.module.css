@@ -4,11 +4,11 @@
 	display: flex;
 	flex-direction: column;
 	gap: 6px;
-	margin-top: 16px;
+	margin-top: 12px;
 }
 
 .shortedMessage {
-	margin-top: 6px;
+	margin-top: 0;
 	gap: 0;
 }
 
@@ -21,7 +21,7 @@
 .headerInfo {
 	display: flex;
 	align-items: center;
-	gap: 4px;
+	gap: 8px;
 }
 
 .username {
@@ -34,7 +34,7 @@
 .date {
 	font-size: 12px;
 	font-weight: 500;
-	line-height: 16px;
+	line-height: 20px;
 	color: #0f132499;
 }
 
@@ -42,6 +42,7 @@
 	font-size: 18px;
 	font-weight: 500;
 	line-height: 26px;
+	font-family: Manrope;
 	letter-spacing: -0.012em;
 	word-break: break-word;
 }
@@ -52,6 +53,12 @@
 	min-width: 20px;
 	min-height: 20px;
 	padding: 0;
+	border-radius: 4px;
+	color: rgba(105, 107, 118, 1);
+}
+
+.dotsBtn:hover {
+	color: rgba(105, 107, 118, 1);
 }
 
 .invisible {
@@ -60,4 +67,5 @@
 
 .visible {
 	opacity: 1;
+	transform: translateY(4px);
 }

@@ -30,6 +30,7 @@ interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
 	multiline?: boolean;
 	inputContainerClassName?: string;
 	shouldFocus?: boolean;
+	shouldSelect?: boolean;
 }
 
 export const Input: React.FC<Props> = ({
@@ -50,6 +51,7 @@ export const Input: React.FC<Props> = ({
 	inputContainerClassName,
 	shouldFocus,
 	successText,
+	shouldSelect,
 	...props
 }) => {
 	const [inputType, setInputType] = useState<string>(() => {
@@ -62,10 +64,6 @@ export const Input: React.FC<Props> = ({
 	const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
 	const handleInput = (): void => {
-		console.log(
-			textareaRef.current?.textLength,
-			Number(textareaRef.current?.style.width),
-		);
 		if (
 			textareaRef.current &&
 			textareaRef.current.textLength >=
@@ -83,8 +81,21 @@ export const Input: React.FC<Props> = ({
 	}, [textareaRef.current?.textLength === 0]);
 
 	useEffect(() => {
-		if (shouldFocus && inputRef.current) {
-			inputRef.current.focus();
+		const textarea = textareaRef.current;
+		const input = inputRef.current;
+		if (shouldFocus) {
+			if (input) {
+				input.focus();
+			} else if (textarea) {
+				textarea.focus();
+			}
+		}
+		if (shouldSelect) {
+			if (input) {
+				input.select();
+			} else if (textarea) {
+				textarea.select();
+			}
 		}
 	}, []);
 

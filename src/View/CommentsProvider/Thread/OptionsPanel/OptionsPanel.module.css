@@ -14,8 +14,19 @@
 	border: none;
 	outline: none;
 	cursor: pointer;
+	font-family: Manrope;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 20px;
+	letter-spacing: -0.005em;
 }
 
 .btn:hover {
 	background-color: #f7f7f8;
+}
+
+@media (max-width: 568px) {
+	.panel {
+		transform: translateX(calc(-100% + 20px));
+	}
 }

@@ -70,7 +70,7 @@ export const ExtraOptions = ({ comment, canEdit }: Props): JSX.Element => {
 					color: "#696B76",
 				}}
 			>
-				<Icon iconName="Dots" width={20} height={20} />
+				<Icon iconName="Dots" width={24} height={24} />
 			</UiButton>
 			{(isCursorOnButton || isCursorOnMenu) && (
 				<div

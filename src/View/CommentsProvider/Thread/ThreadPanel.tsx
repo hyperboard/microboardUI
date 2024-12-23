@@ -56,6 +56,7 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 		const threadRef = useClickOutside(
 			() => setOpenedThreadId(undefined),
 			[messageOptionsRef],
+			true,
 		);
 
 		const { t } = useTranslation();

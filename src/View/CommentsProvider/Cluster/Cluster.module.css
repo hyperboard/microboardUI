@@ -28,6 +28,10 @@
 	letter-spacing: -0.014em;
 }
 
+.cluster.unread > p {
+	color: #ffffff;
+}
+
 .clusterTippy {
 	position: absolute;
 	top: 100%;

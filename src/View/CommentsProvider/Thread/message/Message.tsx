@@ -110,7 +110,7 @@ export const Message = forwardRef<HTMLDivElement, Props>(
 								variant="secondary"
 								onClick={handleOptionsClick}
 							>
-								<Icon iconName="Dots" width={12} height={12} />
+								<Icon iconName="Dots" width={16} height={16} />
 							</UiButton>
 						)}
 					</div>
