@@ -2,6 +2,13 @@
 	padding: 72px 64px;
 	display: flex;
 	flex-direction: column;
+	min-width: 300px;
+}
+
+@media screen and (max-width: 720px) {
+	.wrapper {
+		padding: 20px 12px;
+	}
 }
 
 .heading {
