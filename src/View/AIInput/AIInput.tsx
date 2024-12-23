@@ -24,6 +24,7 @@ export const AIInput: React.FC = () => {
 	const inputRef = useRef<HTMLTextAreaElement | null>(null);
 	const [model, setModel] = useState<OpenAIModels>("gpt-4o");
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+	const dropdownRef = useRef<HTMLDivElement | null>(null);
 	const forceUpdate = useForceUpdate();
 	const selectedItemsCount = board.selection.items.list().length;
 
@@ -125,7 +126,7 @@ export const AIInput: React.FC = () => {
 
 		const defaultConnector = new Connector(board);
 		const connectorData = defaultConnector.serialize();
-		connectorData.lineStyle = "orthogonal";
+		connectorData.lineStyle = "curved";
 
 		const startPointData: ControlPointData = {
 			pointType: "Fixed",
@@ -175,6 +176,7 @@ export const AIInput: React.FC = () => {
 					<div
 						className={styles.selectedModel}
 						onClick={toggleModelDropdown}
+						ref={dropdownRef}
 					>
 						{model !== "gpt-4o" && <span>{model}</span>}
 						{model === "gpt-4o" && (
