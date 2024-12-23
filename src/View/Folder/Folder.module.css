@@ -1,3 +1,7 @@
+.wrapper {
+	width: 100%;
+	position: relative;
+}
 .header {
 	display: flex;
 	gap: 8px;
@@ -9,9 +13,8 @@
 	cursor: pointer;
 	transition: background 0.3s ease;
 	border-radius: 10px;
-	width: 100%;
-	min-width: 265px;
 	font-family: Manrope;
+	width: 100%;
 }
 
 @media screen and (hover: hover) {
@@ -68,4 +71,34 @@
 	transition:
 		opacity 500ms,
 		transform 500ms;
+}
+
+.contextMenuBtn {
+	place-items: center;
+	position: absolute;
+	right: 8px;
+	top: 50%;
+	transform: translateY(-50%);
+	cursor: pointer;
+	color: rgba(105, 107, 118, 1);
+	transition: background 0.3s ease;
+	border-radius: 4px;
+	padding: 2px;
+	z-index: 5;
+	display: none;
+}
+
+@media screen and (hover: hover) {
+	.header:hover,
+	.contextMenuBtn:hover ~ .header {
+		background-color: rgba(10, 15, 41, 0.04);
+	}
+	.contextMenuBtn:hover {
+		background-color: rgba(10, 15, 41, 0.08);
+	}
+
+	.wrapper:hover .contextMenuBtn,
+	.contextMenuBtn:hover {
+		display: grid;
+	}
 }

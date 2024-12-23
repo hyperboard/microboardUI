@@ -1,35 +1,33 @@
+import { useDroppable } from "@dnd-kit/core";
+import { useBoardsList } from "App/useBoardsList";
+import { handleClickDetection } from "lib/handleClickDetection";
+import { useHoverState } from "lib/useHoverState";
 import React, {
-	forwardRef,
-	memo,
-	useCallback,
 	useEffect,
-	useImperativeHandle,
 	useRef,
 	type MouseEventHandler,
-	type RefCallback,
+	type SyntheticEvent,
 } from "react";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { foldersApi, type boardsApiV2 } from "shared/apiV2";
+import { useAppContext } from "View/AppContext";
+import { useContextMenuContext } from "View/ContextMenu";
 import { Icon } from "View/Icon";
 import type { IconId } from "View/Icon/Icon";
+import { RenameInput, useRenameContext } from "View/Rename";
 import {
 	UiAdaptiveAccordion,
 	type AccordionState,
 } from "View/Ui/UiAdaptiveAccordion";
 import styles from "./Folder.module.css";
 import { FolderItem } from "./FolderItem";
-import { useHoverState } from "lib/useHoverState";
-import { CSSTransition, TransitionGroup } from "react-transition-group";
-import { handleClickDetection } from "lib/handleClickDetection";
-import { RenameInput, useRenameContext } from "View/Rename";
-import { useContextMenuContext } from "View/ContextMenu";
-import { useBoardsList } from "App/useBoardsList";
-import { useAppContext } from "View/AppContext";
-import { useDroppable } from "@dnd-kit/core";
 import { useOpenedFoldersContext } from "./OpenedFoldersContext";
+import { useSidePanelContext } from "View/SidePanel";
 
 type Props = {
 	folder: foldersApi.Folder | null;
 	handleOpenBoard?: (board: boardsApiV2.Board) => void;
+	accordionClassName?: string;
 };
 
 // @ts-expect-error TODO add icons for all folder types
@@ -44,13 +42,18 @@ export type FolderRef = {
 	openFoldersContainsBoard: (boardId: string) => void;
 };
 
-export const Folder = ({ folder, handleOpenBoard }: Props) => {
+export const Folder = ({
+	folder,
+	handleOpenBoard,
+	accordionClassName,
+}: Props) => {
 	const { handlePointerEnter, handlePointerLeave, isHover } = useHoverState();
-	const { open } = useContextMenuContext();
+	const { open, close } = useContextMenuContext();
 	const { boardId: openedFoldersBoardId, folderId: openedFoldersFolderId } =
 		useOpenedFoldersContext();
 	const { setNewName, setRenamingId, renamingId } = useRenameContext();
 	const { board } = useAppContext();
+	const { isOpen: isSidePanelOpen } = useSidePanelContext();
 	const boardsList = useBoardsList();
 	const boardId = board.getBoardId();
 	const accordionRef = useRef<AccordionState>(null);
@@ -59,6 +62,7 @@ export const Folder = ({ folder, handleOpenBoard }: Props) => {
 	const { isOver, setNodeRef } = useDroppable({
 		id: folder?.id || "unknown",
 		data: folder ?? undefined,
+		disabled: folder?.type === foldersApi.FolderType.VISITED,
 	});
 	const style = {
 		color: isOver ? "green" : undefined,
@@ -114,7 +118,6 @@ export const Folder = ({ folder, handleOpenBoard }: Props) => {
 	};
 
 	useEffect(() => {
-		console.log("open folder useEffect");
 		openFoldersContainsBoard(openedFoldersBoardId);
 		if (openedFoldersFolderId) {
 			openFoldersContainsFolder(openedFoldersFolderId);
@@ -127,6 +130,23 @@ export const Folder = ({ folder, handleOpenBoard }: Props) => {
 		}
 	}, [isOver]);
 
+	useEffect(() => {
+		if (
+			(folder?.type === foldersApi.FolderType.DRAFTS ||
+				folder?.type === foldersApi.FolderType.ROOT ||
+				folder?.type === foldersApi.FolderType.VISITED) &&
+			folder?.items.length > 0
+		) {
+			if (isSidePanelOpen) {
+				accordionRef.current?.open();
+			}
+		}
+	}, [
+		isSidePanelOpen,
+		boardsList.getRootFolder(),
+		boardsList.getSharedFolder(),
+	]);
+
 	if (!folder || folder.type === foldersApi.FolderType.TRASH) {
 		return null;
 	}
@@ -138,6 +158,7 @@ export const Folder = ({ folder, handleOpenBoard }: Props) => {
 		handleClickDetection(
 			() => {
 				toggle();
+				close();
 			},
 			() => {
 				if (!isRenameAllowed) {
@@ -154,38 +175,57 @@ export const Folder = ({ folder, handleOpenBoard }: Props) => {
 		open(ev.clientX, ev.clientY, undefined, folder.id);
 	};
 
+	const stopPropagation = (ev: SyntheticEvent) => {
+		ev.stopPropagation();
+	};
+
 	return (
 		<UiAdaptiveAccordion
+			className={accordionClassName}
 			ref={accordionRef}
 			elemRef={setNodeRef}
 			renderHeader={({ toggle, isOpen }) => (
-				<button
-					ref={currentFolderRef}
-					style={style}
-					className={styles.header}
-					onClick={handleClick(toggle)}
-					onPointerEnter={handlePointerEnter}
-					onPointerLeave={handlePointerLeave}
-					onContextMenu={handleContextMenuOpen}
-				>
-					<span className={styles.icon}>
-						{!isHover && (
-							<Icon
-								width={20}
-								height={20}
-								iconName={folderIcons[folder.type]}
-							/>
+				<div className={styles.wrapper}>
+					<button
+						className={styles.contextMenuBtn}
+						onClick={handleContextMenuOpen}
+						onMouseDown={stopPropagation}
+						onMouseUp={stopPropagation}
+					>
+						<Icon width={16} height={16} iconName="ThreeDots" />
+					</button>
+					<button
+						ref={currentFolderRef}
+						style={style}
+						className={styles.header}
+						onClick={handleClick(toggle)}
+						onPointerEnter={handlePointerEnter}
+						onPointerLeave={handlePointerLeave}
+						onContextMenu={handleContextMenuOpen}
+					>
+						<span className={styles.icon}>
+							{!isHover && (
+								<Icon
+									width={20}
+									height={20}
+									iconName={folderIcons[folder.type]}
+								/>
+							)}
+							{isHover && (
+								<Icon
+									width={20}
+									height={20}
+									iconName={isOpen ? "ArrowUp" : "ArrowDown"}
+								/>
+							)}
+						</span>
+						{isRenaming ? (
+							<RenameInput />
+						) : (
+							<span>{folder.title}</span>
 						)}
-						{isHover && (
-							<Icon
-								width={20}
-								height={20}
-								iconName={isOpen ? "ArrowUp" : "ArrowDown"}
-							/>
-						)}
-					</span>
-					{isRenaming ? <RenameInput /> : <span>{folder.title}</span>}
-				</button>
+					</button>
+				</div>
 			)}
 			renderContent={() => (
 				<div className={styles.contentWrapper}>

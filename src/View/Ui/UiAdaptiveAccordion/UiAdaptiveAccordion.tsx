@@ -33,6 +33,7 @@ export const UiAdaptiveAccordion = forwardRef<AccordionState, Props>(
 			renderContent,
 			renderHeader,
 			elemRef,
+			className,
 			...props
 		},
 		ref,
@@ -71,13 +72,14 @@ export const UiAdaptiveAccordion = forwardRef<AccordionState, Props>(
 						toggle,
 					})}
 				</header>
-				<div className={styles.content}>
-					{renderContent({
-						isOpen,
-						close,
-						open,
-						toggle,
-					})}
+				<div className={clsx(styles.content, className)}>
+					{isOpen &&
+						renderContent({
+							isOpen,
+							close,
+							open,
+							toggle,
+						})}
 				</div>
 			</div>
 		);

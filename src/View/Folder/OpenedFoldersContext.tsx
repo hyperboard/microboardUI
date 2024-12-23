@@ -18,7 +18,6 @@ export const OpenedFoldersContextProvider = ({
 }: PropsWithChildren<{}>) => {
 	const [boardId, setBoardId] = useState<string | null>(null);
 	const setBoard = (boardId: string | null) => {
-		console.log("setBoardId", boardId);
 		setBoardId(boardId);
 	};
 

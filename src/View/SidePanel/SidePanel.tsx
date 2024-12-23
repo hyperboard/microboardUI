@@ -71,10 +71,15 @@ export function SidePanel(): JSX.Element {
 					</UiButton>
 				</div>
 				<div className={style.folders}>
-					<FoldersDndContext>
-						<Folder folder={boardsList.getRootFolder()} />
-						<Folder folder={boardsList.getSharedFolder()} />
-					</FoldersDndContext>
+					<div className={style.foldersWrapper}>
+						<FoldersDndContext>
+							<Folder
+								accordionClassName={style.rootFolder}
+								folder={boardsList.getRootFolder()}
+							/>
+							<Folder folder={boardsList.getSharedFolder()} />
+						</FoldersDndContext>
+					</div>
 				</div>
 			</div>
 			<div className={style.bottom}>

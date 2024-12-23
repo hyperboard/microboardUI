@@ -360,10 +360,18 @@
 	},
 	"modalConfirm": {
 		"deleteBoard": {
-			"title": "Удаление доски",
-			"description": "Вы уверены, что хотите удалить доску",
+			"title": "Удалить доску",
+			"description": "Вы уверены, что хотите удалить доску \"{{name}}\"?",
 			"delete": "Удалить",
 			"cancel": "Отменить"
+		},
+		"deleteVisitedBoard": {
+			"title": "Удалить из списка",
+			"description": " Вы уверены, что хотите удалить из вашего списка доску ‘{{name}}’?"
+		},
+		"deleteFolder": {
+			"title": "Удалить папку",
+			"description": "Вы уверены, что хотите удалить папку \"{{name}}\"?"
 		}
 	},
 	"modalLinkTo": {
@@ -522,7 +530,7 @@
 	},
 	"contextMenu": {
 		"delete": "Удалить",
-		"deleteShared": "Убрать из списка",
+		"deleteShared": "Удалить из списка",
 		"addNew": "Добавить",
 		"rename": "Переименовать",
 		"newBoard": "Новая доска",

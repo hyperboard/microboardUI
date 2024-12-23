@@ -55,7 +55,6 @@ export function ContextMenu(): JSX.Element | null {
 		: false;
 	const isFolderExtendable = folderInfo
 		? folderInfo.type !== foldersApi.FolderType.TRASH &&
-			folderInfo.type !== foldersApi.FolderType.DRAFTS &&
 			folderInfo.type !== foldersApi.FolderType.VISITED
 		: false;
 
@@ -68,7 +67,7 @@ export function ContextMenu(): JSX.Element | null {
 		setIsBoardCreating(true);
 		const boardId = await boardsList.createBoard(
 			undefined,
-			undefined,
+			folderInfo?.type === foldersApi.FolderType.DRAFTS,
 			folderId ?? undefined,
 		);
 		setIsBoardCreating(false);
@@ -95,6 +94,8 @@ export function ContextMenu(): JSX.Element | null {
 		close();
 		setBoard(null);
 		setFolder(createdFolderId ?? null);
+		setRenamingId(createdFolderId ?? null);
+		setNewName(t("board.untitled"));
 	};
 
 	const handleRename: MouseEventHandler = ev => {
@@ -116,11 +117,13 @@ export function ContextMenu(): JSX.Element | null {
 	const handleDeleteBoard: MouseEventHandler = ev => {
 		ev.preventDefault();
 		ev.stopPropagation();
-		setIsBoardDeleting(true);
 		openModalConfirm(
-			"Deleting document",
-			`Are you sure you want to delete the board "${boardInfo?.title}"`,
+			t("modalConfirm.deleteBoard.title"),
+			t("modalConfirm.deleteBoard.description", {
+				name: boardInfo?.title,
+			}),
 			async () => {
+				close();
 				if (!boardId || !folderId) {
 					return;
 				}
@@ -130,15 +133,18 @@ export function ContextMenu(): JSX.Element | null {
 					await app.openBoard("blank");
 					board.disconnect();
 				}
+				setIsBoardDeleting(true);
 
 				if (hasOwnerRights) {
-					boardsList.removeBoard(boardId);
+					await boardsList.removeBoard(boardId);
 				} else {
-					boardsList.removeBoardFromFolder(folderId, boardId);
+					await boardsList.removeBoardFromFolder(folderId, boardId);
 				}
-				setIsBoardDeleting(false);
-				close();
 				Promise.resolve();
+				setIsBoardDeleting(false);
+			},
+			async () => {
+				setIsBoardDeleting(false);
 			},
 		);
 	};
@@ -148,17 +154,22 @@ export function ContextMenu(): JSX.Element | null {
 		ev.stopPropagation();
 		setIsFolderDeleting(true);
 		openModalConfirm(
-			"Deleting document",
-			`Are you sure you want to delete the folder "${folderInfo?.title}"`,
+			t("modalConfirm.deleteFolder.title"),
+			t("modalConfirm.deleteFolder.description", {
+				name: folderInfo?.title,
+			}),
 			async () => {
+				close();
 				if (!folderId) {
 					return;
 				}
 
 				boardsList.removeFolder(folderId);
 				setIsFolderDeleting(false);
-				close();
 				Promise.resolve();
+			},
+			async () => {
+				setIsFolderDeleting(false);
 			},
 		);
 	};
@@ -224,7 +235,7 @@ export function ContextMenu(): JSX.Element | null {
 					</ContextMenuItem>
 				</>
 			)}
-			{isFolderExtendable && (
+			{isFolderExtendable && !isBoardMenu && (
 				<>
 					<ContextMenuItem
 						onClick={handleCreateBoard}
@@ -250,7 +261,7 @@ export function ContextMenu(): JSX.Element | null {
 					</ContextMenuItem>
 				</>
 			)}
-			{isFolderExtendable && isBoardMenu && hasOwnerRights && (
+			{isFolderExtendable && !isBoardMenu && hasOwnerRights && (
 				<UiSeparator />
 			)}
 			{isBoardMenu && (

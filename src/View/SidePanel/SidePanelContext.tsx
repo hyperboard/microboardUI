@@ -3,6 +3,7 @@ import { createStrictContext, useStrictContext } from "lib/strictContext";
 import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "View/AppContext";
+import { useContextMenuContext } from "View/ContextMenu";
 import { useOpenedFoldersContext } from "View/Folder";
 
 type SidePanelContext = {
@@ -32,6 +33,7 @@ export function SidePanelContextProvider({
 	const boardsList = useBoardsList();
 	const timeoutRef = useRef<NodeJS.Timeout>();
 	const { setBoard, setFolder } = useOpenedFoldersContext();
+	const { close } = useContextMenuContext();
 	const boardId = board?.getBoardId();
 
 	const toggleSideMenu = (): void => {
@@ -41,6 +43,7 @@ export function SidePanelContextProvider({
 				setFolder(null);
 			}
 			if (prev) {
+				close();
 				setBoard(null);
 				setFolder(null);
 			}

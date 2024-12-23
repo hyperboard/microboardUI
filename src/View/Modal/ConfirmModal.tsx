@@ -3,12 +3,14 @@ import React, { MouseEventHandler, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import styles from "./ConfirmModal.module.css";
+import { UiLoader } from "View/Ui/UiLoader";
 
 interface ConfirmModalData {
 	title: string;
 	description: string;
 	opened: boolean;
 	onConfirm: () => Promise<void>;
+	onCancel?: () => Promise<void>;
 }
 
 interface ConfirmModalProps extends ConfirmModalData {
@@ -21,12 +23,15 @@ const ConfirmModalView: React.FC<ConfirmModalProps> = ({
 	description,
 	onClose,
 	onConfirm,
+	onCancel,
 }) => {
+	const [isLoading, setIsLoading] = useState(false);
 	const { t } = useTranslation();
 
 	useEffect(() => {
-		const handleEscapeKey = (evt: KeyboardEvent): void => {
+		const handleEscapeKey = async (evt: KeyboardEvent) => {
 			if (evt.key === "Escape") {
+				onCancel?.();
 				onClose();
 			}
 		};
@@ -36,16 +41,19 @@ const ConfirmModalView: React.FC<ConfirmModalProps> = ({
 		};
 	});
 
-	const handleConfirm: MouseEventHandler = (ev): void => {
+	const handleConfirm: MouseEventHandler = async ev => {
 		ev.preventDefault();
 		ev.stopPropagation();
-		onConfirm();
+		setIsLoading(true);
+		await onConfirm();
+		setIsLoading(false);
 		onClose();
 	};
 
-	const handleClose: MouseEventHandler = (ev): void => {
+	const handleClose: MouseEventHandler = async ev => {
 		ev.preventDefault();
 		ev.stopPropagation();
+		onCancel?.();
 		onClose();
 	};
 
@@ -63,7 +71,14 @@ const ConfirmModalView: React.FC<ConfirmModalProps> = ({
 						className={styles.confirmButton}
 						onClick={handleConfirm}
 					>
-						{t("modalConfirm.deleteBoard.delete")}
+						<span>{t("modalConfirm.deleteBoard.delete")}</span>
+						{isLoading && (
+							<UiLoader
+								size={20}
+								strokeWidth={3}
+								rotateTime={1}
+							/>
+						)}
 					</button>
 					<button
 						className={styles.cancelButton}
@@ -89,6 +104,7 @@ export const ConfirmModalContext = createStrictContext<{
 		title: string,
 		description: string,
 		onConfirm: () => Promise<void>,
+		onCancel?: () => Promise<void>,
 	) => void;
 	closeModalConfirm: () => void;
 	confirmModalInfo: ConfirmModalData;
@@ -104,18 +120,27 @@ export const ConfirmModalProvider: React.FC = ({ children }) => {
 		title: "",
 		description: "",
 		onConfirm: () => Promise.reject(),
+		onCancel: () => Promise.reject(),
 	});
 
 	const openModalConfirm = (
 		title: string,
 		description: string,
 		onConfirm: () => Promise<void>,
+		onCancel?: () => Promise<void>,
 	): void => {
-		setModalConfirm({ title, description, opened: true, onConfirm });
+		setModalConfirm({
+			title,
+			description,
+			opened: true,
+			onConfirm,
+			onCancel,
+		});
 	};
 
 	const closeModalConfirm = (): void => {
 		setModalConfirm(prev => ({ ...prev, opened: false }));
+		modalConfirm.onCancel?.();
 	};
 
 	return (

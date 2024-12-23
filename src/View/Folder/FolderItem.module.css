@@ -7,7 +7,7 @@
 	display: flex;
 	align-items: center;
 	padding: 6px 8px;
-	padding-right: 32px;
+	padding-right: 36px;
 	position: relative;
 	overflow: visible;
 	color: rgba(15, 19, 36, 0.6);
@@ -18,8 +18,8 @@
 	transition: background 0.3s ease;
 	border-radius: 10px;
 	position: relative;
-	width: 100%;
 	font-family: Manrope;
+	width: 100%;
 }
 
 .icon {

@@ -362,10 +362,18 @@
 	},
 	"modalConfirm": {
 		"deleteBoard": {
-			"title": "Deleting board",
-			"description": "Are you sure you want to delete board",
+			"title": "Delete board",
+			"description": "Are you sure you want to delete the board ‘{{name}}’?",
 			"delete": "Delete",
 			"cancel": "Cancel"
+		},
+		"deleteVisitedBoard": {
+			"title": "Remove board",
+			"description": "Are you sure you want to remove the board ‘{{name}}’?"
+		},
+		"deleteFolder": {
+			"title": "Delete folder",
+			"description": "Are you sure you want to delete the folder ‘{{name}}’?"
 		}
 	},
 	"modalLinkTo": {

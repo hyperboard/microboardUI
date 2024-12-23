@@ -134,7 +134,7 @@ export class Account {
 					this._accessToken = data.accessToken;
 					this.connection.publishAuth();
 				}
-
+				this.storage.softClean();
 				this.updateTokenData();
 				await this.fetchAccountInfo();
 			} catch (error) {
