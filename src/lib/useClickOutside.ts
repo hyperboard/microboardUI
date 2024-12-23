@@ -5,7 +5,7 @@ type ClickOutsideCb = () => void;
 export const useClickOutside = (
 	callback: ClickOutsideCb,
 	refs: RefObject<HTMLElement>[] = [],
-	considerCanvasAsOutside: boolean = false,
+	considerCanvasAsOutside = false,
 ): RefObject<HTMLDivElement> => {
 	const ref = useRef<HTMLDivElement>(null);
 

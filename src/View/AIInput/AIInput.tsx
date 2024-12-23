@@ -22,7 +22,7 @@ export const AIInput: React.FC = () => {
 	const { app, board } = useAppContext();
 	const [inputValue, setInputValue] = useState("");
 	const inputRef = useRef<HTMLTextAreaElement | null>(null);
-	const [model, setModel] = useState<OpenAIModels>("GPT-4o");
+	const [model, setModel] = useState<OpenAIModels>("gpt-4o");
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const dropdownRef = useRef<HTMLDivElement | null>(null);
 	const forceUpdate = useForceUpdate();
