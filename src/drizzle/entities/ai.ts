@@ -39,6 +39,7 @@ export enum MessageStatus {
     PENDING = "pending",
     ARCHIVED = "archived",
     INTERRUPTED = "interrupted",
+    DONE = "done",
 }
 
 export enum MessageRole {

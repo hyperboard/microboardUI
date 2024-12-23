@@ -1,17 +1,68 @@
-import { asc, inArray } from "drizzle-orm";
+import { asc, eq, inArray } from "drizzle-orm";
 import WebSocket from "ws";
 import { OpenAI } from ".";
 import { db } from "drizzle/db";
 import { AiChatMsg, ChatChunk, StopGeneration, UserRequest } from "WebSocket/ai-chat";
 import { Chat, chat, Message, message, MessageRole, MessageStatus } from "drizzle/entities/ai";
-import { ChatCompletionChunk, ChatCompletionMessageParam, CompletionUsage } from "openai/resources";
+import {
+    ChatCompletionChunk,
+    ChatCompletionContentPart,
+    ChatCompletionMessageParam,
+    CompletionUsage,
+} from "openai/resources";
 import { Stream } from "openai/streaming";
-import { getChatSystemPrompt, getChatUserPrompt } from "Routes/V1/AI/prompts/chat";
-import { eq } from "drizzle-orm";
+import {
+    getAdjustReadingLevelPrompt,
+    getAdjustTextLengthPrompt,
+    getChatQueryGeneratorPrompt,
+    getChatSystemPrompt,
+    getChatUserPrompt,
+    getEmojiPrompt,
+} from "Routes/V1/AI/prompts/chat";
 import winston from "winston";
+import { getEncoding } from "js-tiktoken";
+import { getJson } from "serpapi";
+
+class SerpApi {
+    private apiKey = "ecab67b89779cf9339a9f60ddaecc819f25c7327876545cbd04ec100fc3c0945";
+
+    async getJson(query: string): Promise<{
+        answer_box: any;
+        organic: any;
+    }> {
+        const result: {
+            answer_box: any;
+            organic: any;
+        } = {
+            answer_box: null,
+            organic: null,
+        };
+        const response = await getJson({
+            api_key: this.apiKey,
+            engine: "google",
+            q: query,
+            location: "Moscow",
+        });
+
+        console.log(response);
+
+        result["answer_box"] = response?.answer_box?.snippet;
+
+        result["organic"] = response?.organic_results?.map(
+            ({ title, link, snippet }: { title: string; link: string; snippet: string }) => ({
+                title,
+                link,
+                snippet,
+            })
+        );
+
+        return result;
+    }
+}
 
 export class ChatStreamHandler {
     private openai: OpenAI;
+    private serpapi = new SerpApi();
     boardClients = new Map<string, WebSocket.WebSocket[]>();
 
     private activeStreams = new Map<
@@ -26,6 +77,25 @@ export class ChatStreamHandler {
 
     constructor(openai: OpenAI) {
         this.openai = openai;
+    }
+
+    async fetchQuery(idea: string): Promise<string | null> {
+        const analyze = await this.openai.generateChatCompletion([
+            {
+                role: MessageRole.SYSTEM,
+                content: getChatQueryGeneratorPrompt(),
+            },
+            {
+                role: MessageRole.USER,
+                content: idea,
+            },
+        ]);
+
+        if (!analyze) {
+            return null;
+        }
+
+        return analyze?.includes("null") ? null : analyze;
     }
 
     async stopConversation(options: {
@@ -58,7 +128,12 @@ export class ChatStreamHandler {
 
             const foundedChat = await this.ensureChatExists(msg, logger);
 
-            await this.saveMessage(foundedChat, MessageRole.SYSTEM, "Conversation manually stopped by user", logger);
+            await this.saveMessage({
+                chat: foundedChat,
+                role: MessageRole.SYSTEM,
+                content: "Conversation manually stopped by user",
+                logger,
+            });
             const stopChunk: AiChatMsg<ChatChunk> = {
                 type: "AiChat",
                 boardId: boardId,
@@ -82,7 +157,7 @@ export class ChatStreamHandler {
         }
     }
 
-    async handleUserRequest(options: {
+    public async handleUserRequest(options: {
         msg: AiChatMsg<UserRequest>;
         ws: WebSocket;
         logger: winston.Logger;
@@ -107,39 +182,124 @@ export class ChatStreamHandler {
 
             const contextMessages: ChatCompletionMessageParam[] = [];
 
-            if (msg.event.context.length > 0) {
-                logger.debug("Fetching context strings, if any...");
-                const contextStrings = await this.getContextStrings(msg.event.context, logger);
-
-                const boardContextStrings = msg.event.boardContext || [];
-                const combinedContext = [...contextStrings, ...boardContextStrings];
-
-                if (combinedContext.length > 0) {
+            switch (msg.event?.action?.action) {
+                case "adjust_text_length":
                     contextMessages.push({
-                        role: MessageRole.USER,
-                        content: getChatUserPrompt(
-                            msg.event.idea,
-                            contextStrings.join(", "),
-                            boardContextStrings.join(", ")
-                        ),
+                        role: MessageRole.SYSTEM,
+                        content: getAdjustTextLengthPrompt(),
                     });
-                } else {
+                    await this.saveMessage({
+                        chat,
+                        role: MessageRole.SYSTEM,
+                        content: getAdjustTextLengthPrompt(),
+                        logger,
+                    });
+                    break;
+                case "adjust_reading_level":
+                    contextMessages.push({
+                        role: MessageRole.SYSTEM,
+                        content: getAdjustReadingLevelPrompt(),
+                    });
+                    await this.saveMessage({
+                        chat,
+                        role: MessageRole.SYSTEM,
+                        content: getAdjustReadingLevelPrompt(),
+                        logger,
+                    });
+                    break;
+                case "adjust_emojis":
+                    contextMessages.push({
+                        role: MessageRole.SYSTEM,
+                        content: getEmojiPrompt(),
+                    });
+                    await this.saveMessage({
+                        chat,
+                        role: MessageRole.SYSTEM,
+                        content: getEmojiPrompt(),
+                        logger,
+                    });
+                    break;
+                default:
                     contextMessages.push({
                         role: MessageRole.SYSTEM,
                         content: getChatSystemPrompt(),
                     });
-                    await this.saveMessage(chat, MessageRole.SYSTEM, getChatSystemPrompt(), logger);
+                    await this.saveMessage({
+                        chat,
+                        role: MessageRole.SYSTEM,
+                        content: getChatSystemPrompt(),
+                        logger,
+                    });
+                    break;
+            }
+
+            const searchQuery = await this.fetchQuery(msg.event.idea);
+            console.log("Search query: ", searchQuery);
+            let searchResult = "";
+            if (searchQuery) {
+                const googleResponse = await this.serpapi.getJson(searchQuery);
+                console.log("Google response: ", googleResponse);
+                const organic = googleResponse.organic;
+
+                if (organic) {
+                    console.log("Organic: ", organic);
+                    searchResult = `Internet search for user's query: ${JSON.stringify(organic)}`;
+                }
+            }
+            logger.debug("search result: ", searchResult);
+
+            let userPrompt = "";
+            logger.debug("Fetching context strings, if any...");
+            const contextStrings = await this.getContextStrings(msg.event.context, logger);
+
+            const boardContextStrings = msg.event.boardContext || [];
+            // const combinedContext = [...contextStrings, ...boardContextStrings];
+            userPrompt = getChatUserPrompt({
+                idea: msg.event.idea,
+                context: contextStrings.length > 0 ? contextStrings.join(", ") : "",
+                boardContext: boardContextStrings.length > 0 ? boardContextStrings.join(", ") : "",
+                searchResults: searchResult,
+                level: msg.event?.action?.level || undefined,
+            });
+
+            logger.debug("user prompt: ", userPrompt);
+            const inputArray: ChatCompletionContentPart[] = [
+                {
+                    type: "text",
+                    text: userPrompt,
+                },
+            ];
+
+            if (msg.event.images && msg.event.images.length > 0) {
+                for (const imageUrl of msg.event.images) {
+                    inputArray.push({
+                        type: "image_url",
+                        image_url: { url: imageUrl, detail: "auto" },
+                    });
                 }
             }
 
+            logger.debug("Input array: ", inputArray);
+
             contextMessages.push({
                 role: MessageRole.USER,
-                content: msg.event.idea,
+                content: inputArray,
             });
 
-            const userMessage = await this.saveMessage(chat, MessageRole.USER, msg.event.idea, logger);
+            const encoder = getEncoding("cl100k_base");
+            const tokens = encoder.encode(`${getChatSystemPrompt()}${userPrompt}`);
+
+            const userMessage = await this.saveMessage({
+                chat,
+                role: MessageRole.USER,
+                content: msg.event.idea,
+                logger,
+                tokensUsed: tokens.length,
+            });
 
             logger.debug("Generating chat completion stream...");
+            logger.debug("Context messages: ", JSON.stringify(contextMessages));
+
             const stream = await this.openai.generateStreamChatCompletion(contextMessages, {
                 model: msg.event.model || "gpt-4o",
                 signal: controller.signal,
@@ -171,6 +331,7 @@ export class ChatStreamHandler {
                 controller,
                 userMessage,
                 itemId,
+                msg,
             });
         } catch (error) {
             console.error("Error in handleUserRequest:", error);
@@ -206,39 +367,6 @@ export class ChatStreamHandler {
         return boardChat;
     }
 
-    private async prepareContextMessages(
-        event: UserRequest,
-        logger: winston.Logger
-    ): Promise<ChatCompletionMessageParam[]> {
-        logger.debug("Preparing context messages for event:", event);
-        const contextMessages: ChatCompletionMessageParam[] = [];
-
-        if (event.context && event.context.length > 0) {
-            logger.debug("Fetching context chats...");
-            const contextChats = await db
-                .select()
-                .from(message)
-                .where(inArray(message.id, event.context))
-                .orderBy(asc(message.id));
-
-            contextMessages.push(
-                ...contextChats.map((msg) => ({
-                    role: msg.role as MessageRole,
-                    content: msg.content,
-                }))
-            );
-        }
-
-        logger.debug("Adding user idea to context messages...");
-        contextMessages.push({
-            role: MessageRole.USER,
-            content: event.idea,
-        });
-
-        logger.debug("Prepared context messages:", contextMessages);
-        return contextMessages;
-    }
-
     private handleStreamChunks(options: {
         stream: Stream<ChatCompletionChunk>;
         ws: WebSocket;
@@ -248,8 +376,9 @@ export class ChatStreamHandler {
         controller: AbortController;
         userMessage: Message;
         itemId: string;
+        msg: AiChatMsg<UserRequest>;
     }) {
-        const { stream, ws, chat, logger, boardId, controller, userMessage, itemId } = options;
+        const { stream, ws, chat, msg, logger, boardId, controller, userMessage, itemId } = options;
         logger.debug("Starting to handle stream chunks...");
         let assistantResponse = "";
         let usageMetadata: CompletionUsage | undefined;
@@ -300,6 +429,8 @@ export class ChatStreamHandler {
                 },
                 close: () => {
                     if (!isStopped && !controller.signal.aborted) {
+                        const encoder = getEncoding("cl100k_base");
+                        const tokens = encoder.encode(assistantResponse);
                         logger.debug("Stream closed. Finalizing response...");
                         this.finalizeStream({
                             ws,
@@ -307,11 +438,18 @@ export class ChatStreamHandler {
                             assistantResponse,
                             logger,
                             userMessage,
-                            usageMetadata,
+                            usageMetadata: {
+                                completion_tokens: tokens.length,
+                            },
                             itemId,
                         });
                     } else {
-                        this.saveMessage(chat, MessageRole.SYSTEM, "Conversation manually stopped by user", logger);
+                        this.saveMessage({
+                            chat,
+                            role: MessageRole.SYSTEM,
+                            content: "Conversation manually stopped by user",
+                            logger,
+                        });
                     }
 
                     this.activeStreams.delete(boardId);
@@ -336,20 +474,19 @@ export class ChatStreamHandler {
         logger: winston.Logger;
         userMessage: Message;
         itemId: string;
-        usageMetadata?: CompletionUsage;
+        usageMetadata?: Partial<CompletionUsage>;
     }) {
         const { ws, chat, assistantResponse, logger, userMessage, usageMetadata, itemId } = options;
         logger.debug("Finalizing stream response...");
         logger.debug("Saving assistant response to database...");
-        await this.saveMessage(
+        await this.saveMessage({
             chat,
-            MessageRole.ASSISTANT,
-            assistantResponse,
+            role: MessageRole.ASSISTANT,
+            content: assistantResponse,
             logger,
-            usageMetadata?.completion_tokens || 0,
-            undefined,
-            userMessage.id
-        );
+            tokensUsed: usageMetadata?.completion_tokens || 0,
+            generatedFrom: userMessage.id,
+        });
 
         const endChunk: AiChatMsg<ChatChunk> = {
             type: "AiChat",
@@ -368,15 +505,17 @@ export class ChatStreamHandler {
         // ws.send(JSON.stringify(endChunk));
     }
 
-    private async saveMessage(
-        chat: Chat,
-        role: MessageRole,
-        content: string,
-        logger: winston.Logger,
-        tokensUsed = 0,
-        updatedFrom?: number,
-        generatedFrom?: number
-    ) {
+    private async saveMessage(options: {
+        chat: Chat;
+        role: MessageRole;
+        content: string;
+        logger: winston.Logger;
+        status?: MessageStatus;
+        tokensUsed?: number;
+        updatedFrom?: number;
+        generatedFrom?: number;
+    }) {
+        const { chat, role, status, content, logger, tokensUsed = 0, updatedFrom, generatedFrom } = options;
         logger.debug("Saving message to database:", { chatId: chat.id, role, content, tokensUsed });
         const [savedMessage] = await db
             .insert(message)
@@ -385,6 +524,7 @@ export class ChatStreamHandler {
                 role,
                 content,
                 tokensUsed,
+                status: status || MessageStatus.DONE,
                 updatedFrom: updatedFrom ? updatedFrom : undefined,
                 generatedFrom: generatedFrom ? generatedFrom : undefined,
             })

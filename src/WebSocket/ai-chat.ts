@@ -3,7 +3,7 @@ import { ChatStreamHandler } from "ai/openai/ChatStreamHandler";
 import { CompletionUsage } from "openai/resources";
 import winston from "winston";
 import WebSocket from "ws";
-export const handleAIChatMessage = (options: {
+export const handleAIChatMessage = async (options: {
     msg: AiChatMsg;
     ws: WebSocket;
     openai: OpenAI;
@@ -11,14 +11,14 @@ export const handleAIChatMessage = (options: {
     boardClients: Map<string, WebSocket.WebSocket[]>;
     chatStreamHandler: ChatStreamHandler;
 }) => {
-    const { msg, ws, openai, logger, boardClients, chatStreamHandler } = options;
+    const { msg, ws, logger, boardClients, chatStreamHandler } = options;
 
     switch (msg.event.method) {
         case "UserRequest":
-            chatStreamHandler.handleUserRequest({ msg: msg as AiChatMsg<UserRequest>, ws, logger, boardClients });
+            await chatStreamHandler.handleUserRequest({ msg: msg as AiChatMsg<UserRequest>, ws, logger, boardClients });
             break;
         case "StopGeneration":
-            chatStreamHandler.stopConversation({
+            await chatStreamHandler.stopConversation({
                 msg: msg as AiChatMsg<StopGeneration>,
                 boardId: msg.boardId,
                 ws,
@@ -39,10 +39,26 @@ export interface UserRequest {
     method: "UserRequest";
     context: number[]; // chat message context;
     boardContext: string[];
+    boardContextIds?: string[]; // just for frontend
     idea: string;
     model?: OpenAIModels; // default gpt-4-turbo-preview
+    images?: string[]; // only with 4o and later. Image link or base64. Better use: `data:{type};base64,${base64}`
     updatedFrom?: number; // "user" message id
     itemId: string;
+    action?: TextAction;
+}
+
+export type TTextAction = "adjust_text_length" | "adjust_reading_level" | "adjust_emojis";
+/*
+Levels:
+-3 to 3 for text adjustment
+0 to 6 for reading level adjustment
+0 to 3 for emojis
+* */
+
+export interface TextAction {
+    action: TTextAction;
+    level: number;
 }
 
 export interface StopGeneration {
@@ -57,7 +73,7 @@ export interface ChatChunk {
     type: "chunk" | "done" | "end" | "error";
     itemId: string;
     content?: string;
-    usage?: CompletionUsage;
+    usage?: Partial<CompletionUsage>;
     error?: string;
 }
 

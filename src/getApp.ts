@@ -36,7 +36,9 @@ import { withWebSocketApi } from "./WebSocket";
 export async function getApp(): Promise<http.Server> {
     const app = express();
 
-    await runMigration();
+    if (process.env.NODE_ENV?.toLocaleLowerCase() === "production") {
+        await runMigration();
+    }
 
     if (process.env.MIGRATE_EVENTS === "true") {
         await migrateData().catch(console.error);
@@ -142,6 +144,7 @@ export async function getApp(): Promise<http.Server> {
         wss,
         redis,
         ai,
+        openai,
     });
 
     app.use(v1Router);

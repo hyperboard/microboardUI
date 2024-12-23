@@ -1,7 +1,6 @@
 import express from "express";
 import fs from "fs";
 import path from "path";
-import { Redis } from "Redis";
 import { Auth, getAuthRouter } from "Routes/V1/Auth";
 // import { Boards } from "Routes/V1/Boards";
 import { getUsersRouter, Users } from "Routes/V1/Users";
@@ -10,14 +9,18 @@ import { internalError } from "shared/lib/routing";
 import { Mailer } from "shared/modules/mailer/mailer";
 import winston from "winston";
 import { WebSocketServer } from "ws";
-import { AI } from "./AI/AI";
-import { getAIRouter } from "./AI/Router";
-import { createHealthRouter } from "./Health";
 import { createJobsRouter } from "./Jobs";
 import { createMediaRouter } from "./Media";
 import { MediaDAL } from "./Media/MediaDAL";
 import { getMiroRouter } from "./Miro";
 import { getTemplatesRouter, Templates } from "./Templates";
+import { createHealthRouter } from "./Health";
+import { Redis } from "Redis";
+import { getAIRouter } from "./AI/Router";
+import { AI } from "./AI/AI";
+import { getBillingRouter } from "./Billing";
+import { getIngestRouter } from "./Ingest";
+import { OpenAI } from "../../ai/openai";
 
 function createFileRoute(
     router: express.Router,
@@ -61,6 +64,7 @@ export function getV1Router({
     wss,
     redis,
     ai,
+    openai,
 }: {
     config: Config;
     mailer: Mailer;
@@ -73,6 +77,7 @@ export function getV1Router({
     wss: WebSocketServer;
     redis: Redis;
     ai: AI;
+    openai: OpenAI;
 }): express.Router {
     const router = express.Router();
     const apiBase = "/api/v1";
@@ -87,6 +92,8 @@ export function getV1Router({
     // router.use(authMiddleware);
     router.use(apiBase, getUsersRouter(users, logger));
     router.use(`${apiBase}/miro`, getMiroRouter());
+    router.use(`${apiBase}`, getBillingRouter(logger));
+    router.use(`${apiBase}`, getIngestRouter(logger, openai));
 
     createFileRoute(
         router,

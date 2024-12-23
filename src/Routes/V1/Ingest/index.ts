@@ -1,0 +1,1 @@
+export { getIngestRouter } from "./Router";

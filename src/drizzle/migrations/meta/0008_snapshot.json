@@ -1,5 +1,5 @@
 {
-  "id": "df1ac8b8-9c34-4f19-a114-ddc421a57de2",
+  "id": "5de73dbc-8745-4a32-ae9e-6e0abf498141",
   "prevId": "9bfa4df8-6fdb-4e8b-ab5a-0da7493531de",
   "version": "7",
   "dialect": "postgresql",
@@ -30,27 +30,13 @@
         },
         "board_id": {
           "name": "board_id",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "chat_board_id_boards_id_fk": {
-          "name": "chat_board_id_boards_id_fk",
-          "tableFrom": "chat",
-          "tableTo": "boards",
-          "columnsFrom": [
-            "board_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
+      "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -103,6 +89,25 @@
           "primaryKey": false,
           "notNull": true,
           "default": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "updated_from": {
+          "name": "updated_from",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "generated_from": {
+          "name": "generated_from",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -526,6 +531,42 @@
           ]
         }
       }
+    },
+    "public.user_board_id": {
+      "name": "user_board_id",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "board_uuid": {
+          "name": "board_uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_board_id_user_id_users_id_fk": {
+          "name": "user_board_id_user_id_users_id_fk",
+          "tableFrom": "user_board_id",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     },
     "public.board_snapshots": {
       "name": "board_snapshots",

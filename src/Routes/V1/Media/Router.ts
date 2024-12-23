@@ -80,6 +80,7 @@ export function createMediaRouter(media: MediaDAL, logger: Logger) {
                 } else {
                     await media.saveImageStream(id, passThroughStream);
                 }
+
                 res.status(200).json({
                     message: `Image with ID ${id} successfully saved.`,
                     src,

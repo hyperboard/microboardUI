@@ -75,7 +75,7 @@ export function getAIRouter(ai: AI, logger: winston.Logger): express.Router {
 
     // Health check endpoint
     router.get("/ai/", (req: Request, res: Response) => {
-        return res.send("OK");
+        return res.send("OK!");
     });
 
     return router;
