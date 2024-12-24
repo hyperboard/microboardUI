@@ -71,6 +71,13 @@
       "when": 1734420244020,
       "tag": "0010_elite_mandroid",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1735083641370,
+      "tag": "0011_steep_pixie",
+      "breakpoints": true
     }
   ]
 }
