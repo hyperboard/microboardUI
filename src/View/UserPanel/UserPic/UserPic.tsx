@@ -99,7 +99,12 @@ export const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 						onClick={handleOpenProfileSettings}
 						pattern="ghost"
 					>
-						<Icon width={20} height={20} iconName="human" />{" "}
+						<Icon
+							className={styles.humanIcon}
+							width={20}
+							height={20}
+							iconName="human"
+						/>{" "}
 						<span className={styles.userDropDownButton}>
 							{t("profile.title")}
 						</span>
