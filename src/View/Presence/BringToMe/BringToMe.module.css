@@ -96,9 +96,18 @@
 	opacity: 50%;
 }
 
+.idleHide {
+	opacity: .6;
+}
+
 .nickname {
 	word-wrap: break-word;
 	word-break: break-all;
+}
+
+.idle {
+	font-size: 12px;
+	font-weight: 400;
 }
 
 .icon {

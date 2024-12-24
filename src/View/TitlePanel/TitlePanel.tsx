@@ -24,6 +24,7 @@ import { Icon, Logo } from "../Icon";
 import { useModal } from "../Modal/ModalProvider";
 import { CreateTemplateModal } from "../Templates";
 import style from "./TitlePanel.module.css";
+import { useClickOutside } from "lib/useClickOutside";
 
 const MAX_BOARD_TITLE_LENGTH = 32;
 
@@ -41,7 +42,12 @@ export function TitlePanel(): JSX.Element | null {
 	const boardName =
 		boardsList.getBoardInfo(boardId)?.title || t("board.untitled");
 	const isBlank = boardId === "blank";
-
+	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+	const clickOutsideRef = useClickOutside<HTMLButtonElement>(
+		() => setIsDropdownOpen(false),
+		[],
+		true,
+	);
 	const [isRenaming, setIsRenaming] = useState(false);
 	const [newBoardName, setNewBoardName] = useState(boardName);
 	const [isBoardRenameBtnShown, setIsBoardRenameBtnShown] = useState(false);
@@ -82,12 +88,30 @@ export function TitlePanel(): JSX.Element | null {
 		board.tools.export();
 	};
 
-	const saveTemplate = () => {
+	const exportHTML = async (): Promise<string> => {
+		const htmlContent = await board.serializeHTML();
+		const blob = new Blob([htmlContent], {
+			type: "text/html;charset=utf-8",
+		});
+		const url = URL.createObjectURL(blob);
+		const anch = document.createElement("a");
+		anch.href = url;
+		anch.download = `${board.getBoardId()}.html`;
+		anch.click();
+		URL.revokeObjectURL(url);
+		return htmlContent;
+	};
+
+	const toggleExportDropdown = (): void => {
+		setIsDropdownOpen(prev => !prev);
+	};
+
+	const saveTemplate = (): void => {
 		const body = JSON.stringify({ snapshot: board.getSnapshot() });
 		saveTemplateReq(body);
 	};
 
-	async function saveTemplateReq(body: any) {
+	async function saveTemplateReq(body: any): Promise<void> {
 		try {
 			const response = await fetch(
 				`${getApiUrl()}/templates/${board.getBoardId()}`,
@@ -198,8 +222,9 @@ export function TitlePanel(): JSX.Element | null {
 			<ViewModeGuard>
 				<UiSeparator vertical className={style.tabletHide} />
 				<UiButton
+					ref={clickOutsideRef}
 					className={style.tabletHide}
-					onClick={openExport}
+					onClick={toggleExportDropdown}
 					variant="secondary"
 					rounded="right"
 					tooltip={t("export.tooltip")}
@@ -207,6 +232,20 @@ export function TitlePanel(): JSX.Element | null {
 				>
 					<Icon iconName="Export" />
 				</UiButton>
+				{isDropdownOpen && (
+					<div className={style.exportDropdown}>
+						<div onClick={openExport}>
+							<strong>PNG</strong>
+							<p>{t("export.PNGDescription")}</p>
+						</div>
+						<div onClick={exportHTML}>
+							<strong>
+								HTML<span className={style.betaTag}>Beta</span>
+							</strong>
+							<p>{t("export.HTMLDescription")}</p>
+						</div>
+					</div>
+				)}
 				{window.enableTemplateCreating && (
 					<>
 						<UiSeparator vertical className={style.tabletHide} />

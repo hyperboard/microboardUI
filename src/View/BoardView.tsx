@@ -53,6 +53,14 @@ const BoardView = ({ app }: Props): JSX.Element => {
 	useLayoutEffect(() => {
 		account.init().finally(() => {
 			boardsList.loadBoards().then(() => {
+				// if (params.boardId === "local") {
+				// 	app.openBoardFromFile().then(() => {
+				// 		navigate(`/boards/${params.boardId}?${searchParams}`, {
+				// 			replace: true,
+				// 		});
+				// 		app.render();
+				// 	})
+				// } else
 				if (params.boardId) {
 					app.openBoard(
 						params.boardId,

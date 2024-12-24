@@ -14,8 +14,7 @@ declare global {
 		showDebug: boolean;
 		customTextRender: boolean;
 		enableTemplateCreating: boolean;
-		// todo remove when has ui
-		exportHTML: () => string;
+		showOpenFilePicker: () => Promise<FileSystemFileHandle[]>; // undefined by itself ??
 	}
 }
 
@@ -30,10 +29,5 @@ window.app = createApp();
 window.app.connection.connect().then(() => {
 	window.app.render();
 });
-
-function exportHTML(): string {
-	return window.app.getBoard().exportHTML();
-}
-window.exportHTML = exportHTML;
 
 window.useHTTPSubscription = false;
