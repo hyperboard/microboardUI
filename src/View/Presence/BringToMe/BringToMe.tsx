@@ -238,10 +238,14 @@ export const BringToMe: React.FC<{
 							</div>
 						)}
 
-						<span className={styles.nickname}>
-							{user.name}{" "}
-							{user.idle && "(" + t("presence.idle") + ")"}
-						</span>
+						<div className={clsx(user.idle && styles.idleHide)}>
+							<p className={styles.nickname}>{user.name}</p>
+							{user.idle && (
+								<p className={styles.idle}>
+									{t("presence.idle")}
+								</p>
+							)}
+						</div>
 						<div className={styles.userActionsContainer}>
 							<UiButton
 								className={styles.btn}

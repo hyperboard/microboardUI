@@ -35,6 +35,7 @@ export interface App {
 	boardSubject: Subject<unknown>;
 	subscriptions: Subscriptions;
 	openBoard: (id: string, accessKey?: string) => Promise<void>;
+	openBoardFromFile: () => Promise<void>;
 	getBoard: () => Board;
 	getConnection: () => Connection;
 	getLastBoardId: () => string | null;
@@ -43,6 +44,7 @@ export interface App {
 	getSnapshot(boardId: string): BoardSnapshot | null;
 	sessionStorage: SessionStorage;
 	getConnectedBoard: (boardId: string) => Board | null;
+	openAndEditFile(): Promise<string | undefined>;
 }
 
 export function createApp(isHistory = true): App {
@@ -57,6 +59,7 @@ export function createApp(isHistory = true): App {
 	const test = createTester(getBoard);
 
 	let board: Board;
+	let fileHandle: FileSystemFileHandle | undefined = undefined;
 
 	function getConnection(): Connection {
 		return connection;
@@ -116,6 +119,17 @@ export function createApp(isHistory = true): App {
 		board = currentBoard;
 	}
 
+	//  todo fix and finish
+	async function openBoardFromFile(): Promise<void> {
+		app.getBoard()?.selection.quickAddButtons.clear();
+		const id = "local";
+
+		const currentBoard = new Board(id);
+		subscriptions.setBoard(currentBoard);
+		boardSubject.publish(currentBoard);
+		board = currentBoard;
+	}
+
 	function getLastBoardId(): string | null {
 		return localStorage.getItem(LAST_BOARD_KEY) || null;
 	}
@@ -128,8 +142,34 @@ export function createApp(isHistory = true): App {
 		return board.getSnapshot();
 	}
 
-	function getConnectedBoard(boardId: string) {
+	function getConnectedBoard(boardId: string): Board | undefined {
 		return boards.get(boardId);
+	}
+
+	async function openAndEditFile(): Promise<string | undefined> {
+		try {
+			const [newFileHandle] = await window.showOpenFilePicker();
+			fileHandle = newFileHandle;
+
+			const file = await newFileHandle.getFile();
+			const contents = await file.text();
+
+			return contents;
+		} catch (err) {
+			fileHandle = undefined;
+			console.error("Streaming file err:", err);
+		}
+		return;
+	}
+
+	async function saveEditingFile(): Promise<void> {
+		if (!fileHandle) {
+			return;
+		}
+		const writable = await fileHandle.createWritable();
+		const data = await getBoard().serializeHTML();
+		await writable.write(data);
+		await writable.close();
 	}
 
 	const app = {
@@ -143,6 +183,7 @@ export function createApp(isHistory = true): App {
 		boardSubject,
 		subscriptions,
 		openBoard,
+		openBoardFromFile,
 		getBoard,
 		getConnection,
 		getLastBoardId,
@@ -151,6 +192,7 @@ export function createApp(isHistory = true): App {
 		getSnapshot,
 		sessionStorage,
 		getConnectedBoard,
+		openAndEditFile,
 	};
 
 	function render(): void {

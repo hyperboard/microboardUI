@@ -10,8 +10,6 @@ declare global {
 	interface Window {
 		showDebug: boolean;
 		enableTemplateCreating: boolean;
-		// todo remove when has ui
-		exportHTML: () => string;
 	}
 }
 
@@ -23,8 +21,3 @@ const app = createApp();
 app.connection.connect().then(() => {
 	app.render();
 });
-
-function exportHTML(): string {
-	return app.getBoard().exportHTML();
-}
-window.exportHTML = exportHTML;

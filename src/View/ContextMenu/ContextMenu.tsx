@@ -22,6 +22,7 @@ import { useAppContext } from "View/AppContext";
 import { useNavigate } from "react-router-dom";
 import { useOpenedFoldersContext } from "View/Folder";
 import { UiLoader } from "View/Ui/UiLoader";
+import { Mbr } from "Board/Items";
 
 export function ContextMenu(): JSX.Element | null {
 	const { boardId, x, y, isOpen, folderId, close } = useContextMenuContext();
@@ -77,6 +78,81 @@ export function ContextMenu(): JSX.Element | null {
 		setNewName(boardInfo?.title ?? "");
 		setBoard(boardId);
 		setFolder(null);
+	};
+
+	const handleImportBoard: MouseEventHandler = async ev => {
+		ev.preventDefault();
+		ev.stopPropagation();
+		setIsBoardCreating(true);
+
+		const uploadPromise = new Promise<string | undefined>(
+			(resolve, reject) => {
+				const input = document.createElement("input");
+				input.type = "file";
+				input.accept = ".html";
+
+				input.onchange = async (event: Event) => {
+					const file = (event.target as HTMLInputElement).files?.[0];
+					if (file) {
+						const reader = new FileReader();
+						reader.onload = ev => {
+							const htmlContent = ev.target?.result as string;
+							resolve(htmlContent);
+						};
+						reader.onerror = () => {
+							reject(new Error("Failed to read file"));
+						};
+						reader.readAsText(file);
+					} else {
+						resolve(undefined);
+					}
+				};
+
+				input.onerror = () => {
+					resolve(undefined);
+				};
+				input.oncancel = () => {
+					resolve(undefined);
+				};
+				input.onabort = () => {
+					resolve(undefined);
+				};
+
+				input.click();
+			},
+		);
+		const stringedHTML = await uploadPromise;
+		// const stringedHTML = await app.openAndEditFile();
+		if (stringedHTML) {
+			const boardId = await boardsList.createBoard(
+				undefined,
+				folderInfo?.type === foldersApi.FolderType.DRAFTS,
+				folderId ?? undefined,
+			);
+			close();
+			setBoard(boardId);
+			setFolder(null);
+			await app.openBoard(boardId);
+			navigate(`/boards/${boardId}`);
+			// app.openBoardFromFile();
+			// navigate(`/boards/local`);
+			app.getBoard().deserializeHTML(stringedHTML);
+			app.render();
+			const sumMbr = [
+				...app.getBoard().items.listAll(),
+				...app.getBoard().items.listFrames(),
+			].reduce((acc: undefined | Mbr, item) => {
+				if (!acc) {
+					return item.getMbr();
+				}
+				return acc.combine(item.getMbr());
+			}, undefined);
+			if (sumMbr) {
+				app.getBoard().camera.zoomToFit(sumMbr);
+			}
+		}
+
+		setIsBoardCreating(false);
 	};
 
 	const handleCreateFolder: MouseEventHandler = async ev => {
@@ -224,6 +300,20 @@ export function ContextMenu(): JSX.Element | null {
 						}
 					>
 						{t("contextMenu.newBoard")}
+					</ContextMenuItem>
+					<ContextMenuItem
+						disabled={isMutationsDisabled}
+						onClick={handleImportBoard}
+						icon={
+							<Icon
+								iconName="EmbedBoardIcon"
+								width={20}
+								height={20}
+							/>
+						}
+						isLoading={isBoardCreating}
+					>
+						{t("contextMenu.importHTML")}
 					</ContextMenuItem>
 					<ContextMenuItem
 						disabled={!account.isLoggedIn || isMutationsDisabled}

@@ -514,6 +514,8 @@
 	"export": {
 		"tooltip": "Export this board",
 		"confirm": "Export",
+		"PNGDescription": "Select a section of the board to save as a PNG",
+		"HTMLDescription": "Save board as HTML and browse it locally",
 		"cancel": "Cancel",
 		"error": {
 			"title": "Export error",
@@ -534,6 +536,7 @@
 		"delete": "Delete",
 		"deleteShared": "Remove from my list",
 		"addNew": "Add new",
+		"importHTML": "Import from HTML",
 		"rename": "Rename",
 		"newBoard": "New board",
 		"newFolder": "New folder",
