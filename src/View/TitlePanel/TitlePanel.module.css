@@ -41,6 +41,55 @@ input.rename {
 	font-weight: 400;
 }
 
+.exportDropdown {
+	position: absolute;
+	top: calc(100% + var(--absolute-position-panel-padding));
+	left: 86%;
+	background-color: white;
+	border: 1px solid rgba(204, 204, 204, 0.5);
+	width: 300px;
+	z-index: 10;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	padding: 5px;
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+.exportDropdown div {
+	padding: 10px;
+	cursor: pointer;
+	border-radius: 8px;
+}
+
+.exportDropdown div:hover {
+	background-color: #0a0f290a;
+}
+
+.exportDropdown strong {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 5px;
+	font-weight: normal;
+	color: black;
+}
+
+.exportDropdown p {
+	margin: 0;
+	color: #666;
+	font-size: 12px;
+}
+
+.betaTag {
+	padding: 4px 8px;
+	font-size: 10px;
+	color: #007bff;
+	background-color: #e0f0ff;
+	border-radius: 4px;
+	font-weight: 600;
+}
+
 @media screen and (max-width: 520px) {
 	.mobileHide {
 		display: none;

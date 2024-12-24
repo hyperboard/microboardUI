@@ -2,12 +2,12 @@ import { useEffect, useRef, RefObject } from "react";
 
 type ClickOutsideCb = () => void;
 
-export const useClickOutside = (
+export const useClickOutside = <T extends HTMLElement = HTMLDivElement>(
 	callback: ClickOutsideCb,
 	refs: RefObject<HTMLElement>[] = [],
 	considerCanvasAsOutside = false,
-): RefObject<HTMLDivElement> => {
-	const ref = useRef<HTMLDivElement>(null);
+): RefObject<T> => {
+	const ref = useRef<T>(null);
 
 	const handleClickOutside = (event: MouseEvent): void => {
 		const isOutside =
