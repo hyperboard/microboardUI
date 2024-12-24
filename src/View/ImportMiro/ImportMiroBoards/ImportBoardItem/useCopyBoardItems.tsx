@@ -279,7 +279,7 @@ export const useCopyBoardItems = (
 		element: HTMLElement,
 		style?: IMiroBoardItemStyle,
 		item?: Shape | Sticker | RichText | Connector,
-	): (TextNode & { "line-through": boolean })[] => {
+	): TextNode[] => {
 		return Array.from(element.childNodes).map(child => {
 			const childElement = child as HTMLElement;
 			const stringText = child.textContent ?? "";
@@ -309,7 +309,6 @@ export const useCopyBoardItems = (
 				fontColor: textColor,
 				fontSize: style?.fontSize ? +style.fontSize : 14,
 				fontHighlight: textStyles?.backgroundColor,
-				"line-through": fontStyles.includes("line-through"),
 			};
 		});
 	};

@@ -11,7 +11,7 @@ export const DEFAULT_TEXT_STYLES: DefaultTextStyles = {
 	bold: false,
 	underline: false,
 	italic: false,
-	"line-through": false,
+	lineThrough: false,
 };
 
 export async function loadFonts(): Promise<void> {

@@ -94,7 +94,7 @@ function transformText(data: AiText, board: Board): void {
 					bold: data.bold,
 					italic: data.italic,
 					underline: data.underline,
-					lineThrough: data["line-through"],
+					lineThrough: data.lineThrough,
 					fontColor: data.fontColor,
 					fontSize: data.fontSize,
 					fontHighlight: data.fontHighlight,
