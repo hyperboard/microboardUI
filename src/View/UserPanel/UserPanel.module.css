@@ -312,6 +312,8 @@
 	position: absolute;
 	bottom: -2px;
 	right: -2px;
+	width: max-content;
+	height: max-content;
 }
 
 .userPic > img {
