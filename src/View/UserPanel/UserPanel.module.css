@@ -174,8 +174,8 @@
 
 .dropdownWrapper {
 	position: absolute;
-	top: 70px;
-	right: 8px;
+	top: calc(100% + 12px);
+	right: 0;
 	box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
 	border: 1px solid #dee0e3;
 	padding: 4px 6px;
@@ -208,6 +208,9 @@
 	font-weight: 600;
 	font-size: 16px;
 	margin: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .userEmail {
