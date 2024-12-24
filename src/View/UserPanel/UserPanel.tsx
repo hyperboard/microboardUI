@@ -80,9 +80,6 @@ export const UserPanel: React.FC = () => {
 						{/* /> */}
 						{isMicroboardIframe() && insideOfMicroboard ? (
 							<>
-								<p className={styles.unauthMsg}>
-									Don&apos;t lose your progress.
-								</p>
 								<UiLink
 									variant="secondary"
 									className={styles.logInBtn}
@@ -107,9 +104,6 @@ export const UserPanel: React.FC = () => {
 							</>
 						) : (
 							<>
-								<p className={styles.unauthMsg}>
-									Don&apos;t lose your progress.
-								</p>
 								<UiButton
 									variant="secondary"
 									className={styles.logInBtn}
