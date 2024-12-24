@@ -9,6 +9,7 @@ import React, { MouseEventHandler, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import style from "./FontSize.module.css";
 import { useAppContext } from "View/AppContext";
+import btnStyle from "../ContextPanelButton.module.css";
 
 const MENU_NAME = "FontSize";
 
@@ -125,6 +126,7 @@ export function FontSize({ rounded = "none" }: Props): React.ReactElement {
 					tooltip={t("contextPanel.fontSize.tooltip")}
 					tooltipPosition="top"
 					className={clsx(
+						btnStyle.contextPanelButton,
 						style.button,
 						verticalAlign === "bottom" &&
 							openedMenu === MENU_NAME &&

@@ -4,6 +4,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
 import { getHotkeyLabel } from "Board/Keyboard";
+import btnStyle from "./ContextPanelButton.module.css";
 
 type Props = {
 	rounded?: "none" | "left" | "right";
@@ -18,6 +19,7 @@ export function Duplicate({ rounded = "none" }: Props): React.ReactElement {
 	};
 	return (
 		<UiButton
+			className={btnStyle.contextPanelButton}
 			id={"duplicate"}
 			onClick={handleClick}
 			variant="secondary"

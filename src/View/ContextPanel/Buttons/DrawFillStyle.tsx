@@ -9,6 +9,7 @@ import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
+import btnStyle from "./ContextPanelButton.module.css";
 
 const MENU_NAME = "DrawFillStyle";
 
@@ -42,6 +43,7 @@ export function DrawFillStyle(): React.ReactElement | null {
 			align="center"
 			button={
 				<UiButton
+					className={btnStyle.contextPanelButton}
 					id={"drawing-fill-style"}
 					tooltip={t("contextPanel.penColor.tooltip")}
 					tooltipPosition="top"

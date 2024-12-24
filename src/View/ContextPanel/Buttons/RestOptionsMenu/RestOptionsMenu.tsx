@@ -6,6 +6,7 @@ import { Icon } from "View/Icon";
 import { UiButton } from "View/Ui/UiButton/UiButton";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import style from "./RestOptionsMenu.module.css";
+import btnStyle from "../ContextPanelButton.module.css";
 
 const MENU_NAME = "RestOptions";
 
@@ -39,6 +40,7 @@ export function RestOptionsMenu({
 					active={openedMenu === MENU_NAME}
 					rounded={rounded}
 					className={clsx(
+						btnStyle.contextPanelButton,
 						verticalAlign === "bottom" &&
 							openedMenu === MENU_NAME &&
 							style.menuBottom,

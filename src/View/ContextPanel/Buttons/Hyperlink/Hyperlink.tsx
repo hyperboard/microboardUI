@@ -7,6 +7,8 @@ import style from "./Hyperlink.module.css";
 import { useAppContext } from "View/AppContext";
 import { useTranslation } from "react-i18next";
 import { usePanelContext } from "View/ContextPanel/PanelContext";
+import btnStyle from "../ContextPanelButton.module.css";
+
 type HyperlinkProps = {
 	isReady: boolean;
 };
@@ -89,6 +91,7 @@ export const Hyperlink = ({
 					align="left"
 					button={
 						<UiButton
+							className={btnStyle.contextPanelButton}
 							id="Hyperlink"
 							tooltip={t("contextPanel.hyperLink.tooltip")}
 							tooltipPosition="top"

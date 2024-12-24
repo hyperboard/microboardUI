@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
 import { Icon } from "View/Icon";
 import { UiButton } from "View/Ui/UiButton/UiButton";
+import btnStyle from "./ContextPanelButton.module.css";
 
 export function SwitchPointers(): React.ReactElement | null {
 	const { board } = useAppContext();
@@ -13,6 +14,7 @@ export function SwitchPointers(): React.ReactElement | null {
 
 	return (
 		<UiButton
+			className={btnStyle.contextPanelButton}
 			id={"switch-pointers"}
 			tooltip={t("contextPanel.connectorSwitchPointers.tooltip")}
 			tooltipPosition="top"

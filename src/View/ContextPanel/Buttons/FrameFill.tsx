@@ -9,6 +9,7 @@ import { ColorPicker } from "View/Pickers/ColorPicker/ColorPicker";
 import { UiButton } from "View/Ui/UiButton/UiButton";
 import { UiColorInput } from "View/Ui/UiColorInput";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
+import btnStyle from "./ContextPanelButton.module.css";
 
 const MENU_NAME = "FrameFill";
 
@@ -46,6 +47,7 @@ export function FrameFill(): React.ReactElement | null {
 			align="left"
 			button={
 				<UiButton
+					className={btnStyle.contextPanelButton}
 					id={"fill-style"}
 					onClick={handleClick}
 					tooltip={t("contextPanel.frameColor.tooltip")}

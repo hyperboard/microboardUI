@@ -8,6 +8,7 @@ import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
+import btnStyle from "./ContextPanelButton.module.css";
 
 const MENU_NAME = "StickerFillStyle";
 
@@ -35,6 +36,7 @@ export function StickerFillStyle(): React.ReactElement | null {
 			align="left"
 			button={
 				<UiButton
+					className={btnStyle.contextPanelButton}
 					id="sticker-fill-style"
 					tooltip={t("contextPanel.stickerColor.tooltip")}
 					tooltipPosition="top"

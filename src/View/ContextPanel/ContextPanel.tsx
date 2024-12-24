@@ -42,6 +42,7 @@ import { ConnectorTextHighlight } from "./Buttons/ConnectorTextHighlight";
 import { CopyItemLink } from "./Buttons/RestOptionsMenu/Items/CopyItemLink";
 import { SetLinkTo } from "./Buttons/RestOptionsMenu/Items/SetLinkTo";
 import { Hyperlink } from "./Buttons/Hyperlink";
+import style from "./ContextPanel.module.css";
 
 const isReady = false;
 
@@ -113,6 +114,7 @@ export function ContextPanel(): React.ReactElement | null {
 			}}
 		>
 			<UiPanel
+				// className={style.contextPanel}
 				style={{
 					position: "absolute",
 					left: mbr.left,

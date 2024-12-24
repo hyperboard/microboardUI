@@ -1,6 +1,7 @@
 import React from "react";
 import { useAppContext } from "View/AppContext";
 import { UiButton } from "View/Ui/UiButton/UiButton";
+import btnStyle from "./ContextPanelButton.module.css";
 
 export function Edit(): React.ReactElement | null {
 	const { board } = useAppContext();
@@ -10,6 +11,7 @@ export function Edit(): React.ReactElement | null {
 	};
 	return (
 		<UiButton
+			className={btnStyle.contextPanelButton}
 			id="ContextPanelEdit"
 			onClick={handleClick}
 			rounded="left"

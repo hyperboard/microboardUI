@@ -21,6 +21,17 @@
 	border-radius: 50%;
 }
 
+@media screen and (max-width: 748px) {
+	.button {
+		width: 24px;
+		height: 24px;
+	}
+	.button.active::before {
+		width: 28px;
+		height: 28px;
+	}
+}
+
 .none::after {
 	content: "";
 	position: absolute;

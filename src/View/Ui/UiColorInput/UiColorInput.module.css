@@ -34,6 +34,17 @@
 	padding-block: 0;
 }
 
+@media screen and (max-width: 748px) {
+	.colorPickerContainer.active::before {
+		width: 28px;
+		height: 28px;
+	}
+	.colorCircle {
+		width: 24px;
+		height: 24px;
+	}
+}
+
 .colorCircle.image {
 	background-position: center;
 	background-size: contain;

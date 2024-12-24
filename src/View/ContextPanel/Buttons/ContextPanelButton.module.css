@@ -1,0 +1,7 @@
+@media screen and (max-width: 768px) {
+	.contextPanelButton {
+		--min-width: 28px;
+		--min-height: 28px;
+		--padding: 4px;
+	}
+}

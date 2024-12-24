@@ -14,6 +14,7 @@ import { SliderPicker } from "../../../Pickers/SliderPicker";
 import { StrokeStylePicker } from "../../../Pickers/StrokeStylePicker";
 import styles from "./ConnectorType.module.css";
 import { BorderStyle } from "../../../../Board/Items/Path";
+import btnStyle from "../ContextPanelButton.module.css";
 
 const MENU_NAME = "ConnectorType";
 
@@ -55,6 +56,7 @@ export function ConnectorType(): React.ReactElement | null {
 			align="left"
 			button={
 				<UiButton
+					className={btnStyle.contextPanelButton}
 					id={"connector-type"}
 					tooltip={t("contextPanel.connectorType.tooltip")}
 					tooltipPosition="top"

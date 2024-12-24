@@ -10,6 +10,8 @@ import style from "./EndPointer.module.css";
 import { useAppContext } from "View/AppContext";
 import { ConnectorPointerStyle } from "Board/Items/Connector/Pointers/Pointers";
 import { ConnectorPointerType } from "View/Icon/ConnectorPointerIcon";
+import btnStyle from "../ContextPanelButton.module.css";
+import clsx from "clsx";
 
 const MENU_NAME = "EndPointer";
 
@@ -44,7 +46,7 @@ export function EndPointer(): React.ReactElement | null {
 					variant="secondary"
 					rounded="none"
 					active={openedMenu === MENU_NAME}
-					className={style.button}
+					className={clsx(style.button, btnStyle.contextPanelButton)}
 				>
 					{pointerStartStyle === "None" ? (
 						"None"

@@ -11,6 +11,7 @@ import { UiButton } from "View/Ui/UiButton/UiButton";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import { UiSeparator } from "View/Ui/UiSeparator";
 import style from "./TextAlignment.module.css";
+import btnStyle from "../ContextPanelButton.module.css";
 
 const MENU_NAME = "TextAlignment";
 
@@ -48,6 +49,7 @@ export function TextAlignment(): React.ReactElement | null {
 			align="left"
 			button={
 				<UiButton
+					className={btnStyle.contextPanelButton}
 					id="ChangeTextAlignment"
 					tooltip={t("contextPanel.textAlignment.tooltip")}
 					tooltipPosition="top"

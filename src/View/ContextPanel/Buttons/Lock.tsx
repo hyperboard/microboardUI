@@ -4,6 +4,7 @@ import { Icon } from "View/Icon";
 import { UiButton } from "View/Ui/UiButton";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import btnStyle from "./ContextPanelButton.module.css";
 
 type Props = {
 	rounded?: "none" | "left";
@@ -83,6 +84,7 @@ export const Lock = ({
 
 	return (
 		<UiButton
+			className={btnStyle.contextPanelButton}
 			id={"lock"}
 			onClick={handleClick}
 			variant="secondary"

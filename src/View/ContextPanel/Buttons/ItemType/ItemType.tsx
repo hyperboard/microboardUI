@@ -13,6 +13,7 @@ import { useAppContext } from "View/AppContext";
 import clsx from "clsx";
 import { Shape } from "Board/Items";
 import { ShapeCategoryName } from "../../../Tools/AddShape";
+import btnStyle from "../ContextPanelButton.module.css";
 
 const MENU_NAME = "ItemType";
 
@@ -61,6 +62,7 @@ export function ItemType(): React.ReactElement | null {
 					active={openedMenu === MENU_NAME}
 					rounded="left"
 					className={clsx(
+						btnStyle.contextPanelButton,
 						verticalAlign === "bottom" &&
 							openedMenu === MENU_NAME &&
 							style.menuBottom,

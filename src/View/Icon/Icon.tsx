@@ -1,5 +1,7 @@
 import React from "react";
 import sprite from "./sprite.svg";
+import styles from "./Icon.module.css";
+import clsx from "clsx";
 
 export type IconId =
 	| "Select"
@@ -131,8 +133,8 @@ export function Icon({
 	iconName,
 	style,
 	className,
-	height = 24,
-	width = 24,
+	height,
+	width,
 }: Props): React.ReactElement {
 	return (
 		<svg
@@ -141,7 +143,7 @@ export function Icon({
 			width={width}
 			height={height}
 			style={style}
-			className={className}
+			className={clsx(className, styles.icon)}
 		>
 			<use
 				width={width}

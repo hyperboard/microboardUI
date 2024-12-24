@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next";
 import style from "./StrokeStyle.module.css";
 import { useAppContext } from "View/AppContext";
 import { Shape } from "../../../../Board/Items";
+import btnStyle from "../ContextPanelButton.module.css";
 
 const MENU_NAME = "StrokeStyle";
 
@@ -80,6 +81,7 @@ export function StrokeStyle(): React.ReactElement | null {
 			align="left"
 			button={
 				<UiButton
+					className={btnStyle.contextPanelButton}
 					id={"stroke-style"}
 					tooltip={t("contextPanel.strokeStyle.tooltip")}
 					tooltipPosition="top"

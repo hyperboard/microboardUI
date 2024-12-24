@@ -5,6 +5,7 @@ import { Icon } from "View/Icon";
 import { UiButton } from "View/Ui/UiButton/UiButton";
 import { Connector } from "../../../Board/Items";
 import { UiSeparator } from "../../Ui/UiSeparator";
+import btnStyle from "./ContextPanelButton.module.css";
 
 export function ConnectorAddText(): React.ReactElement | null {
 	const { board } = useAppContext();
@@ -44,6 +45,7 @@ export function ConnectorAddText(): React.ReactElement | null {
 				onClick={handleClick}
 				variant="secondary"
 				rounded="none"
+				className={btnStyle.contextPanelButton}
 			>
 				<Icon iconName="AddText" />
 			</UiButton>

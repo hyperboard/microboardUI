@@ -7,6 +7,7 @@ import { Icon } from "View/Icon";
 import { FontStylePicker } from "View/Pickers/FontStylePicker";
 import { UiButton } from "View/Ui/UiButton/UiButton";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
+import btnStyle from "./ContextPanelButton.module.css";
 
 const MENU_NAME = "FontStyle";
 
@@ -36,6 +37,7 @@ export function FontStyle(): React.ReactElement | null {
 			align="left"
 			button={
 				<UiButton
+					className={btnStyle.contextPanelButton}
 					id={"ChangeFontStyle"}
 					tooltip={t("contextPanel.fontStyle.tooltip")}
 					tooltipPosition="top"

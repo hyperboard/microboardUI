@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
 import { UiColorInput } from "View/Ui/UiColorInput";
 import { convertHexToRGBA } from "utils";
+import btnStyle from "./ContextPanelButton.module.css";
 
 const MENU_NAME = "TextHighlight";
 
@@ -41,6 +42,7 @@ export function TextHighlight(): React.ReactElement | null {
 			align="left"
 			button={
 				<UiButton
+					className={btnStyle.contextPanelButton}
 					id="ChangeTextHighlight"
 					tooltip={t("contextPanel.textHighlight.tooltip")}
 					tooltipPosition="top"

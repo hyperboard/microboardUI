@@ -11,6 +11,7 @@ import { FramePicker } from "View/Pickers/FramePicker";
 import { UiButton } from "View/Ui/UiButton/UiButton";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import style from "./FrameRatio.module.css";
+import btnStyle from "../ContextPanelButton.module.css";
 
 const MENU_NAME = "FrameType";
 
@@ -68,6 +69,7 @@ export function FrameRatio(): React.ReactElement | null {
 					active={openedMenu === MENU_NAME}
 					rounded="left"
 					className={clsx(
+						btnStyle.contextPanelButton,
 						verticalAlign === "bottom" &&
 							openedMenu === MENU_NAME &&
 							style.menuOpened,

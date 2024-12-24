@@ -9,6 +9,7 @@ import { HorizontalAlignmentPicker } from "View/Pickers/HorizontalAlignmentPicke
 import { VerticalAlignmentPicker } from "View/Pickers/VerticalAlignmentPicker";
 import { UiButton } from "View/Ui/UiButton/UiButton";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
+import btnStyle from "./ContextPanelButton.module.css";
 
 const MENU_NAME = "TextAlignmentSticker";
 
@@ -27,12 +28,16 @@ export function TextAlignmentSticker(): React.ReactElement | null {
 		toggleMenu(MENU_NAME);
 	};
 
-	const handleHorisontalAlignmentPick = (alignment: HorisontalAlignment): void => {
+	const handleHorisontalAlignmentPick = (
+		alignment: HorisontalAlignment,
+	): void => {
 		board.selection.setHorisontalAlignment(alignment);
 		toggleMenu("None");
 	};
 
-	const handleVerticalAlignmentPick = (alignment: VerticalAlignment): void => {
+	const handleVerticalAlignmentPick = (
+		alignment: VerticalAlignment,
+	): void => {
 		board.selection.setVerticalAlignment(alignment);
 		toggleMenu("None");
 	};
@@ -46,6 +51,7 @@ export function TextAlignmentSticker(): React.ReactElement | null {
 			align="center"
 			button={
 				<UiButton
+					className={btnStyle.contextPanelButton}
 					id={"sticker-text-alignment"}
 					tooltip={t("contextPanel.textAlignment.tooltip")}
 					tooltipPosition="top"

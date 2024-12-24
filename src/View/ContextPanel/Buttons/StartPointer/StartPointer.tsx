@@ -11,6 +11,7 @@ import { useAppContext } from "View/AppContext";
 import clsx from "clsx";
 import { ConnectorPointerStyle } from "Board/Items/Connector/Pointers/Pointers";
 import { ConnectorPointerType } from "View/Icon/ConnectorPointerIcon";
+import btnStyle from "../ContextPanelButton.module.css";
 
 const MENU_NAME = "StartPointer";
 
@@ -46,6 +47,7 @@ export function StartPointer(): React.ReactElement | null {
 					rounded="left"
 					active={openedMenu === MENU_NAME}
 					className={clsx(
+						btnStyle.contextPanelButton,
 						style.button,
 						verticalAlign === "bottom" &&
 							openedMenu === MENU_NAME &&
