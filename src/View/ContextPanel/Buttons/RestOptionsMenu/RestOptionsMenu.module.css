@@ -27,6 +27,8 @@
 }
 
 .hotkey {
+	font-family: "Manrope";
+	font-weight: 400;
 	font-size: 1.4rem;
 	color: rgba(13, 17, 38, 0.4);
 	margin-left: auto;
@@ -34,6 +36,8 @@
 }
 
 .text {
+	font-family: "Manrope";
+	font-weight: 400;
 	text-wrap: nowrap;
 	text-align: left;
 	flex: 1 0;

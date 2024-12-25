@@ -100,7 +100,6 @@ export const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 						pattern="ghost"
 					>
 						<Icon
-							className={styles.humanIcon}
 							width={20}
 							height={20}
 							iconName="human"
