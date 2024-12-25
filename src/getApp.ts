@@ -4,7 +4,7 @@ import bodyParser from "body-parser";
 import compression from "compression";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import { db } from "drizzle/db";
+import { db, pool } from "drizzle/db";
 import { migrateData } from "drizzle/scripts/board-events-table.migration";
 import { runMigration } from "drizzle/scripts/migrate";
 import express from "express";
@@ -32,15 +32,23 @@ import { Users } from "./Routes/V1/Users";
 import { Config } from "./shared/config/config";
 import { Mailer } from "./shared/modules/mailer/mailer";
 import { withWebSocketApi } from "./WebSocket";
+import { updateTariffs } from "drizzle/scripts/tariffs";
+import { createVectorExtension } from "drizzle/scripts/create-vector-ext";
 
 export async function getApp(): Promise<http.Server> {
     const app = express();
 
-    await runMigration();
+    await createVectorExtension(pool).catch(console.error);
+
+    if (process.env.NODE_ENV?.toLocaleLowerCase() === "production") {
+        await runMigration();
+    }
 
     if (process.env.MIGRATE_EVENTS === "true") {
         await migrateData().catch(console.error);
     }
+
+    await updateTariffs().catch(console.error);
 
     app.use(morgan("combined"));
     if (process.env.NODE_ENV !== "production") {

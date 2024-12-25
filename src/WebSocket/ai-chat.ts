@@ -1,5 +1,6 @@
 import { OpenAI, OpenAIModels } from "ai/openai";
 import { ChatStreamHandler } from "ai/openai/ChatStreamHandler";
+import { Message } from "drizzle/entities";
 import { CompletionUsage } from "openai/resources";
 import winston from "winston";
 import WebSocket from "ws";
@@ -26,13 +27,20 @@ export const handleAIChatMessage = async (options: {
                 itemId: msg.event.itemId,
             });
             break;
+        case "GetMessageList":
+            await chatStreamHandler.handleGetMessageList({
+                msg: msg as AiChatMsg<GetMessageList>,
+                logger,
+                boardClients,
+            });
+            break;
 
         default:
             throw new Error("Unknown method");
     }
 };
 
-export type AiChatEventType = UserRequest | StopGeneration;
+export type AiChatEventType = UserRequest | StopGeneration | GetMessageList;
 
 // To receive
 export interface UserRequest {
@@ -44,7 +52,8 @@ export interface UserRequest {
     model?: OpenAIModels; // default gpt-4-turbo-preview
     images?: string[]; // only with 4o and later. Image link or base64. Better use: `data:{type};base64,${base64}`
     updatedFrom?: number; // "user" message id
-    itemId: string;
+    itemId: string; // response item id;
+    requestItemId: string;
     action?: TextAction;
 }
 
@@ -66,6 +75,11 @@ export interface StopGeneration {
     itemId: string;
 }
 
+export interface GetMessageList {
+    method: "GetMessageList";
+    boardId: string;
+}
+
 // To send
 export interface ChatChunk {
     method: "ChatChunk";
@@ -75,6 +89,12 @@ export interface ChatChunk {
     content?: string;
     usage?: Partial<CompletionUsage>;
     error?: string;
+    message?: number;
+}
+
+export interface MessageList {
+    method: "MessageList";
+    messages: Message[];
 }
 
 export interface AiChatMsg<T = AiChatEventType> {

@@ -20,6 +20,7 @@ export const message = pgTable("message", {
     status: text("status").notNull().default("pending"),
     updatedFrom: integer("updated_from"),
     generatedFrom: integer("generated_from"),
+    itemId: text("item_id"),
 });
 
 export const chatRelations = relations(chat, ({ many }) => ({

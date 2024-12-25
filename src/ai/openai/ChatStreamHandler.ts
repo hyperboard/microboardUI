@@ -1,8 +1,8 @@
-import { asc, eq, inArray } from "drizzle-orm";
+import { asc, eq, inArray, ne, and } from "drizzle-orm";
 import WebSocket from "ws";
 import { OpenAI } from ".";
 import { db } from "drizzle/db";
-import { AiChatMsg, ChatChunk, StopGeneration, UserRequest } from "WebSocket/ai-chat";
+import { AiChatMsg, ChatChunk, GetMessageList, MessageList, StopGeneration, UserRequest } from "WebSocket/ai-chat";
 import { Chat, chat, Message, message, MessageRole, MessageStatus } from "drizzle/entities/ai";
 import {
     ChatCompletionChunk,
@@ -63,6 +63,7 @@ class SerpApi {
 export class ChatStreamHandler {
     private openai: OpenAI;
     private serpapi = new SerpApi();
+    private encoder = getEncoding("cl100k_base");
     boardClients = new Map<string, WebSocket.WebSocket[]>();
 
     private activeStreams = new Map<
@@ -77,6 +78,10 @@ export class ChatStreamHandler {
 
     constructor(openai: OpenAI) {
         this.openai = openai;
+    }
+
+    private countTokens(text: string): number {
+        return this.encoder.encode(text).length;
     }
 
     async fetchQuery(idea: string): Promise<string | null> {
@@ -145,7 +150,7 @@ export class ChatStreamHandler {
                 },
             };
 
-            this.broadcastChunkToBoardClients(this.boardClients, boardId, stopChunk);
+            this.broadcastToBoardClients(this.boardClients, boardId, stopChunk);
         } catch (error) {
             logger.error(`Error stopping conversation for board ${boardId}:`, error);
 
@@ -155,6 +160,38 @@ export class ChatStreamHandler {
                 error instanceof Error ? error.message : "Failed to stop conversation"
             );
         }
+    }
+
+    public async handleGetMessageList({
+        msg,
+        logger,
+        boardClients,
+    }: {
+        msg: AiChatMsg<GetMessageList>;
+        logger: winston.Logger;
+        boardClients: Map<string, WebSocket.WebSocket[]>;
+    }) {
+        const verifiedChat = await this.ensureChatExists(msg, logger);
+        this.boardClients = boardClients;
+
+        console.log("verifiedChat: ", verifiedChat);
+        const messages = await db
+            .select()
+            .from(message)
+            .where(and(eq(message.chatId, verifiedChat.id), eq(message.archived, false), ne(message.role, "system")))
+            .orderBy(message.createdAt);
+
+        console.log("messages: ", messages);
+        const msgToSend: AiChatMsg<MessageList> = {
+            type: "AiChat",
+            boardId: msg.boardId,
+            event: {
+                method: "MessageList",
+                messages,
+            },
+        };
+
+        this.broadcastToBoardClients(this.boardClients, msg.boardId, msgToSend);
     }
 
     public async handleUserRequest(options: {
@@ -295,6 +332,7 @@ export class ChatStreamHandler {
                 content: msg.event.idea,
                 logger,
                 tokensUsed: tokens.length,
+                itemId: msg.event.requestItemId,
             });
 
             logger.debug("Generating chat completion stream...");
@@ -349,9 +387,9 @@ export class ChatStreamHandler {
 
         logger.debug(
             "Fetched context strings:",
-            contextItems.map((item) => item.content)
+            contextItems.map((item) => JSON.stringify({ content: item.content, role: item.role }))
         );
-        return contextItems.map((item) => item.content);
+        return contextItems.map((item) => JSON.stringify({ content: item.content, role: item.role }));
     }
 
     private async ensureChatExists(msg: AiChatMsg, logger: winston.Logger): Promise<Chat> {
@@ -420,7 +458,7 @@ export class ChatStreamHandler {
                                 },
                             };
                             logger.debug("Sending chunk to board clients:", streamChunkMsg);
-                            this.broadcastChunkToBoardClients(this.boardClients, chat.boardId, streamChunkMsg);
+                            this.broadcastToBoardClients(this.boardClients, chat.boardId, streamChunkMsg);
                         }
                     } catch (error) {
                         console.error("Error processing stream chunk:", error);
@@ -442,6 +480,7 @@ export class ChatStreamHandler {
                                 completion_tokens: tokens.length,
                             },
                             itemId,
+                            requestItemId: msg.event.requestItemId,
                         });
                     } else {
                         this.saveMessage({
@@ -474,18 +513,20 @@ export class ChatStreamHandler {
         logger: winston.Logger;
         userMessage: Message;
         itemId: string;
+        requestItemId: string;
         usageMetadata?: Partial<CompletionUsage>;
     }) {
-        const { ws, chat, assistantResponse, logger, userMessage, usageMetadata, itemId } = options;
+        const { ws, chat, assistantResponse, logger, userMessage, usageMetadata, itemId, requestItemId } = options;
         logger.debug("Finalizing stream response...");
-        logger.debug("Saving assistant response to database...");
-        await this.saveMessage({
+
+        const assistantMessage = await this.saveMessage({
             chat,
             role: MessageRole.ASSISTANT,
             content: assistantResponse,
             logger,
-            tokensUsed: usageMetadata?.completion_tokens || 0,
+            tokensUsed: usageMetadata?.completion_tokens,
             generatedFrom: userMessage.id,
+            itemId: itemId,
         });
 
         const endChunk: AiChatMsg<ChatChunk> = {
@@ -497,12 +538,12 @@ export class ChatStreamHandler {
                 usage: usageMetadata,
                 chatId: chat.id,
                 itemId: itemId,
+                message: assistantMessage.id,
             },
         };
 
         logger.debug("Sending end chunk to WebSocket:", endChunk);
-        this.broadcastChunkToBoardClients(this.boardClients, chat.boardId, endChunk);
-        // ws.send(JSON.stringify(endChunk));
+        this.broadcastToBoardClients(this.boardClients, chat.boardId, endChunk);
     }
 
     private async saveMessage(options: {
@@ -514,9 +555,28 @@ export class ChatStreamHandler {
         tokensUsed?: number;
         updatedFrom?: number;
         generatedFrom?: number;
+        itemId?: string;
     }) {
-        const { chat, role, status, content, logger, tokensUsed = 0, updatedFrom, generatedFrom } = options;
-        logger.debug("Saving message to database:", { chatId: chat.id, role, content, tokensUsed });
+        const {
+            chat,
+            role,
+            content,
+            logger,
+            status = MessageStatus.DONE,
+            updatedFrom,
+            generatedFrom,
+            itemId,
+        } = options;
+
+        const tokensUsed = options.tokensUsed ?? this.countTokens(content);
+
+        logger.debug("Saving message to database:", {
+            chatId: chat.id,
+            role,
+            content,
+            tokensUsed,
+        });
+
         const [savedMessage] = await db
             .insert(message)
             .values({
@@ -524,26 +584,22 @@ export class ChatStreamHandler {
                 role,
                 content,
                 tokensUsed,
-                status: status || MessageStatus.DONE,
-                updatedFrom: updatedFrom ? updatedFrom : undefined,
-                generatedFrom: generatedFrom ? generatedFrom : undefined,
+                status,
+                updatedFrom,
+                generatedFrom,
+                itemId,
             })
             .returning();
 
         if (updatedFrom && !isNaN(Number(updatedFrom))) {
             const [updatedUserMessage] = await db
                 .update(message)
-                .set({
-                    status: MessageStatus.ARCHIVED,
-                })
+                .set({ status: MessageStatus.ARCHIVED })
                 .where(eq(message.id, updatedFrom))
                 .returning();
-
             await db
                 .update(message)
-                .set({
-                    status: MessageStatus.ARCHIVED,
-                })
+                .set({ status: MessageStatus.ARCHIVED })
                 .where(eq(message.generatedFrom, updatedUserMessage.id))
                 .returning();
         }
@@ -565,19 +621,19 @@ export class ChatStreamHandler {
             },
         };
         if (chat) {
-            this.broadcastChunkToBoardClients(this.boardClients, chat.boardId, errorChunk);
+            this.broadcastToBoardClients(this.boardClients, chat.boardId, errorChunk);
         } else {
             ws.send(JSON.stringify(errorChunk));
         }
     }
 
-    private broadcastChunkToBoardClients(
+    private broadcastToBoardClients(
         boardClients: Map<string, WebSocket[]>,
         boardUUID: string,
-        chunk: AiChatMsg<ChatChunk>
+        message: AiChatMsg<any>
     ) {
         const clients = boardClients.get(boardUUID) ?? [];
-        const content = JSON.stringify(chunk);
+        const content = JSON.stringify(message);
         for (const client of clients) {
             client.send(content);
         }

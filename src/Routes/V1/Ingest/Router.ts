@@ -37,16 +37,15 @@ export const getIngestRouter = (logger: winston.Logger, openai: OpenAI): express
                 .returning();
 
             const savedMedia = await minioClient!.getObject(BUCKET_NAME, id);
-            console.log("saved media");
+            console.log("saved media", savedMedia);
             const chunks: Buffer[] = [];
             await pipeline(savedMedia, async function* (source) {
                 for await (const chunk of source) {
                     chunks.push(Buffer.from(chunk));
                 }
             });
-            console.log("chunks");
+            console.log("chunks: ", chunks);
             const mediaString = Buffer.concat(chunks).toString("utf-8");
-            // TODO: Rewrite from openai to another embedding service
             await fileEmbeddingHandler.processFileAndCreateEmbedding(newFile.id, mediaString, boardId);
 
             res.send("Created");
