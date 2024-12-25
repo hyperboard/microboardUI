@@ -100,7 +100,12 @@ export const SelectTemplateModal = (): JSX.Element => {
 			<div className={styles.wrapper}>
 				<div className={styles.sidebar}>
 					<div className={styles.sidebarHeader}>
-						<Icon width={30} height={30} iconName="Template" />
+						<Icon
+							width={30}
+							height={30}
+							iconName="Template"
+							className={styles.sidebarHeaderIcon}
+						/>
 						<h3>{t("modalTemplate.templates")}</h3>
 					</div>
 					<CategoriesMenu

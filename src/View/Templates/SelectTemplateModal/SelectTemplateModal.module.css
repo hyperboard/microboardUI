@@ -24,6 +24,11 @@
 	column-gap: 8px;
 }
 
+.sidebarHeaderIcon {
+	max-width: 30px;
+	max-height: 30px;
+}
+
 .sidebarHeader > img {
 	display: block;
 	width: 30px;
