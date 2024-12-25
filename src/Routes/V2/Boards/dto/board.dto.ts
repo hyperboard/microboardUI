@@ -1,15 +1,17 @@
 export class BoardDto {
-  title: string;
-  authorKey: string | null;
-  isPublic: boolean;
-  directAccessType: string;
-  id: string;
+    title: string;
+    authorKey: string | null;
+    isPublic: boolean;
+    directAccessType: string;
+    id: string;
+    order?: number;
 
-  constructor(payload: BoardDto) {
-    this.id = payload.id;
-    this.title = payload.title;
-    this.authorKey = payload.authorKey;
-    this.isPublic = payload.isPublic;
-    this.directAccessType = payload.directAccessType;
-  }
+    constructor(payload: BoardDto) {
+        this.id = payload.id;
+        this.title = payload.title;
+        this.authorKey = payload.authorKey;
+        this.isPublic = payload.isPublic;
+        this.directAccessType = payload.directAccessType;
+        this.order = payload.order;
+    }
 }

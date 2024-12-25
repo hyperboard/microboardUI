@@ -7,32 +7,33 @@ import { authenticate } from "Routes/V1/Auth/middlewares";
 import { rootFolderQuerySchema } from "./schema/root-folder-query.schema";
 import { folderParamsSchema } from "./schema/folder-params.schema";
 import { FOLDER_ID_PARAM } from "./types";
+import { reorderFolderSchema } from "./schema/reorder-folder.schema";
 
 export function getFoldersRouter(foldersService: FoldersService) {
-  const foldersController = getFoldersController(foldersService);
+    const foldersController = getFoldersController(foldersService);
 
-  const router = Router();
+    const router = Router();
 
-  router.route('/folders')
-    .all(authenticate())
-    .post(
-      validateBody(folderPayloadSchema),
-      foldersController.create
-    )
-    .get(
-      validateQuery(rootFolderQuerySchema),
-      foldersController.getRoot
-    );
+    router
+        .route("/folders")
+        .all(authenticate())
+        .post(validateBody(folderPayloadSchema), foldersController.create)
+        .get(validateQuery(rootFolderQuerySchema), foldersController.getRoot);
 
-  router.post('/folders/init', authenticate(), foldersController.init)
+    router.post("/folders/init", authenticate(), foldersController.init);
 
-  router.route(`/folders/:${FOLDER_ID_PARAM}`)
-    .all(authenticate(), validateParams(folderParamsSchema))
-    .get(foldersController.get)
-    .post(foldersController.addContent)
-    .delete(foldersController.remove)
-    .patch(foldersController.edit);
+    router
+        .route(`/folders/:${FOLDER_ID_PARAM}/reorder`)
+        .all(authenticate(), validateParams(folderParamsSchema))
+        .post(validateBody(reorderFolderSchema), foldersController.reorder);
 
+    router
+        .route(`/folders/:${FOLDER_ID_PARAM}`)
+        .all(authenticate(), validateParams(folderParamsSchema))
+        .get(foldersController.get)
+        .post(foldersController.addContent)
+        .delete(foldersController.remove)
+        .patch(foldersController.edit);
 
-  return router;
+    return router;
 }
