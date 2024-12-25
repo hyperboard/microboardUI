@@ -1,3 +1,4 @@
+import { DragOverlay } from "@dnd-kit/core";
 import React, {
 	type CSSProperties,
 	type PropsWithChildren,
@@ -20,19 +21,13 @@ export function DraggingWrapper({
 	if (!isDragging) {
 		return <>{children}</>;
 	}
-
 	return (
 		<>
 			{children}
 			{createPortal(
-				<div
-					style={{
-						position: "absolute",
-						...style,
-					}}
-				>
-					{draggableItem}
-				</div>,
+				<DragOverlay>
+					<div>{draggableItem}</div>
+				</DragOverlay>,
 				document.getElementById("drag")!,
 			)}
 		</>

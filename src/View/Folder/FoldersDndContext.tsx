@@ -1,9 +1,11 @@
 import {
+	closestCenter,
 	DndContext,
 	PointerSensor,
 	useSensor,
 	useSensors,
 	type DragEndEvent,
+	type DragOverEvent,
 } from "@dnd-kit/core";
 import { useBoardsList } from "App/useBoardsList";
 import type { PropsWithChildren } from "react";
@@ -36,20 +38,51 @@ export function FoldersDndContext({ children }: Props) {
 	const sensors = useSensors(pointerSensor);
 	const handleDragEnd = async (evt: DragEndEvent) => {
 		const board = evt.active.data.current;
-		const targetFolderId = evt.over?.id;
-		if (
-			!isBoard(board) ||
-			!targetFolderId ||
-			board.parentFolderId === targetFolderId
-		) {
+		const target = evt.over?.data.current;
+
+		console.log(evt.over?.rect);
+		console.log(evt.active);
+
+		if (!isBoard(board) || !target) {
 			return;
 		}
-		await boardsList.removeBoardFromFolder(board.parentFolderId, board.id);
-		await boardsList.addBoardToFolder(+targetFolderId, board.id);
+		await boardsList.removeItemFromFolder(board.parentFolderId, board.id);
+		if (isFolder(target)) {
+			await boardsList.addItemToFolder(target.id, board);
+		} else if (isBoard(target)) {
+			const targetFolderId = target.parentFolderId;
+			const targetIdx = boardsList.getItemIndexInFolder(
+				targetFolderId,
+				target.id,
+			);
+			await boardsList.addItemToFolder(
+				targetFolderId,
+				board,
+				targetIdx ? targetIdx + 1 : undefined,
+			);
+		}
+
+		// await boardsList.removeBoardFromFolder(board.parentFolderId, board.id);
+		// await boardsList.addBoardToFolder(+targetFolderId, board.id);
+	};
+
+	const handleDragOver = (evt: DragOverEvent) => {
+		const target = evt.over?.data.current;
+		if (isBoard(target)) {
+			const targetIdx = boardsList.getItemIndexInFolder(
+				target.parentFolderId,
+				target.id,
+			);
+		}
 	};
 
 	return (
-		<DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+		<DndContext
+			collisionDetection={closestCenter}
+			onDragOver={handleDragOver}
+			sensors={sensors}
+			onDragEnd={handleDragEnd}
+		>
 			{children}
 		</DndContext>
 	);

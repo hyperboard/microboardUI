@@ -15,6 +15,7 @@ import { UiPanel } from "View/Ui/UiPanel";
 import { ResizableEdge } from "./ResizableEdge";
 import style from "./SidePanel.module.css";
 import { useSidePanelContext } from "./SidePanelContext";
+import { SortableContext } from "@dnd-kit/sortable";
 
 const MIN_PANEL_WIDTH = 280;
 
@@ -73,11 +74,18 @@ export function SidePanel(): JSX.Element {
 				<div className={style.folders}>
 					<div className={style.foldersWrapper}>
 						<FoldersDndContext>
-							<Folder
-								accordionClassName={style.rootFolder}
-								folder={boardsList.getRootFolder()}
-							/>
-							<Folder folder={boardsList.getSharedFolder()} />
+							<SortableContext
+								items={[
+									boardsList.getRootFolder()?.id ?? 0,
+									boardsList.getSharedFolder()?.id ?? 1,
+								]}
+							>
+								<Folder
+									accordionClassName={style.rootFolder}
+									folder={boardsList.getRootFolder()}
+								/>
+								<Folder folder={boardsList.getSharedFolder()} />
+							</SortableContext>
 						</FoldersDndContext>
 					</div>
 				</div>

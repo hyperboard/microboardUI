@@ -4,6 +4,7 @@ import type {
 	Folder,
 	FolderPayload,
 	FolderType,
+	ReorderFolderPayload,
 } from "./types";
 
 export function getRootFolder(folderType?: FolderType) {
@@ -65,4 +66,16 @@ export function editFolder(folderId: number, body: FolderPayload) {
 			folderId,
 		},
 	});
+}
+
+export function reorderFolder(folderId: number, body: ReorderFolderPayload[]) {
+	return apiV2.post(
+		"/folders/:folderId/reorder",
+		{ items: body },
+		{
+			params: {
+				folderId,
+			},
+		},
+	);
 }

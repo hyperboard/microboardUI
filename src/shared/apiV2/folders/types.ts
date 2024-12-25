@@ -28,3 +28,8 @@ export type AddToFolderPayload = Partial<{
 	nestedFolderId: number;
 	nestedBoardId: string;
 }>;
+
+export type ReorderFolderPayload = {
+	id: string | number;
+	order: number;
+};
