@@ -119,14 +119,19 @@ export function createApp(isHistory = true): App {
 		board = currentBoard;
 	}
 
-	//  todo fix and finish
 	async function openBoardFromFile(): Promise<void> {
 		app.getBoard()?.selection.quickAddButtons.clear();
 		const id = "local";
 
-		const currentBoard = new Board(id);
+		const currentBoard = new Board(
+			id,
+			undefined,
+			saveEditingFile.bind(app),
+		);
+		currentBoard.connect(connection);
 		subscriptions.setBoard(currentBoard);
 		boardSubject.publish(currentBoard);
+		currentBoard.setInterfaceType("edit");
 		board = currentBoard;
 	}
 

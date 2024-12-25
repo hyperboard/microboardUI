@@ -36,6 +36,7 @@ import style from "./AppView.module.css";
 import { InactiveBoardHidder } from "./InactiveBoardHidder";
 import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
+import { LocalFileSaveProgress } from "View/LocalFileSavingProgress";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -199,6 +200,7 @@ export function AppView(): JSX.Element {
 				<ChangePasswordModal />
 				<AccessDeniedModal />
 			</UiModalBackground>
+			<LocalFileSaveProgress />
 		</div>
 	);
 }

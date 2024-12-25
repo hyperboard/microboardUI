@@ -310,9 +310,18 @@ export function createConnection(
 				console.warn("Debug: Received unknown message type:", msg.type);
 		}
 	}
-	const ws = createWsClient(onMessage, setConnectionErrorTimeout, onErorr);
+	const ws = createWsClient(
+		onMessage,
+		setConnectionErrorTimeout,
+		onErorr,
+		getBoard,
+	);
 
 	async function connect(): Promise<void> {
+		if (getBoard()?.getBoardId().includes("local")) {
+			return;
+		}
+
 		try {
 			postConnectingMsg();
 			const response = await fetch(`${getApiUrl()}/connection`, {
@@ -358,9 +367,7 @@ export function createConnection(
 		}
 
 		async function sendSubscribeMsg(): Promise<void> {
-			console.log("send subscribe msg");
 			await publishAuth();
-			console.log("send subscribe after auth");
 			let subscribeTimeout = subscribeTimeouts.get(boardId);
 			if (!subscribeTimeout) {
 				subscribeTimeout = {
@@ -389,8 +396,6 @@ export function createConnection(
 				userId: generatedClientId,
 				accessKey,
 			});
-
-			console.log("send subscribe msg end");
 		}
 
 		function unsubscribe(): void {
@@ -595,6 +600,7 @@ export function createWsClient(
 	msgHandler: SocketMsgHandler,
 	setConnectionErrorTimeout: () => void,
 	onError: (error: unknown) => void,
+	getBoard: () => Board,
 ): WsClient {
 	let socket: WebSocket | null;
 	const onOpenSubject = new Subject();
@@ -654,7 +660,11 @@ export function createWsClient(
 	}
 
 	function send(message): void {
-		if (socket && isConnected()) {
+		if (
+			socket &&
+			isConnected() &&
+			!getBoard()?.getBoardId().includes("local")
+		) {
 			socket.send(JSON.stringify(message));
 		}
 	}
@@ -677,8 +687,8 @@ export function createWsClient(
 	const pingMsg = JSON.stringify({ type: "ping" });
 
 	function keepAlivePing(): void {
-		if (isConnected()) {
-			socket?.send(pingMsg);
+		if (isConnected() && !getBoard()?.getBoardId().includes("local")) {
+			send(pingMsg);
 
 			setConnectionErrorTimeout();
 		}

@@ -537,6 +537,7 @@
 		"deleteShared": "Remove from my list",
 		"addNew": "Add new",
 		"importHTML": "Import from HTML",
+		"editHTML": "Edit local HTML",
 		"rename": "Rename",
 		"newBoard": "New board",
 		"newFolder": "New folder",

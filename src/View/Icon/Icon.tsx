@@ -67,6 +67,8 @@ export type IconId =
 	| "Search"
 	| "UserPic"
 	| "EmbedBoardIcon"
+	| "UploadBoardIcon"
+	| "EditBoardIcon"
 	| "addButton"
 	| "canEdit"
 	| "canView"

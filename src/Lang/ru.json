@@ -535,6 +535,7 @@
 		"deleteShared": "Удалить из списка",
 		"addNew": "Добавить",
 		"importHTML": "Импортировать из HTML",
+		"editHTML": "Редактировать локальный HTML",
 		"rename": "Переименовать",
 		"newBoard": "Новая доска",
 		"newFolder": "Новая папка",

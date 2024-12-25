@@ -131,6 +131,7 @@ export const UserPanel: React.FC = () => {
 	return (
 		<CommentsPanelContextProvider>
 			<UiPanel zIndex={10} padding={0} className={styles.wrapper}>
+				"!@#"
 				<ActionButtons />
 				<PresenceUsers app={app} />
 				<div className={styles.container}>

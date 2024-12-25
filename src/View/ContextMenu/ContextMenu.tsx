@@ -80,6 +80,41 @@ export function ContextMenu(): JSX.Element | null {
 		setFolder(null);
 	};
 
+	const deserializeBoard = (stringedHTML: string): void => {
+		app.getBoard().deserializeHTML(stringedHTML);
+		app.render();
+		const sumMbr = [
+			...app.getBoard().items.listAll(),
+			...app.getBoard().items.listFrames(),
+		].reduce((acc: undefined | Mbr, item) => {
+			if (!acc) {
+				return item.getMbr();
+			}
+			return acc.combine(item.getMbr());
+		}, undefined);
+		if (sumMbr) {
+			app.getBoard().camera.zoomToFit(sumMbr);
+		}
+	};
+
+	const handleEditLocalFile: MouseEventHandler = async ev => {
+		ev.preventDefault();
+		ev.stopPropagation();
+		setIsBoardCreating(true);
+
+		const stringedHTML = await app.openAndEditFile();
+		if (stringedHTML) {
+			close();
+			setBoard(boardId);
+			setFolder(null);
+			app.openBoardFromFile();
+			navigate(`/boards/local`);
+			deserializeBoard(stringedHTML);
+		}
+
+		setIsBoardCreating(false);
+	};
+
 	const handleImportBoard: MouseEventHandler = async ev => {
 		ev.preventDefault();
 		ev.stopPropagation();
@@ -108,21 +143,17 @@ export function ContextMenu(): JSX.Element | null {
 					}
 				};
 
-				input.onerror = () => {
+				function resolver(): void {
 					resolve(undefined);
-				};
-				input.oncancel = () => {
-					resolve(undefined);
-				};
-				input.onabort = () => {
-					resolve(undefined);
-				};
+				}
+				input.onerror = resolver;
+				input.oncancel = resolver;
+				input.onabort = resolver;
 
 				input.click();
 			},
 		);
 		const stringedHTML = await uploadPromise;
-		// const stringedHTML = await app.openAndEditFile();
 		if (stringedHTML) {
 			const boardId = await boardsList.createBoard(
 				undefined,
@@ -134,22 +165,7 @@ export function ContextMenu(): JSX.Element | null {
 			setFolder(null);
 			await app.openBoard(boardId);
 			navigate(`/boards/${boardId}`);
-			// app.openBoardFromFile();
-			// navigate(`/boards/local`);
-			app.getBoard().deserializeHTML(stringedHTML);
-			app.render();
-			const sumMbr = [
-				...app.getBoard().items.listAll(),
-				...app.getBoard().items.listFrames(),
-			].reduce((acc: undefined | Mbr, item) => {
-				if (!acc) {
-					return item.getMbr();
-				}
-				return acc.combine(item.getMbr());
-			}, undefined);
-			if (sumMbr) {
-				app.getBoard().camera.zoomToFit(sumMbr);
-			}
+			deserializeBoard(stringedHTML);
 		}
 
 		setIsBoardCreating(false);
@@ -306,7 +322,7 @@ export function ContextMenu(): JSX.Element | null {
 						onClick={handleImportBoard}
 						icon={
 							<Icon
-								iconName="EmbedBoardIcon"
+								iconName="UploadBoardIcon"
 								width={20}
 								height={20}
 							/>
@@ -314,6 +330,20 @@ export function ContextMenu(): JSX.Element | null {
 						isLoading={isBoardCreating}
 					>
 						{t("contextMenu.importHTML")}
+					</ContextMenuItem>
+					<ContextMenuItem
+						disabled={isMutationsDisabled}
+						onClick={handleEditLocalFile}
+						icon={
+							<Icon
+								iconName="EditBoardIcon"
+								width={20}
+								height={20}
+							/>
+						}
+						isLoading={isBoardCreating}
+					>
+						{t("contextMenu.editHTML")}
 					</ContextMenuItem>
 					<ContextMenuItem
 						disabled={!account.isLoggedIn || isMutationsDisabled}
