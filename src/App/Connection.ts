@@ -141,13 +141,27 @@ export type OpenAIModels =
 	| "gpt-4-16k"
 	| "o1-mini"
 	| "o1";
+
 export interface UserRequest {
 	method: "UserRequest";
-	context: number[];
+	context: number[]; // chat message context
 	boardContext: string[];
+	boardContextIds?: string[]; // just for frontend
 	idea: string;
-	model?: OpenAIModels;
+	model?: OpenAIModels; // default gpt-4-turbo-preview
+	images?: string[]; // only with 4o and later. Image link or base64. Better use: `data:{type};base64,${base64}`
+	updatedFrom?: number; // "user" message id
 	itemId: string;
+	action?: TextAction;
+}
+
+export type TTextAction =
+	| "adjust_text_length"
+	| "adjust_reading_level"
+	| "adjust_emojis";
+export interface TextAction {
+	action: TTextAction;
+	level: number;
 }
 
 export interface ChatChunk {
