@@ -418,13 +418,6 @@
 	height: 32px;
 }
 
-.humanIcon,
-.crown,
-.shareIcon {
-	width: max-content;
-	height: max-content;
-}
-
 @media screen and (max-width: 640px) {
 	.modalWrapper {
 		padding: 0 16px;

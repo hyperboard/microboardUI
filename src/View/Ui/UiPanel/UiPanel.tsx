@@ -10,7 +10,12 @@ type UiPanelProps = HTMLAttributes<HTMLDivElement> & {
 	zIndex?: number;
 	padding?: number;
 	gap?: number;
-	rounded?: "top" | "bottom" | "full";
+	rounded?:
+		| "top"
+		| "bottom"
+		| "full"
+		| "topRightBottom"
+		| "bottomRightTop";
 };
 
 export const UiPanel = forwardRef<HTMLDivElement, UiPanelProps>(

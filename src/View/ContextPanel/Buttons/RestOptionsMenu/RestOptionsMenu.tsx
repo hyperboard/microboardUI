@@ -14,6 +14,32 @@ type Props = PropsWithChildren<{
 	rounded?: "left" | "right" | "none" | "full";
 }>;
 
+function getRounded(
+	verticalAlign: string,
+	horizontalAlign: string,
+	isOptionsInTop: boolean,
+): "full" | "bottom" | "topRightBottom" | "bottomRightTop" | "top" | undefined {
+	if (verticalAlign === "bottom") {
+		if (horizontalAlign === "None") {
+			return "topRightBottom";
+		}
+		if (horizontalAlign === "Center") {
+			return "bottom";
+		}
+	}
+	
+	if (isOptionsInTop) {
+		if (horizontalAlign === "None") {
+			return "bottomRightTop";
+		}
+		if (horizontalAlign === "Center") {
+			return "top";
+		}
+	}
+	
+	return "full";
+}
+
 export function RestOptionsMenu({
 	rounded = "right",
 	children,
@@ -50,15 +76,13 @@ export function RestOptionsMenu({
 				</UiButton>
 			)}
 		>
-			{verticalAlign => (
+			{(verticalAlign, horizontalAlign) => (
 				<UiPanel
-					rounded={
-						verticalAlign === "bottom"
-							? "bottom"
-							: isOptionsInTop
-								? "top"
-								: "full"
-					}
+					rounded={getRounded(
+						verticalAlign,
+						horizontalAlign,
+						isOptionsInTop,
+					)}
 					vertical
 					className={style.menu}
 					padding={6}

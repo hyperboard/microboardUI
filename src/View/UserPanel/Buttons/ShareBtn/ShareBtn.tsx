@@ -39,7 +39,6 @@ export const ShareBtn: React.FC = () => {
 				width={16}
 				height={16}
 				iconName={boardInfo?.isPublic ? "publicDrafts" : "lock"}
-				className={commonStyles.shareIcon}
 			/>
 			{t("sharing.share")}
 		</Button>
