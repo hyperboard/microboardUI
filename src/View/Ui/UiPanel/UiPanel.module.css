@@ -16,6 +16,18 @@
 	border-top-right-radius: 12px;
 }
 
+.top-right-bottom {
+	border-top-right-radius: 12px;
+	border-bottom-left-radius: 12px;
+	border-bottom-right-radius: 12px;
+}
+
+.bottom-right-top {
+	border-top-left-radius: 12px;
+	border-top-right-radius: 12px;
+	border-bottom-right-radius: 12px;
+}
+
 .bottom {
 	border-bottom-left-radius: 12px;
 	border-bottom-right-radius: 12px;

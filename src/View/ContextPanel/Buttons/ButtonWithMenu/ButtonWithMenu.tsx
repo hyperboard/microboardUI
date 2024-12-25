@@ -3,7 +3,10 @@ import clsx from "clsx";
 import React, { ReactNode, useEffect, useRef, useState } from "react";
 import style from "./UiButtonWithMenu.module.css";
 
-type RenderNode = (verticalAlign: "middle" | "top" | "bottom") => ReactNode;
+type RenderNode = (
+	verticalAlign: "middle" | "top" | "bottom",
+	horizontalAlign: "Left" | "Right" | "Center" | "None",
+) => ReactNode;
 
 type Props = {
 	children: ReactNode | RenderNode;
@@ -78,7 +81,9 @@ export function ButtonWithMenu({
 
 	return (
 		<div className={style.container}>
-			{typeof button === "function" ? button(verticalAlign) : button}
+			{typeof button === "function"
+				? button(verticalAlign, horizontalAlign)
+				: button}
 			<div
 				ref={menuRef}
 				className={clsx([
@@ -93,7 +98,7 @@ export function ButtonWithMenu({
 				])}
 			>
 				{typeof children === "function"
-					? children(verticalAlign)
+					? children(verticalAlign, horizontalAlign)
 					: children}
 			</div>
 			{/* )} */}
