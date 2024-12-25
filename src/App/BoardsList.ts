@@ -465,29 +465,144 @@ export class BoardsList {
 		);
 	}
 
-	async addBoardToFolder(folderId: number, boardId: string): Promise<void> {
-		if (!this.account.isLoggedIn) {
-			return;
-		}
-
-		await foldersApi.addToFolder(folderId, {
-			nestedBoardId: boardId,
-		});
-		await this.updateList();
-	}
-
-	async removeBoardFromFolder(
+	async addItemToFolder(
 		folderId: number,
-		boardId: string,
+		item: foldersApi.NestedBoard | foldersApi.NestedFolder,
+		order = 0,
 	): Promise<void> {
 		if (!this.account.isLoggedIn) {
 			return;
 		}
 
-		await foldersApi.deleteFolderContent(folderId, {
-			nestedBoardId: boardId,
-		});
-		await this.updateList();
+		const findFolder = (
+			folder: foldersApi.Folder | null,
+		): foldersApi.Folder | null => {
+			if (!folder) {
+				return null;
+			}
+			if (folder.id === folderId) {
+				return folder;
+			}
+			for (const item of folder.items) {
+				if (item.itemType === "folder") {
+					const found = findFolder(item as foldersApi.Folder);
+					if (found) {
+						return found;
+					}
+				}
+			}
+			return null;
+		};
+
+		const targetFolder =
+			findFolder(this.rootFolder) || findFolder(this.sharedFolder);
+
+		if (targetFolder) {
+			targetFolder.items.splice(order, 0, item);
+			this.subject.publish();
+			if (typeof item.id === "string") {
+				await foldersApi.addToFolder(folderId, {
+					nestedBoardId: item.id,
+				});
+			} else {
+				await foldersApi.addToFolder(folderId, {
+					nestedFolderId: item.id,
+				});
+			}
+			const folderItemsOrder = targetFolder.items.map((item, idx) => ({
+				id: item.id,
+				order: idx,
+			}));
+			await foldersApi.reorderFolder(targetFolder.id, folderItemsOrder);
+			await this.updateList();
+		}
+	}
+
+	getItemIndexInFolder(
+		folderId: number,
+		itemId: string | number,
+	): number | null {
+		const findItemIndex = (
+			folder: foldersApi.Folder | null,
+		): number | null => {
+			if (!folder) {
+				return null;
+			}
+			if (folder.id === folderId) {
+				const itemIndex = folder.items.findIndex(
+					item => item.id === itemId,
+				);
+				// Corrected condition to check if itemIndex is found
+				return itemIndex !== -1 ? itemIndex : null;
+			}
+			for (const item of folder.items) {
+				if (item.itemType === "folder") {
+					const foundIndex = findItemIndex(item as foldersApi.Folder);
+					if (foundIndex !== null) {
+						return foundIndex;
+					}
+				}
+			}
+			return null;
+		};
+
+		return (
+			findItemIndex(this.rootFolder) || findItemIndex(this.sharedFolder)
+		);
+	}
+
+	async removeItemFromFolder(
+		folderId: number,
+		itemId: string | number,
+	): Promise<void> {
+		if (!this.account.isLoggedIn) {
+			return;
+		}
+
+		const findAndRemoveItem = (
+			folder: foldersApi.Folder | null,
+		): boolean => {
+			if (!folder) {
+				return false;
+			}
+			if (folder.id === folderId) {
+				const itemIndex = folder.items.findIndex(
+					item => item.id === itemId,
+				);
+				if (itemIndex !== -1) {
+					folder.items.splice(itemIndex, 1);
+					return true;
+				}
+			}
+			for (const item of folder.items) {
+				if (item.itemType === "folder") {
+					const found = findAndRemoveItem(item as foldersApi.Folder);
+					if (found) {
+						return true;
+					}
+				}
+			}
+			return false;
+		};
+
+		const removedFromRoot = findAndRemoveItem(this.rootFolder);
+		const removedFromShared = removedFromRoot
+			? false
+			: findAndRemoveItem(this.sharedFolder);
+
+		if (removedFromRoot || removedFromShared) {
+			this.subject.publish();
+			if (typeof itemId === "string") {
+				await foldersApi.deleteFolderContent(folderId, {
+					nestedBoardId: itemId,
+				});
+			} else {
+				await foldersApi.deleteFolderContent(folderId, {
+					nestedFolderId: itemId,
+				});
+			}
+			await this.updateList();
+		}
 	}
 
 	async removeFolder(folderId: number): Promise<void> {

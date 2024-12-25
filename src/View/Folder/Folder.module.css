@@ -1,3 +1,7 @@
+.folder {
+	position: relative;
+}
+
 .wrapper {
 	width: 100%;
 	position: relative;
@@ -15,6 +19,10 @@
 	border-radius: 10px;
 	font-family: Manrope;
 	width: 100%;
+}
+
+.header.over {
+	background-color: rgba(10, 15, 41, 0.04);
 }
 
 @media screen and (hover: hover) {

@@ -23,11 +23,18 @@ import styles from "./Folder.module.css";
 import { FolderItem } from "./FolderItem";
 import { useOpenedFoldersContext } from "./OpenedFoldersContext";
 import { useSidePanelContext } from "View/SidePanel";
+import {
+	SortableContext,
+	useSortable,
+	verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import clsx from "clsx";
 
 type Props = {
 	folder: foldersApi.Folder | null;
 	handleOpenBoard?: (board: boardsApiV2.Board) => void;
 	accordionClassName?: string;
+	zIndex?: number;
 };
 
 // @ts-expect-error TODO add icons for all folder types
@@ -46,6 +53,7 @@ export const Folder = ({
 	folder,
 	handleOpenBoard,
 	accordionClassName,
+	zIndex = 0,
 }: Props) => {
 	const { handlePointerEnter, handlePointerLeave, isHover } = useHoverState();
 	const { open, close } = useContextMenuContext();
@@ -64,9 +72,6 @@ export const Folder = ({
 		data: folder ?? undefined,
 		disabled: folder?.type === foldersApi.FolderType.VISITED,
 	});
-	const style = {
-		color: isOver ? "green" : undefined,
-	};
 
 	const openFoldersContainsBoard = (boardId: string | null) => {
 		if (!folder || !boardId) {
@@ -180,105 +185,118 @@ export const Folder = ({
 	};
 
 	return (
-		<UiAdaptiveAccordion
-			className={accordionClassName}
-			ref={accordionRef}
-			elemRef={setNodeRef}
-			renderHeader={({ toggle, isOpen }) => (
-				<div className={styles.wrapper}>
-					<button
-						className={styles.contextMenuBtn}
-						onClick={handleContextMenuOpen}
-						onMouseDown={stopPropagation}
-						onMouseUp={stopPropagation}
-					>
-						<Icon width={16} height={16} iconName="ThreeDots" />
-					</button>
-					<button
-						ref={currentFolderRef}
-						style={style}
-						className={styles.header}
-						onClick={handleClick(toggle)}
-						onPointerEnter={handlePointerEnter}
-						onPointerLeave={handlePointerLeave}
-						onContextMenu={handleContextMenuOpen}
-					>
-						<span className={styles.icon}>
-							{!isHover && (
-								<Icon
-									width={20}
-									height={20}
-									iconName={folderIcons[folder.type]}
-								/>
+		<SortableContext
+			items={folder.items.map(({ id }) => id)}
+			strategy={verticalListSortingStrategy}
+		>
+			<UiAdaptiveAccordion
+				className={clsx(accordionClassName, styles.folder)}
+				style={{ zIndex }}
+				ref={accordionRef}
+				elemRef={setNodeRef}
+				renderHeader={({ toggle, isOpen }) => (
+					<div className={styles.wrapper}>
+						<button
+							className={styles.contextMenuBtn}
+							onClick={handleContextMenuOpen}
+							onMouseDown={stopPropagation}
+							onMouseUp={stopPropagation}
+						>
+							<Icon width={16} height={16} iconName="ThreeDots" />
+						</button>
+						<button
+							ref={currentFolderRef}
+							className={clsx(
+								styles.header,
+								isOver && styles.over,
 							)}
-							{isHover && (
-								<Icon
-									width={20}
-									height={20}
-									iconName={isOpen ? "ArrowUp" : "ArrowDown"}
-								/>
-							)}
-						</span>
-						{isRenaming ? (
-							<RenameInput />
-						) : (
-							<span>{folder.title}</span>
-						)}
-					</button>
-				</div>
-			)}
-			renderContent={() => (
-				<div className={styles.contentWrapper}>
-					<div className={styles.content}>
-						{folder.items.length > 0 ? (
-							<TransitionGroup component={null}>
-								{folder.items.map((item, idx) => (
-									<CSSTransition
-										key={item.id}
-										timeout={500}
-										classNames={{
-											enter: styles.fadeEnter,
-											enterActive: styles.fadeEnterActive,
-											exit: styles.fadeExit,
-											exitActive: styles.fadeExitActive,
-										}}
-									>
-										{item.itemType === "board" ? (
-											<FolderItem
-												ref={el => {
-													if (
-														el &&
-														item.id === boardId
-													) {
-														currentBoardRef.current =
-															el;
-													}
-												}}
-												folder={folder}
-												key={item.id}
-												board={item}
-												handleOpenBoard={
-													handleOpenBoard
-												}
-											/>
-										) : (
-											<Folder
-												key={item.id}
-												folder={item}
-											/>
-										)}
-									</CSSTransition>
-								))}
-							</TransitionGroup>
-						) : (
-							<span className={styles.noContent}>
-								No boards available yet
+							onClick={handleClick(toggle)}
+							onPointerEnter={handlePointerEnter}
+							onPointerLeave={handlePointerLeave}
+							onContextMenu={handleContextMenuOpen}
+						>
+							<span className={styles.icon}>
+								{!isHover && (
+									<Icon
+										width={20}
+										height={20}
+										iconName={folderIcons[folder.type]}
+									/>
+								)}
+								{isHover && (
+									<Icon
+										width={20}
+										height={20}
+										iconName={
+											isOpen ? "ArrowUp" : "ArrowDown"
+										}
+									/>
+								)}
 							</span>
-						)}
+							{isRenaming ? (
+								<RenameInput />
+							) : (
+								<span>{folder.title}</span>
+							)}
+						</button>
 					</div>
-				</div>
-			)}
-		/>
+				)}
+				renderContent={() => (
+					<div className={styles.contentWrapper}>
+						<div className={styles.content}>
+							{folder.items.length > 0 ? (
+								<TransitionGroup component={null}>
+									{folder.items.map((item, idx) => (
+										<CSSTransition
+											key={item.id}
+											timeout={500}
+											classNames={{
+												enter: styles.fadeEnter,
+												enterActive:
+													styles.fadeEnterActive,
+												exit: styles.fadeExit,
+												exitActive:
+													styles.fadeExitActive,
+											}}
+										>
+											{item.itemType === "board" ? (
+												<FolderItem
+													ref={el => {
+														if (
+															el &&
+															item.id === boardId
+														) {
+															currentBoardRef.current =
+																el;
+														}
+													}}
+													folder={folder}
+													key={item.id}
+													board={item}
+													handleOpenBoard={
+														handleOpenBoard
+													}
+												/>
+											) : (
+												<Folder
+													zIndex={zIndex + 1}
+													key={item.id}
+													folder={item}
+												/>
+											)}
+										</CSSTransition>
+									))}
+								</TransitionGroup>
+							) : (
+								<span className={styles.noContent}>
+									No boards available yet
+								</span>
+							)}
+						</div>
+					</div>
+				)}
+			/>
+		</SortableContext>
 	);
 };
 

@@ -1,3 +1,5 @@
+import { useSortable } from "@dnd-kit/sortable";
+import { useAccount } from "App/useAccount";
 import clsx from "clsx";
 import { handleClickDetection } from "lib/handleClickDetection";
 import React, {
@@ -15,11 +17,9 @@ import { useAppContext } from "View/AppContext";
 import { useContextMenuContext } from "View/ContextMenu";
 import { Icon } from "View/Icon";
 import { RenameInput, useRenameContext } from "View/Rename";
-import styles from "./FolderItem.module.css";
-import { useAccount } from "App/useAccount";
-import { useDraggable } from "@dnd-kit/core";
-import { DraggingWrapper } from "./DraggingWrapper";
 import { DraggingItem } from "./DraggingItem";
+import { DraggingWrapper } from "./DraggingWrapper";
+import styles from "./FolderItem.module.css";
 
 type Props = {
 	board: foldersApi.NestedBoard;
@@ -39,11 +39,17 @@ export const FolderItem = forwardRef<HTMLDivElement, Props>(
 			Record<"left" | "top" | "width" | "height", number>
 		>({ left: 0, top: 0, width: 0, height: 0 });
 
-		const { attributes, listeners, setNodeRef, transform, isDragging } =
-			useDraggable({
-				id: board.id,
-				data: { ...board, parentFolderId: folder?.id },
-			});
+		const {
+			attributes,
+			listeners,
+			setNodeRef,
+			transform,
+			isDragging,
+			isOver,
+		} = useSortable({
+			id: board.id,
+			data: { ...board, parentFolderId: folder?.id },
+		});
 
 		const calcOriginalPosition = () => {
 			if (isDragging && itemRef.current) {
@@ -170,9 +176,13 @@ export const FolderItem = forwardRef<HTMLDivElement, Props>(
 						</button>
 					)}
 					<button
-						className={clsx(styles.item, {
-							[styles.active]: isActive || isDragging,
-						})}
+						className={clsx(
+							styles.item,
+							{
+								[styles.active]: isActive || isDragging,
+							},
+							isOver && styles.disableHover,
+						)}
 						onContextMenu={handleContextMenuOpen}
 						onClick={handleClick}
 						onMouseDown={stopPropagation}
@@ -194,6 +204,7 @@ export const FolderItem = forwardRef<HTMLDivElement, Props>(
 						)}
 					</button>
 				</div>
+				{isOver && <div className={styles.placeholder}></div>}
 			</DraggingWrapper>
 		);
 	},
