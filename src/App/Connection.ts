@@ -489,11 +489,15 @@ export function createConnection(
 		event: PresenceEventType,
 	): void {
 		const messageId = generateMessageId();
-
+		const updateCurrenUser = (): string => {
+			const currentUser = storage.setUser();
+			getBoard().presence.setCurrentUser(currentUser);
+			return currentUser;
+		};
 		const storage = getStorage();
 		const generatedClientId = storage.getUser()
 			? storage.getUser()!
-			: storage.setUser();
+			: updateCurrenUser();
 		const account = getAccount();
 		const generatedNickname = account.isLoggedIn
 			? account.info?.name || account.info?.email || "Wild Cat"
