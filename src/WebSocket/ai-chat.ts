@@ -16,7 +16,12 @@ export const handleAIChatMessage = async (options: {
 
     switch (msg.event.method) {
         case "UserRequest":
-            await chatStreamHandler.handleUserRequest({ msg: msg as AiChatMsg<UserRequest>, ws, logger, boardClients });
+            await chatStreamHandler.handleUserRequest({
+                msg: msg as AiChatMsg<UserRequest>,
+                ws,
+                logger,
+                boardClients,
+            });
             break;
         case "StopGeneration":
             await chatStreamHandler.stopConversation({
@@ -55,6 +60,11 @@ export interface UserRequest {
     itemId: string; // response item id;
     requestItemId: string;
     action?: TextAction;
+    contextRequest?: {
+        messageId: number; // redefine context
+        range?: number;
+    };
+    createThreadFrom?: number;
 }
 
 export type TTextAction = "adjust_text_length" | "adjust_reading_level" | "adjust_emojis";

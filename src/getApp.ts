@@ -32,7 +32,7 @@ import { Users } from "./Routes/V1/Users";
 import { Config } from "./shared/config/config";
 import { Mailer } from "./shared/modules/mailer/mailer";
 import { withWebSocketApi } from "./WebSocket";
-import { updateTariffs } from "drizzle/scripts/tariffs";
+import { updatePlans } from "drizzle/scripts/plans";
 import { createVectorExtension } from "drizzle/scripts/create-vector-ext";
 
 export async function getApp(): Promise<http.Server> {
@@ -48,7 +48,7 @@ export async function getApp(): Promise<http.Server> {
         await migrateData().catch(console.error);
     }
 
-    await updateTariffs().catch(console.error);
+    await updatePlans().catch(console.error);
 
     app.use(morgan("combined"));
     if (process.env.NODE_ENV !== "production") {

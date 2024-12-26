@@ -3,75 +3,154 @@ import { catchAsync } from "../../../shared/lib/catchAsync";
 import { sql } from "drizzle-orm";
 import winston from "winston";
 import { db } from "../../../drizzle/db";
-import { tariffPlans, userTariffs } from "../../../drizzle/entities/tariffs";
+import { aiModels, modelLimits, plans, userStorageUsage, userPlans } from "../../../drizzle/entities/plans";
 import { eq, and, gte, lte } from "drizzle-orm";
 import { jwtMiddleware } from "../../../Middlewares/jwt.middleware";
 import { body } from "express-validator";
 import { boardOwner, boards, chat, message } from "drizzle/entities";
+import { stripeService } from "./stripe";
+import stripe from "stripe";
 
 export const getBillingRouter = (logger: winston.Logger): express.Router => {
     const router = express.Router();
 
-    function getCurrentMonthPeriod() {
+    function getCurrentPeriods() {
         const now = new Date();
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - now.getDay());
+
         return {
-            startDate: startOfMonth,
-            endDate: now,
+            daily: {
+                start: startOfToday,
+                end: now,
+            },
+            weekly: {
+                start: startOfWeek,
+                end: now,
+            },
         };
     }
 
-    async function getCurrentUserTariff(userId: number) {
+    async function getCurrentUserPlan(userId: number) {
         const now = new Date();
-        const currentTariff = await db
+        const currentPlan = await db
             .select({
-                tariffId: userTariffs.tariffId,
-                monthlyTokenLimit: tariffPlans.monthlyTokenLimit,
-                tariffName: tariffPlans.name,
-                startDate: userTariffs.startDate,
-                endDate: userTariffs.endDate,
-                status: userTariffs.status,
+                planId: userPlans.planId,
+                monthlyTokenLimit: plans.monthlyTokenLimit,
+                name: plans.name,
+                startDate: userPlans.startDate,
+                endDate: userPlans.endDate,
+                status: userPlans.status,
+                storageLimit: plans.storageLimit,
             })
-            .from(userTariffs)
-            .innerJoin(tariffPlans, eq(userTariffs.tariffId, tariffPlans.id))
+            .from(userPlans)
+            .innerJoin(plans, eq(userPlans.planId, plans.id))
             .where(
                 and(
-                    eq(userTariffs.userId, userId),
-                    eq(userTariffs.status, "active"),
-                    lte(userTariffs.startDate, now),
-                    gte(userTariffs.endDate, now)
+                    eq(userPlans.userId, userId),
+                    eq(userPlans.status, "active"),
+                    lte(userPlans.startDate, now),
+                    gte(userPlans.endDate, now)
                 )
             )
             .limit(1);
 
-        if (!currentTariff.length) {
-            const freeTariff = await db
+        if (!currentPlan.length) {
+            const freePlan = await db
                 .select({
-                    tariffId: tariffPlans.id,
-                    monthlyTokenLimit: tariffPlans.monthlyTokenLimit,
-                    tariffName: tariffPlans.name,
+                    planId: plans.id,
+                    monthlyTokenLimit: plans.monthlyTokenLimit,
+                    name: plans.name,
+                    storageLimit: plans.storageLimit,
                 })
-                .from(tariffPlans)
-                .where(eq(tariffPlans.name, "free"))
+                .from(plans)
+                .where(eq(plans.name, "free"))
                 .limit(1);
 
-            if (!freeTariff.length) {
-                throw new Error("Free tariff not found in the system.");
+            if (!freePlan.length) {
+                throw new Error("Free plan not found in the system.");
             }
 
-            const { startDate, endDate } = getCurrentMonthPeriod();
+            const now = new Date();
+            const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
             return {
-                tariffId: freeTariff[0].tariffId,
-                monthlyTokenLimit: freeTariff[0].monthlyTokenLimit,
-                tariffName: freeTariff[0].tariffName,
-                startDate,
-                endDate,
+                planId: freePlan[0].planId,
+                monthlyTokenLimit: freePlan[0].monthlyTokenLimit,
+                name: freePlan[0].name,
+                startDate: now,
+                endDate: thirtyDaysFromNow,
                 status: "active" as const,
+                storageLimit: freePlan[0].storageLimit,
             };
         }
 
-        return currentTariff[0];
+        return currentPlan[0];
+    }
+
+    async function getCurrentModelLimits(userId: number) {
+        const userPlan = await getCurrentUserPlan(userId);
+        const modelLimitsQuery = await db
+            .select({
+                modelId: aiModels.id,
+                modelName: aiModels.name,
+                displayName: aiModels.displayName,
+                isDefault: aiModels.isDefault,
+                dailyLimit: modelLimits.dailyRequestLimit,
+                weeklyLimit: modelLimits.weeklyRequestLimit,
+                isEnabled: modelLimits.isEnabled,
+            })
+            .from(aiModels)
+            .leftJoin(modelLimits, and(eq(modelLimits.modelId, aiModels.id), eq(modelLimits.planId, userPlan.planId)));
+
+        const periods = getCurrentPeriods();
+        const usage = await Promise.all(
+            modelLimitsQuery.map(async (model) => {
+                const [dailyUsage, weeklyUsage] = await Promise.all([
+                    db
+                        .select({
+                            count: sql<number>`count(${message.id})`,
+                        })
+                        .from(message)
+                        .innerJoin(chat, eq(message.chatId, chat.id))
+                        .innerJoin(boards, sql`${chat.boardId}::text = ${boards.uniqId}::text`)
+                        .innerJoin(boardOwner, eq(boards.id, boardOwner.boardId))
+                        .where(
+                            and(
+                                eq(boardOwner.ownerId, userId),
+                                eq(message.role, "assistant"),
+                                gte(message.createdAt, periods.daily.start),
+                                lte(message.createdAt, periods.daily.end)
+                            )
+                        ),
+                    db
+                        .select({
+                            count: sql<number>`count(${message.id})`,
+                        })
+                        .from(message)
+                        .innerJoin(chat, eq(message.chatId, chat.id))
+                        .innerJoin(boards, sql`${chat.boardId}::text = ${boards.uniqId}::text`)
+                        .innerJoin(boardOwner, eq(boards.id, boardOwner.boardId))
+                        .where(
+                            and(
+                                eq(boardOwner.ownerId, userId),
+                                eq(message.role, "assistant"),
+                                gte(message.createdAt, periods.weekly.start),
+                                lte(message.createdAt, periods.weekly.end)
+                            )
+                        ),
+                ]);
+
+                return {
+                    ...model,
+                    dailyUsage: dailyUsage[0].count,
+                    weeklyUsage: weeklyUsage[0].count,
+                };
+            })
+        );
+
+        return usage;
     }
 
     async function getCurrentPeriodTokenUsage(userId: number, startDate: Date, endDate: Date) {
@@ -81,10 +160,7 @@ export const getBillingRouter = (logger: winston.Logger): express.Router => {
             })
             .from(message)
             .innerJoin(chat, eq(message.chatId, chat.id))
-            .innerJoin(
-                boards,
-                sql`${chat.boardId}::text = ${boards.uniqId}::text` // Cast both to text for comparison
-            )
+            .innerJoin(boards, sql`${chat.boardId}::text = ${boards.uniqId}::text`)
             .innerJoin(boardOwner, eq(boards.id, boardOwner.boardId))
             .where(
                 and(eq(boardOwner.ownerId, userId), gte(message.createdAt, startDate), lte(message.createdAt, endDate))
@@ -93,83 +169,157 @@ export const getBillingRouter = (logger: winston.Logger): express.Router => {
         return result[0].totalTokens;
     }
 
+    async function getCurrentStorageUsage(userId: number) {
+        const result = await db
+            .select({
+                totalBytes: userStorageUsage.totalBytes,
+            })
+            .from(userStorageUsage)
+            .where(eq(userStorageUsage.userId, userId))
+            .limit(1);
+
+        return result.length ? result[0].totalBytes : 0;
+    }
+
     router.get(
-        "/billing/tokens",
+        "/billing/limits",
         jwtMiddleware(logger),
         catchAsync(async (req, res) => {
             const { token } = req;
             const userToken = await token;
             const userId = parseInt(userToken?.sub);
 
-            const currentTariff = await getCurrentUserTariff(userId);
-            const tokensUsed = await getCurrentPeriodTokenUsage(userId, currentTariff.startDate, currentTariff.endDate);
+            const [currentPlan, modelLimits, storageUsage] = await Promise.all([
+                getCurrentUserPlan(userId),
+                getCurrentModelLimits(userId),
+                getCurrentStorageUsage(userId),
+            ]);
 
-            const remainingTokens = currentTariff.monthlyTokenLimit - tokensUsed;
+            const tokensUsed = await getCurrentPeriodTokenUsage(userId, currentPlan.startDate, currentPlan.endDate);
+
+            const remainingTokens = currentPlan.monthlyTokenLimit - tokensUsed;
 
             res.json({
-                remainingTokens,
-                tariff: currentTariff.tariffName,
-                resetAt: currentTariff.endDate,
-                tokensUsed,
-                limit: currentTariff.monthlyTokenLimit,
-                periodStart: currentTariff.startDate,
-                periodEnd: currentTariff.endDate,
+                tokens: {
+                    remaining: remainingTokens,
+                    used: tokensUsed,
+                    limit: currentPlan.monthlyTokenLimit,
+                },
+                storage: {
+                    used: storageUsage,
+                    limit: currentPlan.storageLimit,
+                },
+                models: modelLimits.map((model) => ({
+                    id: model.modelId,
+                    name: model.modelName,
+                    displayName: model.displayName,
+                    isDefault: model.isDefault,
+                    isEnabled: model.isEnabled,
+                    limits: {
+                        daily: model.dailyLimit,
+                        weekly: model.weeklyLimit,
+                        dailyUsed: model.dailyUsage,
+                        weeklyUsed: model.weeklyUsage,
+                    },
+                })),
+                plan: {
+                    name: currentPlan.name,
+                    periodStart: currentPlan.startDate,
+                    periodEnd: currentPlan.endDate,
+                },
             });
         })
     );
 
     router.get(
-        "/billing/tariffs",
+        "/billing/plans",
         jwtMiddleware(logger),
         catchAsync(async (req, res) => {
-            const tariffs = await db.select().from(tariffPlans).where(eq(tariffPlans.version, 1));
-            res.json(tariffs);
+            const plansQuery = await db.select().from(plans).where(eq(plans.version, 1));
+            res.json(plansQuery);
         })
     );
 
     router.post(
         "/billing/subscribe",
         jwtMiddleware(logger),
-        body("tariffId").isString(),
+        body("planId").isString(),
         catchAsync(async (req, res) => {
             const { token } = req;
             const userToken = await token;
             const userId = parseInt(userToken?.sub);
-            const { tariffId } = req.body;
+            const { planId } = req.body;
 
-            const tariff = await db.select().from(tariffPlans).where(eq(tariffPlans.id, tariffId)).limit(1);
+            const plan = await db.select().from(plans).where(eq(plans.id, planId)).limit(1);
 
-            if (!tariff.length) {
-                res.status(400).json({ error: "Invalid tariff ID." });
+            if (!plan.length) {
+                res.status(400).json({ error: "Invalid plan ID." });
                 return;
             }
 
-            if (tariff[0].name === "free") {
-                res.status(400).json({ error: "Cannot subscribe to free tariff." });
+            if (plan[0].name === "free") {
+                res.status(400).json({ error: "Cannot subscribe to free plan." });
                 return;
             }
 
             await db
-                .update(userTariffs)
+                .update(userPlans)
                 .set({
                     status: "cancelled",
                     canceledAt: new Date(),
                 })
-                .where(and(eq(userTariffs.userId, userId), eq(userTariffs.status, "active")));
+                .where(and(eq(userPlans.userId, userId), eq(userPlans.status, "active")));
+
             const now = new Date();
-            const resetPeriod = tariff[0].resetPeriodDays || 30;
+            const resetPeriod = plan[0].resetPeriodDays || 30;
             const endDate = new Date(now.getTime() + resetPeriod * 24 * 60 * 60 * 1000);
 
-            await db.insert(userTariffs).values({
+            await db.insert(userPlans).values({
                 id: crypto.randomUUID(),
                 userId,
-                tariffId,
+                planId,
                 startDate: now,
                 endDate,
                 status: "active",
             });
 
-            res.status(200).json({ message: "Successfully subscribed to tariff." });
+            res.status(200).json({ message: "Successfully subscribed to plan." });
+        })
+    );
+
+    router.post(
+        "/billing/create-checkout",
+        jwtMiddleware(logger),
+        body("planId").isString(),
+        body("successUrl").isString(),
+        body("cancelUrl").isString(),
+        catchAsync(async (req, res) => {
+            const { token } = req;
+            const userToken = await token;
+            const userId = parseInt(userToken?.sub);
+            const { planId, successUrl, cancelUrl } = req.body;
+
+            const session = await stripeService.createCheckoutSession({
+                userId,
+                planId,
+                successUrl,
+                cancelUrl,
+            });
+
+            res.json({ url: session.url });
+        })
+    );
+
+    router.post(
+        "/billing/webhook",
+        express.raw({ type: "application/json" }),
+        catchAsync(async (req, res) => {
+            const signature = req.headers["stripe-signature"]!;
+
+            const event = stripe.webhooks.constructEvent(req.body, signature, process.env.STRIPE_WEBHOOK_SECRET!);
+
+            await stripeService.handleWebhook(event);
+            res.json({ received: true });
         })
     );
 

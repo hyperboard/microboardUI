@@ -11,7 +11,9 @@ export const chat = pgTable("chat", {
 
 export const message = pgTable("message", {
     id: serial("id").primaryKey(),
-    chatId: integer("chat_id").references(() => chat.id, { onDelete: "cascade" }),
+    chatId: integer("chat_id")
+        .notNull()
+        .references(() => chat.id, { onDelete: "cascade" }),
     role: text("role").notNull(),
     content: text("content").notNull().default(""),
     tokensUsed: integer("tokens_used").notNull().default(0),
@@ -21,6 +23,7 @@ export const message = pgTable("message", {
     updatedFrom: integer("updated_from"),
     generatedFrom: integer("generated_from"),
     itemId: text("item_id"),
+    previousMessageId: integer("previous_message_id"),
 });
 
 export const chatRelations = relations(chat, ({ many }) => ({
