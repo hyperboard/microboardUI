@@ -97,12 +97,13 @@
 }
 
 .idleHide {
-	opacity: .6;
+	opacity: 0.6;
 }
 
 .nickname {
-	word-wrap: break-word;
-	word-break: break-all;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
 }
 
 .idle {
