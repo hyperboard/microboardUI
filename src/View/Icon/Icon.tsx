@@ -121,7 +121,9 @@ export type IconId =
 	| "EyeDashed"
 	| "addLink"
 	| "Hyperlink"
-	| "Vector";
+	| "Vector"
+	| "ArrowUpCircle"
+	| "ai";
 
 type Props = {
 	iconName: IconId;

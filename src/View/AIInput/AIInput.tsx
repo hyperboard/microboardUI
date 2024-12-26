@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+	useEffect,
+	useRef,
+	useState,
+	type MouseEventHandler,
+	type SyntheticEvent,
+} from "react";
 import styles from "./AIInput.module.css";
 
 import { useAppSubscription } from "Board/useBoardSubscription";
@@ -17,6 +23,13 @@ import { Chevron } from "shared/ui-lib/Dropdown/Chevron";
 import { TEXT_HIGHLIGHT_COLORS } from "View/Tools/AddText";
 import { UiPanel } from "View/Ui/UiPanel";
 import { AINode } from "Board/Items/AINode/AINode";
+import { useAccount } from "App/useAccount";
+import { useUiModalContext } from "View/Ui/UiModal";
+import { AI_UNAVAILABLE_MODAL_ID } from "View/AiUnavailableModal/AiUnavailableModal";
+import clsx from "clsx";
+import { useNavigate } from "react-router-dom";
+import { useMediaQuery } from "lib/useMediaQuery";
+import { USER_PLAN_MODAL_ID } from "View/UserPlan";
 
 export const AIInput: React.FC = () => {
 	const { t } = useTranslation();
@@ -28,6 +41,11 @@ export const AIInput: React.FC = () => {
 	const dropdownRef = useRef<HTMLDivElement | null>(null);
 	const forceUpdate = useForceUpdate();
 	const selectedItemsCount = board.selection.items.list().length;
+	const account = useAccount();
+	const { openModal } = useUiModalContext();
+	const [isShaking, setIsShaking] = useState(false);
+	const navigate = useNavigate();
+	const isMediaMatches = useMediaQuery("(max-width: 1170px)");
 
 	const isPhoneScreenCheck = () =>
 		matchMedia("screen and (max-width: 640px)").matches;
@@ -57,8 +75,25 @@ export const AIInput: React.FC = () => {
 		event.target.style.height = `${Math.min(event.target.scrollHeight, 120)}px`;
 	};
 
-	const handleSendClick = async () => {
+	const handleSendClick = async (ev: SyntheticEvent) => {
+		ev.stopPropagation();
 		if (!inputValue.trim()) {
+			return;
+		}
+		if (!account.isLoggedIn) {
+			return openModal(AI_UNAVAILABLE_MODAL_ID);
+		}
+		if ((account.billingInfo?.remainingTokens ?? 0) <= 0) {
+			setIsShaking(true);
+			setTimeout(() => {
+				setIsShaking(false);
+
+				if (isMediaMatches) {
+					navigate("/user/plan");
+				} else {
+					openModal(USER_PLAN_MODAL_ID);
+				}
+			}, 1000);
 			return;
 		}
 		sendInputData();
@@ -75,7 +110,7 @@ export const AIInput: React.FC = () => {
 		event.stopPropagation();
 		if (event.key === "Enter" && !event.shiftKey) {
 			event.preventDefault();
-			handleSendClick();
+			handleSendClick(event);
 		}
 	};
 
@@ -131,7 +166,7 @@ export const AIInput: React.FC = () => {
 		if (!connection) {
 			console.error("Ws no open");
 		}
-		//TODO parent node
+		// TODO parent node
 		const requestNode = createNode(board, inputValue, true);
 		const requestAdded = board.add(requestNode);
 		const responseNode = createNode(
@@ -213,7 +248,7 @@ export const AIInput: React.FC = () => {
 	return (
 		<UiPanel
 			padding={0}
-			className={styles.inputContainer}
+			className={clsx(styles.inputContainer, isShaking && styles.shake)}
 			ref={dropdownRef}
 		>
 			<div className={styles.contentWrapper}>

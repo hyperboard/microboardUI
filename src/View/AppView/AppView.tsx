@@ -37,6 +37,8 @@ import { InactiveBoardHidder } from "./InactiveBoardHidder";
 import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
 import { LocalFileSaveProgress } from "View/LocalFileSavingProgress";
+import { UserPlanModal } from "View/UserPlan";
+import { AiUnavailableModal } from "View/AiUnavailableModal/AiUnavailableModal";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -195,10 +197,12 @@ export function AppView(): JSX.Element {
 			<ImportMiroStartModal />
 			<SetLinkToModal />
 			<UiModalBackground>
+				<UserPlanModal />
 				<ShareModal />
 				<ProfileSettingsModal />
 				<ChangePasswordModal />
 				<AccessDeniedModal />
+				<AiUnavailableModal />
 			</UiModalBackground>
 			<LocalFileSaveProgress />
 		</div>

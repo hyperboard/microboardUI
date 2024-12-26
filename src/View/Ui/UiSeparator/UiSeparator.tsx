@@ -5,9 +5,10 @@ import style from "./UiSeparator.module.css";
 type Props = {
 	vertical?: boolean;
 	className?: string;
+	color?: string;
 };
 
-export function UiSeparator({ vertical = false, className }: Props) {
+export function UiSeparator({ vertical = false, className, color }: Props) {
 	return (
 		<div
 			className={clsx(
@@ -17,6 +18,7 @@ export function UiSeparator({ vertical = false, className }: Props) {
 			)}
 		>
 			<div
+				style={{ color }}
 				className={clsx([
 					style.separator,
 					vertical ? style.vertical : style.horizontal,

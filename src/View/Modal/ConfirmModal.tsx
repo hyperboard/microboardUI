@@ -28,6 +28,8 @@ const ConfirmModalView: React.FC<ConfirmModalProps> = ({
 	const [isLoading, setIsLoading] = useState(false);
 	const { t } = useTranslation();
 
+	const stopPropagation: MouseEventHandler = ev => ev.stopPropagation();
+
 	useEffect(() => {
 		const handleEscapeKey = async (evt: KeyboardEvent) => {
 			if (evt.key === "Escape") {
@@ -62,7 +64,10 @@ const ConfirmModalView: React.FC<ConfirmModalProps> = ({
 	}
 
 	return (
-		<div className={`${styles.modal} ${opened ? styles.open : null}`}>
+		<div
+			onClick={stopPropagation}
+			className={`${styles.modal} ${opened ? styles.open : null}`}
+		>
 			<div className={styles.wrapper}>
 				<div className={styles.title}>{title}</div>
 				<div className={styles.description}>{description}</div>
@@ -95,7 +100,7 @@ const ConfirmModalView: React.FC<ConfirmModalProps> = ({
 export const ConfirmModal: React.FC<ConfirmModalProps> = props => {
 	return createPortal(
 		<ConfirmModalView {...props} />,
-		document.getElementById("root")!,
+		document.getElementById("modal")!,
 	);
 };
 

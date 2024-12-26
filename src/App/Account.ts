@@ -1,6 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 import { getEmailPrefix } from "lib/getEmailPrefix";
-import { authApi, usersApi } from "shared/api";
+import { authApi, billingApi, usersApi } from "shared/api";
 import { Subject } from "Subject";
 import { Connection } from "./Connection";
 import { Permissions } from "./Permissions";
@@ -12,6 +12,12 @@ type AccountInfo = {
 	name: string;
 	avatar: string;
 	avatarGenerated: boolean;
+};
+
+type BillingInfo = {
+	remainingTokens: number;
+	tariff: string;
+	resetAt: Date | null;
 };
 
 type TokenData = {
@@ -27,6 +33,7 @@ type TokenData = {
 export class Account {
 	subject = new Subject<AccountInfo | null>();
 	info: null | AccountInfo = null;
+	billingInfo: null | BillingInfo = null;
 	isTokenLoading = false;
 	tokenData: TokenData | null = null;
 	onSessionExpired: (() => void) | null = null;
@@ -86,10 +93,40 @@ export class Account {
 			this.storage.clearUserId();
 		}
 
-		this.info = {
-			...data,
-			name: data?.name || getEmailPrefix(data?.email ?? "", "Anonymous"),
-		};
+		if (data) {
+			this.info = {
+				...data,
+				name:
+					data?.name ||
+					getEmailPrefix(data?.email ?? "", "Anonymous"),
+			};
+		}
+
+		try {
+			const { data: billingInfo } = await billingApi.getUserPlanDetails();
+			if (billingInfo) {
+				this.billingInfo = {
+					...billingInfo,
+					resetAt: billingInfo
+						? new Date(billingInfo?.resetAt)
+						: null,
+				};
+			} else {
+				this.billingInfo = {
+					remainingTokens: 0,
+					resetAt: null,
+					tariff: "basic",
+				};
+			}
+		} catch {
+			this.billingInfo = {
+				remainingTokens: 0,
+				resetAt: null,
+				tariff: "pro",
+			};
+			console.error("Error fetching billing user info");
+		}
+
 		this.subject.publish(this.info);
 	}
 

@@ -16,6 +16,7 @@ import { SigninView } from "./SigninView/SigninView";
 import { SignupView } from "./SignupView/SignupView";
 import { VerifyMailView } from "./VerifyMailView/VerifyMailView";
 import { WelcomeBoard } from "./WelcomeBoard";
+import { UserPlanPage } from "./UserPlan/UserPlanPage";
 
 export function getRender(app: App) {
 	// new IframeModule(app);
@@ -105,6 +106,16 @@ export function getRender(app: App) {
 						{
 							path: "",
 							element: <SelectBoard app={app} />,
+						},
+					],
+				},
+				{
+					path: "/user/plan",
+					element: <ProtectedRoute isPublic={false} />,
+					children: [
+						{
+							path: "",
+							element: <UserPlanPage />,
 						},
 					],
 				},

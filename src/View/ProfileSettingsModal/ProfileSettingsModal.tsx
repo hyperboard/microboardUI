@@ -20,12 +20,16 @@ import { Input } from "shared/ui-lib/Input";
 import styles from "./ProfileSettingsModal.module.css";
 import { UserAvatar } from "View/UserPanel/UserAvatar/UserAvatar";
 import { notify } from "View/Ui/Toast";
+import { USER_PLAN_MODAL_ID } from "View/UserPlan";
+import { Icon } from "View/Icon";
+import { useMediaQuery } from "lib/useMediaQuery";
 
 export const PROFILE_SETTINGS_MODAL_ID = Symbol("profileSettingsModal");
 const MAX_AVATAR_SIZE = 10 * 1024 * 1024; // 10MB
 const ACCEPTED_AVATAR_TYPES = ["image/jpeg", "image/png", "image/svg+xml"];
 
 export function ProfileSettingsModal() {
+	const isMediaMatches = useMediaQuery("(max-width: 1170px)");
 	const account = useAccount();
 	const [name, setName] = useState(() => account.info?.name ?? "");
 	const [updateState, setUpdateState] = useState<
@@ -115,6 +119,17 @@ export function ProfileSettingsModal() {
 		target.click();
 	};
 
+	const handlePlanModalOpen: MouseEventHandler = ev => {
+		ev.preventDefault();
+		ev.stopPropagation();
+
+		if (isMediaMatches) {
+			navigate("/user/plan");
+		} else {
+			openModal(USER_PLAN_MODAL_ID);
+		}
+	};
+
 	const handleAvatarRemove: MouseEventHandler = async ev => {
 		ev.preventDefault();
 		ev.stopPropagation();
@@ -200,6 +215,15 @@ export function ProfileSettingsModal() {
 						className={styles.btn}
 					>
 						<ChangePassword /> {t("profile.changePassword")}
+					</Button>
+					<Button
+						type="button"
+						onClick={handlePlanModalOpen}
+						pattern="ghost"
+						className={styles.btn}
+					>
+						<Icon iconName="ArrowUpCircle" width={20} height={20} />{" "}
+						{t("profile.changePassword")}
 					</Button>
 					<Button
 						type="button"

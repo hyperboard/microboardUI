@@ -1,0 +1,117 @@
+.card {
+	background-color: var(--bg-color);
+	padding: 20px;
+	border-radius: 24px;
+	border: 1px solid rgba(10, 15, 41, 0.08);
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 20px;
+}
+
+.current {
+	box-shadow: 0px 0px 0px 2px #9117f0;
+}
+
+.basic {
+	--bg-color: rgb(255, 255, 255);
+}
+
+.plus {
+	--bg-color: rgb(236, 223, 251);
+}
+
+.pro {
+	--bg-color: rgb(209, 250, 228);
+}
+
+.name {
+	font-size: 20px;
+	font-weight: 500;
+}
+
+.heading {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.price {
+	font-size: 36px;
+	font-weight: 500;
+	color: rgba(20, 21, 26, 1);
+}
+
+.models {
+	font-size: 16px;
+	color: rgba(15, 19, 36, 0.6);
+}
+
+.features {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+	display: flex;
+	flex-direction: column;
+	flex: 1 0;
+	gap: 16px;
+}
+
+.feature {
+	margin: 0;
+	padding: 0;
+	padding-left: 36px;
+	color: rgba(20, 21, 26, 1);
+	font-size: 16px;
+	position: relative;
+}
+
+.markIcon {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.top {
+	display: flex;
+	justify-content: space-between;
+}
+
+.unlimited {
+	background-color: rgb(255, 255, 255);
+	padding: 2px 8px;
+	border-radius: 360px;
+	display: flex;
+	gap: 4px;
+	align-items: center;
+	color: rgba(20, 21, 26, 1);
+	font-size: 14px;
+	font-weight: 500;
+}
+
+.button:disabled,
+.button:disabled:hover {
+	background: none;
+}
+
+.priceWrapper {
+	display: flex;
+	align-items: flex-end;
+	color: rgba(13, 17, 38, 0.4);
+	font-size: 36px;
+	font-weight: 500;
+}
+
+.priceValue {
+	color: rgba(20, 21, 26, 1);
+}
+
+.perMonth {
+	font-size: 14px;
+	align-self: flex-end;
+	transform: translateY(-6px);
+}
+
+.slash {
+	margin: 0 4px;
+}
