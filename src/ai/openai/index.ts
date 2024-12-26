@@ -94,7 +94,7 @@ export class OpenAI {
         if (process.env.OPENAI_ENABLED === "true") {
             this.client = new llm({
                 apiKey,
-                // baseURL: "https://openai-api.microboard.io",
+                baseURL: "https://openai-api.microboard.io",
             });
         } else {
             // AIMLAPI
