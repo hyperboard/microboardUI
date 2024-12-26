@@ -16,6 +16,7 @@ import { ControlPointData } from "Board/Items/Connector/ControlPoint";
 import { Chevron } from "shared/ui-lib/Dropdown/Chevron";
 import { TEXT_HIGHLIGHT_COLORS } from "View/Tools/AddText";
 import { UiPanel } from "View/Ui/UiPanel";
+import { AINode } from "Board/Items/AINode/AINode";
 
 export const AIInput: React.FC = () => {
 	const { t } = useTranslation();
@@ -103,30 +104,26 @@ export const AIInput: React.FC = () => {
 		};
 	}, [dropdownRef]);
 
-	function createRichText(
+	function createNode(
 		board: Board,
 		inputValue: string,
+		isUserRequest: boolean,
+		parentNodeId?: string,
 		offsetY = 0,
-		needFontColor = true,
-	): RichText {
-		const richText = new RichText(new Mbr());
+	): AINode {
+		const node = new AINode(isUserRequest, parentNodeId);
 		const cameraMbr = board.camera.getMbr();
 
 		const centerX = cameraMbr.getCenter().x;
 		const centerY = cameraMbr.getCenter().y + offsetY;
 
-		richText.transformation.translateTo(centerX, centerY);
+		node.transformation.translateTo(centerX, centerY);
 
-		richText.transformation.scaleBy(1, 1);
-		richText.editor.setMaxWidth(600);
-		richText.editor.setSelectionHorisontalAlignment("left");
-		richText.insideOf = richText.itemType;
-		const highlightColor = TEXT_HIGHLIGHT_COLORS[11];
-		if (needFontColor) {
-			richText.editor.applySelectionFontColor(highlightColor);
-		}
-		richText.editor.insertCopiedText(inputValue);
-		return richText;
+		node.getRichText().setMaxWidth(600);
+		node.getRichText().setSelectionHorisontalAlignment("left");
+
+		node.getRichText().editor.insertCopiedText(inputValue);
+		return node;
 	}
 
 	const sendInputData = () => {
@@ -134,55 +131,33 @@ export const AIInput: React.FC = () => {
 		if (!connection) {
 			console.error("Ws no open");
 		}
-
-		const requestRichText = createRichText(board, inputValue);
-		const requestAdded = board.add(requestRichText);
-		const responseRichText = createRichText(board, "", 100, false);
-		const responseAdded = board.add(responseRichText);
-		responseAdded.editor.setMaxWidth(600);
+		//TODO parent node
+		const requestNode = createNode(board, inputValue, true);
+		const requestAdded = board.add(requestNode);
+		const responseNode = createNode(
+			board,
+			"",
+			false,
+			requestNode.getId(),
+			200,
+		);
+		const responseAdded = board.add(responseNode);
 
 		const defaultConnector = new Connector(board);
 		const connectorData = defaultConnector.serialize();
 		connectorData.lineStyle = "curved";
-		const selectedItems = board.selection.items.list();
-		const boardContext = selectedItems
-			.map(item => {
-				const richText = item.getRichText();
-				if (richText) {
-					const textNodes = richText.editor.getText();
-					if (Array.isArray(textNodes)) {
-						return textNodes
-							.map(paragraph => {
-								if (paragraph.children) {
-									return paragraph.children
-										.map(child => child.text || "")
-										.join(" ");
-								}
-								return "";
-							})
-							.join(" ")
-							.trim();
-					}
-				}
-				return "";
-			})
-			.filter(text => text !== "");
-
-		console.log("boardContext", boardContext);
 
 		const startPointData: ControlPointData = {
 			pointType: "Fixed",
 			itemId: requestAdded.getId(),
-			relativeY:
-				requestRichText.getTransformedContainer().getHeight() * 5, // ffs - for some reason relative point of rt must be 5 times more, than its actual height (e.g. instaed of 19.6 it must be 100)
-			relativeX: requestRichText.getTransformedContainer().getWidth() / 3, // ffs
+			relativeY: requestNode.getMbr().getHeight() * 5, // ffs - for some reason relative point of rt must be 5 times more, than its actual height (e.g. instaed of 19.6 it must be 100)
+			relativeX: requestNode.getMbr().getWidth() / 3, // ffs
 		};
 		const endPointData: ControlPointData = {
 			pointType: "Fixed",
 			itemId: responseAdded.getId(),
 			relativeY: 0,
-			relativeX:
-				responseRichText.getTransformedContainer().getWidth() / 3, // ffs
+			relativeX: responseNode.getMbr().getWidth() / 3, // ffs
 		};
 		connectorData.startPoint = startPointData;
 		connectorData.endPoint = endPointData;
@@ -195,7 +170,7 @@ export const AIInput: React.FC = () => {
 			event: {
 				method: "UserRequest",
 				context: [],
-				boardContext,
+				boardContext: [],
 				idea: inputValue,
 				model,
 				itemId: responseAdded.getId(),
