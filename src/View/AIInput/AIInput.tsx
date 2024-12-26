@@ -147,6 +147,30 @@ export const AIInput: React.FC = () => {
 		const connectorData = defaultConnector.serialize();
 		connectorData.lineStyle = "curved";
 
+		const selectedItems = board.selection.items.list();
+		const boardContext = selectedItems
+			.map(item => {
+				const richText = item.getRichText();
+				if (richText) {
+					const textNodes = richText.editor.getText();
+					if (Array.isArray(textNodes)) {
+						return textNodes
+							.map(paragraph => {
+								if ("children" in paragraph) {
+									return paragraph.children
+										.map(child => child.text || "")
+										.join(" ");
+								}
+								return "";
+							})
+							.join(" ")
+							.trim();
+					}
+				}
+				return "";
+			})
+			.filter(text => text !== "");
+
 		const startPointData: ControlPointData = {
 			pointType: "Fixed",
 			itemId: requestAdded.getId(),
@@ -170,7 +194,7 @@ export const AIInput: React.FC = () => {
 			event: {
 				method: "UserRequest",
 				context: [],
-				boardContext: [],
+				boardContext,
 				idea: inputValue,
 				model,
 				itemId: responseAdded.getId(),
