@@ -15,12 +15,11 @@ import { StarIcon } from "./StarIcon";
 
 import { AiChatMsg, OpenAIModels, UserRequest } from "App/Connection";
 import { Board } from "Board";
-import { Connector, Mbr, RichText } from "Board/Items";
+import { Connector } from "Board/Items";
 import { useForceUpdate } from "lib/useForceUpdate";
 
 import { ControlPointData } from "Board/Items/Connector/ControlPoint";
 import { Chevron } from "shared/ui-lib/Dropdown/Chevron";
-import { TEXT_HIGHLIGHT_COLORS } from "View/Tools/AddText";
 import { UiPanel } from "View/Ui/UiPanel";
 import { AINode } from "Board/Items/AINode/AINode";
 import { useAccount } from "App/useAccount";
@@ -166,15 +165,31 @@ export const AIInput: React.FC = () => {
 		if (!connection) {
 			console.error("Ws no open");
 		}
-		// TODO parent node
-		const requestNode = createNode(board, inputValue, true);
+
+		const selectedNode = board.selection.items.getItemsByItemTypes([
+			"AINode",
+		])[0];
+		const offsetY = selectedNode?.getMbr().bottom;
+		const selectedNodeId = selectedNode?.getId();
+
+		const requestNode = createNode(
+			board,
+			inputValue,
+			true,
+			selectedNodeId,
+			offsetY
+				? offsetY - board.camera.getMbr().getCenter().y + 100
+				: undefined,
+		);
 		const requestAdded = board.add(requestNode);
 		const responseNode = createNode(
 			board,
 			"",
 			false,
 			requestNode.getId(),
-			200,
+			requestNode.getMbr().bottom -
+				board.camera.getMbr().getCenter().y +
+				100,
 		);
 		const responseAdded = board.add(responseNode);
 
@@ -233,6 +248,10 @@ export const AIInput: React.FC = () => {
 				idea: inputValue,
 				model,
 				itemId: responseAdded.getId(),
+				contextRequest: {
+					range: 5,
+					itemId: selectedNodeId,
+				},
 			},
 		};
 

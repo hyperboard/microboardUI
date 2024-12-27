@@ -153,6 +153,10 @@ export interface UserRequest {
 	updatedFrom?: number; // "user" message id
 	itemId: string;
 	action?: TextAction;
+	contextRequest: {
+		itemId: string;
+		range?: number;
+	};
 }
 
 export type TTextAction =
