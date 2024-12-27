@@ -50,7 +50,7 @@ export type AiChatEventType = UserRequest | StopGeneration | GetMessageList;
 // To receive
 export interface UserRequest {
     method: "UserRequest";
-    context: number[]; // chat message context;
+    context: string[]; // chat message context;
     boardContext: string[];
     boardContextIds?: string[]; // just for frontend
     idea: string;
@@ -61,10 +61,10 @@ export interface UserRequest {
     requestItemId: string;
     action?: TextAction;
     contextRequest?: {
-        messageId: number; // redefine context
+        messageId: string; // redefine context
         range?: number;
     };
-    createThreadFrom?: number;
+    createThreadFrom?: string;
 }
 
 export type TTextAction = "adjust_text_length" | "adjust_reading_level" | "adjust_emojis";
@@ -76,6 +76,7 @@ Levels:
 * */
 
 export interface TextAction {
+    messageId: string;
     action: TTextAction;
     level: number;
 }
@@ -99,7 +100,8 @@ export interface ChatChunk {
     content?: string;
     usage?: Partial<CompletionUsage>;
     error?: string;
-    message?: number;
+    userMessage?: number | null;
+    assistantMessage?: number | null;
 }
 
 export interface MessageList {

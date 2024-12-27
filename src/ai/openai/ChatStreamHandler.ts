@@ -378,7 +378,7 @@ export class ChatStreamHandler {
                 .from(message)
                 .where(
                     and(
-                        eq(message.id, msg.event.createThreadFrom),
+                        eq(message.itemId, msg.event.createThreadFrom),
                         eq(message.role, MessageRole.USER),
                         eq(message.archived, false)
                     )
@@ -416,14 +416,14 @@ export class ChatStreamHandler {
 
         const range = msg.event.contextRequest.range || 5;
         const messages: Message[] = [];
-        let currentId = msg.event.contextRequest.messageId;
+        let currentItemId: string | null = msg.event.contextRequest.messageId;
         let count = 0;
 
-        while (currentId && count < range) {
+        while (currentItemId && count < range) {
             const [userMsg] = await db
                 .select()
                 .from(message)
-                .where(and(eq(message.id, currentId), eq(message.archived, false)))
+                .where(and(eq(message.itemId, currentItemId), eq(message.archived, false)))
                 .limit(1);
 
             if (!userMsg) break;
@@ -445,7 +445,17 @@ export class ChatStreamHandler {
                 messages.unshift(assistantMsg);
             }
 
-            currentId = userMsg.previousMessageId || 0;
+            if (userMsg.previousMessageId) {
+                const [previousMsg] = await db
+                    .select()
+                    .from(message)
+                    .where(eq(message.id, userMsg.previousMessageId))
+                    .limit(1);
+
+                currentItemId = previousMsg?.itemId || null;
+            } else {
+                currentItemId = null;
+            }
             count++;
         }
 
@@ -552,17 +562,20 @@ export class ChatStreamHandler {
 
             let userPrompt = "";
             logger.debug("Fetching context strings, if any...");
-            // const contextStrings = await this.getContextStrings(msg.event.context, logger);
-
+            const simpleContextStrings = await this.getContextStrings(msg.event.context, logger);
             const messagesInContext = await this.getContextMessages(msg, logger);
-            const contextStrings = messagesInContext.map((m) => JSON.stringify({ content: m.content, role: m.role }));
 
+            const contextStrings = messagesInContext.map((m) => JSON.stringify({ content: m.content, role: m.role }));
             const boardContextStrings = msg.event.boardContext || [];
-            // const combinedContext = [...contextStrings, ...boardContextStrings];
             userPrompt = getChatUserPrompt({
                 idea: msg.event.idea,
-                context: contextMessages.length ? contextStrings.join(", ") : "",
-                boardContext: msg.event.boardContext?.join(", ") || "",
+                context:
+                    contextStrings.length > 0
+                        ? contextStrings.reverse().join(", ")
+                        : simpleContextStrings.length > 0
+                        ? simpleContextStrings.reverse().join(", ")
+                        : "",
+                boardContext: boardContextStrings.length > 0 ? boardContextStrings.join(", ") : "",
                 searchResults: searchResult,
                 level: msg.event?.action?.level,
             });
@@ -596,7 +609,6 @@ export class ChatStreamHandler {
 
             const previousMessageId = await this.handleThreading(chat, msg);
             console.log("Handle previous: ", previousMessageId);
-
             const userMessage = await this.saveMessage({
                 chat,
                 role: MessageRole.USER,
@@ -690,11 +702,11 @@ export class ChatStreamHandler {
         return context.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
     }
 
-    private async getContextStrings(contextIds: number[], logger: winston.Logger): Promise<string[]> {
+    private async getContextStrings(contextIds: string[], logger: winston.Logger): Promise<string[]> {
         const messages = await db
             .select()
             .from(message)
-            .where(and(inArray(message.id, contextIds), eq(message.archived, false)))
+            .where(and(inArray(message.itemId, contextIds), eq(message.archived, false)))
             .orderBy(asc(message.id));
 
         const threadContext = await this.getThreadContext(messages);
@@ -745,7 +757,7 @@ export class ChatStreamHandler {
         return boardChat;
     }
 
-    private handleStreamChunks(options: {
+    private async handleStreamChunks(options: {
         stream: Stream<ChatCompletionChunk>;
         ws: WebSocket;
         chat: Chat;
@@ -763,6 +775,16 @@ export class ChatStreamHandler {
         let isStopped = false;
 
         const readableStream = stream.toReadableStream();
+
+        let exMessage = null;
+        if (msg.event?.action?.messageId) {
+            const [foundToUpdate] = await db
+                .select()
+                .from(message)
+                .where(eq(message.itemId, msg.event?.action?.messageId))
+                .limit(1);
+            exMessage = foundToUpdate || null;
+        }
 
         readableStream.pipeTo(
             new WritableStream({
@@ -821,6 +843,7 @@ export class ChatStreamHandler {
                             },
                             itemId,
                             requestItemId: msg.event.requestItemId,
+                            updatedFrom: exMessage?.id,
                         });
                     } else {
                         this.saveMessage({
@@ -855,8 +878,10 @@ export class ChatStreamHandler {
         itemId: string;
         requestItemId: string;
         usageMetadata?: Partial<CompletionUsage>;
+        updatedFrom?: number | null;
     }) {
-        const { ws, chat, assistantResponse, logger, userMessage, usageMetadata, itemId, requestItemId } = options;
+        const { ws, chat, updatedFrom, assistantResponse, logger, userMessage, usageMetadata, itemId, requestItemId } =
+            options;
         logger.debug("Finalizing stream response...");
 
         const assistantMessage = await this.saveMessage({
@@ -867,6 +892,7 @@ export class ChatStreamHandler {
             tokensUsed: usageMetadata?.completion_tokens,
             generatedFrom: userMessage.id,
             itemId: itemId,
+            updatedFrom: updatedFrom,
             // previousMessageId: userMessage.id,
         });
 
@@ -879,7 +905,8 @@ export class ChatStreamHandler {
                 usage: usageMetadata,
                 chatId: chat.id,
                 itemId: itemId,
-                message: assistantMessage.id,
+                assistantMessage: assistantMessage.id || null,
+                userMessage: assistantMessage.generatedFrom || null,
             },
         };
 
@@ -894,7 +921,7 @@ export class ChatStreamHandler {
         logger: winston.Logger;
         status?: MessageStatus;
         tokensUsed?: number;
-        updatedFrom?: number;
+        updatedFrom?: number | null;
         generatedFrom?: number;
         itemId?: string;
         previousMessageId?: number;
@@ -921,32 +948,41 @@ export class ChatStreamHandler {
             previousMessageId,
         });
 
-        const [savedMessage] = await db
-            .insert(message)
-            .values({
-                chatId: chat.id,
-                role,
-                content,
-                tokensUsed,
-                status,
-                updatedFrom,
-                generatedFrom,
-                itemId,
-                previousMessageId,
-            })
-            .returning();
+        let savedMessage;
 
         if (updatedFrom && !isNaN(Number(updatedFrom))) {
-            const [updatedUserMessage] = await db
+            [savedMessage] = await db
                 .update(message)
-                .set({ status: MessageStatus.ARCHIVED })
+                .set({
+                    role,
+                    content,
+                    tokensUsed,
+                    status,
+                    generatedFrom,
+                    itemId,
+                    previousMessageId,
+                })
                 .where(eq(message.id, updatedFrom))
                 .returning();
-            await db
-                .update(message)
-                .set({ status: MessageStatus.ARCHIVED })
-                .where(eq(message.generatedFrom, updatedUserMessage.id))
+
+            logger.debug("Updated existing message:", { updatedFrom, savedMessage });
+        } else {
+            [savedMessage] = await db
+                .insert(message)
+                .values({
+                    chatId: chat.id,
+                    role,
+                    content,
+                    tokensUsed,
+                    status,
+                    updatedFrom,
+                    generatedFrom,
+                    itemId,
+                    previousMessageId,
+                })
                 .returning();
+
+            logger.debug("Inserted new message:", { savedMessage });
         }
 
         return savedMessage;

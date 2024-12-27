@@ -78,6 +78,13 @@
       "when": 1735083641370,
       "tag": "0011_steep_pixie",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1735291986882,
+      "tag": "0012_clammy_eddie_brock",
+      "breakpoints": true
     }
   ]
 }

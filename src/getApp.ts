@@ -1,3 +1,4 @@
+import { createStripeService } from "./Routes/V1/Billing/stripe";
 import { createMiddleware } from "@trigger.dev/express";
 import { OpenAI } from "ai/openai";
 import bodyParser from "body-parser";
@@ -34,6 +35,8 @@ import { Mailer } from "./shared/modules/mailer/mailer";
 import { withWebSocketApi } from "./WebSocket";
 import { updatePlans } from "drizzle/scripts/plans";
 import { createVectorExtension } from "drizzle/scripts/create-vector-ext";
+import Stripe from "stripe";
+import { catchAsync } from "shared/lib/catchAsync";
 
 export async function getApp(): Promise<http.Server> {
     const app = express();
@@ -60,11 +63,37 @@ export async function getApp(): Promise<http.Server> {
         server,
     });
 
+    const stripe = new Stripe(process.env.STRIPE_KEY!, {
+        apiVersion: "2024-12-18.acacia",
+    });
+
+    const stripeService = await createStripeService(stripe);
+    app.post(
+        "/api/v1/billing/webhook",
+        express.raw({ type: "application/json" }),
+        catchAsync(async (req, res) => {
+            try {
+                const signature = req.headers["stripe-signature"];
+
+                if (!signature) {
+                    return res.status(400).json({ error: "Missing stripe-signature header" });
+                }
+
+                const event = stripe.webhooks.constructEvent(req.body, signature, process.env.STRIPE_WEBHOOK_SECRET!);
+
+                await stripeService.handleWebhook(event);
+                res.json({ received: true });
+            } catch (err: any) {
+                logger.error("Stripe webhook Error:", err);
+                res.status(400).send(`Webhook Error: ${err?.message || "Unknown"}`);
+            }
+        })
+    );
+
     app.use(bodyParser.json({ limit: "10mb" }));
     app.use(bodyParser.urlencoded({ extended: false, limit: "10mb" }));
     app.use(cookieParser());
     app.use(compression());
-
     app.use(createMiddleware(client, "/api/trigger"));
 
     // Create a winston logger.
@@ -151,6 +180,7 @@ export async function getApp(): Promise<http.Server> {
         redis,
         ai,
         openai,
+        stripe,
     });
 
     app.use(v1Router);

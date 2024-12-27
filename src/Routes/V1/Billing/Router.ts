@@ -8,11 +8,12 @@ import { eq, and, gte, lte } from "drizzle-orm";
 import { jwtMiddleware } from "../../../Middlewares/jwt.middleware";
 import { body } from "express-validator";
 import { boardOwner, boards, chat, message } from "drizzle/entities";
-import { stripeService } from "./stripe";
-import stripe from "stripe";
+import { createStripeService } from "./stripe";
+import { Stripe } from "stripe";
 
-export const getBillingRouter = (logger: winston.Logger): express.Router => {
+export const getBillingRouter = (logger: winston.Logger, stripe: Stripe): express.Router => {
     const router = express.Router();
+    const stripeService = createStripeService(stripe);
 
     function getCurrentPeriods() {
         const now = new Date();
@@ -240,52 +241,53 @@ export const getBillingRouter = (logger: winston.Logger): express.Router => {
         })
     );
 
-    router.post(
-        "/billing/subscribe",
-        jwtMiddleware(logger),
-        body("planId").isString(),
-        catchAsync(async (req, res) => {
-            const { token } = req;
-            const userToken = await token;
-            const userId = parseInt(userToken?.sub);
-            const { planId } = req.body;
+    //  // TEST
+    // router.post(
+    //     "/billing/subscribe",
+    //     jwtMiddleware(logger),
+    //     body("planId").isString(),
+    //     catchAsync(async (req, res) => {
+    //         const { token } = req;
+    //         const userToken = await token;
+    //         const userId = parseInt(userToken?.sub);
+    //         const { planId } = req.body;
 
-            const plan = await db.select().from(plans).where(eq(plans.id, planId)).limit(1);
+    //         const plan = await db.select().from(plans).where(eq(plans.id, planId)).limit(1);
 
-            if (!plan.length) {
-                res.status(400).json({ error: "Invalid plan ID." });
-                return;
-            }
+    //         if (!plan.length) {
+    //             res.status(400).json({ error: "Invalid plan ID." });
+    //             return;
+    //         }
 
-            if (plan[0].name === "free") {
-                res.status(400).json({ error: "Cannot subscribe to free plan." });
-                return;
-            }
+    //         if (plan[0].name === "free") {
+    //             res.status(400).json({ error: "Cannot subscribe to free plan." });
+    //             return;
+    //         }
 
-            await db
-                .update(userPlans)
-                .set({
-                    status: "cancelled",
-                    canceledAt: new Date(),
-                })
-                .where(and(eq(userPlans.userId, userId), eq(userPlans.status, "active")));
+    //         await db
+    //             .update(userPlans)
+    //             .set({
+    //                 status: "cancelled",
+    //                 canceledAt: new Date(),
+    //             })
+    //             .where(and(eq(userPlans.userId, userId), eq(userPlans.status, "active")));
 
-            const now = new Date();
-            const resetPeriod = plan[0].resetPeriodDays || 30;
-            const endDate = new Date(now.getTime() + resetPeriod * 24 * 60 * 60 * 1000);
+    //         const now = new Date();
+    //         const resetPeriod = plan[0].resetPeriodDays || 30;
+    //         const endDate = new Date(now.getTime() + resetPeriod * 24 * 60 * 60 * 1000);
 
-            await db.insert(userPlans).values({
-                id: crypto.randomUUID(),
-                userId,
-                planId,
-                startDate: now,
-                endDate,
-                status: "active",
-            });
+    //         await db.insert(userPlans).values({
+    //             id: crypto.randomUUID(),
+    //             userId,
+    //             planId,
+    //             startDate: now,
+    //             endDate,
+    //             status: "active",
+    //         });
 
-            res.status(200).json({ message: "Successfully subscribed to plan." });
-        })
-    );
+    //         res.status(200).json({ message: "Successfully subscribed to plan." });
+    //     })
+    // );
 
     router.post(
         "/billing/create-checkout",
@@ -307,19 +309,6 @@ export const getBillingRouter = (logger: winston.Logger): express.Router => {
             });
 
             res.json({ url: session.url });
-        })
-    );
-
-    router.post(
-        "/billing/webhook",
-        express.raw({ type: "application/json" }),
-        catchAsync(async (req, res) => {
-            const signature = req.headers["stripe-signature"]!;
-
-            const event = stripe.webhooks.constructEvent(req.body, signature, process.env.STRIPE_WEBHOOK_SECRET!);
-
-            await stripeService.handleWebhook(event);
-            res.json({ received: true });
         })
     );
 
