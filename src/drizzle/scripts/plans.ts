@@ -23,8 +23,8 @@ export const AI_MODELS: AiModel[] = [
 
 export const PLANS: Plan[] = [
     {
-        id: "free",
-        name: "free",
+        id: "basic",
+        name: "basic",
         description: "Free plan",
         monthlyTokenLimit: 100_000,
         resetPeriodDays: 7,
@@ -38,24 +38,24 @@ export const PLANS: Plan[] = [
         description: "Plus plan",
         monthlyTokenLimit: 1_000_000,
         resetPeriodDays: 30,
-        price: 500 * RUB,
+        price: 1200 * RUB,
         version: 1,
-        storageLimit: 10_000, // 100GB
+        storageLimit: 100_000, // 100GB
     },
 ];
 
 export const PLAN_MODEL_LIMITS: ModelLimit[] = [
     {
-        id: "free-gpt-4o-mini",
-        planId: "free",
+        id: "basic-gpt-4o-mini",
+        planId: "basic",
         modelId: "gpt-4o-mini",
         dailyRequestLimit: null,
         weeklyRequestLimit: 30,
         isEnabled: true,
     },
     {
-        id: "free-gpt-4o",
-        planId: "free",
+        id: "basic-gpt-4o",
+        planId: "basic",
         modelId: "gpt-4o",
         dailyRequestLimit: null,
         weeklyRequestLimit: null,

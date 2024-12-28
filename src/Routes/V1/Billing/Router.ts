@@ -66,7 +66,7 @@ export const getBillingRouter = (logger: winston.Logger, stripe: Stripe): expres
                     storageLimit: plans.storageLimit,
                 })
                 .from(plans)
-                .where(eq(plans.name, "free"))
+                .where(eq(plans.name, "basic"))
                 .limit(1);
 
             if (!freePlan.length) {
@@ -167,7 +167,7 @@ export const getBillingRouter = (logger: winston.Logger, stripe: Stripe): expres
                 and(eq(boardOwner.ownerId, userId), gte(message.createdAt, startDate), lte(message.createdAt, endDate))
             );
 
-        return result[0].totalTokens;
+        return +result[0].totalTokens;
     }
 
     async function getCurrentStorageUsage(userId: number) {

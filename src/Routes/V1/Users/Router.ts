@@ -1,17 +1,13 @@
 import express from "express";
-import { Users } from "./Users";
-import { HttpException } from "shared/exceptions/http-exception";
-import { HttpStatus } from "shared/enums/http-status.enum";
-import winston from "winston";
-import { jwtMiddleware } from "Middlewares/jwt.middleware";
-import { catchAsync } from "shared/lib/catchAsync";
 import { body, param, query } from "express-validator";
-import { Readable } from "stream";
+import { jwtMiddleware } from "Middlewares/jwt.middleware";
+import { HttpStatus } from "shared/enums/http-status.enum";
+import { HttpException } from "shared/exceptions/http-exception";
+import { catchAsync } from "shared/lib/catchAsync";
+import winston from "winston";
+import { Users } from "./Users";
 
-export function getUsersRouter(
-    usersService: Users,
-    logger: winston.Logger
-): express.Router {
+export function getUsersRouter(usersService: Users, logger: winston.Logger): express.Router {
     const router = express.Router();
 
     router.patch(
@@ -21,12 +17,12 @@ export function getUsersRouter(
             const { token } = request;
             const userToken = await token;
             const userId = parseInt(userToken?.sub);
-            const contentType = request.headers['content-type']
+            const contentType = request.headers["content-type"];
 
             await usersService.uploadAvatar(userId, request, contentType);
             response.status(HttpStatus.NO_CONTENT).send();
-        }
-        ));
+        })
+    );
 
     router.delete(
         "/users/me/avatar",
@@ -38,7 +34,8 @@ export function getUsersRouter(
 
             await usersService.uploadAvatar(userId);
             response.status(HttpStatus.NO_CONTENT).send();
-        }))
+        })
+    );
 
     router.get(
         "/users/me",
@@ -72,13 +69,13 @@ export function getUsersRouter(
             }
 
             response.end();
-        }
-        ));
+        })
+    );
 
     router.patch(
         "/users/me",
         jwtMiddleware(logger),
-        body('name').isString().isLength({ min: 1 }).optional(),
+        body("name").isString().isLength({ min: 1 }).optional(),
         catchAsync(async (request, response) => {
             const { token } = request;
             const userToken = await token;
@@ -107,13 +104,12 @@ export function getUsersRouter(
             }
 
             response.end();
-        }
-        ));
-
+        })
+    );
 
     router.get(
         "/users/:userId",
-        param('userId').isInt(),
+        param("userId").isInt(),
         catchAsync(async (request, response) => {
             const userId = parseInt(request.body?.userId);
             let user = null;
@@ -131,19 +127,22 @@ export function getUsersRouter(
             }
 
             response.end();
-        }
-        ));
+        })
+    );
 
     router.get(
         "/users",
-        query('search').isString().optional(),
-        query('limit').isInt().optional().default(20),
+        query("search").isString().optional(),
+        query("limit").isInt().optional().default(20),
         catchAsync(async (request, response) => {
             const search = request.query.search;
             const limit = request.query.limit;
 
             try {
-                const users = await usersService.getUsers(typeof search === 'string' ? search : undefined, typeof limit === 'string' ? +limit : undefined);
+                const users = await usersService.getUsers(
+                    typeof search === "string" ? search : undefined,
+                    typeof limit === "string" ? +limit : undefined
+                );
                 response.json(users).end();
             } catch (e: HttpException | any) {
                 response
@@ -156,8 +155,8 @@ export function getUsersRouter(
             }
 
             response.end();
-        }
-        ));
+        })
+    );
 
     return router;
 }

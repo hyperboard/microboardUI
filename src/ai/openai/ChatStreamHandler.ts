@@ -27,7 +27,7 @@ import { boardOwner, boards } from "drizzle/entities";
 import { PLAN_MODEL_LIMITS } from "drizzle/scripts/plans";
 
 class UsageLimitChecker {
-    private readonly defaultPlanId = "free";
+    private readonly defaultPlanId = "basic";
 
     private async getActivePlan(userId: number) {
         if (userId === 0) {
