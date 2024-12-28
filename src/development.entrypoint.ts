@@ -12,18 +12,14 @@ declare global {
 		app: App;
 		useHTTPSubscription: boolean;
 		showDebug: boolean;
-		customTextRender: boolean;
 		enableTemplateCreating: boolean;
-		showOpenFilePicker: () => Promise<FileSystemFileHandle[]>; // undefined by itself ??
+		showOpenFilePicker: () => Promise<FileSystemFileHandle[]>; // should be there
 	}
 }
 
 var showDebug = isMicroboard() ? true : false;
 window.showDebug = showDebug;
 window.enableTemplateCreating = false;
-
-var customTextRender = false;
-window.customTextRender = customTextRender;
 
 window.app = createApp();
 window.app.connection.connect().then(() => {
