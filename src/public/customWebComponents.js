@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		button.textContent = "Loading...";
 
 		const { createApp } = await import(
-			"https://www.unpkg.com/test_package_board@0.0.43/dist/bundle.js"
+			"https://www.unpkg.com/test_package_board@0.0.44/dist/bundle.js"
 		);
 		const app = createApp();
 		window.app = app;
@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 
 		const response = await fetch(
-			"https://www.unpkg.com/test_package_board@0.0.43/dist/bundle.css",
+			"https://www.unpkg.com/test_package_board@0.0.44/dist/bundle.css",
 		);
 		const cssText = await response.text();
 		const styleEl = document.createElement("style");
@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		document.body.appendChild(styleEl);
 
 		const responseSvg = await fetch(
-			"https://www.unpkg.com/test_package_board@0.0.43/dist/sprite.svg",
+			"https://www.unpkg.com/test_package_board@0.0.44/dist/sprite.svg",
 		);
 		const svgText = await responseSvg.text();
 		const div = document.createElement("div");
