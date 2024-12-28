@@ -74,6 +74,17 @@ export const AIInput: React.FC = () => {
 		event.target.style.height = `${Math.min(event.target.scrollHeight, 120)}px`;
 	};
 
+	useEffect(() => {
+		if (account.billingInfo?.models) {
+			return;
+		}
+		const defaultModel = account.billingInfo?.models.find(
+			model => model.isDefault,
+		);
+
+		setModel((defaultModel?.id as OpenAIModels) ?? "gpt-4o-mini");
+	}, [account.billingInfo?.models]);
+
 	const handleSendClick = async (ev: SyntheticEvent) => {
 		ev.stopPropagation();
 		if (!inputValue.trim()) {
@@ -82,7 +93,8 @@ export const AIInput: React.FC = () => {
 		if (!account.isLoggedIn) {
 			return openModal(AI_UNAVAILABLE_MODAL_ID);
 		}
-		if ((account.billingInfo?.remainingTokens ?? 0) <= 0) {
+		await account.fetchBillingInfo();
+		if ((account.billingInfo?.tokens.remaining ?? 0) <= 0) {
 			setIsShaking(true);
 			setTimeout(() => {
 				setIsShaking(false);
@@ -285,18 +297,34 @@ export const AIInput: React.FC = () => {
 					<StarIcon className={styles.starIcon} />
 					{isDropdownOpen && (
 						<div className={styles.modelDropdown}>
-							<div onClick={() => selectModel("gpt-4o")}>
+							<button
+								disabled={
+									!account.billingInfo?.models.find(
+										model =>
+											model.id === "gpt-4o-mini" &&
+											model.isEnabled,
+									)
+								}
+								className={styles.modelBtn}
+								onClick={() => selectModel("gpt-4o-mini")}
+							>
+								<strong>GPT-4o mini</strong>
+								<p>{t("ai.models.gpt-4o-mini.description")}</p>
+							</button>
+							<button
+								disabled={
+									!account.billingInfo?.models.find(
+										model =>
+											model.id === "gpt-4o" &&
+											model.isEnabled,
+									)
+								}
+								className={styles.modelBtn}
+								onClick={() => selectModel("gpt-4o")}
+							>
 								<strong>GPT-4o</strong>
-								<p>Отлично подходит для большинства задач</p>
-							</div>
-							<div onClick={() => selectModel("o1")}>
-								<strong>o1</strong>
-								<p>Использует продвинутые рассуждения</p>
-							</div>
-							<div onClick={() => selectModel("o1-mini")}>
-								<strong>o1-mini</strong>
-								<p>Быстрее рассуждает</p>
-							</div>
+								<p>{t("ai.models.gpt-4o.description")}</p>
+							</button>
 						</div>
 					)}
 				</div>

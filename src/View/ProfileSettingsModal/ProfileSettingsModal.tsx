@@ -223,7 +223,7 @@ export function ProfileSettingsModal() {
 						className={styles.btn}
 					>
 						<Icon iconName="ArrowUpCircle" width={20} height={20} />{" "}
-						{t("profile.changePassword")}
+						{t("userPlan.upgradePlan")}
 					</Button>
 					<Button
 						type="button"

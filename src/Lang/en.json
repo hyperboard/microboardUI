@@ -653,7 +653,15 @@
 		"symbols": "characters",
 		"processingIdea": "Processing your idea...",
 		"generating": "Generating...",
-		"generate": "Generate"
+		"generate": "Generate",
+		"models": {
+			"gpt-4o-mini": {
+				"description": "Fast and efficient"
+			},
+			"gpt-4o": {
+				"description": "High accuracy and depth"
+			}
+		}
 	},
 	"sharing": {
 		"share": "Share",
@@ -739,7 +747,8 @@
 		"avatarTypeConstraint": "The image must be in jpeg, png or svg format"
 	},
 	"userPlan": {
-		"currentPlanInfo": "You have <0>{{availableRequests}} requests left for {{aiModel}} until {{subscriptionEndDate}}</0>",
+		"upgradePlan": "Upgrade Plan",
+		"currentPlanInfo": "You have <0>{{availableRequests}} requests left for {{aiModel}} until {{tokensUsageResetDate}}</0>",
 		"unlimited": "Unlimited",
 		"free": "Free",
 		"perMonth": "per month",

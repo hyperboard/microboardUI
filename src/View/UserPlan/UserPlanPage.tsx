@@ -1,13 +1,21 @@
+import { useAccount } from "App/useAccount";
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { Button } from "shared/ui-lib/Button";
 import { Logo } from "View/Icon";
+import { BasicPlanCard, PlusPlanCard, ProPlanCard } from "./PlanCards";
 import style from "./UserPlanPage.module.css";
 import { UserPlanUsage } from "./UserPlanUsage";
-import { BasicPlanCard, PlusPlanCard, ProPlanCard } from "./PlanCards";
-import { Button } from "shared/ui-lib/Button";
-import { useNavigate } from "react-router-dom";
 
 export function UserPlanPage() {
 	const navigate = useNavigate();
+	const account = useAccount();
+	const { t } = useTranslation();
+
+	const defaultModel = account.billingInfo?.models.find(
+		model => model.isDefault,
+	);
 
 	const handleOpenProfileSettings = () => {
 		navigate(-1);
@@ -19,11 +27,16 @@ export function UserPlanPage() {
 				<span>Microboard</span>
 			</header>
 			<main className={style.content}>
-				<h1 className={style.h1}>User Plan</h1>
+				<h1 className={style.h1}>{t("userPlan.upgradePlan")}</h1>
 				<UserPlanUsage
-					aiModel="aboba"
-					availableRequests={20}
-					subscriptionEndDate={new Date()}
+					aiModel={defaultModel?.displayName ?? "Unknown"}
+					availableRequests={
+						(defaultModel?.limits.weekly ?? 0) -
+						(defaultModel?.limits.weeklyUsed ?? 0)
+					}
+					tokensUsageResetDate={
+						account.billingInfo?.plan.periodEnd ?? new Date()
+					}
 				/>
 				<div className={style.cards}>
 					<BasicPlanCard />

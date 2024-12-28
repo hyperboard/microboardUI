@@ -76,28 +76,38 @@
 	padding: 5px;
 }
 
-.modelDropdown div {
+.modelBtn {
 	padding: 10px 15px;
 	cursor: pointer;
 	border-radius: 8px;
 	margin: 5px 0;
+	display: flex;
+	flex-direction: column;
+	width: 100%;
 }
 
-.modelDropdown div:hover {
+.modelBtn:hover:not(:disabled) {
 	background-color: #0a0f290a;
 }
 
-.modelDropdown strong {
+.modelBtn strong {
 	display: block;
 	margin-bottom: 5px;
 	font-weight: normal;
 	color: black;
 }
 
-.modelDropdown p {
+.modelBtn p {
 	margin: 0;
 	color: #666;
 	font-size: 12px;
+}
+
+.modelBtn:disabled,
+.modelBtn:disabled p,
+.modelBtn:disabled strong {
+	color: rgba(204, 204, 204, 0.8);
+	cursor: not-allowed;
 }
 
 .aiInput {

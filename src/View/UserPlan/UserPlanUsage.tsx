@@ -5,20 +5,20 @@ import styles from "./UserPlanUsage.module.css";
 type Props = {
 	availableRequests: number;
 	aiModel: string;
-	subscriptionEndDate: string | Date;
+	tokensUsageResetDate: string | Date;
 };
 
 export function UserPlanUsage({
 	aiModel,
 	availableRequests,
-	subscriptionEndDate,
+	tokensUsageResetDate,
 }: Props) {
 	const { t, i18n } = useTranslation();
 	const formattedDate = new Intl.DateTimeFormat(i18n.language, {
 		year: "numeric",
 		month: "numeric",
 		day: "numeric",
-	}).format(new Date(subscriptionEndDate));
+	}).format(new Date(tokensUsageResetDate));
 
 	return (
 		<p className={styles.planUsage}>
@@ -28,7 +28,7 @@ export function UserPlanUsage({
 				values={{
 					availableRequests,
 					aiModel,
-					subscriptionEndDate: formattedDate,
+					tokensUsageResetDate: formattedDate,
 				}}
 				components={[<span />]}
 			/>
