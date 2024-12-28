@@ -108,6 +108,9 @@ export const CommentCard = ({ comment }: Props) => {
 			{showMoreComments &&
 				messages.length &&
 				messages.slice(1).map((mes, index) => {
+					if (!mes || !mes.id) {
+						return null;
+					}
 					return (
 						<Message
 							isUnread={
