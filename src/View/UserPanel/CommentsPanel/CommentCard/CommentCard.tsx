@@ -106,11 +106,13 @@ export const CommentCard = ({ comment }: Props) => {
 				)}
 			</div>
 			{showMoreComments &&
+				messages.length &&
 				messages.slice(1).map((mes, index) => {
 					return (
 						<Message
 							isUnread={
 								!!unreadMessages &&
+								!!unreadMessages.length &&
 								!!unreadMessages.find(
 									message => message.id === mes.id,
 								)
