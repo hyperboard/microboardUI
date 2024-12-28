@@ -1,10 +1,4 @@
-import React, {
-	useEffect,
-	useRef,
-	useState,
-	type MouseEventHandler,
-	type SyntheticEvent,
-} from "react";
+import React, { useEffect, useRef, useState, type SyntheticEvent } from "react";
 import styles from "./AIInput.module.css";
 
 import { useAppSubscription } from "Board/useBoardSubscription";
@@ -15,19 +9,8 @@ import { StarIcon } from "./StarIcon";
 
 import { AiChatMsg, OpenAIModels, UserRequest } from "App/Connection";
 import { Board } from "Board";
-import {
-	Connector,
-	ConnectorData,
-	Item,
-	ItemData,
-	Matrix,
-	Mbr,
-	Point,
-	RichText,
-} from "Board/Items";
+import { Connector, ConnectorData, Matrix, Mbr, RichText } from "Board/Items";
 import { useForceUpdate } from "lib/useForceUpdate";
-
-import { ControlPointData } from "Board/Items/Connector/ControlPoint";
 import { Chevron } from "shared/ui-lib/Dropdown/Chevron";
 import { UiPanel } from "View/Ui/UiPanel";
 import { AINode } from "Board/Items/AINode/AINode";
@@ -76,47 +59,6 @@ export const AIInput: React.FC = () => {
 		subjects: ["selectionItems"],
 		observer: forceUpdate,
 	});
-
-	function getEndPointPosition(mbr: Mbr): Point | undefined {
-		if (!mbr) {
-			return;
-		}
-
-		const center = mbr.getCenter();
-		const height = mbr.getHeight();
-		const position = new Point(center.x, center.y - height / 2);
-		return position;
-	}
-
-	const createConnector = (startNode: AINode, endNode: AINode) => {
-		const defaultConnector = new Connector(board);
-		const connectorData = defaultConnector.serialize();
-		connectorData.lineStyle = "orthogonal";
-		const startAnchor = startNode.getSnapAnchorPoints()[1];
-		const startMatrix = startNode.transformation.matrix.getInverse();
-		startAnchor.transform(startMatrix);
-
-		const endAnchor = endNode.getSnapAnchorPoints()[0];
-		const endMatrix = endNode.transformation.matrix.getInverse();
-		endAnchor.transform(endMatrix);
-
-		const startPointData: ControlPointData = {
-			pointType: "Fixed",
-			itemId: startNode.getId(),
-			relativeX: startAnchor.x,
-			relativeY: startAnchor.y,
-		};
-		const endPointData: ControlPointData = {
-			pointType: "Fixed",
-			itemId: endNode.getId(),
-			relativeX: endAnchor.x,
-			relativeY: 0,
-		};
-		connectorData.startPoint = startPointData;
-		connectorData.endPoint = endPointData;
-
-		board.add(board.createItem(board.getNewItemId(), connectorData));
-	};
 
 	function calculateNodePosition(
 		newNode: AINode,
@@ -177,10 +119,10 @@ export const AIInput: React.FC = () => {
 			step += 1;
 		}
 
-		const endPoint = getEndPointPosition(newMbr);
-
-		const connectorEndPoint = endPoint || new Point();
-		const newItem = board.createItem(board.getNewItemId(), newNodeData);
+		const newItem = board.createItem(
+			board.getNewItemId(),
+			newNodeData,
+		) as AINode;
 
 		const defaultConnector = new Connector(board);
 		const connectorData = defaultConnector.serialize();
@@ -304,7 +246,10 @@ export const AIInput: React.FC = () => {
 			const centerY = cameraMbr.getCenter().y;
 			node.transformation.translateTo(centerX, centerY);
 			return {
-				node: board.createItem(board.getNewItemId(), node.serialize()),
+				node: board.createItem(
+					board.getNewItemId(),
+					node.serialize(),
+				) as AINode,
 				connectorData: null,
 			};
 		}
@@ -351,10 +296,18 @@ export const AIInput: React.FC = () => {
 			);
 		}
 
+		const parentNodes = selectedNode
+			? [selectedNode, ...board.getParentAINodes(selectedNode)]
+			: [];
+
 		const selectedItems = board.selection.items.list();
 		const boardContext = selectedItems
 			.map(item => {
-				if (item.itemType === "AINode") {
+				if (
+					item.itemType === "AINode" &&
+					parentNodes.length &&
+					parentNodes.find(node => node.getId() === item.getId())
+				) {
 					return "";
 				}
 				const richText = item.getRichText();
@@ -378,6 +331,13 @@ export const AIInput: React.FC = () => {
 			})
 			.filter(text => text !== "");
 
+		const contextRequest = selectedNode
+			? {
+					range: 5,
+					messageId: selectedNode.getId(),
+				}
+			: undefined;
+
 		const message: AiChatMsg<UserRequest> = {
 			type: "AiChat",
 			boardId: board.getBoardId(),
@@ -389,12 +349,7 @@ export const AIInput: React.FC = () => {
 				model,
 				itemId: responseAdded.getId(),
 				requestItemId: requestAdded.getId(),
-				contextRequest: selectedNode
-					? {
-							range: 5,
-							messageId: selectedNode.getId(),
-						}
-					: undefined,
+				contextRequest,
 			},
 		};
 

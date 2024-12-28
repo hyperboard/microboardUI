@@ -154,7 +154,7 @@ export interface UserRequest {
 	itemId: string;
 	requestItemId: string;
 	action?: TextAction;
-	contextRequest: {
+	contextRequest?: {
 		messageId: string;
 		range?: number;
 	};
