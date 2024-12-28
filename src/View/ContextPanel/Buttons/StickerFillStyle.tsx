@@ -53,7 +53,7 @@ export function StickerFillStyle(): React.ReactElement | null {
 				<UiPanel
 					rounded={verticalAlign === "bottom" ? "bottom" : "full"}
 					grid
-					columns={4}
+					columns={5}
 					gap={8}
 				>
 					<ColorPicker
