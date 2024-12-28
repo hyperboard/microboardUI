@@ -651,7 +651,15 @@
 		"symbols": "символов",
 		"processingIdea": "Обработка идеи...",
 		"generating": "Генерируем...",
-		"generate": "Сгенерировать"
+		"generate": "Сгенерировать",
+		"models": {
+			"gpt-4o-mini": {
+				"description": "Быстрота и эффективность"
+			},
+			"gpt-4o": {
+				"description": "Точность и глубина анализа"
+			}
+		}
 	},
 	"sharing": {
 		"share": "Поделиться",
@@ -735,5 +743,49 @@
 		"avatarUploadError": "Ошибка загрузки аватара",
 		"avatarSizeConstraint": "Максимальный размер изображения - 10 Мб",
 		"avatarTypeConstraint": "Изображение должно быть в формате jpeg, png или svg"
+	},
+	"userPlan": {
+		"upgradePlan": "Выбрать тариф",
+		"currentPlanInfo": "У вас осталось <0>{{availableRequests}} запросов к {{aiModel}} до {{tokensUsageResetDate}}</0>",
+		"unlimited": "Без ограничениий",
+		"free": "Бесплатно",
+		"perMonth": "в месяц",
+		"customPrice": "Цена по запросу",
+		"subscribe": {
+			"current": "Действует",
+			"getPlan": "Подключить {{plan}}",
+			"contact": "Напишите нам",
+			"downgrade": "Downgrade"
+		},
+		"plans": {
+			"basic": {
+				"name": "Базовый",
+				"description": "GPT-4o mini",
+				"features": [
+					"30 запросов в неделю к GPT-4o mini",
+					"Доски, фигуры — без ограничений",
+					"Картинки — до 100 МБ"
+				]
+			},
+			"plus": {
+				"name": "Plus",
+				"description": "GPT-4o mini and GPT-4o",
+				"features": [
+					"Безлимит запросов к GPT-4o mini",
+					"50 запросов в неделю к GPT-4o",
+					"Картинки — до 100 ГБ"
+				]
+			},
+			"pro": {
+				"name": "Pro",
+				"description": "For use without limits",
+				"features": [
+					"Локальное размещение",
+					"Интеграция в ваш продукт",
+					"Собственная LLM",
+					"Доски, фигуры, картинки — без ограничений"
+				]
+			}
+		}
 	}
 }

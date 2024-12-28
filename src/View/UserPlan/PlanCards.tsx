@@ -1,23 +1,36 @@
 import { useTranslation } from "react-i18next";
 import { PlanCard, type PlanState } from "./PlanCard";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useAccount } from "App/useAccount";
 import { useConfirmModalContext } from "View/Modal/ConfirmModal";
 import { notify } from "View/Ui/Toast";
+import { billingApi } from "shared/api";
 
 export function BasicPlanCard() {
 	const { t } = useTranslation();
 	const account = useAccount();
 	const { openModalConfirm } = useConfirmModalContext();
+	const [plan, setPlan] = useState<billingApi.Plan | null>(null);
+
+	useEffect(() => {
+		billingApi.getPlans().then(({ data }) => {
+			const basicPlan = data?.find(({ id }) => id === "basic");
+
+			setPlan(basicPlan ?? null);
+		});
+	}, [account.isLoggedIn]);
 
 	const getBasicSubState = (): PlanState => {
-		if (!account.billingInfo || account.billingInfo?.tariff === "basic") {
+		if (
+			!account.billingInfo ||
+			account.billingInfo?.plan.name === plan?.name
+		) {
 			return "current";
 		}
 
 		if (
-			account.billingInfo.tariff === "pro" ||
-			account.billingInfo.tariff === "plus"
+			account.billingInfo.plan.name === "pro" ||
+			account.billingInfo.plan.name === "plus"
 		) {
 			return "downgrade";
 		}
@@ -27,14 +40,18 @@ export function BasicPlanCard() {
 
 	const onDowngrade = () => {
 		openModalConfirm(
-			`Отказаться от тарифа ${account.billingInfo?.tariff}`,
-			`Доступ к ${account.billingInfo?.tariff} останется в течение оплаченного срока до ${account.billingInfo?.resetAt}, после этого вы потеряете преимущества тарифа ${account.billingInfo?.tariff} и вернетесь к Базовому тарифу.`,
+			`Отказаться от тарифа ${account.billingInfo?.plan.name}`,
+			`Доступ к ${account.billingInfo?.plan.name} останется в течение оплаченного срока до ${account.billingInfo?.plan.periodEnd}, после этого вы потеряете преимущества тарифа ${account.billingInfo?.plan.name} и вернетесь к Базовому тарифу.`,
 			async () => {
 				notify({ header: "Тариф обновлен", body: "Бла бла бла бла" });
 				Promise.resolve();
 			},
 		);
 	};
+	if (!plan) {
+		return null;
+	}
+
 	return (
 		<PlanCard
 			onDowngrade={onDowngrade}
@@ -54,22 +71,62 @@ export function PlusPlanCard() {
 	const { t } = useTranslation();
 	const account = useAccount();
 
+	const [plan, setPlan] = useState<billingApi.Plan | null>(null);
+
+	useEffect(() => {
+		billingApi.getPlans().then(({ data }) => {
+			const plusPlan = data?.find(({ id }) => id === "plus");
+
+			setPlan(plusPlan ?? null);
+		});
+	}, [account.isLoggedIn]);
+
 	const getPlusSubState = (): PlanState => {
 		if (
 			!account.billingInfo ||
-			account.billingInfo?.tariff === "basic" ||
-			account.billingInfo?.tariff === "pro"
+			account.billingInfo?.plan.name === "basic" ||
+			account.billingInfo?.plan.name === "pro"
 		) {
 			return "available";
 		}
 
-		if (account.billingInfo.tariff === "plus") {
+		if (account.billingInfo.plan.name === plan?.name) {
 			return "current";
 		}
 
 		return "available";
 	};
 
+	if (!plan) {
+		return null;
+	}
+
+	const handleSubscribe = async () => {
+		const successUrl = `${window.location.href}?paymentStatus=success`;
+		const cancelUrl = `${window.location.href}?paymentStatus=error`;
+
+		try {
+			const { data } = await billingApi.createCheckout({
+				planId: plan.id,
+				successUrl,
+				cancelUrl,
+			});
+
+			if (!data) {
+				throw new Error();
+			}
+			const linkElem = document.createElement("a");
+			linkElem.href = data?.url;
+			linkElem.target = "_blank";
+			linkElem.click();
+		} catch {
+			notify({
+				header: "Оплата",
+				body: "Ошибка оплаты",
+				variant: "error",
+			});
+		}
+	};
 	return (
 		<PlanCard
 			name={t("userPlan.plans.plus.name")}
@@ -79,8 +136,9 @@ export function PlusPlanCard() {
 			})}
 			variant="plus"
 			unlimited
-			price={12}
+			price={plan.price}
 			state={getPlusSubState()}
+			onSubscribe={handleSubscribe}
 		/>
 	);
 }
@@ -92,13 +150,13 @@ export function ProPlanCard() {
 	const getProSubState = (): PlanState => {
 		if (
 			!account.billingInfo ||
-			account.billingInfo?.tariff === "basic" ||
-			account.billingInfo?.tariff === "plus"
+			account.billingInfo?.plan.name === "basic" ||
+			account.billingInfo?.plan.name === "plus"
 		) {
 			return "available";
 		}
 
-		if (account.billingInfo.tariff === "pro") {
+		if (account.billingInfo.plan.name === "pro") {
 			return "current";
 		}
 

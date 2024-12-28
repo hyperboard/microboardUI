@@ -83,22 +83,22 @@ const TEXT_VERTICAL_ALIGNMENT = {
 };
 
 const STICKER_COLOR = {
-	dark_blue: STICKER_COLORS[0],
-	blue: STICKER_COLORS[0],
-	light_blue: STICKER_COLORS[0],
-	red: STICKER_COLORS[5],
-	orange: STICKER_COLORS[1],
-	violet: STICKER_COLORS[3],
-	pink: STICKER_COLORS[5],
-	light_pink: STICKER_COLORS[5],
-	cyan: STICKER_COLORS[4],
-	dark_green: STICKER_COLORS[2],
-	green: STICKER_COLORS[2],
-	light_green: STICKER_COLORS[2],
-	yellow: STICKER_COLORS[1],
-	light_yellow: STICKER_COLORS[1],
-	gray: STICKER_COLORS[6],
-	black: STICKER_COLORS[7],
+	dark_blue: STICKER_COLORS[2],
+	blue: STICKER_COLORS[2],
+	light_blue: STICKER_COLORS[3],
+	red: STICKER_COLORS[1],
+	orange: STICKER_COLORS[6],
+	violet: STICKER_COLORS[0],
+	pink: STICKER_COLORS[1],
+	light_pink: STICKER_COLORS[1],
+	cyan: STICKER_COLORS[5],
+	dark_green: STICKER_COLORS[4],
+	green: STICKER_COLORS[4],
+	light_green: STICKER_COLORS[1],
+	yellow: STICKER_COLORS[7],
+	light_yellow: STICKER_COLORS[7],
+	gray: STICKER_COLORS[8],
+	black: STICKER_COLORS[9],
 };
 
 const SHAPE_TYPES = {

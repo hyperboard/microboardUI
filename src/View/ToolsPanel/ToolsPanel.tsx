@@ -37,7 +37,13 @@ export function ToolsPanel(): JSX.Element {
 
 	return (
 		<PanelContext.Provider value={{ toggleMenu, openedMenu }}>
-			<div className={style.wrapper}>
+			<div
+				className={
+					window.location.protocol === "file:"
+						? style.localWrapper
+						: style.wrapper
+				}
+			>
 				<UiPanel vertical padding={0} zIndex={20}>
 					<AddTemplate />
 					<UiSeparator vertical={false} />

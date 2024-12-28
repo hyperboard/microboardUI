@@ -14,12 +14,6 @@ type AccountInfo = {
 	avatarGenerated: boolean;
 };
 
-type BillingInfo = {
-	remainingTokens: number;
-	tariff: string;
-	resetAt: Date | null;
-};
-
 type TokenData = {
 	sub: string; // Subject (usually user id)
 	exp: number; // Expiration time
@@ -33,7 +27,7 @@ type TokenData = {
 export class Account {
 	subject = new Subject<AccountInfo | null>();
 	info: null | AccountInfo = null;
-	billingInfo: null | BillingInfo = null;
+	billingInfo: null | billingApi.UserLimits = null;
 	isTokenLoading = false;
 	tokenData: TokenData | null = null;
 	onSessionExpired: (() => void) | null = null;
@@ -85,6 +79,19 @@ export class Account {
 		this.tokenData = jwtDecode<TokenData>(this.accessToken);
 	}
 
+	async fetchBillingInfo(): Promise<void> {
+		try {
+			const { data: billingInfo } = await billingApi.getUserPlanDetails();
+			if (billingInfo) {
+				this.billingInfo = billingInfo;
+			}
+		} catch {
+			console.error("Error fetching billing user info");
+		} finally {
+			this.subject.publish(this.info);
+		}
+	}
+
 	async fetchAccountInfo(): Promise<void> {
 		const { data } = await usersApi.getMe();
 		if (data?.id) {
@@ -102,30 +109,7 @@ export class Account {
 			};
 		}
 
-		try {
-			const { data: billingInfo } = await billingApi.getUserPlanDetails();
-			if (billingInfo) {
-				this.billingInfo = {
-					...billingInfo,
-					resetAt: billingInfo
-						? new Date(billingInfo?.resetAt)
-						: null,
-				};
-			} else {
-				this.billingInfo = {
-					remainingTokens: 0,
-					resetAt: null,
-					tariff: "basic",
-				};
-			}
-		} catch {
-			this.billingInfo = {
-				remainingTokens: 0,
-				resetAt: null,
-				tariff: "pro",
-			};
-			console.error("Error fetching billing user info");
-		}
+		await this.fetchBillingInfo();
 
 		this.subject.publish(this.info);
 	}

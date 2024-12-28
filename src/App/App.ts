@@ -20,6 +20,7 @@ import i18next from "i18next";
 import { SessionStorage } from "./SessionStorage";
 import { apiV2 } from "shared/apiV2/base";
 import { foldersApi } from "shared/apiV2";
+import { getLocalRender } from "View/router";
 
 export const LAST_BOARD_KEY = "lastSeenBoard";
 export const LAST_BOARD_KEY_QS = LAST_BOARD_KEY.concat("Wqs");
@@ -40,6 +41,7 @@ export interface App {
 	getConnection: () => Connection;
 	getLastBoardId: () => string | null;
 	render: () => void;
+	localRender: () => void;
 	test: TestRecorder;
 	getSnapshot(boardId: string): BoardSnapshot | null;
 	sessionStorage: SessionStorage;
@@ -171,8 +173,39 @@ export function createApp(isHistory = true): App {
 		if (!fileHandle) {
 			return;
 		}
+
+		async function getData(): Promise<string> {
+			const items = getBoard().items.getWholeHTML();
+			const docCopy = document.cloneNode(true) as Document;
+
+			const head = document.head.cloneNode(true);
+			const headElement = docCopy.querySelector("head");
+			if (headElement) {
+				headElement.replaceWith(head);
+			} else {
+				docCopy.documentElement.insertBefore(head, docCopy.body);
+			}
+
+			const reactDiv = docCopy.getElementById("items");
+			if (reactDiv) {
+				reactDiv.innerHTML = items;
+			}
+
+			const elements = docCopy.body.querySelectorAll(
+				"button, style, #sprite",
+			);
+			elements.forEach(element => element.remove());
+
+			return docCopy.documentElement.outerHTML;
+		}
+
+		const serializer =
+			window.location.protocol === "file:"
+				? getData
+				: getBoard().serializeHTML;
+
+		const data = await serializer();
 		const writable = await fileHandle.createWritable();
-		const data = await getBoard().serializeHTML();
 		await writable.write(data);
 		await writable.close();
 	}
@@ -193,6 +226,7 @@ export function createApp(isHistory = true): App {
 		getConnection,
 		getLastBoardId,
 		render,
+		localRender,
 		test,
 		getSnapshot,
 		sessionStorage,
@@ -239,6 +273,12 @@ export function createApp(isHistory = true): App {
 				variant: "error",
 			});
 		});
+		render();
+	}
+
+	function localRender(id: string): void {
+		const render = getLocalRender(app, id);
+
 		render();
 	}
 

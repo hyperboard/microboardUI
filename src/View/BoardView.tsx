@@ -10,6 +10,8 @@ import { ACCESS_DENIED_MODAL } from "./AccessDeniedModal";
 import { AppContext } from "./AppContext";
 import ModalsWrapper from "./Modal/ModalsWrapper";
 import { useUiModalContext } from "./Ui/UiModal";
+import { USER_PLAN_MODAL_ID } from "./UserPlan";
+import { notify } from "./Ui/Toast";
 
 type Props = {
 	app: App;
@@ -77,6 +79,27 @@ const BoardView = ({ app }: Props): JSX.Element => {
 						});
 						app.render();
 					});
+				}
+
+				const paymentStatus = searchParams.get("paymentStatus");
+				if (paymentStatus) {
+					openModal(USER_PLAN_MODAL_ID);
+
+					if (paymentStatus === "success") {
+						notify({
+							header: "Статус оплаты",
+							body: "Оплата успешно прошла",
+							variant: "success",
+						});
+					}
+
+					if (paymentStatus === "error") {
+						notify({
+							header: "Статус оплаты",
+							body: "Оплата не прошла",
+							variant: "error",
+						});
+					}
 				}
 			});
 		});

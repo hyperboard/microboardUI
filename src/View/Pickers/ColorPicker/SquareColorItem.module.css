@@ -1,9 +1,10 @@
 .button {
 	background: none;
-	width: 24px;
-	height: 24px;
+	width: 40px;
+	height: 40px;
 	border-radius: 5px;
 	display: flex;
+	padding: 7.5px;
 	align-items: center;
 	justify-content: center;
 	transition: 0.2s ease-out;
@@ -24,4 +25,17 @@
 	width: 25px;
 	height: 25px;
 	border: 1px solid rgba(31, 31, 31, 0.25);
+}
+
+@media screen and (max-width: 748px) {
+	.button {
+		width: 30px;
+		height: 30px;
+		padding: 5px;
+	}
+
+	.button span {
+		width: 20px;
+		height: 20px;
+	}
 }

@@ -1,8 +1,6 @@
 import { createStrictContext, useStrictContext } from "lib/strictContext";
 import React, { PropsWithChildren, useEffect, useState } from "react";
 import { ShapeCategoryName } from "../Tools/AddShape";
-import { useAppContext } from "../AppContext";
-import { useLocation } from "react-router-dom";
 import { tempStorage } from "App/SessionStorage";
 
 type ShapesPanelContext = {
@@ -30,6 +28,46 @@ const getInitialShapeCategory = (): ShapeCategoryName => {
 	}
 	return "basicShapes";
 };
+
+// was added to allow usage of ShapesPanelContextProvider outside of router provider
+// (inside of local app)
+function useLocation(): string {
+	const [location, setLocation] = useState(() => window.location.pathname);
+
+	useEffect(() => {
+		const handleUpdate = (): void => {
+			setLocation(window.location.pathname);
+		};
+		window.addEventListener("popstate", handleUpdate);
+
+		const originalPushState = history.pushState;
+		const originalReplaceState = history.replaceState;
+
+		function patchedPushState(
+			...args: Parameters<History["pushState"]>
+		): void {
+			originalPushState.apply(history, args);
+			handleUpdate();
+		}
+		function patchedReplaceState(
+			...args: Parameters<History["replaceState"]>
+		): void {
+			originalReplaceState.apply(history, args);
+			handleUpdate();
+		}
+
+		history.pushState = patchedPushState;
+		history.replaceState = patchedReplaceState;
+
+		return () => {
+			window.removeEventListener("popstate", handleUpdate);
+			history.pushState = originalPushState;
+			history.replaceState = originalReplaceState;
+		};
+	}, []);
+
+	return location;
+}
 
 export function ShapesPanelContextProvider({
 	children,

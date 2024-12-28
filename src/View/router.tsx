@@ -17,8 +17,14 @@ import { SignupView } from "./SignupView/SignupView";
 import { VerifyMailView } from "./VerifyMailView/VerifyMailView";
 import { WelcomeBoard } from "./WelcomeBoard";
 import { UserPlanPage } from "./UserPlan/UserPlanPage";
+import { AppContext } from "./AppContext";
+import { LocalAppView } from "./AppView";
+import { LocalSidePanelContextProvider } from "./SidePanel/LocalSidePanelContext";
 
-export function getRender(app: App) {
+export function getRender(app: App): {
+	render: () => void;
+	router: ReturnType<typeof createBrowserRouter>;
+} {
 	// new IframeModule(app);
 	const iframeModule = IframeModule.getInstance(app);
 	const board = app.getBoard();
@@ -131,5 +137,18 @@ export function getRender(app: App) {
 			);
 		},
 		router,
+	};
+}
+
+export function getLocalRender(app: App, customId: string): () => void {
+	return () => {
+		ReactDOM.render(
+			<AppContext.Provider value={{ app, board: app.getBoard() }}>
+				<LocalSidePanelContextProvider>
+					<LocalAppView />
+				</LocalSidePanelContextProvider>
+			</AppContext.Provider>,
+			document.getElementById(customId) as HTMLElement,
+		);
 	};
 }
