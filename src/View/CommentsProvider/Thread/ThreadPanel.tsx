@@ -209,7 +209,7 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 						)}
 					>
 						{thread.map((mes, index) => {
-							if (!mes.id) {
+							if (!mes || !mes.id) {
 								return null;
 							}
 							return (
