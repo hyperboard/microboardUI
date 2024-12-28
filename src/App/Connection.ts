@@ -152,9 +152,10 @@ export interface UserRequest {
 	images?: string[]; // only with 4o and later. Image link or base64. Better use: `data:{type};base64,${base64}`
 	updatedFrom?: number; // "user" message id
 	itemId: string;
+	requestItemId: string;
 	action?: TextAction;
 	contextRequest: {
-		itemId: string;
+		messageId: string;
 		range?: number;
 	};
 }
