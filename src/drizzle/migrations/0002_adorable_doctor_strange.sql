@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS "user_avatars" (
-	"user_id" integer,
-	"avatar" varchar,
-	CONSTRAINT "user_avatars_user_id_unique" UNIQUE("user_id")
+    "user_id" integer,
+    "avatar" varchar,
+    CONSTRAINT "user_avatars_user_id_unique" UNIQUE ("user_id")
 );
 --> statement-breakpoint
 DO $$ BEGIN

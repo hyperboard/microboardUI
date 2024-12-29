@@ -1,1 +1,0 @@
-ALTER TABLE "templates" ALTER COLUMN "uniq_id" SET DATA TYPE text;

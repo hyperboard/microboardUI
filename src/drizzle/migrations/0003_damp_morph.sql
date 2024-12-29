@@ -1,14 +1,14 @@
 CREATE TABLE IF NOT EXISTS "templates" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"uniq_id" uuid NOT NULL,
-	"board_id" integer,
-	"name" jsonb NOT NULL,
-	"description" jsonb NOT NULL,
-	"created" timestamp DEFAULT now(),
-	"languages" text[] NOT NULL,
-	"preview" text,
-	"tags" text[] NOT NULL,
-	"snapshot" jsonb NOT NULL
+    "id" serial PRIMARY KEY NOT NULL,
+    "uniq_id" uuid NOT NULL,
+    "board_id" integer,
+    "name" jsonb NOT NULL,
+    "description" jsonb NOT NULL,
+    "created" timestamp DEFAULT now(),
+    "languages" text [] NOT NULL,
+    "preview" text,
+    "tags" text [] NOT NULL,
+    "snapshot" jsonb NOT NULL
 );
 --> statement-breakpoint
 DO $$ BEGIN

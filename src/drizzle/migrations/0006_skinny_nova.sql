@@ -1,1 +1,0 @@
-ALTER TABLE "user_avatars" ADD COLUMN "generated" boolean DEFAULT true NOT NULL;

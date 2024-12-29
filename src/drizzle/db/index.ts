@@ -1,7 +1,6 @@
+import dotenv from "dotenv";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-import dotenv from "dotenv";
-import { createVectorExtension } from "drizzle/scripts/create-vector-ext";
 
 dotenv.config();
 
@@ -12,7 +11,5 @@ export const pool = new Pool({
     password: process.env.DB_PASSWORD || "12345",
     database: process.env.DB_NAME || "postgres",
 });
-
-createVectorExtension(pool);
 
 export const db = drizzle(pool);
