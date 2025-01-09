@@ -5,12 +5,12 @@ import { UiButton } from "View/Ui/UiButton";
 import React, { ChangeEventHandler, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
-export function AddImage() {
+export function AddImage(): JSX.Element {
 	const { board } = useAppContext();
 	const inputRef = useRef<HTMLInputElement>(null);
 	const { t } = useTranslation();
 
-	const handleClick = () => {
+	const handleClick = (): void => {
 		const input = inputRef.current;
 		if (!input) {
 			return;
@@ -19,8 +19,8 @@ export function AddImage() {
 		input.click();
 	};
 
-	const handleChange: ChangeEventHandler<HTMLInputElement> = e => {
-		const input = e.target;
+	const handleChange: ChangeEventHandler<HTMLInputElement> = ev => {
+		const input = ev.target;
 		const file = input.files?.[0];
 		if (!file) {
 			return;
