@@ -26,9 +26,9 @@ export function UiAccordion({
 	className,
 	contentClassName,
 	...props
-}: Props) {
+}: Props): JSX.Element {
 	const [isOpen, setIsOpen] = useState(false);
-	const toggle = () => setIsOpen(prev => !prev);
+	const toggle = (): void => setIsOpen(prev => !prev);
 	return (
 		<div className={className}>
 			<div

@@ -18,15 +18,15 @@ export function UiColorInput({
 	inputClassName,
 	toggleMenu,
 	setIsCloseMenu,
-}: Props) {
+}: Props): JSX.Element {
 	const inputRef = useRef<HTMLInputElement>(null);
 
-	const handleColorChange = (event: ChangeEvent<HTMLInputElement>) => {
+	const handleColorChange = (event: ChangeEvent<HTMLInputElement>): void => {
 		const newColor = event.target.value;
 		onChange(newColor);
 	};
 
-	const onBlur = () => {
+	const onBlur = (): void => {
 		toggleMenu?.("None");
 		setIsCloseMenu?.(true);
 	};

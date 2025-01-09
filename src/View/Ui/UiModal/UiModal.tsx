@@ -4,7 +4,6 @@ import React, {
 	type ReactNode,
 } from "react";
 import { Icon } from "View/Icon";
-import { OpacityTransition } from "../Transitions";
 import { UiButton } from "../UiButton";
 import { UiPanel } from "../UiPanel";
 import styles from "./UiModal.module.css";
@@ -26,11 +25,11 @@ export function UiModal({
 	closeButton,
 	className,
 	onClose,
-}: Props) {
+}: Props): JSX.Element {
 	const { closeModal, openedModalId, transitionFrom } = useUiModalContext();
 	const isCloseTransition = transitionFrom === modalId;
 
-	const handleClose = () => {
+	const handleClose = (): void => {
 		closeModal();
 		onClose?.();
 	};

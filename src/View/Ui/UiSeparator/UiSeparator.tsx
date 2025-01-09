@@ -8,7 +8,11 @@ type Props = {
 	color?: string;
 };
 
-export function UiSeparator({ vertical = false, className, color }: Props) {
+export function UiSeparator({
+	vertical = false,
+	className,
+	color,
+}: Props): JSX.Element {
 	return (
 		<div
 			className={clsx(

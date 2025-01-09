@@ -17,12 +17,12 @@ export const UiSlider: React.FC<Props> = ({
 	value,
 	id,
 }) => {
-	const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
 		const newValue = parseInt(event.target.value, 10);
 		onChange(newValue);
 	};
 
-	const calculateProgressWidth = () => {
+	const calculateProgressWidth = (): string => {
 		return (((value ?? 0) - min) / (max - min)) * 100 + "%";
 	};
 
@@ -36,7 +36,7 @@ export const UiSlider: React.FC<Props> = ({
 				step={step}
 				value={value}
 				onChange={handleSliderChange}
-				onClick={e => e.stopPropagation()}
+				onClick={event => event.stopPropagation()}
 				className={style.slider}
 			/>
 			<div

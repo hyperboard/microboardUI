@@ -11,7 +11,7 @@ class UiModalState {
 	transitionTo: ModalId = null;
 	subject = new Subject<void>();
 
-	openModal = (modalId: ModalId) => {
+	openModal = (modalId: ModalId): void => {
 		if (this.openedModalId && modalId) {
 			this.isTransition = true;
 			this.transitionFrom = this.openedModalId;
@@ -21,7 +21,7 @@ class UiModalState {
 		this.subject.publish();
 	};
 
-	closeModal = () => {
+	closeModal = (): void => {
 		this.openedModalId = null;
 		this.isTransition = false;
 		this.transitionFrom = null;
@@ -32,7 +32,7 @@ class UiModalState {
 
 export const UiModalStateInstance = new UiModalState();
 
-export const useUiModalContext = () => {
+export const useUiModalContext = (): UiModalState => {
 	const forceUpdate = useForceUpdate();
 	useLayoutEffect(() => {
 		UiModalStateInstance.subject.subscribe(forceUpdate);

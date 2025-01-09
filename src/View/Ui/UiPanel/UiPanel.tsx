@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { forwardRef, type HTMLAttributes } from "react";
+import React, { forwardRef, ReactNode, type HTMLAttributes } from "react";
 import style from "./UiPanel.module.css";
 
 type UiPanelProps = HTMLAttributes<HTMLDivElement> & {
@@ -10,12 +10,10 @@ type UiPanelProps = HTMLAttributes<HTMLDivElement> & {
 	zIndex?: number;
 	padding?: number;
 	gap?: number;
-	rounded?:
-		| "top"
-		| "bottom"
-		| "full"
-		| "topRightBottom"
-		| "bottomRightTop";
+	rounded?: "top" | "bottom" | "full" | "topRightBottom" | "bottomRightTop";
+	children: ReactNode;
+	className: string;
+	style?: unknown;
 };
 
 export const UiPanel = forwardRef<HTMLDivElement, UiPanelProps>(

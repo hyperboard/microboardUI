@@ -6,7 +6,9 @@ import { useUiModalContext } from "./UiModalContext";
 
 const modalsContainer = document.getElementById("modal")!;
 
-export function UiModalBackground({ children }: PropsWithChildren<{}>) {
+export function UiModalBackground({
+	children,
+}: PropsWithChildren<{}>): JSX.Element {
 	const { openedModalId, closeModal } = useUiModalContext();
 
 	useEffect(() => {

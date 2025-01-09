@@ -13,16 +13,18 @@ export function UiLoader({
 	rotateTime = 2,
 	strokeWidth = 5,
 	color = "rgba(10, 15, 41, 0.25)",
-}: Props) {
+}: Props): JSX.Element {
 	return (
 		<span
-			style={{
-				width: size,
-				height: size,
-				"--color": color,
-				"--stroke-width": `${strokeWidth}px`,
-				"--rotate-time": `${rotateTime}s`,
-			}}
+			style={
+				{
+					width: size,
+					height: size,
+					"--color": color,
+					"--stroke-width": `${strokeWidth}px`,
+					"--rotate-time": `${rotateTime}s`,
+				} as React.CSSProperties
+			}
 			className={styles.loader}
 		/>
 	);

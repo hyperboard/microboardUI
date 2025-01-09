@@ -24,6 +24,7 @@ type Props = HTMLProps<HTMLDivElement> & {
 	renderHeader: RenderPropsFunc;
 	renderContent: RenderPropsFunc;
 	elemRef?: Ref<HTMLDivElement>;
+	className: string;
 };
 
 export const UiAdaptiveAccordion = forwardRef<AccordionState, Props>(
@@ -40,9 +41,9 @@ export const UiAdaptiveAccordion = forwardRef<AccordionState, Props>(
 	) => {
 		const [isOpen, setIsOpen] = useState(initialOpenState);
 
-		const toggle = () => setIsOpen(prev => !prev);
-		const close = () => setIsOpen(false);
-		const open = (onOpen?: OnOpenCb) => {
+		const toggle = (): void => setIsOpen(prev => !prev);
+		const close = (): void => setIsOpen(false);
+		const open = (onOpen?: OnOpenCb): void => {
 			setIsOpen(true);
 			setTimeout(() => {
 				onOpen?.();

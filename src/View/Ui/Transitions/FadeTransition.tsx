@@ -5,10 +5,8 @@ import type { TransitionProps } from "./types";
 
 export function FadeTransition({
 	children,
-	inProp,
 	timeout = 500,
-	unmountOnExit,
-}: TransitionProps) {
+}: TransitionProps): JSX.Element {
 	return (
 		<CSSTransition
 			// in={inProp}
