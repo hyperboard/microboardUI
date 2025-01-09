@@ -80,7 +80,19 @@ export function FontSize({ rounded = "none" }: Props): React.ReactElement {
 		}
 	};
 
+
+	// TODO exclude scale from font size calculation
+	const resetTextScale = (): void => {
+		const items = board.selection.items.list();
+		items.forEach(item => {
+			if (item.itemType === "RichText") {
+				item.transformation.scaleTo(1, 1);
+			}
+		});
+	}
+
 	const handlePick = (size: number | "auto"): void => {
+		resetTextScale();
 		board.selection.setFontSize(size);
 		toggleMenu("None");
 	};
@@ -95,6 +107,7 @@ export function FontSize({ rounded = "none" }: Props): React.ReactElement {
 		const rect = chevronRef.current.getBoundingClientRect();
 		const midpoint = rect.top + rect.height / 2;
 
+		resetTextScale();
 		if (event.clientY < midpoint) {
 			board.selection.setFontSize(getNextBiggerValue(fontSize));
 		} else {
@@ -107,6 +120,7 @@ export function FontSize({ rounded = "none" }: Props): React.ReactElement {
 	): void => {
 		const fontSize = Number(ev.target.value);
 		if (!!fontSize && fontSize >= 1) {
+			resetTextScale();
 			board.selection.setFontSize(fontSize > 6 ? fontSize : 6);
 		}
 		setFontSizeInputValue(ev.target.value);
