@@ -12,7 +12,7 @@ type UiPanelProps = HTMLAttributes<HTMLDivElement> & {
 	gap?: number;
 	rounded?: "top" | "bottom" | "full" | "topRightBottom" | "bottomRightTop";
 	children: ReactNode;
-	className: string;
+	className?: string;
 	style?: unknown;
 };
 
