@@ -1,15 +1,20 @@
 import React, { useEffect, useRef, useState, type SyntheticEvent } from "react";
 import styles from "./AIInput.module.css";
-
 import { useAppSubscription } from "Board/useBoardSubscription";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
 import { Icon } from "View/Icon";
 import { StarIcon } from "./StarIcon";
-
 import { AiChatMsg, OpenAIModels, UserRequest } from "App/Connection";
 import { Board } from "Board";
-import { Connector, ConnectorData, Matrix, Mbr, RichText } from "Board/Items";
+import {
+	Connector,
+	ConnectorData,
+	Matrix,
+	Mbr,
+	Point,
+	RichText,
+} from "Board/Items";
 import { useForceUpdate } from "lib/useForceUpdate";
 import { Chevron } from "shared/ui-lib/Dropdown/Chevron";
 import { UiPanel } from "View/Ui/UiPanel";
@@ -23,6 +28,8 @@ import { useMediaQuery } from "lib/useMediaQuery";
 import { USER_PLAN_MODAL_ID } from "View/UserPlan";
 import { SessionStorage } from "App/SessionStorage";
 import { getControlPointData } from "Board/Selection/QuickAddButtons/quickAddHelpers";
+
+const DEFAULT_MAX_NODE_WIDTH = 620;
 
 export const AIInput: React.FC = () => {
 	const { t } = useTranslation();
@@ -68,12 +75,19 @@ export const AIInput: React.FC = () => {
 		const currMbr = selectedNode.getMbr();
 		const currData = selectedNode.serialize();
 		const newNodeData = newNode.serialize();
-		const width = 700;
+		const width = DEFAULT_MAX_NODE_WIDTH;
 		const height = 100;
 
 		const iterAdjustment = { x: -2 * width, y: 0 };
 
-		const baseAdjustments = { translateX: 0, translateY: height };
+		const baseAdjustments = {
+			translateX: currMbr.getWidth() / 2,
+			translateY: height,
+		};
+		newNodeData.adjustmentPoint = new Point(
+			baseAdjustments.translateX + currMbr.left,
+			baseAdjustments.translateY + currMbr.top,
+		);
 
 		if (newNodeData.transformation) {
 			newNodeData.transformation.translateX =
@@ -83,6 +97,7 @@ export const AIInput: React.FC = () => {
 				currData.transformation.translateY +
 				currMbr.getHeight();
 		}
+
 		const newMbr = currMbr
 			.copy()
 			.getTransformed(
@@ -116,6 +131,11 @@ export const AIInput: React.FC = () => {
 				newNodeData.transformation.translateY +=
 					iterAdjustment.y * direction * step;
 			}
+			if (newNodeData.adjustmentPoint) {
+				newNodeData.adjustmentPoint.transform(
+					new Matrix(iterAdjustment.x * direction * step, 0),
+				);
+			}
 			step += 1;
 		}
 
@@ -123,6 +143,8 @@ export const AIInput: React.FC = () => {
 			board.getNewItemId(),
 			newNodeData,
 		) as AINode;
+
+		newItem.transformation.translateBy(-newItem.getMbr().getWidth() / 2, 0);
 
 		const defaultConnector = new Connector(board);
 		const connectorData = defaultConnector.serialize();
@@ -233,11 +255,16 @@ export const AIInput: React.FC = () => {
 		inputValue: string,
 		isUserRequest: boolean,
 		parentNode?: AINode,
+		withPlaceholder: boolean = false,
 	): { node: AINode; connectorData: ConnectorData | null } {
 		const node = new AINode(isUserRequest, parentNode?.getId());
 		node.getRichText().setMaxWidth(600);
 		node.getRichText().setSelectionHorisontalAlignment("left");
-		node.getRichText().editor.insertCopiedText(inputValue);
+		if (withPlaceholder) {
+			node.getRichText().placeholderText = inputValue;
+		} else {
+			node.getRichText().editor.insertCopiedText(inputValue);
+		}
 
 		if (!parentNode) {
 			const cameraMbr = board.camera.getMbr();
@@ -283,7 +310,13 @@ export const AIInput: React.FC = () => {
 			);
 		}
 
-		const responseNode = createNode(board, "", false, requestAdded);
+		const responseNode = createNode(
+			board,
+			"Waiting for response...",
+			false,
+			requestAdded,
+			true,
+		);
 		const responseAdded = board.add(responseNode.node);
 
 		if (responseNode.connectorData) {
