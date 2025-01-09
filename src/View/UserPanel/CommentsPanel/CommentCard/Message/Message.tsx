@@ -29,7 +29,7 @@ export const Message = forwardRef(
 
 		const commentator = message.commentator;
 
-		const onClick = () => {
+		const onClick = (): void => {
 			if (handleClick) {
 				handleClick();
 				setTargetMessageId(message.id);
@@ -68,3 +68,5 @@ export const Message = forwardRef(
 		);
 	},
 );
+
+Message.displayName = "Message";

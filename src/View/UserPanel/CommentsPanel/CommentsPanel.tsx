@@ -46,7 +46,7 @@ export const CommentsPanel: React.FC = () => {
 
 	const username = account.info?.name || account.info?.email;
 
-	const closePanels = () => {
+	const closePanels = (): void => {
 		setIsOptionsPanelOpen(false);
 		setIsFiltersPanelOpen(false);
 	};
@@ -66,7 +66,7 @@ export const CommentsPanel: React.FC = () => {
 		return true;
 	});
 
-	const markAllCommentsAsRead = () => {
+	const markAllCommentsAsRead = (): void => {
 		if (!username) {
 			return;
 		}
@@ -82,32 +82,32 @@ export const CommentsPanel: React.FC = () => {
 		setIsOptionsPanelOpen(false);
 	};
 
-	const handleFiltersBtnClick = () => {
+	const handleFiltersBtnClick = (): void => {
 		setIsFiltersPanelOpen(!isFiltersPanelOpen);
 		setIsOptionsPanelOpen(false);
 	};
 
-	const handleOptionsBtnClick = () => {
+	const handleOptionsBtnClick = (): void => {
 		setIsFiltersPanelOpen(false);
 		setIsOptionsPanelOpen(!isOptionsPanelOpen);
 	};
 
-	const handleShowCommentsFilterClick = (filter: "all" | "replies") => {
+	const handleShowCommentsFilterClick = (filter: "all" | "replies"): void => {
 		setShowCommentsFilter(filter);
 		setIsFiltersPanelOpen(false);
 	};
 
-	const toggleShowResolved = () => {
+	const toggleShowResolved = (): void => {
 		setShowResolved(!showResolved);
 		setIsFiltersPanelOpen(false);
 	};
 
-	const toggleShowComments = () => {
+	const toggleShowComments = (): void => {
 		setShowComments(!showComments);
 		setIsOptionsPanelOpen(false);
 	};
 
-	const toggleEnableClusters = () => {
+	const toggleEnableClusters = (): void => {
 		setEnableClusters(!enableClusters);
 		setIsOptionsPanelOpen(false);
 	};

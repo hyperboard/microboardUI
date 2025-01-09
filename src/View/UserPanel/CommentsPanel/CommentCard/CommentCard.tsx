@@ -15,7 +15,7 @@ interface Props {
 	comment: Comment;
 }
 
-export const CommentCard = ({ comment }: Props) => {
+export const CommentCard = ({ comment }: Props): JSX.Element => {
 	const [showMoreComments, setShowMoreComments] = useState(false);
 	const refs = useRef<Record<string, HTMLDivElement>>({});
 	const { board } = useAppContext();
@@ -39,7 +39,7 @@ export const CommentCard = ({ comment }: Props) => {
 		deps: [showMoreComments],
 	});
 
-	const handleCardClick = () => {
+	const handleCardClick = (): void => {
 		const item = board.items.getById(comment.getId());
 		if (!item) {
 			return;
@@ -48,8 +48,8 @@ export const CommentCard = ({ comment }: Props) => {
 		board.camera.zoomToFit(item.getMbr());
 	};
 
-	const handleShowBtnClick = (e: MouseEvent<HTMLButtonElement>) => {
-		e.stopPropagation();
+	const handleShowBtnClick = (ev: MouseEvent<HTMLButtonElement>): void => {
+		ev.stopPropagation();
 		setShowMoreComments(!showMoreComments);
 	};
 
@@ -57,7 +57,7 @@ export const CommentCard = ({ comment }: Props) => {
 		refs.current[id] = el;
 	};
 
-	const handleMessageClick = () => {
+	const handleMessageClick = (): void => {
 		setOpenedThreadId(comment.getId());
 	};
 
@@ -65,11 +65,11 @@ export const CommentCard = ({ comment }: Props) => {
 	if (unreadMessages) {
 		const ending = getCorrectEnding(unreadMessages.length);
 		showMoreText = `${t("comment.panel.card.showNew", { count: unreadMessages.length })} 
-		${t("comment.panel.card.new." + ending)}
-		${t("comment.panel.card.comments." + ending)}`;
+		${t(`comment.panel.card.new.${ending}`)}
+		${t(`comment.panel.card.comments.${ending}`)}`;
 	} else {
 		showMoreText = `${t("comment.panel.card.showMore", { count: messages.length - 1 })} 
-        ${t("comment.panel.card.comments." + getCorrectEnding(messages.length - 1))}`;
+        ${t(`comment.panel.card.comments.${getCorrectEnding(messages.length - 1)}`)}`;
 	}
 
 	return (
@@ -107,7 +107,7 @@ export const CommentCard = ({ comment }: Props) => {
 			</div>
 			{showMoreComments &&
 				messages.length &&
-				messages.slice(1).map((mes, index) => {
+				messages.slice(1).map((mes) => {
 					if (!mes || !mes.id) {
 						return null;
 					}
