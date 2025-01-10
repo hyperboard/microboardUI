@@ -1,19 +1,16 @@
 import express from "express";
 import { catchAsync } from "../../../shared/lib/catchAsync";
-import { sql } from "drizzle-orm";
+import { sql, desc, eq, and, gte, lte } from "drizzle-orm";
 import winston from "winston";
 import { db } from "../../../drizzle/db";
 import { aiModels, modelLimits, plans, userStorageUsage, userPlans } from "../../../drizzle/entities/plans";
-import { eq, and, gte, lte } from "drizzle-orm";
 import { jwtMiddleware } from "../../../Middlewares/jwt.middleware";
 import { body } from "express-validator";
 import { boardOwner, boards, chat, message } from "drizzle/entities";
-import { createStripeService } from "./stripe";
-import { Stripe } from "stripe";
+import { StripeService } from "./stripe";
 
-export const getBillingRouter = (logger: winston.Logger, stripe: Stripe): express.Router => {
+export const getBillingRouter = (logger: winston.Logger, stripeService: StripeService): express.Router => {
     const router = express.Router();
-    const stripeService = createStripeService(stripe);
 
     function getCurrentPeriods() {
         const now = new Date();
@@ -197,7 +194,6 @@ export const getBillingRouter = (logger: winston.Logger, stripe: Stripe): expres
             ]);
 
             const tokensUsed = await getCurrentPeriodTokenUsage(userId, currentPlan.startDate, currentPlan.endDate);
-
             const remainingTokens = currentPlan.monthlyTokenLimit - tokensUsed;
 
             res.json({
@@ -217,10 +213,16 @@ export const getBillingRouter = (logger: winston.Logger, stripe: Stripe): expres
                     isDefault: model.isDefault,
                     isEnabled: model.isEnabled,
                     limits: {
-                        daily: model.dailyLimit,
-                        weekly: model.weeklyLimit,
-                        dailyUsed: model.dailyUsage,
-                        weeklyUsed: model.weeklyUsage,
+                        daily: {
+                            limit: model.dailyLimit,
+                            used: model.dailyUsage,
+                            remaining: model.dailyLimit ? Math.max(0, model.dailyLimit - model.dailyUsage) : null,
+                        },
+                        weekly: {
+                            limit: model.weeklyLimit,
+                            used: model.weeklyUsage,
+                            remaining: model.weeklyLimit ? Math.max(0, model.weeklyLimit - model.weeklyUsage) : null,
+                        },
                     },
                 })),
                 plan: {
@@ -241,53 +243,36 @@ export const getBillingRouter = (logger: winston.Logger, stripe: Stripe): expres
         })
     );
 
-    //  // TEST
-    // router.post(
-    //     "/billing/subscribe",
-    //     jwtMiddleware(logger),
-    //     body("planId").isString(),
-    //     catchAsync(async (req, res) => {
-    //         const { token } = req;
-    //         const userToken = await token;
-    //         const userId = parseInt(userToken?.sub);
-    //         const { planId } = req.body;
+    router.get(
+        "/billing/history",
+        jwtMiddleware(logger),
+        catchAsync(async (req, res) => {
+            const { token } = req;
+            const userToken = await token;
+            const userId = parseInt(userToken?.sub);
 
-    //         const plan = await db.select().from(plans).where(eq(plans.id, planId)).limit(1);
+            const history = await db
+                .select({
+                    id: userPlans.id,
+                    planId: userPlans.planId,
+                    planName: plans.name,
+                    startDate: userPlans.startDate,
+                    endDate: userPlans.endDate,
+                    status: userPlans.status,
+                    canceledAt: userPlans.canceledAt,
+                    price: plans.price,
+                    description: plans.description,
+                    monthlyTokenLimit: plans.monthlyTokenLimit,
+                    storageLimit: plans.storageLimit,
+                })
+                .from(userPlans)
+                .innerJoin(plans, eq(userPlans.planId, plans.id))
+                .where(eq(userPlans.userId, userId))
+                .orderBy(desc(userPlans.startDate));
 
-    //         if (!plan.length) {
-    //             res.status(400).json({ error: "Invalid plan ID." });
-    //             return;
-    //         }
-
-    //         if (plan[0].name === "free") {
-    //             res.status(400).json({ error: "Cannot subscribe to free plan." });
-    //             return;
-    //         }
-
-    //         await db
-    //             .update(userPlans)
-    //             .set({
-    //                 status: "cancelled",
-    //                 canceledAt: new Date(),
-    //             })
-    //             .where(and(eq(userPlans.userId, userId), eq(userPlans.status, "active")));
-
-    //         const now = new Date();
-    //         const resetPeriod = plan[0].resetPeriodDays || 30;
-    //         const endDate = new Date(now.getTime() + resetPeriod * 24 * 60 * 60 * 1000);
-
-    //         await db.insert(userPlans).values({
-    //             id: crypto.randomUUID(),
-    //             userId,
-    //             planId,
-    //             startDate: now,
-    //             endDate,
-    //             status: "active",
-    //         });
-
-    //         res.status(200).json({ message: "Successfully subscribed to plan." });
-    //     })
-    // );
+            res.json(history);
+        })
+    );
 
     router.post(
         "/billing/create-checkout",

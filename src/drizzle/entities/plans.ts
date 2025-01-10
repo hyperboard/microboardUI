@@ -17,6 +17,7 @@ export const plans = pgTable("plans", {
     price: integer("price").notNull(), // in kopeck
     version: integer("version").notNull().default(1),
     storageLimit: integer("storage_limit").notNull(), // in bytes (100MB or 100GB)
+    isActive: boolean("is_active").notNull().default(true),
 });
 
 export const userPlans = pgTable("user_plans", {
@@ -45,6 +46,7 @@ export const modelLimits = pgTable("plan_model_limits", {
     dailyRequestLimit: integer("daily_request_limit"), // null means unlimited
     weeklyRequestLimit: integer("weekly_request_limit"), // null means unlimited
     isEnabled: boolean("is_enabled").notNull().default(true),
+    planVersion: integer("plan_version").notNull().default(1),
 });
 
 export const userModelUsage = pgTable("user_model_usage", {

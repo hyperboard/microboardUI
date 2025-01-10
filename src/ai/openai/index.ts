@@ -165,19 +165,21 @@ export class OpenAI {
     async generateImage(
         prompt: string,
         options: {
-            size?: "256x256" | "512x512" | "1024x1024";
+            size?: "256x256" | "512x512" | "1024x1024" | "1792x1024";
             quality?: "standard" | "hd";
-            n?: number;
         } = {}
-    ) {
-        const { size = "1024x1024", quality = "standard", n = 1 } = options;
+    ): Promise<string> {
+        const { size = "1024x1024", quality = "standard" } = options;
 
-        return this.client.images.generate({
+        const response = await this.client.images.generate({
             prompt,
             size,
             quality,
-            n,
+            n: 1,
+            response_format: "b64_json",
         });
+
+        return response.data[0]?.b64_json!;
     }
 
     async createEmbedding(input: string): Promise<number[] | null> {

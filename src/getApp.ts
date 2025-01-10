@@ -43,7 +43,9 @@ export async function getApp(): Promise<http.Server> {
 
     await createVectorExtension(pool).catch(console.error);
 
-    await runMigration();
+    if (process.env.NODE_ENV?.toLocaleLowerCase() === "production") {
+        await runMigration();
+    }
 
     if (process.env.MIGRATE_EVENTS === "true") {
         await migrateData().catch(console.error);
@@ -65,7 +67,34 @@ export async function getApp(): Promise<http.Server> {
         apiVersion: "2024-12-18.acacia",
     });
 
-    const stripeService = await createStripeService(stripe);
+    // Create a winston logger.
+    const logger = winston.createLogger({
+        level: "info",
+        format: winston.format.combine(
+            winston.format.errors({ stack: true }), // Ensure error objects are serialized
+            winston.format.metadata(), // Include metadata in logs
+            winston.format.json({ space: 2 }) // Output logs in JSON format
+        ),
+        defaultMeta: {
+            service: "user-service",
+        },
+        transports: [
+            // Write all logs error (and below) to `error.log`.
+            new winston.transports.File({
+                filename: "error.log",
+                level: "error",
+            }),
+            // Write to all logs with level `info` and below to `combined.log`
+            new winston.transports.File({ filename: "combined.log" }),
+            // Write all logs with level `info` and below to console.
+            new winston.transports.Console({
+                format: winston.format.combine(winston.format.simple(), winston.format.errors({ stack: true })),
+            }),
+        ],
+    });
+
+    const redis = await getRedis(logger);
+    const stripeService = await createStripeService(stripe, redis);
     app.post(
         "/api/v1/billing/webhook",
         express.raw({ type: "application/json" }),
@@ -94,32 +123,6 @@ export async function getApp(): Promise<http.Server> {
     app.use(compression());
     app.use(createMiddleware(client, "/api/trigger"));
 
-    // Create a winston logger.
-    const logger = winston.createLogger({
-        level: "info",
-        format: winston.format.combine(
-            winston.format.errors({ stack: true }), // Ensure error objects are serialized
-            winston.format.metadata(), // Include metadata in logs
-            winston.format.json({ space: 2 }) // Output logs in JSON format
-        ),
-        defaultMeta: {
-            service: "user-service",
-        },
-        transports: [
-            // Write all logs error (and below) to `error.log`.
-            new winston.transports.File({
-                filename: "error.log",
-                level: "error",
-            }),
-            // Write to all logs with level `info` and below to `combined.log`
-            new winston.transports.File({ filename: "combined.log" }),
-            // Write all logs with level `info` and below to console.
-            new winston.transports.Console({
-                format: winston.format.combine(winston.format.simple(), winston.format.errors({ stack: true })),
-            }),
-        ],
-    });
-
     logger.info.bind(logger);
 
     // Atlassian security policy requirements
@@ -145,7 +148,6 @@ export async function getApp(): Promise<http.Server> {
     const config = new Config();
     const openai = new OpenAI(process.env.OPENAI_API_KEY!);
     const mailer = new Mailer(config, logger, process.env.BASE_URL ?? "example");
-    const redis = await getRedis(logger);
     const boards = new Boards(logger);
     const templates = new Templates(logger);
     const accessKeysService = new AccessKeysService(db);
@@ -178,7 +180,7 @@ export async function getApp(): Promise<http.Server> {
         redis,
         ai,
         openai,
-        stripe,
+        stripeService,
     });
 
     app.use(v1Router);

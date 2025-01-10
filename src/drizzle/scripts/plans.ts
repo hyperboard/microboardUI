@@ -1,10 +1,13 @@
 import { db } from "drizzle/db";
 import { Plan, plans, aiModels, AiModel, ModelLimit, modelLimits } from "drizzle/entities/plans";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 
 const BYTES_IN_MB = 1024 * 1024;
 const BYTES_IN_GB = BYTES_IN_MB * 1024;
 const RUB = 100;
+
+export type PlanDefinition = Omit<Plan, "version" | "isActive">;
+export type ModelLimitDefinition = Omit<ModelLimit, "planVersion">;
 
 export const AI_MODELS: AiModel[] = [
     {
@@ -21,7 +24,7 @@ export const AI_MODELS: AiModel[] = [
     },
 ];
 
-export const PLANS: Plan[] = [
+export const PLANS: PlanDefinition[] = [
     {
         id: "basic",
         name: "basic",
@@ -29,7 +32,6 @@ export const PLANS: Plan[] = [
         monthlyTokenLimit: 100_000,
         resetPeriodDays: 7,
         price: 0 * RUB,
-        version: 1,
         storageLimit: 100, // 100MB
     },
     {
@@ -39,12 +41,11 @@ export const PLANS: Plan[] = [
         monthlyTokenLimit: 1_000_000,
         resetPeriodDays: 30,
         price: 1200 * RUB,
-        version: 1,
         storageLimit: 100_000, // 100GB
     },
 ];
 
-export const PLAN_MODEL_LIMITS: ModelLimit[] = [
+export const PLAN_MODEL_LIMITS: ModelLimitDefinition[] = [
     {
         id: "basic-gpt-4o-mini",
         planId: "basic",
@@ -59,14 +60,14 @@ export const PLAN_MODEL_LIMITS: ModelLimit[] = [
         modelId: "gpt-4o",
         dailyRequestLimit: null,
         weeklyRequestLimit: null,
-        isEnabled: false, // Disabled for free plan
+        isEnabled: false,
     },
     {
         id: "plus-gpt-4o-mini",
         planId: "plus",
         modelId: "gpt-4o-mini",
         dailyRequestLimit: null,
-        weeklyRequestLimit: null, // Unlimited
+        weeklyRequestLimit: null,
         isEnabled: true,
     },
     {
@@ -82,105 +83,103 @@ export const PLAN_MODEL_LIMITS: ModelLimit[] = [
 function isEqual<T extends Record<string, any>>(existing: T, updated: T, fields: (keyof T)[]): boolean {
     return fields.every((field) => existing[field] === updated[field]);
 }
-
 export async function updatePlans() {
     console.log("Starting system initialization...");
 
     try {
-        console.log("Syncing AI models...");
-        const existingModels = await db.select().from(aiModels);
-        const existingModelMap = new Map(existingModels.map((m) => [m.id, m]));
+        await db.transaction(async (tx) => {
+            console.log("Syncing AI models...");
+            const existingModels = await tx.select().from(aiModels);
+            const existingModelMap = new Map(existingModels.map((m) => [m.id, m]));
 
-        for (const model of AI_MODELS) {
-            const existingModel = existingModelMap.get(model.id);
+            for (const model of AI_MODELS) {
+                const existingModel = existingModelMap.get(model.id);
 
-            if (existingModel) {
-                if (!isEqual(existingModel, model, ["name", "displayName", "isDefault"])) {
-                    await db.update(aiModels).set(model).where(eq(aiModels.id, model.id));
-                    console.log(`Updated AI model: ${model.name}`);
+                if (existingModel) {
+                    if (!isEqual(existingModel, model, ["name", "displayName", "isDefault"])) {
+                        await tx.update(aiModels).set(model).where(eq(aiModels.id, model.id));
+                        console.log(`Updated AI model: ${model.name}`);
+                    }
+                } else {
+                    await tx.insert(aiModels).values(model);
+                    console.log(`Created new AI model: ${model.name}`);
                 }
-            } else {
-                await db.insert(aiModels).values(model);
-                console.log(`Created new AI model: ${model.name}`);
             }
-        }
 
-        console.log("Syncing plans...");
-        const existingPlans = await db.select().from(plans);
-        const existingPlanMap = new Map(existingPlans.map((t) => [t.id, t]));
+            console.log("Syncing plans...");
+            const existingActivePlans = await tx.select().from(plans).where(eq(plans.isActive, true));
 
-        for (const plan of PLANS) {
-            const existingPlan = existingPlanMap.get(plan.id);
+            const existingActivePlanMap = new Map(existingActivePlans.map((p) => [p.id, p]));
 
-            if (existingPlan) {
-                if (
-                    !isEqual(existingPlan, plan, [
-                        "name",
-                        "description",
-                        "monthlyTokenLimit",
-                        "resetPeriodDays",
-                        "price",
-                        "storageLimit",
-                    ])
-                ) {
-                    await db.update(plans).set(plan).where(eq(plans.id, plan.id));
-                    console.log(`Updated plan: ${plan.name}`);
-                }
-            } else {
-                await db.insert(plans).values(plan);
-                console.log(`Created new plan: ${plan.name}`);
-            }
-        }
+            for (const planDef of PLANS) {
+                const existingPlan = existingActivePlanMap.get(planDef.id);
 
-        console.log("Syncing plan model limits ...");
-        const existingLimits = await db.select().from(modelLimits);
-        const getLimitKey = (limit: Omit<ModelLimit, "id">) => `${limit.planId}-${limit.modelId}`;
-        const existingLimitMap = new Map(existingLimits.map((l) => [`${l.id}-${l.modelId}`, l]));
+                if (existingPlan) {
+                    if (
+                        !isEqual(existingPlan, planDef, [
+                            "name",
+                            "description",
+                            "monthlyTokenLimit",
+                            "resetPeriodDays",
+                            "price",
+                            "storageLimit",
+                        ])
+                    ) {
+                        await tx.update(plans).set({ isActive: false }).where(eq(plans.id, planDef.id));
 
-        for (const limit of PLAN_MODEL_LIMITS) {
-            const existingLimit = existingLimitMap.get(getLimitKey(limit));
+                        const newPlan = {
+                            ...planDef,
+                            version: existingPlan.version + 1,
+                            isActive: true,
+                        };
+                        await tx.insert(plans).values(newPlan);
 
-            if (existingLimit) {
-                if (!isEqual(existingLimit, limit, ["dailyRequestLimit", "weeklyRequestLimit", "isEnabled"])) {
-                    await db
-                        .update(modelLimits)
-                        .set(limit)
-                        .where(and(eq(modelLimits.id, limit.planId), eq(modelLimits.modelId, limit.modelId)));
-                    console.log(`Updated plan model limit: ${limit.planId}-${limit.modelId}`);
-                }
-            } else {
-                await db
-                    .insert(modelLimits)
-                    .values({
+                        const planLimits = PLAN_MODEL_LIMITS.filter((l) => l.planId === planDef.id).map((limit) => ({
+                            ...limit,
+                            planVersion: newPlan.version,
+                        }));
+
+                        for (const limit of planLimits) {
+                            await tx.insert(modelLimits).values(limit).onConflictDoNothing();
+                        }
+
+                        console.log(`Updated plan ${planDef.name} to version ${newPlan.version}`);
+                    }
+                } else {
+                    const latestVersion = await tx
+                        .select({ version: sql<number>`MAX(version)` })
+                        .from(plans)
+                        .where(eq(plans.id, planDef.id));
+
+                    const newVersion = (latestVersion[0]?.version ?? 0) + 1;
+
+                    const newPlan = {
+                        ...planDef,
+                        version: newVersion,
+                        isActive: true,
+                    };
+                    await tx.insert(plans).values(newPlan);
+
+                    const planLimits = PLAN_MODEL_LIMITS.filter((l) => l.planId === planDef.id).map((limit) => ({
                         ...limit,
-                    })
-                    .onConflictDoNothing();
-                console.log(`Created new plan model limit: ${limit.planId}-${limit.modelId}`);
-            }
-        }
+                        planVersion: newVersion,
+                    }));
 
-        for (const [modelId, model] of existingModelMap) {
-            if (!AI_MODELS.some((m) => m.id === modelId)) {
-                await db.delete(aiModels).where(eq(aiModels.id, modelId));
-                console.log(`Removed deprecated AI model: ${model.name}`);
-            }
-        }
+                    for (const limit of planLimits) {
+                        await tx.insert(modelLimits).values(limit).onConflictDoNothing();
+                    }
 
-        for (const [planId, plan] of existingPlanMap) {
-            if (!PLANS.some((t) => t.id === planId)) {
-                await db.delete(plans).where(eq(plans.id, planId));
-                console.log(`Removed deprecated plan: ${plan.name}`);
+                    console.log(`Created new plan: ${planDef.name} (v${newVersion})`);
+                }
             }
-        }
 
-        for (const limit of existingLimits) {
-            if (!PLAN_MODEL_LIMITS.some((l) => l.planId === limit.planId && l.modelId === limit.modelId)) {
-                await db
-                    .delete(modelLimits)
-                    .where(and(eq(modelLimits.planId, limit.planId), eq(modelLimits.modelId, limit.modelId)));
-                console.log(`Removed deprecated model limit: ${limit.planId}-${limit.modelId}`);
+            for (const [planId, plan] of existingActivePlanMap) {
+                if (!PLANS.some((p) => p.id === planId)) {
+                    await tx.update(plans).set({ isActive: false }).where(eq(plans.id, planId));
+                    console.log(`Deactivated plan: ${plan.name} (v${plan.version})`);
+                }
             }
-        }
+        });
 
         console.log("System initialization completed successfully");
     } catch (error) {

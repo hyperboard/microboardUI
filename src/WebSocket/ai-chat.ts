@@ -23,6 +23,9 @@ export const handleAIChatMessage = async (options: {
                 boardClients,
             });
             break;
+        case "GenerateImage":
+            await chatStreamHandler.handleGenerateImage(msg as AiChatMsg<GenerateImage>, boardClients);
+            break;
         case "StopGeneration":
             await chatStreamHandler.stopConversation({
                 msg: msg as AiChatMsg<StopGeneration>,
@@ -45,7 +48,7 @@ export const handleAIChatMessage = async (options: {
     }
 };
 
-export type AiChatEventType = UserRequest | StopGeneration | GetMessageList;
+export type AiChatEventType = UserRequest | StopGeneration | GetMessageList | GenerateImage;
 
 // To receive
 export interface UserRequest {
@@ -90,6 +93,26 @@ export interface GetMessageList {
     method: "GetMessageList";
     boardId: string;
 }
+
+export interface GenerateImage {
+    method: "GenerateImage";
+    prompt: string;
+    model?: "dall-e-2" | "dall-e-3";
+    quality?: "standard" | "hd";
+    size?: "256x256" | "512x512" | "1024x1024" | "1792x1024";
+    itemId: string;
+}
+/*
+DALL·E 3	Standard	1024×1024	$0.040 / image
+            Standard	1024×1792, 1792×1024	$0.080 / image
+
+DALL·E 3	HD	1024×1024	$0.080 / image
+            HD	1024×1792, 1792×1024	$0.120 / image
+
+DALL·E 2		1024×1024	$0.020 / image
+                512×512	$0.018 / image
+                256×256	$0.016 / image
+ */
 
 // To send
 export interface ChatChunk {

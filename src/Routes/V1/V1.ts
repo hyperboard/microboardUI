@@ -22,6 +22,7 @@ import { AI } from "./AI/AI";
 import { getBillingRouter } from "./Billing";
 import { getIngestRouter } from "./Ingest";
 import { OpenAI } from "../../ai/openai";
+import { StripeService } from "./Billing/stripe";
 
 function createFileRoute(
     router: express.Router,
@@ -66,7 +67,7 @@ export function getV1Router({
     redis,
     ai,
     openai,
-    stripe,
+    stripeService,
 }: {
     config: Config;
     mailer: Mailer;
@@ -80,7 +81,7 @@ export function getV1Router({
     redis: Redis;
     ai: AI;
     openai: OpenAI;
-    stripe: Stripe;
+    stripeService: StripeService;
 }): express.Router {
     const router = express.Router();
     const apiBase = "/api/v1";
@@ -95,7 +96,7 @@ export function getV1Router({
     // router.use(authMiddleware);
     router.use(apiBase, getUsersRouter(users, logger));
     router.use(`${apiBase}/miro`, getMiroRouter());
-    router.use(`${apiBase}`, getBillingRouter(logger, stripe));
+    router.use(`${apiBase}`, getBillingRouter(logger, stripeService));
     router.use(`${apiBase}`, getIngestRouter(logger, openai));
 
     createFileRoute(

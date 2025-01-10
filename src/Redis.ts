@@ -48,7 +48,7 @@ export async function getRedis(logger: winston.Logger): Promise<Redis> {
                 logger.warn(`Redis retry attempt ${times} with delay ${delay}ms`);
                 return delay;
             },
-            maxRetriesPerRequest: 3,
+            maxRetriesPerRequest: null,
             enableAutoPipelining: true,
             connectTimeout: 10000,
             disconnectTimeout: 2000,

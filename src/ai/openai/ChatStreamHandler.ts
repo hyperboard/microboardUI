@@ -2,7 +2,15 @@ import { asc, eq, inArray, ne, and, desc, gte, lte } from "drizzle-orm";
 import WebSocket from "ws";
 import { OpenAI } from ".";
 import { db } from "drizzle/db";
-import { AiChatMsg, ChatChunk, GetMessageList, MessageList, StopGeneration, UserRequest } from "WebSocket/ai-chat";
+import {
+    AiChatMsg,
+    ChatChunk,
+    GenerateImage,
+    GetMessageList,
+    MessageList,
+    StopGeneration,
+    UserRequest,
+} from "WebSocket/ai-chat";
 import { Chat, chat, Message, message, MessageRole, MessageStatus } from "drizzle/entities/ai";
 import {
     ChatCompletionChunk,
@@ -24,10 +32,10 @@ import { getEncoding } from "js-tiktoken";
 import { getJson } from "serpapi";
 import { ModelLimit, userModelUsage, userPlans } from "drizzle/entities/plans";
 import { boardOwner, boards } from "drizzle/entities";
-import { PLAN_MODEL_LIMITS } from "drizzle/scripts/plans";
+import { ModelLimitDefinition, PLAN_MODEL_LIMITS } from "drizzle/scripts/plans";
 
 class UsageLimitChecker {
-    private readonly defaultPlanId = "basic";
+    private readonly defaultPlanId = "free";
 
     private async getActivePlan(userId: number) {
         if (userId === 0) {
@@ -43,7 +51,7 @@ class UsageLimitChecker {
         return userPlan;
     }
 
-    private findPlanLimit(planId: string, modelId: string): Omit<ModelLimit, "id"> | undefined {
+    private findPlanLimit(planId: string, modelId: string): ModelLimitDefinition | undefined {
         return PLAN_MODEL_LIMITS.find((limit) => limit.planId === planId && limit.modelId === modelId);
     }
 
@@ -370,6 +378,66 @@ export class ChatStreamHandler {
         this.broadcastToBoardClients(this.boardClients, msg.boardId, msgToSend);
     }
 
+    public async handleGenerateImage(msg: AiChatMsg<GenerateImage>, boardClients: Map<string, WebSocket.WebSocket[]>) {
+        let imageBase64: null | string = null;
+        this.boardClients = boardClients;
+
+        const generatingMsg: AiChatMsg<any> = {
+            type: "AiChat",
+            boardId: msg.boardId,
+            event: {
+                method: "GenerateImage",
+                status: "generating",
+            },
+        };
+
+        console.log("Message to send(Generating): ", generatingMsg);
+        this.broadcastToBoardClients(this.boardClients, msg.boardId, generatingMsg);
+
+        try {
+            switch (msg.event.model) {
+                // case "midjourney": {
+                //     console.log("Midjourney not supported");
+                //     break;
+                // }
+                case "dall-e-2":
+                case "dall-e-3":
+                default: {
+                    imageBase64 = await this.openai.generateImage(msg.event.prompt);
+                    break;
+                }
+            }
+        } catch (error) {
+            console.error("Error generating image: ", error);
+
+            const errorMsg: AiChatMsg<any> = {
+                type: "AiChat",
+                boardId: msg.boardId,
+                event: {
+                    method: "GenerateImage",
+                    status: "error",
+                    message: "Image generation failed.",
+                },
+            };
+
+            this.broadcastToBoardClients(this.boardClients, msg.boardId, errorMsg);
+            return;
+        }
+
+        const msgToSend: AiChatMsg<any> = {
+            type: "AiChat",
+            boardId: msg.boardId,
+            event: {
+                method: "GenerateImage",
+                status: "completed",
+                base64: imageBase64,
+            },
+        };
+
+        console.log("Message to send(Generate Image): ", msgToSend);
+        this.broadcastToBoardClients(this.boardClients, msg.boardId, msgToSend);
+    }
+
     private async handleThreading(chat: Chat, msg: AiChatMsg<UserRequest>): Promise<number | undefined> {
         // Starting new thread from specific message
         if (msg.event.createThreadFrom) {
@@ -470,8 +538,7 @@ export class ChatStreamHandler {
     }) {
         const { msg, ws, logger, boardClients } = options;
         const boardOwnerId = await this.getBoardOwner(msg.boardId);
-        // const usageCheck = await this.usageLimitChecker.checkUserLimits(boardOwnerId, msg.event.model || "gpt-4o-mini");
-        const usageCheck = await this.usageLimitChecker.checkUserLimits(boardOwnerId, "gpt-4o-mini");
+        const usageCheck = await this.usageLimitChecker.checkUserLimits(boardOwnerId, msg.event.model || "gpt-4o-mini");
         if (!usageCheck.canProceed) {
             this.sendErrorResponse(null, ws, usageCheck.error || "LimitExceeded");
             return;
@@ -619,15 +686,13 @@ export class ChatStreamHandler {
                 previousMessageId,
             });
 
-            // await this.usageLimitChecker.incrementUsage(boardOwnerId, msg.event.model || "gpt-4o");
-            await this.usageLimitChecker.incrementUsage(boardOwnerId, "gpt-4o-mini");
+            await this.usageLimitChecker.incrementUsage(boardOwnerId, msg.event.model || "gpt-4o-mini");
 
             logger.debug("Generating chat completion stream...");
             logger.debug("Context messages: ", JSON.stringify(contextMessages));
 
             const stream = await this.openai.generateStreamChatCompletion(contextMessages, {
-                // model: msg.event.model || "gpt-4o",
-                model: "gpt-4o-mini",
+                model: msg.event.model || "gpt-4o-mini",
                 signal: controller.signal,
             });
 
