@@ -354,6 +354,12 @@
 		"noAccess": "No access",
 		"copyLink": "Copy link"
 	},
+	"cookiesModal": {
+		"title": "This site uses cookies",
+		"text": "We use cookies to ensure the proper functioning of the site, analyze traffic, and improve your experience. ",
+		"learnMoreBtn": "Learn more",
+		"acceptBtn": "Accept"
+	},
 	"modalInfo": {
 		"accessDenied": {
 			"title": "Board is unavailable",

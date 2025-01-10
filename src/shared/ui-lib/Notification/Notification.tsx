@@ -8,6 +8,7 @@ export enum InfoColor {
 	error = "#E6483D",
 	success = "#26BD6C",
 	warn = "#F48E2F",
+	info = "#4778F5",
 }
 
 interface NotificationProps {
@@ -18,6 +19,7 @@ interface NotificationProps {
 	setIsOpen: (isOpen: unknown) => void;
 	infoIcon?: boolean;
 	infoColor?: InfoColor;
+	position?: "top" | "bottom";
 }
 
 export const Notification: React.FC<NotificationProps> = (
@@ -31,6 +33,7 @@ export const Notification: React.FC<NotificationProps> = (
 		cross,
 		infoIcon,
 		infoColor = InfoColor.error,
+		position = "top",
 		...rest
 	} = props;
 
@@ -40,6 +43,7 @@ export const Notification: React.FC<NotificationProps> = (
 					className={clsx(
 						styles.notification,
 						{ [styles.open]: isOpen, [styles.withCross]: cross },
+						styles[position],
 						[className],
 					)}
 					{...rest}

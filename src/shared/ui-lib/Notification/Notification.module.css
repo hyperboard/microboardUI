@@ -1,7 +1,5 @@
 .notification {
 	position: absolute;
-	right: 10px;
-	top: 70px;
 	z-index: 5;
 	background: white;
 	padding: 16px 16px 16px 48px;
@@ -11,6 +9,16 @@
 	opacity: 0;
 	visibility: hidden;
 	transition: opacity 0.2s ease-out, visibility 0.2s ease-out;
+}
+
+.top {
+	right: 10px;
+	top: 70px;
+}
+
+.bottom {
+	right: 12px;
+	bottom: 78px;
 }
 
 .open {

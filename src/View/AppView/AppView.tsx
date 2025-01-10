@@ -39,6 +39,7 @@ import { QuickAddPanel } from "./QuickAddPanel";
 import { LocalFileSaveProgress } from "View/LocalFileSavingProgress";
 import { UserPlanModal } from "View/UserPlan";
 import { AiUnavailableModal } from "View/AiUnavailableModal/AiUnavailableModal";
+import { CookiesModal } from "View/Modal/CookiesModal";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -195,6 +196,7 @@ export function AppView(): JSX.Element {
 			<ToastProvider />
 			{authCode && teamIdSearch ? <ImportMiro /> : null}
 			<ImportMiroStartModal />
+			<CookiesModal />
 			<SetLinkToModal />
 			<UiModalBackground>
 				<UserPlanModal />
