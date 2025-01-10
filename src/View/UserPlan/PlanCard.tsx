@@ -8,6 +8,8 @@ import { useTranslation } from "react-i18next";
 
 export type PlanState = "current" | "downgrade" | "available";
 
+const rubToUsd = (price: number) => price / 10000;
+
 type Props = {
 	variant?: "basic" | "pro" | "plus";
 	state?: PlanState;
@@ -93,7 +95,9 @@ export function PlanCard({
 					) : (
 						<p className={styles.priceWrapper}>
 							<span>$</span>
-							<span className={styles.priceValue}>{price}</span>
+							<span className={styles.priceValue}>
+								{rubToUsd(price)}
+							</span>
 							<span
 								className={clsx(styles.slash, styles.perMonth)}
 							>

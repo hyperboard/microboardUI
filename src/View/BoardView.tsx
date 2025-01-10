@@ -105,7 +105,7 @@ const BoardView = ({ app }: Props): JSX.Element => {
 		});
 	}, []);
 
-	if (!board) {
+	if (!board || !account.isInitialized) {
 		return <div></div>;
 	}
 

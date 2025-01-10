@@ -1,5 +1,5 @@
 import { useAccount } from "App/useAccount";
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
 type TProtectedRoute = {
@@ -28,8 +28,24 @@ export const ProtectedRoute: React.FC<TProtectedRoute> = ({
 	// if (!allowRoles.includes(user.role as EUserRole)) {
 	// 	return <Navigate to='/unauthorized' replace />;
 	// }
+
+	useLayoutEffect(() => {
+		account.init();
+	}, []);
+
 	if (isPublic) {
 		return <Outlet />;
 	}
-	return account.isLoggedIn ? <Outlet /> : <Navigate to="/auth/sign-in" />;
+
+	if (!account.isInitialized) {
+		return null;
+	}
+
+	if (account.isLoggedIn) {
+		return <Outlet />;
+	} else {
+		return <Navigate to="/auth/sign-in" />;
+	}
+
+	// return account.isLoggedIn ? <Outlet /> : <Navigate to="/auth/sign-in" />;
 };

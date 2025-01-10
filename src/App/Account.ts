@@ -29,6 +29,7 @@ export class Account {
 	info: null | AccountInfo = null;
 	billingInfo: null | billingApi.UserLimits = null;
 	isTokenLoading = false;
+	isInitialized = false;
 	tokenData: TokenData | null = null;
 	onSessionExpired: (() => void) | null = null;
 	readonly permissions: Permissions;
@@ -44,7 +45,8 @@ export class Account {
 	}
 
 	async init() {
-		this.refreshTokens();
+		await this.refreshTokens();
+		this.isInitialized = true;
 		this.subject.publish(this.info);
 	}
 
