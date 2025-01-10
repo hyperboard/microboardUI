@@ -80,16 +80,18 @@ export function FontSize({ rounded = "none" }: Props): React.ReactElement {
 		}
 	};
 
-
 	// TODO exclude scale from font size calculation
 	const resetTextScale = (): void => {
 		const items = board.selection.items.list();
 		items.forEach(item => {
-			if (item.itemType === "RichText") {
+			if (
+				item.itemType === "RichText" &&
+				item.transformation.getScale().x !== 1
+			) {
 				item.transformation.scaleTo(1, 1);
 			}
 		});
-	}
+	};
 
 	const handlePick = (size: number | "auto"): void => {
 		resetTextScale();
@@ -121,7 +123,7 @@ export function FontSize({ rounded = "none" }: Props): React.ReactElement {
 		const fontSize = Number(ev.target.value);
 		if (!!fontSize && fontSize >= 1) {
 			resetTextScale();
-			board.selection.setFontSize(fontSize > 6 ? fontSize : 6);
+			board.selection.setFontSize(fontSize);
 		}
 		setFontSizeInputValue(ev.target.value);
 	};
