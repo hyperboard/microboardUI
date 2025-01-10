@@ -107,7 +107,7 @@ export const CommentCard = ({ comment }: Props): JSX.Element => {
 			</div>
 			{showMoreComments &&
 				messages.length &&
-				messages.slice(1).map((mes) => {
+				messages.slice(1).map(mes => {
 					if (!mes || !mes.id) {
 						return null;
 					}

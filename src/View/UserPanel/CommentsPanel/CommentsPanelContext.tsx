@@ -16,7 +16,9 @@ interface Props {
 	children: React.ReactNode;
 }
 
-export const CommentsPanelContextProvider = ({ children }: Props): JSX.Element => {
+export const CommentsPanelContextProvider = ({
+	children,
+}: Props): JSX.Element => {
 	const [isPanelOpen, setIsPanelOpen] = useState(false);
 
 	return (

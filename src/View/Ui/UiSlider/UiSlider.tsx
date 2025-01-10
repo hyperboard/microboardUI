@@ -17,7 +17,9 @@ export const UiSlider: React.FC<Props> = ({
 	value,
 	id,
 }) => {
-	const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+	const handleSliderChange = (
+		event: React.ChangeEvent<HTMLInputElement>,
+	): void => {
 		const newValue = parseInt(event.target.value, 10);
 		onChange(newValue);
 	};
