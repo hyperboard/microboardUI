@@ -789,5 +789,13 @@
 				]
 			}
 		}
+	},
+	"AIInput": {
+		"selectContext": "Select context, ask AI",
+		"selectedItems": {
+			"one": "Selected item",
+			"few": "Selected items",
+			"many": "Selected items"
+		}
 	}
 }

@@ -162,9 +162,19 @@
 	color: #666;
 	font-size: 14px;
 }
+
+.activeSelection {
+	background-color: #ecdffb;
+}
+
 .icon {
 	margin-top: 3px;
 }
+
+.activeIcon {
+	color: #924fe8;
+}
+
 .starIcon {
 	margin-left: 5px;
 }

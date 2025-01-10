@@ -28,6 +28,7 @@ import { useMediaQuery } from "lib/useMediaQuery";
 import { USER_PLAN_MODAL_ID } from "View/UserPlan";
 import { SessionStorage } from "App/SessionStorage";
 import { getControlPointData } from "Board/Selection/QuickAddButtons/quickAddHelpers";
+import { getCorrectEnding } from "utils";
 
 const DEFAULT_MAX_NODE_WIDTH = 620;
 
@@ -255,7 +256,7 @@ export const AIInput: React.FC = () => {
 		inputValue: string,
 		isUserRequest: boolean,
 		parentNode?: AINode,
-		withPlaceholder: boolean = false,
+		withPlaceholder = false,
 	): { node: AINode; connectorData: ConnectorData | null } {
 		const node = new AINode(isUserRequest, parentNode?.getId());
 		node.getRichText().setMaxWidth(600);
@@ -293,18 +294,22 @@ export const AIInput: React.FC = () => {
 			console.error("Ws no open");
 		}
 
-		const selectedNode = board.selection.items.getItemsByItemTypes([
-			"AINode",
-		])[0];
+		const nodeWithParents =
+			board.selection.getMostNestedAINodeWithParents();
 
-		const requestNode = createNode(board, inputValue, true, selectedNode);
+		const requestNode = createNode(
+			board,
+			inputValue,
+			true,
+			nodeWithParents?.node,
+		);
 		const requestAdded = board.add(requestNode.node);
 
-		if (requestNode.connectorData) {
+		if (requestNode.connectorData && nodeWithParents) {
 			board.add(
 				board.createItem(board.getNewItemId(), {
 					...requestNode.connectorData,
-					startPoint: getControlPointData(selectedNode, 3),
+					startPoint: getControlPointData(nodeWithParents.node, 3),
 					endPoint: getControlPointData(requestAdded, 2),
 				}),
 			);
@@ -329,8 +334,8 @@ export const AIInput: React.FC = () => {
 			);
 		}
 
-		const parentNodes = selectedNode
-			? [selectedNode, ...board.getParentAINodes(selectedNode)]
+		const parentNodes = nodeWithParents
+			? [nodeWithParents.node, ...nodeWithParents.parents]
 			: [];
 
 		const selectedItems = board.selection.items.list();
@@ -364,10 +369,10 @@ export const AIInput: React.FC = () => {
 			})
 			.filter(text => text !== "");
 
-		const contextRequest = selectedNode
+		const contextRequest = nodeWithParents
 			? {
 					range: 5,
-					messageId: selectedNode.getId(),
+					messageId: nodeWithParents.node.getId(),
 				}
 			: undefined;
 
@@ -457,20 +462,31 @@ export const AIInput: React.FC = () => {
 					onKeyDown={event => handleKeyDown(event)}
 					onFocus={event => event.currentTarget.select()}
 					onChange={event => handleInputChange(event)}
-					placeholder={"Select context, ask AI"}
+					placeholder={t("AIInput.selectContext")}
 					className={styles.aiInput}
 					ref={inputRef}
 					rows={1}
 				/>
-				<div className={styles.selectionInfo}>
-					{"Selected:"} {selectedItemsCount} {"items"}
+				<div
+					className={clsx(
+						styles.selectionInfo,
+						selectedItemsCount && styles.activeSelection,
+					)}
+				>
+					{t(
+						`AIInput.selectedItems.${getCorrectEnding(selectedItemsCount)}`,
+						{ count: selectedItemsCount },
+					)}
 				</div>
 				<button onClick={handleSendClick} className={styles.sendButton}>
 					<Icon
 						width={20}
 						height={20}
 						iconName="Vector"
-						className={styles.icon}
+						className={clsx(
+							styles.icon,
+							inputValue.trim() && styles.activeIcon,
+						)}
 					/>
 				</button>
 			</div>
