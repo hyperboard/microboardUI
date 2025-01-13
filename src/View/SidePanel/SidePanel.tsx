@@ -16,6 +16,7 @@ import { ResizableEdge } from "./ResizableEdge";
 import style from "./SidePanel.module.css";
 import { useSidePanelContext } from "./SidePanelContext";
 import { SortableContext } from "@dnd-kit/sortable";
+import { FoldersContextProvider } from "View/Folder/FoldersContext";
 
 const MIN_PANEL_WIDTH = 280;
 
@@ -73,20 +74,24 @@ export function SidePanel(): JSX.Element {
 				</div>
 				<div className={style.folders}>
 					<div className={style.foldersWrapper}>
-						<FoldersDndContext>
-							<SortableContext
-								items={[
-									boardsList.getRootFolder()?.id ?? 0,
-									boardsList.getSharedFolder()?.id ?? 1,
-								]}
-							>
-								<Folder
-									accordionClassName={style.rootFolder}
-									folder={boardsList.getRootFolder()}
-								/>
-								<Folder folder={boardsList.getSharedFolder()} />
-							</SortableContext>
-						</FoldersDndContext>
+						<FoldersContextProvider>
+							<FoldersDndContext>
+								<SortableContext
+									items={[
+										boardsList.getRootFolder()?.id ?? 0,
+										boardsList.getSharedFolder()?.id ?? 1,
+									]}
+								>
+									<Folder
+										accordionClassName={style.rootFolder}
+										folder={boardsList.getRootFolder()}
+									/>
+									<Folder
+										folder={boardsList.getSharedFolder()}
+									/>
+								</SortableContext>
+							</FoldersDndContext>
+						</FoldersContextProvider>
 					</div>
 				</div>
 			</div>

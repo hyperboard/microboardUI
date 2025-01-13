@@ -24,7 +24,9 @@ const isBoard = (
 const isFolder = (item: unknown): item is foldersApi.NestedFolder =>
 	typeof item === "object" &&
 	item !== null &&
-	(item as { itemType?: string }).itemType === "folder";
+	(("itemType" in item &&
+		(item as { itemType?: string }).itemType === "folder") ||
+		("id" in item && typeof (item as { id: number }).id === "number"));
 
 export function FoldersDndContext({ children }: Props) {
 	const boardsList = useBoardsList();
@@ -32,6 +34,7 @@ export function FoldersDndContext({ children }: Props) {
 		activationConstraint: {
 			delay: 300,
 			distance: 5,
+			tolerance: 10,
 		},
 	});
 
@@ -39,17 +42,29 @@ export function FoldersDndContext({ children }: Props) {
 	const handleDragEnd = async (evt: DragEndEvent) => {
 		const board = evt.active.data.current;
 		const target = evt.over?.data.current;
+		console.log(board, target, isBoard(board));
 
-		console.log(evt.over?.rect);
-		console.log(evt.active);
-
-		if (!isBoard(board) || !target) {
+		if (
+			!isBoard(board) ||
+			!target ||
+			board.id === target.id ||
+			board.parentFolderId === target.id
+		) {
 			return;
 		}
-		await boardsList.removeItemFromFolder(board.parentFolderId, board.id);
 		if (isFolder(target)) {
+			await boardsList.removeItemFromFolder(
+				board.parentFolderId,
+				board.id,
+			);
+
 			await boardsList.addItemToFolder(target.id, board);
 		} else if (isBoard(target)) {
+			await boardsList.removeItemFromFolder(
+				board.parentFolderId,
+				board.id,
+			);
+
 			const targetFolderId = target.parentFolderId;
 			const targetIdx = boardsList.getItemIndexInFolder(
 				targetFolderId,
@@ -61,19 +76,16 @@ export function FoldersDndContext({ children }: Props) {
 				targetIdx ? targetIdx + 1 : undefined,
 			);
 		}
-
-		// await boardsList.removeBoardFromFolder(board.parentFolderId, board.id);
-		// await boardsList.addBoardToFolder(+targetFolderId, board.id);
 	};
 
 	const handleDragOver = (evt: DragOverEvent) => {
 		const target = evt.over?.data.current;
-		if (isBoard(target)) {
-			const targetIdx = boardsList.getItemIndexInFolder(
-				target.parentFolderId,
-				target.id,
-			);
-		}
+		// if (isBoard(target)) {
+		// 	const targetIdx = boardsList.getItemIndexInFolder(
+		// 		target.parentFolderId,
+		// 		target.id,
+		// 	);
+		// }
 	};
 
 	return (

@@ -5,6 +5,7 @@ import { useHoverState } from "lib/useHoverState";
 import React, {
 	useEffect,
 	useRef,
+	useState,
 	type MouseEventHandler,
 	type SyntheticEvent,
 } from "react";
@@ -29,6 +30,7 @@ import {
 	verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import clsx from "clsx";
+import { useFoldersContext } from "./FoldersContext";
 
 type Props = {
 	folder: foldersApi.Folder | null;
@@ -67,11 +69,14 @@ export const Folder = ({
 	const accordionRef = useRef<AccordionState>(null);
 	const currentBoardRef = useRef<HTMLDivElement>();
 	const currentFolderRef = useRef<HTMLButtonElement>(null);
-	const { isOver, setNodeRef } = useDroppable({
+	const [openedByDragging, setOpenedByDragging] = useState(false);
+	const { overFolderId, setOverFolderId } = useFoldersContext();
+	const { isOver, setNodeRef } = useSortable({
 		id: folder?.id || "unknown",
 		data: folder ?? undefined,
 		disabled: folder?.type === foldersApi.FolderType.VISITED,
 	});
+	const isOverTimerRef = useRef<NodeJS.Timeout>();
 
 	const openFoldersContainsBoard = (boardId: string | null) => {
 		if (!folder || !boardId) {
@@ -92,6 +97,7 @@ export const Folder = ({
 				}, 0);
 			});
 		} else {
+			setOpenedByDragging(false);
 			accordionRef.current?.close();
 		}
 	};
@@ -101,7 +107,6 @@ export const Folder = ({
 			return;
 		}
 		const isOpen = boardsList.isFolderContainsFolder(folder.id, folderId);
-		console.log("isOpen", isOpen);
 		if (isOpen) {
 			accordionRef.current?.open(() => {
 				setTimeout(() => {
@@ -109,7 +114,6 @@ export const Folder = ({
 						currentFolderRef.current &&
 						folder.id === openedFoldersFolderId
 					) {
-						console.log("scroll to folder", openedFoldersFolderId);
 						currentFolderRef.current.scrollIntoView({
 							behavior: "smooth",
 							block: "nearest",
@@ -118,6 +122,7 @@ export const Folder = ({
 				}, 0);
 			});
 		} else {
+			setOpenedByDragging(false);
 			accordionRef.current?.close();
 		}
 	};
@@ -131,8 +136,26 @@ export const Folder = ({
 
 	useEffect(() => {
 		if (isOver && !accordionRef.current?.isOpen) {
-			accordionRef.current?.open();
+			setOverFolderId(folder?.id);
+			clearTimeout(isOverTimerRef.current);
+			isOverTimerRef.current = setTimeout(() => {
+				setOpenedByDragging(true);
+				accordionRef.current?.open();
+			}, 800);
 		}
+
+		// if (overFolderId !== folder?.id && !isOver && openedByDragging) {
+		// 	accordionRef.current?.close();
+		// }
+
+		if (!isOver) {
+			setOverFolderId(null);
+			clearTimeout(isOverTimerRef.current);
+		}
+
+		return () => {
+			clearTimeout(isOverTimerRef.current);
+		};
 	}, [isOver]);
 
 	useEffect(() => {
@@ -172,6 +195,7 @@ export const Folder = ({
 				setNewName(folder.title);
 				setRenamingId(folder.id);
 			},
+			200,
 		);
 
 	const handleContextMenuOpen: MouseEventHandler = ev => {

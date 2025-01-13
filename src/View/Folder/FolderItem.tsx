@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { handleClickDetection } from "lib/handleClickDetection";
 import React, {
 	forwardRef,
+	useCallback,
 	useEffect,
 	useRef,
 	useState,
@@ -20,6 +21,7 @@ import { RenameInput, useRenameContext } from "View/Rename";
 import { DraggingItem } from "./DraggingItem";
 import { DraggingWrapper } from "./DraggingWrapper";
 import styles from "./FolderItem.module.css";
+import { useFoldersContext } from "./FoldersContext";
 
 type Props = {
 	board: foldersApi.NestedBoard;
@@ -38,6 +40,8 @@ export const FolderItem = forwardRef<HTMLDivElement, Props>(
 		const [originalPosition, setOriginalPosition] = useState<
 			Record<"left" | "top" | "width" | "height", number>
 		>({ left: 0, top: 0, width: 0, height: 0 });
+
+		const { setOverFolderId } = useFoldersContext();
 
 		const {
 			attributes,
@@ -75,6 +79,14 @@ export const FolderItem = forwardRef<HTMLDivElement, Props>(
 			};
 		}, [isDragging]);
 
+		useEffect(() => {
+			if (isOver) {
+				setOverFolderId(folder?.id);
+			} else {
+				setOverFolderId(null);
+			}
+		}, [isOver]);
+
 		const style: CSSProperties | undefined = transform
 			? {
 					transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
@@ -91,25 +103,29 @@ export const FolderItem = forwardRef<HTMLDivElement, Props>(
 			board.id,
 		);
 
-		const handleClick = handleClickDetection(
-			async ev => {
-				ev.preventDefault();
-				ev.stopPropagation();
-				if (handleOpenBoard) {
-					return handleOpenBoard(board);
-				}
-				await app.openBoard(board.id);
-				navigate(`/boards/${board.id}`);
-			},
-			ev => {
-				ev.preventDefault();
-				ev.stopPropagation();
-				if (!hasOwnerRights) {
-					return;
-				}
-				setRenamingId(board.id);
-				setNewName(board.title);
-			},
+		const handleClick = useCallback(
+			handleClickDetection(
+				async ev => {
+					ev.preventDefault();
+					ev.stopPropagation();
+					if (handleOpenBoard) {
+						return handleOpenBoard(board);
+					}
+					await app.openBoard(board.id);
+					navigate(`/boards/${board.id}`);
+				},
+				ev => {
+					ev.preventDefault();
+					ev.stopPropagation();
+					if (!hasOwnerRights) {
+						return;
+					}
+					setRenamingId(board.id);
+					setNewName(board.title);
+				},
+				300,
+			),
+			[board],
 		);
 
 		const stopPropagation = (ev: SyntheticEvent) => {
