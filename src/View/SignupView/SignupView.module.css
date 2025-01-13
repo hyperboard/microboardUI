@@ -143,6 +143,31 @@
 	font-weight: 600 !important;
 }
 
+.newsletter {
+	font-family: "Manrope";
+	font-size: 14px;
+	color: #6f717c;
+}
+
+.newsletterLink {
+	color: #4778f5;
+	transition: all .35s;
+}
+
+.newsletterLink::after {
+	background-color: #4778f5;
+	height: 1px;
+	bottom: 1px;
+	transition: all .35s;
+}
+
+.newsletterLink:hover:after {
+	background-color: #DED1FF;
+	height: 1px;
+	bottom: 1px;
+}
+
+
 @media screen and (max-width: 640px) {
 	.btns {
 		margin-top: 16px;

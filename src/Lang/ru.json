@@ -343,7 +343,8 @@
 		"passwordDoNotMatch": "Введенные пароли не совпадают",
 		"currentPasswordIsIncorrect": "Текущий пароль введен неправильно. Попробуйте еще раз",
 		"enterAValidEmailAddress": "Введите корректный email",
-		"sessionExpired": "Сессия истекла. Пожалуйста, войдите еще раз"
+		"sessionExpired": "Сессия истекла. Пожалуйста, войдите еще раз",
+		"newsletter": "Даю согласие на получение информационных материалов и новостей о продукте"
 	},
 	"modal": {
 		"canEdit": "Можно редактировать",
@@ -748,7 +749,9 @@
 		"cancelPassword": "Отменить",
 		"avatarUploadError": "Ошибка загрузки аватара",
 		"avatarSizeConstraint": "Максимальный размер изображения - 10 Мб",
-		"avatarTypeConstraint": "Изображение должно быть в формате jpeg, png или svg"
+		"avatarTypeConstraint": "Изображение должно быть в формате jpeg, png или svg",
+		"newsletter": "Отказываюсь от получения информационных материалов и новостей о продукте"
+
 	},
 	"userPlan": {
 		"upgradePlan": "Выбрать тариф",

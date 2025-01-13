@@ -12,6 +12,7 @@ type AccountInfo = {
 	name: string;
 	avatar: string;
 	avatarGenerated: boolean;
+	newsletter: boolean;
 };
 
 type TokenData = {
@@ -137,8 +138,13 @@ export class Account {
 		await this.onLogin?.();
 	}
 
-	register(email: string, password: string, name: string) {
-		return authApi.register({ email, password, name });
+	register(
+		email: string,
+		password: string,
+		name: string,
+		newsletter: boolean,
+	) {
+		return authApi.register({ email, password, name, newsletter });
 	}
 
 	private refreshTokensPromise: Promise<void> | null = null;

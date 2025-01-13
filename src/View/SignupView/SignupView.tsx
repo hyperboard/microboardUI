@@ -11,6 +11,7 @@ import { Icon } from "View/Icon";
 import { EmailIcon } from "./EmailIcon";
 import { LockIcon } from "./LockIcon";
 import styles from "./SignupView.module.css";
+import { Checkbox } from "View/Ui/Checkbox";
 
 export const SignupView = (): React.ReactElement => {
 	const { t, i18n } = useTranslation();
@@ -18,13 +19,14 @@ export const SignupView = (): React.ReactElement => {
 	const formRef = React.useRef<HTMLFormElement>(null);
 	const [showNameInput, setShowNameInput] = useState(true);
 	const [username, setUsername] = useState("");
+	const [newsletter, setNewsletter] = useState<boolean>(true);
 	const [isDisabled, setIsDisabled] = useState(true);
 	const [isSubmitLoading, setIsSubmitLoading] = useState(false);
 	const [error, setError] = useState<string>("");
 	const [emailError, setEmailError] = useState<string>("");
 	const account = useAccount();
 
-	const next = () => {
+	const next = (): void => {
 		if (isDisabled) {
 			return;
 		}
@@ -78,7 +80,7 @@ export const SignupView = (): React.ReactElement => {
 		return true;
 	};
 
-	const checkName = (val: string) => {
+	const checkName = (val: string): void => {
 		if (val.length < 1) {
 			setError("Name length too short, minimum 1 symbol");
 			setIsDisabled(true);
@@ -115,6 +117,7 @@ export const SignupView = (): React.ReactElement => {
 				event.currentTarget.email.value,
 				event.currentTarget.password.value,
 				username,
+				newsletter,
 			)
 			.then(res => res.data)
 			.catch(error => {
@@ -144,6 +147,9 @@ export const SignupView = (): React.ReactElement => {
 				setIsSubmitLoading(false);
 			});
 	};
+
+	const onNewsletterChange = (checked: boolean): void =>
+		setNewsletter(checked);
 
 	// const dbCheckForm = checkForm;
 
@@ -226,6 +232,25 @@ export const SignupView = (): React.ReactElement => {
 					>
 						{t("auth.signIn")}
 					</Button>
+					{!showNameInput && (
+						<Checkbox checked onChange={onNewsletterChange}>
+							<span className={styles.newsletter}>
+								{t("auth.newsletter")}
+								<OuterLink
+									href={
+										i18n.language === "ru"
+											? "https://microboard.ru/personal"
+											: "https://microboard.io/privacy-policy"
+									}
+									className={styles.newsletterLink}
+								>
+									{i18n.language === "ru"
+										? " Microboard.ru"
+										: " Microboard.io"}
+								</OuterLink>
+							</span>
+						</Checkbox>
+					)}
 				</div>
 			</form>
 			<div className={styles.policy}>

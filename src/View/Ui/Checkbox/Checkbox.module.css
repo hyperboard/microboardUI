@@ -1,21 +1,24 @@
 .label {
-  display: flex;
 	cursor: pointer;
+	display: grid;
+	grid-template-columns: auto auto;
+	gap: 8px;
 }
 
 .checkbox {
 	-webkit-appearance: none;
 	appearance: none;
-	width: 23px;
+	width: 17px;
 	height: 16px;
 	border-radius: 4px;
-	margin: 2px 8px 0 0;
+	margin: 2px 0 0;
 	border: 1px solid #c8cad0;
 	outline-offset: 1px;
 	box-shadow: 0 0 2px #14151a0d;
-  transition: all .35s ease-out;
+	transition: all 0.35s ease-out;
 	outline-color: #ded1ff;
-  outline-width: 1.5px;
+	outline-width: 1.5px;
+	cursor: pointer;
 }
 
 .checkbox.checked {

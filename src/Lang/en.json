@@ -345,7 +345,8 @@
 		"passwordDoNotMatch": "The entered passwords do not match",
 		"currentPasswordIsIncorrect": "The current password you entered is incorrect. Please try again",
 		"enterAValidEmailAddress": "Enter a valid email address",
-		"sessionExpired": "Session expired. Please login again"
+		"sessionExpired": "Session expired. Please login again",
+		"newsletter": "I agree to receive product updates and promotional materials from"
 	},
 	"modal": {
 		"canEdit": "Can edit",
@@ -750,7 +751,8 @@
 		"cancelPassword": "Cancel",
 		"avatarUploadError": "Avatar upload error",
 		"avatarSizeConstraint": "Maximum image size is 10 MB",
-		"avatarTypeConstraint": "The image must be in jpeg, png or svg format"
+		"avatarTypeConstraint": "The image must be in jpeg, png or svg format",
+		"newsletter": "I decline receiving informational materials and product news."
 	},
 	"userPlan": {
 		"upgradePlan": "Upgrade Plan",

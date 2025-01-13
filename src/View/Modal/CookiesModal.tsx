@@ -27,18 +27,23 @@ export const CookiesModal = ({
 		window.location.href = policyUrl;
 	};
 
-  const onAccept = (): void => {
-    Cookies.set("first_visit", "true");
-    setOpen(false)
-  }
+	const onAccept = (): void => {
+		Cookies.set("first_visit", "true");
+		setOpen(false);
+	};
 
 	useEffect(() => {
-		const visitCookie = Cookies.get("first_visit");
+		const isOpenModal =
+			Cookies.get("first_visit") && !Cookies.get("refreshToken");
 
-		if (!visitCookie) {
+		if (!isOpenModal) {
 			setOpen(true);
 		} else {
 			setOpen(false);
+		}
+
+		if (!Cookies.get("first_visit")) {
+			Cookies.set("first_visit", "true");
 		}
 	}, []);
 

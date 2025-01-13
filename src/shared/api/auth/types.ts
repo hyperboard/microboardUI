@@ -7,9 +7,10 @@ export type RegisterPayload = {
 	email: string;
 	password: string;
 	name: string;
+	newsletter: boolean;
 };
 
-export type LoginPayload = RegisterPayload;
+export type LoginPayload = Omit<RegisterPayload, 'newsletter' | 'name'>;
 
 export type Tokens = {
 	accessToken: string;
