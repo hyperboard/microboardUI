@@ -13,6 +13,4 @@ export const pool = new Pool({
     database: process.env.DB_NAME || "postgres",
 });
 
-createVectorExtension(pool);
-
 export const db = drizzle(pool);

@@ -30,10 +30,12 @@ export class FoldersService {
     constructor(private db: NodePgDatabase, private boardsService: BoardsService) {}
 
     async create(newFolder: FolderPayload & { parentFolder?: number }) {
+        const parentFolder = newFolder.parentFolder && (await this.get(newFolder.parentFolder));
+
         const folder = await this.db.transaction(async (tx) => {
             const [record] = await this.db.insert(folders).values(newFolder).returning().execute();
 
-            if (newFolder.parentFolder) {
+            if (parentFolder) {
                 await tx
                     .insert(foldersToFolders)
                     .values({ folderId: newFolder.parentFolder, containsFolderId: record.id })
@@ -42,6 +44,13 @@ export class FoldersService {
 
             return record;
         });
+
+        if (parentFolder) {
+            await this.reorder(parentFolder.id, [
+                { id: folder.id, order: 0 },
+                ...parentFolder.items.map((item, idx) => ({ id: item.id, order: idx + 1 })),
+            ]);
+        }
 
         return folder;
     }
@@ -219,7 +228,6 @@ export class FoldersService {
     }
 
     async reorder(folderId: number, items: FolderItems) {
-        console.log(folderId, items);
         await Promise.all(
             items.map(async (item) => {
                 if (typeof item.id === "number") {

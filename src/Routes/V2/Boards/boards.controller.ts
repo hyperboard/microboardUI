@@ -35,6 +35,13 @@ export function getBoardsController(
 
             if (rootFolder) {
                 await foldersService.addNestedBoard(parentFolder || rootFolder.id, board.uniqId);
+                await foldersService.reorder(rootFolder.id, [
+                    { order: 0, id: board.id },
+                    ...rootFolder.items.map((item, idx) => ({
+                        id: item.id,
+                        order: idx + 1,
+                    })),
+                ]);
             }
         }
 
