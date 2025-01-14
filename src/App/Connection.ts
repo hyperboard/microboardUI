@@ -127,7 +127,7 @@ export interface AiChatMsg<T = AiChatEventType> {
 	event: T;
 }
 
-export type AiChatEventType = UserRequest | ChatChunk;
+export type AiChatEventType = UserRequest | ChatChunk | StopGeneration;
 
 export type OpenAIModels =
 	| "gpt-3.5-turbo"
@@ -167,6 +167,10 @@ export type TTextAction =
 export interface TextAction {
 	action: TTextAction;
 	level: number;
+}
+export interface StopGeneration {
+	method: "StopGeneration";
+	itemId: string;
 }
 
 export interface ChatChunk {

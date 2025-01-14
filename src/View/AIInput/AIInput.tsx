@@ -45,6 +45,8 @@ export const AIInput: React.FC = () => {
 	const account = useAccount();
 	const { openModal } = useUiModalContext();
 	const [isShaking, setIsShaking] = useState(false);
+	const [responseNodeId, setResponseNodeId] = useState<string | null>(null);
+	const [isGenerating, setIsGenerating] = useState(false);
 	const navigate = useNavigate();
 	const isMediaMatches = useMediaQuery("(max-width: 1170px)");
 
@@ -324,6 +326,8 @@ export const AIInput: React.FC = () => {
 		);
 		const responseAdded = board.add(responseNode.node);
 
+		setResponseNodeId(responseAdded.getId());
+
 		if (responseNode.connectorData) {
 			board.add(
 				board.createItem(board.getNewItemId(), {
@@ -394,6 +398,7 @@ export const AIInput: React.FC = () => {
 		connection.wsClient.send(message);
 
 		setInputValue("");
+		setIsGenerating(true);
 
 		if (inputRef.current) {
 			inputRef.current.style.height = "auto";
@@ -401,6 +406,32 @@ export const AIInput: React.FC = () => {
 
 		const mbrToFit = responseAdded.getMbr().combine(requestAdded.getMbr());
 		board.camera.zoomToFit(mbrToFit, (600 / mbrToFit.getWidth()) * 30);
+	};
+
+	const stopStream = (boardId, itemId) => {
+		const connection = app.getConnection();
+		const stopMessage: AiChatMsg<{
+			method: "StopGeneration";
+			itemId: string;
+		}> = {
+			type: "AiChat",
+			boardId: boardId,
+			event: {
+				method: "StopGeneration",
+				itemId: itemId,
+			},
+		};
+
+		connection.wsClient.send(stopMessage);
+	};
+
+	const handleStopClick = () => {
+		const boardId = board.getBoardId();
+
+		if (responseNodeId) {
+			stopStream(boardId, responseNodeId);
+			setIsGenerating(false);
+		}
 	};
 
 	return (
@@ -478,11 +509,14 @@ export const AIInput: React.FC = () => {
 						{ count: selectedItemsCount },
 					)}
 				</div>
-				<button onClick={handleSendClick} className={styles.sendButton}>
+				<button
+					onClick={isGenerating ? handleStopClick : handleSendClick}
+					className={styles.sendButton}
+				>
 					<Icon
 						width={20}
 						height={20}
-						iconName="Vector"
+						iconName={isGenerating ? "StopAiGeneration" : "Vector"}
 						className={clsx(
 							styles.icon,
 							inputValue.trim() && styles.activeIcon,

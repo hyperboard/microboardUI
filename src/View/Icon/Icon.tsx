@@ -121,6 +121,7 @@ export type IconId =
 	| "EyeDashed"
 	| "addLink"
 	| "Hyperlink"
+	| "StopAiGeneration"
 	| "Vector"
 	| "ArrowUpCircle"
 	| "ai";

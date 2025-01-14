@@ -663,10 +663,10 @@
 		"generate": "Generate",
 		"models": {
 			"gpt-4o-mini": {
-				"description": "Fast and efficient"
+				"description": "Faster for everyday tasks"
 			},
 			"gpt-4o": {
-				"description": "High accuracy and depth"
+				"description": "Great for most tasks"
 			}
 		}
 	},
