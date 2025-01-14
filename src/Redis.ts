@@ -50,14 +50,43 @@ export async function getRedis(logger: winston.Logger): Promise<Redis> {
             },
             maxRetriesPerRequest: null,
             enableAutoPipelining: true,
-            connectTimeout: 10000,
-            disconnectTimeout: 2000,
-            commandTimeout: 5000,
+            connectTimeout: 10_000,
+            disconnectTimeout: 2_000,
+            commandTimeout: 10_000,
         };
         if (process.env.REDIS_LOCAL === "true") {
             options.password = "redis";
         }
-        return new RedisClient(options);
+        const redis = new RedisClient(options);
+
+        const originalSendCommand = redis.sendCommand;
+        const pendingCommands = new Map();
+
+        redis.sendCommand = (command) => {
+            const commandId = Math.random().toString(36).substr(2, 9); // Unique ID for tracking
+            const commandDetails = {
+                name: command.name,
+                args: command.args,
+                startTime: Date.now(),
+            };
+
+            pendingCommands.set(commandId, commandDetails);
+
+            logger.debug(`Redis Command Sent: ${command.name} ${command.args.join(" ")}`);
+
+            const onCommandComplete = () => pendingCommands.delete(commandId);
+            command.promise.finally(onCommandComplete);
+
+            //@ts-ignore
+            return originalSendCommand.call(redis, command).catch((err) => {
+                if (err.message.includes("Command timed out")) {
+                    console.error(`Command ${command.name} timed out: ${JSON.stringify(commandDetails)}`);
+                }
+                throw err;
+            });
+        };
+
+        return redis;
     }
 
     async function set(options: { key: string; value: string; prefix: REDIS_HASH; exp?: number }) {

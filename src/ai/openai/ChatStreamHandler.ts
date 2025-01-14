@@ -5,7 +5,8 @@ import { db } from "drizzle/db";
 import {
     AiChatMsg,
     ChatChunk,
-    GenerateImage,
+    GenerateImageEvent,
+    GenerateImageResponse,
     GetMessageList,
     MessageList,
     StopGeneration,
@@ -33,6 +34,7 @@ import { getJson } from "serpapi";
 import { ModelLimit, userModelUsage, userPlans } from "drizzle/entities/plans";
 import { boardOwner, boards } from "drizzle/entities";
 import { ModelLimitDefinition, PLAN_MODEL_LIMITS } from "drizzle/scripts/plans";
+import { GenerateImageOptions, ImageGenerator } from "WebSocket/image-generator";
 
 class UsageLimitChecker {
     private readonly defaultPlanId = "free";
@@ -203,6 +205,53 @@ class UsageLimitChecker {
                 periodType,
             });
         }
+    }
+
+    public async checkImageGenerationLimits(userId: number): Promise<{
+        canProceed: boolean;
+        error?: string;
+    }> {
+        const userPlan = await this.getActivePlan(userId);
+        const planId = userPlan?.planId || this.defaultPlanId;
+        const planLimit = this.findPlanLimit(planId, "image-generation");
+
+        if (!planLimit?.isEnabled) {
+            return { canProceed: false, error: "Image generation not available in your plan" };
+        }
+
+        const now = new Date();
+        const startOfDay = new Date(now.setHours(0, 0, 0, 0));
+        const endOfDay = new Date(now.setHours(23, 59, 59, 999));
+
+        await this.ensureUsageRecord(userId, "image-generation", startOfDay, endOfDay, "daily");
+
+        const [[dailyUsage]] = await Promise.all([
+            db
+                .select()
+                .from(userModelUsage)
+                .where(
+                    and(
+                        eq(userModelUsage.userId, userId),
+                        eq(userModelUsage.modelId, "image-generation"),
+                        eq(userModelUsage.periodType, "daily")
+                    )
+                )
+                .limit(1),
+        ]);
+
+        if (planLimit.dailyRequestLimit && dailyUsage?.requestCount >= planLimit.dailyRequestLimit) {
+            return { canProceed: false, error: "Image generation limit exceeded" };
+        }
+
+        return { canProceed: true };
+    }
+
+    public async incrementImageGenerationUsage(userId: number): Promise<void> {
+        const now = new Date();
+        const todayStart = new Date(now.setHours(0, 0, 0, 0));
+        const todayEnd = new Date(now.setHours(23, 59, 59, 999));
+
+        await this.updatePeriodUsage(userId, "image-generation", "daily", todayStart, todayEnd);
     }
 }
 
@@ -378,16 +427,39 @@ export class ChatStreamHandler {
         this.broadcastToBoardClients(this.boardClients, msg.boardId, msgToSend);
     }
 
-    public async handleGenerateImage(msg: AiChatMsg<GenerateImage>, boardClients: Map<string, WebSocket.WebSocket[]>) {
-        let imageBase64: null | string = null;
+    public async handleGenerateImage(
+        msg: AiChatMsg<GenerateImageEvent>,
+        boardClients: Map<string, WebSocket.WebSocket[]>,
+        imageGenerator: ImageGenerator,
+        ws: WebSocket
+    ) {
         this.boardClients = boardClients;
+        const boardOwnerId = await this.getBoardOwner(msg.boardId);
+        const imageLimits = await this.usageLimitChecker.checkImageGenerationLimits(boardOwnerId);
 
-        const generatingMsg: AiChatMsg<any> = {
+        if (!imageLimits.canProceed) {
+            this.broadcastToBoardClients(this.boardClients, msg.boardId, {
+                type: "AiChat",
+                boardId: msg.boardId,
+                event: {
+                    method: "GenerateImage",
+                    status: "error",
+                    error: imageLimits.error,
+                    message: "LimitExceeded",
+                },
+            });
+            return;
+        }
+
+        const generatingMsg: AiChatMsg<GenerateImageResponse> = {
             type: "AiChat",
             boardId: msg.boardId,
             event: {
                 method: "GenerateImage",
                 status: "generating",
+                base64: null,
+                imageUrl: null,
+                itemId: msg.event.itemId,
             },
         };
 
@@ -395,47 +467,84 @@ export class ChatStreamHandler {
         this.broadcastToBoardClients(this.boardClients, msg.boardId, generatingMsg);
 
         try {
-            switch (msg.event.model) {
-                // case "midjourney": {
-                //     console.log("Midjourney not supported");
-                //     break;
-                // }
-                case "dall-e-2":
-                case "dall-e-3":
-                default: {
-                    imageBase64 = await this.openai.generateImage(msg.event.prompt);
+            const baseOptions = {
+                prompt: msg.event.prompt,
+                itemId: msg.event.itemId,
+            };
+
+            let options: GenerateImageOptions = {} as GenerateImageOptions;
+            switch (msg.event.options.model) {
+                case "midjourney": {
+                    options = {
+                        ...baseOptions,
+                        model: "midjourney",
+                    };
+                    break;
+                }
+                case "dall-e-2": {
+                    options = {
+                        ...baseOptions,
+                        model: msg.event.options.model || "dall-e-2",
+                        size: msg.event.options?.size,
+                    };
+                    break;
+                }
+                case "dall-e-3": {
+                    options = {
+                        ...baseOptions,
+                        model: msg.event.options.model || "dall-e-3",
+                        size: msg.event.options?.size,
+                    };
+                    break;
+                }
+                case "flux-schnell":
+                case "flux-pro": {
+                    options = {
+                        ...baseOptions,
+                        model: msg.event.options.model || "flux-schnell",
+                        aspectRatio: msg.event.options?.aspect_ratio,
+                    };
                     break;
                 }
             }
+
+            const result = await imageGenerator.generateImage(options);
+
+            const msgToSend: AiChatMsg<GenerateImageResponse> = {
+                type: "AiChat",
+                boardId: msg.boardId,
+                event: {
+                    method: "GenerateImage",
+                    status: "completed",
+                    itemId: msg.event.itemId,
+                    base64: result.base64,
+                    imageUrl: result.imageUrl,
+                },
+            };
+
+            console.log("Message to send(Generate Image): ", msgToSend);
+
+            await this.usageLimitChecker.incrementImageGenerationUsage(boardOwnerId);
+
+            this.broadcastToBoardClients(this.boardClients, msg.boardId, msgToSend);
         } catch (error) {
             console.error("Error generating image: ", error);
 
-            const errorMsg: AiChatMsg<any> = {
+            const errorMsg: AiChatMsg<GenerateImageResponse> = {
                 type: "AiChat",
                 boardId: msg.boardId,
                 event: {
                     method: "GenerateImage",
                     status: "error",
-                    message: "Image generation failed.",
+                    itemId: msg.event.itemId,
+                    base64: null,
+                    imageUrl: null,
+                    message: `Image generation failed: ${error instanceof Error ? error.message : "Unknown error"}`,
                 },
             };
 
             this.broadcastToBoardClients(this.boardClients, msg.boardId, errorMsg);
-            return;
         }
-
-        const msgToSend: AiChatMsg<any> = {
-            type: "AiChat",
-            boardId: msg.boardId,
-            event: {
-                method: "GenerateImage",
-                status: "completed",
-                base64: imageBase64,
-            },
-        };
-
-        console.log("Message to send(Generate Image): ", msgToSend);
-        this.broadcastToBoardClients(this.boardClients, msg.boardId, msgToSend);
     }
 
     private async handleThreading(chat: Chat, msg: AiChatMsg<UserRequest>): Promise<number | undefined> {

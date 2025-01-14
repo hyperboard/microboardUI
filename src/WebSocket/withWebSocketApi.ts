@@ -1,3 +1,4 @@
+import { ImageGenerator } from "./image-generator";
 import { OpenAI } from "ai/openai";
 import { ChatStreamHandler } from "ai/openai/ChatStreamHandler";
 import { AccessKeyType } from "drizzle/entities/boardAccessKeys";
@@ -32,6 +33,7 @@ export function withWebSocketApi({
     redis,
     boardsService,
     openai,
+    imageGenerator,
 }: {
     wss: WebSocketServer;
     boards: Boards;
@@ -40,6 +42,7 @@ export function withWebSocketApi({
     redis: Redis;
     boardsService: BoardsService;
     openai: OpenAI;
+    imageGenerator: ImageGenerator;
 }): void {
     const boardClients = new Map<string, WebSocket.WebSocket[]>();
     const wsTokens = new Map<WebSocket, AccessToken>();
@@ -116,7 +119,15 @@ export function withWebSocketApi({
             case "BoardEvent":
                 return await handleBoardEventMsg(msg, ws);
             case "AiChat":
-                return await handleAIChatMessage({ msg, ws, openai, logger, boardClients, chatStreamHandler });
+                return await handleAIChatMessage({
+                    msg,
+                    ws,
+                    openai,
+                    logger,
+                    boardClients,
+                    chatStreamHandler,
+                    imageGenerator,
+                });
             case "PresenceEvent":
                 return await handlePresenceEventMsg(msg, ws);
             case "BoardSnapshot":

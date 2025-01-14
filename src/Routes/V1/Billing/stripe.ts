@@ -25,7 +25,30 @@ export interface StripeService {
     handleSubscriptionRenewal: (stripeSubscriptionId: string) => Promise<void>;
     startSubscriptionCheck: (data: RenewalJobData) => Promise<void>;
     cleanup: () => Promise<void>;
+    createStripeCustomer: (sub: string) => Promise<Stripe.Customer>;
+    syncStripeDataToKV: (customerId: string) => Promise<any>;
 }
+
+const allowedEvents = [
+    "checkout.session.completed",
+    "customer.subscription.created",
+    "customer.subscription.updated",
+    "customer.subscription.deleted",
+    "customer.subscription.paused",
+    "customer.subscription.resumed",
+    "customer.subscription.pending_update_applied",
+    "customer.subscription.pending_update_expired",
+    "customer.subscription.trial_will_end",
+    "invoice.paid",
+    "invoice.payment_failed",
+    "invoice.payment_action_required",
+    "invoice.upcoming",
+    "invoice.marked_uncollectible",
+    "invoice.payment_succeeded",
+    "payment_intent.succeeded",
+    "payment_intent.payment_failed",
+    "payment_intent.canceled",
+] as Stripe.Event.Type[];
 
 export const createStripeService = (stripe: Stripe, redis: Redis): StripeService => {
     const subscriptionQueue = new Queue<RenewalJobData>("subscription-renewal", {
@@ -81,6 +104,14 @@ export const createStripeService = (stripe: Stripe, redis: Redis): StripeService
         },
         { connection: redis.client }
     );
+
+    worker.on("failed", (job, err) => {
+        console.error(`Job failed: ${job?.name}`, err);
+    });
+
+    worker.on("completed", (job) => {
+        console.log(`Job completed: ${job.name}`);
+    });
 
     const handleSubscriptionCheck = async (userId: number, planId: string, stripeSubscriptionId: string) => {
         try {
@@ -184,6 +215,59 @@ export const createStripeService = (stripe: Stripe, redis: Redis): StripeService
     };
 
     return {
+        async syncStripeDataToKV(customerId: string) {
+            const subscriptions = await stripe.subscriptions.list({
+                customer: customerId,
+                limit: 1,
+                status: "all",
+                expand: ["data.default_payment_method"],
+            });
+
+            if (subscriptions.data.length === 0) {
+                const subData = { status: "none" };
+                await redis.client.set(`stripe:customer:${customerId}`, JSON.stringify(subData));
+                return subData;
+            }
+
+            const subscription = subscriptions.data[0];
+
+            const subData = {
+                subscriptionId: subscription.id,
+                status: subscription.status,
+                priceId: subscription.items.data[0].price.id,
+                currentPeriodEnd: subscription.current_period_end,
+                currentPeriodStart: subscription.current_period_start,
+                cancelAtPeriodEnd: subscription.cancel_at_period_end,
+                paymentMethod:
+                    subscription.default_payment_method && typeof subscription.default_payment_method !== "string"
+                        ? {
+                              brand: subscription.default_payment_method.card?.brand ?? null,
+                              last4: subscription.default_payment_method.card?.last4 ?? null,
+                          }
+                        : null,
+            };
+
+            await redis.client.set(`stripe:customer:${customerId}`, JSON.stringify(subData));
+            return subData;
+        },
+        async createStripeCustomer(sub: string) {
+            const [user] = await db
+                .select()
+                .from(users)
+                .where(eq(users.id, +sub));
+
+            if (!user) {
+                throw new Error("Checkout error: No such user");
+            }
+
+            const stripeCustomer = await stripe.customers.create({
+                email: user.email,
+                metadata: { userId: +sub },
+            });
+
+            return stripeCustomer;
+        },
+
         async createCheckoutSession({ userId, planId, successUrl, cancelUrl }: CreateCheckoutSessionParams) {
             const plan = await db.select().from(plans).where(eq(plans.id, planId)).limit(1);
             const userEmail = await db.select({ email: users.email }).from(users).where(eq(users.id, userId)).limit(1);
@@ -224,6 +308,17 @@ export const createStripeService = (stripe: Stripe, redis: Redis): StripeService
 
         async handleWebhook(event: Stripe.Event) {
             console.log(`[DEBUG] Stripe webhook event: ${event.type}`);
+            if (!allowedEvents.includes(event.type)) return;
+            const { customer: customerId } = event?.data?.object as {
+                customer: string;
+            };
+
+            if (typeof customerId !== "string") {
+                throw new Error(`[STRIPE HOOK][CANCER] ID isn't string.\nEvent type: ${event.type}`);
+            }
+
+            this.syncStripeDataToKV(customerId);
+
             switch (event.type) {
                 case "checkout.session.completed": {
                     const session = event.data.object as Stripe.Checkout.Session;

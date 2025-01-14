@@ -91,18 +91,10 @@ export class OpenAI {
     private defaultMaxTokens = 10000; // max 128k per completion for gpt-4o
 
     constructor(apiKey: string) {
-        if (process.env.OPENAI_ENABLED === "true") {
-            this.client = new llm({
-                apiKey,
-                baseURL: "https://openai-api.microboard.io/v1",
-            });
-        } else {
-            // AIMLAPI
-            this.client = new llm({
-                apiKey: process.env.AIMLAPI_KEY,
-                baseURL: "https://api.aimlapi.com/v1",
-            });
-        }
+        this.client = new llm({
+            apiKey,
+            baseURL: "https://openai-api.microboard.io/v1",
+        });
     }
 
     async generateChatCompletion(

@@ -1,55 +1,55 @@
 {
-  "version": "7",
-  "dialect": "postgresql",
-  "entries": [
-    {
-      "idx": 0,
-      "version": "7",
-      "when": 1730972439819,
-      "tag": "0000_flippant_nightcrawler",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1731962558742,
-      "tag": "0001_conscious_echo",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1732105023875,
-      "tag": "0002_adorable_doctor_strange",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1732614198482,
-      "tag": "0003_damp_morph",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1735433126656,
-      "tag": "0004_naive_gamora",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1736726938717,
-      "tag": "0005_mixed_squirrel_girl",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1736803663605,
-      "tag": "0006_sour_wong",
-      "breakpoints": true
-    }
-  ]
+    "version": "7",
+    "dialect": "postgresql",
+    "entries": [
+        {
+            "idx": 0,
+            "version": "7",
+            "when": 1730972439819,
+            "tag": "0000_flippant_nightcrawler",
+            "breakpoints": true
+        },
+        {
+            "idx": 1,
+            "version": "7",
+            "when": 1731962558742,
+            "tag": "0001_conscious_echo",
+            "breakpoints": true
+        },
+        {
+            "idx": 2,
+            "version": "7",
+            "when": 1732105023875,
+            "tag": "0002_adorable_doctor_strange",
+            "breakpoints": true
+        },
+        {
+            "idx": 3,
+            "version": "7",
+            "when": 1732614198482,
+            "tag": "0003_damp_morph",
+            "breakpoints": true
+        },
+        {
+            "idx": 4,
+            "version": "7",
+            "when": 1735433126656,
+            "tag": "0004_naive_gamora",
+            "breakpoints": true
+        },
+        {
+            "idx": 5,
+            "version": "7",
+            "when": 1736726938717,
+            "tag": "0005_mixed_squirrel_girl",
+            "breakpoints": true
+        },
+        {
+            "idx": 6,
+            "version": "7",
+            "when": 1736803663605,
+            "tag": "0006_sour_wong",
+            "breakpoints": true
+        }
+    ]
 }

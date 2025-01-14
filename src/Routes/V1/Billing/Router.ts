@@ -8,8 +8,13 @@ import { jwtMiddleware } from "../../../Middlewares/jwt.middleware";
 import { body } from "express-validator";
 import { boardOwner, boards, chat, message } from "drizzle/entities";
 import { StripeService } from "./stripe";
+import { Redis } from "Redis";
 
-export const getBillingRouter = (logger: winston.Logger, stripeService: StripeService): express.Router => {
+export const getBillingRouter = (
+    logger: winston.Logger,
+    stripeService: StripeService,
+    redis: Redis
+): express.Router => {
     const router = express.Router();
 
     function getCurrentPeriods() {
@@ -286,6 +291,12 @@ export const getBillingRouter = (logger: winston.Logger, stripeService: StripeSe
             const userId = parseInt(userToken?.sub);
             const { planId, successUrl, cancelUrl } = req.body;
 
+            let stripeCustomerId = await redis.client.get(`stripe:user:${userToken.sub}`);
+
+            if (!stripeCustomerId) {
+                stripeCustomerId = (await stripeService.createStripeCustomer(userToken.sub)).id;
+            }
+
             const session = await stripeService.createCheckoutSession({
                 userId,
                 planId,
@@ -294,6 +305,22 @@ export const getBillingRouter = (logger: winston.Logger, stripeService: StripeSe
             });
 
             res.json({ url: session.url });
+        })
+    );
+
+    router.get(
+        "/sync-after-success",
+        jwtMiddleware(logger),
+        catchAsync(async (req, res) => {
+            const userToken = await req.token;
+            let stripeCustomerId = await redis.client.get(`stripe:user:${userToken.sub}`);
+            if (!stripeCustomerId) {
+                return res.status(404).json({ message: "Subscriber not found" });
+            }
+            await stripeService.syncStripeDataToKV(stripeCustomerId);
+            return res.status(200).json({
+                message: "Subscriber verified",
+            });
         })
     );
 

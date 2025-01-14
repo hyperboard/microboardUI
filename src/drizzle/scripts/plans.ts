@@ -22,6 +22,12 @@ export const AI_MODELS: AiModel[] = [
         displayName: "GPT-4o",
         isDefault: false,
     },
+    {
+        id: "image-generation",
+        name: "image-generation",
+        displayName: "Image Generation",
+        isDefault: false,
+    },
 ];
 
 export const PLANS: PlanDefinition[] = [
@@ -78,6 +84,22 @@ export const PLAN_MODEL_LIMITS: ModelLimitDefinition[] = [
         weeklyRequestLimit: null,
         isEnabled: true,
     },
+    {
+        id: "basic-image-generation",
+        planId: "basic",
+        modelId: "image-generation",
+        dailyRequestLimit: null,
+        weeklyRequestLimit: null,
+        isEnabled: false,
+    },
+    {
+        id: "plus-image-generation",
+        planId: "plus",
+        modelId: "image-generation",
+        dailyRequestLimit: 25,
+        weeklyRequestLimit: null,
+        isEnabled: true,
+    },
 ];
 
 function isEqual<T extends Record<string, any>>(existing: T, updated: T, fields: (keyof T)[]): boolean {
@@ -115,6 +137,28 @@ export async function updatePlans() {
                 const existingPlan = existingActivePlanMap.get(planDef.id);
 
                 if (existingPlan) {
+                    const existingLimits = await tx
+                        .select()
+                        .from(modelLimits)
+                        .where(
+                            and(eq(modelLimits.planId, planDef.id), eq(modelLimits.planVersion, existingPlan.version))
+                        );
+
+                    const existingLimitIds = new Set(existingLimits.map((limit) => limit.id));
+
+                    const newLimits = PLAN_MODEL_LIMITS.filter((l) => l.planId === planDef.id)
+                        .filter((l) => !existingLimitIds.has(l.id))
+                        .map((limit) => ({
+                            ...limit,
+                            planVersion: existingPlan.version,
+                        }));
+
+                    if (newLimits.length > 0) {
+                        for (const limit of newLimits) {
+                            await tx.insert(modelLimits).values(limit).onConflictDoNothing();
+                        }
+                    }
+
                     if (
                         !isEqual(existingPlan, planDef, [
                             "name",
@@ -144,6 +188,8 @@ export async function updatePlans() {
                         }
 
                         console.log(`Updated plan ${planDef.name} to version ${newPlan.version}`);
+                    } else {
+                        console.log(`Plan ${planDef.name} is up to date`);
                     }
                 } else {
                     const latestVersion = await tx

@@ -1,3 +1,4 @@
+import { ImageGenerator } from "./image-generator";
 import { OpenAI, OpenAIModels } from "ai/openai";
 import { ChatStreamHandler } from "ai/openai/ChatStreamHandler";
 import { Message } from "drizzle/entities";
@@ -8,11 +9,12 @@ export const handleAIChatMessage = async (options: {
     msg: AiChatMsg;
     ws: WebSocket;
     openai: OpenAI;
+    imageGenerator: ImageGenerator;
     logger: winston.Logger;
     boardClients: Map<string, WebSocket.WebSocket[]>;
     chatStreamHandler: ChatStreamHandler;
 }) => {
-    const { msg, ws, logger, boardClients, chatStreamHandler } = options;
+    const { msg, ws, logger, boardClients, chatStreamHandler, imageGenerator } = options;
 
     switch (msg.event.method) {
         case "UserRequest":
@@ -24,7 +26,12 @@ export const handleAIChatMessage = async (options: {
             });
             break;
         case "GenerateImage":
-            await chatStreamHandler.handleGenerateImage(msg as AiChatMsg<GenerateImage>, boardClients);
+            await chatStreamHandler.handleGenerateImage(
+                msg as AiChatMsg<GenerateImageEvent>,
+                boardClients,
+                imageGenerator,
+                ws
+            );
             break;
         case "StopGeneration":
             await chatStreamHandler.stopConversation({
@@ -48,7 +55,7 @@ export const handleAIChatMessage = async (options: {
     }
 };
 
-export type AiChatEventType = UserRequest | StopGeneration | GetMessageList | GenerateImage;
+export type AiChatEventType = UserRequest | StopGeneration | GetMessageList | GenerateImageEvent;
 
 // To receive
 export interface UserRequest {
@@ -94,12 +101,35 @@ export interface GetMessageList {
     boardId: string;
 }
 
-export interface GenerateImage {
+export interface GenerateImageEvent {
     method: "GenerateImage";
     prompt: string;
-    model?: "dall-e-2" | "dall-e-3";
-    quality?: "standard" | "hd";
-    size?: "256x256" | "512x512" | "1024x1024" | "1792x1024";
+    itemId: string;
+    options:
+        | {
+              model: "dall-e-2";
+              size: "256x256" | "512x512" | "1024x1024";
+          }
+        | {
+              model: "dall-e-3";
+              size: "1024x1024" | "1792x1024" | "1024x1792";
+              quality: "standard" | "hd";
+          }
+        | {
+              model: "midjourney";
+          }
+        | {
+              model: "flux-schnell" | "flux-pro";
+              aspect_ratio: string; // "1:1"
+          };
+}
+
+export interface GenerateImageResponse {
+    method: "GenerateImage";
+    status: "generating" | "completed" | "error";
+    message?: string;
+    base64: string | null;
+    imageUrl: string | null;
     itemId: string;
 }
 /*

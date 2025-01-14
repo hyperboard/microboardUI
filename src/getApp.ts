@@ -37,13 +37,17 @@ import { updatePlans } from "drizzle/scripts/plans";
 import { createVectorExtension } from "drizzle/scripts/create-vector-ext";
 import Stripe from "stripe";
 import { catchAsync } from "shared/lib/catchAsync";
+import { getLoggerLevel } from "shared/lib/logger";
+import { createImageGenerator } from "WebSocket/image-generator";
 
 export async function getApp(): Promise<http.Server> {
     const app = express();
 
     await createVectorExtension(pool).catch(console.error);
 
-    await runMigration();
+    if (process.env.NODE_ENV?.toLocaleLowerCase() === "production") {
+        await runMigration();
+    }
 
     if (process.env.MIGRATE_EVENTS === "true") {
         await migrateData().catch(console.error);
@@ -67,7 +71,7 @@ export async function getApp(): Promise<http.Server> {
 
     // Create a winston logger.
     const logger = winston.createLogger({
-        level: "info",
+        level: getLoggerLevel(process.env.LOG_LEVEL),
         format: winston.format.combine(
             winston.format.errors({ stack: true }), // Ensure error objects are serialized
             winston.format.metadata(), // Include metadata in logs
@@ -151,7 +155,16 @@ export async function getApp(): Promise<http.Server> {
     const accessKeysService = new AccessKeysService(db);
     const boardsService = new BoardsService(db, logger);
     const foldersService = new FoldersService(db, boardsService);
-    withWebSocketApi({ wss, boards, accessKeysService, logger, redis, boardsService, openai });
+    const imageGenerator = await createImageGenerator({
+        openaiToken: process.env.OPENAI_API_KEY!,
+        replicateToken: process.env.REPLICATE_TOKEN!,
+        logger: logger,
+        useapiToken: process.env.USEAPI_TOKEN,
+        discordToken: process.env.DISCORD_TOKEN,
+        discordServerId: process.env.DISCORD_SERVER_ID,
+        discordChannelId: process.env.DISCORD_CHANNEL_ID,
+    });
+    withWebSocketApi({ wss, boards, accessKeysService, logger, redis, boardsService, openai, imageGenerator });
     const media = createMinioMediaDAL(logger);
     const users = new Users(media, logger);
     const auth = new Auth(logger, users, config, mailer);
