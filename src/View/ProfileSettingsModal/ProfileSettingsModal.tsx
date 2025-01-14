@@ -6,6 +6,7 @@ import { ChangePassword } from "View/UserPanel/icons/ChangePassword";
 import { Logout } from "View/UserPanel/icons/Logout";
 import { debounce } from "lib/debounce";
 import React, {
+	ReactElement,
 	useCallback,
 	useRef,
 	useState,
@@ -23,12 +24,16 @@ import { notify } from "View/Ui/Toast";
 import { USER_PLAN_MODAL_ID } from "View/UserPlan";
 import { Icon } from "View/Icon";
 import { useMediaQuery } from "lib/useMediaQuery";
+import i18n from "Lang";
+import { OuterLink } from "shared/ui-lib/OuterLink";
+import { Account } from "App/Account";
+import { Checkbox } from "View/Ui/Checkbox";
 
 export const PROFILE_SETTINGS_MODAL_ID = Symbol("profileSettingsModal");
 const MAX_AVATAR_SIZE = 10 * 1024 * 1024; // 10MB
 const ACCEPTED_AVATAR_TYPES = ["image/jpeg", "image/png", "image/svg+xml"];
 
-export function ProfileSettingsModal() {
+export function ProfileSettingsModal(): ReactElement {
 	const isMediaMatches = useMediaQuery("(max-width: 1170px)");
 	const account = useAccount();
 	const [name, setName] = useState(() => account.info?.name ?? "");
@@ -68,7 +73,27 @@ export function ProfileSettingsModal() {
 		if (setIdleTimeoutRef.current) {
 			clearTimeout(setIdleTimeoutRef.current);
 		}
-		debouncedChangeInfo(newName);
+		debouncedChangeInfo(newName, account.info?.newsletter);
+	};
+
+	const debouncedChangeNewsletter = useCallback(
+		debounce(async (newsletter: boolean) => {
+			await account.changeNewsletter(
+				{ newsletter },
+				abortController.current.signal,
+			);
+		}, 2000),
+		[account],
+	);
+
+
+	const handleNewsletterChange = (_newsletter: boolean): void => {
+		abortController.current.abort();
+		abortController.current = new AbortController();
+		if (setIdleTimeoutRef.current) {
+			clearTimeout(setIdleTimeoutRef.current);
+		}
+		debouncedChangeNewsletter(!account.info?.newsletter);
 	};
 
 	const handleOpenPasswordChange: MouseEventHandler = ev => {
@@ -207,6 +232,10 @@ export function ProfileSettingsModal() {
 						}
 					/>
 				</div>
+				<NewsLetterCheckbox
+					account={account}
+					onChange={handleNewsletterChange}
+				/>
 				<div className={styles.btns}>
 					<Button
 						type="button"
@@ -238,3 +267,37 @@ export function ProfileSettingsModal() {
 		</UiModal>
 	);
 }
+
+const NewsLetterCheckbox = ({
+	account,
+	onChange,
+}: {
+	account: Account;
+	onChange: (isChecked: boolean) => void;
+}): ReactElement => {
+	const { t } = useTranslation();
+	const isChecked = account.info?.newsletter;
+	const text = isChecked ? t("profile.newsletter") : t("auth.newsletter");
+
+	return (
+		<div className={styles.newsletter}>
+			<Checkbox checked={!isChecked} onChange={onChange}>
+				<span className={styles.newsletter}>
+					{text}
+					<OuterLink
+						href={
+							i18n.language === "ru"
+								? "https://microboard.ru/personal"
+								: "https://microboard.io/privacy-policy"
+						}
+						className={styles.newsletterLink}
+					>
+						{i18n.language === "ru"
+							? " Microboard.ru"
+							: " Microboard.io"}
+					</OuterLink>
+				</span>
+			</Checkbox>
+		</div>
+	);
+};

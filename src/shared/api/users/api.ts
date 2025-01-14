@@ -1,5 +1,5 @@
 import { api } from "../base/base";
-import type { UpdateUserPayload, User } from "./types";
+import type { UpdateUserPayload, User, UpdateUserNewsletter } from "./types";
 
 export function getMe() {
 	return api.get<User>("/users/me");
@@ -15,6 +15,15 @@ export function getUsers(search?: string, limit = 20) {
 
 export function updateMe(payload: UpdateUserPayload, signal?: AbortSignal) {
 	return api.patch("/users/me", payload, {
+		signal,
+	});
+}
+
+export function updateNewsletter(
+	payload: UpdateUserNewsletter,
+	signal?: AbortSignal,
+) {
+	return api.patch("/users/me/newsletter", payload, {
 		signal,
 	});
 }

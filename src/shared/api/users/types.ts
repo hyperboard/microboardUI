@@ -4,6 +4,11 @@ export type User = {
 	name: string;
 	avatar: string;
 	avatarGenerated: boolean;
+	newsletter: boolean;
+};
+
+export type UpdateUserNewsletter = {
+	newsletter: boolean;
 };
 
 export type UpdateUserPayload = {

@@ -221,6 +221,11 @@ export class Account {
 		await this.fetchAccountInfo();
 	}
 
+	async changeNewsletter(payload: usersApi.UpdateUserNewsletter, signal: AbortSignal) {
+		await usersApi.updateNewsletter(payload, signal);
+		await this.fetchAccountInfo();
+	}
+
 	setOnLogout(cb: () => Promise<void>) {
 		this.onLogout = cb;
 	}
