@@ -16,7 +16,7 @@ const MENU_NAME = "ConnectorLineColor";
 export function ConnectorLineColor(): React.ReactElement | null {
 	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
 		usePanelContext();
-	const { board } = useAppContext();
+	const { board, app } = useAppContext();
 
 	const { t } = useTranslation();
 
@@ -28,10 +28,12 @@ export function ConnectorLineColor(): React.ReactElement | null {
 
 	const handlePick = (color: string): void => {
 		board.selection.setStrokeColor(color);
+		app.sessionStorage.setConnectorFillColor(color);
 		toggleMenu("None");
 	};
 
 	const handleCustomPick = (color: string): void => {
+		app.sessionStorage.setConnectorFillColor(color);
 		board.selection.setStrokeColor(color);
 	};
 

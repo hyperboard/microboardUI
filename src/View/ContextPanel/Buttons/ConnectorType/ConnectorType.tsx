@@ -40,11 +40,13 @@ export function ConnectorType(): React.ReactElement | null {
 
 	const handleStrokeStylePick = (style: BorderStyle): void => {
 		board.selection.setStrokeStyle(style);
+		app.sessionStorage.setConnectorStrokeStyle(style);
 		toggleMenu("None");
 	};
 
 	const handleSliderChange = (width: number): void => {
 		board.selection.setStrokeWidth(width);
+		app.sessionStorage.setConnectorLineWidth(width);
 	};
 
 	return (

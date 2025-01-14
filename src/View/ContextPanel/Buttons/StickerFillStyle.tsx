@@ -9,6 +9,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
 import btnStyle from "./ContextPanelButton.module.css";
+import { Sticker } from "Board/Items/Sticker";
 
 const MENU_NAME = "StickerFillStyle";
 
@@ -25,6 +26,10 @@ export function StickerFillStyle(): React.ReactElement | null {
 	};
 	const handlePick = (color: string): void => {
 		board.selection.setFillColor(color);
+		const sticker = board.selection.items.getSingle();
+		if (sticker && sticker instanceof Sticker) {
+			sticker.saveStickerData();
+		}
 		toggleMenu("None");
 	};
 	return (

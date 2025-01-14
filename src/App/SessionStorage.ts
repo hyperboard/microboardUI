@@ -1,7 +1,9 @@
 import type { ShapeData } from "Board/Items";
 import { ConnectorLineStyle } from "Board/Items/Connector";
+import type { ConnectionLineWidth } from "Board/Items/Connector/Connector";
 import { ConnectorEdge } from "Board/Items/Connector/Pointers";
 import { ConnectorPointerStyle } from "Board/Items/Connector/Pointers/Pointers";
+import type { BorderStyle } from "Board/Items/Path";
 import type { TextStyle } from "Board/Items/RichText";
 import type { StickerData } from "Board/Items/Sticker/StickerOperation";
 
@@ -25,6 +27,30 @@ export class SessionStorage {
 	remove(key: string): void {
 		const boardId = this.getBoardId() || "";
 		sessionStorage.removeItem(boardId + "_" + key);
+	}
+
+	setConnectorStrokeStyle(color: BorderStyle): void {
+		this.set(`connectorStrokeStyle`, color);
+	}
+
+	getConnectorStrokeStyle(): BorderStyle | undefined {
+		return this.get("connectorStrokeStyle");
+	}
+
+	setConnectorLineWidth(color: number): void {
+		this.set(`connectorLineWidth`, color);
+	}
+
+	getConnectorLineWidth(): ConnectionLineWidth | undefined {
+		return this.get("connectorLineWidth");
+	}
+
+	setConnectorFillColor(color: string): void {
+		this.set(`connectorFillColor`, color);
+	}
+
+	getConnectorFillColor(): string | undefined {
+		return this.get("connectorFillColor");
 	}
 
 	setConnectorPointer(
