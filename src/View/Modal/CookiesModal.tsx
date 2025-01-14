@@ -8,6 +8,7 @@ import {
 import { Button } from "shared/ui-lib/Button";
 import i18n from "Lang";
 import Cookies from "js-cookie";
+import { useAccount } from "App/useAccount";
 
 interface CookiesModalProps {
 	className?: string;
@@ -18,6 +19,7 @@ export const CookiesModal = ({
 }: CookiesModalProps): React.ReactElement => {
 	const { t } = useTranslation();
 	const [open, setOpen] = useState<boolean>(false);
+	const account = useAccount();
 
 	const redirectOnPolicy = (): void => {
 		const policyUrl =
@@ -33,19 +35,20 @@ export const CookiesModal = ({
 	};
 
 	useEffect(() => {
-		const isOpenModal =
-			Cookies.get("first_visit") && !Cookies.get("refreshToken");
+		const isOpenModal = Cookies.get("first_visit");
 
 		if (!isOpenModal) {
 			setOpen(true);
 		} else {
 			setOpen(false);
 		}
-
-		if (!Cookies.get("first_visit")) {
-			Cookies.set("first_visit", "true");
-		}
 	}, []);
+
+	useEffect(() => {
+		Cookies.set("first_visit", "true", {
+			expires: account.tokenData?.exp,
+		});
+	}, [account]);
 
 	return (
 		<Notification

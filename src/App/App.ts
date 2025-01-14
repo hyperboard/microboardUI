@@ -21,6 +21,7 @@ import { SessionStorage } from "./SessionStorage";
 import { apiV2 } from "shared/apiV2/base";
 import { foldersApi } from "shared/apiV2";
 import { getLocalRender } from "View/router";
+import Cookies from "js-cookie";
 
 export const LAST_BOARD_KEY = "lastSeenBoard";
 export const LAST_BOARD_KEY_QS = LAST_BOARD_KEY.concat("Wqs");
@@ -272,6 +273,7 @@ export function createApp(isHistory = true): App {
 				body: i18next.t("auth.sessionExpired"),
 				variant: "error",
 			});
+			Cookies.remove("first_visit");
 		});
 		render();
 	}
