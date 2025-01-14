@@ -76,7 +76,7 @@ export class Auth {
         }
 
         try {
-            await Drizzle.addUser(payload.email);
+            await Drizzle.addUser(payload.email, payload.newsletter);
         } catch (e) {
             this.logger.error(`add_user error: ${e}`);
             throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred when creating new user");
@@ -121,7 +121,11 @@ export class Auth {
             this.logger.error(`sendMail error: ${e}`);
         }
 
-        return { id: createdUser.userId, email: createdUser.userEmail!, name: createdUser.userName! };
+        return {
+            id: createdUser.userId,
+            email: createdUser.userEmail!,
+            name: createdUser.userName!,
+        };
     }
 
     async refresh(payload: RefreshPayload): Promise<{

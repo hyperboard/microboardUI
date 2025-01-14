@@ -1,13 +1,20 @@
 import { and, eq, ilike, isNotNull, sql } from "drizzle-orm";
 import { db } from "drizzle/db";
-import { boardOwner, boardPermissions, boards, userNames, userPasswords, users } from "drizzle/entities";
+import {
+    boardOwner,
+    boardPermissions,
+    boards,
+    userNames,
+    userPasswords,
+    users,
+} from "drizzle/entities";
 import { userAvatars } from "drizzle/entities/userAvatars";
 
 /**
  * Function to add new user.
  */
-export async function addUser(email: string) {
-    await db.insert(users).values({ email }).execute();
+export async function addUser(email: string, newsletter: boolean) {
+    await db.insert(users).values({ email, newsletter }).execute();
 }
 
 /**
@@ -34,7 +41,8 @@ export async function getUser(userId: number) {
             userEmail: users.email,
             userName: userNames.name,
             avatar: userAvatars.avatar,
-            avatarGenerated: userAvatars.generated
+            avatarGenerated: userAvatars.generated,
+            newsletter: users.newsletter,
         })
         .from(users)
         .leftJoin(userAvatars, eq(users.id, userAvatars.userId))
@@ -69,7 +77,7 @@ export async function getUserByEmail(userEmail: string) {
 /**
  * Fucntion to get users info by email
  */
-export async function getUsersByEmail(userEmail: string = '', limit = 20) {
+export async function getUsersByEmail(userEmail: string = "", limit = 20) {
     const userRecords = await db
         .select({
             id: users.id,
@@ -195,4 +203,14 @@ export async function updateUserActiveStatus(userId: number) {
         .execute();
 
     return userRecords;
+}
+
+/**
+ * Function to change newsletter.
+ */
+export async function changeNewsletter(userId: number, newsletter: boolean) {
+	await db.update(users)
+		.set({ newsletter })
+		.where(eq(users.id, userId))
+		.execute();
 }

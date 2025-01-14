@@ -19,7 +19,14 @@ export class Users {
 
     async getUser(
         userId: number
-    ): Promise<{ id: number; email: string; name: string; avatar: string; avatarGenerated: boolean } | null> {
+    ): Promise<{
+        id: number;
+        email: string;
+        name: string;
+        avatar: string;
+        avatarGenerated: boolean;
+        newsletter: boolean;
+    } | null> {
         let user = await Drizzle.getUser(userId);
 
         if (user && !user.avatar) {
@@ -38,11 +45,16 @@ export class Users {
             name: user.userName!,
             avatar: user.avatar!,
             avatarGenerated: user.avatarGenerated ?? true,
+            newsletter: user.newsletter ?? true,
         };
     }
 
     async editUser(userId: number, name: string) {
         await Drizzle.changeUsername(userId, name);
+    }
+
+    async editNewsletter(userId: number, newsletter: boolean) {
+        await Drizzle.changeNewsletter(userId, newsletter);
     }
 
     async uploadAvatar(userId: number, avatar?: internal.Readable, type?: string) {

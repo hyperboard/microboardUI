@@ -37,6 +37,42 @@ export function getUsersRouter(usersService: Users, logger: winston.Logger): exp
         })
     );
 
+    router.patch(
+        "/users/me/newsletter",
+        jwtMiddleware(logger),
+        body("newsletter").isBoolean(),
+        catchAsync(async (request, response) => {
+            const { token } = request;
+            const userToken = await token;
+            const userId = parseInt(userToken?.sub);
+            // if (!token || userToken === null) {
+            //     response
+            //         .status(HttpStatus.UNAUTHORIZED)
+            //         .json({
+            //             status: HttpStatus.UNAUTHORIZED,
+            //             message: "Unauthorized",
+            //         })
+            //         .end();
+            //     return;
+            // }
+
+            try {
+                await usersService.editNewsletter(userId, request.body.newsletter);
+                response.status(HttpStatus.NO_CONTENT).send();
+            } catch (e: HttpException | any) {
+                response
+                    .status(e.status || HttpStatus.INTERNAL_SERVER_ERROR)
+                    .json({
+                        status: e.status || HttpStatus.INTERNAL_SERVER_ERROR,
+                        message: e.message,
+                    })
+                    .end();
+            }
+
+            // response.end();
+        })
+    );
+
     router.get(
         "/users/me",
         jwtMiddleware(logger),

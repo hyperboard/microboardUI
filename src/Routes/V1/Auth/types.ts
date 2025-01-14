@@ -20,6 +20,7 @@ export type RegisterPayload = {
     email: string;
     password: string;
     name: string;
+    newsletter: boolean;
 };
 
 export type LoginPayload = {

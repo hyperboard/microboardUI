@@ -13,5 +13,6 @@ export {
 	getCanViewUserBoards,
 	getBoardsByUser,
 	updateRefreshToken,
-	getUsersByEmail
+	getUsersByEmail,
+	changeNewsletter
 } from './handler';

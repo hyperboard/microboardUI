@@ -7,6 +7,7 @@ export const users = pgTable("users", {
     email: varchar("email", { length: 254 }).unique().notNull(),
     activated: boolean("activated").default(false),
     refreshToken: varchar("refresh_token"),
+    newsletter: boolean("newsletter").default(true),
 });
 
 export const userRelations = relations(users, ({ one, many }) => ({
