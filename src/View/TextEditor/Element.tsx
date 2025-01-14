@@ -16,23 +16,29 @@ export function Element(props: RenderElementProps): React.ReactElement {
 					{children}
 				</p>
 			);
-		case "bulleted-list":
+		case "ul_list":
 			return (
 				<ul
 					{...attributes}
 					style={{
 						textAlign: props.element.horisontalAlignment,
+						margin: 0,
+						paddingLeft: "16px",
+						whiteSpace: "nowrap",
 					}}
 				>
 					{children}{" "}
 				</ul>
 			);
-		case "numbered-list":
+		case "ol_list":
 			return (
 				<ol
 					{...attributes}
 					style={{
 						textAlign: props.element.horisontalAlignment,
+						margin: 0,
+						paddingLeft: "16px",
+						whiteSpace: "nowrap",
 					}}
 				>
 					{children}
@@ -49,7 +55,7 @@ export function Element(props: RenderElementProps): React.ReactElement {
 					{children}
 				</blockquote>
 			);
-		case "heading":
+		case "heading_one":
 			return (
 				<h1
 					{...attributes}
@@ -60,13 +66,71 @@ export function Element(props: RenderElementProps): React.ReactElement {
 					{children}
 				</h1>
 			);
-		case "list-item":
-			return <li {...attributes}>{children}</li>;
+		case "heading_two":
+			return (
+				<h2
+					{...attributes}
+					style={{
+						textAlign: props.element.horisontalAlignment,
+					}}
+				>
+					{children}
+				</h2>
+			);
+		case "heading_three":
+			return (
+				<h3
+					{...attributes}
+					style={{
+						textAlign: props.element.horisontalAlignment,
+					}}
+				>
+					{children}
+				</h3>
+			);
+		case "code_block":
+			return (
+				<code
+					{...attributes}
+					style={{
+						textAlign: props.element.horisontalAlignment,
+						margin: 0,
+					}}
+				>
+					{children}
+				</code>
+			);
+		case "list_item":
+			return (
+				<li
+					{...attributes}
+					style={{
+						textAlign: props.element.horisontalAlignment,
+						margin: 0,
+						paddingLeft: "24px",
+						whiteSpace: "pre-wrap",
+					}}
+				>
+					{children}
+				</li>
+			);
 		case "hyper-link":
 			return (
 				<a href={element.url} {...attributes}>
 					{children}
 				</a>
+			);
+		default:
+			return (
+				<p
+					{...attributes}
+					style={{
+						textAlign: props.element.horisontalAlignment,
+						margin: 0,
+					}}
+				>
+					{children}
+				</p>
 			);
 	}
 }

@@ -208,12 +208,12 @@ export class TextEditor extends React.Component<
 		}
 
 		return (
-			/* <div 
+			/* <div
 				style={{
 					position: 'absolute',
-					left: `${container.left}px`, 
-					top: `${container.top}px`, 
-					width: `${container.getWidth()/editorScale}px`, 
+					left: `${container.left}px`,
+					top: `${container.top}px`,
+					width: `${container.getWidth()/editorScale}px`,
 					height: `${container.getHeight()/editorScale}px`,
 					overflow: 'hidden', // This will cut off any overflowing content
 					transformOrigin: "left top",
