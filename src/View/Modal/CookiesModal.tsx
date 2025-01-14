@@ -24,8 +24,8 @@ export const CookiesModal = ({
 	const redirectOnPolicy = (): void => {
 		const policyUrl =
 			i18n.language === "ru"
-				? "https://microboard.ru/terms"
-				: "https://microboard.io/terms";
+				? "https://microboard.ru/personal"
+				: "https://microboard.io/privacy-policy";
 		window.location.href = policyUrl;
 	};
 
