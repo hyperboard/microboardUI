@@ -37,7 +37,7 @@ import { ModelLimitDefinition, PLAN_MODEL_LIMITS } from "drizzle/scripts/plans";
 import { GenerateImageOptions, ImageGenerator } from "WebSocket/image-generator";
 
 class UsageLimitChecker {
-    private readonly defaultPlanId = "free";
+    private readonly defaultPlanId = "basic";
 
     private async getActivePlan(userId: number) {
         if (userId === 0) {
@@ -67,6 +67,9 @@ class UsageLimitChecker {
         const userPlan = await this.getActivePlan(userId);
         const planId = userPlan?.planId || this.defaultPlanId;
         const planLimit = this.findPlanLimit(planId, modelId);
+        console.log("userPlan", userPlan);
+        console.log("planId", planId);
+        console.log("planLimit", planLimit);
 
         if (!planLimit?.isEnabled) {
             return { canProceed: false, error: "Model not available in your plan" };
@@ -648,6 +651,7 @@ export class ChatStreamHandler {
         const { msg, ws, logger, boardClients } = options;
         const boardOwnerId = await this.getBoardOwner(msg.boardId);
         const usageCheck = await this.usageLimitChecker.checkUserLimits(boardOwnerId, msg.event.model || "gpt-4o-mini");
+        console.log("usage check", usageCheck);
         if (!usageCheck.canProceed) {
             this.sendErrorResponse(null, ws, usageCheck.error || "LimitExceeded");
             return;
