@@ -2,7 +2,7 @@ import { useAccount } from "App/useAccount";
 import { PROFILE_SETTINGS_MODAL_ID } from "View/ProfileSettingsModal";
 import { useUiModalContext } from "View/Ui/UiModal";
 import { UiModal } from "View/Ui/UiModal/UiModal";
-import React, { type MouseEventHandler } from "react";
+import React, { useEffect, type MouseEventHandler } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "shared/ui-lib/Button";
 import { BasicPlanCard, PlusPlanCard, ProPlanCard } from "./PlanCards";
@@ -16,8 +16,8 @@ export function UserPlanModal() {
 	const { t } = useTranslation();
 	const account = useAccount();
 
-	const defaultModel = account.billingInfo?.models.find(
-		model => model.isDefault,
+	const currentModel = account.billingInfo?.models.find(
+		model => model.isEnabled,
 	);
 
 	const handleOpenProfileSettings: MouseEventHandler = ev => {
@@ -27,15 +27,21 @@ export function UserPlanModal() {
 		openModal(PROFILE_SETTINGS_MODAL_ID);
 	};
 
+	useEffect(() => {
+		account.fetchBillingInfo();
+	}, []);
+
+	console.log("billing info", account.billingInfo);
+
 	return (
 		<UiModal modalId={USER_PLAN_MODAL_ID}>
 			<div className={styles.wrapper}>
 				<h1 className={styles.heading}>{t("userPlan.upgradePlan")}</h1>
 				<UserPlanUsage
-					aiModel={defaultModel?.displayName ?? "Unknown"}
+					aiModel={currentModel?.displayName ?? "Unknown"}
 					availableRequests={
-						(defaultModel?.limits.weekly ?? 0) -
-						(defaultModel?.limits.weeklyUsed ?? 0)
+						currentModel?.limits.daily.remaining ||
+						currentModel?.limits.weekly.remaining
 					}
 					tokensUsageResetDate={
 						account.billingInfo?.plan.periodEnd ?? new Date()

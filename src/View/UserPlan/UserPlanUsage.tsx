@@ -3,14 +3,14 @@ import { Trans, useTranslation } from "react-i18next";
 import styles from "./UserPlanUsage.module.css";
 
 type Props = {
-	availableRequests: number;
+	availableRequests?: number | null;
 	aiModel: string;
 	tokensUsageResetDate: string | Date;
 };
 
 export function UserPlanUsage({
 	aiModel,
-	availableRequests,
+	availableRequests = 0,
 	tokensUsageResetDate,
 }: Props) {
 	const { t, i18n } = useTranslation();

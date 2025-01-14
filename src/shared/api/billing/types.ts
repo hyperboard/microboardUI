@@ -9,6 +9,12 @@ export type StorageUsage = {
 	limit: number;
 };
 
+export type ModelLimit = {
+	limit: number | null;
+	used: number | null;
+	remaining: number | null;
+};
+
 export type AvailableModel = {
 	id: string;
 	name: string;
@@ -16,10 +22,8 @@ export type AvailableModel = {
 	isDefault: boolean;
 	isEnabled: boolean;
 	limits: {
-		daily: null | number;
-		weekly: null | number;
-		dailyUsed: number;
-		weeklyUsed: number;
+		daily: ModelLimit;
+		weekly: ModelLimit;
 	};
 };
 

@@ -37,7 +37,7 @@ export const AIInput: React.FC = () => {
 	const { app, board } = useAppContext();
 	const [inputValue, setInputValue] = useState("");
 	const inputRef = useRef<HTMLTextAreaElement | null>(null);
-	const [model, setModel] = useState<OpenAIModels>("gpt-4o");
+	const [model, setModel] = useState<OpenAIModels>();
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const dropdownRef = useRef<HTMLDivElement | null>(null);
 	const forceUpdate = useForceUpdate();
@@ -178,11 +178,11 @@ export const AIInput: React.FC = () => {
 	};
 
 	useEffect(() => {
-		if (account.billingInfo?.models) {
+		if (!account.billingInfo?.models) {
 			return;
 		}
 		const defaultModel = account.billingInfo?.models.find(
-			model => model.isDefault,
+			model => model.isDefault && model.isEnabled,
 		);
 
 		setModel((defaultModel?.id as OpenAIModels) ?? "gpt-4o-mini");
@@ -197,7 +197,15 @@ export const AIInput: React.FC = () => {
 			return openModal(AI_UNAVAILABLE_MODAL_ID);
 		}
 		await account.fetchBillingInfo();
-		if ((account.billingInfo?.tokens.remaining ?? 0) <= 0) {
+		const currentModel = account.billingInfo?.models.find(
+			({ id }) => id === model,
+		);
+
+		if (
+			!currentModel ||
+			((currentModel.limits.daily.remaining ?? 0) <= 0 &&
+				(currentModel.limits.weekly.remaining ?? 0) <= 0)
+		) {
 			setIsShaking(true);
 			setTimeout(() => {
 				setIsShaking(false);
@@ -210,7 +218,7 @@ export const AIInput: React.FC = () => {
 			}, 1000);
 			return;
 		}
-		sendInputData();
+		await sendInputData();
 	};
 
 	const handleInputClick = (event: React.MouseEvent<HTMLTextAreaElement>) => {
@@ -220,11 +228,13 @@ export const AIInput: React.FC = () => {
 		}
 	};
 
-	const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+	const handleKeyDown = async (
+		event: React.KeyboardEvent<HTMLTextAreaElement>,
+	) => {
 		event.stopPropagation();
 		if (event.key === "Enter" && !event.shiftKey) {
 			event.preventDefault();
-			handleSendClick(event);
+			await handleSendClick(event);
 		}
 	};
 
@@ -290,7 +300,7 @@ export const AIInput: React.FC = () => {
 		return { node: newItem, connectorData };
 	}
 
-	const sendInputData = () => {
+	const sendInputData = async () => {
 		const connection = app.getConnection();
 		if (!connection) {
 			console.error("Ws no open");
@@ -325,6 +335,7 @@ export const AIInput: React.FC = () => {
 			true,
 		);
 		const responseAdded = board.add(responseNode.node);
+		console.log(responseAdded);
 
 		setResponseNodeId(responseAdded.getId());
 
@@ -395,6 +406,8 @@ export const AIInput: React.FC = () => {
 			},
 		};
 
+		console.log("sendInputDAta", model);
+
 		connection.wsClient.send(message);
 
 		setInputValue("");
@@ -408,7 +421,7 @@ export const AIInput: React.FC = () => {
 		board.camera.zoomToFit(mbrToFit, (600 / mbrToFit.getWidth()) * 30);
 	};
 
-	const stopStream = (boardId, itemId) => {
+	const stopStream = async (boardId, itemId) => {
 		const connection = app.getConnection();
 		const stopMessage: AiChatMsg<{
 			method: "StopGeneration";
@@ -423,13 +436,14 @@ export const AIInput: React.FC = () => {
 		};
 
 		connection.wsClient.send(stopMessage);
+		await account.fetchBillingInfo();
 	};
 
-	const handleStopClick = () => {
+	const handleStopClick = async () => {
 		const boardId = board.getBoardId();
 
 		if (responseNodeId) {
-			stopStream(boardId, responseNodeId);
+			await stopStream(boardId, responseNodeId);
 			setIsGenerating(false);
 		}
 	};

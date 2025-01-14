@@ -116,7 +116,7 @@ export function PlanCard({
 			<UiSeparator />
 			<ul className={styles.features}>
 				{features.map(feature => (
-					<li className={styles.feature}>
+					<li className={styles.feature} key={feature}>
 						<Icon
 							className={styles.markIcon}
 							width={24}
