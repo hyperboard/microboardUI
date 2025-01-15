@@ -65,7 +65,7 @@
 
 .modelDropdown {
 	position: absolute;
-	bottom: calc(100% + 12px);
+	bottom: calc(100% + 25px);
 	left: -10px;
 	background-color: white;
 	border: 1px solid rgba(204, 204, 204, 0.5);
