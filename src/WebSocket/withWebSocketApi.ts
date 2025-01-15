@@ -215,50 +215,63 @@ export function withWebSocketApi({
     const socketsBoardsSeqNums = new Map<WebSocket, Map<string, number>>();
 
     async function handleSubscribeMsg(msg: SubscribeMsg, ws: WebSocket): Promise<void> {
+        logger.info(`Handling subscribe message for board: ${msg.boardId}`);
         try {
             if (!isUUID(msg.boardId)) {
+                logger.warn(`Invalid board ID: ${msg.boardId}`);
                 return sendError(ws, "Access denied: Subscribe to board events.", { deniedBoardId: msg.boardId });
             }
             if (msg.accessKey) {
                 wsAccessKeys.set(ws, msg.accessKey);
+                logger.debug(`Access key set for WebSocket connection`);
             }
             const boardId = msg.boardId;
             const mode = await getMode(ws, msg.boardId);
+            logger.info(`Access mode for board ${boardId}: ${mode}`);
 
-            if (mode) {
-                await subscribeClientToBoard(ws, boardId);
-
-                const initialSequenceNumber = getInitialSeqNum(ws, boardId);
-                const snapshot = await boards.getLatestBoardSnapshot(boardId);
-                const lastSnapshotEventOrder = snapshot?.lastIndex || 0;
-                const eventsSinceLastSnapshot = await getEventsSinceLastSnapshot(boardId, lastSnapshotEventOrder);
-                ws.send(
-                    JSON.stringify({
-                        type: "BoardSubscriptionCompleted",
-                        boardId,
-                        mode,
-                        snapshot,
-                        lastSnapshotEventOrder,
-                        eventsSinceLastSnapshot,
-                        initialSequenceNumber,
-                    })
-                );
-                // const presenceEvents = await presence.getBoardEvents(boardId);
-                const presenceSnapshots = await presence.createBoardPresenceSnapshots(boardId);
-                ws.send(
-                    JSON.stringify({
-                        type: "UserJoin",
-                        boardId: boardId,
-                        userId: msg.userId,
-                        // events: presenceEvents,
-                        snapshots: presenceSnapshots,
-                        timestamp: Date.now(),
-                    })
-                );
-            } else {
+            if (!mode) {
+                logger.warn(`Access denied for board ${boardId}`);
                 unsubscribeClient(msg.boardId, ws);
                 return sendError(ws, "Access denied: Subscribe to board events.", { deniedBoardId: msg.boardId });
             }
+
+            await subscribeClientToBoard(ws, boardId);
+            logger.info(`Client subscribed to board ${boardId}`);
+
+            const initialSequenceNumber = getInitialSeqNum(ws, boardId);
+            logger.debug(`Initial sequence number: ${initialSequenceNumber}`);
+            const snapshot = await boards.getLatestBoardSnapshot(boardId);
+            const lastSnapshotEventOrder = snapshot?.lastIndex || 0;
+            logger.debug(`Last snapshot event order: ${lastSnapshotEventOrder}`);
+            const eventsSinceLastSnapshot = await getEventsSinceLastSnapshot(boardId, lastSnapshotEventOrder);
+            logger.info(`Retrieved ${eventsSinceLastSnapshot.length} events since last snapshot`);
+
+            ws.send(
+                JSON.stringify({
+                    type: "BoardSubscriptionCompleted",
+                    boardId,
+                    mode,
+                    snapshot,
+                    lastSnapshotEventOrder,
+                    eventsSinceLastSnapshot,
+                    initialSequenceNumber,
+                })
+            );
+            logger.info(`Sent BoardSubscriptionCompleted message for board ${boardId}`);
+
+            const presenceSnapshots = await presence.createBoardPresenceSnapshots(boardId);
+            logger.debug(`Created ${presenceSnapshots.length} presence snapshots for board ${boardId}`);
+
+            ws.send(
+                JSON.stringify({
+                    type: "UserJoin",
+                    boardId: boardId,
+                    userId: msg.userId,
+                    snapshots: presenceSnapshots,
+                    timestamp: Date.now(),
+                })
+            );
+            logger.info(`Sent UserJoin message for user ${msg.userId} on board ${boardId}`);
         } catch (error) {
             logger.error("Failed to subscribe to board events:", error);
             unsubscribeClient(msg.boardId, ws);
