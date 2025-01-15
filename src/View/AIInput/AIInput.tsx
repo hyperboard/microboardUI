@@ -10,10 +10,12 @@ import { Board } from "Board";
 import {
 	Connector,
 	ConnectorData,
+	Item,
 	Matrix,
 	Mbr,
 	Point,
 	RichText,
+	Shape,
 } from "Board/Items";
 import { useForceUpdate } from "lib/useForceUpdate";
 import { Chevron } from "shared/ui-lib/Dropdown/Chevron";
@@ -29,8 +31,51 @@ import { USER_PLAN_MODAL_ID } from "View/UserPlan";
 import { SessionStorage } from "App/SessionStorage";
 import { getControlPointData } from "Board/Selection/QuickAddButtons/quickAddHelpers";
 import { getCorrectEnding } from "utils";
+import { Sticker } from "Board/Items/Sticker/Sticker";
 
+type PossibleParentNode = AINode | Shape | RichText | Sticker;
 const DEFAULT_MAX_NODE_WIDTH = 620;
+
+const getTextFromItem = (item: Item) => {
+	const richText = item.getRichText();
+	if (richText) {
+		const textNodes = richText.editor.getText();
+		if (Array.isArray(textNodes)) {
+			return textNodes
+				.map(paragraph => {
+					if ("children" in paragraph) {
+						return paragraph.children
+							.map(child => child.text || "")
+							.join(" ");
+					}
+					return "";
+				})
+				.join(" ")
+				.trim();
+		}
+	}
+	return "";
+};
+
+const getIdeaFromSelection = (
+	selectionItems: Item[],
+): { item: PossibleParentNode; idea: string } | null => {
+	if (selectionItems.length === 0) {
+		return null;
+	}
+	for (const item of selectionItems) {
+		switch (item.itemType) {
+			case "RichText":
+			case "Sticker":
+			case "Shape":
+				const text = getTextFromItem(item);
+				if (text.trim().length !== 0) {
+					return { item, idea: text };
+				}
+		}
+	}
+	return null;
+};
 
 export const AIInput: React.FC = () => {
 	const { t } = useTranslation();
@@ -50,6 +95,9 @@ export const AIInput: React.FC = () => {
 	const navigate = useNavigate();
 	const isMediaMatches = useMediaQuery("(max-width: 1170px)");
 
+	const ideaFromSelection = getIdeaFromSelection(
+		board.selection.items.list(),
+	);
 	const isPhoneScreenCheck = () =>
 		matchMedia("screen and (max-width: 640px)").matches;
 	const [isPhoneScreen, setIsPhoneScreen] = useState(isPhoneScreenCheck);
@@ -72,11 +120,11 @@ export const AIInput: React.FC = () => {
 
 	function calculateNodePosition(
 		newNode: AINode,
-		selectedNode: AINode,
+		selectedItem: PossibleParentNode,
 	): { newItem: AINode; connectorData: ConnectorData } {
 		const connectorStorage = new SessionStorage();
-		const currMbr = selectedNode.getMbr();
-		const currData = selectedNode.serialize();
+		const currMbr = selectedItem.getMbr();
+		const currData = selectedItem.serialize();
 		const newNodeData = newNode.serialize();
 		const width = DEFAULT_MAX_NODE_WIDTH;
 		const height = 100;
@@ -94,10 +142,11 @@ export const AIInput: React.FC = () => {
 
 		if (newNodeData.transformation) {
 			newNodeData.transformation.translateX =
-				baseAdjustments.translateX + currData.transformation.translateX;
+				baseAdjustments.translateX +
+				(currData.transformation?.translateX || 0);
 			newNodeData.transformation.translateY =
 				baseAdjustments.translateY +
-				currData.transformation.translateY +
+				(currData?.transformation?.translateY || 0) +
 				currMbr.getHeight();
 		}
 
@@ -190,7 +239,7 @@ export const AIInput: React.FC = () => {
 
 	const handleSendClick = async (ev: SyntheticEvent) => {
 		ev.stopPropagation();
-		if (!inputValue.trim()) {
+		if (!inputValue.trim() && !ideaFromSelection) {
 			return;
 		}
 		if (!account.isLoggedIn) {
@@ -267,10 +316,15 @@ export const AIInput: React.FC = () => {
 		board: Board,
 		inputValue: string,
 		isUserRequest: boolean,
-		parentNode?: AINode,
+		parentItem?: PossibleParentNode,
 		withPlaceholder = false,
 	): { node: AINode; connectorData: ConnectorData | null } {
-		const node = new AINode(isUserRequest, parentNode?.getId());
+		let parentNodeId: string | undefined;
+		if (parentItem && parentItem.itemType === "AINode") {
+			parentNodeId = parentItem.getId();
+		}
+
+		const node = new AINode(isUserRequest, parentNodeId);
 		node.getRichText().setMaxWidth(600);
 		node.getRichText().setSelectionHorisontalAlignment("left");
 		if (withPlaceholder) {
@@ -279,7 +333,7 @@ export const AIInput: React.FC = () => {
 			node.getRichText().editor.insertCopiedText(inputValue);
 		}
 
-		if (!parentNode) {
+		if (!parentItem) {
 			const cameraMbr = board.camera.getMbr();
 
 			const centerX = cameraMbr.getCenter().x;
@@ -295,7 +349,7 @@ export const AIInput: React.FC = () => {
 		}
 		const { newItem, connectorData } = calculateNodePosition(
 			node,
-			parentNode,
+			parentItem,
 		);
 		return { node: newItem, connectorData };
 	}
@@ -306,22 +360,33 @@ export const AIInput: React.FC = () => {
 			console.error("Ws no open");
 		}
 
+		if (!inputValue.trim().length && !ideaFromSelection) {
+			return;
+		}
+
 		const nodeWithParents =
 			board.selection.getMostNestedAINodeWithParents();
 
-		const requestNode = createNode(
-			board,
-			inputValue,
-			true,
-			nodeWithParents?.node,
-		);
+		let idea = inputValue;
+		let itemToContinueThread: Item | undefined = nodeWithParents?.node;
+		if (idea.trim().length === 0) {
+			if (!ideaFromSelection) {
+				return;
+			}
+			idea = ideaFromSelection.idea;
+			if (!itemToContinueThread) {
+				itemToContinueThread = ideaFromSelection.item;
+			}
+		}
+
+		const requestNode = createNode(board, idea, true, itemToContinueThread);
 		const requestAdded = board.add(requestNode.node);
 
-		if (requestNode.connectorData && nodeWithParents) {
+		if (requestNode.connectorData && itemToContinueThread) {
 			board.add(
 				board.createItem(board.getNewItemId(), {
 					...requestNode.connectorData,
-					startPoint: getControlPointData(nodeWithParents.node, 3),
+					startPoint: getControlPointData(itemToContinueThread, 3),
 					endPoint: getControlPointData(requestAdded, 2),
 				}),
 			);
@@ -335,7 +400,6 @@ export const AIInput: React.FC = () => {
 			true,
 		);
 		const responseAdded = board.add(responseNode.node);
-		console.log(responseAdded);
 
 		setResponseNodeId(responseAdded.getId());
 
@@ -354,7 +418,9 @@ export const AIInput: React.FC = () => {
 			: [];
 
 		const selectedItems = board.selection.items.list();
+
 		const boardContext = selectedItems
+			.filter(item => item.getId() !== ideaFromSelection?.item.getId())
 			.map(item => {
 				if (
 					item.itemType === "AINode" &&
@@ -363,24 +429,7 @@ export const AIInput: React.FC = () => {
 				) {
 					return "";
 				}
-				const richText = item.getRichText();
-				if (richText) {
-					const textNodes = richText.editor.getText();
-					if (Array.isArray(textNodes)) {
-						return textNodes
-							.map(paragraph => {
-								if ("children" in paragraph) {
-									return paragraph.children
-										.map(child => child.text || "")
-										.join(" ");
-								}
-								return "";
-							})
-							.join(" ")
-							.trim();
-					}
-				}
-				return "";
+				return getTextFromItem(item);
 			})
 			.filter(text => text !== "");
 
@@ -398,15 +447,13 @@ export const AIInput: React.FC = () => {
 				method: "UserRequest",
 				context: [],
 				boardContext,
-				idea: inputValue,
+				idea,
 				model,
 				itemId: responseAdded.getId(),
 				requestItemId: requestAdded.getId(),
 				contextRequest,
 			},
 		};
-
-		console.log("sendInputDAta", model);
 
 		connection.wsClient.send(message);
 
@@ -421,7 +468,7 @@ export const AIInput: React.FC = () => {
 		board.camera.zoomToFit(mbrToFit, (600 / mbrToFit.getWidth()) * 30);
 	};
 
-	const stopStream = async (boardId, itemId) => {
+	const stopStream = async (boardId: string, itemId: string) => {
 		const connection = app.getConnection();
 		const stopMessage: AiChatMsg<{
 			method: "StopGeneration";
@@ -533,7 +580,8 @@ export const AIInput: React.FC = () => {
 						iconName={isGenerating ? "StopAiGeneration" : "Vector"}
 						className={clsx(
 							styles.icon,
-							inputValue.trim() && styles.activeIcon,
+							(inputValue.trim() || ideaFromSelection) &&
+								styles.activeIcon,
 						)}
 					/>
 				</button>
