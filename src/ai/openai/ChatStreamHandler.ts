@@ -35,6 +35,7 @@ import { ModelLimit, userModelUsage, userPlans } from "drizzle/entities/plans";
 import { boardOwner, boards } from "drizzle/entities";
 import { ModelLimitDefinition, PLAN_MODEL_LIMITS } from "drizzle/scripts/plans";
 import { GenerateImageOptions, ImageGenerator } from "WebSocket/image-generator";
+import {client} from "../../trigger";
 
 class UsageLimitChecker {
     private readonly defaultPlanId = "basic";
@@ -350,20 +351,20 @@ export class ChatStreamHandler {
         const foundedChat = await this.ensureChatExists(msg, logger);
 
         try {
-            logger.debug(`Attempting to stop conversation for board ${boardId}`);
+            logger.debug(`Attempting to stop conversation for item ${itemId}`);
 
-            const boardStreamEntry = this.activeStreams.get(msg.boardId);
+            const boardStreamEntry = this.activeStreams.get(itemId);
             logger.debug("ABORT STREAM:", { entry: boardStreamEntry });
 
             if (boardStreamEntry) {
-                logger.debug(`Aborting stream for board ${boardId}`);
+                logger.debug(`Aborting stream for item ${itemId}`);
                 boardStreamEntry.controller.abort();
 
-                this.activeStreams.delete(boardId);
+                this.activeStreams.delete(itemId);
 
-                logger.debug(`Stream for board ${boardId} successfully aborted`);
+                logger.debug(`Stream for item ${itemId} successfully aborted`);
             } else {
-                logger.warn(`No active stream found for board ${boardId}`);
+                logger.warn(`No active stream found for item ${itemId}`);
                 return;
             }
 
@@ -388,7 +389,7 @@ export class ChatStreamHandler {
 
             ws.send(JSON.stringify(stopChunk));
         } catch (error) {
-            logger.error(`Error stopping conversation for board ${boardId}:`, error);
+            logger.error(`Error stopping conversation for item ${itemId}:`, error);
 
             this.sendErrorResponse(
                 foundedChat,
@@ -664,10 +665,10 @@ export class ChatStreamHandler {
         try {
             const controller = new AbortController();
 
-            const existingBoardStream = this.activeStreams.get(msg.boardId);
+            const existingBoardStream = this.activeStreams.get(itemId);
             if (existingBoardStream) {
                 existingBoardStream.controller.abort();
-                this.activeStreams.delete(msg.boardId);
+                this.activeStreams.delete(itemId);
             }
 
             logger.debug("Ensuring chat existence...");
@@ -816,16 +817,17 @@ export class ChatStreamHandler {
                 return;
             }
 
-            this.activeStreams.set(msg.boardId, {
+            this.activeStreams.set(itemId, {
                 stream,
-                controller,
+                controller
             });
-            logger.debug(`Stream created for board: ${msg.boardId} `, {
-                controller: this.activeStreams.get(msg.boardId)?.controller,
+            logger.debug(`Stream created for item: ${itemId} `, {
+                controller: this.activeStreams.get(itemId)?.controller,
                 size: this.activeStreams.size,
             });
 
             logger.debug("Handling stream chunks...");
+            ws.send('stream_created')
             this.handleStreamChunks({
                 stream,
                 ws,
@@ -924,7 +926,7 @@ export class ChatStreamHandler {
     }
 
     private async ensureChatExists(msg: AiChatMsg, logger: winston.Logger): Promise<Chat> {
-        logger.debug("Board ID provided, fetching existing chat...");
+        logger.debug("Item ID provided, fetching existing chat...");
         let [boardChat] = await db.select().from(chat).where(eq(chat.boardId, msg.boardId)).limit(1);
         if (!boardChat) {
             const [newChat] = await db.insert(chat).values({ boardId: msg.boardId }).returning();
@@ -971,7 +973,7 @@ export class ChatStreamHandler {
                     try {
                         if (controller.signal.aborted) {
                             isStopped = true;
-                            logger.debug(`Stream aborted for board ${boardId}`);
+                            logger.debug(`Stream aborted for item ${itemId}`);
                             return;
                         }
 
@@ -1033,7 +1035,7 @@ export class ChatStreamHandler {
                         });
                     }
 
-                    this.activeStreams.delete(boardId);
+                    this.activeStreams.delete(itemId);
                 },
                 abort: (err) => {
                     console.error("Streaming error:", err);
@@ -1042,7 +1044,7 @@ export class ChatStreamHandler {
                         this.sendErrorResponse(chat, ws, err instanceof Error ? err.message : "Stream error");
                     }
 
-                    this.activeStreams.delete(boardId);
+                    this.activeStreams.delete(itemId);
                 },
             })
         );

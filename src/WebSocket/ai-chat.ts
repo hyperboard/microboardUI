@@ -18,7 +18,7 @@ export const handleAIChatMessage = async (options: {
 
     switch (msg.event.method) {
         case "UserRequest":
-            await chatStreamHandler.handleUserRequest({
+            chatStreamHandler.handleUserRequest({
                 msg: msg as AiChatMsg<UserRequest>,
                 ws,
                 logger,
