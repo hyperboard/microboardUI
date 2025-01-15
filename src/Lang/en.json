@@ -803,6 +803,7 @@
 			"one": "Selected item",
 			"few": "Selected items",
 			"many": "Selected items"
-		}
+		},
+		"disable": "Available on boards you can edit"
 	}
 }

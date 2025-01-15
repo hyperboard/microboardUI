@@ -98,6 +98,8 @@ export const AIInput: React.FC = () => {
 	const ideaFromSelection = getIdeaFromSelection(
 		board.selection.items.list(),
 	);
+	const isEditable = board.getInterfaceType() !== "view";
+
 	const isPhoneScreenCheck = () =>
 		matchMedia("screen and (max-width: 640px)").matches;
 	const [isPhoneScreen, setIsPhoneScreen] = useState(isPhoneScreenCheck);
@@ -558,6 +560,8 @@ export const AIInput: React.FC = () => {
 					className={styles.aiInput}
 					ref={inputRef}
 					rows={1}
+					disabled={!isEditable}
+					title={!isEditable ? t("AIInput.disable") : ""}
 				/>
 				<div
 					className={clsx(
@@ -573,6 +577,7 @@ export const AIInput: React.FC = () => {
 				<button
 					onClick={isGenerating ? handleStopClick : handleSendClick}
 					className={styles.sendButton}
+					disabled={!isEditable}
 				>
 					<Icon
 						width={20}
