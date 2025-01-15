@@ -285,6 +285,9 @@ export const AIInput: React.FC = () => {
 		if (board.selection.getContext() === "EditTextUnderPointer") {
 			board.selection.setContext("EditUnderPointer");
 		}
+		if (isDropdownOpen) {
+			setIsDropdownOpen(false);
+		}
 	};
 
 	const handleKeyDown = async (
