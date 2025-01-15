@@ -26,7 +26,6 @@ import { Icon } from "View/Icon";
 import { useMediaQuery } from "lib/useMediaQuery";
 import i18n from "Lang";
 import { OuterLink } from "shared/ui-lib/OuterLink";
-import { Account } from "App/Account";
 import { Checkbox } from "View/Ui/Checkbox";
 
 export const PROFILE_SETTINGS_MODAL_ID = Symbol("profileSettingsModal");
@@ -233,7 +232,7 @@ export function ProfileSettingsModal(): ReactElement {
 					/>
 				</div>
 				<NewsLetterCheckbox
-					account={account}
+					accountNewsletter={account.info?.newsletter}
 					onChange={handleNewsletterChange}
 				/>
 				<div className={styles.btns}>
@@ -269,21 +268,19 @@ export function ProfileSettingsModal(): ReactElement {
 }
 
 const NewsLetterCheckbox = ({
-	account,
+	accountNewsletter,
 	onChange,
 }: {
-	account: Account;
+	accountNewsletter?: boolean;
 	onChange: (isChecked: boolean) => void;
 }): ReactElement => {
 	const { t } = useTranslation();
-	const isChecked = account.info?.newsletter;
-	const text = isChecked ? t("profile.newsletter") : t("auth.newsletter");
 
 	return (
 		<div className={styles.newsletter}>
-			<Checkbox checked={!isChecked} onChange={onChange}>
+			<Checkbox checked={accountNewsletter} onChange={onChange}>
 				<span className={styles.newsletter}>
-					{text}
+					{t("auth.newsletter")}
 					<OuterLink
 						href={
 							i18n.language === "ru"

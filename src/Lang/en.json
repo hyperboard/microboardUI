@@ -751,8 +751,7 @@
 		"cancelPassword": "Cancel",
 		"avatarUploadError": "Avatar upload error",
 		"avatarSizeConstraint": "Maximum image size is 10 MB",
-		"avatarTypeConstraint": "The image must be in jpeg, png or svg format",
-		"newsletter": "I decline receiving informational materials and product news."
+		"avatarTypeConstraint": "The image must be in jpeg, png or svg format"
 	},
 	"userPlan": {
 		"upgradePlan": "Upgrade Plan",
