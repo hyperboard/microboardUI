@@ -23,7 +23,6 @@ export const ProtectedRoute: React.FC<TProtectedRoute> = ({
 	isPublic = false,
 }) => {
 	const account = useAccount();
-
 	// TODO: implement role model on backend
 	// if (!allowRoles.includes(user.role as EUserRole)) {
 	// 	return <Navigate to='/unauthorized' replace />;

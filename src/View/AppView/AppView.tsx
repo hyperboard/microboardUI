@@ -40,6 +40,7 @@ import { LocalFileSaveProgress } from "View/LocalFileSavingProgress";
 import { UserPlanModal } from "View/UserPlan";
 import { AiUnavailableModal } from "View/AiUnavailableModal/AiUnavailableModal";
 import { CookiesModal } from "View/Modal/CookiesModal";
+import { SelectPaymentModal } from "View/UserPlan/SelectPaymentModal";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -199,6 +200,7 @@ export function AppView(): JSX.Element {
 			<CookiesModal />
 			<SetLinkToModal />
 			<UiModalBackground>
+				<SelectPaymentModal />
 				<UserPlanModal />
 				<ShareModal />
 				<ProfileSettingsModal />

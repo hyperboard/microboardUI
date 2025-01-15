@@ -20,6 +20,9 @@ import { UserPlanPage } from "./UserPlan/UserPlanPage";
 import { AppContext } from "./AppContext";
 import { LocalAppView } from "./AppView";
 import { LocalSidePanelContextProvider } from "./SidePanel/LocalSidePanelContext";
+import { SelectPaymentModal } from "./UserPlan/SelectPaymentModal";
+import { UiModalBackground } from "./Ui/UiModal";
+import ModalsWrapper from "./Modal/ModalsWrapper";
 
 export function getRender(app: App): {
 	render: () => void;
@@ -121,7 +124,14 @@ export function getRender(app: App): {
 					children: [
 						{
 							path: "",
-							element: <UserPlanPage />,
+							element: (
+								<ModalsWrapper>
+									<UserPlanPage />
+									<UiModalBackground>
+										<SelectPaymentModal />
+									</UiModalBackground>
+								</ModalsWrapper>
+							),
 						},
 					],
 				},

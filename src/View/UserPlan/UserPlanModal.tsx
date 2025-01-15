@@ -31,8 +31,6 @@ export function UserPlanModal() {
 		account.fetchBillingInfo();
 	}, []);
 
-	console.log("billing info", account.billingInfo);
-
 	return (
 		<UiModal modalId={USER_PLAN_MODAL_ID}>
 			<div className={styles.wrapper}>

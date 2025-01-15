@@ -5,6 +5,8 @@ import { useAccount } from "App/useAccount";
 import { useConfirmModalContext } from "View/Modal/ConfirmModal";
 import { notify } from "View/Ui/Toast";
 import { billingApi } from "shared/api";
+import { useUiModalContext } from "View/Ui/UiModal";
+import { SELECT_PAYMENT_MODAL_ID } from "./SelectPaymentModal";
 
 export function BasicPlanCard() {
 	const { t } = useTranslation();
@@ -67,9 +69,10 @@ export function BasicPlanCard() {
 	);
 }
 
-export function PlusPlanCard() {
+export function PlusPlanCard(): JSX.Element {
 	const { t } = useTranslation();
 	const account = useAccount();
+	const { openModal } = useUiModalContext();
 
 	const [plan, setPlan] = useState<billingApi.Plan | null>(null);
 
@@ -98,34 +101,15 @@ export function PlusPlanCard() {
 	};
 
 	if (!plan) {
-		return null;
+		return <></>;
 	}
 
-	const handleSubscribe = async () => {
-		const successUrl = `${window.location.href}?paymentStatus=success`;
-		const cancelUrl = `${window.location.href}?paymentStatus=error`;
+	const handleOpenPaymentModal = async (ev): Promise<void> => {
+		ev.preventDefault();
+		ev.stopPropagation();
 
-		try {
-			const { data } = await billingApi.createCheckout({
-				planId: plan.id,
-				successUrl,
-				cancelUrl,
-			});
-
-			if (!data) {
-				throw new Error();
-			}
-			const linkElem = document.createElement("a");
-			linkElem.href = data?.url;
-			linkElem.target = "_blank";
-			linkElem.click();
-		} catch {
-			notify({
-				header: "Оплата",
-				body: "Ошибка оплаты",
-				variant: "error",
-			});
-		}
+		openModal(SELECT_PAYMENT_MODAL_ID);
+		return;
 	};
 	return (
 		<PlanCard
@@ -138,7 +122,7 @@ export function PlusPlanCard() {
 			unlimited
 			price={plan.price}
 			state={getPlusSubState()}
-			onSubscribe={handleSubscribe}
+			onSubscribe={handleOpenPaymentModal}
 		/>
 	);
 }

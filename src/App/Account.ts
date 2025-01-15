@@ -150,6 +150,7 @@ export class Account {
 	private refreshTokensPromise: Promise<void> | null = null;
 
 	async refreshTokens(): Promise<void> {
+		this.isTokenLoading = true;
 		if (this.refreshTokensPromise) {
 			return this.refreshTokensPromise;
 		}
@@ -221,7 +222,10 @@ export class Account {
 		await this.fetchAccountInfo();
 	}
 
-	async changeNewsletter(payload: usersApi.UpdateUserNewsletter, signal: AbortSignal) {
+	async changeNewsletter(
+		payload: usersApi.UpdateUserNewsletter,
+		signal: AbortSignal,
+	) {
 		await usersApi.updateNewsletter(payload, signal);
 		await this.fetchAccountInfo();
 	}
