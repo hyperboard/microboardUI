@@ -123,6 +123,7 @@ export const AIInput: React.FC = () => {
 	function calculateNodePosition(
 		newNode: AINode,
 		selectedItem: PossibleParentNode,
+		isResponseNode: boolean,
 	): { newItem: AINode; connectorData: ConnectorData } {
 		const connectorStorage = new SessionStorage();
 		const currMbr = selectedItem.getMbr();
@@ -137,15 +138,21 @@ export const AIInput: React.FC = () => {
 			translateX: currMbr.getWidth() / 2,
 			translateY: height,
 		};
-		newNodeData.adjustmentPoint = new Point(
+		const adjustmentPoint = new Point(
 			baseAdjustments.translateX + currMbr.left,
 			baseAdjustments.translateY + currMbr.top,
 		);
 
+		newNodeData.adjustmentPoint = adjustmentPoint;
+
 		if (newNodeData.transformation) {
-			newNodeData.transformation.translateX =
-				baseAdjustments.translateX +
-				(currData.transformation?.translateX || 0);
+			if (isResponseNode) {
+				newNodeData.transformation.translateX = adjustmentPoint.x;
+			} else {
+				newNodeData.transformation.translateX =
+					baseAdjustments.translateX +
+					(currData.transformation?.translateX || 0);
+			}
 			newNodeData.transformation.translateY =
 				baseAdjustments.translateY +
 				(currData?.transformation?.translateY || 0) +
@@ -328,12 +335,16 @@ export const AIInput: React.FC = () => {
 		}
 
 		const node = new AINode(isUserRequest, parentNodeId);
-		node.getRichText().setMaxWidth(600);
-		node.getRichText().setSelectionHorisontalAlignment("left");
+		const nodeRichText = node.getRichText();
+		nodeRichText.setMaxWidth(600);
+		nodeRichText.setSelectionHorisontalAlignment("left");
+		nodeRichText.container.right = nodeRichText.container.left + 600;
+
 		if (withPlaceholder) {
-			node.getRichText().placeholderText = inputValue;
+			nodeRichText.placeholderText =
+				"...............................................................................................................................................................................................";
 		} else {
-			node.getRichText().editor.insertCopiedText(inputValue);
+			nodeRichText.editor.insertCopiedText(inputValue);
 		}
 
 		if (!parentItem) {
@@ -353,6 +364,7 @@ export const AIInput: React.FC = () => {
 		const { newItem, connectorData } = calculateNodePosition(
 			node,
 			parentItem,
+			!isUserRequest,
 		);
 		return { node: newItem, connectorData };
 	}
