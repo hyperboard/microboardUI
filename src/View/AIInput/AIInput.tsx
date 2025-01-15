@@ -270,6 +270,7 @@ export const AIInput: React.FC = () => {
 			return;
 		}
 		await sendInputData();
+		setIsGenerating(false);
 	};
 
 	const handleInputClick = (event: React.MouseEvent<HTMLTextAreaElement>) => {
