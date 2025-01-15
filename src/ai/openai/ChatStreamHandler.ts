@@ -386,7 +386,7 @@ export class ChatStreamHandler {
                 },
             };
 
-            this.broadcastToBoardClients(this.boardClients, boardId, stopChunk);
+            ws.send(JSON.stringify(stopChunk));
         } catch (error) {
             logger.error(`Error stopping conversation for board ${boardId}:`, error);
 
@@ -402,10 +402,12 @@ export class ChatStreamHandler {
         msg,
         logger,
         boardClients,
+        ws,
     }: {
         msg: AiChatMsg<GetMessageList>;
         logger: winston.Logger;
-        boardClients: Map<string, WebSocket.WebSocket[]>;
+        boardClients: Map<string, WebSocket.WebSocket[]>
+        ws: WebSocket;
     }) {
         const verifiedChat = await this.ensureChatExists(msg, logger);
         this.boardClients = boardClients;
@@ -427,7 +429,7 @@ export class ChatStreamHandler {
             },
         };
 
-        this.broadcastToBoardClients(this.boardClients, msg.boardId, msgToSend);
+        ws.send(JSON.stringify(msgToSend));
     }
 
     public async handleGenerateImage(
@@ -441,7 +443,7 @@ export class ChatStreamHandler {
         const imageLimits = await this.usageLimitChecker.checkImageGenerationLimits(boardOwnerId);
 
         if (!imageLimits.canProceed) {
-            this.broadcastToBoardClients(this.boardClients, msg.boardId, {
+            ws.send(JSON.stringify({
                 type: "AiChat",
                 boardId: msg.boardId,
                 event: {
@@ -450,7 +452,7 @@ export class ChatStreamHandler {
                     error: imageLimits.error,
                     message: "LimitExceeded",
                 },
-            });
+            }));
             return;
         }
 
@@ -467,7 +469,7 @@ export class ChatStreamHandler {
         };
 
         console.log("Message to send(Generating): ", generatingMsg);
-        this.broadcastToBoardClients(this.boardClients, msg.boardId, generatingMsg);
+        ws.send(JSON.stringify(generatingMsg));
 
         try {
             const baseOptions = {
@@ -528,8 +530,7 @@ export class ChatStreamHandler {
             console.log("Message to send(Generate Image): ", msgToSend);
 
             await this.usageLimitChecker.incrementImageGenerationUsage(boardOwnerId);
-
-            this.broadcastToBoardClients(this.boardClients, msg.boardId, msgToSend);
+            ws.send(JSON.stringify(msgToSend));
         } catch (error) {
             console.error("Error generating image: ", error);
 
@@ -546,7 +547,7 @@ export class ChatStreamHandler {
                 },
             };
 
-            this.broadcastToBoardClients(this.boardClients, msg.boardId, errorMsg);
+            ws.send(JSON.stringify(errorMsg));
         }
     }
 
@@ -997,8 +998,8 @@ export class ChatStreamHandler {
                                     itemId: itemId,
                                 },
                             };
-                            logger.debug("Sending chunk to board clients:", streamChunkMsg);
-                            this.broadcastToBoardClients(this.boardClients, chat.boardId, streamChunkMsg);
+                            logger.debug("Sending chunk to client:", streamChunkMsg);
+                            ws.send(JSON.stringify(streamChunkMsg));
                         }
                     } catch (error) {
                         console.error("Error processing stream chunk:", error);
@@ -1089,7 +1090,7 @@ export class ChatStreamHandler {
         };
 
         logger.debug("Sending end chunk to WebSocket:", endChunk);
-        this.broadcastToBoardClients(this.boardClients, chat.boardId, endChunk);
+        ws.send(JSON.stringify(endChunk));
     }
 
     private async saveMessage(options: {
@@ -1179,22 +1180,7 @@ export class ChatStreamHandler {
                 itemId: "",
             },
         };
-        if (chat) {
-            this.broadcastToBoardClients(this.boardClients, chat.boardId, errorChunk);
-        } else {
-            ws.send(JSON.stringify(errorChunk));
-        }
-    }
 
-    private broadcastToBoardClients(
-        boardClients: Map<string, WebSocket[]>,
-        boardUUID: string,
-        message: AiChatMsg<any>
-    ) {
-        const clients = boardClients.get(boardUUID) ?? [];
-        const content = JSON.stringify(message);
-        for (const client of clients) {
-            client.send(content);
-        }
+        ws.send(JSON.stringify(errorChunk));
     }
 }

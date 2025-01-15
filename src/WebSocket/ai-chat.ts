@@ -47,6 +47,7 @@ export const handleAIChatMessage = async (options: {
                 msg: msg as AiChatMsg<GetMessageList>,
                 logger,
                 boardClients,
+                ws,
             });
             break;
 
