@@ -23,6 +23,7 @@ import { getBillingRouter } from "./Billing";
 import { getIngestRouter } from "./Ingest";
 import { OpenAI } from "../../ai/openai";
 import { StripeService } from "./Billing/stripe";
+import { getCryproRouter } from "./Crypto";
 
 function createFileRoute(
     router: express.Router,
@@ -98,6 +99,7 @@ export function getV1Router({
     router.use(`${apiBase}/miro`, getMiroRouter());
     router.use(`${apiBase}`, getBillingRouter(logger, stripeService));
     router.use(`${apiBase}`, getIngestRouter(logger, openai));
+    router.use(apiBase, getCryproRouter(redis, logger));
 
     createFileRoute(
         router,

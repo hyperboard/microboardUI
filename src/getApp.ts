@@ -45,9 +45,10 @@ export async function getApp(): Promise<http.Server> {
 
     await createVectorExtension(pool).catch(console.error);
 
-    if (process.env.NODE_ENV?.toLocaleLowerCase() === "production") {
-        await runMigration();
-    }
+    await runMigration();
+    // if (process.env.NODE_ENV?.toLocaleLowerCase() === "production") {
+    //     await runMigration();
+    // }
 
     if (process.env.MIGRATE_EVENTS === "true") {
         await migrateData().catch(console.error);

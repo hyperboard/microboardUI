@@ -33,6 +33,25 @@ export const userPlans = pgTable("user_plans", {
     status: varchar("status").notNull().default("active"), // active, cancelled, expired
     canceledAt: timestamp("canceled_at"),
     stripeSubscriptionId: varchar("stripe_subscription_id"),
+    transactionHash: varchar("transaction_hash"),
+});
+
+export const userCryptoCheckout = pgTable("user_crypto_checkout", {
+    id: varchar("id").primaryKey(),
+    userId: integer("user_id")
+    .references(() => users.id)
+    .notNull(),
+    planId: varchar("plan_id")
+    .references(() => plans.id)
+    .notNull(),
+    startDate: timestamp("start_date").notNull(),
+    endDate: timestamp("end_date").notNull(),
+    status: varchar("status").notNull().default("active"), // active, cancelled, expired(?), payed 
+    symbol: varchar("crypto_symbol").notNull(), // ETH, POL, ...
+    chainName: varchar("crypto_chain").notNull(), // Ethereum, Polygon, ...
+    addressFrom: varchar("crypto_wallet").notNull(),
+    valueWei: varchar("crypto_price").notNull(), // not WEI
+    transactionHash: varchar("transaction_hash"),
 });
 
 export const modelLimits = pgTable("plan_model_limits", {
