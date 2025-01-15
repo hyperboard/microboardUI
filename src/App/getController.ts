@@ -487,6 +487,16 @@ export function getController(
 			clipboard.set(null);
 			return;
 		}
+
+		const aiInputRegex = /^AIInput-module__aiInput/;
+		if (
+			event?.target instanceof HTMLElement &&
+			aiInputRegex.test(event.target.className)
+		) {
+			clipboard.set(event);
+			return;
+		}
+
 		const data = board.selection.copy();
 		const text = JSON.stringify(data);
 		event.clipboardData?.setData("text/plain", text);
