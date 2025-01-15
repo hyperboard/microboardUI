@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "shared/ui-lib/Button";
 import styles from "./SelectPaymentModal.module.css";
 import { USER_PLAN_MODAL_ID } from "./UserPlanModal";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { notify } from "View/Ui/Toast";
 import { billingApi } from "shared/api";
 import { useAccount } from "App/useAccount";
@@ -61,7 +61,6 @@ async function cancelCheckout(
 export function SelectPaymentModal(): JSX.Element {
 	const { openModal } = useUiModalContext();
 	const location = useLocation();
-	const navigate = useNavigate();
 	const account = useAccount();
 	const { t } = useTranslation();
 	const [isDisabled, setIsDisabled] = useState(false);
@@ -150,7 +149,6 @@ export function SelectPaymentModal(): JSX.Element {
 				body: "Your transaction was completed successfully, wait for confirmations",
 				variant: "success",
 			});
-			setTimeout(() => navigate(0), 5000);
 		};
 
 		const onError = (error): void => {
