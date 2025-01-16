@@ -520,6 +520,7 @@ export const AIInput: React.FC = () => {
 		<UiPanel
 			padding={0}
 			className={clsx(styles.inputContainer, isShaking && styles.shake)}
+			zIndex={2}
 			ref={dropdownRef}
 		>
 			<div className={styles.contentWrapper}>
@@ -528,14 +529,14 @@ export const AIInput: React.FC = () => {
 						className={styles.selectedModel}
 						onClick={toggleModelDropdown}
 					>
-						{model !== "gpt-4o" && model !== "gpt-4o-mini" && (
+						{model !== "GPT-4o" && model !== "GPT-4o mini" && (
 							<span>{model}</span>
 						)}
-						{model === "gpt-4o" && (
+						{model === "GPT-4o" && (
 							<span>{isPhoneScreen ? "4o" : model}</span>
 						)}
-						{model === "gpt-4o-mini" && (
-							<span>{isPhoneScreen ? "4o-mini" : model}</span>
+						{model === "GPT-4o mini" && (
+							<span>{isPhoneScreen ? "4o mini" : model}</span>
 						)}
 						<Chevron
 							className={clsx(

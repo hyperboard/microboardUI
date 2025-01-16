@@ -231,6 +231,7 @@
 	.modelDropdown {
 		width: 100%;
 		left: 0;
+		bottom: calc(100% + 7px);
 	}
 
 	.selectedModel {
