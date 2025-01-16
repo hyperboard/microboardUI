@@ -27,7 +27,7 @@ export function Element(props: RenderElementProps): React.ReactElement {
 						whiteSpace: "nowrap",
 					}}
 				>
-					{children}{" "}
+					{children}
 				</ul>
 			);
 		case "ol_list":

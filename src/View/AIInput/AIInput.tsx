@@ -34,7 +34,7 @@ import { getCorrectEnding } from "utils";
 import { Sticker } from "Board/Items/Sticker/Sticker";
 
 type PossibleParentNode = AINode | Shape | RichText | Sticker;
-const DEFAULT_MAX_NODE_WIDTH = 620;
+const DEFAULT_MAX_NODE_WIDTH = 640;
 
 const getTextFromItem = (item: Item) => {
 	const richText = item.getRichText();
