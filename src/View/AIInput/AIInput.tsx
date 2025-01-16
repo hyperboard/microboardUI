@@ -525,9 +525,14 @@ export const AIInput: React.FC = () => {
 						className={styles.selectedModel}
 						onClick={toggleModelDropdown}
 					>
-						{model !== "gpt-4o" && <span>{model}</span>}
+						{model !== "gpt-4o" && model !== "gpt-4o-mini" && (
+							<span>{model}</span>
+						)}
 						{model === "gpt-4o" && (
 							<span>{isPhoneScreen ? "4o" : model}</span>
+						)}
+						{model === "gpt-4o-mini" && (
+							<span>{isPhoneScreen ? "4o-mini" : model}</span>
 						)}
 						<Chevron />
 					</div>
@@ -572,7 +577,11 @@ export const AIInput: React.FC = () => {
 					onKeyDown={event => handleKeyDown(event)}
 					onFocus={event => event.currentTarget.select()}
 					onChange={event => handleInputChange(event)}
-					placeholder={t("AIInput.selectContext")}
+					placeholder={
+						isPhoneScreen
+							? t("AIInput.selectMobileContext")
+							: t("AIInput.selectContext")
+					}
 					className={styles.aiInput}
 					ref={inputRef}
 					rows={1}
