@@ -243,7 +243,10 @@ export const AIInput: React.FC = () => {
 			model => model.isDefault && model.isEnabled,
 		);
 
-		setModel((defaultModel?.id as OpenAIModels) ?? "gpt-4o-mini");
+		const dm = defaultModel?.id
+			.replace(/^gpt-/, "GPT-")
+			.replace("-mini", " mini");
+		setModel((dm as OpenAIModels) ?? "GPT4o-mini");
 	}, [account.billingInfo?.models]);
 
 	const handleSendClick = async (ev: SyntheticEvent) => {
@@ -534,9 +537,18 @@ export const AIInput: React.FC = () => {
 						{model === "gpt-4o-mini" && (
 							<span>{isPhoneScreen ? "4o-mini" : model}</span>
 						)}
-						<Chevron />
+						<Chevron
+							className={clsx(
+								isDropdownOpen ? styles.activeArrow : "",
+								styles.arrow,
+							)}
+						/>
 					</div>
-					<StarIcon className={styles.starIcon} />
+					<StarIcon
+						className={styles.starIcon}
+						width={20}
+						height={20}
+					/>
 					{isDropdownOpen && (
 						<div className={styles.modelDropdown}>
 							<button

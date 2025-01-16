@@ -19,3 +19,9 @@
 		border-radius: var(--radius);
 	}
 }
+
+@media screen and (max-width: 425px) {
+	.panel {
+		bottom:  calc(var(--absolute-position-panel-padding)* 2 + 48px);
+	}
+}
