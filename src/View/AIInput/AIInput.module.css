@@ -70,7 +70,7 @@
 
 .modelDropdown {
 	position: absolute;
-	bottom: calc(100% + 40px);
+	bottom: calc(100% + 24px);
 	left: -10px;
 	background-color: white;
 	border: 1px solid rgba(204, 204, 204, 0.5);
@@ -231,7 +231,6 @@
 	.modelDropdown {
 		width: 100%;
 		left: 0;
-		bottom: calc(100% + 25px);
 	}
 
 	.selectedModel {
