@@ -91,7 +91,6 @@ export const AIInput: React.FC = () => {
 	const { openModal } = useUiModalContext();
 	const [isShaking, setIsShaking] = useState(false);
 	const [responseNodeId, setResponseNodeId] = useState<string | null>(null);
-	const [isGenerating, setIsGenerating] = useState(false);
 	const navigate = useNavigate();
 	const isMediaMatches = useMediaQuery("(max-width: 1170px)");
 
@@ -279,8 +278,8 @@ export const AIInput: React.FC = () => {
 			}, 1000);
 			return;
 		}
+		board.isAIGenerating = true;
 		await sendInputData();
-		setIsGenerating(false);
 	};
 
 	const handleInputClick = (event: React.MouseEvent<HTMLTextAreaElement>) => {
@@ -479,7 +478,6 @@ export const AIInput: React.FC = () => {
 		connection.wsClient.send(message);
 
 		setInputValue("");
-		setIsGenerating(true);
 
 		if (inputRef.current) {
 			inputRef.current.style.height = "auto";
@@ -512,7 +510,7 @@ export const AIInput: React.FC = () => {
 
 		if (responseNodeId) {
 			await stopStream(boardId, responseNodeId);
-			setIsGenerating(false);
+			board.isAIGenerating = false;
 		}
 	};
 
@@ -615,14 +613,18 @@ export const AIInput: React.FC = () => {
 					)}
 				</div>
 				<button
-					onClick={isGenerating ? handleStopClick : handleSendClick}
+					onClick={
+						board.isAIGenerating ? handleStopClick : handleSendClick
+					}
 					className={styles.sendButton}
 					disabled={!isEditable}
 				>
 					<Icon
 						width={20}
 						height={20}
-						iconName={isGenerating ? "StopAiGeneration" : "Vector"}
+						iconName={
+							board.isAIGenerating ? "StopAiGeneration" : "Vector"
+						}
 						className={clsx(
 							styles.icon,
 							(inputValue.trim() || ideaFromSelection) &&
