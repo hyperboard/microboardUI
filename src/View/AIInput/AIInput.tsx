@@ -243,10 +243,10 @@ export const AIInput: React.FC = () => {
 			model => model.isDefault && model.isEnabled,
 		);
 
-		const dm = defaultModel?.id
-			.replace(/^gpt-/, "GPT-")
-			.replace("-mini", " mini");
-		setModel((dm as OpenAIModels) ?? "GPT4o-mini");
+		// const dm = defaultModel?.id
+		// 	.replace(/^gpt-/, "GPT-")
+		// 	.replace("-mini", " mini");
+		setModel((defaultModel?.id as OpenAIModels) ?? "GPT4o mini");
 	}, [account.billingInfo?.models]);
 
 	const handleSendClick = async (ev: SyntheticEvent) => {
@@ -516,6 +516,16 @@ export const AIInput: React.FC = () => {
 		}
 	};
 
+	const getModelDisplayName = (model: string): string => {
+		if (model === "gpt-4o") {
+			return isPhoneScreen ? "4o" : "GPT-4o";
+		}
+		if (model === "gpt-4o-mini") {
+			return isPhoneScreen ? "4o mini" : "GPT-4o mini";
+		}
+		return model;
+	};
+
 	return (
 		<UiPanel
 			padding={0}
@@ -529,15 +539,7 @@ export const AIInput: React.FC = () => {
 						className={styles.selectedModel}
 						onClick={toggleModelDropdown}
 					>
-						{model !== "GPT-4o" && model !== "GPT-4o mini" && (
-							<span>{model}</span>
-						)}
-						{model === "GPT-4o" && (
-							<span>{isPhoneScreen ? "4o" : model}</span>
-						)}
-						{model === "GPT-4o mini" && (
-							<span>{isPhoneScreen ? "4o mini" : model}</span>
-						)}
+						<span>{getModelDisplayName(model)}</span>
 						<Chevron
 							className={clsx(
 								isDropdownOpen ? styles.activeArrow : "",
