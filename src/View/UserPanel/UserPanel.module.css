@@ -47,6 +47,9 @@
 }
 
 @media screen and (max-width: 960px) {
+	.container {
+		padding: 6px 6px;
+	}
 	.shareButton {
 		display: none;
 	}
