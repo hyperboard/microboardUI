@@ -29,7 +29,6 @@
 	color: #14151a;
 	background: #ffffff;
 	border: 1px solid #dee0e3;
-	/* shadows/lg */
 	box-shadow:
 		0px 10px 16px -3px rgba(20, 21, 26, 0.08),
 		0px 3px 6px -2px rgba(20, 21, 26, 0.05);
@@ -37,25 +36,25 @@
 
 	box-sizing: border-box;
 
-	/* Auto layout */
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
+	justify-content: space-between;
 	padding: 24px;
 	gap: 8px;
 	isolation: isolate;
 }
 
-.disabled {
-	cursor: not-allowed;
+.card > div {
+	text-align: left;
 }
 
-.card:hover {
-	background: #f7f7f8;
-	/* shadows/xl */
-	box-shadow:
-		0px 18px 24px -5px rgba(20, 21, 26, 0.1),
-		0px 8px 8px -5px rgba(20, 21, 26, 0.05);
+.inline-buttons {
+	width: 100%;
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	justify-content: space-between;
 }
 
 .description {

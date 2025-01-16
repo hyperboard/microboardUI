@@ -7,8 +7,6 @@ import { Logo } from "View/Icon";
 import { BasicPlanCard, PlusPlanCard, ProPlanCard } from "./PlanCards";
 import style from "./UserPlanPage.module.css";
 import { UserPlanUsage } from "./UserPlanUsage";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import "@rainbow-me/rainbowkit/styles.css";
 
 export function UserPlanPage(): JSX.Element {
 	const navigate = useNavigate();
@@ -40,7 +38,6 @@ export function UserPlanPage(): JSX.Element {
 						account.billingInfo?.plan.periodEnd ?? new Date()
 					}
 				/>
-				<ConnectButton />
 				<div className={style.cards}>
 					<BasicPlanCard />
 					<PlusPlanCard />

@@ -14,7 +14,12 @@ import { useLocation } from "react-router-dom";
 import { notify } from "View/Ui/Toast";
 import { billingApi } from "shared/api";
 import { useAccount } from "App/useAccount";
-import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
+import {
+	ConnectButton,
+	useAccountModal,
+	useChainModal,
+	useConnectModal,
+} from "@rainbow-me/rainbowkit";
 
 import { useSendTransaction, useAccount as useWalletAccount } from "wagmi";
 import { parseEther } from "viem";
@@ -55,7 +60,7 @@ async function cancelCheckout(
 	const url = "/crypto/checkout";
 	const body = { sender: from, to, value };
 
-	const res = await api.delete(url, undefined, body);
+	await api.delete(url, undefined, body);
 }
 
 export function SelectPaymentModal(): JSX.Element {
@@ -67,6 +72,8 @@ export function SelectPaymentModal(): JSX.Element {
 	const [plan, setPlan] = useState<billingApi.Plan | null>(null);
 
 	const { openConnectModal } = useConnectModal();
+	const { openAccountModal } = useAccountModal();
+	const { openChainModal } = useChainModal();
 	const { sendTransaction } = useSendTransaction();
 	const { address, isConnected, chain } = useWalletAccount();
 
@@ -118,17 +125,10 @@ export function SelectPaymentModal(): JSX.Element {
 		}
 	};
 
-	const handleCrypto = async (
-		event: React.MouseEvent<HTMLDivElement>,
-	): Promise<void> => {
-		const children = Array.from(cryptoCardRef.current?.children || []);
+	const handleCrypto: MouseEventHandler<HTMLButtonElement> = async event => {
 		if (
-			!(
-				cryptoCardRef.current &&
-				cryptoCardRef.current === event.currentTarget &&
-				(event.target === event.currentTarget ||
-					(children[0] && event.target === children[0]))
-			)
+			event.target instanceof HTMLElement &&
+			/^crypto.*button$/.test(event.target.id)
 		) {
 			return;
 		}
@@ -221,46 +221,75 @@ export function SelectPaymentModal(): JSX.Element {
 			<div className={styles.wrapper}>
 				<h1 className={styles.heading}>Payment</h1>
 				<div className={styles.cards}>
-					<div
-						className={clsx(
-							styles.card,
-							isDisabled && styles.disabled,
-						)}
+					<Button
+						className={styles.card}
+						pattern="tertiary"
+						disabled={isDisabled}
 						onClick={handleCrypto}
-						ref={cryptoCardRef}
 					>
-						Pay in crypto
+						<div>Pay in crypto</div>
 						<div className={styles.description}>
 							Make a payment directly from your cryptocurrency
 							wallet, in seconds.
 						</div>
-						{!isConnected && (
-							<Button
-								pattern="primary"
-								onClick={openConnectModal}
-							>
-								Connect wallet
-							</Button>
-						)}
-						{isConnected && (
-							<span>
-								<ConnectButton />
-							</span>
-						)}
-					</div>
-					<div
-						className={clsx(
-							styles.card,
-							isDisabled && styles.disabled,
-						)}
+						<ConnectButton.Custom>
+							{({
+								account,
+								chain,
+								openAccountModal,
+								openChainModal,
+								openConnectModal,
+								mounted,
+							}) => {
+								if (!account || !mounted) {
+									return (
+										<Button
+											id="crypto_connect_button"
+											pattern="tertiary"
+											onClick={openConnectModal}
+											disabled={isDisabled}
+										>
+											Connect wallet
+										</Button>
+									);
+								}
+								return (
+									<div className={styles.inlineButtons}>
+										<Button
+											id="crypto_chain_button"
+											pattern="tertiary"
+											onClick={openChainModal}
+											disabled={isDisabled}
+										>
+											{chain?.name}
+										</Button>
+										<Button
+											id="crypto_account_button"
+											pattern="tertiary"
+											onClick={openAccountModal}
+											disabled={isDisabled}
+										>
+											{account.displayBalance}{" "}
+											{account.address.slice(0, 4)}...
+											{account.address.slice(-4)}
+										</Button>
+									</div>
+								);
+							}}
+						</ConnectButton.Custom>
+					</Button>
+					<Button
+						className={styles.card}
+						pattern="tertiary"
 						onClick={handleStripe}
+						disabled={isDisabled}
 					>
-						Pay with Visa/MasterCard/, $USD
+						<div>Pay with Visa/MasterCard/, $USD</div>
 						<div className={styles.description}>
 							Payment of bills in dollars, debit and credit cards
 							by stripe.
 						</div>
-					</div>
+					</Button>
 				</div>
 				{!location.pathname.includes("user") && (
 					<Button
