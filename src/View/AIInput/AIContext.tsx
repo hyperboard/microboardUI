@@ -19,7 +19,8 @@ interface Context {
 	setResponseNodeId: (nodeId: string) => void;
 	createNodesWithConnectors: (
 		idea: string,
-		itemToContinueThread: PossibleParentNode,
+		itemToContinueThread?: PossibleParentNode,
+		isIdeaFromInput?: boolean,
 	) => { responseAdded: AINode; requestAdded: AINode };
 }
 
@@ -62,19 +63,38 @@ export const AIContextProvider = ({ children }: Props): JSX.Element => {
 
 	function createNodesWithConnectors(
 		idea: string,
-		itemToContinueThread: PossibleParentNode,
+		itemToContinueThread?: PossibleParentNode,
+		isIdeaFromInput = true,
 	) {
-		const requestNode = createNode(board, idea, true, itemToContinueThread);
-		const requestAdded = board.add(requestNode.node);
-
-		if (requestNode.connectorData && itemToContinueThread) {
-			board.add(
-				board.createItem(board.getNewItemId(), {
-					...requestNode.connectorData,
-					startPoint: getControlPointData(itemToContinueThread, 3),
-					endPoint: getControlPointData(requestAdded, 2),
-				}),
+		let requestAdded: AINode;
+		if (
+			itemToContinueThread &&
+			itemToContinueThread.itemType === "AINode" &&
+			itemToContinueThread.getIsUserRequest() &&
+			!isIdeaFromInput
+		) {
+			requestAdded = itemToContinueThread;
+		} else {
+			const requestNode = createNode(
+				board,
+				idea,
+				true,
+				itemToContinueThread,
 			);
+			requestAdded = board.add(requestNode.node);
+
+			if (requestNode.connectorData && itemToContinueThread) {
+				board.add(
+					board.createItem(board.getNewItemId(), {
+						...requestNode.connectorData,
+						startPoint: getControlPointData(
+							itemToContinueThread,
+							3,
+						),
+						endPoint: getControlPointData(requestAdded, 2),
+					}),
+				);
+			}
 		}
 
 		const responseNode = createNode(

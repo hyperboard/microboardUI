@@ -85,6 +85,7 @@ export function AIGeneration({ rounded = "none" }: Props): React.ReactElement {
 		const { responseAdded, requestAdded } = createNodesWithConnectors(
 			idea,
 			itemToContinueThread,
+			false,
 		);
 
 		const parentNodes = nodeWithParents

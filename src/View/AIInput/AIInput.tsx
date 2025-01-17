@@ -18,7 +18,11 @@ import { useNavigate } from "react-router-dom";
 import { useMediaQuery } from "lib/useMediaQuery";
 import { USER_PLAN_MODAL_ID } from "View/UserPlan";
 import { getCorrectEnding } from "utils";
-import { getIdeaFromSelection, getTextFromItem } from "View/AIInput/utils";
+import {
+	getIdeaFromSelection,
+	getTextFromItem,
+	PossibleParentNode,
+} from "View/AIInput/utils";
 import { useAIContext } from "View/AIInput/AIContext";
 import { Tooltip } from "View/Ui/UiButton/Tooltip";
 
@@ -185,12 +189,15 @@ export const AIInput: React.FC = () => {
 			board.selection.getMostNestedAINodeWithParents();
 
 		let idea = inputValue;
-		let itemToContinueThread: Item | undefined = nodeWithParents?.node;
+		let itemToContinueThread: PossibleParentNode | undefined =
+			nodeWithParents?.node;
+		let isIdeaFromSelection = false;
 		if (idea.trim().length === 0) {
 			if (!ideaFromSelection) {
 				return;
 			}
 			idea = ideaFromSelection.idea;
+			isIdeaFromSelection = true;
 			if (!itemToContinueThread) {
 				itemToContinueThread = ideaFromSelection.item;
 			}
@@ -199,6 +206,7 @@ export const AIInput: React.FC = () => {
 		const { responseAdded, requestAdded } = createNodesWithConnectors(
 			idea,
 			itemToContinueThread,
+			!isIdeaFromSelection,
 		);
 
 		const parentNodes = nodeWithParents
