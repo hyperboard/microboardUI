@@ -23,6 +23,7 @@ export const ShareBtn: React.FC = () => {
 		ev.preventDefault();
 		ev.stopPropagation();
 		setIds(boardId);
+		board.selection.setContext("None");
 		openModal(SHARE_MODAL_ID);
 	};
 	if (boardId === "blank") {

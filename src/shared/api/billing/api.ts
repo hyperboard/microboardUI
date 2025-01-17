@@ -1,4 +1,5 @@
 import { api } from "../base/base";
+import type { MessageResponse } from "../types";
 import {
 	CheckoutUrl,
 	type CreateCheckoutPayload,
@@ -16,4 +17,8 @@ export function getPlans() {
 
 export function createCheckout(payload: CreateCheckoutPayload) {
 	return api.post<CheckoutUrl>("/billing/create-checkout", payload);
+}
+
+export function verifyPayment() {
+	return api.get<MessageResponse>("/billing/sync-after-success");
 }

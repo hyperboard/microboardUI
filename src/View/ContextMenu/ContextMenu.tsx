@@ -230,13 +230,14 @@ export function ContextMenu(): JSX.Element | null {
 				if (hasOwnerRights) {
 					await boardsList.removeBoard(boardId);
 				} else {
-					await boardsList.removeBoardFromFolder(folderId, boardId);
+					await boardsList.removeItemFromFolder(folderId, boardId);
 				}
 				Promise.resolve();
 				setIsBoardDeleting(false);
 			},
 			async () => {
 				setIsBoardDeleting(false);
+				close();
 			},
 		);
 	};
@@ -300,6 +301,7 @@ export function ContextMenu(): JSX.Element | null {
 			padding={6}
 			zIndex={100}
 			ref={menuRef}
+			gap={4}
 		>
 			{!boardId && !folderId && (
 				<>

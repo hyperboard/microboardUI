@@ -12,6 +12,7 @@ import ModalsWrapper from "./Modal/ModalsWrapper";
 import { useUiModalContext } from "./Ui/UiModal";
 import { USER_PLAN_MODAL_ID } from "./UserPlan";
 import { notify } from "./Ui/Toast";
+import { billingApi } from "shared/api";
 
 type Props = {
 	app: App;
@@ -104,17 +105,29 @@ const BoardView = ({ app }: Props): JSX.Element => {
 					openModal(USER_PLAN_MODAL_ID);
 
 					if (paymentStatus === "success") {
-						notify({
-							header: "Статус оплаты",
-							body: "Оплата успешно прошла",
-							variant: "success",
-						});
+						billingApi
+							.verifyPayment()
+							.then(() => {
+								notify({
+									header: "Статус оплаты",
+									body: "Оплата успешно прошла",
+									variant: "success",
+								});
+								account.fetchBillingInfo();
+							})
+							.catch(() => {
+								notify({
+									header: "Статус оплаты",
+									body: "Произошла ошибка",
+									variant: "error",
+								});
+							});
 					}
 
 					if (paymentStatus === "error") {
 						notify({
 							header: "Статус оплаты",
-							body: "Оплата не прошла",
+							body: "Произошла ошибка",
 							variant: "error",
 						});
 					}

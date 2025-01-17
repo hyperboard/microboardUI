@@ -107,7 +107,7 @@ export const Folder = ({
 			return;
 		}
 		const isOpen = boardsList.isFolderContainsFolder(folder.id, folderId);
-		if (isOpen) {
+		if (isOpen && folder.items.length > 0) {
 			accordionRef.current?.open(() => {
 				setTimeout(() => {
 					if (
@@ -128,11 +128,19 @@ export const Folder = ({
 	};
 
 	useEffect(() => {
-		openFoldersContainsBoard(openedFoldersBoardId);
-		if (openedFoldersFolderId) {
-			openFoldersContainsFolder(openedFoldersFolderId);
+		if (folder && folder.items && folder.items.length > 0) {
+			openFoldersContainsBoard(openedFoldersBoardId);
 		}
-	}, [folder?.id, openedFoldersBoardId, openedFoldersFolderId]);
+		if (folder && folder.items && openedFoldersFolderId) {
+			openFoldersContainsFolder(openedFoldersFolderId);
+			console.log("opened by 0");
+		}
+	}, [
+		folder?.id,
+		openedFoldersBoardId,
+		openedFoldersFolderId,
+		isSidePanelOpen,
+	]);
 
 	useEffect(() => {
 		if (isOver && !accordionRef.current?.isOpen) {
@@ -140,6 +148,8 @@ export const Folder = ({
 			clearTimeout(isOverTimerRef.current);
 			isOverTimerRef.current = setTimeout(() => {
 				setOpenedByDragging(true);
+				console.log("opened by 1");
+
 				accordionRef.current?.open();
 			}, 800);
 		}
@@ -166,6 +176,7 @@ export const Folder = ({
 			folder?.items.length > 0
 		) {
 			if (isSidePanelOpen) {
+				console.log("opened by 2");
 				accordionRef.current?.open();
 			}
 		}
