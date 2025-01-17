@@ -137,6 +137,10 @@
 		},
 		"unlock": {
 			"tooltip": "Unlock"
+		},
+		"ai": {
+			"tooltip": "Ask AI",
+			"stop": "Stop generation"
 		}
 	},
 	"toolsPanel": {

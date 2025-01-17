@@ -42,7 +42,7 @@ import { ConnectorTextHighlight } from "./Buttons/ConnectorTextHighlight";
 import { CopyItemLink } from "./Buttons/RestOptionsMenu/Items/CopyItemLink";
 import { SetLinkTo } from "./Buttons/RestOptionsMenu/Items/SetLinkTo";
 import { Hyperlink } from "./Buttons/Hyperlink";
-import style from "./ContextPanel.module.css";
+import { AIGeneration } from "View/ContextPanel/Buttons/AIGeneration";
 
 const isReady = false;
 
@@ -93,6 +93,7 @@ export function ContextPanel(): React.ReactElement | null {
 	const isImage = board.selection.items.isAllItemsType("Image");
 	const isFrame = board.selection.items.isAllItemsType("Frame");
 	const isPlaceholder = board.selection.items.isAllItemsType("Placeholder");
+	const isAINode = board.selection.items.isAllItemsType("AINode");
 	const isDifferentItems =
 		!isText &&
 		!isSticker &&
@@ -101,7 +102,8 @@ export function ContextPanel(): React.ReactElement | null {
 		!isPen &&
 		!isImage &&
 		!isFrame &&
-		!isPlaceholder;
+		!isPlaceholder &&
+		!isAINode;
 
 	return (
 		<PanelContext.Provider
@@ -159,6 +161,7 @@ export function ContextPanel(): React.ReactElement | null {
 						<UiSeparator vertical />
 						<Duplicate />
 						<Delete />
+						<AIGeneration />
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
@@ -184,6 +187,7 @@ export function ContextPanel(): React.ReactElement | null {
 						<UiSeparator vertical />
 						<Duplicate />
 						<Delete />
+						<AIGeneration />
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
@@ -221,6 +225,7 @@ export function ContextPanel(): React.ReactElement | null {
 						<UiSeparator vertical />
 						<Duplicate />
 						<Delete />
+						<AIGeneration />
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
@@ -305,6 +310,22 @@ export function ContextPanel(): React.ReactElement | null {
 							<CopyItemLink />
 							<SetLinkTo />
 							<ExportFrame />
+						</RestOptionsMenu>
+					</>
+				)}
+				{isAINode && !isSelectUnderPointer && !isLocked && (
+					<>
+						<Lock rounded="left" />
+						<UiSeparator vertical />
+						<Duplicate />
+						<Delete />
+						<AIGeneration />
+						<UiSeparator vertical />
+						<RestOptionsMenu>
+							<BringToFront />
+							<SendToBack />
+							<CopyItemLink />
+							{/*<SetLinkTo />*/}
 						</RestOptionsMenu>
 					</>
 				)}

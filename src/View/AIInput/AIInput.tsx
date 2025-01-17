@@ -6,21 +6,10 @@ import { useAppContext } from "View/AppContext";
 import { Icon } from "View/Icon";
 import { StarIcon } from "./StarIcon";
 import { AiChatMsg, OpenAIModels, UserRequest } from "App/Connection";
-import { Board } from "Board";
-import {
-	Connector,
-	ConnectorData,
-	Item,
-	Matrix,
-	Mbr,
-	Point,
-	RichText,
-	Shape,
-} from "Board/Items";
+import { Item } from "Board/Items";
 import { useForceUpdate } from "lib/useForceUpdate";
 import { Chevron } from "shared/ui-lib/Dropdown/Chevron";
 import { UiPanel } from "View/Ui/UiPanel";
-import { AINode } from "Board/Items/AINode/AINode";
 import { useAccount } from "App/useAccount";
 import { useUiModalContext } from "View/Ui/UiModal";
 import { AI_UNAVAILABLE_MODAL_ID } from "View/AiUnavailableModal/AiUnavailableModal";
@@ -28,61 +17,15 @@ import clsx from "clsx";
 import { useNavigate } from "react-router-dom";
 import { useMediaQuery } from "lib/useMediaQuery";
 import { USER_PLAN_MODAL_ID } from "View/UserPlan";
-import { SessionStorage } from "App/SessionStorage";
-import { getControlPointData } from "Board/Selection/QuickAddButtons/quickAddHelpers";
 import { getCorrectEnding } from "utils";
-import { Sticker } from "Board/Items/Sticker/Sticker";
-
-type PossibleParentNode = AINode | Shape | RichText | Sticker;
-const DEFAULT_MAX_NODE_WIDTH = 640;
-
-const getTextFromItem = (item: Item) => {
-	const richText = item.getRichText();
-	if (richText) {
-		const textNodes = richText.editor.getText();
-		if (Array.isArray(textNodes)) {
-			return textNodes
-				.map(paragraph => {
-					if ("children" in paragraph) {
-						return paragraph.children
-							.map(child => child.text || "")
-							.join(" ");
-					}
-					return "";
-				})
-				.join(" ")
-				.trim();
-		}
-	}
-	return "";
-};
-
-const getIdeaFromSelection = (
-	selectionItems: Item[],
-): { item: PossibleParentNode; idea: string } | null => {
-	if (selectionItems.length === 0) {
-		return null;
-	}
-	for (const item of selectionItems) {
-		switch (item.itemType) {
-			case "RichText":
-			case "Sticker":
-			case "Shape":
-				const text = getTextFromItem(item);
-				if (text.trim().length !== 0) {
-					return { item, idea: text };
-				}
-		}
-	}
-	return null;
-};
+import { getIdeaFromSelection, getTextFromItem } from "View/AIInput/utils";
+import { useAIContext } from "View/AIInput/AIContext";
 
 export const AIInput: React.FC = () => {
 	const { t } = useTranslation();
 	const { app, board } = useAppContext();
 	const [inputValue, setInputValue] = useState("");
 	const inputRef = useRef<HTMLTextAreaElement | null>(null);
-	const [model, setModel] = useState<OpenAIModels>();
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const dropdownRef = useRef<HTMLDivElement | null>(null);
 	const forceUpdate = useForceUpdate();
@@ -90,9 +33,15 @@ export const AIInput: React.FC = () => {
 	const account = useAccount();
 	const { openModal } = useUiModalContext();
 	const [isShaking, setIsShaking] = useState(false);
-	const [responseNodeId, setResponseNodeId] = useState<string | null>(null);
 	const navigate = useNavigate();
 	const isMediaMatches = useMediaQuery("(max-width: 1170px)");
+	const {
+		stopStream,
+		responseNodeId,
+		model,
+		setModel,
+		createNodesWithConnectors,
+	} = useAIContext();
 
 	const ideaFromSelection = getIdeaFromSelection(
 		board.selection.items.list(),
@@ -115,116 +64,9 @@ export const AIInput: React.FC = () => {
 	});
 
 	useAppSubscription({
-		subjects: ["selectionItems"],
+		subjects: ["selectionItems", "selectionItem", "selection"],
 		observer: forceUpdate,
 	});
-
-	function calculateNodePosition(
-		newNode: AINode,
-		selectedItem: PossibleParentNode,
-		isResponseNode: boolean,
-	): { newItem: AINode; connectorData: ConnectorData } {
-		const connectorStorage = new SessionStorage();
-		const currMbr = selectedItem.getMbr();
-		const currData = selectedItem.serialize();
-		const newNodeData = newNode.serialize();
-		const width = DEFAULT_MAX_NODE_WIDTH;
-		const height = 100;
-
-		const iterAdjustment = { x: -2 * width, y: 0 };
-
-		const baseAdjustments = {
-			translateX: currMbr.getWidth() / 2,
-			translateY: height,
-		};
-		const adjustmentPoint = new Point(
-			baseAdjustments.translateX + currMbr.left,
-			baseAdjustments.translateY + currMbr.top,
-		);
-
-		newNodeData.adjustmentPoint = adjustmentPoint;
-
-		if (newNodeData.transformation) {
-			if (isResponseNode) {
-				newNodeData.transformation.translateX = adjustmentPoint.x;
-			} else {
-				newNodeData.transformation.translateX =
-					baseAdjustments.translateX +
-					(currData.transformation?.translateX || 0);
-			}
-			newNodeData.transformation.translateY =
-				baseAdjustments.translateY +
-				(currData?.transformation?.translateY || 0) +
-				currMbr.getHeight();
-		}
-
-		const newMbr = currMbr
-			.copy()
-			.getTransformed(
-				new Matrix(
-					baseAdjustments.translateX,
-					baseAdjustments.translateY + currMbr.getHeight(),
-				),
-			);
-
-		let step = 1;
-		while (
-			board.index
-				.getItemsEnclosedOrCrossed(
-					newMbr.left,
-					newMbr.top,
-					newMbr.right,
-					newMbr.bottom,
-				)
-				.filter(item => item.itemType !== "Connector").length > 0
-		) {
-			const direction = step % 2 === 0 ? -1 : 1;
-			newMbr.transform(
-				new Matrix(
-					iterAdjustment.x * direction * step,
-					iterAdjustment.y * direction * step,
-				),
-			);
-			if (newNodeData.transformation) {
-				newNodeData.transformation.translateX +=
-					iterAdjustment.x * direction * step;
-				newNodeData.transformation.translateY +=
-					iterAdjustment.y * direction * step;
-			}
-			if (newNodeData.adjustmentPoint) {
-				newNodeData.adjustmentPoint.transform(
-					new Matrix(iterAdjustment.x * direction * step, 0),
-				);
-			}
-			step += 1;
-		}
-
-		const newItem = board.createItem(
-			board.getNewItemId(),
-			newNodeData,
-		) as AINode;
-
-		newItem.transformation.translateBy(-newItem.getMbr().getWidth() / 2, 0);
-
-		const defaultConnector = new Connector(board);
-		const connectorData = defaultConnector.serialize();
-		connectorData.lineStyle = "orthogonal";
-
-		const savedStart = connectorStorage.getConnectorPointer("start");
-		if (savedStart) {
-			connectorData.startPointerStyle = savedStart;
-		}
-		const savedEnd = connectorStorage.getConnectorPointer("end");
-		if (savedEnd) {
-			connectorData.endPointerStyle = savedEnd;
-		}
-		connectorData.text = new RichText(new Mbr()).serialize();
-
-		return {
-			newItem,
-			connectorData,
-		};
-	}
 
 	const handleInputChange = (
 		event: React.ChangeEvent<HTMLTextAreaElement>,
@@ -327,57 +169,11 @@ export const AIInput: React.FC = () => {
 		};
 	}, [dropdownRef]);
 
-	function createNode(
-		board: Board,
-		inputValue: string,
-		isUserRequest: boolean,
-		parentItem?: PossibleParentNode,
-		withPlaceholder = false,
-	): { node: AINode; connectorData: ConnectorData | null } {
-		let parentNodeId: string | undefined;
-		if (parentItem && parentItem.itemType === "AINode") {
-			parentNodeId = parentItem.getId();
-		}
-
-		const node = new AINode(isUserRequest, parentNodeId);
-		const nodeRichText = node.getRichText();
-		nodeRichText.setMaxWidth(600);
-		nodeRichText.setSelectionHorisontalAlignment("left");
-		nodeRichText.container.right = nodeRichText.container.left + 600;
-
-		if (withPlaceholder) {
-			nodeRichText.placeholderText =
-				"...............................................................................................................................................................................................";
-		} else {
-			nodeRichText.editor.insertCopiedText(inputValue);
-		}
-
-		if (!parentItem) {
-			const cameraMbr = board.camera.getMbr();
-
-			const centerX = cameraMbr.getCenter().x;
-			const centerY = cameraMbr.getCenter().y;
-			node.transformation.translateTo(centerX, centerY);
-			return {
-				node: board.createItem(
-					board.getNewItemId(),
-					node.serialize(),
-				) as AINode,
-				connectorData: null,
-			};
-		}
-		const { newItem, connectorData } = calculateNodePosition(
-			node,
-			parentItem,
-			!isUserRequest,
-		);
-		return { node: newItem, connectorData };
-	}
-
 	const sendInputData = async () => {
 		const connection = app.getConnection();
 		if (!connection) {
 			console.error("Ws no open");
+			return;
 		}
 
 		if (!inputValue.trim().length && !ideaFromSelection) {
@@ -399,39 +195,10 @@ export const AIInput: React.FC = () => {
 			}
 		}
 
-		const requestNode = createNode(board, idea, true, itemToContinueThread);
-		const requestAdded = board.add(requestNode.node);
-
-		if (requestNode.connectorData && itemToContinueThread) {
-			board.add(
-				board.createItem(board.getNewItemId(), {
-					...requestNode.connectorData,
-					startPoint: getControlPointData(itemToContinueThread, 3),
-					endPoint: getControlPointData(requestAdded, 2),
-				}),
-			);
-		}
-
-		const responseNode = createNode(
-			board,
-			"Waiting for response...",
-			false,
-			requestAdded,
-			true,
+		const { responseAdded, requestAdded } = createNodesWithConnectors(
+			idea,
+			itemToContinueThread,
 		);
-		const responseAdded = board.add(responseNode.node);
-
-		setResponseNodeId(responseAdded.getId());
-
-		if (responseNode.connectorData) {
-			board.add(
-				board.createItem(board.getNewItemId(), {
-					...responseNode.connectorData,
-					startPoint: getControlPointData(requestAdded, 3),
-					endPoint: getControlPointData(responseAdded, 2),
-				}),
-			);
-		}
 
 		const parentNodes = nodeWithParents
 			? [nodeWithParents.node, ...nodeWithParents.parents]
@@ -487,29 +254,11 @@ export const AIInput: React.FC = () => {
 		board.camera.zoomToFit(mbrToFit, (600 / mbrToFit.getWidth()) * 30);
 	};
 
-	const stopStream = async (boardId: string, itemId: string) => {
-		const connection = app.getConnection();
-		const stopMessage: AiChatMsg<{
-			method: "StopGeneration";
-			itemId: string;
-		}> = {
-			type: "AiChat",
-			boardId: boardId,
-			event: {
-				method: "StopGeneration",
-				itemId: itemId,
-			},
-		};
-
-		connection.wsClient.send(stopMessage);
-		await account.fetchBillingInfo();
-	};
-
 	const handleStopClick = async () => {
 		const boardId = board.getBoardId();
 
 		if (responseNodeId) {
-			await stopStream(boardId, responseNodeId);
+			await stopStream(boardId, responseNodeId, account);
 			board.isAIGenerating = false;
 		}
 	};
