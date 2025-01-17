@@ -20,6 +20,7 @@ import { USER_PLAN_MODAL_ID } from "View/UserPlan";
 import { getCorrectEnding } from "utils";
 import { getIdeaFromSelection, getTextFromItem } from "View/AIInput/utils";
 import { useAIContext } from "View/AIInput/AIContext";
+import { Tooltip } from "View/Ui/UiButton/Tooltip";
 
 export const AIInput: React.FC = () => {
 	const { t } = useTranslation();
@@ -280,6 +281,14 @@ export const AIInput: React.FC = () => {
 			zIndex={2}
 			ref={dropdownRef}
 		>
+			{!isEditable && (
+				<Tooltip
+					tooltip={t("AIInput.disable")}
+					tooltipPosition="top-center-fixed"
+					tooltipAlign="left"
+					className={styles.tooltip}
+				/>
+			)}
 			<div className={styles.contentWrapper}>
 				<div className={styles.modelSelector}>
 					<div
@@ -348,7 +357,6 @@ export const AIInput: React.FC = () => {
 					ref={inputRef}
 					rows={1}
 					disabled={!isEditable}
-					title={!isEditable ? t("AIInput.disable") : ""}
 				/>
 				<div
 					className={clsx(

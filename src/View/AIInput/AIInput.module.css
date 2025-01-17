@@ -192,6 +192,20 @@
 	transform: rotate(180deg);
 }
 
+.tooltip {
+	display: none;
+	position: absolute;
+	top: -35px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+@media screen and (hover: hover) {
+	.inputContainer:hover .tooltip {
+		display: block;
+	}
+}
+
 @media screen and (max-width: 768px) {
 	.selectionInfo {
 		position: absolute;
