@@ -1,2 +1,2 @@
-export { getCryproRouter } from "./Router";
-export { createCryptoService } from "./monitor"
+export { getCryptoRouter } from "./Router";
+export { createCryptoService } from "./monitor";
