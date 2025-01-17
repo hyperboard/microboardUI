@@ -657,7 +657,7 @@ export class ChatStreamHandler {
         const usageCheck = await this.usageLimitChecker.checkUserLimits(boardOwnerId, msg.event.model || "gpt-4o-mini");
         console.log("usage check", usageCheck);
         if (!usageCheck.canProceed) {
-            this.sendErrorResponse(null, ws, usageCheck.error || "LimitExceeded");
+            this.sendErrorResponse(null, ws, usageCheck.error || "LimitExceeded", msg.boardId);
             return;
         }
         const itemId = msg.event.itemId;
@@ -843,7 +843,7 @@ export class ChatStreamHandler {
             });
         } catch (error) {
             console.error("Error in handleUserRequest:", error);
-            this.sendErrorResponse(null, ws, error instanceof Error ? error.message : "Unknown error");
+            this.sendErrorResponse(null, ws, error instanceof Error ? error.message : "Unknown error", msg.boardId);
         }
     }
 
@@ -1171,11 +1171,11 @@ export class ChatStreamHandler {
         return savedMessage;
     }
 
-    private sendErrorResponse(chat: Chat | null, ws: WebSocket, errorMessage: string) {
+    private sendErrorResponse(chat: Chat | null, ws: WebSocket, errorMessage: string, boardId?: string) {
         console.error("Sending error response:", errorMessage);
         const errorChunk: AiChatMsg<ChatChunk> = {
             type: "AiChat",
-            boardId: chat?.boardId || "",
+            boardId: chat?.boardId || boardId  || "",
             event: {
                 type: "error",
                 error: errorMessage,
