@@ -13,14 +13,7 @@ import { OpenedFoldersContextProvider } from "./Folder";
 
 import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
-import {
-	mainnet,
-	polygon,
-	optimism,
-	arbitrum,
-	base,
-	sepolia,
-} from "wagmi/chains";
+import { mainnet, polygon, arbitrum, sepolia } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
 type Props = {
