@@ -35,7 +35,7 @@ import { ModelLimit, userModelUsage, userPlans } from "drizzle/entities/plans";
 import { boardOwner, boards } from "drizzle/entities";
 import { ModelLimitDefinition, PLAN_MODEL_LIMITS } from "drizzle/scripts/plans";
 import { GenerateImageOptions, ImageGenerator } from "WebSocket/image-generator";
-import {client} from "../../trigger";
+import { client } from "../../trigger";
 
 class UsageLimitChecker {
     private readonly defaultPlanId = "basic";
@@ -407,7 +407,7 @@ export class ChatStreamHandler {
     }: {
         msg: AiChatMsg<GetMessageList>;
         logger: winston.Logger;
-        boardClients: Map<string, WebSocket.WebSocket[]>
+        boardClients: Map<string, WebSocket.WebSocket[]>;
         ws: WebSocket;
     }) {
         const verifiedChat = await this.ensureChatExists(msg, logger);
@@ -444,16 +444,18 @@ export class ChatStreamHandler {
         const imageLimits = await this.usageLimitChecker.checkImageGenerationLimits(boardOwnerId);
 
         if (!imageLimits.canProceed) {
-            ws.send(JSON.stringify({
-                type: "AiChat",
-                boardId: msg.boardId,
-                event: {
-                    method: "GenerateImage",
-                    status: "error",
-                    error: imageLimits.error,
-                    message: "LimitExceeded",
-                },
-            }));
+            ws.send(
+                JSON.stringify({
+                    type: "AiChat",
+                    boardId: msg.boardId,
+                    event: {
+                        method: "GenerateImage",
+                        status: "error",
+                        error: imageLimits.error,
+                        message: "LimitExceeded",
+                    },
+                })
+            );
             return;
         }
 
@@ -819,7 +821,7 @@ export class ChatStreamHandler {
 
             this.activeStreams.set(itemId, {
                 stream,
-                controller
+                controller,
             });
             logger.debug(`Stream created for item: ${itemId} `, {
                 controller: this.activeStreams.get(itemId)?.controller,
@@ -827,7 +829,7 @@ export class ChatStreamHandler {
             });
 
             logger.debug("Handling stream chunks...");
-            ws.send('stream_created')
+            ws.send("stream_created");
             this.handleStreamChunks({
                 stream,
                 ws,

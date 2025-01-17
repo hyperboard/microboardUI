@@ -97,7 +97,7 @@ export function getV1Router({
     // router.use(authMiddleware);
     router.use(apiBase, getUsersRouter(users, logger));
     router.use(`${apiBase}/miro`, getMiroRouter());
-    router.use(`${apiBase}`, getBillingRouter(logger, stripeService));
+    router.use(`${apiBase}`, getBillingRouter(logger, stripeService, redis));
     router.use(`${apiBase}`, getIngestRouter(logger, openai));
     router.use(apiBase, getCryproRouter(redis, logger));
 
