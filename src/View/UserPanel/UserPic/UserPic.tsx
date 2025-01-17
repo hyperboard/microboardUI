@@ -15,6 +15,9 @@ import {
 import { useTranslation } from "react-i18next";
 import { UserAvatar } from "../UserAvatar/UserAvatar";
 import { UserDropDown } from "../UserDropdown/UserDropdown";
+import { useMediaQuery } from "lib/useMediaQuery";
+import { useNavigate } from "react-router-dom";
+import { USER_PLAN_MODAL_ID } from "View/UserPlan";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	email?: string;
@@ -41,6 +44,8 @@ type TUserPicProps = UserPicProps &
 
 export const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 	const { t } = useTranslation();
+	const isMediaMatches = useMediaQuery("(max-width: 1170px)");
+	const navigate = useNavigate();
 	const { board } = useAppContext();
 	const { setIsPanelOpen } = useCommentsPanelContext();
 	const userPanelRef = useRef<HTMLDivElement>(null);
@@ -57,6 +62,17 @@ export const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 		ev.preventDefault();
 		ev.stopPropagation();
 		openModal(PROFILE_SETTINGS_MODAL_ID);
+	};
+
+	const handlePlanModalOpen: MouseEventHandler = ev => {
+		ev.preventDefault();
+		ev.stopPropagation();
+
+		if (isMediaMatches) {
+			navigate("/user/plan");
+		} else {
+			openModal(USER_PLAN_MODAL_ID);
+		}
 	};
 
 	return (
@@ -93,6 +109,17 @@ export const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 				followers={props.followers}
 				presenceUsers={props.presenceUsers}
 				buttons={[
+					<Button
+						type="button"
+						key="userDropDown2"
+						onClick={handlePlanModalOpen}
+						pattern="ghost"
+					>
+						<Icon iconName="ArrowUpCircle" width={20} height={20} />{" "}
+						<span className={styles.userDropDownButton}>
+							{t("userPlan.upgradePlan")}
+						</span>
+					</Button>,
 					<Button
 						type="button"
 						key="userDropDown1"
