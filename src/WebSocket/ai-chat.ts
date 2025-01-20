@@ -5,56 +5,56 @@ import { Message } from "drizzle/entities";
 import { CompletionUsage } from "openai/resources";
 import winston from "winston";
 import WebSocket from "ws";
-export const handleAIChatMessage = async (options: {
-    msg: AiChatMsg;
-    ws: WebSocket;
+export function getAIChatMsgHandler(options: {
     openai: OpenAI;
     imageGenerator: ImageGenerator;
     logger: winston.Logger;
     boardClients: Map<string, WebSocket.WebSocket[]>;
     chatStreamHandler: ChatStreamHandler;
-}) => {
-    const { msg, ws, logger, boardClients, chatStreamHandler, imageGenerator } = options;
+}): (msg: AiChatMsg, ws: WebSocket) => Promise<void> {
+    return async (msg: AiChatMsg, ws: WebSocket) => {
+        const { logger, boardClients, chatStreamHandler, imageGenerator } = options;
 
-    switch (msg.event.method) {
-        case "UserRequest":
-            chatStreamHandler.handleUserRequest({
-                msg: msg as AiChatMsg<UserRequest>,
-                ws,
-                logger,
-                boardClients,
-            });
-            break;
-        case "GenerateImage":
-            await chatStreamHandler.handleGenerateImage(
-                msg as AiChatMsg<GenerateImageEvent>,
-                boardClients,
-                imageGenerator,
-                ws
-            );
-            break;
-        case "StopGeneration":
-            await chatStreamHandler.stopConversation({
-                msg: msg as AiChatMsg<StopGeneration>,
-                boardId: msg.boardId,
-                ws,
-                logger,
-                itemId: msg.event.itemId,
-            });
-            break;
-        case "GetMessageList":
-            await chatStreamHandler.handleGetMessageList({
-                msg: msg as AiChatMsg<GetMessageList>,
-                logger,
-                boardClients,
-                ws,
-            });
-            break;
+        switch (msg.event.method) {
+            case "UserRequest":
+                chatStreamHandler.handleUserRequest({
+                    msg: msg as AiChatMsg<UserRequest>,
+                    ws,
+                    logger,
+                    boardClients,
+                });
+                break;
+            case "GenerateImage":
+                await chatStreamHandler.handleGenerateImage(
+                    msg as AiChatMsg<GenerateImageEvent>,
+                    boardClients,
+                    imageGenerator,
+                    ws
+                );
+                break;
+            case "StopGeneration":
+                await chatStreamHandler.stopConversation({
+                    msg: msg as AiChatMsg<StopGeneration>,
+                    boardId: msg.boardId,
+                    ws,
+                    logger,
+                    itemId: msg.event.itemId,
+                });
+                break;
+            case "GetMessageList":
+                await chatStreamHandler.handleGetMessageList({
+                    msg: msg as AiChatMsg<GetMessageList>,
+                    logger,
+                    boardClients,
+                    ws,
+                });
+                break;
 
-        default:
-            throw new Error("Unknown method");
-    }
-};
+            default:
+                throw new Error("Unknown method");
+        }
+    };
+}
 
 export type AiChatEventType = UserRequest | StopGeneration | GetMessageList | GenerateImageEvent;
 

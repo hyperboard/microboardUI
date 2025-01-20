@@ -13,8 +13,10 @@ import { verifyToken } from "Tokens";
 import { isUUID } from "validator";
 import winston from "winston";
 import WebSocket, { WebSocketServer } from "ws";
-import { AiChatMsg, handleAIChatMessage } from "./ai-chat";
+import { AiChatMsg, getAIChatMsgHandler } from "./ai-chat";
 import { Presence } from "./Presence";
+import { WebSocketRouter } from "./WebSocketRouter";
+import { z } from "zod";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
@@ -52,97 +54,82 @@ export function withWebSocketApi({
     const chatStreamHandler = new ChatStreamHandler(openai);
 
     wss.on("connection", (ws) => {
-        setupSocketErrorHandling(ws);
-        setupSocketMessageHandling(ws);
-        setupSocketCloseHandling(ws);
-    });
-
-    function setupSocketErrorHandling(ws: WebSocket) {
+        ws.on("message", async (data) => {
+            try {
+                const msg = JSON.parse(data.toString()) as SocketMsg;
+                handleMessage(ws, msg);
+            } catch (error) {
+                handleError(ws, error, "Error parsing JSON message");
+                ws.close();
+            }
+        });
         ws.on("error", (err) => {
             logger.error("WebSocket error:", err);
             ws.close();
         });
-    }
-
-    const msgHandlingQueue: SocketMsg[] = [];
-    let isProcessing = false;
-    function setupSocketMessageHandling(ws: WebSocket) {
-        ws.on("message", async (data) => {
-            try {
-                const msg = JSON.parse(data.toString()) as SocketMsg;
-                msgHandlingQueue.push(msg);
-                websocketEventQueueSize.set(msgHandlingQueue.length);
-                processMsgQueue(ws);
-            } catch (error) {
-                logger.error("Error parsing JSON message:", error);
-                sendError(ws, "Invalid JSON message format");
-                ws.close();
-                isProcessing = false;
-            }
+        ws.on("close", () => {
+            disconnectClientFromBoards(ws);
         });
-    }
+    });
 
-    async function invalidateBoardRights(boardUUID: string, byUser = false) {
-        broadcastBoardEvent(boardUUID, {
+    async function sendInvalidateRightsMsg(boardUUID: string, byUser = false) {
+        const clients = boardClients.get(boardUUID) ?? [];
+        sendWsMsg(clients, {
             type: "InvalidateRights",
             boardId: boardUUID,
             byUser,
         });
     }
-    boardsService.setInvalidateBoardRights(invalidateBoardRights);
-
-    async function processMsgQueue(ws: WebSocket) {
-        if (isProcessing) return;
-        isProcessing = true;
-
-        while (msgHandlingQueue.length > 0) {
-            const msg = msgHandlingQueue.shift();
-            if (msg) {
-                await handleMessage(ws, msg);
-            }
-            websocketEventQueueSize.set(msgHandlingQueue.length);
-        }
-
-        isProcessing = false;
-    }
+    boardsService.setInvalidateBoardRights(sendInvalidateRightsMsg);
 
     async function handleMessage(ws: WebSocket, msg: SocketMsg) {
         switch (msg.type) {
             case "Auth":
-                return await handleAuthMsg(msg, ws);
+                return handleAuthMsg(msg, ws).catch((error) => {
+                    handleError(ws, error, "Failed to authenticate");
+                });
             case "Logout":
-                return await handleLogoutMsg(msg, ws);
+                return handleLogoutMsg(msg, ws);
             case "Subscribe":
-                return await handleSubscribeMsg(msg, ws);
+                return handleSubscribeMsg(msg, ws).catch((error) => {
+                    unsubscribeClient(msg.boardId, ws);
+                    handleError(ws, error, "Failed to subscribe to board events");
+                });
             case "Unsubscribe":
-                return await handleUnsubscribeMsg(msg, ws);
+                return handleUnsubscribeMsg(msg, ws);
             case "BoardEvent":
-                return await handleBoardEventMsg(msg, ws);
+                return handleBoardEventMsg(msg, ws).catch((error) =>
+                    handleError(ws, error, "Failed to process board event")
+                );
             case "AiChat":
-                return await handleAIChatMessage({
-                    msg,
-                    ws,
-                    openai,
-                    logger,
-                    boardClients,
-                    chatStreamHandler,
-                    imageGenerator,
+                return handleAiChatMessage(msg, ws).catch((error) => {
+                    handleError(ws, error, "Failed to process AI chat message");
                 });
             case "PresenceEvent":
-                return await handlePresenceEventMsg(msg, ws);
+                return handlePresenceEventMsg(msg, ws).catch((error) => {
+                    handleError(ws, error, "Failed to process presence event");
+                });
             case "BoardSnapshot":
-                return await handleSnapshotMsg(msg, ws);
+                return handleSnapshotMsg(msg, ws).catch((error) => {
+                    handleError(ws, error, "Failed to process snapshot");
+                });
             case "GetMode":
-                return await handleGetModeMsg(msg, ws);
+                return handleGetModeMsg(msg, ws).catch((error) => {
+                    unsubscribeClient(msg.boardId, ws);
+                    handleError(ws, error, "Failed to get access mode");
+                });
             case "ping":
-                return await handlePingMsg(msg, ws);
+                return handlePingMsg(msg, ws);
         }
     }
-    function setupSocketCloseHandling(ws: WebSocket) {
-        ws.on("close", () => {
-            disconnectClientFromBoards(ws);
-        });
-    }
+
+    const handleAiChatMessage = getAIChatMsgHandler({
+        openai,
+        logger,
+        boardClients,
+        chatStreamHandler,
+        imageGenerator,
+    });
 
     function disconnectClientFromBoards(ws: WebSocket) {
         for (const [boardId, clients] of boardClients.entries()) {
@@ -155,128 +142,101 @@ export function withWebSocketApi({
     }
 
     async function handleAuthMsg(msg: AuthMsg, ws: WebSocket): Promise<void> {
-        try {
-            const token = await verifyToken(msg.jwt, "access");
-            if (token) {
-                saveToken(ws, token);
-                return ws.send(
-                    JSON.stringify({
-                        type: "AuthConfirmation",
-                    })
-                );
-            } else {
-                return sendError(ws, "Invalid or expired token");
-            }
-        } catch (err) {
-            logger.error("Error (handleAuthMsg)", err);
-            return sendError(ws, "Invalid token");
-        }
+        authenticateUser(msg, ws);
+        sendAuthSuccess(msg, ws);
     }
 
-    function saveToken(ws: WebSocket, token: AccessToken): void {
+    async function authenticateUser(msg: AuthMsg, ws: WebSocket): Promise<void> {
+        const token = await verifyToken(msg.jwt, "access");
+        if (!token) {
+            throw new Error("Invalid or expired token");
+        }
         wsTokens.set(ws, token);
     }
 
-    function sendError(ws: WebSocket, message: string, ...args: Array<{ [additionalInfo: string]: string }>): void {
-        const additionalInfo = Object.assign({}, ...args);
-        return ws.send(JSON.stringify({ type: "Error", message, ...additionalInfo }));
+    async function sendAuthSuccess(msg: AuthMsg, ws: WebSocket): Promise<void> {
+        sendWsMsg(ws, { type: "AuthConfirmation" });
+    }
+
+    async function handleError(ws: WebSocket, error: unknown, context: string): Promise<void> {
+        const msg = getErrorMsg(error, context);
+        logger.error(msg);
+        sendWsMsg(ws, { type: "Error", message: msg });
+    }
+
+    function getErrorMsg(error: unknown, msg: string): string {
+        return `${msg}: ${error instanceof Error ? error.message : "An unexpected error occurred"}`;
+    }
+
+    function sendWsMsg(clients: WebSocket.WebSocket | WebSocket.WebSocket[], data: any): void {
+        const clientsArray = Array.isArray(clients) ? clients : [clients];
+        const msg = JSON.stringify(data);
+        for (const client of clientsArray) {
+            client.send(msg);
+        }
     }
 
     function handlePingMsg(_msg: PingMsg, ws: WebSocket): void {
-        ws.send(
-            JSON.stringify({
-                type: "ping",
-            })
-        );
+        sendWsMsg(ws, { type: "pong" });
     }
 
-    function handleLogoutMsg(msg: LogoutMsg, ws: WebSocket) {
+    function handleLogoutMsg(_msg: LogoutMsg, ws: WebSocket) {
         wsTokens.delete(ws);
     }
 
     async function handleGetModeMsg(msg: GetModeMsg, ws: WebSocket) {
-        try {
-            if (!isUUID(msg.boardId)) {
-                return sendError(ws, "Access denied: Subscribe to board events.", { deniedBoardId: msg.boardId });
-            }
-            const mode = await getMode(ws, msg.boardId);
-            if (mode) {
-                return enforceMode(ws, msg.boardId, mode);
-            }
-            unsubscribeClient(msg.boardId, ws);
-            return sendError(ws, "Access denied: edit board.", { deniedBoardId: msg.boardId });
-        } catch (err) {
-            logger.error("Access denied: edit board. (handleGetModeMsg)", err);
-            unsubscribeClient(msg.boardId, ws);
-            return sendError(ws, "Access denied: edit board.", { deniedBoardId: msg.boardId });
-        }
+        enshureValidBoardId(msg.boardId);
+        const mode = await getAccessMode(ws, msg.boardId);
+        sendAccessMode(ws, msg.boardId, mode);
     }
 
     const socketsBoardsSeqNums = new Map<WebSocket, Map<string, number>>();
 
-    async function handleSubscribeMsg(msg: SubscribeMsg, ws: WebSocket): Promise<void> {
-        logger.info(`Handling subscribe message for board: ${msg.boardId}`);
-        try {
-            if (!isUUID(msg.boardId)) {
-                logger.warn(`Invalid board ID: ${msg.boardId}`);
-                return sendError(ws, "Access denied: Subscribe to board events.", { deniedBoardId: msg.boardId });
-            }
-            if (msg.accessKey) {
-                wsAccessKeys.set(ws, msg.accessKey);
-                logger.debug(`Access key set for WebSocket connection`);
-            }
-            const boardId = msg.boardId;
-            const mode = await getMode(ws, msg.boardId);
-            logger.info(`Access mode for board ${boardId}: ${mode}`);
-
-            if (!mode) {
-                logger.warn(`Access denied for board ${boardId}`);
-                unsubscribeClient(msg.boardId, ws);
-                return sendError(ws, "Access denied: Subscribe to board events.", { deniedBoardId: msg.boardId });
-            }
-
-            await subscribeClientToBoard(ws, boardId);
-            logger.info(`Client subscribed to board ${boardId}`);
-
-            const initialSequenceNumber = getInitialSeqNum(ws, boardId);
-            logger.debug(`Initial sequence number: ${initialSequenceNumber}`);
-            const snapshot = await boards.getLatestBoardSnapshot(boardId);
-            const lastSnapshotEventOrder = snapshot?.lastIndex || 0;
-            logger.debug(`Last snapshot event order: ${lastSnapshotEventOrder}`);
-            const eventsSinceLastSnapshot = await getEventsSinceLastSnapshot(boardId, lastSnapshotEventOrder);
-            logger.info(`Retrieved ${eventsSinceLastSnapshot.length} events since last snapshot`);
-
-            ws.send(
-                JSON.stringify({
-                    type: "BoardSubscriptionCompleted",
-                    boardId,
-                    mode,
-                    snapshot,
-                    lastSnapshotEventOrder,
-                    eventsSinceLastSnapshot,
-                    initialSequenceNumber,
-                })
-            );
-            logger.info(`Sent BoardSubscriptionCompleted message for board ${boardId}`);
-
-            const presenceSnapshots = await presence.createBoardPresenceSnapshots(boardId);
-            logger.debug(`Created ${presenceSnapshots.length} presence snapshots for board ${boardId}`);
-
-            ws.send(
-                JSON.stringify({
-                    type: "UserJoin",
-                    boardId: boardId,
-                    userId: msg.userId,
-                    snapshots: presenceSnapshots,
-                    timestamp: Date.now(),
-                })
-            );
-            logger.info(`Sent UserJoin message for user ${msg.userId} on board ${boardId}`);
-        } catch (error) {
-            logger.error("Failed to subscribe to board events:", error);
-            unsubscribeClient(msg.boardId, ws);
-            return sendError(ws, "Failed to subscribe to board events.");
+    function enshureValidBoardId(boardId: string): void {
+        if (!isUUID(boardId)) {
+            throw new Error(`Invalid Board Id: ${boardId}`);
         }
+    }
+
+    async function handleSubscribeMsg(msg: SubscribeMsg, ws: WebSocket): Promise<void> {
+        enshureValidBoardId(msg.boardId);
+        if (msg.accessKey) {
+            wsAccessKeys.set(ws, msg.accessKey);
+        }
+        const mode = await getAccessMode(ws, msg.boardId);
+
+        subscribeClientToBoard(ws, msg.boardId);
+
+        await sendSubscriptionCompleted(ws, msg.boardId, mode);
+
+        await sendPresenceSnapshots(msg.boardId, ws, msg);
+    }
+
+    async function sendSubscriptionCompleted(ws: WebSocket, boardId: string, mode: string) {
+        const initialSequenceNumber = getInitialSeqNum(ws, boardId);
+        const snapshot = await boards.getLatestBoardSnapshot(boardId);
+        const lastSnapshotEventOrder = snapshot?.lastIndex || 0;
+        const eventsSinceLastSnapshot = await getEventsSinceLastSnapshot(boardId, lastSnapshotEventOrder);
+        sendWsMsg(ws, {
+            type: "BoardSubscriptionCompleted",
+            boardId,
+            mode,
+            snapshot,
+            lastSnapshotEventOrder,
+            eventsSinceLastSnapshot,
+            initialSequenceNumber,
+        });
+    }
+
+    async function sendPresenceSnapshots(boardId: string, ws: WebSocket, msg: SubscribeMsg) {
+        const snapshots = await presence.createBoardPresenceSnapshots(boardId);
+        sendWsMsg(ws, {
+            type: "UserJoin",
+            boardId: boardId,
+            userId: msg.userId,
+            snapshots: snapshots,
+            timestamp: Date.now(),
+        });
     }
 
     function getInitialSeqNum(ws: WebSocket, boardId: string): number {
@@ -327,103 +287,90 @@ export function withWebSocketApi({
         return +token.sub;
     }
 
-    async function subscribeClientToBoard(ws: WebSocket, boardId: string): Promise<void> {
+    function subscribeClientToBoard(ws: WebSocket, boardId: string): void {
         const clients = boardClients.get(boardId) ?? [];
         clients.push(ws);
         boardClients.set(boardId, clients);
     }
 
-    function enforceMode(ws: WebSocket, boardId: string, mode: ViewMode) {
-        ws.send(
-            JSON.stringify({
-                type: "Mode",
-                boardId: boardId,
-                mode,
-            })
-        );
+    function sendAccessMode(ws: WebSocket, boardId: string, mode: AccessMode) {
+        sendWsMsg(ws, {
+            type: "Mode",
+            boardId: boardId,
+            mode,
+        });
     }
 
     const eventsManager = new EventsManager(boards, logger, boardsService);
 
     async function handleBoardEventMsg(msg: BoardEventMsg, ws: WebSocket): Promise<void> {
+        const startTime = process.hrtime.bigint();
+        enshureEditMode(msg.boardId, ws);
+        enshureExpectedSequenceNumber(msg, ws);
+
+        const eventData = await eventsManager.processEvent(msg.boardId, msg.event.body, {
+            startTime: startTime,
+            queueTime: process.hrtime.bigint(),
+        });
+        sendBoardEventConfirmation(ws, msg, eventData);
+        broadcastBoardEvent(msg.boardId, msg, eventData);
+
+        const totalEndTime = process.hrtime.bigint();
+        const totalLatency = Number(totalEndTime - startTime);
+        boardEventTotalLatency.observe(totalLatency);
+    }
+
+    function sendBoardEventConfirmation(ws: WebSocket, msg: BoardEventMsg, eventData: BoardEventData) {
+        sendWsMsg(ws, {
+            type: "Confirmation",
+            boardId: msg.boardId,
+            sequenceNumber: msg.sequenceNumber,
+            order: eventData.order,
+        });
+    }
+
+    async function enshureEditMode(boardId: string, ws: WebSocket): Promise<void> {
         try {
-            const mode = await getMode(ws, msg.boardId);
-            if (mode) {
-                enforceMode(ws, msg.boardId, mode);
+            const mode = await getAccessMode(ws, boardId);
+            if (mode !== "edit") {
+                throw new Error(`board id:${boardId}`);
             }
-            if (!mode) {
-                unsubscribeClient(msg.boardId, ws);
-                return sendError(ws, "Access denied: edit board.", { deniedBoardId: msg.boardId });
-            }
-        } catch (err) {
-            logger.error("Access denied: edit board. (handleBoardEventMsg)", err);
-            unsubscribeClient(msg.boardId, ws);
-            return sendError(ws, "Access denied: edit board.", { deniedBoardId: msg.boardId });
-        }
-        const expectedSequence = socketsBoardsSeqNums.get(ws)?.get(msg.boardId) || 1;
-        if (msg.sequenceNumber === expectedSequence) {
-            const startTime = process.hrtime.bigint();
-            const expectedSequence = socketsBoardsSeqNums.get(ws)?.get(msg.boardId) || 1;
-
-            if (msg.sequenceNumber !== expectedSequence) {
-                sendError(
-                    ws,
-                    "Unexpected sequence number" +
-                        JSON.stringify({
-                            expectedSequence,
-                            receivedSequence: msg.sequenceNumber,
-                            boardId: msg.boardId,
-                        })
-                );
-                return;
-            }
-            try {
-                const mode = await getMode(ws, msg.boardId);
-                if (mode !== "edit") {
-                    return sendError(ws, "Access denied: edit board.");
-                }
-
-                const eventData = await eventsManager.processEvent(msg.boardId, msg.event.body, {
-                    startTime: startTime,
-                    queueTime: process.hrtime.bigint(),
-                });
-
-                broadcastBoardEvent(msg.boardId, {
-                    type: msg.type,
-                    boardId: msg.boardId,
-                    event: { body: eventData, order: eventData.order },
-                    sequenceNumber: msg.sequenceNumber,
-                });
-
-                socketsBoardsSeqNums.get(ws)!.set(msg.boardId, expectedSequence + 1);
-
-                ws.send(
-                    JSON.stringify({
-                        type: "Confirmation",
-                        boardId: msg.boardId,
-                        sequenceNumber: msg.sequenceNumber,
-                        order: eventData.order,
-                    })
-                );
-
-                const totalEndTime = process.hrtime.bigint();
-                const totalLatency = Number(totalEndTime - startTime);
-                boardEventTotalLatency.observe(totalLatency);
-            } catch (error) {
-                logger.error("Failed to process board event.", error);
-                return sendError(ws, "Failed to process board event." + JSON.stringify(error));
-            }
+            sendAccessMode(ws, boardId, mode);
+        } catch (error) {
+            unsubscribeClient(boardId, ws);
+            throw error;
         }
     }
 
-    async function handlePresenceEventMsg(msg: PresenceEventMsg, ws: WebSocket): Promise<void> {
-        try {
-            presence.saveEvent(msg);
-            broadcastPresenceEvent(msg.boardId, msg);
-        } catch (error) {
-            logger.error("Failed to process presence event:", error);
-            return sendError(ws, "Failed to process presence event.");
+    function enshureExpectedSequenceNumber(msg: BoardEventMsg, ws: WebSocket): void {
+        const boardsSeqNums = getSocketBoardSeqNums(ws);
+        const expectedSeqNum = boardsSeqNums.get(msg.boardId) || 1;
+        if (msg.sequenceNumber !== expectedSeqNum) {
+            throw new Error(
+                "Unexpected sequence number" +
+                    JSON.stringify({
+                        expectedSeqNum,
+                        receivedSeqNum: msg.sequenceNumber,
+                        boardId: msg.boardId,
+                    })
+            );
         }
+        boardsSeqNums.set(msg.boardId, expectedSeqNum + 1);
+    }
+
+    function getSocketBoardSeqNums(ws: WebSocket): Map<string, number> {
+        const foundMap = socketsBoardsSeqNums.get(ws);
+        if (!foundMap) {
+            const newMap = new Map();
+            socketsBoardsSeqNums.set(ws, newMap);
+            return newMap;
+        }
+        return foundMap;
+    }
+
+    async function handlePresenceEventMsg(msg: PresenceEventMsg, ws: WebSocket): Promise<void> {
+        presence.saveEvent(msg);
+        broadcastPresenceEvent(msg.boardId, msg);
     }
 
     async function hasAccessKeyRights(ws: WebSocket, boardId: number, accessType: AccessKeyType) {
@@ -438,10 +385,10 @@ export function withWebSocketApi({
         return accessKeyData?.keyType === accessType;
     }
 
-    async function getMode(ws: WebSocket, boardId: string): Promise<ViewMode | null> {
+    async function getAccessMode(ws: WebSocket, boardId: string): Promise<AccessMode> {
         const board = await boardsService.get(boardId);
         if (!board) {
-            return null;
+            throw new Error(`Board not found ${boardId}`);
         }
         const accessKey = wsAccessKeys.get(ws);
         if (accessKey) {
@@ -454,7 +401,7 @@ export function withWebSocketApi({
                 return "view";
             }
 
-            return null;
+            throw new Error(`Invalid access key for board ${boardId}`);
         }
 
         const userToken = wsTokens.get(ws);
@@ -480,7 +427,7 @@ export function withWebSocketApi({
             }
         }
 
-        return null;
+        throw new Error(`Invalid access mode for board ${boardId}`);
     }
 
     function handleUnsubscribeMsg(msg: UnsubscribeMsg, ws: WebSocket): void {
@@ -497,38 +444,30 @@ export function withWebSocketApi({
         wsAccessKeys.delete(ws);
     }
 
-    function sendMessageToClients(message: SocketMsg, clients: WebSocket.WebSocket[]): void {
-        const content = JSON.stringify(message);
-        for (const client of clients) {
-            client.send(content);
-        }
-    }
-
-    function broadcastBoardEvent(
-        boardUUID: string,
-        message: BoardEventMsg | BoardEventListMsg | ModeMsg | InvalidateRightsMsg
-    ): void {
+    function broadcastBoardEvent(boardUUID: string, msg: BoardEventMsg, eventData: BoardEventData): void {
         const clients = boardClients.get(boardUUID) ?? [];
-        sendMessageToClients(message, clients);
+        sendWsMsg(clients, {
+            type: msg.type,
+            boardId: msg.boardId,
+            event: { body: eventData, order: eventData.order },
+            sequenceNumber: msg.sequenceNumber,
+        });
     }
 
     function broadcastPresenceEvent(boardUUID: string, msg: PresenceEventMsg): void {
         const clients = boardClients.get(boardUUID) ?? [];
-        sendMessageToClients(
-            {
-                type: "PresenceEvent",
-                boardId: msg.boardId,
-                event: msg.event,
-                userId: msg.userId,
-                messageId: msg.messageId,
-                nickname: msg.nickname,
-                color: msg.color,
-                avatar: msg.avatar,
-                hardId: msg.hardId,
-                softId: msg.softId,
-            },
-            clients
-        );
+        sendWsMsg(clients, {
+            type: "PresenceEvent",
+            boardId: msg.boardId,
+            event: msg.event,
+            userId: msg.userId,
+            messageId: msg.messageId,
+            nickname: msg.nickname,
+            color: msg.color,
+            avatar: msg.avatar,
+            hardId: msg.hardId,
+            softId: msg.softId,
+        });
     }
 
     function requestSnapshotFromClient(boardId: string, sinceLast: number): void {
@@ -545,12 +484,11 @@ export function withWebSocketApi({
     eventsManager.requestSnapshotCallback = requestSnapshotFromClient;
 
     function sendSnapshotRequest(ws: WebSocket, boardId: string, sinceLast: number) {
-        const message = JSON.stringify({
+        sendWsMsg(ws, {
             type: "CreateSnapshotRequest",
             boardId: boardId,
             sinceLast,
         });
-        ws.send(message);
     }
 
     function setupSnapshotRequestTimeout(boardId: string, client: WebSocket, sinceLast: number): void {
@@ -562,14 +500,10 @@ export function withWebSocketApi({
     }
 
     async function handleSnapshotMsg(snapshotMsg: SnapshotResponseMsg, ws: WebSocket) {
-        try {
-            const { boardId, snapshot, lastEventOrder } = snapshotMsg;
-            const board = await boardsService.get(boardId);
-            await boardsService.saveBoardSnapshot({ boardId: board.id, snapshot, lastEventOrder });
-            eventsManager.updateSnapshotInfo(boardId, snapshot.lastIndex);
-        } catch (error) {
-            logger.error(`Failed to process snapshot: ${error}`);
-        }
+        const { boardId, snapshot, lastEventOrder } = snapshotMsg;
+        const board = await boardsService.get(boardId);
+        await boardsService.saveBoardSnapshot({ boardId: board.id, snapshot, lastEventOrder });
+        eventsManager.updateSnapshotInfo(boardId, snapshot.lastIndex);
     }
 
     setInterval(() => {
@@ -665,12 +599,12 @@ export interface SnapshotResponseMsg {
     lastEventOrder: number;
 }
 
-export type ViewMode = "view" | "edit";
+export type AccessMode = "view" | "edit";
 
 export interface ModeMsg {
     type: "Mode";
     boardId: string;
-    mode: ViewMode;
+    mode: AccessMode;
 }
 
 export interface PingMsg {
