@@ -9,7 +9,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { notify } from "View/Ui/Toast";
 import { billingApi } from "shared/api";
 import { useAccount } from "App/useAccount";
-import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
+import {
+	ConnectButton,
+	useAccountModal,
+	useChainModal,
+	useConnectModal,
+} from "@rainbow-me/rainbowkit";
 
 import { useSendTransaction, useAccount as useWalletAccount } from "wagmi";
 import { parseEther } from "viem";
@@ -71,7 +76,9 @@ export function SelectPaymentModal(): JSX.Element {
 	const [isDisabled, setIsDisabled] = useState(false);
 	const [plan, setPlan] = useState<billingApi.Plan | null>(null);
 
-	const { openConnectModal } = useConnectModal();
+	const { accountModalOpen } = useAccountModal();
+	const { chainModalOpen } = useChainModal();
+	const { openConnectModal, connectModalOpen } = useConnectModal();
 	const { sendTransaction } = useSendTransaction();
 	const { address, isConnected, chain } = useWalletAccount();
 
@@ -250,7 +257,12 @@ export function SelectPaymentModal(): JSX.Element {
 	};
 
 	return (
-		<UiModal modalId={SELECT_PAYMENT_MODAL_ID}>
+		<UiModal
+			modalId={SELECT_PAYMENT_MODAL_ID}
+			closeByBgClick={
+				!(accountModalOpen || connectModalOpen || chainModalOpen)
+			}
+		>
 			<div className={styles.wrapper}>
 				<h1 className={styles.heading}>Payment</h1>
 				<div className={styles.cards}>
