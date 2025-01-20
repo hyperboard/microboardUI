@@ -91,16 +91,16 @@ export const AIInput: React.FC = () => {
 		event.target.style.height = `${Math.min(event.target.scrollHeight, 120)}px`;
 	};
 
-	useEffect(() => {
-		if (!account.billingInfo?.models) {
-			return;
-		}
-		const defaultModel = account.billingInfo?.models.find(
-			model => model.isDefault && model.isEnabled,
-		);
+	// useEffect(() => {
+	// 	if (!account.billingInfo?.models) {
+	// 		return;
+	// 	}
+	// 	const defaultModel = account.billingInfo?.models.find(
+	// 		model => model.isDefault && model.isEnabled,
+	// 	);
 
-		setModel((defaultModel?.id as OpenAIModels) ?? "GPT4o mini");
-	}, [account.billingInfo?.models]);
+	// 	setModel((defaultModel?.id as OpenAIModels) ?? "GPT4o mini");
+	// }, [account.billingInfo?.models]);
 
 	const handleSendClick = async (ev: SyntheticEvent) => {
 		ev.stopPropagation();
