@@ -94,7 +94,7 @@ export function getV1Router({
     router.use(apiBase, getAIRouter(ai, logger));
     router.use(apiBase, createMediaRouter(media as MediaDAL, logger));
     router.use(apiBase, createJobsRouter(logger, wss));
-    router.use(apiBase, createDashboardRouter());
+    router.use(apiBase, createDashboardRouter(logger));
     // BUG: Миддлвар блокирует запрос GET boards/:id без токена по edit/view ссылке
     // router.use(authMiddleware);
     router.use(apiBase, getUsersRouter(users, logger));

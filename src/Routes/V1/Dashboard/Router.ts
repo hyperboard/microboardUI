@@ -1,9 +1,8 @@
 import express from "express";
 import { getFirstPaymentsToday, getNewBoardsToday, getNewUsersToday, getRenewalsToday, getTotalBoardEvents, getTotalBoards, getTotalPayingUsers, getTotalUsers } from "../../../drizzle/functions/board/MetricsDashboard";
+import winston from "winston";
 
-
-
-export const createDashboardRouter = (): express.Router => {
+export const createDashboardRouter = (logger: winston.Logger): express.Router => {
     const router = express.Router();
     router.get("/dashboard", async (req, res) => {
         try {
@@ -27,7 +26,7 @@ export const createDashboardRouter = (): express.Router => {
                 getTotalPayingUsers()
             ]);
     
-            res.json({
+            res.status(200).json({
                 totalBoards,
                 newBoardsToday,
                 totalUsers,
@@ -38,7 +37,9 @@ export const createDashboardRouter = (): express.Router => {
                 totalPayingUsers,
             });
         } catch (error) {
-            res.status(500).json({ error: "Ошибка при получении данных дашборда" });
+            logger.error("Error dashboard data:", error);
+            return res.status(500).json({ error: "Ошибка при получении данных дашборда" });
+            
         }
     });
     return router;
