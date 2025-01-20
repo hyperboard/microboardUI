@@ -73,8 +73,6 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
     const expiryWorker = new Worker(
         "expiry",
         async (job: Job) => {
-            logger.info(`BULL: job ${job}}`);
-            logger.info(`BULL: jobname ${job.name}}`);
             switch (job.name) {
                 case "checkout-expiry":
                     await handleCheckoutExpiry(job);
@@ -241,11 +239,9 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
     }
 
     async function scheduleCheckoutExpiry(checkoutId: string, endDate: Date) {
-        logger.info(`BULL: schedule "checkout-expiry" for ${checkoutId}`);
         await scheduleExpiry("checkout-expiry", { checkoutId }, endDate);
     }
     async function schedulePlanExpiry(userId: number, endDate: Date) {
-        logger.info(`BULL: schedule "plan-expiry" for ${userId}`);
         await scheduleExpiry("plan-expiry", { userId }, endDate);
     }
 
@@ -406,7 +402,6 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
         const userToken = await token;
         const userId = parseInt(userToken?.sub);
 
-        logger.info(`BULL: creating checkout for ${userId} in ${providerURL}`);
         if (!providerURL) {
             return res
                 .status(HttpStatus.BAD_REQUEST)
@@ -425,7 +420,6 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
                 .json({ error: "Unable to create checkout: The selected plan is already active." });
         }
 
-        logger.info(`BULL: fetching rates...`);
         const rates = await fetchRates(symbol.toString());
         const quote = rates[symbol.toString()]?.quote;
         if (!quote) {
@@ -437,9 +431,7 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
         const PRICE = 12; // price of subscription in USD
         // const PRICE = 0.01; // price of subscription in USD
         const wei = web3.utils.toWei((PRICE / price).toString(), "ether");
-        logger.info(`BULL: FETCHED RATE, curr price ${PRICE / price} in ${symbol.toString()}`);
         
-        logger.info(`BULL: creating checkout...`);
         const check = await createCheckoutDb({
             userId,
             planId,
