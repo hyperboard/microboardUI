@@ -31,8 +31,8 @@ export function UserPlanPage(): JSX.Element {
 				<UserPlanUsage
 					aiModel={defaultModel?.displayName ?? "Unknown"}
 					availableRequests={
-						(defaultModel?.limits.weekly ?? 0) -
-						(defaultModel?.limits.weeklyUsed ?? 0)
+						defaultModel?.limits.daily.remaining ||
+						defaultModel?.limits.weekly.remaining
 					}
 					tokensUsageResetDate={
 						account.billingInfo?.plan.periodEnd ?? new Date()
@@ -48,7 +48,7 @@ export function UserPlanPage(): JSX.Element {
 					className={style.back}
 					onClick={handleOpenProfileSettings}
 				>
-					Back to Profile settings
+					{t("userPlan.backToProfile")}
 				</Button>
 			</main>
 		</div>

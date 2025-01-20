@@ -1,11 +1,11 @@
 .planUsage {
-	font-size: 20px;
+	font-size: 16px;
 	color: rgba(15, 19, 36, 0.6);
 	align-self: flex-start;
 }
 
 .planUsage span {
-	font-weight: 600;
+	font-weight: 500;
 }
 
 @media screen and (max-width: 748px) {

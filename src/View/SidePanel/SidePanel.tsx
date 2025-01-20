@@ -107,12 +107,6 @@ export function SidePanel(): JSX.Element {
 					disabled={!account.isLoggedIn}
 					className={style.importMiroBtn}
 				>
-					<Icon
-						iconName="miro"
-						width={16}
-						height={16}
-						style={{ color: "#050038" }}
-					/>
 					<span>{t("miro.importMiroBtn")}</span>
 					<Tooltip
 						tooltip={

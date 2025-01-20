@@ -1,39 +1,53 @@
 import { UiModal } from "View/Ui/UiModal/UiModal";
 import React from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Button } from "shared/ui-lib/Button";
 import { Link } from "shared/ui-lib/Link";
 import styles from "./AiUnavailableModal.module.css";
+import { useUiModalContext } from "View/Ui/UiModal";
 
 export const AI_UNAVAILABLE_MODAL_ID = Symbol("aiUnavailableModal");
 
 export function AiUnavailableModal(): JSX.Element {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
+	const { closeModal } = useUiModalContext();
 
 	return (
 		<UiModal modalId={AI_UNAVAILABLE_MODAL_ID}>
 			<div className={styles.wrapper}>
-				<h1 className={styles.heading}>AI-чат на доске Microboard</h1>
+				<h1 className={styles.heading}>{t("ai.unauth.heading")}</h1>
 				<div className={styles.msg}>
-					<p>AI-чат доступен только авторизованным пользователям.</p>
-					<p>
-						<Link to="/auth/sign-in" className={styles.link}>
-							{" "}
-							{t("sharing.login")}
-						</Link>{" "}
-						{t("sharing.or")}{" "}
-						<Link to="/auth/sign-up" className={styles.link}>
-							{t("sharing.register")}
-						</Link>
-						, чтобы продолжить работу.
-					</p>
+					<Trans
+						t={t}
+						i18nKey={"ai.unauth.description"}
+						components={{
+							p: <p />,
+							signinLink: (
+								<Link
+									to="/auth/sign-in"
+									className={styles.link}
+									onClick={closeModal}
+								/>
+							),
+							signupLink: (
+								<Link
+									to="/auth/sign-up"
+									className={styles.link}
+									onClick={closeModal}
+								/>
+							),
+						}}
+					/>
 				</div>
 
 				<Button
 					className={styles.btn}
-					onClick={() => navigate("/auth/sign-in")}
+					onClick={() => {
+						navigate("/auth/sign-in");
+						closeModal();
+					}}
 				>
 					{t("auth.signIn")}
 				</Button>

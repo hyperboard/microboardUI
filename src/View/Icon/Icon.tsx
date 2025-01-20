@@ -74,7 +74,6 @@ export type IconId =
 	| "canView"
 	| "checkMark"
 	| "BurgerMenu"
-	| "miro"
 	| "loader"
 	| "TextLimitWarning"
 	| "lock"
@@ -149,7 +148,7 @@ export function Icon({
 			width={width}
 			height={height}
 			style={style}
-			className={clsx(className, styles.icon)}
+			className={clsx(className, !width && !height && styles.icon)}
 		>
 			<use
 				width={width}

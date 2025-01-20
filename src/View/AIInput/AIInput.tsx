@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState, type SyntheticEvent } from "react";
+import React, {
+	useEffect,
+	useRef,
+	useState,
+	type MouseEventHandler,
+	type SyntheticEvent,
+} from "react";
 import styles from "./AIInput.module.css";
 import { useAppSubscription } from "Board/useBoardSubscription";
 import { useTranslation } from "react-i18next";
@@ -41,6 +47,8 @@ export const AIInput: React.FC = () => {
 	const navigate = useNavigate();
 	const isMediaMatches = useMediaQuery("(max-width: 1170px)");
 	const {
+		query,
+		setQuery,
 		stopStream,
 		responseNodeId,
 		model,
@@ -63,10 +71,11 @@ export const AIInput: React.FC = () => {
 
 		window.addEventListener("resize", setScreen);
 
+		setInputValue(query);
 		return () => {
 			window.removeEventListener("resize", setScreen);
 		};
-	});
+	}, []);
 
 	useAppSubscription({
 		subjects: ["selectionItems", "selectionItem", "selection"],
@@ -77,6 +86,7 @@ export const AIInput: React.FC = () => {
 		event: React.ChangeEvent<HTMLTextAreaElement>,
 	) => {
 		setInputValue(event.target.value);
+		setQuery(event.target.value);
 		event.target.style.height = "auto";
 		event.target.style.height = `${Math.min(event.target.scrollHeight, 120)}px`;
 	};
@@ -282,6 +292,22 @@ export const AIInput: React.FC = () => {
 		return model;
 	};
 
+	const isModelDisabled = (model: OpenAIModels) =>
+		!account.billingInfo?.models.find(
+			item => item.id === model && item.isEnabled,
+		);
+
+	const handleOpenModal: MouseEventHandler = evt => {
+		evt.preventDefault();
+		evt.stopPropagation();
+		setIsDropdownOpen(false);
+		if (account.isLoggedIn) {
+			openModal(USER_PLAN_MODAL_ID);
+		} else {
+			openModal(AI_UNAVAILABLE_MODAL_ID);
+		}
+	};
+
 	return (
 		<UiPanel
 			padding={0}
@@ -319,32 +345,44 @@ export const AIInput: React.FC = () => {
 					{isDropdownOpen && (
 						<div className={styles.modelDropdown}>
 							<button
-								disabled={
-									!account.billingInfo?.models.find(
-										model =>
-											model.id === "gpt-4o-mini" &&
-											model.isEnabled,
-									)
+								className={clsx(
+									styles.modelBtn,
+									isModelDisabled("gpt-4o-mini") &&
+										styles.disabled,
+								)}
+								onClick={
+									isModelDisabled("gpt-4o-mini")
+										? handleOpenModal
+										: () => selectModel("gpt-4o-mini")
 								}
-								className={styles.modelBtn}
-								onClick={() => selectModel("gpt-4o-mini")}
 							>
 								<strong>GPT-4o mini</strong>
 								<p>{t("ai.models.gpt-4o-mini.description")}</p>
+								{isModelDisabled("gpt-4o-mini") && (
+									<Tooltip
+										tooltip={t("userPlan.upgradeTooltip")}
+									/>
+								)}
 							</button>
 							<button
-								disabled={
-									!account.billingInfo?.models.find(
-										model =>
-											model.id === "gpt-4o" &&
-											model.isEnabled,
-									)
+								className={clsx(
+									styles.modelBtn,
+									isModelDisabled("gpt-4o") &&
+										styles.disabled,
+								)}
+								onClick={
+									isModelDisabled("gpt-4o")
+										? handleOpenModal
+										: () => selectModel("gpt-4o")
 								}
-								className={styles.modelBtn}
-								onClick={() => selectModel("gpt-4o")}
 							>
 								<strong>GPT-4o</strong>
 								<p>{t("ai.models.gpt-4o.description")}</p>
+								{isModelDisabled("gpt-4o") && (
+									<Tooltip
+										tooltip={t("userPlan.upgradeTooltip")}
+									/>
+								)}
 							</button>
 						</div>
 					)}

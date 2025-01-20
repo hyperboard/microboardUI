@@ -10,6 +10,7 @@ import { LockIcon } from "View/SignupView/LockIcon";
 import { Button } from "shared/ui-lib/Button";
 import { Tail } from "View/AuthView/Tail";
 import { PROFILE_SETTINGS_MODAL_ID } from "View/ProfileSettingsModal";
+import { Icon } from "View/Icon";
 
 export const CHANGE_PASSWORD_MODAL = Symbol("ChangePasswordModal");
 
@@ -153,6 +154,14 @@ export function ChangePasswordModal(): JSX.Element {
 	return (
 		<UiModal modalId={CHANGE_PASSWORD_MODAL}>
 			<div className={styles.modal}>
+				<Button
+					onClick={closeModal}
+					className={styles.backBtn}
+					pattern="ghost"
+				>
+					<Icon width={20} height={20} iconName="BackArrow" />{" "}
+					{t("profile.title")}
+				</Button>
 				<h2 className={styles.modalTitle}>
 					{t("profile.changePassword")}
 				</h2>

@@ -63,23 +63,23 @@
 
 .newsletterLink {
 	color: #4778f5;
-	transition: all .35s;
+	transition: all 0.35s;
 }
 
 .newsletterLink::after {
 	background-color: #4778f5;
 	height: 1px;
 	bottom: 1px;
-	transition: all .35s;
+	transition: all 0.35s;
 }
 
 .newsletterLink:hover:after {
-	background-color: #DED1FF;
+	background-color: #ded1ff;
 	height: 1px;
 	bottom: 1px;
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 1028px) {
 	.container {
 		padding: 16px;
 	}

@@ -91,7 +91,7 @@
 	width: 100%;
 }
 
-.modelBtn:hover:not(:disabled) {
+.modelBtn:hover:not(.disabled) {
 	background-color: #0a0f290a;
 }
 
@@ -108,11 +108,11 @@
 	font-size: 12px;
 }
 
-.modelBtn:disabled,
-.modelBtn:disabled p,
-.modelBtn:disabled strong {
+.modelBtn.disabled,
+.modelBtn.disabled p,
+.modelBtn.disabled strong {
 	color: rgba(204, 204, 204, 0.8);
-	cursor: not-allowed;
+	cursor: default;
 }
 
 .aiInput {

@@ -1,12 +1,19 @@
-import { useTranslation } from "react-i18next";
-import { PlanCard, type PlanState } from "./PlanCard";
-import React, { useEffect, useState } from "react";
 import { useAccount } from "App/useAccount";
-import { useConfirmModalContext } from "View/Modal/ConfirmModal";
-import { notify } from "View/Ui/Toast";
+import React, { useEffect, useState, type MouseEventHandler } from "react";
+import { useTranslation } from "react-i18next";
 import { billingApi } from "shared/api";
 import { useUiModalContext } from "View/Ui/UiModal";
+import { PlanCard, type PlanState } from "./PlanCard";
 import { SELECT_PAYMENT_MODAL_ID } from "./SelectPaymentModal";
+import { useConfirmModalContext } from "View/Modal/ConfirmModal";
+import { notify } from "View/Ui/Toast";
+import i18n from "Lang";
+import styles from "./PlanCards.module.css";
+
+const PLAN_NAMES = {
+	basic: i18n.t("userPlan.plans.basic.name"),
+	plus: i18n.t("userPlan.plans.basic.name"),
+};
 
 export function BasicPlanCard() {
 	const { t } = useTranslation();
@@ -42,14 +49,38 @@ export function BasicPlanCard() {
 
 	const onDowngrade = () => {
 		openModalConfirm(
-			`Отказаться от тарифа ${account.billingInfo?.plan.name}`,
-			`Доступ к ${account.billingInfo?.plan.name} останется в течение оплаченного срока до ${account.billingInfo?.plan.periodEnd}, после этого вы потеряете преимущества тарифа ${account.billingInfo?.plan.name} и вернетесь к Базовому тарифу.`,
+			<h2 className={styles.downgradeHeading}>
+				{t("userPlan.downgradeModal.heading", {
+					planName:
+						PLAN_NAMES[account.billingInfo?.plan.name ?? "basic"],
+				})}
+			</h2>,
+			<p className={styles.downgradeDesc}>
+				{t("userPlan.downgradeModal.description", {
+					planName:
+						PLAN_NAMES[account.billingInfo?.plan.name ?? "basic"],
+					currentPeriodEnd: new Intl.DateTimeFormat(i18n.language, {
+						year: "numeric",
+						month: "numeric",
+						day: "numeric",
+					}).format(
+						new Date(account.billingInfo?.plan.periodEnd ?? 0),
+					),
+				})}
+			</p>,
 			async () => {
 				notify({ header: "Тариф обновлен", body: "Бла бла бла бла" });
 				Promise.resolve();
 			},
+			async () => {},
+			t("userPlan.downgradeModal.confirm", {
+				planName: PLAN_NAMES[account.billingInfo?.plan.name ?? "basic"],
+			}),
+			t("userPlan.downgradeModal.cancel"),
+			styles.downgradeConfirmation,
 		);
 	};
+
 	if (!plan) {
 		return null;
 	}
@@ -119,7 +150,6 @@ export function PlusPlanCard(): JSX.Element {
 				returnObjects: true,
 			})}
 			variant="plus"
-			unlimited
 			price={plan.price}
 			state={getPlusSubState()}
 			onSubscribe={handleOpenPaymentModal}

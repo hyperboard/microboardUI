@@ -591,7 +591,7 @@
 		"imgAuthClipboardModal": {
 			"title": "You copied the images",
 			"description": "Miro does not allow importing images without sign in. Please sign in to continue.",
-			"authBtn": "Sign In",
+			"authBtn": "Sign in to Miro",
 			"continueBtn": "Continue without images"
 		},
 		"startModal": {
@@ -672,6 +672,10 @@
 			"gpt-4o": {
 				"description": "Great for most tasks"
 			}
+		},
+		"unauth": {
+			"heading": "AI chat on Microboard",
+			"description": "<p>AI chat is only available to authorized users.</p><p><signinLink>Sign in</signinLink> or <signupLink>sign up</signupLink> to proceed.</p>"
 		}
 	},
 	"sharing": {
@@ -764,11 +768,19 @@
 		"free": "Free",
 		"perMonth": "per month",
 		"customPrice": "Custom Pricing",
+		"upgradeTooltip": "Upgrade your plan",
+		"backToProfile": "Back to Profile settings",
 		"subscribe": {
 			"current": "Current Plan",
 			"getPlan": "Get {{plan}}",
 			"contact": "Contact Us",
 			"downgrade": "Downgrade"
+		},
+		"downgradeModal": {
+			"heading": "Cancel {{planName}}?",
+			"description": "Access to {{planName}} will remain for the paid term until {{currentPeriodEnd}}, after which you will lose the benefits of the {{planName}} plan and revert to the Basic plan.",
+			"confirm": "Cancel {{planName}} plan",
+			"cancel": "Keep"
 		},
 		"plans": {
 			"basic": {

@@ -32,7 +32,7 @@ export function UserPlanModal() {
 	}, []);
 
 	return (
-		<UiModal modalId={USER_PLAN_MODAL_ID}>
+		<UiModal modalId={USER_PLAN_MODAL_ID} closeByBgClick={false}>
 			<div className={styles.wrapper}>
 				<h1 className={styles.heading}>{t("userPlan.upgradePlan")}</h1>
 				<UserPlanUsage
@@ -55,7 +55,7 @@ export function UserPlanModal() {
 					className={styles.back}
 					onClick={handleOpenProfileSettings}
 				>
-					Back to Profile settings
+					{t("userPlan.backToProfile")}
 				</Button>
 			</div>
 		</UiModal>

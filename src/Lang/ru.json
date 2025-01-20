@@ -588,8 +588,8 @@
 		},
 		"imgAuthClipboardModal": {
 			"title": "Вы скопировали изображения",
-			"description": "Miro не разрешает импорт изображений без авторизации. Чтобы продолжить, пожалуйста, авторизируйтесь.",
-			"authBtn": "Авторизироваться",
+			"description": "Miro не разрешает импорт изображений без авторизации. Чтобы продолжить, пожалуйста, авторизуйтесь.",
+			"authBtn": "Авторизоваться в Miro",
 			"continueBtn": "Продолжить без изображений"
 		},
 		"startModal": {
@@ -610,7 +610,7 @@
 	},
 	"notifications": {
 		"connectionLostHeader": "Доска в оффлайн-режиме. Восстанавливаем соединение...",
-		"connectionReestablished": "Соединие восстановлено.",
+		"connectionReestablished": "Соединение восстановлено.",
 		"restoringConnectionHeader": "Восстанавливаем соединение",
 		"restoringConnectionBody": "Не обновляйте страницу и не закрывайте вкладку, чтобы не потерять прогресс"
 	},
@@ -670,6 +670,10 @@
 			"gpt-4o": {
 				"description": "Отлично подходит для большинства задач"
 			}
+		},
+		"unauth": {
+			"heading": "AI-чат на доске Microboard",
+			"description": "<p>AI-чат доступен только авторизованным пользователям.</p><p><signinLink>Войдите</signinLink> или <signupLink>зарегистрируйтесь</signupLink>, чтобы продолжить работу.</p>"
 		}
 	},
 	"sharing": {
@@ -761,12 +765,20 @@
 		"unlimited": "Без ограничениий",
 		"free": "Бесплатно",
 		"perMonth": "в месяц",
-		"customPrice": "Цена по запросу",
+		"customPrice": "По запросу",
+		"upgradeTooltip": "Увеличить лимит",
+		"backToProfile": "Вернуться к настройкам профиля",
 		"subscribe": {
 			"current": "Действует",
 			"getPlan": "Подключить {{plan}}",
 			"contact": "Напишите нам",
 			"downgrade": "Downgrade"
+		},
+		"downgradeModal": {
+			"heading": "Отказаться от тарифа {{planName}}?",
+			"description": "Доступ к {{planName}} останется в течение оплаченного срока до {{currentPeriodEnd}},  после этого вы потеряете преимущества тарифа {{planName}} и вернетесь к Базовому тарифу.",
+			"confirm": "Отказаться от {{planName}}",
+			"cancel": "Оставить"
 		},
 		"plans": {
 			"basic": {

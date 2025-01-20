@@ -51,12 +51,6 @@ export const ImgAuthClipboardModal = (): JSX.Element => {
 					className={styles.btn}
 					pattern="primary"
 				>
-					<Icon
-						iconName="miro"
-						width={16}
-						height={16}
-						style={{ color: "#050038" }}
-					/>
 					{t("miro.imgAuthClipboardModal.authBtn")}
 				</Button>
 				<Button

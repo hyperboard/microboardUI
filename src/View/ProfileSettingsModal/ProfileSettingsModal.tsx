@@ -33,7 +33,7 @@ const MAX_AVATAR_SIZE = 10 * 1024 * 1024; // 10MB
 const ACCEPTED_AVATAR_TYPES = ["image/jpeg", "image/png", "image/svg+xml"];
 
 export function ProfileSettingsModal(): ReactElement {
-	const isMediaMatches = useMediaQuery("(max-width: 1170px)");
+	// const isMediaMatches = useMediaQuery("(max-width: 1170px)");
 	const account = useAccount();
 	const [name, setName] = useState(() => account.info?.name ?? "");
 	const [updateState, setUpdateState] = useState<
@@ -84,7 +84,6 @@ export function ProfileSettingsModal(): ReactElement {
 		}, 2000),
 		[account],
 	);
-
 
 	const handleNewsletterChange = (_newsletter: boolean): void => {
 		abortController.current.abort();
@@ -147,11 +146,11 @@ export function ProfileSettingsModal(): ReactElement {
 		ev.preventDefault();
 		ev.stopPropagation();
 
-		if (isMediaMatches) {
-			navigate("/user/plan");
-		} else {
-			openModal(USER_PLAN_MODAL_ID);
-		}
+		// if (isMediaMatches) {
+		// 	navigate("/user/plan");
+		// } else {
+		openModal(USER_PLAN_MODAL_ID);
+		// }
 	};
 
 	const handleAvatarRemove: MouseEventHandler = async ev => {
@@ -175,7 +174,7 @@ export function ProfileSettingsModal(): ReactElement {
 	};
 
 	return (
-		<UiModal modalId={PROFILE_SETTINGS_MODAL_ID}>
+		<UiModal modalId={PROFILE_SETTINGS_MODAL_ID} closeByBgClick={false}>
 			<div className={styles.container}>
 				<h1 className={styles.heading}>{t("profile.title")}</h1>
 				<div className={styles.avatar}>

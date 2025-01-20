@@ -36,12 +36,6 @@ export const ImportMiroStartModal = (): JSX.Element => {
 					onClick={onClick}
 					className={styles.goToMiroBtn}
 				>
-					<Icon
-						iconName="miro"
-						width={16}
-						height={16}
-						style={{ color: "#050038" }}
-					/>
 					{t("miro.startModal.goToMiroBtn")}
 				</Button>
 			</div>

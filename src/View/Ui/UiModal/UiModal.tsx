@@ -3,7 +3,7 @@ import React, {
 	type PropsWithChildren,
 	type ReactNode,
 } from "react";
-import { Icon } from "View/Icon";
+import { Icon, Logo } from "View/Icon";
 import { UiButton } from "../UiButton";
 import { UiPanel } from "../UiPanel";
 import styles from "./UiModal.module.css";
@@ -17,6 +17,7 @@ type Props = PropsWithChildren<{
 	closeButton?: (closeModal: MouseEventHandler) => ReactNode;
 	onClose?: () => void;
 	className?: string;
+	closeByBgClick?: boolean;
 }>;
 
 export function UiModal({
@@ -25,6 +26,7 @@ export function UiModal({
 	closeButton,
 	className,
 	onClose,
+	closeByBgClick = true,
 }: Props): JSX.Element {
 	const { closeModal, openedModalId, transitionFrom } = useUiModalContext();
 	const isCloseTransition = transitionFrom === modalId;
@@ -34,7 +36,13 @@ export function UiModal({
 		onClose?.();
 	};
 
-	const ref = useClickOutside(handleClose);
+	const handleOutsideClose = () => {
+		if (closeByBgClick) {
+			handleClose();
+		}
+	};
+
+	const ref = useClickOutside(handleOutsideClose);
 
 	return (
 		<CSSTransition
@@ -67,6 +75,10 @@ export function UiModal({
 							</UiButton>
 						)}
 					</div>
+					<header className={styles.header}>
+						<Logo />
+						<span>Microboard</span>
+					</header>
 					<div ref={ref} className={styles.content}>
 						{children}
 					</div>

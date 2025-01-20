@@ -41,7 +41,6 @@ import { UserPlanModal } from "View/UserPlan";
 import { AiUnavailableModal } from "View/AiUnavailableModal/AiUnavailableModal";
 import { CookiesModal } from "View/Modal/CookiesModal";
 import { SelectPaymentModal } from "View/UserPlan/SelectPaymentModal";
-import { AIContextProvider } from "View/AIInput/AIContext";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -158,60 +157,58 @@ export function AppView(): JSX.Element {
 		<div className={style.wrapper}>
 			{shouldShow("titlePanel") && <LandingMenu />}
 			{shouldShow("titlePanel") && <MobileLandingMenu />}
-			<AIContextProvider>
-				<InactiveBoardHidder>
-					<div ref={containerRef}>
-						<Canvas
-							router={{ location, navigate, params }}
-							app={app}
-							board={board}
-						/>
-						<TextEditors app={app} board={board} />
-					</div>
-				</InactiveBoardHidder>
-				{appBoard.getBoardId() === "blank" && <NoBoardIsOpen />}
-				<ExportVisible>
-					<SidePanelsContainer
-						isBlank={appBoard.getBoardId() === "blank"}
+			<InactiveBoardHidder>
+				<div ref={containerRef}>
+					<Canvas
+						router={{ location, navigate, params }}
+						app={app}
+						board={board}
 					/>
-					<ContextMenu />
-					<ItemTooltip />
-					<AIInput />
-				</ExportVisible>
-				<ExportVisible>
-					<CommentsContextProvider>
-						<UserPanelLayout app={app} />
-						<CommentsProvider />
-					</CommentsContextProvider>
-				</ExportVisible>
-				<ExportVisible>
-					<UserTracking board={board} />
-				</ExportVisible>
-				<InactiveBoardHidder>
-					<ZoomPanel />
-				</InactiveBoardHidder>
-				<ViewModeGuard>
-					<LinksProvider />
-					<ContextPanel />
-					<QuickAddPanel />
-					<ExportPanel />
-				</ViewModeGuard>
-				<ToastProvider />
-				{authCode && teamIdSearch ? <ImportMiro /> : null}
-				<ImportMiroStartModal />
-				<CookiesModal />
-				<SetLinkToModal />
-				<UiModalBackground>
-					<SelectPaymentModal />
-					<UserPlanModal />
-					<ShareModal />
-					<ProfileSettingsModal />
-					<ChangePasswordModal />
-					<AccessDeniedModal />
-					<AiUnavailableModal />
-				</UiModalBackground>
-				<LocalFileSaveProgress />
-			</AIContextProvider>
+					<TextEditors app={app} board={board} />
+				</div>
+			</InactiveBoardHidder>
+			{appBoard.getBoardId() === "blank" && <NoBoardIsOpen />}
+			<ExportVisible>
+				<SidePanelsContainer
+					isBlank={appBoard.getBoardId() === "blank"}
+				/>
+				<ContextMenu />
+				<ItemTooltip />
+				<AIInput />
+			</ExportVisible>
+			<ExportVisible>
+				<CommentsContextProvider>
+					<UserPanelLayout app={app} />
+					<CommentsProvider />
+				</CommentsContextProvider>
+			</ExportVisible>
+			<ExportVisible>
+				<UserTracking board={board} />
+			</ExportVisible>
+			<InactiveBoardHidder>
+				<ZoomPanel />
+			</InactiveBoardHidder>
+			<ViewModeGuard>
+				<LinksProvider />
+				<ContextPanel />
+				<QuickAddPanel />
+				<ExportPanel />
+			</ViewModeGuard>
+			<ToastProvider />
+			{authCode && teamIdSearch ? <ImportMiro /> : null}
+			<ImportMiroStartModal />
+			<CookiesModal />
+			<SetLinkToModal />
+			<UiModalBackground>
+				<SelectPaymentModal />
+				<UserPlanModal />
+				<ShareModal />
+				<ProfileSettingsModal />
+				<ChangePasswordModal />
+				<AccessDeniedModal />
+				<AiUnavailableModal />
+			</UiModalBackground>
+			<LocalFileSaveProgress />
 		</div>
 	);
 }

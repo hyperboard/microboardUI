@@ -43,6 +43,8 @@
 	height: 100%;
 	width: 100%;
 	position: relative;
+	flex-direction: column;
+	align-items: stretch;
 }
 
 .content {
@@ -85,4 +87,54 @@
 
 .opacityExitDone {
 	z-index: 1001;
+}
+
+.header {
+	padding: 12px 30px;
+	border-bottom: 1px solid rgba(222, 224, 227, 1);
+	font-size: 16px;
+	font-weight: 500;
+	align-items: center;
+	gap: 8px;
+	display: none;
+	width: 100%;
+}
+
+@media screen and (max-width: 1028px) {
+	.closeBtn {
+		display: none;
+	}
+	.header {
+		display: flex;
+	}
+
+	.modalWrapper,
+	.panel,
+	.content {
+		max-width: 100%;
+		max-height: none;
+		width: 100%;
+		height: 100%;
+		min-height: 100%;
+	}
+
+	.modalWrapper {
+		inset: 0;
+		top: 0;
+		left: 0;
+		transform: none;
+		overflow: auto;
+	}
+
+	.panel {
+		border-radius: 0;
+		height: max-content;
+		min-height: 100%;
+		align-items: start;
+	}
+
+	.content {
+		height: max-content;
+		min-height: 100%;
+	}
 }

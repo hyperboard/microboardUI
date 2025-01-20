@@ -308,7 +308,7 @@
 <symbol id="FrameFrame1x1" viewBox="0 0 36 30" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path fill-rule="evenodd" clip-rule="evenodd" d="M12 9V21H24V9H12ZM11 7C10.4477 7 10 7.44772 10 8V22C10 22.5523 10.4477 23 11 23H25C25.5523 23 26 22.5523 26 22V8C26 7.44772 25.5523 7 25 7H11Z" fill="#14151A"/>
 </symbol>
-<symbol id="Close" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+<symbol id="Close" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none">
   <path d="M10.0001 8.82129L13.5359 5.28546C13.8613 4.96007 14.3889 4.96007 14.7143 5.28546V5.28546C15.0397 5.61084 15.0397 6.1384 14.7143 6.46379L11.1784 9.99962L14.7143 13.5355C15.0397 13.8608 15.0397 14.3884 14.7143 14.7138V14.7138C14.3889 15.0392 13.8613 15.0392 13.5359 14.7138L10.0001 11.178L6.46428 14.7138C6.13889 15.0392 5.61133 15.0392 5.28594 14.7138V14.7138C4.96056 14.3884 4.96056 13.8608 5.28594 13.5355L8.82178 9.99962L5.28594 6.46379C4.96056 6.1384 4.96056 5.61084 5.28594 5.28546V5.28546C5.61133 4.96007 6.13889 4.96007 6.46428 5.28546L10.0001 8.82129Z" fill="currentColor"/>
 </symbol>
 <symbol id="Folder" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -651,22 +651,6 @@
 
   <symbol id="linkTo" viewBox="0 0 13 14" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M11.0054 3.414L2.39838 12.021L0.984375 10.607L9.59037 2H2.00538V0H13.0054V11H11.0054V3.414Z" fill="#924FE8"/>
-  </symbol>
-
-  <symbol id="miro" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <g clip-path="url(#clip0_2301_3887)">
-      <path
-        d="M0 2C0 0.895431 0.895431 0 2 0H14C15.1046 0 16 0.895431 16 2V14C16 15.1046 15.1046 16 14 16H2C0.895431 16 0 15.1046 0 14V2Z"
-        fill="#FFD02F" />
-      <path
-        d="M10.9011 2.1333H9.1931L10.7094 4.4833L7.50377 2.1333H5.79577L7.3121 5.21263L4.10644 2.1333H2.39844L3.88977 6.10863L2.39844 13.8666H4.10644L7.3121 5.5483L5.79577 13.8666H7.50377L10.7094 4.8193L9.1931 13.8666H10.9011L14.1318 3.9283L10.9011 2.1333Z"
-        fill="currentColor" />
-    </g>
-    <defs>
-      <clipPath id="clip0_2301_3887">
-        <rect width="16" height="16" fill="white" />
-      </clipPath>
-    </defs>
   </symbol>
 
   <symbol id="AllTemplates" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">

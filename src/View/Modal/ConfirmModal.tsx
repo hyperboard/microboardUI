@@ -1,16 +1,25 @@
 import { createStrictContext, useStrictContext } from "lib/strictContext";
-import React, { MouseEventHandler, useEffect, useState } from "react";
+import React, {
+	MouseEventHandler,
+	useEffect,
+	useState,
+	type ReactNode,
+} from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import styles from "./ConfirmModal.module.css";
 import { UiLoader } from "View/Ui/UiLoader";
+import clsx from "clsx";
 
 interface ConfirmModalData {
-	title: string;
-	description: string;
+	title: string | ReactNode;
+	description: string | ReactNode;
 	opened: boolean;
 	onConfirm: () => Promise<void>;
 	onCancel?: () => Promise<void>;
+	confirmButtonLabel?: string;
+	cancelButtonLabel?: string;
+	containerClassname?: string;
 }
 
 interface ConfirmModalProps extends ConfirmModalData {
@@ -24,6 +33,9 @@ const ConfirmModalView: React.FC<ConfirmModalProps> = ({
 	onClose,
 	onConfirm,
 	onCancel,
+	confirmButtonLabel,
+	cancelButtonLabel,
+	containerClassname = "",
 }) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const { t } = useTranslation();
@@ -63,20 +75,38 @@ const ConfirmModalView: React.FC<ConfirmModalProps> = ({
 		return null;
 	}
 
+	console.log(
+		title,
+		confirmButtonLabel,
+		cancelButtonLabel,
+		containerClassname,
+	);
+
 	return (
 		<div
 			onClick={stopPropagation}
-			className={`${styles.modal} ${opened ? styles.open : null}`}
+			className={clsx(styles.modal, opened && styles.open)}
 		>
-			<div className={styles.wrapper}>
-				<div className={styles.title}>{title}</div>
-				<div className={styles.description}>{description}</div>
+			<div className={clsx(styles.wrapper, containerClassname)}>
+				{typeof title === "string" ? (
+					<div className={styles.title}>{title}</div>
+				) : (
+					title
+				)}
+				{typeof description === "string" ? (
+					<div className={styles.description}>{description}</div>
+				) : (
+					description
+				)}
 				<div className={styles.buttons}>
 					<button
 						className={styles.confirmButton}
 						onClick={handleConfirm}
 					>
-						<span>{t("modalConfirm.deleteBoard.delete")}</span>
+						<span>
+							{confirmButtonLabel ??
+								t("modalConfirm.deleteBoard.delete")}
+						</span>
 						{isLoading && (
 							<UiLoader
 								size={20}
@@ -89,7 +119,8 @@ const ConfirmModalView: React.FC<ConfirmModalProps> = ({
 						className={styles.cancelButton}
 						onClick={handleClose}
 					>
-						{t("modalConfirm.deleteBoard.cancel")}
+						{cancelButtonLabel ??
+							t("modalConfirm.deleteBoard.cancel")}
 					</button>
 				</div>
 			</div>
@@ -106,10 +137,13 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = props => {
 
 export const ConfirmModalContext = createStrictContext<{
 	openModalConfirm: (
-		title: string,
-		description: string,
+		title: string | ReactNode,
+		description: string | ReactNode,
 		onConfirm: () => Promise<void>,
 		onCancel?: () => Promise<void>,
+		confirmButtonLabel?: string,
+		cancelButtonLabel?: string,
+		containerClassname?: string,
 	) => void;
 	closeModalConfirm: () => void;
 	confirmModalInfo: ConfirmModalData;
@@ -126,13 +160,19 @@ export const ConfirmModalProvider: React.FC = ({ children }) => {
 		description: "",
 		onConfirm: () => Promise.reject(),
 		onCancel: () => Promise.reject(),
+		cancelButtonLabel: "",
+		confirmButtonLabel: "",
+		containerClassname: "",
 	});
 
 	const openModalConfirm = (
-		title: string,
-		description: string,
+		title: string | ReactNode,
+		description: string | ReactNode,
 		onConfirm: () => Promise<void>,
 		onCancel?: () => Promise<void>,
+		confirmButtonLabel?: string,
+		cancelButtonLabel?: string,
+		containerClassname?: string,
 	): void => {
 		setModalConfirm({
 			title,
@@ -140,6 +180,9 @@ export const ConfirmModalProvider: React.FC = ({ children }) => {
 			opened: true,
 			onConfirm,
 			onCancel,
+			confirmButtonLabel,
+			cancelButtonLabel,
+			containerClassname,
 		});
 	};
 
@@ -157,13 +200,7 @@ export const ConfirmModalProvider: React.FC = ({ children }) => {
 			}}
 		>
 			{children}
-			<ConfirmModal
-				opened={modalConfirm.opened}
-				title={modalConfirm.title}
-				description={modalConfirm.description}
-				onClose={closeModalConfirm}
-				onConfirm={modalConfirm.onConfirm}
-			/>
+			<ConfirmModal onClose={closeModalConfirm} {...modalConfirm} />
 		</ConfirmModalContext.Provider>
 	);
 };
