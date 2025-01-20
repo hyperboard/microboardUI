@@ -45,16 +45,16 @@ export function getUsersRouter(usersService: Users, logger: winston.Logger): exp
             const { token } = request;
             const userToken = await token;
             const userId = parseInt(userToken?.sub);
-            // if (!token || userToken === null) {
-            //     response
-            //         .status(HttpStatus.UNAUTHORIZED)
-            //         .json({
-            //             status: HttpStatus.UNAUTHORIZED,
-            //             message: "Unauthorized",
-            //         })
-            //         .end();
-            //     return;
-            // }
+            if (!token || userToken === null) {
+                response
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .json({
+                        status: HttpStatus.UNAUTHORIZED,
+                        message: "Unauthorized",
+                    })
+                    .end();
+                return;
+            }
 
             try {
                 await usersService.editNewsletter(userId, request.body.newsletter);

@@ -49,11 +49,12 @@ export function getAuthRouter(authService: Auth, userService: Users, logger: win
         body("password").isLength({ min: 6 }),
         validateRequest,
         catchAsync(async (req, res) => {
-            const { email, password, name } = req.body;
+            const { email, password, name, newsletter } = req.body;
             const user = await authService.register({
                 email,
                 password,
                 name,
+                newsletter
             });
             return res.json(user);
         })

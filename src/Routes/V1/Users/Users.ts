@@ -45,7 +45,7 @@ export class Users {
             name: user.userName!,
             avatar: user.avatar!,
             avatarGenerated: user.avatarGenerated ?? true,
-            newsletter: user.newsletter ?? true,
+            newsletter: user.newsletter ?? false,
         };
     }
 
