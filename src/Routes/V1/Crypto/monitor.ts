@@ -41,22 +41,22 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
     const ADDRESS_TO_MONITOR_TYPE_GUARD = ADDRESS_TO_MONITOR;
 
     const mainnetURL = `wss://mainnet.infura.io/ws/v3/${INFURA_API_KEY}`;
-    const sepoliaURL = `wss://sepolia.infura.io/ws/v3/${INFURA_API_KEY}`;
     const polygonURL = `wss://polygon-mainnet.infura.io/ws/v3/${INFURA_API_KEY}`;
     const arbitrumURL = `wss://arbitrum-mainnet.infura.io/ws/v3/${INFURA_API_KEY}`;
+    // const sepoliaURL = `wss://sepolia.infura.io/ws/v3/${INFURA_API_KEY}`;
 
     // todo strictly type
     const chainURLMap: Record<string, string> = {
         polygon: polygonURL,
         "arbitrum one": arbitrumURL,
         ethereum: mainnetURL,
-        sepolia: sepoliaURL,
+        // sepolia: sepoliaURL,
     };
     const chainURLHttpMap: Record<string, string> = {
         polygon: `https://polygon-mainnet.infura.io/v3/${INFURA_API_KEY}`,
         "arbitrum one": `https://arbitrum-mainnet.infura.io/v3/${INFURA_API_KEY}`,
         ethereum: `https://mainnet.infura.io/v3/${INFURA_API_KEY}`,
-        sepolia: `https://sepolia.infura.io/v3/${INFURA_API_KEY}`,
+        // sepolia: `https://sepolia.infura.io/v3/${INFURA_API_KEY}`,
     };
 
     const expiryQueue = new Queue("expiry", {
