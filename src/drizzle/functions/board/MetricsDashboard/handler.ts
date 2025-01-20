@@ -13,7 +13,7 @@ export async function getNewBoardsToday() {
     const result = await db
         .select({ count: sql`COUNT(*)` })
         .from(boards)
-        .where(sql`created >= CURRENT_DATE`)
+        .where(sql`${boards.createdAt} >= CURRENT_DATE`)
         .execute();
     return result[0]?.count || 0;
 }
@@ -27,7 +27,7 @@ export async function getNewUsersToday() {
     const result = await db
         .select({ count: sql`COUNT(*)` })
         .from(users)
-        .where(sql`created >= CURRENT_DATE`)
+        .where(sql`${users.createdAt} >= CURRENT_DATE`)
         .execute();
     return result[0]?.count || 0;
 }
@@ -41,7 +41,7 @@ export async function getFirstPaymentsToday() {
     const result = await db
         .select({ count: sql`COUNT(*)` })
         .from(userPlans)
-        .where(sql`start_date >= CURRENT_DATE AND status = 'active'`)
+        .where(sql`${userPlans.startDate} >= CURRENT_DATE AND status = 'active'`)
         .execute();
     return result[0]?.count || 0;
 }
@@ -51,7 +51,7 @@ export async function getRenewalsToday() {
         .select({ count: sql`COUNT(*)` })
         .from(userPlans)
         .where(sql`
-            start_date >= CURRENT_DATE 
+            ${userPlans.startDate} >= CURRENT_DATE 
             AND status = 'active' 
             AND plan_id IN (
                 SELECT plan_id 
