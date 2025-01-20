@@ -117,8 +117,10 @@ export const AIInput: React.FC = () => {
 
 		if (
 			!currentModel ||
-			((currentModel.limits.daily.remaining ?? 0) <= 0 &&
-				(currentModel.limits.weekly.remaining ?? 0) <= 0)
+			(currentModel.limits.daily.remaining !== null &&
+				currentModel.limits.daily.remaining <= 0) ||
+			(currentModel.limits.weekly.remaining !== null &&
+				currentModel.limits.weekly.remaining <= 0)
 		) {
 			setIsShaking(true);
 			setTimeout(() => {
