@@ -12,7 +12,6 @@ import { useAppContext } from "View/AppContext";
 import { Icon } from "View/Icon";
 import { StarIcon } from "./StarIcon";
 import { AiChatMsg, OpenAIModels, UserRequest } from "App/Connection";
-import { Item } from "Board/Items";
 import { useForceUpdate } from "lib/useForceUpdate";
 import { Chevron } from "shared/ui-lib/Dropdown/Chevron";
 import { UiPanel } from "View/Ui/UiPanel";
@@ -59,7 +58,7 @@ export const AIInput: React.FC = () => {
 	const ideaFromSelection = getIdeaFromSelection(
 		board.selection.items.list(),
 	);
-	const isEditable = board.getInterfaceType() !== "view";
+	const isEditable = board.getInterfaceType() !== "view" && !board.isAIGenerating;
 
 	const isPhoneScreenCheck = () =>
 		matchMedia("screen and (max-width: 640px)").matches;
@@ -99,9 +98,6 @@ export const AIInput: React.FC = () => {
 			model => model.isDefault && model.isEnabled,
 		);
 
-		// const dm = defaultModel?.id
-		// 	.replace(/^gpt-/, "GPT-")
-		// 	.replace("-mini", " mini");
 		setModel((defaultModel?.id as OpenAIModels) ?? "GPT4o mini");
 	}, [account.billingInfo?.models]);
 
