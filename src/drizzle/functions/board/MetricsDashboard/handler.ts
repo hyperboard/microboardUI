@@ -50,8 +50,16 @@ export async function getRenewalsToday() {
     const result = await db
         .select({ count: sql`COUNT(*)` })
         .from(userPlans)
-        .where(sql`start_date >= CURRENT_DATE AND status = 'active'`)
-        .where(sql`plan_id IN (SELECT plan_id FROM user_plans WHERE user_id = user_plans.user_id AND start_date < CURRENT_DATE)`)
+        .where(sql`
+            start_date >= CURRENT_DATE 
+            AND status = 'active' 
+            AND plan_id IN (
+                SELECT plan_id 
+                FROM user_plans 
+                WHERE user_id = user_plans.user_id 
+                AND start_date < CURRENT_DATE
+            )
+        `)
         .execute();
     return result[0]?.count || 0;
 }
