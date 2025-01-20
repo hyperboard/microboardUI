@@ -70,7 +70,7 @@ export function calculateNodePosition(
 	const currData = selectedItem?.serialize() || null;
 	const newNodeData = newNode.serialize();
 	const width = DEFAULT_MAX_NODE_WIDTH - DEFAULT_MAX_NODE_WIDTH / 3;
-	const height = 100;
+	const height = 150;
 
 	const iterAdjustment = { x: -2 * width, y: 0 };
 
