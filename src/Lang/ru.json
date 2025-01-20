@@ -762,7 +762,11 @@
 	"userPlan": {
 		"upgradePlan": "Выбрать тариф",
 		"currentPlanInfo": "У вас осталось <0>{{availableRequests}} запросов к {{aiModel}} до {{tokensUsageResetDate}}</0>",
-		"unlimited": "Без ограничениий",
+		"currentPlanInfoDaily": "У вас осталось <0>{{availableRequests}} запросов к {{aiModel}} до конца дня.</0>",
+		"currentPlanPending": "Тариф {{planName}} оплачен до {{cancellationDate}}. Автоплатеж отключен.",
+		"currentPlanActive": "Тариф {{planName}} оплачен до {{cancellationDate}}. Подключен автоплатеж. Следующее списание: {{cancellationDate}}.",
+		"cancelPayment": "Отказаться",
+		"unlimited": "Без ограничений",
 		"free": "Бесплатно",
 		"perMonth": "в месяц",
 		"customPrice": "По запросу",
@@ -772,7 +776,7 @@
 			"current": "Действует",
 			"getPlan": "Подключить {{plan}}",
 			"contact": "Напишите нам",
-			"downgrade": "Downgrade"
+			"downgrade": "Отказаться"
 		},
 		"downgradeModal": {
 			"heading": "Отказаться от тарифа {{planName}}?",

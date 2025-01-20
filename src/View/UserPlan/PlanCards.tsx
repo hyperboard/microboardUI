@@ -1,18 +1,18 @@
 import { useAccount } from "App/useAccount";
-import React, { useEffect, useState, type MouseEventHandler } from "react";
+import i18n from "Lang";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { billingApi } from "shared/api";
-import { useUiModalContext } from "View/Ui/UiModal";
-import { PlanCard, type PlanState } from "./PlanCard";
-import { SELECT_PAYMENT_MODAL_ID } from "./SelectPaymentModal";
 import { useConfirmModalContext } from "View/Modal/ConfirmModal";
 import { notify } from "View/Ui/Toast";
-import i18n from "Lang";
+import { useUiModalContext } from "View/Ui/UiModal";
+import { PlanCard, type PlanState } from "./PlanCard";
 import styles from "./PlanCards.module.css";
+import { SELECT_PAYMENT_MODAL_ID } from "./SelectPaymentModal";
 
-const PLAN_NAMES = {
+export const PLAN_NAMES = {
 	basic: i18n.t("userPlan.plans.basic.name"),
-	plus: i18n.t("userPlan.plans.basic.name"),
+	plus: i18n.t("userPlan.plans.plus.name"),
 };
 
 export function BasicPlanCard() {
@@ -41,6 +41,10 @@ export function BasicPlanCard() {
 			account.billingInfo.plan.name === "pro" ||
 			account.billingInfo.plan.name === "plus"
 		) {
+			if (account.billingInfo.plan.status === "pending_cancellation") {
+				return "pending";
+			}
+
 			return "downgrade";
 		}
 
@@ -69,6 +73,7 @@ export function BasicPlanCard() {
 				})}
 			</p>,
 			async () => {
+				await account.unsubscribe();
 				notify({ header: "Тариф обновлен", body: "Бла бла бла бла" });
 				Promise.resolve();
 			},

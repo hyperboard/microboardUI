@@ -763,7 +763,11 @@
 	},
 	"userPlan": {
 		"upgradePlan": "Upgrade Plan",
-		"currentPlanInfo": "You have <0>{{availableRequests}} requests left for {{aiModel}} until {{tokensUsageResetDate}}</0>",
+		"currentPlanInfo": "You have <0>{{availableRequests}} requests left for {{aiModel}} until {{tokensUsageResetDate}}.</0>",
+		"currentPlanInfoDaily": "You have <0>{{availableRequests}} requests to {{aiModel}} remaining for the rest of the day.</0>",
+		"currentPlanPending": "The current {{planName}} plan is paid until {{cancellationDate}}. Auto-payment is disabled.",
+		"currentPlanActive": "The current {{planName}} plan is paid until {{cancellationDate}}. Auto-payment is enabled. Next payment: {{cancellationDate}}.",
+		"cancelPayment": "Cancel upcoming payment",
 		"unlimited": "Unlimited",
 		"free": "Free",
 		"perMonth": "per month",

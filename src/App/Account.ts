@@ -95,6 +95,15 @@ export class Account {
 		}
 	}
 
+	async unsubscribe() {
+		if (!this.isLoggedIn) {
+			return;
+		}
+
+		await billingApi.unsubscribe();
+		await this.fetchBillingInfo();
+	}
+
 	async fetchAccountInfo(): Promise<void> {
 		const { data } = await usersApi.getMe();
 		if (data?.id) {

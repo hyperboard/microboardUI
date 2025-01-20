@@ -13,6 +13,7 @@ export type ModelLimit = {
 	limit: number | null;
 	used: number | null;
 	remaining: number | null;
+	resetDate: string;
 };
 
 export type AvailableModel = {
@@ -31,6 +32,7 @@ export type UserPlan = {
 	name: string;
 	periodStart: string;
 	periodEnd: string;
+	status: "pending_cancellation" | "active";
 };
 
 export type UserLimits = {

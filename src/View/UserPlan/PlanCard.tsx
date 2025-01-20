@@ -6,7 +6,7 @@ import { Icon } from "View/Icon";
 import { Button } from "shared/ui-lib/Button";
 import { useTranslation } from "react-i18next";
 
-export type PlanState = "current" | "downgrade" | "available";
+export type PlanState = "current" | "downgrade" | "available" | "pending";
 
 const rubToUsd = (price: number) => price / 10000;
 
@@ -46,6 +46,7 @@ export function PlanCard({
 			case "current":
 				return t("userPlan.subscribe.current");
 			case "downgrade":
+			case "pending":
 				return t("userPlan.subscribe.downgrade");
 		}
 	};
@@ -131,8 +132,12 @@ export function PlanCard({
 			<Button
 				onClick={getHandler()}
 				className={styles.button}
-				disabled={state === "current"}
-				pattern={state === "downgrade" ? "tertiary" : "primary"}
+				disabled={state === "current" || state === "pending"}
+				pattern={
+					state === "downgrade" || state === "pending"
+						? "tertiary"
+						: "primary"
+				}
 			>
 				{getButtonLabel()}
 			</Button>

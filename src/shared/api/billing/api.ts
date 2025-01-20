@@ -19,6 +19,10 @@ export function createCheckout(payload: CreateCheckoutPayload) {
 	return api.post<CheckoutUrl>("/billing/create-checkout", payload);
 }
 
+export function unsubscribe() {
+	return api.delete<MessageResponse>("/billing/subscriptions");
+}
+
 export function verifyPayment() {
 	return api.get<MessageResponse>("/billing/sync-after-success");
 }

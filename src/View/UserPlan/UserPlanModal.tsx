@@ -5,19 +5,30 @@ import { UiModal } from "View/Ui/UiModal/UiModal";
 import React, { useEffect, type MouseEventHandler } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "shared/ui-lib/Button";
-import { BasicPlanCard, PlusPlanCard, ProPlanCard } from "./PlanCards";
+import {
+	BasicPlanCard,
+	PLAN_NAMES,
+	PlusPlanCard,
+	ProPlanCard,
+} from "./PlanCards";
 import styles from "./UserPlanModal.module.css";
 import { UserPlanUsage } from "./UserPlanUsage";
+import type { OpenAIModels } from "App/Connection";
+import { notify } from "View/Ui/Toast";
+import { useConfirmModalContext } from "View/Modal/ConfirmModal";
 
 export const USER_PLAN_MODAL_ID = Symbol("userPlanModal");
 
 export function UserPlanModal() {
 	const { openModal } = useUiModalContext();
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const account = useAccount();
+	const { openModalConfirm } = useConfirmModalContext();
 
+	const currentModelId: OpenAIModels =
+		account.billingInfo?.plan.name === "plus" ? "gpt-4o" : "gpt-4o-mini";
 	const currentModel = account.billingInfo?.models.find(
-		model => model.isEnabled,
+		({ id }) => id === currentModelId,
 	);
 
 	const handleOpenProfileSettings: MouseEventHandler = ev => {
@@ -27,23 +38,70 @@ export function UserPlanModal() {
 		openModal(PROFILE_SETTINGS_MODAL_ID);
 	};
 
+	const onDowngrade = () => {
+		openModalConfirm(
+			<h2 className={styles.downgradeHeading}>
+				{t("userPlan.downgradeModal.heading", {
+					planName:
+						PLAN_NAMES[account.billingInfo?.plan.name ?? "basic"],
+				})}
+			</h2>,
+			<p className={styles.downgradeDesc}>
+				{t("userPlan.downgradeModal.description", {
+					planName:
+						PLAN_NAMES[account.billingInfo?.plan.name ?? "basic"],
+					currentPeriodEnd: new Intl.DateTimeFormat(i18n.language, {
+						year: "numeric",
+						month: "numeric",
+						day: "numeric",
+					}).format(
+						new Date(account.billingInfo?.plan.periodEnd ?? 0),
+					),
+				})}
+			</p>,
+			async () => {
+				await account.unsubscribe();
+				notify({
+					header: "Тариф обновлен",
+					body: "Автоматическое продление отменено",
+				});
+				Promise.resolve();
+			},
+			async () => {},
+			t("userPlan.downgradeModal.confirm", {
+				planName: PLAN_NAMES[account.billingInfo?.plan.name ?? "basic"],
+			}),
+			t("userPlan.downgradeModal.cancel"),
+			styles.downgradeConfirmation,
+		);
+	};
+
 	useEffect(() => {
 		account.fetchBillingInfo();
 	}, []);
-
 	return (
 		<UiModal modalId={USER_PLAN_MODAL_ID} closeByBgClick={false}>
 			<div className={styles.wrapper}>
 				<h1 className={styles.heading}>{t("userPlan.upgradePlan")}</h1>
 				<UserPlanUsage
+					onCancel={onDowngrade}
+					isFree={account.billingInfo?.plan.name === "basic"}
+					planName={
+						PLAN_NAMES[account.billingInfo?.plan.name ?? "basic"]
+					}
 					aiModel={currentModel?.displayName ?? "Unknown"}
 					availableRequests={
 						currentModel?.limits.daily.remaining ||
 						currentModel?.limits.weekly.remaining
 					}
 					tokensUsageResetDate={
-						account.billingInfo?.plan.periodEnd ?? new Date()
+						(account.billingInfo?.plan.name === "plus"
+							? currentModel?.limits.daily.resetDate
+							: currentModel?.limits.weekly.resetDate) ??
+						new Date()
 					}
+					status={account.billingInfo?.plan.status ?? "active"}
+					cancellationDate={account.billingInfo?.plan.periodEnd}
 				/>
 				<div className={styles.cards}>
 					<BasicPlanCard />
