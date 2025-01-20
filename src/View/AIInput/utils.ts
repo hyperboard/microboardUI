@@ -149,7 +149,7 @@ export function calculateNodePosition(
 
 	const defaultConnector = new Connector(board);
 	const connectorData = defaultConnector.serialize();
-	connectorData.lineStyle = "orthogonal";
+	connectorData.lineStyle = "curved";
 
 	const savedStart = connectorStorage.getConnectorPointer("start");
 	if (savedStart) {
