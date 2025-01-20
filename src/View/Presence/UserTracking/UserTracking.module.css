@@ -12,6 +12,7 @@
 	align-items: flex-start;
 	overflow: hidden;
 	pointer-events: none;
+	z-index: 2;
 }
 
 .header {

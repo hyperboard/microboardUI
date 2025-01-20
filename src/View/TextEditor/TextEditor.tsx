@@ -90,7 +90,7 @@ export class TextEditor extends React.Component<
 		}
 	};
 
-	onPaste = (event): void => {
+	onPaste = (event): void | boolean => {
 		const board = this.props.board;
 
 		// TODO: actually check login
@@ -108,9 +108,9 @@ export class TextEditor extends React.Component<
 		if (richText.insideOf === "Frame") {
 			text = text.replace(/\n+/g, " ").trim();
 			Transforms.insertText(richText.editor.editor, text);
-		} else {
-			richText.editor.insertText(text);
 		}
+
+		return false;
 	};
 
 	render(): React.ReactElement | null {

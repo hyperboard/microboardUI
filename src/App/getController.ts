@@ -512,8 +512,8 @@ export function getController(
 
 		const text = tryToPasteAsItemOrReturnText(event, board, isLoggedIn());
 
-		if (text) {
-			pasteTextToTheBoard(board, text);
+		if (text && event.clipboardData) {
+			pasteTextToTheBoard(board, event.clipboardData);
 		}
 	}
 

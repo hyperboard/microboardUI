@@ -2,7 +2,7 @@ import { Board } from "Board";
 import { Mbr } from "Board/Items";
 import { RichText } from "Board/Items/RichText/RichText";
 
-export function pasteTextToTheBoard(board: Board, text: string): void {
+export function pasteTextToTheBoard(board: Board, data: DataTransfer): void {
 	const richText = new RichText(new Mbr());
 	richText.transformation.translateTo(
 		board.pointer.point.x,
@@ -12,6 +12,6 @@ export function pasteTextToTheBoard(board: Board, text: string): void {
 	richText.editor.setMaxWidth(600);
 	richText.editor.setSelectionHorisontalAlignment("left");
 	richText.insideOf = richText.itemType;
-	richText.editor.insertCopiedText(text);
+	richText.editor.editor.insertData(data);
 	board.add(richText);
 }
