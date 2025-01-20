@@ -1,14 +1,20 @@
 import express from "express";
 import { catchAsync } from "../../../shared/lib/catchAsync";
-import { sql, desc, eq, and, gte, lte } from "drizzle-orm";
+import { desc, eq, and } from "drizzle-orm";
 import winston from "winston";
 import { db } from "../../../drizzle/db";
-import { aiModels, modelLimits, plans, userStorageUsage, userPlans } from "../../../drizzle/entities/plans";
+import { plans, userPlans } from "../../../drizzle/entities/plans";
 import { jwtMiddleware } from "../../../Middlewares/jwt.middleware";
 import { body } from "express-validator";
-import { boardOwner, boards, chat, message } from "drizzle/entities";
 import { StripeService } from "./stripe";
 import { Redis } from "Redis";
+import {
+    getCurrentModelLimits,
+    getCurrentPeriods,
+    getCurrentPeriodTokenUsage,
+    getCurrentStorageUsage,
+    getCurrentUserPlan,
+} from "./utils";
 import { HttpStatus } from "shared/enums/http-status.enum";
 
 export const getBillingRouter = (
@@ -17,173 +23,6 @@ export const getBillingRouter = (
     redis: Redis
 ): express.Router => {
     const router = express.Router();
-
-    function getCurrentPeriods() {
-        const now = new Date();
-        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const startOfWeek = new Date(now);
-        startOfWeek.setDate(now.getDate() - now.getDay());
-
-        return {
-            daily: {
-                start: startOfToday,
-                end: now,
-            },
-            weekly: {
-                start: startOfWeek,
-                end: now,
-            },
-        };
-    }
-
-    async function getCurrentUserPlan(userId: number) {
-        const now = new Date();
-        const currentPlan = await db
-            .select({
-                planId: userPlans.planId,
-                monthlyTokenLimit: plans.monthlyTokenLimit,
-                name: plans.name,
-                startDate: userPlans.startDate,
-                endDate: userPlans.endDate,
-                status: userPlans.status,
-                storageLimit: plans.storageLimit,
-            })
-            .from(userPlans)
-            .innerJoin(plans, eq(userPlans.planId, plans.id))
-            .where(
-                and(
-                    eq(userPlans.userId, userId),
-                    eq(userPlans.status, "active"),
-                    lte(userPlans.startDate, now),
-                    gte(userPlans.endDate, now)
-                )
-            )
-            .limit(1);
-
-        if (!currentPlan.length) {
-            const freePlan = await db
-                .select({
-                    planId: plans.id,
-                    monthlyTokenLimit: plans.monthlyTokenLimit,
-                    name: plans.name,
-                    storageLimit: plans.storageLimit,
-                })
-                .from(plans)
-                .where(eq(plans.name, "basic"))
-                .limit(1);
-
-            if (!freePlan.length) {
-                throw new Error("Free plan not found in the system.");
-            }
-
-            const now = new Date();
-            const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-
-            return {
-                planId: freePlan[0].planId,
-                monthlyTokenLimit: freePlan[0].monthlyTokenLimit,
-                name: freePlan[0].name,
-                startDate: now,
-                endDate: thirtyDaysFromNow,
-                status: "active" as const,
-                storageLimit: freePlan[0].storageLimit,
-            };
-        }
-
-        return currentPlan[0];
-    }
-
-    async function getCurrentModelLimits(userId: number) {
-        const userPlan = await getCurrentUserPlan(userId);
-        const modelLimitsQuery = await db
-            .select({
-                modelId: aiModels.id,
-                modelName: aiModels.name,
-                displayName: aiModels.displayName,
-                isDefault: aiModels.isDefault,
-                dailyLimit: modelLimits.dailyRequestLimit,
-                weeklyLimit: modelLimits.weeklyRequestLimit,
-                isEnabled: modelLimits.isEnabled,
-            })
-            .from(aiModels)
-            .leftJoin(modelLimits, and(eq(modelLimits.modelId, aiModels.id), eq(modelLimits.planId, userPlan.planId)));
-
-        const periods = getCurrentPeriods();
-        const usage = await Promise.all(
-            modelLimitsQuery.map(async (model) => {
-                const [dailyUsage, weeklyUsage] = await Promise.all([
-                    db
-                        .select({
-                            count: sql<number>`count(${message.id})`,
-                        })
-                        .from(message)
-                        .innerJoin(chat, eq(message.chatId, chat.id))
-                        .innerJoin(boards, sql`${chat.boardId}::text = ${boards.uniqId}::text`)
-                        .innerJoin(boardOwner, eq(boards.id, boardOwner.boardId))
-                        .where(
-                            and(
-                                eq(boardOwner.ownerId, userId),
-                                eq(message.role, "assistant"),
-                                gte(message.createdAt, periods.daily.start),
-                                lte(message.createdAt, periods.daily.end)
-                            )
-                        ),
-                    db
-                        .select({
-                            count: sql<number>`count(${message.id})`,
-                        })
-                        .from(message)
-                        .innerJoin(chat, eq(message.chatId, chat.id))
-                        .innerJoin(boards, sql`${chat.boardId}::text = ${boards.uniqId}::text`)
-                        .innerJoin(boardOwner, eq(boards.id, boardOwner.boardId))
-                        .where(
-                            and(
-                                eq(boardOwner.ownerId, userId),
-                                eq(message.role, "assistant"),
-                                gte(message.createdAt, periods.weekly.start),
-                                lte(message.createdAt, periods.weekly.end)
-                            )
-                        ),
-                ]);
-
-                return {
-                    ...model,
-                    dailyUsage: dailyUsage[0].count,
-                    weeklyUsage: weeklyUsage[0].count,
-                };
-            })
-        );
-
-        return usage;
-    }
-
-    async function getCurrentPeriodTokenUsage(userId: number, startDate: Date, endDate: Date) {
-        const result = await db
-            .select({
-                totalTokens: sql<number>`COALESCE(SUM(${message.tokensUsed}), 0)`,
-            })
-            .from(message)
-            .innerJoin(chat, eq(message.chatId, chat.id))
-            .innerJoin(boards, sql`${chat.boardId}::text = ${boards.uniqId}::text`)
-            .innerJoin(boardOwner, eq(boards.id, boardOwner.boardId))
-            .where(
-                and(eq(boardOwner.ownerId, userId), gte(message.createdAt, startDate), lte(message.createdAt, endDate))
-            );
-
-        return +result[0].totalTokens;
-    }
-
-    async function getCurrentStorageUsage(userId: number) {
-        const result = await db
-            .select({
-                totalBytes: userStorageUsage.totalBytes,
-            })
-            .from(userStorageUsage)
-            .where(eq(userStorageUsage.userId, userId))
-            .limit(1);
-
-        return result.length ? result[0].totalBytes : 0;
-    }
 
     router.get(
         "/billing/limits",
@@ -201,6 +40,8 @@ export const getBillingRouter = (
 
             const tokensUsed = await getCurrentPeriodTokenUsage(userId, currentPlan.startDate, currentPlan.endDate);
             const remainingTokens = currentPlan.monthlyTokenLimit - tokensUsed;
+
+            const periods = getCurrentPeriods();
 
             res.json({
                 tokens: {
@@ -223,11 +64,13 @@ export const getBillingRouter = (
                             limit: model.dailyLimit,
                             used: model.dailyUsage,
                             remaining: model.dailyLimit ? Math.max(0, model.dailyLimit - model.dailyUsage) : null,
+                            resetDate: periods.daily.resetDate,
                         },
                         weekly: {
                             limit: model.weeklyLimit,
                             used: model.weeklyUsage,
                             remaining: model.weeklyLimit ? Math.max(0, model.weeklyLimit - model.weeklyUsage) : null,
+                            resetDate: periods.weekly.resetDate,
                         },
                     },
                 })),
@@ -306,7 +149,6 @@ export const getBillingRouter = (
 
             if (!stripeCustomerId) {
                 stripeCustomerId = (await stripeService.createStripeCustomer(userToken.sub)).id;
-                await redis.client.set(`stripe:user:${userToken.sub}`, stripeCustomerId);
             }
 
             const session = await stripeService.createCheckoutSession({
@@ -335,6 +177,171 @@ export const getBillingRouter = (
             });
         })
     );
+    router.delete(
+        "/billing/subscriptions",
+        jwtMiddleware(logger),
+        catchAsync(async (req, res) => {
+            const userToken = await req.token;
+            const userId = +userToken.sub;
+
+            const activeSubscription = await db
+                .select()
+                .from(userPlans)
+                .where(and(eq(userPlans.userId, userId), eq(userPlans.status, "active")))
+                .limit(1);
+
+            if (!activeSubscription.length) {
+                return res.status(404).json({
+                    error: "No active subscription found",
+                });
+            }
+
+            const subscription = activeSubscription[0];
+
+            if (!subscription.stripeSubscriptionId) {
+                return res.status(400).json({
+                    error: "No Stripe subscription found",
+                });
+            }
+
+            try {
+                await stripeService.stripe.subscriptions.update(subscription.stripeSubscriptionId, {
+                    cancel_at_period_end: true,
+                });
+
+                await db
+                    .update(userPlans)
+                    .set({
+                        status: "pending_cancellation",
+                        canceledAt: new Date(),
+                    })
+                    .where(eq(userPlans.id, subscription.id));
+
+                return res.status(200).json({
+                    message: "Subscription will be canceled at the end of the billing period",
+                });
+            } catch (error) {
+                logger.error("Failed to cancel subscription:", error);
+                return res.status(500).json({
+                    error: "Failed to cancel subscription",
+                });
+            }
+        })
+    );
+
+    // change plan
+    router.patch(
+        "/billing/subscriptions",
+        jwtMiddleware(logger),
+        body("newPlanId").isString(),
+        body("productId").isString(),
+        catchAsync(async (req, res) => {
+            const userToken = await req.token;
+            const userId = +userToken.sub;
+
+            const { newPlanId } = req.body as { newPlanId: string };
+
+            const activeSubscription = await db
+                .select()
+                .from(userPlans)
+                .where(and(eq(userPlans.userId, userId), eq(userPlans.status, "active")))
+                .limit(1);
+
+            if (!activeSubscription.length) {
+                return res.status(404).json({
+                    error: "No active subscription found",
+                });
+            }
+
+            const subscription = activeSubscription[0];
+
+            if (!subscription.stripeSubscriptionId) {
+                return res.status(400).json({
+                    error: "No Stripe subscription found",
+                });
+            }
+
+            try {
+                const plan = await db.select().from(plans).where(eq(plans.id, newPlanId)).limit(1);
+
+                if (!plan.length) {
+                    return res.status(404).json({
+                        error: "New plan not found",
+                    });
+                }
+
+                const stripeSubscription = await stripeService.stripe.subscriptions.retrieve(
+                    subscription.stripeSubscriptionId
+                );
+
+                await stripeService.stripe.subscriptions.update(subscription.stripeSubscriptionId, {
+                    items: [
+                        {
+                            id: stripeSubscription.items.data[0].id,
+                            price_data: {
+                                currency: "rub",
+                                product: "",
+                                unit_amount: plan[0].price,
+                                recurring: {
+                                    interval: "month",
+                                },
+                            },
+                        },
+                    ],
+                    metadata: {
+                        ...stripeSubscription.metadata,
+                        planId: newPlanId,
+                    },
+                });
+
+                await db
+                    .update(userPlans)
+                    .set({
+                        planId: newPlanId,
+                        updatedAt: new Date(),
+                    })
+                    .where(eq(userPlans.id, subscription.id));
+
+                return res.status(200).json({
+                    message: "Subscription plan updated successfully",
+                });
+            } catch (error) {
+                logger.error("Failed to change subscription plan:", error);
+                return res.status(500).json({
+                    error: "Failed to update subscription plan",
+                });
+            }
+        })
+    );
+
+    // Заявка на кастом
+    // router.post(
+    //     "/billing/custom",
+    //     jwtMiddleware(logger),
+    //     catchAsync(async (req, res) => {
+    //         const userToken = await req.token;
+    //         const userId = +userToken.sub;
+
+    //         const [pendingRequest] = await db
+    //             .select()
+    //             .from(customPlanRequests)
+    //             .where(eq(customPlanRequests.userId, userId))
+    //             .limit(1);
+
+    //         if (pendingRequest) {
+    //             return res.status(409).json({
+    //                 error: "You already have a pending request",
+    //             });
+    //         }
+
+    //         const [newRequest] = await db
+    //             .insert(customPlanRequests)
+    //             .values({ userId: userId, status: "pending" })
+    //             .returning();
+
+    //         return res.send(201).json(newRequest);
+    //     })
+    // );
 
     return router;
 };

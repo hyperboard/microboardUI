@@ -51,7 +51,7 @@ export function withWebSocketApi({
     const wsAccessKeys = new Map<WebSocket, string>();
     const snapshotRequestTimers = new Map<string, NodeJS.Timeout>();
     const presence = new Presence(redis);
-    const chatStreamHandler = new ChatStreamHandler(openai);
+    const chatStreamHandler = new ChatStreamHandler(openai, logger);
 
     wss.on("connection", (ws) => {
         ws.on("message", async (data) => {

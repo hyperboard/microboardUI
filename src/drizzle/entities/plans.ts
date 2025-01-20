@@ -1,4 +1,4 @@
-import { boolean, integer, pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, serial, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 import { users } from "./users";
 
 export const aiModels = pgTable("ai_models", {
@@ -32,6 +32,7 @@ export const userPlans = pgTable("user_plans", {
     endDate: timestamp("end_date").notNull(),
     status: varchar("status").notNull().default("active"), // active, cancelled, expired
     canceledAt: timestamp("canceled_at"),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
     stripeSubscriptionId: varchar("stripe_subscription_id"),
     transactionHash: varchar("transaction_hash"),
 });
@@ -39,14 +40,14 @@ export const userPlans = pgTable("user_plans", {
 export const userCryptoCheckout = pgTable("user_crypto_checkout", {
     id: varchar("id").primaryKey(),
     userId: integer("user_id")
-    .references(() => users.id)
-    .notNull(),
+        .references(() => users.id)
+        .notNull(),
     planId: varchar("plan_id")
-    .references(() => plans.id)
-    .notNull(),
+        .references(() => plans.id)
+        .notNull(),
     startDate: timestamp("start_date").notNull(),
     endDate: timestamp("end_date").notNull(),
-    status: varchar("status").notNull().default("active"), // active, cancelled, expired, payed 
+    status: varchar("status").notNull().default("active"), // active, cancelled, expired, payed
     symbol: varchar("crypto_symbol").notNull(), // ETH, POL, ...
     chainName: varchar("crypto_chain").notNull(), // Ethereum, Polygon, ...
     addressFrom: varchar("crypto_wallet").notNull(),
@@ -68,20 +69,6 @@ export const modelLimits = pgTable("plan_model_limits", {
     planVersion: integer("plan_version").notNull().default(1),
 });
 
-export const userModelUsage = pgTable("user_model_usage", {
-    id: varchar("id").primaryKey(),
-    userId: integer("user_id")
-        .references(() => users.id)
-        .notNull(),
-    modelId: varchar("model_id")
-        .references(() => aiModels.id)
-        .notNull(),
-    requestCount: integer("request_count").notNull().default(0),
-    periodStart: timestamp("period_start").notNull(),
-    periodEnd: timestamp("period_end").notNull(),
-    periodType: varchar("period_type").notNull(), // 'daily' or 'weekly'
-});
-
 export const userStorageUsage = pgTable("user_storage_usage", {
     id: varchar("id").primaryKey(),
     userId: integer("user_id")
@@ -91,8 +78,16 @@ export const userStorageUsage = pgTable("user_storage_usage", {
     lastUpdated: timestamp("last_updated").notNull(),
 });
 
+export const customPlanRequests = pgTable("custom_plan_requests", {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id")
+        .references(() => users.id)
+        .notNull(),
+    status: varchar("status").notNull().default("pending"), // pending, rejected, approved
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export type Plan = typeof plans.$inferSelect;
 export type UserPlan = typeof userPlans.$inferSelect;
 export type AiModel = typeof aiModels.$inferSelect;
 export type ModelLimit = typeof modelLimits.$inferSelect;
-export type UserModelUsage = typeof userModelUsage.$inferSelect;

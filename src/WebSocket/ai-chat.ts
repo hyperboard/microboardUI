@@ -29,7 +29,8 @@ export function getAIChatMsgHandler(options: {
                     msg as AiChatMsg<GenerateImageEvent>,
                     boardClients,
                     imageGenerator,
-                    ws
+                    ws,
+                    logger
                 );
                 break;
             case "StopGeneration":

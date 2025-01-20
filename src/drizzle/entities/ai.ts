@@ -24,6 +24,7 @@ export const message = pgTable("message", {
     generatedFrom: integer("generated_from"),
     itemId: text("item_id"),
     previousMessageId: integer("previous_message_id"),
+    model: text("model").notNull().default("unsupported"),
 });
 
 export const chatRelations = relations(chat, ({ many }) => ({

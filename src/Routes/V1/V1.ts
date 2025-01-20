@@ -11,7 +11,7 @@ import { Mailer } from "shared/modules/mailer/mailer";
 import winston from "winston";
 import { WebSocketServer } from "ws";
 import { createJobsRouter } from "./Jobs";
-import { createDashboardRouter } from "./Dashboard"
+import { createDashboardRouter } from "./Dashboard";
 import { createMediaRouter } from "./Media";
 import { MediaDAL } from "./Media/MediaDAL";
 import { getMiroRouter } from "./Miro";
@@ -25,7 +25,6 @@ import { getIngestRouter } from "./Ingest";
 import { OpenAI } from "../../ai/openai";
 import { StripeService } from "./Billing/stripe";
 import { getCryptoRouter } from "./Crypto";
-
 
 function createFileRoute(
     router: express.Router,

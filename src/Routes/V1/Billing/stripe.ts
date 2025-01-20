@@ -1,4 +1,3 @@
-import { Queue, Worker } from "bullmq";
 import { and, eq, lte } from "drizzle-orm";
 import { db } from "drizzle/db";
 import { users } from "drizzle/entities";
@@ -13,21 +12,13 @@ interface CreateCheckoutSessionParams {
     cancelUrl: string;
 }
 
-interface RenewalJobData {
-    userId: number;
-    planId: string;
-    stripeSubscriptionId: string;
-}
-
 export interface StripeService {
     createCheckoutSession: (params: CreateCheckoutSessionParams) => Promise<Stripe.Checkout.Session>;
     handleWebhook: (event: Stripe.Event) => Promise<void>;
-    handleSubscriptionRenewal: (stripeSubscriptionId: string) => Promise<void>;
-    startSubscriptionCheck: (data: RenewalJobData) => Promise<void>;
-    cleanup: () => Promise<void>;
     createStripeCustomer: (sub: string) => Promise<Stripe.Customer>;
-    cancelSubscription: (userId: number) => Promise<void>;
     syncStripeDataToKV: (customerId: string) => Promise<any>;
+    cancelSubscription: (userId: number) => Promise<void>;
+    stripe: Stripe;
 }
 
 const allowedEvents = [
@@ -52,72 +43,37 @@ const allowedEvents = [
 ] as Stripe.Event.Type[];
 
 export const createStripeService = (stripe: Stripe, redis: Redis): StripeService => {
-    const subscriptionQueue = new Queue<RenewalJobData>("subscription-renewal", {
-        connection: redis.client,
-        defaultJobOptions: {
-            attempts: 3,
-            backoff: {
-                type: "exponential",
-                delay: 1000,
-            },
-        },
-    });
+    const transitionToFreePlan = async (userId: number) => {
+        const currentPlan = await db
+            .select()
+            .from(userPlans)
+            .where(
+                and(eq(userPlans.userId, userId), eq(userPlans.status, "cancelled"), lte(userPlans.endDate, new Date()))
+            )
+            .limit(1);
 
-    const scheduleSubscriptionCheck = async (data: RenewalJobData) => {
-        await subscriptionQueue.add("check-subscriptions", data, {
-            repeat: {
-                pattern: "0 */6 * * *", // Run every 6 hours
-            },
-            jobId: `subscription-check-${data.userId}`,
+        if (!currentPlan.length) return;
+
+        const freePlan = await db.select().from(plans).where(eq(plans.name, "free")).limit(1);
+
+        if (!freePlan.length) throw new Error("Free plan not found");
+
+        const startDate = new Date();
+        const endDate = new Date(startDate.getTime() + (freePlan[0].resetPeriodDays || 30) * 24 * 60 * 60 * 1000);
+
+        await db.insert(userPlans).values({
+            id: crypto.randomUUID(),
+            userId,
+            planId: freePlan[0].id,
+            startDate,
+            endDate,
+            status: "active",
         });
     };
-
-    const scheduleFreePlanTransition = async (userId: number, transitionDate: Date) => {
-        await subscriptionQueue.add(
-            "transition-to-free",
-            // @ts-ignore
-            { userId },
-            {
-                delay: transitionDate.getTime() - Date.now(),
-                jobId: `free-plan-transition-${userId}`,
-            }
-        );
-    };
-
-    const removeSubscriptionCheck = async (userId: number) => {
-        const repeatableJobs = await subscriptionQueue.getJobSchedulers();
-        const userJob = repeatableJobs.find((job) => job.id === `subscription-check-${userId}`);
-        if (userJob) {
-            await subscriptionQueue.removeJobScheduler(userJob.key);
-        }
-    };
-
-    const worker = new Worker(
-        "subscription-renewal",
-        async (job) => {
-            if (job.name === "check-subscriptions") {
-                const { userId, planId, stripeSubscriptionId } = job.data;
-                await handleSubscriptionCheck(userId, planId, stripeSubscriptionId);
-            } else if (job.name === "transition-to-free") {
-                const { userId } = job.data;
-                await transitionToFreePlan(userId);
-            }
-        },
-        { connection: redis.client }
-    );
-
-    worker.on("failed", (job, err) => {
-        console.error(`Job failed: ${job?.name}`, err);
-    });
-
-    worker.on("completed", (job) => {
-        console.log(`Job completed: ${job.name}`);
-    });
 
     const handleSubscriptionCheck = async (userId: number, planId: string, stripeSubscriptionId: string) => {
         try {
             const stripeSubscription = await stripe.subscriptions.retrieve(stripeSubscriptionId);
-
             const currentSubscription = await db
                 .select()
                 .from(userPlans)
@@ -141,15 +97,12 @@ export const createStripeService = (stripe: Stripe, redis: Redis): StripeService
                     })
                     .where(eq(userPlans.id, currentSubscription[0].id));
 
-                await scheduleFreePlanTransition(userId, new Date(currentSubscription[0].endDate));
-
-                await removeSubscriptionCheck(userId);
+                await transitionToFreePlan(userId);
                 return;
             }
 
             if (stripeSubscription.status === "active") {
                 const plan = await db.select().from(plans).where(eq(plans.id, planId)).limit(1);
-
                 if (!plan.length) return;
 
                 if (new Date(currentSubscription[0].endDate) <= new Date()) {
@@ -185,34 +138,6 @@ export const createStripeService = (stripe: Stripe, redis: Redis): StripeService
             console.error(`Failed to process subscription for user ${userId}:`, error);
             throw error;
         }
-    };
-
-    const transitionToFreePlan = async (userId: number) => {
-        const currentPlan = await db
-            .select()
-            .from(userPlans)
-            .where(
-                and(eq(userPlans.userId, userId), eq(userPlans.status, "cancelled"), lte(userPlans.endDate, new Date()))
-            )
-            .limit(1);
-
-        if (!currentPlan.length) return;
-
-        const freePlan = await db.select().from(plans).where(eq(plans.name, "free")).limit(1);
-
-        if (!freePlan.length) throw new Error("Free plan not found");
-
-        const startDate = new Date();
-        const endDate = new Date(startDate.getTime() + (freePlan[0].resetPeriodDays || 30) * 24 * 60 * 60 * 1000);
-
-        await db.insert(userPlans).values({
-            id: crypto.randomUUID(),
-            userId,
-            planId: freePlan[0].id,
-            startDate,
-            endDate,
-            status: "active",
-        });
     };
 
     return {
@@ -318,7 +243,7 @@ export const createStripeService = (stripe: Stripe, redis: Redis): StripeService
                 throw new Error(`[STRIPE HOOK][CANCER] ID isn't string.\nEvent type: ${event.type}`);
             }
 
-            this.syncStripeDataToKV(customerId);
+            await this.syncStripeDataToKV(customerId);
 
             switch (event.type) {
                 case "checkout.session.completed": {
@@ -351,57 +276,51 @@ export const createStripeService = (stripe: Stripe, redis: Redis): StripeService
                     break;
                 }
 
+                case "customer.subscription.updated": {
+                    const subscription = event.data.object as Stripe.Subscription;
+                    const userId = parseInt(subscription.metadata.userId);
+                    const planId = subscription.metadata.planId;
+
+                    if (!userId || !planId) {
+                        console.log("Missing metadata in subscription update");
+                        break;
+                    }
+
+                    await handleSubscriptionCheck(userId, planId, subscription.id);
+                    console.log("Subscription details have been updated and checked");
+                    break;
+                }
+
                 case "invoice.payment_succeeded": {
                     const invoice = event.data.object as Stripe.Invoice;
-
                     if (!invoice.subscription) return;
 
-                    const currentSubscription = await db
-                        .select()
-                        .from(userPlans)
-                        .where(eq(userPlans.stripeSubscriptionId, invoice.subscription as string))
-                        .limit(1);
+                    const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
+                    const userId = parseInt(subscription.metadata.userId);
+                    const planId = subscription.metadata.planId;
 
-                    if (!currentSubscription.length) return;
+                    if (!userId || !planId) {
+                        console.log("Missing metadata in invoice payment success");
+                        break;
+                    }
 
-                    const plan = await db
-                        .select()
-                        .from(plans)
-                        .where(eq(plans.id, currentSubscription[0].planId))
-                        .limit(1);
-
-                    if (!plan.length) throw new Error("Plan not found");
-
-                    const startDate = new Date();
-                    const endDate = new Date(
-                        startDate.getTime() + (plan[0].resetPeriodDays || 30) * 24 * 60 * 60 * 1000
-                    );
-
-                    await db.insert(userPlans).values({
-                        id: crypto.randomUUID(),
-                        userId: currentSubscription[0].userId,
-                        planId: currentSubscription[0].planId,
-                        startDate,
-                        endDate,
-                        status: "active",
-                        stripeSubscriptionId: invoice.subscription as string,
-                    });
-
-                    await db
-                        .update(userPlans)
-                        .set({
-                            status: "expired",
-                            endDate: startDate,
-                        })
-                        .where(eq(userPlans.id, currentSubscription[0].id));
-
+                    await handleSubscriptionCheck(userId, planId, subscription.id);
+                    console.log("Payment succeeded, subscription renewed");
                     break;
                 }
 
                 case "invoice.payment_failed": {
                     const invoice = event.data.object as Stripe.Invoice;
-
                     if (!invoice.subscription) return;
+
+                    const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
+                    const userId = parseInt(subscription.metadata.userId);
+                    const planId = subscription.metadata.planId;
+
+                    if (!userId || !planId) {
+                        console.log("Missing metadata in invoice payment failure");
+                        break;
+                    }
 
                     await db
                         .update(userPlans)
@@ -410,11 +329,20 @@ export const createStripeService = (stripe: Stripe, redis: Redis): StripeService
                         })
                         .where(eq(userPlans.stripeSubscriptionId, invoice.subscription as string));
 
+                    await handleSubscriptionCheck(userId, planId, subscription.id);
                     break;
                 }
 
                 case "customer.subscription.deleted": {
                     const subscription = event.data.object as Stripe.Subscription;
+                    const userId = parseInt(subscription.metadata.userId);
+                    const planId = subscription.metadata.planId;
+
+                    if (!userId || !planId) {
+                        console.log("Missing metadata in subscription deletion");
+                        break;
+                    }
+
                     const userPlan = await db
                         .select()
                         .from(userPlans)
@@ -430,51 +358,66 @@ export const createStripeService = (stripe: Stripe, redis: Redis): StripeService
                             })
                             .where(eq(userPlans.id, userPlan[0].id));
 
-                        await scheduleFreePlanTransition(userPlan[0].userId, new Date(userPlan[0].endDate));
-                        await removeSubscriptionCheck(userPlan[0].userId);
+                        await transitionToFreePlan(userPlan[0].userId);
                     }
+
+                    await handleSubscriptionCheck(userId, planId, subscription.id);
                     break;
                 }
+
+                case "customer.subscription.created":
+                    console.log("New subscription created for customer");
+                    break;
+
+                case "customer.subscription.paused":
+                    console.log("Subscription has been paused");
+                    break;
+
+                case "customer.subscription.resumed":
+                    console.log("Subscription has been resumed after being paused");
+                    break;
+
+                case "customer.subscription.pending_update_applied":
+                    console.log("Pending update to subscription has been applied");
+                    break;
+
+                case "customer.subscription.pending_update_expired":
+                    console.log("Pending update to subscription has expired");
+                    break;
+
+                case "customer.subscription.trial_will_end":
+                    console.log("Subscription trial period is ending soon");
+                    break;
+
+                case "invoice.paid":
+                    console.log("Invoice has been paid");
+                    break;
+
+                case "invoice.payment_action_required":
+                    console.log("Additional action required to complete payment");
+                    break;
+
+                case "invoice.upcoming":
+                    console.log("Upcoming invoice has been generated");
+                    break;
+
+                case "invoice.marked_uncollectible":
+                    console.log("Invoice has been marked as uncollectible");
+                    break;
+
+                case "payment_intent.succeeded":
+                    console.log("Payment has been successfully processed");
+                    break;
+
+                case "payment_intent.payment_failed":
+                    console.log("Payment attempt has failed");
+                    break;
+
+                case "payment_intent.canceled":
+                    console.log("Payment intent has been canceled");
+                    break;
             }
         },
-
-        async handleSubscriptionRenewal(stripeSubscriptionId: string) {
-            const currentSubscription = await db
-                .select()
-                .from(userPlans)
-                .where(eq(userPlans.stripeSubscriptionId, stripeSubscriptionId))
-                .limit(1);
-
-            if (!currentSubscription.length) return;
-
-            const plan = await db.select().from(plans).where(eq(plans.id, currentSubscription[0].planId)).limit(1);
-
-            if (!plan.length) throw new Error("Plan not found");
-
-            const startDate = new Date();
-            const endDate = new Date(startDate.getTime() + (plan[0].resetPeriodDays || 30) * 24 * 60 * 60 * 1000);
-
-            await db.transaction(async (tx) => {
-                await tx.insert(userPlans).values({
-                    id: crypto.randomUUID(),
-                    userId: currentSubscription[0].userId,
-                    planId: currentSubscription[0].planId,
-                    startDate,
-                    endDate,
-                    status: "active",
-                    stripeSubscriptionId,
-                });
-
-                await tx
-                    .update(userPlans)
-                    .set({
-                        status: "expired",
-                        endDate: startDate,
-                    })
-                    .where(eq(userPlans.id, currentSubscription[0].id));
-            });
-        },
-
         async cancelSubscription(userId: number) {
             try {
                 const activeUserPlans = await db
@@ -499,12 +442,6 @@ export const createStripeService = (stripe: Stripe, redis: Redis): StripeService
             }
         },
 
-        startSubscriptionCheck(data: RenewalJobData) {
-            return scheduleSubscriptionCheck(data);
-        },
-
-        async cleanup() {
-            await worker.close();
-        },
+        stripe,
     };
 };

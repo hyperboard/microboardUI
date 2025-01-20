@@ -1,4 +1,4 @@
-import { asc, eq, inArray, ne, and, desc, gte, lte } from "drizzle-orm";
+import { asc, eq, inArray, ne, and, desc, gte, lte, sql } from "drizzle-orm";
 import WebSocket from "ws";
 import { OpenAI } from ".";
 import { db } from "drizzle/db";
@@ -31,31 +31,57 @@ import {
 import winston from "winston";
 import { getEncoding } from "js-tiktoken";
 import { getJson } from "serpapi";
-import { ModelLimit, userModelUsage, userPlans } from "drizzle/entities/plans";
+import { ModelLimit, modelLimits, userPlans } from "drizzle/entities/plans";
 import { boardOwner, boards } from "drizzle/entities";
 import { ModelLimitDefinition, PLAN_MODEL_LIMITS } from "drizzle/scripts/plans";
 import { GenerateImageOptions, ImageGenerator } from "WebSocket/image-generator";
-import { client } from "../../trigger";
+import { getCurrentUserPlan } from "Routes/V1/Billing/utils";
 
 class UsageLimitChecker {
-    private readonly defaultPlanId = "basic";
+    constructor(private logger: winston.Logger) {}
+    private async getCurrentPeriods() {
+        const now = new Date();
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-    private async getActivePlan(userId: number) {
-        if (userId === 0) {
-            return null;
-        }
+        const dayOfWeek = now.getDay();
+        const daysSinceMonday = (dayOfWeek + 6) % 7;
+        const startOfWeek = new Date(startOfToday);
+        startOfWeek.setDate(startOfToday.getDate() - daysSinceMonday);
 
-        const [userPlan] = await db
-            .select()
-            .from(userPlans)
-            .where(and(eq(userPlans.userId, userId), eq(userPlans.status, "active")))
-            .limit(1);
-
-        return userPlan;
+        return {
+            daily: {
+                start: startOfToday,
+                end: now,
+                resetDate: new Date(startOfToday.getTime() + 24 * 60 * 60 * 1000),
+            },
+            weekly: {
+                start: startOfWeek,
+                end: now,
+                resetDate: new Date(startOfWeek.getTime() + 7 * 24 * 60 * 60 * 1000),
+            },
+        };
     }
 
-    private findPlanLimit(planId: string, modelId: string): ModelLimitDefinition | undefined {
-        return PLAN_MODEL_LIMITS.find((limit) => limit.planId === planId && limit.modelId === modelId);
+    private async getCurrentUsage(userId: number, modelId: string, startDate: Date, endDate: Date): Promise<number> {
+        const result = await db
+            .select({
+                count: sql<number>`count(${message.id})`,
+            })
+            .from(message)
+            .innerJoin(chat, eq(message.chatId, chat.id))
+            .innerJoin(boards, sql`${chat.boardId}::text = ${boards.uniqId}::text`)
+            .innerJoin(boardOwner, eq(boards.id, boardOwner.boardId))
+            .where(
+                and(
+                    eq(message.model, modelId),
+                    eq(boardOwner.ownerId, userId),
+                    eq(message.role, "assistant"),
+                    gte(message.createdAt, startDate),
+                    lte(message.createdAt, endDate)
+                )
+            );
+
+        return result[0].count;
     }
 
     public async checkUserLimits(
@@ -65,12 +91,14 @@ class UsageLimitChecker {
         canProceed: boolean;
         error?: string;
     }> {
-        const userPlan = await this.getActivePlan(userId);
-        const planId = userPlan?.planId || this.defaultPlanId;
-        const planLimit = this.findPlanLimit(planId, modelId);
-        console.log("userPlan", userPlan);
-        console.log("planId", planId);
-        console.log("planLimit", planLimit);
+        const userPlan = await getCurrentUserPlan(userId);
+        const mLimits = await db
+            .select()
+            .from(modelLimits)
+            .where(and(eq(modelLimits.modelId, modelId), eq(modelLimits.planId, userPlan.planId)))
+            .limit(1);
+
+        const planLimit = mLimits[0];
 
         if (!planLimit?.isEnabled) {
             return { canProceed: false, error: "Model not available in your plan" };
@@ -80,45 +108,18 @@ class UsageLimitChecker {
             return { canProceed: true };
         }
 
-        const now = new Date();
-        const startOfDay = new Date(now.setHours(0, 0, 0, 0));
-        const endOfDay = new Date(now.setHours(23, 59, 59, 999));
-        const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
-        const endOfWeek = new Date(new Date(startOfWeek).setDate(startOfWeek.getDate() + 6));
+        const periods = await this.getCurrentPeriods();
 
-        await Promise.all([
-            this.ensureUsageRecord(userId, modelId, startOfDay, endOfDay, "daily"),
-            this.ensureUsageRecord(userId, modelId, startOfWeek, endOfWeek, "weekly"),
+        const [dailyUsage, weeklyUsage] = await Promise.all([
+            this.getCurrentUsage(userId, modelId, periods.daily.start, periods.daily.end),
+            this.getCurrentUsage(userId, modelId, periods.weekly.start, periods.weekly.end),
         ]);
 
-        const [[dailyUsage], [weeklyUsage]] = await Promise.all([
-            db
-                .select()
-                .from(userModelUsage)
-                .where(
-                    and(
-                        eq(userModelUsage.userId, userId),
-                        eq(userModelUsage.modelId, modelId),
-                        eq(userModelUsage.periodType, "daily")
-                    )
-                )
-                .limit(1),
-            db
-                .select()
-                .from(userModelUsage)
-                .where(
-                    and(
-                        eq(userModelUsage.userId, userId),
-                        eq(userModelUsage.modelId, modelId),
-                        eq(userModelUsage.periodType, "weekly")
-                    )
-                )
-                .limit(1),
-        ]);
+        this.logger.debug(`${modelId} - dailyUsage: ${dailyUsage}, weeklyUsage: ${weeklyUsage}`);
 
         if (
-            (planLimit.dailyRequestLimit && dailyUsage?.requestCount >= planLimit.dailyRequestLimit) ||
-            (planLimit.weeklyRequestLimit && weeklyUsage?.requestCount >= planLimit.weeklyRequestLimit)
+            (planLimit.dailyRequestLimit && dailyUsage >= planLimit.dailyRequestLimit) ||
+            (planLimit.weeklyRequestLimit && weeklyUsage >= planLimit.weeklyRequestLimit)
         ) {
             return { canProceed: false, error: "Request limit exceeded" };
         }
@@ -126,136 +127,40 @@ class UsageLimitChecker {
         return { canProceed: true };
     }
 
-    private async ensureUsageRecord(
-        userId: number,
-        modelId: string,
-        periodStart: Date,
-        periodEnd: Date,
-        periodType: "daily" | "weekly"
-    ): Promise<void> {
-        const [existingRecord] = await db
-            .select()
-            .from(userModelUsage)
-            .where(
-                and(
-                    eq(userModelUsage.userId, userId),
-                    eq(userModelUsage.modelId, modelId),
-                    eq(userModelUsage.periodType, periodType)
-                )
-            )
-            .limit(1);
-
-        if (!existingRecord) {
-            await db.insert(userModelUsage).values({
-                id: crypto.randomUUID(),
-                userId,
-                modelId,
-                requestCount: 0,
-                periodStart,
-                periodEnd,
-                periodType,
-            });
-        }
-    }
-
-    public async incrementUsage(userId: number, modelId: string): Promise<void> {
-        const now = new Date();
-        const todayStart = new Date(now.setHours(0, 0, 0, 0));
-        const todayEnd = new Date(now.setHours(23, 59, 59, 999));
-
-        const weekStart = new Date(now);
-        weekStart.setDate(now.getDate() - now.getDay());
-        const weekEnd = new Date(weekStart);
-        weekEnd.setDate(weekStart.getDate() + 6);
-
-        await Promise.all([
-            this.updatePeriodUsage(userId, modelId, "daily", todayStart, todayEnd),
-            this.updatePeriodUsage(userId, modelId, "weekly", weekStart, weekEnd),
-        ]);
-    }
-
-    public async updatePeriodUsage(
-        userId: number,
-        modelId: string,
-        periodType: "daily" | "weekly",
-        startDate: Date,
-        endDate: Date
-    ): Promise<void> {
-        const [existing] = await db
-            .select()
-            .from(userModelUsage)
-            .where(
-                and(
-                    eq(userModelUsage.userId, userId),
-                    eq(userModelUsage.modelId, modelId),
-                    eq(userModelUsage.periodType, periodType)
-                )
-            )
-            .limit(1);
-
-        if (existing) {
-            await db
-                .update(userModelUsage)
-                .set({ requestCount: existing.requestCount + 1 })
-                .where(eq(userModelUsage.id, existing.id));
-        } else {
-            await db.insert(userModelUsage).values({
-                id: crypto.randomUUID(),
-                userId,
-                modelId,
-                requestCount: 1,
-                periodStart: startDate,
-                periodEnd: endDate,
-                periodType,
-            });
-        }
-    }
-
     public async checkImageGenerationLimits(userId: number): Promise<{
         canProceed: boolean;
         error?: string;
     }> {
-        const userPlan = await this.getActivePlan(userId);
-        const planId = userPlan?.planId || this.defaultPlanId;
-        const planLimit = this.findPlanLimit(planId, "image-generation");
+        const userPlan = await getCurrentUserPlan(userId);
+        const mLimits = await db
+            .select()
+            .from(modelLimits)
+            .where(and(eq(modelLimits.modelId, "image-generation"), eq(modelLimits.planId, userPlan.planId)))
+            .limit(1);
+
+        const planLimit = mLimits[0];
 
         if (!planLimit?.isEnabled) {
             return { canProceed: false, error: "Image generation not available in your plan" };
         }
 
-        const now = new Date();
-        const startOfDay = new Date(now.setHours(0, 0, 0, 0));
-        const endOfDay = new Date(now.setHours(23, 59, 59, 999));
+        if (!planLimit.dailyRequestLimit) {
+            return { canProceed: true };
+        }
 
-        await this.ensureUsageRecord(userId, "image-generation", startOfDay, endOfDay, "daily");
+        const periods = await this.getCurrentPeriods();
+        const dailyUsage = await this.getCurrentUsage(
+            userId,
+            "image-generation",
+            periods.daily.start,
+            periods.daily.end
+        );
 
-        const [[dailyUsage]] = await Promise.all([
-            db
-                .select()
-                .from(userModelUsage)
-                .where(
-                    and(
-                        eq(userModelUsage.userId, userId),
-                        eq(userModelUsage.modelId, "image-generation"),
-                        eq(userModelUsage.periodType, "daily")
-                    )
-                )
-                .limit(1),
-        ]);
-
-        if (planLimit.dailyRequestLimit && dailyUsage?.requestCount >= planLimit.dailyRequestLimit) {
+        if (planLimit.dailyRequestLimit && dailyUsage >= planLimit.dailyRequestLimit) {
             return { canProceed: false, error: "Image generation limit exceeded" };
         }
 
         return { canProceed: true };
-    }
-
-    public async incrementImageGenerationUsage(userId: number): Promise<void> {
-        const now = new Date();
-        const todayStart = new Date(now.setHours(0, 0, 0, 0));
-        const todayEnd = new Date(now.setHours(23, 59, 59, 999));
-
-        await this.updatePeriodUsage(userId, "image-generation", "daily", todayStart, todayEnd);
     }
 }
 
@@ -300,7 +205,8 @@ export class ChatStreamHandler {
     private openai: OpenAI;
     private serpapi = new SerpApi();
     private encoder = getEncoding("cl100k_base");
-    private usageLimitChecker = new UsageLimitChecker();
+    private usageLimitChecker: UsageLimitChecker;
+
     boardClients = new Map<string, WebSocket.WebSocket[]>();
 
     private activeStreams = new Map<
@@ -313,8 +219,9 @@ export class ChatStreamHandler {
         }
     >();
 
-    constructor(openai: OpenAI) {
+    constructor(openai: OpenAI, logger: winston.Logger) {
         this.openai = openai;
+        this.usageLimitChecker = new UsageLimitChecker(logger);
     }
 
     private countTokens(text: string): number {
@@ -375,6 +282,7 @@ export class ChatStreamHandler {
                 role: MessageRole.SYSTEM,
                 content: "Conversation manually stopped by user",
                 logger,
+                model: "unsupported",
             });
             const stopChunk: AiChatMsg<ChatChunk> = {
                 type: "AiChat",
@@ -437,11 +345,13 @@ export class ChatStreamHandler {
         msg: AiChatMsg<GenerateImageEvent>,
         boardClients: Map<string, WebSocket.WebSocket[]>,
         imageGenerator: ImageGenerator,
-        ws: WebSocket
+        ws: WebSocket,
+        logger: winston.Logger
     ) {
         this.boardClients = boardClients;
         const boardOwnerId = await this.getBoardOwner(msg.boardId);
         const imageLimits = await this.usageLimitChecker.checkImageGenerationLimits(boardOwnerId);
+        const chat = await this.ensureChatExists(msg, logger);
 
         if (!imageLimits.canProceed) {
             ws.send(
@@ -518,6 +428,14 @@ export class ChatStreamHandler {
 
             const result = await imageGenerator.generateImage(options);
 
+            await this.saveMessage({
+                chat,
+                role: MessageRole.ASSISTANT,
+                content: result.base64 || "",
+                logger,
+                model: "unsupported",
+            });
+
             const msgToSend: AiChatMsg<GenerateImageResponse> = {
                 type: "AiChat",
                 boardId: msg.boardId,
@@ -531,8 +449,6 @@ export class ChatStreamHandler {
             };
 
             console.log("Message to send(Generate Image): ", msgToSend);
-
-            await this.usageLimitChecker.incrementImageGenerationUsage(boardOwnerId);
             ws.send(JSON.stringify(msgToSend));
         } catch (error) {
             console.error("Error generating image: ", error);
@@ -689,6 +605,7 @@ export class ChatStreamHandler {
                         role: MessageRole.SYSTEM,
                         content: getAdjustTextLengthPrompt(),
                         logger,
+                        model: msg.event.model || "gpt-4o-mini",
                     });
                     break;
                 case "adjust_reading_level":
@@ -701,6 +618,7 @@ export class ChatStreamHandler {
                         role: MessageRole.SYSTEM,
                         content: getAdjustReadingLevelPrompt(),
                         logger,
+                        model: msg.event.model || "gpt-4o-mini",
                     });
                     break;
                 case "adjust_emojis":
@@ -713,6 +631,7 @@ export class ChatStreamHandler {
                         role: MessageRole.SYSTEM,
                         content: getEmojiPrompt(),
                         logger,
+                        model: msg.event.model || "gpt-4o-mini",
                     });
                     break;
                 default:
@@ -725,6 +644,7 @@ export class ChatStreamHandler {
                         role: MessageRole.SYSTEM,
                         content: getChatSystemPrompt(),
                         logger,
+                        model: msg.event.model || "gpt-4o-mini",
                     });
                     break;
             }
@@ -801,9 +721,8 @@ export class ChatStreamHandler {
                 tokensUsed: tokens.length,
                 itemId: msg.event.requestItemId,
                 previousMessageId,
+                model: msg.event.model || "gpt-4o-mini",
             });
-
-            await this.usageLimitChecker.incrementUsage(boardOwnerId, msg.event.model || "gpt-4o-mini");
 
             logger.debug("Generating chat completion stream...");
             logger.debug("Context messages: ", JSON.stringify(contextMessages));
@@ -1034,6 +953,7 @@ export class ChatStreamHandler {
                             role: MessageRole.SYSTEM,
                             content: "Conversation manually stopped by user",
                             logger,
+                            model: "system",
                         });
                     }
 
@@ -1076,6 +996,7 @@ export class ChatStreamHandler {
             generatedFrom: userMessage.id,
             itemId: itemId,
             updatedFrom: updatedFrom,
+            model: userMessage.model,
             // previousMessageId: userMessage.id,
         });
 
@@ -1108,6 +1029,7 @@ export class ChatStreamHandler {
         generatedFrom?: number;
         itemId?: string;
         previousMessageId?: number;
+        model: string;
     }) {
         const {
             chat,
@@ -1119,6 +1041,7 @@ export class ChatStreamHandler {
             generatedFrom,
             itemId,
             previousMessageId,
+            model,
         } = options;
 
         const tokensUsed = options.tokensUsed ?? this.countTokens(content);
@@ -1162,6 +1085,7 @@ export class ChatStreamHandler {
                     generatedFrom,
                     itemId,
                     previousMessageId,
+                    model,
                 })
                 .returning();
 
@@ -1175,7 +1099,7 @@ export class ChatStreamHandler {
         console.error("Sending error response:", errorMessage);
         const errorChunk: AiChatMsg<ChatChunk> = {
             type: "AiChat",
-            boardId: chat?.boardId || boardId  || "",
+            boardId: chat?.boardId || boardId || "",
             event: {
                 type: "error",
                 error: errorMessage,
