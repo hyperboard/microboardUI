@@ -9,6 +9,7 @@ import { body } from "express-validator";
 import { boardOwner, boards, chat, message } from "drizzle/entities";
 import { StripeService } from "./stripe";
 import { Redis } from "Redis";
+import { HttpStatus } from "shared/enums/http-status.enum";
 
 export const getBillingRouter = (
     logger: winston.Logger,
@@ -245,6 +246,16 @@ export const getBillingRouter = (
         catchAsync(async (req, res) => {
             const plansQuery = await db.select().from(plans).where(eq(plans.version, 1));
             res.json(plansQuery);
+        })
+    );
+
+    router.delete(
+        "/billing/cancel",
+        jwtMiddleware(logger),
+        catchAsync(async (req, res) => {
+            const userId = +req.token.sub;
+            await stripeService.cancelSubscription(userId);
+            res.status(HttpStatus.NO_CONTENT).json(userId);
         })
     );
 

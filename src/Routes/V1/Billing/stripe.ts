@@ -26,6 +26,7 @@ export interface StripeService {
     startSubscriptionCheck: (data: RenewalJobData) => Promise<void>;
     cleanup: () => Promise<void>;
     createStripeCustomer: (sub: string) => Promise<Stripe.Customer>;
+    cancelSubscription: (userId: number) => Promise<void>;
     syncStripeDataToKV: (customerId: string) => Promise<any>;
 }
 
@@ -472,6 +473,30 @@ export const createStripeService = (stripe: Stripe, redis: Redis): StripeService
                     })
                     .where(eq(userPlans.id, currentSubscription[0].id));
             });
+        },
+
+        async cancelSubscription(userId: number) {
+            try {
+                const activeUserPlans = await db
+                    .select()
+                    .from(userPlans)
+                    .where(and(eq(userPlans.userId, userId), eq(userPlans.status, "active")));
+
+                if (!activeUserPlans.length) {
+                    console.log(`No active subscriptions found for user ${userId}.`);
+                    return;
+                }
+
+                for (const plan of activeUserPlans) {
+                    if (plan.stripeSubscriptionId) {
+                        await stripe.subscriptions.cancel(plan.stripeSubscriptionId);
+                    } else {
+                        console.warn(`No valid subscription ID for user ${userId} on plan ${plan.id}.`);
+                    }
+                }
+            } catch (error) {
+                console.error(`Failed to cancel subscriptions for user ${userId}:`, error);
+            }
         },
 
         startSubscriptionCheck(data: RenewalJobData) {
