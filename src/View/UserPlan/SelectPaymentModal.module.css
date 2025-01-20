@@ -18,6 +18,12 @@
 	align-items: stretch;
 }
 
+@media (max-width: 600px) {
+	.cards {
+		grid-template-columns: repeat(1, minmax(320px, 1fr));
+	}
+}
+
 .card {
 	cursor: pointer;
 	width: 100%;
