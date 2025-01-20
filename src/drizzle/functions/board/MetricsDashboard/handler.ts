@@ -1,8 +1,8 @@
 
-import { boards, users, boardEvents, userPlans} from "drizzle/entities";
+import { boards, users, boardEvents } from "drizzle/entities";
 import { db } from "drizzle/db";
 import { sql } from "drizzle-orm";
-
+import { userPlans } from "drizzle/entities/plans";
 
 export async function getTotalBoards() {
     const result = await db.select({ count: sql`COUNT(*)` }).from(boards).execute();
