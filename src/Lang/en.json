@@ -821,6 +821,7 @@
 			"few": "Selected items",
 			"many": "Selected items"
 		},
-		"disable": "Available on boards you can edit"
+		"disable": "Available on boards you can edit",
+		"disableWhenGenerating": "Wait for the response"
 	}
 }

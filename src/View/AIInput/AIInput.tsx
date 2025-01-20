@@ -58,8 +58,7 @@ export const AIInput: React.FC = () => {
 	const ideaFromSelection = getIdeaFromSelection(
 		board.selection.items.list(),
 	);
-	const isEditable =
-		board.getInterfaceType() !== "view" && !board.isAIGenerating;
+	const isEditable = board.getInterfaceType() !== "view";
 
 	const isPhoneScreenCheck = () =>
 		matchMedia("screen and (max-width: 640px)").matches;
@@ -147,8 +146,10 @@ export const AIInput: React.FC = () => {
 		}
 	};
 
-	const toggleModelDropdown = () => {
-		setIsDropdownOpen(!isDropdownOpen);
+	const toggleModelDropdown = (): void => {
+		if (!board.isAIGenerating) {
+			setIsDropdownOpen(!isDropdownOpen);
+		}
 	};
 
 	const selectModel = (model: OpenAIModels) => {
@@ -311,7 +312,19 @@ export const AIInput: React.FC = () => {
 					className={styles.tooltip}
 				/>
 			)}
-			<div className={styles.contentWrapper}>
+			{board.isAIGenerating && (
+				<Tooltip
+					tooltip={t("AIInput.disableWhenGenerating")}
+					tooltipPosition="top-center-fixed"
+					tooltipAlign="left"
+					className={styles.tooltip}
+				/>
+			)}
+			<div
+				className={clsx(styles.contentWrapper, {
+					[styles.disabled]: board.isAIGenerating,
+				})}
+			>
 				<div className={styles.modelSelector}>
 					<div
 						className={styles.selectedModel}
@@ -319,10 +332,9 @@ export const AIInput: React.FC = () => {
 					>
 						<span>{getModelDisplayName(model)}</span>
 						<Chevron
-							className={clsx(
-								isDropdownOpen ? styles.activeArrow : "",
-								styles.arrow,
-							)}
+							className={clsx(styles.arrow, {
+								[styles.activeArrow]: isDropdownOpen,
+							})}
 						/>
 					</div>
 					<StarIcon
@@ -330,7 +342,7 @@ export const AIInput: React.FC = () => {
 						width={20}
 						height={20}
 					/>
-					{isDropdownOpen && (
+					{isDropdownOpen && !board.isAIGenerating && (
 						<div className={styles.modelDropdown}>
 							<button
 								className={clsx(
@@ -390,7 +402,7 @@ export const AIInput: React.FC = () => {
 					className={styles.aiInput}
 					ref={inputRef}
 					rows={1}
-					disabled={!isEditable}
+					disabled={!isEditable || board.isAIGenerating}
 				/>
 				<div
 					className={clsx(
@@ -408,19 +420,22 @@ export const AIInput: React.FC = () => {
 						board.isAIGenerating ? handleStopClick : handleSendClick
 					}
 					className={styles.sendButton}
-					disabled={!isEditable && !board.isAIGenerating}
+					disabled={!isEditable}
 				>
 					<Icon
 						width={20}
 						height={20}
 						iconName={
-							board.isAIGenerating ? "StopAiGeneration" : "Vector"
+							board.isAIGenerating
+								? "StopAiGeneration"
+								: "Vector"
 						}
-						className={clsx(
-							styles.icon,
-							(inputValue.trim() || ideaFromSelection) &&
-								styles.activeIcon,
-						)}
+						className={clsx(styles.icon, {
+							[styles.activeIcon]:
+								inputValue.trim() ||
+								ideaFromSelection ||
+								board.isAIGenerating,
+						})}
 					/>
 				</button>
 			</div>

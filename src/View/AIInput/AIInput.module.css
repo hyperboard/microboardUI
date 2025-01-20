@@ -64,8 +64,13 @@
 	font-weight: 500;
 }
 
-.selectedModel svg {
-	opacity: 0.4;
+.disabled .selectedModel {
+	cursor: default;
+}
+
+.disabled .starIcon {
+	filter: grayscale(1);
+	opacity: 0.25;
 }
 
 .modelDropdown {
@@ -119,7 +124,6 @@
 	flex-grow: 1;
 	border: none;
 	margin-left: 5px;
-	margin-top: 2px;
 	max-width: 405px;
 	resize: none;
 	font-size: 14px;
@@ -129,6 +133,12 @@
 	box-sizing: border-box;
 	max-height: 120px;
 	line-height: 1.5;
+}
+
+.disabled .selectedModel,
+.disabled .aiInput::placeholder,
+.disabled .selectionInfo	{
+	color: rgba(10, 15, 41, 0.25);
 }
 
 .aiInput:focus {
@@ -172,6 +182,10 @@
 	font-weight: 500;
 }
 
+.disabled .selectionInfo {
+	background-color: #E9EAEC;
+}
+
 .activeSelection {
 	background-color: #ecdffb;
 }
@@ -186,6 +200,10 @@
 
 .arrow {
 	transition: all 0.45s ease-in-out;
+}
+
+.disabled .arrow {
+	opacity: 0.25;
 }
 
 .activeArrow {
@@ -210,7 +228,7 @@
 }
 
 .inputContainer:hover .tooltip div::before {
-	margin-left: -0.7rem;
+	margin-left: 0.3rem;
 	bottom: -0.6rem;
 	left: 4%;
 	transform: rotate(180deg);
