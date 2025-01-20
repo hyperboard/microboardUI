@@ -203,7 +203,17 @@
 @media screen and (hover: hover) {
 	.inputContainer:hover .tooltip {
 		display: block;
+		position: fixed;
+		bottom: 6rem;
+		top: unset;
 	}
+}
+
+.inputContainer:hover .tooltip div::before {
+	margin-left: -0.7rem;
+	bottom: -0.6rem;
+	left: 4%;
+	transform: rotate(180deg);
 }
 
 @media screen and (max-width: 768px) {
