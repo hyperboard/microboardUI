@@ -258,8 +258,17 @@ export const AIInput: React.FC = () => {
 			inputRef.current.style.height = "auto";
 		}
 
-		const mbrToFit = responseAdded.getMbr().combine(requestAdded.getMbr());
-		board.camera.zoomToFit(mbrToFit, (600 / mbrToFit.getWidth()) * 30);
+		const itemsInView = board.items.getInView();
+		const isAiNodesInView = itemsInView.some(
+			item => item.getId() === responseAdded.getId(),
+		);
+
+		if (!isAiNodesInView) {
+			const mbrToFit = responseAdded
+				.getMbr()
+				.combine(requestAdded.getMbr());
+			board.camera.zoomToFit(mbrToFit, (600 / mbrToFit.getWidth()) * 30);
+		}
 	};
 
 	const handleStopClick = async () => {
@@ -426,9 +435,7 @@ export const AIInput: React.FC = () => {
 						width={20}
 						height={20}
 						iconName={
-							board.isAIGenerating
-								? "StopAiGeneration"
-								: "Vector"
+							board.isAIGenerating ? "StopAiGeneration" : "Vector"
 						}
 						className={clsx(styles.icon, {
 							[styles.activeIcon]:
