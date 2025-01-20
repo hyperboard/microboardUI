@@ -66,10 +66,10 @@ export function calculateNodePosition(
 	board: Board,
 ): { newItem: AINode; connectorData: ConnectorData } {
 	const connectorStorage = new SessionStorage();
-	const currMbr = selectedItem.getMbr();
-	const currData = selectedItem.serialize();
+	const currMbr = selectedItem?.getMbr() || null;
+	const currData = selectedItem?.serialize() || null;
 	const newNodeData = newNode.serialize();
-	const width = DEFAULT_MAX_NODE_WIDTH;
+	const width = DEFAULT_MAX_NODE_WIDTH - DEFAULT_MAX_NODE_WIDTH / 3;
 	const height = 100;
 
 	const iterAdjustment = { x: -2 * width, y: 0 };
@@ -167,6 +167,102 @@ export function calculateNodePosition(
 	};
 }
 
+// TODO - find best practice
+function calculateParentItemPosition(
+	newNode: AINode,
+	board: Board,
+): { newItem: AINode; connectorData: ConnectorData } {
+	const connectorStorage = new SessionStorage();
+	const nearbyToCenterItems = board.items.getInView();
+
+	const iterAdjustment = {
+		x: DEFAULT_MAX_NODE_WIDTH / 2,
+		y: -newNode.getMbr().getHeight() / 2,
+	};
+
+	const baseAdjustments = {
+		translateX: DEFAULT_MAX_NODE_WIDTH,
+		translateY: 0,
+	};
+
+	let step = 1;
+	const cameraMbr = board.camera.getMbr();
+	let nearbyItemMbr = cameraMbr.copy();
+
+	if (nearbyToCenterItems.length) {
+		nearbyItemMbr = nearbyToCenterItems[nearbyToCenterItems.length - 1]
+			.getMbr()
+			.copy();
+
+		nearbyToCenterItems.forEach(item => {
+			if (
+				board.index.getNearestTo(
+					new Point(item.getMbr().right, item.getMbr().top),
+					20,
+					(otherItem: Item) =>
+						otherItem.itemType !== "Connector" &&
+						otherItem.isInView(cameraMbr),
+					DEFAULT_MAX_NODE_WIDTH,
+				).length === 0
+			) {
+				nearbyItemMbr = item.getMbr().copy();
+			}
+		});
+	}
+
+	const adjustmentPoint = new Point(
+		baseAdjustments.translateX + nearbyItemMbr.left,
+		baseAdjustments.translateY + nearbyItemMbr.top,
+	);
+
+	const newNodeData = newNode.serialize();
+	newNodeData.adjustmentPoint = adjustmentPoint;
+
+	while (
+		board.index.getNearestTo(
+			new Point(nearbyItemMbr.right, nearbyItemMbr.top),
+			20,
+			(otherItem: Item) =>
+				otherItem.itemType !== "Connector" &&
+				otherItem.isInView(cameraMbr),
+			DEFAULT_MAX_NODE_WIDTH,
+		).length > 0
+	) {
+		nearbyItemMbr.transform(
+			new Matrix(iterAdjustment.x * step, iterAdjustment.y * step),
+		);
+		if (newNodeData.transformation) {
+			newNodeData.transformation.translateX = nearbyItemMbr.right;
+			newNodeData.transformation.translateY = nearbyItemMbr.top;
+		}
+		step += 1;
+	}
+
+	const newItems = board.createItem(
+		board.getNewItemId(),
+		newNodeData,
+	) as AINode;
+
+	const defaultConnector = new Connector(board);
+	const connectorData = defaultConnector.serialize();
+	connectorData.lineStyle = "orthogonal";
+
+	const savedStart = connectorStorage.getConnectorPointer("start");
+	if (savedStart) {
+		connectorData.startPointerStyle = savedStart;
+	}
+	const savedEnd = connectorStorage.getConnectorPointer("end");
+	if (savedEnd) {
+		connectorData.endPointerStyle = savedEnd;
+	}
+	connectorData.text = new RichText(new Mbr()).serialize();
+
+	return {
+		newItem: newItems,
+		connectorData,
+	};
+}
+
 export function createNode(
 	board: Board,
 	inputValue: string,
@@ -192,19 +288,14 @@ export function createNode(
 	}
 
 	if (!parentItem) {
-		const cameraMbr = board.camera.getMbr();
+		const { newItem, connectorData } = calculateParentItemPosition(
+			node,
+			board,
+		);
 
-		const centerX = cameraMbr.getCenter().x;
-		const centerY = cameraMbr.getCenter().y;
-		node.transformation.translateTo(centerX, centerY);
-		return {
-			node: board.createItem(
-				board.getNewItemId(),
-				node.serialize(),
-			) as AINode,
-			connectorData: null,
-		};
+		return { node: newItem, connectorData };
 	}
+
 	const { newItem, connectorData } = calculateNodePosition(
 		node,
 		parentItem,
