@@ -29,6 +29,27 @@ export function getCurrentPeriods() {
 
 export async function getCurrentUserPlan(userId: number) {
     const now = new Date();
+    const pendingPlan = await db
+        .select({
+            planId: userPlans.planId,
+            monthlyTokenLimit: plans.monthlyTokenLimit,
+            name: plans.name,
+            startDate: userPlans.startDate,
+            endDate: userPlans.endDate,
+            status: userPlans.status,
+            storageLimit: plans.storageLimit,
+        })
+        .from(userPlans)
+        .innerJoin(plans, eq(userPlans.planId, plans.id))
+        .where(
+            and(
+                eq(userPlans.userId, userId),
+                eq(userPlans.status, "pending_cancellation"),
+                lte(userPlans.startDate, now),
+                gte(userPlans.endDate, now)
+            )
+        )
+        .limit(1);
     const currentPlan = await db
         .select({
             planId: userPlans.planId,
@@ -51,7 +72,7 @@ export async function getCurrentUserPlan(userId: number) {
         )
         .limit(1);
 
-    if (!currentPlan.length) {
+    if (!pendingPlan.length && !currentPlan.length) {
         const freePlan = await db
             .select({
                 planId: plans.id,
@@ -81,7 +102,7 @@ export async function getCurrentUserPlan(userId: number) {
         };
     }
 
-    return currentPlan[0];
+    return pendingPlan[0] || currentPlan[0];
 }
 
 export async function getCurrentModelLimits(userId: number) {

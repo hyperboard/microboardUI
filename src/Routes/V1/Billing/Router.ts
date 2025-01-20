@@ -78,6 +78,7 @@ export const getBillingRouter = (
                     name: currentPlan.name,
                     periodStart: currentPlan.startDate,
                     periodEnd: currentPlan.endDate,
+                    status: currentPlan.status,
                 },
             });
         })
