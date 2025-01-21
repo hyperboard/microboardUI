@@ -671,6 +671,9 @@
 			},
 			"gpt-4o": {
 				"description": "Great for most tasks"
+			},
+			"flux-schnell": {
+				"description": "Transforming your text into visuals"
 			}
 		},
 		"unauth": {

@@ -11,7 +11,12 @@ import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
 import { Icon } from "View/Icon";
 import { StarIcon } from "./StarIcon";
-import { AiChatMsg, OpenAIModels, UserRequest } from "App/Connection";
+import {
+	AiChatMsg,
+	GenerateImageRequest,
+	OpenAIModels,
+	UserRequest,
+} from "App/Connection";
 import { useForceUpdate } from "lib/useForceUpdate";
 import { Chevron } from "shared/ui-lib/Dropdown/Chevron";
 import { UiPanel } from "View/Ui/UiPanel";
@@ -228,29 +233,44 @@ export const AIInput: React.FC = () => {
 			})
 			.filter(text => text !== "");
 
-		const contextRequest = nodeWithParents
-			? {
-					range: 5,
-					messageId: nodeWithParents.node.getId(),
-				}
-			: undefined;
+		if (model !== "image-generation") {
+			const contextRequest = nodeWithParents
+				? {
+						range: 5,
+						messageId: nodeWithParents.node.getId(),
+					}
+				: undefined;
 
-		const message: AiChatMsg<UserRequest> = {
-			type: "AiChat",
-			boardId: board.getBoardId(),
-			event: {
-				method: "UserRequest",
-				context: [],
-				boardContext,
-				idea,
-				model,
-				itemId: responseAdded.getId(),
-				requestItemId: requestAdded.getId(),
-				contextRequest,
-			},
-		};
+			const message: AiChatMsg<UserRequest> = {
+				type: "AiChat",
+				boardId: board.getBoardId(),
+				event: {
+					method: "UserRequest",
+					context: [],
+					boardContext,
+					idea,
+					model,
+					itemId: responseAdded.getId(),
+					requestItemId: requestAdded.getId(),
+					contextRequest,
+				},
+			};
 
-		connection.wsClient.send(message);
+			connection.wsClient.send(message);
+		} else {
+			const message: AiChatMsg<GenerateImageRequest> = {
+				type: "AiChat",
+				boardId: board.getBoardId(),
+				event: {
+					method: "GenerateImage",
+					prompt: idea,
+					model: "flux-schnell",
+					itemId: responseAdded.getId(),
+				},
+			};
+
+			connection.wsClient.send(message);
+		}
 
 		setInputValue("");
 
@@ -286,6 +306,9 @@ export const AIInput: React.FC = () => {
 		}
 		if (model === "gpt-4o-mini") {
 			return isPhoneScreen ? "4o mini" : "GPT-4o mini";
+		}
+		if (model == "image-generation") {
+			return isPhoneScreen ? "flux" : "Flux.1 schnell";
 		}
 		return model;
 	};
@@ -388,6 +411,26 @@ export const AIInput: React.FC = () => {
 								<strong>GPT-4o</strong>
 								<p>{t("ai.models.gpt-4o.description")}</p>
 								{isModelDisabled("gpt-4o") && (
+									<Tooltip
+										tooltip={t("userPlan.upgradeTooltip")}
+									/>
+								)}
+							</button>
+							<button
+								className={clsx(
+									styles.modelBtn,
+									isModelDisabled("image-generation") &&
+										styles.disabled,
+								)}
+								onClick={
+									isModelDisabled("image-generation")
+										? handleOpenModal
+										: () => selectModel("image-generation")
+								}
+							>
+								<strong>Flux.1 schnell</strong>
+								<p>{t("ai.models.flux-schnell.description")}</p>
+								{isModelDisabled("image-generation") && (
 									<Tooltip
 										tooltip={t("userPlan.upgradeTooltip")}
 									/>

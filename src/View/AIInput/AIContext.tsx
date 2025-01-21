@@ -62,6 +62,9 @@ export const AIContextProvider = ({ children }: Props): JSX.Element => {
 
 		connection.wsClient.send(stopMessage);
 		await account.fetchBillingInfo();
+		setTimeout(() => {
+			connection.wsClient.send(stopMessage);
+		}, 10000);
 	};
 
 	function createNodesWithConnectors(

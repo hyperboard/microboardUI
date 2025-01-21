@@ -127,7 +127,11 @@ export interface AiChatMsg<T = AiChatEventType> {
 	event: T;
 }
 
-export type AiChatEventType = UserRequest | ChatChunk | StopGeneration;
+export type AiChatEventType =
+	| UserRequest
+	| ChatChunk
+	| StopGeneration
+	| GenerateImageRequest;
 
 export type OpenAIModels =
 	| "gpt-3.5-turbo"
@@ -142,7 +146,17 @@ export type OpenAIModels =
 	| "gpt-3.5-turbo-16k"
 	| "gpt-4-16k"
 	| "o1-mini"
-	| "o1";
+	| "o1"
+	| imageModels;
+
+type imageModels =
+	| "dall-e-2"
+	| "dall-e-3"
+	| "midjourney"
+	| "flux-schnell"
+	| "flux-pro"
+	| "recraft"
+	| "image-generation";
 
 export interface UserRequest {
 	method: "UserRequest";
@@ -160,6 +174,30 @@ export interface UserRequest {
 		messageId: string;
 		range?: number;
 	};
+}
+
+export interface GenerateImageRequest {
+	method: "GenerateImage";
+	prompt: string;
+	model?:
+		| "dall-e-2"
+		| "dall-e-3"
+		| "midjourney"
+		| "flux-schnell"
+		| "flux-pro"
+		| "recraft";
+	quality?: "standard" | "hd";
+	size?: "256x256" | "512x512" | "1024x1024" | "1792x1024";
+	itemId: string;
+}
+
+export interface GenerateImageResponse {
+	method: "GenerateImage";
+	status: "generating" | "completed" | "error";
+	message?: string;
+	base64: string | null;
+	imageUrl: string | null;
+	itemId: string;
 }
 
 export type TTextAction =
