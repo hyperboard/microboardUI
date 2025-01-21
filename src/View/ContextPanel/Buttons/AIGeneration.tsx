@@ -162,9 +162,17 @@ export function AIGeneration({ rounded = "none" }: Props): React.ReactElement {
 			tooltipPosition="top"
 		>
 			{board.isAIGenerating ? (
-				<Icon iconName="StopAiGeneration" />
+				<Icon
+					iconName="StopAiGeneration"
+					style={{ color: "#924fe8" }}
+				/>
 			) : (
-				<Icon iconName="ContextPanelAIChat" width={20} height={20} />
+				<Icon
+					iconName="ContextPanelAIChat"
+					width={20}
+					height={20}
+					style={{ color: "#924fe8" }}
+				/>
 			)}
 		</UiButton>
 	);
