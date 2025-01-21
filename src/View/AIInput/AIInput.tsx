@@ -258,14 +258,19 @@ export const AIInput: React.FC = () => {
 
 			connection.wsClient.send(message);
 		} else {
+			const options = {
+				model: "flux-schnell",
+				aspect_ratio: "1:1",
+			};
+
 			const message: AiChatMsg<GenerateImageRequest> = {
 				type: "AiChat",
 				boardId: board.getBoardId(),
 				event: {
 					method: "GenerateImage",
 					prompt: idea,
-					model: "flux-schnell",
 					itemId: responseAdded.getId(),
+					options,
 				},
 			};
 

@@ -131,7 +131,8 @@ export type AiChatEventType =
 	| UserRequest
 	| ChatChunk
 	| StopGeneration
-	| GenerateImageRequest;
+	| GenerateImageRequest
+	| GenerateImageResponse;
 
 export type OpenAIModels =
 	| "gpt-3.5-turbo"
@@ -179,16 +180,24 @@ export interface UserRequest {
 export interface GenerateImageRequest {
 	method: "GenerateImage";
 	prompt: string;
-	model?:
-		| "dall-e-2"
-		| "dall-e-3"
-		| "midjourney"
-		| "flux-schnell"
-		| "flux-pro"
-		| "recraft";
-	quality?: "standard" | "hd";
-	size?: "256x256" | "512x512" | "1024x1024" | "1792x1024";
 	itemId: string;
+	options:
+		| {
+				model: "dall-e-2";
+				size: "256x256" | "512x512" | "1024x1024";
+		  }
+		| {
+				model: "dall-e-3";
+				size: "1024x1024" | "1792x1024" | "1024x1792";
+				quality: "standard" | "hd";
+		  }
+		| {
+				model: "midjourney";
+		  }
+		| {
+				model: "flux-schnell" | "flux-pro";
+				aspect_ratio: string; // "1:1"
+		  };
 }
 
 export interface GenerateImageResponse {
