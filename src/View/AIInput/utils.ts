@@ -217,6 +217,10 @@ function calculateParentItemPosition(
 
 	const newNodeData = newNode.serialize();
 	newNodeData.adjustmentPoint = adjustmentPoint;
+	if (newNodeData.transformation) {
+		newNodeData.transformation.translateX = nearbyItemMbr.getCenter().x;
+		newNodeData.transformation.translateY = nearbyItemMbr.getCenter().y;
+	}
 
 	while (
 		board.index.getNearestTo(
