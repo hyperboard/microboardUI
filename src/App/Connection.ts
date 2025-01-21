@@ -338,9 +338,6 @@ export function createConnection(
 			case "UserJoin":
 			case "Mode":
 			case "PresenceEvent":
-				if (msg.type === "AiChat") {
-					console.log("Chat Msg", msg);
-				}
 				const subscribeTimeout = subscribeTimeouts.get(msg.boardId);
 				if (subscribeTimeout) {
 					clearTimeout(subscribeTimeout.timeout);
@@ -757,8 +754,10 @@ export function createWsClient(
 	const pingMsg = JSON.stringify({ type: "ping" });
 
 	function keepAlivePing(): void {
-		if (isConnected() && !getBoard()?.getBoardId().includes("local")) {
+		const board = getBoard();
+		if (isConnected() && !board?.getBoardId().includes("local")) {
 			send(pingMsg);
+			board.presence.ping();
 
 			setConnectionErrorTimeout();
 		}
