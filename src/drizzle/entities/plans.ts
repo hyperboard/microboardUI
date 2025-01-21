@@ -1,4 +1,4 @@
-import { boolean, integer, pgTable, serial, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, serial, text, timestamp, unique, uuid, varchar } from "drizzle-orm/pg-core";
 import { users } from "./users";
 
 export const aiModels = pgTable("ai_models", {
@@ -49,11 +49,20 @@ export const userCryptoCheckout = pgTable("user_crypto_checkout", {
     endDate: timestamp("end_date").notNull(),
     status: varchar("status").notNull().default("active"), // active, cancelled, expired, payed
     symbol: varchar("crypto_symbol").notNull(), // ETH, POL, ...
-    chainName: varchar("crypto_chain").notNull(), // Ethereum, Polygon, ...
+    chainName: varchar("crypto_chain").notNull(), // Ethereum, polygon, ...
     addressFrom: varchar("crypto_wallet").notNull(),
     valueWei: varchar("crypto_price").notNull(),
     transactionHash: varchar("transaction_hash"),
 });
+
+export const walletLastCheckedBlock = pgTable("wallet_last_checked_block", {
+    id: varchar("id").primaryKey(),
+    address: varchar("crypto_wallet").notNull(),
+    chainName: varchar("crypto_chain").notNull(), // ethereum, polygon, ...
+    lastBlockNumber: integer("last_block_number").default(0),
+}, (t) => ({
+    uniqueAddressChain: unique().on(t.address, t.chainName),
+}));
 
 export const modelLimits = pgTable("plan_model_limits", {
     id: text("id").primaryKey(),
