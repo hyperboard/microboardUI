@@ -824,9 +824,9 @@
 		"selectContext": "Select context, ask AI",
 		"selectMobileContext": "Ask AI",
 		"selectedItems": {
-			"one": "Selected item",
-			"few": "Selected items",
-			"many": "Selected items"
+			"one": "Selected {{count}} item",
+			"few": "Selected {{count}} items",
+			"many": "Selected {{count}} items"
 		},
 		"disable": "Available on boards you can edit",
 		"disableWhenGenerating": "Wait for the response"
