@@ -447,8 +447,8 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
 
         const { price } = quote.USD;
         const web3 = new Web3();
-        // const PRICE = 12; // price of subscription in USD
-        const PRICE = 0.001; // price of subscription in USD
+        const PRICE = 12; // price of subscription in USD
+        // const PRICE = 0.001; // price of subscription in USD
         const wei = web3.utils.toWei((PRICE / price).toString(), "ether");
 
         const check = await createCheckoutDb({
