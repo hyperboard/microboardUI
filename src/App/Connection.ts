@@ -532,6 +532,15 @@ export function createConnection(
 	function publishGetMode(): void {
 		const board = getBoard();
 		const boardId = board?.getBoardId();
+		const account = getAccount();
+
+		if (
+			account.isLoggedIn &&
+			account.permissions.checkPermissions("owns", "boards", boardId)
+		) {
+			return;
+		}
+
 		if (!boardId || boardId === "blank") {
 			return;
 		}
@@ -715,7 +724,7 @@ export function createWsClient(
 			console.warn(error);
 			if (
 				error instanceof Error &&
-				error.message.includes("Access denied")
+				error.message.includes("deniedBoardId")
 			) {
 				const match = error.message.match(/deniedBoardId: (\S+)/);
 				if (match) {

@@ -5,6 +5,7 @@ import { Subject } from "Subject";
 import { Connection } from "./Connection";
 import { Permissions } from "./Permissions";
 import { Storage } from "./Storage";
+import type { BoardsList } from "./BoardsList";
 
 type AccountInfo = {
 	id: number;
@@ -37,6 +38,7 @@ export class Account {
 	private _accessToken: string | null = null;
 	onLogout: (() => Promise<void>) | null = null;
 	onLogin: (() => Promise<void>) | null = null;
+	onInit: (() => Promise<void>) | null = null;
 
 	constructor(
 		private readonly storage: Storage,
@@ -47,6 +49,7 @@ export class Account {
 
 	async init() {
 		await this.refreshTokens();
+		this.onInit?.();
 		this.isInitialized = true;
 		this.subject.publish(this.info);
 	}
@@ -72,6 +75,10 @@ export class Account {
 
 	setOnSessionExpired(callback: () => void): void {
 		this.onSessionExpired = callback;
+	}
+
+	setOnInit(callback: () => Promise<void>): void {
+		this.onInit = callback;
 	}
 
 	updateTokenData(): void {

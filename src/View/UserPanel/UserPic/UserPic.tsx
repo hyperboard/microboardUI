@@ -45,8 +45,6 @@ type TUserPicProps = UserPicProps &
 
 export const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 	const { t } = useTranslation();
-	const isMediaMatches = useMediaQuery("(max-width: 1170px)");
-	const navigate = useNavigate();
 	const { board } = useAppContext();
 	const { setIsPanelOpen } = useCommentsPanelContext();
 	const userPanelRef = useRef<HTMLDivElement>(null);
@@ -69,11 +67,7 @@ export const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 		ev.preventDefault();
 		ev.stopPropagation();
 
-		if (isMediaMatches) {
-			navigate("/user/plan");
-		} else {
-			openModal(USER_PLAN_MODAL_ID);
-		}
+		openModal(USER_PLAN_MODAL_ID);
 	};
 
 		const handleLogout: MouseEventHandler = async ev => {

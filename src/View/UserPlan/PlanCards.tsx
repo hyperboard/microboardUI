@@ -74,7 +74,25 @@ export function BasicPlanCard() {
 			</p>,
 			async () => {
 				await account.unsubscribe();
-				notify({ header: "Тариф обновлен", body: "Бла бла бла бла" });
+				notify({
+					header: "Тариф обновлен",
+					body: t("userPlan.downgradeModal.description", {
+						planName:
+							PLAN_NAMES[
+								account.billingInfo?.plan.name ?? "basic"
+							],
+						currentPeriodEnd: new Intl.DateTimeFormat(
+							i18n.language,
+							{
+								year: "numeric",
+								month: "numeric",
+								day: "numeric",
+							},
+						).format(
+							new Date(account.billingInfo?.plan.periodEnd ?? 0),
+						),
+					}),
+				});
 				Promise.resolve();
 			},
 			async () => {},
