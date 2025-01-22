@@ -36,7 +36,7 @@ import {
 import { useAIContext } from "View/AIInput/AIContext";
 import { Tooltip } from "View/Ui/UiButton/Tooltip";
 
-export const AIInput: React.FC = () => {
+export const AIInput = () => {
 	const { t } = useTranslation();
 	const { app, board } = useAppContext();
 	const [inputValue, setInputValue] = useState("");
@@ -297,11 +297,11 @@ export const AIInput: React.FC = () => {
 	};
 
 	const handleStopClick = async () => {
-		const boardId = board.getBoardId();
+		const boardId = app.getBoard().getBoardId();
 
 		if (responseNodeId) {
 			await stopStream(boardId, responseNodeId, account);
-			board.isAIGenerating = false;
+			app.getBoard().isAIGenerating = false;
 		}
 	};
 
@@ -336,9 +336,9 @@ export const AIInput: React.FC = () => {
 
 	const boardId = board.getBoardId();
 	if (!boardId || boardId === "blank") {
-		return;
+		return null;
 	}
-	
+
 	return (
 		<UiPanel
 			padding={0}

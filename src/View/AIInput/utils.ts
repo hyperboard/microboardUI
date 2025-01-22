@@ -10,12 +10,12 @@ import { Matrix } from "Board/Items/Transformation/Matrix";
 import { Connector } from "Board/Items/Connector/Connector";
 import { Mbr } from "Board/Items/Mbr/Mbr";
 import { Board } from "Board/Board";
+import { t } from "i18next";
 
 export type PossibleParentNode = AINode | Shape | RichText | Sticker;
 
 export const DEFAULT_MAX_NODE_WIDTH = 640;
-const PLACEHOLDER_TEXT =
-	"...............................................................................................................................................................................................";
+const PLACEHOLDER_OFFSET = "												";
 
 export const getTextFromItem = (item: Item) => {
 	const richText = item.getRichText();
@@ -286,7 +286,9 @@ export function createNode(
 	nodeRichText.container.right = nodeRichText.container.left + 600;
 
 	if (withPlaceholder) {
-		nodeRichText.placeholderText = PLACEHOLDER_TEXT;
+		nodeRichText.editor.insertCopiedText(
+			t("AIInput.generatingResponse") + PLACEHOLDER_OFFSET,
+		);
 	} else {
 		nodeRichText.editor.insertCopiedText(inputValue);
 	}

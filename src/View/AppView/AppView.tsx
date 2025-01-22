@@ -174,7 +174,14 @@ export function AppView(): JSX.Element {
 				/>
 				<ContextMenu />
 				<ItemTooltip />
-				<AIInput />
+				<ViewModeGuard mode={"edit"}>
+					{interfaceType => {
+						if (interfaceType === "edit") {
+							return <AIInput />;
+						}
+						return null;
+					}}
+				</ViewModeGuard>
 			</ExportVisible>
 			<ExportVisible>
 				<CommentsContextProvider>
