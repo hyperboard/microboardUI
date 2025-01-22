@@ -521,7 +521,6 @@ export const useCopyBoardItems = (
 		const updatedGeometry = updateStickerGeometry(
 			item,
 			itemGeometry,
-			miroItem,
 		);
 		const itemPosition = getItemPosition(
 			position,
@@ -557,13 +556,12 @@ export const useCopyBoardItems = (
 	const updateStickerGeometry = (
 		item: Item,
 		geometry: { width: number; height: number },
-		miroItem: IMiroBoardItem,
 	): { width: number; height: number } => {
 		if (item.itemType !== "Sticker") {
 			return geometry;
 		}
 
-		if ((miroItem as IMiroBoardItemSticker).data.shape === "square") {
+		if (geometry.height >= geometry.width) {
 			return {
 				width: geometry.height,
 				height: geometry.height,
@@ -1096,6 +1094,8 @@ export const useCopyBoardItems = (
 		miroBoardItems
 			.filter(item => item.type === MiroBoardItemTypes.IMAGE)
 			.forEach(item => addImagePlaceholder(item));
+
+		console.log("miroBoardItems", miroBoardItems);
 
 		for (const [index, item] of miroBoardItems.entries()) {
 			const type = item.type as MiroItemsTypes;
