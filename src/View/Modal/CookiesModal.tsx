@@ -36,6 +36,7 @@ export const CookiesModal = ({
 
 	useEffect(() => {
 		const isOpenModal = Cookies.get("first_visit");
+		console.log("isOpenModal", isOpenModal);
 
 		if (!isOpenModal) {
 			setOpen(true);
@@ -45,9 +46,11 @@ export const CookiesModal = ({
 	}, []);
 
 	useEffect(() => {
-		Cookies.set("first_visit", "true", {
-			expires: account.tokenData?.exp,
-		});
+		if (account.tokenData?.exp) {
+			Cookies.set("first_visit", "true", {
+				expires: account.tokenData?.exp,
+			});
+		}
 	}, [account]);
 
 	return (
