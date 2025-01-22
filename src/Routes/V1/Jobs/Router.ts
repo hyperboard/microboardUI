@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import { body } from "express-validator";
 import { healthCheckJob } from "trigger/jobs/health-check";
-import { importMiroBoard } from "trigger/jobs/import-miro";
+// import { importMiroBoard } from "trigger/jobs/import-miro";
 import winston from "winston";
 import { WebSocketServer } from "ws";
 import { catchAsync } from "shared/lib/catchAsync";
@@ -16,31 +16,31 @@ interface ImportMiroBoardsRequest {
 export const createJobsRouter = (logger: winston.Logger, wss: WebSocketServer) => {
     const router = express.Router();
 
-    router.post(
-        "/jobs/import-miro-boards",
-        body("accessToken").isString(),
-        body("userId").isString(),
-        body("boardIds").isArray(),
-        catchAsync(async (req: Request, res: Response) => {
-            const { accessToken, userId, boardIds } = req.body as ImportMiroBoardsRequest;
-            try {
-                for (const boardId of boardIds) {
-                    await importMiroBoard.invoke({
-                        accessToken,
-                        userId,
-                        boardId,
-                    });
-                }
+    // router.post(
+    //     "/jobs/import-miro-boards",
+    //     body("accessToken").isString(),
+    //     body("userId").isString(),
+    //     body("boardIds").isArray(),
+    //     catchAsync(async (req: Request, res: Response) => {
+    //         const { accessToken, userId, boardIds } = req.body as ImportMiroBoardsRequest;
+    //         try {
+    //             for (const boardId of boardIds) {
+    //                 await importMiroBoard.invoke({
+    //                     accessToken,
+    //                     userId,
+    //                     boardId,
+    //                 });
+    //             }
 
-                res.status(200).json({
-                    message: "Import Miro board jobs started",
-                });
-            } catch (e) {
-                logger.error("Error importing boards:", e);
-                return internalError(res, e, "Error to start importing boards jobs");
-            }
-        })
-    );
+    //             res.status(200).json({
+    //                 message: "Import Miro board jobs started",
+    //             });
+    //         } catch (e) {
+    //             logger.error("Error importing boards:", e);
+    //             return internalError(res, e, "Error to start importing boards jobs");
+    //         }
+    //     })
+    // );
 
     router.post(
         "/jobs/notify",

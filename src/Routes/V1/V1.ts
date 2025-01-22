@@ -25,6 +25,14 @@ import { getIngestRouter } from "./Ingest";
 import { OpenAI } from "../../ai/openai";
 import { StripeService } from "./Billing/stripe";
 import { getCryptoRouter } from "./Crypto";
+import { getBoardsRouter } from "./Boards/boards.router";
+import { getFoldersRouter } from "./Foldres/folders.router";
+import { catchAsync } from "shared/lib/catchAsync";
+import { HttpStatus } from "shared/enums/http-status.enum";
+import { HttpException } from "shared/exceptions/http-exception";
+import type { BoardsService } from "./Boards/boards.service";
+import type { FoldersService } from "./Foldres/folders.service";
+import type { AccessKeysService } from "./Boards/access-keys.service";
 
 function createFileRoute(
     router: express.Router,
@@ -70,6 +78,9 @@ export function getV1Router({
     ai,
     openai,
     stripeService,
+    boardsService,
+    accessKeysService,
+    foldersService,
 }: {
     config: Config;
     mailer: Mailer;
@@ -84,12 +95,16 @@ export function getV1Router({
     ai: AI;
     openai: OpenAI;
     stripeService: StripeService;
+    boardsService: BoardsService;
+    foldersService: FoldersService;
+    accessKeysService: AccessKeysService;
 }): express.Router {
     const router = express.Router();
     const apiBase = "/api/v1";
     router.use(apiBase, createHealthRouter(logger, redis));
     router.use(apiBase, getAuthRouter(auth, users, logger));
-    // router.use(apiBase, getBoardsRouter(boards, logger));
+    router.use(apiBase, getBoardsRouter(boardsService, foldersService, accessKeysService));
+    router.use(apiBase, getFoldersRouter(foldersService));
     router.use(apiBase, getTemplatesRouter(templates, logger), getAIRouter(ai, logger));
     router.use(apiBase, getAIRouter(ai, logger));
     router.use(apiBase, createMediaRouter(media as MediaDAL, logger));

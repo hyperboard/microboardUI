@@ -2,7 +2,7 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import type { FolderItems, FolderPayload } from "./types";
 import { folders, foldersToBoards, foldersToFolders, folderType, FolderType } from "drizzle/entities/folders";
 import { aliasedTable, and, eq, getTableColumns, sql } from "drizzle-orm";
-import { boards } from "drizzle/entities";
+import { boardOwner, boards } from "drizzle/entities";
 import type { BoardsService } from "../Boards/boards.service";
 import { BoardDto } from "../Boards/dto";
 import { NestedFolderDto } from "./dto/nested-folder.dto";
@@ -197,13 +197,32 @@ export class FoldersService {
     }
 
     async init(ownerId: number) {
-        const [rootFolderId] = await this.db
-            .select({ id: folders.id })
-            .from(folders)
-            .where(and(eq(folders.ownerId, ownerId), eq(folders.type, FolderType.ROOT)));
+        const rootFolder = await this.getRoot(ownerId);
 
-        if (rootFolderId) {
-            return;
+        if (rootFolder) {
+            if (
+                rootFolder.items.length === 0 ||
+                (rootFolder.items.length === 1 && rootFolder.items[0].type === FolderType.VISITED)
+            ) {
+                const ownedBoards = await this.db
+                    .select({ id: boards.id })
+                    .from(boards)
+                    .innerJoin(boardOwner, eq(boards.id, boardOwner.boardId))
+                    .where(eq(boardOwner.ownerId, ownerId));
+
+                const addBoardQuery = this.db
+                    .insert(foldersToBoards)
+                    .values({ folderId: rootFolder.id, containsBoardId: sql.placeholder("boardId") })
+                    .prepare("addBoard");
+
+                for (const board of ownedBoards) {
+                    await addBoardQuery.execute({ boardId: board.id });
+                }
+            }
+
+            if (rootFolder.items.length > 1) {
+                return;
+            }
         }
 
         await this.db.transaction(async (tx) => {

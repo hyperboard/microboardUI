@@ -4,10 +4,19 @@ import { boardEvents, boardOwner, boardPermissions, boards, boardSnapshots, user
 import { folders, foldersToBoards, FolderType } from "drizzle/entities/folders";
 import { userAvatars } from "drizzle/entities/userAvatars";
 import { boardEventDbWriteLatency } from "Metrics/metrics";
-import type { BoardEventData } from "Routes/V1/Boards";
 import { v4 } from "uuid";
 import type winston from "winston";
 import { BoardPayload, BoardSnapshotPayload, UserAccessType } from "./types";
+import * as Drizzle from "drizzle";
+import type { BoardDto } from "./dto";
+import { isUUID } from "validator";
+
+export interface BoardEventData {
+    eventId: string;
+    body: object;
+    order: number;
+    operation: any;
+}
 
 export class BoardsService {
     constructor(private readonly db: NodePgDatabase, private readonly logger: winston.Logger) {}
@@ -176,67 +185,117 @@ export class BoardsService {
             });
     }
 
-    async getBoardEvents(boardId: number, afterLogId = 0) {
-        const events = await this.db
-            .select()
-            .from(boardEvents)
-            .where(and(eq(boardEvents.boardId, boardId), gt(boardEvents.logId, afterLogId)))
-            .orderBy(asc(boardEvents.logId));
+    async addEventToBoard(boardId: string, eventId: string, eventBody: object): Promise<{ order: number; body: any }> {
+        try {
+            this.validateUUID(boardId, "boardId");
 
-        const eventBodies = events.map<{ order: number; body: any }>((event) => ({
-            order: parseInt(event.eventId?.split(":")[1] || "0"),
-            body: event.eventBody || {},
-        }));
+            const result = await Drizzle.addBoardEventUsingUUID(boardId, eventId, eventBody);
+            const order = result.boardId;
+            const event = { order, body: eventBody };
 
-        return eventBodies;
+            this.onEventSave(boardId, {
+                type: "BoardEvent",
+                boardId,
+                event,
+            });
+
+            return event;
+        } catch (error) {
+            this.logger.error(`Error adding event to board: ${error}`);
+            throw error;
+        }
     }
 
-    async getLatestBoardSnapshot(boardId: number): Promise<any> {
-        const [latestSnapshot] = await this.db
-            .select({ snapshot: boardSnapshots.snapshot })
-            .from(boardSnapshots)
-            .where(eq(boardSnapshots.boardId, boardId))
-            .orderBy(desc(boardSnapshots.createdAt))
-            .limit(1);
+    async addEventsToBoard(boardId: string, events: Array<BoardEventData>): Promise<void> {
+        try {
+            const startDbWrite = process.hrtime.bigint();
+            // Find the board
+            const board = await this.get(boardId);
+            if (!board) {
+                return;
+            }
+            await this.db
+                .insert(boardEvents)
+                .values(
+                    events.map((event) => {
+                        const eventId = (event.eventId.split(":")[0] || Date.now().toString()) + ":" + event.order;
+                        return {
+                            boardId: board.id,
+                            logId: event.order,
+                            eventId,
+                            eventBody: {
+                                ...event,
+                                eventId,
+                            },
+                        };
+                    })
+                )
+                .onConflictDoNothing();
 
-        return (latestSnapshot?.snapshot as any[]) ?? [];
+            const endDbWrite = process.hrtime.bigint();
+            const dbWriteLatency = Number(endDbWrite - startDbWrite);
+
+            try {
+                boardEventDbWriteLatency.observe(dbWriteLatency);
+            } catch (e) {
+                this.logger.error(`Error recording db write latency: ${e}`);
+            }
+        } catch (error) {
+            console.error(`Error adding events to board: ${error}`);
+            throw error;
+        }
     }
 
-    async getAllBoardLastEventOrders() {
-        const extractedValuesQuery = this.db.$with("extracted_values").as(
-            this.db
-                .select({
-                    boardId: boardEvents.boardId,
-                    eventId: boardEvents.eventId,
-                    integer2Value:
-                        sql`CAST((regexp_matches(${boardEvents.eventId}, '(\\d+):(\\d+)'))[2] AS INTEGER)`.as(
-                            "integer2Value"
-                        ),
-                })
-                .from(boardEvents)
-        );
+    async getBoardEvents(boardId: string, offset = 0, page?: number, limit?: number): Promise<any[]> {
+        try {
+            const events = await Drizzle.getBoardEvents(boardId, offset);
 
-        const lastOrderPerBoardQuery = this.db.$with("last_order_per_board").as(
-            this.db
-                .select({
-                    boardId: extractedValuesQuery.boardId,
-                    lastOrder: sql<number>`MAX(${extractedValuesQuery.integer2Value})`.as("lastOrder"),
-                })
-                .from(extractedValuesQuery) // Ensure this is correctly referenced
-                .groupBy(extractedValuesQuery.boardId)
-        );
+            const eventBodies = events.map<{ order: number; body: any }>((event) => ({
+                order: parseInt(event.eventId?.split(":")[1] || "0"),
+                body: event.eventBody || {},
+            }));
 
-        const results = await this.db
-            .with(extractedValuesQuery, lastOrderPerBoardQuery)
-            .select({
-                boardUUID: boards.uniqId,
-                lastOrder: lastOrderPerBoardQuery.lastOrder,
-            })
-            .from(boards)
-            .leftJoin(lastOrderPerBoardQuery, eq(boards.id, lastOrderPerBoardQuery.boardId)) // Ensure this join is correct
-            .groupBy(boards.uniqId, lastOrderPerBoardQuery.lastOrder);
+            return eventBodies;
+        } catch (error) {
+            this.logger.error(`Error retrieving board events: ${error}`);
+            throw error;
+        }
+    }
 
-        return results;
+    async getLatestBoardSnapshot(boardId: string): Promise<any> {
+        try {
+            // FIXME: proper type
+            const result: any[] = (await Drizzle.getLatestBoardSnapshot(boardId)) as any[];
+
+            if (result?.length === 0) {
+                // throw new Error(`No snapshot found for board or link UUID ${boardUuidOrEditLink}`);
+                return null;
+            }
+
+            return result;
+        } catch (error) {
+            this.logger.error(`Error retrieving latest snapshot for board ${boardId}: ${error}`);
+            throw error;
+        }
+    }
+
+    async getEventCountSinceLastSnapshot(boardId: string): Promise<number> {
+        try {
+            this.validateUUID(boardId, "boardId");
+
+            const result = await Drizzle.getEventsCountSinceLastSnapshot(boardId);
+
+            return result as number;
+        } catch (error) {
+            this.logger.error(`Error getting event count since last snapshot for board ${boardId}: ${error}`);
+            throw error;
+        }
+    }
+
+    private validateUUID(id: string, idName: string): void {
+        if (!isUUID(id)) {
+            throw new Error(`Invalid ${idName}: ${id}`);
+        }
     }
 
     async getEventsCountSinceLastSnapshot(boardUUID: string) {
@@ -280,7 +339,7 @@ export class BoardsService {
         );
 
         const result = await this.db
-            .with(lastSnapshotCTE, parsedEventsCTE, eventCountsCTE) // Ensure all CTEs are included
+            .with(lastSnapshotCTE, parsedEventsCTE, eventCountsCTE)
             .select({
                 event_count: sql<number>`
           CASE 
@@ -335,6 +394,20 @@ export class BoardsService {
             boardEventDbWriteLatency.observe(dbWriteLatency);
         } catch (e) {
             this.logger.error(`Error recording db write latency: ${e}`);
+        }
+    }
+
+    async getLastEventOrderForBoard(boardUuid: string): Promise<number> {
+        try {
+            const result = await Drizzle.getLastEventOrderForBoard(boardUuid);
+
+            if (typeof result === "undefined") {
+                throw new Error(`Failed to get last event order for board ${boardUuid}`);
+            }
+            return result;
+        } catch (error) {
+            this.logger.error(`Error getting last event order for board ${boardUuid}: ${error}`);
+            throw error;
         }
     }
 
@@ -402,4 +475,78 @@ export class BoardsService {
 
         return [...owner, ...records];
     }
+
+    onEventSave(boardId: string, boardEvent: any): void {}
+
+    // async saveBoardData(transformedData: {
+    //     id: string;
+    //     name: string;
+    //     items: any[];
+    //     userId?: string;
+    // }): Promise<{ boardId: string; editLink: string }> {
+    //     const startTime = Date.now();
+    //     this.logger.info("Starting board data save", {
+    //         dataId: transformedData.id,
+    //         name: transformedData.name,
+    //         itemCount: transformedData.items.length,
+    //         userId: transformedData.userId,
+    //         operation: "saveBoardData",
+    //     });
+
+    //     try {
+    //         let createdBoard: null | BoardDto = null;
+
+    //         if (transformedData.userId !== undefined) {
+    //             createdBoard = (await this.createBoard(
+    //                 transformedData.name || "Untitled",
+    //                 +transformedData.userId
+    //             )) as OwnedBoard;
+    //         }
+
+    //         if (createdBoard === null) {
+    //             throw new Error("Failed to create board: create_private_board returned null");
+    //         }
+
+    //         this.logger.info("Board created, creating edit link", {
+    //             boardUuid: createdBoard.uniq_id,
+    //             editLink,
+    //             operation: "saveBoardData",
+    //         });
+
+    //         await this.createLink(createdBoard.uniq_id, "edit", editLink);
+
+    //         this.logger.info("Starting item addition to board", {
+    //             boardUuid: createdBoard.uniq_id,
+    //             itemCount: transformedData.items.length,
+    //             operation: "saveBoardData",
+    //         });
+
+    //         for (const item of transformedData.items) {
+    //             await this.addEventToBoard(createdBoard.uniq_id, item.eventId, item);
+    //         }
+
+    //         const result = {
+    //             boardId: createdBoard.uniq_id,
+    //             editLink,
+    //         };
+
+    //         this.logger.info("Board data saved successfully", {
+    //             boardUuid: createdBoard.uniq_id,
+    //             executionTime: Date.now() - startTime,
+    //             operation: "saveBoardData",
+    //         });
+
+    //         return result;
+    //     } catch (err) {
+    //         this.logger.error("Error saving board data", {
+    //             error: err instanceof Error ? err.message : String(err),
+    //             stack: err instanceof Error ? err.stack : undefined,
+    //             dataId: transformedData.id,
+    //             userId: transformedData.userId,
+    //             executionTime: Date.now() - startTime,
+    //             operation: "saveBoardData",
+    //         });
+    //         throw err;
+    //     }
+    // }
 }

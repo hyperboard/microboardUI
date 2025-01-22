@@ -5,7 +5,7 @@ import { AccessKeyType } from "drizzle/entities/boardAccessKeys";
 import { DirectAccessType } from "drizzle/entities/boards";
 import { getApp } from "getApp";
 import http from "http";
-import { BOARD_AUTHOR_KEY_HEADER } from "Routes/V2/Boards/middlewares";
+import { BOARD_AUTHOR_KEY_HEADER } from "Routes/V1/Boards/middlewares";
 import request from "supertest";
 import { createToken } from "Tokens";
 

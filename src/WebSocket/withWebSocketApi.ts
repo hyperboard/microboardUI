@@ -6,9 +6,8 @@ import { DirectAccessType } from "drizzle/entities/boards";
 import { AccessToken } from "Interface";
 import { boardEventTotalLatency, websocketEventQueueSize } from "Metrics/metrics";
 import { Redis } from "Redis";
-import { BoardEventData, Boards } from "Routes/V1/Boards";
-import type { AccessKeysService } from "Routes/V2/Boards/access-keys.service";
-import type { BoardsService } from "Routes/V2/Boards/boards.service";
+import type { AccessKeysService } from "Routes/V1/Boards/access-keys.service";
+import type { BoardEventData, BoardsService } from "Routes/V1/Boards/boards.service";
 import { verifyToken } from "Tokens";
 import { isUUID } from "validator";
 import winston from "winston";
@@ -17,6 +16,7 @@ import { AiChatMsg, getAIChatMsgHandler } from "./ai-chat";
 import { Presence } from "./Presence";
 import { WebSocketRouter } from "./WebSocketRouter";
 import { z } from "zod";
+import { WsError } from "./wsError";
 import { TelegramService } from "services/TelegramService";
 
 const SECOND = 1000;
@@ -30,7 +30,6 @@ const SNAPSHOT_REQUEST_TIMEOUT = 10 * SECOND;
 
 export function withWebSocketApi({
     wss,
-    boards,
     accessKeysService,
     logger,
     redis,
@@ -40,7 +39,6 @@ export function withWebSocketApi({
     telegramService,
 }: {
     wss: WebSocketServer;
-    boards: Boards;
     accessKeysService: AccessKeysService;
     logger: winston.Logger;
     redis: Redis;
@@ -168,6 +166,9 @@ export function withWebSocketApi({
     async function handleError(ws: WebSocket, error: unknown, context: string): Promise<void> {
         const msg = getErrorMsg(error, context);
         logger.error(msg);
+        if (error instanceof WsError) {
+            return sendWsMsg(ws, error);
+        }
         sendWsMsg(ws, { type: "Error", message: msg });
     }
 
@@ -221,7 +222,7 @@ export function withWebSocketApi({
 
     async function sendSubscriptionCompleted(ws: WebSocket, boardId: string, mode: string) {
         const initialSequenceNumber = getInitialSeqNum(ws, boardId);
-        const snapshot = await boards.getLatestBoardSnapshot(boardId);
+        const snapshot = await boardsService.getLatestBoardSnapshot(boardId);
         const lastSnapshotEventOrder = snapshot?.lastIndex || 0;
         const eventsSinceLastSnapshot = await getEventsSinceLastSnapshot(boardId, lastSnapshotEventOrder);
         sendWsMsg(ws, {
@@ -258,7 +259,7 @@ export function withWebSocketApi({
     }
 
     async function getEventsSinceLastSnapshot(boardId: string, offset: number): Promise<any[]> {
-        const savedEvents = await boards.getBoardEvents(boardId, offset);
+        const savedEvents = await boardsService.getBoardEvents(boardId, offset);
         const enqueuedEvents = await eventsManager.getEnqueuedEvents(boardId);
         return savedEvents.concat(enqueuedEvents);
     }
@@ -308,7 +309,7 @@ export function withWebSocketApi({
         });
     }
 
-    const eventsManager = new EventsManager(boards, logger, boardsService);
+    const eventsManager = new EventsManager(logger, boardsService);
 
     async function handleBoardEventMsg(msg: BoardEventMsg, ws: WebSocket): Promise<void> {
         const startTime = process.hrtime.bigint();
@@ -395,7 +396,7 @@ export function withWebSocketApi({
     async function getAccessMode(ws: WebSocket, boardId: string): Promise<AccessMode> {
         const board = await boardsService.get(boardId);
         if (!board) {
-            throw new Error(`Board not found ${boardId}`);
+            throw new WsError("Board not found", boardId);
         }
         const accessKey = wsAccessKeys.get(ws);
         if (accessKey) {
@@ -408,7 +409,7 @@ export function withWebSocketApi({
                 return "view";
             }
 
-            throw new Error(`Invalid access key for board ${boardId}`);
+            throw new WsError("Invalid access key", boardId);
         }
 
         const userToken = wsTokens.get(ws);
@@ -434,7 +435,7 @@ export function withWebSocketApi({
             }
         }
 
-        throw new Error(`Invalid access mode for board ${boardId}`);
+        throw new WsError("Not authorized", boardId);
     }
 
     function handleUnsubscribeMsg(msg: UnsubscribeMsg, ws: WebSocket): void {
@@ -756,7 +757,7 @@ export class EventsManager {
         };
     } = {};
 
-    constructor(private boards: Boards, private logger: winston.Logger, private boardsService: BoardsService) {
+    constructor(private logger: winston.Logger, private boardsService: BoardsService) {
         setInterval(() => {
             this.tryToSaveEvents();
         }, SAVE_EVENTS_INTERVAL);
@@ -786,7 +787,7 @@ export class EventsManager {
     async getLastEventOrder(boardUuid: string): Promise<number> {
         let order = this.lastEventOrders.get(boardUuid);
         if (!order) {
-            order = await this.boards.getLastEventOrderForBoard(boardUuid);
+            order = await this.boardsService.getLastEventOrderForBoard(boardUuid);
             if (!isNaturalNumber(order)) {
                 throw new Error(`Error processing event: board ${boardUuid} not found`);
             }
@@ -824,7 +825,7 @@ export class EventsManager {
     async getEventCountSinceLastSnapshot(boardUuid: string): Promise<number> {
         let eventCount = this.eventCountSinceLastSnapshot.get(boardUuid);
         if (!eventCount) {
-            eventCount = await this.boards.getEventCountSinceLastSnapshot(boardUuid);
+            eventCount = await this.boardsService.getEventCountSinceLastSnapshot(boardUuid);
             if (!isNaturalNumber(eventCount)) {
                 throw new Error(`Error processing event: board ${boardUuid} not found`);
             }

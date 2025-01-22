@@ -3,9 +3,9 @@ import { body, param, query, validationResult } from "express-validator";
 import { catchAsync } from "../../../shared/lib/catchAsync";
 import winston from "winston";
 import { internalError } from "../../../shared/lib/routing";
-import { checkPermissions, forbidden } from "../Boards/Router";
 import { Templates } from "./Templates";
 import { HttpException } from "../../../shared/exceptions/http-exception";
+import { checkPermissions, forbidden } from "shared/utils/router";
 
 export function getTemplatesRouter(templates: Templates, logger: winston.Logger): express.Router {
     const router = express.Router();

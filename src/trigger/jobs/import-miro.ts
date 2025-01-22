@@ -1,6 +1,5 @@
 import { invokeTrigger } from "@trigger.dev/sdk";
 import { z } from "zod";
-import { Boards } from "../../Routes/V1/Boards";
 import { client } from "..";
 import { createLogger } from "winston";
 import { Board, MiroApi } from "@mirohq/miro-api";
@@ -8,6 +7,7 @@ import { BUCKET_NAME, minioClient } from "Routes/V1/Media/MinioClient";
 import { v4 } from "uuid";
 import { getTransformedBoard } from "trigger/etl/parsers";
 import { fetchAndProcessItems, fetchAndProcessConnectors } from "../etl/utils";
+import { BoardsService } from "Routes/V1/Boards/boards.service";
 
 interface ExtractedBoard {
     board: Board;
@@ -160,7 +160,7 @@ export const importMiroBoard = client.defineJob({
                 transformedBoard: transformedBoardTask.data,
             });
 
-            const boards = new Boards(winstonLogger);
+            const boards = new BoardsService(winstonLogger);
             const savedBoard = await boards.saveBoardData(transformedBoardTask.data);
 
             await io.logger.info(`Saved board: `, {

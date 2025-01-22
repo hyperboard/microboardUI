@@ -1,4 +1,3 @@
-import { createStripeService } from "./Routes/V1/Billing/stripe";
 import { createMiddleware } from "@trigger.dev/express";
 import { OpenAI } from "ai/openai";
 import bodyParser from "body-parser";
@@ -7,7 +6,9 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import { db, pool } from "drizzle/db";
 import { migrateData } from "drizzle/scripts/board-events-table.migration";
+import { createVectorExtension } from "drizzle/scripts/create-vector-ext";
 import { runMigration } from "drizzle/scripts/migrate";
+import { updatePlans } from "drizzle/scripts/plans";
 import express from "express";
 import helmet from "helmet";
 import http from "http";
@@ -16,29 +17,28 @@ import morgan from "morgan";
 import path from "path";
 import { getRedis } from "Redis";
 import { AI } from "Routes/V1/AI/AI";
+import { AccessKeysService } from "Routes/V1/Boards/access-keys.service";
+import { BoardsService } from "Routes/V1/Boards/boards.service";
+import { FoldersService } from "Routes/V1/Foldres/folders.service";
 import { createMinioMediaDAL } from "Routes/V1/Media";
-import { AccessKeysService } from "Routes/V2/Boards/access-keys.service";
-import { BoardsService } from "Routes/V2/Boards/boards.service";
-import { FoldersService } from "Routes/V2/Foldres/folders.service";
-import { getV2Router } from "Routes/V2/V2";
+import { catchAsync } from "shared/lib/catchAsync";
+import { getLoggerLevel } from "shared/lib/logger";
+import Stripe from "stripe";
 import { client } from "trigger";
+import { createImageGenerator } from "WebSocket/image-generator";
 import winston from "winston";
 import { WebSocketServer } from "ws";
 import { nocache } from "./nocache";
 import { getV1Router } from "./Routes";
 import { Auth } from "./Routes/V1/Auth";
-import { Boards } from "./Routes/V1/Boards";
+import { createStripeService } from "./Routes/V1/Billing/stripe";
 import { Templates } from "./Routes/V1/Templates";
 import { Users } from "./Routes/V1/Users";
 import { Config } from "./shared/config/config";
 import { Mailer } from "./shared/modules/mailer/mailer";
 import { withWebSocketApi } from "./WebSocket";
-import { updatePlans } from "drizzle/scripts/plans";
-import { createVectorExtension } from "drizzle/scripts/create-vector-ext";
-import Stripe from "stripe";
-import { catchAsync } from "shared/lib/catchAsync";
-import { getLoggerLevel } from "shared/lib/logger";
-import { createImageGenerator } from "WebSocket/image-generator";
+import { HttpException } from "shared/exceptions/http-exception";
+import { HttpStatus } from "shared/enums/http-status.enum";
 import { TelegramService } from "services/TelegramService";
 
 export async function getApp(): Promise<http.Server> {
@@ -154,7 +154,6 @@ export async function getApp(): Promise<http.Server> {
         deepseekApiKey: process.env.DEEPSEEK_API_KEY,
     });
     const mailer = new Mailer(config, logger, process.env.BASE_URL ?? "example");
-    const boards = new Boards(logger);
     const templates = new Templates(logger);
     const accessKeysService = new AccessKeysService(db);
     const boardsService = new BoardsService(db, logger);
@@ -178,7 +177,7 @@ export async function getApp(): Promise<http.Server> {
 
     withWebSocketApi({
         wss,
-        boards,
+       
         accessKeysService,
         logger,
         redis,
@@ -214,17 +213,12 @@ export async function getApp(): Promise<http.Server> {
         ai,
         openai,
         stripeService,
+        accessKeysService,
+        boardsService,
+        foldersService,
     });
 
     app.use(v1Router);
-
-    const v2Router = await getV2Router({
-        boardsService,
-        foldersService,
-        accessKeysService,
-    });
-
-    app.use("/api/v2", v2Router);
 
     app.use(exceptionMiddleware(logger));
 
@@ -240,6 +234,13 @@ export async function getApp(): Promise<http.Server> {
             next();
         }
     });
+
+    app.all(
+        "*",
+        catchAsync(async (req) => {
+            throw new HttpException(HttpStatus.NOT_FOUND, `Route ${req.originalUrl} not found`);
+        })
+    );
 
     const onError = (err: unknown) => {
         logger.error("Fatal unhandled error");

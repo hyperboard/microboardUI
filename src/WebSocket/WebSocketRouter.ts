@@ -12,8 +12,6 @@ const authMsgSchema = baseSocketMsgSchema.extend({
     jwt: z.string(),
 });
 
-authMsgSchema.shape.
-
 const logoutMsgSchema = baseSocketMsgSchema.extend({
     type: z.literal("Logout"),
 });
@@ -47,12 +45,12 @@ export class WebSocketRouter {
     private handlers: Map<string, { schema: z.ZodType<any>; handlers: MessageHandler<any>[] }> = new Map();
     private errorHandlers: Map<string, ErrorHandler<any>> = new Map();
 
-	route<T extends SocketMsg>(type: T['type'], schema: z.ZodType<T>): RouteBuilder<T> {
-		if (!this.handlers.has(type)) {
-			this.handlers.set(type, { schema, handlers: [] });
-		}
-		return new RouteBuilder<T>(this, type);
-	} 
+    route<T extends SocketMsg>(type: T["type"], schema: z.ZodType<T>): RouteBuilder<T> {
+        if (!this.handlers.has(type)) {
+            this.handlers.set(type, { schema, handlers: [] });
+        }
+        return new RouteBuilder<T>(this, type);
+    }
 
     async handleMessage(ws: WebSocket, rawMsg: unknown): Promise<void> {
         const parsedMsg = socketMsgSchema.safeParse(rawMsg);
@@ -105,26 +103,23 @@ class RouteBuilder<T extends SocketMsg> {
 // Usage
 const wsRouter = new WebSocketRouter();
 
-wsRouter
-  .route("Auth", authMsgSchema)
-  // .handle((msg, ws) => handleAuthMsg(msg, ws))
-  // .catch((error, msg, ws) => handleError(ws, error, "Failed to authenticate"));
+wsRouter.route("Auth", authMsgSchema);
+// .handle((msg, ws) => handleAuthMsg(msg, ws))
+// .catch((error, msg, ws) => handleError(ws, error, "Failed to authenticate"));
 
-wsRouter
-  .route("Logout", logoutMsgSchema)
-  // .handle(handleLogoutMsg);
+wsRouter.route("Logout", logoutMsgSchema);
+// .handle(handleLogoutMsg);
 
-wsRouter
-  .route("Subscribe", subscribeMsgSchema)
-  //.handle(handleSubscribeMsg)
-  // .catch((error, msg, ws) => {
-    // unsubscribeClient(msg.boardId, ws);
-    // return handleError(ws, error, "Failed to subscribe to board events");
-  // });
+wsRouter.route("Subscribe", subscribeMsgSchema);
+//.handle(handleSubscribeMsg)
+// .catch((error, msg, ws) => {
+// unsubscribeClient(msg.boardId, ws);
+// return handleError(ws, error, "Failed to subscribe to board events");
+// });
 
 // ... other routes ...
 
 // Main message handler
 async function handleMessage(ws: WebSocket, rawMsg: unknown) {
-  await wsRouter.handleMessage(ws, rawMsg);
+    await wsRouter.handleMessage(ws, rawMsg);
 }
