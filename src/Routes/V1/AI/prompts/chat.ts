@@ -31,7 +31,7 @@ export const getChatSystemPrompt = (): string => {
   Remember:
   - Current date is: ${new Date().toISOString()}
   - Supporting_context is essential and must influence your response
-  - If no supporting_context provided - omit and don't mention it
+  - If no supporting_context provided - omit and don't mention it. If fields in supporting_context are empty - omit them and don't mention them. IT IS IMPORTANT!
   - Take a deep breath and think step by step`;
 };
 

@@ -39,6 +39,7 @@ import Stripe from "stripe";
 import { catchAsync } from "shared/lib/catchAsync";
 import { getLoggerLevel } from "shared/lib/logger";
 import { createImageGenerator } from "WebSocket/image-generator";
+import { TelegramService } from "services/TelegramService";
 
 export async function getApp(): Promise<http.Server> {
     const app = express();
@@ -149,7 +150,9 @@ export async function getApp(): Promise<http.Server> {
     app.use(nocache);
 
     const config = new Config();
-    const openai = new OpenAI(process.env.OPENAI_API_KEY!);
+    const openai = new OpenAI(process.env.OPENAI_API_KEY!, {
+        deepseekApiKey: process.env.DEEPSEEK_API_KEY,
+    });
     const mailer = new Mailer(config, logger, process.env.BASE_URL ?? "example");
     const boards = new Boards(logger);
     const templates = new Templates(logger);
@@ -165,7 +168,25 @@ export async function getApp(): Promise<http.Server> {
         discordServerId: process.env.DISCORD_SERVER_ID,
         discordChannelId: process.env.DISCORD_CHANNEL_ID,
     });
-    withWebSocketApi({ wss, boards, accessKeysService, logger, redis, boardsService, openai, imageGenerator });
+
+    const telegramService = new TelegramService(
+        process.env.TELEGRAM_BOT_TOKEN!,
+        process.env.TELEGRAM_APP_TOKEN!,
+        logger
+    );
+    await telegramService.start();
+
+    withWebSocketApi({
+        wss,
+        boards,
+        accessKeysService,
+        logger,
+        redis,
+        boardsService,
+        openai,
+        imageGenerator,
+        telegramService,
+    });
     const media = createMinioMediaDAL(logger);
     const users = new Users(media, logger);
     const auth = new Auth(logger, users, config, mailer);

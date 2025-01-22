@@ -17,6 +17,7 @@ import { AiChatMsg, getAIChatMsgHandler } from "./ai-chat";
 import { Presence } from "./Presence";
 import { WebSocketRouter } from "./WebSocketRouter";
 import { z } from "zod";
+import { TelegramService } from "services/TelegramService";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
@@ -36,6 +37,7 @@ export function withWebSocketApi({
     boardsService,
     openai,
     imageGenerator,
+    telegramService,
 }: {
     wss: WebSocketServer;
     boards: Boards;
@@ -45,13 +47,14 @@ export function withWebSocketApi({
     boardsService: BoardsService;
     openai: OpenAI;
     imageGenerator: ImageGenerator;
+    telegramService: TelegramService;
 }): void {
     const boardClients = new Map<string, WebSocket.WebSocket[]>();
     const wsTokens = new Map<WebSocket, AccessToken>();
     const wsAccessKeys = new Map<WebSocket, string>();
     const snapshotRequestTimers = new Map<string, NodeJS.Timeout>();
     const presence = new Presence(redis);
-    const chatStreamHandler = new ChatStreamHandler(openai, logger);
+    const chatStreamHandler = new ChatStreamHandler(openai, logger, redis, telegramService);
 
     wss.on("connection", (ws) => {
         ws.on("message", async (data) => {
@@ -103,6 +106,10 @@ export function withWebSocketApi({
                 );
             case "AiChat":
                 return handleAiChatMessage(msg, ws).catch((error) => {
+                    telegramService.broadcastMessage(error?.message || "Unknown error", {
+                        boardId: msg.boardId,
+                        msg: msg,
+                    });
                     handleError(ws, error, "Failed to process AI chat message");
                 });
             case "PresenceEvent":

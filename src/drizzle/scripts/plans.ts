@@ -28,6 +28,18 @@ export const AI_MODELS: AiModel[] = [
         displayName: "Image Generation",
         isDefault: false,
     },
+    {
+        id: "deepseek-chat",
+        name: "deepseek-chat",
+        displayName: "DeepSeek Chat",
+        isDefault: false,
+    },
+    {
+        id: "deepseek-reasoner",
+        name: "deepseek-reasoner",
+        displayName: "DeepSeek Reasoner",
+        isDefault: false,
+    },
 ];
 
 export const PLANS: PlanDefinition[] = [
@@ -97,6 +109,38 @@ export const PLAN_MODEL_LIMITS: ModelLimitDefinition[] = [
         planId: "plus",
         modelId: "image-generation",
         dailyRequestLimit: 25,
+        weeklyRequestLimit: null,
+        isEnabled: true,
+    },
+    {
+        id: "basic-deepseek-chat",
+        planId: "basic",
+        modelId: "deepseek-chat",
+        dailyRequestLimit: null,
+        weeklyRequestLimit: null,
+        isEnabled: false,
+    },
+    {
+        id: "basic-deepseek-reasoner",
+        planId: "basic",
+        modelId: "deepseek-reasoner",
+        dailyRequestLimit: null,
+        weeklyRequestLimit: null,
+        isEnabled: true,
+    },
+    {
+        id: "plus-deepseek-chat",
+        planId: "plus",
+        modelId: "deepseek-chat",
+        dailyRequestLimit: null,
+        weeklyRequestLimit: null,
+        isEnabled: true,
+    },
+    {
+        id: "plus-deepseek-reasoner",
+        planId: "plus",
+        modelId: "deepseek-reasoner",
+        dailyRequestLimit: null,
         weeklyRequestLimit: null,
         isEnabled: true,
     },

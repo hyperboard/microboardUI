@@ -54,9 +54,9 @@ export async function getRedis(logger: winston.Logger): Promise<Redis> {
             disconnectTimeout: 2_000,
             commandTimeout: 10_000,
         };
-        if (process.env.REDIS_LOCAL === "true") {
-            options.password = "redis";
-        }
+        // if (process.env.REDIS_LOCAL === "true") {
+        //     options.password = "redis";
+        // }
         const redis = new RedisClient(options);
 
         const originalSendCommand = redis.sendCommand;

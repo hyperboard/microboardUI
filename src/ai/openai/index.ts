@@ -1,4 +1,4 @@
-import llm from "openai";
+import LLM from "openai";
 import { ChatCompletionMessageParam } from "openai/resources/chat";
 
 export type OpenAIModels =
@@ -86,15 +86,25 @@ function forceMaxTokens(model: OpenAIModels): number {
 }
 
 export class OpenAI {
-    private client: llm;
+    private client: LLM;
+    private deepseek: LLM | null = null;
     private defaultModel: OpenAIModels = "gpt-4o";
     private defaultMaxTokens = 10000; // max 128k per completion for gpt-4o
 
-    constructor(apiKey: string) {
-        this.client = new llm({
+    constructor(apiKey: string, options: { deepseekApiKey?: string } = {}) {
+        const { deepseekApiKey } = options;
+
+        this.client = new LLM({
             apiKey,
             baseURL: "https://openai-api.microboard.io/v1",
         });
+
+        if (deepseekApiKey) {
+            this.deepseek = new LLM({
+                apiKey: deepseekApiKey,
+                baseURL: "https://api.deepseek.com",
+            });
+        }
     }
 
     async generateChatCompletion(
@@ -103,17 +113,33 @@ export class OpenAI {
             model?: OpenAIModels;
             temperature?: number;
             maxTokens?: number;
+            customModel?: "deepseek-chat" | "deepseek-reasoner";
         } = {}
     ): Promise<string | null> {
-        const { model = this.defaultModel, temperature = 0.7, maxTokens = this.defaultMaxTokens } = options;
+        const {
+            model = this.defaultModel,
+            temperature = 0.7,
+            maxTokens = this.defaultMaxTokens,
+            customModel,
+        } = options;
 
         try {
-            const response = await this.client.chat.completions.create({
-                model,
-                messages,
-                temperature,
-                // max_completion_tokens: 4096,
-            });
+            let response = null;
+
+            if (customModel && this.deepseek && customModel.startsWith("deepseek-")) {
+                response = await this.deepseek.chat.completions.create({
+                    model: customModel,
+                    messages,
+                    temperature,
+                });
+            } else {
+                response = await this.client.chat.completions.create({
+                    model,
+                    messages,
+                    temperature,
+                    // max_completion_tokens: 4096,
+                });
+            }
 
             return response.choices[0].message.content;
         } catch (err) {
@@ -129,23 +155,38 @@ export class OpenAI {
             model?: OpenAIModels;
             temperature?: number;
             maxTokens?: number;
+            customModel?: "deepseek-chat" | "deepseek-reasoner";
         } = {}
     ) {
         const { model = this.defaultModel, temperature = 0.7, maxTokens = this.defaultMaxTokens, signal } = options;
 
         try {
-            const response = await this.client.chat.completions.create(
-                {
-                    model,
-                    messages,
-                    temperature,
-                    // max_completion_tokens: forceMaxTokens(model),
-                    stream: true,
-                },
-                {
-                    signal: signal,
-                }
-            );
+            let response = null;
+
+            if (options?.customModel && options.customModel.startsWith("deepseek-") && this.deepseek) {
+                response = await this.deepseek.chat.completions.create(
+                    {
+                        model: options.customModel,
+                        messages,
+                        temperature,
+                        stream: true,
+                    },
+                    { signal }
+                );
+            } else {
+                response = await this.client.chat.completions.create(
+                    {
+                        model,
+                        messages,
+                        temperature,
+                        // max_completion_tokens: forceMaxTokens(model),
+                        stream: true,
+                    },
+                    {
+                        signal: signal,
+                    }
+                );
+            }
 
             return response;
         } catch (err) {

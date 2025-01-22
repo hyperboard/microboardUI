@@ -31,58 +31,15 @@ import {
 import winston from "winston";
 import { getEncoding } from "js-tiktoken";
 import { getJson } from "serpapi";
-import { ModelLimit, modelLimits, userPlans } from "drizzle/entities/plans";
+import { modelLimits } from "drizzle/entities/plans";
 import { boardOwner, boards } from "drizzle/entities";
-import { ModelLimitDefinition, PLAN_MODEL_LIMITS } from "drizzle/scripts/plans";
 import { GenerateImageOptions, ImageGenerator } from "WebSocket/image-generator";
-import { getCurrentUserPlan } from "Routes/V1/Billing/utils";
+import { getCurrentModelLimits, getCurrentUserPlan } from "Routes/V1/Billing/utils";
+import { Redis } from "Redis";
+import { TelegramService } from "services/TelegramService";
 
 class UsageLimitChecker {
     constructor(private logger: winston.Logger) {}
-    private async getCurrentPeriods() {
-        const now = new Date();
-        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-        const dayOfWeek = now.getDay();
-        const daysSinceMonday = (dayOfWeek + 6) % 7;
-        const startOfWeek = new Date(startOfToday);
-        startOfWeek.setDate(startOfToday.getDate() - daysSinceMonday);
-
-        return {
-            daily: {
-                start: startOfToday,
-                end: now,
-                resetDate: new Date(startOfToday.getTime() + 24 * 60 * 60 * 1000),
-            },
-            weekly: {
-                start: startOfWeek,
-                end: now,
-                resetDate: new Date(startOfWeek.getTime() + 7 * 24 * 60 * 60 * 1000),
-            },
-        };
-    }
-
-    private async getCurrentUsage(userId: number, modelId: string, startDate: Date, endDate: Date): Promise<number> {
-        const result = await db
-            .select({
-                count: sql<number>`count(${message.id})`,
-            })
-            .from(message)
-            .innerJoin(chat, eq(message.chatId, chat.id))
-            .innerJoin(boards, sql`${chat.boardId}::text = ${boards.uniqId}::text`)
-            .innerJoin(boardOwner, eq(boards.id, boardOwner.boardId))
-            .where(
-                and(
-                    eq(message.model, modelId),
-                    eq(boardOwner.ownerId, userId),
-                    eq(message.role, "assistant"),
-                    gte(message.createdAt, startDate),
-                    lte(message.createdAt, endDate)
-                )
-            );
-
-        return result[0].count;
-    }
 
     public async checkUserLimits(
         userId: number,
@@ -108,18 +65,20 @@ class UsageLimitChecker {
             return { canProceed: true };
         }
 
-        const periods = await this.getCurrentPeriods();
+        const modelUsage = await getCurrentModelLimits(userId);
+        const currentModelUsage = modelUsage.find((m) => m.modelName === modelId);
 
-        const [dailyUsage, weeklyUsage] = await Promise.all([
-            this.getCurrentUsage(userId, modelId, periods.daily.start, periods.daily.end),
-            this.getCurrentUsage(userId, modelId, periods.weekly.start, periods.weekly.end),
-        ]);
+        if (!currentModelUsage) {
+            return { canProceed: false, error: "Model not found" };
+        }
 
-        this.logger.debug(`${modelId} - dailyUsage: ${dailyUsage}, weeklyUsage: ${weeklyUsage}`);
+        this.logger.debug(
+            `${modelId} - dailyUsage: ${currentModelUsage.dailyUsage}, weeklyUsage: ${currentModelUsage.weeklyUsage}`
+        );
 
         if (
-            (planLimit.dailyRequestLimit && dailyUsage >= planLimit.dailyRequestLimit) ||
-            (planLimit.weeklyRequestLimit && weeklyUsage >= planLimit.weeklyRequestLimit)
+            (planLimit.dailyRequestLimit && currentModelUsage.dailyUsage >= planLimit.dailyRequestLimit) ||
+            (planLimit.weeklyRequestLimit && currentModelUsage.weeklyUsage >= planLimit.weeklyRequestLimit)
         ) {
             return { canProceed: false, error: "Request limit exceeded" };
         }
@@ -131,32 +90,18 @@ class UsageLimitChecker {
         canProceed: boolean;
         error?: string;
     }> {
-        const userPlan = await getCurrentUserPlan(userId);
-        const mLimits = await db
-            .select()
-            .from(modelLimits)
-            .where(and(eq(modelLimits.modelId, "image-generation"), eq(modelLimits.planId, userPlan.planId)))
-            .limit(1);
+        const modelUsage = await getCurrentModelLimits(userId);
+        const imageGenUsage = modelUsage.find((m) => m.modelName === "image-generation");
 
-        const planLimit = mLimits[0];
-
-        if (!planLimit?.isEnabled) {
+        if (!imageGenUsage?.isEnabled) {
             return { canProceed: false, error: "Image generation not available in your plan" };
         }
 
-        if (!planLimit.dailyRequestLimit) {
+        if (!imageGenUsage.dailyLimit) {
             return { canProceed: true };
         }
 
-        const periods = await this.getCurrentPeriods();
-        const dailyUsage = await this.getCurrentUsage(
-            userId,
-            "image-generation",
-            periods.daily.start,
-            periods.daily.end
-        );
-
-        if (planLimit.dailyRequestLimit && dailyUsage >= planLimit.dailyRequestLimit) {
+        if (imageGenUsage.dailyLimit && imageGenUsage.dailyUsage >= imageGenUsage.dailyLimit) {
             return { canProceed: false, error: "Image generation limit exceeded" };
         }
 
@@ -206,6 +151,8 @@ export class ChatStreamHandler {
     private serpapi = new SerpApi();
     private encoder = getEncoding("cl100k_base");
     private usageLimitChecker: UsageLimitChecker;
+    private redis: Redis;
+    private telegramService: TelegramService;
 
     boardClients = new Map<string, WebSocket.WebSocket[]>();
 
@@ -219,9 +166,15 @@ export class ChatStreamHandler {
         }
     >();
 
-    constructor(openai: OpenAI, logger: winston.Logger) {
+    constructor(openai: OpenAI, logger: winston.Logger, redis: Redis, telegramService: TelegramService) {
         this.openai = openai;
         this.usageLimitChecker = new UsageLimitChecker(logger);
+        this.redis = redis;
+        this.telegramService = telegramService;
+    }
+
+    private async reportToTelegramBot(text: string, meta?: { boardId?: string; msg?: AiChatMsg }) {
+        await this.telegramService.broadcastMessage(text, meta);
     }
 
     private countTokens(text: string): number {
@@ -433,7 +386,7 @@ export class ChatStreamHandler {
                 role: MessageRole.ASSISTANT,
                 content: result.base64 || "",
                 logger,
-                model: "unsupported",
+                model: "image-generation",
             });
 
             const msgToSend: AiChatMsg<GenerateImageResponse> = {
@@ -451,9 +404,11 @@ export class ChatStreamHandler {
             console.log("Message to send(Generate Image): ", msgToSend);
             ws.send(JSON.stringify(msgToSend));
         } catch (error) {
-            console.error("Error generating image: ", error);
+            const errorMsg = `Error generating image for chat ${chat.id}: ${error}`;
+            console.error(errorMsg);
+            await this.reportToTelegramBot(errorMsg, { boardId: msg.boardId, msg: msg });
 
-            const errorMsg: AiChatMsg<GenerateImageResponse> = {
+            const errorResponse: AiChatMsg<GenerateImageResponse> = {
                 type: "AiChat",
                 boardId: msg.boardId,
                 event: {
@@ -466,7 +421,7 @@ export class ChatStreamHandler {
                 },
             };
 
-            ws.send(JSON.stringify(errorMsg));
+            ws.send(JSON.stringify(errorResponse));
         }
     }
 
@@ -727,10 +682,20 @@ export class ChatStreamHandler {
             logger.debug("Generating chat completion stream...");
             logger.debug("Context messages: ", JSON.stringify(contextMessages));
 
-            const stream = await this.openai.generateStreamChatCompletion(contextMessages, {
-                model: msg.event.model || "gpt-4o-mini",
-                signal: controller.signal,
-            });
+            let stream: Stream<ChatCompletionChunk> | null = null;
+
+            if (msg.event.model?.startsWith("deepseek-")) {
+                stream = await this.openai.generateStreamChatCompletion(contextMessages, {
+                    model: msg.event.model || "gpt-4o-mini",
+                    signal: controller.signal,
+                    customModel: msg.event.model as "deepseek-chat" | "deepseek-reasoner",
+                });
+            } else {
+                stream = await this.openai.generateStreamChatCompletion(contextMessages, {
+                    model: msg.event.model || "gpt-4o-mini",
+                    signal: controller.signal,
+                });
+            }
 
             if (!stream) {
                 console.error("Failed to create stream");
@@ -761,7 +726,9 @@ export class ChatStreamHandler {
                 msg,
             });
         } catch (error) {
-            console.error("Error in handleUserRequest:", error);
+            const errorMsg = `Error handling user request for board ${msg.boardId}: ${error}`;
+            console.error(errorMsg);
+            await this.reportToTelegramBot(errorMsg, { boardId: msg.boardId, msg: msg });
             this.sendErrorResponse(null, ws, error instanceof Error ? error.message : "Unknown error", msg.boardId);
         }
     }
@@ -890,7 +857,7 @@ export class ChatStreamHandler {
 
         readableStream.pipeTo(
             new WritableStream({
-                write: (chunk: Uint8Array) => {
+                write: async (chunk: Uint8Array) => {
                     try {
                         if (controller.signal.aborted) {
                             isStopped = true;
@@ -925,11 +892,13 @@ export class ChatStreamHandler {
                             ws.send(JSON.stringify(streamChunkMsg));
                         }
                     } catch (error) {
-                        console.error("Error processing stream chunk:", error);
+                        const errorMsg = `Error processing stream chunk for chat ${chat.id}: ${error}`;
+                        console.error(errorMsg);
+                        await this.reportToTelegramBot(errorMsg, { boardId: msg.boardId, msg: msg });
                         this.sendErrorResponse(chat, ws, "Invalid chunk format");
                     }
                 },
-                close: () => {
+                close: async () => {
                     if (!isStopped && !controller.signal.aborted) {
                         const encoder = getEncoding("cl100k_base");
                         const tokens = encoder.encode(assistantResponse);
@@ -948,19 +917,22 @@ export class ChatStreamHandler {
                             updatedFrom: exMessage?.id,
                         });
                     } else {
-                        this.saveMessage({
+                        await this.saveMessage({
                             chat,
                             role: MessageRole.SYSTEM,
                             content: "Conversation manually stopped by user",
                             logger,
                             model: "system",
                         });
+                        await this.reportToTelegramBot(`Chat ${chat.id} manually stopped by user`);
                     }
 
                     this.activeStreams.delete(itemId);
                 },
-                abort: (err) => {
-                    console.error("Streaming error:", err);
+                abort: async (err) => {
+                    const errorMsg = `Streaming error for chat ${chat.id}: ${err}`;
+                    console.error(errorMsg);
+                    await this.reportToTelegramBot(errorMsg, { boardId: msg.boardId, msg: msg });
 
                     if (!isStopped) {
                         this.sendErrorResponse(chat, ws, err instanceof Error ? err.message : "Stream error");
@@ -1095,8 +1067,11 @@ export class ChatStreamHandler {
         return savedMessage;
     }
 
-    private sendErrorResponse(chat: Chat | null, ws: WebSocket, errorMessage: string, boardId?: string) {
-        console.error("Sending error response:", errorMessage);
+    private async sendErrorResponse(chat: Chat | null, ws: WebSocket, errorMessage: string, boardId?: string) {
+        const errorMsg = `Error response for chat ${chat?.id || "unknown"}: ${errorMessage}`;
+        console.error(errorMsg);
+        await this.reportToTelegramBot(errorMsg, { boardId: chat?.boardId || boardId || "" });
+
         const errorChunk: AiChatMsg<ChatChunk> = {
             type: "AiChat",
             boardId: chat?.boardId || boardId || "",
