@@ -112,10 +112,13 @@ export const AIContextProvider = ({ children }: Props): JSX.Element => {
 			false,
 			requestAdded,
 			true,
+			model === "image-generation",
 		);
 		const responseAdded = board.add(responseNode.node);
 
 		setResponseNodeId(responseAdded.getId());
+
+		board.AIImagePlaceholder = responseAdded;
 
 		if (responseNode.connectorData) {
 			board.add(
@@ -126,6 +129,7 @@ export const AIContextProvider = ({ children }: Props): JSX.Element => {
 				}),
 			);
 		}
+
 		return { responseAdded, requestAdded };
 	}
 

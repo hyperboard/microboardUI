@@ -518,10 +518,7 @@ export const useCopyBoardItems = (
 		position: IMiroPosition,
 		parent?: IMiroParent,
 	): void => {
-		const updatedGeometry = updateStickerGeometry(
-			item,
-			itemGeometry,
-		);
+		const updatedGeometry = updateStickerGeometry(item, itemGeometry);
 		const itemPosition = getItemPosition(
 			position,
 			miroItem.geometry,
@@ -733,7 +730,11 @@ export const useCopyBoardItems = (
 					board.remove(placeholder);
 				}
 
-				const imgItem = new ImageItem(imageData, board).setId(id);
+				const imgItem = new ImageItem(
+					imageData,
+					board,
+					board.events,
+				).setId(id);
 
 				const imgPosition = getItemPosition(
 					position,

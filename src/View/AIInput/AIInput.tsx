@@ -127,7 +127,6 @@ export const AIInput = () => {
 			}, 1000);
 			return;
 		}
-		board.isAIGenerating = true;
 		await sendInputData();
 	};
 
@@ -152,7 +151,7 @@ export const AIInput = () => {
 	};
 
 	const toggleModelDropdown = (): void => {
-		if (!board.isAIGenerating) {
+		if (!board.AIGeneratingOnItem) {
 			setIsDropdownOpen(!isDropdownOpen);
 		}
 	};
@@ -212,6 +211,8 @@ export const AIInput = () => {
 			itemToContinueThread,
 			!isIdeaFromSelection,
 		);
+
+		board.AIGeneratingOnItem = responseAdded.getId();
 
 		const parentNodes = nodeWithParents
 			? [nodeWithParents.node, ...nodeWithParents.parents]
@@ -301,7 +302,7 @@ export const AIInput = () => {
 
 		if (responseNodeId) {
 			await stopStream(boardId, responseNodeId, account);
-			app.getBoard().isAIGenerating = false;
+			board.AIGeneratingOnItem = undefined;
 		}
 	};
 
@@ -354,7 +355,7 @@ export const AIInput = () => {
 					className={styles.tooltip}
 				/>
 			)}
-			{board.isAIGenerating && (
+			{board.AIGeneratingOnItem && (
 				<Tooltip
 					tooltip={t("AIInput.disableWhenGenerating")}
 					tooltipPosition="top-center-fixed"
@@ -364,7 +365,8 @@ export const AIInput = () => {
 			)}
 			<div
 				className={clsx(styles.contentWrapper, {
-					[styles.disabled]: board.isAIGenerating || !isEditable,
+					[styles.disabled]:
+						board.AIGeneratingOnItem || !isEditableOnItem,
 				})}
 			>
 				<div className={styles.modelSelector}>
@@ -384,7 +386,7 @@ export const AIInput = () => {
 						width={20}
 						height={20}
 					/>
-					{isDropdownOpen && !board.isAIGenerating && (
+					{isDropdownOpen && !board.AIGeneratingOnItem && (
 						<div className={styles.modelDropdown}>
 							<button
 								className={clsx(
@@ -464,7 +466,7 @@ export const AIInput = () => {
 					className={styles.aiInput}
 					ref={inputRef}
 					rows={1}
-					disabled={!isEditable || board.isAIGenerating}
+					disabled={!isEditable || !!board.AIGeneratingOnItem}
 				/>
 				<div
 					className={clsx(
@@ -479,7 +481,9 @@ export const AIInput = () => {
 				</div>
 				<button
 					onClick={
-						board.isAIGenerating ? handleStopClick : handleSendClick
+						board.AIGeneratingOnItem
+							? handleStopClick
+							: handleSendClick
 					}
 					className={styles.sendButton}
 					disabled={!isEditable}
@@ -488,13 +492,15 @@ export const AIInput = () => {
 						width={20}
 						height={20}
 						iconName={
-							board.isAIGenerating ? "StopAiGeneration" : "Vector"
+							board.AIGeneratingOnItem
+								? "StopAiGeneration"
+								: "Vector"
 						}
 						className={clsx(styles.icon, {
 							[styles.activeIcon]:
 								inputValue.trim() ||
 								ideaFromSelection ||
-								board.isAIGenerating,
+								board.AIGeneratingOnItem,
 						})}
 					/>
 				</button>

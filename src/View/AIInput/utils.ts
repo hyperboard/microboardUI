@@ -11,11 +11,13 @@ import { Connector } from "Board/Items/Connector/Connector";
 import { Mbr } from "Board/Items/Mbr/Mbr";
 import { Board } from "Board/Board";
 import { t } from "i18next";
+import { ImageItem } from "Board/Items/Image";
 
 export type PossibleParentNode = AINode | Shape | RichText | Sticker;
 
 export const DEFAULT_MAX_NODE_WIDTH = 640;
-const PLACEHOLDER_OFFSET = "												";
+const PLACEHOLDER_TEXT =
+	"...............................................................................................................................................................................................";
 
 export const getTextFromItem = (item: Item) => {
 	const richText = item.getRichText();
@@ -60,11 +62,11 @@ export const getIdeaFromSelection = (
 };
 
 export function calculateNodePosition(
-	newNode: AINode,
+	newNode: Item,
 	selectedItem: PossibleParentNode,
 	isResponseNode: boolean,
 	board: Board,
-): { newItem: AINode; connectorData: ConnectorData } {
+): { newItem: Item; connectorData: ConnectorData } {
 	const connectorStorage = new SessionStorage();
 	const currMbr = selectedItem?.getMbr() || null;
 	const currData = selectedItem?.serialize() || null;
@@ -83,7 +85,9 @@ export function calculateNodePosition(
 		baseAdjustments.translateY + currMbr.top,
 	);
 
-	newNodeData.adjustmentPoint = adjustmentPoint;
+	if (newNodeData.itemType === "AINode") {
+		newNodeData.adjustmentPoint = adjustmentPoint;
+	}
 
 	if (newNodeData.transformation) {
 		if (isResponseNode) {
@@ -273,25 +277,39 @@ export function createNode(
 	isUserRequest: boolean,
 	parentItem?: PossibleParentNode,
 	withPlaceholder = false,
-): { node: AINode; connectorData: ConnectorData | null } {
+	isImage = false,
+): { node: AINode | ImageItem; connectorData: ConnectorData | null } {
 	let parentNodeId: string | undefined;
 	if (parentItem && parentItem.itemType === "AINode") {
 		parentNodeId = parentItem.getId();
 	}
-
-	const node = new AINode(isUserRequest, parentNodeId);
-	const nodeRichText = node.getRichText();
-	nodeRichText.setMaxWidth(600);
-	nodeRichText.setSelectionHorisontalAlignment("left");
-	nodeRichText.container.right = nodeRichText.container.left + 600;
-
-	if (withPlaceholder) {
-		nodeRichText.editor.insertCopiedText(
-			t("AIInput.generatingResponse") + PLACEHOLDER_OFFSET,
+	let node;
+	if (isImage) {
+		node = new ImageItem(
+			{
+				base64: undefined,
+				imageDimension: { width: 600, height: 600 },
+				storageLink: "",
+			},
+			board,
+			board.events,
 		);
+		board.AIImagePlaceholder = node;
 	} else {
-		nodeRichText.editor.insertCopiedText(inputValue);
+		node = new AINode(isUserRequest, parentNodeId);
+		const nodeRichText = node.getRichText();
+		nodeRichText.setMaxWidth(600);
+		nodeRichText.setSelectionHorisontalAlignment("left");
+		nodeRichText.container.right = nodeRichText.container.left + 600;
+		if (withPlaceholder) {
+			nodeRichText.editor.insertCopiedText(
+				t("AIInput.generatingResponse") + PLACEHOLDER_OFFSET,
+			);
+		} else {
+			nodeRichText.editor.insertCopiedText(inputValue);
+		}
 	}
+	// const node = new AINode(isUserRequest, parentNodeId);
 
 	if (!parentItem) {
 		const { newItem, connectorData } = calculateParentItemPosition(

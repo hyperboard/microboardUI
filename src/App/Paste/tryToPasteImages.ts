@@ -23,7 +23,7 @@ export function tryToPasteImages(event: ClipboardEvent, board: Board): boolean {
 		reader.onload = event => {
 			prepareImage(event.target?.result)
 				.then(imageData => {
-					const image = new ImageItem(imageData, board);
+					const image = new ImageItem(imageData, board, board.events);
 					image.transformation.translateTo(
 						board.pointer.point.x,
 						board.pointer.point.y,
