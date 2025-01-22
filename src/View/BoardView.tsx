@@ -131,6 +131,8 @@ const BoardView = ({ app }: Props): JSX.Element => {
 							variant: "error",
 						});
 					}
+
+					searchParams.delete("paymentStatus");
 				}
 			});
 		});

@@ -334,6 +334,11 @@ export const AIInput: React.FC = () => {
 		}
 	};
 
+	const boardId = board.getBoardId();
+	if (!boardId || boardId === "blank") {
+		return;
+	}
+
 	return (
 		<UiPanel
 			padding={0}

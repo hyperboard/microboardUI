@@ -21,6 +21,7 @@ type Props = {
 	features: string[];
 	onDowngrade?: MouseEventHandler;
 	onSubscribe?: MouseEventHandler;
+	activationDate?: string | Date;
 };
 
 export function PlanCard({
@@ -34,6 +35,7 @@ export function PlanCard({
 	features,
 	onDowngrade,
 	onSubscribe,
+	activationDate,
 }: Props) {
 	const { t } = useTranslation();
 
@@ -46,8 +48,9 @@ export function PlanCard({
 			case "current":
 				return t("userPlan.subscribe.current");
 			case "downgrade":
-			case "pending":
 				return t("userPlan.subscribe.downgrade");
+			case "pending":
+				return t("userPlan.pendingBtn", { activationDate });
 		}
 	};
 

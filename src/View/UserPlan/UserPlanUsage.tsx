@@ -88,7 +88,7 @@ export function UserPlanUsage({
 						</button>
 					</p>
 				) : (
-					<p>
+					<p className={styles.planUsage}>
 						{t("userPlan.currentPlanPending", {
 							planName,
 							cancellationDate: formattedCancellationDate,

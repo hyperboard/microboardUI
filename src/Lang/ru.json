@@ -766,8 +766,9 @@
 		"upgradePlan": "Выбрать тариф",
 		"currentPlanInfo": "У вас осталось <0>{{availableRequests}} запросов к {{aiModel}} до {{tokensUsageResetDate}}</0>",
 		"currentPlanInfoDaily": "У вас осталось <0>{{availableRequests}} запросов к {{aiModel}} до конца дня.</0>",
-		"currentPlanPending": "Тариф {{planName}} оплачен до {{cancellationDate}}. Автоплатеж отключен.",
+		"currentPlanPending": "Тариф {{planName}} оплачен до {{cancellationDate}}.",
 		"currentPlanActive": "Тариф {{planName}} оплачен до {{cancellationDate}}. Подключен автоплатеж. Следующее списание: {{cancellationDate}}.",
+		"pendingBtn": "Будет действовать с {{activationDate}}",
 		"cancelPayment": "Отказаться",
 		"unlimited": "Без ограничений",
 		"free": "Бесплатно",
@@ -803,6 +804,7 @@
 				"features": [
 					"Безлимит запросов к GPT-4o mini",
 					"50 запросов в день к GPT-4o",
+					"Доски, фигуры — без ограничений",
 					"Картинки — до 100 ГБ"
 				]
 			},

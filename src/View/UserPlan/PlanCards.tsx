@@ -98,6 +98,14 @@ export function BasicPlanCard() {
 			features={t("userPlan.plans.basic.features", {
 				returnObjects: true,
 			})}
+			activationDate={new Intl.DateTimeFormat(i18n.language, {
+				year: "numeric",
+				month: "numeric",
+				day: "numeric",
+			}).format(
+				new Date(account.billingInfo?.plan.periodEnd ?? 0).getTime() +
+					24 * 60 * 60 * 1000,
+			)}
 			price={t("userPlan.free")}
 			variant="basic"
 			state={getBasicSubState()}
