@@ -13,9 +13,10 @@ declare global {
 	}
 }
 
-var showDebug = isMicroboard() ? true : false;
-window.showDebug = showDebug;
+// var showDebug = isMicroboard() ? true : false;
+window.showDebug = false;
 window.enableTemplateCreating = false;
+window.enableDiagrams = false;
 
 const app = createApp();
 app.connection.connect().then(() => {

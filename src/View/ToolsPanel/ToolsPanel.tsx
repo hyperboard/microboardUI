@@ -62,7 +62,9 @@ export function ToolsPanel(): JSX.Element {
 				</UiPanel>
 				<div className={style.bottomLeftWrapper}>
 					{window.showDebug && <EventList />}
-					<AIChatPanel board={app.getBoard()} />
+					{window.enableDiagrams && (
+						<AIChatPanel board={app.getBoard()} />
+					)}
 				</div>
 			</div>
 		</PanelContext.Provider>

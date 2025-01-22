@@ -13,6 +13,7 @@ declare global {
 		useHTTPSubscription: boolean;
 		showDebug: boolean;
 		enableTemplateCreating: boolean;
+		enableDiagrams: boolean;
 		showOpenFilePicker: () => Promise<FileSystemFileHandle[]>; // should be there
 	}
 }
@@ -20,6 +21,7 @@ declare global {
 var showDebug = isMicroboard() ? true : false;
 window.showDebug = showDebug;
 window.enableTemplateCreating = false;
+window.enableDiagrams = true;
 
 window.app = createApp();
 window.app.connection.connect().then(() => {
