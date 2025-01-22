@@ -6,6 +6,8 @@ import { Account } from "App/Account";
 import { getControlPointData } from "Board/Selection/QuickAddButtons/quickAddHelpers";
 import { createNode, PossibleParentNode } from "View/AIInput/utils";
 import { AINode } from "Board/Items/AINode/AINode";
+import { useAppSubscription } from "Board/useBoardSubscription";
+import { useForceUpdate } from "lib/useForceUpdate";
 
 interface Context {
 	stopStream: (
@@ -37,7 +39,7 @@ interface Props {
 }
 
 export const AIContextProvider = ({ children }: Props): JSX.Element => {
-	const { app, board } = useAppContext();
+	const { app } = useAppContext();
 	const [model, setModel] = useState<OpenAIModels>("gpt-4o-mini");
 	const [responseNodeId, setResponseNodeId] = useState<string | undefined>();
 	const [query, setQuery] = useState("");
@@ -72,6 +74,7 @@ export const AIContextProvider = ({ children }: Props): JSX.Element => {
 		itemToContinueThread?: PossibleParentNode,
 		isIdeaFromInput = true,
 	) {
+		const board = app.getBoard();
 		let requestAdded: AINode;
 		if (
 			itemToContinueThread &&
