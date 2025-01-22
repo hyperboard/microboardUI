@@ -18,6 +18,7 @@ import { UserDropDown } from "../UserDropdown/UserDropdown";
 import { useMediaQuery } from "lib/useMediaQuery";
 import { useNavigate } from "react-router-dom";
 import { USER_PLAN_MODAL_ID } from "View/UserPlan";
+import { Logout } from "../icons/Logout";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	email?: string;
@@ -75,6 +76,12 @@ export const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 		}
 	};
 
+		const handleLogout: MouseEventHandler = async ev => {
+			ev.stopPropagation();
+			await account.logout();
+			navigate("/");
+		};
+
 	return (
 		<>
 			<div
@@ -111,7 +118,7 @@ export const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 				buttons={[
 					<Button
 						type="button"
-						key="userDropDown2"
+						key="userDropDown1"
 						onClick={handlePlanModalOpen}
 						pattern="ghost"
 					>
@@ -122,13 +129,24 @@ export const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 					</Button>,
 					<Button
 						type="button"
-						key="userDropDown1"
+						key="userDropDown2"
 						onClick={handleOpenProfileSettings}
 						pattern="ghost"
 					>
 						<Icon width={20} height={20} iconName="human" />{" "}
 						<span className={styles.userDropDownButton}>
 							{t("profile.title")}
+						</span>
+					</Button>,
+					<Button
+						type="button"
+						key="userDropDown3"
+						onClick={handleLogout}
+						pattern="ghost"
+					>
+						<Logout />
+						<span className={styles.userDropDownButton}>
+							{t("profile.logout")}
 						</span>
 					</Button>,
 				]}
