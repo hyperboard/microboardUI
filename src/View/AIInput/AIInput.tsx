@@ -338,7 +338,7 @@ export const AIInput: React.FC = () => {
 	if (!boardId || boardId === "blank") {
 		return;
 	}
-
+	
 	return (
 		<UiPanel
 			padding={0}
@@ -364,7 +364,7 @@ export const AIInput: React.FC = () => {
 			)}
 			<div
 				className={clsx(styles.contentWrapper, {
-					[styles.disabled]: board.isAIGenerating,
+					[styles.disabled]: board.isAIGenerating || !isEditable,
 				})}
 			>
 				<div className={styles.modelSelector}>
