@@ -94,7 +94,7 @@ const STICKER_COLOR = {
 	cyan: STICKER_COLORS[5],
 	dark_green: STICKER_COLORS[4],
 	green: STICKER_COLORS[4],
-	light_green: STICKER_COLORS[1],
+	light_green: STICKER_COLORS[4],
 	yellow: STICKER_COLORS[7],
 	light_yellow: STICKER_COLORS[7],
 	gray: STICKER_COLORS[8],
