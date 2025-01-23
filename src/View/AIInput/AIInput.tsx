@@ -168,6 +168,7 @@ export const AIInput = () => {
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
+		console.log('board', board.AIGeneratingOnItem)
 			if (
 				dropdownRef.current &&
 				!dropdownRef.current.contains(event.target as Node)
@@ -324,6 +325,18 @@ export const AIInput = () => {
 		return model;
 	};
 
+	const getInputPlaceholder = (): string => {
+		if (board.AIGeneratingOnItem) {
+			return t("AIInput.disableWhenGenerating");
+		}
+
+		if (isPhoneScreen) {
+			return t("AIInput.selectMobileContext");
+		}
+
+		return t("AIInput.selectContext");
+	};
+
 	const isModelDisabled = (model: OpenAIModels) =>
 		!account.billingInfo?.models.find(
 			item => item.id === model && item.isEnabled,
@@ -360,17 +373,9 @@ export const AIInput = () => {
 					className={styles.tooltip}
 				/>
 			)}
-			{board.AIGeneratingOnItem && (
-				<Tooltip
-					tooltip={t("AIInput.disableWhenGenerating")}
-					tooltipPosition="top-center-fixed"
-					tooltipAlign="left"
-					className={styles.tooltip}
-				/>
-			)}
 			<div
 				className={clsx(styles.contentWrapper, {
-					[styles.disabled]: board.AIGeneratingOnItem,
+					[styles.disabled]: !!board.AIGeneratingOnItem,
 				})}
 			>
 				<div className={styles.modelSelector}>
@@ -462,11 +467,7 @@ export const AIInput = () => {
 					onKeyDown={event => handleKeyDown(event)}
 					onFocus={event => event.currentTarget.select()}
 					onChange={event => handleInputChange(event)}
-					placeholder={
-						isPhoneScreen
-							? t("AIInput.selectMobileContext")
-							: t("AIInput.selectContext")
-					}
+					placeholder={getInputPlaceholder()}
 					className={styles.aiInput}
 					ref={inputRef}
 					rows={1}
