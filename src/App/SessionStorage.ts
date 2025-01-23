@@ -173,6 +173,18 @@ export class SessionStorage {
 		);
 	}
 
+	setLastAIRequest(request: string): void {
+		sessionStorage.setItem("lastAIRequest", request);
+	}
+
+	getLastAIRequest(): string | null {
+		return sessionStorage.getItem("lastAIRequest");
+	}
+
+	removeLastAIRequest(): void {
+		sessionStorage.removeItem("lastAIRequest");
+	}
+
 	clear(): void {
 		sessionStorage.clear();
 	}

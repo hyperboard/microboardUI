@@ -35,6 +35,9 @@ import {
 } from "View/AIInput/utils";
 import { useAIContext } from "View/AIInput/AIContext";
 import { Tooltip } from "View/Ui/UiButton/Tooltip";
+import { SessionStorage } from "App/SessionStorage";
+
+const sessionStorage = new SessionStorage();
 
 export const AIInput = () => {
 	const { t } = useTranslation();
@@ -51,8 +54,6 @@ export const AIInput = () => {
 	const navigate = useNavigate();
 	const isMediaMatches = useMediaQuery("(max-width: 1170px)");
 	const {
-		query,
-		setQuery,
 		stopStream,
 		responseNodeId,
 		model,
@@ -75,7 +76,10 @@ export const AIInput = () => {
 
 		window.addEventListener("resize", setScreen);
 
-		setInputValue(query);
+		const lastRequest = sessionStorage.getLastAIRequest();
+		if (lastRequest) {
+			setInputValue(lastRequest);
+		}
 		return () => {
 			window.removeEventListener("resize", setScreen);
 		};
@@ -90,7 +94,7 @@ export const AIInput = () => {
 		event: React.ChangeEvent<HTMLTextAreaElement>,
 	) => {
 		setInputValue(event.target.value);
-		setQuery(event.target.value);
+		sessionStorage.setLastAIRequest(event.target.value);
 		event.target.style.height = "auto";
 		event.target.style.height = `${Math.min(event.target.scrollHeight, 120)}px`;
 	};
@@ -127,6 +131,7 @@ export const AIInput = () => {
 			}, 1000);
 			return;
 		}
+		sessionStorage.removeLastAIRequest();
 		await sendInputData();
 	};
 

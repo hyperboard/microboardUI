@@ -55,9 +55,9 @@ export function createApp(isHistory = true): App {
 	const clipboard = new Clipboard();
 	const location = new Location();
 	const storage = new Storage();
-	const account = new Account(storage, connection);
-	const boardsList = new BoardsList(storage, account);
 	const sessionStorage = new SessionStorage();
+	const account = new Account(storage, sessionStorage, connection);
+	const boardsList = new BoardsList(storage, account);
 
 	const test = createTester(getBoard);
 

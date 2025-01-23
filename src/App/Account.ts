@@ -5,7 +5,7 @@ import { Subject } from "Subject";
 import { Connection } from "./Connection";
 import { Permissions } from "./Permissions";
 import { Storage } from "./Storage";
-import type { BoardsList } from "./BoardsList";
+import { SessionStorage } from "App/SessionStorage";
 
 type AccountInfo = {
 	id: number;
@@ -42,6 +42,7 @@ export class Account {
 
 	constructor(
 		private readonly storage: Storage,
+		private readonly sessionStorage: SessionStorage,
 		private readonly connection: Connection,
 	) {
 		this.permissions = new Permissions(this, this.storage);
@@ -59,6 +60,7 @@ export class Account {
 		this.tokenData = null;
 		this.info = null;
 		this.storage.clearUserId();
+		this.sessionStorage.removeLastAIRequest();
 	}
 
 	get accessToken(): string | null {
