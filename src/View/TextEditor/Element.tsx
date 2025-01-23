@@ -88,6 +88,28 @@ export function Element(props: RenderElementProps): React.ReactElement {
 					{children}
 				</h3>
 			);
+		case "heading_four":
+			return (
+				<h3
+					{...attributes}
+					style={{
+						textAlign: props.element.horisontalAlignment,
+					}}
+				>
+					{children}
+				</h3>
+			);
+		case "heading_five":
+			return (
+				<h3
+					{...attributes}
+					style={{
+						textAlign: props.element.horisontalAlignment,
+					}}
+				>
+					{children}
+				</h3>
+			);
 		case "code_block":
 			return (
 				<code
