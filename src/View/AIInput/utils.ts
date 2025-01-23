@@ -16,8 +16,7 @@ import { ImageItem } from "Board/Items/Image";
 export type PossibleParentNode = AINode | Shape | RichText | Sticker;
 
 export const DEFAULT_MAX_NODE_WIDTH = 640;
-const PLACEHOLDER_TEXT =
-	"...............................................................................................................................................................................................";
+const PLACEHOLDER_OFFSET = "												";
 
 export const getTextFromItem = (item: Item) => {
 	const richText = item.getRichText();
@@ -230,8 +229,7 @@ function calculateParentItemPosition(
 		board.index.getNearestTo(
 			new Point(nearbyItemMbr.right, nearbyItemMbr.top),
 			20,
-			(otherItem: Item) =>
-				otherItem.itemType !== "Connector",
+			(otherItem: Item) => otherItem.itemType !== "Connector",
 			DEFAULT_MAX_NODE_WIDTH,
 		).length > 0
 	) {

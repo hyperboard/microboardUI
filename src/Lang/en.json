@@ -832,6 +832,16 @@
 			"many": "Selected {{count}} items"
 		},
 		"disable": "Available on boards you can edit",
-		"disableWhenGenerating": "Wait for the response"
+		"disableWhenGenerating": "Wait for the response",
+		"textGenerationError": {
+			"header": "Response generation Error",
+			"body": "Failed to get a response.",
+			"footer": "Please try again"
+		},
+		"imageGenerationError": {
+			"header": "Image generation Error",
+			"body": "Failed to generate an image.",
+			"footer": "Please try again"
+		}
 	}
 }

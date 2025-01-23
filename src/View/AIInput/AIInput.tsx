@@ -365,8 +365,7 @@ export const AIInput = () => {
 			)}
 			<div
 				className={clsx(styles.contentWrapper, {
-					[styles.disabled]:
-						board.AIGeneratingOnItem || !isEditableOnItem,
+					[styles.disabled]: board.AIGeneratingOnItem,
 				})}
 			>
 				<div className={styles.modelSelector}>
