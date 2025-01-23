@@ -131,6 +131,7 @@ export const AIInput = () => {
 			}, 1000);
 			return;
 		}
+		board.AIGeneratingOnItem = responseNodeId;
 		sessionStorage.removeLastAIRequest();
 		await sendInputData();
 	};
@@ -168,7 +169,6 @@ export const AIInput = () => {
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
-		console.log('board', board.AIGeneratingOnItem)
 			if (
 				dropdownRef.current &&
 				!dropdownRef.current.contains(event.target as Node)
@@ -326,7 +326,7 @@ export const AIInput = () => {
 	};
 
 	const getInputPlaceholder = (): string => {
-		if (board.AIGeneratingOnItem) {
+		if (!!board.AIGeneratingOnItem) {
 			return t("AIInput.disableWhenGenerating");
 		}
 
@@ -471,7 +471,7 @@ export const AIInput = () => {
 					className={styles.aiInput}
 					ref={inputRef}
 					rows={1}
-					disabled={!isEditable || !!board.AIGeneratingOnItem}
+					disabled={!!board.AIGeneratingOnItem}
 				/>
 				<div
 					className={clsx(
@@ -486,18 +486,17 @@ export const AIInput = () => {
 				</div>
 				<button
 					onClick={
-						board.AIGeneratingOnItem
+						!!board.AIGeneratingOnItem
 							? handleStopClick
 							: handleSendClick
 					}
 					className={styles.sendButton}
-					disabled={!isEditable}
 				>
 					<Icon
 						width={20}
 						height={20}
 						iconName={
-							board.AIGeneratingOnItem
+							!!board.AIGeneratingOnItem
 								? "StopAiGeneration"
 								: "Vector"
 						}
@@ -505,7 +504,7 @@ export const AIInput = () => {
 							[styles.activeIcon]:
 								inputValue.trim() ||
 								ideaFromSelection ||
-								board.AIGeneratingOnItem,
+								!!board.AIGeneratingOnItem,
 						})}
 					/>
 				</button>

@@ -63,6 +63,7 @@ export function AIGeneration({ rounded = "none" }: Props): React.ReactElement {
 			}
 			return;
 		}
+		board.AIGeneratingOnItem = responseNodeId;
 		await sendGenerationRequest();
 	};
 
@@ -88,8 +89,6 @@ export function AIGeneration({ rounded = "none" }: Props): React.ReactElement {
 			itemToContinueThread,
 			false,
 		);
-
-		board.AIGeneratingOnItem = responseAdded.getId();
 
 		const parentNodes = nodeWithParents
 			? [nodeWithParents.node, ...nodeWithParents.parents]
