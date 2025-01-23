@@ -36,7 +36,6 @@ export const CookiesModal = ({
 
 	useEffect(() => {
 		const isOpenModal = Cookies.get("first_visit");
-		console.log("isOpenModal", isOpenModal);
 
 		if (!isOpenModal) {
 			setOpen(true);

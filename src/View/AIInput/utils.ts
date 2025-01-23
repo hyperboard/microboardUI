@@ -231,8 +231,7 @@ function calculateParentItemPosition(
 			new Point(nearbyItemMbr.right, nearbyItemMbr.top),
 			20,
 			(otherItem: Item) =>
-				otherItem.itemType !== "Connector" &&
-				otherItem.isInView(cameraMbr),
+				otherItem.itemType !== "Connector",
 			DEFAULT_MAX_NODE_WIDTH,
 		).length > 0
 	) {
