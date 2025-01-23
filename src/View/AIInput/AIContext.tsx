@@ -20,6 +20,7 @@ interface Context {
 	createNodesWithConnectors: (
 		idea: string,
 		itemToContinueThread?: PossibleParentNode,
+		contextItems?: string[],
 		isIdeaFromInput?: boolean,
 	) => { responseAdded: AINode; requestAdded: AINode };
 }
@@ -67,6 +68,7 @@ export const AIContextProvider = ({ children }: Props): JSX.Element => {
 	function createNodesWithConnectors(
 		idea: string,
 		itemToContinueThread?: PossibleParentNode,
+		contextItems: string[] = [],
 		isIdeaFromInput = true,
 	) {
 		const board = app.getBoard();
@@ -84,6 +86,7 @@ export const AIContextProvider = ({ children }: Props): JSX.Element => {
 				idea,
 				true,
 				itemToContinueThread,
+				contextItems,
 			);
 			requestAdded = board.add(requestNode.node);
 
@@ -106,6 +109,7 @@ export const AIContextProvider = ({ children }: Props): JSX.Element => {
 			"Waiting for response...",
 			false,
 			requestAdded,
+			undefined,
 			true,
 			model === "image-generation",
 		);

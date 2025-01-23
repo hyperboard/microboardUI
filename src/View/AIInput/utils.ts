@@ -273,6 +273,7 @@ export function createNode(
 	inputValue: string,
 	isUserRequest: boolean,
 	parentItem?: PossibleParentNode,
+	contextItems: string[] = [],
 	withPlaceholder = false,
 	isImage = false,
 ): { node: AINode | ImageItem; connectorData: ConnectorData | null } {
@@ -293,7 +294,7 @@ export function createNode(
 		);
 		board.AIImagePlaceholder = node;
 	} else {
-		node = new AINode(isUserRequest, parentNodeId);
+		node = new AINode(isUserRequest, parentNodeId, contextItems);
 		const nodeRichText = node.getRichText();
 		nodeRichText.setMaxWidth(600);
 		nodeRichText.setSelectionHorisontalAlignment("left");
@@ -325,3 +326,29 @@ export function createNode(
 	);
 	return { node: newItem, connectorData };
 }
+
+export const getContextItems = (
+	items: Item[],
+	parentNodes: AINode[],
+	selectedItemId?: string,
+) => {
+	const boardContext: string[] = [];
+	const contextItems = items.filter(item => {
+		if (
+			item.getId() === selectedItemId ||
+			(item.itemType === "AINode" &&
+				parentNodes.length &&
+				parentNodes.find(node => node.getId() === item.getId()))
+		) {
+			return false;
+		}
+
+		const text = getTextFromItem(item);
+		if (text) {
+			boardContext.push(text);
+			return true;
+		}
+		return false;
+	});
+	return { boardContext, contextItems };
+};

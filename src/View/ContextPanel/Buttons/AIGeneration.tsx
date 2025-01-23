@@ -9,7 +9,7 @@ import { USER_PLAN_MODAL_ID } from "View/UserPlan/UserPlanModal";
 import { useNavigate } from "react-router-dom";
 import { useMediaQuery } from "lib/useMediaQuery";
 import { useAIContext } from "View/AIInput/AIContext";
-import { getIdeaFromSelection, getTextFromItem } from "View/AIInput/utils";
+import { getContextItems, getIdeaFromSelection } from "View/AIInput/utils";
 import { useAccount } from "App/useAccount";
 import { useUiModalContext } from "View/Ui/UiModal/UiModalContext";
 import { AiChatMsg, UserRequest } from "App/Connection";
@@ -25,13 +25,8 @@ export function AIGeneration({ rounded = "none" }: Props): React.ReactElement {
 	const isMediaMatches = useMediaQuery("(max-width: 1170px)");
 	const account = useAccount();
 	const { openModal } = useUiModalContext();
-	const {
-		stopStream,
-		responseNodeId,
-		model,
-		setModel,
-		createNodesWithConnectors,
-	} = useAIContext();
+	const { stopStream, responseNodeId, model, createNodesWithConnectors } =
+		useAIContext();
 
 	const ideaFromSelection = getIdeaFromSelection(
 		board.selection.items.list(),
@@ -63,7 +58,6 @@ export function AIGeneration({ rounded = "none" }: Props): React.ReactElement {
 			}
 			return;
 		}
-		board.AIGeneratingOnItem = responseNodeId;
 		await sendGenerationRequest();
 	};
 
@@ -84,31 +78,26 @@ export function AIGeneration({ rounded = "none" }: Props): React.ReactElement {
 		const nodeWithParents =
 			board.selection.getMostNestedAINodeWithParents();
 
-		const { responseAdded, requestAdded } = createNodesWithConnectors(
-			idea,
-			itemToContinueThread,
-			false,
-		);
-
 		const parentNodes = nodeWithParents
 			? [nodeWithParents.node, ...nodeWithParents.parents]
 			: [];
 
 		const selectedItems = board.selection.items.list();
 
-		const boardContext = selectedItems
-			.filter(item => item.getId() !== ideaFromSelection?.item.getId())
-			.map(item => {
-				if (
-					item.itemType === "AINode" &&
-					parentNodes.length &&
-					parentNodes.find(node => node.getId() === item.getId())
-				) {
-					return "";
-				}
-				return getTextFromItem(item);
-			})
-			.filter(text => text !== "");
+		const { boardContext, contextItems } = getContextItems(
+			selectedItems,
+			parentNodes,
+			ideaFromSelection?.item.getId(),
+		);
+
+		const { responseAdded, requestAdded } = createNodesWithConnectors(
+			idea,
+			itemToContinueThread,
+			contextItems.map(item => item.getId()),
+			false,
+		);
+
+		board.AIGeneratingOnItem = responseAdded.getId();
 
 		const contextRequest = nodeWithParents
 			? {

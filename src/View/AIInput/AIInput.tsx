@@ -29,8 +29,8 @@ import { useMediaQuery } from "lib/useMediaQuery";
 import { USER_PLAN_MODAL_ID } from "View/UserPlan";
 import { getCorrectEnding } from "utils";
 import {
+	getContextItems,
 	getIdeaFromSelection,
-	getTextFromItem,
 	PossibleParentNode,
 } from "View/AIInput/utils";
 import { useAIContext } from "View/AIInput/AIContext";
@@ -131,7 +131,7 @@ export const AIInput = () => {
 			}, 1000);
 			return;
 		}
-		board.AIGeneratingOnItem = responseNodeId;
+
 		sessionStorage.removeLastAIRequest();
 		await sendInputData();
 	};
@@ -197,6 +197,20 @@ export const AIInput = () => {
 		const nodeWithParents =
 			board.selection.getMostNestedAINodeWithParents();
 
+		const parentNodes = nodeWithParents
+			? [nodeWithParents.node, ...nodeWithParents.parents]
+			: [];
+
+		const selectedItems = board.selection.items.list();
+
+		const { boardContext, contextItems } = getContextItems(
+			selectedItems,
+			parentNodes,
+			inputValue.trim().length
+				? undefined
+				: ideaFromSelection?.item.getId(),
+		);
+
 		let idea = inputValue;
 		let itemToContinueThread: PossibleParentNode | undefined =
 			nodeWithParents?.node;
@@ -215,30 +229,11 @@ export const AIInput = () => {
 		const { responseAdded, requestAdded } = createNodesWithConnectors(
 			idea,
 			itemToContinueThread,
+			contextItems.map(item => item.getId()),
 			!isIdeaFromSelection,
 		);
 
 		board.AIGeneratingOnItem = responseAdded.getId();
-
-		const parentNodes = nodeWithParents
-			? [nodeWithParents.node, ...nodeWithParents.parents]
-			: [];
-
-		const selectedItems = board.selection.items.list();
-
-		const boardContext = selectedItems
-			.filter(item => item.getId() !== ideaFromSelection?.item.getId())
-			.map(item => {
-				if (
-					item.itemType === "AINode" &&
-					parentNodes.length &&
-					parentNodes.find(node => node.getId() === item.getId())
-				) {
-					return "";
-				}
-				return getTextFromItem(item);
-			})
-			.filter(text => text !== "");
 
 		if (model !== "image-generation") {
 			const contextRequest = nodeWithParents
