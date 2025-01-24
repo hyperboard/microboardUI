@@ -9,7 +9,7 @@ import { USER_PLAN_MODAL_ID } from "View/UserPlan/UserPlanModal";
 import { useNavigate } from "react-router-dom";
 import { useMediaQuery } from "lib/useMediaQuery";
 import { useAIContext } from "View/AIInput/AIContext";
-import { getContextItems, getIdeaFromSelection } from "View/AIInput/utils";
+import { getContextItems, getIdeaFromSelection } from "View/AIInput";
 import { useAccount } from "App/useAccount";
 import { useUiModalContext } from "View/Ui/UiModal/UiModalContext";
 import { AiChatMsg, UserRequest } from "App/Connection";

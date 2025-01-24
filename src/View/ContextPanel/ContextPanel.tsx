@@ -43,6 +43,7 @@ import { CopyItemLink } from "./Buttons/RestOptionsMenu/Items/CopyItemLink";
 import { SetLinkTo } from "./Buttons/RestOptionsMenu/Items/SetLinkTo";
 import { Hyperlink } from "./Buttons/Hyperlink";
 import { AIGeneration } from "View/ContextPanel/Buttons/AIGeneration";
+import { getIdeaFromSelection } from "View/AIInput";
 
 const isReady = false;
 
@@ -84,6 +85,10 @@ export function ContextPanel(): React.ReactElement | null {
 
 	const isHoverUnderPointer =
 		board.selection.getContext() === "HoverUnderPointer";
+
+	const ideaFromSelection = getIdeaFromSelection(
+		board.selection.items.list(),
+	);
 
 	const isText = board.selection.items.isAllItemsType("RichText");
 	const isSticker = board.selection.items.isAllItemsType("Sticker");
@@ -350,6 +355,7 @@ export function ContextPanel(): React.ReactElement | null {
 							<UiSeparator vertical />
 							<Duplicate />
 							<Delete />
+							{ideaFromSelection && <AIGeneration />}
 							<RestOptionsMenu rounded="full">
 								<BringToFront />
 								<SendToBack />

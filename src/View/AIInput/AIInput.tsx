@@ -32,8 +32,8 @@ import {
 	getContextItems,
 	getIdeaFromSelection,
 	PossibleParentNode,
-} from "View/AIInput/utils";
-import { useAIContext } from "View/AIInput/AIContext";
+} from "View/AIInput";
+import { useAIContext } from "View/AIInput";
 import { Tooltip } from "View/Ui/UiButton/Tooltip";
 import { SessionStorage } from "App/SessionStorage";
 
