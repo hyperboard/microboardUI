@@ -131,7 +131,7 @@ export const AIInput = () => {
 			}, 1000);
 			return;
 		}
-
+		board.AIGeneratingOnItem = "unknown";
 		sessionStorage.removeLastAIRequest();
 		await sendInputData();
 	};

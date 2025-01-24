@@ -58,6 +58,7 @@ export function AIGeneration({ rounded = "none" }: Props): React.ReactElement {
 			}
 			return;
 		}
+		board.AIGeneratingOnItem = "unknown";
 		await sendGenerationRequest();
 	};
 
