@@ -33,6 +33,7 @@ import styles from "./Folder.module.css";
 import { FolderItem } from "./FolderItem";
 import { useFoldersContext } from "./FoldersContext";
 import { useOpenedFoldersContext } from "./OpenedFoldersContext";
+import { FolderType } from "shared/apiV2/folders";
 
 type Props = {
 	folder: foldersApi.Folder | null;
@@ -309,18 +310,20 @@ export const Folder = ({
 								itemRef.current = node;
 							}}
 						>
-							<button
-								className={styles.contextMenuBtn}
-								onClick={handleContextMenuOpen}
-								onMouseDown={stopPropagation}
-								onMouseUp={stopPropagation}
-							>
-								<Icon
-									width={16}
-									height={16}
-									iconName="ThreeDots"
-								/>
-							</button>
+							{folder.type !== FolderType.VISITED && (
+								<button
+									className={styles.contextMenuBtn}
+									onClick={handleContextMenuOpen}
+									onMouseDown={stopPropagation}
+									onMouseUp={stopPropagation}
+								>
+									<Icon
+										width={16}
+										height={16}
+										iconName="ThreeDots"
+									/>
+								</button>
+							)}
 							<button
 								ref={currentFolderRef}
 								className={clsx(
