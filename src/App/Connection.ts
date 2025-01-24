@@ -148,7 +148,8 @@ export type OpenAIModels =
 	| "gpt-4-16k"
 	| "o1-mini"
 	| "o1"
-	| imageModels;
+	| imageModels
+	| customModals;
 
 type imageModels =
 	| "dall-e-2"
@@ -158,6 +159,8 @@ type imageModels =
 	| "flux-pro"
 	| "recraft"
 	| "image-generation";
+
+type customModals = "deepseek-chat" | "deepseek-reasoner";
 
 export interface UserRequest {
 	method: "UserRequest";
@@ -347,6 +350,9 @@ export function createConnection(
 			case "UserJoin":
 			case "Mode":
 			case "PresenceEvent":
+				if (msg.type === "AiChat") {
+					console.log("AImsg", msg.event);
+				}
 				const subscribeTimeout = subscribeTimeouts.get(msg.boardId);
 				if (subscribeTimeout) {
 					clearTimeout(subscribeTimeout.timeout);

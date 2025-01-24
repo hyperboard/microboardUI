@@ -258,6 +258,8 @@ export const AIInput = () => {
 				},
 			};
 
+			console.log("message", message);
+
 			connection.wsClient.send(message);
 		} else {
 			const options = {
@@ -316,6 +318,9 @@ export const AIInput = () => {
 		}
 		if (model == "image-generation") {
 			return isPhoneScreen ? "flux" : "Flux.1 schnell";
+		}
+		if (model == "deepseek-reasoner") {
+			return isPhoneScreen ? "deepseek" : "DeepSeek-R1";
 		}
 		return model;
 	};
@@ -427,6 +432,28 @@ export const AIInput = () => {
 								<strong>GPT-4o</strong>
 								<p>{t("ai.models.gpt-4o.description")}</p>
 								{isModelDisabled("gpt-4o") && (
+									<Tooltip
+										tooltip={t("userPlan.upgradeTooltip")}
+									/>
+								)}
+							</button>
+							<button
+								className={clsx(
+									styles.modelBtn,
+									isModelDisabled("deepseek-reasoner") &&
+										styles.disabled,
+								)}
+								onClick={
+									isModelDisabled("deepseek-reasoner")
+										? handleOpenModal
+										: () => selectModel("deepseek-reasoner")
+								}
+							>
+								<strong>DeepSeek-R1</strong>
+								<p>
+									{t("ai.models.deepseek-chat.description")}
+								</p>
+								{isModelDisabled("deepseek-reasoner") && (
 									<Tooltip
 										tooltip={t("userPlan.upgradeTooltip")}
 									/>

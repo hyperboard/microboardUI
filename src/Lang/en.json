@@ -678,6 +678,9 @@
 			},
 			"flux-schnell": {
 				"description": "Transforming your text into visuals"
+			},
+			"deepseek-chat": {
+				"description": "Better than o1 in many cases"
 			}
 		},
 		"unauth": {

@@ -676,6 +676,9 @@
 			},
 			"flux-schnell": {
 				"description": "Превратит ваш текст в изображение"
+			},
+			"deepseek-chat": {
+				"description": "Лучше чем o1 для множества задач"
 			}
 		},
 		"unauth": {
