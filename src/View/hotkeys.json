@@ -246,5 +246,25 @@
 			"mac": "⏎",
 			"windows": "⏎"
 		}
+	},
+	"frameNavigationNext": {
+		"key": {
+			"button": "ArrowRight",
+			"ctrl": true
+		},
+		"label": {
+			"mac": "⌘ArrowRight",
+			"windows": "Ctrl + ArrowRight"
+		}
+	},
+	"frameNavigationPrev": {
+		"key": {
+			"button": "ArrowLeft",
+			"ctrl": true
+		},
+		"label": {
+			"mac": "⌘ArrowLeft",
+			"windows": "Ctrl + ArrowLeft"
+		}
 	}
 }

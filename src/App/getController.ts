@@ -178,6 +178,8 @@ export function getController(
 			zoomIn: () => board.camera.zoomInToViewCenter(),
 			zoomOut: () => board.camera.zoomOutFromViewCenter(),
 			zoomDefault: () => board.camera.zoomToViewCenter(1),
+			frameNavigationNext: () => board.tools.frameNavigation("next"),
+			frameNavigationPrev: () => board.tools.frameNavigation("prev"),
 		};
 		const viewModeHotkeys = {
 			zoomIn: () => board.camera.zoomInToViewCenter(),
