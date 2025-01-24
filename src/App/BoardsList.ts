@@ -565,6 +565,7 @@ export class BoardsList {
 			if (!folder) {
 				return false;
 			}
+			console.log("folder", folder);
 			if (folder.id === folderId) {
 				const itemIndex = folder.items.findIndex(
 					item => item.id === itemId,

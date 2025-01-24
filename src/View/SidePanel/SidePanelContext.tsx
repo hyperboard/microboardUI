@@ -38,7 +38,7 @@ export function SidePanelContextProvider({
 
 	const toggleSideMenu = (): void => {
 		setIsOpen(prev => {
-			if (boardId !== "blank" && !prev) {
+			if (boardId !== "blank") {
 				setBoard(boardId);
 				setFolder(null);
 			}

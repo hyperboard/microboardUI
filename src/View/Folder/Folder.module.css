@@ -33,8 +33,9 @@
 
 .icon {
 	color: rgb(105, 107, 117);
-	display: grid;
-	place-items: center;
+	display: flex;
+	align-items: center;
+	gap: 4px;
 }
 
 .noContent {

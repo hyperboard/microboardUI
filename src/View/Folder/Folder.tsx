@@ -1,11 +1,17 @@
-import { useDroppable } from "@dnd-kit/core";
+import { useDraggable } from "@dnd-kit/core";
+import {
+	SortableContext,
+	useSortable,
+	verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { useBoardsList } from "App/useBoardsList";
+import clsx from "clsx";
 import { handleClickDetection } from "lib/handleClickDetection";
-import { useHoverState } from "lib/useHoverState";
 import React, {
 	useEffect,
 	useRef,
 	useState,
+	type CSSProperties,
 	type MouseEventHandler,
 	type SyntheticEvent,
 } from "react";
@@ -16,24 +22,21 @@ import { useContextMenuContext } from "View/ContextMenu";
 import { Icon } from "View/Icon";
 import type { IconId } from "View/Icon/Icon";
 import { RenameInput, useRenameContext } from "View/Rename";
+import { useSidePanelContext } from "View/SidePanel";
 import {
 	UiAdaptiveAccordion,
 	type AccordionState,
 } from "View/Ui/UiAdaptiveAccordion";
+import { DraggingItem } from "./DraggingItem";
+import { DraggingWrapper } from "./DraggingWrapper";
 import styles from "./Folder.module.css";
 import { FolderItem } from "./FolderItem";
-import { useOpenedFoldersContext } from "./OpenedFoldersContext";
-import { useSidePanelContext } from "View/SidePanel";
-import {
-	SortableContext,
-	useSortable,
-	verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import clsx from "clsx";
 import { useFoldersContext } from "./FoldersContext";
+import { useOpenedFoldersContext } from "./OpenedFoldersContext";
 
 type Props = {
 	folder: foldersApi.Folder | null;
+	parentFolderId?: number;
 	handleOpenBoard?: (board: boardsApiV2.Board) => void;
 	accordionClassName?: string;
 	zIndex?: number;
@@ -56,8 +59,8 @@ export const Folder = ({
 	handleOpenBoard,
 	accordionClassName,
 	zIndex = 0,
+	parentFolderId,
 }: Props) => {
-	const { handlePointerEnter, handlePointerLeave, isHover } = useHoverState();
 	const { open, close } = useContextMenuContext();
 	const { boardId: openedFoldersBoardId, folderId: openedFoldersFolderId } =
 		useOpenedFoldersContext();
@@ -71,12 +74,33 @@ export const Folder = ({
 	const currentFolderRef = useRef<HTMLButtonElement>(null);
 	const [openedByDragging, setOpenedByDragging] = useState(false);
 	const { overFolderId, setOverFolderId } = useFoldersContext();
+	const [originalPosition, setOriginalPosition] = useState<
+		Record<"left" | "top" | "width" | "height", number>
+	>({ left: 0, top: 0, width: 0, height: 0 });
 	const { isOver, setNodeRef } = useSortable({
 		id: folder?.id || "unknown",
 		data: folder ?? undefined,
 		disabled: folder?.type === foldersApi.FolderType.VISITED,
 	});
+	const {
+		attributes,
+		listeners,
+		setNodeRef: setNodeRefHeader,
+		transform,
+		isDragging,
+	} = useDraggable({
+		id: folder?.id ?? 0,
+		data: { ...folder, parentFolderId },
+	});
 	const isOverTimerRef = useRef<NodeJS.Timeout>();
+	const itemRef = useRef<HTMLDivElement | null>(null);
+
+	const style: CSSProperties | undefined = transform
+		? {
+				transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+				zIndex: 10000,
+			}
+		: undefined;
 
 	const openFoldersContainsBoard = (boardId: string | null) => {
 		if (!folder || !boardId) {
@@ -130,6 +154,7 @@ export const Folder = ({
 	useEffect(() => {
 		if (folder && folder.items && folder.items.length > 0) {
 			openFoldersContainsBoard(openedFoldersBoardId);
+			console.log("opened by -1");
 		}
 		if (folder && folder.items && openedFoldersFolderId) {
 			openFoldersContainsFolder(openedFoldersFolderId);
@@ -215,6 +240,29 @@ export const Folder = ({
 		open(ev.clientX, ev.clientY, undefined, folder.id);
 	};
 
+	const calcOriginalPosition = () => {
+		if (isDragging && itemRef.current) {
+			const rect = itemRef.current.getBoundingClientRect();
+			setOriginalPosition({
+				top: rect.y,
+				left: rect.x,
+				width: rect.width,
+				height: rect.height,
+			});
+		}
+	};
+	useEffect(() => {
+		calcOriginalPosition();
+		document.addEventListener("scroll", calcOriginalPosition, true);
+
+		if (isDragging) {
+			accordionRef.current?.close();
+		}
+		return () => {
+			document.removeEventListener("scroll", calcOriginalPosition, true);
+		};
+	}, [isDragging]);
+
 	const stopPropagation = (ev: SyntheticEvent) => {
 		ev.stopPropagation();
 	};
@@ -230,35 +278,59 @@ export const Folder = ({
 				ref={accordionRef}
 				elemRef={setNodeRef}
 				renderHeader={({ toggle, isOpen }) => (
-					<div className={styles.wrapper}>
-						<button
-							className={styles.contextMenuBtn}
-							onClick={handleContextMenuOpen}
-							onMouseDown={stopPropagation}
-							onMouseUp={stopPropagation}
+					<DraggingWrapper
+						isDragging={isDragging}
+						style={{ ...style, ...originalPosition }}
+						draggableItem={
+							<DraggingItem
+								style={{
+									width: originalPosition.width,
+									height: originalPosition.height,
+								}}
+								name={folder.title}
+								icon={
+									<span className={styles.icon}>
+										<Icon
+											width={20}
+											height={20}
+											iconName={folderIcons[folder.type]}
+										/>
+									</span>
+								}
+							/>
+						}
+					>
+						<div
+							className={styles.wrapper}
+							{...listeners}
+							{...attributes}
+							ref={node => {
+								setNodeRefHeader(node);
+								itemRef.current = node;
+							}}
 						>
-							<Icon width={16} height={16} iconName="ThreeDots" />
-						</button>
-						<button
-							ref={currentFolderRef}
-							className={clsx(
-								styles.header,
-								isOver && styles.over,
-							)}
-							onClick={handleClick(toggle)}
-							onPointerEnter={handlePointerEnter}
-							onPointerLeave={handlePointerLeave}
-							onContextMenu={handleContextMenuOpen}
-						>
-							<span className={styles.icon}>
-								{!isHover && (
-									<Icon
-										width={20}
-										height={20}
-										iconName={folderIcons[folder.type]}
-									/>
+							<button
+								className={styles.contextMenuBtn}
+								onClick={handleContextMenuOpen}
+								onMouseDown={stopPropagation}
+								onMouseUp={stopPropagation}
+							>
+								<Icon
+									width={16}
+									height={16}
+									iconName="ThreeDots"
+								/>
+							</button>
+							<button
+								ref={currentFolderRef}
+								className={clsx(
+									styles.header,
+									isOver && styles.over,
 								)}
-								{isHover && (
+								onClick={handleClick(toggle)}
+								onContextMenu={handleContextMenuOpen}
+							>
+								<span className={styles.icon}>
 									<Icon
 										width={20}
 										height={20}
@@ -266,15 +338,20 @@ export const Folder = ({
 											isOpen ? "ArrowUp" : "ArrowDown"
 										}
 									/>
+									<Icon
+										width={20}
+										height={20}
+										iconName={folderIcons[folder.type]}
+									/>
+								</span>
+								{isRenaming ? (
+									<RenameInput />
+								) : (
+									<span>{folder.title}</span>
 								)}
-							</span>
-							{isRenaming ? (
-								<RenameInput />
-							) : (
-								<span>{folder.title}</span>
-							)}
-						</button>
-					</div>
+							</button>
+						</div>
+					</DraggingWrapper>
 				)}
 				renderContent={() => (
 					<div className={styles.contentWrapper}>
@@ -314,6 +391,7 @@ export const Folder = ({
 												/>
 											) : (
 												<Folder
+													parentFolderId={folder.id}
 													zIndex={zIndex + 1}
 													key={item.id}
 													folder={item}

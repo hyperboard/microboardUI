@@ -21,7 +21,9 @@ const isBoard = (
 	item !== null &&
 	(item as { itemType?: string }).itemType === "board";
 
-const isFolder = (item: unknown): item is foldersApi.NestedFolder =>
+const isFolder = (
+	item: unknown,
+): item is foldersApi.NestedFolder & { parentFolderId: number } =>
 	typeof item === "object" &&
 	item !== null &&
 	(("itemType" in item &&
@@ -40,29 +42,32 @@ export function FoldersDndContext({ children }: Props) {
 
 	const sensors = useSensors(pointerSensor);
 	const handleDragEnd = async (evt: DragEndEvent) => {
-		const board = evt.active.data.current;
+		const draggable = evt.active.data.current;
 		const target = evt.over?.data.current;
-		console.log(board, target, isBoard(board));
+		console.log(draggable, target, isBoard(draggable));
 
 		if (
-			!isBoard(board) ||
+			(!isBoard(draggable) && !isFolder(draggable)) ||
 			!target ||
-			board.id === target.id ||
-			board.parentFolderId === target.id
+			draggable.id === target.id ||
+			draggable.parentFolderId === target.id
 		) {
 			return;
 		}
 		if (isFolder(target)) {
+			console.log(
+				`remove ${draggable.id} from folder ${draggable.parentFolderId}`,
+			);
 			await boardsList.removeItemFromFolder(
-				board.parentFolderId,
-				board.id,
+				draggable.parentFolderId,
+				draggable.id,
 			);
 
-			await boardsList.addItemToFolder(target.id, board);
+			await boardsList.addItemToFolder(target.id, draggable);
 		} else if (isBoard(target)) {
 			await boardsList.removeItemFromFolder(
-				board.parentFolderId,
-				board.id,
+				draggable.parentFolderId,
+				draggable.id,
 			);
 
 			const targetFolderId = target.parentFolderId;
@@ -72,7 +77,7 @@ export function FoldersDndContext({ children }: Props) {
 			);
 			await boardsList.addItemToFolder(
 				targetFolderId,
-				board,
+				draggable,
 				targetIdx ? targetIdx + 1 : undefined,
 			);
 		}
