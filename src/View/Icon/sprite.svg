@@ -969,7 +969,7 @@
 </defs>
 </symbol>
 
-  <symbol id="ContextPanelAIChat" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg" >
+  <svg id="ContextPanelAIChat" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg" >
     <path d="M0.946815 7.31455C0.424815 7.14055 0.419815 6.85955 0.956815 6.68055L20.0438 0.318552C20.5728 0.142552 20.8758 0.438552 20.7278 0.956552L15.2738 20.0426C15.1238 20.5716 14.8188 20.5896 14.5948 20.0876L11.0008 11.9996L17.0008 3.99955L9.00081 9.99955L0.946815 7.31455Z"/>
     <defs>
       <linearGradient id="paint0_linear_7542_32550" x1="10.66" y1="0.267578" x2="10.66" y2="20.452" gradientUnits="userSpaceOnUse">
@@ -977,7 +977,7 @@
         <stop offset="1" stop-color="#5F4AFF"/>
       </linearGradient>
     </defs>
-  </symbol>
+  </svg>
 
   <symbol id="ArrowRightFill" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M12.172 6.99968L6.808 1.63568L8.222 0.22168L16 7.99968L8.222 15.7777L6.808 14.3637L12.172 8.99968H0V6.99968H12.172Z" fill="currentColor"/>

@@ -84,10 +84,6 @@ export function calculateNodePosition(
 		baseAdjustments.translateY + currMbr.top,
 	);
 
-	if (newNodeData.itemType === "AINode") {
-		newNodeData.adjustmentPoint = adjustmentPoint;
-	}
-
 	if (newNodeData.transformation) {
 		if (isResponseNode) {
 			newNodeData.transformation.translateX = adjustmentPoint.x;
@@ -135,11 +131,6 @@ export function calculateNodePosition(
 			newNodeData.transformation.translateY +=
 				iterAdjustment.y * direction * step;
 		}
-		if (newNodeData.adjustmentPoint) {
-			newNodeData.adjustmentPoint.transform(
-				new Matrix(iterAdjustment.x * direction * step, 0),
-			);
-		}
 		step += 1;
 	}
 
@@ -183,10 +174,10 @@ function calculateParentItemPosition(
 		y: -newNode.getMbr().getHeight() / 2,
 	};
 
-	const baseAdjustments = {
-		translateX: DEFAULT_MAX_NODE_WIDTH,
-		translateY: 0,
-	};
+	// const baseAdjustments = {
+	// 	translateX: DEFAULT_MAX_NODE_WIDTH,
+	// 	translateY: 0,
+	// };
 
 	let step = 1;
 	const cameraMbr = board.camera.getMbr();
@@ -213,13 +204,7 @@ function calculateParentItemPosition(
 		});
 	}
 
-	const adjustmentPoint = new Point(
-		baseAdjustments.translateX + nearbyItemMbr.left,
-		baseAdjustments.translateY + nearbyItemMbr.top,
-	);
-
 	const newNodeData = newNode.serialize();
-	newNodeData.adjustmentPoint = adjustmentPoint;
 	if (newNodeData.transformation) {
 		newNodeData.transformation.translateX = nearbyItemMbr.getCenter().x;
 		newNodeData.transformation.translateY = nearbyItemMbr.getCenter().y;
