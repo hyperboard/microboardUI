@@ -124,7 +124,8 @@ export type IconId =
 	| "Vector"
 	| "ArrowUpCircle"
 	| "ai"
-	| "ContextPanelAIChat";
+	| "ContextPanelAIChat"
+	| "ArrowRightFill";
 
 type Props = {
 	iconName: IconId;

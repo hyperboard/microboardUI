@@ -1,3 +1,11 @@
+.frameNavIcon {
+	color: #696B76;
+}
+
+.frameNavIconPrev {
+	transform: rotate(180deg);
+}
+
 @media screen and (max-width: 768px) {
 	.contextPanelButton {
 		--min-width: 28px;

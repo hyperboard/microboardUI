@@ -141,6 +141,10 @@
 		"ai": {
 			"tooltip": "Ask AI",
 			"stop": "Stop generation"
+		},
+		"frameNavigation": {
+			"next": "To next frame",
+			"prev": "To prev frame"
 		}
 	},
 	"toolsPanel": {

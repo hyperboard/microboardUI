@@ -44,6 +44,8 @@ import { SetLinkTo } from "./Buttons/RestOptionsMenu/Items/SetLinkTo";
 import { Hyperlink } from "./Buttons/Hyperlink";
 import { AIGeneration } from "View/ContextPanel/Buttons/AIGeneration";
 import { getIdeaFromSelection } from "View/AIInput";
+import { FrameNavNext } from "./Buttons/FrameNavNext";
+import { FrameNavPrev } from "./Buttons/FrameNavPrev";
 
 const isReady = false;
 
@@ -312,6 +314,8 @@ export function ContextPanel(): React.ReactElement | null {
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
+							<FrameNavNext />
+							<FrameNavPrev />
 							<CopyItemLink />
 							<SetLinkTo />
 							<ExportFrame />
