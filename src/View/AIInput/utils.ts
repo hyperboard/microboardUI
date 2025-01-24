@@ -169,21 +169,15 @@ function calculateParentItemPosition(
 	const connectorStorage = new SessionStorage();
 	const nearbyToCenterItems = board.items.getInView();
 
-	const iterAdjustment = {
-		x: DEFAULT_MAX_NODE_WIDTH / 2,
-		y: -newNode.getMbr().getHeight() / 2,
-	};
+	const iterAdjustment = [
+		{ x: 0, y: 1.5 },
+		{ x: DEFAULT_MAX_NODE_WIDTH / 2, y: 0 },
+	];
 
-	// const baseAdjustments = {
-	// 	translateX: DEFAULT_MAX_NODE_WIDTH,
-	// 	translateY: 0,
-	// };
-
-	let step = 1;
 	const cameraMbr = board.camera.getMbr();
 	let nearbyItemMbr = cameraMbr.copy();
 
-	if (nearbyToCenterItems.length) {
+	if (nearbyToCenterItems.length && !board.selection.items.list().length) {
 		nearbyItemMbr = nearbyToCenterItems[nearbyToCenterItems.length - 1]
 			.getMbr()
 			.copy();
@@ -204,6 +198,15 @@ function calculateParentItemPosition(
 		});
 	}
 
+	let bestPosition = iterAdjustment[1];
+	let step = 0.5;
+	let maxDistance = DEFAULT_MAX_NODE_WIDTH;
+	if(board.selection.items.list().length) {
+		nearbyItemMbr = board.selection.items.getMbr()?.copy()!;
+		bestPosition = iterAdjustment[0];
+		maxDistance = 100;
+	}
+
 	const newNodeData = newNode.serialize();
 	if (newNodeData.transformation) {
 		newNodeData.transformation.translateX = nearbyItemMbr.getCenter().x;
@@ -212,20 +215,20 @@ function calculateParentItemPosition(
 
 	while (
 		board.index.getNearestTo(
-			new Point(nearbyItemMbr.right, nearbyItemMbr.top),
+			new Point(nearbyItemMbr.left, nearbyItemMbr.top),
 			20,
 			(otherItem: Item) => otherItem.itemType !== "Connector",
-			DEFAULT_MAX_NODE_WIDTH,
+			maxDistance,
 		).length > 0
 	) {
 		nearbyItemMbr.transform(
-			new Matrix(iterAdjustment.x * step, iterAdjustment.y * step),
+			new Matrix(bestPosition.x * step, bestPosition.y * step),
 		);
 		if (newNodeData.transformation) {
-			newNodeData.transformation.translateX = nearbyItemMbr.right;
+			newNodeData.transformation.translateX = nearbyItemMbr.left;
 			newNodeData.transformation.translateY = nearbyItemMbr.top;
 		}
-		step += 1;
+		step += 0.5;
 	}
 
 	const newItems = board.createItem(
