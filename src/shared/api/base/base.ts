@@ -9,6 +9,7 @@ import type {
 	MutationRequestBody,
 	ParamsRecord,
 } from "./types";
+import i18n from "Lang";
 
 export class HTTP {
 	private readonly baseURL: string;
@@ -73,6 +74,7 @@ export class HTTP {
 							...this.headers,
 							...modifiedConfig.headers,
 							...config.headers,
+							"x-client-language": i18n.language,
 						},
 						credentials: "include",
 					},

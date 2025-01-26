@@ -377,14 +377,14 @@
 	},
 	"modalConfirm": {
 		"deleteBoard": {
-			"title": "Remove board",
-			"description": "Are you sure you want to remove from your list the board ‘{{name}}’?",
+			"title": "Delete board",
+			"description": "Are you sure you want to delete the board ‘{{name}}’?",
 			"delete": "Remove",
 			"cancel": "Cancel"
 		},
 		"deleteVisitedBoard": {
 			"title": "Remove board",
-			"description": "Are you sure you want to remove the board ‘{{name}}’?"
+			"description": "Are you sure you want to remove from your list the board ‘{{name}}’?"
 		},
 		"deleteFolder": {
 			"title": "Delete folder",
