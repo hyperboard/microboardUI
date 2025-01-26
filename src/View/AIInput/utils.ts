@@ -201,7 +201,7 @@ function calculateParentItemPosition(
 	let bestPosition = iterAdjustment[1];
 	let step = 0.5;
 	let maxDistance = DEFAULT_MAX_NODE_WIDTH;
-	if(board.selection.items.list().length) {
+	if (board.selection.items.list().length) {
 		nearbyItemMbr = board.selection.items.getMbr()?.copy()!;
 		bestPosition = iterAdjustment[0];
 		maxDistance = 100;
@@ -271,16 +271,15 @@ export function createNode(
 	}
 	let node;
 	if (isImage) {
-		node = new ImageItem(
-			{
-				base64: undefined,
-				imageDimension: { width: 600, height: 600 },
-				storageLink: "",
-			},
-			board,
-			board.events,
+		node = new AINode(isUserRequest, parentNodeId, contextItems);
+		const nodeRichText = node.getRichText();
+		nodeRichText.setMaxWidth(600);
+		nodeRichText.setSelectionHorisontalAlignment("left");
+		nodeRichText.container.right = nodeRichText.container.left + 600;
+		nodeRichText.editor.insertCopiedText(
+			t("AIInput.awaitingImageGeneration"),
 		);
-		board.AIImagePlaceholder = node;
+		board.AIGeneratingOnItem = node.getId();
 	} else {
 		node = new AINode(isUserRequest, parentNodeId, contextItems);
 		const nodeRichText = node.getRichText();

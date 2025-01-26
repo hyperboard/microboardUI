@@ -829,6 +829,7 @@
 	},
 	"AIInput": {
 		"generatingResponse": "Генерация ответа…",
+		"awaitingImageGeneration": "Генерация изображения…",
 		"selectContext": "Выделите контекст, спросите ИИ",
 		"selectMobileContext": "Спросите ИИ",
 		"selectedItems": {
