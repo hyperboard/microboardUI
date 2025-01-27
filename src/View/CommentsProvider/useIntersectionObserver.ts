@@ -4,7 +4,7 @@ import { Comment } from "Board/Items/Comment/Comment";
 interface Args {
 	comment: Comment;
 	refs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
-	username?: string;
+	userId?: number;
 	deps?: unknown[];
 	disabled?: boolean;
 }
@@ -12,12 +12,12 @@ interface Args {
 export const useIntersectionObserver = ({
 	comment,
 	refs,
-	username,
+	userId,
 	deps = [],
 	disabled = false,
 }: Args): void => {
 	useEffect(() => {
-		const unreadMessages = comment.getUnreadMessages(username);
+		const unreadMessages = comment.getUnreadMessages(userId);
 
 		const observer = new IntersectionObserver(
 			entries => {
@@ -31,7 +31,7 @@ export const useIntersectionObserver = ({
 							unreadMessages &&
 							unreadMessages.some(mes => mes.id === messageId)
 						) {
-							comment.markMessagesAsRead([messageId], username);
+							comment.markMessagesAsRead([messageId], userId);
 						}
 					}
 				}
@@ -54,5 +54,5 @@ export const useIntersectionObserver = ({
 				}
 			});
 		};
-	}, [username, ...deps]);
+	}, [userId, ...deps]);
 };

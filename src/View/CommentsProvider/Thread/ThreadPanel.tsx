@@ -61,13 +61,13 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 
 		const { t } = useTranslation();
 		const accountInfo = account.info;
-		const username = accountInfo?.name || accountInfo?.email;
-		const unreadMessages = comment.getUnreadMessages(username);
+		const userId = accountInfo?.id;
+		const unreadMessages = comment.getUnreadMessages(userId);
 
 		useIntersectionObserver({
 			comment,
 			refs,
-			username,
+			userId,
 			deps: [unreadMessages && unreadMessages.length],
 		});
 		useScrollToUnreadMessage({ unreadMessages, refs });
@@ -115,8 +115,8 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 		};
 
 		useEffect(() => {
-			if (username && comment.getIsThreadMarkedAsUnread(username)) {
-				comment.markThreadAsRead(username);
+			if (userId && comment.getIsThreadMarkedAsUnread(userId)) {
+				comment.markThreadAsRead(userId);
 			}
 
 			if (targetMessageId && refs.current[targetMessageId]) {
@@ -125,7 +125,7 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 				});
 				setTargetMessageId(undefined);
 			}
-		}, [username, targetMessageId]);
+		}, [userId, targetMessageId]);
 
 		const handleClose = (): void => {
 			setOpenedThreadId(undefined);
@@ -136,7 +136,15 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 		};
 
 		const handleCreateMessage = (): void => {
-			comment.saveMessage(value, username || "", accountInfo?.avatar);
+			if (!userId) {
+				return;
+			}
+			comment.saveMessage(
+				value,
+				accountInfo?.name || "Unknown",
+				userId,
+				accountInfo?.avatar,
+			);
 			setValue("");
 		};
 
@@ -150,7 +158,7 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 				"owns",
 				"boards",
 				board.getBoardId(),
-			) || username === comment.getCommentators()[0].username;
+			) || userId === comment.getCommentators()[0].id;
 
 		return (
 			<div ref={threadRef}>
@@ -224,8 +232,7 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 										textUnderEditorId === mes.id
 									}
 									setTextUnderEditor={setTextUnderEditorId}
-									username={mes.commentator.username}
-									avatar={mes.commentator.avatar}
+									commentator={mes.commentator}
 									handleOptionsClick={() =>
 										handleMessageOptionsClick(mes.id)
 									}
@@ -247,7 +254,7 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 							);
 						})}
 					</div>
-					{username && (
+					{(userId || userId === 0) && accountInfo?.name && (
 						<>
 							<UiSeparator />
 							<div className={styles.scrollContainer}>

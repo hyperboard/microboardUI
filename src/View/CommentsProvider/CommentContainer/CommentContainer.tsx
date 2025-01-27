@@ -133,11 +133,10 @@ export const CommentContainer = ({ comment }: Props) => {
 		}
 	};
 
-	const username = account.info?.name || account.info?.email;
-	const unreadMessages = comment.getUnreadMessages(username);
+	const userId = account.info?.id;
+	const unreadMessages = comment.getUnreadMessages(userId);
 	const isUnread = Boolean(
-		unreadMessages ||
-			(username && comment.getIsThreadMarkedAsUnread(username)),
+		unreadMessages || (userId && comment.getIsThreadMarkedAsUnread(userId)),
 	);
 
 	const zIndex = isThreadOpen ? 3 : isPreviewOpen ? 2 : 1;
@@ -212,11 +211,11 @@ export const CommentContainer = ({ comment }: Props) => {
 						/>
 						{isUnread && (
 							<div className={styles.badge}>
-								{username &&
-								comment.getIsThreadMarkedAsUnread(username) ? (
+								{userId &&
+								comment.getIsThreadMarkedAsUnread(userId) ? (
 									<div className={styles.badgeDot}></div>
 								) : (
-									unreadMessages.length
+									unreadMessages?.length
 								)}
 							</div>
 						)}

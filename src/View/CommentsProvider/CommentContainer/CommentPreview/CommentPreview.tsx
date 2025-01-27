@@ -47,7 +47,7 @@ export const CommentPreview = ({
 						{commentators.slice(0, 5).map(commentator => {
 							return (
 								<Avatar
-									key={commentator.username}
+									key={commentator.id}
 									avatar={commentator.avatar}
 									width={32}
 									height={32}

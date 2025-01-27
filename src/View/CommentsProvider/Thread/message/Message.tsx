@@ -7,13 +7,13 @@ import { CommentInput } from "../../CommentInput/CommentInput";
 import { formatDate } from "utils";
 import { Avatar } from "View/UserPanel/Avatar/Avatar.tsx";
 import { useAccount } from "App/useAccount";
+import { Commentator } from "Board/Items/Comment/Comment";
 
 interface Props {
 	text: string;
 	date: Date;
-	username: string;
+	commentator: Commentator;
 	handleOptionsClick: () => void;
-	avatar?: string;
 	handleEditMessage: (value: string, id: string) => void;
 	handleRemoveMessage: () => void;
 	id: string;
@@ -28,8 +28,7 @@ export const Message = forwardRef<HTMLDivElement, Props>(
 		{
 			text,
 			date,
-			username,
-			avatar,
+			commentator,
 			handleOptionsClick,
 			handleEditMessage,
 			id,
@@ -45,8 +44,7 @@ export const Message = forwardRef<HTMLDivElement, Props>(
 		const [isOptionsBtnVisible, setIsOptionsBtnVisible] = useState(false);
 		const account = useAccount();
 
-		const canEdit =
-			account.info?.name === username || account.info?.email === username;
+		const canEdit = account.info?.id === commentator.id;
 		const handleEditClick = (): void => {
 			setTextUnderEditor(undefined);
 			handleEditMessage(value, id);
@@ -78,11 +76,13 @@ export const Message = forwardRef<HTMLDivElement, Props>(
 						{!isShorted && (
 							<>
 								<Avatar
-									avatar={avatar}
+									avatar={commentator.avatar}
 									width={32}
 									height={32}
 								/>
-								<p className={styles.username}>{username}</p>
+								<p className={styles.username}>
+									{commentator.username}
+								</p>
 							</>
 						)}
 						<p

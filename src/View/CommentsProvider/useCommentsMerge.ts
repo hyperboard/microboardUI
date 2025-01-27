@@ -6,8 +6,8 @@ type MergeComments = { clusters: Comment[][]; singleComments: Comment[] };
 const mergeComments = (
 	comments: Comment[],
 	threshold: number,
-	existingClusters?: Comment[][],
 	scale: number,
+	existingClusters?: Comment[][],
 ): MergeComments => {
 	const clusters: Comment[][] = [];
 	const singleComments: Comment[] = [];
@@ -79,8 +79,8 @@ export const useCommentsMerge = (
 	const { clusters, singleComments } = mergeComments(
 		comments,
 		56 / cameraScale,
-		prevScale.current > cameraScale ? existingClusters.current : undefined,
 		cameraScale,
+		prevScale.current > cameraScale ? existingClusters.current : undefined,
 	);
 	existingClusters.current = clusters;
 	prevScale.current = cameraScale;

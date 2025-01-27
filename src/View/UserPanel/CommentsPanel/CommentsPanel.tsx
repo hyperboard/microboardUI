@@ -44,7 +44,7 @@ export const CommentsPanel: React.FC = () => {
 		},
 	});
 
-	const username = account.info?.name || account.info?.email;
+	const userId = account.info?.id;
 
 	const closePanels = (): void => {
 		setIsOptionsPanelOpen(false);
@@ -61,21 +61,21 @@ export const CommentsPanel: React.FC = () => {
 			return false;
 		}
 		if (showCommentsFilter === "replies") {
-			return !!comment.getUnreadMessages(username);
+			return !!comment.getUnreadMessages(userId);
 		}
 		return true;
 	});
 
 	const markAllCommentsAsRead = (): void => {
-		if (!username) {
+		if (!userId) {
 			return;
 		}
 		comments.forEach(comment => {
-			const unreadMessages = comment.getUnreadMessages(username);
+			const unreadMessages = comment.getUnreadMessages(userId);
 			if (unreadMessages) {
 				comment.markMessagesAsRead(
 					unreadMessages.map(mes => mes.id),
-					username,
+					userId,
 				);
 			}
 		});

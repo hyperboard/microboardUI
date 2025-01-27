@@ -28,10 +28,14 @@ export const CreateComment = ({ comment, className }: Props): JSX.Element => {
 
 	const handleSubmit = (): void => {
 		const accountInfo = account.info;
+		if (!accountInfo?.id) {
+			return;
+		}
 		comment.saveMessage(
 			value,
-			accountInfo?.name || accountInfo?.email || "",
-			accountInfo?.avatar,
+			accountInfo.name,
+			accountInfo.id,
+			accountInfo.avatar,
 		);
 	};
 

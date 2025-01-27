@@ -21,14 +21,17 @@ export const ExtraOptions = ({ comment, canEdit }: Props): JSX.Element => {
 	const account = useAccount();
 	const { t } = useTranslation();
 
-	const username = account.info?.name || account.info?.email;
+	const userId = account.info?.id;
 
 	const handleRemove = (): void => {
 		board.remove(comment);
 	};
 
 	const handleMarkAsUnread = (): void => {
-		comment.markThreadAsUnread(username!);
+		if (!userId) {
+			return;
+		}
+		comment.markThreadAsUnread(userId);
 	};
 
 	const handleMouseLeave = (element: "menu" | "btn"): void => {
@@ -79,8 +82,8 @@ export const ExtraOptions = ({ comment, canEdit }: Props): JSX.Element => {
 					onMouseLeave={() => handleMouseLeave("menu")}
 				>
 					<UiPanel className={styles.panel} vertical={true}>
-						{username &&
-							!comment.getIsThreadMarkedAsUnread(username) && (
+						{userId &&
+							!comment.getIsThreadMarkedAsUnread(userId) && (
 								<button
 									className={styles.btn}
 									onClick={handleMarkAsUnread}

@@ -76,7 +76,7 @@ export const Cluster = ({ comments }: Props): JSX.Element => {
 	};
 
 	const hasUnreadMessages = comments.some(comment =>
-		comment.getUnreadMessages(account.info?.name || account.info?.email),
+		comment.getUnreadMessages(account.info?.id),
 	);
 
 	return (

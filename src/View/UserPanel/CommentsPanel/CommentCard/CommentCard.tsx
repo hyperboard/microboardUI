@@ -22,14 +22,14 @@ export const CommentCard = ({ comment }: Props): JSX.Element => {
 	const account = useAccount();
 	const { t } = useTranslation();
 	const { setOpenedThreadId } = useCommentsContext();
-	const username = account.info?.name || account.info?.email;
+	const userId = account.info?.id;
 	const messages = comment.getThread();
-	const unreadMessages = comment.getUnreadMessages(username);
+	const unreadMessages = comment.getUnreadMessages(userId);
 
 	useIntersectionObserver({
 		comment,
 		refs,
-		username: account.info?.name || account.info?.email,
+		userId,
 		deps: [showMoreComments, unreadMessages && unreadMessages.length],
 		disabled: !showMoreComments,
 	});

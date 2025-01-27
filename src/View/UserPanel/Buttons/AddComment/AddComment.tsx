@@ -22,14 +22,14 @@ export function AddComment() {
 		observer: forceUpdate,
 	});
 
-	const username = account.info?.name || account.info?.email;
+	const userId = account.info?.id;
 
-	let showBadge = !!username;
-	if (username) {
+	let showBadge = !!userId;
+	if (userId) {
 		showBadge = board.items.getComments().some(comment => {
 			return (
-				comment.getIsThreadMarkedAsUnread(username) ||
-				comment.getUnreadMessages(username)
+				comment.getIsThreadMarkedAsUnread(userId) ||
+				comment.getUnreadMessages(userId)
 			);
 		});
 	}
