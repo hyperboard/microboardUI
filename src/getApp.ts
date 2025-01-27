@@ -40,6 +40,7 @@ import { withWebSocketApi } from "./WebSocket";
 import { HttpException } from "shared/exceptions/http-exception";
 import { HttpStatus } from "shared/enums/http-status.enum";
 import { TelegramService } from "services/TelegramService";
+import { language } from "Middlewares/language.middleware";
 
 export async function getApp(): Promise<http.Server> {
     const app = express();
@@ -121,6 +122,7 @@ export async function getApp(): Promise<http.Server> {
         })
     );
 
+    app.use(language("x-client-language"));
     app.use(bodyParser.json({ limit: "10mb" }));
     app.use(bodyParser.urlencoded({ extended: false, limit: "10mb" }));
     app.use(cookieParser());
@@ -177,7 +179,7 @@ export async function getApp(): Promise<http.Server> {
 
     withWebSocketApi({
         wss,
-       
+
         accessKeysService,
         logger,
         redis,

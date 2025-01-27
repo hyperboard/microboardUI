@@ -207,7 +207,7 @@ export const createStripeService = (stripe: Stripe, redis: Redis): StripeService
                 line_items: [
                     {
                         price_data: {
-                            currency: "rub",
+                            currency: "usd",
                             product_data: {
                                 name: plan[0].name,
                                 description: plan[0].description || undefined,

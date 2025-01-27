@@ -50,12 +50,15 @@ export function getAuthRouter(authService: Auth, userService: Users, logger: win
         validateRequest,
         catchAsync(async (req, res) => {
             const { email, password, name, newsletter } = req.body;
-            const user = await authService.register({
-                email,
-                password,
-                name,
-                newsletter
-            });
+            const user = await authService.register(
+                {
+                    email,
+                    password,
+                    name,
+                    newsletter,
+                },
+                req.lang
+            );
             return res.json(user);
         })
     );
@@ -132,7 +135,7 @@ export function getAuthRouter(authService: Auth, userService: Users, logger: win
         validateRequest,
         catchAsync(async (req, res) => {
             const { email } = req.body;
-            await authService.resendEmail({ email });
+            await authService.resendEmail({ email }, req.lang);
             res.json({ message: "Email sent" });
         })
     );
@@ -175,7 +178,7 @@ export function getAuthRouter(authService: Auth, userService: Users, logger: win
         catchAsync(async (req, res) => {
             const { email } = req.body;
 
-            await authService.requestPasswordRestoration(email);
+            await authService.requestPasswordRestoration(email, req.lang);
             res.json({ message: "Email sent" });
         })
     );

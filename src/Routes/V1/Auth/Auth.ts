@@ -19,6 +19,7 @@ import {
     ResendEmailPayload,
     VerifyEmailPayload,
 } from "./types";
+import type { Lang } from "Middlewares/language.middleware";
 
 export class Auth {
     private authHelper: AuthHelper;
@@ -68,7 +69,10 @@ export class Auth {
         };
     }
 
-    async register(payload: RegisterPayload): Promise<{ email: string; id: number; name: string } | null> {
+    async register(
+        payload: RegisterPayload,
+        lang: Lang = "en"
+    ): Promise<{ email: string; id: number; name: string } | null> {
         const user = await Drizzle.getUserByEmail(payload.email);
 
         if (user) {
@@ -109,14 +113,19 @@ export class Auth {
         }
 
         try {
-            await this.mailer.sendMail(createdUser.userEmail!, "Confirm Your Email Address", {
-                template: "verify-email",
-                context: {
-                    passcode: encodeURIComponent(passcode),
-                    userId: encodeURIComponent(createdUser.userId),
-                    email: encodeURIComponent(createdUser.userEmail!),
+            await this.mailer.sendMail(
+                createdUser.userEmail!,
+                lang === "en" ? "Confirm Your Email Address" : "Подтвердите ваш Email",
+                {
+                    template: "verify-email",
+                    context: {
+                        passcode: encodeURIComponent(passcode),
+                        userId: encodeURIComponent(createdUser.userId),
+                        email: encodeURIComponent(createdUser.userEmail!),
+                    },
                 },
-            });
+                lang
+            );
         } catch (e) {
             this.logger.error(`sendMail error: ${e}`);
         }
@@ -243,7 +252,7 @@ export class Auth {
         return `PASSCODE_NOT_SENDED: ${+lastPasscode.created! - (Date.now() - 3 * 60 * 1000)}`;
     }
 
-    async resendEmail(payload: ResendEmailPayload): Promise<any> {
+    async resendEmail(payload: ResendEmailPayload, lang: Lang = "en"): Promise<any> {
         const { userId } = await Drizzle.getUserByEmail(payload.email);
 
         if (!userId) {
@@ -273,7 +282,7 @@ export class Auth {
             throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred when setting new user passcode");
         }
 
-        return await this.trySendVerifyMail(userId, payload.email, passcode);
+        return await this.trySendVerifyMail(userId, payload.email, passcode, lang);
     }
 
     async logout(userId: number) {
@@ -286,7 +295,7 @@ export class Auth {
         return true;
     }
 
-    async requestPasswordRestoration(email: string): Promise<void> {
+    async requestPasswordRestoration(email: string, lang: Lang = "en"): Promise<void> {
         const user = await Drizzle.getUserByEmail(email);
 
         if (!user) {
@@ -309,12 +318,17 @@ export class Auth {
         }
 
         try {
-            await this.mailer.sendMail(email, "Password Reset Request", {
-                template: "restore-password",
-                context: {
-                    token: token,
+            await this.mailer.sendMail(
+                email,
+                lang === "en" ? "Password Reset Request" : "Запрос на сброс пароля",
+                {
+                    template: "restore-password",
+                    context: {
+                        token: token,
+                    },
                 },
-            });
+                lang
+            );
         } catch (e) {
             this.logger.error(`sendMail error: ${e}`);
         }
@@ -417,16 +431,21 @@ export class Auth {
         }
     }
 
-    private async trySendVerifyMail(userId: number, userEmail: string, passcode: string) {
+    private async trySendVerifyMail(userId: number, userEmail: string, passcode: string, lang: Lang = "en") {
         try {
-            await this.mailer.sendMail(userEmail, "Confirm Your Email Address", {
-                template: "verify-email",
-                context: {
-                    passcode: passcode,
-                    userId: "" + userId,
-                    email: userEmail,
+            await this.mailer.sendMail(
+                userEmail,
+                lang === "en" ? "Confirm Your Email Address" : "Подтвердите ваш Email",
+                {
+                    template: "verify-email",
+                    context: {
+                        passcode: passcode,
+                        userId: "" + userId,
+                        email: userEmail,
+                    },
                 },
-            });
+                lang
+            );
 
             return "PASSCODE_SENDED";
         } catch (e) {

@@ -2,6 +2,7 @@ import * as nodemailer from "nodemailer";
 import { Config } from "../../config/config";
 import winston from "winston";
 import hbs from "nodemailer-express-handlebars";
+import type { Lang } from "Middlewares/language.middleware";
 
 type VerifyEmailTemplate = {
     template: "verify-email";
@@ -68,13 +69,13 @@ export class Mailer {
         );
     }
 
-    sendMail(to: string, subject: string, template: Template): Promise<void> {
+    sendMail(to: string, subject: string, template: Template, lang: Lang = "en"): Promise<void> {
         return new Promise((resolve, reject) => {
             const mailOptions = {
                 from: this.config.environment.MAILER_USER!,
                 to: to,
                 subject: subject,
-                template: "dist/templates/" + template.template,
+                template: "dist/templates/" + `${template.template}-${lang}`,
                 context: { ...template.context, baseUrl: this.baseUrl },
             };
 

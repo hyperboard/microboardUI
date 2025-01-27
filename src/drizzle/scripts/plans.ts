@@ -4,7 +4,7 @@ import { and, eq, sql } from "drizzle-orm";
 
 const BYTES_IN_MB = 1024 * 1024;
 const BYTES_IN_GB = BYTES_IN_MB * 1024;
-const RUB = 100;
+const USD = 100;
 
 export type PlanDefinition = Omit<Plan, "version" | "isActive">;
 export type ModelLimitDefinition = Omit<ModelLimit, "planVersion">;
@@ -49,7 +49,7 @@ export const PLANS: PlanDefinition[] = [
         description: "Free plan",
         monthlyTokenLimit: 100_000,
         resetPeriodDays: 7,
-        price: 0 * RUB,
+        price: 0 * USD,
         storageLimit: 100, // 100MB
     },
     {
@@ -58,7 +58,7 @@ export const PLANS: PlanDefinition[] = [
         description: "Plus plan",
         monthlyTokenLimit: 1_000_000,
         resetPeriodDays: 30,
-        price: 1200 * RUB,
+        price: 12 * USD,
         storageLimit: 100_000, // 100GB
     },
 ];
