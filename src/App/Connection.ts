@@ -350,9 +350,6 @@ export function createConnection(
 			case "UserJoin":
 			case "Mode":
 			case "PresenceEvent":
-				if (msg.type === "AiChat") {
-					console.log("AImsg", msg.event);
-				}
 				const subscribeTimeout = subscribeTimeouts.get(msg.boardId);
 				if (subscribeTimeout) {
 					clearTimeout(subscribeTimeout.timeout);

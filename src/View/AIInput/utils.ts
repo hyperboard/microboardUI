@@ -279,7 +279,7 @@ export function createNode(
 		nodeRichText.editor.insertCopiedText(
 			t("AIInput.awaitingImageGeneration"),
 		);
-		board.AIGeneratingOnItem = node.getId();
+		node.id = crypto.randomUUID();
 	} else {
 		node = new AINode(isUserRequest, parentNodeId, contextItems);
 		const nodeRichText = node.getRichText();

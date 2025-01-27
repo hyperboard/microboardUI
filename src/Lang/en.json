@@ -831,7 +831,7 @@
 	},
 	"AIInput": {
 		"generatingResponse": "Generating response…",
-		"awaitingImageGeneration": "Awaiting image…",
+		"awaitingImageGeneration": "Generating image…",
 		"selectContext": "Select context, ask AI",
 		"selectMobileContext": "Ask AI",
 		"selectedItems": {
