@@ -253,8 +253,8 @@
 			"ctrl": true
 		},
 		"label": {
-			"mac": "⌘ArrowRight",
-			"windows": "Ctrl + ArrowRight"
+			"mac": "⌘→",
+			"windows": "Ctrl→"
 		}
 	},
 	"frameNavigationPrev": {
@@ -263,8 +263,8 @@
 			"ctrl": true
 		},
 		"label": {
-			"mac": "⌘ArrowLeft",
-			"windows": "Ctrl + ArrowLeft"
+			"mac": "⌘←",
+			"windows": "Ctrl←"
 		}
 	}
 }
