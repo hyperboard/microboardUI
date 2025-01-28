@@ -17,6 +17,10 @@ export class TelegramService {
     }
 
     private async sendTelegramRequest(method: string, body?: object) {
+        if (process.env.TELEGRAM_ENABLED !== "true") {
+            this.logger.info("Telegram bot disabled");
+            return;
+        }
         try {
             const response = await fetch(`${this.baseUrl}/${method}`, {
                 method: body ? "POST" : "GET",
@@ -118,6 +122,10 @@ export class TelegramService {
     }
 
     public async start() {
+        if (process.env.TELEGRAM_ENABLED !== "true") {
+            this.logger.info("Telegram bot disabled");
+            return;
+        }
         try {
             const botInfo = await this.sendTelegramRequest("getMe");
             this.logger.info(`Telegram bot link: https://t.me/${botInfo.result.username}`);
