@@ -23,6 +23,7 @@ import { LocalSidePanelContextProvider } from "./SidePanel/LocalSidePanelContext
 import { SelectPaymentModal } from "./UserPlan/SelectPaymentModal";
 import { UiModalBackground } from "./Ui/UiModal";
 import ModalsWrapper from "./Modal/ModalsWrapper";
+import { AddEmailView } from "./AddEmailView/AddEmailView";
 
 export function getRender(app: App): {
 	render: () => void;
@@ -57,6 +58,10 @@ export function getRender(app: App): {
 						{
 							path: "verify",
 							element: <VerifyMailView app={app} />,
+						},
+						{
+							path: "add-email",
+							element: <AddEmailView />,
 						},
 						{
 							path: "restore-password",

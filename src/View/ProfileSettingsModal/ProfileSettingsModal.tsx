@@ -99,6 +99,11 @@ export function ProfileSettingsModal(): ReactElement {
 		openModal(CHANGE_PASSWORD_MODAL);
 	};
 
+	const handleAddEmail: MouseEventHandler = ev => {
+		ev.stopPropagation();
+		navigate("/auth/add-email" + window.location.search);
+	};
+
 	const handleAvatarChange: ChangeEventHandler<
 		HTMLInputElement
 	> = async ev => {
@@ -243,6 +248,17 @@ export function ProfileSettingsModal(): ReactElement {
 					>
 						<ChangePassword /> {t("profile.changePassword")}
 					</Button>
+					{!account.info?.email && (
+						<Button
+							type="button"
+							onClick={handleAddEmail}
+							pattern="ghost"
+							className={styles.btn}
+						>
+							<Icon iconName="Plus" width={20} height={20} />{" "}
+							{t("profile.addEmail")}
+						</Button>
+					)}
 					<Button
 						type="button"
 						onClick={handlePlanModalOpen}

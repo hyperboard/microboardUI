@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "shared/ui-lib/Button";
 import styles from "./SelectPaymentModal.module.css";
 import { USER_PLAN_MODAL_ID } from "./UserPlanModal";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { notify } from "View/Ui/Toast";
 import { billingApi } from "shared/api";
 import { useAccount } from "App/useAccount";
@@ -125,12 +125,33 @@ export function SelectPaymentModal(): JSX.Element {
 			linkElem.href = data?.url;
 			linkElem.target = "_blank";
 			linkElem.click();
-		} catch {
-			notify({
-				header: "Оплата",
-				body: "Ошибка оплаты",
-				variant: "error",
-			});
+		} catch (err) {
+			if (
+				err instanceof Error &&
+				err.message ===
+					"Unable to checkout user without email, add email first"
+			) {
+				notify({
+					header: "Email not found",
+					body: (
+						<>
+							<Link
+								to={`/auth/add-email?${window.location.search.substring(1)}`}
+							>
+								Add email
+							</Link>{" "}
+							to your account to pay with stripe.
+						</>
+					),
+					variant: "error",
+				});
+			} else {
+				notify({
+					header: "Оплата",
+					body: "Ошибка оплаты",
+					variant: "error",
+				});
+			}
 		}
 	};
 

@@ -22,6 +22,8 @@ import { apiV2 } from "shared/apiV2/base";
 import { foldersApi } from "shared/apiV2";
 import { getLocalRender } from "View/router";
 import Cookies from "js-cookie";
+import { wagmiConfig } from "View/ContextWrapper";
+import { disconnect } from "@wagmi/core";
 
 export const LAST_BOARD_KEY = "lastSeenBoard";
 export const LAST_BOARD_KEY_QS = LAST_BOARD_KEY.concat("Wqs");
@@ -265,6 +267,7 @@ export function createApp(isHistory = true): App {
 				router.navigate(`/${window.location.search}`);
 			}
 			await boardsList.loadBoards();
+			await disconnect(wagmiConfig);
 			account.subject.publish(account.info);
 		});
 		account.setOnSessionExpired(() => {

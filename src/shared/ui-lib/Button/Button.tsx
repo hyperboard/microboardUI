@@ -18,6 +18,7 @@ export const Button: React.FC<Props> = ({
 	pattern = "primary",
 	children,
 	className,
+	loading,
 	...props
 }) => {
 	return (
@@ -26,12 +27,12 @@ export const Button: React.FC<Props> = ({
 				styles.button,
 				styles[pattern],
 				className,
-				props.loading && styles.loading,
+				loading && styles.loading, // Use loading here
 			)}
-			disabled={props.loading || props.disabled}
+			disabled={loading || props.disabled}
 			{...props}
 		>
-			{props.loading && (
+			{loading && (
 				<div className={styles.loader}>
 					<Loader />
 				</div>

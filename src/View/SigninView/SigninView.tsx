@@ -17,6 +17,7 @@ import { Tail } from "View/AuthView/Tail";
 import { EmailIcon } from "View/SignupView/EmailIcon";
 import { LockIcon } from "View/SignupView/LockIcon";
 import styles from "./SigninView.module.css";
+import { WalletLoginButton } from "View/WalletLoginButton";
 
 interface Props {
 	app: App;
@@ -188,6 +189,8 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 					>
 						{t("auth.signUpForFree")}
 					</Button>
+
+					<WalletLoginButton />
 				</div>
 			</form>
 			<div className={styles.policy}>

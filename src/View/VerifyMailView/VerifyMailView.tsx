@@ -57,32 +57,37 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 		event: React.FormEvent<HTMLFormElement>,
 	): Promise<void> => {
 		event.preventDefault();
-		if (!searchParams.get("email")) {
+		const email = decodeURIComponent(searchParams.get("email") || "");
+		const passcode = formRef.current?.code.value;
+		if (!email || !passcode) {
 			return;
 		}
-		if (searchParams.get("email")) {
-			const passcode = formRef.current?.code.value;
-			setSubmitDisabled(true);
-			setIsSubmitLoading(true);
 
-			account
-				.verifyMail(searchParams.get("email") ?? "", passcode)
-				.then(onSuccess)
-				.catch(error => {
-					console.log("error", error);
-					if (error?.message === "PASSCODE_ATTEMPTS_EXCEEDED") {
-						setIsAttemptsExceeded(true);
-						setError(t("auth.errorVerificationCodeAttempts"));
-						setSubmitDisabled(true);
-						return;
-					}
-					setError(t("auth.errorVerificationCode"));
-				})
-				.finally(() => {
-					setIsSubmitLoading(false);
-					setSubmitDisabled(false);
-				});
-		}
+		setSubmitDisabled(true);
+		setIsSubmitLoading(true);
+
+		const action = searchParams.get("action");
+		const method =
+			action === "addEmail"
+				? account.verifyAddedEmail
+				: account.verifyMail;
+
+		method(email, passcode)
+			.then(onSuccess)
+			.catch(error => {
+				console.log("error", error);
+				if (error?.message === "PASSCODE_ATTEMPTS_EXCEEDED") {
+					setIsAttemptsExceeded(true);
+					setError(t("auth.errorVerificationCodeAttempts"));
+					setSubmitDisabled(true);
+					return;
+				}
+				setError(t("auth.errorVerificationCode"));
+			})
+			.finally(() => {
+				setIsSubmitLoading(false);
+				setSubmitDisabled(false);
+			});
 	};
 
 	const checkForm = (checkAttempts = true): void => {

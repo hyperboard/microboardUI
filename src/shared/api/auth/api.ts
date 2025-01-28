@@ -11,6 +11,8 @@ import type {
 	RestorePasswordPayload,
 	Tokens,
 	VerifyMailPayload,
+	GetNoncePayload,
+	VerifySignaturePayload,
 } from "./types";
 
 export const ACCESS_TOKEN_KEY = "accessToken";
@@ -54,4 +56,23 @@ export function forgotPassword(body: ForgotPasswordPayload) {
 
 export function restorePassword(body: RestorePasswordPayload) {
 	return api.post<MessageResponse>("/auth/password/restore", body);
+}
+
+export function getNonce(body: GetNoncePayload) {
+	return api.post<MessageResponse>("/auth/crypto/nonce", body);
+}
+
+export function verifySignature(body: VerifySignaturePayload) {
+	return api.post<Tokens>("/auth/crypto/verify", body);
+}
+
+export function requstAddEmail(body: CheckVerificationCodesPayload) {
+	return api.post<MessageResponse & { email: string }>(
+		"/auth/email/verify/request",
+		body,
+	);
+}
+
+export function addEmail(body: VerifyMailPayload) {
+	return api.post<MessageResponse>("/auth/email/verify", body);
 }

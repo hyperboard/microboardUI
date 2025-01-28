@@ -12,6 +12,7 @@ import { EmailIcon } from "./EmailIcon";
 import { LockIcon } from "./LockIcon";
 import styles from "./SignupView.module.css";
 import { Checkbox } from "View/Ui/Checkbox";
+import { WalletLoginButton } from "View/WalletLoginButton";
 
 export const SignupView = (): React.ReactElement => {
 	const { t, i18n } = useTranslation();
@@ -232,6 +233,9 @@ export const SignupView = (): React.ReactElement => {
 					>
 						{t("auth.signIn")}
 					</Button>
+
+					<WalletLoginButton />
+
 					{!showNameInput && (
 						<Checkbox checked onChange={onNewsletterChange}>
 							<span className={styles.newsletter}>

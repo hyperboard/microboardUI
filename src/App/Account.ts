@@ -1,11 +1,14 @@
 import { jwtDecode } from "jwt-decode";
 import { getEmailPrefix } from "lib/getEmailPrefix";
-import { authApi, billingApi, usersApi } from "shared/api";
+import { authApi, billingApi, HTTPResponse, usersApi } from "shared/api";
 import { Subject } from "Subject";
 import { Connection } from "./Connection";
 import { Permissions } from "./Permissions";
 import { Storage } from "./Storage";
 import { SessionStorage } from "App/SessionStorage";
+import { UniqueString } from "shared/api/auth";
+import { MessageResponse } from "shared/api/types";
+import { ArcData } from "Board/Items/Arc/Arc";
 
 type AccountInfo = {
 	id: number;
@@ -48,7 +51,7 @@ export class Account {
 		this.permissions = new Permissions(this, this.storage);
 	}
 
-	async init() {
+	async init(): Promise<void> {
 		await this.refreshTokens();
 		this.onInit?.();
 		this.isInitialized = true;
@@ -104,7 +107,7 @@ export class Account {
 		}
 	}
 
-	async unsubscribe() {
+	async unsubscribe(): Promise<void> {
 		if (!this.isLoggedIn) {
 			return;
 		}
@@ -135,12 +138,12 @@ export class Account {
 		this.subject.publish(this.info);
 	}
 
-	async uploadAvatar(avatar: File) {
+	async uploadAvatar(avatar: File): Promise<void> {
 		await usersApi.uploadAvatar(avatar);
 		await this.fetchAccountInfo();
 	}
 
-	async removeAvatar() {
+	async removeAvatar(): Promise<void> {
 		await usersApi.removeAvatar();
 		await this.fetchAccountInfo();
 	}
@@ -161,7 +164,7 @@ export class Account {
 		password: string,
 		name: string,
 		newsletter: boolean,
-	) {
+	): Promise<HTTPResponse<usersApi.User>> {
 		return authApi.register({ email, password, name, newsletter });
 	}
 
@@ -206,7 +209,10 @@ export class Account {
 		this.subject.publish(null);
 	}
 
-	async verifyMail(email: string, passcode: string) {
+	async verifyMail(
+		email: string,
+		passcode: string,
+	): Promise<authApi.Tokens | null> {
 		const { data } = await authApi.verifyMail({ email, passcode });
 
 		this._accessToken = data?.accessToken ?? null;
@@ -214,28 +220,64 @@ export class Account {
 		return data;
 	}
 
-	async resendMail(email: string) {
+	async resendMail(email: string): Promise<HTTPResponse<MessageResponse>> {
 		return await authApi.resendMail({ email });
 	}
 
-	async checkVerificationCodes(email: string) {
+	async checkVerificationCodes(
+		email: string,
+	): Promise<MessageResponse | null> {
 		const { data } = await authApi.checkVerificationCodes({ email });
 		return data;
 	}
 
-	async changePassword(oldPassword: string, newPassword: string) {
+	async getNonce(address: UniqueString): Promise<string | undefined> {
+		const { data } = await authApi.getNonce({ address });
+		return data?.message;
+	}
+
+	async verifySignature(
+		address: UniqueString,
+		signature: UniqueString,
+	): Promise<void> {
+		const { data } = await authApi.verifySignature({ address, signature });
+
+		if (data?.accessToken) {
+			this._accessToken = data.accessToken;
+		}
+
+		await this.fetchAccountInfo();
+		await this.onLogin?.();
+	}
+
+	async addEmail(email: string): Promise<string> {
+		const { data } = await authApi.requstAddEmail({ email });
+		return data?.email || "";
+	}
+
+	async verifyAddedEmail(email: string, passcode: string): Promise<void> {
+		await authApi.addEmail({ email, passcode });
+	}
+
+	async changePassword(
+		oldPassword: string,
+		newPassword: string,
+	): Promise<void> {
 		await authApi.changePassword({ newPassword, oldPassword });
 	}
 
-	async forgotPassword(email: string) {
+	async forgotPassword(email: string): Promise<void> {
 		await authApi.forgotPassword({ email });
 	}
 
-	async restorePassword(token: string, newPassword: string) {
+	async restorePassword(token: string, newPassword: string): Promise<void> {
 		await authApi.restorePassword({ token, newPassword });
 	}
 
-	async changeInfo(payload: usersApi.UpdateUserPayload, signal: AbortSignal) {
+	async changeInfo(
+		payload: usersApi.UpdateUserPayload,
+		signal: AbortSignal,
+	): Promise<void> {
 		await usersApi.updateMe(payload, signal);
 		await this.fetchAccountInfo();
 	}
@@ -243,16 +285,16 @@ export class Account {
 	async changeNewsletter(
 		payload: usersApi.UpdateUserNewsletter,
 		signal: AbortSignal,
-	) {
+	): Promise<void> {
 		await usersApi.updateNewsletter(payload, signal);
 		await this.fetchAccountInfo();
 	}
 
-	setOnLogout(cb: () => Promise<void>) {
+	setOnLogout(cb: () => Promise<void>): void {
 		this.onLogout = cb;
 	}
 
-	setOnLogin(cb: () => Promise<void>) {
+	setOnLogin(cb: () => Promise<void>): void {
 		this.onLogin = cb;
 	}
 }

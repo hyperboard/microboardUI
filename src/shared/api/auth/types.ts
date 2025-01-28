@@ -1,3 +1,5 @@
+export type UniqueString = `0x${string}`;
+
 export type ChangePasswordPayload = {
 	oldPassword: string;
 	newPassword: string;
@@ -10,7 +12,7 @@ export type RegisterPayload = {
 	newsletter: boolean;
 };
 
-export type LoginPayload = Omit<RegisterPayload, 'newsletter' | 'name'>;
+export type LoginPayload = Omit<RegisterPayload, "newsletter" | "name">;
 
 export type Tokens = {
 	accessToken: string;
@@ -37,4 +39,13 @@ export type ForgotPasswordPayload = {
 export type RestorePasswordPayload = {
 	token: string;
 	newPassword: string;
+};
+
+export type GetNoncePayload = {
+	address: UniqueString;
+};
+
+export type VerifySignaturePayload = {
+	address: UniqueString;
+	signature: UniqueString;
 };
