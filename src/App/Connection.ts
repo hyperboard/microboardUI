@@ -778,7 +778,9 @@ export function createWsClient(
 		const board = getBoard();
 		if (isConnected() && !board?.getBoardId().includes("local")) {
 			send(pingMsg);
-			board.presence.ping();
+			if (board) {
+				board.presence.ping();
+			}
 
 			setConnectionErrorTimeout();
 		}

@@ -22,7 +22,8 @@ export function renderAnchor(
 	ctx.strokeStyle = borderColor;
 	ctx.lineWidth = strokeWidth / scale;
 	ctx.beginPath();
-	if (scale > 0) { // TODO fix camera scale < 0
+	if (scale > 0) {
+		// TODO fix camera scale < 0
 		ctx.roundRect(
 			center.x - adjustedWidth / scale / 2,
 			center.y - adjustedWidth / scale / 2,
@@ -48,13 +49,15 @@ export function renderCircleAnchor(
 	strokeWidth: number,
 	scale: number,
 ): void {
-	renderAnchor(
-		ctx,
-		center,
-		radius,
-		borderColor,
-		backgroundColor,
-		strokeWidth,
-		scale,
-	);
+	try {
+		renderAnchor(
+			ctx,
+			center,
+			radius,
+			borderColor,
+			backgroundColor,
+			strokeWidth,
+			scale,
+		);
+	} catch {}
 }

@@ -234,6 +234,7 @@ export const AIInput = () => {
 		);
 
 		board.AIGeneratingOnItem = responseAdded.getId();
+		board.camera.subscribeToItem(responseAdded);
 
 		if (model !== "image-generation") {
 			const contextRequest = nodeWithParents

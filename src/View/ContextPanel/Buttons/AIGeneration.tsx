@@ -99,6 +99,7 @@ export function AIGeneration({ rounded = "none" }: Props): React.ReactElement {
 		);
 
 		board.AIGeneratingOnItem = responseAdded.getId();
+		board.camera.subscribeToItem(responseAdded);
 
 		const contextRequest = nodeWithParents
 			? {

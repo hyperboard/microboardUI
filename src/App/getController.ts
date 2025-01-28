@@ -41,6 +41,7 @@ export function getController(
 		if (!board) {
 			return;
 		}
+		board.camera.unsubscribeFromItem();
 		if (wheel.isIgnore()) {
 			return;
 		}
@@ -67,6 +68,7 @@ export function getController(
 			return;
 		}
 
+		board.camera.unsubscribeFromItem();
 		board.presence.disableTracking();
 
 		const context = board.selection.getContext();
@@ -254,6 +256,7 @@ export function getController(
 		if (!board) {
 			return false;
 		}
+		board.camera.unsubscribeFromItem();
 		board.isBoardMenuOpen = false;
 		const { tools, camera, selection } = board;
 		const transformerTool = selection.tool;
@@ -511,6 +514,7 @@ export function getController(
 		if (!board) {
 			return;
 		}
+		board.camera.unsubscribeFromItem();
 
 		const text = tryToPasteAsItemOrReturnText(event, board, isLoggedIn());
 
