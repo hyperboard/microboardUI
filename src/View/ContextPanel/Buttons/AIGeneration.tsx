@@ -124,8 +124,23 @@ export function AIGeneration({ rounded = "none" }: Props): React.ReactElement {
 
 		connection.wsClient.send(message);
 
-		const mbrToFit = responseAdded.getMbr().combine(requestAdded.getMbr());
-		board.camera.zoomToFit(mbrToFit, (600 / mbrToFit.getWidth()) * 30);
+		const itemsInView = board.items.getInView();
+		const viewport = board.camera.getMbr();
+		const isAiNodesInView = itemsInView.some(item => {
+			const itemMbr = item.getMbr();
+			return (
+				item.getId() === responseAdded.getId() &&
+				itemMbr.right < viewport.right &&
+				itemMbr.left > viewport.left
+			);
+		});
+
+		if (!isAiNodesInView) {
+			const mbrToFit = responseAdded
+				.getMbr()
+				.combine(requestAdded.getMbr());
+			board.camera.zoomToFit(mbrToFit, (600 / mbrToFit.getWidth()) * 30);
+		}
 	};
 
 	const handleStopClick = async () => {

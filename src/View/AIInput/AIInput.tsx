@@ -288,9 +288,15 @@ export const AIInput = () => {
 		}
 
 		const itemsInView = board.items.getInView();
-		const isAiNodesInView = itemsInView.some(
-			item => item.getId() === responseAdded.getId(),
-		);
+		const viewport = board.camera.getMbr();
+		const isAiNodesInView = itemsInView.some(item => {
+			const itemMbr = item.getMbr();
+			return (
+				item.getId() === responseAdded.getId() &&
+				itemMbr.right < viewport.right &&
+				itemMbr.left > viewport.left
+			);
+		});
 
 		if (!isAiNodesInView) {
 			const mbrToFit = responseAdded
