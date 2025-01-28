@@ -22,13 +22,15 @@ export function renderAnchor(
 	ctx.strokeStyle = borderColor;
 	ctx.lineWidth = strokeWidth / scale;
 	ctx.beginPath();
-	ctx.roundRect(
-		center.x - adjustedWidth / scale / 2,
-		center.y - adjustedWidth / scale / 2,
-		adjustedWidth / scale,
-		adjustedWidth / scale,
-		1 / scale,
-	);
+	if (scale > 0) { // TODO fix camera scale < 0
+		ctx.roundRect(
+			center.x - adjustedWidth / scale / 2,
+			center.y - adjustedWidth / scale / 2,
+			adjustedWidth / scale,
+			adjustedWidth / scale,
+			1 / scale,
+		);
+	}
 	if (backgroundColor !== "none") {
 		ctx.fillStyle = backgroundColor;
 		ctx.fill();
