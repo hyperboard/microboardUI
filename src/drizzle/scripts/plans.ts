@@ -40,6 +40,12 @@ export const AI_MODELS: AiModel[] = [
         displayName: "DeepSeek Reasoner",
         isDefault: false,
     },
+    {
+        id: "flux-schnell",
+        name: "flux-schnell",
+        displayName: "Flux.1 schnell",
+        isDefault: false,
+    },
 ];
 
 export const PLANS: PlanDefinition[] = [
@@ -125,7 +131,7 @@ export const PLAN_MODEL_LIMITS: ModelLimitDefinition[] = [
         planId: "basic",
         modelId: "deepseek-reasoner",
         dailyRequestLimit: null,
-        weeklyRequestLimit: null,
+        weeklyRequestLimit: 30,
         isEnabled: true,
     },
     {
@@ -140,7 +146,23 @@ export const PLAN_MODEL_LIMITS: ModelLimitDefinition[] = [
         id: "plus-deepseek-reasoner",
         planId: "plus",
         modelId: "deepseek-reasoner",
+        dailyRequestLimit: 100,
+        weeklyRequestLimit: null,
+        isEnabled: true,
+    },
+    {
+        id: "basic-flux-schnell",
+        planId: "basic",
+        modelId: "flux-schnell",
         dailyRequestLimit: null,
+        weeklyRequestLimit: null,
+        isEnabled: false,
+    },
+    {
+        id: "plus-flux-schnell",
+        planId: "plus",
+        modelId: "flux-schnell",
+        dailyRequestLimit: 25,
         weeklyRequestLimit: null,
         isEnabled: true,
     },
