@@ -3,6 +3,8 @@ import { db } from "drizzle/db";
 import { users } from "drizzle/entities";
 import { plans, userPlans } from "drizzle/entities/plans";
 import { Redis } from "Redis";
+import { HttpStatus } from "shared/enums/http-status.enum";
+import { HttpException } from "shared/exceptions/http-exception";
 import Stripe from "stripe";
 
 interface CreateCheckoutSessionParams {
@@ -186,8 +188,15 @@ export const createStripeService = (stripe: Stripe, redis: Redis): StripeService
                 throw new Error("Checkout error: No such user");
             }
 
+            if (!user.email) {
+                throw new HttpException(
+                    HttpStatus.BAD_REQUEST,
+                    "Unable to checkout user without email, add email first"
+                );
+            }
+
             const stripeCustomer = await stripe.customers.create({
-                email: user.email,
+                email: user.email || undefined,
                 metadata: { userId: +sub },
             });
 
@@ -196,14 +205,21 @@ export const createStripeService = (stripe: Stripe, redis: Redis): StripeService
 
         async createCheckoutSession({ userId, planId, successUrl, cancelUrl }: CreateCheckoutSessionParams) {
             const plan = await db.select().from(plans).where(eq(plans.id, planId)).limit(1);
-            const userEmail = await db.select({ email: users.email }).from(users).where(eq(users.id, userId)).limit(1);
+            const [userEmail] = await db.select({ email: users.email }).from(users).where(eq(users.id, userId)).limit(1);
+
+            if (!userEmail || !userEmail.email) {
+                throw new HttpException(
+                    HttpStatus.BAD_REQUEST,
+                    "Unable to checkout user without email, add email first"
+                );
+            }
 
             if (!plan.length) {
                 throw new Error("Plan not found");
             }
 
             const session = await stripe.checkout.sessions.create({
-                customer_email: userEmail[0]?.email,
+                customer_email: userEmail?.email || undefined,
                 line_items: [
                     {
                         price_data: {

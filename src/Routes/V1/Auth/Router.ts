@@ -67,6 +67,7 @@ export function getAuthRouter(authService: Auth, userService: Users, logger: win
         "/auth/refresh",
         catchAsync(async (req, res) => {
             const refreshToken = req.cookies[REFRESH_TOKEN_COOKIE_NAME];
+            console.log(`GOT TOKEN ${refreshToken}`);
             if (!refreshToken) {
                 return res.status(HttpStatus.UNAUTHORIZED).json({
                     status: HttpStatus.UNAUTHORIZED,
@@ -79,6 +80,7 @@ export function getAuthRouter(authService: Auth, userService: Users, logger: win
             });
 
             if (!jwtTokens?.refreshToken) {
+                console.log("NO REFRESH TOKEN");
                 return res.status(HttpStatus.UNAUTHORIZED).json({
                     status: HttpStatus.UNAUTHORIZED,
                     message: "Unauthorized",
@@ -156,6 +158,33 @@ export function getAuthRouter(authService: Auth, userService: Users, logger: win
             });
             res.json({ message: "User logged out" });
         })
+    );
+
+    router.post("/auth/crypto/nonce", body("address").isString(), validateRequest, catchAsync(authService.handleNonce));
+
+    router.post(
+        "/auth/crypto/verify",
+        body("address").isString(),
+        body("signature").isString(),
+        validateRequest,
+        catchAsync(authService.handleVerifySignature(setCookies))
+    );
+
+    router.post(
+        "/auth/email/verify/request",
+        jwtMiddleware(logger),
+        body("email").isEmail(),
+        validateRequest,
+        catchAsync(authService.handleRequestAddEmail)
+    );
+
+    router.post(
+        "/auth/email/verify",
+        jwtMiddleware(logger),
+        body("email").isEmail(),
+        body("passcode").isString(),
+        validateRequest,
+        catchAsync(authService.handleAddEmail)
     );
 
     router.post(

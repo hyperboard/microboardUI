@@ -78,6 +78,13 @@
       "when": 1737463207395,
       "tag": "0010_brave_agent_zero",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1738039864676,
+      "tag": "0011_useful_sister_grimm",
+      "breakpoints": true
     }
   ]
 }

@@ -5,6 +5,8 @@ export {
 	updateUserActiveStatus,
 	getUser,
 	getUserByEmail,
+	getOrCreateUserByAddress,
+	addEmail,
 	getUserAuthInfo,
 	getUserBoards,
 	getRefreshToken,

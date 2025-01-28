@@ -8,6 +8,7 @@ import { Redis } from "Redis";
 import { catchAsync } from "shared/lib/catchAsync";
 import { HttpStatus } from "shared/enums/http-status.enum";
 import { Request, Response, NextFunction } from "express";
+import { HttpException } from "shared/exceptions/http-exception";
 
 interface CryptoService {
     createCheckout: (req: Request, res: Response, next: NextFunction) => void;
@@ -38,7 +39,6 @@ function isValidChain(chain: any): chain is Chain {
 export const createCryptoService = (redis: Redis, logger: winston.Logger): CryptoService => {
     const ADDRESS_TO_MONITOR = process.env.SUBSCRIPTION_WALLET;
     const COINMARKET_API_KEY = process.env.COINMARKET_API_KEY;
-
     const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY;
     const POLYGONSCAN_API_KEY = process.env.POLYGONSCAN_API_KEY;
     const ARBISCAN_API_KEY = process.env.ARBISCAN_API_KEY;
@@ -130,14 +130,18 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
                     eq(walletLastCheckedBlock.address, walletAddress.toLowerCase()),
                     eq(walletLastCheckedBlock.chainName, chain)
                 )
-            );
+            )
+            .execute();
 
         if (!lastCheckedBlock) {
-            await db.insert(walletLastCheckedBlock).values({
-                address: walletAddress.toLowerCase(),
-                chainName: chain,
-                id: crypto.randomUUID(),
-            });
+            await db
+                .insert(walletLastCheckedBlock)
+                .values({
+                    address: walletAddress.toLowerCase(),
+                    chainName: chain,
+                    id: crypto.randomUUID(),
+                })
+                .execute();
         }
 
         const { baseUrl, apiKey } = chainExplorerMap[chain];
@@ -174,7 +178,8 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
                 .onConflictDoUpdate({
                     target: [walletLastCheckedBlock.address, walletLastCheckedBlock.chainName],
                     set: { lastBlockNumber: tx.blockNumber },
-                });
+                })
+                .execute();
 
             const [sameHash] = await db
                 .select()
@@ -185,7 +190,8 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
                         eq(userCryptoCheckout.status, "payed")
                     )
                 )
-                .limit(1);
+                .limit(1)
+                .execute();
 
             if (sameHash) {
                 continue;
@@ -201,7 +207,8 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
                         eq(userCryptoCheckout.valueWei, tx.value),
                         eq(userCryptoCheckout.status, "active")
                     )
-                );
+                )
+                .execute();
 
             if (!check) {
                 continue;
@@ -210,31 +217,36 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
             await db
                 .update(userCryptoCheckout)
                 .set({ status: "payed", transactionHash: tx.hash.toLowerCase() })
-                .where(eq(userCryptoCheckout.id, check.id));
+                .where(eq(userCryptoCheckout.id, check.id))
+                .execute();
             logger.info(`web3: payed check ${check.id}, hash ${tx.hash.toLowerCase()}`);
 
             unsubscribe(check.chainName);
 
             const plan = await db.select().from(plans).where(eq(plans.id, check.planId)).limit(1);
-            if (!plan.length) throw new Error("Plan not found");
+            if (!plan.length) throw new HttpException(HttpStatus.NOT_FOUND, "Plan not found");
 
             await db
                 .update(userPlans)
                 .set({ status: "cancelled", canceledAt: new Date() })
-                .where(and(eq(userPlans.userId, check.userId), eq(userPlans.status, "active")));
+                .where(and(eq(userPlans.userId, check.userId), eq(userPlans.status, "active")))
+                .execute();
 
             const startDate = new Date();
             const endDate = new Date(startDate.getTime() + (plan[0].resetPeriodDays || 30) * 24 * 60 * 60 * 1000);
 
-            await db.insert(userPlans).values({
-                id: crypto.randomUUID(),
-                userId: check.userId,
-                planId: check.planId,
-                startDate,
-                endDate,
-                status: "active",
-                transactionHash: tx.hash.toLowerCase(),
-            });
+            await db
+                .insert(userPlans)
+                .values({
+                    id: crypto.randomUUID(),
+                    userId: check.userId,
+                    planId: check.planId,
+                    startDate,
+                    endDate,
+                    status: "active",
+                    transactionHash: tx.hash.toLowerCase(),
+                })
+                .execute();
 
             await schedulePlanExpiry(check.userId, endDate);
         }
@@ -307,7 +319,8 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
             .select()
             .from(userCryptoCheckout)
             .where(and(eq(userCryptoCheckout.chainName, chainTyped), eq(userCryptoCheckout.status, "active")))
-            .limit(1);
+            .limit(1)
+            .execute();
 
         if (!rest.length) {
             stopIntervalForChain(chainTyped);
@@ -326,12 +339,17 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
                     lte(userCryptoCheckout.endDate, new Date())
                 )
             )
-            .limit(1);
+            .limit(1)
+            .execute();
 
         if (checkout) {
             const chain = checkout.chainName.toLowerCase();
 
-            await db.update(userCryptoCheckout).set({ status: "expired" }).where(eq(userCryptoCheckout.id, checkoutId));
+            await db
+                .update(userCryptoCheckout)
+                .set({ status: "expired" })
+                .where(eq(userCryptoCheckout.id, checkoutId))
+                .execute();
 
             unsubscribe(chain);
         }
@@ -350,26 +368,30 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
                     isNotNull(userPlans.transactionHash)
                 )
             )
-            .limit(1);
+            .limit(1)
+            .execute();
 
         if (currentPlan) {
             await db.update(userPlans).set({ status: "expired" }).where(eq(userPlans.id, currentPlan.id));
 
-            const freePlan = await db.select().from(plans).where(eq(plans.name, "free")).limit(1);
+            const freePlan = await db.select().from(plans).where(eq(plans.name, "free")).limit(1).execute();
 
-            if (!freePlan.length) throw new Error("Free plan not found");
+            if (!freePlan.length) throw new HttpException(HttpStatus.NOT_FOUND, "Free Plan not found");
 
             const startDate = new Date();
             const endDate = new Date(startDate.getTime() + (freePlan[0].resetPeriodDays || 30) * 24 * 60 * 60 * 1000);
 
-            await db.insert(userPlans).values({
-                id: crypto.randomUUID(),
-                userId,
-                planId: freePlan[0].id,
-                startDate,
-                endDate,
-                status: "active",
-            });
+            await db
+                .insert(userPlans)
+                .values({
+                    id: crypto.randomUUID(),
+                    userId,
+                    planId: freePlan[0].id,
+                    startDate,
+                    endDate,
+                    status: "active",
+                })
+                .execute();
         }
     }
 
@@ -431,7 +453,8 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
             .select()
             .from(userPlans)
             .where(and(eq(userPlans.userId, userId), eq(userPlans.status, "active"), eq(userPlans.planId, planId)))
-            .limit(1);
+            .limit(1)
+            .execute();
 
         if (active) {
             return res
@@ -441,9 +464,7 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
 
         const rates = await fetchRates(symbol.toString());
         const quote = rates[symbol.toString()]?.quote;
-        if (!quote) {
-            throw new Error("Failed to fetch rates");
-        }
+        if (!quote) throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to fetch rates");
 
         const { price } = quote.USD;
         const web3 = new Web3();
@@ -491,7 +512,8 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
                     eq(userCryptoCheckout.userId, userId)
                 )
             )
-            .limit(1);
+            .limit(1)
+            .execute();
 
         if (existingCheckout.length === 0) {
             return res.status(HttpStatus.NOT_FOUND).json({ error: "Checkout not found" });
@@ -511,7 +533,7 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
             )
             .returning();
 
-        logger.info(`web3: canceled checkout ${deleted.id}`);
+        logger.info(`web3: cancelled checkout ${deleted.id}`);
 
         unsubscribe(existingCheckout[0].chainName.toLowerCase());
 
@@ -534,7 +556,8 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
                     eq(userCryptoCheckout.status, "active")
                 )
             )
-            .limit(1);
+            .limit(1)
+            .execute();
 
         if (!checkout) {
             return res.status(HttpStatus.NOT_FOUND).json({ error: "Checkout not found or already confirmed." });
@@ -554,7 +577,8 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
         const [confirmed] = await db
             .select()
             .from(userCryptoCheckout)
-            .where(and(eq(userCryptoCheckout.transactionHash, hash), eq(userCryptoCheckout.status, "payed")));
+            .where(and(eq(userCryptoCheckout.transactionHash, hash), eq(userCryptoCheckout.status, "payed")))
+            .execute();
 
         if (confirmed) {
             logger.info(`web3: checkout ${checkout.id} was already confirmed by ${hash}`);
@@ -567,13 +591,14 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
                 status: "confirmed",
                 transactionHash: hash,
             })
-            .where(and(eq(userCryptoCheckout.userId, userId), eq(userCryptoCheckout.planId, planId)));
+            .where(and(eq(userCryptoCheckout.userId, userId), eq(userCryptoCheckout.planId, planId)))
+            .execute();
 
         logger.info(`web3: confirmed checkout ${checkout.id} by hash ${hash}`);
         unsubscribe(checkout.chainName);
 
         const plan = await db.select().from(plans).where(eq(plans.id, checkout.planId)).limit(1);
-        if (!plan.length) throw new Error("Plan not found");
+        if (!plan.length) throw new HttpException(HttpStatus.NOT_FOUND, "Plan not found");
 
         await db
             .update(userPlans)
@@ -581,20 +606,24 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
                 status: "cancelled",
                 canceledAt: new Date(),
             })
-            .where(and(eq(userPlans.userId, checkout.userId), eq(userPlans.status, "active")));
+            .where(and(eq(userPlans.userId, checkout.userId), eq(userPlans.status, "active")))
+            .execute();
 
         const startDate = new Date();
         const endDate = new Date(startDate.getTime() + (plan[0].resetPeriodDays || 30) * 24 * 60 * 60 * 1000);
 
-        await db.insert(userPlans).values({
-            id: crypto.randomUUID(),
-            userId: checkout.userId,
-            planId: checkout.planId,
-            startDate,
-            endDate,
-            status: "active",
-            transactionHash: hash,
-        });
+        await db
+            .insert(userPlans)
+            .values({
+                id: crypto.randomUUID(),
+                userId: checkout.userId,
+                planId: checkout.planId,
+                startDate,
+                endDate,
+                status: "active",
+                transactionHash: hash,
+            })
+            .execute();
 
         // Schedule plan expiry after one month
         await schedulePlanExpiry(checkout.userId, endDate);

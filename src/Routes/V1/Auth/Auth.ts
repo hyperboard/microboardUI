@@ -1,3 +1,4 @@
+import type { Request, Response } from "express";
 import { AccessToken } from "Interface";
 import { verifyToken } from "Tokens";
 import * as bcrypt from "bcryptjs";
@@ -20,6 +21,8 @@ import {
     VerifyEmailPayload,
 } from "./types";
 import type { Lang } from "Middlewares/language.middleware";
+import { verifyMessage } from "ethers";
+import { db } from "drizzle/db";
 
 export class Auth {
     private authHelper: AuthHelper;
@@ -31,6 +34,10 @@ export class Auth {
         private mailer: Mailer
     ) {
         this.authHelper = new AuthHelper(this.config);
+        this.handleNonce = this.handleNonce.bind(this);
+        this.handleVerifySignature = this.handleVerifySignature.bind(this);
+        this.handleRequestAddEmail = this.handleRequestAddEmail.bind(this);
+        this.handleAddEmail = this.handleAddEmail.bind(this);
     }
 
     async login(payload: LoginPayload): Promise<{ accessToken: string; refreshToken: string; userId: number } | null> {
@@ -44,8 +51,8 @@ export class Auth {
             throw new HttpException(HttpStatus.UNAUTHORIZED, "User not activated");
         }
 
-        this.logger.log("info", user.password!, payload.password);
-        const isValidPassword = await bcrypt.compare(payload.password, user.password!);
+        this.logger.log("info", user?.password || "", payload.password);
+        const isValidPassword = await bcrypt.compare(payload.password, user?.password || "");
 
         if (!isValidPassword) {
             throw new HttpException(HttpStatus.NOT_FOUND, "Invalid email or password");
@@ -349,7 +356,7 @@ export class Auth {
 
         const oldPassword = await Drizzle.getPassword(userId);
 
-        const isSamePassword = await bcrypt.compare(newPassword, oldPassword!);
+        const isSamePassword = await bcrypt.compare(newPassword, oldPassword || "");
 
         if (isSamePassword) {
             throw new HttpException(HttpStatus.CONFLICT, "New password is the same as the old one");
@@ -452,5 +459,119 @@ export class Auth {
             this.logger.error(`sendMail error: ${e}`);
             throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Error occurred when sending verification email");
         }
+    }
+
+    async handleNonce(req: Request, res: Response) {
+        const { address } = req.body;
+        const uniqueMessage = `sign this message to log in. nonce: ${crypto
+            .randomBytes(16)
+            .toString("hex")}`.toLowerCase();
+        await Drizzle.saveNonce(address, uniqueMessage);
+
+        return res.status(HttpStatus.OK).json({ message: uniqueMessage });
+    }
+
+    handleVerifySignature(setCookies: (res: Response, refreshToken: string) => void) {
+        return async (req: Request, res: Response) => {
+            const { address, signature } = req.body;
+
+            const lastNonce = await Drizzle.getLastNonce(address);
+            if (!lastNonce) {
+                throw new HttpException(HttpStatus.UNAUTHORIZED, "Nonce not found");
+            }
+
+            const HOURS_24 = 24 * 60 * 60 * 1000;
+            if (+lastNonce.created < Date.now() - HOURS_24) {
+                throw new HttpException(HttpStatus.UNAUTHORIZED, "Nonce expired");
+            }
+            if (lastNonce.remainingAttempts <= 0) {
+                throw new HttpException(HttpStatus.UNAUTHORIZED, "PASSCODE_ATTEMPTS_EXCEEDED");
+            }
+
+            const recoveredAddress = verifyMessage(lastNonce.nonce, signature);
+            const checkNonce = await Drizzle.checkNonce(lastNonce, address, recoveredAddress);
+
+            if (!checkNonce) {
+                throw new HttpException(HttpStatus.UNAUTHORIZED, "Invalid nonce");
+            }
+
+            const user = await Drizzle.getOrCreateUserByAddress(address);
+            if (!user) {
+                throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to get user");
+            }
+
+            const permissions = await this.getPermissions(user.userId);
+            const tokens = await this.authHelper.generateTokens(user.userId, { ...permissions });
+            const salt = await bcrypt.genSalt(10);
+            const refreshTokenHash = await bcrypt.hash(tokens.refreshToken, salt);
+
+            await this.trySaveToken(user.userId, refreshTokenHash);
+            setCookies(res, tokens.refreshToken);
+
+            if (user.avatarGenerated) {
+                await this.userService.uploadAvatar(user.userId);
+            }
+
+            return res.status(HttpStatus.OK).json({ ...tokens, userId: user.userId });
+        };
+    }
+
+    async handleRequestAddEmail(req: Request, res: Response) {
+        const { email } = req.body;
+        const { token } = req;
+        const userToken = await token;
+        const userId = parseInt(userToken?.sub);
+        if (!userId) {
+            throw new HttpException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
+
+        const user = await Drizzle.getUser(userId);
+        if (!user) {
+            throw new HttpException(HttpStatus.NOT_FOUND, "User not found");
+        }
+
+        const passcode = this.authHelper.generatePasscode();
+
+        console.log("GENERATED PASSCODE", passcode);
+        await Drizzle.addPasscode(user.userId, passcode);
+        console.log("ADDED");
+        await this.mailer.sendMail(email, "Confirm Your Email Address", {
+            template: "verify-email",
+            context: {
+                passcode: encodeURIComponent(passcode),
+                userId: encodeURIComponent(user.userId),
+                email: encodeURIComponent(email),
+            },
+        });
+
+        return res.status(HttpStatus.OK).json({ message: "Passcode sent to email", email });
+    }
+
+    async handleAddEmail(req: Request, res: Response) {
+        const { email, passcode } = req.body;
+
+        const { token } = req;
+        const userToken = await token;
+        const userId = parseInt(userToken?.sub);
+        if (!userId) {
+            throw new HttpException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
+
+        const user = await Drizzle.getUser(userId);
+        if (!user) {
+            throw new HttpException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
+        if (user.userEmail) {
+            throw new HttpException(HttpStatus.BAD_REQUEST, "Email already exists");
+        }
+
+        const isPasscodeValid = await Drizzle.checkPasscode(passcode, userId);
+        if (!isPasscodeValid) {
+            throw new HttpException(HttpStatus.UNAUTHORIZED, "Invalid passcode");
+        }
+
+        await Drizzle.addEmail(userId, email);
+
+        return res.status(HttpStatus.OK).json({ message: "Email added successfully" });
     }
 }

@@ -20,7 +20,7 @@ export async function getPassword(userId: number) {
 		.where(eq(userPasswords.userId, userId))
 		.execute();
 
-	return passwordRecords.password;
+	return passwordRecords?.password;
 }
 
 /**

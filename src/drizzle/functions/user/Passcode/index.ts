@@ -1,1 +1,1 @@
-export { addPasscode, checkPasscode, getLastPasscode } from './handler';
+export { addPasscode, checkPasscode, getLastPasscode, saveNonce, getLastNonce, checkNonce } from "./handler";

@@ -21,7 +21,8 @@ export class Users {
         userId: number
     ): Promise<{
         id: number;
-        email: string;
+        email?: string;
+        address?: string;
         name: string;
         avatar: string;
         avatarGenerated: boolean;
@@ -41,7 +42,8 @@ export class Users {
 
         return {
             id: user.userId,
-            email: user.userEmail!,
+            email: user.userEmail || undefined,
+            address: user.userAddress || undefined,
             name: user.userName!,
             avatar: user.avatar!,
             avatarGenerated: user.avatarGenerated ?? true,
