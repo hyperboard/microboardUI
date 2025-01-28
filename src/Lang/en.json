@@ -851,13 +851,11 @@
 		"disableWhenGenerating": "Wait for the response",
 		"textGenerationError": {
 			"header": "Response generation Error",
-			"body": "Failed to get a response.",
-			"footer": "Please try again"
+			"body": "Failed to get a response.\nPlease try again"
 		},
 		"imageGenerationError": {
 			"header": "Image generation Error",
-			"body": "Failed to generate an image.",
-			"footer": "Please try again"
+			"body": "Failed to generate an image.\nPlease try again"
 		}
 	}
 }

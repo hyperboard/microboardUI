@@ -54,7 +54,16 @@ export function notify({
 						header
 					)}
 					{body && typeof body === "string" ? (
-						<p className={style.description}>{body}</p>
+						<p className={style.description}>
+							{body.split("\n").map((line, index) => (
+								<span key={index}>
+									{line}
+									{index < body.split("\n").length - 1 && (
+										<br />
+									)}
+								</span>
+							))}
+						</p>
 					) : (
 						body
 					)}
