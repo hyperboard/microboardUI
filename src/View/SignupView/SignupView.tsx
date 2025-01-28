@@ -242,12 +242,11 @@ export const SignupView = (): React.ReactElement => {
 								{t("auth.newsletter")}
 								<OuterLink
 									href={
-										i18n.language === "ru"
-											? "https://microboard.ru/personal"
-											: "https://microboard.io/privacy-policy"
+										"https://microboard.io/privacy-policy"
 									}
 									className={styles.newsletterLink}
 								>
+									{" "}
 									Microboard.io
 								</OuterLink>
 							</span>
