@@ -6,9 +6,7 @@ import {
 	Notification,
 } from "shared/ui-lib/Notification/Notification";
 import { Button } from "shared/ui-lib/Button";
-import i18n from "Lang";
 import Cookies from "js-cookie";
-import { useAccount } from "App/useAccount";
 
 interface CookiesModalProps {
 	className?: string;
@@ -19,18 +17,14 @@ export const CookiesModal = ({
 }: CookiesModalProps): React.ReactElement => {
 	const { t } = useTranslation();
 	const [open, setOpen] = useState<boolean>(false);
-	const account = useAccount();
 
 	const redirectOnPolicy = (): void => {
-		const policyUrl =
-			i18n.language === "ru"
-				? "https://microboard.ru/personal"
-				: "https://microboard.io/privacy-policy";
+		const policyUrl = "https://microboard.io/privacy-policy";
 		window.location.href = policyUrl;
 	};
 
 	const onAccept = (): void => {
-		Cookies.set("first_visit", "true");
+		Cookies.set("first_visit", "true", { expires: 182, path: '/' });
 		setOpen(false);
 	};
 
@@ -43,14 +37,6 @@ export const CookiesModal = ({
 			setOpen(false);
 		}
 	}, []);
-
-	useEffect(() => {
-		if (account.tokenData?.exp) {
-			Cookies.set("first_visit", "true", {
-				expires: account.tokenData?.exp,
-			});
-		}
-	}, [account]);
 
 	return (
 		<Notification

@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import style from "./ZoomPanel.module.css";
 import clsx from "clsx";
 import { Mbr } from "Board/Items/Mbr/Mbr";
+import { useMediaQuery } from "lib/useMediaQuery";
 
 export function ZoomPanel() {
 	const { board } = useAppContext();
@@ -20,6 +21,7 @@ export function ZoomPanel() {
 		observer: forceUpdate,
 	});
 	const { t } = useTranslation();
+	const isMobile = useMediaQuery("screen and (max-width: 1200px)");
 
 	const zoomToFit = (): void => {
 		const items = [...board.items.listAll(), ...board.items.listFrames()];
@@ -49,7 +51,7 @@ export function ZoomPanel() {
 				className={style.zoomToFit}
 				id="zoom-to-fit"
 				tooltip={t("zoomPanel.zoomToFit.tooltip")}
-				tooltipPosition="top"
+				tooltipPosition={isMobile ? "top-right" : "top"}
 				onClick={zoomToFit}
 				variant="secondary"
 				rounded="left"
