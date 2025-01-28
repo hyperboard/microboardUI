@@ -70,7 +70,7 @@ export function calculateNodePosition(
 	const currMbr = selectedItem?.getMbr() || null;
 	const currData = selectedItem?.serialize() || null;
 	const newNodeData = newNode.serialize();
-	const width = DEFAULT_MAX_NODE_WIDTH;
+	const width = DEFAULT_MAX_NODE_WIDTH - DEFAULT_MAX_NODE_WIDTH / 5;
 	const height = 150;
 
 	const iterAdjustment = { x: -2 * width, y: 0 };
@@ -138,6 +138,8 @@ export function calculateNodePosition(
 		board.getNewItemId(),
 		newNodeData,
 	) as AINode;
+
+		newItem.transformation.translateBy(-newItem.getMbr().getWidth() / 2, 0);
 
 	const defaultConnector = new Connector(board);
 	const connectorData = defaultConnector.serialize();
