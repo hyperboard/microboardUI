@@ -159,23 +159,23 @@ export function AppView(): JSX.Element {
 			{shouldShow("titlePanel") && <LandingMenu />}
 			{shouldShow("titlePanel") && <MobileLandingMenu />}
 			<InactiveBoardHidder>
-				<ViewModeGuard
-					mode={["edit", "view"]}
-					fallback={
-						<div className={style.loaderWrapper}>
-							<UiLoader size={50} />
-						</div>
-					}
-				>
-					<div ref={containerRef}>
+				<div ref={containerRef}>
+					<ViewModeGuard
+						mode={["edit", "view"]}
+						fallback={
+							<div className={style.loaderWrapper}>
+								<UiLoader size={50} />
+							</div>
+						}
+					>
 						<Canvas
 							router={{ location, navigate, params }}
 							app={app}
 							board={board}
 						/>
 						<TextEditors app={app} board={board} />
-					</div>
-				</ViewModeGuard>
+					</ViewModeGuard>
+				</div>
 			</InactiveBoardHidder>
 			{appBoard.getBoardId() === "blank" && <NoBoardIsOpen />}
 			<ExportVisible>
