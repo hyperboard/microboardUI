@@ -11,6 +11,7 @@ export function Element(props: RenderElementProps): React.ReactElement {
 					style={{
 						textAlign: props.element.horisontalAlignment,
 						margin: 0,
+						paddingTop: "0.25em",
 					}}
 				>
 					{children}
@@ -90,25 +91,25 @@ export function Element(props: RenderElementProps): React.ReactElement {
 			);
 		case "heading_four":
 			return (
-				<h3
+				<h4
 					{...attributes}
 					style={{
 						textAlign: props.element.horisontalAlignment,
 					}}
 				>
 					{children}
-				</h3>
+				</h4>
 			);
 		case "heading_five":
 			return (
-				<h3
+				<h5
 					{...attributes}
 					style={{
 						textAlign: props.element.horisontalAlignment,
 					}}
 				>
 					{children}
-				</h3>
+				</h5>
 			);
 		case "code_block":
 			return (
@@ -130,6 +131,7 @@ export function Element(props: RenderElementProps): React.ReactElement {
 						textAlign: props.element.horisontalAlignment,
 						margin: 0,
 						paddingLeft: "24px",
+						paddingTop: "0.25em",
 						whiteSpace: "pre-wrap",
 					}}
 				>
