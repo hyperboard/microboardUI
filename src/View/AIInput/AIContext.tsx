@@ -120,13 +120,15 @@ export const AIContextProvider = ({ children }: Props): JSX.Element => {
 		board.AIImagePlaceholder = responseAdded;
 
 		if (responseNode.connectorData) {
-			board.add(
+			const pointer = board.add(
 				board.createItem(board.getNewItemId(), {
 					...responseNode.connectorData,
 					startPoint: getControlPointData(requestAdded, 3),
 					endPoint: getControlPointData(responseAdded, 2),
 				}),
 			);
+
+			board.AIImageConnectorID = pointer.getId();
 		}
 
 		return { responseAdded, requestAdded };
