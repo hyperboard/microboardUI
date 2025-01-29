@@ -59,6 +59,8 @@ export const AIInput = () => {
 		model,
 		setModel,
 		createNodesWithConnectors,
+		quotedText,
+		setQuotedText,
 	} = useAIContext();
 
 	const ideaFromSelection = getIdeaFromSelection(
@@ -133,6 +135,7 @@ export const AIInput = () => {
 		}
 		board.AIGeneratingOnItem = "unknown";
 		sessionStorage.removeLastAIRequest();
+		setQuotedText(undefined);
 		await sendInputData();
 	};
 
@@ -210,6 +213,10 @@ export const AIInput = () => {
 				? undefined
 				: ideaFromSelection?.item.getId(),
 		);
+
+		if (quotedText) {
+			boardContext.unshift(quotedText);
+		}
 
 		let idea = inputValue;
 		let itemToContinueThread: PossibleParentNode | undefined =
@@ -372,6 +379,7 @@ export const AIInput = () => {
 			zIndex={2}
 			ref={dropdownRef}
 		>
+			{quotedText && <p>{quotedText}</p>}
 			{!isEditable && (
 				<Tooltip
 					tooltip={t("AIInput.disable")}

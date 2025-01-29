@@ -23,6 +23,8 @@ interface Context {
 		contextItems?: string[],
 		isIdeaFromInput?: boolean,
 	) => { responseAdded: AINode; requestAdded: AINode };
+	quotedText: string | undefined;
+	setQuotedText: (text: string | undefined) => void;
 }
 
 export const AIContext = createStrictContext<Context>();
@@ -39,6 +41,7 @@ export const AIContextProvider = ({ children }: Props): JSX.Element => {
 	const { app } = useAppContext();
 	const [model, setModel] = useState<OpenAIModels>("gpt-4o-mini");
 	const [responseNodeId, setResponseNodeId] = useState<string | undefined>();
+	const [quotedText, setQuotedText] = useState<string | undefined>();
 
 	const stopStream = async (
 		boardId: string,
@@ -143,6 +146,8 @@ export const AIContextProvider = ({ children }: Props): JSX.Element => {
 				responseNodeId,
 				setResponseNodeId,
 				createNodesWithConnectors,
+				quotedText,
+				setQuotedText,
 			}}
 		>
 			{children}

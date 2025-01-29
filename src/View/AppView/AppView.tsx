@@ -42,9 +42,11 @@ import { AiUnavailableModal } from "View/AiUnavailableModal/AiUnavailableModal";
 import { CookiesModal } from "View/Modal/CookiesModal";
 import { SelectPaymentModal } from "View/UserPlan/SelectPaymentModal";
 import { UiLoader } from "View/Ui/UiLoader";
+import { useAIContext } from "View/AIInput/AIContext";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
+	const { setQuotedText } = useAIContext();
 	const location = useLocation();
 	const navigate = useNavigate();
 	const params = useParams();
@@ -173,7 +175,11 @@ export function AppView(): JSX.Element {
 							app={app}
 							board={board}
 						/>
-						<TextEditors app={app} board={board} />
+						<TextEditors
+							app={app}
+							board={board}
+							setQuotedText={setQuotedText}
+						/>
 					</ViewModeGuard>
 				</div>
 			</InactiveBoardHidder>

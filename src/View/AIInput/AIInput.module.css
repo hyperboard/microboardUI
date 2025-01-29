@@ -6,9 +6,7 @@
 	width: calc(100% - 144px);
 	max-width: 720px;
 	min-height: 48px;
-	display: flex;
-	align-items: stretch;
-	justify-content: stretch;
+	display: block;
 	border: none;
 }
 
@@ -137,7 +135,7 @@
 
 .disabled .selectedModel,
 .disabled .aiInput::placeholder,
-.disabled .selectionInfo	{
+.disabled .selectionInfo {
 	color: rgba(10, 15, 41, 0.25);
 }
 
@@ -183,7 +181,7 @@
 }
 
 .disabled .selectionInfo {
-	background-color: #E9EAEC;
+	background-color: #e9eaec;
 }
 
 .activeSelection {
