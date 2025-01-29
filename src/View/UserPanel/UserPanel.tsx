@@ -20,7 +20,7 @@ import { ShareBtn } from "./Buttons/ShareBtn/ShareBtn.tsx";
 export const UserPanel: React.FC = () => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
-	const { app } = useAppContext();
+	const { app, board } = useAppContext();
 	const account = useAccount();
 
 	const insideOfMicroboard =
@@ -133,9 +133,11 @@ export const UserPanel: React.FC = () => {
 			<UiPanel zIndex={10} padding={0} className={styles.wrapper}>
 				<ActionButtons />
 				<PresenceUsers app={app} />
-				<div className={styles.container}>
-					<ShareBtn />
-				</div>
+				{board.getBoardId() !== "blank" && (
+					<div className={styles.container}>
+						<ShareBtn />
+					</div>
+				)}
 			</UiPanel>
 			<CommentsPanel />
 		</CommentsPanelContextProvider>

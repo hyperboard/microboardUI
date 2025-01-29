@@ -8,9 +8,11 @@ export const FRAME_TITLE_COLOR = "rgb(107, 110, 120)";
 export const FRAME_TYPES = [
 	{ id: "Custom", label: "Custom" },
 	{ id: "Frame16x9", label: "16:9" },
+	{ id: "Frame3x2", label: "3:2" },
 	{ id: "Frame4x3", label: "4:3" },
 	{ id: "A4", label: "A4" },
 	{ id: "Letter", label: "Letter" },
+	{ id: "Frame9x18", label: "9:18" },
 	{ id: "Frame1x1", label: "1:1" },
 ] as const;
 

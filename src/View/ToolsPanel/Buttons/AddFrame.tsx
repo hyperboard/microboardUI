@@ -46,7 +46,7 @@ export function AddFrame() {
 				</UiButton>
 			}
 		>
-			<UiPanel gap={4} grid columns={3}>
+			<UiPanel gap={4} grid columns={4}>
 				<FramePicker
 					onPick={handlePick}
 					selected={selected ?? "Custom"}

@@ -4,3 +4,12 @@
 	background-color: rgba(200, 200, 200, 0.2);
 	overflow: hidden;
 }
+
+.loaderWrapper {
+	display: grid;
+	place-items: center;
+	position: absolute;
+	top: 0;
+	left: 0;
+	inset: 0;
+}

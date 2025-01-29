@@ -41,6 +41,7 @@ import { UserPlanModal } from "View/UserPlan";
 import { AiUnavailableModal } from "View/AiUnavailableModal/AiUnavailableModal";
 import { CookiesModal } from "View/Modal/CookiesModal";
 import { SelectPaymentModal } from "View/UserPlan/SelectPaymentModal";
+import { UiLoader } from "View/Ui/UiLoader";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -54,7 +55,7 @@ export function AppView(): JSX.Element {
 	const authCode = searchParams.get("code");
 	const teamIdSearch = searchParams.get("team_id");
 	let canPasteAgain = true;
-
+	console.log(board.getInterfaceType());
 	function update(): void {
 		if (animationId.current) {
 			return; // Function already scheduled to run
@@ -158,14 +159,23 @@ export function AppView(): JSX.Element {
 			{shouldShow("titlePanel") && <LandingMenu />}
 			{shouldShow("titlePanel") && <MobileLandingMenu />}
 			<InactiveBoardHidder>
-				<div ref={containerRef}>
-					<Canvas
-						router={{ location, navigate, params }}
-						app={app}
-						board={board}
-					/>
-					<TextEditors app={app} board={board} />
-				</div>
+				<ViewModeGuard
+					mode={["edit", "view"]}
+					fallback={
+						<div className={style.loaderWrapper}>
+							<UiLoader size={50} />
+						</div>
+					}
+				>
+					<div ref={containerRef}>
+						<Canvas
+							router={{ location, navigate, params }}
+							app={app}
+							board={board}
+						/>
+						<TextEditors app={app} board={board} />
+					</div>
+				</ViewModeGuard>
 			</InactiveBoardHidder>
 			{appBoard.getBoardId() === "blank" && <NoBoardIsOpen />}
 			<ExportVisible>

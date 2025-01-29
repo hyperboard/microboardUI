@@ -22,6 +22,8 @@ const frameTypeTitle: Record<FrameType, string> = {
 	Frame4x3: "4 : 3",
 	Frame1x1: "1 : 1",
 	Custom: "Custom",
+	Frame3x2: "3 : 2",
+	Frame9x18: "9 : 18",
 };
 
 export function FrameRatio(): React.ReactElement | null {
@@ -93,7 +95,7 @@ export function FrameRatio(): React.ReactElement | null {
 				<UiPanel
 					rounded={verticalAlign === "bottom" ? "bottom" : "full"}
 					grid
-					columns={3}
+					columns={4}
 					gap={4}
 				>
 					<FramePicker

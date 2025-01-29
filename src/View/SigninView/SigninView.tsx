@@ -143,7 +143,7 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 				<Input
 					id="email"
 					prefixIcon={<EmailIcon />}
-					placeholder="Your email"
+					placeholder={t("auth.emailPlaceholder")}
 					hasError={!!emailError.length}
 					errorText={emailError}
 					onBlur={() => {
@@ -153,7 +153,7 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 				<Input
 					id="password"
 					prefixIcon={<LockIcon />}
-					placeholder="Password"
+					placeholder={t("auth.passwordPlaceholder")}
 					password
 					onInput={dbCheckForm}
 					errorText={errorText}

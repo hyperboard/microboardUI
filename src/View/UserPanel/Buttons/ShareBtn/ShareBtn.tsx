@@ -26,9 +26,6 @@ export const ShareBtn: React.FC = () => {
 		board.selection.setContext("None");
 		openModal(SHARE_MODAL_ID);
 	};
-	if (boardId === "blank") {
-		return null;
-	}
 
 	return (
 		<Button
