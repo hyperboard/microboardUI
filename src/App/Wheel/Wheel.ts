@@ -51,7 +51,7 @@ export function createWheel(event: ChromeWheelEvent): Wheel {
 	const deltaX = toFiniteNumber(event.deltaX);
 	const deltaY = toFiniteNumber(event.deltaY);
 	const deltaMode = getDeltaMode(event);
-	detector.handle(wheelDelta);
+	detector.handle(event);
 
 	function getDeltaMode(event): "pixel" | "line" | "page" {
 		switch (event.deltaMode) {
@@ -139,7 +139,7 @@ export function createWheel(event: ChromeWheelEvent): Wheel {
 }
 
 interface WheelDetector {
-	handle: (wheelDelta: number) => void;
+	handle: (event: WheelEvent) => void;
 	readonly isMouseWheel: boolean;
 	readonly isIgnore: boolean;
 }
@@ -149,6 +149,9 @@ export function createWheelDetector(): WheelDetector {
 	const detectionFrequency = 8;
 	const maxWheelDelta = 50;
 	const log: number[] = [];
+	let lastEventTimestamp = performance.now();
+	let lastDeltaY = 0;
+	let lastSpeed = 0;
 
 	let isMouseWheel = true;
 	let isIgnore = false;
@@ -156,11 +159,15 @@ export function createWheelDetector(): WheelDetector {
 	let wheelDeltaConstant: number;
 	let highDeltaPrevious: number | undefined;
 
-	function handle(wheelDelta: number): void {
+	function handle(event: WheelEvent): void {
+		const wheelDelta = event.deltaY;
 		const absWheelDelta = Math.abs(wheelDelta);
 
-		log.push(absWheelDelta);
+		const currentTimestamp = performance.now();
+		const timeSinceLastEvent = currentTimestamp - lastEventTimestamp;
+		lastEventTimestamp = currentTimestamp;
 
+		log.push(absWheelDelta);
 		if (log.length > logSize) {
 			log.shift();
 		}
@@ -207,6 +214,14 @@ export function createWheelDetector(): WheelDetector {
 			}
 		}
 
+		const speed = Math.abs(absWheelDelta - lastDeltaY) / timeSinceLastEvent;
+		lastDeltaY = absWheelDelta;
+
+		if (absWheelDelta > maxWheelDelta && speed < lastSpeed / 2) {
+			localIsMouseWheel = false;
+		}
+
+		lastSpeed = speed;
 		isMouseWheel = localIsMouseWheel;
 	}
 
