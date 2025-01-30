@@ -44,7 +44,7 @@ function applyScaleTransformation(item: Item, width = 100, height = 100): void {
 }
 
 function transformSticker(data: AiSticker, board: Board): void {
-	const sticker = new Sticker();
+	const sticker = new Sticker(board);
 	sticker.setId(board.getNewItemId());
 	if (data.backgroundColor) {
 		sticker.setBackgroundColor(stickerColors[data.backgroundColor]);
@@ -80,7 +80,7 @@ function transformSticker(data: AiSticker, board: Board): void {
 }
 
 function transformText(data: AiText, board: Board): void {
-	const textItem = new RichText(new Mbr());
+	const textItem = new RichText(board, new Mbr());
 	textItem.setId(board.getNewItemId());
 
 	// Set text content with formatting
@@ -178,7 +178,6 @@ function transformConnector(data: AiConnector, board: Board): void {
 
 	const connector = new Connector(
 		board,
-		undefined,
 		new FixedPoint(startItem, startPoint),
 		new FixedPoint(endItem, endPoint),
 	);
@@ -223,7 +222,7 @@ function transformConnector(data: AiConnector, board: Board): void {
 }
 
 function transformShape(data: AiShape, board: Board): void {
-	const shape = new Shape(undefined, undefined, "Rectangle");
+	const shape = new Shape(board, undefined, "Rectangle");
 	shape.setId(board.getNewItemId());
 	try {
 		shape.setShapeType(data.type);
@@ -274,8 +273,8 @@ function transformShape(data: AiShape, board: Board): void {
 
 function transformFrame(data: AiFrame, board: Board): void {
 	const frame = new Frame(
+		board,
 		board.items.getById.bind(board.items),
-		undefined,
 		undefined,
 		data.title || "Frame",
 	);

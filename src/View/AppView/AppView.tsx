@@ -57,7 +57,6 @@ export function AppView(): JSX.Element {
 	const authCode = searchParams.get("code");
 	const teamIdSearch = searchParams.get("team_id");
 	let canPasteAgain = true;
-	console.log(board.getInterfaceType());
 	function update(): void {
 		if (animationId.current) {
 			return; // Function already scheduled to run

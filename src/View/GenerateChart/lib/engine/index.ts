@@ -135,7 +135,6 @@ export class LayoutEngine {
 
 		const connector = new Connector(
 			this.board,
-			undefined,
 			new FixedPoint(startItem, startRelative),
 			new FixedPoint(endItem, endRelative),
 		);
@@ -184,7 +183,7 @@ export class LayoutEngine {
 			indexInRow: number;
 		};
 	}): void {
-		const shape = new Shape();
+		const shape = new Shape(this.board);
 		switch (options.shape) {
 			case "rectangle":
 				shape.setShapeType("Rectangle");

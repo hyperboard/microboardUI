@@ -135,6 +135,7 @@ export class TextEditor extends React.Component<
 			event.stopPropagation();
 			this.props.board.selection.setContext("EditUnderPointer");
 		}
+		this.props.board.lastTextEdit = Date.now();
 	};
 
 	onPaste = (event): void | boolean => {

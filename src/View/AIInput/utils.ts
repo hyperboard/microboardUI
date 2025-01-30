@@ -139,7 +139,7 @@ export function calculateNodePosition(
 		newNodeData,
 	) as AINode;
 
-		newItem.transformation.translateBy(-newItem.getMbr().getWidth() / 2, 0);
+	newItem.transformation.translateBy(-newItem.getMbr().getWidth() / 2, 0);
 
 	const defaultConnector = new Connector(board);
 	const connectorData = defaultConnector.serialize();
@@ -153,7 +153,7 @@ export function calculateNodePosition(
 	if (savedEnd) {
 		connectorData.endPointerStyle = savedEnd;
 	}
-	connectorData.text = new RichText(new Mbr()).serialize();
+	connectorData.text = new RichText(board, new Mbr()).serialize();
 
 	return {
 		newItem,
@@ -248,7 +248,7 @@ function calculateParentItemPosition(
 	if (savedEnd) {
 		connectorData.endPointerStyle = savedEnd;
 	}
-	connectorData.text = new RichText(new Mbr()).serialize();
+	connectorData.text = new RichText(board, new Mbr()).serialize();
 
 	return {
 		newItem: newItems,
@@ -271,7 +271,7 @@ export function createNode(
 	}
 	let node;
 	if (isImage) {
-		node = new AINode(isUserRequest, parentNodeId, contextItems);
+		node = new AINode(board, isUserRequest, parentNodeId, contextItems);
 		const nodeRichText = node.getRichText();
 		nodeRichText.setMaxWidth(600);
 		nodeRichText.setSelectionHorisontalAlignment("left");
@@ -281,7 +281,7 @@ export function createNode(
 		);
 		node.id = crypto.randomUUID();
 	} else {
-		node = new AINode(isUserRequest, parentNodeId, contextItems);
+		node = new AINode(board, isUserRequest, parentNodeId, contextItems);
 		const nodeRichText = node.getRichText();
 		nodeRichText.setMaxWidth(600);
 		nodeRichText.setSelectionHorisontalAlignment("left");

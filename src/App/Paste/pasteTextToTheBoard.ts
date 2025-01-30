@@ -3,7 +3,7 @@ import { Mbr } from "Board/Items";
 import { RichText } from "Board/Items/RichText/RichText";
 
 export function pasteTextToTheBoard(board: Board, data: DataTransfer): void {
-	const richText = new RichText(new Mbr());
+	const richText = new RichText(board, new Mbr());
 	richText.transformation.translateTo(
 		board.pointer.point.x,
 		board.pointer.point.y,

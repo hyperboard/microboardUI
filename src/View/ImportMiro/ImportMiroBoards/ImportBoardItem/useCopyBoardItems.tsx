@@ -581,7 +581,7 @@ export const useCopyBoardItems = (
 		const miroShapeType = data?.shape ?? "rectangle";
 		const shapeType = SHAPE_TYPES[miroShapeType];
 
-		const newShape = new Shape(undefined, id, shapeType);
+		const newShape = new Shape(board, id, shapeType);
 
 		if (style) {
 			const {
@@ -642,7 +642,7 @@ export const useCopyBoardItems = (
 			return;
 		}
 		const color = STICKER_COLOR[fillColor];
-		const sticker = new Sticker(undefined, id, color);
+		const sticker = new Sticker(board, id, color);
 
 		setTransformation(sticker, item);
 		stickerPosition &&
@@ -869,7 +869,6 @@ export const useCopyBoardItems = (
 
 			return new Connector(
 				board,
-				undefined,
 				new BoardPoint(
 					Number(startItemPosition?.x.replace("%", "")) / 100 +
 						pointer.x,
@@ -928,7 +927,6 @@ export const useCopyBoardItems = (
 
 		return new Connector(
 			board,
-			undefined,
 			new FixedPoint(startItemMiro, startRelativePoint),
 			new FixedPoint(endItemMiro, endRelativePoint),
 		);
@@ -969,7 +967,7 @@ export const useCopyBoardItems = (
 	const copyText = (item: IMiroBoardItemText): void => {
 		const { id, style, data, geometry, scale, linkTo } = item;
 
-		const richtext = new RichText(new Mbr(), id);
+		const richtext = new RichText(board, new Mbr(), id);
 
 		const richTextWidth = geometry?.width ?? RICH_TEXT_MAX_WIDTH;
 		richtext.setMaxWidth(richTextWidth);
@@ -993,8 +991,8 @@ export const useCopyBoardItems = (
 		const { format } = data;
 		const title = data.title || `Frame ${id}`;
 		const frame = new Frame(
+			board,
 			board.items.getById.bind(board.items),
-			undefined,
 			id,
 			title,
 		)
