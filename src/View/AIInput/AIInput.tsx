@@ -43,6 +43,7 @@ export const AIInput = () => {
 	const { t } = useTranslation();
 	const { app, board } = useAppContext();
 	const [inputValue, setInputValue] = useState("");
+	const disabledRef = useRef<boolean>(!!board.AIGeneratingOnItem);
 	const inputRef = useRef<HTMLTextAreaElement | null>(null);
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -86,6 +87,13 @@ export const AIInput = () => {
 			window.removeEventListener("resize", setScreen);
 		};
 	}, []);
+
+	useEffect(() => {
+		if (disabledRef.current && !board.AIGeneratingOnItem) {
+			inputRef.current?.focus();
+		}
+		disabledRef.current = !!board.AIGeneratingOnItem;
+	}, [board.AIGeneratingOnItem]);
 
 	useAppSubscription({
 		subjects: ["selectionItems", "selectionItem", "selection"],
