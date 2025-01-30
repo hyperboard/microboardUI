@@ -108,13 +108,20 @@ export function FontSize({ rounded = "none" }: Props): React.ReactElement {
 
 		const rect = chevronRef.current.getBoundingClientRect();
 		const midpoint = rect.top + rect.height / 2;
+		const isBigger = event.clientY < midpoint;
+		const valueGetter = isBigger ? getNextBiggerValue : getNextSmallerValue;
+
+		const smallest = board.selection.getFontSize(false);
+		if (
+			isBigger &&
+			board.selection.getAutosize() &&
+			valueGetter(smallest)
+		) {
+			return;
+		}
 
 		resetTextScale();
-		if (event.clientY < midpoint) {
-			board.selection.setFontSize(getNextBiggerValue(fontSize));
-		} else {
-			board.selection.setFontSize(getNextSmallerValue(fontSize));
-		}
+		board.selection.setFontSize(valueGetter(fontSize));
 	};
 
 	const handleInputChange = (
@@ -196,6 +203,11 @@ export function FontSize({ rounded = "none" }: Props): React.ReactElement {
 							]).length
 						}
 						onPick={handlePick}
+						max={
+							board.selection.getAutosize()
+								? board.selection.getFontSize(false)
+								: undefined
+						}
 					/>
 				</UiPanel>
 			)}
