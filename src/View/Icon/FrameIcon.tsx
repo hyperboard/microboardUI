@@ -12,8 +12,8 @@ type Props = {
 export function FrameIcon({
 	iconName,
 	style,
-	height = 30,
-	width = 36,
+	height = 24,
+	width = 24,
 }: Props): React.ReactElement {
 	return (
 		<svg
