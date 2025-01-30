@@ -43,7 +43,7 @@ export const AIInput = () => {
 	const { t } = useTranslation();
 	const { app, board } = useAppContext();
 	const [inputValue, setInputValue] = useState("");
-	const disabledRef = useRef<boolean>(!!board.aIGeneratingOnItem);
+	const disabledRef = useRef<boolean>(!!board.aiGeneratingOnItem);
 	const inputRef = useRef<HTMLTextAreaElement | null>(null);
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -89,11 +89,11 @@ export const AIInput = () => {
 	}, []);
 
 	useEffect(() => {
-		if (disabledRef.current && !board.aIGeneratingOnItem) {
+		if (disabledRef.current && !board.aiGeneratingOnItem) {
 			inputRef.current?.focus();
 		}
-		disabledRef.current = !!board.aIGeneratingOnItem;
-	}, [board.aIGeneratingOnItem]);
+		disabledRef.current = !!board.aiGeneratingOnItem;
+	}, [board.aiGeneratingOnItem]);
 
 	useAppSubscription({
 		subjects: ["selectionItems", "selectionItem", "selection"],
@@ -141,7 +141,7 @@ export const AIInput = () => {
 			}, 1000);
 			return;
 		}
-		board.aIGeneratingOnItem = "unknown";
+		board.aiGeneratingOnItem = "unknown";
 		sessionStorage.removeLastAIRequest();
 		setQuotedText(undefined);
 		await sendInputData();
@@ -168,7 +168,7 @@ export const AIInput = () => {
 	};
 
 	const toggleModelDropdown = (): void => {
-		if (!board.aIGeneratingOnItem) {
+		if (!board.aiGeneratingOnItem) {
 			setIsDropdownOpen(!isDropdownOpen);
 		}
 	};
@@ -248,7 +248,7 @@ export const AIInput = () => {
 			!isIdeaFromSelection,
 		);
 
-		board.aIGeneratingOnItem = responseAdded.getId();
+		board.aiGeneratingOnItem = responseAdded.getId();
 		board.camera.subscribeToItem(responseAdded);
 
 		if (model !== "image-generation") {
@@ -327,7 +327,7 @@ export const AIInput = () => {
 
 		if (responseNodeId) {
 			await stopStream(boardId, responseNodeId, account);
-			board.aIGeneratingOnItem = undefined;
+			board.aiGeneratingOnItem = undefined;
 		}
 	};
 
@@ -348,7 +348,7 @@ export const AIInput = () => {
 	};
 
 	const getInputPlaceholder = (): string => {
-		if (!!board.aIGeneratingOnItem) {
+		if (!!board.aiGeneratingOnItem) {
 			return t("AIInput.disableWhenGenerating");
 		}
 
@@ -398,7 +398,7 @@ export const AIInput = () => {
 			)}
 			<div
 				className={clsx(styles.contentWrapper, {
-					[styles.disabled]: !!board.aIGeneratingOnItem,
+					[styles.disabled]: !!board.aiGeneratingOnItem,
 				})}
 			>
 				<div className={styles.modelSelector}>
@@ -418,7 +418,7 @@ export const AIInput = () => {
 						width={20}
 						height={20}
 					/>
-					{isDropdownOpen && !board.aIGeneratingOnItem && (
+					{isDropdownOpen && !board.aiGeneratingOnItem && (
 						<div className={styles.modelDropdown}>
 							<button
 								className={clsx(
@@ -516,7 +516,7 @@ export const AIInput = () => {
 					className={styles.aiInput}
 					ref={inputRef}
 					rows={1}
-					disabled={!!board.aIGeneratingOnItem}
+					disabled={!!board.aiGeneratingOnItem}
 				/>
 				<div
 					className={clsx(
@@ -531,7 +531,7 @@ export const AIInput = () => {
 				</div>
 				<button
 					onClick={
-						!!board.aIGeneratingOnItem
+						!!board.aiGeneratingOnItem
 							? handleStopClick
 							: handleSendClick
 					}
@@ -541,7 +541,7 @@ export const AIInput = () => {
 						width={20}
 						height={20}
 						iconName={
-							!!board.aIGeneratingOnItem
+							!!board.aiGeneratingOnItem
 								? "StopAiGeneration"
 								: "Vector"
 						}
@@ -549,7 +549,7 @@ export const AIInput = () => {
 							[styles.activeIcon]:
 								inputValue.trim() ||
 								ideaFromSelection ||
-								!!board.aIGeneratingOnItem,
+								!!board.aiGeneratingOnItem,
 						})}
 					/>
 				</button>

@@ -58,7 +58,7 @@ export function AIGeneration({ rounded = "none" }: Props): React.ReactElement {
 			}
 			return;
 		}
-		board.aIGeneratingOnItem = "unknown";
+		board.aiGeneratingOnItem = "unknown";
 		await sendGenerationRequest();
 	};
 
@@ -98,7 +98,7 @@ export function AIGeneration({ rounded = "none" }: Props): React.ReactElement {
 			false,
 		);
 
-		board.aIGeneratingOnItem = responseAdded.getId();
+		board.aiGeneratingOnItem = responseAdded.getId();
 		board.camera.subscribeToItem(responseAdded);
 
 		const contextRequest = nodeWithParents
@@ -149,7 +149,7 @@ export function AIGeneration({ rounded = "none" }: Props): React.ReactElement {
 
 		if (responseNodeId) {
 			await stopStream(boardId, responseNodeId, account);
-			board.aIGeneratingOnItem = undefined;
+			board.aiGeneratingOnItem = undefined;
 		}
 	};
 
@@ -157,17 +157,17 @@ export function AIGeneration({ rounded = "none" }: Props): React.ReactElement {
 		<UiButton
 			className={btnStyle.contextPanelButton}
 			id={"AIGeneration"}
-			onClick={board.aIGeneratingOnItem ? handleStopClick : handleClick}
+			onClick={board.aiGeneratingOnItem ? handleStopClick : handleClick}
 			variant="secondary"
 			rounded={rounded}
 			tooltip={t(
-				board.aIGeneratingOnItem
+				board.aiGeneratingOnItem
 					? "contextPanel.ai.stop"
 					: "contextPanel.ai.tooltip",
 			)}
 			tooltipPosition="top"
 		>
-			{board.aIGeneratingOnItem ? (
+			{board.aiGeneratingOnItem ? (
 				<Icon
 					iconName="StopAiGeneration"
 					style={{ color: "#924fe8" }}
