@@ -98,10 +98,14 @@ export class TextEditor extends React.Component<
 	editableRef = React.createRef<HTMLDivElement>();
 
 	getSlateSelectionRect(editor: EditorContainer) {
-		if (!editor.getSelection() || !editor.hasTextInSelection()) return null;
+		if (!editor.getSelection() || !editor.hasTextInSelection()) {
+			return null;
+		}
 
 		const domSelection = window.getSelection();
-		if (!domSelection || domSelection.rangeCount === 0) return null;
+		if (!domSelection || domSelection.rangeCount === 0) {
+			return null;
+		}
 
 		const range = domSelection.getRangeAt(0);
 		return range.getBoundingClientRect();

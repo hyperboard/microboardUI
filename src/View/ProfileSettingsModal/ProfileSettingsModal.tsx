@@ -255,7 +255,9 @@ export function ProfileSettingsModal(): ReactElement {
 							pattern="ghost"
 							className={styles.btn}
 						>
-							<Icon iconName="Plus" width={20} height={20} />{" "}
+							<span className={styles.icon}>
+								<Icon iconName="Plus" width={20} height={20} />
+							</span>{" "}
 							{t("profile.addEmail")}
 						</Button>
 					)}
@@ -265,7 +267,13 @@ export function ProfileSettingsModal(): ReactElement {
 						pattern="ghost"
 						className={styles.btn}
 					>
-						<Icon iconName="ArrowUpCircle" width={20} height={20} />{" "}
+						<span className={styles.icon}>
+							<Icon
+								iconName="ArrowUpCircle"
+								width={20}
+								height={20}
+							/>
+						</span>{" "}
 						{t("userPlan.upgradePlan")}
 					</Button>
 					<Button

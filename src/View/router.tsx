@@ -4,6 +4,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { BoardView } from "View/BoardView";
+import { AddEmailView } from "./AddEmailView/AddEmailView";
+import { AppContext } from "./AppContext";
+import { LocalAppView } from "./AppView";
 import AuthView from "./AuthView/AuthView";
 import { ContextWrapper } from "./ContextWrapper";
 import SelectBoard from "./Embedding/SelectBoard";
@@ -12,18 +15,11 @@ import { ForgotPassword } from "./ForgotPassword/ForgotPassword";
 import { RestorePassword } from "./RestorePassword/RestorePassword";
 import RootView from "./RootView/RootView";
 import { ProtectedRoute } from "./Routes/ProtectedRoute";
+import { LocalSidePanelContextProvider } from "./SidePanel/LocalSidePanelContext";
 import { SigninView } from "./SigninView/SigninView";
 import { SignupView } from "./SignupView/SignupView";
 import { VerifyMailView } from "./VerifyMailView/VerifyMailView";
 import { WelcomeBoard } from "./WelcomeBoard";
-import { UserPlanPage } from "./UserPlan/UserPlanPage";
-import { AppContext } from "./AppContext";
-import { LocalAppView } from "./AppView";
-import { LocalSidePanelContextProvider } from "./SidePanel/LocalSidePanelContext";
-import { SelectPaymentModal } from "./UserPlan/SelectPaymentModal";
-import { UiModalBackground } from "./Ui/UiModal";
-import ModalsWrapper from "./Modal/ModalsWrapper";
-import { AddEmailView } from "./AddEmailView/AddEmailView";
 
 export function getRender(app: App): {
 	render: () => void;
@@ -120,23 +116,6 @@ export function getRender(app: App): {
 						{
 							path: "",
 							element: <SelectBoard app={app} />,
-						},
-					],
-				},
-				{
-					path: "/user/plan",
-					element: <ProtectedRoute isPublic={false} />,
-					children: [
-						{
-							path: "",
-							element: (
-								<ModalsWrapper>
-									<UserPlanPage />
-									<UiModalBackground>
-										<SelectPaymentModal />
-									</UiModalBackground>
-								</ModalsWrapper>
-							),
 						},
 					],
 				},

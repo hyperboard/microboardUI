@@ -34,6 +34,9 @@
 		"connectorSwitchPointers": {
 			"tooltip": "Поменять местами"
 		},
+		"connectorColor": {
+			"tooltip": "Цвет линии"
+		},
 		"changeShape": {
 			"tooltip": "Тип фигуры"
 		},

@@ -1,7 +1,7 @@
 import type { ConnectorAnchorColors } from "Board/Items/Connector/types";
 import { BorderStyle } from "../../Board/Items/Path";
 
-export const CONNECTOR_COLOR = "black";
+export const CONNECTOR_COLOR = "rgb(20, 21, 26)";
 export const CONNECTOR_LINE_WIDTH = 1;
 export const CONNECTOR_BORDER_STYLE: BorderStyle = "solid";
 export const DEFAULT_END_POINTER = "TriangleFilled";

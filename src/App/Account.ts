@@ -209,16 +209,17 @@ export class Account {
 		this.subject.publish(null);
 	}
 
-	async verifyMail(
+	verifyMail = async (
 		email: string,
 		passcode: string,
-	): Promise<authApi.Tokens | null> {
+	): Promise<authApi.Tokens | null> => {
 		const { data } = await authApi.verifyMail({ email, passcode });
 
+		console.log("verify data", data, "this", this);
 		this._accessToken = data?.accessToken ?? null;
 
 		return data;
-	}
+	};
 
 	async resendMail(email: string): Promise<HTTPResponse<MessageResponse>> {
 		return await authApi.resendMail({ email });

@@ -28,11 +28,15 @@
 		"connectorEndPointer": {
 			"tooltip": "End style"
 		},
+
 		"connectorStartPointer": {
 			"tooltip": "Start style"
 		},
 		"connectorSwitchPointers": {
 			"tooltip": "Switch pointers"
+		},
+		"connectorColor": {
+			"tooltip": "Color"
 		},
 		"changeShape": {
 			"tooltip": "Shape"

@@ -131,19 +131,19 @@ export function PlanCard({
 					</li>
 				))}
 			</ul>
-			<UiSeparator />
-			<Button
-				onClick={getHandler()}
-				className={styles.button}
-				disabled={state === "current" || state === "pending"}
-				pattern={
-					state === "downgrade" || state === "pending"
-						? "tertiary"
-						: "primary"
-				}
-			>
-				{getButtonLabel()}
-			</Button>
+			{state !== "downgrade" && (
+				<>
+					<UiSeparator />
+					<Button
+						onClick={getHandler()}
+						className={styles.button}
+						disabled={state === "current" || state === "pending"}
+						pattern={state === "pending" ? "tertiary" : "primary"}
+					>
+						{getButtonLabel()}
+					</Button>
+				</>
+			)}
 		</div>
 	);
 }

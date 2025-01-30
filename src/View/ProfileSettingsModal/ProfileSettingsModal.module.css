@@ -49,6 +49,12 @@
 	gap: 2px;
 }
 
+.icon {
+	display: grid;
+	place-items: center;
+	color: #696b76;
+}
+
 .btn {
 	padding: 6px;
 	display: flex;

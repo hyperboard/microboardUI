@@ -52,7 +52,7 @@ export function ConnectorLineColor(): React.ReactElement | null {
 				<UiButton
 					className={btnStyle.contextPanelButton}
 					id={"fill-style"}
-					tooltip={t("contextPanel.fillStyle.tooltip")}
+					tooltip={t("contextPanel.connectorColor.tooltip")}
 					tooltipPosition="top"
 					onClick={handleClick}
 					variant="secondary"

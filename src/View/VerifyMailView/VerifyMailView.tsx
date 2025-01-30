@@ -39,6 +39,7 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 	const boardsList = useBoardsList();
 
 	const onSuccess = async (): Promise<void> => {
+		console.log("success verify");
 		await account.fetchAccountInfo();
 		await account.onLogin?.();
 		if (searchParams.get("backToSelect") === "true") {
@@ -210,7 +211,8 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 				searchParams.get("passcode") || "",
 			)
 			.then(onSuccess)
-			.catch(_ => {
+			.catch(err => {
+				console.log("verify error", err);
 				setError(t("auth.errorVerificationCode"));
 			})
 			.finally(() => {
