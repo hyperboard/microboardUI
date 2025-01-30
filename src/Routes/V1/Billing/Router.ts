@@ -209,6 +209,7 @@ export const getBillingRouter = (
             try {
                 await stripeService.stripe.subscriptions.update(subscription.stripeSubscriptionId, {
                     cancel_at_period_end: true,
+                    metadata: { userId, planId: activeSubscription[0].planId },
                 });
 
                 await db

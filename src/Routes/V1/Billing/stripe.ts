@@ -205,7 +205,11 @@ export const createStripeService = (stripe: Stripe, redis: Redis): StripeService
 
         async createCheckoutSession({ userId, planId, successUrl, cancelUrl }: CreateCheckoutSessionParams) {
             const plan = await db.select().from(plans).where(eq(plans.id, planId)).limit(1);
-            const [userEmail] = await db.select({ email: users.email }).from(users).where(eq(users.id, userId)).limit(1);
+            const [userEmail] = await db
+                .select({ email: users.email })
+                .from(users)
+                .where(eq(users.id, userId))
+                .limit(1);
 
             if (!userEmail || !userEmail.email) {
                 throw new HttpException(
@@ -296,7 +300,6 @@ export const createStripeService = (stripe: Stripe, redis: Redis): StripeService
                     const subscription = event.data.object as Stripe.Subscription;
                     const userId = parseInt(subscription.metadata.userId);
                     const planId = subscription.metadata.planId;
-
                     if (!userId || !planId) {
                         console.log("Missing metadata in subscription update");
                         break;
