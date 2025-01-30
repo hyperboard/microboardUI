@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, getTableColumns, gt, isNull, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, getTableColumns, gt, inArray, isNull, or, sql, notInArray } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { boardEvents, boardOwner, boardPermissions, boards, boardSnapshots, userNames, users } from "drizzle/entities";
 import { folders, foldersToBoards, FolderType } from "drizzle/entities/folders";
@@ -176,13 +176,33 @@ export class BoardsService {
     }
 
     async saveBoardSnapshot(snapshot: BoardSnapshotPayload) {
-        await this.db
-            .insert(boardSnapshots)
-            .values(snapshot)
-            .onConflictDoUpdate({
-                target: [boardSnapshots.boardId, boardSnapshots.lastEventOrder],
-                set: snapshot,
-            });
+        await this.db.transaction(async (tx) => {
+            await tx
+                .insert(boardSnapshots)
+                .values(snapshot)
+                .onConflictDoUpdate({
+                    target: [boardSnapshots.boardId, boardSnapshots.lastEventOrder],
+                    set: snapshot,
+                });
+
+            const snapshotsToKeep = await tx
+                .select({ id: boardSnapshots.id })
+                .from(boardSnapshots)
+                .where(eq(boardSnapshots.boardId, Number(snapshot.boardId)))
+                .orderBy(desc(boardSnapshots.createdAt))
+                .limit(5);
+
+            const snapshotIdsToKeep = snapshotsToKeep.map((s) => s.id);
+
+            await tx
+                .delete(boardSnapshots)
+                .where(
+                    and(
+                        eq(boardSnapshots.boardId, Number(snapshot.boardId)),
+                        notInArray(boardSnapshots.id, snapshotIdsToKeep)
+                    )
+                );
+        });
     }
 
     async addEventToBoard(boardId: string, eventId: string, eventBody: object): Promise<{ order: number; body: any }> {

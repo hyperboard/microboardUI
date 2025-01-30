@@ -6,6 +6,10 @@ import { DirectAccessType } from "drizzle/entities/boards";
 import { AccessToken } from "Interface";
 import { boardEventTotalLatency, websocketEventQueueSize } from "Metrics/metrics";
 import { Redis } from "Redis";
+// import { BoardEventData, Boards } from "Routes/V1/Boards";
+// import type { AccessKeysService } from "Routes/V2/Boards/access-keys.service";
+// import type { BoardsService } from "Routes/V2/Boards/boards.service";
+import { DevelopersService } from "Routes/V1/Developers/Service";
 import type { AccessKeysService } from "Routes/V1/Boards/access-keys.service";
 import type { BoardEventData, BoardsService } from "Routes/V1/Boards/boards.service";
 import { verifyToken } from "Tokens";
@@ -27,6 +31,9 @@ const SAVE_EVENTS_INTERVAL = 1000;
 const SNAPSHOT_EVENTS_TO_REQUEST = 100;
 const SNAPSHOT_RETRY_TIMEOUT = 2 * MINUTE;
 const SNAPSHOT_REQUEST_TIMEOUT = 10 * SECOND;
+const PERIODIC_SNAPSHOT_INTERVAL = 30 * MINUTE;
+const REDIS_BOARD_FIRST_EVENT_KEY = "board:first_event:";
+const REDIS_BOARD_LAST_SNAPSHOT_KEY = "board:last_snapshot:";
 
 export function withWebSocketApi({
     wss,
@@ -309,7 +316,7 @@ export function withWebSocketApi({
         });
     }
 
-    const eventsManager = new EventsManager(logger, boardsService);
+    const eventsManager = new EventsManager(logger, boardsService, redis, boardClients);
 
     async function handleBoardEventMsg(msg: BoardEventMsg, ws: WebSocket): Promise<void> {
         const startTime = process.hrtime.bigint();
@@ -450,6 +457,15 @@ export function withWebSocketApi({
         }
         boardClients.set(boardId, clients);
         wsAccessKeys.delete(ws);
+
+        // If no clients left, clean up periodic snapshot timer
+        if (clients.length === 0) {
+            const periodicTimer = eventsManager.getPeriodicSnapshotTimer(boardId);
+            if (periodicTimer) {
+                clearInterval(periodicTimer);
+                eventsManager.clearPeriodicSnapshotTimer(boardId);
+            }
+        }
     }
 
     function broadcastBoardEvent(boardUUID: string, msg: BoardEventMsg, eventData: BoardEventData): void {
@@ -512,6 +528,10 @@ export function withWebSocketApi({
         const board = await boardsService.get(boardId);
         await boardsService.saveBoardSnapshot({ boardId: board.id, snapshot, lastEventOrder });
         eventsManager.updateSnapshotInfo(boardId, snapshot.lastIndex);
+
+        // Invalidate Redis cache when new snapshot is received
+        const developersService = new DevelopersService(boardsService, logger, redis);
+        await developersService.handleBoardSnapshot(boardId);
     }
 
     setInterval(() => {
@@ -743,11 +763,12 @@ export interface EventMetadata {
 
 export class EventsManager {
     readonly processing: string[] = [];
-
-    private lastEventOrders: Map<string, number> = new Map();
+    private readonly BOARD_LAST_ORDER_KEY = "board:last_order:";
     private eventCountSinceLastSnapshot: Map<string, number> = new Map();
     private snapshotRequestTimers: Map<string, NodeJS.Timeout> = new Map();
+    private periodicSnapshotTimers: Map<string, NodeJS.Timeout> = new Map();
     private presenceEventHandlers: Map<string, (event: PresenceEventType) => void> = new Map();
+    private boardClients: Map<string, WebSocket.WebSocket[]>;
 
     private queues: {
         [boardId: string]: {
@@ -757,7 +778,15 @@ export class EventsManager {
         };
     } = {};
 
-    constructor(private logger: winston.Logger, private boardsService: BoardsService) {
+    requestSnapshotCallback: (boardId: string, sinceLast: number) => void = () => {};
+
+    constructor(
+        private logger: winston.Logger,
+        private boardsService: BoardsService,
+        private redis: Redis,
+        boardClients: Map<string, WebSocket.WebSocket[]>
+    ) {
+        this.boardClients = boardClients;
         setInterval(() => {
             this.tryToSaveEvents();
         }, SAVE_EVENTS_INTERVAL);
@@ -765,11 +794,15 @@ export class EventsManager {
 
     async processEvent(boardId: string, eventBody: BoardEventBody, metadata: EventMetadata): Promise<BoardEventData> {
         const newOrder = await this.incrementLastEventOrder(boardId);
-
         const data = this.enqueueEventForSaving(boardId, eventBody, metadata, newOrder);
 
-        const eventCount = await this.incrementEventCountSinceSnapshot(boardId);
+        const isFirstEvent = await this.checkAndMarkFirstEvent(boardId);
+        if (isFirstEvent) {
+            this.requestSnapshotIfNotAlreadyRequested(boardId);
+            this.setupPeriodicSnapshot(boardId);
+        }
 
+        const eventCount = await this.incrementEventCountSinceSnapshot(boardId);
         if (eventCount >= SNAPSHOT_EVENTS_TO_REQUEST) {
             this.requestSnapshotIfNotAlreadyRequested(boardId);
         }
@@ -777,23 +810,92 @@ export class EventsManager {
         return data;
     }
 
+    private async checkAndMarkFirstEvent(boardId: string): Promise<boolean> {
+        const key = REDIS_BOARD_FIRST_EVENT_KEY + boardId;
+        const result = await this.redis.client.set(key, "1", "EX", 24 * 60 * 60); // 24 hours
+        return result === "OK";
+    }
+
+    private setupPeriodicSnapshot(boardId: string): void {
+        if (this.periodicSnapshotTimers.has(boardId)) {
+            clearInterval(this.periodicSnapshotTimers.get(boardId));
+        }
+
+        const timer = setInterval(async () => {
+            const clients = this.boardClients.get(boardId);
+            if (clients && clients.length > 0) {
+                const lastSnapshotTime = await this.getLastSnapshotTime(boardId);
+                const now = Date.now();
+
+                if (!lastSnapshotTime || now - lastSnapshotTime >= PERIODIC_SNAPSHOT_INTERVAL) {
+                    this.requestSnapshotIfNotAlreadyRequested(boardId);
+                }
+            }
+        }, PERIODIC_SNAPSHOT_INTERVAL);
+
+        this.periodicSnapshotTimers.set(boardId, timer);
+    }
+
+    private async getLastSnapshotTime(boardId: string): Promise<number | null> {
+        const key = REDIS_BOARD_LAST_SNAPSHOT_KEY + boardId;
+        const time = await this.redis.client.get(key);
+        return time ? parseInt(time) : null;
+    }
+
+    private async updateLastSnapshotTime(boardId: string): Promise<void> {
+        const key = REDIS_BOARD_LAST_SNAPSHOT_KEY + boardId;
+        await this.redis.client.set(key, Date.now().toString(), "EX", 24 * 60 * 60); // 24 hours
+    }
+
+    updateSnapshotInfo(boardId: string, lastEventOrder: number): void {
+        this.eventCountSinceLastSnapshot.set(boardId, 0);
+        this.updateLastSnapshotTime(boardId);
+
+        if (this.snapshotRequestTimers.has(boardId)) {
+            clearTimeout(this.snapshotRequestTimers.get(boardId));
+            this.snapshotRequestTimers.delete(boardId);
+        }
+    }
+
+    getPeriodicSnapshotTimer(boardId: string): NodeJS.Timeout | undefined {
+        return this.periodicSnapshotTimers.get(boardId);
+    }
+
+    clearPeriodicSnapshotTimer(boardId: string): void {
+        this.periodicSnapshotTimers.delete(boardId);
+    }
+
     async incrementLastEventOrder(boardUuid: string): Promise<number> {
-        const oldOrder = await this.getLastEventOrder(boardUuid);
-        const newOrder = oldOrder + 1;
-        this.lastEventOrders.set(boardUuid, newOrder);
+        const key = this.BOARD_LAST_ORDER_KEY + boardUuid;
+        const order = await this.redis.client.get(key);
+
+        if (!order) {
+            const lastOrder = await this.getLastEventOrder(boardUuid);
+            await this.redis.client.set(key, lastOrder.toString());
+            const newOrder = lastOrder + 1;
+            await this.redis.client.set(key, newOrder.toString());
+            return newOrder;
+        }
+
+        const newOrder = parseInt(order) + 1;
+        await this.redis.client.set(key, newOrder.toString());
         return newOrder;
     }
 
     async getLastEventOrder(boardUuid: string): Promise<number> {
-        let order = this.lastEventOrders.get(boardUuid);
+        const key = this.BOARD_LAST_ORDER_KEY + boardUuid;
+        const order = await this.redis.client.get(key);
+
         if (!order) {
-            order = await this.boardsService.getLastEventOrderForBoard(boardUuid);
-            if (!isNaturalNumber(order)) {
+            const dbOrder = await this.boardsService.getLastEventOrderForBoard(boardUuid);
+            if (!isNaturalNumber(dbOrder)) {
                 throw new Error(`Error processing event: board ${boardUuid} not found`);
             }
-            this.lastEventOrders.set(boardUuid, order);
+            await this.redis.client.set(key, dbOrder.toString());
+            return dbOrder;
         }
-        return order;
+
+        return parseInt(order);
     }
 
     enqueueEventForSaving(
@@ -834,8 +936,6 @@ export class EventsManager {
         return eventCount;
     }
 
-    // TODO use boardUuid
-    // here boardId is either boardUuid or one of edit links
     private requestSnapshotIfNotAlreadyRequested(boardId: string): void {
         if (this.snapshotRequestTimers.has(boardId)) {
             clearTimeout(this.snapshotRequestTimers.get(boardId));
@@ -861,19 +961,7 @@ export class EventsManager {
         this.snapshotRequestTimers.set(boardId, retryTimer);
     }
 
-    // In updateSnapshotInfo method:
-    updateSnapshotInfo(boardId: string, lastEventOrder: number) {
-        this.eventCountSinceLastSnapshot.set(boardId, 0);
-        this.lastEventOrders.set(boardId, lastEventOrder);
-
-        // Clear any existing timers when snapshot is received
-        if (this.snapshotRequestTimers.has(boardId)) {
-            clearTimeout(this.snapshotRequestTimers.get(boardId));
-            this.snapshotRequestTimers.delete(boardId);
-        }
-    }
-
-    async tryToSaveEvents() {
+    async tryToSaveEvents(): Promise<void> {
         for (const [boardId, queue] of Object.entries(this.queues)) {
             if (queue.events.length > 0 && !queue.isSaving) {
                 queue.isSaving = true;
@@ -899,7 +987,7 @@ export class EventsManager {
             data: BoardEventData;
             metadata: EventMetadata;
         }>
-    ) {
+    ): Promise<void> {
         const events = eventQueue.map((event) => event.data);
 
         try {
@@ -907,16 +995,6 @@ export class EventsManager {
         } catch (error) {
             throw error;
         }
-
-        /*
-        eventQueue.forEach((event, index) => {
-            const { metadata } = event;
-            const totalEndTime = process.hrtime.bigint();
-            const totalLatency = Number(totalEndTime - metadata.startTime);
-            boardEventTotalLatency.observe(totalLatency);
-            console.log(`[DEBUG] Event ${index} total latency: ${totalLatency}`);
-        });
-        */
     }
 
     async getEnqueuedEvents(boardId: string): Promise<any[]> {
@@ -927,8 +1005,6 @@ export class EventsManager {
         }
         return events;
     }
-
-    requestSnapshotCallback(boardId: string, sinceLast: number): void {}
 
     isBoardReady(boardId: string): boolean {
         return !this.processing.includes(boardId);

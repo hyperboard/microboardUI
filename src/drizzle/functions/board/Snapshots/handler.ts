@@ -40,7 +40,7 @@ export async function getLatestBoardSnapshot(boardOrLinkUUID: string) {
         .select({ snapshot: boardSnapshots.snapshot })
         .from(boardSnapshots)
         .where(eq(boardSnapshots.boardId, boardId))
-        .orderBy(desc(boardSnapshots.boardId))
+        .orderBy(desc(boardSnapshots.createdAt))
         .limit(1);
 
     return latestSnapshot[0]?.snapshot ? latestSnapshot[0].snapshot : [];

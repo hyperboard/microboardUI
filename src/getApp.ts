@@ -41,6 +41,7 @@ import { HttpException } from "shared/exceptions/http-exception";
 import { HttpStatus } from "shared/enums/http-status.enum";
 import { TelegramService } from "services/TelegramService";
 import { language } from "Middlewares/language.middleware";
+import { DevelopersService } from "Routes/V1/Developers/Service";
 
 export async function getApp(): Promise<http.Server> {
     const app = express();
@@ -170,16 +171,18 @@ export async function getApp(): Promise<http.Server> {
         discordChannelId: process.env.DISCORD_CHANNEL_ID,
     });
 
-    const telegramService = new TelegramService(
-        process.env.TELEGRAM_BOT_TOKEN!,
-        process.env.TELEGRAM_APP_TOKEN!,
-        logger
-    );
+    const developersService = new DevelopersService(boardsService, logger, redis);
+
+    const telegramService = new TelegramService({
+        token: process.env.TELEGRAM_BOT_TOKEN!,
+        appToken: process.env.TELEGRAM_APP_TOKEN!,
+        logger,
+        isEnabled: process.env.TELEGRAM_ENABLED === "true",
+    });
     await telegramService.start();
 
     withWebSocketApi({
         wss,
-
         accessKeysService,
         logger,
         redis,
@@ -215,6 +218,7 @@ export async function getApp(): Promise<http.Server> {
         ai,
         openai,
         stripeService,
+        developersService,
         accessKeysService,
         boardsService,
         foldersService,

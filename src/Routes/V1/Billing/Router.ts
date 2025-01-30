@@ -150,7 +150,6 @@ export const getBillingRouter = (
 
             if (!stripeCustomerId) {
                 stripeCustomerId = (await stripeService.createStripeCustomer(userToken.sub)).id;
-                await redis.client.set(`stripe:user:${userToken.sub}`, stripeCustomerId);
             }
 
             const session = await stripeService.createCheckoutSession({

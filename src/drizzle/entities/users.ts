@@ -1,5 +1,5 @@
 import { relations, sql } from "drizzle-orm";
-import { pgTable, varchar, serial, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, varchar, serial, boolean, integer, timestamp } from "drizzle-orm/pg-core";
 import { boards } from "./boards";
 import { check } from "drizzle-orm/pg-core";
 
@@ -24,4 +24,27 @@ export const users = pgTable(
 
 export const userRelations = relations(users, ({ one, many }) => ({
     boards: many(boards),
+    apiKeys: many(apiKeys),
 }));
+
+export const apiKeys = pgTable("api_keys", {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id")
+        .notNull()
+        .references(() => users.id),
+    key: varchar("key", { length: 255 }).notNull(),
+    name: varchar("name", { length: 100 }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    lastUsedAt: timestamp("last_used_at"),
+});
+
+export const apiKeyRelations = relations(apiKeys, ({ one }) => ({
+    user: one(users, {
+        fields: [apiKeys.userId],
+        references: [users.id],
+    }),
+}));
+
+export type ApiKey = typeof apiKeys.$inferSelect & {
+    message?: string;
+};

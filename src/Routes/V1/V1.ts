@@ -25,11 +25,10 @@ import { getIngestRouter } from "./Ingest";
 import { OpenAI } from "../../ai/openai";
 import { StripeService } from "./Billing/stripe";
 import { getCryptoRouter } from "./Crypto";
+import { getDevelopersRouter } from "./Developers/Router";
+import { DevelopersService } from "./Developers/Service";
 import { getBoardsRouter } from "./Boards/boards.router";
 import { getFoldersRouter } from "./Foldres/folders.router";
-import { catchAsync } from "shared/lib/catchAsync";
-import { HttpStatus } from "shared/enums/http-status.enum";
-import { HttpException } from "shared/exceptions/http-exception";
 import type { BoardsService } from "./Boards/boards.service";
 import type { FoldersService } from "./Foldres/folders.service";
 import type { AccessKeysService } from "./Boards/access-keys.service";
@@ -78,6 +77,7 @@ export function getV1Router({
     ai,
     openai,
     stripeService,
+    developersService,
     boardsService,
     accessKeysService,
     foldersService,
@@ -95,6 +95,7 @@ export function getV1Router({
     ai: AI;
     openai: OpenAI;
     stripeService: StripeService;
+    developersService: DevelopersService;
     boardsService: BoardsService;
     foldersService: FoldersService;
     accessKeysService: AccessKeysService;
@@ -117,6 +118,7 @@ export function getV1Router({
     router.use(`${apiBase}`, getBillingRouter(logger, stripeService, redis));
     router.use(`${apiBase}`, getIngestRouter(logger, openai));
     router.use(apiBase, getCryptoRouter(redis, logger));
+    router.use(apiBase, getDevelopersRouter(developersService));
 
     createFileRoute(
         router,

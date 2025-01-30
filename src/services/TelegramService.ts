@@ -5,27 +5,36 @@ import { eq } from "drizzle-orm";
 import { sleep } from "openai/core";
 import { AiChatMsg } from "WebSocket/ai-chat";
 
+export interface TelegramServiceConfig {
+    token: string;
+    appToken: string;
+    isEnabled?: boolean;
+    logger: winston.Logger;
+}
+
 export class TelegramService {
+    private readonly isEnabled: boolean;
     private baseUrl: string;
     private logger: winston.Logger;
     private appToken: string;
 
-    constructor(botToken: string, appToken: string, logger: winston.Logger) {
-        this.baseUrl = `https://api.telegram.org/bot${botToken}`;
-        this.logger = logger;
-        this.appToken = appToken;
+    constructor(private readonly config: TelegramServiceConfig) {
+        this.baseUrl = `https://api.telegram.org/bot${this.config.token}`;
+        this.logger = config.logger;
+        this.appToken = this.config.appToken;
+        this.isEnabled = this.config.isEnabled ?? true;
     }
 
-    private async sendTelegramRequest(method: string, body?: object) {
-        if (process.env.TELEGRAM_ENABLED !== "true") {
-            this.logger.info("Telegram bot disabled");
-            return;
+    private async sendTelegramRequest(method: string, params: any = {}) {
+        if (!this.isEnabled) {
+            this.logger.debug(`Telegram disabled: skipping ${method} request`);
+            return { ok: true, result: [] };
         }
         try {
             const response = await fetch(`${this.baseUrl}/${method}`, {
-                method: body ? "POST" : "GET",
-                headers: body ? { "Content-Type": "application/json" } : undefined,
-                body: body ? JSON.stringify(body) : undefined,
+                method: params ? "POST" : "GET",
+                headers: params ? { "Content-Type": "application/json" } : undefined,
+                body: params ? JSON.stringify(params) : undefined,
             });
 
             if (!response.ok) {
@@ -122,7 +131,7 @@ export class TelegramService {
     }
 
     public async start() {
-        if (process.env.TELEGRAM_ENABLED !== "true") {
+        if (!this.isEnabled) {
             this.logger.info("Telegram bot disabled");
             return;
         }
@@ -179,6 +188,22 @@ export class TelegramService {
             }
         } catch (error) {
             this.logger.error("Error broadcasting message:", error);
+        }
+    }
+
+    public async sendMessage(chatId: number, text: string, options: any = {}) {
+        if (!this.isEnabled) {
+            this.logger.debug(`Telegram disabled: skipping message to ${chatId}`);
+            return;
+        }
+        try {
+            await this.sendTelegramRequest("sendMessage", {
+                chat_id: chatId,
+                text: text,
+                ...options,
+            });
+        } catch (error) {
+            this.logger.error(`Failed to send message to chat ${chatId}:`, error);
         }
     }
 }

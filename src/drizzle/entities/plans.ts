@@ -55,14 +55,18 @@ export const userCryptoCheckout = pgTable("user_crypto_checkout", {
     transactionHash: varchar("transaction_hash"),
 });
 
-export const walletLastCheckedBlock = pgTable("wallet_last_checked_block", {
-    id: varchar("id").primaryKey(),
-    address: varchar("crypto_wallet").notNull(),
-    chainName: varchar("crypto_chain").notNull(), // ethereum, polygon, ...
-    lastBlockNumber: integer("last_block_number").default(0),
-}, (t) => ({
-    uniqueAddressChain: unique().on(t.address, t.chainName),
-}));
+export const walletLastCheckedBlock = pgTable(
+    "wallet_last_checked_block",
+    {
+        id: varchar("id").primaryKey(),
+        address: varchar("crypto_wallet").notNull(),
+        chainName: varchar("crypto_chain").notNull(), // ethereum, polygon, ...
+        lastBlockNumber: integer("last_block_number").default(0),
+    },
+    (t) => ({
+        uniqueAddressChain: unique().on(t.address, t.chainName),
+    })
+);
 
 export const modelLimits = pgTable("plan_model_limits", {
     id: text("id").primaryKey(),
