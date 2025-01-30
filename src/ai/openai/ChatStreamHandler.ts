@@ -174,7 +174,8 @@ export class ChatStreamHandler {
     }
 
     private async reportToTelegramBot(text: string, meta?: { boardId?: string; msg?: AiChatMsg }) {
-        await this.telegramService.broadcastMessage(text, meta);
+        const boardId = meta?.boardId || meta?.msg?.boardId || "unknown";
+        await this.telegramService.broadcastMessage(text, { boardId });
     }
 
     private countTokens(text: string): number {
@@ -251,11 +252,13 @@ export class ChatStreamHandler {
             ws.send(JSON.stringify(stopChunk));
         } catch (error) {
             logger.error(`Error stopping conversation for item ${itemId}:`, error);
+            
 
             this.sendErrorResponse(
                 foundedChat,
                 ws,
-                error instanceof Error ? error.message : "Failed to stop conversation"
+                error instanceof Error ? error.message : "Failed to stop conversation",
+                msg.boardId
             );
         }
     }
@@ -893,7 +896,7 @@ export class ChatStreamHandler {
                         }
                     } catch (error) {
                         const errorMsg = `Error processing stream chunk for chat ${chat.id}: ${error}`;
-                        console.error(errorMsg);
+                        logger.error(errorMsg);
                         await this.reportToTelegramBot(errorMsg, { boardId: msg.boardId, msg: msg });
                         this.sendErrorResponse(chat, ws, "Invalid chunk format");
                     }
