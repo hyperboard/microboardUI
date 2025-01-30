@@ -23,6 +23,7 @@ export class TelegramService {
         this.logger = config.logger;
         this.appToken = this.config.appToken;
         this.isEnabled = this.config.isEnabled ?? true;
+        this.logger.info("TelegramService initialized"); 
     }
 
     private async sendTelegramRequest(method: string, params: any = {}) {
@@ -31,6 +32,7 @@ export class TelegramService {
             return { ok: true, result: [] };
         }
         try {
+            this.logger.debug(`Sending request to Telegram API: ${method}`, { body });
             const response = await fetch(`${this.baseUrl}/${method}`, {
                 method: params ? "POST" : "GET",
                 headers: params ? { "Content-Type": "application/json" } : undefined,
@@ -40,6 +42,7 @@ export class TelegramService {
             if (!response.ok) {
                 throw new Error(`Telegram API error: ${response.status} ${response.statusText}`);
             }
+            this.logger.debug(`Telegram API response: ${method}`, { status: response.status, data: response.body });
 
             return await response.json();
         } catch (error) {
@@ -64,10 +67,12 @@ export class TelegramService {
     }
 
     private async handleUpdate(update: any) {
+        this.logger.debug("Received update:", JSON.stringify(update)); 
         if (!update.message?.text || !update.message?.chat?.id) return;
 
         const chatId = update.message.chat.id.toString();
         const text = update.message.text;
+        this.logger.info(`Processing command: ${text}`); 
         const [command, ...args] = text.split(" ");
 
         switch (command) {
@@ -80,6 +85,7 @@ export class TelegramService {
 
             case "/subscribe":
                 const token = args[0];
+                this.logger.debug(`Subscribe attempt with token: ${token}`);
                 if (!token) {
                     await this.sendTelegramRequest("sendMessage", {
                         chat_id: chatId,
@@ -136,6 +142,7 @@ export class TelegramService {
             return;
         }
         try {
+            this.logger.info("Starting Telegram bot...");
             const botInfo = await this.sendTelegramRequest("getMe");
             this.logger.info(`Telegram bot link: https://t.me/${botInfo.result.username}`);
 
@@ -144,10 +151,13 @@ export class TelegramService {
             let offset = 0;
             const poll = async () => {
                 try {
+                    this.logger.debug("Polling Telegram updates...");
                     const updates = await this.sendTelegramRequest("getUpdates", {
                         offset,
                         timeout: 30,
                     });
+
+                    this.logger.debug(`Received ${updates.result?.length || 0} updates`);
 
                     for (const update of updates.result) {
                         offset = update.update_id + 1;
