@@ -75,13 +75,6 @@ const ConfirmModalView: React.FC<ConfirmModalProps> = ({
 		return null;
 	}
 
-	console.log(
-		title,
-		confirmButtonLabel,
-		cancelButtonLabel,
-		containerClassname,
-	);
-
 	return (
 		<div
 			onClick={stopPropagation}

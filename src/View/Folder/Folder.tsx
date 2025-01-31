@@ -113,7 +113,6 @@ export const Folder = ({
 			accordionRef.current?.open(() => {
 				setTimeout(() => {
 					if (currentBoardRef.current) {
-						console.log("scroll to board", openedFoldersBoardId);
 						currentBoardRef.current.scrollIntoView({
 							behavior: "smooth",
 							block: "nearest",
@@ -155,11 +154,9 @@ export const Folder = ({
 	useEffect(() => {
 		if (folder && folder.items && folder.items.length > 0) {
 			openFoldersContainsBoard(openedFoldersBoardId);
-			console.log("opened by -1");
 		}
 		if (folder && folder.items && openedFoldersFolderId) {
 			openFoldersContainsFolder(openedFoldersFolderId);
-			console.log("opened by 0");
 		}
 	}, [
 		folder?.id,
@@ -174,7 +171,6 @@ export const Folder = ({
 			clearTimeout(isOverTimerRef.current);
 			isOverTimerRef.current = setTimeout(() => {
 				setOpenedByDragging(true);
-				console.log("opened by 1");
 
 				accordionRef.current?.open();
 			}, 800);
@@ -202,7 +198,6 @@ export const Folder = ({
 			folder?.items.length > 0
 		) {
 			if (isSidePanelOpen) {
-				console.log("opened by 2");
 				accordionRef.current?.open();
 			}
 		}

@@ -215,7 +215,6 @@ export class Account {
 	): Promise<authApi.Tokens | null> => {
 		const { data } = await authApi.verifyMail({ email, passcode });
 
-		console.log("verify data", data, "this", this);
 		this._accessToken = data?.accessToken ?? null;
 
 		return data;

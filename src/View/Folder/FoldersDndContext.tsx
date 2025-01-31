@@ -44,7 +44,6 @@ export function FoldersDndContext({ children }: Props) {
 	const handleDragEnd = async (evt: DragEndEvent) => {
 		const draggable = evt.active.data.current;
 		const target = evt.over?.data.current;
-		console.log(draggable, target, isBoard(draggable));
 
 		if (
 			(!isBoard(draggable) && !isFolder(draggable)) ||
@@ -55,9 +54,6 @@ export function FoldersDndContext({ children }: Props) {
 			return;
 		}
 		if (isFolder(target)) {
-			console.log(
-				`remove ${draggable.id} from folder ${draggable.parentFolderId}`,
-			);
 			await boardsList.removeItemFromFolder(
 				draggable.parentFolderId,
 				draggable.id,
