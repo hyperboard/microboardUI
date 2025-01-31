@@ -1,9 +1,10 @@
 import { Notification } from "shared/ui-lib/Notification";
 import { useTranslation } from "react-i18next";
 import styles from "../ImportMiro.module.css";
-import React from "react";
+import React, { useEffect } from "react";
 import { Loader } from "shared/ui-lib/Loader/Loader";
 import { useModal } from "View/Modal/ModalProvider";
+import { useAccount } from "App/useAccount";
 
 interface LoadingNotificationProps {
 	className?: string;
@@ -14,6 +15,13 @@ export const LoadingNotification = ({
 }: LoadingNotificationProps): JSX.Element => {
 	const { isModalOpen, data, hideModal } = useModal();
 	const { t } = useTranslation();
+	const { isLoggedIn } = useAccount();
+
+	useEffect(() => {
+		if (isModalOpen?.("loadingNotification") && !isLoggedIn) {
+			hideModal("loadingNotification");
+		}
+	}, [isLoggedIn]);
 
 	return (
 		<Notification
