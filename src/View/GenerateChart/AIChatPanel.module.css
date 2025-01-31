@@ -27,7 +27,7 @@
 	height: 24px;
 }
 
-@media screen and (max-width: 425px) {
+@media screen and (max-width: 550px) {
 	.panelButton {
 		display: none;
 	}

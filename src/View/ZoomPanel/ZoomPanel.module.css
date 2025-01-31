@@ -20,8 +20,8 @@
 	}
 }
 
-@media screen and (max-width: 425px) {
+@media screen and (max-width: 550px) {
 	.panel {
-		bottom:  calc(var(--absolute-position-panel-padding)* 2 + 48px);
+		bottom: calc(var(--absolute-position-panel-padding) * 2 + 48px);
 	}
 }

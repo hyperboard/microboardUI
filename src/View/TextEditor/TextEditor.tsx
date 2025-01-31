@@ -1,6 +1,5 @@
 import React from "react";
 import { Slate, Editable } from "slate-react";
-import { Editor, Range } from "slate";
 import { Leaf } from "./Leaf";
 import { Element } from "./Element";
 import { App } from "App";
@@ -14,6 +13,7 @@ import { Icon } from "View/Icon";
 import { tryToPasteAsItemOrReturnText } from "App/Paste";
 import { Transforms } from "slate";
 import { EditorContainer } from "Board/Items/RichText/EditorContainer";
+import { t } from "i18next";
 
 export class TextEditors extends React.Component<
 	{
@@ -67,6 +67,7 @@ export class TextEditor extends React.Component<
 		timeoutId: NodeJS.Timeout | null;
 		buttonPosition: { top: number; left: number } | null;
 		isButtonVisible: boolean;
+		isQuoteBtnTooltipVisible: boolean;
 	}
 > {
 	static getDerivedStateFromError(error): {
@@ -92,6 +93,7 @@ export class TextEditor extends React.Component<
 		timeoutId: null,
 		buttonPosition: null,
 		isButtonVisible: false,
+		isQuoteBtnTooltipVisible: false,
 	};
 
 	containerRef = React.createRef<HTMLDivElement>();
@@ -108,7 +110,20 @@ export class TextEditor extends React.Component<
 		}
 
 		const range = domSelection.getRangeAt(0);
-		return range.getBoundingClientRect();
+		const clientRects = range.getClientRects();
+
+		if (clientRects.length === 0) {
+			return null;
+		}
+
+		const firstRect = clientRects[0];
+
+		return {
+			top: firstRect.top,
+			left: firstRect.left,
+			right: firstRect.right,
+			bottom: firstRect.bottom,
+		};
 	}
 
 	handleSelectionChange = () => {
@@ -443,27 +458,31 @@ export class TextEditor extends React.Component<
 					buttonPosition &&
 					text.insideOf === "AINode" && (
 						<button
+							onMouseEnter={() =>
+								this.setState({
+									isQuoteBtnTooltipVisible: true,
+								})
+							}
+							onMouseLeave={() =>
+								this.setState({
+									isQuoteBtnTooltipVisible: false,
+								})
+							}
+							className={styles.quoteBtn}
 							onClick={onQuoteBtnClick}
 							style={{
-								cursor: "pointer",
-								backgroundColor: "rgba(247, 247, 248, 1)",
-								border: "1px solid rgba(200, 202, 208, 1)",
-								borderRadius: "10px",
-								padding: "8px 12px",
-								display: "flex",
-								justifyContent: "center",
-								alignItems: "center",
-								position: "fixed",
-								boxShadow:
-									"0px 1px 3px 0px rgba(20, 21, 26, 0.1)",
 								top: buttonPosition.top,
 								left: buttonPosition.left,
-								zIndex: 1000,
 							}}
 						>
+							{this.state.isQuoteBtnTooltipVisible && (
+								<div className={styles.tooltip}>
+									{t("AIInput.quoteBtnTooltip")}
+								</div>
+							)}
 							<svg
-								width="12"
-								height="10"
+								width="16"
+								height="16"
 								viewBox="0 0 12 10"
 								fill="none"
 								xmlns="http://www.w3.org/2000/svg"

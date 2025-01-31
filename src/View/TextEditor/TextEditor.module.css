@@ -54,3 +54,48 @@
 		opacity: 0;
 	}
 }
+
+.quoteBtn {
+	cursor: pointer;
+	background-color: rgba(247, 247, 248, 1);
+	border: 1px solid rgba(200, 202, 208, 1);
+	border-radius: 10px;
+	width: 48px;
+	height: 32px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: fixed;
+	box-shadow: 0px 1px 3px 0px rgba(20, 21, 26, 0.1);
+	z-index: 1000;
+}
+
+.tooltip {
+	position: absolute;
+	bottom: calc(100% + 1.2rem);
+	padding: 8px 12px;
+	border-radius: 6px;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	white-space: nowrap;
+	font-size: 1.4rem;
+	font-weight: 400;
+	background-color: rgb(11, 12, 14);
+	color: rgb(247, 247, 247);
+}
+
+.tooltip::before {
+	content: "";
+	position: absolute;
+	width: 0;
+	height: 0;
+	border-left: 0.7rem solid transparent;
+	border-right: 0.7rem solid transparent;
+	border-bottom: 0.8rem solid rgb(11, 12, 14);
+	border-radius: 8px;
+	left: 50%;
+	margin-left: -0.7rem;
+	bottom: -0.6rem;
+	transform: rotate(180deg);
+}

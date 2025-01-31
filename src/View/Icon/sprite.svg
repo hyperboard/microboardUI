@@ -993,6 +993,9 @@
   <symbol id="ArrowRightFill" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M12.172 6.99968L6.808 1.63568L8.222 0.22168L16 7.99968L8.222 15.7777L6.808 14.3637L12.172 8.99968H0V6.99968H12.172Z" fill="currentColor"/>
   </symbol>
+  <symbol id="quotedText" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M9.05 2.05L14 7L9.05 11.95L7.636 10.536L10.172 7.999L2 7.99985L0 8V0L2 0.000249863V6H3.586H10.172L7.636 3.464L9.05 2.05Z" fill="currentColor"/>
+  </symbol>
 
 
 </svg>

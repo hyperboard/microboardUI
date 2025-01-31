@@ -36,6 +36,8 @@ import {
 import { useAIContext } from "View/AIInput";
 import { Tooltip } from "View/Ui/UiButton/Tooltip";
 import { SessionStorage } from "App/SessionStorage";
+import { UiButton } from "View/Ui/UiButton/UiButton";
+import { getHotkeyLabel } from "Board/Keyboard/getHotkeyLabel";
 
 const sessionStorage = new SessionStorage();
 
@@ -266,15 +268,13 @@ export const AIInput = () => {
 					method: "UserRequest",
 					context: [],
 					boardContext,
-					idea,
+					idea: quotedText ? idea + " " + quotedText : idea,
 					model,
 					itemId: responseAdded.getId(),
 					requestItemId: requestAdded.getId(),
 					contextRequest,
 				},
 			};
-
-			console.log("message", message);
 
 			connection.wsClient.send(message);
 		} else {
@@ -381,17 +381,14 @@ export const AIInput = () => {
 	}
 
 	return (
-		<UiPanel
-			padding={0}
+		<div
 			className={clsx(styles.inputContainer, isShaking && styles.shake)}
-			zIndex={2}
 			ref={dropdownRef}
 		>
-			{quotedText && <p>{quotedText}</p>}
 			{!isEditable && (
 				<Tooltip
 					tooltip={t("AIInput.disable")}
-					tooltipPosition="top-center-fixed"
+					tooltipPosition="top"
 					tooltipAlign="left"
 					className={styles.tooltip}
 				/>
@@ -401,7 +398,12 @@ export const AIInput = () => {
 					[styles.disabled]: !!board.aiGeneratingOnItem,
 				})}
 			>
-				<div className={styles.modelSelector}>
+				<UiPanel className={clsx(styles.modelSelector, styles.panel)}>
+					<StarIcon
+						className={styles.starIcon}
+						width={20}
+						height={20}
+					/>
 					<div
 						className={styles.selectedModel}
 						onClick={toggleModelDropdown}
@@ -413,11 +415,6 @@ export const AIInput = () => {
 							})}
 						/>
 					</div>
-					<StarIcon
-						className={styles.starIcon}
-						width={20}
-						height={20}
-					/>
 					{isDropdownOpen && !board.aiGeneratingOnItem && (
 						<div className={styles.modelDropdown}>
 							<button
@@ -504,38 +501,81 @@ export const AIInput = () => {
 							</button>
 						</div>
 					)}
-				</div>
-				<textarea
-					value={inputValue}
-					onClick={event => handleInputClick(event)}
-					onPaste={event => event.stopPropagation()}
-					onKeyDown={event => handleKeyDown(event)}
-					onFocus={event => event.currentTarget.select()}
-					onChange={event => handleInputChange(event)}
-					placeholder={getInputPlaceholder()}
-					className={styles.aiInput}
-					ref={inputRef}
-					rows={1}
-					disabled={!!board.aiGeneratingOnItem}
-				/>
-				<div
-					className={clsx(
-						styles.selectionInfo,
-						selectedItemsCount && styles.activeSelection,
+				</UiPanel>
+				<UiPanel className={clsx(styles.inputWrapper, styles.panel)}>
+					{quotedText && (
+						<div className={styles.quoteContainer}>
+							<Icon
+								width={16}
+								height={14}
+								iconName={"quotedText"}
+							/>
+							<p className={styles.quoteText}>{quotedText}</p>
+							<button
+								style={{
+									color: "rgba(15, 19, 36, 0.6)",
+									cursor: "pointer",
+								}}
+								onClick={() => setQuotedText(undefined)}
+							>
+								<Icon
+									width={20}
+									height={20}
+									iconName={"Close"}
+								/>
+							</button>
+						</div>
 					)}
-				>
-					{t(
-						`AIInput.selectedItems.${getCorrectEnding(selectedItemsCount)}`,
-						{ count: selectedItemsCount },
-					)}
-				</div>
-				<button
+					<div className={styles.inputWithSelection}>
+						<textarea
+							value={inputValue}
+							onClick={event => handleInputClick(event)}
+							onPaste={event => event.stopPropagation()}
+							onKeyDown={event => handleKeyDown(event)}
+							onFocus={event => event.currentTarget.select()}
+							onChange={event => handleInputChange(event)}
+							placeholder={getInputPlaceholder()}
+							className={styles.aiInput}
+							ref={inputRef}
+							rows={1}
+							disabled={!!board.aiGeneratingOnItem}
+						/>
+						<div
+							className={clsx(
+								styles.selectionInfo,
+								selectedItemsCount && styles.activeSelection,
+							)}
+						>
+							<Tooltip
+								id="selection-info-tooltip"
+								tooltip={t(
+									`AIInput.selectedItems.${getCorrectEnding(selectedItemsCount)}`,
+									{ count: selectedItemsCount },
+								)}
+								className={styles.itemsCountTooltip}
+								tooltipPosition="top"
+							/>
+							{selectedItemsCount}
+						</div>
+					</div>
+				</UiPanel>
+				<UiButton
+					id={"send-ai-input-data"}
+					disabled={!inputValue.trim() && !ideaFromSelection}
+					tooltip={
+						!inputValue.trim() && !ideaFromSelection
+							? t("AIInput.sendBtnTooltip")
+							: undefined
+					}
+					tooltipPosition={"top"}
+					className={clsx(styles.sendButton, styles.panel)}
 					onClick={
 						!!board.aiGeneratingOnItem
 							? handleStopClick
 							: handleSendClick
 					}
-					className={styles.sendButton}
+					variant="secondary"
+					rounded="full"
 				>
 					<Icon
 						width={20}
@@ -552,8 +592,8 @@ export const AIInput = () => {
 								!!board.aiGeneratingOnItem,
 						})}
 					/>
-				</button>
+				</UiButton>
 			</div>
-		</UiPanel>
+		</div>
 	);
 };

@@ -125,7 +125,8 @@ export type IconId =
 	| "ArrowUpCircle"
 	| "ai"
 	| "ContextPanelAIChat"
-	| "ArrowRightFill";
+	| "ArrowRightFill"
+	| "quotedText";
 
 type Props = {
 	iconName: IconId;

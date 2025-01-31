@@ -19,6 +19,7 @@ interface TooltipProps {
 	inlineStyle?: CSSProperties;
 	borderRadius?: "radiusMd";
 	padding?: "paddingMd";
+	className?: string;
 	[key: string]: unknown;
 }
 
@@ -33,6 +34,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
 			borderRadius,
 			padding,
 			inlineStyle,
+			className,
 			...props
 		},
 		ref,
@@ -40,18 +42,22 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
 		return (
 			<div
 				ref={ref}
-				className={clsx(style.tipContainer, {
-					[style.right]: tooltipPosition === "right",
-					[style.top]: tooltipPosition === "top",
-					[style.topRight]: tooltipPosition === "top-right",
-					[style.topCenterFixed]:
-						tooltipPosition === "top-center-fixed",
-					[style.topRightFixed]:
-						tooltipPosition === "top-right-fixed",
-					[style.bottom]: tooltipPosition === "bottom",
-					[style.bottomRight]: tooltipPosition === "bottom-right",
-					[style.bottomLeft]: tooltipPosition === "bottom-left",
-				})}
+				className={clsx(
+					style.tipContainer,
+					{
+						[style.right]: tooltipPosition === "right",
+						[style.top]: tooltipPosition === "top",
+						[style.topRight]: tooltipPosition === "top-right",
+						[style.topCenterFixed]:
+							tooltipPosition === "top-center-fixed",
+						[style.topRightFixed]:
+							tooltipPosition === "top-right-fixed",
+						[style.bottom]: tooltipPosition === "bottom",
+						[style.bottomRight]: tooltipPosition === "bottom-right",
+						[style.bottomLeft]: tooltipPosition === "bottom-left",
+					},
+					className,
+				)}
 				style={inlineStyle}
 				{...props}
 			>

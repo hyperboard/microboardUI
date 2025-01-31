@@ -4,10 +4,11 @@
 	left: 50%;
 	transform: translateX(-50%);
 	width: calc(100% - 144px);
-	max-width: 720px;
+	max-width: 756px;
 	min-height: 48px;
 	display: block;
 	border: none;
+	z-index: 101;
 }
 
 @keyframes shake {
@@ -36,20 +37,21 @@
 
 .contentWrapper {
 	width: 100%;
-	padding: 14px 12px;
 	display: flex;
-	align-items: flex-start;
+	align-items: flex-end;
 	justify-content: space-between;
-	background-color: white;
 	position: relative;
-	border-radius: 12px;
-	border: 1px solid rgb(222, 223, 227);
+	gap: 16px;
 }
 
 .modelSelector {
 	position: relative;
 	display: flex;
 	align-items: center;
+}
+
+.modelSelector:hover {
+	background: rgba(200, 202, 208, 1);
 }
 
 .selectedModel {
@@ -60,6 +62,7 @@
 	border-radius: 8px;
 	padding: 0 4px;
 	font-weight: 500;
+	white-space: nowrap;
 }
 
 .disabled .selectedModel {
@@ -73,8 +76,8 @@
 
 .modelDropdown {
 	position: absolute;
-	bottom: calc(100% + 24px);
-	left: -10px;
+	bottom: calc(100% + 12px);
+	right: 0;
 	background-color: white;
 	border: 1px solid rgba(204, 204, 204, 0.5);
 	width: 300px;
@@ -118,18 +121,60 @@
 	cursor: default;
 }
 
+.inputWrapper {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	min-width: 120px;
+	padding: 12px;
+	width: 100%;
+	gap: 12px;
+}
+
+.inputWithSelection {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-end;
+	width: 100%;
+	gap: 12px;
+}
+
+.quoteContainer {
+	width: 100%;
+	background-color: rgba(10, 15, 41, 0.04);
+	border: 1px solid rgba(222, 224, 227, 1);
+	border-radius: 12px;
+	display: flex;
+	padding: 12px;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 12px;
+	color: rgba(15, 19, 36, 0.6);
+}
+
+.quoteText {
+	width: 100%;
+	word-break: break-word;
+	max-height: 80px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+}
+
 .aiInput {
 	flex-grow: 1;
 	border: none;
-	margin-left: 5px;
-	max-width: 405px;
+	width: 100%;
 	resize: none;
 	font-size: 14px;
 	font-family: "Manrope";
 	font-weight: 400;
 	overflow-y: auto;
 	box-sizing: border-box;
-	max-height: 120px;
+	max-height: 60px;
 	line-height: 1.5;
 }
 
@@ -158,19 +203,20 @@
 }
 
 .sendButton {
-	background: none;
-	border: none;
 	cursor: pointer;
-	margin-left: 10px;
 	padding: 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	color: #b1b3bb;
+	border: 1px solid var(--border-action-normal);
+	box-shadow:
+		0px 10px 10px -3px rgba(20, 21, 26, 0.08),
+		0px 3px 6px -2px rgba(20, 21, 26, 0.05);
+	background-color: var(--background-surface-default);
 }
 
 .selectionInfo {
-	margin-left: 10px;
 	background-color: #e9eaec;
 	padding: 0 6px;
 	border-radius: 8px;
@@ -178,6 +224,9 @@
 	font-size: 14px;
 	font-family: "Manrope";
 	font-weight: 500;
+	position: relative;
+	display: flex;
+	justify-content: center;
 }
 
 .disabled .selectionInfo {
@@ -216,12 +265,30 @@
 	transform: translateX(-50%);
 }
 
+.itemsCountTooltip {
+	display: none;
+}
+
 @media screen and (hover: hover) {
 	.inputContainer:hover .tooltip {
-		display: block;
+		display: flex;
 		position: fixed;
 		bottom: 6rem;
 		top: unset;
+		z-index: 200;
+	}
+
+	.sendButton:hover {
+		background-color: var(--background-surface-default);
+		color: #b1b3bb;
+	}
+
+	.selectionInfo:hover .itemsCountTooltip {
+		display: flex;
+	}
+
+	.modelSelector:hover {
+		background: rgba(247, 247, 248, 1);
 	}
 }
 
@@ -232,14 +299,10 @@
 	transform: rotate(180deg);
 }
 
-@media screen and (max-width: 768px) {
-	.selectionInfo {
-		position: absolute;
+@media screen and (max-width: 1024px) {
+	.modelDropdown {
 		left: 0;
-		bottom: calc(100% + 4px);
-		padding: 0;
-		border-radius: 0;
-		background: none;
+		right: unset;
 	}
 }
 
@@ -253,23 +316,28 @@
 	}
 }
 
-@media screen and (max-width: 425px) {
+@media screen and (max-width: 550px) {
 	.inputContainer {
-		width: calc(100% - 87px);
-		transform: translateX(-39%);
+		width: calc(100% - 24px);
+		transform: translateX(0);
+		left: 12px;
 	}
 
 	.contentWrapper {
-		padding: 10px;
 		align-items: center;
-	}
-
-	.modelSelector {
-		position: unset;
+		border-radius: 12px;
+		gap: 12px;
+		border: 1px solid var(--border-action-normal);
+		box-shadow:
+			0px 10px 10px -3px rgba(20, 21, 26, 0.08),
+			0px 3px 6px -2px rgba(20, 21, 26, 0.05);
+		background-color: var(--background-surface-default);
+		padding: 0 12px;
 	}
 
 	.modelDropdown {
 		width: 100%;
+		min-width: 200px;
 		left: 0;
 		bottom: calc(100% + 7px);
 	}
@@ -277,5 +345,12 @@
 	.selectedModel {
 		font-size: 14px;
 		white-space: nowrap;
+	}
+
+	.panel {
+		padding: 0 !important;
+		background-color: inherit;
+		border: none;
+		box-shadow: none;
 	}
 }
