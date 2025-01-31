@@ -21,7 +21,6 @@ import { SessionStorage } from "./SessionStorage";
 import { apiV2 } from "shared/apiV2/base";
 import { foldersApi } from "shared/apiV2";
 import { getLocalRender } from "View/router";
-import Cookies from "js-cookie";
 import { wagmiConfig } from "View/ContextWrapper";
 import { disconnect } from "@wagmi/core";
 
@@ -276,7 +275,6 @@ export function createApp(isHistory = true): App {
 				body: i18next.t("auth.sessionExpired"),
 				variant: "error",
 			});
-			Cookies.remove("first_visit");
 		});
 		account.setOnInit(async () => {
 			await foldersApi.initFolders();

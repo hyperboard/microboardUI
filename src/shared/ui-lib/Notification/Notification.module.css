@@ -5,7 +5,8 @@
 	padding: 16px 16px 16px 48px;
 	border-radius: 12px;
 	border: 1px solid #dee0e3;
-	box-shadow: 0 4px 4px #00000040;
+	/* box-shadow: 0 4px 4px #00000040; */
+	box-shadow: 0 10px 10px -3px #14151a14, 0 3px 6px -2px #14151a0d;
 	opacity: 0;
 	visibility: hidden;
 	transition: opacity 0.2s ease-out, visibility 0.2s ease-out;

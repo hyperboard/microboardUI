@@ -4,14 +4,13 @@ import { useTranslation } from "react-i18next";
 import styles from "./ImgAuthClipboardModal.module.css";
 import { useModal } from "View/Modal/ModalProvider";
 import { Button } from "shared/ui-lib/Button";
-import { Icon } from "View/Icon";
 import { useCopyBoardItems } from "../ImportMiroBoards/ImportBoardItem/useCopyBoardItems";
 import { useAppContext } from "View/AppContext";
 
 export const ImgAuthClipboardModal = (): JSX.Element => {
 	const { t } = useTranslation();
 	const { isModalOpen, hideModal } = useModal();
-	const { board } = useAppContext();
+	const { app } = useAppContext();
 
 	const onAuthClick = (): void => {
 		hideModal("imgAuthClipboardNotification");
@@ -30,13 +29,13 @@ export const ImgAuthClipboardModal = (): JSX.Element => {
 
 	const onContinueClick = (): void => {
 		hideModal("imgAuthClipboardNotification");
-		useCopyBoardItems(board, undefined, true);
+		useCopyBoardItems(app.getBoard(), undefined, true);
 	};
 
 	return (
 		<Modal
 			isOpen={isModalOpen("imgAuthClipboardNotification")}
-			hideModal={hideModal}
+			setIsOpen={onContinueClick}
 			modalName="imgAuthClipboardNotification"
 		>
 			<h3 className={styles.title}>

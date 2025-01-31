@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import styles from "./ImportMiroStartModal.module.css";
 import { useModal } from "View/Modal/ModalProvider";
 import { Button } from "shared/ui-lib/Button";
-import { Icon } from "View/Icon";
 
 export const ImportMiroStartModal = (): JSX.Element => {
 	const { t } = useTranslation();

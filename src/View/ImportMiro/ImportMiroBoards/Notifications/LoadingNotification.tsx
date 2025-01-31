@@ -20,6 +20,7 @@ export const LoadingNotification = ({
 			isOpen={isModalOpen("loadingNotification")}
 			className={className}
 			setIsOpen={() => hideModal("loadingNotification")}
+			cross
 		>
 			<Loader
 				className={styles.notificationIcon}
