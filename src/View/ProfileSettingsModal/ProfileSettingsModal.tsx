@@ -23,8 +23,6 @@ import { UserAvatar } from "View/UserPanel/UserAvatar/UserAvatar";
 import { notify } from "View/Ui/Toast";
 import { USER_PLAN_MODAL_ID } from "View/UserPlan";
 import { Icon } from "View/Icon";
-import { useMediaQuery } from "lib/useMediaQuery";
-import i18n from "Lang";
 import { OuterLink } from "shared/ui-lib/OuterLink";
 import { Checkbox } from "View/Ui/Checkbox";
 
@@ -305,16 +303,11 @@ const NewsLetterCheckbox = ({
 				<span className={styles.newsletter}>
 					{t("auth.newsletter")}
 					<OuterLink
-						href={
-							i18n.language === "ru"
-								? "https://microboard.ru/personal"
-								: "https://microboard.io/privacy-policy"
-						}
+						href={"https://microboard.io/privacy-policy"}
 						className={styles.newsletterLink}
 					>
-						{i18n.language === "ru"
-							? " Microboard.ru"
-							: " Microboard.io"}
+						{" "}
+						Microboard.io
 					</OuterLink>
 				</span>
 			</Checkbox>
