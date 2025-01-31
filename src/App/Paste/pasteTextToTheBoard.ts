@@ -9,7 +9,7 @@ export function pasteTextToTheBoard(board: Board, data: DataTransfer): void {
 		board.pointer.point.y,
 	);
 	richText.transformation.scaleBy(1, 1);
-	richText.editor.setMaxWidth(600);
+	richText.editor.maxWidth = 600;
 	richText.editor.setSelectionHorisontalAlignment("left");
 	richText.insideOf = richText.itemType;
 	richText.editor.editor.insertData(data);
