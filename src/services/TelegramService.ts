@@ -32,7 +32,7 @@ export class TelegramService {
             return { ok: true, result: [] };
         }
         try {
-            this.logger.debug(`Sending request to Telegram API: ${method}`, { body });
+            this.logger.debug(`Sending request to Telegram API: ${method}`, { params });
             const response = await fetch(`${this.baseUrl}/${method}`, {
                 method: params ? "POST" : "GET",
                 headers: params ? { "Content-Type": "application/json" } : undefined,
