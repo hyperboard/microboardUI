@@ -398,7 +398,10 @@ export const AIInput = () => {
 					[styles.disabled]: !!board.aiGeneratingOnItem,
 				})}
 			>
-				<UiPanel className={clsx(styles.modelSelector, styles.panel)}>
+				<UiPanel
+					zIndex={2}
+					className={clsx(styles.modelSelector, styles.panel)}
+				>
 					<StarIcon
 						className={styles.starIcon}
 						width={20}

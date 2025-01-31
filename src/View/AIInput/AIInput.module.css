@@ -353,4 +353,9 @@
 		border: none;
 		box-shadow: none;
 	}
+
+	.sendButton {
+		min-width: 20px !important;
+		min-height: 20px !important;
+	}
 }
