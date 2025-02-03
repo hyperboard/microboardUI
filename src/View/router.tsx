@@ -20,6 +20,7 @@ import { SigninView } from "./SigninView/SigninView";
 import { SignupView } from "./SignupView/SignupView";
 import { VerifyMailView } from "./VerifyMailView/VerifyMailView";
 import { WelcomeBoard } from "./WelcomeBoard";
+import { UnauthGuard } from "View/UnauthGuard";
 
 export function getRender(app: App): {
 	render: () => void;
@@ -44,28 +45,39 @@ export function getRender(app: App): {
 					element: <AuthView />,
 					children: [
 						{
-							path: "sign-up",
-							element: <SignupView />,
-						},
-						{
-							path: "sign-in",
-							element: <SigninView app={app} />,
-						},
-						{
-							path: "verify",
-							element: <VerifyMailView app={app} />,
-						},
-						{
 							path: "add-email",
 							element: <AddEmailView />,
 						},
+					],
+				},
+				{
+					path: "/auth",
+					element: <UnauthGuard />,
+					children: [
 						{
-							path: "restore-password",
-							element: <RestorePassword />,
-						},
-						{
-							path: "forgot-password",
-							element: <ForgotPassword />,
+							element: <AuthView />,
+							children: [
+								{
+									path: "sign-up",
+									element: <SignupView />,
+								},
+								{
+									path: "sign-in",
+									element: <SigninView app={app} />,
+								},
+								{
+									path: "verify",
+									element: <VerifyMailView app={app} />,
+								},
+								{
+									path: "restore-password",
+									element: <RestorePassword />,
+								},
+								{
+									path: "forgot-password",
+									element: <ForgotPassword />,
+								},
+							],
 						},
 					],
 				},

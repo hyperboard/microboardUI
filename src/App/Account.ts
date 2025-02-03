@@ -1,6 +1,12 @@
 import { jwtDecode } from "jwt-decode";
 import { getEmailPrefix } from "lib/getEmailPrefix";
-import { authApi, billingApi, HTTPResponse, usersApi } from "shared/api";
+import {
+	authApi,
+	billingApi,
+	HTTPError,
+	HTTPResponse,
+	usersApi,
+} from "shared/api";
 import { Subject } from "Subject";
 import { Connection } from "./Connection";
 import { Permissions } from "./Permissions";
@@ -8,7 +14,6 @@ import { Storage } from "./Storage";
 import { SessionStorage } from "App/SessionStorage";
 import { UniqueString } from "shared/api/auth";
 import { MessageResponse } from "shared/api/types";
-import { ArcData } from "Board/Items/Arc/Arc";
 
 type AccountInfo = {
 	id: number;
@@ -189,7 +194,11 @@ export class Account {
 				this.updateTokenData();
 				await this.fetchAccountInfo();
 			} catch (error) {
-				if (this.isLoggedIn) {
+				if (
+					this.isLoggedIn &&
+					error instanceof HTTPError &&
+					error.status === 401
+				) {
 					this.cleanup();
 					this.onSessionExpired?.();
 				}
