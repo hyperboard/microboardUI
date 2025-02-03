@@ -11,6 +11,9 @@ import type {
 } from "./types";
 import i18n from "Lang";
 
+const RETRY_DELAY = 5_000;
+const RETRY_ATTEMPTS = 3;
+
 export class HTTP {
 	private readonly baseURL: string;
 	private readonly headers: Record<string, string>;
@@ -62,7 +65,9 @@ export class HTTP {
 			return this.fetchCache.get(cacheKey) as Promise<HTTPResponse<R>>;
 		}
 
-		const fetchPromise = (async () => {
+		const fetchWithRetry = async (
+			retries: number,
+		): Promise<HTTPResponse<R>> => {
 			try {
 				const modifiedConfig =
 					await this.interceptors.triggerRequestInterceptors(config);
@@ -103,13 +108,27 @@ export class HTTP {
 
 				return customResponse;
 			} catch (error) {
+				if (error instanceof HTTPError) {
+					if (error.status >= 400 && error.status < 500) {
+						// Immediately throw for 4xx errors
+						throw error;
+					}
+				}
+				if (retries > 0) {
+					// Retry for 5xx errors and unexpected exceptions
+					await new Promise(resolve =>
+						setTimeout(resolve, RETRY_DELAY),
+					);
+					return fetchWithRetry(retries - 1);
+				}
 				this.interceptors.triggerResponseErrorInterceptors(error);
 				throw error;
 			} finally {
 				this.fetchCache.delete(cacheKey);
 			}
-		})();
+		};
 
+		const fetchPromise = fetchWithRetry(RETRY_ATTEMPTS);
 		this.fetchCache.set(cacheKey, fetchPromise);
 		return fetchPromise;
 	}
