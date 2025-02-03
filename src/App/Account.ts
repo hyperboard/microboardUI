@@ -260,7 +260,7 @@ export class Account {
 	}
 
 	async addEmail(email: string): Promise<string> {
-		const { data } = await authApi.requstAddEmail({ email });
+		const { data } = await authApi.requestAddEmail({ email });
 		return data?.email || "";
 	}
 

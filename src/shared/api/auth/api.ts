@@ -66,7 +66,7 @@ export function verifySignature(body: VerifySignaturePayload) {
 	return api.post<Tokens>("/auth/crypto/verify", body);
 }
 
-export function requstAddEmail(body: CheckVerificationCodesPayload) {
+export function requestAddEmail(body: CheckVerificationCodesPayload) {
 	return api.post<MessageResponse & { email: string }>(
 		"/auth/email/verify/request",
 		body,
