@@ -36,10 +36,12 @@ export function ContextMenu(): JSX.Element | null {
 	const menuRef = useClickOutside(() => {
 		close();
 	});
-	const [isFolderCreating, setIsFolderCreating] = useState(false);
-	const [isBoardCreating, setIsBoardCreating] = useState(false);
-	const [isBoardDeleting, setIsBoardDeleting] = useState(false);
-	const [isFolderDeleting, setIsFolderDeleting] = useState(false);
+	const [isCreatingBoard, setIsCreatingBoard] = useState(false);
+	const [isImportingBoard, setIsImportingBoard] = useState(false);
+	const [isEditingLocalFile, setIsEditingLocalFile] = useState(false);
+	const [isCreatingFolder, setIsCreatingFolder] = useState(false);
+	const [isDeletingBoard, setIsDeletingBoard] = useState(false);
+	const [isDeletingFolder, setIsDeletingFolder] = useState(false);
 
 	const { setBoard, setFolder } = useOpenedFoldersContext();
 	const navigate = useNavigate();
@@ -65,13 +67,13 @@ export function ContextMenu(): JSX.Element | null {
 	const handleCreateBoard: MouseEventHandler = async ev => {
 		ev.preventDefault();
 		ev.stopPropagation();
-		setIsBoardCreating(true);
+		setIsCreatingBoard(true);
 		const boardId = await boardsList.createBoard(
 			undefined,
 			folderInfo?.type === foldersApi.FolderType.DRAFTS,
 			folderId ?? undefined,
 		);
-		setIsBoardCreating(false);
+		setIsCreatingBoard(false);
 		close();
 		const boardInfo = boardsList.getBoardInfo(boardId);
 		setRenamingId(boardId);
@@ -100,7 +102,7 @@ export function ContextMenu(): JSX.Element | null {
 	const handleEditLocalFile: MouseEventHandler = async ev => {
 		ev.preventDefault();
 		ev.stopPropagation();
-		setIsBoardCreating(true);
+		setIsEditingLocalFile(true);
 
 		const stringedHTML = await app.openAndEditFile();
 		if (stringedHTML) {
@@ -112,13 +114,13 @@ export function ContextMenu(): JSX.Element | null {
 			deserializeBoard(stringedHTML);
 		}
 
-		setIsBoardCreating(false);
+		setIsEditingLocalFile(false);
 	};
 
 	const handleImportBoard: MouseEventHandler = async ev => {
 		ev.preventDefault();
 		ev.stopPropagation();
-		setIsBoardCreating(true);
+		setIsImportingBoard(true);
 
 		const uploadPromise = new Promise<string | undefined>(
 			(resolve, reject) => {
@@ -168,21 +170,21 @@ export function ContextMenu(): JSX.Element | null {
 			deserializeBoard(stringedHTML);
 		}
 
-		setIsBoardCreating(false);
+		setIsImportingBoard(false);
 	};
 
 	const handleCreateFolder: MouseEventHandler = async ev => {
 		if (!account.isLoggedIn) {
 			return;
 		}
-		setIsFolderCreating(true);
+		setIsCreatingFolder(true);
 		ev.preventDefault();
 		ev.stopPropagation();
 		const createdFolderId = await boardsList.createFolder(
 			undefined,
 			folderId ?? undefined,
 		);
-		setIsFolderCreating(false);
+		setIsCreatingFolder(false);
 		close();
 		setBoard(null);
 		setFolder(createdFolderId ?? null);
@@ -225,7 +227,7 @@ export function ContextMenu(): JSX.Element | null {
 					await app.openBoard("blank");
 					board.disconnect();
 				}
-				setIsBoardDeleting(true);
+				setIsDeletingBoard(true);
 
 				if (hasOwnerRights) {
 					await boardsList.removeBoard(boardId);
@@ -233,10 +235,10 @@ export function ContextMenu(): JSX.Element | null {
 					await boardsList.removeItemFromFolder(folderId, boardId);
 				}
 				Promise.resolve();
-				setIsBoardDeleting(false);
+				setIsDeletingBoard(false);
 			},
 			async () => {
-				setIsBoardDeleting(false);
+				setIsDeletingBoard(false);
 				close();
 			},
 		);
@@ -245,7 +247,7 @@ export function ContextMenu(): JSX.Element | null {
 	const handleDeleteFolder: MouseEventHandler = ev => {
 		ev.preventDefault();
 		ev.stopPropagation();
-		setIsFolderDeleting(true);
+		setIsDeletingFolder(true);
 		openModalConfirm(
 			t("modalConfirm.deleteFolder.title"),
 			t("modalConfirm.deleteFolder.description", {
@@ -258,11 +260,11 @@ export function ContextMenu(): JSX.Element | null {
 				}
 
 				boardsList.removeFolder(folderId);
-				setIsFolderDeleting(false);
+				setIsDeletingFolder(false);
 				Promise.resolve();
 			},
 			async () => {
-				setIsFolderDeleting(false);
+				setIsDeletingFolder(false);
 			},
 		);
 	};
@@ -280,10 +282,12 @@ export function ContextMenu(): JSX.Element | null {
 	};
 
 	const isMutationsDisabled =
-		isFolderCreating ||
-		isBoardCreating ||
-		isBoardDeleting ||
-		isFolderDeleting;
+		isCreatingBoard ||
+		isImportingBoard ||
+		isEditingLocalFile ||
+		isCreatingFolder ||
+		isDeletingBoard ||
+		isDeletingFolder;
 
 	if (!isOpen) {
 		return null;
@@ -307,7 +311,7 @@ export function ContextMenu(): JSX.Element | null {
 				<>
 					<ContextMenuItem
 						onClick={handleCreateBoard}
-						isLoading={isBoardCreating}
+						isLoading={isCreatingBoard}
 						disabled={isMutationsDisabled}
 						icon={
 							<Icon
@@ -329,7 +333,7 @@ export function ContextMenu(): JSX.Element | null {
 								height={20}
 							/>
 						}
-						isLoading={isBoardCreating}
+						isLoading={isImportingBoard}
 					>
 						{t("contextMenu.importHTML")}
 					</ContextMenuItem>
@@ -343,7 +347,7 @@ export function ContextMenu(): JSX.Element | null {
 								height={20}
 							/>
 						}
-						isLoading={isBoardCreating}
+						isLoading={isEditingLocalFile}
 					>
 						{t("contextMenu.editHTML")}
 					</ContextMenuItem>
@@ -351,7 +355,7 @@ export function ContextMenu(): JSX.Element | null {
 						disabled={!account.isLoggedIn || isMutationsDisabled}
 						onClick={handleCreateFolder}
 						icon={<Icon iconName="Folder" width={20} height={20} />}
-						isLoading={isFolderCreating}
+						isLoading={isCreatingFolder}
 					>
 						{t("contextMenu.newFolder")}
 					</ContextMenuItem>
@@ -361,7 +365,7 @@ export function ContextMenu(): JSX.Element | null {
 				<>
 					<ContextMenuItem
 						onClick={handleCreateBoard}
-						isLoading={isBoardCreating}
+						isLoading={isCreatingBoard}
 						disabled={isMutationsDisabled}
 						icon={
 							<Icon
@@ -375,7 +379,7 @@ export function ContextMenu(): JSX.Element | null {
 					</ContextMenuItem>
 					<ContextMenuItem
 						disabled={!account.isLoggedIn || isMutationsDisabled}
-						isLoading={isFolderCreating}
+						isLoading={isCreatingFolder}
 						onClick={handleCreateFolder}
 						icon={<Icon iconName="Folder" width={20} height={20} />}
 					>

@@ -1,5 +1,6 @@
 .menu {
 	position: absolute;
+	width: max-content;
 }
 
 .item {
@@ -9,7 +10,8 @@
 	border-radius: 6px;
 	gap: 8px;
 	padding: 6px;
-	width: 220px;
+	min-width: 100%;
+	white-space: nowrap;
 	cursor: pointer;
 	transition: 0.3s;
 	font-size: 1.4rem;
