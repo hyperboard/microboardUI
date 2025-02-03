@@ -9,6 +9,8 @@ import { useUiModalContext } from "View/Ui/UiModal";
 import { PlanCard, type PlanState } from "./PlanCard";
 import styles from "./PlanCards.module.css";
 import { SELECT_PAYMENT_MODAL_ID } from "./SelectPaymentModal";
+import { UiLoader } from "View/Ui/UiLoader";
+import { UiSkeleton } from "View/Ui/UiSkeleton";
 
 export const PLAN_NAMES = {
 	basic: i18n.t("userPlan.plans.basic.name"),
@@ -20,13 +22,17 @@ export function BasicPlanCard() {
 	const account = useAccount();
 	const { openModalConfirm } = useConfirmModalContext();
 	const [plan, setPlan] = useState<billingApi.Plan | null>(null);
+	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
-		billingApi.getPlans().then(({ data }) => {
-			const basicPlan = data?.find(({ id }) => id === "basic");
+		billingApi
+			.getPlans()
+			.then(({ data }) => {
+				const basicPlan = data?.find(({ id }) => id === "basic");
 
-			setPlan(basicPlan ?? null);
-		});
+				setPlan(basicPlan ?? null);
+			})
+			.finally(() => setIsLoading(false));
 	}, [account.isLoggedIn]);
 
 	const getBasicSubState = (): PlanState => {
@@ -104,10 +110,6 @@ export function BasicPlanCard() {
 		);
 	};
 
-	if (!plan) {
-		return null;
-	}
-
 	return (
 		<PlanCard
 			onDowngrade={onDowngrade}
@@ -127,6 +129,7 @@ export function BasicPlanCard() {
 			price={t("userPlan.free")}
 			variant="basic"
 			state={getBasicSubState()}
+			isLoading={isLoading}
 		/>
 	);
 }
@@ -137,13 +140,17 @@ export function PlusPlanCard(): JSX.Element {
 	const { openModal } = useUiModalContext();
 
 	const [plan, setPlan] = useState<billingApi.Plan | null>(null);
+	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
-		billingApi.getPlans().then(({ data }) => {
-			const plusPlan = data?.find(({ id }) => id === "plus");
+		billingApi
+			.getPlans()
+			.then(({ data }) => {
+				const plusPlan = data?.find(({ id }) => id === "plus");
 
-			setPlan(plusPlan ?? null);
-		});
+				setPlan(plusPlan ?? null);
+			})
+			.finally(() => setIsLoading(false));
 	}, [account.isLoggedIn]);
 
 	const getPlusSubState = (): PlanState => {
@@ -162,10 +169,6 @@ export function PlusPlanCard(): JSX.Element {
 		return "available";
 	};
 
-	if (!plan) {
-		return <></>;
-	}
-
 	const handleOpenPaymentModal = async (ev): Promise<void> => {
 		ev.preventDefault();
 		ev.stopPropagation();
@@ -181,9 +184,10 @@ export function PlusPlanCard(): JSX.Element {
 				returnObjects: true,
 			})}
 			variant="plus"
-			price={plan.price}
+			price={plan?.price ?? 0}
 			state={getPlusSubState()}
 			onSubscribe={handleOpenPaymentModal}
+			isLoading={isLoading}
 		/>
 	);
 }
@@ -191,6 +195,11 @@ export function PlusPlanCard(): JSX.Element {
 export function ProPlanCard() {
 	const { t } = useTranslation();
 	const account = useAccount();
+	const [isLoading, setIsLoading] = useState(true);
+
+	useEffect(() => {
+		billingApi.getPlans().finally(() => setIsLoading(false));
+	}, [account.isLoggedIn]);
 
 	const getProSubState = (): PlanState => {
 		if (
@@ -219,6 +228,7 @@ export function ProPlanCard() {
 			variant="pro"
 			contact
 			unlimited
+			isLoading={isLoading}
 			state={getProSubState()}
 		/>
 	);

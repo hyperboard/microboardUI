@@ -5,6 +5,7 @@ import { UiSeparator } from "View/Ui/UiSeparator";
 import { Icon } from "View/Icon";
 import { Button } from "shared/ui-lib/Button";
 import { useTranslation } from "react-i18next";
+import { UiSkeleton } from "View/Ui/UiSkeleton";
 
 export type PlanState = "current" | "downgrade" | "available" | "pending";
 
@@ -22,6 +23,7 @@ type Props = {
 	onDowngrade?: MouseEventHandler;
 	onSubscribe?: MouseEventHandler;
 	activationDate?: string | Date;
+	isLoading?: boolean;
 };
 
 export function PlanCard({
@@ -36,9 +38,9 @@ export function PlanCard({
 	onDowngrade,
 	onSubscribe,
 	activationDate,
+	isLoading = false,
 }: Props) {
 	const { t } = useTranslation();
-
 	const getButtonLabel = () => {
 		switch (state) {
 			case "available":
@@ -74,6 +76,10 @@ export function PlanCard({
 			return onDowngrade;
 		}
 	};
+
+	if (isLoading) {
+		return <UiSkeleton className={styles.card} />;
+	}
 
 	return (
 		<div
