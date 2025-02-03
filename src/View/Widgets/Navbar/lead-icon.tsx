@@ -10,85 +10,16 @@ export const LeadIcon: React.FC<Props> = ({ width = 20, height = 20 }) => {
 		<svg
 			width={width}
 			height={height}
-			viewBox={`0 0 ${width} ${height}`}
+			viewBox="0 0 24 24"
 			fill="none"
 			xmlns="http://www.w3.org/2000/svg"
 		>
-			<g clipPath="url(#clip0_576_11290)">
-				<path
-					d="M6.86133 17.5C15.8647 17.4994 13.0944 3.82447 13.0944 1.79292"
-					stroke="url(#paint0_linear_576_11290)"
-					strokeWidth="4.16824"
-					strokeLinecap="round"
-				/>
-				<path
-					d="M17.5 6.58398C17.4994 15.5871 3.82407 12.8169 1.79247 12.8169"
-					stroke="url(#paint1_linear_576_11290)"
-					strokeWidth="4.16824"
-					strokeLinecap="round"
-				/>
-				<path
-					d="M12.9766 1.66699C3.97316 1.66763 6.74349 15.3425 6.74349 17.3741"
-					stroke="url(#paint2_linear_576_11290)"
-					strokeWidth="4.16824"
-					strokeLinecap="round"
-				/>
-				<path
-					d="M1.66602 12.6992C1.66665 3.69607 15.3419 6.46632 17.3735 6.46632"
-					stroke="url(#paint3_linear_576_11290)"
-					strokeWidth="4.16824"
-					strokeLinecap="round"
-				/>
-			</g>
-			<defs>
-				<linearGradient
-					id="paint0_linear_576_11290"
-					x1="8.21037"
-					y1="23.2627"
-					x2="6.39234"
-					y2="2.8309"
-					gradientUnits="userSpaceOnUse"
-				>
-					<stop stopColor="#8041FF" />
-					<stop offset="1" stopColor="#C03AFF" />
-				</linearGradient>
-				<linearGradient
-					id="paint1_linear_576_11290"
-					x1="23.2628"
-					y1="7.93299"
-					x2="2.83049"
-					y2="6.1148"
-					gradientUnits="userSpaceOnUse"
-				>
-					<stop stopColor="white" />
-					<stop offset="1" stopColor="#C03AFF" />
-				</linearGradient>
-				<linearGradient
-					id="paint2_linear_576_11290"
-					x1="11.6275"
-					y1="-4.09567"
-					x2="13.4455"
-					y2="16.3361"
-					gradientUnits="userSpaceOnUse"
-				>
-					<stop stopColor="#B48EFF" />
-					<stop offset="1" stopColor="#C03AFF" />
-				</linearGradient>
-				<linearGradient
-					id="paint3_linear_576_11290"
-					x1="-4.09681"
-					y1="11.3502"
-					x2="16.3355"
-					y2="13.1684"
-					gradientUnits="userSpaceOnUse"
-				>
-					<stop stopColor="white" />
-					<stop offset="1" stopColor="#C03AFF" />
-				</linearGradient>
-				<clipPath id="clip0_576_11290">
-					<rect width="20" height="20" fill="white" />
-				</clipPath>
-			</defs>
+			<path
+				fillRule="evenodd"
+				clipRule="evenodd"
+				d="M12.0118 2.04402C15.2239 2.90472 17.21 6.05727 16.682 9.27093L21.049 10.4411C21.7332 10.6244 22.1394 11.3277 21.956 12.012C21.0953 15.2242 17.9426 17.2103 14.7289 16.6822L13.5589 21.049C13.3755 21.7333 12.6722 22.1393 11.988 21.956C8.77579 21.0953 6.78975 17.9427 7.31772 14.7291L2.95099 13.559C2.26674 13.3757 1.86068 12.6724 2.04402 11.9882C2.90471 8.77602 6.05716 6.78999 9.27077 7.31789L10.4409 2.95099C10.6242 2.26674 11.3275 1.86068 12.0118 2.04402ZM13.3604 10.8829C12.609 10.1315 11.3909 10.1315 10.6395 10.8829C9.88817 11.6343 9.88817 12.8525 10.6395 13.6038C11.3909 14.3552 12.609 14.3552 13.3604 13.6038C14.1117 12.8525 14.1117 11.6342 13.3604 10.8829Z"
+				fill="#8041FF"
+			/>
 		</svg>
 	);
 };
