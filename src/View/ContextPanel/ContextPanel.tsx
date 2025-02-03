@@ -324,7 +324,16 @@ export function ContextPanel(): React.ReactElement | null {
 				)}
 				{isAINode && !isSelectUnderPointer && !isLocked && (
 					<>
-						<Lock rounded="left" />
+						<FontSize rounded="left" />
+						<UiSeparator vertical />
+						<FontStyle />
+						<TextAlignment />
+						<Hyperlink isReady={isReady} />
+						<UiSeparator vertical />
+						<TextColor />
+						<TextHighlight />
+						<UiSeparator vertical />
+						<Lock />
 						<UiSeparator vertical />
 						<Duplicate />
 						<Delete />
