@@ -9,8 +9,9 @@ import { useUiModalContext } from "View/Ui/UiModal";
 import { PlanCard, type PlanState } from "./PlanCard";
 import styles from "./PlanCards.module.css";
 import { SELECT_PAYMENT_MODAL_ID } from "./SelectPaymentModal";
-import { UiLoader } from "View/Ui/UiLoader";
-import { UiSkeleton } from "View/Ui/UiSkeleton";
+
+const annualToMonthlyPrice = (price?: number) =>
+	price ? Math.round(price / 12) : 0;
 
 export const PLAN_NAMES = {
 	basic: i18n.t("userPlan.plans.basic.name"),
@@ -184,7 +185,11 @@ export function PlusPlanCard(): JSX.Element {
 				returnObjects: true,
 			})}
 			variant="plus"
-			price={plan?.price ?? 0}
+			price={
+				account.getIsAnnualPayment()
+					? annualToMonthlyPrice(plan?.annualPrice)
+					: plan?.price
+			}
 			state={getPlusSubState()}
 			onSubscribe={handleOpenPaymentModal}
 			isLoading={isLoading}

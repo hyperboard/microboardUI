@@ -106,25 +106,26 @@ export function SelectPaymentModal(): JSX.Element {
 	};
 
 	const handleStripe = async (): Promise<void> => {
-		const successUrl = `${window.location.href}?paymentStatus=success`;
-		const cancelUrl = `${window.location.href}?paymentStatus=error`;
+		// const successUrl = `${window.location.href}?paymentStatus=success`;
+		// const cancelUrl = `${window.location.href}?paymentStatus=error`;
 
 		try {
 			assertPlanExists(plan);
 
-			const { data } = await billingApi.createCheckout({
-				planId: plan.id,
-				successUrl,
-				cancelUrl,
-			});
+			// const { data } = await billingApi.createCheckout({
+			// 	planId: plan.id,
+			// 	successUrl,
+			// 	cancelUrl,
+			// });
 
-			if (!data) {
-				throw new Error();
-			}
-			const linkElem = document.createElement("a");
-			linkElem.href = data?.url;
-			linkElem.target = "_blank";
-			linkElem.click();
+			// if (!data) {
+			// 	throw new Error();
+			// }
+			// const linkElem = document.createElement("a");
+			// linkElem.href = data?.url;
+			// linkElem.target = "_blank";
+			// linkElem.click();
+			await account.createCheckout(plan.id);
 		} catch (err) {
 			if (
 				err instanceof Error &&
@@ -343,7 +344,7 @@ export function SelectPaymentModal(): JSX.Element {
 					<Card
 						onClick={handleStripe}
 						title="Pay with Visa/MasterCard/, $USD"
-						description="Payment of bills in dollars, debit and credit cardsby stripe."
+						description="Payment of bills in dollars, debit and credit cards by stripe."
 						disabled={isDisabled}
 					/>
 				</div>

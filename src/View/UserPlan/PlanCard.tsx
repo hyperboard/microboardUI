@@ -17,7 +17,7 @@ type Props = {
 	contact?: boolean;
 	unlimited?: boolean;
 	name: string;
-	price?: string | number;
+	price?: string | number | null;
 	description?: string;
 	features: string[];
 	onDowngrade?: MouseEventHandler;

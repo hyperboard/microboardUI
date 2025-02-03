@@ -48,6 +48,7 @@ export type Plan = {
 	monthlyTokenLimit: number;
 	name: string;
 	price: string;
+	annualPrice: number;
 	resetPeriodDays: number;
 	storageLimit: number;
 	version: number;
@@ -57,6 +58,7 @@ export type CreateCheckoutPayload = {
 	planId: string;
 	successUrl: string;
 	cancelUrl: string;
+	annualPayment?: boolean;
 };
 
 export type CheckoutUrl = { url: string };

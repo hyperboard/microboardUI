@@ -44,6 +44,7 @@ export class Account {
 	onSessionExpired: (() => void) | null = null;
 	readonly permissions: Permissions;
 	private _accessToken: string | null = null;
+	private annualPayment = false;
 	onLogout: (() => Promise<void>) | null = null;
 	onLogin: (() => Promise<void>) | null = null;
 	onInit: (() => Promise<void>) | null = null;
@@ -97,6 +98,20 @@ export class Account {
 			return;
 		}
 		this.tokenData = jwtDecode<TokenData>(this.accessToken);
+	}
+
+	setIsAnnualPayment(isAnnual: boolean) {
+		this.annualPayment = isAnnual;
+		this.subject.publish(this.info);
+	}
+
+	toggleIsAnnualPayment() {
+		this.annualPayment = !this.annualPayment;
+		this.subject.publish(this.info);
+	}
+
+	getIsAnnualPayment() {
+		return this.annualPayment;
 	}
 
 	async fetchBillingInfo(): Promise<void> {
@@ -297,6 +312,26 @@ export class Account {
 	): Promise<void> {
 		await usersApi.updateNewsletter(payload, signal);
 		await this.fetchAccountInfo();
+	}
+
+	async createCheckout(planId: string) {
+		const successUrl = `${window.location.href}?paymentStatus=success`;
+		const cancelUrl = `${window.location.href}?paymentStatus=error`;
+
+		const { data } = await billingApi.createCheckout({
+			planId,
+			successUrl,
+			cancelUrl,
+			annualPayment: this.annualPayment,
+		});
+
+		if (!data) {
+			throw new Error();
+		}
+		const linkElem = document.createElement("a");
+		linkElem.href = data?.url;
+		linkElem.target = "_blank";
+		linkElem.click();
 	}
 
 	setOnLogout(cb: () => Promise<void>): void {

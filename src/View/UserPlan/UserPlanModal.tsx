@@ -16,6 +16,8 @@ import { UserPlanUsage } from "./UserPlanUsage";
 import type { OpenAIModels } from "App/Connection";
 import { notify } from "View/Ui/Toast";
 import { useConfirmModalContext } from "View/Modal/ConfirmModal";
+import { ToggleMark } from "View/UserPanel/CommentsPanel/ToggleMark";
+import type { Plan } from "shared/api/billing";
 
 export const USER_PLAN_MODAL_ID = Symbol("userPlanModal");
 
@@ -36,6 +38,10 @@ export function UserPlanModal() {
 		ev.stopPropagation();
 
 		openModal(PROFILE_SETTINGS_MODAL_ID);
+	};
+
+	const handleToggleAnnualPayment = () => {
+		account.toggleIsAnnualPayment();
 	};
 
 	const onDowngrade = () => {
@@ -103,6 +109,13 @@ export function UserPlanModal() {
 					status={account.billingInfo?.plan.status ?? "active"}
 					cancellationDate={account.billingInfo?.plan.periodEnd}
 				/>
+				<button
+					className={styles.annualPayment}
+					onClick={handleToggleAnnualPayment}
+				>
+					Ежегодный платеж
+					<ToggleMark isActive={account.getIsAnnualPayment()} />
+				</button>
 				<div className={styles.cards}>
 					<BasicPlanCard />
 					<PlusPlanCard />

@@ -72,3 +72,11 @@
 	text-align: left;
 	padding: 32px 64px;
 }
+
+.annualPayment {
+	display: flex;
+	align-items: center;
+	align-self: flex-start;
+	gap: 8px;
+	cursor: pointer;
+}
