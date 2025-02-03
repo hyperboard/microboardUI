@@ -56,6 +56,7 @@ export const PLANS: PlanDefinition[] = [
         monthlyTokenLimit: 100_000,
         resetPeriodDays: 7,
         price: 0 * USD,
+        annualPrice: 0,
         storageLimit: 100, // 100MB
     },
     {
@@ -64,7 +65,8 @@ export const PLANS: PlanDefinition[] = [
         description: "Plus plan",
         monthlyTokenLimit: 1_000_000,
         resetPeriodDays: 30,
-        price: 12 * USD,
+        price: 18 * USD,
+        annualPrice: 144 * USD,
         storageLimit: 100_000, // 100GB
     },
 ];

@@ -42,7 +42,6 @@ export const getBillingRouter = (
             const remainingTokens = currentPlan.monthlyTokenLimit - tokensUsed;
 
             const periods = getCurrentPeriods();
-
             res.json({
                 tokens: {
                     remaining: remainingTokens,
@@ -140,11 +139,12 @@ export const getBillingRouter = (
         body("planId").isString(),
         body("successUrl").isString(),
         body("cancelUrl").isString(),
+        body("annualPayment").isBoolean().optional().default(false),
         catchAsync(async (req, res) => {
             const { token } = req;
             const userToken = await token;
             const userId = parseInt(userToken?.sub);
-            const { planId, successUrl, cancelUrl } = req.body;
+            const { planId, successUrl, cancelUrl, annualPayment } = req.body;
 
             let stripeCustomerId = await redis.client.get(`stripe:user:${userToken.sub}`);
 
@@ -157,6 +157,7 @@ export const getBillingRouter = (
                 planId,
                 successUrl,
                 cancelUrl,
+                annualPayment,
             });
 
             res.json({ url: session.url });
@@ -281,7 +282,7 @@ export const getBillingRouter = (
                         {
                             id: stripeSubscription.items.data[0].id,
                             price_data: {
-                                currency: "rub",
+                                currency: "usd",
                                 product: "",
                                 unit_amount: plan[0].price,
                                 recurring: {

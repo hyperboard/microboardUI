@@ -15,6 +15,7 @@ export const plans = pgTable("plans", {
     monthlyTokenLimit: integer("monthly_token_limit").notNull(),
     resetPeriodDays: integer("reset_period_days"),
     price: integer("price").notNull(), // in kopeck
+    annualPrice: integer("annual_price").notNull(),
     version: integer("version").notNull().default(1),
     storageLimit: integer("storage_limit").notNull(), // in bytes (100MB or 100GB)
     isActive: boolean("is_active").notNull().default(true),

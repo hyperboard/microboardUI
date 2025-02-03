@@ -12,6 +12,7 @@ interface CreateCheckoutSessionParams {
     planId: string;
     successUrl: string;
     cancelUrl: string;
+    annualPayment?: boolean;
 }
 
 export interface StripeService {
@@ -56,7 +57,7 @@ export const createStripeService = (stripe: Stripe, redis: Redis): StripeService
 
         if (!currentPlan.length) return;
 
-        const freePlan = await db.select().from(plans).where(eq(plans.name, "free")).limit(1);
+        const freePlan = await db.select().from(plans).where(eq(plans.name, "basic")).limit(1);
 
         if (!freePlan.length) throw new Error("Free plan not found");
 
@@ -108,9 +109,10 @@ export const createStripeService = (stripe: Stripe, redis: Redis): StripeService
                 if (!plan.length) return;
 
                 if (new Date(currentSubscription[0].endDate) <= new Date()) {
-                    const startDate = new Date();
+                    const startDate = new Date(stripeSubscription.current_period_start * 1000);
                     const endDate = new Date(
-                        startDate.getTime() + (plan[0].resetPeriodDays || 30) * 24 * 60 * 60 * 1000
+                        // startDate.getTime() + (plan[0].resetPeriodDays || 30) * 24 * 60 * 60 * 1000
+                        stripeSubscription.current_period_end * 1000
                     );
 
                     await db.transaction(async (tx) => {
@@ -203,7 +205,13 @@ export const createStripeService = (stripe: Stripe, redis: Redis): StripeService
             return stripeCustomer;
         },
 
-        async createCheckoutSession({ userId, planId, successUrl, cancelUrl }: CreateCheckoutSessionParams) {
+        async createCheckoutSession({
+            userId,
+            planId,
+            successUrl,
+            cancelUrl,
+            annualPayment,
+        }: CreateCheckoutSessionParams) {
             const plan = await db.select().from(plans).where(eq(plans.id, planId)).limit(1);
             const [userEmail] = await db
                 .select({ email: users.email })
@@ -232,9 +240,9 @@ export const createStripeService = (stripe: Stripe, redis: Redis): StripeService
                                 name: plan[0].name,
                                 description: plan[0].description || undefined,
                             },
-                            unit_amount: plan[0].price,
+                            unit_amount: annualPayment ? plan[0].annualPrice : plan[0].price,
                             recurring: {
-                                interval: "month",
+                                interval: annualPayment ? "year" : "month",
                             },
                         },
                         quantity: 1,
@@ -278,16 +286,19 @@ export const createStripeService = (stripe: Stripe, redis: Redis): StripeService
 
                         const plan = await tx.select().from(plans).where(eq(plans.id, planId)).limit(1);
 
-                        if (!plan.length) throw new Error("Plan not found");
-
-                        const now = new Date();
-                        const endDate = new Date(now.getTime() + (plan[0].resetPeriodDays || 30) * 24 * 60 * 60 * 1000);
+                        if (!plan.length || typeof session.subscription !== "string") throw new Error("Plan not found");
+                        const stripeSubscription = await stripe.subscriptions.retrieve(session.subscription);
+                        const startDate = new Date(stripeSubscription.current_period_start * 1000);
+                        const endDate = new Date(
+                            // startDate.getTime() + (plan[0].resetPeriodDays || 30) * 24 * 60 * 60 * 1000
+                            stripeSubscription.current_period_end * 1000
+                        );
 
                         await tx.insert(userPlans).values({
                             id: crypto.randomUUID(),
                             userId: parseInt(userId),
                             planId,
-                            startDate: now,
+                            startDate,
                             endDate,
                             status: "active",
                             stripeSubscriptionId: session.subscription as string,
