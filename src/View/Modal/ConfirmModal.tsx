@@ -27,7 +27,6 @@ interface ConfirmModalProps extends ConfirmModalData {
 }
 
 const ConfirmModalView: React.FC<ConfirmModalProps> = ({
-	opened,
 	title,
 	description,
 	onClose,
@@ -71,14 +70,10 @@ const ConfirmModalView: React.FC<ConfirmModalProps> = ({
 		onClose();
 	};
 
-	if (!opened) {
-		return null;
-	}
-
 	return (
 		<div
 			onClick={stopPropagation}
-			className={clsx(styles.modal, opened && styles.open)}
+			className={clsx(styles.modal, styles.open)}
 		>
 			<div className={clsx(styles.wrapper, containerClassname)}>
 				{typeof title === "string" ? (
@@ -193,7 +188,9 @@ export const ConfirmModalProvider: React.FC = ({ children }) => {
 			}}
 		>
 			{children}
-			<ConfirmModal onClose={closeModalConfirm} {...modalConfirm} />
+			{modalConfirm.opened && (
+				<ConfirmModal onClose={closeModalConfirm} {...modalConfirm} />
+			)}
 		</ConfirmModalContext.Provider>
 	);
 };
