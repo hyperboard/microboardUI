@@ -5,7 +5,7 @@ import {
 	PresenceEventType,
 	UserJoinMsg,
 } from "Board/Presence/Events";
-import { getApiUrl } from "Config";
+import { getApiUrl, getPublicUrl } from "Config";
 import { Subject } from "Subject";
 import { getWebsocketUrl } from "../Config";
 import { Account } from "./Account";
@@ -81,6 +81,11 @@ export interface ErrorMsg {
 	deniedBoardId?: string;
 	expectedSequence?: number;
 	receivedSequence?: number;
+}
+
+export interface VersionCheckMsg {
+	type: "VersionCheck";
+	version: string;
 }
 
 export interface SnapshotRequestMsg {
@@ -257,6 +262,7 @@ export type SocketMsg =
 	| UserJoinMsg
 	| SubscribeMsg
 	| UnsubscribeMsg
+	| VersionCheckMsg
 	| ErrorMsg
 	| ModeMsg
 	| PingMsg
@@ -336,6 +342,14 @@ export function createConnection(
 	}
 
 	function onMessage(msg: SocketMsg): void {
+		if (msg.type === "VersionCheck") {
+			const version = localStorage.getItem("App_version");
+			if (version !== msg.version) {
+				localStorage.setItem("App_version", msg.version);
+				window.location.reload(true);
+			}
+		}
+
 		const board = getBoard();
 		clearConnectionError();
 		switch (msg.type) {
