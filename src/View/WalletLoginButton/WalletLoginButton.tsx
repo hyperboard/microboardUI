@@ -1,5 +1,5 @@
 import React from "react";
-import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import {
 	useAccount as useWalletAccount,
 	useSignMessage,
@@ -8,10 +8,7 @@ import {
 } from "wagmi";
 import { Button } from "shared/ui-lib/Button";
 import { useTranslation } from "react-i18next";
-import { wagmiConfig } from "View/ContextWrapper";
 import { injected } from "@wagmi/connectors";
-import { api } from "shared/api";
-import { UniqueString } from "shared/api/auth";
 import { useAccount } from "App/useAccount";
 import { notify } from "View/Ui/Toast";
 
@@ -19,10 +16,9 @@ interface WalletLoginButtonProps {}
 
 const WalletLoginButton: React.FC<WalletLoginButtonProps> = () => {
 	const { t } = useTranslation();
-	const { address, isConnected, status } = useWalletAccount();
+	const { address } = useWalletAccount();
 	const account = useAccount();
-	const { openConnectModal } = useConnectModal();
-	const { connectAsync, connectors } = useConnect();
+	const { connectAsync } = useConnect();
 	const { disconnectAsync } = useDisconnect();
 	const { signMessageAsync } = useSignMessage();
 
@@ -38,13 +34,8 @@ const WalletLoginButton: React.FC<WalletLoginButtonProps> = () => {
 				throw new Error("Failed to fetch nonce");
 			}
 
-			console.log("nonce", nonce);
 			const signature = await signMessageAsync({ message: nonce });
-			const verified = await account.verifySignature(
-				res.accounts[0],
-				signature,
-			);
-			console.log("verified", verified);
+			await account.verifySignature(res.accounts[0], signature);
 		} catch (err) {
 			notify({
 				variant: "error",
@@ -53,19 +44,11 @@ const WalletLoginButton: React.FC<WalletLoginButtonProps> = () => {
 			});
 			disconnectAsync();
 		}
-		// if (!address && openConnectModal) {
-		//     openConnectModal()
-		// }  else {
-		//     const message = t("auth.cyrptoSignInMsg");
-		//     const signature = await signMessageAsync({ message });
-		//     console.log("SIGNATURE", signature);
-		//     console.log("address", address);
-		// }
 	};
 
 	return (
 		<ConnectButton.Custom>
-			{({ openConnectModal }) => (
+			{() => (
 				<Button pattern="ghost" onClick={handleLogin} type="button">
 					{t("auth.cryptoSignIn")}
 					{!address && ` (${t("auth.connectWallet")})`}
