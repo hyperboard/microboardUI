@@ -22,6 +22,7 @@ import { WebSocketRouter } from "./WebSocketRouter";
 import { z } from "zod";
 import { WsError } from "./wsError";
 import { TelegramService } from "services/TelegramService";
+import {getAppVersion} from "../shared/utils/getAppVersion";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
@@ -34,6 +35,7 @@ const SNAPSHOT_REQUEST_TIMEOUT = 10 * SECOND;
 const PERIODIC_SNAPSHOT_INTERVAL = 30 * MINUTE;
 const REDIS_BOARD_FIRST_EVENT_KEY = "board:first_event:";
 const REDIS_BOARD_LAST_SNAPSHOT_KEY = "board:last_snapshot:";
+const CURRENT_VERSION = getAppVersion();
 
 export function withWebSocketApi({
     wss,
@@ -62,6 +64,10 @@ export function withWebSocketApi({
     const chatStreamHandler = new ChatStreamHandler(openai, logger, redis, telegramService);
 
     wss.on("connection", (ws) => {
+        if (CURRENT_VERSION) {
+            ws.send(JSON.stringify({ type: 'VersionCheck', version: CURRENT_VERSION }));
+        }
+
         ws.on("message", async (data) => {
             try {
                 const msg = JSON.parse(data.toString()) as SocketMsg;
