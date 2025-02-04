@@ -99,7 +99,12 @@ export class TextEditor extends React.Component<
 	containerRef = React.createRef<HTMLDivElement>();
 	editableRef = React.createRef<HTMLDivElement>();
 
-	getSlateSelectionRect(editor: EditorContainer) {
+	getSlateSelectionRect(editor: EditorContainer): {
+		top: number;
+		left: number;
+		right: number;
+		bottom: number;
+	} | null {
 		if (!editor.getSelection() || !editor.hasTextInSelection()) {
 			return null;
 		}
@@ -126,9 +131,8 @@ export class TextEditor extends React.Component<
 		};
 	}
 
-	handleSelectionChange = () => {
+	handleSelectionChange = (): void => {
 		const editor = this.props.text.editor;
-
 		const rect = this.getSlateSelectionRect(editor);
 
 		if (rect) {
@@ -181,7 +185,7 @@ export class TextEditor extends React.Component<
 			return null;
 		}
 
-		const onQuoteBtnClick = () => {
+		const onQuoteBtnClick = (): void => {
 			const selection = window.getSelection();
 			if (selection) {
 				this.props.setQuotedText(selection.toString());
@@ -373,7 +377,7 @@ export class TextEditor extends React.Component<
 							editor={text.editor.editor}
 							value={text.getText()}
 							key={text.getId()}
-							onChange={() => {}}
+							onChange={this.handleSelectionChange}
 						>
 							<Editable
 								renderElement={Element}
@@ -386,7 +390,6 @@ export class TextEditor extends React.Component<
 								)}
 								onBlur={text.handleBlur}
 								onFocus={text.handleFocus}
-								onSelect={this.handleSelectionChange}
 								className={
 									isInsideOfFrame
 										? styles.scrollContainer
@@ -394,30 +397,6 @@ export class TextEditor extends React.Component<
 								}
 								onKeyDown={this.onKeyDown}
 								onPaste={this.onPaste}
-								// placeholder={text.placeholderText}
-								// renderPlaceholder={({ children, attributes }) => (
-								// 	<span
-								// 		{...attributes}
-								// 		style={{
-								// 			position: "absolute",
-								// 			left: 0,
-								// 			right: 0,
-								// 			top: 0,
-								// 			zIndex: 0,
-								// 			display: "inline-block",
-								// 			width: 0,
-								// 			whiteSpace: "nowrap",
-								// 			opacity: 0.33,
-								// 			maxWidth: "100%",
-								// 			textDecoration: "none",
-								// 			userSelect: "none",
-								// 			pointerEvents: "none",
-								// 			fontSize: "inherit",
-								// 		}}
-								// 	>
-								// 		{children}
-								// 	</span>
-								// )}
 								style={{
 									whiteSpace: textWhiteSpace,
 									// overflowWrap: "break-word",
