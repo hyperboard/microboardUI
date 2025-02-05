@@ -37,7 +37,6 @@ import { useAIContext } from "View/AIInput";
 import { Tooltip } from "View/Ui/UiButton/Tooltip";
 import { SessionStorage } from "App/SessionStorage";
 import { UiButton } from "View/Ui/UiButton/UiButton";
-import { getHotkeyLabel } from "Board/Keyboard/getHotkeyLabel";
 
 const sessionStorage = new SessionStorage();
 
@@ -564,7 +563,11 @@ export const AIInput = () => {
 				</UiPanel>
 				<UiButton
 					id={"send-ai-input-data"}
-					disabled={!inputValue.trim() && !ideaFromSelection}
+					disabled={
+						!inputValue.trim() &&
+						!ideaFromSelection &&
+						!board.aiGeneratingOnItem
+					}
 					tooltip={
 						!inputValue.trim() && !ideaFromSelection
 							? t("AIInput.sendBtnTooltip")
