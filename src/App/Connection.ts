@@ -346,7 +346,7 @@ export function createConnection(
 			const version = localStorage.getItem("App_version");
 			if (version !== msg.version) {
 				localStorage.setItem("App_version", msg.version);
-				window.location.reload(true);
+				window.location.reload();
 			}
 		}
 
