@@ -4,6 +4,7 @@ import { telegramChats } from "drizzle/entities";
 import { eq } from "drizzle-orm";
 import { sleep } from "openai/core";
 import { AiChatMsg } from "WebSocket/ai-chat";
+import { getFirstPaymentsToday, getNewBoardsToday, getNewUsersToday, getRenewalsToday, getTotalBoardEvents, getTotalBoards, getTotalPayingUsers, getTotalUsers } from "drizzle/functions/board/MetricsDashboard";
 
 export interface TelegramServiceConfig {
     token: string;
@@ -51,11 +52,45 @@ export class TelegramService {
         }
     }
 
+    private async getDashboardMetrics(): Promise<string> {
+        const [
+            totalBoards,
+            newBoardsToday,
+            totalUsers,
+            newUsersToday,
+            totalBoardEvents,
+            firstPaymentsToday,
+            renewalsToday,
+            totalPayingUsers
+        ] = await Promise.all([
+            getTotalBoards(),
+            getNewBoardsToday(),
+            getTotalUsers(),
+            getNewUsersToday(),
+            getTotalBoardEvents(),
+            getFirstPaymentsToday(),
+            getRenewalsToday(),
+            getTotalPayingUsers()
+        ]);
+    
+        return `
+            Всего досок: ${totalBoards}
+            Новых досок сегодня: ${newBoardsToday}
+            Всего пользователей: ${totalUsers}
+            Новых пользователей сегодня: ${newUsersToday}
+            Всего событий на досках: ${totalBoardEvents}
+            Первых платежей сегодня: ${firstPaymentsToday}
+            Продлений сегодня: ${renewalsToday}
+            Всего платящих пользователей: ${totalPayingUsers}
+        `;
+    }
+
     private async setupCommands() {
         const commands = [
             { command: "start", description: "Start the bot" },
             { command: "subscribe", description: "Subscribe to error reports" },
             { command: "unsubscribe", description: "Unsubscribe from error reports" },
+            { command: "metrics", description: "Get metrics dashboard" },
         ];
 
         try {
@@ -133,6 +168,21 @@ export class TelegramService {
                     });
                 }
                 break;
+                case "/metrics":
+                    try {
+                        const metrics = await this.getDashboardMetrics();
+                        await this.sendTelegramRequest("sendMessage", {
+                            chat_id: chatId,
+                            text: `Dashboard Metrics:\n${metrics}`,
+                        });
+                    } catch (error) {
+                        this.logger.error("Error fetching metrics:", error);
+                        await this.sendTelegramRequest("sendMessage", {
+                            chat_id: chatId,
+                            text: "Failed to fetch metrics. Please try again later.",
+                        });
+                    }
+                    break;
         }
     }
 
