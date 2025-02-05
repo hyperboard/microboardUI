@@ -8,7 +8,7 @@
 	min-height: 48px;
 	display: block;
 	border: none;
-	z-index: 101;
+	z-index: 10;
 }
 
 @keyframes shake {
