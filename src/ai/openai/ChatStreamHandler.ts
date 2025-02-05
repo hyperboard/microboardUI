@@ -110,7 +110,7 @@ class UsageLimitChecker {
 }
 
 class SerpApi {
-    private apiKey = "ecab67b89779cf9339a9f60ddaecc819f25c7327876545cbd04ec100fc3c0945";
+    private apiKey = "29d96f8ff55e566b32fdc0ab65da79fc4ca76e44680c50d4a23ead5dfff80faa";
 
     async getJson(query: string): Promise<{
         answer_box: any;
@@ -252,7 +252,7 @@ export class ChatStreamHandler {
             ws.send(JSON.stringify(stopChunk));
         } catch (error) {
             logger.error(`Error stopping conversation for item ${itemId}:`, error);
-            
+
 
             this.sendErrorResponse(
                 foundedChat,

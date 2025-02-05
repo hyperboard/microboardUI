@@ -247,6 +247,11 @@ export function withWebSocketApi({
             eventsSinceLastSnapshot,
             initialSequenceNumber,
         });
+
+        const eventsSinceLastSnapshotCount = await eventsManager.getEventCountSinceLastSnapshot(boardId);
+        if (eventsSinceLastSnapshotCount >= SNAPSHOT_EVENTS_TO_REQUEST) {
+            eventsManager.requestSnapshotIfNotAlreadyRequested(boardId);
+        }
     }
 
     async function sendPresenceSnapshots(boardId: string, ws: WebSocket, msg: SubscribeMsg) {
@@ -818,6 +823,10 @@ export class EventsManager {
 
     private async checkAndMarkFirstEvent(boardId: string): Promise<boolean> {
         const key = REDIS_BOARD_FIRST_EVENT_KEY + boardId;
+        const existingEvent = await this.redis.client.get(key)
+        if (existingEvent) {
+            return false;
+        }
         const result = await this.redis.client.set(key, "1", "EX", 24 * 60 * 60); // 24 hours
         return result === "OK";
     }
@@ -942,7 +951,7 @@ export class EventsManager {
         return eventCount;
     }
 
-    private requestSnapshotIfNotAlreadyRequested(boardId: string): void {
+    requestSnapshotIfNotAlreadyRequested(boardId: string): void {
         if (this.snapshotRequestTimers.has(boardId)) {
             clearTimeout(this.snapshotRequestTimers.get(boardId));
             this.snapshotRequestTimers.delete(boardId);
