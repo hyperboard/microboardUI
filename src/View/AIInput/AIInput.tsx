@@ -571,7 +571,9 @@ export const AIInput = () => {
 					tooltip={
 						!inputValue.trim() && !ideaFromSelection
 							? t("AIInput.sendBtnTooltip")
-							: undefined
+							: board.aiGeneratingOnItem
+								? t("contextPanel.ai.stop")
+								: undefined
 					}
 					tooltipPosition={"top"}
 					className={clsx(styles.sendButton, styles.panel)}
