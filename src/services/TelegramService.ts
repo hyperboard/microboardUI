@@ -4,6 +4,7 @@ import { telegramChats } from "drizzle/entities";
 import { eq } from "drizzle-orm";
 import { sleep } from "openai/core";
 import { AiChatMsg } from "WebSocket/ai-chat";
+import cron from 'node-cron';
 import { getFirstPaymentsToday, getNewBoardsToday, getNewUsersToday, getRenewalsToday, getTotalBoardEvents, getTotalBoards, getTotalPayingUsers, getTotalUsers } from "drizzle/functions/board/MetricsDashboard";
 
 export interface TelegramServiceConfig {
@@ -83,6 +84,17 @@ export class TelegramService {
             Продлений сегодня: ${renewalsToday}
             Всего платящих пользователей: ${totalPayingUsers}
         `;
+    }
+
+    private scheduleDailyMetrics() {
+        cron.schedule('0 8,20 * * *', async () => {
+            try {
+                const metrics = await this.getDashboardMetrics();
+                await this.broadcastMessage(`Ежедневные метрики дашборда:\n${metrics}`);
+            } catch (error) {
+                this.logger.error("Ошибка при отправке ежедневных метрик:", error);
+            }
+        });
     }
 
     private async setupCommands() {
@@ -222,6 +234,7 @@ export class TelegramService {
 
             poll();
             this.logger.info("Telegram bot started successfully");
+            this.scheduleDailyMetrics();
         } catch (error) {
             this.logger.error("Failed to start Telegram bot:", error);
             throw error;
