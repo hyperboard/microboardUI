@@ -611,13 +611,17 @@ export class ChatStreamHandler {
             console.log("Search query: ", searchQuery);
             let searchResult = "";
             if (searchQuery) {
-                const googleResponse = await this.serpapi.getJson(searchQuery);
-                console.log("Google response: ", googleResponse);
-                const organic = googleResponse.organic;
+                try {
+                    const googleResponse = await this.serpapi.getJson(searchQuery);
+                    console.log("Google response: ", googleResponse);
+                    const organic = googleResponse.organic;
 
-                if (organic) {
-                    console.log("Organic: ", organic);
-                    searchResult = `Internet search for user's query: ${JSON.stringify(organic)}`;
+                    if (organic) {
+                        console.log("Organic: ", organic);
+                        searchResult = `Internet search for user's query: ${JSON.stringify(organic)}`;
+                    }
+                } catch (e) {
+                    console.error(`Error while fetching google response for boardId: ${msg.boardId}`, e);
                 }
             }
             logger.debug("search result: ", searchResult);
