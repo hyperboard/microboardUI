@@ -174,7 +174,7 @@ export function AIGeneration({ rounded = "none" }: Props): React.ReactElement {
 				/>
 			) : (
 				<Icon
-					iconName="ContextPanelAIChat"
+					iconName="AIChatSendArrow"
 					width={20}
 					height={20}
 					style={{ color: "#924fe8" }}

@@ -348,6 +348,7 @@ export function createConnection(
 				localStorage.setItem("App_version", msg.version);
 				window.location.reload();
 			}
+			return;
 		}
 
 		const board = getBoard();

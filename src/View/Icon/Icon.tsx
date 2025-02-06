@@ -124,7 +124,7 @@ export type IconId =
 	| "Vector"
 	| "ArrowUpCircle"
 	| "ai"
-	| "ContextPanelAIChat"
+	| "AIChatSendArrow"
 	| "ArrowRightFill"
 	| "quotedText";
 

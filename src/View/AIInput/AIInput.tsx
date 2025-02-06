@@ -591,7 +591,7 @@ export const AIInput = () => {
 						iconName={
 							!!board.aiGeneratingOnItem
 								? "StopAiGeneration"
-								: "Vector"
+								: "AIChatSendArrow"
 						}
 						className={clsx(styles.icon, {
 							[styles.activeIcon]:
