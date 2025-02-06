@@ -607,24 +607,24 @@ export class ChatStreamHandler {
                     break;
             }
 
-            const searchQuery = await this.fetchQuery(msg.event.idea);
-            console.log("Search query: ", searchQuery);
+            // const searchQuery = await this.fetchQuery(msg.event.idea);
+            // console.log("Search query: ", searchQuery);
             let searchResult = "";
-            if (searchQuery) {
-                try {
-                    const googleResponse = await this.serpapi.getJson(searchQuery);
-                    console.log("Google response: ", googleResponse);
-                    const organic = googleResponse.organic;
-
-                    if (organic) {
-                        console.log("Organic: ", organic);
-                        searchResult = `Internet search for user's query: ${JSON.stringify(organic)}`;
-                    }
-                } catch (e) {
-                    console.error(`Error while fetching google response for boardId: ${msg.boardId}`, e);
-                }
-            }
-            logger.debug("search result: ", searchResult);
+            // if (searchQuery) {
+            //     try {
+            //         const googleResponse = await this.serpapi.getJson(searchQuery);
+            //         console.log("Google response: ", googleResponse);
+            //         const organic = googleResponse.organic;
+            //
+            //         if (organic) {
+            //             console.log("Organic: ", organic);
+            //             searchResult = `Internet search for user's query: ${JSON.stringify(organic)}`;
+            //         }
+            //     } catch (e) {
+            //         console.error(`Error while fetching google response for boardId: ${msg.boardId}`, e);
+            //     }
+            // }
+            // logger.debug("search result: ", searchResult);
 
             let userPrompt = "";
             logger.debug("Fetching context strings, if any...");
