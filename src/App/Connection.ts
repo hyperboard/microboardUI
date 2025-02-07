@@ -347,7 +347,6 @@ export function createConnection(
 			if (scriptElement) {
 				const version = scriptElement.src.split(".")[1];
 				if (version !== msg.version) {
-					localStorage.setItem("App_version", msg.version);
 					window.location.reload();
 				}
 			}
