@@ -38,6 +38,7 @@ export class Account {
 	subject = new Subject<AccountInfo | null>();
 	info: null | AccountInfo = null;
 	billingInfo: null | billingApi.UserLimits = null;
+	billingHistory: billingApi.HistoryRecord[] = [];
 	isTokenLoading = false;
 	isInitialized = false;
 	tokenData: TokenData | null = null;
@@ -154,8 +155,20 @@ export class Account {
 		}
 
 		await this.fetchBillingInfo();
+		await this.fetchBillingHistory();
 
 		this.subject.publish(this.info);
+	}
+
+	async fetchBillingHistory() {
+		try {
+			const { data } = await billingApi.getHistory();
+			this.billingHistory = data ?? [];
+		} catch {
+			console.error("Error fetching billing user history");
+		} finally {
+			this.subject.publish(this.info);
+		}
 	}
 
 	async uploadAvatar(avatar: File): Promise<void> {

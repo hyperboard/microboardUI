@@ -3,6 +3,7 @@ import type { MessageResponse } from "../types";
 import {
 	CheckoutUrl,
 	type CreateCheckoutPayload,
+	type HistoryRecord,
 	type Plan,
 	type UserLimits,
 } from "./types";
@@ -25,4 +26,8 @@ export function unsubscribe() {
 
 export function verifyPayment() {
 	return api.get<MessageResponse>("/billing/sync-after-success");
+}
+
+export function getHistory() {
+	return api.get<HistoryRecord[]>("/billing/history");
 }

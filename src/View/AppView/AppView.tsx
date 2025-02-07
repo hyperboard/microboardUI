@@ -43,6 +43,8 @@ import { CookiesModal } from "View/Modal/CookiesModal";
 import { SelectPaymentModal } from "View/UserPlan/SelectPaymentModal";
 import { UiLoader } from "View/Ui/UiLoader";
 import { useAIContext } from "View/AIInput/AIContext";
+import { LimitsModal } from "View/UserPlan/LimitsModal";
+import { HistoryModal } from "View/UserPlan/HistoryModal";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -224,6 +226,8 @@ export function AppView(): JSX.Element {
 			<UiModalBackground>
 				<SelectPaymentModal />
 				<UserPlanModal />
+				<LimitsModal />
+				<HistoryModal />
 				<ShareModal />
 				<ProfileSettingsModal />
 				<ChangePasswordModal />

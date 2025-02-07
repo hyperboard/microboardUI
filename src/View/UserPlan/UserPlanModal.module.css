@@ -28,6 +28,17 @@
 	font-weight: 500;
 }
 
+.plansBtn {
+	color: rgba(15, 19, 36, 0.6);
+	display: flex;
+	align-items: center;
+	font-size: 14px;
+	font-weight: 500;
+	gap: 8px;
+	align-self: flex-start;
+	cursor: pointer;
+}
+
 @media screen and (max-width: 1028px) {
 	.heading {
 		font-size: 30px;
@@ -79,4 +90,16 @@
 	align-self: flex-start;
 	gap: 8px;
 	cursor: pointer;
+}
+
+.badge {
+	padding: 2px 6px;
+	background-color: rgba(10, 15, 41, 0.04);
+	border-radius: 8px;
+}
+
+.switchBtn {
+	display: flex;
+	align-items: center;
+	gap: 8px;
 }

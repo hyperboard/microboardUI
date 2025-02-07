@@ -997,5 +997,9 @@
     <path d="M9.05 2.05L14 7L9.05 11.95L7.636 10.536L10.172 7.999L2 7.99985L0 8V0L2 0.000249863V6H3.586H10.172L7.636 3.464L9.05 2.05Z" fill="currentColor"/>
   </symbol>
 
+  <symbol id="ArrowRightSm" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M13.6687 11.9997L8.71875 7.04974L10.1327 5.63574L16.4967 11.9997L10.1327 18.3637L8.71875 16.9497L13.6687 11.9997Z" fill="currentColor"/>
+  </symbol>
+
 
 </svg>

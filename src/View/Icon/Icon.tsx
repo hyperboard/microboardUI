@@ -126,7 +126,9 @@ export type IconId =
 	| "ai"
 	| "AIChatSendArrow"
 	| "ArrowRightFill"
-	| "quotedText";
+	| "quotedText"
+	| "ArrowRight"
+	| "ArrowRightSm";
 
 type Props = {
 	iconName: IconId;

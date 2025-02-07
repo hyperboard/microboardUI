@@ -28,11 +28,13 @@ export type AvailableModel = {
 	};
 };
 
+type Status = "pending_cancellation" | "active";
+
 export type UserPlan = {
 	name: string;
 	periodStart: string;
 	periodEnd: string;
-	status: "pending_cancellation" | "active";
+	status: Status;
 };
 
 export type UserLimits = {
@@ -62,3 +64,17 @@ export type CreateCheckoutPayload = {
 };
 
 export type CheckoutUrl = { url: string };
+
+export type HistoryRecord = {
+	id: string;
+	planId: string;
+	planName: string;
+	startDate: string;
+	endDate: string;
+	status: Status;
+	canceledAt: string | null;
+	price: number;
+	description: string;
+	monthlyTokenLimit: number;
+	storageLimit: number;
+};

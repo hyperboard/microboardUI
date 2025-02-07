@@ -1,0 +1,45 @@
+.table {
+	font-size: 14px;
+	font-weight: 400;
+}
+
+.table td,
+.table th {
+	padding: 8px 12px;
+}
+
+.table th {
+	font-weight: 400;
+}
+
+.header {
+	background-color: rgb(247, 247, 248);
+	border-bottom: 1px solid #e9eaec;
+}
+
+.modelsHeading {
+	text-align-last: left;
+}
+
+.model {
+	gap: 2px;
+}
+
+.modelName {
+	font-weight: 500;
+	color: rgba(20, 21, 26, 1);
+}
+
+.modelDescription {
+	font-size: 12px;
+	font-weight: 400;
+	color: rgba(15, 19, 36, 0.6);
+}
+
+.modelDisabled {
+	color: rgba(10, 15, 41, 0.25);
+}
+
+.modelLimitReached {
+	color: rgba(13, 17, 38, 0.4);
+}

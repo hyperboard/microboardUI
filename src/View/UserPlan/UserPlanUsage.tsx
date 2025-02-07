@@ -1,16 +1,19 @@
 import React from "react";
 import { Trans, useTranslation } from "react-i18next";
 import styles from "./UserPlanUsage.module.css";
+import { Icon } from "View/Icon";
+import { useUiModalContext } from "View/Ui/UiModal";
+import { LIMITS_MODAL_ID } from "View/UserPlan/LimitsModal";
+import { HISTORY_MODAL_ID } from "View/UserPlan/HistoryModal";
 
 type Props = {
-	availableRequests?: number | null;
-	aiModel: string;
-	tokensUsageResetDate: string | Date;
 	cancellationDate?: string | Date;
 	status: "active" | "pending_cancellation";
 	planName: string;
 	isFree: boolean;
-	onCancel: () => void;
+	onCancel?: () => void;
+	history?: boolean;
+	hasHistory?: boolean;
 };
 
 const isTomorrow = (date: Date): boolean => {
@@ -25,76 +28,110 @@ const isTomorrow = (date: Date): boolean => {
 };
 
 export function UserPlanUsage({
-	aiModel,
-	availableRequests = 0,
-	tokensUsageResetDate,
 	cancellationDate,
 	status,
 	planName,
 	isFree = true,
 	onCancel,
+	history,
+	hasHistory,
 }: Props) {
 	const { t, i18n } = useTranslation();
-	const formattedDate = new Intl.DateTimeFormat(i18n.language, {
-		year: "numeric",
-		month: "numeric",
-		day: "numeric",
-	}).format(new Date(tokensUsageResetDate));
+	const { openModal } = useUiModalContext();
 
-	const daily = isTomorrow(new Date(tokensUsageResetDate));
+	const handleOpenLimitsModal = () => openModal(LIMITS_MODAL_ID);
+	const handleOpenHistoryModal = () => openModal(HISTORY_MODAL_ID);
 
 	const formattedCancellationDate = new Intl.DateTimeFormat(i18n.language, {
 		year: "numeric",
 		month: "numeric",
 		day: "numeric",
 	}).format(new Date(cancellationDate ?? Date.now()));
-	console.log(status);
-
 	return (
 		<div className={styles.container}>
 			<p className={styles.planUsage}>
-				{daily ? (
-					<Trans
-						t={t}
-						i18nKey={"userPlan.currentPlanInfoDaily"}
-						values={{
-							availableRequests,
-							aiModel,
-						}}
-						components={[<span />]}
-					/>
+				{isFree ? (
+					<>
+						<Trans
+							t={t}
+							i18nKey={"userPlan.currentPlanFree"}
+							components={[<span />]}
+						/>
+						{history ? (
+							hasHistory ? (
+								<span
+									onClick={handleOpenHistoryModal}
+									className={styles.limitsBtn}
+								>
+									История платежей
+								</span>
+							) : null
+						) : (
+							<span
+								className={styles.limitsBtn}
+								onClick={handleOpenLimitsModal}
+							>
+								{t("userPlan.limits")}{" "}
+								<Icon
+									width={24}
+									height={24}
+									iconName="ArrowRightSm"
+								/>
+							</span>
+						)}
+					</>
 				) : (
-					<Trans
-						t={t}
-						i18nKey={"userPlan.currentPlanInfo"}
-						values={{
-							availableRequests,
-							aiModel,
-							tokensUsageResetDate: formattedDate,
-						}}
-						components={[<span />]}
-					/>
+					<>
+						{status === "pending_cancellation" ? (
+							<span>
+								{t("userPlan.currentPlanPending", {
+									planName,
+									cancellationDate: formattedCancellationDate,
+								})}
+							</span>
+						) : (
+							<span>
+								{t("userPlan.currentPlanActive", {
+									planName,
+									cancellationDate: formattedCancellationDate,
+								})}
+							</span>
+						)}
+						{history ? (
+							hasHistory ? (
+								<span
+									onClick={handleOpenHistoryModal}
+									className={styles.limitsBtn}
+								>
+									История платежей.
+								</span>
+							) : null
+						) : (
+							<span
+								className={styles.limitsBtn}
+								onClick={handleOpenLimitsModal}
+							>
+								{status === "active"
+									? t("userPlan.nextPayment", {
+											cancellationDate:
+												formattedCancellationDate,
+										})
+									: t("userPlan.limits")}
+								<Icon
+									width={24}
+									height={24}
+									iconName="ArrowRightSm"
+								/>
+							</span>
+						)}
+					</>
+				)}
+				{status === "active" && onCancel && (
+					<span onClick={onCancel} className={styles.cancel}>
+						Отменить
+					</span>
 				)}
 			</p>
-			{!isFree &&
-				(status === "active" ? (
-					<p className={styles.planUsage}>
-						{t("userPlan.currentPlanActive", {
-							planName,
-							cancellationDate: formattedCancellationDate,
-						})}{" "}
-						<button className={styles.link} onClick={onCancel}>
-							{t("userPlan.cancelPayment")}
-						</button>
-					</p>
-				) : (
-					<p className={styles.planUsage}>
-						{t("userPlan.currentPlanPending", {
-							planName,
-							cancellationDate: formattedCancellationDate,
-						})}
-					</p>
-				))}
 		</div>
 	);
 }
