@@ -343,19 +343,15 @@ export function createConnection(
 
 	function onMessage(msg: SocketMsg): void {
 		if (msg.type === "VersionCheck") {
-			const version = localStorage.getItem("App_version");
 			const scriptElement = document.getElementsByTagName("script")[0];
-			console.log(scriptElement);
-			// if (scriptElement) {
-			// 	const version = scriptElement.src.split(".")[1];
-			// 	console.log(version);
-			// 	if (version !== msg.version) {
-			// 		window.location.reload();
-			// 	}
-			// }
-			if (version !== msg.version) {
-				localStorage.setItem("App_version", msg.version);
-				window.location.reload();
+			if (scriptElement) {
+				const absoluteUrl = scriptElement.src;
+				const baseUrl = window.location.origin;
+				//<baseUrl>/app.<hash>.js > app.<hash>.js
+				const version = absoluteUrl.replace(baseUrl, "").split(".")[1];
+				if (version !== msg.version) {
+					window.location.reload();
+				}
 			}
 
 			return;
