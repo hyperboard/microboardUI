@@ -374,7 +374,7 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
         if (currentPlan) {
             await db.update(userPlans).set({ status: "expired" }).where(eq(userPlans.id, currentPlan.id));
 
-            const freePlan = await db.select().from(plans).where(eq(plans.name, "free")).limit(1).execute();
+            const freePlan = await db.select().from(plans).where(eq(plans.name, "basic")).limit(1).execute();
 
             if (!freePlan.length) throw new HttpException(HttpStatus.NOT_FOUND, "Free Plan not found");
 
