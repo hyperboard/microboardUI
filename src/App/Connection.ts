@@ -343,11 +343,15 @@ export function createConnection(
 
 	function onMessage(msg: SocketMsg): void {
 		if (msg.type === "VersionCheck") {
-			const version = localStorage.getItem("App_version");
-			if (version !== msg.version) {
-				localStorage.setItem("App_version", msg.version);
-				window.location.reload();
+			const scriptElement = document.getElementsByTagName("script")[0];
+			if (scriptElement) {
+				const version = scriptElement.src.split(".")[1];
+				if (version !== msg.version) {
+					localStorage.setItem("App_version", msg.version);
+					window.location.reload();
+				}
 			}
+
 			return;
 		}
 
