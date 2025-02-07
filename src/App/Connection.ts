@@ -347,7 +347,7 @@ export function createConnection(
 			if (scriptElement) {
 				const absoluteUrl = scriptElement.src;
 				const baseUrl = window.location.origin;
-				//<baseUrl>/app.<hash>.js > app.<hash>.js
+				// <baseUrl>/app.<hash>.js > app.<hash>.js
 				const version = absoluteUrl.replace(baseUrl, "").split(".")[1];
 				if (version !== msg.version) {
 					window.location.reload();
