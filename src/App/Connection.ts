@@ -346,6 +346,7 @@ export function createConnection(
 			const scriptElement = document.getElementsByTagName("script")[0];
 			if (scriptElement) {
 				const version = scriptElement.src.split(".")[1];
+				console.log(version);
 				if (version !== msg.version) {
 					window.location.reload();
 				}
