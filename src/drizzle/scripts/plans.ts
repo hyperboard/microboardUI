@@ -4,7 +4,7 @@ import { and, eq, sql } from "drizzle-orm";
 
 const BYTES_IN_MB = 1024 * 1024;
 const BYTES_IN_GB = BYTES_IN_MB * 1024;
-const USD = 100;
+export const USD = 100;
 
 export type PlanDefinition = Omit<Plan, "version" | "isActive">;
 export type ModelLimitDefinition = Omit<ModelLimit, "planVersion">;
@@ -46,6 +46,12 @@ export const AI_MODELS: AiModel[] = [
         displayName: "Flux.1 schnell",
         isDefault: false,
     },
+    {
+        id: "tts-1-hd",
+        name: "tts-1-hd",
+        displayName: "Text to speech",
+        isDefault: false,
+    },
 ];
 
 export const PLANS: PlanDefinition[] = [
@@ -58,6 +64,7 @@ export const PLANS: PlanDefinition[] = [
         price: 0 * USD,
         annualPrice: 0,
         storageLimit: 100, // 100MB
+        textToSpeech: 0, // 0 symbols
     },
     {
         id: "plus",
@@ -68,6 +75,7 @@ export const PLANS: PlanDefinition[] = [
         price: 18 * USD,
         annualPrice: 144 * USD,
         storageLimit: 100_000, // 100GB
+        textToSpeech: 15_000, // 15k symbols
     },
 ];
 
@@ -81,20 +89,20 @@ export const PLAN_MODEL_LIMITS: ModelLimitDefinition[] = [
         isEnabled: true,
     },
     {
-        id: "basic-gpt-4o",
-        planId: "basic",
-        modelId: "gpt-4o",
-        dailyRequestLimit: null,
-        weeklyRequestLimit: null,
-        isEnabled: false,
-    },
-    {
         id: "plus-gpt-4o-mini",
         planId: "plus",
         modelId: "gpt-4o-mini",
         dailyRequestLimit: null,
         weeklyRequestLimit: null,
         isEnabled: true,
+    },
+    {
+        id: "basic-gpt-4o",
+        planId: "basic",
+        modelId: "gpt-4o",
+        dailyRequestLimit: null,
+        weeklyRequestLimit: null,
+        isEnabled: false,
     },
     {
         id: "plus-gpt-4o",
@@ -137,14 +145,6 @@ export const PLAN_MODEL_LIMITS: ModelLimitDefinition[] = [
         isEnabled: true,
     },
     {
-        id: "plus-deepseek-chat",
-        planId: "plus",
-        modelId: "deepseek-chat",
-        dailyRequestLimit: null,
-        weeklyRequestLimit: null,
-        isEnabled: true,
-    },
-    {
         id: "plus-deepseek-reasoner",
         planId: "plus",
         modelId: "deepseek-reasoner",
@@ -165,6 +165,22 @@ export const PLAN_MODEL_LIMITS: ModelLimitDefinition[] = [
         planId: "plus",
         modelId: "flux-schnell",
         dailyRequestLimit: 25,
+        weeklyRequestLimit: null,
+        isEnabled: true,
+    },
+    {
+        id: "basic-tts-1-hd",
+        planId: "basic",
+        modelId: "tts-1-hd",
+        dailyRequestLimit: null,
+        weeklyRequestLimit: null,
+        isEnabled: false,
+    },
+    {
+        id: "plus-tts-1-hd",
+        planId: "plus",
+        modelId: "tts-1-hd",
+        dailyRequestLimit: null,
         weeklyRequestLimit: null,
         isEnabled: true,
     },

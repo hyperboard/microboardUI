@@ -33,6 +33,14 @@ export function getAIChatMsgHandler(options: {
                     logger
                 );
                 break;
+            case "GenerateAudio":
+                await chatStreamHandler.handleGenerateAudio(
+                    msg as AiChatMsg<GenerateAudioEvent>,
+                    boardClients,
+                    ws,
+                    logger
+                );
+                break;
             case "StopGeneration":
                 await chatStreamHandler.stopConversation({
                     msg: msg as AiChatMsg<StopGeneration>,
@@ -57,7 +65,7 @@ export function getAIChatMsgHandler(options: {
     };
 }
 
-export type AiChatEventType = UserRequest | StopGeneration | GetMessageList | GenerateImageEvent;
+export type AiChatEventType = UserRequest | StopGeneration | GetMessageList | GenerateImageEvent | GenerateAudioEvent;
 
 // To receive
 export interface UserRequest {
@@ -145,6 +153,20 @@ DALL·E 2		1024×1024	$0.020 / image
                 512×512	$0.018 / image
                 256×256	$0.016 / image
  */
+
+export interface GenerateAudioEvent {
+    method: "GenerateAudio";
+    text: string;
+    model: "tts-1-hd";
+}
+
+export interface GenerateAudioResponse {
+    method: "GenerateAudio";
+    status: "generating" | "completed" | "error";
+    base64: string | null;
+    audioUrl: string | null;
+    message?: string;
+}
 
 // To send
 export interface ChatChunk {

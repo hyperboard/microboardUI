@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { db } from "drizzle/db";
 import { boardOwner, boards, chat, message } from "drizzle/entities";
 import { aiModels, modelLimits, plans, userPlans, userStorageUsage } from "drizzle/entities/plans";
+import { PLANS } from "drizzle/scripts/plans";
 
 export function getCurrentPeriods() {
     const now = new Date();
@@ -103,6 +104,34 @@ export async function getCurrentUserPlan(userId: number) {
     }
 
     return pendingPlan[0] || currentPlan[0];
+}
+
+export async function getAudioModelLimist(userId: number) {
+    const modelId = "tts-1-hd";
+    const userPlan = await getCurrentUserPlan(userId);
+    const planLimit = PLANS.find((plan) => plan.id === userPlan.planId)?.textToSpeech;
+
+    const totalSymbolsUsed = await db
+        .select({
+            totalSymbols: sql<number>`COALESCE(SUM(${message.symbolsUsed}), 0)`,
+        })
+        .from(message)
+        .innerJoin(chat, eq(message.chatId, chat.id))
+        .innerJoin(boards, sql`${chat.boardId}::text = ${boards.uniqId}::text`)
+        .innerJoin(boardOwner, eq(boards.id, boardOwner.boardId))
+        .where(
+            and(
+                eq(message.model, modelId),
+                eq(boardOwner.ownerId, userId),
+                gte(message.createdAt, userPlan.startDate),
+                lte(message.createdAt, new Date())
+            )
+        );
+
+    return {
+        limit: planLimit,
+        symbolsUsed: totalSymbolsUsed[0].totalSymbols,
+    };
 }
 
 export async function getCurrentModelLimits(userId: number) {

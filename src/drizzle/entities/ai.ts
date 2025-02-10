@@ -17,6 +17,7 @@ export const message = pgTable("message", {
     role: text("role").notNull(),
     content: text("content").notNull().default(""),
     tokensUsed: integer("tokens_used").notNull().default(0),
+    symbolsUsed: integer("symbol_used").notNull().default(0),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     archived: boolean("archived").default(false).notNull(),
     status: text("status").notNull().default("pending"),

@@ -9,6 +9,7 @@ import { catchAsync } from "shared/lib/catchAsync";
 import { HttpStatus } from "shared/enums/http-status.enum";
 import { Request, Response, NextFunction } from "express";
 import { HttpException } from "shared/exceptions/http-exception";
+import { USD } from "drizzle/scripts/plans";
 
 interface CryptoService {
     createCheckout: (req: Request, res: Response, next: NextFunction) => void;
@@ -462,14 +463,21 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
                 .json({ error: "Unable to create checkout: The selected plan is already active." });
         }
 
+        const [plan] = await db.select().from(plans).where(eq(plans.id, planId));
+        if (!plan) {
+            return res
+                .status(HttpStatus.BAD_REQUEST)
+                .json({ error: "Unable to create checkout: The selected plan is not found." });
+        }
+
         const rates = await fetchRates(symbol.toString());
         const quote = rates[symbol.toString()]?.quote;
         if (!quote) throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to fetch rates");
 
         const { price } = quote.USD;
         const web3 = new Web3();
-        const PRICE = 12; // price of subscription in USD
         // const PRICE = 0.001; // price of subscription in USD
+        const PRICE = plan.price / USD; // TODO ADD annual payment
         const wei = web3.utils.toWei((PRICE / price).toString(), "ether");
 
         const check = await createCheckoutDb({

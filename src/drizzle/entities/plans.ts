@@ -18,6 +18,7 @@ export const plans = pgTable("plans", {
     annualPrice: integer("annual_price").notNull(),
     version: integer("version").notNull().default(1),
     storageLimit: integer("storage_limit").notNull(), // in bytes (100MB or 100GB)
+    textToSpeech: integer("text_to_speech_limit").notNull(), // in symbols (0 or 15_000)
     isActive: boolean("is_active").notNull().default(true),
 });
 

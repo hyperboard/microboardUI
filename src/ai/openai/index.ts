@@ -67,7 +67,8 @@ export type OpenAIModels =
     | "o1-mini-2024-09-12"
     | "chatgpt-4o-latest"
     | "gpt-4o-realtime"
-    | "gpt-4o-realtime-preview-2024-10-01";
+    | "gpt-4o-realtime-preview-2024-10-01"
+    | "tts-1";
 
 function forceMaxTokens(model: OpenAIModels): number {
     switch (model) {

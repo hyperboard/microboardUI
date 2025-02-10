@@ -11,6 +11,8 @@ import {
     MessageList,
     StopGeneration,
     UserRequest,
+    GenerateAudioEvent,
+    GenerateAudioResponse,
 } from "WebSocket/ai-chat";
 import { Chat, chat, Message, message, MessageRole, MessageStatus } from "drizzle/entities/ai";
 import {
@@ -34,9 +36,11 @@ import { getJson } from "serpapi";
 import { modelLimits } from "drizzle/entities/plans";
 import { boardOwner, boards } from "drizzle/entities";
 import { GenerateImageOptions, ImageGenerator } from "WebSocket/image-generator";
-import { getCurrentModelLimits, getCurrentUserPlan } from "Routes/V1/Billing/utils";
+import { getAudioModelLimist, getCurrentModelLimits, getCurrentUserPlan } from "Routes/V1/Billing/utils";
 import { Redis } from "Redis";
 import { TelegramService } from "services/TelegramService";
+import { generateAudio, GenerateAudioOptions } from "WebSocket/audio-generator";
+import { LargeNumberLike } from "crypto";
 
 class UsageLimitChecker {
     constructor(private logger: winston.Logger) {}
@@ -103,6 +107,26 @@ class UsageLimitChecker {
 
         if (imageGenUsage.dailyLimit && imageGenUsage.dailyUsage >= imageGenUsage.dailyLimit) {
             return { canProceed: false, error: "Image generation limit exceeded" };
+        }
+
+        return { canProceed: true };
+    }
+
+    public async checkAudioGenerationLimits(
+        userId: number,
+        text: string
+    ): Promise<{
+        canProceed: boolean;
+        error?: string;
+    }> {
+        const modelUsage = await getAudioModelLimist(userId);
+
+        if (!modelUsage.limit) {
+            return { canProceed: false, error: "Audio generation not available in your plan" };
+        }
+
+        if (modelUsage.limit <= modelUsage.symbolsUsed) {
+            return { canProceed: false, error: "Audio generation limit exceeded" };
         }
 
         return { canProceed: true };
@@ -253,7 +277,6 @@ export class ChatStreamHandler {
         } catch (error) {
             logger.error(`Error stopping conversation for item ${itemId}:`, error);
 
-
             this.sendErrorResponse(
                 foundedChat,
                 ws,
@@ -346,6 +369,7 @@ export class ChatStreamHandler {
                 itemId: msg.event.itemId,
             };
 
+            // todo replace with map instead of let switch
             let options: GenerateImageOptions = {} as GenerateImageOptions;
             switch (msg.event.options.model) {
                 case "midjourney": {
@@ -384,10 +408,11 @@ export class ChatStreamHandler {
 
             const result = await imageGenerator.generateImage(options);
 
+            // todo implement this.saveImageMessage
             await this.saveMessage({
                 chat,
                 role: MessageRole.ASSISTANT,
-                content: result.base64 || "",
+                content: result.base64 || "", // todo FIX, should count amount of images instead of saving base64 as tokens
                 logger,
                 model: "image-generation",
             });
@@ -424,6 +449,92 @@ export class ChatStreamHandler {
                 },
             };
 
+            ws.send(JSON.stringify(errorResponse));
+        }
+    }
+
+    public async handleGenerateAudio(
+        msg: AiChatMsg<GenerateAudioEvent>,
+        boardClients: Map<string, WebSocket.WebSocket[]>,
+        ws: WebSocket,
+        logger: winston.Logger
+    ) {
+        this.boardClients = boardClients; // ?
+
+        const boardOwnerId = await this.getBoardOwner(msg.boardId); // todo check requested user instead of board owner
+        const audioLimits = await this.usageLimitChecker.checkAudioGenerationLimits(boardOwnerId, msg.event.text);
+
+        if (!audioLimits.canProceed) {
+            ws.send(
+                JSON.stringify({
+                    type: "AiChat",
+                    boardId: msg.boardId,
+                    event: {
+                        method: "GenerateAudio",
+                        status: "error",
+                        error: audioLimits.error,
+                        message: "LimitExceeded",
+                        base64: null,
+                        audioUrl: null,
+                    },
+                })
+            );
+            return;
+        }
+
+        const generatingMsg: AiChatMsg<GenerateAudioResponse> = {
+            type: "AiChat",
+            boardId: msg.boardId,
+            event: {
+                method: "GenerateAudio",
+                status: "generating",
+                base64: null,
+                audioUrl: null,
+            },
+        };
+        ws.send(JSON.stringify(generatingMsg));
+
+        try {
+            const options: GenerateAudioOptions = {
+                text: msg.event.text,
+                model: "tts-1-hd",
+                openaiToken: process.env.OPENAI_API_KEY!,
+            };
+            const result = await generateAudio(options);
+
+            const chat = await this.ensureChatExists(msg, logger);
+
+            await this.saveAudioMessage({
+                chat,
+                role: MessageRole.ASSISTANT,
+                symbolsUsed: msg.event.text.length,
+                logger,
+                model: options.model,
+            });
+
+            const msgToSend: AiChatMsg<GenerateAudioResponse> = {
+                type: "AiChat",
+                boardId: msg.boardId,
+                event: {
+                    method: "GenerateAudio",
+                    status: "completed",
+                    base64: result.base64,
+                    audioUrl: result.audioUrl,
+                },
+            };
+            ws.send(JSON.stringify(msgToSend));
+        } catch (error) {
+            const errorResponse: AiChatMsg<GenerateAudioResponse> = {
+                type: "AiChat",
+                boardId: msg.boardId,
+                event: {
+                    method: "GenerateAudio",
+                    status: "error",
+                    base64: null,
+                    audioUrl: null,
+                    message: `Audio generation failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+                },
+            };
             ws.send(JSON.stringify(errorResponse));
         }
     }
@@ -528,7 +639,7 @@ export class ChatStreamHandler {
     }) {
         const { msg, ws, logger, boardClients } = options;
         const boardOwnerId = await this.getBoardOwner(msg.boardId);
-        const usageCheck = await this.usageLimitChecker.checkUserLimits(boardOwnerId, msg.event.model || "gpt-4o-mini");
+        const usageCheck = await this.usageLimitChecker.checkUserLimits(boardOwnerId, msg.event.model || "gpt-4o-mini"); // todo check requested user instead of board owner
         console.log("usage check", usageCheck);
         if (!usageCheck.canProceed) {
             this.sendErrorResponse(null, ws, usageCheck.error || "LimitExceeded", msg.boardId);
@@ -995,6 +1106,35 @@ export class ChatStreamHandler {
 
         logger.debug("Sending end chunk to WebSocket:", endChunk);
         ws.send(JSON.stringify(endChunk));
+    }
+
+    private async saveAudioMessage(options: {
+        chat: Chat;
+        role: MessageRole;
+        logger: winston.Logger;
+        symbolsUsed: number;
+        model: "tts-1-hd";
+    }) {
+        const { chat, role, logger, model, symbolsUsed } = options;
+
+        logger.debug("Saving audio message to database:", {
+            chatId: chat.id,
+            role,
+        });
+
+        const [savedMessage] = await db
+            .insert(message)
+            .values({
+                chatId: chat.id,
+                role,
+                model,
+                symbolsUsed,
+            })
+            .returning();
+
+        logger.debug("Inserted new audio message:", { savedMessage });
+
+        return savedMessage;
     }
 
     private async saveMessage(options: {
