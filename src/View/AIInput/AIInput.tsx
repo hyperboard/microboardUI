@@ -13,6 +13,7 @@ import { Icon } from "View/Icon";
 import { StarIcon } from "./StarIcon";
 import {
 	AiChatMsg,
+	GenerateAudioRequest,
 	GenerateImageRequest,
 	OpenAIModels,
 	UserRequest,
@@ -72,11 +73,11 @@ export const AIInput = () => {
 	const isSendBtnDisabled =
 		!inputValue.trim() && !ideaFromSelection && !board.aiGeneratingOnItem;
 
-	const isPhoneScreenCheck = () =>
+	const isPhoneScreenCheck = (): boolean =>
 		matchMedia("screen and (max-width: 640px)").matches;
 	const [isPhoneScreen, setIsPhoneScreen] = useState(isPhoneScreenCheck);
 	useEffect(() => {
-		const setScreen = () => {
+		const setScreen = (): void => {
 			setIsPhoneScreen(isPhoneScreenCheck());
 		};
 
@@ -105,14 +106,14 @@ export const AIInput = () => {
 
 	const handleInputChange = (
 		event: React.ChangeEvent<HTMLTextAreaElement>,
-	) => {
+	): void => {
 		setInputValue(event.target.value);
 		sessionStorage.setLastAIRequest(event.target.value);
 		event.target.style.height = "auto";
 		event.target.style.height = `${Math.min(event.target.scrollHeight, 120)}px`;
 	};
 
-	const handleSendClick = async (ev: SyntheticEvent) => {
+	const handleSendClick = async (ev: SyntheticEvent): Promise<void> => {
 		ev.stopPropagation();
 		if (!inputValue.trim() && !ideaFromSelection) {
 			return;
@@ -150,7 +151,9 @@ export const AIInput = () => {
 		await sendInputData();
 	};
 
-	const handleInputClick = (event: React.MouseEvent<HTMLTextAreaElement>) => {
+	const handleInputClick = (
+		event: React.MouseEvent<HTMLTextAreaElement>,
+	): void => {
 		event.stopPropagation();
 		if (board.selection.getContext() === "EditTextUnderPointer") {
 			board.selection.setContext("EditUnderPointer");
@@ -162,7 +165,7 @@ export const AIInput = () => {
 
 	const handleKeyDown = async (
 		event: React.KeyboardEvent<HTMLTextAreaElement>,
-	) => {
+	): Promise<void> => {
 		event.stopPropagation();
 		if (event.key === "Enter" && !event.shiftKey) {
 			event.preventDefault();
@@ -176,13 +179,13 @@ export const AIInput = () => {
 		}
 	};
 
-	const selectModel = (model: OpenAIModels) => {
+	const selectModel = (model: OpenAIModels) => (): void => {
 		setModel(model);
 		setIsDropdownOpen(false);
 	};
 
 	useEffect(() => {
-		const handleClickOutside = (event: MouseEvent) => {
+		const handleClickOutside = (event: MouseEvent): void => {
 			if (
 				dropdownRef.current &&
 				!dropdownRef.current.contains(event.target as Node)
@@ -197,7 +200,7 @@ export const AIInput = () => {
 		};
 	}, [dropdownRef]);
 
-	const sendInputData = async () => {
+	const sendInputData = async (): Promise<void> => {
 		const connection = app.getConnection();
 		if (!connection) {
 			console.error("Ws no open");
@@ -254,7 +257,37 @@ export const AIInput = () => {
 		board.aiGeneratingOnItem = responseAdded.getId();
 		board.camera.subscribeToItem(responseAdded);
 
-		if (model !== "image-generation") {
+		if (model === "image-generation") {
+			const options = {
+				model: "flux-schnell",
+				aspect_ratio: "1:1",
+			};
+
+			const message: AiChatMsg<GenerateImageRequest> = {
+				type: "AiChat",
+				boardId: board.getBoardId(),
+				event: {
+					method: "GenerateImage",
+					prompt: idea,
+					itemId: responseAdded.getId(),
+					options,
+				},
+			};
+
+			connection.wsClient.send(message);
+		} else if (model === "tst-1-hd") {
+			const message: AiChatMsg<GenerateAudioRequest> = {
+				type: "AiChat",
+				boardId: board.getBoardId(),
+				event: {
+					method: "GenerateAudio",
+					text: idea,
+					model: "tts-1-hd",
+				},
+			};
+
+			connection.wsClient.send(message);
+		} else {
 			const contextRequest = nodeWithParents
 				? {
 						range: 5,
@@ -274,24 +307,6 @@ export const AIInput = () => {
 					itemId: responseAdded.getId(),
 					requestItemId: requestAdded.getId(),
 					contextRequest,
-				},
-			};
-
-			connection.wsClient.send(message);
-		} else {
-			const options = {
-				model: "flux-schnell",
-				aspect_ratio: "1:1",
-			};
-
-			const message: AiChatMsg<GenerateImageRequest> = {
-				type: "AiChat",
-				boardId: board.getBoardId(),
-				event: {
-					method: "GenerateImage",
-					prompt: idea,
-					itemId: responseAdded.getId(),
-					options,
 				},
 			};
 
@@ -323,7 +338,7 @@ export const AIInput = () => {
 		}
 	};
 
-	const handleStopClick = async () => {
+	const handleStopClick = async (): Promise<void> => {
 		const boardId = app.getBoard().getBoardId();
 
 		if (responseNodeId) {
@@ -332,18 +347,21 @@ export const AIInput = () => {
 		}
 	};
 
-	const getModelDisplayName = (model: string): string => {
+	const getModelDisplayName = (model: OpenAIModels): string => {
 		if (model === "gpt-4o") {
 			return isPhoneScreen ? "4o" : "GPT-4o";
 		}
 		if (model === "gpt-4o-mini") {
 			return isPhoneScreen ? "4o mini" : "GPT-4o mini";
 		}
-		if (model == "image-generation") {
+		if (model === "image-generation") {
 			return isPhoneScreen ? "flux" : "Flux.1 schnell";
 		}
-		if (model == "deepseek-reasoner") {
+		if (model === "deepseek-reasoner") {
 			return isPhoneScreen ? "deepseek" : "DeepSeek-R1";
+		}
+		if (model === "tst-1-hd") {
+			return isPhoneScreen ? "Text to speech" : "Text to speech HD";
 		}
 		return model;
 	};
@@ -360,7 +378,7 @@ export const AIInput = () => {
 		return t("AIInput.selectContext");
 	};
 
-	const isModelDisabled = (model: OpenAIModels) =>
+	const isModelDisabled = (model: OpenAIModels): boolean =>
 		!account.billingInfo?.models.find(
 			item => item.id === model && item.isEnabled,
 		);
@@ -430,7 +448,7 @@ export const AIInput = () => {
 								onClick={
 									isModelDisabled("gpt-4o-mini")
 										? handleOpenModal
-										: () => selectModel("gpt-4o-mini")
+										: selectModel("gpt-4o-mini")
 								}
 							>
 								<strong>GPT-4o mini</strong>
@@ -450,7 +468,7 @@ export const AIInput = () => {
 								onClick={
 									isModelDisabled("gpt-4o")
 										? handleOpenModal
-										: () => selectModel("gpt-4o")
+										: selectModel("gpt-4o")
 								}
 							>
 								<strong>GPT-4o</strong>
@@ -470,7 +488,7 @@ export const AIInput = () => {
 								onClick={
 									isModelDisabled("deepseek-reasoner")
 										? handleOpenModal
-										: () => selectModel("deepseek-reasoner")
+										: selectModel("deepseek-reasoner")
 								}
 							>
 								<strong>DeepSeek-R1</strong>
@@ -492,12 +510,34 @@ export const AIInput = () => {
 								onClick={
 									isModelDisabled("image-generation")
 										? handleOpenModal
-										: () => selectModel("image-generation")
+										: selectModel("image-generation")
 								}
 							>
 								<strong>Flux.1 schnell</strong>
 								<p>{t("ai.models.flux-schnell.description")}</p>
 								{isModelDisabled("image-generation") && (
+									<Tooltip
+										tooltip={t("userPlan.upgradeTooltip")}
+									/>
+								)}
+							</button>
+							<button
+								className={clsx(
+									styles.modelBtn,
+									isModelDisabled("tst-1-hd") &&
+										styles.disabled,
+								)}
+								onClick={
+									isModelDisabled("tst-1-hd")
+										? handleOpenModal
+										: selectModel("tst-1-hd")
+								}
+							>
+								<strong>
+									{getModelDisplayName("tst-1-hd")}
+								</strong>
+								<p>{t("ai.models.flux-schnell.description")}</p>
+								{isModelDisabled("tst-1-hd") && (
 									<Tooltip
 										tooltip={t("userPlan.upgradeTooltip")}
 									/>

@@ -137,7 +137,8 @@ export type AiChatEventType =
 	| ChatChunk
 	| StopGeneration
 	| GenerateImageRequest
-	| GenerateImageResponse;
+	| GenerateImageResponse
+	| GenerateAudioRequest;
 
 export type OpenAIModels =
 	| "gpt-3.5-turbo"
@@ -153,10 +154,11 @@ export type OpenAIModels =
 	| "gpt-4-16k"
 	| "o1-mini"
 	| "o1"
-	| imageModels
-	| customModals;
+	| ImageModels
+	| CustomModels
+	| TextToSpeechModels;
 
-type imageModels =
+type ImageModels =
 	| "dall-e-2"
 	| "dall-e-3"
 	| "midjourney"
@@ -165,7 +167,9 @@ type imageModels =
 	| "recraft"
 	| "image-generation";
 
-type customModals = "deepseek-chat" | "deepseek-reasoner";
+type TextToSpeechModels = "tst-1-hd";
+
+type CustomModels = "deepseek-chat" | "deepseek-reasoner";
 
 export interface UserRequest {
 	method: "UserRequest";
@@ -215,6 +219,20 @@ export interface GenerateImageResponse {
 	base64: string | null;
 	imageUrl: string | null;
 	itemId: string;
+}
+
+export interface GenerateAudioRequest {
+	method: "GenerateAudio";
+	text: string;
+	model: "tts-1-hd";
+}
+
+export interface GenerateAudioResponse {
+	method: "GenerateAudio";
+	status: "generating" | "completed" | "error";
+	message?: string;
+	base64: string | null;
+	audioUrl: string | null;
 }
 
 export type TTextAction =
