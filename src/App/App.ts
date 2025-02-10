@@ -275,6 +275,10 @@ export function createApp(isHistory = true): App {
 				body: i18next.t("auth.sessionExpired"),
 				variant: "error",
 			});
+			Cookies.remove("first_visit");
+		});
+		account.setOnInit(async () => {
+			await foldersApi.initFolders();
 		});
 		account.setOnInit(async () => {
 			await foldersApi.initFolders();
