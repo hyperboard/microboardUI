@@ -99,3 +99,7 @@
 	bottom: -0.6rem;
 	transform: rotate(180deg);
 }
+
+li span {
+	left: 0 !important;
+}

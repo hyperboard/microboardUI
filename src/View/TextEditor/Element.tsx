@@ -130,7 +130,6 @@ export function Element(props: RenderElementProps): React.ReactElement {
 					style={{
 						textAlign: props.element.horisontalAlignment,
 						margin: 0,
-						paddingLeft: "24px",
 						paddingTop: "0.25em",
 						whiteSpace: "pre-wrap",
 					}}

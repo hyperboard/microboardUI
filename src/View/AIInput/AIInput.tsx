@@ -69,6 +69,8 @@ export const AIInput = () => {
 		board.selection.items.list(),
 	);
 	const isEditable = board.getInterfaceType() !== "view";
+	const isSendBtnDisabled =
+		!inputValue.trim() && !ideaFromSelection && !board.aiGeneratingOnItem;
 
 	const isPhoneScreenCheck = () =>
 		matchMedia("screen and (max-width: 640px)").matches;
@@ -563,13 +565,9 @@ export const AIInput = () => {
 				</UiPanel>
 				<UiButton
 					id={"send-ai-input-data"}
-					disabled={
-						!inputValue.trim() &&
-						!ideaFromSelection &&
-						!board.aiGeneratingOnItem
-					}
+					disabled={isSendBtnDisabled}
 					tooltip={
-						!inputValue.trim() && !ideaFromSelection
+						isSendBtnDisabled
 							? t("AIInput.sendBtnTooltip")
 							: board.aiGeneratingOnItem
 								? t("contextPanel.ai.stop")
