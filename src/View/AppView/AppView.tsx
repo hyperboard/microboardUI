@@ -171,17 +171,17 @@ export function AppView(): JSX.Element {
 							</div>
 						}
 					>
-						<Canvas
-							router={{ location, navigate, params }}
-							app={app}
-							board={board}
-						/>
 						<TextEditors
 							app={app}
 							board={board}
 							setQuotedText={setQuotedText}
 						/>
 					</ViewModeGuard>
+					<Canvas
+						router={{ location, navigate, params }}
+						app={app}
+						board={board}
+					/>
 				</div>
 			</InactiveBoardHidder>
 			{appBoard.getBoardId() === "blank" && <NoBoardIsOpen />}
