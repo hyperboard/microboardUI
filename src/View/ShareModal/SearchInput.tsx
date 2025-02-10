@@ -26,9 +26,10 @@ export type SearchOption = {
 type Props = {
 	onInput: (value: string) => void;
 	options: SearchOption[];
-	onValuesChange: (values: string[]) => void;
+	onValuesChange: (values: string[], currValue: string) => void;
 	isLoading?: boolean;
 	placeholder?: string;
+	excludeValues?: string[];
 };
 
 export function SearchInput({
@@ -37,6 +38,7 @@ export function SearchInput({
 	onValuesChange,
 	isLoading,
 	placeholder,
+	excludeValues = [],
 }: Props) {
 	const { t } = useTranslation();
 	const [addedValues, setAddedValues] = useState<string[]>([]);
@@ -52,6 +54,9 @@ export function SearchInput({
 	>({ left: 0, top: 0, width: 0 });
 	const [inputWidth, setInputWidth] = useState(20);
 	const [maxWidth, setMaxWidth] = useState<number>(0);
+	const [highlightedValueIdx, setHighlightedValueIdx] = useState<
+		number | null
+	>(null);
 
 	const filteredOptions = options.filter(
 		op => !addedValues.includes(op.value),
@@ -165,26 +170,44 @@ export function SearchInput({
 		evt.preventDefault();
 	};
 
+	const addValue = (currValue: string) => {
+		const addedValueIdx = addedValues.findIndex(
+			val => val === currValue.trim(),
+		);
+		const isExcludedValue = excludeValues.includes(currValue);
+		if (isExcludedValue) {
+			onValuesChange(addedValues, currValue);
+			return;
+		}
+
+		if (addedValueIdx >= 0) {
+			setHighlightedValueIdx(addedValueIdx);
+			setTimeout(() => {
+				setHighlightedValueIdx(null);
+			}, 3000);
+			return;
+		}
+		const values = [...addedValues, currValue];
+		onValuesChange(values, currValue);
+		setAddedValues(values);
+		setCurrValue("");
+		calcInputSize("");
+		scrollInputToBottom();
+	};
+
 	const handleKeyPress = (evt: React.KeyboardEvent) => {
 		evt.stopPropagation();
 		switch (evt.key) {
 			case "Enter": {
 				evt.preventDefault();
-				// const isExistsInOptions = filteredOptions.find(
-				// 	opt => opt.value === currValue,
-				// );
 				const isExistsInOptions = isEmail(currValue.trim());
-				if (
+				const isValidInputValue =
 					currValue.trim() &&
 					isExistsInOptions &&
-					highlightedIndex === null
-				) {
-					const values = [...addedValues, currValue.trim()];
-					setAddedValues(values);
-					setCurrValue("");
-					calcInputSize("");
-					onValuesChange(values);
-					scrollInputToBottom();
+					highlightedIndex === null;
+
+				if (isValidInputValue) {
+					addValue(currValue.trim());
 				}
 
 				if (!isExistsInOptions) {
@@ -195,13 +218,8 @@ export function SearchInput({
 				if (highlightedIndex !== null) {
 					const highlightedValue =
 						filteredOptions[highlightedIndex].value;
-					const values = [...addedValues, highlightedValue];
-					setAddedValues(values);
-					setCurrValue("");
-					calcInputSize("");
-					scrollInputToBottom();
+					addValue(highlightedValue);
 					setHighlightedIndex(null);
-					onValuesChange(values);
 				}
 				break;
 			}
@@ -209,7 +227,7 @@ export function SearchInput({
 				if (!currValue) {
 					setAddedValues(prev => {
 						const newValues = prev.slice(0, -1);
-						onValuesChange(newValues);
+						onValuesChange(newValues, currValue);
 						return newValues;
 					});
 					calcInputSize("");
@@ -255,7 +273,7 @@ export function SearchInput({
 			ev.stopPropagation();
 			const values = [...addedValues, opt.value.trim()];
 			setAddedValues(values);
-			onValuesChange(values);
+			onValuesChange(values, currValue);
 			setCurrValue("");
 			calcInputSize("");
 			scrollInputToBottom();
@@ -268,7 +286,10 @@ export function SearchInput({
 			ev.preventDefault();
 
 			setAddedValues(prev => prev.filter(item => item !== val));
-			onValuesChange(addedValues.filter(item => item !== val));
+			onValuesChange(
+				addedValues.filter(item => item !== val),
+				currValue,
+			);
 			calcInputSize("");
 			scrollInputToBottom();
 		};
@@ -291,9 +312,13 @@ export function SearchInput({
 					onPointerDown={stopPropagation}
 					onPointerUp={stopPropagation}
 				>
-					{addedValues.map(val => (
+					{addedValues.map((val, idx) => (
 						<div
-							className={styles.item}
+							className={clsx(
+								styles.item,
+								highlightedValueIdx === idx &&
+									styles.valueHighlight,
+							)}
 							key={val}
 							onClick={handleAddedValueClick(val)}
 						>

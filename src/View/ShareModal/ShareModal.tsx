@@ -77,6 +77,9 @@ export function ShareModal() {
 	);
 	const [searchOptions, setSearchOptions] = useState<usersApi.User[]>([]);
 	const [isSearchOptionsLoading, setIsSearchOptionsLoading] = useState(false);
+	const [highlightedEmail, setHighlightedEmail] = useState<string | null>(
+		null,
+	);
 	const { t } = useTranslation();
 
 	const loadInfo = async () => {
@@ -119,7 +122,6 @@ export function ShareModal() {
 	);
 
 	useEffect(() => {
-		console.log(boardInfo, "info effect");
 		setIsPublic(boardInfo?.isPublic ?? true);
 		setMode(boardInfo?.directAccessType ?? DirectAccessType.EDIT);
 	}, [boardInfo]);
@@ -203,6 +205,24 @@ export function ShareModal() {
 		closeModal();
 		setIsSubmitting(false);
 	};
+
+	const handleAddUser =
+		(setUserEmails: (val: string[]) => void) =>
+		(values: string[], currValue: string) => {
+			const addedUser = grantedUsers.find(
+				({ email }) => email === currValue.trim(),
+			);
+
+			if (addedUser) {
+				setHighlightedEmail(addedUser.email);
+				setTimeout(() => {
+					setHighlightedEmail(null);
+				}, 3000);
+				return;
+			}
+
+			setUserEmails(values);
+		};
 	return (
 		<UiModal className={styles.modalContainer} modalId={SHARE_MODAL_ID}>
 			<div className={styles.wrapper}>
@@ -221,10 +241,13 @@ export function ShareModal() {
 						>
 							<div>
 								<SearchInput
+									excludeValues={grantedUsers.map(
+										({ email }) => email,
+									)}
 									isLoading={isSearchOptionsLoading}
-									onValuesChange={val => {
-										setUserEmails(val);
-									}}
+									onValuesChange={handleAddUser(
+										setUserEmails,
+									)}
 									onInput={handleInputChange}
 									options={searchOptions
 										.filter(
@@ -274,10 +297,13 @@ export function ShareModal() {
 								)}
 							>
 								<SearchInput
+									excludeValues={grantedUsers.map(
+										({ email }) => email,
+									)}
 									isLoading={isSearchOptionsLoading}
-									onValuesChange={val => {
-										setUserEmails2(val);
-									}}
+									onValuesChange={handleAddUser(
+										setUserEmails2,
+									)}
 									onInput={handleInputChange}
 									options={searchOptions
 										.filter(
@@ -352,6 +378,10 @@ export function ShareModal() {
 												}}
 											>
 												<GrantedUser
+													highlighted={
+														highlightedEmail ===
+														user.email
+													}
 													onChange={
 														handleUserAccessChange
 													}
@@ -469,6 +499,7 @@ type GrantedUserProps = GrantedUser & {
 		userId: number;
 		accessType: UserAccessType;
 	}) => void;
+	highlighted?: boolean;
 };
 
 function GrantedUser({
@@ -479,13 +510,19 @@ function GrantedUser({
 	avatar,
 	isOwner,
 	onChange,
+	highlighted,
 }: GrantedUserProps) {
 	const account = useAccount();
 	const isLoggedInUser = account.info?.id === id;
 	const { t } = useTranslation();
 
 	return (
-		<div className={styles.grantedUser}>
+		<div
+			className={clsx(
+				styles.grantedUser,
+				highlighted && styles.highlighted,
+			)}
+		>
 			<div className={styles.userInfo}>
 				<div className={styles.avatar}>
 					<UserAvatar

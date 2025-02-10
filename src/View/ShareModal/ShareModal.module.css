@@ -103,7 +103,12 @@
 .grantedUser {
 	display: flex;
 	justify-content: space-between;
+	transition: 0.3s;
 	gap: 16px;
+}
+
+.highlighted {
+	background-color: rgb(237, 253, 244);
 }
 
 .userInfo {
