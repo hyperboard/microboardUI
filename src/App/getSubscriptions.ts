@@ -1,7 +1,7 @@
 import { Board } from "Board";
-import { Subject } from "../Subject";
 import { BoardEvent } from "Board/Events/Events";
 import { SyncLogSubject } from "Board/Events/SyncLog";
+import { Subject } from "../Subject";
 
 export type SubjectName =
 	| "camera"
@@ -14,7 +14,8 @@ export type SubjectName =
 	| "events"
 	| "syncLog"
 	| "pointer"
-	| "presence";
+	| "presence"
+	| "board";
 
 export interface Subscription {
 	subjects: SubjectName[];
@@ -42,6 +43,7 @@ export function getSubscriptions(getBoard: () => Board): Subscriptions {
 		["syncLog", () => board.events?.syncLogSubject as SyncLogSubject],
 		["pointer", () => board.pointer.subject],
 		["presence", () => board.presence.subject],
+		["board", () => board.subject],
 	];
 
 	const subjects: Map<string, () => Subject<any>> = new Map(

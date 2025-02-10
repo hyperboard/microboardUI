@@ -8,7 +8,9 @@ import {
 	useSearchParams,
 } from "react-router-dom";
 import { AccessDeniedModal } from "View/AccessDeniedModal";
+import { useAIContext } from "View/AIInput/AIContext";
 import { AIInput } from "View/AIInput/AIInput";
+import { AiUnavailableModal } from "View/AiUnavailableModal/AiUnavailableModal";
 import { useAppContext } from "View/AppContext";
 import { Canvas } from "View/Canvas";
 import { ChangePasswordModal } from "View/ChangePasswordModal";
@@ -19,14 +21,21 @@ import { ExportVisible } from "View/ExportPanel/ExportVisible";
 import { ImportMiro, ImportMiroStartModal } from "View/ImportMiro";
 import { ItemTooltip } from "View/ItemTooltip";
 import { LandingMenu, MobileLandingMenu } from "View/LandingMenu";
+import { LocalFileSaveProgress } from "View/LocalFileSavingProgress";
+import { CookiesModal } from "View/Modal/CookiesModal";
 import { UserTracking } from "View/Presence/UserTracking/UserTracking";
 import { ProfileSettingsModal } from "View/ProfileSettingsModal";
 import { ShareModal } from "View/ShareModal";
 import { SidePanelsContainer } from "View/SidePanelsContainer";
 import { TextEditors } from "View/TextEditor/TextEditor";
 import { ToastProvider } from "View/ToastProvider";
+import { UiLoader } from "View/Ui/UiLoader";
 import { UiModalBackground } from "View/Ui/UiModal";
 import { UserPanelLayout } from "View/UserPanel/UserPanel";
+import { UserPlanModal } from "View/UserPlan";
+import { HistoryModal } from "View/UserPlan/HistoryModal";
+import { LimitsModal } from "View/UserPlan/LimitsModal";
+import { SelectPaymentModal } from "View/UserPlan/SelectPaymentModal";
 import { ViewModeGuard } from "View/ViewModeGuard";
 import { ZoomPanel } from "View/ZoomPanel";
 import { CommentsContextProvider, CommentsProvider } from "../CommentsProvider";
@@ -36,15 +45,6 @@ import style from "./AppView.module.css";
 import { InactiveBoardHidder } from "./InactiveBoardHidder";
 import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
-import { LocalFileSaveProgress } from "View/LocalFileSavingProgress";
-import { UserPlanModal } from "View/UserPlan";
-import { AiUnavailableModal } from "View/AiUnavailableModal/AiUnavailableModal";
-import { CookiesModal } from "View/Modal/CookiesModal";
-import { SelectPaymentModal } from "View/UserPlan/SelectPaymentModal";
-import { UiLoader } from "View/Ui/UiLoader";
-import { useAIContext } from "View/AIInput/AIContext";
-import { LimitsModal } from "View/UserPlan/LimitsModal";
-import { HistoryModal } from "View/UserPlan/HistoryModal";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -170,17 +170,16 @@ export function AppView(): JSX.Element {
 								<UiLoader size={50} />
 							</div>
 						}
-					>
-						<TextEditors
-							app={app}
-							board={board}
-							setQuotedText={setQuotedText}
-						/>
-					</ViewModeGuard>
+					/>
 					<Canvas
 						router={{ location, navigate, params }}
 						app={app}
 						board={board}
+					/>
+					<TextEditors
+						app={app}
+						board={board}
+						setQuotedText={setQuotedText}
 					/>
 				</div>
 			</InactiveBoardHidder>

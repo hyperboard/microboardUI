@@ -1,10 +1,10 @@
+import type { ViewMode } from "App/Connection";
+import type { InterfaceType } from "Board/Board";
 import { useAppSubscription } from "Board/useBoardSubscription";
 import { isIframe } from "lib/isIframe";
 import { useForceUpdate } from "lib/useForceUpdate";
 import React, { type ReactNode } from "react";
 import { useAppContext } from "./AppContext";
-import type { ViewMode } from "App/Connection";
-import type { InterfaceType } from "Board/Board";
 
 type Props = {
 	iframe?: boolean;
@@ -13,6 +13,7 @@ type Props = {
 	children?: ReactNode | ((interfaceType: InterfaceType) => ReactNode);
 	callback?: () => void;
 	fallbackCb?: () => void;
+	shouldLog?: boolean;
 };
 
 export function ViewModeGuard({
@@ -26,17 +27,18 @@ export function ViewModeGuard({
 	const { board } = useAppContext();
 	const forceUpdate = useForceUpdate();
 	useAppSubscription({
-		subjects: ["tools"],
+		subjects: ["board"],
 		observer: forceUpdate,
 	});
 
 	const interfaceType = board.getInterfaceType();
 
-	if (
+	const shouldUseFallback =
 		((!Array.isArray(mode) && interfaceType !== mode) ||
 			(Array.isArray(mode) && !mode.includes(interfaceType))) &&
-		(!iframe || isIframe())
-	) {
+		(!iframe || isIframe());
+
+	if (shouldUseFallback) {
 		if (fallbackCb) {
 			fallbackCb();
 		}
