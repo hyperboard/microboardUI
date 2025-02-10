@@ -118,7 +118,7 @@ export function getV1Router({
     router.use(`${apiBase}`, getBillingRouter(logger, stripeService, redis));
     router.use(`${apiBase}`, getIngestRouter(logger, openai));
     router.use(apiBase, getCryptoRouter(redis, logger));
-    router.use(apiBase, getDevelopersRouter(developersService));
+    router.use(apiBase, getDevelopersRouter(developersService, redis, logger));
 
     createFileRoute(
         router,

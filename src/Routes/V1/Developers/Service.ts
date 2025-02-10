@@ -66,12 +66,20 @@ export class DevelopersService {
     constructor(private boards: BoardsService, private logger: winston.Logger, private redis: Redis) {}
 
     // TODO: find in code
-    private async getBoardUuid(boardId: number): Promise<string> {
+    public async getBoardUuid(boardId: number): Promise<string> {
         const [boardWithUUID] = await db.select().from(boards).where(eq(boards.id, boardId)).limit(1);
         if (!boardWithUUID) {
             throw new HttpException(HttpStatus.NOT_FOUND, "Board not found");
         }
         return boardWithUUID.uniqId;
+    }
+
+    public async getBoardId(boardUuid: string): Promise<number> {
+        const [boardWithId] = await db.select().from(boards).where(eq(boards.uniqId, boardUuid)).limit(1);
+        if (!boardWithId) {
+            throw new HttpException(HttpStatus.NOT_FOUND, "Board not found");
+        }
+        return boardWithId.id;
     }
 
     private generateApiKey(): string {
@@ -156,7 +164,8 @@ export class DevelopersService {
     }
 
     async listAccessibleBoards(userId: number): Promise<any[]> {
-        throw new Error("Not implemented");
+        const boards = await this.boards.getOwnedBoards(userId);
+        return boards;
     }
 
     private getBoardItemsKey(boardId: string): string {
@@ -246,7 +255,7 @@ export class DevelopersService {
         }
     }
 
-    async createBoardItem(boardId: number, request: CreateItemRequest): Promise<BoardItem> {
+    async createBoardItem(boardId: number, boardUUID: string, request: CreateItemRequest): Promise<BoardItem> {
         const boardUuid = await this.getBoardUuid(boardId);
         const defaultText: RichText = {
             children: [
@@ -305,7 +314,7 @@ export class DevelopersService {
         };
 
         const order = await this.getAndIncrementOrder(boardUuid);
-        const newItem = await this._createBoardItem(boardUuid, item, order);
+        const newItem = await this._createBoardItem(boardId, boardUUID, item, order);
 
         try {
             await this.redis.client.set(
@@ -325,7 +334,8 @@ export class DevelopersService {
     }
 
     private async _createBoardItem(
-        boardId: string,
+        boardId: number,
+        boardUUID: string,
         item: Omit<BoardItem, "id" | "order">,
         order: number
     ): Promise<BoardItem> {
@@ -384,7 +394,7 @@ export class DevelopersService {
 
         // TODO : fix user id
         const event = transformCreateOperation({
-            boardId,
+            boardId: boardUUID,
             userId: 0,
             order,
             itemId: newItemId,
@@ -392,7 +402,7 @@ export class DevelopersService {
         });
 
         await db.insert(boardEvents).values({
-            boardId: parseInt(boardId),
+            boardId: boardId,
             logId: order,
             eventId: event.eventId,
             eventBody: event,
@@ -408,15 +418,16 @@ export class DevelopersService {
     }
 
     async updateBoardItem(options: {
-        boardId: string;
+        boardId: number;
+        boardUUID: string;
         itemId: string;
         userId: number;
         operation: UpdateItemRequest;
     }): Promise<void> {
-        const { boardId, itemId, userId, operation } = options;
-        const order = await this.getAndIncrementOrder(boardId);
+        const { boardId, boardUUID, itemId, userId, operation } = options;
+        const order = await this.getAndIncrementOrder(boardUUID);
 
-        const existingItem = await this.getBoardItemById(boardId, itemId);
+        const existingItem = await this.getBoardItemById(boardUUID, itemId);
         if (!existingItem) {
             throw new HttpException(HttpStatus.NOT_FOUND, "Item not found");
         }
@@ -491,34 +502,36 @@ export class DevelopersService {
 
         await this._updateBoardItem({
             boardId,
+            boardUUID,
             itemId,
             userId,
             order,
             operation: updateOperation,
         });
 
-        await this.redis.client.del(this.getBoardItemKey(boardId, itemId));
-        await this.redis.client.del(this.getBoardItemsKey(boardId));
+        await this.redis.client.del(this.getBoardItemKey(boardUUID, itemId));
+        await this.redis.client.del(this.getBoardItemsKey(boardUUID));
     }
 
     private async _updateBoardItem(options: {
-        boardId: string;
+        boardId: number;
+        boardUUID: string;
         itemId: string;
         userId: number;
         order: number;
         operation: UpdateOperation;
     }): Promise<void> {
-        const { boardId, itemId, userId, order, operation } = options;
+        const { boardId, boardUUID, itemId, userId, order, operation } = options;
 
         const transformedEvent = transformUpdateOperation(operation, {
-            boardId,
+            boardId: boardUUID,
             userId,
             order,
             itemId,
         });
 
         await db.insert(boardEvents).values({
-            boardId: parseInt(boardId),
+            boardId: boardId,
             logId: order,
             eventId: `${userId}:${order}`,
             eventBody: transformedEvent,
@@ -527,34 +540,41 @@ export class DevelopersService {
         await this.redis.client.set(this.BOARD_LAST_ORDER_KEY + boardId, order.toString());
     }
 
-    async deleteBoardItem(options: { boardId: string; itemId: string; userId: number }): Promise<void> {
-        const { boardId, itemId, userId } = options;
-        const order = await this.getAndIncrementOrder(boardId);
+    async deleteBoardItem(options: {
+        boardId: number;
+        boardUUID: string;
+        itemId: string;
+        userId: number;
+    }): Promise<void> {
+        const { boardId, boardUUID, itemId, userId } = options;
+        const order = await this.getAndIncrementOrder(boardUUID);
 
         await this._deleteBoardItem({
             boardId,
+            boardUUID,
             itemId,
             userId,
             order,
         });
 
-        await this.redis.client.del(this.getBoardItemKey(boardId, itemId));
-        await this.redis.client.del(this.getBoardItemsKey(boardId));
+        await this.redis.client.del(this.getBoardItemKey(boardUUID, itemId));
+        await this.redis.client.del(this.getBoardItemsKey(boardUUID));
     }
 
     private async _deleteBoardItem(options: {
-        boardId: string;
+        boardId: number;
+        boardUUID: string;
         itemId: string;
         userId: number;
         order: number;
     }): Promise<void> {
-        const { boardId, itemId, userId, order } = options;
-        const transformedEvent = transformDeleteOperation({ boardId, userId, order, itemId: itemId });
+        const { boardId, boardUUID, itemId, userId, order } = options;
+        const transformedEvent = transformDeleteOperation({ boardId: boardUUID, userId, order, itemId: itemId });
 
         await db.insert(boardEvents).values({
-            boardId: parseInt(boardId),
+            boardId: boardId,
             logId: order,
-            eventId: "delete",
+            eventId: `${userId}:${order}`,
             eventBody: transformedEvent,
         });
 
@@ -562,14 +582,15 @@ export class DevelopersService {
     }
 
     async batchUpdateItems(
-        boardId: string,
+        boardId: number,
+        boardUUID: string,
         operations: Array<{
             type: "create" | "update" | "delete";
             itemId?: string;
             data?: CreateItemRequest | UpdateItemRequest;
         }>
     ): Promise<BoardItem[]> {
-        let order = await this.getAndIncrementOrder(boardId);
+        let order = await this.getAndIncrementOrder(boardUUID);
 
         for (const op of operations) {
             switch (op.type) {
@@ -600,13 +621,14 @@ export class DevelopersService {
                         strokeStyle: op.data.strokeStyle,
                         strokeWidth: op.data.strokeWidth,
                     };
-                    await this._createBoardItem(boardId, item, order);
+                    await this._createBoardItem(boardId, boardUUID, item, order);
                     break;
                 case "update":
                     if (!op.itemId || !op.data) {
                         throw new HttpException(HttpStatus.BAD_REQUEST, "Invalid update operation data");
                     }
-                    const existingItem = await this.getBoardItemById(boardId, op.itemId);
+                    const existingItem = await this.getBoardItemById(boardUUID, op.itemId);
+
                     if (!existingItem) {
                         throw new HttpException(HttpStatus.NOT_FOUND, "Item not found");
                     }
@@ -681,6 +703,7 @@ export class DevelopersService {
                     }
                     await this._updateBoardItem({
                         boardId,
+                        boardUUID,
                         itemId: op.itemId,
                         userId: 0,
                         order,
@@ -693,16 +716,18 @@ export class DevelopersService {
                     }
                     await this._deleteBoardItem({
                         boardId,
+                        boardUUID,
                         itemId: op.itemId,
                         userId: 0,
                         order,
                     });
+
                     break;
             }
-            order = await this.getAndIncrementOrder(boardId);
+            order = await this.getAndIncrementOrder(boardUUID);
         }
 
-        return this.getBoardItems(boardId);
+        return this.getBoardItems(boardUUID);
     }
 
     async configureItemRefresh(

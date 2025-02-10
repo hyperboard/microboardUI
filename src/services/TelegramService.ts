@@ -4,8 +4,24 @@ import { telegramChats } from "drizzle/entities";
 import { eq } from "drizzle-orm";
 import { sleep } from "openai/core";
 import { AiChatMsg } from "WebSocket/ai-chat";
-import cron from 'node-cron';
-import { getFirstPaymentsToday, getNewBoardsToday, getNewUsersToday, getRenewalsToday, getTotalBoardEvents, getTotalBoards, getTotalPayingUsers, getTotalUsers } from "drizzle/functions/board/MetricsDashboard";
+import cron from "node-cron";
+import {
+    getFirstPaymentsToday,
+    getNewBoardsToday,
+    getNewUsersToday,
+    getRenewalsToday,
+    getTotalBoardEvents,
+    getTotalBoards,
+    getTotalPayingUsers,
+    getTotalUsers,
+} from "drizzle/functions/board/MetricsDashboard";
+
+export interface TelegramServiceConfig {
+    token: string;
+    appToken: string;
+    isEnabled?: boolean;
+    logger: winston.Logger;
+}
 
 export interface TelegramServiceConfig {
     token: string;
@@ -25,7 +41,7 @@ export class TelegramService {
         this.logger = config.logger;
         this.appToken = this.config.appToken;
         this.isEnabled = this.config.isEnabled ?? true;
-        this.logger.info("TelegramService initialized"); 
+        this.logger.info("TelegramService initialized");
     }
 
     private async sendTelegramRequest(method: string, params: any = {}) {
@@ -62,7 +78,7 @@ export class TelegramService {
             totalBoardEvents,
             firstPaymentsToday,
             renewalsToday,
-            totalPayingUsers
+            totalPayingUsers,
         ] = await Promise.all([
             getTotalBoards(),
             getNewBoardsToday(),
@@ -71,9 +87,9 @@ export class TelegramService {
             getTotalBoardEvents(),
             getFirstPaymentsToday(),
             getRenewalsToday(),
-            getTotalPayingUsers()
+            getTotalPayingUsers(),
         ]);
-    
+
         return `
             Всего досок: ${totalBoards}
             Новых досок сегодня: ${newBoardsToday}
@@ -87,7 +103,7 @@ export class TelegramService {
     }
 
     private scheduleDailyMetrics() {
-        cron.schedule('0 8,20 * * *', async () => {
+        cron.schedule("0 8,20 * * *", async () => {
             try {
                 const metrics = await this.getDashboardMetrics();
                 await this.broadcastMessage(`Ежедневные метрики дашборда:\n${metrics}`);
@@ -114,12 +130,12 @@ export class TelegramService {
     }
 
     private async handleUpdate(update: any) {
-        this.logger.debug("Received update:", JSON.stringify(update)); 
+        this.logger.debug("Received update:", JSON.stringify(update));
         if (!update.message?.text || !update.message?.chat?.id) return;
 
         const chatId = update.message.chat.id.toString();
         const text = update.message.text;
-        this.logger.info(`Processing command: ${text}`); 
+        this.logger.info(`Processing command: ${text}`);
         const [command, ...args] = text.split(" ");
 
         switch (command) {
@@ -180,21 +196,21 @@ export class TelegramService {
                     });
                 }
                 break;
-                case "/metrics":
-                    try {
-                        const metrics = await this.getDashboardMetrics();
-                        await this.sendTelegramRequest("sendMessage", {
-                            chat_id: chatId,
-                            text: `Dashboard Metrics:\n${metrics}`,
-                        });
-                    } catch (error) {
-                        this.logger.error("Error fetching metrics:", error);
-                        await this.sendTelegramRequest("sendMessage", {
-                            chat_id: chatId,
-                            text: "Failed to fetch metrics. Please try again later.",
-                        });
-                    }
-                    break;
+            case "/metrics":
+                try {
+                    const metrics = await this.getDashboardMetrics();
+                    await this.sendTelegramRequest("sendMessage", {
+                        chat_id: chatId,
+                        text: `Dashboard Metrics:\n${metrics}`,
+                    });
+                } catch (error) {
+                    this.logger.error("Error fetching metrics:", error);
+                    await this.sendTelegramRequest("sendMessage", {
+                        chat_id: chatId,
+                        text: "Failed to fetch metrics. Please try again later.",
+                    });
+                }
+                break;
         }
     }
 

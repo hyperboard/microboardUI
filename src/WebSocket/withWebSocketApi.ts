@@ -22,7 +22,7 @@ import { WebSocketRouter } from "./WebSocketRouter";
 import { z } from "zod";
 import { WsError } from "./wsError";
 import { TelegramService } from "services/TelegramService";
-import {getAppVersion} from "../shared/utils/getAppVersion";
+import { getAppVersion } from "../shared/utils/getAppVersion";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
@@ -65,7 +65,7 @@ export function withWebSocketApi({
 
     wss.on("connection", (ws) => {
         if (CURRENT_VERSION) {
-            ws.send(JSON.stringify({ type: 'VersionCheck', version: CURRENT_VERSION }));
+            ws.send(JSON.stringify({ type: "VersionCheck", version: CURRENT_VERSION }));
         }
 
         ws.on("message", async (data) => {
@@ -823,7 +823,7 @@ export class EventsManager {
 
     private async checkAndMarkFirstEvent(boardId: string): Promise<boolean> {
         const key = REDIS_BOARD_FIRST_EVENT_KEY + boardId;
-        const existingEvent = await this.redis.client.get(key)
+        const existingEvent = await this.redis.client.get(key);
         if (existingEvent) {
             return false;
         }

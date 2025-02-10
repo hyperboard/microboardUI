@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { validateApiKey } from "./validateApiKey";
+import { validateApiKey } from "Middlewares/validateApiKey";
 import { DevelopersService } from "./Service";
 import { authenticate } from "../Auth/middlewares";
 import { body, param, query } from "express-validator";
@@ -7,12 +7,15 @@ import { HttpStatus } from "shared/enums/http-status.enum";
 import { HttpException } from "shared/exceptions/http-exception";
 import { catchAsync } from "shared/lib/catchAsync";
 import { BatchOperationRequest, CreateItemRequest, RefreshConfigRequest, UpdateItemRequest } from "./types";
+import { Redis } from "Redis";
+import winston from "winston";
+import { rateLimitMiddleware } from "Middlewares/rateLimit.middleware";
 
-export function getDevelopersRouter(developersService: DevelopersService) {
+export function getDevelopersRouter(developersService: DevelopersService, redis: Redis, logger: winston.Logger) {
     const router = Router();
     const routeBase = "/developers";
-
     // API Keys management
+
     router.post(
         `${routeBase}/api-keys`,
         authenticate(),
@@ -60,7 +63,7 @@ export function getDevelopersRouter(developersService: DevelopersService) {
     );
 
     // Board operations (protected by API key)
-    router.use(`${routeBase}/boards`, validateApiKey);
+    router.use(`${routeBase}/boards`, validateApiKey, rateLimitMiddleware(redis, logger));
 
     router.get(
         `${routeBase}/boards`,
@@ -73,7 +76,7 @@ export function getDevelopersRouter(developersService: DevelopersService) {
 
     // Get all items in a board
     router.get(
-        `${routeBase}/boards/:boardId/items`,
+        `${routeBase}/boards/:boardId/items/all`,
         param("boardId").isString().notEmpty(),
         catchAsync(async (req: Request, res: Response) => {
             const items = await developersService.getBoardItems(req.params.boardId);
@@ -94,30 +97,76 @@ export function getDevelopersRouter(developersService: DevelopersService) {
         })
     );
 
-    // Create a new item
+    // Create endpoints for each item type
+    const createItemEndpoint = (itemType: "Shape" | "Sticker" | "RichText" | "Frame" | "Drawing") => {
+        return catchAsync(async (req: Request<any, any, Omit<CreateItemRequest, "type">>, res: Response) => {
+            const { boardId } = req.params;
+            const boardIntId = await developersService.getBoardId(boardId);
+            const item = await developersService.createBoardItem(boardIntId, boardId, {
+                ...req.body,
+                type: itemType,
+            });
+
+            res.status(HttpStatus.CREATED).json(item);
+        });
+    };
+
+    // Create shape
     router.post(
-        `${routeBase}/boards/:boardId/items`,
+        `${routeBase}/boards/:boardId/shapes`,
         param("boardId").isString().notEmpty(),
         body().isObject().notEmpty(),
-        catchAsync(async (req: Request<any, any, CreateItemRequest>, res: Response) => {
-            const { boardId } = req.params;
-            const item = await developersService.createBoardItem(boardId, req.body);
-            res.status(HttpStatus.CREATED).json(item);
-        })
+        createItemEndpoint("Shape")
     );
 
-    // Update an item
-    router.patch(
-        `${routeBase}/boards/:boardId/items/:itemId`,
+    // Create sticker
+    router.post(
+        `${routeBase}/boards/:boardId/stickers`,
         param("boardId").isString().notEmpty(),
-        param("itemId").isString().notEmpty(),
         body().isObject().notEmpty(),
-        catchAsync(async (req: Request<any, any, UpdateItemRequest>, res: Response) => {
+        createItemEndpoint("Sticker")
+    );
+
+    // Create rich text
+    router.post(
+        `${routeBase}/boards/:boardId/rich-texts`,
+        param("boardId").isString().notEmpty(),
+        body().isObject().notEmpty(),
+        createItemEndpoint("RichText")
+    );
+
+    // Create frame
+    router.post(
+        `${routeBase}/boards/:boardId/frames`,
+        param("boardId").isString().notEmpty(),
+        body().isObject().notEmpty(),
+        createItemEndpoint("Frame")
+    );
+
+    // Create drawing
+    router.post(
+        `${routeBase}/boards/:boardId/drawings`,
+        param("boardId").isString().notEmpty(),
+        body().isObject().notEmpty(),
+        createItemEndpoint("Drawing")
+    );
+
+    // Update endpoints for each item type
+    const updateItemEndpoint = (itemType: "Shape" | "Sticker" | "RichText" | "Frame" | "Drawing") => {
+        return catchAsync(async (req: Request<any, any, UpdateItemRequest>, res: Response) => {
             const { boardId, itemId } = req.params;
             if (!req.sub) throw new HttpException(HttpStatus.UNAUTHORIZED, "Authentication required");
 
+            const existingItem = await developersService.getBoardItemById(boardId, itemId);
+            if (!existingItem) throw new HttpException(HttpStatus.NOT_FOUND, "Item not found");
+            if (existingItem.itemType !== itemType) {
+                throw new HttpException(HttpStatus.BAD_REQUEST, `Item is not a ${itemType}`);
+            }
+            const boardIntId = await developersService.getBoardId(boardId);
+
             await developersService.updateBoardItem({
-                boardId,
+                boardId: boardIntId,
+                boardUUID: boardId,
                 itemId,
                 userId: +req.sub,
                 operation: req.body,
@@ -126,7 +175,52 @@ export function getDevelopersRouter(developersService: DevelopersService) {
             const updatedItem = await developersService.getBoardItemById(boardId, itemId);
             if (!updatedItem) throw new HttpException(HttpStatus.NOT_FOUND, "Item not found");
             res.json(updatedItem);
-        })
+        });
+    };
+
+    // Update shape
+    router.patch(
+        `${routeBase}/boards/:boardId/shapes/:itemId`,
+        param("boardId").isString().notEmpty(),
+        param("itemId").isString().notEmpty(),
+        body().isObject().notEmpty(),
+        updateItemEndpoint("Shape")
+    );
+
+    // Update sticker
+    router.patch(
+        `${routeBase}/boards/:boardId/stickers/:itemId`,
+        param("boardId").isString().notEmpty(),
+        param("itemId").isString().notEmpty(),
+        body().isObject().notEmpty(),
+        updateItemEndpoint("Sticker")
+    );
+
+    // Update rich text
+    router.patch(
+        `${routeBase}/boards/:boardId/rich-texts/:itemId`,
+        param("boardId").isString().notEmpty(),
+        param("itemId").isString().notEmpty(),
+        body().isObject().notEmpty(),
+        updateItemEndpoint("RichText")
+    );
+
+    // Update frame
+    router.patch(
+        `${routeBase}/boards/:boardId/frames/:itemId`,
+        param("boardId").isString().notEmpty(),
+        param("itemId").isString().notEmpty(),
+        body().isObject().notEmpty(),
+        updateItemEndpoint("Frame")
+    );
+
+    // Update drawing
+    router.patch(
+        `${routeBase}/boards/:boardId/drawings/:itemId`,
+        param("boardId").isString().notEmpty(),
+        param("itemId").isString().notEmpty(),
+        body().isObject().notEmpty(),
+        updateItemEndpoint("Drawing")
     );
 
     // Delete an item
@@ -138,9 +232,11 @@ export function getDevelopersRouter(developersService: DevelopersService) {
             const { boardId, itemId } = req.params;
 
             if (!req.sub) throw new HttpException(HttpStatus.UNAUTHORIZED, "Authentication required");
+            const boardIntId = await developersService.getBoardId(boardId);
 
             await developersService.deleteBoardItem({
-                boardId,
+                boardUUID: boardId,
+                boardId: boardIntId,
                 itemId,
                 userId: +req.sub,
             });
@@ -156,24 +252,11 @@ export function getDevelopersRouter(developersService: DevelopersService) {
         body().isObject().notEmpty(),
         catchAsync(async (req: Request<any, any, BatchOperationRequest>, res: Response) => {
             const { boardId } = req.params;
-            const items = await developersService.batchUpdateItems(boardId, req.body.operations);
+            const boardUUID = await developersService.getBoardUuid(boardId);
+            const items = await developersService.batchUpdateItems(boardId, boardUUID, req.body.operations);
             res.json(items);
         })
     );
-
-    // Configure item refresh
-    // router.post(
-    //     `${routeBase}/boards/:boardId/items/:itemId/refresh`,
-    //     authenticate,
-    //     param("boardId").isString().notEmpty(),
-    //     param("itemId").isString().notEmpty(),
-    //     body().isObject().optional(),
-    //     catchAsync(async (req: Request<any, any, RefreshConfigRequest | null>, res: Response) => {
-    //         const { boardId, itemId } = req.params;
-    //         const item = await developersService.configureItemRefresh(boardId, itemId, req.body);
-    //         res.json(item);
-    //     })
-    // );
 
     return router;
 }
