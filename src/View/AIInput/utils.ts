@@ -139,7 +139,10 @@ export function calculateNodePosition(
 		newNodeData,
 	) as AINode;
 
-	newItem.transformation.translateBy(-newItem.getMbr().getWidth() / 2, 0);
+	newItem.transformation.applyTranslateBy(
+		-newItem.getMbr().getWidth() / 2,
+		0,
+	);
 
 	const defaultConnector = new Connector(board);
 	const connectorData = defaultConnector.serialize();
@@ -269,7 +272,7 @@ export function createNode(
 	if (parentItem && parentItem.itemType === "AINode") {
 		parentNodeId = parentItem.getId();
 	}
-	let node;
+	let node: AINode;
 	if (isImage) {
 		node = new AINode(board, isUserRequest, parentNodeId, contextItems);
 		const nodeRichText = node.getRichText();
@@ -279,7 +282,7 @@ export function createNode(
 		nodeRichText.editor.insertCopiedText(
 			t("AIInput.awaitingImageGeneration"),
 		);
-		node.id = crypto.randomUUID();
+		node.setId(crypto.randomUUID());
 	} else {
 		node = new AINode(board, isUserRequest, parentNodeId, contextItems);
 		const nodeRichText = node.getRichText();
