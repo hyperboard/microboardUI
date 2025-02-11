@@ -73,11 +73,10 @@ export const AddEmailView = (): React.ReactElement => {
 		try {
 			const added = await account.addEmail(formRef.current?.email?.value);
 			navigate({
-				pathname: "/auth/verify",
+				pathname: "/bind-email/verify",
 				search: createSearchParams({
 					...Object.fromEntries(new URLSearchParams(location.search)),
 					email: added,
-					action: "addEmail",
 				}).toString(),
 			});
 		} catch {

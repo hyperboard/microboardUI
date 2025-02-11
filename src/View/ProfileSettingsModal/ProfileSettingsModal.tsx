@@ -99,7 +99,7 @@ export function ProfileSettingsModal(): ReactElement {
 
 	const handleAddEmail: MouseEventHandler = ev => {
 		ev.stopPropagation();
-		navigate("/auth/add-email" + window.location.search);
+		navigate("/bind-email/add-email" + window.location.search);
 	};
 
 	const handleAvatarChange: ChangeEventHandler<

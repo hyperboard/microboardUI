@@ -101,17 +101,17 @@ export class Account {
 		this.tokenData = jwtDecode<TokenData>(this.accessToken);
 	}
 
-	setIsAnnualPayment(isAnnual: boolean) {
+	setIsAnnualPayment(isAnnual: boolean): void {
 		this.annualPayment = isAnnual;
 		this.subject.publish(this.info);
 	}
 
-	toggleIsAnnualPayment() {
+	toggleIsAnnualPayment(): void {
 		this.annualPayment = !this.annualPayment;
 		this.subject.publish(this.info);
 	}
 
-	getIsAnnualPayment() {
+	getIsAnnualPayment(): boolean {
 		return this.annualPayment;
 	}
 
@@ -171,7 +171,7 @@ export class Account {
 		this.subject.publish(this.info);
 	}
 
-	async fetchBillingHistory() {
+	async fetchBillingHistory(): Promise<void> {
 		try {
 			const { data } = await billingApi.getHistory();
 			this.billingHistory = data ?? [];
@@ -338,7 +338,7 @@ export class Account {
 		await this.fetchAccountInfo();
 	}
 
-	async createCheckout(planId: string) {
+	async createCheckout(planId: string): Promise<void> {
 		const successUrl = `${window.location.href}?paymentStatus=success`;
 		const cancelUrl = `${window.location.href}?paymentStatus=error`;
 

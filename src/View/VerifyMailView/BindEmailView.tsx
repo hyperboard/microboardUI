@@ -1,7 +1,3 @@
-import { App } from "App";
-import { LAST_BOARD_KEY_QS } from "App/App";
-import { useAccount } from "App/useAccount";
-import { useBoardsList } from "App/useBoardsList";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -9,7 +5,10 @@ import { Button } from "shared/ui-lib/Button";
 import { Input } from "shared/ui-lib/Input/Input";
 import { Tail } from "View/AuthView/Tail";
 import { LockIcon } from "View/SignupView/LockIcon";
+import { useAccount } from "App/useAccount";
 import styles from "./VerifyMailView.module.css";
+import { LAST_BOARD_KEY_QS } from "App/App";
+import { useBoardsList } from "App/useBoardsList";
 
 const secondsToHumanReadable = (seconds: number): string => {
 	const minutes = Math.floor(seconds / 60);
@@ -17,25 +16,25 @@ const secondsToHumanReadable = (seconds: number): string => {
 	return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 };
 
-export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
+export const BindEmailView: React.FC = () => {
 	const { t } = useTranslation();
-	const [searchParams, _setSearchParams] = useSearchParams();
-	const [retryCount, setRetryCount] = React.useState(0);
+	const [searchParams] = useSearchParams();
 	const navigate = useNavigate();
-	// const [passcode, setPasscode] = useState<string>("");
+	const account = useAccount();
+
+	const formRef = useRef<HTMLFormElement>(null);
+	const [retryCount, setRetryCount] = useState(0);
 	const [error, setError] = useState<string>("");
 	const [submitDisabled, setSubmitDisabled] = useState<boolean>(true);
 	const [isSubmitLoading, setIsSubmitLoading] = useState<boolean>(false);
 	const [retryDisabled, setRetryDisabled] = useState<boolean>(false);
 	const [isRetryLoading, setIsRetryLoading] = useState<boolean>(false);
-	const formRef = useRef<HTMLFormElement>(null);
 	const [codeTip, setCodeTip] = useState<
 		"auth.enterCodeBelow" | "auth.enterNewCodeBelow" | ""
 	>("");
 	const [isNewCode, setIsNewCode] = useState<boolean>(false);
 	const [isAttemptsExceeded, setIsAttemptsExceeded] =
 		useState<boolean>(false);
-	const account = useAccount();
 	const boardsList = useBoardsList();
 
 	const onSuccess = async (): Promise<void> => {
@@ -66,11 +65,12 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 		setSubmitDisabled(true);
 		setIsSubmitLoading(true);
 
+		// Для привязки почты всегда вызываем verifyAddedEmail
 		account
-			.verifyMail(email, passcode)
+			.verifyAddedEmail(email, passcode)
 			.then(onSuccess)
 			.catch(error => {
-				console.log("error", error);
+				console.error("error", error);
 				if (error?.message === "PASSCODE_ATTEMPTS_EXCEEDED") {
 					setIsAttemptsExceeded(true);
 					setError(t("auth.errorVerificationCodeAttempts"));
@@ -110,43 +110,42 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 	};
 
 	const onResend = async (): Promise<void> => {
-		if (!searchParams.get("email")) {
+		const emailParam = searchParams.get("email");
+		if (!emailParam) {
 			return;
 		}
 		setRetryDisabled(true);
 		setIsRetryLoading(true);
 
 		account
-			.resendMail(searchParams.get("email") ?? "")
+			.resendMail(emailParam)
 			.then(() => {
 				setRetryCount(60 * 3);
 				setIsAttemptsExceeded(false);
 				setError("");
 				setCodeTip("auth.enterNewCodeBelow");
 				checkForm(false);
-				const form = formRef.current;
-				if (form) {
-					form.code.value = "";
+				if (formRef.current) {
+					formRef.current.code.value = "";
 				}
 				setIsNewCode(true);
 			})
 			.catch(error => {
 				if (error?.message?.startsWith("Can retry after")) {
 					try {
-						const timeToResend =
-							error?.message.split(":")[1] / 1000;
+						const timeToResend = error.message.split(":")[1] / 1000;
 						setRetryCount(parseInt(timeToResend.toFixed(0)));
 					} catch (err) {
 						console.log("no timer");
 					}
-
 					return;
 				}
+				// Если не найден passcode или пользователь – переходим на страницу аккаунта
 				if (
 					error?.message === "Passcode not found" ||
 					error?.message === "User not found"
 				) {
-					navigate(`/auth/sign-up${location.search}`);
+					navigate("/account");
 					return;
 				}
 			})
@@ -156,38 +155,21 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 			});
 	};
 
-	const dbCheckForm = checkForm;
-
 	useEffect(() => {
-		if (!searchParams.get("email")) {
+		const emailParam = searchParams.get("email");
+		if (!emailParam) {
 			return;
 		}
 		setRetryDisabled(true);
 		setIsRetryLoading(true);
 		account
-			.checkVerificationCodes(searchParams.get("email") ?? "")
+			.checkVerificationCodes(emailParam)
 			.then(data => {
 				if (data?.message === "PASSCODE_SENDED") {
 					setRetryCount(60 * 3);
 				}
 				if (data?.message.startsWith("PASSCODE_NOT_SENDED")) {
-					console.log("here");
-
-					try {
-						// const dateString = data?.message.split(": ")[1];
-						// const resendDate = new Date(dateString);
-						// const currentTime = new Date();
-						// const timeToResend =
-						// 	Math.abs(
-						// 		resendDate.getTime() +
-						// 			60 * 3000 -
-						// 			currentTime.getTime(),
-						// 	) / 1000;
-						// console.log(timeToResend, data?.message);
-						setRetryCount(0);
-					} catch (_) {
-						setRetryCount(60 * 3);
-					}
+					setRetryCount(0);
 				}
 			})
 			.finally(() => {
@@ -195,18 +177,16 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 				setIsRetryLoading(false);
 			});
 
+		// Если в query-параметрах передан passcode – пытаемся сразу его верифицировать
 		if (!searchParams.get("passcode")) {
 			return;
 		}
 		setIsSubmitLoading(true);
 		account
-			.verifyMail(
-				searchParams.get("email") || "",
-				searchParams.get("passcode") || "",
-			)
+			.verifyAddedEmail(emailParam, searchParams.get("passcode") || "")
 			.then(onSuccess)
 			.catch(err => {
-				console.log("verify error", err);
+				console.error("verify error", err);
 				setError(t("auth.errorVerificationCode"));
 			})
 			.finally(() => {
@@ -216,33 +196,29 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 
 	useEffect(() => {
 		const interval = setInterval(() => {
-			if (retryCount > 0) {
-				setRetryCount(retryCount - 1);
-			}
+			setRetryCount(prevCount =>
+				prevCount > 0 ? prevCount - 1 : prevCount,
+			);
 		}, 1000);
-
 		return () => {
-			if (interval) {
-				clearInterval(interval);
-			}
+			clearInterval(interval);
 		};
-	});
+	}, []);
 
 	return (
 		<div className={styles.wrapper}>
 			<form onSubmit={onSubmit} className={styles.form} ref={formRef}>
 				<h1 className={styles.title}>{t("auth.checkInbox")}</h1>
-
-				{!isNewCode && (
-					<p className={styles.checkEmail}>
-						{t("auth.weSentCode")}{" "}
-						<span className={styles.email}>
-							{searchParams.get("email")}
-						</span>
-						<br />
-						{t("auth.enterCodeBelow")}
-					</p>
-				)}
+				<p className={styles.checkEmail}>
+					{t("auth.weSentCode")}{" "}
+					<span className={styles.email}>
+						{searchParams.get("email")}
+					</span>
+					<br />
+					{isNewCode
+						? t("auth.enterNewCodeBelow")
+						: t("auth.enterCodeBelow")}
+				</p>
 
 				<Input
 					prefixIcon={<LockIcon />}
@@ -254,7 +230,7 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 					label={codeTip ? t(codeTip) : ""}
 					hasError={!!error.length}
 					errorText={error}
-					onInput={() => dbCheckForm()}
+					onInput={() => checkForm()}
 				/>
 				<div className={styles.btns}>
 					<Button

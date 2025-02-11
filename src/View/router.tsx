@@ -23,6 +23,7 @@ import { WelcomeBoard } from "./WelcomeBoard";
 import { UnauthGuard } from "View/UnauthGuard";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { GoogleCallbackHandler } from "./GoogleAuth";
+import { BindEmailView } from "./VerifyMailView/BindEmailView";
 
 export function getRender(app: App): {
 	render: () => void;
@@ -51,12 +52,22 @@ export function getRender(app: App): {
 					element: <AuthView />,
 					children: [
 						{
+							path: "google/callback",
+							element: <GoogleCallbackHandler />,
+						},
+					],
+				},
+				{
+					path: "/bind-email",
+					element: <AuthView />,
+					children: [
+						{
 							path: "add-email",
 							element: <AddEmailView />,
 						},
 						{
-							path: "google/callback",
-							element: <GoogleCallbackHandler />,
+							path: "verify",
+							element: <BindEmailView />,
 						},
 					],
 				},

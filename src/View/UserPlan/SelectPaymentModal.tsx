@@ -35,9 +35,10 @@ async function createCheckout(
 	chain: string,
 	sender: string,
 	planId: string,
+	annualPayment: boolean,
 ): Promise<CryptoCheckout> {
 	const url = `/crypto/checkout`;
-	const body = { symbol: currency, chain, sender, planId };
+	const body = { symbol: currency, chain, sender, planId, annualPayment };
 
 	const res = await api.post(url, body);
 	return res.data as CryptoCheckout;
@@ -137,7 +138,7 @@ export function SelectPaymentModal(): JSX.Element {
 					body: (
 						<>
 							<Link
-								to={`/auth/add-email?${window.location.search.substring(1)}`}
+								to={`/bind-email/add-email?${window.location.search.substring(1)}`}
 							>
 								Add email
 							</Link>{" "}
@@ -246,6 +247,7 @@ export function SelectPaymentModal(): JSX.Element {
 				chain.name,
 				address,
 				plan.id,
+				account.getIsAnnualPayment(),
 			);
 
 			if (!checkout.address.startsWith("0x")) {
