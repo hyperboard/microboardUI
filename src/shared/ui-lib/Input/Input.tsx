@@ -185,7 +185,7 @@ export const Input: React.FC<Props> = ({
 					{errorText && (
 						<span className="InputErrorText">{errorText}</span>
 					)}
-					{helperText && (
+					{helperText && !errorText && (
 						<span className="InputHelperText">{helperText}</span>
 					)}
 					{successText && (

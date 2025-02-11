@@ -341,6 +341,7 @@
 		"checkInbox": "Check your inbox",
 		"weSentCode": "We have sent a verification code to",
 		"enterCodeBelow": "Please enter it below to confirm your email address. Make sure to check your Spam or Junk folder.",
+		"codePlaceholder": "Verification code",
 		"enterNewCodeBelow": "We have sent you a new code, please enter it below",
 		"emailIfNotFind": "If you haven’t received it, make sure to check your Spam or Junk folder",
 		"passwordLengthError": "The password must be at least 8 and no more than 14 characters long",

@@ -255,7 +255,7 @@ export const VerifyMailView: React.FC<{ app: App }> = ({ app }) => {
 					id="code"
 					name="code"
 					maxLength={6}
-					placeholder="Verification code"
+					placeholder={t("auth.codePlaceholder")}
 					label={codeTip ? t(codeTip) : ""}
 					hasError={!!error.length}
 					errorText={error}
