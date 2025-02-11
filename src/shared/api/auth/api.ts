@@ -26,6 +26,10 @@ export function login(body: LoginPayload) {
 	return api.post<Tokens>("/auth/login", body);
 }
 
+export function loginWithGoogle(payload: { token: string }) {
+	return api.post<{ accessToken: string }>("/api/auth/google", payload);
+}
+
 export function refreshTokens() {
 	return api.post<Tokens>("/auth/refresh");
 }

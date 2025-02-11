@@ -21,6 +21,8 @@ import { SignupView } from "./SignupView/SignupView";
 import { VerifyMailView } from "./VerifyMailView/VerifyMailView";
 import { WelcomeBoard } from "./WelcomeBoard";
 import { UnauthGuard } from "View/UnauthGuard";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { GoogleCallbackHandler } from "./GoogleAuth";
 
 export function getRender(app: App): {
 	render: () => void;
@@ -33,7 +35,11 @@ export function getRender(app: App): {
 	const router = createBrowserRouter([
 		{
 			path: "/",
-			element: <ContextWrapper app={app} board={board} />,
+			element: (
+				<GoogleOAuthProvider clientId="352056718409-nsunl9p7fl37274jbdnaqr7ulvnh3p7o.apps.googleusercontent.com">
+					<ContextWrapper app={app} board={board} />
+				</GoogleOAuthProvider>
+			),
 			children: [
 				{
 					path: "/",
@@ -47,6 +53,10 @@ export function getRender(app: App): {
 						{
 							path: "add-email",
 							element: <AddEmailView />,
+						},
+						{
+							path: "google/callback",
+							element: <GoogleCallbackHandler />,
 						},
 					],
 				},
