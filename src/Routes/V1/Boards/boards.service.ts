@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, getTableColumns, gt, inArray, isNull, or, sql, notInArray } from "drizzle-orm";
+import { and, asc, desc, eq, getTableColumns, gt, inArray, isNull, or, sql, notInArray, ne } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { boardEvents, boardOwner, boardPermissions, boards, boardSnapshots, userNames, users } from "drizzle/entities";
 import { folders, foldersToBoards, FolderType } from "drizzle/entities/folders";
@@ -141,19 +141,21 @@ export class BoardsService {
                 const boardIds = await Promise.all(
                     boardUUIDs.map(async (uuid) => {
                         const [board] = await tx
-                            .select({ id: boards.id, uniqId: boards.uniqId })
+                            .select({ id: boards.id, uniqId: boards.uniqId, ownerId: boardOwner.ownerId })
                             .from(boards)
+                            .leftJoin(boardOwner, eq(boardOwner.boardId, boards.id))
                             .where(eq(boards.uniqId, uuid));
                         return board;
                     })
                 );
+                const filteredBoardIds = boardIds.filter((b) => b.ownerId !== userId);
                 await Promise.all(
-                    boardIds.map(async (board) => {
-                        const isExistsInFolder = sharedFolderItems.find((b) => b.boardId === board?.uniqId);
+                    filteredBoardIds.map(async (board) => {
+                        const isExistsInFolder = sharedFolderItems.find((b) => b?.boardId === board?.uniqId);
                         const [isOwned] = await tx
                             .select({ ownerId: boardOwner.ownerId })
                             .from(boardOwner)
-                            .where(and(eq(boardOwner.ownerId, userId), eq(boardOwner.boardId, board.id)));
+                            .where(and(eq(boardOwner.ownerId, userId), eq(boardOwner.boardId, board?.id)));
                         if (!isExistsInFolder && !isOwned?.ownerId && board?.id) {
                             await insertQuery.execute({ boardId: board.id });
                         }
