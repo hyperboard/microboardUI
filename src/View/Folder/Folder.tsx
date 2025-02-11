@@ -32,7 +32,6 @@ import { DraggingWrapper } from "./DraggingWrapper";
 import styles from "./Folder.module.css";
 import { FolderItem } from "./FolderItem";
 import { useFoldersContext } from "./FoldersContext";
-import { useOpenedFoldersContext } from "./OpenedFoldersContext";
 import { FolderType } from "shared/apiV2/folders";
 
 type Props = {
@@ -63,8 +62,7 @@ export const Folder = ({
 	parentFolderId,
 }: Props) => {
 	const { open, close } = useContextMenuContext();
-	const { boardId: openedFoldersBoardId, folderId: openedFoldersFolderId } =
-		useOpenedFoldersContext();
+
 	const { setNewName, setRenamingId, renamingId } = useRenameContext();
 	const { board } = useAppContext();
 	const { isOpen: isSidePanelOpen } = useSidePanelContext();
@@ -103,71 +101,39 @@ export const Folder = ({
 			}
 		: undefined;
 
-	const openFoldersContainsBoard = (boardId: string | null) => {
-		if (!folder || !boardId) {
+	const openFolders = (boardId: string | null) => {
+		if (!boardId) {
 			return;
 		}
-		const isOpen = boardsList.isFolderContainsBoard(folder.id, boardId);
 
-		if (isOpen) {
-			accordionRef.current?.open(() => {
-				setTimeout(() => {
-					if (currentBoardRef.current) {
-						currentBoardRef.current.scrollIntoView({
-							behavior: "smooth",
-							block: "nearest",
-						});
-					}
-				}, 0);
-			});
-		} else {
-			setOpenedByDragging(false);
-			accordionRef.current?.close();
-		}
-	};
+		const folderIds = boardsList.getPathToBoard(boardId);
 
-	const openFoldersContainsFolder = (folderId: number) => {
-		if (!folder || !folderId) {
+		if (!folderIds) {
 			return;
 		}
-		const isOpen = boardsList.isFolderContainsFolder(folder.id, folderId);
-		if (isOpen && folder.items.length > 0) {
-			accordionRef.current?.open(() => {
-				setTimeout(() => {
-					if (
-						currentFolderRef.current &&
-						folder.id === openedFoldersFolderId
-					) {
-						currentFolderRef.current.scrollIntoView({
-							behavior: "smooth",
-							block: "nearest",
-						});
-					}
-				}, 0);
-			});
-		} else {
-			setOpenedByDragging(false);
-			accordionRef.current?.close();
+
+		if (folder?.id && folderIds.includes(folder?.id)) {
+			accordionRef.current?.open();
 		}
+
+		setTimeout(() => {
+			if (currentBoardRef.current && folderIds.at(-1) === folder?.id) {
+				currentBoardRef.current.scrollIntoView({
+					behavior: "smooth",
+				});
+			}
+		}, 500);
 	};
 
 	useEffect(() => {
-		console.log("folder effect 1");
-		if (folder && folder.items && folder.items.length > 0) {
-			console.log("folder effect 2");
-			openFoldersContainsBoard(openedFoldersBoardId);
-		}
-		if (folder && folder.items && openedFoldersFolderId) {
-			console.log("folder effect 3");
-			openFoldersContainsFolder(openedFoldersFolderId);
+		if (isSidePanelOpen) {
+			openFolders(boardId);
 		}
 	}, [
-		folder?.id,
-		openedFoldersBoardId,
-		openedFoldersFolderId,
 		isSidePanelOpen,
 		boardsList.getRootFolder(),
 		boardsList.getSharedFolder(),
+		boardId,
 	]);
 
 	useEffect(() => {
@@ -198,21 +164,17 @@ export const Folder = ({
 	}, [isOver]);
 
 	useEffect(() => {
-		console.log("folder effect 6");
 		if (
 			(folder?.type === foldersApi.FolderType.DRAFTS ||
 				folder?.type === foldersApi.FolderType.ROOT ||
 				folder?.type === foldersApi.FolderType.VISITED) &&
 			folder?.items.length > 0
 		) {
-			console.log("folder effect 7");
-			accordionRef.current?.open();
+			if (isSidePanelOpen) {
+				accordionRef.current?.open();
+			}
 		}
-	}, [
-		isSidePanelOpen,
-		boardsList.getRootFolder(),
-		boardsList.getSharedFolder(),
-	]);
+	}, [isSidePanelOpen]);
 
 	if (!folder || folder.type === foldersApi.FolderType.TRASH) {
 		return null;
