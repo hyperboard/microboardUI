@@ -152,10 +152,13 @@ export const Folder = ({
 	};
 
 	useEffect(() => {
+		console.log("folder effect 1");
 		if (folder && folder.items && folder.items.length > 0) {
+			console.log("folder effect 2");
 			openFoldersContainsBoard(openedFoldersBoardId);
 		}
 		if (folder && folder.items && openedFoldersFolderId) {
+			console.log("folder effect 3");
 			openFoldersContainsFolder(openedFoldersFolderId);
 		}
 	}, [
@@ -163,10 +166,14 @@ export const Folder = ({
 		openedFoldersBoardId,
 		openedFoldersFolderId,
 		isSidePanelOpen,
+		boardsList.getRootFolder(),
+		boardsList.getSharedFolder(),
 	]);
 
 	useEffect(() => {
+		console.log("folder effect 4");
 		if (isOver && !accordionRef.current?.isOpen) {
+			console.log("folder effect 5");
 			setOverFolderId(folder?.id);
 			clearTimeout(isOverTimerRef.current);
 			isOverTimerRef.current = setTimeout(() => {
@@ -191,15 +198,15 @@ export const Folder = ({
 	}, [isOver]);
 
 	useEffect(() => {
+		console.log("folder effect 6");
 		if (
 			(folder?.type === foldersApi.FolderType.DRAFTS ||
 				folder?.type === foldersApi.FolderType.ROOT ||
 				folder?.type === foldersApi.FolderType.VISITED) &&
 			folder?.items.length > 0
 		) {
-			if (isSidePanelOpen) {
-				accordionRef.current?.open();
-			}
+			console.log("folder effect 7");
+			accordionRef.current?.open();
 		}
 	}, [
 		isSidePanelOpen,

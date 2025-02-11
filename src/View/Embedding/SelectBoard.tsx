@@ -124,7 +124,6 @@ const SelectBoard: React.FC<{ app: App }> = ({ app }) => {
 
 	useEffect(() => {
 		const fetchBoards = async (): Promise<void> => {
-			await account.init();
 			await app.boardsList.loadBoards();
 		};
 

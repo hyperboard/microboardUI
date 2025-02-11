@@ -54,87 +54,85 @@ const BoardView = ({ app }: Props): JSX.Element => {
 	};
 
 	useLayoutEffect(() => {
-		account.init().finally(() => {
-			boardsList.loadBoards().then(() => {
-				if (params.boardId?.includes("local")) {
-					app.openBoardFromFile().then(() => {
-						navigate(`/boards/${params.boardId}?${searchParams}`, {
-							replace: true,
-						});
-						app.render();
+		boardsList.loadBoards().then(() => {
+			if (params.boardId?.includes("local")) {
+				app.openBoardFromFile().then(() => {
+					navigate(`/boards/${params.boardId}?${searchParams}`, {
+						replace: true,
 					});
-				} else if (params.boardId) {
-					app.openBoard(
-						params.boardId,
-						searchParams.get("accessKey") ?? undefined,
-					).then(() => {
-						navigate(`/boards/${params.boardId}?${searchParams}`, {
-							replace: true,
-						});
-						app.render();
+					app.render();
+				});
+			} else if (params.boardId) {
+				app.openBoard(
+					params.boardId,
+					searchParams.get("accessKey") ?? undefined,
+				).then(() => {
+					navigate(`/boards/${params.boardId}?${searchParams}`, {
+						replace: true,
 					});
-				} else {
-					// const lastSeenBoard = localStorage.getItem("lastSeenBoard");
-					// if (lastSeenBoard) {
-					// 	app.openBoard(lastSeenBoard).then(() => {
-					// 		navigate(`/boards/${lastSeenBoard}`, {
-					// 			replace: true,
-					// 		});
-					// 		app.render();
-					// 	});
-					// } else {
-					// 	boardsList.createBoard().then(boardId => {
-					// 		app.openBoard(boardId).then(() => {
-					// 			navigate(`/boards/${boardId}`, {
-					// 				replace: true,
-					// 			});
-					// 			app.render();
-					// 		});
-					// 	});
-					// }
-					app.openBoard("blank").then(() => {
-						navigate(`/boards/blank`, {
-							replace: true,
-						});
-						app.render();
+					app.render();
+				});
+			} else {
+				// const lastSeenBoard = localStorage.getItem("lastSeenBoard");
+				// if (lastSeenBoard) {
+				// 	app.openBoard(lastSeenBoard).then(() => {
+				// 		navigate(`/boards/${lastSeenBoard}`, {
+				// 			replace: true,
+				// 		});
+				// 		app.render();
+				// 	});
+				// } else {
+				// 	boardsList.createBoard().then(boardId => {
+				// 		app.openBoard(boardId).then(() => {
+				// 			navigate(`/boards/${boardId}`, {
+				// 				replace: true,
+				// 			});
+				// 			app.render();
+				// 		});
+				// 	});
+				// }
+				app.openBoard("blank").then(() => {
+					navigate(`/boards/blank`, {
+						replace: true,
 					});
-				}
+					app.render();
+				});
+			}
 
-				const paymentStatus = searchParams.get("paymentStatus");
-				if (paymentStatus) {
-					openModal(USER_PLAN_MODAL_ID);
+			const paymentStatus = searchParams.get("paymentStatus");
+			if (paymentStatus) {
+				openModal(USER_PLAN_MODAL_ID);
 
-					if (paymentStatus === "success") {
-						billingApi
-							.verifyPayment()
-							.then(() => {
-								notify({
-									header: "Статус оплаты",
-									body: "Оплата успешно прошла",
-									variant: "success",
-								});
-								account.fetchBillingInfo();
-							})
-							.catch(() => {
-								notify({
-									header: "Статус оплаты",
-									body: "Произошла ошибка",
-									variant: "error",
-								});
+				if (paymentStatus === "success") {
+					billingApi
+						.verifyPayment()
+						.then(() => {
+							notify({
+								header: "Статус оплаты",
+								body: "Оплата успешно прошла",
+								variant: "success",
 							});
-					}
-
-					if (paymentStatus === "error") {
-						notify({
-							header: "Статус оплаты",
-							body: "Произошла ошибка",
-							variant: "error",
+							account.fetchBillingInfo();
+						})
+						.catch(() => {
+							notify({
+								header: "Статус оплаты",
+								body: "Произошла ошибка",
+								variant: "error",
+							});
 						});
-					}
-
-					searchParams.delete("paymentStatus");
 				}
-			});
+
+				if (paymentStatus === "error") {
+					notify({
+						header: "Статус оплаты",
+						body: "Произошла ошибка",
+						variant: "error",
+					});
+				}
+
+				searchParams.delete("paymentStatus");
+			}
 		});
 	}, []);
 

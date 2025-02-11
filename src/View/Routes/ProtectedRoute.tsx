@@ -28,10 +28,6 @@ export const ProtectedRoute: React.FC<TProtectedRoute> = ({
 	// 	return <Navigate to='/unauthorized' replace />;
 	// }
 
-	useLayoutEffect(() => {
-		account.init();
-	}, []);
-
 	if (isPublic) {
 		return <Outlet />;
 	}

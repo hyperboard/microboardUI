@@ -24,8 +24,10 @@ window.enableTemplateCreating = false;
 window.enableDiagrams = true;
 
 window.app = createApp();
-window.app.connection.connect().then(() => {
-	window.app.render();
+window.app.account.init().then(() => {
+	window.app.connection.connect().then(() => {
+		window.app.render();
+	});
 });
 
 window.useHTTPSubscription = false;
