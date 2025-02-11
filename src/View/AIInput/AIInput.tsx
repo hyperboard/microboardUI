@@ -275,7 +275,7 @@ export const AIInput = () => {
 			};
 
 			connection.wsClient.send(message);
-		} else if (model === "tst-1-hd") {
+		} else if (model === "tts-1-hd") {
 			const message: AiChatMsg<GenerateAudioRequest> = {
 				type: "AiChat",
 				boardId: board.getBoardId(),
@@ -360,7 +360,7 @@ export const AIInput = () => {
 		if (model === "deepseek-reasoner") {
 			return isPhoneScreen ? "deepseek" : "DeepSeek-R1";
 		}
-		if (model === "tst-1-hd") {
+		if (model === "tts-1-hd") {
 			return isPhoneScreen ? "Text to speech" : "Text to speech HD";
 		}
 		return model;
@@ -524,20 +524,20 @@ export const AIInput = () => {
 							<button
 								className={clsx(
 									styles.modelBtn,
-									isModelDisabled("tst-1-hd") &&
+									isModelDisabled("tts-1-hd") &&
 										styles.disabled,
 								)}
 								onClick={
-									isModelDisabled("tst-1-hd")
+									isModelDisabled("tts-1-hd")
 										? handleOpenModal
-										: selectModel("tst-1-hd")
+										: selectModel("tts-1-hd")
 								}
 							>
 								<strong>
-									{getModelDisplayName("tst-1-hd")}
+									{getModelDisplayName("tts-1-hd")}
 								</strong>
 								<p>{t("ai.models.flux-schnell.description")}</p>
-								{isModelDisabled("tst-1-hd") && (
+								{isModelDisabled("tts-1-hd") && (
 									<Tooltip
 										tooltip={t("userPlan.upgradeTooltip")}
 									/>

@@ -167,7 +167,7 @@ type ImageModels =
 	| "recraft"
 	| "image-generation";
 
-type TextToSpeechModels = "tst-1-hd";
+type TextToSpeechModels = "tts-1-hd";
 
 type CustomModels = "deepseek-chat" | "deepseek-reasoner";
 
