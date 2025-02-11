@@ -10,8 +10,9 @@ export function Element(props: RenderElementProps): React.ReactElement {
 					{...attributes}
 					style={{
 						textAlign: props.element.horisontalAlignment,
+						paddingTop: `${element.paddingTop ?? 0}em`,
+						paddingBottom: `${element.paddingBottom ?? 0}em`,
 						margin: 0,
-						paddingTop: "0.25em",
 					}}
 				>
 					{children}
