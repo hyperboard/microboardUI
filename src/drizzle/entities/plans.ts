@@ -54,6 +54,7 @@ export const userCryptoCheckout = pgTable("user_crypto_checkout", {
     chainName: varchar("crypto_chain").notNull(), // Ethereum, polygon, ...
     addressFrom: varchar("crypto_wallet").notNull(),
     valueWei: varchar("crypto_price").notNull(),
+    annualPayment: boolean("is_annual").notNull().default(false),
     transactionHash: varchar("transaction_hash"),
 });
 

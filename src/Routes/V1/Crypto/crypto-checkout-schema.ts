@@ -5,6 +5,7 @@ export const createCheckoutSchema = z.object({
     symbol: z.string(),
     sender: z.string(),
     planId: z.string(),
+    annualPayment: z.boolean().optional().default(false),
 });
 
 export const cancelCheckoutSchema = z.object({

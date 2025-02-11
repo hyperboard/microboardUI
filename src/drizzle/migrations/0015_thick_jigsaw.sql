@@ -1,0 +1,1 @@
+ALTER TABLE "user_crypto_checkout" ADD COLUMN "is_annual" boolean DEFAULT false NOT NULL;

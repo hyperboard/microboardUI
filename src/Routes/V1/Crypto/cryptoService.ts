@@ -28,6 +28,7 @@ type Checkout = {
     chainName: string;
     addressFrom: string;
     valueWei: string;
+    annualPayment: boolean;
 };
 
 const CHAINS = ["ethereum", "polygon", "arbitrum one"] as const;
@@ -234,7 +235,9 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
                 .execute();
 
             const startDate = new Date();
-            const endDate = new Date(startDate.getTime() + (plan[0].resetPeriodDays || 30) * 24 * 60 * 60 * 1000);
+            const endDate = new Date(
+                startDate.getTime() + (check.annualPayment ? 365 : plan[0].resetPeriodDays || 30) * 24 * 60 * 60 * 1000
+            );
 
             await db
                 .insert(userPlans)
@@ -411,7 +414,7 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
     }
 
     async function createCheckoutDb(checkoutData: Omit<Checkout, "id">): Promise<Checkout & { id: string }> {
-        const { userId, planId, symbol, valueWei, chainName, addressFrom } = checkoutData;
+        const { userId, planId, symbol, valueWei, chainName, addressFrom, annualPayment } = checkoutData;
         const checkoutId = crypto.randomUUID();
         const startDate = new Date();
         const endDate = new Date(startDate.getTime() + 15 * 60 * 1000); // 15 minutes later
@@ -428,6 +431,7 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
                 chainName: chainName.toLowerCase(),
                 startDate,
                 endDate,
+                annualPayment,
             })
             .returning();
 
@@ -437,7 +441,7 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
     }
 
     const createCheckout = catchAsync(async (req, res) => {
-        const { symbol, chain, sender, planId } = req.body;
+        const { symbol, chain, sender, planId, annualPayment } = req.body;
         const typedChain = chain.toLowerCase();
 
         if (!isValidChain(typedChain)) {
@@ -476,8 +480,8 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
 
         const { price } = quote.USD;
         const web3 = new Web3();
-        // const PRICE = 0.001; // price of subscription in USD
-        const PRICE = plan.price / USD; // TODO ADD annual payment
+        // const PRICE = 0.001;
+        const PRICE = (annualPayment ? plan.annualPrice : plan.price) / USD;
         const wei = web3.utils.toWei((PRICE / price).toString(), "ether");
 
         const check = await createCheckoutDb({
@@ -488,6 +492,7 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
             valueWei: wei,
             status: "active",
             chainName: typedChain,
+            annualPayment,
         });
 
         logger.info(`web3: created checkout ${check.id} - ${PRICE / price} ${symbol}`);
@@ -593,13 +598,14 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
             return res.status(HttpStatus.OK).json({ message: "Checkout confirmed successfully." });
         }
 
-        await db
+        const [confirmedCheckout] = await db
             .update(userCryptoCheckout)
             .set({
                 status: "confirmed",
                 transactionHash: hash,
             })
             .where(and(eq(userCryptoCheckout.userId, userId), eq(userCryptoCheckout.planId, planId)))
+            .returning()
             .execute();
 
         logger.info(`web3: confirmed checkout ${checkout.id} by hash ${hash}`);
@@ -618,7 +624,10 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
             .execute();
 
         const startDate = new Date();
-        const endDate = new Date(startDate.getTime() + (plan[0].resetPeriodDays || 30) * 24 * 60 * 60 * 1000);
+        const endDate = new Date(
+            startDate.getTime() +
+                (confirmedCheckout.annualPayment ? 365 : plan[0].resetPeriodDays || 30) * 24 * 60 * 60 * 1000
+        );
 
         await db
             .insert(userPlans)
