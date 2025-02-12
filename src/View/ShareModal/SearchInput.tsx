@@ -335,6 +335,7 @@ export function SearchInput({
 						onKeyDown={handleKeyPress}
 						onKeyUp={stopPropagation}
 						onKeyPress={stopPropagation}
+						onPaste={evt => evt.stopPropagation()}
 						value={currValue}
 						ref={htmlInputRef}
 						style={{ width: inputWidth }}
