@@ -125,7 +125,7 @@ class UsageLimitChecker {
             return { canProceed: false, error: "Audio generation not available in your plan" };
         }
 
-        if (modelUsage.limit <= modelUsage.symbolsUsed + text.length) {
+        if (modelUsage.limit <= modelUsage.symbolsUsed) {
             return { canProceed: false, error: "Audio generation limit exceeded" };
         }
 
