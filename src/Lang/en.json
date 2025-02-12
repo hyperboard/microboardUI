@@ -866,6 +866,10 @@
 		"imageGenerationError": {
 			"header": "Image generation Error",
 			"body": "Failed to generate an image.\nPlease try again"
+		},
+		"audioGenerationError": {
+			"header": "Audio generatio error",
+			"body": "Failed to generate audio.\nPlease try again"
 		}
 	}
 }
