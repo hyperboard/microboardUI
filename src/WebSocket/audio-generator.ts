@@ -20,6 +20,7 @@ export interface GenerateAudioResult {
 export async function generateAudio(options: GenerateAudioOptions): Promise<GenerateAudioResult> {
     const openai = new OpenAI({
         apiKey: options.openaiToken,
+        baseURL: "https://openai-api.microboard.io/v1",
     });
 
     const params: SpeechCreateParams = {

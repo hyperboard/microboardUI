@@ -36,7 +36,7 @@ import { getJson } from "serpapi";
 import { modelLimits } from "drizzle/entities/plans";
 import { boardOwner, boards } from "drizzle/entities";
 import { GenerateImageOptions, ImageGenerator } from "WebSocket/image-generator";
-import { getAudioModelLimist, getCurrentModelLimits, getCurrentUserPlan } from "Routes/V1/Billing/utils";
+import { getAudioModelLimits, getCurrentModelLimits, getCurrentUserPlan } from "Routes/V1/Billing/utils";
 import { Redis } from "Redis";
 import { TelegramService } from "services/TelegramService";
 import { generateAudio, GenerateAudioOptions } from "WebSocket/audio-generator";
@@ -119,13 +119,13 @@ class UsageLimitChecker {
         canProceed: boolean;
         error?: string;
     }> {
-        const modelUsage = await getAudioModelLimist(userId);
+        const modelUsage = await getAudioModelLimits(userId);
 
         if (!modelUsage.limit) {
             return { canProceed: false, error: "Audio generation not available in your plan" };
         }
 
-        if (modelUsage.limit <= modelUsage.symbolsUsed) {
+        if (modelUsage.limit <= modelUsage.symbolsUsed + text.length) {
             return { canProceed: false, error: "Audio generation limit exceeded" };
         }
 

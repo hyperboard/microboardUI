@@ -642,7 +642,6 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
             })
             .execute();
 
-        // Schedule plan expiry after one month
         await schedulePlanExpiry(checkout.userId, endDate);
         res.status(HttpStatus.OK).json({ message: "Checkout confirmed successfully." });
     });

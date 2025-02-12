@@ -106,7 +106,7 @@ export async function getCurrentUserPlan(userId: number) {
     return pendingPlan[0] || currentPlan[0];
 }
 
-export async function getAudioModelLimist(userId: number) {
+export async function getAudioModelLimits(userId: number) {
     const modelId = "tts-1-hd";
     const userPlan = await getCurrentUserPlan(userId);
     const planLimit = PLANS.find((plan) => plan.id === userPlan.planId)?.textToSpeech;
