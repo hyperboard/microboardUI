@@ -137,17 +137,6 @@ export class Account {
 		await this.fetchBillingInfo();
 	}
 
-	async loginWithGoogle(token: string): Promise<void> {
-		const { data } = await authApi.loginWithGoogle({ token });
-
-		if (data?.accessToken) {
-			this._accessToken = data.accessToken;
-		}
-
-		await this.fetchAccountInfo();
-		await this.onLogin?.();
-	}
-
 	async fetchAccountInfo(): Promise<void> {
 		const { data } = await usersApi.getMe();
 		if (data?.id) {
