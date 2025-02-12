@@ -83,12 +83,12 @@ export const SignupView = (): React.ReactElement => {
 
 	const checkName = (val: string): void => {
 		if (val.length < 1) {
-			setError("Name length too short, minimum 1 symbol");
+			setError(t("auth.nameLengthShortError"));
 			setIsDisabled(true);
 			return;
 		}
 		if (val.length > 50) {
-			setError("Please enter a name no longer than 50 characters");
+			setError(t("auth.nameLengthLongError"));
 			setIsDisabled(true);
 			return;
 		}
