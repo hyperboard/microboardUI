@@ -113,6 +113,9 @@ export const FolderItem = forwardRef<HTMLDivElement, Props>(
 					}
 					await app.openBoard(board.id);
 					navigate(`/boards/${board.id}`);
+					const newBoard = app.getBoard();
+					const itemsMbr = newBoard.items.getMbr();
+					newBoard.camera.zoomToFit(itemsMbr)
 				},
 				ev => {
 					ev.preventDefault();
