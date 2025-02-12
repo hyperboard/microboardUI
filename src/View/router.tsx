@@ -41,16 +41,6 @@ export function getRender(app: App): {
 					children: [],
 				},
 				{
-					path: "/auth",
-					element: <AuthView />,
-					children: [
-						{
-							path: "google/callback",
-							element: <GoogleCallbackHandler />,
-						},
-					],
-				},
-				{
 					path: "/bind-email",
 					element: <AuthView />,
 					children: [
