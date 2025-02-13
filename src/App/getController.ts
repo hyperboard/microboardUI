@@ -502,7 +502,7 @@ export function getController(
 			return;
 		}
 
-		let data = board.selection.copy();
+		const data = board.selection.copy();
 		if ("imageElement" in data) {
 			copyImage(event, board, clipboard, data);
 		} else {
