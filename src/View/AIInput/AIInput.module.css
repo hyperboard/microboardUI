@@ -332,9 +332,9 @@
 
 @media screen and (max-width: 550px) {
 	.inputContainer {
-		width: calc(100% - 24px);
 		transform: translateX(0);
-		left: 12px;
+		width: calc(100% - 82px);
+		left: 69px;
 	}
 
 	.contentWrapper {
