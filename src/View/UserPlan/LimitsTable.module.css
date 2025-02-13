@@ -1,6 +1,15 @@
 .table {
 	font-size: 14px;
 	font-weight: 400;
+	border-collapse: collapse;
+}
+
+.row {
+	border-bottom: 1px solid #e9eaec;
+}
+
+.unlimited {
+	color: rgba(38, 189, 108, 1);
 }
 
 .table td,
@@ -14,7 +23,6 @@
 
 .header {
 	background-color: rgb(247, 247, 248);
-	border-bottom: 1px solid #e9eaec;
 }
 
 .modelsHeading {
@@ -42,4 +50,9 @@
 
 .modelLimitReached {
 	color: rgba(13, 17, 38, 0.4);
+}
+
+.limits {
+	font-size: 14px;
+	font-weight: 400;
 }

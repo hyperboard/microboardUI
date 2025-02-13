@@ -47,6 +47,21 @@ export function UserPlanUsage({
 		month: "numeric",
 		day: "numeric",
 	}).format(new Date(cancellationDate ?? Date.now()));
+	const previousCancellationDate = new Date(
+		new Date(cancellationDate ?? Date.now()).setDate(
+			new Date(cancellationDate ?? Date.now()).getDate() - 1,
+		),
+	);
+
+	const formattedPreviousCancellationDate = new Intl.DateTimeFormat(
+		i18n.language,
+		{
+			year: "numeric",
+			month: "numeric",
+			day: "numeric",
+		},
+	).format(previousCancellationDate);
+
 	return (
 		<div className={styles.container}>
 			<p className={styles.planUsage}>
@@ -56,7 +71,7 @@ export function UserPlanUsage({
 							t={t}
 							i18nKey={"userPlan.currentPlanFree"}
 							components={[<span />]}
-						/>
+						/>{" "}
 						{history ? (
 							hasHistory ? (
 								<span
@@ -93,10 +108,11 @@ export function UserPlanUsage({
 							<span>
 								{t("userPlan.currentPlanActive", {
 									planName,
-									cancellationDate: formattedCancellationDate,
+									cancellationDate:
+										formattedPreviousCancellationDate,
 								})}
 							</span>
-						)}
+						)}{" "}
 						{history ? (
 							hasHistory ? (
 								<span
@@ -113,7 +129,7 @@ export function UserPlanUsage({
 							>
 								{status === "active"
 									? t("userPlan.nextPayment", {
-											cancellationDate:
+											paymentDate:
 												formattedCancellationDate,
 										})
 									: t("userPlan.limits")}
@@ -125,7 +141,7 @@ export function UserPlanUsage({
 							</span>
 						)}
 					</>
-				)}
+				)}{" "}
 				{status === "active" && onCancel && (
 					<span onClick={onCancel} className={styles.cancel}>
 						Отменить

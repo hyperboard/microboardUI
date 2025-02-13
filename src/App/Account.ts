@@ -120,7 +120,11 @@ export class Account {
 			const { data: billingInfo } = await billingApi.getUserPlanDetails();
 			if (billingInfo) {
 				this.billingInfo = billingInfo;
+				this.setIsAnnualPayment(billingInfo.plan.isAnnual ?? false);
+				console.log(this.getIsAnnualPayment());
 			}
+
+			await this.fetchBillingHistory();
 		} catch {
 			console.error("Error fetching billing user info");
 		} finally {
@@ -155,7 +159,6 @@ export class Account {
 		}
 
 		await this.fetchBillingInfo();
-		await this.fetchBillingHistory();
 
 		this.subject.publish(this.info);
 	}

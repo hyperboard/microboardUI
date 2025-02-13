@@ -692,6 +692,9 @@
 			},
 			"deepseek-chat": {
 				"description": "Better than o1 in many cases"
+			},
+			"tts-1-hd": {
+				"description": "Transforms text into speech"
 			}
 		},
 		"unauth": {
@@ -784,12 +787,14 @@
 		"avatarTypeConstraint": "The image must be in jpeg, png or svg format"
 	},
 	"userPlan": {
+		"paymentHistoryHeading": "Payment History",
+		"currentPlanHeading": "Current Plan",
 		"upgradePlan": "Upgrade Plan",
 		"currentPlanFree": "The Basic plan is active.",
 		"limits": "Limits",
 		"currentPlanPending": "The {{planName}} plan is paid until {{cancellationDate}}.",
 		"currentPlanActive": "The current {{planName}} plan is paid until {{cancellationDate}}. Auto-payment is enabled.",
-		"nextPayment": "Next payment: {{cancellationDate}}.",
+		"nextPayment": "Next payment: {{paymentDate}}",
 		"pendingBtn": "The plan will be effective as of {{activationDate}}",
 		"cancelPayment": "Cancel upcoming payment",
 		"unlimited": "Unlimited",
@@ -798,6 +803,19 @@
 		"customPrice": "Custom Pricing",
 		"upgradeTooltip": "Upgrade your plan",
 		"backToProfile": "Back to Profile settings",
+		"backToPlans": "Back to All Plans",
+		"backToCurrentPlan": "Back to Current Plan",
+		"limitsTable": {
+			"modelName": "Model",
+			"requestsPerWeek": "Remaining requests per week",
+			"requestsPerDay": "Remaining requests per day"
+		},
+		"historyTable": {
+			"plan": "Plan",
+			"paymentDate": "Payment date",
+			"price": "Price",
+			"paymentType": "Payment type"
+		},
 		"subscribe": {
 			"current": "Current Plan",
 			"getPlan": "Get {{plan}}",

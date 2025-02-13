@@ -62,19 +62,27 @@ export function LimitsModal() {
 	return (
 		<UiModal modalId={LIMITS_MODAL_ID} closeByBgClick={false}>
 			<div className={styles.wrapper}>
-				<h1 className={styles.heading}>Current Plan</h1>
+				<h1 className={styles.heading}>
+					{t("userPlan.currentPlanHeading")}
+				</h1>
 				<UserPlanUsage
-					planName={account.billingInfo?.plan.name ?? "basic"}
+					planName={
+						PLAN_NAMES[account.billingInfo?.plan.name ?? "basic"]
+					}
 					isFree={account.billingInfo?.plan.name === "basic"}
 					history
 					hasHistory={account.billingHistory.length > 0}
-					onCancel={onDowngrade}
+					onCancel={
+						account.billingInfo?.plan.name !== "basic"
+							? onDowngrade
+							: undefined
+					}
 					status={account.billingInfo?.plan.status ?? "active"}
 				/>
 				<LimitsTable />
 				<button className={styles.plansBtn} onClick={handleBackButton}>
 					<Icon iconName="ArrowLeft1" />
-					Back to All Plans
+					{t("userPlan.backToPlans")}
 				</button>
 			</div>
 		</UiModal>

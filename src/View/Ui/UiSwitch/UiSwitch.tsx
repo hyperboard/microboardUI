@@ -3,7 +3,10 @@ import React, {
 	useRef,
 	useState,
 	type MouseEventHandler,
+	type MutableRefObject,
 	type ReactNode,
+	type Ref,
+	type RefObject,
 } from "react";
 import style from "./UiSwitch.module.css";
 import clsx from "clsx";
@@ -20,18 +23,16 @@ type Option = {
 				value: Value;
 				isActive: boolean;
 				activeClass: string;
+				ref: RefObject<(HTMLElement | null)[]>;
 		  }) => ReactNode);
 };
 type Props = {
-	initialValue?: Value;
+	value?: Value;
 	options: Option[];
 	onChange?: (value: Value) => void;
 };
 
-export function UiSwitch({ onChange, options, initialValue }: Props) {
-	const [currValue, setCurrValue] = useState<Value>(
-		initialValue ?? options[0]?.value,
-	);
+export function UiSwitch({ onChange, options, value }: Props) {
 	const switchRef = useRef<HTMLDivElement>(null);
 	const optionsRefs = useRef<(HTMLElement | null)[]>([]);
 
@@ -51,46 +52,50 @@ export function UiSwitch({ onChange, options, initialValue }: Props) {
 
 	useLayoutEffect(() => {
 		const initialOptionIndex = options.findIndex(
-			({ value }) => value === initialValue,
+			({ value: optionValue }) => optionValue === value,
 		);
+		console.log("index", initialOptionIndex);
+		console.log("refs", optionsRefs);
 		const selectedOptionRef =
 			optionsRefs.current[
 				initialOptionIndex === -1 ? 0 : initialOptionIndex
 			];
+		console.log("effect", selectedOptionRef);
 		if (selectedOptionRef) {
+			console.log("calcStyles");
 			calcSelectorStyles(selectedOptionRef);
 		}
-	}, []);
+	}, [value]);
 	const handleOptionClick =
 		(value: Value): MouseEventHandler =>
 		evt => {
 			evt.preventDefault();
 			evt.stopPropagation();
 			onChange?.(value);
-			setCurrValue(value);
 			calcSelectorStyles(evt.currentTarget as HTMLElement);
 		};
 
 	return (
 		<div className={style.switch} ref={switchRef}>
-			{options.map(({ value, label }) =>
+			{options.map(({ value: optionValue, label }) =>
 				typeof label === "function" ? (
 					label({
 						textClass: style.btnText,
 						btnClass: style.btn,
-						handleClick: handleOptionClick(value),
-						value,
-						isActive: value === currValue,
+						handleClick: handleOptionClick(optionValue),
+						value: optionValue,
+						isActive: value === optionValue,
 						activeClass: style.active,
+						ref: optionsRefs as RefObject<(HTMLElement | null)[]>,
 					})
 				) : (
 					<button
 						key={label}
 						className={clsx(
 							style.btn,
-							currValue === value && style.active,
+							optionValue === value && style.active,
 						)}
-						onClick={handleOptionClick(value)}
+						onClick={handleOptionClick(optionValue)}
 						ref={ref => optionsRefs.current.push(ref)}
 					>
 						<span className={style.btnText}>{label}</span>

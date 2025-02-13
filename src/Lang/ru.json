@@ -689,6 +689,9 @@
 			},
 			"deepseek-chat": {
 				"description": "Лучше чем o1 для множества задач"
+			},
+			"tts-1-hd": {
+				"description": "Превратит текст в речь"
 			}
 		},
 		"unauth": {
@@ -781,12 +784,14 @@
 		"avatarTypeConstraint": "Изображение должно быть в формате jpeg, png или svg"
 	},
 	"userPlan": {
+		"paymentHistoryHeading": "История платежей",
+		"currentPlanHeading": "Текущий план",
 		"upgradePlan": "Выбрать тариф",
-		"currentPlanFree": "Тариф Базовый действует.",
+		"currentPlanFree": "Тариф Базовый активен.",
 		"limits": "Лимиты",
 		"currentPlanPending": "Тариф {{planName}} оплачен до {{cancellationDate}}.",
 		"currentPlanActive": "Тариф {{planName}} оплачен до {{cancellationDate}}. Подключен автоплатеж.",
-		"nextPayment": "Следующее списание: {{cancellationDate}}.",
+		"nextPayment": "Следующее списание: {{paymentDate}}",
 		"pendingBtn": "Будет действовать с {{activationDate}}",
 		"cancelPayment": "Отказаться",
 		"unlimited": "Без ограничений",
@@ -795,6 +800,19 @@
 		"customPrice": "По запросу",
 		"upgradeTooltip": "Увеличить лимит",
 		"backToProfile": "Вернуться к настройкам профиля",
+		"backToPlans": "Назад к выбору тарифа",
+		"backToCurrentPlan": "Назад к текущему плану",
+		"limitsTable": {
+			"modelName": "Модель",
+			"requestsPerWeek": "Доступно запросов в неделю",
+			"requestsPerDay": "Доступно запросов в день"
+		},
+		"historyTable": {
+			"plan": "Тариф",
+			"paymentDate": "Дата оплаты",
+			"price": "Сумма",
+			"paymentType": "Способ оплаты"
+		},
 		"subscribe": {
 			"current": "Действует",
 			"getPlan": "Подключить {{plan}}",
@@ -823,7 +841,7 @@
 				"description": "GPT-4o mini and GPT-4o",
 				"features": [
 					"Безлимит запросов к GPT-4o mini",
-					"50 запросов в неделю к 4o",
+					"50 запросов в неделю к GPT-4o",
 					"100 запросов в день к DeepSeek-R1",
 					"25 запросов в день к Flux.1 schnell",
 					"Доски, фигуры — без ограничений",

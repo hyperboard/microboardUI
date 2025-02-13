@@ -1,7 +1,10 @@
+import type { OpenAIModels } from "App/Connection";
 import { useAccount } from "App/useAccount";
 import { PROFILE_SETTINGS_MODAL_ID } from "View/ProfileSettingsModal";
 import { useUiModalContext } from "View/Ui/UiModal";
 import { UiModal } from "View/Ui/UiModal/UiModal";
+import { UiSwitch } from "View/Ui/UiSwitch";
+import clsx from "clsx";
 import React, { useEffect, type MouseEventHandler } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "shared/ui-lib/Button";
@@ -13,11 +16,6 @@ import {
 } from "./PlanCards";
 import styles from "./UserPlanModal.module.css";
 import { UserPlanUsage } from "./UserPlanUsage";
-import type { OpenAIModels } from "App/Connection";
-import { notify } from "View/Ui/Toast";
-import { useConfirmModalContext } from "View/Modal/ConfirmModal";
-import { UiSwitch } from "View/Ui/UiSwitch";
-import clsx from "clsx";
 
 export const USER_PLAN_MODAL_ID = Symbol("userPlanModal");
 
@@ -64,13 +62,17 @@ export function UserPlanModal() {
 								textClass,
 								activeClass,
 								isActive,
+								value,
+								ref: optionsRefs,
 							}) => (
 								<button
+									key={value.toString()}
 									onClick={handleClick}
 									className={clsx(
 										btnClass,
 										isActive && activeClass,
 									)}
+									ref={ref => optionsRefs.current?.push(ref)}
 								>
 									<span
 										className={clsx(
@@ -79,7 +81,12 @@ export function UserPlanModal() {
 										)}
 									>
 										<span>Annual</span>
-										<span className={styles.badge}>
+										<span
+											className={clsx(
+												styles.badge,
+												isActive && styles.active,
+											)}
+										>
 											Save 30%
 										</span>
 									</span>
@@ -89,7 +96,7 @@ export function UserPlanModal() {
 						},
 					]}
 					onChange={val => account.setIsAnnualPayment(val as boolean)}
-					initialValue={account.getIsAnnualPayment()}
+					value={account.getIsAnnualPayment()}
 				/>
 				<div className={styles.cards}>
 					<BasicPlanCard />

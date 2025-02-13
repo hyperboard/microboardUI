@@ -29,12 +29,14 @@ export type AvailableModel = {
 };
 
 type Status = "pending_cancellation" | "active";
+type PaymentType = "card" | "crypto";
 
 export type UserPlan = {
 	name: string;
 	periodStart: string;
 	periodEnd: string;
 	status: Status;
+	isAnnual: boolean;
 };
 
 export type UserLimits = {
@@ -72,9 +74,12 @@ export type HistoryRecord = {
 	startDate: string;
 	endDate: string;
 	status: Status;
-	canceledAt: string | null;
+	canceledAt?: string | null;
 	price: number;
 	description: string;
 	monthlyTokenLimit: number;
 	storageLimit: number;
+	isAnnual: boolean;
+	symbol?: string;
+	paymentType: PaymentType;
 };
