@@ -52,6 +52,8 @@ export function Element(props: RenderElementProps): React.ReactElement {
 					{...attributes}
 					style={{
 						textAlign: props.element.horisontalAlignment,
+						paddingTop: `${element.paddingTop ?? 0}em`,
+						paddingBottom: `${element.paddingBottom ?? 0}em`,
 					}}
 				>
 					{children}
@@ -63,6 +65,8 @@ export function Element(props: RenderElementProps): React.ReactElement {
 					{...attributes}
 					style={{
 						textAlign: props.element.horisontalAlignment,
+						paddingTop: `${element.paddingTop ?? 0}em`,
+						paddingBottom: `${element.paddingBottom ?? 0}em`,
 					}}
 				>
 					{children}
@@ -74,6 +78,8 @@ export function Element(props: RenderElementProps): React.ReactElement {
 					{...attributes}
 					style={{
 						textAlign: props.element.horisontalAlignment,
+						paddingTop: `${element.paddingTop ?? 0}em`,
+						paddingBottom: `${element.paddingBottom ?? 0}em`,
 					}}
 				>
 					{children}
@@ -85,6 +91,8 @@ export function Element(props: RenderElementProps): React.ReactElement {
 					{...attributes}
 					style={{
 						textAlign: props.element.horisontalAlignment,
+						paddingTop: `${element.paddingTop ?? 0}em`,
+						paddingBottom: `${element.paddingBottom ?? 0}em`,
 					}}
 				>
 					{children}
@@ -96,6 +104,8 @@ export function Element(props: RenderElementProps): React.ReactElement {
 					{...attributes}
 					style={{
 						textAlign: props.element.horisontalAlignment,
+						paddingTop: `${element.paddingTop ?? 0}em`,
+						paddingBottom: `${element.paddingBottom ?? 0}em`,
 					}}
 				>
 					{children}
@@ -107,6 +117,8 @@ export function Element(props: RenderElementProps): React.ReactElement {
 					{...attributes}
 					style={{
 						textAlign: props.element.horisontalAlignment,
+						paddingTop: `${element.paddingTop ?? 0}em`,
+						paddingBottom: `${element.paddingBottom ?? 0}em`,
 					}}
 				>
 					{children}
@@ -119,6 +131,8 @@ export function Element(props: RenderElementProps): React.ReactElement {
 					style={{
 						textAlign: props.element.horisontalAlignment,
 						margin: 0,
+						paddingTop: `${element.paddingTop ?? 0}em`,
+						paddingBottom: `${element.paddingBottom ?? 0}em`,
 					}}
 				>
 					{children}
@@ -131,7 +145,8 @@ export function Element(props: RenderElementProps): React.ReactElement {
 					style={{
 						textAlign: props.element.horisontalAlignment,
 						margin: 0,
-						paddingTop: "0.25em",
+						paddingTop: `${element.paddingTop ?? 0}em`,
+						paddingBottom: `${element.paddingBottom ?? 0}em`,
 						whiteSpace: "pre-wrap",
 					}}
 				>
