@@ -12,7 +12,7 @@ import { useAIContext } from "View/AIInput/AIContext";
 import { getContextItems, getIdeaFromSelection } from "View/AIInput";
 import { useAccount } from "App/useAccount";
 import { useUiModalContext } from "View/Ui/UiModal/UiModalContext";
-import { AiChatMsg, UserRequest } from "App/Connection";
+import { AiChatMsg, GenerateImageRequest, UserRequest } from "App/Connection";
 
 type Props = {
 	rounded?: "left" | "right" | "none" | "full";
@@ -101,29 +101,49 @@ export function AIGeneration({ rounded = "none" }: Props): React.ReactElement {
 		board.aiGeneratingOnItem = responseAdded.getId();
 		board.camera.subscribeToItem(responseAdded);
 
-		const contextRequest = nodeWithParents
-			? {
-					range: 5,
-					messageId: nodeWithParents.node.getId(),
-				}
-			: undefined;
+		if (model === "image-generation") {
+			const options = {
+				model: "flux-schnell",
+				aspect_ratio: "1:1",
+			};
 
-		const message: AiChatMsg<UserRequest> = {
-			type: "AiChat",
-			boardId: board.getBoardId(),
-			event: {
-				method: "UserRequest",
-				context: [],
-				boardContext,
-				idea,
-				model,
-				itemId: responseAdded.getId(),
-				requestItemId: requestAdded.getId(),
-				contextRequest,
-			},
-		};
+			const message: AiChatMsg<GenerateImageRequest> = {
+				type: "AiChat",
+				boardId: board.getBoardId(),
+				event: {
+					method: "GenerateImage",
+					prompt: idea,
+					itemId: responseAdded.getId(),
+					options,
+				},
+			};
 
-		connection.wsClient.send(message);
+			connection.wsClient.send(message);
+		} else {
+			const contextRequest = nodeWithParents
+				? {
+						range: 5,
+						messageId: nodeWithParents.node.getId(),
+					}
+				: undefined;
+
+			const message: AiChatMsg<UserRequest> = {
+				type: "AiChat",
+				boardId: board.getBoardId(),
+				event: {
+					method: "UserRequest",
+					context: [],
+					boardContext,
+					idea,
+					model,
+					itemId: responseAdded.getId(),
+					requestItemId: requestAdded.getId(),
+					contextRequest,
+				},
+			};
+
+			connection.wsClient.send(message);
+		}
 
 		const itemsInView = board.items.getInView();
 		const viewport = board.camera.getMbr();
