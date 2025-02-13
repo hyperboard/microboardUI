@@ -399,6 +399,13 @@ export const AIInput = () => {
 		return null;
 	}
 
+	const getDropDownTooltip = (model: OpenAIModels): boolean | JSX.Element => {
+		const dropdownTooltip = account.isLoggedIn
+			? t("userPlan.upgradeTooltip")
+			: t("AIInput.authTooltip");
+		return isModelDisabled(model) && <Tooltip tooltip={dropdownTooltip} />;
+	};
+
 	return (
 		<div
 			className={clsx(styles.inputContainer, isShaking && styles.shake)}
@@ -453,11 +460,7 @@ export const AIInput = () => {
 							>
 								<strong>GPT-4o mini</strong>
 								<p>{t("ai.models.gpt-4o-mini.description")}</p>
-								{isModelDisabled("gpt-4o-mini") && (
-									<Tooltip
-										tooltip={t("userPlan.upgradeTooltip")}
-									/>
-								)}
+								{getDropDownTooltip("gpt-4o-mini")}
 							</button>
 							<button
 								className={clsx(
@@ -473,11 +476,7 @@ export const AIInput = () => {
 							>
 								<strong>GPT-4o</strong>
 								<p>{t("ai.models.gpt-4o.description")}</p>
-								{isModelDisabled("gpt-4o") && (
-									<Tooltip
-										tooltip={t("userPlan.upgradeTooltip")}
-									/>
-								)}
+								{getDropDownTooltip("gpt-4o")}
 							</button>
 							<button
 								className={clsx(
@@ -495,11 +494,7 @@ export const AIInput = () => {
 								<p>
 									{t("ai.models.deepseek-chat.description")}
 								</p>
-								{isModelDisabled("deepseek-reasoner") && (
-									<Tooltip
-										tooltip={t("userPlan.upgradeTooltip")}
-									/>
-								)}
+								{getDropDownTooltip("deepseek-reasoner")}
 							</button>
 							<button
 								className={clsx(
@@ -515,11 +510,7 @@ export const AIInput = () => {
 							>
 								<strong>Flux.1 schnell</strong>
 								<p>{t("ai.models.flux-schnell.description")}</p>
-								{isModelDisabled("image-generation") && (
-									<Tooltip
-										tooltip={t("userPlan.upgradeTooltip")}
-									/>
-								)}
+								{getDropDownTooltip("image-generation")}
 							</button>
 							<button
 								className={clsx(
@@ -536,12 +527,8 @@ export const AIInput = () => {
 								<strong>
 									{getModelDisplayName("tts-1-hd")}
 								</strong>
-								<p>{t("ai.models.flux-schnell.description")}</p>
-								{isModelDisabled("tts-1-hd") && (
-									<Tooltip
-										tooltip={t("userPlan.upgradeTooltip")}
-									/>
-								)}
+								<p>{t("ai.models.tts-1-hd.description")}</p>
+								{getDropDownTooltip("tts-1-hd")}
 							</button>
 						</div>
 					)}

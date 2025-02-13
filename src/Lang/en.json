@@ -688,7 +688,7 @@
 				"description": "Great for most tasks"
 			},
 			"flux-schnell": {
-				"description": "Transforming your text into visuals"
+				"description": "Transforms text into visuals"
 			},
 			"deepseek-chat": {
 				"description": "Better than o1 in many cases"
@@ -888,6 +888,7 @@
 		"audioGenerationError": {
 			"header": "Audio generatio error",
 			"body": "Failed to generate audio.\nPlease try again"
-		}
+		},
+		"authTooltip": "Sign in to access all features of Microboard"
 	}
 }
