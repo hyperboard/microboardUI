@@ -3,7 +3,7 @@ import { catchAsync } from "../../../shared/lib/catchAsync";
 import { desc, eq, and } from "drizzle-orm";
 import winston from "winston";
 import { db } from "../../../drizzle/db";
-import { plans, userPlans } from "../../../drizzle/entities/plans";
+import { plans, userCryptoCheckout, userPlans } from "../../../drizzle/entities/plans";
 import { jwtMiddleware } from "../../../Middlewares/jwt.middleware";
 import { body } from "express-validator";
 import { StripeService } from "./stripe";
@@ -78,6 +78,7 @@ export const getBillingRouter = (
                     periodStart: currentPlan.startDate,
                     periodEnd: currentPlan.endDate,
                     status: currentPlan.status,
+                    isAnnual: currentPlan.isAnnual,
                 },
             });
         })
@@ -110,7 +111,7 @@ export const getBillingRouter = (
             const userToken = await token;
             const userId = parseInt(userToken?.sub);
 
-            const history = await db
+            const stripeHistory = await db
                 .select({
                     id: userPlans.id,
                     planId: userPlans.planId,
@@ -123,11 +124,37 @@ export const getBillingRouter = (
                     description: plans.description,
                     monthlyTokenLimit: plans.monthlyTokenLimit,
                     storageLimit: plans.storageLimit,
+                    isAnnual: userPlans.annualPayment,
                 })
                 .from(userPlans)
                 .innerJoin(plans, eq(userPlans.planId, plans.id))
                 .where(eq(userPlans.userId, userId))
                 .orderBy(desc(userPlans.startDate));
+
+            const cryptoHistory = await db
+                .select({
+                    id: userCryptoCheckout.id,
+                    planId: userCryptoCheckout.planId,
+                    planName: plans.name,
+                    startDate: userCryptoCheckout.startDate,
+                    endDate: userCryptoCheckout.endDate,
+                    status: userCryptoCheckout.status,
+                    price: plans.price,
+                    description: plans.description,
+                    monthlyTokenLimit: plans.monthlyTokenLimit,
+                    storageLimit: plans.storageLimit,
+                    symbol: userCryptoCheckout.symbol,
+                    isAnnual: userCryptoCheckout.annualPayment,
+                })
+                .from(userCryptoCheckout)
+                .innerJoin(plans, eq(userCryptoCheckout.planId, plans.id))
+                .where(eq(userCryptoCheckout.userId, userId))
+                .orderBy(desc(userCryptoCheckout.startDate));
+
+            const history = [
+                ...stripeHistory.map((val) => ({ ...val, paymentType: "card" })),
+                ...cryptoHistory.map((val) => ({ ...val, paymentType: "crypto" })),
+            ].sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
 
             res.json(history);
         })

@@ -37,6 +37,7 @@ export const userPlans = pgTable("user_plans", {
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
     stripeSubscriptionId: varchar("stripe_subscription_id"),
     transactionHash: varchar("transaction_hash"),
+    annualPayment: boolean("is_annual").notNull().default(false),
 });
 
 export const userCryptoCheckout = pgTable("user_crypto_checkout", {

@@ -1,0 +1,1 @@
+ALTER TABLE "user_plans" ADD COLUMN "is_annual" boolean DEFAULT false NOT NULL;

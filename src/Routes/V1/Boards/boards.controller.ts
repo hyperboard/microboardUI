@@ -1,3 +1,5 @@
+import { AccessKeyType } from "drizzle/entities/boardAccessKeys";
+import type { Request } from "express";
 import { HttpStatus } from "shared/enums/http-status.enum";
 import { HttpException } from "shared/exceptions/http-exception";
 import { catchAsync } from "shared/lib/catchAsync";
@@ -5,9 +7,7 @@ import type { FoldersService } from "../Foldres/folders.service";
 import type { AccessKeysService } from "./access-keys.service";
 import type { BoardsService } from "./boards.service";
 import { AccessKeyDto, BoardDto, GrantedUserDto } from "./dto";
-import { AccessKeyType } from "drizzle/entities/boardAccessKeys";
-import { ACCESS_KEY_PARAM, BOARD_UUID_PARAM, type UserAccessType } from "./types";
-import type { Request } from "express";
+import { ACCESS_KEY_PARAM, BOARD_UUID_PARAM } from "./types";
 
 export function getBoardsController(
     boardsService: BoardsService,

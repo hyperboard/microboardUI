@@ -39,6 +39,7 @@ export async function getCurrentUserPlan(userId: number) {
             endDate: userPlans.endDate,
             status: userPlans.status,
             storageLimit: plans.storageLimit,
+            isAnnual: userPlans.annualPayment,
         })
         .from(userPlans)
         .innerJoin(plans, eq(userPlans.planId, plans.id))
@@ -60,6 +61,7 @@ export async function getCurrentUserPlan(userId: number) {
             endDate: userPlans.endDate,
             status: userPlans.status,
             storageLimit: plans.storageLimit,
+            isAnnual: userPlans.annualPayment,
         })
         .from(userPlans)
         .innerJoin(plans, eq(userPlans.planId, plans.id))
@@ -100,6 +102,7 @@ export async function getCurrentUserPlan(userId: number) {
             endDate: thirtyDaysFromNow,
             status: "active" as const,
             storageLimit: freePlan[0].storageLimit,
+            isAnnual: false,
         };
     }
 

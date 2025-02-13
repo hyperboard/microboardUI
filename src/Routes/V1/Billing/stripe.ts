@@ -293,6 +293,9 @@ export const createStripeService = (stripe: Stripe, redis: Redis): StripeService
                             // startDate.getTime() + (plan[0].resetPeriodDays || 30) * 24 * 60 * 60 * 1000
                             stripeSubscription.current_period_end * 1000
                         );
+                        const isAnnual = stripeSubscription.items.data.some(
+                            (item) => item.price.recurring?.interval === "year"
+                        );
 
                         await tx.insert(userPlans).values({
                             id: crypto.randomUUID(),
@@ -302,6 +305,7 @@ export const createStripeService = (stripe: Stripe, redis: Redis): StripeService
                             endDate,
                             status: "active",
                             stripeSubscriptionId: session.subscription as string,
+                            annualPayment: isAnnual,
                         });
                     });
                     break;
