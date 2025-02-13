@@ -21,6 +21,7 @@ import { SignupView } from "./SignupView/SignupView";
 import { VerifyMailView } from "./VerifyMailView/VerifyMailView";
 import { WelcomeBoard } from "./WelcomeBoard";
 import { UnauthGuard } from "View/UnauthGuard";
+import { BindEmailView } from "./VerifyMailView/BindEmailView";
 
 export function getRender(app: App): {
 	render: () => void;
@@ -47,6 +48,10 @@ export function getRender(app: App): {
 						{
 							path: "add-email",
 							element: <AddEmailView />,
+						},
+						{
+							path: "verify",
+							element: <BindEmailView />,
 						},
 					],
 				},
