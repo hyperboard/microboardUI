@@ -684,7 +684,7 @@
 			"gpt-4o": {
 				"description": "Отлично подходит для большинства задач"
 			},
-			"flux-schnell": {
+			"image-generation": {
 				"description": "Превратит текст в изображение"
 			},
 			"deepseek-chat": {

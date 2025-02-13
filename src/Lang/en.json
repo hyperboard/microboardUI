@@ -687,7 +687,7 @@
 			"gpt-4o": {
 				"description": "Great for most tasks"
 			},
-			"flux-schnell": {
+			"image-generation": {
 				"description": "Transforms text into visuals"
 			},
 			"deepseek-chat": {

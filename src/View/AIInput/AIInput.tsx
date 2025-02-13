@@ -1,25 +1,16 @@
-import React, {
-	useEffect,
-	useRef,
-	useState,
-	type MouseEventHandler,
-	type SyntheticEvent,
-} from "react";
+import React, { useEffect, useRef, useState, type SyntheticEvent } from "react";
 import styles from "./AIInput.module.css";
 import { useAppSubscription } from "Board/useBoardSubscription";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
 import { Icon } from "View/Icon";
-import { StarIcon } from "./StarIcon";
 import {
 	AiChatMsg,
 	GenerateAudioRequest,
 	GenerateImageRequest,
-	OpenAIModels,
 	UserRequest,
 } from "App/Connection";
 import { useForceUpdate } from "lib/useForceUpdate";
-import { Chevron } from "shared/ui-lib/Dropdown/Chevron";
 import { UiPanel } from "View/Ui/UiPanel";
 import { useAccount } from "App/useAccount";
 import { useUiModalContext } from "View/Ui/UiModal";
@@ -38,6 +29,7 @@ import { useAIContext } from "View/AIInput";
 import { Tooltip } from "View/Ui/UiButton/Tooltip";
 import { SessionStorage } from "App/SessionStorage";
 import { UiButton } from "View/Ui/UiButton/UiButton";
+import { AIDropdown } from "./AIDropdown";
 
 const sessionStorage = new SessionStorage();
 
@@ -60,7 +52,6 @@ export const AIInput = () => {
 		stopStream,
 		responseNodeId,
 		model,
-		setModel,
 		createNodesWithConnectors,
 		quotedText,
 		setQuotedText,
@@ -171,17 +162,6 @@ export const AIInput = () => {
 			event.preventDefault();
 			await handleSendClick(event);
 		}
-	};
-
-	const toggleModelDropdown = (): void => {
-		if (!board.aiGeneratingOnItem) {
-			setIsDropdownOpen(!isDropdownOpen);
-		}
-	};
-
-	const selectModel = (model: OpenAIModels) => (): void => {
-		setModel(model);
-		setIsDropdownOpen(false);
 	};
 
 	useEffect(() => {
@@ -347,25 +327,6 @@ export const AIInput = () => {
 		}
 	};
 
-	const getModelDisplayName = (model: OpenAIModels): string => {
-		if (model === "gpt-4o") {
-			return isPhoneScreen ? "4o" : "GPT-4o";
-		}
-		if (model === "gpt-4o-mini") {
-			return isPhoneScreen ? "4o mini" : "GPT-4o mini";
-		}
-		if (model === "image-generation") {
-			return isPhoneScreen ? "flux" : "Flux.1 schnell";
-		}
-		if (model === "deepseek-reasoner") {
-			return isPhoneScreen ? "deepseek" : "DeepSeek-R1";
-		}
-		if (model === "tts-1-hd") {
-			return isPhoneScreen ? "Text to speech" : "Text to speech HD";
-		}
-		return model;
-	};
-
 	const getInputPlaceholder = (): string => {
 		if (!!board.aiGeneratingOnItem) {
 			return t("AIInput.disableWhenGenerating");
@@ -378,33 +339,10 @@ export const AIInput = () => {
 		return t("AIInput.selectContext");
 	};
 
-	const isModelDisabled = (model: OpenAIModels): boolean =>
-		!account.billingInfo?.models.find(
-			item => item.id === model && item.isEnabled,
-		);
-
-	const handleOpenModal: MouseEventHandler = evt => {
-		evt.preventDefault();
-		evt.stopPropagation();
-		setIsDropdownOpen(false);
-		if (account.isLoggedIn) {
-			openModal(USER_PLAN_MODAL_ID);
-		} else {
-			openModal(AI_UNAVAILABLE_MODAL_ID);
-		}
-	};
-
 	const boardId = board.getBoardId();
 	if (!boardId || boardId === "blank") {
 		return null;
 	}
-
-	const getDropDownTooltip = (model: OpenAIModels): boolean | JSX.Element => {
-		const dropdownTooltip = account.isLoggedIn
-			? t("userPlan.upgradeTooltip")
-			: t("AIInput.authTooltip");
-		return isModelDisabled(model) && <Tooltip tooltip={dropdownTooltip} />;
-	};
 
 	return (
 		<div
@@ -424,115 +362,13 @@ export const AIInput = () => {
 					[styles.disabled]: !!board.aiGeneratingOnItem,
 				})}
 			>
-				<UiPanel
-					zIndex={2}
-					className={clsx(styles.modelSelector, styles.panel)}
-				>
-					<StarIcon
-						className={styles.starIcon}
-						width={20}
-						height={20}
-					/>
-					<div
-						className={styles.selectedModel}
-						onClick={toggleModelDropdown}
-					>
-						<span>{getModelDisplayName(model)}</span>
-						<Chevron
-							className={clsx(styles.arrow, {
-								[styles.activeArrow]: isDropdownOpen,
-							})}
-						/>
-					</div>
-					{isDropdownOpen && !board.aiGeneratingOnItem && (
-						<div className={styles.modelDropdown}>
-							<button
-								className={clsx(
-									styles.modelBtn,
-									isModelDisabled("gpt-4o-mini") &&
-										styles.disabled,
-								)}
-								onClick={
-									isModelDisabled("gpt-4o-mini")
-										? handleOpenModal
-										: selectModel("gpt-4o-mini")
-								}
-							>
-								<strong>GPT-4o mini</strong>
-								<p>{t("ai.models.gpt-4o-mini.description")}</p>
-								{getDropDownTooltip("gpt-4o-mini")}
-							</button>
-							<button
-								className={clsx(
-									styles.modelBtn,
-									isModelDisabled("gpt-4o") &&
-										styles.disabled,
-								)}
-								onClick={
-									isModelDisabled("gpt-4o")
-										? handleOpenModal
-										: selectModel("gpt-4o")
-								}
-							>
-								<strong>GPT-4o</strong>
-								<p>{t("ai.models.gpt-4o.description")}</p>
-								{getDropDownTooltip("gpt-4o")}
-							</button>
-							<button
-								className={clsx(
-									styles.modelBtn,
-									isModelDisabled("deepseek-reasoner") &&
-										styles.disabled,
-								)}
-								onClick={
-									isModelDisabled("deepseek-reasoner")
-										? handleOpenModal
-										: selectModel("deepseek-reasoner")
-								}
-							>
-								<strong>DeepSeek-R1</strong>
-								<p>
-									{t("ai.models.deepseek-chat.description")}
-								</p>
-								{getDropDownTooltip("deepseek-reasoner")}
-							</button>
-							<button
-								className={clsx(
-									styles.modelBtn,
-									isModelDisabled("image-generation") &&
-										styles.disabled,
-								)}
-								onClick={
-									isModelDisabled("image-generation")
-										? handleOpenModal
-										: selectModel("image-generation")
-								}
-							>
-								<strong>Flux.1 schnell</strong>
-								<p>{t("ai.models.flux-schnell.description")}</p>
-								{getDropDownTooltip("image-generation")}
-							</button>
-							<button
-								className={clsx(
-									styles.modelBtn,
-									isModelDisabled("tts-1-hd") &&
-										styles.disabled,
-								)}
-								onClick={
-									isModelDisabled("tts-1-hd")
-										? handleOpenModal
-										: selectModel("tts-1-hd")
-								}
-							>
-								<strong>
-									{getModelDisplayName("tts-1-hd")}
-								</strong>
-								<p>{t("ai.models.tts-1-hd.description")}</p>
-								{getDropDownTooltip("tts-1-hd")}
-							</button>
-						</div>
-					)}
-				</UiPanel>
+				<AIDropdown
+					board={board}
+					isPhoneScreen={isPhoneScreen}
+					account={account}
+					isDropdownOpen={isDropdownOpen}
+					setIsDropdownOpen={setIsDropdownOpen}
+				/>
 				<UiPanel className={clsx(styles.inputWrapper, styles.panel)}>
 					{quotedText && (
 						<div className={styles.quoteContainer}>
