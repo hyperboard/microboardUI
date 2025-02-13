@@ -502,11 +502,15 @@ export function getController(
 			return;
 		}
 
-		const data = board.selection.copy();
-		const text = JSON.stringify(data);
-		event.clipboardData?.setData("text/plain", text);
-		clipboard.set(data);
-		event.preventDefault();
+		let data = board.selection.copy();
+		if ("imageElement" in data) {
+			copyImage(event, board, clipboard, data);
+		} else {
+			const text = JSON.stringify(data);
+			event.clipboardData?.setData("text/plain", text);
+			clipboard.set(data);
+			event.preventDefault();
+		}
 	}
 
 	function onPaste(event: ClipboardEvent): void {
@@ -569,6 +573,49 @@ export function getController(
 		onPaste,
 		onDrop,
 	};
+}
+
+async function copyImage(
+	event: ClipboardEvent,
+	board: Board,
+	clipboard: Clipboard,
+	data: { imageElement: HTMLImageElement; width: number; height: number },
+) {
+	try {
+		const { imageElement, width, height } = data;
+		const MAX_SIZE_MB = 5;
+		const sizeMB = (width * height * 4) / (1024 * 1024);
+		if (sizeMB >= MAX_SIZE_MB) {
+			throw new Error("Image too big");
+		}
+		const canvas = document.createElement("canvas");
+		const ctx = canvas.getContext("2d");
+		canvas.width = width;
+		canvas.height = height;
+		ctx?.drawImage(imageElement, 0, 0, width, height);
+		const blob = await new Promise<Blob | null>((resolve, reject) => {
+			canvas.toBlob(blob => {
+				if (blob) {
+					resolve(blob);
+				} else {
+					reject(new Error("No blob"));
+				}
+			});
+		});
+
+		if (!blob) {
+			throw new Error("No blob");
+		}
+
+		const item = new ClipboardItem({ [blob.type]: blob });
+		await navigator.clipboard.write([item]);
+		event.preventDefault();
+	} catch (err) {
+		const text = JSON.stringify(board.selection.copy(true));
+		event.clipboardData?.setData("text/plain", text);
+		clipboard.set(data);
+		event.preventDefault();
+	}
 }
 
 function isTextInput(element): boolean {
