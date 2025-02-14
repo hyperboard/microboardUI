@@ -56,6 +56,7 @@ const getModelDisplayName = (
 export const AIDropdown = (props: AIDropdownProps): JSX.Element => {
 	const { board, isPhoneScreen, account, isDropdownOpen, setIsDropdownOpen } =
 		props;
+	const { model } = useAIContext();
 
 	const toggleModelDropdown = (): void => {
 		if (!board.aiGeneratingOnItem) {
@@ -70,7 +71,7 @@ export const AIDropdown = (props: AIDropdownProps): JSX.Element => {
 		>
 			<StarIcon className={styles.starIcon} width={20} height={20} />
 			<div className={styles.selectedModel} onClick={toggleModelDropdown}>
-				<span>{getModelDisplayName(models[3], isPhoneScreen)}</span>
+				<span>{getModelDisplayName(model, isPhoneScreen)}</span>
 				<Chevron
 					className={clsx(styles.arrow, {
 						[styles.activeArrow]: isDropdownOpen,
@@ -114,6 +115,7 @@ const Dropdown = (
 		);
 
 	const selectModel = (model: OpenAIModels) => (): void => {
+		console.log("model");
 		setModel(model);
 		setIsDropdownOpen(false);
 	};

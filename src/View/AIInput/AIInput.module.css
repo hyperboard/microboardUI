@@ -108,6 +108,7 @@
 	flex-direction: column;
 	width: 100%;
 	font-family: "Manrope";
+	text-align: left;
 }
 
 .modelBtn:hover:not(.disabled) {
