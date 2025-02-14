@@ -121,6 +121,22 @@ export function createApp(isHistory = true): App {
 		subscriptions.setBoard(currentBoard);
 		boardSubject.publish(currentBoard);
 		board = currentBoard;
+
+		const newBoard = app.getBoard();
+		if (!newBoard.camera.useSavedSnapshot(newBoard.getCameraSnapshot())) {
+			if (newBoard.items.listAll().length > 0) {
+				const itemsMbr = newBoard.items.getMbr();
+				newBoard.camera.zoomToFit(itemsMbr);
+			}
+		}
+
+		const isItemsOnBoard =
+			newBoard.items.listAll().length > 0 ||
+			newBoard.items.listFrames().length > 0;
+
+		if (newBoard.items.getItemsInView().length === 0 && isItemsOnBoard) {
+			newBoard.camera.zoomToFit(newBoard.items.getMbr());
+		}
 	}
 
 	async function openBoardFromFile(): Promise<void> {
