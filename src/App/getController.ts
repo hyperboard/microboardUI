@@ -331,7 +331,12 @@ export function getController(
 			const scale = camera.getPinchScale();
 			const delta = camera.getPanDelta();
 			camera.translateBy(delta.x, delta.y);
-			camera.zoomRelativeToPointBy(scale, pinchCenter.x, pinchCenter.y, 0);
+			camera.zoomRelativeToPointBy(
+				scale,
+				pinchCenter.x,
+				pinchCenter.y,
+				0,
+			);
 			camera.updatePositions();
 			camera.updateDistance();
 			tools.leftButtonUp();

@@ -127,7 +127,7 @@ export const AIInput = () => {
 				// if (isMediaMatches) {
 				// 	navigate("/user/plan");
 				// } else {
-					openModal(USER_PLAN_MODAL_ID);
+				openModal(USER_PLAN_MODAL_ID);
 				// }
 			}, 1000);
 			return;

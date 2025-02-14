@@ -78,7 +78,7 @@ export const AIDropdown = (props: AIDropdownProps): JSX.Element => {
 				/>
 			</div>
 			{isDropdownOpen &&
-			!board.aiGeneratingOnItem &&
+				!board.aiGeneratingOnItem &&
 				createPortal(
 					<Dropdown
 						isPhoneScreen={isPhoneScreen}

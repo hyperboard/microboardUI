@@ -50,7 +50,7 @@ export function AIGeneration({ rounded = "none" }: Props): React.ReactElement {
 			// if (isMediaMatches) {
 			// 	navigate("/user/plan");
 			// } else {
-				openModal(USER_PLAN_MODAL_ID);
+			openModal(USER_PLAN_MODAL_ID);
 			// }
 			return;
 		}
