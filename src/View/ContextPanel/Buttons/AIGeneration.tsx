@@ -6,8 +6,6 @@ import { useAppContext } from "View/AppContext";
 import btnStyle from "./ContextPanelButton.module.css";
 import { AI_UNAVAILABLE_MODAL_ID } from "View/AiUnavailableModal/AiUnavailableModal";
 import { USER_PLAN_MODAL_ID } from "View/UserPlan/UserPlanModal";
-import { useNavigate } from "react-router-dom";
-import { useMediaQuery } from "lib/useMediaQuery";
 import { useAIContext } from "View/AIInput/AIContext";
 import { getContextItems, getIdeaFromSelection } from "View/AIInput";
 import { useAccount } from "App/useAccount";
@@ -21,8 +19,6 @@ type Props = {
 export function AIGeneration({ rounded = "none" }: Props): React.ReactElement {
 	const { board, app } = useAppContext();
 	const { t } = useTranslation();
-	const navigate = useNavigate();
-	const isMediaMatches = useMediaQuery("(max-width: 1170px)");
 	const account = useAccount();
 	const { openModal } = useUiModalContext();
 	const { stopStream, responseNodeId, model, createNodesWithConnectors } =

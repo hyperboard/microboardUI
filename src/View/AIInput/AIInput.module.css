@@ -1,3 +1,9 @@
+:root {
+	--shake-start: -50%;
+	--shake-middle: -49%;
+	--shake-end: -51%;
+}
+
 .inputContainer {
 	position: fixed;
 	bottom: 12px;
@@ -17,24 +23,23 @@
 	bottom: 72px;
 }
 
-
 @keyframes shake {
 	0%,
 	100% {
-		transform: translateX(-50%);
+		transform: translateX(var(--shake-start, -50%));
 	}
 	10%,
 	30%,
 	50%,
 	70%,
 	90% {
-		transform: translateX(-49%);
+		transform: translateX(var(--shake-middle, -49%));
 	}
 	20%,
 	40%,
 	60%,
 	80% {
-		transform: translateX(-51%);
+		transform: translateX(var(--shake-end, -51%));
 	}
 }
 
@@ -331,6 +336,12 @@
 }
 
 @media screen and (max-width: 550px) {
+	:root {
+		--shake-start: -1%;
+		--shake-middle: 0%;
+		--shake-end: -2%;
+	}
+
 	.inputContainer {
 		transform: translateX(0);
 		width: calc(100% - 82px);

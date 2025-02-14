@@ -16,8 +16,6 @@ import { useAccount } from "App/useAccount";
 import { useUiModalContext } from "View/Ui/UiModal";
 import { AI_UNAVAILABLE_MODAL_ID } from "View/AiUnavailableModal/AiUnavailableModal";
 import clsx from "clsx";
-import { useNavigate } from "react-router-dom";
-import { useMediaQuery } from "lib/useMediaQuery";
 import { USER_PLAN_MODAL_ID } from "View/UserPlan";
 import { getCorrectEnding } from "utils";
 import {
@@ -46,8 +44,6 @@ export const AIInput = () => {
 	const account = useAccount();
 	const { openModal } = useUiModalContext();
 	const [isShaking, setIsShaking] = useState(false);
-	const navigate = useNavigate();
-	const isMediaMatches = useMediaQuery("(max-width: 1170px)");
 	const {
 		stopStream,
 		responseNodeId,
