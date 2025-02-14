@@ -236,6 +236,10 @@ export function createApp(isHistory = true): App {
 		openAndEditFile,
 	};
 
+	account.setOnInit(async () => {
+		await foldersApi.initFolders();
+	});
+
 	function render(): void {
 		const { render, router } = getRender(app);
 		boardSubject.subscribe(() => {
@@ -277,9 +281,7 @@ export function createApp(isHistory = true): App {
 			});
 			Cookies.remove("first_visit");
 		});
-		account.setOnInit(async () => {
-			await foldersApi.initFolders();
-		});
+
 		render();
 	}
 
