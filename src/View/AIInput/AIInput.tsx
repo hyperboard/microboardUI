@@ -128,11 +128,11 @@ export const AIInput = () => {
 			setTimeout(() => {
 				setIsShaking(false);
 
-				if (isMediaMatches) {
-					navigate("/user/plan");
-				} else {
+				// if (isMediaMatches) {
+				// 	navigate("/user/plan");
+				// } else {
 					openModal(USER_PLAN_MODAL_ID);
-				}
+				// }
 			}, 1000);
 			return;
 		}

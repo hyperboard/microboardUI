@@ -51,11 +51,11 @@ export function AIGeneration({ rounded = "none" }: Props): React.ReactElement {
 			(currentModel.limits.weekly.remaining !== null &&
 				currentModel.limits.weekly.remaining <= 0)
 		) {
-			if (isMediaMatches) {
-				navigate("/user/plan");
-			} else {
+			// if (isMediaMatches) {
+			// 	navigate("/user/plan");
+			// } else {
 				openModal(USER_PLAN_MODAL_ID);
-			}
+			// }
 			return;
 		}
 		board.aiGeneratingOnItem = "unknown";
