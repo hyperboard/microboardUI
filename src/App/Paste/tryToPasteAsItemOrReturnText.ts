@@ -10,11 +10,6 @@ export function tryToPasteAsItemOrReturnText(
 	board: Board,
 	isLoggedIn: boolean,
 ): string | null {
-	if (tryToPasteImages(event, board)) {
-		preventPasteDefault(event);
-		return null;
-	}
-
 	if (tryToPasteFromMiro(event, board, isLoggedIn)) {
 		preventPasteDefault(event);
 		return null;
@@ -23,10 +18,18 @@ export function tryToPasteAsItemOrReturnText(
 	const text = event?.clipboardData?.getData("text/plain");
 
 	if (!text) {
+		if (tryToPasteImages(event, board)) {
+			preventPasteDefault(event);
+		}
 		return null;
 	}
 
 	if (tryToPasteFromMicroboard(text, board)) {
+		preventPasteDefault(event);
+		return null;
+	}
+
+	if (tryToPasteImages(event, board)) {
 		preventPasteDefault(event);
 		return null;
 	}

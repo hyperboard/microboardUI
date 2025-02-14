@@ -4,7 +4,11 @@ import { AiChatMsg, OpenAIModels } from "App/Connection";
 import { useAppContext } from "View/AppContext";
 import { Account } from "App/Account";
 import { getControlPointData } from "Board/Selection/QuickAddButtons/quickAddHelpers";
-import { createNode, PossibleParentNode } from "View/AIInput/utils";
+import {
+	createNode,
+	DEFAULT_MAX_NODE_WIDTH,
+	PossibleParentNode,
+} from "View/AIInput/utils";
 import { AINode } from "Board/Items/AINode/AINode";
 
 interface Context {
@@ -63,9 +67,6 @@ export const AIContextProvider = ({ children }: Props): JSX.Element => {
 
 		connection.wsClient.send(stopMessage);
 		await account.fetchBillingInfo();
-		setTimeout(() => {
-			connection.wsClient.send(stopMessage);
-		}, 10000);
 	};
 
 	function createNodesWithConnectors(
@@ -117,6 +118,24 @@ export const AIContextProvider = ({ children }: Props): JSX.Element => {
 			model === "image-generation",
 		);
 		const responseAdded = board.add(responseNode.node);
+
+		if (
+			responseAdded.itemType === "AINode" &&
+			!responseAdded.text.editor.getStopProcessingMarkDownCb()
+		) {
+			responseAdded.text.editor.setStopProcessingMarkDownCb(() => {
+				board.camera.unsubscribeFromItem();
+				board.selection.items.removeAll();
+				board.selection.add(responseAdded);
+				const itemWidth = responseAdded.getMbr().getWidth();
+				if (itemWidth < DEFAULT_MAX_NODE_WIDTH) {
+					const offset = (DEFAULT_MAX_NODE_WIDTH - itemWidth) / 2;
+					responseAdded.transformation.translateBy(offset, 0);
+				}
+				board.camera.zoomToFit(responseAdded.getMbr(), 20);
+				board.aiGeneratingOnItem = undefined;
+			});
+		}
 
 		setResponseNodeId(responseAdded.getId());
 

@@ -1,5 +1,5 @@
 import { Board } from "Board";
-import { ImageItem } from "Board/Items/Image";
+import { ImageItem, ImageItemData } from "Board/Items/Image";
 import { checkHotkeys, isControlCharacter } from "Board/Keyboard";
 import { Clipboard } from "./Clipboard";
 import { createWheel } from "./Wheel/Wheel";
@@ -584,20 +584,15 @@ async function copyImage(
 	event: ClipboardEvent,
 	board: Board,
 	clipboard: Clipboard,
-	data: { imageElement: HTMLImageElement; width: number; height: number },
+	data: { imageElement: HTMLImageElement; imageData: ImageItemData },
 ) {
 	try {
-		const { imageElement, width, height } = data;
-		const MAX_SIZE_MB = 5;
-		const sizeMB = (width * height * 4) / (1024 * 1024);
-		if (sizeMB >= MAX_SIZE_MB) {
-			throw new Error("Image too big");
-		}
+		const { imageElement, imageData } = data;
 		const canvas = document.createElement("canvas");
 		const ctx = canvas.getContext("2d");
-		canvas.width = width;
-		canvas.height = height;
-		ctx?.drawImage(imageElement, 0, 0, width, height);
+		canvas.width = imageElement.naturalWidth;
+		canvas.height = imageElement.naturalHeight;
+		ctx?.drawImage(imageElement, 0, 0);
 		const blob = await new Promise<Blob | null>((resolve, reject) => {
 			canvas.toBlob(blob => {
 				if (blob) {
@@ -614,8 +609,19 @@ async function copyImage(
 
 		const item = new ClipboardItem({ [blob.type]: blob });
 		await navigator.clipboard.write([item]);
+		const metaBlob = new Blob([JSON.stringify(imageData)], {
+			type: "text/plain",
+		});
+
+		const clipboardItem = new ClipboardItem({
+			"image/png": blob,
+			"text/plain": metaBlob,
+		});
+
+		await navigator.clipboard.write([clipboardItem]);
 		event.preventDefault();
 	} catch (err) {
+		console.error("error while copying image", err);
 		const text = JSON.stringify(board.selection.copy(true));
 		event.clipboardData?.setData("text/plain", text);
 		clipboard.set(data);
