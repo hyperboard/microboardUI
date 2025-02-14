@@ -18,7 +18,7 @@ window.enableTemplateCreating = false;
 window.enableDiagrams = false;
 
 const app = createApp();
-app.account.init().then(() => {
+app.account.init().finally(() => {
 	app.connection.connect().then(() => {
 		app.render();
 	});

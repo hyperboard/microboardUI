@@ -24,7 +24,7 @@ window.enableTemplateCreating = false;
 window.enableDiagrams = true;
 
 window.app = createApp();
-window.app.account.init().then(() => {
+window.app.account.init().finally(() => {
 	window.app.connection.connect().then(() => {
 		window.app.render();
 	});
