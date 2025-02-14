@@ -23,13 +23,6 @@ export interface TelegramServiceConfig {
     logger: winston.Logger;
 }
 
-export interface TelegramServiceConfig {
-    token: string;
-    appToken: string;
-    isEnabled?: boolean;
-    logger: winston.Logger;
-}
-
 export class TelegramService {
     private readonly isEnabled: boolean;
     private baseUrl: string;

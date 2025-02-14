@@ -6,9 +6,6 @@ import { DirectAccessType } from "drizzle/entities/boards";
 import { AccessToken } from "Interface";
 import { boardEventTotalLatency, websocketEventQueueSize } from "Metrics/metrics";
 import { Redis } from "Redis";
-// import { BoardEventData, Boards } from "Routes/V1/Boards";
-// import type { AccessKeysService } from "Routes/V2/Boards/access-keys.service";
-// import type { BoardsService } from "Routes/V2/Boards/boards.service";
 import { DevelopersService } from "Routes/V1/Developers/Service";
 import type { AccessKeysService } from "Routes/V1/Boards/access-keys.service";
 import type { BoardEventData, BoardsService } from "Routes/V1/Boards/boards.service";
@@ -46,6 +43,7 @@ export function withWebSocketApi({
     openai,
     imageGenerator,
     telegramService,
+    developersService,
 }: {
     wss: WebSocketServer;
     accessKeysService: AccessKeysService;
@@ -55,6 +53,7 @@ export function withWebSocketApi({
     openai: OpenAI;
     imageGenerator: ImageGenerator;
     telegramService: TelegramService;
+    developersService: DevelopersService;
 }): void {
     const boardClients = new Map<string, WebSocket.WebSocket[]>();
     const wsTokens = new Map<WebSocket, AccessToken>();
@@ -62,6 +61,16 @@ export function withWebSocketApi({
     const snapshotRequestTimers = new Map<string, NodeJS.Timeout>();
     const presence = new Presence(redis);
     const chatStreamHandler = new ChatStreamHandler(openai, logger, redis, telegramService);
+
+    developersService.setBroadcastEventFunction((boardUUID: string, eventData: any) => {
+        const clients = boardClients.get(boardUUID) ?? [];
+        sendWsMsg(clients, {
+            type: "BoardEvent",
+            boardId: boardUUID,
+            event: { body: eventData, order: eventData.order },
+            sequenceNumber: 1, // FIXME: API events don't need sequence numbers
+        });
+    });
 
     wss.on("connection", (ws) => {
         if (CURRENT_VERSION) {

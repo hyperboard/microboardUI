@@ -1,4 +1,4 @@
-import RedisClient from "ioredis";
+import RedisClient, { RedisOptions } from "ioredis";
 import winston from "winston";
 
 export enum REDIS_HASH {
@@ -40,24 +40,30 @@ export async function getRedis(logger: winston.Logger): Promise<Redis> {
     async function createRedisClient(logger: winston.Logger): Promise<RedisClient> {
         if (!process.env.REDIS_HOST) throw new Error("REDIS_HOST environment variable is required");
         if (!process.env.REDIS_PORT) throw new Error("REDIS_PORT environment variable is required");
-        const options: any = {
+        const options: RedisOptions = {
             host: process.env.REDIS_LOCAL === "true" ? "redis" : process.env.REDIS_HOST,
             port: parseInt(process.env.REDIS_PORT),
-            retryStrategy(times: number) {
-                const delay = Math.min(times * 50, 2000);
+            retryStrategy: (times: number) => {
+                if (times > 5) return null;
+                const delay = Math.min(times * 1000, 10_000); // from 1s to 10s
                 logger.warn(`Redis retry attempt ${times} with delay ${delay}ms`);
                 return delay;
             },
             maxRetriesPerRequest: null,
-            enableAutoPipelining: true,
-            connectTimeout: 10_000,
-            disconnectTimeout: 2_000,
-            commandTimeout: 10_000,
+            connectTimeout: 15000,
+            commandTimeout: 30000,
+            keepAlive: 30000,
+            reconnectOnError: (err) => {
+                return err.message.includes("READONLY");
+            },
         };
         // if (process.env.REDIS_LOCAL === "true") {
         //     options.password = "redis";
         // }
         const redis = new RedisClient(options);
+
+        process.on("SIGTERM", () => redis.quit());
+        process.on("SIGINT", () => redis.quit());
 
         const originalSendCommand = redis.sendCommand;
         const pendingCommands = new Map();

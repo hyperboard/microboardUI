@@ -6,7 +6,16 @@ import { body, param, query } from "express-validator";
 import { HttpStatus } from "shared/enums/http-status.enum";
 import { HttpException } from "shared/exceptions/http-exception";
 import { catchAsync } from "shared/lib/catchAsync";
-import { BatchOperationRequest, CreateItemRequest, RefreshConfigRequest, UpdateItemRequest } from "./types";
+import {
+    BatchOperationRequest,
+    CreateItemRequest,
+    UpdateItemRequest,
+    UpdateShapeRequest,
+    UpdateStickerRequest,
+    UpdateRichTextRequest,
+    UpdateFrameRequest,
+    UpdateDrawingRequest,
+} from "./types";
 import { Redis } from "Redis";
 import winston from "winston";
 import { rateLimitMiddleware } from "Middlewares/rateLimit.middleware";
@@ -98,15 +107,18 @@ export function getDevelopersRouter(developersService: DevelopersService, redis:
     );
 
     // Create endpoints for each item type
-    const createItemEndpoint = (itemType: "Shape" | "Sticker" | "RichText" | "Frame" | "Drawing") => {
-        return catchAsync(async (req: Request<any, any, Omit<CreateItemRequest, "type">>, res: Response) => {
+    const createItemEndpoint = <T extends CreateItemRequest["type"]>(itemType: T) => {
+        return catchAsync(async (req: Request<any, any, any>, res: Response) => {
             const { boardId } = req.params;
             const boardIntId = await developersService.getBoardId(boardId);
-            const item = await developersService.createBoardItem(boardIntId, boardId, {
+
+            // Type assertion to ensure type safety
+            const createRequest = {
                 ...req.body,
                 type: itemType,
-            });
+            } as CreateItemRequest;
 
+            const item = await developersService.createBoardItem(boardIntId, boardId, createRequest);
             res.status(HttpStatus.CREATED).json(item);
         });
     };
@@ -116,7 +128,7 @@ export function getDevelopersRouter(developersService: DevelopersService, redis:
         `${routeBase}/boards/:boardId/shapes`,
         param("boardId").isString().notEmpty(),
         body().isObject().notEmpty(),
-        createItemEndpoint("Shape")
+        createItemEndpoint("Shape" as const)
     );
 
     // Create sticker
@@ -124,7 +136,7 @@ export function getDevelopersRouter(developersService: DevelopersService, redis:
         `${routeBase}/boards/:boardId/stickers`,
         param("boardId").isString().notEmpty(),
         body().isObject().notEmpty(),
-        createItemEndpoint("Sticker")
+        createItemEndpoint("Sticker" as const)
     );
 
     // Create rich text
@@ -132,7 +144,7 @@ export function getDevelopersRouter(developersService: DevelopersService, redis:
         `${routeBase}/boards/:boardId/rich-texts`,
         param("boardId").isString().notEmpty(),
         body().isObject().notEmpty(),
-        createItemEndpoint("RichText")
+        createItemEndpoint("RichText" as const)
     );
 
     // Create frame
@@ -140,7 +152,7 @@ export function getDevelopersRouter(developersService: DevelopersService, redis:
         `${routeBase}/boards/:boardId/frames`,
         param("boardId").isString().notEmpty(),
         body().isObject().notEmpty(),
-        createItemEndpoint("Frame")
+        createItemEndpoint("Frame" as const)
     );
 
     // Create drawing
@@ -148,12 +160,14 @@ export function getDevelopersRouter(developersService: DevelopersService, redis:
         `${routeBase}/boards/:boardId/drawings`,
         param("boardId").isString().notEmpty(),
         body().isObject().notEmpty(),
-        createItemEndpoint("Drawing")
+        createItemEndpoint("Drawing" as const)
     );
 
     // Update endpoints for each item type
-    const updateItemEndpoint = (itemType: "Shape" | "Sticker" | "RichText" | "Frame" | "Drawing") => {
-        return catchAsync(async (req: Request<any, any, UpdateItemRequest>, res: Response) => {
+    const updateItemEndpoint = <T extends UpdateItemRequest>(
+        itemType: "Shape" | "Sticker" | "RichText" | "Frame" | "Drawing"
+    ) => {
+        return catchAsync(async (req: Request<any, any, T>, res: Response) => {
             const { boardId, itemId } = req.params;
             if (!req.sub) throw new HttpException(HttpStatus.UNAUTHORIZED, "Authentication required");
 
@@ -184,7 +198,7 @@ export function getDevelopersRouter(developersService: DevelopersService, redis:
         param("boardId").isString().notEmpty(),
         param("itemId").isString().notEmpty(),
         body().isObject().notEmpty(),
-        updateItemEndpoint("Shape")
+        updateItemEndpoint<UpdateShapeRequest>("Shape")
     );
 
     // Update sticker
@@ -193,7 +207,7 @@ export function getDevelopersRouter(developersService: DevelopersService, redis:
         param("boardId").isString().notEmpty(),
         param("itemId").isString().notEmpty(),
         body().isObject().notEmpty(),
-        updateItemEndpoint("Sticker")
+        updateItemEndpoint<UpdateStickerRequest>("Sticker")
     );
 
     // Update rich text
@@ -202,7 +216,7 @@ export function getDevelopersRouter(developersService: DevelopersService, redis:
         param("boardId").isString().notEmpty(),
         param("itemId").isString().notEmpty(),
         body().isObject().notEmpty(),
-        updateItemEndpoint("RichText")
+        updateItemEndpoint<UpdateRichTextRequest>("RichText")
     );
 
     // Update frame
@@ -211,7 +225,7 @@ export function getDevelopersRouter(developersService: DevelopersService, redis:
         param("boardId").isString().notEmpty(),
         param("itemId").isString().notEmpty(),
         body().isObject().notEmpty(),
-        updateItemEndpoint("Frame")
+        updateItemEndpoint<UpdateFrameRequest>("Frame")
     );
 
     // Update drawing
@@ -220,7 +234,7 @@ export function getDevelopersRouter(developersService: DevelopersService, redis:
         param("boardId").isString().notEmpty(),
         param("itemId").isString().notEmpty(),
         body().isObject().notEmpty(),
-        updateItemEndpoint("Drawing")
+        updateItemEndpoint<UpdateDrawingRequest>("Drawing")
     );
 
     // Delete an item

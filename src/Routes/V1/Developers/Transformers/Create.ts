@@ -25,21 +25,43 @@ type ShapeType =
 
 type ItemType = "Sticker" | "RichText" | "Shape" | "Connector" | "Image" | "Frame" | "Drawing";
 
+type RichText = {
+    text: string;
+    fontSize?: number;
+    fontColor?: string;
+    fontFamily?: string;
+    lineHeight?: number;
+    fontHighlight?: string;
+};
+
 export type CreateOperation =
     | {
           itemType: "Sticker";
-          text?: string;
+          text?: string | RichText;
           color?: string;
-      }
-    | {
-          itemType: "RichText";
-          text: string;
+          position?: {
+              x?: number;
+              y?: number;
+          };
       }
     | {
           itemType: "Shape";
           shapeType: ShapeType;
+          text?: RichText;
           width?: number;
           height?: number;
+          position?: {
+              x?: number;
+              y?: number;
+          };
+      }
+    | {
+          itemType: "RichText";
+          text: string;
+          position?: {
+              x?: number;
+              y?: number;
+          };
       }
     | {
           itemType: "Connector";
@@ -56,6 +78,10 @@ export type CreateOperation =
           url: string;
           width?: number;
           height?: number;
+          position?: {
+              x?: number;
+              y?: number;
+          };
       }
     | {
           itemType: "Frame";
@@ -76,6 +102,10 @@ export type CreateOperation =
           lineColor: string;
           lineWidth: number;
           lineOpacity: number;
+          position?: {
+              x?: number;
+              y?: number;
+          };
       };
 
 interface BaseEventData {
@@ -178,25 +208,25 @@ function isCreateOperation(op: any): op is CreateOperation {
     return typeof op === "object" && op !== null && "itemType" in op;
 }
 
-export function transformCreateOperation(meta: Meta & { operation: CreateOperation }): any {
-    const { userId, boardId, operation } = meta;
-    if (!isCreateOperation(operation)) {
-        throw new Error("Invalid operation");
-    }
-
-    const newItemId = v4();
-
+function createBaseEvent(
+    userId: number | string,
+    boardId: string,
+    meta: Meta,
+    newItemId: string,
+    itemType: ItemType,
+    operation: CreateOperation
+): any {
     const baseEventData: BaseEventData = {
-        itemType: operation.itemType,
+        itemType,
         transformation: {
             scaleX: 1,
             scaleY: 1,
-            translateX: 0,
-            translateY: 0,
+            translateX: operation.position?.x || 0,
+            translateY: operation.position?.y || 0,
         },
     };
 
-    const baseEvent = {
+    return {
         userId,
         boardId,
         eventId: `${userId}:${meta.order || 0}`,
@@ -207,220 +237,286 @@ export function transformCreateOperation(meta: Meta & { operation: CreateOperati
             data: baseEventData,
         },
     };
+}
 
-    const op = operation as CreateOperation;
-    switch (op.itemType) {
-        case "Sticker": {
-            const stickerOp = operation as Extract<CreateOperation, { itemType: "Sticker" }>;
-            const data: StickerData = {
-                itemType: stickerOp.itemType,
-                transformation: baseEvent.operation.data.transformation,
-                backgroundColor: stickerOp.color || "rgb(174, 212, 250)", // Sky Blue default
-            };
+function transformTextToRichTextData(text: string | RichText) {
+    if (typeof text === "string") {
+        return {
+            text,
+            type: "text",
+            fontSize: 14,
+            fontColor: "black",
+            fontFamily: "Arial",
+            lineHeight: 1.4,
+            fontHighlight: "",
+        };
+    }
+    return {
+        text: text.text,
+        type: "text",
+        fontSize: text.fontSize || 14,
+        fontColor: text.fontColor || "black",
+        fontFamily: text.fontFamily || "Arial",
+        lineHeight: text.lineHeight || 1.4,
+        fontHighlight: text.fontHighlight || "",
+    };
+}
 
-            if (stickerOp.text) {
-                data.text = {
-                    children: [
-                        {
-                            type: "paragraph",
-                            horisontalAlignment: "center",
-                            children: [
-                                {
-                                    text: stickerOp.text,
-                                    type: "text",
-                                    fontSize: 14,
-                                    fontColor: "black",
-                                    fontFamily: "Arial",
-                                    lineHeight: 1.4,
-                                    fontHighlight: "",
-                                },
-                            ],
-                        },
-                    ],
-                    realSize: "auto",
-                    placeholderText: " ",
-                };
-            }
+function transformStickerOperation(baseEvent: any, operation: Extract<CreateOperation, { itemType: "Sticker" }>): any {
+    const data: StickerData = {
+        itemType: operation.itemType,
+        transformation: baseEvent.operation.data.transformation,
+        backgroundColor: operation.color || "rgb(174, 212, 250)", // Sky Blue default
+    };
 
-            return {
-                ...baseEvent,
-                operation: {
-                    ...baseEvent.operation,
-                    data,
+    if (operation.text) {
+        const textData = transformTextToRichTextData(operation.text);
+        data.text = {
+            children: [
+                {
+                    type: "paragraph",
+                    horisontalAlignment: "center",
+                    children: [textData],
                 },
-            };
-        }
+            ],
+            realSize: "auto",
+            placeholderText: " ",
+        };
+    }
 
-        case "RichText": {
-            const textOp = operation as Extract<CreateOperation, { itemType: "RichText" }>;
-            const data: RichTextData = {
-                itemType: textOp.itemType,
-                transformation: baseEvent.operation.data.transformation,
+    return {
+        ...baseEvent,
+        operation: {
+            ...baseEvent.operation,
+            data,
+        },
+    };
+}
+
+function transformRichTextOperation(
+    baseEvent: any,
+    operation: Extract<CreateOperation, { itemType: "RichText" }>
+): any {
+    const data: RichTextData = {
+        itemType: operation.itemType,
+        transformation: baseEvent.operation.data.transformation,
+        children: [
+            {
+                type: "paragraph",
                 children: [
                     {
-                        type: "paragraph",
-                        children: [
-                            {
-                                text: textOp.text,
-                                type: "text",
-                                fontColor: "black",
-                                fontFamily: "Arial",
-                                fontHighlight: "",
-                                fontSize: 14,
-                                lineHeight: 1.4,
-                            },
-                        ],
+                        text: operation.text,
+                        type: "text",
+                        fontColor: "black",
+                        fontFamily: "Arial",
+                        fontHighlight: "",
+                        fontSize: 14,
+                        lineHeight: 1.4,
                     },
                 ],
-                insideOf: "RichText",
-                placeholderText: "Type something",
-                verticalAlignment: "center",
-            };
+            },
+        ],
+        insideOf: "RichText",
+        placeholderText: "Type something",
+        verticalAlignment: "center",
+    };
 
-            return {
-                ...baseEvent,
-                operation: {
-                    ...baseEvent.operation,
-                    data,
-                },
-            };
-        }
+    return {
+        ...baseEvent,
+        operation: {
+            ...baseEvent.operation,
+            data,
+        },
+    };
+}
 
-        case "Shape": {
-            const shapeOp = operation as Extract<CreateOperation, { itemType: "Shape" }>;
-            const data: ShapeData = {
-                itemType: shapeOp.itemType,
-                transformation: baseEvent.operation.data.transformation,
-                shapeType: shapeOp.shapeType,
-                borderColor: "#1a1a1a",
-                borderStyle: "solid",
-                borderWidth: 2,
-                borderOpacity: 1,
-                backgroundColor: "transparent",
-                backgroundOpacity: 0,
-            };
+function transformShapeOperation(baseEvent: any, operation: Extract<CreateOperation, { itemType: "Shape" }>): any {
+    const data: ShapeData = {
+        itemType: operation.itemType,
+        transformation: baseEvent.operation.data.transformation,
+        shapeType: operation.shapeType,
+        borderColor: "#1a1a1a",
+        borderStyle: "solid",
+        borderWidth: 2,
+        borderOpacity: 1,
+        backgroundColor: "transparent",
+        backgroundOpacity: 0,
+    };
 
-            if (shapeOp.width && shapeOp.height) {
-                data.transformation = {
-                    ...data.transformation,
-                    scaleX: shapeOp.width / 100,
-                    scaleY: shapeOp.height / 100,
-                };
-            }
-
-            return {
-                ...baseEvent,
-                operation: {
-                    ...baseEvent.operation,
-                    data,
-                },
-            };
-        }
-
-        case "Connector": {
-            const connectorOp = operation as Extract<CreateOperation, { itemType: "Connector" }>;
-            const data: ConnectorData = {
-                itemType: connectorOp.itemType,
-                transformation: baseEvent.operation.data.transformation,
-                lineColor: "#000000",
-                lineStyle: connectorOp.connectorType || "curved",
-                lineWidth: 1,
-            };
-
-            if (connectorOp.startItemId && connectorOp.endItemId) {
-                data.startPoint = {
-                    itemId: connectorOp.startItemId,
-                    relativeX: connectorOp.position?.x || 50,
-                    relativeY: connectorOp.position?.y || 50,
-                    pointType: "Fixed",
-                };
-                data.endPoint = {
-                    itemId: connectorOp.endItemId,
-                    relativeX: connectorOp.position?.x || 50,
-                    relativeY: connectorOp.position?.y || 50,
-                    pointType: "Fixed",
-                };
-            }
-
-            return {
-                ...baseEvent,
-                operation: {
-                    ...baseEvent.operation,
-                    data,
-                },
-            };
-        }
-
-        case "Image": {
-            const imageOp = operation as Extract<CreateOperation, { itemType: "Image" }>;
-            const data: ImageData = {
-                itemType: imageOp.itemType,
-                transformation: baseEvent.operation.data.transformation,
-                storageLink: imageOp.url,
-            };
-
-            if (imageOp.width && imageOp.height) {
-                data.imageDimension = {
-                    width: imageOp.width,
-                    height: imageOp.height,
-                };
-                data.transformation = {
-                    ...data.transformation,
-                    scaleX: 1,
-                    scaleY: 1,
-                };
-            }
-
-            return {
-                ...baseEvent,
-                operation: {
-                    ...baseEvent.operation,
-                    data,
-                },
-            };
-        }
-
-        case "Frame": {
-            const frameOp = operation as Extract<CreateOperation, { itemType: "Frame" }>;
-            const data: FrameData = {
-                itemType: frameOp.itemType,
-                transformation: baseEvent.operation.data.transformation,
-                shapeType: "Custom",
-                borderColor: "#1a1a1a",
-                canChangeRatio: true,
-                borderStyle: "solid",
-                borderWidth: 1,
-                borderOpacity: 1,
-                backgroundColor: "#ffffff",
-                backgroundOpacity: 1,
-            };
-
-            if (frameOp.width && frameOp.height) {
-                data.transformation = {
-                    ...data.transformation,
-                    scaleX: frameOp.width / 100,
-                    scaleY: frameOp.height / 100,
-                };
-            }
-
-            if (frameOp.position) {
-                data.transformation = {
-                    ...data.transformation,
-                    translateX: frameOp.position.x || 0,
-                    translateY: frameOp.position.y || 0,
-                };
-            }
-
-            return {
-                ...baseEvent,
-                operation: {
-                    ...baseEvent.operation,
-                    data,
-                },
-            };
-        }
-
-        default:
-            throw new Error(`Unsupported item type: ${operation.itemType}`);
+    if (operation.width && operation.height) {
+        data.transformation = {
+            ...data.transformation,
+            scaleX: operation.width / 100,
+            scaleY: operation.height / 100,
+        };
     }
+
+    if (operation.text) {
+        const textData = transformTextToRichTextData(operation.text);
+        (data as any).text = {
+            children: [
+                {
+                    type: "paragraph",
+                    horisontalAlignment: "center",
+                    children: [textData],
+                },
+            ],
+            realSize: "auto",
+            placeholderText: " ",
+        };
+    }
+
+    return {
+        ...baseEvent,
+        operation: {
+            ...baseEvent.operation,
+            data,
+        },
+    };
+}
+
+function transformConnectorOperation(
+    baseEvent: any,
+    operation: Extract<CreateOperation, { itemType: "Connector" }>
+): any {
+    const data: ConnectorData = {
+        itemType: operation.itemType,
+        transformation: baseEvent.operation.data.transformation,
+        lineColor: "#000000",
+        lineStyle: operation.connectorType || "curved",
+        lineWidth: 1,
+    };
+
+    if (operation.startItemId && operation.endItemId) {
+        data.startPoint = {
+            itemId: operation.startItemId,
+            relativeX: operation.position?.x || 50,
+            relativeY: operation.position?.y || 50,
+            pointType: "Fixed",
+        };
+        data.endPoint = {
+            itemId: operation.endItemId,
+            relativeX: operation.position?.x || 50,
+            relativeY: operation.position?.y || 50,
+            pointType: "Fixed",
+        };
+    }
+
+    return {
+        ...baseEvent,
+        operation: {
+            ...baseEvent.operation,
+            data,
+        },
+    };
+}
+
+function transformImageOperation(baseEvent: any, operation: Extract<CreateOperation, { itemType: "Image" }>): any {
+    const data: ImageData = {
+        itemType: operation.itemType,
+        transformation: baseEvent.operation.data.transformation,
+        storageLink: operation.url,
+    };
+
+    if (operation.width && operation.height) {
+        data.imageDimension = {
+            width: operation.width,
+            height: operation.height,
+        };
+        data.transformation = {
+            ...data.transformation,
+            scaleX: 1,
+            scaleY: 1,
+        };
+    }
+
+    return {
+        ...baseEvent,
+        operation: {
+            ...baseEvent.operation,
+            data,
+        },
+    };
+}
+
+function transformFrameOperation(baseEvent: any, operation: Extract<CreateOperation, { itemType: "Frame" }>): any {
+    const data: FrameData = {
+        itemType: operation.itemType,
+        transformation: baseEvent.operation.data.transformation,
+        shapeType: "Custom",
+        borderColor: "#1a1a1a",
+        canChangeRatio: true,
+        borderStyle: "solid",
+        borderWidth: 1,
+        borderOpacity: 1,
+        backgroundColor: "#ffffff",
+        backgroundOpacity: 1,
+    };
+
+    if (operation.width && operation.height) {
+        data.transformation = {
+            ...data.transformation,
+            scaleX: operation.width / 100,
+            scaleY: operation.height / 100,
+        };
+    }
+
+    if (operation.position) {
+        data.transformation = {
+            ...data.transformation,
+            translateX: operation.position.x || 0,
+            translateY: operation.position.y || 0,
+        };
+    }
+
+    return {
+        ...baseEvent,
+        operation: {
+            ...baseEvent.operation,
+            data,
+        },
+    };
+}
+
+function transformDrawingOperation(baseEvent: any, operation: Extract<CreateOperation, { itemType: "Drawing" }>): any {
+    return {
+        ...baseEvent,
+        operation: {
+            ...baseEvent.operation,
+            data: {
+                ...baseEvent.operation.data,
+                points: operation.points,
+                lineColor: operation.lineColor,
+                lineWidth: operation.lineWidth,
+                lineOpacity: operation.lineOpacity,
+            },
+        },
+    };
+}
+
+const transformers = {
+    Sticker: transformStickerOperation,
+    RichText: transformRichTextOperation,
+    Shape: transformShapeOperation,
+    Connector: transformConnectorOperation,
+    Image: transformImageOperation,
+    Frame: transformFrameOperation,
+    Drawing: transformDrawingOperation,
+} as const;
+
+export function transformCreateOperation(meta: Meta & { operation: CreateOperation }): any {
+    const { userId, boardId, operation } = meta;
+    if (!isCreateOperation(operation)) {
+        throw new Error("Invalid operation");
+    }
+
+    const newItemId = v4();
+    const baseEvent = createBaseEvent(userId, boardId, meta, newItemId, operation.itemType, operation);
+
+    const transformer = transformers[operation.itemType];
+    if (!transformer) {
+        throw new Error(`Unsupported item type: ${operation.itemType}`);
+    }
+
+    return transformer(baseEvent, operation as any);
 }

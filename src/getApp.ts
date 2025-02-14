@@ -191,6 +191,7 @@ export async function getApp(): Promise<http.Server> {
         openai,
         imageGenerator,
         telegramService,
+        developersService,
     });
     const media = createMinioMediaDAL(logger);
     const users = new Users(media, logger);

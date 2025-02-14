@@ -179,7 +179,8 @@ interface TransformationData {
 
 type TransformationBaseOperation = {
     itemType: "Transformation";
-    timestamp?: number;
+    method: string;
+    item: string[];
 };
 
 type TransformationUpdateOperation = TransformationBaseOperation &
@@ -214,11 +215,7 @@ type TransformationUpdateOperation = TransformationBaseOperation &
               data: TransformationData;
           }
         | {
-              method: "locked";
-              locked: boolean;
-          }
-        | {
-              method: "unlocked";
+              method: "locked" | "unlocked";
               locked: boolean;
           }
         | {
@@ -301,183 +298,210 @@ export type UpdateOperation =
     | DrawingUpdateOperation
     | FrameUpdateOperation;
 
-export function transformUpdateOperation(operation: UpdateOperation, meta: Meta): any {
-    const baseOperation = {
-        class: operation.itemType,
-        item: [meta.itemId],
-    };
-
-    let specificOperation;
-
-    switch (operation.itemType) {
-        case "Shape":
-            specificOperation = {
-                ...baseOperation,
-                method: operation.method,
-                ...(operation.backgroundColor !== undefined && { backgroundColor: operation.backgroundColor }),
-                ...(operation.backgroundOpacity !== undefined && { backgroundOpacity: operation.backgroundOpacity }),
-                ...(operation.borderColor !== undefined && { borderColor: operation.borderColor }),
-                ...(operation.borderOpacity !== undefined && { borderOpacity: operation.borderOpacity }),
-                ...(operation.borderStyle !== undefined && { borderStyle: operation.borderStyle }),
-                ...(operation.borderWidth !== undefined && {
-                    borderWidth: operation.borderWidth,
-                    prevBorderWidth: operation.prevBorderWidth,
-                }),
-                ...(operation.shapeType !== undefined && { shapeType: operation.shapeType }),
-            };
-            break;
-        case "RichText": {
-            // Create base operation with common fields
-            specificOperation = {
-                ...baseOperation,
-                method: operation.method,
-                ...(operation.selection && { selection: operation.selection }),
-                ...(operation.ops && { ops: operation.ops }),
-            };
-
-            // Add method-specific properties
-            switch (operation.method) {
-                case "setBlockType":
-                    specificOperation = {
-                        ...specificOperation,
-                        type: operation.type,
-                    };
-                    break;
-                case "setFontColor":
-                    specificOperation = {
-                        ...specificOperation,
-                        fontColor: operation.fontColor,
-                    };
-                    break;
-                case "setFontStyle":
-                    specificOperation = {
-                        ...specificOperation,
-                        fontStyleList: operation.fontStyleList,
-                    };
-                    break;
-                case "setFontFamily":
-                    specificOperation = {
-                        ...specificOperation,
-                        fontFamily: operation.fontFamily,
-                    };
-                    break;
-                case "setFontSize":
-                    specificOperation = {
-                        ...specificOperation,
-                        fontSize: operation.fontSize,
-                        ...(operation.context && { context: operation.context }),
-                    };
-                    break;
-                case "setFontHighlight":
-                    specificOperation = {
-                        ...specificOperation,
-                        fontHighlight: operation.fontHighlight,
-                    };
-                    break;
-                case "setHorisontalAlignment":
-                    specificOperation = {
-                        ...specificOperation,
-                        horisontalAlignment: operation.horisontalAlignment,
-                    };
-                    break;
-                case "setVerticalAlignment":
-                    specificOperation = {
-                        ...specificOperation,
-                        verticalAlignment: operation.verticalAlignment,
-                    };
-                    break;
-                case "setMaxWidth":
-                    specificOperation = {
-                        ...specificOperation,
-                        maxWidth: operation.maxWidth,
-                    };
-                    break;
-                case "edit":
-                    // No additional properties needed for edit
-                    break;
-            }
-            break;
-        }
-        case "Sticker":
-            specificOperation = {
-                ...baseOperation,
-                method: operation.method,
-                backgroundColor: operation.backgroundColor,
-            };
-            break;
-        case "Transformation":
-            specificOperation = {
-                ...baseOperation,
-                method: operation.method,
-                ...(operation.timestamp && { timestamp: operation.timestamp }),
-                ...(operation.method === "translateTo" || operation.method === "translateBy"
-                    ? { x: operation.x, y: operation.y }
-                    : {}),
-                ...(operation.method === "scaleTo" || operation.method === "scaleBy"
-                    ? { x: operation.x, y: operation.y }
-                    : {}),
-                ...(operation.method === "rotateTo" || operation.method === "rotateBy"
-                    ? { degree: operation.degree }
-                    : {}),
-                ...(operation.method === "scaleToRelativeTo" || operation.method === "scaleByRelativeTo"
-                    ? { x: operation.x, y: operation.y, point: operation.point }
-                    : {}),
-                ...(operation.method === "scaleByTranslateBy"
-                    ? { translate: operation.translate, scale: operation.scale }
-                    : {}),
-                ...(operation.method === "deserialize" ? { data: operation.data } : {}),
-                ...(operation.method === "locked" || operation.method === "unlocked"
-                    ? { locked: operation.locked }
-                    : {}),
-                ...(operation.method === "transformMany" ? { items: operation.items } : {}),
-            };
-            break;
-        case "Drawing":
-            specificOperation = {
-                ...baseOperation,
-                method: operation.method,
-                ...(operation.method === "setStrokeColor" && { color: operation.color }),
-                ...(operation.method === "setStrokeWidth" && {
-                    width: operation.width,
-                    prevWidth: operation.prevWidth,
-                }),
-                ...(operation.method === "setStrokeOpacity" && { opacity: operation.opacity }),
-                ...(operation.method === "setStrokeStyle" && { style: operation.style }),
-            };
-            break;
-        case "Frame":
-            specificOperation = {
-                ...baseOperation,
-                method: operation.method,
-                ...(operation.method === "setBackgroundColor" && { backgroundColor: operation.backgroundColor }),
-                ...(operation.method === "setCanChangeRatio" && { canChangeRatio: operation.canChangeRatio }),
-                ...(operation.method === "setFrameType" && {
-                    shapeType: operation.shapeType,
-                    prevShapeType: operation.prevShapeType,
-                }),
-                ...(operation.method === "addChild" && { childId: operation.childId }),
-                ...(operation.method === "removeChild" && { childId: operation.childId }),
-            };
-            break;
-        default:
-            throw new Error(`Unsupported item type: ${(operation as any).itemType}`);
-    }
-
-    const eventBody = {
+function createBaseOperation(operation: UpdateOperation, meta: Meta) {
+    return {
         order: meta.order,
-
         eventId: `${meta.userId}:${meta.order}`,
         userId: meta.userId,
         boardId: meta.boardId,
-        operation: specificOperation,
         operations: [
             {
-                ...specificOperation,
+                class: operation.itemType,
+                item: [meta.itemId],
+                method: operation.method,
                 actualId: `${meta.userId}:${meta.order}`,
             },
         ],
         lastKnownOrder: meta.order,
     };
+}
 
-    return eventBody;
+function transformShapeOperation(operation: ShapeUpdateOperation, meta: Meta) {
+    const baseOp = createBaseOperation(operation, meta);
+    const specificOperation = {
+        ...baseOp.operations[0],
+        ...(operation.backgroundColor !== undefined && { backgroundColor: operation.backgroundColor }),
+        ...(operation.backgroundOpacity !== undefined && { backgroundOpacity: operation.backgroundOpacity }),
+        ...(operation.borderColor !== undefined && { borderColor: operation.borderColor }),
+        ...(operation.borderOpacity !== undefined && { borderOpacity: operation.borderOpacity }),
+        ...(operation.borderStyle !== undefined && { borderStyle: operation.borderStyle }),
+        ...(operation.borderWidth !== undefined && {
+            borderWidth: operation.borderWidth,
+            prevBorderWidth: operation.prevBorderWidth,
+        }),
+        ...(operation.shapeType !== undefined && { shapeType: operation.shapeType }),
+    };
+
+    return { ...baseOp, operation: specificOperation, operations: [specificOperation] };
+}
+
+function transformRichTextOperation(operation: RichTextUpdateOperation, meta: Meta) {
+    const baseOp = createBaseOperation(operation, meta);
+    let specificOperation = {
+        ...baseOp.operations[0],
+        ...(operation.selection && { selection: operation.selection }),
+        ...(operation.ops && { ops: operation.ops }),
+    };
+
+    const methodHandlers: Record<
+        RichTextWholeTextOperation["method"],
+        (op: RichTextWholeTextOperation) => Record<string, any>
+    > = {
+        setBlockType: (op) => ({ type: (op as any).type }),
+        setFontColor: (op) => ({ fontColor: (op as any).fontColor }),
+        setFontStyle: (op) => ({ fontStyleList: (op as any).fontStyleList }),
+        setFontFamily: (op) => ({ fontFamily: (op as any).fontFamily }),
+        setFontSize: (op) => {
+            const sizeOp = op as Extract<RichTextWholeTextOperation, { method: "setFontSize" }>;
+            return {
+                fontSize: sizeOp.fontSize,
+                ...(sizeOp.context && { context: sizeOp.context }),
+            };
+        },
+        setFontHighlight: (op) => ({ fontHighlight: (op as any).fontHighlight }),
+        setHorisontalAlignment: (op) => ({ horisontalAlignment: (op as any).horisontalAlignment }),
+        setVerticalAlignment: (op) => ({ verticalAlignment: (op as any).verticalAlignment }),
+        setMaxWidth: (op) => ({ maxWidth: (op as any).maxWidth }),
+        edit: () => ({}),
+    };
+
+    const handler = methodHandlers[operation.method];
+    if (handler) {
+        specificOperation = { ...specificOperation, ...handler(operation) };
+    }
+
+    return { ...baseOp, operation: specificOperation, operations: [specificOperation] };
+}
+
+function transformStickerOperation(operation: StickerUpdateOperation, meta: Meta) {
+    const baseOp = createBaseOperation(operation, meta);
+    const specificOperation = {
+        ...baseOp.operations[0],
+        backgroundColor: operation.backgroundColor,
+    };
+
+    return { ...baseOp, operation: specificOperation, operations: [specificOperation] };
+}
+
+function transformTransformationOperation(operation: TransformationUpdateOperation, meta: Meta) {
+    const baseOp = createBaseOperation(operation, meta);
+    const specificOperation = {
+        ...baseOp.operations[0],
+        ...(operation.method === "translateTo" || operation.method === "translateBy"
+            ? { x: operation.x, y: operation.y }
+            : {}),
+        ...(operation.method === "scaleTo" || operation.method === "scaleBy" ? { x: operation.x, y: operation.y } : {}),
+        ...(operation.method === "rotateTo" || operation.method === "rotateBy" ? { degree: operation.degree } : {}),
+        ...(operation.method === "scaleToRelativeTo" || operation.method === "scaleByRelativeTo"
+            ? { x: operation.x, y: operation.y, point: operation.point }
+            : {}),
+        ...(operation.method === "scaleByTranslateBy"
+            ? { translate: operation.translate, scale: operation.scale }
+            : {}),
+        ...(operation.method === "deserialize" ? { data: operation.data } : {}),
+        ...(operation.method === "locked" || operation.method === "unlocked" ? { locked: operation.locked } : {}),
+        ...(operation.method === "transformMany" ? { items: operation.items } : {}),
+    };
+
+    return { ...baseOp, operation: specificOperation, operations: [specificOperation] };
+}
+
+function transformDrawingOperation(operation: DrawingUpdateOperation, meta: Meta) {
+    const baseOp = createBaseOperation(operation, meta);
+    const specificOperation = {
+        ...baseOp.operations[0],
+        ...(operation.method === "setStrokeColor" && { color: operation.color }),
+        ...(operation.method === "setStrokeWidth" && {
+            width: operation.width,
+            prevWidth: operation.prevWidth,
+        }),
+        ...(operation.method === "setStrokeOpacity" && { opacity: operation.opacity }),
+        ...(operation.method === "setStrokeStyle" && { style: operation.style }),
+    };
+
+    return { ...baseOp, operation: specificOperation, operations: [specificOperation] };
+}
+
+function transformFrameOperation(operation: FrameUpdateOperation, meta: Meta) {
+    const baseOp = createBaseOperation(operation, meta);
+    const specificOperation = {
+        ...baseOp.operations[0],
+        ...(operation.method === "setBackgroundColor" && { backgroundColor: operation.backgroundColor }),
+        ...(operation.method === "setCanChangeRatio" && { canChangeRatio: operation.canChangeRatio }),
+        ...(operation.method === "setFrameType" && {
+            shapeType: operation.shapeType,
+            prevShapeType: operation.prevShapeType,
+        }),
+        ...(operation.method === "addChild" && { childId: operation.childId }),
+        ...(operation.method === "removeChild" && { childId: operation.childId }),
+    };
+
+    return { ...baseOp, operation: specificOperation, operations: [specificOperation] };
+}
+
+const transformers = {
+    Shape: transformShapeOperation,
+    RichText: transformRichTextOperation,
+    Sticker: transformStickerOperation,
+    Transformation: transformTransformationOperation,
+    Drawing: transformDrawingOperation,
+    Frame: transformFrameOperation,
+} as const;
+
+function createTransformationOperation(
+    itemId: string,
+    position: { x?: number; y?: number } | undefined,
+    scale?: { x?: number; y?: number }
+): TransformationUpdateOperation | null {
+    if (!position && !scale) return null;
+
+    if (position && !scale) {
+        return {
+            itemType: "Transformation",
+            method: "translateTo",
+            x: position.x ?? 0,
+            y: position.y ?? 0,
+            item: [itemId],
+        };
+    }
+
+    const operation: TransformationUpdateOperation = {
+        itemType: "Transformation",
+        method: "scaleByTranslateBy",
+        translate: {
+            x: position?.x ?? 0,
+            y: position?.y ?? 0,
+        },
+        scale: {
+            x: scale?.x ?? 1,
+            y: scale?.y ?? 1,
+        },
+        item: [itemId],
+    };
+
+    return operation;
+}
+
+export function transformUpdateOperation(operation: UpdateOperation, meta: Meta): any {
+    const transformer = transformers[operation.itemType];
+    if (!transformer) {
+        throw new Error(`Unsupported item type: ${operation.itemType}`);
+    }
+
+    const mainOperation = transformer(operation as any, meta);
+
+    // Handle position/transformation if present in the operation
+    const position = (operation as any).position;
+    const scale = (operation as any).scale;
+    const transformOperation = createTransformationOperation(meta.itemId, position, scale);
+
+    if (transformOperation) {
+        const transformResult = transformTransformationOperation(transformOperation, meta);
+        return {
+            ...mainOperation,
+            operations: [...mainOperation.operations, transformResult.operations[0]],
+        };
+    }
+
+    return mainOperation;
 }

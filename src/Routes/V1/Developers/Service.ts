@@ -32,6 +32,7 @@ import {
 import { HttpStatus } from "shared/enums/http-status.enum";
 import { HttpException } from "shared/exceptions/http-exception";
 import { BoardsService } from "../Boards/boards.service";
+import WebSocket from "ws";
 
 config();
 
@@ -62,8 +63,19 @@ export interface BoardItem {
 
 export class DevelopersService {
     private readonly BOARD_LAST_ORDER_KEY = "board:last_order:";
+    private broadcastEventFn?: (boardUUID: string, eventData: any) => void;
 
     constructor(private boards: BoardsService, private logger: winston.Logger, private redis: Redis) {}
+
+    setBroadcastEventFunction(fn: (boardUUID: string, eventData: any) => void) {
+        this.broadcastEventFn = fn;
+    }
+
+    private broadcastBoardEvent(boardUUID: string, eventData: any): void {
+        if (this.broadcastEventFn) {
+            this.broadcastEventFn(boardUUID, eventData);
+        }
+    }
 
     // TODO: find in code
     public async getBoardUuid(boardId: number): Promise<string> {
@@ -410,6 +422,8 @@ export class DevelopersService {
 
         await this.redis.client.set(this.BOARD_LAST_ORDER_KEY + boardId, order.toString());
 
+        this.broadcastBoardEvent(boardUUID, event.operation);
+
         return {
             id: newItemId,
             ...item,
@@ -538,6 +552,8 @@ export class DevelopersService {
         });
 
         await this.redis.client.set(this.BOARD_LAST_ORDER_KEY + boardId, order.toString());
+
+        this.broadcastBoardEvent(boardUUID, transformedEvent.operation);
     }
 
     async deleteBoardItem(options: {

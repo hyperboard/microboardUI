@@ -155,12 +155,36 @@ export interface RichTextItem extends BaseItem {
 
 export type BoardItem = ShapeItem | StickerItem | FrameItem | DrawingItem | RichTextItem;
 
-// Request types
-export interface CreateItemRequest {
-    type: "Shape" | "Sticker" | "RichText" | "Frame" | "Drawing";
+// Create Request Interfaces
+export interface CreateShapeRequest {
+    transformation?: Transformation;
+    shapeType: ShapeType;
+    text?: RichText;
+    borderColor?: string;
+    borderStyle?: BorderStyle;
+    borderWidth?: number;
+    borderOpacity?: number;
+    backgroundColor?: string;
+    backgroundOpacity?: number;
+}
+
+export interface CreateStickerRequest {
     transformation?: Transformation;
     text?: RichText;
-    shapeType?: ShapeType | FrameType;
+    backgroundColor?: string;
+}
+
+export interface CreateRichTextRequest {
+    transformation?: Transformation;
+    text: RichText;
+    containerMaxWidth?: number;
+    verticalAlignment?: "center";
+}
+
+export interface CreateFrameRequest {
+    transformation?: Transformation;
+    shapeType?: FrameType;
+    text?: RichText;
     borderColor?: string;
     borderStyle?: BorderStyle;
     borderWidth?: number;
@@ -169,20 +193,71 @@ export interface CreateItemRequest {
     backgroundOpacity?: number;
     canChangeRatio?: boolean;
     children?: string[];
+}
+
+export interface CreateDrawingRequest {
+    transformation?: Transformation;
+    points: Point[];
+    strokeStyle?: string;
+    strokeWidth?: number;
+}
+
+// Update Request Interfaces
+export interface UpdateShapeRequest {
+    shapeType?: ShapeType;
+    text?: RichText;
+    borderColor?: string;
+    borderStyle?: BorderStyle;
+    borderWidth?: number;
+    borderOpacity?: number;
+    backgroundColor?: string;
+    backgroundOpacity?: number;
+}
+
+export interface UpdateStickerRequest {
+    text?: RichText;
+    backgroundColor?: string;
+}
+
+export interface UpdateRichTextRequest {
+    text?: RichText;
+    containerMaxWidth?: number;
+    verticalAlignment?: "center";
+}
+
+export interface UpdateFrameRequest {
+    shapeType?: FrameType;
+    text?: RichText;
+    borderColor?: string;
+    borderStyle?: BorderStyle;
+    borderWidth?: number;
+    borderOpacity?: number;
+    backgroundColor?: string;
+    backgroundOpacity?: number;
+    canChangeRatio?: boolean;
+    children?: string[];
+}
+
+export interface UpdateDrawingRequest {
     points?: Point[];
     strokeStyle?: string;
     strokeWidth?: number;
 }
 
-export interface UpdateItemRequest {
-    shapeType?: ShapeType | FrameType;
-    backgroundColor?: string;
-    backgroundOpacity?: number;
-    borderColor?: string;
-    borderStyle?: BorderStyle;
-    borderWidth?: number;
-    text?: RichText;
-}
+// Update the CreateItemRequest and UpdateItemRequest to use the new interfaces
+export type CreateItemRequest =
+    | ({ type: "Shape" } & CreateShapeRequest)
+    | ({ type: "Sticker" } & CreateStickerRequest)
+    | ({ type: "RichText" } & CreateRichTextRequest)
+    | ({ type: "Frame" } & CreateFrameRequest)
+    | ({ type: "Drawing" } & CreateDrawingRequest);
+
+export type UpdateItemRequest =
+    | UpdateShapeRequest
+    | UpdateStickerRequest
+    | UpdateRichTextRequest
+    | UpdateFrameRequest
+    | UpdateDrawingRequest;
 
 export interface BatchOperationRequest {
     operations: Array<{
