@@ -1,6 +1,6 @@
 import { google } from "googleapis";
 
-export const GOOGLE_AUTH_REDIRECT_URL = "http://localhost:8000/api/v1/auth/google/callback";
+export const GOOGLE_AUTH_REDIRECT_URL = `${process.env.BASE_URL}/api/v1/auth/google/callback`;
 
 export class GoogleOAuth {
     private oauthClient = new google.auth.OAuth2({
@@ -13,13 +13,8 @@ export class GoogleOAuth {
 
     async getUserData(code: string) {
         try {
-            console.log("code", code);
-            console.log("GOOGLE_CLIENT_ID", this.clientId);
-            console.log("GOOGLE_CLIENT_SECRET", this.clientSecret);
-
             // Exchange the authorization code for an access token using oauthClient
             const { tokens } = await this.oauthClient.getToken(code);
-            console.log("tokens", tokens);
             if (!tokens.id_token) {
                 return null;
             }
@@ -32,7 +27,6 @@ export class GoogleOAuth {
 
             const payload = ticket.getPayload();
 
-            console.log(payload);
             return payload ?? null;
         } catch (err) {
             console.error(err);
