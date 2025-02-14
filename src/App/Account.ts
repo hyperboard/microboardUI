@@ -59,10 +59,16 @@ export class Account {
 	}
 
 	async init(): Promise<void> {
-		await this.refreshTokens();
-		await this.onInit?.();
-		this.isInitialized = true;
-		this.subject.publish(this.info);
+		try {
+			await this.refreshTokens();
+			await this.onInit?.();
+			this.isInitialized = true;
+			this.subject.publish(this.info);
+		} catch (err) {
+			console.warn("Account initialization failed");
+			this.isInitialized = true;
+			this.subject.publish(this.info);
+		}
 	}
 
 	private cleanup(): void {
