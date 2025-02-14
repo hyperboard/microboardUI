@@ -42,6 +42,7 @@ import { HttpStatus } from "shared/enums/http-status.enum";
 import { TelegramService } from "services/TelegramService";
 import { language } from "Middlewares/language.middleware";
 import { DevelopersService } from "Routes/V1/Developers/Service";
+import { GoogleOAuth } from "Routes/V1/Auth/GoogleOAuth";
 
 export async function getApp(): Promise<http.Server> {
     const app = express();
@@ -194,6 +195,7 @@ export async function getApp(): Promise<http.Server> {
     const media = createMinioMediaDAL(logger);
     const users = new Users(media, logger);
     const auth = new Auth(logger, users, config, mailer);
+    const googleOAuthService = new GoogleOAuth();
     const ai = new AI(openai);
 
     app.get("/", (request, response) => {
@@ -222,6 +224,7 @@ export async function getApp(): Promise<http.Server> {
         accessKeysService,
         boardsService,
         foldersService,
+        googleOAuthService,
     });
 
     app.use(v1Router);

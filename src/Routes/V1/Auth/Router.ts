@@ -9,6 +9,7 @@ import { REFRESH_TOKEN_EXPIRY } from "./AuthHelper";
 
 import { catchAsync } from "shared/lib/catchAsync";
 import type { Users } from "../Users";
+import type { GoogleOAuth } from "Routes/V1/Auth/GoogleOAuth";
 export const REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
 function setCookies(res: Response, refreshToken: string) {
@@ -20,7 +21,12 @@ function setCookies(res: Response, refreshToken: string) {
     });
 }
 
-export function getAuthRouter(authService: Auth, userService: Users, logger: winston.Logger): express.Router {
+export function getAuthRouter(
+    authService: Auth,
+    userService: Users,
+    googleOAuthService: GoogleOAuth,
+    logger: winston.Logger
+): express.Router {
     const router = express.Router();
 
     router.post(
@@ -237,6 +243,31 @@ export function getAuthRouter(authService: Auth, userService: Users, logger: win
                 status: HttpStatus.OK,
                 message: "Password changed",
             });
+        })
+    );
+
+    router.get(
+        "/auth/google",
+        catchAsync(async (req, res) => {
+            const authUrl = googleOAuthService.generateAuthUrl();
+
+            return res.redirect(authUrl);
+        })
+    );
+
+    router.get(
+        "/auth/google/callback",
+        catchAsync(async (req, res) => {
+            // const authUrl = googleOAuthService.generateAuthUrl();
+            console.log(req.query);
+            const userData = await googleOAuthService.getUserData(req.query.code as string);
+            if (!userData) {
+                throw new HttpException(HttpStatus.UNAUTHORIZED, "Error retrieving google account data");
+            }
+            const tokens = await authService.loginGoogleAccount(userData);
+
+            setCookies(res, tokens.refreshToken);
+            res.redirect("/");
         })
     );
 

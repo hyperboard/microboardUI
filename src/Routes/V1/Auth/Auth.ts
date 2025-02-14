@@ -23,6 +23,7 @@ import {
 import type { Lang } from "Middlewares/language.middleware";
 import { verifyMessage } from "ethers";
 import { db } from "drizzle/db";
+import type { TokenPayload } from "google-auth-library";
 
 export class Auth {
     private authHelper: AuthHelper;
@@ -142,6 +143,59 @@ export class Auth {
             email: createdUser.userEmail!,
             name: createdUser.userName!,
         };
+    }
+
+    async loginGoogleAccount(payload: TokenPayload) {
+        if (!payload.email) {
+            throw new HttpException(HttpStatus.UNAUTHORIZED, "Invalid google account");
+        }
+        const user = await Drizzle.getUserAuthInfo(payload.email);
+
+        if (user) {
+            if (!user.activated) {
+                throw new HttpException(HttpStatus.UNAUTHORIZED, "User not activated");
+            }
+
+            const permissions = await this.getPermissions(user.id);
+
+            const { accessToken, refreshToken } = await this.authHelper.generateTokens(user.id, { ...permissions });
+
+            const salt = await bcrypt.genSalt(10);
+            const refreshTokenHash = await bcrypt.hash(refreshToken, salt);
+
+            this.trySaveToken(user.id, refreshTokenHash);
+            if (user.avatarGenerated) {
+                await this.userService.uploadAvatar(user.id);
+            }
+            return {
+                userId: user.id,
+                accessToken,
+                refreshToken,
+            };
+        } else {
+            await Drizzle.addUser(payload.email, false);
+            const createdUser = await Drizzle.getUserByEmail(payload.email);
+            if (payload.name) {
+                await Drizzle.addUsername(createdUser.userId, payload.name);
+            }
+            await Drizzle.updateUserActiveStatus(createdUser.userId);
+            const permissions = await this.getPermissions(createdUser.userId);
+            const { accessToken, refreshToken } = await this.authHelper.generateTokens(createdUser.userId, {
+                ...permissions,
+            });
+
+            const salt = await bcrypt.genSalt(10);
+            const refreshTokenHash = await bcrypt.hash(refreshToken, salt);
+
+            this.trySaveToken(createdUser.userId, refreshTokenHash);
+            await this.userService.uploadAvatar(createdUser.userId);
+
+            return {
+                userId: createdUser.userId,
+                accessToken,
+                refreshToken,
+            };
+        }
     }
 
     async refresh(payload: RefreshPayload): Promise<{

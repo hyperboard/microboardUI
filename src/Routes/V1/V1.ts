@@ -32,6 +32,7 @@ import { getFoldersRouter } from "./Foldres/folders.router";
 import type { BoardsService } from "./Boards/boards.service";
 import type { FoldersService } from "./Foldres/folders.service";
 import type { AccessKeysService } from "./Boards/access-keys.service";
+import type { GoogleOAuth } from "Routes/V1/Auth/GoogleOAuth";
 
 function createFileRoute(
     router: express.Router,
@@ -81,6 +82,7 @@ export function getV1Router({
     boardsService,
     accessKeysService,
     foldersService,
+    googleOAuthService,
 }: {
     config: Config;
     mailer: Mailer;
@@ -99,11 +101,12 @@ export function getV1Router({
     boardsService: BoardsService;
     foldersService: FoldersService;
     accessKeysService: AccessKeysService;
+    googleOAuthService: GoogleOAuth;
 }): express.Router {
     const router = express.Router();
     const apiBase = "/api/v1";
     router.use(apiBase, createHealthRouter(logger, redis));
-    router.use(apiBase, getAuthRouter(auth, users, logger));
+    router.use(apiBase, getAuthRouter(auth, users, googleOAuthService, logger));
     router.use(apiBase, getBoardsRouter(boardsService, foldersService, accessKeysService));
     router.use(apiBase, getFoldersRouter(foldersService));
     router.use(apiBase, getTemplatesRouter(templates, logger), getAIRouter(ai, logger));
