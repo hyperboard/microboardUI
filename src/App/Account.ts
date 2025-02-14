@@ -60,7 +60,7 @@ export class Account {
 
 	async init(): Promise<void> {
 		await this.refreshTokens();
-		this.onInit?.();
+		await this.onInit?.();
 		this.isInitialized = true;
 		this.subject.publish(this.info);
 	}

@@ -280,9 +280,6 @@ export function createApp(isHistory = true): App {
 		account.setOnInit(async () => {
 			await foldersApi.initFolders();
 		});
-		account.setOnInit(async () => {
-			await foldersApi.initFolders();
-		});
 		render();
 	}
 

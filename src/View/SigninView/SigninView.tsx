@@ -18,6 +18,7 @@ import { EmailIcon } from "View/SignupView/EmailIcon";
 import { LockIcon } from "View/SignupView/LockIcon";
 import styles from "./SigninView.module.css";
 import { WalletLoginButton } from "View/WalletLoginButton";
+import { GoogleAuthBtn } from "View/GoogleAuthBtn/GoogleAuthBtn";
 
 interface Props {
 	app: App;
@@ -191,6 +192,7 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 					</Button>
 
 					<WalletLoginButton />
+					<GoogleAuthBtn />
 				</div>
 			</form>
 			<div className={styles.policy}>

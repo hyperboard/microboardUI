@@ -13,6 +13,7 @@ import { LockIcon } from "./LockIcon";
 import styles from "./SignupView.module.css";
 import { Checkbox } from "View/Ui/Checkbox";
 import { WalletLoginButton } from "View/WalletLoginButton";
+import { GoogleAuthBtn } from "View/GoogleAuthBtn/GoogleAuthBtn";
 
 export const SignupView = (): React.ReactElement => {
 	const { t, i18n } = useTranslation();
@@ -235,6 +236,7 @@ export const SignupView = (): React.ReactElement => {
 					</Button>
 
 					<WalletLoginButton />
+					<GoogleAuthBtn />
 
 					{!showNameInput && (
 						<Checkbox checked onChange={onNewsletterChange}>
