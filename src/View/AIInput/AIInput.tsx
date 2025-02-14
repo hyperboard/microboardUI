@@ -164,7 +164,8 @@ export const AIInput = () => {
 		const handleClickOutside = (event: MouseEvent): void => {
 			if (
 				dropdownRef.current &&
-				!dropdownRef.current.contains(event.target as Node)
+				event.target instanceof Node &&
+				dropdownRef.current.contains(event.target)
 			) {
 				setIsDropdownOpen(false);
 			}
