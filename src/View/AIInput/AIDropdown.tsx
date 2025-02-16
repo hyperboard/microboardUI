@@ -1,4 +1,4 @@
-import React, { MouseEventHandler } from "react";
+import React, { MouseEventHandler, useEffect, useRef } from "react";
 import { UiPanel } from "View/Ui/UiPanel";
 import { StarIcon } from "./StarIcon";
 import clsx from "clsx";
@@ -35,22 +35,20 @@ const getModelDisplayName = (
 	model: OpenAIModels,
 	isPhoneScreen: boolean,
 ): string => {
-	if (model === "gpt-4o") {
-		return isPhoneScreen ? "4o" : "GPT-4o";
+	switch (model) {
+		case "gpt-4o":
+			return "GPT-4o";
+		case "gpt-4o-mini":
+			return "GPT-4o mini";
+		case "image-generation":
+			return "Flux.1 schnell";
+		case "deepseek-chat":
+			return "DeepSeek-R1";
+		case "tts-1-hd":
+			return isPhoneScreen ? "TTS" : "Text to speech HD";
+		default:
+			return model;
 	}
-	if (model === "gpt-4o-mini") {
-		return isPhoneScreen ? "4o mini" : "GPT-4o mini";
-	}
-	if (model === "image-generation") {
-		return isPhoneScreen ? "flux" : "Flux.1 schnell";
-	}
-	if (model === "deepseek-chat") {
-		return isPhoneScreen ? "deepseek" : "DeepSeek-R1";
-	}
-	if (model === "tts-1-hd") {
-		return isPhoneScreen ? "Text to speech" : "Text to speech HD";
-	}
-	return model;
 };
 
 export const AIDropdown = (props: AIDropdownProps): JSX.Element => {
@@ -101,6 +99,7 @@ const Dropdown = (
 	const { account, setIsDropdownOpen, isPhoneScreen } = props;
 	const { setModel } = useAIContext();
 	const { openModal } = useUiModalContext();
+	const dropdownRef = useRef<HTMLDivElement | null>(null);
 
 	const getDropDownTooltip = (model: OpenAIModels): boolean | JSX.Element => {
 		const dropdownTooltip = account.isLoggedIn
@@ -115,7 +114,6 @@ const Dropdown = (
 		);
 
 	const selectModel = (model: OpenAIModels) => (): void => {
-		console.log("model");
 		setModel(model);
 		setIsDropdownOpen(false);
 	};
@@ -131,8 +129,28 @@ const Dropdown = (
 		}
 	};
 
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent): void => {
+			if (
+				dropdownRef.current &&
+				event.target instanceof Node &&
+				!dropdownRef.current.contains(event.target)
+			) {
+				setIsDropdownOpen(false);
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, [dropdownRef]);
+
 	return (
-		<div className={clsx(styles.inputContainer, styles.dropdownContainer)}>
+		<div
+			className={clsx(styles.inputContainer, styles.dropdownContainer)}
+			ref={dropdownRef}
+		>
 			<div className={styles.modelDropdown}>
 				{models.map((model, index) => (
 					<button

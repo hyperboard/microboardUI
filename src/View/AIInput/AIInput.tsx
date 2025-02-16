@@ -38,7 +38,6 @@ export const AIInput = () => {
 	const disabledRef = useRef<boolean>(!!board.aiGeneratingOnItem);
 	const inputRef = useRef<HTMLTextAreaElement | null>(null);
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-	const dropdownRef = useRef<HTMLDivElement | null>(null);
 	const forceUpdate = useForceUpdate();
 	const selectedItemsCount = board.selection.items.list().length;
 	const account = useAccount();
@@ -159,23 +158,6 @@ export const AIInput = () => {
 			await handleSendClick(event);
 		}
 	};
-
-	useEffect(() => {
-		const handleClickOutside = (event: MouseEvent): void => {
-			if (
-				dropdownRef.current &&
-				event.target instanceof Node &&
-				dropdownRef.current.contains(event.target)
-			) {
-				setIsDropdownOpen(false);
-			}
-		};
-
-		document.addEventListener("mousedown", handleClickOutside);
-		return () => {
-			document.removeEventListener("mousedown", handleClickOutside);
-		};
-	}, [dropdownRef]);
 
 	const sendInputData = async (): Promise<void> => {
 		const connection = app.getConnection();
@@ -342,10 +324,7 @@ export const AIInput = () => {
 	}
 
 	return (
-		<div
-			className={clsx(styles.inputContainer, isShaking && styles.shake)}
-			ref={dropdownRef}
-		>
+		<div className={clsx(styles.inputContainer, isShaking && styles.shake)}>
 			{!isEditable && (
 				<Tooltip
 					tooltip={t("AIInput.disable")}
