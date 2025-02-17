@@ -1,6 +1,6 @@
 import { DefaultTextStyles } from "Board/Items/RichText/RichText";
 import { getApiUrl } from "Config";
-import * as flow from "dropflow";
+// import * as flow from "dropflow";
 
 export const DEFAULT_TEXT_STYLES: DefaultTextStyles = {
 	fontFamily: "Lab Grotesque",
@@ -13,7 +13,7 @@ export const DEFAULT_TEXT_STYLES: DefaultTextStyles = {
 	italic: false,
 	"line-through": false,
 };
-
+/*
 export async function loadFonts() {
 	await flow.registerFont(
 		new URL(`${getApiUrl()}/fonts/LabGrotesqueK.ttf`, import.meta.url),
@@ -34,3 +34,4 @@ export async function loadFonts() {
 		),
 	);
 }
+*/

@@ -1,6 +1,6 @@
 /* eslint-disable no-var */
-import { textInit } from "TextInit";
-textInit();
+// import { textInit } from "TextInit";
+// textInit();
 
 import { App } from "App";
 import { createApp } from "App/App";

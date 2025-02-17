@@ -16,16 +16,16 @@ export function FontStylePicker({
 }: Props): React.ReactElement {
 	const { t } = useTalkTranslation();
 
-	const handleBoldPick = () => {
+	const handleBoldPick = (): void => {
 		onPick("bold");
 	};
-	const handleItalicsPick = () => {
+	const handleItalicsPick = (): void => {
 		onPick("italic");
 	};
-	const handleLineThroughPick = () => {
+	const handleLineThroughPick = (): void => {
 		onPick("line-through");
 	};
-	const handleUnderlinePick = () => {
+	const handleUnderlinePick = (): void => {
 		onPick("underline");
 	};
 
@@ -56,8 +56,7 @@ export function FontStylePicker({
 			>
 				<Icon iconName="TextItalic" />
 			</UiButton>
-			{/* TODO uncomment when dropflow can text-decoration */}
-			{/* <UiButton
+			<UiButton
 				id="font-style-strike"
 				tooltip={t("contextPanel.fontStyle.strike")}
 				hotkey={getHotkeyLabel("textStrike")}
@@ -76,7 +75,7 @@ export function FontStylePicker({
 				onClick={handleUnderlinePick}
 			>
 				<Icon width={28} height={28} iconName="TextUnderline" />
-			</UiButton> */}
+			</UiButton>
 		</>
 	);
 }
