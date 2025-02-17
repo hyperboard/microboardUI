@@ -6,6 +6,7 @@ import React, {
 	useRef,
 	useState,
 	type ChangeEventHandler,
+	type ClipboardEventHandler,
 	type FocusEventHandler,
 	type MouseEventHandler,
 	type ReactNode,
@@ -16,6 +17,7 @@ import styles from "./SearchInput.module.css";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import isEmail from "validator/lib/isEmail";
+import { validateItemsMap } from "Board/Validators";
 
 export type SearchOption = {
 	value: string;
@@ -266,6 +268,18 @@ export function SearchInput({
 		}
 	};
 
+	const handlePaste: ClipboardEventHandler = evt => {
+		evt.stopPropagation();
+		const data = evt.clipboardData.getData("text/plain");
+		try {
+			const itemsObj = JSON.parse(data);
+			const isDataValid = validateItemsMap(itemsObj);
+			if (isDataValid) {
+				evt.preventDefault();
+			}
+		} catch {}
+	};
+
 	const handleOptionClick =
 		(opt: SearchOption): MouseEventHandler =>
 		ev => {
@@ -335,7 +349,7 @@ export function SearchInput({
 						onKeyDown={handleKeyPress}
 						onKeyUp={stopPropagation}
 						onKeyPress={stopPropagation}
-						onPaste={evt => evt.stopPropagation()}
+						onPaste={handlePaste}
 						value={currValue}
 						ref={htmlInputRef}
 						style={{ width: inputWidth }}
