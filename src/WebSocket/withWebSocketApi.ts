@@ -126,9 +126,26 @@ export function withWebSocketApi({
                 );
             case "AiChat":
                 return handleAiChatMessage(msg, ws).catch((error) => {
+                    const operationContext = {
+                        boardId: msg.boardId,
+                        itemId: "itemId" in msg.event ? msg.event.itemId : "unknown",
+                        requestType: "text" as const,
+                        startTime: Date.now(),
+                        model: "model" in msg.event ? msg.event.model : "unknown",
+                        pipelineSteps: [
+                            { name: "Initialize Operation", status: "error" as const },
+                            { name: "Check Usage Limits", status: "pending" as const },
+                            { name: "Create Chat", status: "pending" as const },
+                            { name: "Setup Context", status: "pending" as const },
+                            { name: "Generate Response", status: "pending" as const },
+                            { name: "Save Message", status: "pending" as const },
+                        ],
+                    };
+
                     telegramService.broadcastMessage(error?.message || "Unknown error", {
                         boardId: msg.boardId,
                         msg: msg,
+                        operationContext,
                     });
                     handleError(ws, error, "Failed to process AI chat message");
                 });

@@ -177,8 +177,9 @@ export async function getApp(): Promise<http.Server> {
     const telegramService = new TelegramService({
         token: process.env.TELEGRAM_BOT_TOKEN!,
         appToken: process.env.TELEGRAM_APP_TOKEN!,
-        logger,
         isEnabled: process.env.TELEGRAM_ENABLED === "true",
+        logger,
+        source: (process.env.NODE_ENV || "development") as "development" | "staging" | "production",
     });
     await telegramService.start();
 

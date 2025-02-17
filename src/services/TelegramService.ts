@@ -21,6 +21,7 @@ export interface TelegramServiceConfig {
     appToken: string;
     isEnabled?: boolean;
     logger: winston.Logger;
+    source: "development" | "staging" | "production";
 }
 
 export class TelegramService {
@@ -28,13 +29,22 @@ export class TelegramService {
     private baseUrl: string;
     private logger: winston.Logger;
     private appToken: string;
+    private source: "development" | "staging" | "production";
+    private messageQueue: Array<{
+        chatId: string;
+        message: string;
+        options: any;
+    }> = [];
+    private isProcessingQueue = false;
+    private readonly RATE_LIMIT_DELAY = 1000; // 1 second between messages
 
     constructor(private readonly config: TelegramServiceConfig) {
         this.baseUrl = `https://api.telegram.org/bot${this.config.token}`;
         this.logger = config.logger;
         this.appToken = this.config.appToken;
+        this.source = this.config.source;
         this.isEnabled = this.config.isEnabled ?? true;
-        this.logger.info("TelegramService initialized");
+        this.logger.info(`TelegramService initialized with source: ${this.source}`);
     }
 
     private async sendTelegramRequest(method: string, params: any = {}) {
@@ -42,24 +52,27 @@ export class TelegramService {
             this.logger.debug(`Telegram disabled: skipping ${method} request`);
             return { ok: true, result: [] };
         }
-        try {
-            this.logger.debug(`Sending request to Telegram API: ${method}`, { params });
-            const response = await fetch(`${this.baseUrl}/${method}`, {
-                method: params ? "POST" : "GET",
-                headers: params ? { "Content-Type": "application/json" } : undefined,
-                body: params ? JSON.stringify(params) : undefined,
-            });
 
-            if (!response.ok) {
-                throw new Error(`Telegram API error: ${response.status} ${response.statusText}`);
+        return this.retryWithBackoff(async () => {
+            try {
+                this.logger.debug(`Sending request to Telegram API: ${method}`, { params });
+                const response = await fetch(`${this.baseUrl}/${method}`, {
+                    method: params ? "POST" : "GET",
+                    headers: params ? { "Content-Type": "application/json" } : undefined,
+                    body: params ? JSON.stringify(params) : undefined,
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Telegram API error: ${response.status} ${response.statusText}`);
+                }
+                this.logger.debug(`Telegram API response: ${method}`, { status: response.status });
+
+                return await response.json();
+            } catch (error) {
+                this.logger.error(`Telegram API request failed (${method}):`, error);
+                throw error;
             }
-            this.logger.debug(`Telegram API response: ${method}`, { status: response.status, data: response.body });
-
-            return await response.json();
-        } catch (error) {
-            this.logger.error(`Telegram API request failed (${method}):`, error);
-            throw error;
-        }
+        });
     }
 
     private async getDashboardMetrics(): Promise<string> {
@@ -122,6 +135,11 @@ export class TelegramService {
         }
     }
 
+    private async isUserSubscribed(chatId: string): Promise<boolean> {
+        const chat = await db.select().from(telegramChats).where(eq(telegramChats.chatId, chatId)).limit(1);
+        return chat.length > 0;
+    }
+
     private async handleUpdate(update: any) {
         this.logger.debug("Received update:", JSON.stringify(update));
         if (!update.message?.text || !update.message?.chat?.id) return;
@@ -130,6 +148,18 @@ export class TelegramService {
         const text = update.message.text;
         this.logger.info(`Processing command: ${text}`);
         const [command, ...args] = text.split(" ");
+
+        if (command !== "/start" && command !== "/subscribe") {
+            const isSubscribed = await this.isUserSubscribed(chatId);
+
+            if (!isSubscribed) {
+                await this.sendTelegramRequest("sendMessage", {
+                    chat_id: chatId,
+                    text: "🔒 This is a private developer log chat. You need to subscribe first using the command:\n/subscribe <app-token>",
+                });
+                return;
+            }
+        }
 
         switch (command) {
             case "/start":
@@ -159,11 +189,16 @@ export class TelegramService {
                 }
 
                 try {
-                    await db.insert(telegramChats).values({ chatId }).onConflictDoNothing();
+                    await db
+                        .insert(telegramChats)
+                        .values({
+                            chatId,
+                        })
+                        .onConflictDoNothing();
 
                     await this.sendTelegramRequest("sendMessage", {
                         chat_id: chatId,
-                        text: "Successfully subscribed to error reports!",
+                        text: `Successfully subscribed to error reports! (Source: ${this.source})`,
                     });
                 } catch (error) {
                     this.logger.error("Error subscribing chat:", error);
@@ -250,27 +285,196 @@ export class TelegramService {
         }
     }
 
-    public async broadcastMessage(text: string, meta?: { boardId?: string; msg?: AiChatMsg }) {
+    private async formatPipelineSteps(steps: Array<{ name: string; status: "success" | "error" | "pending" }>) {
+        return steps
+            .map((step) => {
+                const icon = step.status === "success" ? "🗸" : step.status === "error" ? "✗" : "…";
+                return `${icon} ${step.name}`;
+            })
+            .join("\n");
+    }
+
+    public async broadcastMessage(
+        text: string,
+        meta?: {
+            boardId?: string;
+            msg?: AiChatMsg;
+            operationContext?: {
+                boardId: string;
+                itemId: string;
+                requestType: "text" | "image" | "audio";
+                startTime: number;
+                model?: string;
+                pipelineSteps?: Array<{ name: string; status: "success" | "error" | "pending" }>;
+            };
+            errorContext?: {
+                boardId: string;
+                chatId: string;
+                timestamp: string;
+                activeOperations: Array<{
+                    itemId: string;
+                    boardId: string;
+                    requestType: string;
+                    startTime: number;
+                    model?: string;
+                }>;
+                activeStreams: string[];
+            };
+        }
+    ) {
+        this.logger.debug("Starting broadcast message process", {
+            textLength: text.length,
+            hasMeta: !!meta,
+            source: this.source,
+        });
+
+        if (!this.isEnabled) {
+            this.logger.info("Broadcast skipped - Telegram service is disabled");
+            return;
+        }
+
         try {
+            this.logger.debug("Fetching telegram chats from database...");
             const chats = await db.select().from(telegramChats);
+            this.logger.info(`Found ${chats.length} telegram chats to broadcast to`);
+
+            if (chats.length === 0) {
+                this.logger.warn("No telegram chats found to broadcast to");
+                return;
+            }
 
             for (const chat of chats) {
+                this.logger.debug(`Processing broadcast for chat ${chat.chatId}`);
+
                 try {
-                    await this.sendTelegramRequest("sendMessage", {
-                        chat_id: chat.chatId,
-                        text:
-                            text +
-                            (meta?.boardId ? `\n\nBoard: ${meta.boardId}` : "") +
-                            (meta?.msg ? `\n\nMessage: ${meta.msg}` : ""),
-                        parse_mode: "Markdown",
+                    const operationInfo = meta?.operationContext
+                        ? `\n\n⚙ Operation Details:
+• Type: ${meta.operationContext.requestType}
+• Model: ${meta.operationContext.model || "N/A"}
+• Duration: ${Date.now() - meta.operationContext.startTime}ms${
+                              meta.operationContext.pipelineSteps
+                                  ? `\n\n⚡ Pipeline Status:\n${await this.formatPipelineSteps(
+                                        meta.operationContext.pipelineSteps
+                                    )}`
+                                  : ""
+                          }`
+                        : "";
+
+                    const errorInfo = meta?.errorContext
+                        ? `\n\n⚠ Error Details:
+• Board: ${meta.errorContext.boardId}
+• Chat: ${meta.errorContext.chatId}
+• Time: ${meta.errorContext.timestamp}
+• Active Operations: ${meta.errorContext.activeOperations.length}
+• Active Streams: ${meta.errorContext.activeStreams.length}`
+                        : "";
+
+                    const wsMessage = meta?.msg
+                        ? `\n\nWebSocket Message:\n\`\`\`json\n${JSON.stringify(meta.msg, null, 2)}\n\`\`\``
+                        : "";
+
+                    const message = this.validateMessage(
+                        [
+                            `${text}`,
+                            meta?.boardId ? `\n[#] Board: ${meta.boardId}` : "",
+                            operationInfo,
+                            errorInfo,
+                            wsMessage,
+                        ].join("")
+                    );
+
+                    this.messageQueue.push({
+                        chatId: chat.chatId,
+                        message,
+                        options: {
+                            parse_mode: "Markdown",
+                        },
                     });
+
+                    this.processMessageQueue();
                 } catch (error) {
-                    this.logger.error(`Failed to send message to chat ${chat.chatId}:`, error);
+                    this.logger.error(`Failed to send broadcast to chat ${chat.chatId}:`, {
+                        error:
+                            error instanceof Error
+                                ? {
+                                      message: error.message,
+                                      stack: error.stack,
+                                  }
+                                : error,
+                        chatId: chat.chatId,
+                    });
+
+                    if (
+                        error instanceof Error &&
+                        (error.message.includes("chat not found") ||
+                            error.message.includes("bot was blocked") ||
+                            error.message.includes("deactivated"))
+                    ) {
+                        this.logger.warn(`Removing inactive chat ${chat.chatId} from database`);
+                        await db.delete(telegramChats).where(eq(telegramChats.chatId, chat.chatId));
+                    }
                 }
             }
         } catch (error) {
-            this.logger.error("Error broadcasting message:", error);
+            this.logger.error("Error in broadcast message process:", error);
         }
+    }
+
+    private async retryWithBackoff<T>(operation: () => Promise<T>, maxRetries: number = 3): Promise<T> {
+        let lastError: Error;
+        for (let i = 0; i < maxRetries; i++) {
+            try {
+                return await operation();
+            } catch (error) {
+                lastError = error instanceof Error ? error : new Error(String(error));
+                this.logger.warn(`Retry ${i + 1}/${maxRetries} failed:`, {
+                    error: lastError.message,
+                    attempt: i + 1,
+                });
+
+                if (i < maxRetries - 1) {
+                    const delay = Math.min(1000 * Math.pow(2, i), 10000);
+                    await new Promise((resolve) => setTimeout(resolve, delay));
+                }
+            }
+        }
+        throw lastError!;
+    }
+
+    private validateMessage(message: string): string {
+        const MAX_LENGTH = 4096; // Telegram's message length limit
+
+        if (message.length > MAX_LENGTH) {
+            this.logger.warn(
+                `Message exceeds Telegram length limit, truncating from ${message.length} to ${MAX_LENGTH} chars`
+            );
+            return message.substring(0, MAX_LENGTH - 100) + "\n... [message truncated]";
+        }
+
+        return message;
+    }
+
+    private async processMessageQueue() {
+        if (this.isProcessingQueue) return;
+        this.isProcessingQueue = true;
+
+        while (this.messageQueue.length > 0) {
+            const msg = this.messageQueue.shift();
+            if (!msg) continue;
+
+            try {
+                await this.sendTelegramRequest("sendMessage", {
+                    chat_id: msg.chatId,
+                    text: msg.message,
+                    ...msg.options,
+                });
+                await new Promise((resolve) => setTimeout(resolve, this.RATE_LIMIT_DELAY));
+            } catch (error) {
+                this.logger.error(`Failed to process queued message:`, error);
+            }
+        }
+
+        this.isProcessingQueue = false;
     }
 
     public async sendMessage(chatId: number, text: string, options: any = {}) {

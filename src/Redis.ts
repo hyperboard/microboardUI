@@ -78,7 +78,7 @@ export async function getRedis(logger: winston.Logger): Promise<Redis> {
 
             pendingCommands.set(commandId, commandDetails);
 
-            logger.debug(`Redis Command Sent: ${command.name} ${command.args.join(" ")}`);
+            logger.silly(`Redis Command Sent: ${command.name} ${command.args.join(" ")}`);
 
             const onCommandComplete = () => pendingCommands.delete(commandId);
             command.promise.finally(onCommandComplete);
