@@ -983,19 +983,19 @@ export class ChatStreamHandler {
             }
 
             if (streamPromise) {
-                this.pendingStreams.set(itemId, streamPromise);
+                this.pendingStreams.set(msg.event.itemId, streamPromise);
             }
 
             const stream = await streamPromise;
 
-            if (!this.pendingStreams.get(itemId)) {
+            if (!this.pendingStreams.get(msg.event.itemId)) {
                 if (stream) {
                     controller.abort();
                 }
                 return;
             }
 
-            this.pendingStreams.delete(itemId);
+            this.pendingStreams.delete(msg.event.itemId);
 
             if (!stream) {
                 console.error("Failed to create stream");
