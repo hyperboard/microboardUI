@@ -249,6 +249,7 @@ export function getController(
 
 	let pointerDownTime = 0;
 	const pointerMoveDelay = 100;
+	let isPinching = false;
 
 	function onPointerDown(event: PointerEvent): boolean {
 		pointerDownTime = Date.now();
@@ -262,6 +263,7 @@ export function getController(
 		const transformerTool = selection.tool;
 		camera.saveDownEvent(event);
 		if (camera.isTwoPointers()) {
+			isPinching = true;
 			return false;
 		}
 		camera.pointTo(event.pageX, event.pageY);
@@ -327,6 +329,7 @@ export function getController(
 
 		camera.updateDownEvent(event);
 		if (camera.isTwoPointers()) {
+			isPinching = true;
 			const pinchCenter = camera.getPinchCenter();
 			const scale = camera.getPinchScale();
 			const delta = camera.getPanDelta();
@@ -362,6 +365,7 @@ export function getController(
 
 	let touchtime = 0;
 	const delay = 300;
+	let pinchingTimeout: NodeJS.Timeout | null = null;
 
 	function onPointerUp(event: PointerEvent): boolean {
 		const board = getBoard();
@@ -379,7 +383,7 @@ export function getController(
 			if (touchtime === 0) {
 				touchtime = new Date().getTime();
 			} else {
-				if (new Date().getTime() - touchtime < delay) {
+				if (new Date().getTime() - touchtime < delay && !isPinching) {
 					triggerDoubleClick(event);
 					touchtime = 0;
 				} else {
@@ -387,6 +391,16 @@ export function getController(
 				}
 			}
 		}
+
+		if (pinchingTimeout) {
+			clearTimeout(pinchingTimeout);
+		}
+
+		pinchingTimeout = setTimeout(() => {
+			isPinching = false;
+			pinchingTimeout = null;
+		}, delay);
+
 		const transformerTool = selection.tool;
 		const isSelect = tools.getSelect() !== undefined;
 		if (isSelect) {
