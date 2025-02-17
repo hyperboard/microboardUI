@@ -1,7 +1,7 @@
-import { asc, eq, inArray, ne, and, desc, gte, lte, sql } from "drizzle-orm";
+import {asc, eq, inArray, ne, and, desc, gte, lte, sql} from "drizzle-orm";
 import WebSocket from "ws";
-import { OpenAI } from ".";
-import { db } from "drizzle/db";
+import {OpenAI} from ".";
+import {db} from "drizzle/db";
 import {
     AiChatMsg,
     ChatChunk,
@@ -14,14 +14,14 @@ import {
     GenerateAudioEvent,
     GenerateAudioResponse,
 } from "WebSocket/ai-chat";
-import { Chat, chat, Message, message, MessageRole, MessageStatus } from "drizzle/entities/ai";
+import {Chat, chat, Message, message, MessageRole, MessageStatus} from "drizzle/entities/ai";
 import {
     ChatCompletionChunk,
     ChatCompletionContentPart,
     ChatCompletionMessageParam,
     CompletionUsage,
 } from "openai/resources";
-import { Stream } from "openai/streaming";
+import {Stream} from "openai/streaming";
 import {
     getAdjustReadingLevelPrompt,
     getAdjustTextLengthPrompt,
@@ -31,19 +31,20 @@ import {
     getEmojiPrompt,
 } from "Routes/V1/AI/prompts/chat";
 import winston from "winston";
-import { getEncoding } from "js-tiktoken";
-import { getJson } from "serpapi";
-import { modelLimits } from "drizzle/entities/plans";
-import { boardOwner, boards } from "drizzle/entities";
-import { GenerateImageOptions, ImageGenerator } from "WebSocket/image-generator";
-import { getAudioModelLimits, getCurrentModelLimits, getCurrentUserPlan } from "Routes/V1/Billing/utils";
-import { Redis } from "Redis";
-import { TelegramService } from "services/TelegramService";
-import { generateAudio, GenerateAudioOptions } from "WebSocket/audio-generator";
-import { LargeNumberLike } from "crypto";
+import {getEncoding} from "js-tiktoken";
+import {getJson} from "serpapi";
+import {modelLimits} from "drizzle/entities/plans";
+import {boardOwner, boards} from "drizzle/entities";
+import {GenerateImageOptions, ImageGenerator} from "WebSocket/image-generator";
+import {getAudioModelLimits, getCurrentModelLimits, getCurrentUserPlan} from "Routes/V1/Billing/utils";
+import {Redis} from "Redis";
+import {TelegramService} from "services/TelegramService";
+import {generateAudio, GenerateAudioOptions} from "WebSocket/audio-generator";
+import {LargeNumberLike} from "crypto";
 
 class UsageLimitChecker {
-    constructor(private logger: winston.Logger) {}
+    constructor(private logger: winston.Logger) {
+    }
 
     public async checkUserLimits(
         userId: number,
@@ -62,18 +63,18 @@ class UsageLimitChecker {
         const planLimit = mLimits[0];
 
         if (!planLimit?.isEnabled) {
-            return { canProceed: false, error: "Model not available in your plan" };
+            return {canProceed: false, error: "Model not available in your plan"};
         }
 
         if (!planLimit.dailyRequestLimit && !planLimit.weeklyRequestLimit) {
-            return { canProceed: true };
+            return {canProceed: true};
         }
 
         const modelUsage = await getCurrentModelLimits(userId);
         const currentModelUsage = modelUsage.find((m) => m.modelName === modelId);
 
         if (!currentModelUsage) {
-            return { canProceed: false, error: "Model not found" };
+            return {canProceed: false, error: "Model not found"};
         }
 
         this.logger.debug(
@@ -84,10 +85,10 @@ class UsageLimitChecker {
             (planLimit.dailyRequestLimit && currentModelUsage.dailyUsage >= planLimit.dailyRequestLimit) ||
             (planLimit.weeklyRequestLimit && currentModelUsage.weeklyUsage >= planLimit.weeklyRequestLimit)
         ) {
-            return { canProceed: false, error: "Request limit exceeded" };
+            return {canProceed: false, error: "Request limit exceeded"};
         }
 
-        return { canProceed: true };
+        return {canProceed: true};
     }
 
     public async checkImageGenerationLimits(userId: number): Promise<{
@@ -98,18 +99,18 @@ class UsageLimitChecker {
         const imageGenUsage = modelUsage.find((m) => m.modelName === "image-generation");
 
         if (!imageGenUsage?.isEnabled) {
-            return { canProceed: false, error: "Image generation not available in your plan" };
+            return {canProceed: false, error: "Image generation not available in your plan"};
         }
 
         if (!imageGenUsage.dailyLimit) {
-            return { canProceed: true };
+            return {canProceed: true};
         }
 
         if (imageGenUsage.dailyLimit && imageGenUsage.dailyUsage >= imageGenUsage.dailyLimit) {
-            return { canProceed: false, error: "Image generation limit exceeded" };
+            return {canProceed: false, error: "Image generation limit exceeded"};
         }
 
-        return { canProceed: true };
+        return {canProceed: true};
     }
 
     public async checkAudioGenerationLimits(
@@ -122,14 +123,14 @@ class UsageLimitChecker {
         const modelUsage = await getAudioModelLimits(userId);
 
         if (!modelUsage.limit) {
-            return { canProceed: false, error: "Audio generation not available in your plan" };
+            return {canProceed: false, error: "Audio generation not available in your plan"};
         }
 
         if (modelUsage.limit <= modelUsage.symbolsUsed) {
-            return { canProceed: false, error: "Audio generation limit exceeded" };
+            return {canProceed: false, error: "Audio generation limit exceeded"};
         }
 
-        return { canProceed: true };
+        return {canProceed: true};
     }
 }
 
@@ -159,7 +160,7 @@ class SerpApi {
         result["answer_box"] = response?.answer_box?.snippet;
 
         result["organic"] = response?.organic_results?.map(
-            ({ title, link, snippet }: { title: string; link: string; snippet: string }) => ({
+            ({title, link, snippet}: { title: string; link: string; snippet: string }) => ({
                 title,
                 link,
                 snippet,
@@ -180,6 +181,10 @@ export class ChatStreamHandler {
 
     boardClients = new Map<string, WebSocket.WebSocket[]>();
 
+    private pendingStreams = new Map<string, Promise<Stream<ChatCompletionChunk> & {
+        _request_id?: string | null;
+    } | null>>();
+
     private activeStreams = new Map<
         string,
         {
@@ -199,7 +204,7 @@ export class ChatStreamHandler {
 
     private async reportToTelegramBot(text: string, meta?: { boardId?: string; msg?: AiChatMsg }) {
         const boardId = meta?.boardId || meta?.msg?.boardId || "unknown";
-        await this.telegramService.broadcastMessage(text, { boardId });
+        await this.telegramService.broadcastMessage(text, {boardId});
     }
 
     private countTokens(text: string): number {
@@ -232,25 +237,31 @@ export class ChatStreamHandler {
         logger: winston.Logger;
         itemId: string;
     }) {
-        const { boardId, ws, logger, msg, itemId } = options;
+        const {boardId, ws, logger, msg, itemId} = options;
         const foundedChat = await this.ensureChatExists(msg, logger);
 
         try {
             logger.debug(`Attempting to stop conversation for item ${itemId}`);
 
-            const boardStreamEntry = this.activeStreams.get(itemId);
-            logger.debug("ABORT STREAM:", { entry: boardStreamEntry });
+            const itemStreamEntry = this.activeStreams.get(itemId);
+            logger.debug("ABORT STREAM:", {entry: itemStreamEntry});
 
-            if (boardStreamEntry) {
+            if (itemStreamEntry) {
                 logger.debug(`Aborting stream for item ${itemId}`);
-                boardStreamEntry.controller.abort();
+                itemStreamEntry.controller.abort();
 
                 this.activeStreams.delete(itemId);
 
                 logger.debug(`Stream for item ${itemId} successfully aborted`);
             } else {
-                logger.warn(`No active stream found for item ${itemId}`);
-                return;
+                logger.debug(`No active stream found for item ${itemId}`);
+
+                const pendingItemStreamEntry = this.pendingStreams.get(itemId);
+                if (!pendingItemStreamEntry) {
+                    logger.debug(`No active or pending stream found for item ${itemId}`);
+                    return;
+                }
+                this.pendingStreams.delete(itemId);
             }
 
             const foundedChat = await this.ensureChatExists(msg, logger);
@@ -287,11 +298,11 @@ export class ChatStreamHandler {
     }
 
     public async handleGetMessageList({
-        msg,
-        logger,
-        boardClients,
-        ws,
-    }: {
+                                          msg,
+                                          logger,
+                                          boardClients,
+                                          ws,
+                                      }: {
         msg: AiChatMsg<GetMessageList>;
         logger: winston.Logger;
         boardClients: Map<string, WebSocket.WebSocket[]>;
@@ -434,7 +445,7 @@ export class ChatStreamHandler {
         } catch (error) {
             const errorMsg = `Error generating image for chat ${chat.id}: ${error}`;
             console.error(errorMsg);
-            await this.reportToTelegramBot(errorMsg, { boardId: msg.boardId, msg: msg });
+            await this.reportToTelegramBot(errorMsg, {boardId: msg.boardId, msg: msg});
 
             const errorResponse: AiChatMsg<GenerateImageResponse> = {
                 type: "AiChat",
@@ -637,7 +648,7 @@ export class ChatStreamHandler {
         logger: winston.Logger;
         boardClients: Map<string, WebSocket.WebSocket[]>;
     }) {
-        const { msg, ws, logger, boardClients } = options;
+        const {msg, ws, logger, boardClients} = options;
         const boardOwnerId = await this.getBoardOwner(msg.boardId);
         const usageCheck = await this.usageLimitChecker.checkUserLimits(boardOwnerId, msg.event.model || "gpt-4o-mini"); // todo check requested user instead of board owner
         console.log("usage check", usageCheck);
@@ -652,9 +663,9 @@ export class ChatStreamHandler {
         try {
             const controller = new AbortController();
 
-            const existingBoardStream = this.activeStreams.get(itemId);
-            if (existingBoardStream) {
-                existingBoardStream.controller.abort();
+            const existingItemStream = this.activeStreams.get(itemId);
+            if (existingItemStream) {
+                existingItemStream.controller.abort();
                 this.activeStreams.delete(itemId);
             }
 
@@ -742,7 +753,7 @@ export class ChatStreamHandler {
             const simpleContextStrings = await this.getContextStrings(msg.event.context, logger);
             const messagesInContext = await this.getContextMessages(msg, logger);
 
-            const contextStrings = messagesInContext.map((m) => JSON.stringify({ content: m.content, role: m.role }));
+            const contextStrings = messagesInContext.map((m) => JSON.stringify({content: m.content, role: m.role}));
             const boardContextStrings = msg.event.boardContext || [];
             userPrompt = getChatUserPrompt({
                 idea: msg.event.idea,
@@ -750,8 +761,8 @@ export class ChatStreamHandler {
                     contextStrings.length > 0
                         ? contextStrings.reverse().join(", ")
                         : simpleContextStrings.length > 0
-                        ? simpleContextStrings.reverse().join(", ")
-                        : "",
+                            ? simpleContextStrings.reverse().join(", ")
+                            : "",
                 boardContext: boardContextStrings.length > 0 ? boardContextStrings.join(", ") : "",
                 searchResults: searchResult,
                 level: msg.event?.action?.level,
@@ -769,7 +780,7 @@ export class ChatStreamHandler {
                 for (const imageUrl of msg.event.images) {
                     inputArray.push({
                         type: "image_url",
-                        image_url: { url: imageUrl, detail: "auto" },
+                        image_url: {url: imageUrl, detail: "auto"},
                     });
                 }
             }
@@ -800,20 +811,37 @@ export class ChatStreamHandler {
             logger.debug("Generating chat completion stream...");
             logger.debug("Context messages: ", JSON.stringify(contextMessages));
 
-            let stream: Stream<ChatCompletionChunk> | null = null;
+            let streamPromise: Promise<(Stream<ChatCompletionChunk> & {
+                _request_id?: string | null | undefined;
+            }) | null>;
 
             if (msg.event.model?.startsWith("deepseek-")) {
-                stream = await this.openai.generateStreamChatCompletion(contextMessages, {
+                streamPromise = this.openai.generateStreamChatCompletion(contextMessages, {
                     model: msg.event.model || "gpt-4o-mini",
                     signal: controller.signal,
                     customModel: msg.event.model as "deepseek-chat" | "deepseek-reasoner",
                 });
             } else {
-                stream = await this.openai.generateStreamChatCompletion(contextMessages, {
+                streamPromise = this.openai.generateStreamChatCompletion(contextMessages, {
                     model: msg.event.model || "gpt-4o-mini",
                     signal: controller.signal,
                 });
             }
+
+            if (streamPromise) {
+                this.pendingStreams.set(itemId, streamPromise);
+            }
+
+            const stream = await streamPromise;
+
+            if (!this.pendingStreams.get(itemId)) {
+                if (stream) {
+                    controller.abort();
+                }
+                return;
+            }
+
+            this.pendingStreams.delete(itemId);
 
             if (!stream) {
                 console.error("Failed to create stream");
@@ -846,7 +874,7 @@ export class ChatStreamHandler {
         } catch (error) {
             const errorMsg = `Error handling user request for board ${msg.boardId}: ${error}`;
             console.error(errorMsg);
-            await this.reportToTelegramBot(errorMsg, { boardId: msg.boardId, msg: msg });
+            await this.reportToTelegramBot(errorMsg, {boardId: msg.boardId, msg: msg});
             this.sendErrorResponse(null, ws, error instanceof Error ? error.message : "Unknown error", msg.boardId);
         }
     }
@@ -897,7 +925,7 @@ export class ChatStreamHandler {
             .orderBy(asc(message.id));
 
         const threadContext = await this.getThreadContext(messages);
-        return threadContext.map((item) => JSON.stringify({ content: item.content, role: item.role }));
+        return threadContext.map((item) => JSON.stringify({content: item.content, role: item.role}));
     }
 
     private async getThreadMessages(messages: Message[]): Promise<Message[]> {
@@ -935,7 +963,7 @@ export class ChatStreamHandler {
         logger.debug("Item ID provided, fetching existing chat...");
         let [boardChat] = await db.select().from(chat).where(eq(chat.boardId, msg.boardId)).limit(1);
         if (!boardChat) {
-            const [newChat] = await db.insert(chat).values({ boardId: msg.boardId }).returning();
+            const [newChat] = await db.insert(chat).values({boardId: msg.boardId}).returning();
 
             return newChat;
         }
@@ -955,11 +983,12 @@ export class ChatStreamHandler {
         itemId: string;
         msg: AiChatMsg<UserRequest>;
     }) {
-        const { stream, ws, chat, msg, logger, boardId, controller, userMessage, itemId } = options;
+        const {stream, ws, chat, msg, logger, boardId, controller, userMessage, itemId} = options;
         logger.debug("Starting to handle stream chunks...");
         let assistantResponse = "";
         let usageMetadata: CompletionUsage | undefined;
         let isStopped = false;
+        let isAnyChunkSent = false;
 
         const readableStream = stream.toReadableStream();
 
@@ -1008,16 +1037,19 @@ export class ChatStreamHandler {
                             };
                             logger.debug("Sending chunk to client:", streamChunkMsg);
                             ws.send(JSON.stringify(streamChunkMsg));
+                            if (!isAnyChunkSent) {
+                                isAnyChunkSent = true;
+                            }
                         }
                     } catch (error) {
                         const errorMsg = `Error processing stream chunk for chat ${chat.id}: ${error}`;
                         logger.error(errorMsg);
-                        await this.reportToTelegramBot(errorMsg, { boardId: msg.boardId, msg: msg });
+                        await this.reportToTelegramBot(errorMsg, {boardId: msg.boardId, msg: msg});
                         this.sendErrorResponse(chat, ws, "Invalid chunk format");
                     }
                 },
                 close: async () => {
-                    if (!isStopped && !controller.signal.aborted) {
+                    if (!isStopped && !controller.signal.aborted && isAnyChunkSent) {
                         const encoder = getEncoding("cl100k_base");
                         const tokens = encoder.encode(assistantResponse);
                         logger.debug("Stream closed. Finalizing response...");
@@ -1034,6 +1066,16 @@ export class ChatStreamHandler {
                             requestItemId: msg.event.requestItemId,
                             updatedFrom: exMessage?.id,
                         });
+                    } else if (!isStopped && !controller.signal.aborted && !isAnyChunkSent) {
+                        await this.saveMessage({
+                            chat,
+                            role: MessageRole.SYSTEM,
+                            content: "Conversation stopped by API",
+                            logger,
+                            model: "system",
+                        });
+                        await this.reportToTelegramBot(`Chat ${chat.id} stopped by API. Possible reason: response timeout exceeded`);
+                        this.sendErrorResponse(chat, ws, `Chat ${chat.id} stopped by API. Possible reason: response timeout exceeded`);
                     } else {
                         await this.saveMessage({
                             chat,
@@ -1042,6 +1084,7 @@ export class ChatStreamHandler {
                             logger,
                             model: "system",
                         });
+
                         await this.reportToTelegramBot(`Chat ${chat.id} manually stopped by user`);
                     }
 
@@ -1050,7 +1093,7 @@ export class ChatStreamHandler {
                 abort: async (err) => {
                     const errorMsg = `Streaming error for chat ${chat.id}: ${err}`;
                     console.error(errorMsg);
-                    await this.reportToTelegramBot(errorMsg, { boardId: msg.boardId, msg: msg });
+                    await this.reportToTelegramBot(errorMsg, {boardId: msg.boardId, msg: msg});
 
                     if (!isStopped) {
                         this.sendErrorResponse(chat, ws, err instanceof Error ? err.message : "Stream error");
@@ -1073,7 +1116,7 @@ export class ChatStreamHandler {
         usageMetadata?: Partial<CompletionUsage>;
         updatedFrom?: number | null;
     }) {
-        const { ws, chat, updatedFrom, assistantResponse, logger, userMessage, usageMetadata, itemId, requestItemId } =
+        const {ws, chat, updatedFrom, assistantResponse, logger, userMessage, usageMetadata, itemId, requestItemId} =
             options;
         logger.debug("Finalizing stream response...");
 
@@ -1115,7 +1158,7 @@ export class ChatStreamHandler {
         symbolsUsed: number;
         model: "tts-1-hd";
     }) {
-        const { chat, role, logger, model, symbolsUsed } = options;
+        const {chat, role, logger, model, symbolsUsed} = options;
 
         logger.debug("Saving audio message to database:", {
             chatId: chat.id,
@@ -1132,7 +1175,7 @@ export class ChatStreamHandler {
             })
             .returning();
 
-        logger.debug("Inserted new audio message:", { savedMessage });
+        logger.debug("Inserted new audio message:", {savedMessage});
 
         return savedMessage;
     }
@@ -1190,7 +1233,7 @@ export class ChatStreamHandler {
                 .where(eq(message.id, updatedFrom))
                 .returning();
 
-            logger.debug("Updated existing message:", { updatedFrom, savedMessage });
+            logger.debug("Updated existing message:", {updatedFrom, savedMessage});
         } else {
             [savedMessage] = await db
                 .insert(message)
@@ -1208,7 +1251,7 @@ export class ChatStreamHandler {
                 })
                 .returning();
 
-            logger.debug("Inserted new message:", { savedMessage });
+            logger.debug("Inserted new message:", {savedMessage});
         }
 
         return savedMessage;
@@ -1217,7 +1260,7 @@ export class ChatStreamHandler {
     private async sendErrorResponse(chat: Chat | null, ws: WebSocket, errorMessage: string, boardId?: string) {
         const errorMsg = `Error response for chat ${chat?.id || "unknown"}: ${errorMessage}`;
         console.error(errorMsg);
-        await this.reportToTelegramBot(errorMsg, { boardId: chat?.boardId || boardId || "" });
+        await this.reportToTelegramBot(errorMsg, {boardId: chat?.boardId || boardId || ""});
 
         const errorChunk: AiChatMsg<ChatChunk> = {
             type: "AiChat",
