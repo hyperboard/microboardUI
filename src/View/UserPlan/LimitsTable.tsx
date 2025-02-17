@@ -29,7 +29,7 @@ export function LimitsTable() {
 	const DESCRIPTION_MAP = {
 		"gpt-4o-mini": t("ai.models.gpt-4o-mini.description"),
 		"gpt-4o": t("ai.models.gpt-4o.description"),
-		"deepseek-reasoner": t("ai.models.deepseek-chat.description"),
+		"deepseek-reasoner": t("ai.models.deepseek-reasoner.description"),
 		"flux-schnell": t("ai.models.image-generation.description"),
 		"tts-1-hd": t("ai.models.tts-1-hd.description"),
 	};

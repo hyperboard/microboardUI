@@ -28,7 +28,7 @@ const models: OpenAIModels[] = [
 	"image-generation",
 	"gpt-4o",
 	"gpt-4o-mini",
-	"deepseek-chat",
+	"deepseek-reasoner",
 ];
 
 const getModelDisplayName = (
@@ -42,7 +42,7 @@ const getModelDisplayName = (
 			return "GPT-4o mini";
 		case "image-generation":
 			return "Flux.1 schnell";
-		case "deepseek-chat":
+		case "deepseek-reasoner":
 			return "DeepSeek-R1";
 		case "tts-1-hd":
 			return isPhoneScreen ? "TTS" : "Text to speech HD";

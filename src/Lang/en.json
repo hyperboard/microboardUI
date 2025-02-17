@@ -690,7 +690,7 @@
 			"image-generation": {
 				"description": "Transforms text into visuals"
 			},
-			"deepseek-chat": {
+			"deepseek-reasoner": {
 				"description": "Better than o1 in many cases"
 			},
 			"tts-1-hd": {

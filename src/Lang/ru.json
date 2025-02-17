@@ -687,7 +687,7 @@
 			"image-generation": {
 				"description": "Превратит текст в изображение"
 			},
-			"deepseek-chat": {
+			"deepseek-reasoner": {
 				"description": "Лучше чем o1 для множества задач"
 			},
 			"tts-1-hd": {
