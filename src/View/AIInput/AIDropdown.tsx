@@ -1,4 +1,4 @@
-import React, { MouseEventHandler, useEffect, useRef } from "react";
+import React, { MouseEventHandler, useRef } from "react";
 import { UiPanel } from "View/Ui/UiPanel";
 import { StarIcon } from "./StarIcon";
 import clsx from "clsx";
@@ -14,6 +14,7 @@ import { USER_PLAN_MODAL_ID } from "View/UserPlan";
 import { AI_UNAVAILABLE_MODAL_ID } from "View/AiUnavailableModal/AiUnavailableModal";
 import { useUiModalContext } from "View/Ui/UiModal";
 import { createPortal } from "react-dom";
+import { useOutsideClickHandler } from "shared/hooks/useOutsideClickHandler";
 
 type AIDropdownProps = {
 	board: Board;
@@ -129,22 +130,7 @@ const Dropdown = (
 		}
 	};
 
-	useEffect(() => {
-		const handleClickOutside = (event: MouseEvent): void => {
-			if (
-				dropdownRef.current &&
-				event.target instanceof Node &&
-				!dropdownRef.current.contains(event.target)
-			) {
-				setIsDropdownOpen(false);
-			}
-		};
-
-		document.addEventListener("mousedown", handleClickOutside);
-		return () => {
-			document.removeEventListener("mousedown", handleClickOutside);
-		};
-	}, [dropdownRef]);
+	useOutsideClickHandler(dropdownRef, () => setIsDropdownOpen(false));
 
 	return (
 		<div
