@@ -9,6 +9,7 @@ import { body } from "express-validator";
 import { StripeService } from "./stripe";
 import { Redis } from "Redis";
 import {
+    getAudioModelLimits,
     getCurrentModelLimits,
     getCurrentPeriods,
     getCurrentPeriodTokenUsage,
@@ -34,10 +35,11 @@ export const getBillingRouter = (
             const userToken = await token;
             const userId = parseInt(userToken?.sub);
 
-            const [currentPlan, modelLimits, storageUsage] = await Promise.all([
+            const [currentPlan, modelLimits, storageUsage, audioLimits] = await Promise.all([
                 getCurrentUserPlan(userId, stripeService, cryptoService),
                 getCurrentModelLimits(userId, stripeService, cryptoService),
                 getCurrentStorageUsage(userId),
+                getAudioModelLimits(userId, stripeService, cryptoService),
             ]);
 
             const tokensUsed = await getCurrentPeriodTokenUsage(userId, currentPlan.startDate, currentPlan.endDate);
@@ -54,27 +56,41 @@ export const getBillingRouter = (
                     used: storageUsage,
                     limit: currentPlan.storageLimit,
                 },
-                models: modelLimits.map((model) => ({
-                    id: model.modelId,
-                    name: model.modelName,
-                    displayName: model.displayName,
-                    isDefault: model.isDefault,
-                    isEnabled: model.isEnabled,
-                    limits: {
-                        daily: {
-                            limit: model.dailyLimit,
-                            used: model.dailyUsage,
-                            remaining: model.dailyLimit ? Math.max(0, model.dailyLimit - model.dailyUsage) : null,
-                            resetDate: periods.daily.resetDate,
+                models: [
+                    ...modelLimits.map((model) => ({
+                        id: model.modelId,
+                        name: model.modelName,
+                        displayName: model.displayName,
+                        isDefault: model.isDefault,
+                        isEnabled: model.isEnabled,
+                        limits: {
+                            daily: {
+                                limit: model.dailyLimit,
+                                used: model.dailyUsage,
+                                remaining: model.dailyLimit ? Math.max(0, model.dailyLimit - model.dailyUsage) : null,
+                                resetDate: periods.daily.resetDate,
+                            },
+                            weekly: {
+                                limit: model.weeklyLimit,
+                                used: model.weeklyUsage,
+                                remaining: model.weeklyLimit
+                                    ? Math.max(0, model.weeklyLimit - model.weeklyUsage)
+                                    : null,
+                                resetDate: periods.weekly.resetDate,
+                            },
                         },
-                        weekly: {
-                            limit: model.weeklyLimit,
-                            used: model.weeklyUsage,
-                            remaining: model.weeklyLimit ? Math.max(0, model.weeklyLimit - model.weeklyUsage) : null,
-                            resetDate: periods.weekly.resetDate,
+                    })),
+                    {
+                        id: audioLimits.modelId,
+                        name: audioLimits.modelName,
+                        displayName: audioLimits.displayName,
+                        isDefault: audioLimits.isDefault,
+                        isEnabled: audioLimits.isEnabled,
+                        limits: {
+                            monthly: audioLimits.monthlyUsage,
                         },
                     },
-                })),
+                ],
                 plan: {
                     name: currentPlan.name,
                     periodStart: currentPlan.startDate,

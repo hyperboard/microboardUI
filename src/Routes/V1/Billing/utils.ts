@@ -1,4 +1,4 @@
-import { and, gte, lt, lte, sql } from "drizzle-orm";
+import { and, gte, lt, lte, ne, sql } from "drizzle-orm";
 import { eq } from "drizzle-orm";
 import { db } from "drizzle/db";
 import { boardOwner, boards, chat, message } from "drizzle/entities";
@@ -140,6 +140,19 @@ export async function getAudioModelLimits(
     const modelId = "tts-1-hd";
     const userPlan = await getCurrentUserPlan(userId, stripeService, cryptoService);
     const planLimit = PLANS.find((plan) => plan.id === userPlan.planId)?.textToSpeech;
+    const model = await db
+        .select({
+            modelId: aiModels.id,
+            modelName: aiModels.name,
+            displayName: aiModels.displayName,
+            isDefault: aiModels.isDefault,
+            dailyLimit: modelLimits.dailyRequestLimit,
+            weeklyLimit: modelLimits.weeklyRequestLimit,
+            isEnabled: modelLimits.isEnabled,
+        })
+        .from(aiModels)
+        .leftJoin(modelLimits, eq(modelLimits.id, aiModels.id))
+        .where(eq(aiModels.id, modelId));
 
     const totalSymbolsUsed = await db
         .select({
@@ -159,8 +172,12 @@ export async function getAudioModelLimits(
         );
 
     return {
-        limit: planLimit,
-        symbolsUsed: totalSymbolsUsed[0].totalSymbols,
+        ...model[0],
+        monthlyUsage: {
+            limit: planLimit,
+            used: totalSymbolsUsed[0].totalSymbols,
+            remaining: (planLimit ?? 0) - totalSymbolsUsed[0].totalSymbols,
+        },
     };
 }
 
@@ -181,7 +198,8 @@ export async function getCurrentModelLimits(
             isEnabled: modelLimits.isEnabled,
         })
         .from(aiModels)
-        .leftJoin(modelLimits, and(eq(modelLimits.modelId, aiModels.id), eq(modelLimits.planId, userPlan.planId)));
+        .leftJoin(modelLimits, and(eq(modelLimits.modelId, aiModels.id), eq(modelLimits.planId, userPlan.planId)))
+        .where(ne(aiModels.id, "tts-1-hd"));
 
     const periods = getCurrentPeriods();
     const usage = await Promise.all(
