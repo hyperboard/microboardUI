@@ -75,6 +75,8 @@ export class Account {
 		this._accessToken = null;
 		this.tokenData = null;
 		this.info = null;
+		this.billingInfo = null;
+		this.billingHistory = [];
 		this.storage.clearUserId();
 		this.sessionStorage.removeLastAIRequest();
 	}
