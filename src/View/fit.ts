@@ -1,65 +1,126 @@
-import { Mbr, RichText } from "Board/Items";
+import { Camera } from "Board/Camera";
+import { Mbr } from "Board/Items";
 
-export function fitContextPanel(
+export function getContextPanelRect(
+	selectionMbr: Mbr,
+	camera: Camera,
+	panel: HTMLElement,
+	toLeft: boolean,
+	horizontalOffset?: number,
+	verticalOffset?: number,
+): Mbr {
+	const transformedMbr = selectionMbr.getTransformed(camera.getMatrix());
+	const windowMbr = camera.window.getMbr();
+	const panelRectFromDom = Mbr.fromDomRect(panel.getBoundingClientRect());
+
+	const panelRect = toLeft
+		? fitContextPanelToLeft(
+				transformedMbr,
+				windowMbr,
+				panelRectFromDom,
+				verticalOffset,
+				horizontalOffset,
+			)
+		: fitContextPanelToCenter(
+				transformedMbr,
+				windowMbr,
+				panelRectFromDom,
+				verticalOffset,
+				horizontalOffset,
+			);
+
+	return panelRect;
+}
+
+export function fitContextPanelToLeft(
 	selectionMbr: Mbr,
 	view: Mbr,
 	panel: Mbr,
 	verticalOffset = 40,
 	horizontalOffset = 80,
-	richTextSelection?: RichText,
 ): Mbr {
-	const topSpace = selectionMbr.top - view.top;
-	const bottomSpace = view.bottom - selectionMbr.bottom;
 	const panelHeight = panel.getHeight();
+	const panelWidth = panel.getWidth();
 	const newPanel = new Mbr();
 
-	const shouldPlaceAbove =
-		topSpace > bottomSpace - panelHeight ||
-		(richTextSelection && topSpace >= panelHeight + verticalOffset);
+	const topSpace = selectionMbr.top - view.top;
+	const hasEnoughTopSpace = topSpace >= panelHeight + verticalOffset;
+	if (hasEnoughTopSpace) {
+		newPanel.top = selectionMbr.top - panelHeight - verticalOffset;
+		if (newPanel.top < view.top) {
+			newPanel.top = view.top + verticalOffset;
+		}
+	} else {
+		const usePanelTop =
+			panel.top > 1 && panel.top > selectionMbr.top + verticalOffset;
+		newPanel.top = usePanelTop
+			? panel.top
+			: selectionMbr.bottom + verticalOffset;
+		const isOverflowingBottom = newPanel.top + panelHeight > view.bottom;
+		const isLargeOffsetForRichText =
+			newPanel.top >= selectionMbr.bottom + verticalOffset * 2;
+		if (isOverflowingBottom || isLargeOffsetForRichText) {
+			newPanel.top = selectionMbr.bottom - (panelHeight + verticalOffset);
+		}
+	}
 
+	const itemMbr = selectionMbr.getMbr();
+	newPanel.left = itemMbr.left;
+	adjustPanelHorizontal(newPanel, panelWidth, view, horizontalOffset);
+
+	return newPanel;
+}
+
+export function fitContextPanelToCenter(
+	selectionMbr: Mbr,
+	view: Mbr,
+	panel: Mbr,
+	verticalOffset = 40,
+	horizontalOffset = 80,
+): Mbr {
+	const panelHeight = panel.getHeight();
+	const panelWidth = panel.getWidth();
+	const newPanel = new Mbr();
+
+	const topSpace = selectionMbr.top - view.top;
+	const bottomSpace = view.bottom - selectionMbr.bottom;
+	const shouldPlaceAbove = topSpace > bottomSpace - panelHeight;
 	if (shouldPlaceAbove) {
 		newPanel.top = selectionMbr.top - panelHeight - verticalOffset;
 		if (newPanel.top < view.top) {
 			newPanel.top = view.top + verticalOffset;
 		}
 	} else {
-		if (
-			panel.top > 1 &&
-			panel.top > selectionMbr.top + verticalOffset &&
-			richTextSelection
-		) {
-			newPanel.top = panel.top;
-		} else {
-			newPanel.top = selectionMbr.bottom + verticalOffset;
-		}
-
+		newPanel.top = selectionMbr.bottom + verticalOffset;
 		const isOverflowingBottom = newPanel.top + panelHeight > view.bottom;
 		const isLargeOffsetForRichText =
-			richTextSelection &&
 			newPanel.top >= selectionMbr.bottom + verticalOffset * 2;
-
 		if (isOverflowingBottom || isLargeOffsetForRichText) {
 			newPanel.top = selectionMbr.bottom - (panelHeight + verticalOffset);
 		}
 	}
 
 	newPanel.bottom = newPanel.top + panelHeight;
-
-	const panelWidth = panel.getWidth();
-
-	// Center the panel regardless of richTextSelection
 	const itemCenter = selectionMbr.getCenter();
 	newPanel.left = itemCenter.x - panelWidth / 2;
+	adjustPanelHorizontal(newPanel, panelWidth, view, horizontalOffset);
 
+	return newPanel;
+}
+
+function adjustPanelHorizontal(
+	newPanel: Mbr,
+	panelWidth: number,
+	view: Mbr,
+	horizontalOffset: number,
+): void {
 	newPanel.right = newPanel.left + panelWidth;
 	if (newPanel.left < view.left + horizontalOffset) {
 		newPanel.left = view.left + horizontalOffset;
-		newPanel.right = newPanel.left + panelWidth;
 	} else if (newPanel.right + horizontalOffset > view.right) {
-		newPanel.right = view.right - horizontalOffset;
 		newPanel.left = view.right - (panelWidth + horizontalOffset);
 	}
-	return newPanel;
+	newPanel.right = newPanel.left + panelWidth;
 }
 
 export function fitContextMenu(
