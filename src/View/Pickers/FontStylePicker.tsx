@@ -60,8 +60,7 @@ export function FontStylePicker({
 			>
 				<Icon width={24} height={24} iconName="TextItalic" />
 			</UiButton>
-			{/* TODO uncomment when dropflow can text-decoration */}
-			{/* <UiButton
+			<UiButton
 				id="ChangeFontUnderline"
 				tooltip={t("contextPanel.fontStyle.underline")}
 				hotkey={getHotkeyLabel("textUnderline")}
@@ -84,7 +83,7 @@ export function FontStylePicker({
 				variant="secondary"
 			>
 				<Icon width={24} height={24} iconName="TextStrike" />
-			</UiButton> */}
+			</UiButton>
 		</>
 	);
 }

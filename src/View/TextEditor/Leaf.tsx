@@ -19,7 +19,7 @@ export function Leaf(props: LeafProps): React.ReactElement {
 	if (leaf.underline) {
 		styles.add("underline");
 	}
-	if (leaf.lineThrough) {
+	if (leaf["line-through"]) {
 		styles.add("line-through");
 	}
 	if (leaf.subscript) {

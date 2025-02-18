@@ -303,7 +303,7 @@ export const useCopyBoardItems = (
 				italic: fontStyles.includes("italic"),
 				underline: fontStyles.includes("underline"),
 				overline: false,
-				lineThrough: fontStyles.includes("line-through"),
+				"line-through": fontStyles.includes("line-through"),
 				subscript: false,
 				superscript: false,
 				fontColor: textColor,

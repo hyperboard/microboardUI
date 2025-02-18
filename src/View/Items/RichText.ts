@@ -9,5 +9,5 @@ export const DEFAULT_TEXT_STYLES: DefaultTextStyles = {
 	bold: false,
 	underline: false,
 	italic: false,
-	lineThrough: false,
+	"line-through": false,
 };

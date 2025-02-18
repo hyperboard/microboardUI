@@ -28,6 +28,8 @@ export function FontStyle(): React.ReactElement | null {
 		toggleMenu("None");
 	};
 
+	console.log("fontStyles", fontStyles);
+
 	return (
 		<ButtonWithMenu
 			menuName={MENU_NAME}
