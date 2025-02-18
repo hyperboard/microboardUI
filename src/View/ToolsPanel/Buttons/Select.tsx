@@ -12,7 +12,11 @@ export function Select({ rounded = "top" }: Props): JSX.Element {
 	const { t } = useTranslation();
 
 	function handleClick(): void {
-		board.tools.select(true);
+		if (board.tools.getSelect()) {
+			board.tools.navigate();
+		} else {
+			board.tools.select();
+		}
 	}
 
 	const isActive = Boolean(board.tools.getSelect());
