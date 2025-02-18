@@ -66,6 +66,7 @@ export function LimitsModal() {
 					{t("userPlan.currentPlanHeading")}
 				</h1>
 				<UserPlanUsage
+					cancellationDate={account.billingInfo?.plan.periodEnd}
 					planName={
 						PLAN_NAMES[account.billingInfo?.plan.name ?? "basic"]
 					}

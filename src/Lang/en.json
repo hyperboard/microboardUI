@@ -808,7 +808,8 @@
 		"limitsTable": {
 			"modelName": "Model",
 			"requestsPerWeek": "Remaining requests per week",
-			"requestsPerDay": "Remaining requests per day"
+			"requestsPerDay": "Remaining requests per day",
+			"availableOnPlus": "Available on Plus plan"
 		},
 		"historyTable": {
 			"plan": "Plan",

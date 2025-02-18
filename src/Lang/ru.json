@@ -805,7 +805,8 @@
 		"limitsTable": {
 			"modelName": "Модель",
 			"requestsPerWeek": "Доступно запросов в неделю",
-			"requestsPerDay": "Доступно запросов в день"
+			"requestsPerDay": "Доступно запросов в день",
+			"availableOnPlus": "Доступно на тарифе Plus"
 		},
 		"historyTable": {
 			"plan": "Тариф",

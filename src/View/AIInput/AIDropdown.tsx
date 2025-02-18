@@ -113,7 +113,6 @@ const Dropdown = (
 		!account.billingInfo?.models.find(
 			item => item.id === model && item.isEnabled,
 		);
-
 	const selectModel = (model: OpenAIModels) => (): void => {
 		setModel(model);
 		setIsDropdownOpen(false);

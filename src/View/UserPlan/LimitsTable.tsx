@@ -86,6 +86,7 @@ function ModelRow({
 	remaining,
 	enabled,
 }: ModelRowProps) {
+	const { t } = useTranslation();
 	return (
 		<tr className={styles.row}>
 			<td className={styles.model}>
@@ -110,7 +111,7 @@ function ModelRow({
 						variant="secondary"
 						disabled
 						tooltipPosition="bottom-left"
-						tooltip="Available on Plus plan"
+						tooltip={t("userPlan.limitsTable.availableOnPlus")}
 					>
 						0/0
 					</UiButton>

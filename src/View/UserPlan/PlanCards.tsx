@@ -115,7 +115,7 @@ export function BasicPlanCard() {
 		<PlanCard
 			onDowngrade={onDowngrade}
 			name={t("userPlan.plans.basic.name")}
-			description={t("userPlan.plans.basic.description")}
+			// description={t("userPlan.plans.basic.description")}
 			features={t("userPlan.plans.basic.features", {
 				returnObjects: true,
 			})}
@@ -180,7 +180,7 @@ export function PlusPlanCard(): JSX.Element {
 	return (
 		<PlanCard
 			name={t("userPlan.plans.plus.name")}
-			description={t("userPlan.plans.plus.description")}
+			// description={t("userPlan.plans.plus.description")}
 			features={t("userPlan.plans.plus.features", {
 				returnObjects: true,
 			})}
@@ -225,7 +225,7 @@ export function ProPlanCard() {
 	return (
 		<PlanCard
 			name={t("userPlan.plans.pro.name")}
-			description={t("userPlan.plans.pro.description")}
+			// description={t("userPlan.plans.pro.description")}
 			features={t("userPlan.plans.pro.features", {
 				returnObjects: true,
 			})}
