@@ -237,6 +237,9 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
         };
 
         const response = await fetch(url, options);
+        if (!response.ok) {
+            throw new HttpException(500, `Unable to fetch rates for ${symbol}`);
+        }
         const data = await response.json();
         return data.data;
     }
