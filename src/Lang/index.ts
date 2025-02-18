@@ -3,18 +3,14 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
 import en from "./en.json";
 import ru from "./ru.json";
-import enTalk from "./talk/en.json";
-import ruTalk from "./talk/ru.json";
 
 export const defaultNS = "default";
 export const resources = {
 	en: {
 		default: en,
-		talk: enTalk,
 	},
 	ru: {
 		default: ru,
-		talk: ruTalk,
 	},
 };
 
