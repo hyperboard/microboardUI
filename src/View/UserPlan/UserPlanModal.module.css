@@ -6,6 +6,13 @@
 	align-items: center;
 }
 
+.tables {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 20px;
+}
+
 .heading {
 	font-size: 48px;
 	font-weight: 600;

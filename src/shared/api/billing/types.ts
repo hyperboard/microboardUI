@@ -13,7 +13,7 @@ export type ModelLimit = {
 	limit: number | null;
 	used: number | null;
 	remaining: number | null;
-	resetDate: string;
+	resetDate?: string;
 };
 
 export type AvailableModel = {
@@ -23,8 +23,9 @@ export type AvailableModel = {
 	isDefault: boolean;
 	isEnabled: boolean;
 	limits: {
-		daily: ModelLimit;
-		weekly: ModelLimit;
+		daily?: ModelLimit;
+		weekly?: ModelLimit;
+		monthly?: ModelLimit;
 	};
 };
 

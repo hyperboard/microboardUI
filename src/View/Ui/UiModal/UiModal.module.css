@@ -28,6 +28,8 @@
 	transform: translate(-50%, -50%);
 	max-width: calc(100dvw - 20px);
 	max-height: calc(100dvh - 20px);
+	overflow: hidden;
+	border-radius: 12px;
 	z-index: 1000;
 	display: flex;
 	align-items: stretch;
@@ -40,11 +42,12 @@
 }
 
 .panel {
-	height: 100%;
+	max-height: 100%;
 	width: 100%;
 	position: relative;
 	flex-direction: column;
 	align-items: stretch;
+	overflow: auto;
 }
 
 .content {
@@ -89,6 +92,23 @@
 	z-index: 1001;
 }
 
+.panel::-webkit-scrollbar {
+	appearance: none;
+	width: 3px;
+	height: 3px;
+}
+.panel::-webkit-scrollbar-button {
+	display: none;
+}
+.panel::-webkit-scrollbar-thumb {
+	display: block;
+	background-color: rgba(233, 234, 236, 1);
+	border-radius: 2px;
+}
+body {
+	background-color: rgba(200, 200, 200, 0.2);
+}
+
 .header {
 	padding: 12px 30px;
 	border-bottom: 1px solid rgba(222, 224, 227, 1);
@@ -124,6 +144,7 @@
 		left: 0;
 		transform: none;
 		overflow: auto;
+		border-radius: 0;
 	}
 
 	.panel {

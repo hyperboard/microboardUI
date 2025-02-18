@@ -1,6 +1,7 @@
 export type User = {
 	id: number;
-	email: string;
+	email?: string;
+	address?: string;
 	name: string;
 	avatar: string;
 	avatarGenerated: boolean;

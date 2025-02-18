@@ -17,7 +17,8 @@ import { MessageResponse } from "shared/api/types";
 
 type AccountInfo = {
 	id: number;
-	email: string;
+	email?: string;
+	address?: string;
 	name: string;
 	avatar: string;
 	avatarGenerated: boolean;

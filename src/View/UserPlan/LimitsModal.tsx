@@ -1,16 +1,16 @@
+import { useAccount } from "App/useAccount";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { UiModal } from "View/Ui/UiModal/UiModal";
-import styles from "./UserPlanModal.module.css";
-import { UserPlanUsage } from "View/UserPlan/UserPlanUsage";
-import { useAccount } from "App/useAccount";
-import { LimitsTable } from "View/UserPlan/LimitsTable";
 import { Icon } from "View/Icon";
-import { useUiModalContext } from "View/Ui/UiModal";
-import { USER_PLAN_MODAL_ID } from "View/UserPlan/UserPlanModal";
-import { PLAN_NAMES } from "View/UserPlan/PlanCards";
-import { notify } from "View/Ui/Toast";
 import { useConfirmModalContext } from "View/Modal/ConfirmModal";
+import { notify } from "View/Ui/Toast";
+import { useUiModalContext } from "View/Ui/UiModal";
+import { UiModal } from "View/Ui/UiModal/UiModal";
+import { LimitsTable, PerMonthLimitsTable } from "View/UserPlan/LimitsTable";
+import { PLAN_NAMES } from "View/UserPlan/PlanCards";
+import { USER_PLAN_MODAL_ID } from "View/UserPlan/UserPlanModal";
+import { UserPlanUsage } from "View/UserPlan/UserPlanUsage";
+import styles from "./UserPlanModal.module.css";
 
 export const LIMITS_MODAL_ID = Symbol("limitsModal");
 
@@ -80,7 +80,10 @@ export function LimitsModal() {
 					}
 					status={account.billingInfo?.plan.status ?? "active"}
 				/>
-				<LimitsTable />
+				<main className={styles.tables}>
+					<LimitsTable />
+					<PerMonthLimitsTable />
+				</main>
 				<button className={styles.plansBtn} onClick={handleBackButton}>
 					<Icon iconName="ArrowLeft1" />
 					{t("userPlan.backToPlans")}

@@ -740,6 +740,7 @@
 		"requestAccess": "Request access",
 		"requestAccessMsg": "Request access or log in to a permissioned account.",
 		"loggedIn": "You are logged in to your <1>{{account}}</1> account.",
+		"loggedInCrypto": "You are logged in to your Crypto wallet: <1>{{account}}</1> account.",
 		"accessDenied": "Access denied",
 		"addAccessLevel": "Add one more access level"
 	},
@@ -811,7 +812,9 @@
 			"modelName": "Model",
 			"requestsPerWeek": "Remaining requests per week",
 			"requestsPerDay": "Remaining requests per day",
-			"availableOnPlus": "Available on Plus plan"
+			"requestsPerMonth": "Remaining requests per month",
+			"availableOnPlus": "Available on Plus plan",
+			"symbols": "symbols"
 		},
 		"historyTable": {
 			"plan": "Plan",
@@ -851,7 +854,8 @@
 					"100 requests per week to  DeepSeek-R1",
 					"25 requests per day to Flux.1 schnell",
 					"Unlimited boards and figures, and storage space",
-					"Images — up to 100 GB"
+					"Images — up to 100 GB",
+					"Text-to-speech HD — 15,000 characters total (~20 min audio)"
 				]
 			},
 			"pro": {

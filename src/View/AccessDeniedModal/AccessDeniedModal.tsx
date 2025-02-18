@@ -27,10 +27,21 @@ export function AccessDeniedModal(): JSX.Element {
 					</p>
 					{account.isLoggedIn ? (
 						<p>
-							<Trans t={t} i18nKey={"sharing.loggedIn"}>
+							<Trans
+								t={t}
+								i18nKey={
+									account.info?.address
+										? "sharing.loggedInCrypto"
+										: "sharing.loggedIn"
+								}
+							>
 								You are logged in to your
 								<span className={styles.link}>
-									{{ account: account.info?.email }}
+									{{
+										account:
+											account.info?.email ||
+											account.info?.address,
+									}}
 								</span>{" "}
 								account.
 							</Trans>

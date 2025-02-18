@@ -737,6 +737,7 @@
 		"requestAccess": "Запросить доступ",
 		"requestAccessMsg": "Запросите доступ или войдите в аккаунт с правом доступа.",
 		"loggedIn": "Вы авторизованы в аккаунте <1>{{account}}</1>",
+		"loggedInCrypto": "Вы авторизованы в аккаунте CryptoWallet: <1>{{account}}</1>",
 		"accessDenied": "Нет доступа",
 		"addAccessLevel": "Добавить еще один уровень доступа"
 	},
@@ -787,7 +788,7 @@
 	},
 	"userPlan": {
 		"paymentHistoryHeading": "История платежей",
-		"currentPlanHeading": "Текущий план",
+		"currentPlanHeading": "Текущий тариф",
 		"upgradePlan": "Выбрать тариф",
 		"currentPlanFree": "Тариф Базовый активен.",
 		"limits": "Лимиты",
@@ -808,7 +809,9 @@
 			"modelName": "Модель",
 			"requestsPerWeek": "Доступно запросов в неделю",
 			"requestsPerDay": "Доступно запросов в день",
-			"availableOnPlus": "Доступно на тарифе Plus"
+			"requestsPerMonth": "Доступно запросов в месяц",
+			"availableOnPlus": "Доступно на тарифе Plus",
+			"symbols": "символов"
 		},
 		"historyTable": {
 			"plan": "Тариф",
@@ -848,7 +851,8 @@
 					"100 запросов в день к DeepSeek-R1",
 					"25 запросов в день к Flux.1 schnell",
 					"Доски, фигуры — без ограничений",
-					"Картинки — до 100 ГБ"
+					"Картинки — до 100 ГБ",
+					"Text to speech HD — 15 000 символов в сумме всех запросов (~20 минут аудио)"
 				]
 			},
 			"pro": {

@@ -8,6 +8,13 @@
 	border-bottom: 1px solid #e9eaec;
 }
 
+.limit {
+	text-align: right;
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+}
+
 .unlimited {
 	color: rgba(38, 189, 108, 1);
 }
@@ -26,7 +33,7 @@
 }
 
 .modelsHeading {
-	text-align-last: left;
+	text-align: left;
 }
 
 .model {

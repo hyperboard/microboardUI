@@ -3,8 +3,9 @@ import styles from "./LimitsTable.module.css";
 import { useAccount } from "App/useAccount";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
-import { Tooltip } from "View/Ui/UiButton/Tooltip";
 import { UiButton } from "View/Ui/UiButton";
+
+// Воняет конкретно, TODO - переписать
 
 const DISPLAYNAME_MAP = {
 	"gpt-4o-mini": "GPT-4o mini",
@@ -19,8 +20,9 @@ const MODELS_ORDER = [
 	"gpt-4o-mini",
 	"gpt-4o",
 	"flux-schnell",
-	"tts-1-hd",
 ];
+
+const PER_MONTH_MODELS_ORDER = ["tts-1-hd"];
 
 export function LimitsTable() {
 	const account = useAccount();
@@ -31,7 +33,6 @@ export function LimitsTable() {
 		"gpt-4o": t("ai.models.gpt-4o.description"),
 		"deepseek-reasoner": t("ai.models.deepseek-reasoner.description"),
 		"flux-schnell": t("ai.models.image-generation.description"),
-		"tts-1-hd": t("ai.models.tts-1-hd.description"),
 	};
 
 	const sortedModels = models
@@ -60,11 +61,53 @@ export function LimitsTable() {
 				<ModelRow
 					name={DISPLAYNAME_MAP[id]}
 					description={DESCRIPTION_MAP[id] ?? ""}
-					limit={limits.daily.limit || limits.weekly.limit}
+					limit={limits.daily?.limit || limits.weekly?.limit || 0}
 					remaining={
-						limits.daily.remaining || limits.weekly.remaining
+						limits.daily?.remaining || limits.weekly?.remaining || 0
 					}
 					enabled={isEnabled}
+				/>
+			))}
+		</table>
+	);
+}
+
+export function PerMonthLimitsTable() {
+	const account = useAccount();
+	const models = account.billingInfo?.models;
+	const { t } = useTranslation();
+	const DESCRIPTION_MAP = {
+		"tts-1-hd": t("ai.models.tts-1-hd.description"),
+	};
+
+	const sortedModels = models
+		?.filter(({ id }) => PER_MONTH_MODELS_ORDER.includes(id))
+		.sort(
+			(a, b) =>
+				PER_MONTH_MODELS_ORDER.indexOf(a.id) -
+				PER_MONTH_MODELS_ORDER.indexOf(b.id),
+		);
+
+	return (
+		<table className={styles.table}>
+			<thead className={styles.row}>
+				<tr className={styles.header}>
+					<th className={styles.modelsHeading}>
+						{t("userPlan.limitsTable.modelName")}
+					</th>
+					<th className={styles.limit}>
+						{t("userPlan.limitsTable.requestsPerMonth")}
+					</th>
+				</tr>
+			</thead>
+			{sortedModels?.map(({ limits, isEnabled, id }) => (
+				<ModelRow
+					name={DISPLAYNAME_MAP[id]}
+					description={DESCRIPTION_MAP[id] ?? ""}
+					limit={limits.monthly?.limit || 0}
+					remaining={limits.monthly?.remaining || 0}
+					enabled={true}
+					isAudio
 				/>
 			))}
 		</table>
@@ -77,6 +120,7 @@ type ModelRowProps = {
 	remaining: number | null;
 	limit: number | null;
 	enabled: boolean;
+	isAudio?: boolean;
 };
 
 function ModelRow({
@@ -85,8 +129,10 @@ function ModelRow({
 	name,
 	remaining,
 	enabled,
+	isAudio = false,
 }: ModelRowProps) {
 	const { t } = useTranslation();
+	console.log(name, limit, remaining);
 	return (
 		<tr className={styles.row}>
 			<td className={styles.model}>
@@ -95,19 +141,22 @@ function ModelRow({
 			</td>
 			<td
 				className={clsx(
+					styles.limit,
 					!enabled && styles.modelDisabled,
 					remaining === 0 && styles.modelLimitReached,
 				)}
 			>
 				{enabled ? (
 					!remaining ? (
-						<span className={styles.unlimited}>Unlimited</span>
+						<span className={styles.unlimited}>
+							{t("userPlan.unlimited")}
+						</span>
 					) : (
-						`${remaining}/${limit}`
+						`${remaining}/${limit} ${isAudio ? t("userPlan.limitsTable.symbols") : ""}`
 					)
 				) : (
 					<UiButton
-						className={styles.limits}
+						className={clsx(styles.limits)}
 						variant="secondary"
 						disabled
 						tooltipPosition="bottom-left"
