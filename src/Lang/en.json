@@ -365,7 +365,9 @@
 		"nameLengthShortError": "Name length too short, minimum 1 symbol.",
 		"nameLengthLongError": "Please enter a name no longer than 50 characters.",
 		"sessionExpired": "Session expired. Please login again",
-		"newsletter": "I agree to receive product updates and promotional materials from"
+		"newsletter": "I agree to receive product updates and promotional materials from",
+		"loginWith": "Or log in with:",
+		"googleAuth": "Sing in with Google"
 	},
 	"modal": {
 		"canEdit": "Can edit",

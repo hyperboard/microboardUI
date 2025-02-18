@@ -14,9 +14,10 @@ import styles from "./SignupView.module.css";
 import { Checkbox } from "View/Ui/Checkbox";
 import { WalletLoginButton } from "View/WalletLoginButton";
 import { GoogleAuthBtn } from "View/GoogleAuthBtn/GoogleAuthBtn";
+import { LoginWith } from "View/LoginWith/LoginWith";
 
 export const SignupView = (): React.ReactElement => {
-	const { t, i18n } = useTranslation();
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const formRef = React.useRef<HTMLFormElement>(null);
 	const [showNameInput, setShowNameInput] = useState(true);
@@ -235,6 +236,7 @@ export const SignupView = (): React.ReactElement => {
 						{t("auth.signIn")}
 					</Button>
 
+					<LoginWith />
 					<WalletLoginButton />
 					<GoogleAuthBtn />
 

@@ -128,7 +128,9 @@ export type IconId =
 	| "ArrowRightFill"
 	| "quotedText"
 	| "ArrowRight"
-	| "ArrowRightSm";
+	| "ArrowRightSm"
+	| "CryptoIcon"
+	| "GoogleIcon";
 
 type Props = {
 	iconName: IconId;

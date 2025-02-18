@@ -1,0 +1,17 @@
+.baseStyle {
+	height: 40px;
+	min-width: 252px;
+	border: none;
+	text-align: center;
+	font-size: 14px;
+	font-family: "Manrope";
+	font-weight: 600;
+	background-color: #5980de;
+	color: #ffffff;
+	border-radius: 12px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+	cursor: pointer;
+}

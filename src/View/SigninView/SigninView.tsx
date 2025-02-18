@@ -5,11 +5,7 @@ import { useBoardsList } from "App/useBoardsList";
 import { isEmail } from "lib/regex";
 import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-	createSearchParams,
-	useNavigate,
-	useSearchParams,
-} from "react-router-dom";
+import { createSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "shared/ui-lib/Button";
 import { Input } from "shared/ui-lib/Input/Input";
 import { OuterLink } from "shared/ui-lib/OuterLink";
@@ -19,6 +15,7 @@ import { LockIcon } from "View/SignupView/LockIcon";
 import styles from "./SigninView.module.css";
 import { WalletLoginButton } from "View/WalletLoginButton";
 import { GoogleAuthBtn } from "View/GoogleAuthBtn/GoogleAuthBtn";
+import { LoginWith } from "View/LoginWith/LoginWith";
 
 interface Props {
 	app: App;
@@ -35,7 +32,6 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 	const [errorText, setErrorText] = useState<string>("");
 	const account = useAccount();
 	const boards = useBoardsList();
-	const [searchParams] = useSearchParams();
 
 	const onSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
@@ -191,6 +187,7 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 						{t("auth.signUpForFree")}
 					</Button>
 
+					<LoginWith />
 					<WalletLoginButton />
 					<GoogleAuthBtn />
 				</div>

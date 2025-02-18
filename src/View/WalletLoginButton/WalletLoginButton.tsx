@@ -11,6 +11,9 @@ import { useTranslation } from "react-i18next";
 import { injected } from "@wagmi/connectors";
 import { useAccount } from "App/useAccount";
 import { notify } from "View/Ui/Toast";
+import { Icon } from "View/Icon";
+import { Tooltip } from "View/Ui/UiButton/Tooltip";
+import styles from "./WalletLoginButton.module.css";
 
 interface WalletLoginButtonProps {}
 
@@ -49,9 +52,20 @@ const WalletLoginButton: React.FC<WalletLoginButtonProps> = () => {
 	return (
 		<ConnectButton.Custom>
 			{() => (
-				<Button pattern="ghost" onClick={handleLogin} type="button">
+				<Button
+					pattern="primary"
+					onClick={handleLogin}
+					className={styles.btn}
+				>
+					<Icon iconName={"CryptoIcon"} />
 					{t("auth.cryptoSignIn")}
-					{!address && ` (${t("auth.connectWallet")})`}
+					{!address && (
+						<Tooltip
+							tooltip={t("auth.connectWallet")}
+							tooltipPosition="top"
+							tooltipAlign="left"
+						/>
+					)}
 				</Button>
 			)}
 		</ConnectButton.Custom>
