@@ -7,7 +7,7 @@ export { userPasscodes } from "./userPasscodes";
 export { userPasswordResetRequests } from "./userPasswordResetRequests";
 export { userPasswords } from "./userPasswords";
 export { users } from "./users";
-export * from './plans'
+export * from "./plans";
 export { boardEvents } from "./boardEvents";
 export * from "./templates";
 export { userNames } from "./userNames";

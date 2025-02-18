@@ -1,1 +1,1 @@
-export { addBoardOwner } from './handler';
+export { addBoardOwner } from "./handler";

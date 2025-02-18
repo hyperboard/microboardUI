@@ -1,1 +1,1 @@
-export type Shape = (color: string) => string
+export type Shape = (color: string) => string;

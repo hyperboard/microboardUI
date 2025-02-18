@@ -1,5 +1,1 @@
-export {
-	createBoardSnapshot,
-	getLatestBoardSnapshot,
-	saveBoardSnapshot	
-} from './handler';
+export { createBoardSnapshot, getLatestBoardSnapshot, saveBoardSnapshot } from "./handler";

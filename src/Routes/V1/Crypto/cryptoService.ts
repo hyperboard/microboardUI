@@ -575,7 +575,6 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
         cancelCheckout,
         confirmCheckout,
         handlePlanExpiry,
-        async cleanup() {
-        },
+        async cleanup() {},
     };
 };

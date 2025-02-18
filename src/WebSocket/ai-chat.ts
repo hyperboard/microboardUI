@@ -1,4 +1,10 @@
-import { DallEOptions, FluxOptions, GenerateImageOptions, ImageGenerator, MidjourneyOptions } from "../ai/openai/image-generator";
+import {
+    DallEOptions,
+    FluxOptions,
+    GenerateImageOptions,
+    ImageGenerator,
+    MidjourneyOptions,
+} from "../ai/openai/image-generator";
 import { OpenAI, OpenAIModels } from "ai/openai";
 import { ChatStreamHandler } from "ai/openai/ChatStreamHandler";
 import { Message } from "drizzle/entities";
@@ -23,17 +29,10 @@ export function getAIChatMsgHandler(options: {
                 });
                 break;
             case "GenerateImage":
-                chatStreamHandler.handleGenerateImage(
-                    msg as AiChatMsg<GenerateImageEvent>,
-                    imageGenerator,
-                    ws,
-                );
+                chatStreamHandler.handleGenerateImage(msg as AiChatMsg<GenerateImageEvent>, imageGenerator, ws);
                 break;
             case "GenerateAudio":
-                chatStreamHandler.handleGenerateAudio(
-                    msg as AiChatMsg<GenerateAudioEvent>,
-                    ws,
-                );
+                chatStreamHandler.handleGenerateAudio(msg as AiChatMsg<GenerateAudioEvent>, ws);
                 break;
             case "StopGeneration":
                 chatStreamHandler.stopConversation({

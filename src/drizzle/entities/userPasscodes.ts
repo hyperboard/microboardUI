@@ -12,7 +12,7 @@ export const userPasscodes = pgTable("user_passcode", {
 export const addressNonce = pgTable("address_nonce", {
     id: serial("id").primaryKey(),
     nonce: varchar("nonce").notNull(),
-	address: varchar("crypto_wallet").notNull(),
+    address: varchar("crypto_wallet").notNull(),
     created: timestamp("created").defaultNow().notNull(),
     remainingAttempts: integer("remaining_attempts").default(5).notNull(),
 });

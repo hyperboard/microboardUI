@@ -1,4 +1,4 @@
 export enum AccessKeyType {
-	EDIT = 'edit',
-	VIEW = 'view',
+    EDIT = "edit",
+    VIEW = "view",
 }

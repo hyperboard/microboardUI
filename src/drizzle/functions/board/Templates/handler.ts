@@ -2,7 +2,7 @@ import { db } from "../../../db";
 import { templates } from "../../../entities";
 import { and, eq, arrayContains, sql, SQLWrapper } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
-import {getBoardByLink, getBoardInfo} from "../Boards";
+import { getBoardByLink, getBoardInfo } from "../Boards";
 import { HttpException } from "../../../../shared/exceptions/http-exception";
 import { createAccessKey, getBoardViewLink } from "../AccessKeys";
 import { AccessKeyType } from "../AccessKeys/types";
@@ -23,7 +23,7 @@ export async function createTemplate(
         throw new Error(`Could not find board by ${boardUUID} UUID`);
     }
 
-    const uniqId = `boards/${boardUUID}?accessKey=${viewLink}`
+    const uniqId = `boards/${boardUUID}?accessKey=${viewLink}`;
 
     const [insertedRecords] = await db
         .insert(templates)
@@ -60,10 +60,10 @@ export async function updateTemplateSnapshot(boardUUID: string, snapshot: object
         .execute();
 
     if (!updatedRecords) {
-        return "create"
+        return "create";
     }
 
-    return "updated"
+    return "updated";
 }
 
 export async function getTemplates(language: string, term?: string, tag?: string) {

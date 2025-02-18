@@ -6,9 +6,9 @@ export const createSvg = (size: number | string, ...children: string[]) => `
     height="${size}"
     viewBox="0 0 500 500"
   >
-    ${children.join('')}
+    ${children.join("")}
   </svg>
-`
+`;
 
 export const createBackground = (round: boolean, color: string) => `
   <rect
@@ -17,12 +17,12 @@ export const createBackground = (round: boolean, color: string) => `
     rx="${round ? 250 : 0}"
     fill="${color}"
   />
-`
+`;
 
 export const createBlackout = (round: boolean) => `
   <path
-    d="${round ? 'M250,0a250,250 0 1,1 0,500' : 'M250,0L500,0L500,500L250,500'}"
+    d="${round ? "M250,0a250,250 0 1,1 0,500" : "M250,0L500,0L500,500L250,500"}"
     fill="#15212a"
     fill-opacity="0.08"
   />
-`
+`;

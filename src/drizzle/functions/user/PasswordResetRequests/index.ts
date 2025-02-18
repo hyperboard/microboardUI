@@ -1,6 +1,6 @@
-export { 
-	createPasswordResetRequests,
-	updatePasswordResetRequests, 
-	getPasswordResetRequests,
-	deletePasswordResetRequests
-} from './handler';
+export {
+    createPasswordResetRequests,
+    updatePasswordResetRequests,
+    getPasswordResetRequests,
+    deletePasswordResetRequests,
+} from "./handler";

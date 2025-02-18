@@ -62,7 +62,6 @@ export async function getBoardEvents(boardOrLinkUUID: string, afterLogid: number
     return events || [];
 }
 
-
 /**
  * Function to get count of events since last snapshot.
  */

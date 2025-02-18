@@ -1,2 +1,2 @@
-export * from './functions/board';
-export * from './functions/user';
+export * from "./functions/board";
+export * from "./functions/user";

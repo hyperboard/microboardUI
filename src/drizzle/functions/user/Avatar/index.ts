@@ -1,1 +1,1 @@
-export { addAvatar, changeAvatar } from './handler'
+export { addAvatar, changeAvatar } from "./handler";

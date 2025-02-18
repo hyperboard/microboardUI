@@ -53,12 +53,7 @@ export async function createToken(
     return tokenString;
 }
 
-
-
-export async function verifyToken(
-    tokenString: string,
-    type: TokenType
-): Promise<AccessToken | null> {
+export async function verifyToken(tokenString: string, type: TokenType): Promise<AccessToken | null> {
     try {
         const publicKey = getPublicKey(type);
         if (!publicKey) {
@@ -76,7 +71,6 @@ export async function verifyToken(
         return null;
     }
 }
-
 
 function getPrivateKey(type: TokenType) {
     switch (type) {

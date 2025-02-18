@@ -1,10 +1,10 @@
 export {
-	addUserPermissions,
-	revokePermissions,
-	updateBoardPermissions,
-	getBoardPermissions,
-	grantViewPermissions,
-	grantEditPermissions,
-	checkUserViewPermission,
-	checkUserEditPermission
-} from './handler';
+    addUserPermissions,
+    revokePermissions,
+    updateBoardPermissions,
+    getBoardPermissions,
+    grantViewPermissions,
+    grantEditPermissions,
+    checkUserViewPermission,
+    checkUserEditPermission,
+} from "./handler";

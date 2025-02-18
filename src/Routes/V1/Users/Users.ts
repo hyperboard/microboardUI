@@ -17,9 +17,7 @@ export class Users {
         return users;
     }
 
-    async getUser(
-        userId: number
-    ): Promise<{
+    async getUser(userId: number): Promise<{
         id: number;
         email?: string;
         address?: string;

@@ -407,7 +407,7 @@ export class ChatStreamHandler {
     public async handleGenerateImage(
         msg: AiChatMsg<GenerateImageEvent>,
         imageGenerator: ImageGenerator,
-        ws: WebSocket,
+        ws: WebSocket
     ) {
         const pipelineSteps: PipelineStep[] = [
             { name: "Initialize Image Generation", status: "pending" as const },
@@ -745,10 +745,7 @@ export class ChatStreamHandler {
         return messages;
     }
 
-    public async handleUserRequest(options: {
-        msg: AiChatMsg<UserRequest>;
-        ws: WebSocket;
-    }) {
+    public async handleUserRequest(options: { msg: AiChatMsg<UserRequest>; ws: WebSocket }) {
         const { msg, ws } = options;
         const controller = new AbortController();
         const pipelineSteps: PipelineStep[] = [

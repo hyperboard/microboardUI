@@ -1,1 +1,1 @@
-export {createTemplate, updateTemplateSnapshot, getTemplates} from './handler'
+export { createTemplate, updateTemplateSnapshot, getTemplates } from "./handler";
