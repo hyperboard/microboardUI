@@ -8,6 +8,7 @@ type RootViewProps = {
 
 const RootView: React.FC<RootViewProps> = ({ app }) => {
 	const navigate = useNavigate();
+	console.log("RootView");
 
 	React.useEffect(() => {
 		navigate(`/boards`);

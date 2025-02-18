@@ -45,6 +45,7 @@ import style from "./AppView.module.css";
 import { InactiveBoardHidder } from "./InactiveBoardHidder";
 import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
+import { UIMainLoader } from "View/Ui/UIMainLoader/UIMainLoader";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -167,7 +168,8 @@ export function AppView(): JSX.Element {
 						mode={["edit", "view"]}
 						fallback={
 							<div className={style.loaderWrapper}>
-								<UiLoader size={50} />
+								{/* <UiLoader size={50} /> */}
+								<UIMainLoader />
 							</div>
 						}
 					/>
