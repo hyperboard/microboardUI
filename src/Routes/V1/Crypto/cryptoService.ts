@@ -11,11 +11,11 @@ import { Request, Response, NextFunction } from "express";
 import { HttpException } from "shared/exceptions/http-exception";
 import { USD } from "drizzle/scripts/plans";
 
-interface CryptoService {
+export interface CryptoService {
     createCheckout: (req: Request, res: Response, next: NextFunction) => void;
     cancelCheckout: (req: Request, res: Response, next: NextFunction) => void;
     confirmCheckout: (req: Request, res: Response, next: NextFunction) => void;
-    initSchedules: () => Promise<void>;
+    handlePlanExpiry(userId: number): void;
     cleanup: () => Promise<void>;
 }
 
@@ -94,34 +94,6 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
             logger.info(`web3: No more active checkouts for chain ${chain}, stopped interval.`);
         }
     }
-
-    const expiryQueue = new Queue("expiry", {
-        connection: redis.client,
-        defaultJobOptions: {
-            attempts: 3,
-            backoff: {
-                type: "exponential",
-                delay: 1000,
-            },
-        },
-    });
-
-    const expiryWorker = new Worker(
-        "expiry",
-        async (job: Job) => {
-            switch (job.name) {
-                case "checkout-expiry":
-                    await handleCheckoutExpiry(job);
-                    break;
-                case "plan-expiry":
-                    await handlePlanExpiry(job);
-                    break;
-                default:
-                    throw new Error(`Unknown job type: ${job.name}`);
-            }
-        },
-        { connection: redis.client }
-    );
 
     async function fetchNativeTransactions(walletAddress: string, chain: Chain): Promise<Array<any>> {
         const [lastCheckedBlock] = await db
@@ -251,8 +223,6 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
                     transactionHash: tx.hash.toLowerCase(),
                 })
                 .execute();
-
-            await schedulePlanExpiry(check.userId, endDate);
         }
     }
 
@@ -331,36 +301,7 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
         }
     }
 
-    async function handleCheckoutExpiry(job: Job) {
-        const { checkoutId } = job.data;
-        const [checkout] = await db
-            .select()
-            .from(userCryptoCheckout)
-            .where(
-                and(
-                    eq(userCryptoCheckout.id, checkoutId),
-                    eq(userCryptoCheckout.status, "active"),
-                    lte(userCryptoCheckout.endDate, new Date())
-                )
-            )
-            .limit(1)
-            .execute();
-
-        if (checkout) {
-            const chain = checkout.chainName.toLowerCase();
-
-            await db
-                .update(userCryptoCheckout)
-                .set({ status: "expired" })
-                .where(eq(userCryptoCheckout.id, checkoutId))
-                .execute();
-
-            unsubscribe(chain);
-        }
-    }
-
-    async function handlePlanExpiry(job: Job) {
-        const { userId } = job.data;
+    async function handlePlanExpiry(userId: number) {
         const [currentPlan] = await db
             .select()
             .from(userPlans)
@@ -399,20 +340,6 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
         }
     }
 
-    async function scheduleCheckoutExpiry(checkoutId: string, endDate: Date) {
-        await scheduleExpiry("checkout-expiry", { checkoutId }, endDate);
-    }
-    async function schedulePlanExpiry(userId: number, endDate: Date) {
-        await scheduleExpiry("plan-expiry", { userId }, endDate);
-    }
-
-    async function scheduleExpiry(name: string, data: any, endDate: Date) {
-        const delay = endDate.getTime() - Date.now();
-        const safeDelay = delay > 0 ? delay : 0;
-
-        await expiryQueue.add(name, { ...data }, { delay: safeDelay });
-    }
-
     async function createCheckoutDb(checkoutData: Omit<Checkout, "id">): Promise<Checkout & { id: string }> {
         const { userId, planId, symbol, valueWei, chainName, addressFrom, annualPayment } = checkoutData;
         const checkoutId = crypto.randomUUID();
@@ -434,8 +361,6 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
                 annualPayment,
             })
             .returning();
-
-        await scheduleCheckoutExpiry(checkoutId, endDate);
 
         return checkout;
     }
@@ -642,60 +567,15 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
             })
             .execute();
 
-        await schedulePlanExpiry(checkout.userId, endDate);
         res.status(HttpStatus.OK).json({ message: "Checkout confirmed successfully." });
     });
 
-    async function initSchedules() {
-        logger.info("web3: Initializing schedules for active checkouts and user plans.");
-        const now = new Date();
-
-        const futureCheckouts = await db
-            .select()
-            .from(userCryptoCheckout)
-            .where(and(eq(userCryptoCheckout.status, "active"), gt(userCryptoCheckout.endDate, now)));
-        for (const checkout of futureCheckouts) {
-            await scheduleCheckoutExpiry(checkout.id, checkout.endDate);
-            await startIntervalForChain(checkout.chainName as Chain);
-        }
-
-        const expiredCheckouts = await db
-            .select()
-            .from(userCryptoCheckout)
-            .where(and(eq(userCryptoCheckout.status, "active"), lte(userCryptoCheckout.endDate, now)));
-        for (const checkout of expiredCheckouts) {
-            await scheduleCheckoutExpiry(checkout.id, now);
-        }
-
-        const futurePlans = await db
-            .select()
-            .from(userPlans)
-            .where(
-                and(eq(userPlans.status, "active"), isNotNull(userPlans.transactionHash), gt(userPlans.endDate, now))
-            );
-        for (const plan of futurePlans) {
-            await schedulePlanExpiry(plan.userId, plan.endDate);
-        }
-
-        const expiredPlans = await db
-            .select()
-            .from(userPlans)
-            .where(
-                and(eq(userPlans.status, "active"), isNotNull(userPlans.transactionHash), lte(userPlans.endDate, now))
-            );
-        for (const plan of expiredPlans) {
-            await schedulePlanExpiry(plan.userId, now);
-        }
-    }
-
-    initSchedules();
     return {
         createCheckout,
         cancelCheckout,
         confirmCheckout,
-        initSchedules,
+        handlePlanExpiry,
         async cleanup() {
-            await expiryWorker.close();
         },
     };
 };

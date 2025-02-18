@@ -1,4 +1,4 @@
-import { ImageGenerator } from "./image-generator";
+import { ImageGenerator } from "../ai/openai/image-generator";
 import { OpenAI } from "ai/openai";
 import { ChatStreamHandler } from "ai/openai/ChatStreamHandler";
 import { AccessKeyType } from "drizzle/entities/boardAccessKeys";
@@ -20,6 +20,8 @@ import { z } from "zod";
 import { WsError } from "./wsError";
 import { TelegramService } from "services/TelegramService";
 import { getAppVersion } from "../shared/utils/getAppVersion";
+import { StripeService } from "Routes/V1/Billing/stripe";
+import { CryptoService } from "Routes/V1/Crypto/cryptoService";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
@@ -34,6 +36,8 @@ const REDIS_BOARD_FIRST_EVENT_KEY = "board:first_event:";
 const REDIS_BOARD_LAST_SNAPSHOT_KEY = "board:last_snapshot:";
 const CURRENT_VERSION = getAppVersion();
 
+export type WebSocketType = { chatStreamHandler: ChatStreamHandler };
+
 export function withWebSocketApi({
     wss,
     accessKeysService,
@@ -44,6 +48,8 @@ export function withWebSocketApi({
     imageGenerator,
     telegramService,
     developersService,
+    stripeService,
+    cryptoService,
 }: {
     wss: WebSocketServer;
     accessKeysService: AccessKeysService;
@@ -54,13 +60,22 @@ export function withWebSocketApi({
     imageGenerator: ImageGenerator;
     telegramService: TelegramService;
     developersService: DevelopersService;
-}): void {
+    stripeService: StripeService;
+    cryptoService: CryptoService;
+}): WebSocketType {
     const boardClients = new Map<string, WebSocket.WebSocket[]>();
     const wsTokens = new Map<WebSocket, AccessToken>();
     const wsAccessKeys = new Map<WebSocket, string>();
     const snapshotRequestTimers = new Map<string, NodeJS.Timeout>();
     const presence = new Presence(redis);
-    const chatStreamHandler = new ChatStreamHandler(openai, logger, redis, telegramService);
+    const chatStreamHandler = new ChatStreamHandler({
+        stripeService,
+        cryptoService,
+        openai,
+        logger,
+        redis,
+        telegramService,
+    });
 
     developersService.setBroadcastEventFunction((boardUUID: string, eventData: any) => {
         const clients = boardClients.get(boardUUID) ?? [];
@@ -579,6 +594,10 @@ export function withWebSocketApi({
             }
         }
     }, WS_TOKENS_CLEANUP_INTERVAL);
+
+    return {
+        chatStreamHandler,
+    };
 }
 
 export interface AuthMsg {

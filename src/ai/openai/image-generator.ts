@@ -2,30 +2,30 @@ import OpenAI from "openai";
 import Replicate from "replicate";
 import winston from "winston";
 
-interface GenerateImageResult {
+export interface GenerateImageResult {
     imageUrl: string | null;
     base64: string | null;
 }
 
-interface MidjourneyOptions {
+export interface MidjourneyOptions {
     model: "midjourney";
     prompt: string;
 }
 
-interface DallEOptions {
+export interface DallEOptions {
     model: "dall-e-2" | "dall-e-3";
     prompt: string;
     quality?: "standard" | "hd";
     size?: "256x256" | "512x512" | "1024x1024" | "1024x1792" | "1792x1024";
 }
 
-interface FluxOptions {
+export interface FluxOptions {
     model: "flux-schnell" | "flux-pro";
     prompt: string;
     aspectRatio: string;
 }
 
-interface RecraftOptions {
+export interface RecraftOptions {
     model: "recraft";
     prompt: string;
 }

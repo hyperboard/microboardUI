@@ -3,7 +3,7 @@ import type { UserAccessType } from "../types";
 export class GrantedUserDto {
   id: number;
   name: string | null;
-  email: string;
+  email: string | null;
   accessType: UserAccessType;
   avatar: string | null;
   isOwner: boolean;

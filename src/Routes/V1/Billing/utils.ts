@@ -1,9 +1,11 @@
-import { and, gte, lte, sql } from "drizzle-orm";
+import { and, gte, lt, lte, sql } from "drizzle-orm";
 import { eq } from "drizzle-orm";
 import { db } from "drizzle/db";
 import { boardOwner, boards, chat, message } from "drizzle/entities";
 import { aiModels, modelLimits, plans, userPlans, userStorageUsage } from "drizzle/entities/plans";
 import { PLANS } from "drizzle/scripts/plans";
+import { CryptoService } from "../Crypto/cryptoService";
+import { StripeService } from "./stripe";
 
 export function getCurrentPeriods() {
     const now = new Date();
@@ -28,7 +30,7 @@ export function getCurrentPeriods() {
     };
 }
 
-export async function getCurrentUserPlan(userId: number) {
+export async function getCurrentUserPlan(userId: number, stripeService?: StripeService, cryptoService?: CryptoService) {
     const now = new Date();
     const pendingPlan = await db
         .select({
@@ -76,6 +78,27 @@ export async function getCurrentUserPlan(userId: number) {
         .limit(1);
 
     if (!pendingPlan.length && !currentPlan.length) {
+        const [anyActivePlan] = await db
+            .select({
+                id: userPlans.id,
+                userId: userPlans.userId,
+                hash: userPlans.transactionHash,
+                stripeId: userPlans.stripeSubscriptionId,
+            })
+            .from(userPlans)
+            .innerJoin(plans, eq(userPlans.planId, plans.id))
+            .where(and(eq(userPlans.userId, userId), eq(userPlans.status, "active"), lt(userPlans.endDate, new Date())))
+            .limit(1)
+            .execute();
+
+        if (anyActivePlan) {
+            if (anyActivePlan.hash && cryptoService) {
+                cryptoService.handlePlanExpiry(anyActivePlan.userId);
+            } else if (anyActivePlan.stripeId && stripeService) {
+                stripeService.handleSubscriptionCheck(anyActivePlan.userId, anyActivePlan.id, anyActivePlan.stripeId);
+            }
+        }
+
         const freePlan = await db
             .select({
                 planId: plans.id,
@@ -109,9 +132,13 @@ export async function getCurrentUserPlan(userId: number) {
     return pendingPlan[0] || currentPlan[0];
 }
 
-export async function getAudioModelLimits(userId: number) {
+export async function getAudioModelLimits(
+    userId: number,
+    stripeService?: StripeService,
+    cryptoService?: CryptoService
+) {
     const modelId = "tts-1-hd";
-    const userPlan = await getCurrentUserPlan(userId);
+    const userPlan = await getCurrentUserPlan(userId, stripeService, cryptoService);
     const planLimit = PLANS.find((plan) => plan.id === userPlan.planId)?.textToSpeech;
 
     const totalSymbolsUsed = await db
@@ -126,7 +153,7 @@ export async function getAudioModelLimits(userId: number) {
             and(
                 eq(message.model, modelId),
                 eq(boardOwner.ownerId, userId),
-                gte(message.createdAt, userPlan.startDate),
+                gte(message.createdAt, new Date(new Date().getTime() - 30 * 24 * 60 * 60 * 1000)),
                 lte(message.createdAt, new Date())
             )
         );
@@ -137,8 +164,12 @@ export async function getAudioModelLimits(userId: number) {
     };
 }
 
-export async function getCurrentModelLimits(userId: number) {
-    const userPlan = await getCurrentUserPlan(userId);
+export async function getCurrentModelLimits(
+    userId: number,
+    stripeService?: StripeService,
+    cryptoService?: CryptoService
+) {
+    const userPlan = await getCurrentUserPlan(userId, stripeService, cryptoService);
     const modelLimitsQuery = await db
         .select({
             modelId: aiModels.id,

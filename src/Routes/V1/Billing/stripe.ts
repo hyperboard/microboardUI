@@ -21,6 +21,7 @@ export interface StripeService {
     createStripeCustomer: (sub: string) => Promise<Stripe.Customer>;
     syncStripeDataToKV: (customerId: string) => Promise<any>;
     cancelSubscription: (userId: number) => Promise<void>;
+    handleSubscriptionCheck: (userId: number, planId: string, stripeSubscriptionId: string) => Promise<void>;
     stripe: Stripe;
 }
 
@@ -477,5 +478,6 @@ export const createStripeService = (stripe: Stripe, redis: Redis): StripeService
         },
 
         stripe,
+        handleSubscriptionCheck,
     };
 };

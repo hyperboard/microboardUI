@@ -14,7 +14,8 @@ let testUserId: any;
 
 beforeAll(async () => {
     dotenv.config();
-    server = await getApp();
+    const app = await getApp();
+    server = app.server;
     testUserId = await createTestUser();
 });
 
@@ -23,7 +24,7 @@ afterAll(() => {
 });
 
 async function createTestUser() {
-    await addUser("test@email.com");
+    await addUser("test@email.com", false);
     const user = await getUserByEmail("test@email.com");
     return user.userId;
 }

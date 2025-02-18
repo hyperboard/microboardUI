@@ -33,6 +33,7 @@ import type { BoardsService } from "./Boards/boards.service";
 import type { FoldersService } from "./Foldres/folders.service";
 import type { AccessKeysService } from "./Boards/access-keys.service";
 import type { GoogleOAuth } from "Routes/V1/Auth/GoogleOAuth";
+import { CryptoService } from "./Crypto/cryptoService";
 
 function createFileRoute(
     router: express.Router,
@@ -78,6 +79,7 @@ export function getV1Router({
     ai,
     openai,
     stripeService,
+    cryptoService,
     developersService,
     boardsService,
     accessKeysService,
@@ -97,6 +99,7 @@ export function getV1Router({
     ai: AI;
     openai: OpenAI;
     stripeService: StripeService;
+    cryptoService: CryptoService;
     developersService: DevelopersService;
     boardsService: BoardsService;
     foldersService: FoldersService;
@@ -118,9 +121,9 @@ export function getV1Router({
     // router.use(authMiddleware);
     router.use(apiBase, getUsersRouter(users, logger));
     router.use(`${apiBase}/miro`, getMiroRouter());
-    router.use(`${apiBase}`, getBillingRouter(logger, stripeService, redis));
+    router.use(`${apiBase}`, getBillingRouter(logger, stripeService, cryptoService, redis));
     router.use(`${apiBase}`, getIngestRouter(logger, openai));
-    router.use(apiBase, getCryptoRouter(redis, logger));
+    router.use(apiBase, getCryptoRouter(cryptoService, redis, logger));
     router.use(apiBase, getDevelopersRouter(developersService, redis, logger));
 
     createFileRoute(

@@ -1,4 +1,4 @@
-import { ImageGenerator } from "./image-generator";
+import { DallEOptions, FluxOptions, GenerateImageOptions, ImageGenerator, MidjourneyOptions } from "../ai/openai/image-generator";
 import { OpenAI, OpenAIModels } from "ai/openai";
 import { ChatStreamHandler } from "ai/openai/ChatStreamHandler";
 import { Message } from "drizzle/entities";
@@ -13,48 +13,39 @@ export function getAIChatMsgHandler(options: {
     chatStreamHandler: ChatStreamHandler;
 }): (msg: AiChatMsg, ws: WebSocket) => Promise<void> {
     return async (msg: AiChatMsg, ws: WebSocket) => {
-        const { logger, boardClients, chatStreamHandler, imageGenerator } = options;
+        const { logger, chatStreamHandler, imageGenerator } = options;
 
         switch (msg.event.method) {
             case "UserRequest":
                 chatStreamHandler.handleUserRequest({
                     msg: msg as AiChatMsg<UserRequest>,
                     ws,
-                    logger,
-                    boardClients,
                 });
                 break;
             case "GenerateImage":
-                await chatStreamHandler.handleGenerateImage(
+                chatStreamHandler.handleGenerateImage(
                     msg as AiChatMsg<GenerateImageEvent>,
-                    boardClients,
                     imageGenerator,
                     ws,
-                    logger
                 );
                 break;
             case "GenerateAudio":
-                await chatStreamHandler.handleGenerateAudio(
+                chatStreamHandler.handleGenerateAudio(
                     msg as AiChatMsg<GenerateAudioEvent>,
-                    boardClients,
                     ws,
-                    logger
                 );
                 break;
             case "StopGeneration":
-                await chatStreamHandler.stopConversation({
+                chatStreamHandler.stopConversation({
                     msg: msg as AiChatMsg<StopGeneration>,
                     boardId: msg.boardId,
                     ws,
-                    logger,
                     itemId: msg.event.itemId,
                 });
                 break;
             case "GetMessageList":
-                await chatStreamHandler.handleGetMessageList({
+                chatStreamHandler.handleGetMessageList({
                     msg: msg as AiChatMsg<GetMessageList>,
-                    logger,
-                    boardClients,
                     ws,
                 });
                 break;
@@ -115,23 +106,7 @@ export interface GenerateImageEvent {
     method: "GenerateImage";
     prompt: string;
     itemId: string;
-    options:
-        | {
-              model: "dall-e-2";
-              size: "256x256" | "512x512" | "1024x1024";
-          }
-        | {
-              model: "dall-e-3";
-              size: "1024x1024" | "1792x1024" | "1024x1792";
-              quality: "standard" | "hd";
-          }
-        | {
-              model: "midjourney";
-          }
-        | {
-              model: "flux-schnell" | "flux-pro";
-              aspect_ratio: string; // "1:1"
-          };
+    options: GenerateImageOptions;
 }
 
 export interface GenerateImageResponse {

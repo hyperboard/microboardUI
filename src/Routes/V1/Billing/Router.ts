@@ -16,10 +16,12 @@ import {
     getCurrentUserPlan,
 } from "./utils";
 import { HttpStatus } from "shared/enums/http-status.enum";
+import { CryptoService } from "../Crypto/cryptoService";
 
 export const getBillingRouter = (
     logger: winston.Logger,
     stripeService: StripeService,
+    cryptoService: CryptoService,
     redis: Redis
 ): express.Router => {
     const router = express.Router();
@@ -33,8 +35,8 @@ export const getBillingRouter = (
             const userId = parseInt(userToken?.sub);
 
             const [currentPlan, modelLimits, storageUsage] = await Promise.all([
-                getCurrentUserPlan(userId),
-                getCurrentModelLimits(userId),
+                getCurrentUserPlan(userId, stripeService, cryptoService),
+                getCurrentModelLimits(userId, stripeService, cryptoService),
                 getCurrentStorageUsage(userId),
             ]);
 

@@ -36,11 +36,13 @@ import {
     StopGeneration,
     UserRequest,
 } from "WebSocket/ai-chat";
-import { generateAudio, GenerateAudioOptions } from "WebSocket/audio-generator";
-import { GenerateImageOptions, ImageGenerator } from "WebSocket/image-generator";
+import { GenerateImageOptions, ImageGenerator } from "./image-generator";
+import { GenerateAudioOptions, generateAudio } from "./audio-generator";
 import winston from "winston";
 import WebSocket from "ws";
 import { OpenAI } from ".";
+import { StripeService } from "Routes/V1/Billing/stripe";
+import { CryptoService } from "Routes/V1/Crypto/cryptoService";
 
 type PipelineStep = {
     name: string;
@@ -56,17 +58,17 @@ interface AiChatLogContext {
     pipelineSteps?: PipelineStep[];
 }
 
-class UsageLimitChecker {
-    constructor(private logger: winston.Logger) {}
+type LimitResult = { canProceed: true } | { canProceed: false; error: string };
 
-    public async checkUserLimits(
-        userId: number,
-        modelId: string
-    ): Promise<{
-        canProceed: boolean;
-        error?: string;
-    }> {
-        const userPlan = await getCurrentUserPlan(userId);
+export class UsageLimitChecker {
+    constructor(
+        private logger: winston.Logger,
+        private stripeService: StripeService,
+        private cryptoService: CryptoService
+    ) {}
+
+    public async checkUserLimits(userId: number, modelId: string): Promise<LimitResult> {
+        const userPlan = await getCurrentUserPlan(userId, this.stripeService, this.cryptoService);
         const mLimits = await db
             .select()
             .from(modelLimits)
@@ -83,7 +85,7 @@ class UsageLimitChecker {
             return { canProceed: true };
         }
 
-        const modelUsage = await getCurrentModelLimits(userId);
+        const modelUsage = await getCurrentModelLimits(userId, this.stripeService, this.cryptoService);
         const currentModelUsage = modelUsage.find((m) => m.modelName === modelId);
 
         if (!currentModelUsage) {
@@ -104,11 +106,8 @@ class UsageLimitChecker {
         return { canProceed: true };
     }
 
-    public async checkImageGenerationLimits(userId: number): Promise<{
-        canProceed: boolean;
-        error?: string;
-    }> {
-        const modelUsage = await getCurrentModelLimits(userId);
+    public async checkImageGenerationLimits(userId: number): Promise<LimitResult> {
+        const modelUsage = await getCurrentModelLimits(userId, this.stripeService, this.cryptoService);
         const imageGenUsage = modelUsage.find((m) => m.modelName === "image-generation");
 
         if (!imageGenUsage?.isEnabled) {
@@ -119,27 +118,24 @@ class UsageLimitChecker {
             return { canProceed: true };
         }
 
-        if (imageGenUsage.dailyLimit && imageGenUsage.dailyUsage >= imageGenUsage.dailyLimit) {
+        if (
+            (imageGenUsage.dailyLimit && imageGenUsage.dailyUsage >= imageGenUsage.dailyLimit) ||
+            (imageGenUsage.weeklyLimit && imageGenUsage.weeklyUsage >= imageGenUsage.weeklyLimit)
+        ) {
             return { canProceed: false, error: "Image generation limit exceeded" };
         }
 
         return { canProceed: true };
     }
 
-    public async checkAudioGenerationLimits(
-        userId: number,
-        text: string
-    ): Promise<{
-        canProceed: boolean;
-        error?: string;
-    }> {
-        const modelUsage = await getAudioModelLimits(userId);
+    public async checkAudioGenerationLimits(userId: number, text: string): Promise<LimitResult> {
+        const modelUsage = await getAudioModelLimits(userId, this.stripeService, this.cryptoService);
 
         if (!modelUsage.limit) {
             return { canProceed: false, error: "Audio generation not available in your plan" };
         }
 
-        if (modelUsage.limit <= modelUsage.symbolsUsed) {
+        if (modelUsage.limit && modelUsage.limit <= modelUsage.symbolsUsed) {
             return { canProceed: false, error: "Audio generation limit exceeded" };
         }
 
@@ -188,10 +184,10 @@ export class ChatStreamHandler {
     private openai: OpenAI;
     private serpapi = new SerpApi();
     private encoder = getEncoding("cl100k_base");
-    private usageLimitChecker: UsageLimitChecker;
+    usageLimitChecker: UsageLimitChecker;
     private redis: Redis;
     private telegramService: TelegramService;
-    private logger: winston.Logger;
+    logger: winston.Logger;
 
     boardClients = new Map<string, WebSocket.WebSocket[]>();
 
@@ -218,12 +214,26 @@ export class ChatStreamHandler {
     // Track ongoing AI operations
     private activeOperations = new Map<string, AiChatLogContext>();
 
-    constructor(openai: OpenAI, logger: winston.Logger, redis: Redis, telegramService: TelegramService) {
+    constructor({
+        openai,
+        logger,
+        redis,
+        telegramService,
+        stripeService,
+        cryptoService,
+    }: {
+        openai: OpenAI;
+        logger: winston.Logger;
+        redis: Redis;
+        telegramService: TelegramService;
+        stripeService: StripeService;
+        cryptoService: CryptoService;
+    }) {
         this.openai = openai;
-        this.logger = logger;
-        this.usageLimitChecker = new UsageLimitChecker(logger);
+        this.usageLimitChecker = new UsageLimitChecker(logger, stripeService, cryptoService);
         this.redis = redis;
         this.telegramService = telegramService;
+        this.logger = logger;
     }
 
     private logOperationStart(context: AiChatLogContext) {
@@ -308,43 +318,41 @@ export class ChatStreamHandler {
         msg: AiChatMsg<StopGeneration>;
         boardId: string;
         ws: WebSocket;
-        logger: winston.Logger;
         itemId: string;
     }) {
-        const { boardId, ws, logger, msg, itemId } = options;
-        const foundedChat = await this.ensureChatExists(msg, logger);
+        const { boardId, ws, msg, itemId } = options;
+        const foundedChat = await this.ensureChatExists(msg);
 
         try {
-            logger.debug(`Attempting to stop conversation for item ${itemId}`);
+            this.logger.debug(`Attempting to stop conversation for item ${itemId}`);
 
             const itemStreamEntry = this.activeStreams.get(itemId);
-            logger.debug("ABORT STREAM:", { entry: itemStreamEntry });
+            this.logger.debug("ABORT STREAM:", { entry: itemStreamEntry });
 
             if (itemStreamEntry) {
-                logger.debug(`Aborting stream for item ${itemId}`);
+                this.logger.debug(`Aborting stream for item ${itemId}`);
                 itemStreamEntry.controller.abort();
 
                 this.activeStreams.delete(itemId);
 
-                logger.debug(`Stream for item ${itemId} successfully aborted`);
+                this.logger.debug(`Stream for item ${itemId} successfully aborted`);
             } else {
-                logger.debug(`No active stream found for item ${itemId}`);
+                this.logger.debug(`No active stream found for item ${itemId}`);
 
                 const pendingItemStreamEntry = this.pendingStreams.get(itemId);
                 if (!pendingItemStreamEntry) {
-                    logger.debug(`No active or pending stream found for item ${itemId}`);
+                    this.logger.debug(`No active or pending stream found for item ${itemId}`);
                     return;
                 }
                 this.pendingStreams.delete(itemId);
             }
 
-            const foundedChat = await this.ensureChatExists(msg, logger);
+            const foundedChat = await this.ensureChatExists(msg);
 
             await this.saveMessage({
                 chat: foundedChat,
                 role: MessageRole.SYSTEM,
                 content: "Conversation manually stopped by user",
-                logger,
                 model: "unsupported",
             });
             const stopChunk: AiChatMsg<ChatChunk> = {
@@ -360,7 +368,7 @@ export class ChatStreamHandler {
 
             ws.send(JSON.stringify(stopChunk));
         } catch (error) {
-            logger.error(`Error stopping conversation for item ${itemId}:`, error);
+            this.logger.error(`Error stopping conversation for item ${itemId}:`, error);
 
             this.sendErrorResponse(
                 foundedChat,
@@ -373,19 +381,8 @@ export class ChatStreamHandler {
         }
     }
 
-    public async handleGetMessageList({
-        msg,
-        logger,
-        boardClients,
-        ws,
-    }: {
-        msg: AiChatMsg<GetMessageList>;
-        logger: winston.Logger;
-        boardClients: Map<string, WebSocket.WebSocket[]>;
-        ws: WebSocket;
-    }) {
-        const verifiedChat = await this.ensureChatExists(msg, logger);
-        this.boardClients = boardClients;
+    public async handleGetMessageList({ msg, ws }: { msg: AiChatMsg<GetMessageList>; ws: WebSocket }) {
+        const verifiedChat = await this.ensureChatExists(msg);
 
         console.log("verifiedChat: ", verifiedChat);
         const messages = await db
@@ -409,10 +406,8 @@ export class ChatStreamHandler {
 
     public async handleGenerateImage(
         msg: AiChatMsg<GenerateImageEvent>,
-        boardClients: Map<string, WebSocket.WebSocket[]>,
         imageGenerator: ImageGenerator,
         ws: WebSocket,
-        logger: winston.Logger
     ) {
         const pipelineSteps: PipelineStep[] = [
             { name: "Initialize Image Generation", status: "pending" as const },
@@ -461,7 +456,7 @@ export class ChatStreamHandler {
             }
             pipelineSteps[1].status = "success";
 
-            const chat = await this.ensureChatExists(msg, logger);
+            const chat = await this.ensureChatExists(msg);
             pipelineSteps[2].status = "success";
 
             const baseOptions = {
@@ -499,7 +494,7 @@ export class ChatStreamHandler {
                     options = {
                         ...baseOptions,
                         model: msg.event.options.model,
-                        aspectRatio: msg.event.options?.aspect_ratio,
+                        aspectRatio: msg.event.options?.aspectRatio,
                     };
                     break;
                 }
@@ -531,11 +526,11 @@ export class ChatStreamHandler {
             }
             pipelineSteps[6].status = "success";
 
-            await this.saveMessage({
+            // todo implement this.saveImageMessage
+            await this.saveImageMessage({
                 chat,
                 role: MessageRole.ASSISTANT,
-                content: result.base64 || "",
-                logger,
+                imageUrl: "",
                 model: "image-generation",
             });
             pipelineSteps[7].status = "success";
@@ -580,14 +575,7 @@ export class ChatStreamHandler {
         }
     }
 
-    public async handleGenerateAudio(
-        msg: AiChatMsg<GenerateAudioEvent>,
-        boardClients: Map<string, WebSocket.WebSocket[]>,
-        ws: WebSocket,
-        logger: winston.Logger
-    ) {
-        this.boardClients = boardClients; // ?
-
+    public async handleGenerateAudio(msg: AiChatMsg<GenerateAudioEvent>, ws: WebSocket) {
         const boardOwnerId = await this.getBoardOwner(msg.boardId); // todo check requested user instead of board owner
         const audioLimits = await this.usageLimitChecker.checkAudioGenerationLimits(boardOwnerId, msg.event.text);
 
@@ -629,13 +617,12 @@ export class ChatStreamHandler {
             };
             const result = await generateAudio(options);
 
-            const chat = await this.ensureChatExists(msg, logger);
+            const chat = await this.ensureChatExists(msg);
 
             await this.saveAudioMessage({
                 chat,
                 role: MessageRole.ASSISTANT,
                 symbolsUsed: msg.event.text.length,
-                logger,
                 model: options.model,
             });
 
@@ -705,7 +692,7 @@ export class ChatStreamHandler {
         return 0;
     }
 
-    private async getContextMessages(msg: AiChatMsg<UserRequest>, logger: winston.Logger): Promise<Message[]> {
+    private async getContextMessages(msg: AiChatMsg<UserRequest>): Promise<Message[]> {
         if (!msg.event.contextRequest?.messageId) {
             return [];
         }
@@ -761,10 +748,8 @@ export class ChatStreamHandler {
     public async handleUserRequest(options: {
         msg: AiChatMsg<UserRequest>;
         ws: WebSocket;
-        logger: winston.Logger;
-        boardClients: Map<string, WebSocket.WebSocket[]>;
     }) {
-        const { msg, ws, logger, boardClients } = options;
+        const { msg, ws } = options;
         const controller = new AbortController();
         const pipelineSteps: PipelineStep[] = [
             { name: "Initialize Operation", status: "pending" as const },
@@ -818,7 +803,7 @@ export class ChatStreamHandler {
             }
             pipelineSteps[1].status = "success";
 
-            const chat = await this.ensureChatExists(msg, logger);
+            const chat = await this.ensureChatExists(msg);
             pipelineSteps[2].status = "success";
 
             const contextMessages: ChatCompletionMessageParam[] = [];
@@ -833,7 +818,6 @@ export class ChatStreamHandler {
                         chat,
                         role: MessageRole.SYSTEM,
                         content: getAdjustTextLengthPrompt(),
-                        logger,
                         model: msg.event.model || "gpt-4o-mini",
                     });
                     break;
@@ -846,7 +830,6 @@ export class ChatStreamHandler {
                         chat,
                         role: MessageRole.SYSTEM,
                         content: getAdjustReadingLevelPrompt(),
-                        logger,
                         model: msg.event.model || "gpt-4o-mini",
                     });
                     break;
@@ -859,7 +842,6 @@ export class ChatStreamHandler {
                         chat,
                         role: MessageRole.SYSTEM,
                         content: getEmojiPrompt(),
-                        logger,
                         model: msg.event.model || "gpt-4o-mini",
                     });
                     break;
@@ -872,19 +854,12 @@ export class ChatStreamHandler {
                         chat,
                         role: MessageRole.SYSTEM,
                         content: getChatSystemPrompt(),
-                        logger,
                         model: msg.event.model || "gpt-4o-mini",
                     });
                     break;
             }
             pipelineSteps[3].status = "success";
 
-            const simpleContextStrings = await this.getContextStrings(msg.event.context, logger);
-            const messagesInContext = await this.getContextMessages(msg, logger);
-            pipelineSteps[4].status = "success";
-
-            const contextStrings = messagesInContext.map((m) => JSON.stringify({ content: m.content, role: m.role }));
-            const boardContextStrings = msg.event.boardContext || [];
             let searchResult = "";
             // Keep the commented search code for future use
             // const searchQuery = await this.fetchQuery(msg.event.idea);
@@ -905,7 +880,15 @@ export class ChatStreamHandler {
             // }
             // logger.debug("search result: ", searchResult);
 
-            let userPrompt = getChatUserPrompt({
+            let userPrompt = "";
+            this.logger.debug("Fetching context strings, if any...");
+            const simpleContextStrings = await this.getContextStrings(msg.event.context);
+            const messagesInContext = await this.getContextMessages(msg);
+            pipelineSteps[4].status = "success";
+
+            const contextStrings = messagesInContext.map((m) => JSON.stringify({ content: m.content, role: m.role }));
+            const boardContextStrings = msg.event.boardContext || [];
+            userPrompt = getChatUserPrompt({
                 idea: msg.event.idea,
                 context:
                     contextStrings.length > 0
@@ -919,6 +902,7 @@ export class ChatStreamHandler {
             });
             pipelineSteps[5].status = "success";
 
+            this.logger.debug("user prompt: ", userPrompt);
             const inputArray: ChatCompletionContentPart[] = [
                 {
                     type: "text",
@@ -935,7 +919,7 @@ export class ChatStreamHandler {
                 }
             }
 
-            logger.debug("Input array: ", inputArray);
+            this.logger.debug("Input array: ", inputArray);
 
             contextMessages.push({
                 role: MessageRole.USER,
@@ -951,7 +935,6 @@ export class ChatStreamHandler {
                 chat,
                 role: MessageRole.USER,
                 content: msg.event.idea,
-                logger,
                 tokensUsed: tokens.length,
                 itemId: msg.event.requestItemId,
                 previousMessageId,
@@ -959,8 +942,8 @@ export class ChatStreamHandler {
             });
             pipelineSteps[6].status = "success";
 
-            logger.debug("Generating chat completion stream...");
-            logger.debug("Context messages: ", JSON.stringify(contextMessages));
+            this.logger.debug("Generating chat completion stream...");
+            this.logger.debug("Context messages: ", JSON.stringify(contextMessages));
 
             let streamPromise: Promise<
                 | (Stream<ChatCompletionChunk> & {
@@ -1008,18 +991,17 @@ export class ChatStreamHandler {
                 controller,
             });
             pipelineSteps[7].status = "success";
-            logger.debug(`Stream created for item: ${msg.event.itemId} `, {
+            this.logger.debug(`Stream created for item: ${msg.event.itemId} `, {
                 controller: this.activeStreams.get(msg.event.itemId)?.controller,
                 size: this.activeStreams.size,
             });
 
-            logger.debug("Handling stream chunks...");
+            this.logger.debug("Handling stream chunks...");
             ws.send("stream_created");
             this.handleStreamChunks({
                 stream,
                 ws,
                 chat,
-                logger,
                 boardId: msg.boardId,
                 controller,
                 userMessage,
@@ -1092,7 +1074,7 @@ export class ChatStreamHandler {
         return context.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
     }
 
-    private async getContextStrings(contextIds: string[], logger: winston.Logger): Promise<string[]> {
+    private async getContextStrings(contextIds: string[]): Promise<string[]> {
         const messages = await db
             .select()
             .from(message)
@@ -1134,14 +1116,14 @@ export class ChatStreamHandler {
         return messages.reverse();
     }
 
-    private async ensureChatExists(msg: AiChatMsg, logger: winston.Logger): Promise<Chat> {
-        logger.debug("Checking chat existence...", { boardId: msg.boardId });
+    async ensureChatExists(msg: AiChatMsg): Promise<Chat> {
+        this.logger.debug("Checking chat existence...", { boardId: msg.boardId });
 
         try {
             let [boardChat] = await db.select().from(chat).where(eq(chat.boardId, msg.boardId)).limit(1);
 
             if (!boardChat) {
-                logger.info("Chat not found, creating new one", { boardId: msg.boardId });
+                this.logger.info("Chat not found, creating new one", { boardId: msg.boardId });
                 const [newChat] = await db.insert(chat).values({ boardId: msg.boardId }).returning();
                 if (!newChat) {
                     throw new Error("Failed to create new chat");
@@ -1149,14 +1131,14 @@ export class ChatStreamHandler {
                 return newChat;
             }
 
-            logger.debug("Existing chat found", {
+            this.logger.debug("Existing chat found", {
                 boardId: msg.boardId,
                 chatId: boardChat.id,
             });
             return boardChat;
         } catch (error) {
             const errorMsg = `Failed to ensure chat exists for board ${msg.boardId}`;
-            logger.error(errorMsg, {
+            this.logger.error(errorMsg, {
                 error:
                     error instanceof Error
                         ? {
@@ -1174,7 +1156,6 @@ export class ChatStreamHandler {
         stream: Stream<ChatCompletionChunk>;
         ws: WebSocket;
         chat: Chat;
-        logger: winston.Logger;
         boardId: string;
         controller: AbortController;
         userMessage: Message;
@@ -1182,8 +1163,8 @@ export class ChatStreamHandler {
         msg: AiChatMsg<UserRequest>;
         context: AiChatLogContext;
     }) {
-        const { stream, ws, chat, msg, logger, boardId, controller, userMessage, itemId, context } = options;
-        logger.debug("Starting to handle stream chunks...");
+        const { stream, ws, chat, msg, boardId, controller, userMessage, itemId, context } = options;
+        this.logger.debug("Starting to handle stream chunks...");
         let assistantResponse = "";
         let usageMetadata: CompletionUsage | undefined;
         let isStopped = false;
@@ -1209,7 +1190,7 @@ export class ChatStreamHandler {
                     try {
                         if (controller.signal.aborted) {
                             isStopped = true;
-                            logger.debug(`Stream aborted for item ${itemId}`);
+                            this.logger.debug(`Stream aborted for item ${itemId}`);
                             this.logOperationEnd(itemId, "error", "Stream aborted by user");
                             return;
                         }
@@ -1222,7 +1203,7 @@ export class ChatStreamHandler {
                         const timeSinceLastChunk = now - lastChunkTime;
                         lastChunkTime = now;
 
-                        logger.debug("Stream chunk received", {
+                        this.logger.debug("Stream chunk received", {
                             itemId,
                             chunkNumber: chunkCount,
                             chunkSize: decodedChunk.length,
@@ -1231,7 +1212,7 @@ export class ChatStreamHandler {
 
                         if (parsedChunk.usage) {
                             usageMetadata = parsedChunk.usage;
-                            logger.debug("Updated usage metadata:", usageMetadata);
+                            this.logger.debug("Updated usage metadata:", usageMetadata);
                         }
 
                         const content = parsedChunk.choices?.[0]?.delta?.content;
@@ -1249,7 +1230,7 @@ export class ChatStreamHandler {
                                     itemId: itemId,
                                 },
                             };
-                            logger.debug("Sending chunk to client:", streamChunkMsg);
+                            this.logger.debug("Sending chunk to client:", streamChunkMsg);
                             ws.send(JSON.stringify(streamChunkMsg));
                             if (!isAnyChunkSent) {
                                 isAnyChunkSent = true;
@@ -1257,7 +1238,7 @@ export class ChatStreamHandler {
                         }
                     } catch (error) {
                         const errorMsg = `Error processing stream chunk: ${error}`;
-                        logger.error(errorMsg, { context });
+                        this.logger.error(errorMsg, { context });
                         this.logOperationEnd(itemId, "error", errorMsg);
 
                         this.sendErrorResponse(chat, ws, "Invalid chunk format", msg.boardId, msg.event.itemId, msg, {
@@ -1268,7 +1249,7 @@ export class ChatStreamHandler {
                 },
                 close: async () => {
                     if (!isStopped && !controller.signal.aborted && isAnyChunkSent) {
-                        logger.info("Stream completed successfully", {
+                        this.logger.info("Stream completed successfully", {
                             itemId,
                             totalChunks: chunkCount,
                             totalDuration: Date.now() - context.startTime,
@@ -1276,12 +1257,11 @@ export class ChatStreamHandler {
                         this.logOperationEnd(itemId, "success");
                         const encoder = getEncoding("cl100k_base");
                         const tokens = encoder.encode(assistantResponse);
-                        logger.debug("Stream closed. Finalizing response...");
+                        this.logger.debug("Stream closed. Finalizing response...");
                         this.finalizeStream({
                             ws,
                             chat,
                             assistantResponse,
-                            logger,
                             userMessage,
                             usageMetadata: {
                                 completion_tokens: tokens.length,
@@ -1295,7 +1275,6 @@ export class ChatStreamHandler {
                             chat,
                             role: MessageRole.SYSTEM,
                             content: "Conversation stopped by API",
-                            logger,
                             model: "system",
                         });
                         await this.reportToTelegramBot(
@@ -1311,7 +1290,6 @@ export class ChatStreamHandler {
                             chat,
                             role: MessageRole.SYSTEM,
                             content: "Conversation manually stopped by user",
-                            logger,
                             model: "system",
                         });
 
@@ -1322,7 +1300,7 @@ export class ChatStreamHandler {
                 },
                 abort: async (err) => {
                     const errorMsg = `Streaming error: ${err}`;
-                    logger.error(errorMsg, { context });
+                    this.logger.error(errorMsg, { context });
                     this.logOperationEnd(itemId, "error", errorMsg);
                     await this.reportToTelegramBot(errorMsg, { boardId: msg.boardId, msg });
 
@@ -1347,22 +1325,19 @@ export class ChatStreamHandler {
         ws: WebSocket;
         chat: Chat;
         assistantResponse: string;
-        logger: winston.Logger;
         userMessage: Message;
         itemId: string;
         requestItemId: string;
         usageMetadata?: Partial<CompletionUsage>;
         updatedFrom?: number | null;
     }) {
-        const { ws, chat, updatedFrom, assistantResponse, logger, userMessage, usageMetadata, itemId, requestItemId } =
-            options;
-        logger.debug("Finalizing stream response...");
+        const { ws, chat, updatedFrom, assistantResponse, userMessage, usageMetadata, itemId, requestItemId } = options;
+        this.logger.debug("Finalizing stream response...");
 
         const assistantMessage = await this.saveMessage({
             chat,
             role: MessageRole.ASSISTANT,
             content: assistantResponse,
-            logger,
             tokensUsed: usageMetadata?.completion_tokens,
             generatedFrom: userMessage.id,
             itemId: itemId,
@@ -1385,7 +1360,7 @@ export class ChatStreamHandler {
             },
         };
 
-        logger.debug("Sending end chunk to WebSocket:", endChunk);
+        this.logger.debug("Sending end chunk to WebSocket:", endChunk);
         ws.send(JSON.stringify(endChunk));
 
         if (chat && this.activeOperations.has(itemId)) {
@@ -1397,16 +1372,10 @@ export class ChatStreamHandler {
         }
     }
 
-    private async saveAudioMessage(options: {
-        chat: Chat;
-        role: MessageRole;
-        logger: winston.Logger;
-        symbolsUsed: number;
-        model: "tts-1-hd";
-    }) {
-        const { chat, role, logger, model, symbolsUsed } = options;
+    async saveAudioMessage(options: { chat: Chat; role: MessageRole; symbolsUsed: number; model: "tts-1-hd" }) {
+        const { chat, role, model, symbolsUsed } = options;
 
-        logger.debug("Saving audio message to database:", {
+        this.logger.debug("Saving audio message to database:", {
             chatId: chat.id,
             role,
         });
@@ -1421,16 +1390,37 @@ export class ChatStreamHandler {
             })
             .returning();
 
-        logger.debug("Inserted new audio message:", { savedMessage });
+        this.logger.debug("Inserted new audio message:", { savedMessage });
 
         return savedMessage;
     }
 
-    private async saveMessage(options: {
+    async saveImageMessage(options: { chat: Chat; role: MessageRole; imageUrl: string; model: "image-generation" }) {
+        const { chat, role, model } = options;
+
+        const status = MessageStatus.DONE;
+        this.logger.debug("Saving image message to database:", {
+            chatId: chat.id,
+            role,
+        });
+
+        const [savedMessage] = await db
+            .insert(message)
+            .values({
+                chatId: chat.id,
+                role,
+                status,
+                model,
+            })
+            .returning();
+
+        return savedMessage;
+    }
+
+    async saveMessage(options: {
         chat: Chat;
         role: MessageRole;
         content: string;
-        logger: winston.Logger;
         status?: MessageStatus;
         tokensUsed?: number;
         updatedFrom?: number | null;
@@ -1443,7 +1433,6 @@ export class ChatStreamHandler {
             chat,
             role,
             content,
-            logger,
             status = MessageStatus.DONE,
             updatedFrom,
             generatedFrom,
@@ -1467,7 +1456,7 @@ export class ChatStreamHandler {
             contentLength: content.length,
         };
 
-        logger.debug("Saving message to database:", messageContext);
+        this.logger.debug("Saving message to database:", messageContext);
 
         try {
             let savedMessage;
@@ -1487,7 +1476,7 @@ export class ChatStreamHandler {
                     .where(eq(message.id, updatedFrom))
                     .returning();
 
-                logger.debug("Updated existing message:", {
+                this.logger.debug("Updated existing message:", {
                     messageId: savedMessage.id,
                     ...messageContext,
                 });
@@ -1508,7 +1497,7 @@ export class ChatStreamHandler {
                     })
                     .returning();
 
-                logger.debug("Inserted new message:", {
+                this.logger.debug("Inserted new message:", {
                     messageId: savedMessage.id,
                     ...messageContext,
                 });
@@ -1521,7 +1510,7 @@ export class ChatStreamHandler {
             return savedMessage;
         } catch (error) {
             const errorMsg = `Failed to save message for chat ${chat.id}`;
-            logger.error(errorMsg, {
+            this.logger.error(errorMsg, {
                 error:
                     error instanceof Error
                         ? {

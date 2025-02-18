@@ -1,15 +1,13 @@
 import express from "express";
 import winston from "winston";
-import { createCryptoService } from "./cryptoService";
+import { createCryptoService, CryptoService } from "./cryptoService";
 import { jwtMiddleware, validateBody } from "Middlewares";
 import { body } from "express-validator";
 import { Redis } from "Redis";
 import { cancelCheckoutSchema, confirmCheckoutSchema, createCheckoutSchema } from "./crypto-checkout-schema";
 
-export const getCryptoRouter = (redis: Redis, logger: winston.Logger): express.Router => {
+export const getCryptoRouter = (cryptoService: CryptoService, redis: Redis, logger: winston.Logger): express.Router => {
     const router = express.Router();
-
-    const cryptoService = createCryptoService(redis, logger);
 
     router
         .route("/crypto/checkout")

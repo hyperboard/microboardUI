@@ -25,26 +25,33 @@ import { catchAsync } from "shared/lib/catchAsync";
 import { getLoggerLevel } from "shared/lib/logger";
 import Stripe from "stripe";
 import { client } from "trigger";
-import { createImageGenerator } from "WebSocket/image-generator";
+import { createImageGenerator } from "ai/openai/image-generator";
 import winston from "winston";
 import { WebSocketServer } from "ws";
 import { nocache } from "./nocache";
 import { getV1Router } from "./Routes";
 import { Auth } from "./Routes/V1/Auth";
-import { createStripeService } from "./Routes/V1/Billing/stripe";
+import { createStripeService, StripeService } from "./Routes/V1/Billing/stripe";
 import { Templates } from "./Routes/V1/Templates";
 import { Users } from "./Routes/V1/Users";
 import { Config } from "./shared/config/config";
 import { Mailer } from "./shared/modules/mailer/mailer";
-import { withWebSocketApi } from "./WebSocket";
+import { WebSocketType, withWebSocketApi } from "./WebSocket";
 import { HttpException } from "shared/exceptions/http-exception";
 import { HttpStatus } from "shared/enums/http-status.enum";
 import { TelegramService } from "services/TelegramService";
 import { language } from "Middlewares/language.middleware";
 import { DevelopersService } from "Routes/V1/Developers/Service";
 import { GoogleOAuth } from "Routes/V1/Auth/GoogleOAuth";
+import { createCryptoService } from "Routes/V1/Crypto";
+import { CryptoService } from "Routes/V1/Crypto/cryptoService";
 
-export async function getApp(): Promise<http.Server> {
+export async function getApp(): Promise<{
+    server: http.Server;
+    webSocket: WebSocketType;
+    stripeService: StripeService;
+    cryptoService: CryptoService;
+}> {
     const app = express();
 
     await createVectorExtension(pool).catch(console.error);
@@ -102,6 +109,7 @@ export async function getApp(): Promise<http.Server> {
 
     const redis = await getRedis(logger);
     const stripeService = await createStripeService(stripe, redis);
+    const cryptoService = createCryptoService(redis, logger);
     app.post(
         "/api/v1/billing/webhook",
         express.raw({ type: "application/json" }),
@@ -183,7 +191,7 @@ export async function getApp(): Promise<http.Server> {
     });
     await telegramService.start();
 
-    withWebSocketApi({
+    const webSocket = withWebSocketApi({
         wss,
         accessKeysService,
         logger,
@@ -193,6 +201,8 @@ export async function getApp(): Promise<http.Server> {
         imageGenerator,
         telegramService,
         developersService,
+        stripeService,
+        cryptoService,
     });
     const media = createMinioMediaDAL(logger);
     const users = new Users(media, logger);
@@ -222,6 +232,7 @@ export async function getApp(): Promise<http.Server> {
         ai,
         openai,
         stripeService,
+        cryptoService,
         developersService,
         accessKeysService,
         boardsService,
@@ -261,5 +272,5 @@ export async function getApp(): Promise<http.Server> {
     process.on("unhandledRejection", onError);
     process.on("uncaughtException", onError);
 
-    return server;
+    return { server, webSocket, cryptoService, stripeService };
 }
