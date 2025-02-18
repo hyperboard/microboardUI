@@ -1,1 +1,0 @@
-export { SliderPicker } from "./SliderPicker";

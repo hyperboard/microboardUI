@@ -1,4 +1,0 @@
-.button:active:not([disabled]) {
-	background-color: rgba(0, 0, 0, 0.08);
-	color: rgba(0, 0, 0, 0.8);
-}
