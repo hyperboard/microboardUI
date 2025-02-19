@@ -29,7 +29,6 @@ import { ShareModal } from "View/ShareModal";
 import { SidePanelsContainer } from "View/SidePanelsContainer";
 import { TextEditors } from "View/TextEditor/TextEditor";
 import { ToastProvider } from "View/ToastProvider";
-import { UiLoader } from "View/Ui/UiLoader";
 import { UiModalBackground } from "View/Ui/UiModal";
 import { UserPanelLayout } from "View/UserPanel/UserPanel";
 import { UserPlanModal } from "View/UserPlan";
@@ -168,7 +167,6 @@ export function AppView(): JSX.Element {
 						mode={["edit", "view"]}
 						fallback={
 							<div className={style.loaderWrapper}>
-								{/* <UiLoader size={50} /> */}
 								<UIMainLoader />
 							</div>
 						}
