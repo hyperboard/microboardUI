@@ -87,6 +87,16 @@ export function withWebSocketApi({
         });
     });
 
+    developersService.setBroadcastEventFunction((boardUUID: string, eventData: any) => {
+        const clients = boardClients.get(boardUUID) ?? [];
+        sendWsMsg(clients, {
+            type: "BoardEvent",
+            boardId: boardUUID,
+            event: { body: eventData, order: eventData.order },
+            sequenceNumber: 1, // FIXME: API events don't need sequence numbers
+        });
+    });
+
     wss.on("connection", (ws) => {
         if (CURRENT_VERSION) {
             ws.send(JSON.stringify({ type: "VersionCheck", version: CURRENT_VERSION }));

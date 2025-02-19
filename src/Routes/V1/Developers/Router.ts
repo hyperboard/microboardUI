@@ -163,6 +163,43 @@ export function getDevelopersRouter(developersService: DevelopersService, redis:
         createItemEndpoint("Drawing" as const)
     );
 
+    router.post(
+        `${routeBase}/boards/:boardId/images`,
+        param("boardId").isString().notEmpty(),
+        body().isObject().notEmpty(),
+        createItemEndpoint("Image" as const)
+    );
+
+    router.post(
+        `${routeBase}/boards/:boardId/events`,
+        param("boardId").isString().notEmpty(),
+        body("events").isArray(),
+        catchAsync(async (req: Request, res: Response) => {
+            console.log("EVENTS: ", req.body);
+            const { boardId } = req.params;
+            const { events } = req.body;
+
+            if (
+                !Array.isArray(events) ||
+                !events.every(
+                    (event) =>
+                        event.userId &&
+                        event.boardId &&
+                        event.operation &&
+                        typeof event.operation === "object" &&
+                        event.operation.class &&
+                        event.operation.method
+                )
+            ) {
+                console.log("INVALID EVENTS FORMAT");
+                throw new HttpException(HttpStatus.BAD_REQUEST, "Invalid events format");
+            }
+
+            await developersService.saveBoardEvents(boardId, events);
+            res.status(HttpStatus.NO_CONTENT).send();
+        })
+    );
+
     // Update endpoints for each item type
     const updateItemEndpoint = <T extends UpdateItemRequest>(
         itemType: "Shape" | "Sticker" | "RichText" | "Frame" | "Drawing"

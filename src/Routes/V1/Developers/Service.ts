@@ -28,6 +28,8 @@ import {
     isShapeType,
     isFrameType,
     isBorderStyle,
+    ImageItem,
+    UpdateShapeRequest,
 } from "./types";
 import { HttpStatus } from "shared/enums/http-status.enum";
 import { HttpException } from "shared/exceptions/http-exception";
@@ -39,7 +41,7 @@ config();
 export const ENCRYPTION_KEY = crypto.scryptSync(process.env.API_KEY_ENCRYPTION_KEY || "your-secret-key", "salt", 32);
 export const ENCRYPTION_IV_LENGTH = 16;
 
-export type BoardItemType = "Shape" | "Sticker" | "RichText" | "Frame" | "Drawing";
+export type BoardItemType = "Shape" | "Sticker" | "RichText" | "Frame" | "Drawing" | "Image";
 
 export interface BoardItem {
     id: string;
@@ -59,6 +61,24 @@ export interface BoardItem {
     strokeStyle?: string;
     strokeWidth?: number;
     order?: number;
+}
+
+interface RawEvent {
+    userId: number;
+    boardId: string;
+    operation: {
+        class: string;
+        items?: Record<string, any>;
+        method: string;
+        timeStamp: number;
+    };
+    operations?: Array<{
+        class: string;
+        items?: Record<string, any>;
+        method: string;
+        actualId?: string;
+        timeStamp: number;
+    }>;
 }
 
 export class DevelopersService {
@@ -301,7 +321,7 @@ export class DevelopersService {
             verticalAlignment: "center",
         };
 
-        const item: Omit<BoardItem, "id" | "order"> = {
+        const item = {
             itemType: request.type,
             transformation: {
                 rotate: request.transformation?.rotate ?? 0,
@@ -310,20 +330,65 @@ export class DevelopersService {
                 translateX: request.transformation?.translateX ?? 0,
                 translateY: request.transformation?.translateY ?? 0,
             },
-            text: request.text ?? defaultText,
-            shapeType: request.shapeType,
-            borderColor: request.borderColor,
-            borderStyle: request.borderStyle,
-            borderWidth: request.borderWidth,
-            borderOpacity: request.borderOpacity,
-            backgroundColor: request.backgroundColor,
-            backgroundOpacity: request.backgroundOpacity,
-            canChangeRatio: request.canChangeRatio,
-            children: request.children,
-            points: request.points,
-            strokeStyle: request.strokeStyle,
-            strokeWidth: request.strokeWidth,
-        };
+        } as Omit<BoardItem, "id" | "order">;
+
+        switch (request.type) {
+            case "Shape":
+                Object.assign(item, {
+                    text: request.text ?? defaultText,
+                    shapeType: request.shapeType,
+                    borderColor: request.borderColor,
+                    borderStyle: request.borderStyle,
+                    borderWidth: request.borderWidth,
+                    borderOpacity: request.borderOpacity,
+                    backgroundColor: request.backgroundColor,
+                    backgroundOpacity: request.backgroundOpacity,
+                });
+                break;
+            case "Sticker":
+                Object.assign(item, {
+                    text: request.text ?? defaultText,
+                    backgroundColor: request.backgroundColor,
+                });
+                break;
+            case "RichText":
+                Object.assign(item, {
+                    children: request.text.children,
+                    insideOf: "RichText",
+                    realSize: request.text.realSize ?? 14,
+                    placeholderText: request.text.placeholderText ?? " ",
+                    containerMaxWidth: request.containerMaxWidth,
+                    verticalAlignment: request.verticalAlignment ?? "center",
+                });
+                break;
+            case "Frame":
+                Object.assign(item, {
+                    text: request.text ?? defaultText,
+                    children: request.children ?? [],
+                    shapeType: request.shapeType,
+                    borderColor: request.borderColor,
+                    borderStyle: request.borderStyle,
+                    borderWidth: request.borderWidth,
+                    borderOpacity: request.borderOpacity,
+                    backgroundColor: request.backgroundColor,
+                    backgroundOpacity: request.backgroundOpacity,
+                    canChangeRatio: request.canChangeRatio,
+                });
+                break;
+            case "Drawing":
+                Object.assign(item, {
+                    points: request.points,
+                    strokeStyle: request.strokeStyle,
+                    strokeWidth: request.strokeWidth,
+                });
+                break;
+            case "Image":
+                Object.assign(item, {
+                    storageLink: request.storageLink,
+                    imageDimension: request.imageDimension,
+                });
+                break;
+        }
 
         const order = await this.getAndIncrementOrder(boardUuid);
         const newItem = await this._createBoardItem(boardId, boardUUID, item, order);
@@ -355,7 +420,7 @@ export class DevelopersService {
 
         let operation: CreateOperation;
         switch (item.itemType) {
-            case "Shape": {
+            case "Shape":
                 const defaultShapeType = ShapeTypes[0];
                 const shapeType = item.shapeType && isShapeType(item.shapeType) ? item.shapeType : defaultShapeType;
                 operation = {
@@ -366,7 +431,6 @@ export class DevelopersService {
                     height: item.transformation.scaleY * 100,
                 } as const;
                 break;
-            }
             case "Sticker":
                 operation = {
                     itemType: "Sticker",
@@ -399,6 +463,21 @@ export class DevelopersService {
                     lineWidth: item.strokeWidth || 1,
                     lineOpacity: 1,
                 } as const;
+                break;
+            case "Image":
+                if ("storageLink" in item && "imageDimension" in item) {
+                    operation = {
+                        itemType: "Image",
+                        storageLink: (item as ImageItem).storageLink,
+                        imageDimension: (item as ImageItem).imageDimension,
+                        position: {
+                            x: item.transformation.translateX,
+                            y: item.transformation.translateY,
+                        },
+                    } as const;
+                } else {
+                    throw new Error("Missing required Image properties");
+                }
                 break;
             default:
                 throw new Error(`Unsupported item type: ${item.itemType}`);
@@ -450,20 +529,18 @@ export class DevelopersService {
         const itemType = existingItem.itemType;
         switch (itemType) {
             case "Shape": {
-                if (operation.shapeType && isShapeType(operation.shapeType)) {
+                const shapeOp = operation as UpdateShapeRequest;
+                if (shapeOp.shapeType && isShapeType(shapeOp.shapeType)) {
                     updateOperation = {
                         itemType: "Shape",
                         method: "setShapeType",
-                        // @ts-ignore
-                        shapeType: operation.shapeType as ShapeType,
-                        backgroundColor: operation.backgroundColor || "",
-                        backgroundOpacity: operation.backgroundOpacity ?? 1,
-                        borderColor: operation.borderColor || "",
-                        borderStyle: isBorderStyle(operation.borderStyle) ? operation.borderStyle : BorderStyles[0],
-                        borderWidth: operation.borderWidth,
+                        shapeType: shapeOp.shapeType,
+                        backgroundColor: shapeOp.backgroundColor || "",
+                        backgroundOpacity: shapeOp.backgroundOpacity ?? 1,
+                        borderColor: shapeOp.borderColor || "",
+                        borderStyle: isBorderStyle(shapeOp.borderStyle) ? shapeOp.borderStyle : BorderStyles[0],
+                        borderWidth: shapeOp.borderWidth,
                     };
-                } else {
-                    throw new Error("Invalid shape type");
                 }
                 break;
             }
@@ -508,6 +585,14 @@ export class DevelopersService {
                             text: operation.text?.children[0]?.children[0]?.text || "",
                         },
                     ],
+                };
+                break;
+            case "Image":
+                updateOperation = {
+                    itemType: "Image",
+                    method: "update",
+                    storageLink: operation.storageLink,
+                    imageDimension: operation.imageDimension,
                 };
                 break;
             default:
@@ -623,20 +708,66 @@ export class DevelopersService {
                             translateX: op.data.transformation?.translateX ?? 0,
                             translateY: op.data.transformation?.translateY ?? 0,
                         },
-                        text: op.data.text,
-                        shapeType: op.data.shapeType,
-                        borderColor: op.data.borderColor,
-                        borderStyle: op.data.borderStyle,
-                        borderWidth: op.data.borderWidth,
-                        borderOpacity: op.data.borderOpacity,
-                        backgroundColor: op.data.backgroundColor,
-                        backgroundOpacity: op.data.backgroundOpacity,
-                        canChangeRatio: op.data.canChangeRatio,
-                        children: op.data.children,
-                        points: op.data.points,
-                        strokeStyle: op.data.strokeStyle,
-                        strokeWidth: op.data.strokeWidth,
                     };
+
+                    // Add type-specific properties
+                    switch (op.data.type) {
+                        case "Shape":
+                            Object.assign(item, {
+                                text: op.data.text ?? defaultText,
+                                shapeType: op.data.shapeType,
+                                borderColor: op.data.borderColor,
+                                borderStyle: op.data.borderStyle,
+                                borderWidth: op.data.borderWidth,
+                                borderOpacity: op.data.borderOpacity,
+                                backgroundColor: op.data.backgroundColor,
+                                backgroundOpacity: op.data.backgroundOpacity,
+                            });
+                            break;
+                        case "Sticker":
+                            Object.assign(item, {
+                                text: op.data.text ?? defaultText,
+                                backgroundColor: op.data.backgroundColor,
+                            });
+                            break;
+                        case "RichText":
+                            Object.assign(item, {
+                                children: op.data.text.children,
+                                insideOf: "RichText",
+                                realSize: op.data.text.realSize ?? 14,
+                                placeholderText: op.data.text.placeholderText ?? " ",
+                                containerMaxWidth: op.data.containerMaxWidth,
+                                verticalAlignment: op.data.verticalAlignment ?? "center",
+                            });
+                            break;
+                        case "Frame":
+                            Object.assign(item, {
+                                text: op.data.text ?? defaultText,
+                                children: op.data.children ?? [],
+                                shapeType: op.data.shapeType,
+                                borderColor: op.data.borderColor,
+                                borderStyle: op.data.borderStyle,
+                                borderWidth: op.data.borderWidth,
+                                borderOpacity: op.data.borderOpacity,
+                                backgroundColor: op.data.backgroundColor,
+                                backgroundOpacity: op.data.backgroundOpacity,
+                                canChangeRatio: op.data.canChangeRatio,
+                            });
+                            break;
+                        case "Drawing":
+                            Object.assign(item, {
+                                points: op.data.points,
+                                strokeStyle: op.data.strokeStyle,
+                                strokeWidth: op.data.strokeWidth,
+                            });
+                            break;
+                        case "Image":
+                            Object.assign(item, {
+                                storageLink: op.data.storageLink,
+                                imageDimension: op.data.imageDimension,
+                            });
+                            break;
+                    }
                     await this._createBoardItem(boardId, boardUUID, item, order);
                     break;
                 case "update":
@@ -652,22 +783,20 @@ export class DevelopersService {
                     const itemType = existingItem.itemType;
                     switch (itemType) {
                         case "Shape": {
-                            if (op.data.shapeType && isShapeType(op.data.shapeType)) {
+                            const shapeOp = op.data as UpdateShapeRequest;
+                            if (shapeOp.shapeType && isShapeType(shapeOp.shapeType)) {
                                 updateOperation = {
                                     itemType: "Shape",
                                     method: "setShapeType",
-                                    // @ts-ignore
-                                    shapeType: op.data.shapeType as ShapeType,
-                                    backgroundColor: op.data.backgroundColor || "",
-                                    backgroundOpacity: op.data.backgroundOpacity ?? 1,
-                                    borderColor: op.data.borderColor || "",
-                                    borderStyle: isBorderStyle(op.data.borderStyle)
-                                        ? op.data.borderStyle
+                                    shapeType: shapeOp.shapeType,
+                                    backgroundColor: shapeOp.backgroundColor || "",
+                                    backgroundOpacity: shapeOp.backgroundOpacity ?? 1,
+                                    borderColor: shapeOp.borderColor || "",
+                                    borderStyle: isBorderStyle(shapeOp.borderStyle)
+                                        ? shapeOp.borderStyle
                                         : BorderStyles[0],
-                                    borderWidth: op.data.borderWidth,
+                                    borderWidth: shapeOp.borderWidth,
                                 };
-                            } else {
-                                throw new Error("Invalid shape type");
                             }
                             break;
                         }
@@ -712,6 +841,14 @@ export class DevelopersService {
                                         text: op.data.text?.children[0]?.children[0]?.text || "",
                                     },
                                 ],
+                            };
+                            break;
+                        case "Image":
+                            updateOperation = {
+                                itemType: "Image",
+                                method: "update",
+                                storageLink: op.data.storageLink,
+                                imageDimension: op.data.imageDimension,
                             };
                             break;
                         default:
@@ -772,5 +909,38 @@ export class DevelopersService {
 
     async handleBoardSnapshot(boardId: string): Promise<void> {
         await this.invalidateBoardCache(boardId);
+    }
+
+    async saveBoardEvents(boardId: string, events: RawEvent[]): Promise<void> {
+        console.log("SAVING EVENTS: ", events);
+        const boardIntId = await this.getBoardId(boardId);
+
+        for (const event of events) {
+            console.log("SAVING EVENT: ", event);
+            const order = await this.getAndIncrementOrder(boardId);
+
+            const eventId = `${event.userId}:${order}`;
+
+            const eventBody = {
+                order,
+                userId: event.userId,
+                boardId: event.boardId,
+                eventId,
+                operation: event.operation,
+                operations: event.operations || [],
+                lastKnownOrder: order - 1,
+            };
+
+            await db.insert(boardEvents).values({
+                boardId: boardIntId,
+                logId: order,
+                eventId: eventId,
+                eventBody,
+            });
+
+            await this.redis.client.set(this.BOARD_LAST_ORDER_KEY + boardId, order.toString());
+
+            this.broadcastBoardEvent(boardId, event.operation);
+        }
     }
 }

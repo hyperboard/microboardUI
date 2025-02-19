@@ -153,7 +153,16 @@ export interface RichTextItem extends BaseItem {
     verticalAlignment: "center";
 }
 
-export type BoardItem = ShapeItem | StickerItem | FrameItem | DrawingItem | RichTextItem;
+export interface ImageItem extends BaseItem {
+    itemType: "Image";
+    storageLink: string;
+    imageDimension: {
+        width: number;
+        height: number;
+    };
+}
+
+export type BoardItem = ShapeItem | StickerItem | FrameItem | DrawingItem | RichTextItem | ImageItem;
 
 // Create Request Interfaces
 export interface CreateShapeRequest {
@@ -202,6 +211,15 @@ export interface CreateDrawingRequest {
     strokeWidth?: number;
 }
 
+export interface CreateImageRequest {
+    transformation?: Transformation;
+    storageLink: string;
+    imageDimension: {
+        width: number;
+        height: number;
+    };
+}
+
 // Update Request Interfaces
 export interface UpdateShapeRequest {
     shapeType?: ShapeType;
@@ -244,20 +262,30 @@ export interface UpdateDrawingRequest {
     strokeWidth?: number;
 }
 
+export interface UpdateImageRequest {
+    storageLink?: string;
+    imageDimension?: {
+        width: number;
+        height: number;
+    };
+}
+
 // Update the CreateItemRequest and UpdateItemRequest to use the new interfaces
 export type CreateItemRequest =
     | ({ type: "Shape" } & CreateShapeRequest)
     | ({ type: "Sticker" } & CreateStickerRequest)
     | ({ type: "RichText" } & CreateRichTextRequest)
     | ({ type: "Frame" } & CreateFrameRequest)
-    | ({ type: "Drawing" } & CreateDrawingRequest);
+    | ({ type: "Drawing" } & CreateDrawingRequest)
+    | ({ type: "Image" } & CreateImageRequest);
 
 export type UpdateItemRequest =
     | UpdateShapeRequest
     | UpdateStickerRequest
     | UpdateRichTextRequest
     | UpdateFrameRequest
-    | UpdateDrawingRequest;
+    | UpdateDrawingRequest
+    | UpdateImageRequest;
 
 export interface BatchOperationRequest {
     operations: Array<{

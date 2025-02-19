@@ -75,9 +75,11 @@ export type CreateOperation =
       }
     | {
           itemType: "Image";
-          url: string;
-          width?: number;
-          height?: number;
+          storageLink: string;
+          imageDimension: {
+              width: number;
+              height: number;
+          };
           position?: {
               x?: number;
               y?: number;
@@ -415,20 +417,9 @@ function transformImageOperation(baseEvent: any, operation: Extract<CreateOperat
     const data: ImageData = {
         itemType: operation.itemType,
         transformation: baseEvent.operation.data.transformation,
-        storageLink: operation.url,
+        storageLink: operation.storageLink,
+        imageDimension: operation.imageDimension,
     };
-
-    if (operation.width && operation.height) {
-        data.imageDimension = {
-            width: operation.width,
-            height: operation.height,
-        };
-        data.transformation = {
-            ...data.transformation,
-            scaleX: 1,
-            scaleY: 1,
-        };
-    }
 
     return {
         ...baseEvent,
