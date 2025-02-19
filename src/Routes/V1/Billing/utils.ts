@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { db } from "drizzle/db";
 import { boardOwner, boards, chat, message } from "drizzle/entities";
 import { aiModels, modelLimits, plans, userPlans, userStorageUsage } from "drizzle/entities/plans";
-import { PLANS } from "drizzle/scripts/plans";
+import { PLAN_MODEL_LIMITS, PLANS } from "drizzle/scripts/plans";
 import { CryptoService } from "../Crypto/cryptoService";
 import { StripeService } from "./stripe";
 
@@ -140,6 +140,8 @@ export async function getAudioModelLimits(
     const modelId = "tts-1-hd";
     const userPlan = await getCurrentUserPlan(userId, stripeService, cryptoService);
     const planLimit = PLANS.find((plan) => plan.id === userPlan.planId)?.textToSpeech;
+    const isEnabled =
+        PLAN_MODEL_LIMITS.find((limit) => limit.id === `${userPlan.planId}-${modelId}`)?.isEnabled ?? false;
     const model = await db
         .select({
             modelId: aiModels.id,
@@ -148,7 +150,6 @@ export async function getAudioModelLimits(
             isDefault: aiModels.isDefault,
             dailyLimit: modelLimits.dailyRequestLimit,
             weeklyLimit: modelLimits.weeklyRequestLimit,
-            isEnabled: modelLimits.isEnabled,
         })
         .from(aiModels)
         .leftJoin(modelLimits, eq(modelLimits.id, aiModels.id))
@@ -173,6 +174,7 @@ export async function getAudioModelLimits(
 
     return {
         ...model[0],
+        isEnabled,
         monthlyUsage: {
             limit: planLimit,
             used: totalSymbolsUsed[0].totalSymbols,

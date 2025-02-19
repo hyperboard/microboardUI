@@ -131,11 +131,11 @@ export class UsageLimitChecker {
     public async checkAudioGenerationLimits(userId: number, text: string): Promise<LimitResult> {
         const modelUsage = await getAudioModelLimits(userId, this.stripeService, this.cryptoService);
 
-        if (!modelUsage.limit) {
+        if (!modelUsage.monthlyUsage.limit) {
             return { canProceed: false, error: "Audio generation not available in your plan" };
         }
 
-        if (modelUsage.limit && modelUsage.limit <= modelUsage.symbolsUsed) {
+        if (modelUsage.monthlyUsage.limit && modelUsage.monthlyUsage.limit <= modelUsage.monthlyUsage.used) {
             return { canProceed: false, error: "Audio generation limit exceeded" };
         }
 
@@ -163,8 +163,6 @@ class SerpApi {
             q: query,
             location: "Moscow",
         });
-
-        console.log(response);
 
         result["answer_box"] = response?.answer_box?.snippet;
 
