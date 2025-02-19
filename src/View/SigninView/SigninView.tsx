@@ -197,8 +197,10 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 				<OuterLink
 					href={
 						i18n.language === "ru"
-							? "https://microboard.ru/terms"
-							: "https://microboard.io/terms"
+							? window.location.origin +
+								"/pdf/terms_conditions_ru.pdf"
+							: window.location.origin +
+								"/pdf/terms_conditions_en.pdf"
 					}
 					className={styles.policyLink}
 				>
@@ -208,8 +210,10 @@ export const SigninView: React.FC<Props> = ({ app }): React.ReactElement => {
 				<OuterLink
 					href={
 						i18n.language === "ru"
-							? "https://microboard.ru/personal"
-							: "https://microboard.io/privacy-policy"
+							? window.location.origin +
+								"/pdf/privacy_policy_ru.pdf"
+							: window.location.origin +
+								"/pdf/privacy_policy_en.pdf"
 					}
 					className={styles.policyLink}
 				>

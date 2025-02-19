@@ -15,6 +15,7 @@ import { Checkbox } from "View/Ui/Checkbox";
 import { WalletLoginButton } from "View/WalletLoginButton";
 import { GoogleAuthBtn } from "View/GoogleAuthBtn/GoogleAuthBtn";
 import { LoginWith } from "View/LoginWith/LoginWith";
+import i18n from "Lang";
 
 export const SignupView = (): React.ReactElement => {
 	const { t } = useTranslation();
@@ -264,14 +265,26 @@ export const SignupView = (): React.ReactElement => {
 			<div className={styles.policy}>
 				{t("auth.policyWith")}{" "}
 				<OuterLink
-					href={"https://microboard.io/terms"}
+					href={
+						i18n.language === "ru"
+							? window.location.origin +
+								"/pdf/terms_conditions_ru.pdf"
+							: window.location.origin +
+								"/pdf/terms_conditions_en.pdf"
+					}
 					className={styles.policyLink}
 				>
 					{t("auth.termsAndConditions")}
 				</OuterLink>{" "}
 				{t("common.and")}{" "}
 				<OuterLink
-					href={"https://microboard.io/privacy-policy"}
+					href={
+						i18n.language === "ru"
+							? window.location.origin +
+								"/pdf/privacy_policy_ru.pdf"
+							: window.location.origin +
+								"/pdf/privacy_policy_en.pdf"
+					}
 					className={styles.policyLink}
 				>
 					{t("auth.privacyPolicy")}
