@@ -130,7 +130,6 @@ export class Account {
 			if (billingInfo) {
 				this.billingInfo = billingInfo;
 				this.setIsAnnualPayment(billingInfo.plan.isAnnual ?? false);
-				console.log(this.getIsAnnualPayment());
 			}
 
 			await this.fetchBillingHistory();

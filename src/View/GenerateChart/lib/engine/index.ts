@@ -68,7 +68,6 @@ export class LayoutEngine {
 		endId: number;
 		label?: string;
 	}): Connector {
-		console.log("Transform connector: ", options);
 		const startItem: Item = this.itemsById.get(options.startId);
 		const endItem: Item = this.itemsById.get(options.endId);
 		const { left: startItemX, top: startItemY } = startItem
@@ -329,7 +328,6 @@ export class LayoutEngine {
 					queue.push({ nodeId: childId, row: row + 1 });
 				}
 			}
-			console.log("Node layouts: ", this.nodeLayouts);
 		}
 
 		const lastRow = this.rows.length;

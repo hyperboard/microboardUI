@@ -1094,8 +1094,6 @@ export const useCopyBoardItems = (
 			.filter(item => item.type === MiroBoardItemTypes.IMAGE)
 			.forEach(item => addImagePlaceholder(item));
 
-		console.log("miroBoardItems", miroBoardItems);
-
 		for (const [index, item] of miroBoardItems.entries()) {
 			const type = item.type as MiroItemsTypes;
 			setModalData?.(Math.floor((index / miroBoardItems.length) * 100));

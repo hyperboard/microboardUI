@@ -114,10 +114,12 @@ export const AIInput = () => {
 
 		if (
 			!currentModel ||
-			(currentModel.limits.daily.remaining !== null &&
+			(currentModel.limits.daily?.remaining != null &&
 				currentModel.limits.daily.remaining <= 0) ||
-			(currentModel.limits.weekly.remaining !== null &&
-				currentModel.limits.weekly.remaining <= 0)
+			(currentModel.limits.weekly?.remaining != null &&
+				currentModel.limits.weekly.remaining <= 0) ||
+			(currentModel.limits.monthly?.remaining != null &&
+				currentModel.limits.monthly.remaining <= 0)
 		) {
 			setIsShaking(true);
 			setTimeout(() => {
@@ -244,7 +246,6 @@ export const AIInput = () => {
 					model: "tts-1-hd",
 				},
 			};
-
 			connection.wsClient.send(message);
 		} else {
 			const contextRequest = nodeWithParents

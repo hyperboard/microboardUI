@@ -723,7 +723,6 @@ export const parseItem = (
 };
 
 export const pasteMiroClipboard = (board: Board, clipboardJson: any): any => {
-	console.log("Clipboard json: ", clipboardJson);
 	const clipboardItems: MiroClipboardItem[] =
 		clipboardJson?.data?.objects || [];
 	const boardId = clipboardJson?.boardId || "";

@@ -54,15 +54,11 @@ export function UiSwitch({ onChange, options, value }: Props) {
 		const initialOptionIndex = options.findIndex(
 			({ value: optionValue }) => optionValue === value,
 		);
-		console.log("index", initialOptionIndex);
-		console.log("refs", optionsRefs);
 		const selectedOptionRef =
 			optionsRefs.current[
 				initialOptionIndex === -1 ? 0 : initialOptionIndex
 			];
-		console.log("effect", selectedOptionRef);
 		if (selectedOptionRef) {
-			console.log("calcStyles");
 			calcSelectorStyles(selectedOptionRef);
 		}
 	}, [value]);

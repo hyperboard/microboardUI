@@ -137,9 +137,7 @@ export const Folder = ({
 	]);
 
 	useEffect(() => {
-		console.log("folder effect 4");
 		if (isOver && !accordionRef.current?.isOpen) {
-			console.log("folder effect 5");
 			setOverFolderId(folder?.id);
 			clearTimeout(isOverTimerRef.current);
 			isOverTimerRef.current = setTimeout(() => {

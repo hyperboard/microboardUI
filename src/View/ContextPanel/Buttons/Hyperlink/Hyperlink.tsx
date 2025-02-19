@@ -67,7 +67,6 @@ export const Hyperlink = ({
 	const handleApplyHyperlink = (): void => {
 		const { board } = useAppContext();
 		const richTextItems = board.selection.getTextToEdit();
-		console.log("richTextItems", richTextItems);
 
 		if (richTextItems.length > 0) {
 			const textItem = richTextItems[0];
