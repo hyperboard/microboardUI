@@ -74,7 +74,13 @@ export function getController(
 		const context = board.selection.getContext();
 		const editModeHotkeys: HotkeysMap = {
 			select: {
-				cb: () => board.tools.select(true),
+				cb: () => {
+					if (board.tools.getNavigate()) {
+						board.tools.select(true);
+					} else {
+						board.tools.navigate();
+					}
+				},
 				selectionContext: ["SelectUnderPointer", "None"],
 			},
 			text: {
