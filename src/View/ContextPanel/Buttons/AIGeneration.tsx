@@ -1,6 +1,6 @@
 import { Icon } from "View/Icon";
 import { UiButton } from "View/Ui/UiButton/UiButton";
-import React from "react";
+import React, { SyntheticEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
 import btnStyle from "./ContextPanelButton.module.css";
@@ -28,7 +28,8 @@ export function AIGeneration({ rounded = "none" }: Props): React.ReactElement {
 		board.selection.items.list(),
 	);
 
-	const handleClick = async (): Promise<void> => {
+	const handleClick = async (ev: SyntheticEvent): Promise<void> => {
+		ev.stopPropagation();
 		if (!ideaFromSelection) {
 			return;
 		}
