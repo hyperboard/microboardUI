@@ -14,7 +14,7 @@ interface ChromeWheelEvent extends WheelEvent {
 const WHEEL_BASE_DELTA = 120;
 
 function getExpectedWheelDelta(): number {
-	return Math.floor(WHEEL_BASE_DELTA * window.devicePixelRatio);
+	return Math.floor(WHEEL_BASE_DELTA / window.devicePixelRatio);
 }
 
 function isMouseWheelDelta(wheelDelta: number): boolean {
