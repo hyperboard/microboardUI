@@ -536,14 +536,23 @@ export function getController(
 		}
 	}
 
-	function onPaste(event: ClipboardEvent): void {
+	async function onPaste(event: ClipboardEvent): Promise<void> {
 		const board = getBoard();
 		if (!board) {
 			return;
 		}
 		board.camera.unsubscribeFromItem();
 
-		const text = tryToPasteAsItemOrReturnText(event, board, isLoggedIn());
+		const text = await tryToPasteAsItemOrReturnText(
+			event,
+			board,
+			isLoggedIn(),
+		);
+
+		if (typeof text === "object" && text?.markdown) {
+			pasteTextToTheBoard(board, text.markdown);
+			return;
+		}
 
 		if (text && event.clipboardData) {
 			pasteTextToTheBoard(board, event.clipboardData);

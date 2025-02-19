@@ -4,15 +4,20 @@ import {
 	tryToPasteFromMiro,
 	tryToPasteFromMicroboard,
 } from ".";
+import { transformHtmlToMarkdown } from "Board/Items/RichText/transformHtmlToMarkdown";
 
-export function tryToPasteAsItemOrReturnText(
+export async function tryToPasteAsItemOrReturnText(
 	event: ClipboardEvent,
 	board: Board,
 	isLoggedIn: boolean,
-): string | null {
+): Promise<string | null | { markdown: string }> {
 	if (tryToPasteFromMiro(event, board, isLoggedIn)) {
 		preventPasteDefault(event);
 		return null;
+	}
+	const html = event?.clipboardData?.getData("text/html");
+	if (html) {
+		return { markdown: await transformHtmlToMarkdown(html) };
 	}
 
 	const text = event?.clipboardData?.getData("text/plain");
