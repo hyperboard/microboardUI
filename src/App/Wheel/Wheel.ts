@@ -121,9 +121,7 @@ export function createWheel(event: ChromeWheelEvent): Wheel {
 		const isSafariMouseWheel =
 			isSafari() && wheelDelta !== -deltaY * 3 && deltaY !== 0;
 		return isWheelDelta
-			? isChromeMouseWheel ||
-					isSafariMouseWheel ||
-					isMouseWheelDelta(wheelDeltaY)
+			? isChromeMouseWheel || isSafariMouseWheel
 			: deltaMode !== "pixel";
 	}
 
