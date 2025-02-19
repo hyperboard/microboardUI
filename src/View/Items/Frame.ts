@@ -1,4 +1,4 @@
-export const FRAME_BORDER_COLOR = "transparent";
+export const FRAME_BORDER_COLOR = "rgba(10, 15, 41, 0.08)";
 
 export const FRAME_HIGHLIGHTER_BORDER_COLOR = "#93AFF6";
 export const FRAME_CHILDREN_HIGHLIGHTER_COLOR = "rgb(10, 15, 41, .08)";
