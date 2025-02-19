@@ -11,6 +11,22 @@ interface ChromeWheelEvent extends WheelEvent {
 	wheelDeltaY?: number;
 }
 
+const WHEEL_BASE_DELTA = 120;
+
+function getExpectedWheelDelta(): number {
+	return Math.floor(WHEEL_BASE_DELTA * window.devicePixelRatio);
+}
+
+function isMouseWheelDelta(wheelDelta: number): boolean {
+	const expectedDelta = getExpectedWheelDelta();
+	const absWheelDelta = Math.abs(wheelDelta);
+	return (
+		expectedDelta === absWheelDelta ||
+		expectedDelta * 2 === absWheelDelta ||
+		expectedDelta * 3 === absWheelDelta
+	);
+}
+
 const detector = createWheelDetector();
 
 interface Wheel {
@@ -105,7 +121,9 @@ export function createWheel(event: ChromeWheelEvent): Wheel {
 		const isSafariMouseWheel =
 			isSafari() && wheelDelta !== -deltaY * 3 && deltaY !== 0;
 		return isWheelDelta
-			? isChromeMouseWheel || isSafariMouseWheel
+			? isChromeMouseWheel ||
+					isSafariMouseWheel ||
+					isMouseWheelDelta(wheelDeltaY)
 			: deltaMode !== "pixel";
 	}
 
