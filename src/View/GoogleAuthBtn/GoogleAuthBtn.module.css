@@ -1,6 +1,8 @@
 .baseStyle {
 	height: 40px;
-	min-width: 252px;
+	max-width: 252px;
+	width: 100%;
+	margin: 0 auto;
 	border: none;
 	text-align: center;
 	font-size: 14px;

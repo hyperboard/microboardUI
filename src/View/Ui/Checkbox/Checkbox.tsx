@@ -26,15 +26,15 @@ export const Checkbox: React.FC<CheckboxProps> = ({
 	};
 
 	return (
-		<label className={styles.label}>
+		<label className={clsx(styles.label, className)}>
 			<input
 				type="checkbox"
 				onChange={handleChange}
 				checked={isChecked}
-				className={clsx(styles.checkbox, className, {
+				className={clsx(styles.checkbox, {
 					[styles.checked]: isChecked,
 				})}
-        {...props}
+				{...props}
 			/>
 			{children}
 		</label>

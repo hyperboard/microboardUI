@@ -111,6 +111,7 @@
 	font-family: "Manrope", "Arial";
 	font-size: 14px;
 	color: rgba(15, 19, 36, 0.6);
+	text-align: center;
 }
 
 .policyLink {
@@ -136,11 +137,15 @@
 	flex-direction: column;
 	gap: 12px;
 
-	margin-top: 8px;
+	margin: 8px 0 40px;
 }
 
 .login {
 	font-weight: 600 !important;
+}
+
+.checkboxWr {
+	margin: 8px 0 24px;
 }
 
 .newsletter {
@@ -151,22 +156,21 @@
 
 .newsletterLink {
 	color: #4778f5;
-	transition: all .35s;
+	transition: all 0.35s;
 }
 
 .newsletterLink::after {
 	background-color: #4778f5;
 	height: 1px;
 	bottom: 1px;
-	transition: all .35s;
+	transition: all 0.35s;
 }
 
 .newsletterLink:hover:after {
-	background-color: #DED1FF;
+	background-color: #ded1ff;
 	height: 1px;
 	bottom: 1px;
 }
-
 
 @media screen and (max-width: 640px) {
 	.btns {

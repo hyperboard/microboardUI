@@ -1,12 +1,12 @@
 import React from "react";
 import { Icon } from "View/Icon";
 import { useTranslation } from "react-i18next";
-import styles from "./styles.module.css";
+import styles from "./GoogleAuthBtn.module.css";
 
 export function GoogleAuthBtn(): JSX.Element {
 	const { t } = useTranslation();
 
-	const handleClick = e => {
+	const handleClick = (_ev): void => {
 		window.location.replace(`${window.location.origin}/api/v1/auth/google`);
 	};
 

@@ -215,14 +215,34 @@ export const SignupView = (): React.ReactElement => {
 							</Button>
 						</div>
 					) : (
-						<Button
-							type="submit"
-							disabled={isDisabled}
-							loading={isSubmitLoading}
-						>
-							{t("auth.submit")}
-							<Tail />
-						</Button>
+						<>
+							<Checkbox
+								checked
+								onChange={onNewsletterChange}
+								className={styles.checkboxWr}
+							>
+								<span className={styles.newsletter}>
+									{t("auth.newsletter")}
+									<OuterLink
+										href={
+											"https://microboard.io/privacy-policy"
+										}
+										className={styles.newsletterLink}
+									>
+										{" "}
+										Microboard.io
+									</OuterLink>
+								</span>
+							</Checkbox>
+							<Button
+								type="submit"
+								disabled={isDisabled}
+								loading={isSubmitLoading}
+							>
+								{t("auth.submit")}
+								<Tail />
+							</Button>
+						</>
 					)}
 					<Button
 						pattern="ghost"
@@ -239,23 +259,6 @@ export const SignupView = (): React.ReactElement => {
 					<LoginWith />
 					<WalletLoginButton />
 					<GoogleAuthBtn />
-
-					{!showNameInput && (
-						<Checkbox checked onChange={onNewsletterChange}>
-							<span className={styles.newsletter}>
-								{t("auth.newsletter")}
-								<OuterLink
-									href={
-										"https://microboard.io/privacy-policy"
-									}
-									className={styles.newsletterLink}
-								>
-									{" "}
-									Microboard.io
-								</OuterLink>
-							</span>
-						</Checkbox>
-					)}
 				</div>
 			</form>
 			<div className={styles.policy}>

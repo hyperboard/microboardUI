@@ -323,7 +323,7 @@
 		"signUpForFree": "Sign up for free",
 		"addEmail": "Add email",
 		"cryptoSignIn": "Log in with crypto wallet",
-		"connectWallet": "connect your wallet first",
+		"connectWallet": "Connect your wallet first",
 		"cyrptoSignInMsg": "Please sign this message to log in.",
 		"weSentACodeToYourInbox": "We sent a code to your inbox",
 		"restorationTokenIsNotProvided": "Restoration token is not provided",
@@ -366,7 +366,7 @@
 		"nameLengthLongError": "Please enter a name no longer than 50 characters.",
 		"sessionExpired": "Session expired. Please login again",
 		"newsletter": "I agree to receive product updates and promotional materials from",
-		"loginWith": "Or log in with:",
+		"loginWith": "Other options",
 		"googleAuth": "Sing in with Google"
 	},
 	"modal": {

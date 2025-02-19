@@ -15,7 +15,7 @@
 }
 
 .AuthView .Content {
-	margin-top: 216px;
+	margin-top: 104px;
 	width: 500px;
 	height: 100%;
 }
@@ -40,6 +40,6 @@
 	.AuthView .Content {
 		width: 100%;
 		/*padding: 0 12px;*/
-		margin-top: 116px;
+		margin-top: 104px;
 	}
 }
