@@ -31,6 +31,7 @@
 	margin: 0;
 	border: none;
 	background: none;
+	font-family: "Manrope", sans-serif;
 }
 
 html {
@@ -40,7 +41,6 @@ html {
 body {
 	color: var(--text-base-primary);
 	font-size: 1.6rem;
-	font-family: "Manrope", sans-serif;
 	font-optical-sizing: auto;
 	font-style: normal;
 }

@@ -737,7 +737,7 @@
 		"requestAccess": "Запросить доступ",
 		"requestAccessMsg": "Запросите доступ или войдите в аккаунт с правом доступа.",
 		"loggedIn": "Вы авторизованы в аккаунте <1>{{account}}</1>",
-		"loggedInCrypto": "Вы авторизованы в аккаунте CryptoWallet: <1>{{account}}</1>",
+		"loggedInCrypto": "Вы авторизованы с криптокошельком: <1>{{account}}</1>",
 		"accessDenied": "Нет доступа",
 		"addAccessLevel": "Добавить еще один уровень доступа"
 	},

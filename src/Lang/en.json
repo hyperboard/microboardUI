@@ -60,7 +60,7 @@
 			"tooltip": "Font style",
 			"bold": "Bold",
 			"italic": "Italic",
-			"strike": "Strike",
+			"strike": "Strikethrough",
 			"underline": "Underline"
 		},
 		"textAlignment": {
@@ -853,9 +853,9 @@
 					"50 requests per week to GPT-4o",
 					"100 requests per week to  DeepSeek-R1",
 					"25 requests per day to Flux.1 schnell",
-					"Unlimited boards and figures, and storage space",
-					"Images — up to 100 GB",
-					"Text-to-speech HD — 15,000 characters total (~20 min audio)"
+					"Text-to-speech HD — 15,000 characters total (~20 min audio)",
+					"Unlimited boards, figures and storage space",
+					"Images — up to 100 GB"
 				]
 			},
 			"pro": {
@@ -865,7 +865,7 @@
 					"On-premise version",
 					"Embed into your own product",
 					"Bring your own LLM",
-					"Unlimited boards, figures, and storage space"
+					"Unlimited boards, figures and storage space"
 				]
 			}
 		}

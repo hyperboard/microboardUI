@@ -1,5 +1,6 @@
 import React from "react";
 import { RenderElementProps } from "slate-react";
+import styles from "./TextEditor.module.css";
 
 export function Element(props: RenderElementProps): React.ReactElement {
 	const { attributes, element, children } = props;
@@ -142,6 +143,7 @@ export function Element(props: RenderElementProps): React.ReactElement {
 			return (
 				<li
 					{...attributes}
+					className={styles.listItem}
 					style={{
 						textAlign: props.element.horisontalAlignment,
 						margin: 0,
