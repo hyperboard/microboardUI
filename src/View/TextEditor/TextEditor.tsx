@@ -156,11 +156,11 @@ export class TextEditor extends React.Component<
 		}
 	};
 
-	onPaste = (event): void | boolean => {
+	onPaste = async (event): Promise<void | boolean> => {
 		const board = this.props.board;
 
 		// TODO: actually check login
-		let text = tryToPasteAsItemOrReturnText(event, board, true);
+		let text = await tryToPasteAsItemOrReturnText(event, board, true);
 
 		event.preventDefault();
 		event.stopPropagation();
@@ -170,6 +170,19 @@ export class TextEditor extends React.Component<
 		}
 
 		const richText = this.props.text;
+
+		if (
+			richText.insideOf !== "Frame" &&
+			typeof text === "object" &&
+			text.markdown
+		) {
+			richText.editor.deserializeMarkdown(
+				false,
+				text.markdown,
+				this.props.text.editor.getSelection()?.anchor,
+			);
+			return;
+		}
 
 		if (richText.insideOf === "Frame") {
 			text = text.replace(/\n+/g, " ").trim();

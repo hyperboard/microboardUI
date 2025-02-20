@@ -17,7 +17,11 @@ export async function tryToPasteAsItemOrReturnText(
 	}
 	const html = event?.clipboardData?.getData("text/html");
 	if (html) {
-		return { markdown: await transformHtmlToMarkdown(html) };
+		try {
+			return { markdown: await transformHtmlToMarkdown(html) };
+		} catch (err) {
+			console.warn("Error while parsing html to markdown");
+		}
 	}
 
 	const text = event?.clipboardData?.getData("text/plain");
