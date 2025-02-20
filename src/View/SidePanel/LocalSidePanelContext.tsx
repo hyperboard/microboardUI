@@ -1,6 +1,7 @@
 // import { useBoardsList } from "App/useBoardsList";
 import { createStrictContext, useStrictContext } from "lib/strictContext";
 import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
+import { AIContextProvider } from "View/AIInput/AIContext";
 // import { useNavigate } from "react-router-dom";
 // import { useAppContext } from "View/AppContext";
 // import { useContextMenuContext } from "View/ContextMenu";
@@ -45,16 +46,18 @@ export function LocalSidePanelContextProvider({
 	};
 
 	return (
-		<LocalSidePanelContext.Provider
-			value={{
-				isOpen,
-				openMenu,
-				stamp,
-				setStamp,
-				isHighlighted: highlighted,
-			}}
-		>
-			{children}
-		</LocalSidePanelContext.Provider>
+		<AIContextProvider>
+			<LocalSidePanelContext.Provider
+				value={{
+					isOpen,
+					openMenu,
+					stamp,
+					setStamp,
+					isHighlighted: highlighted,
+				}}
+			>
+				{children}
+			</LocalSidePanelContext.Provider>
+		</AIContextProvider>
 	);
 }

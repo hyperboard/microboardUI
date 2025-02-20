@@ -15,12 +15,14 @@ import { QuickAddPanel } from "./QuickAddPanel";
 import { LocalFileSaveProgress } from "View/LocalFileSavingProgress";
 import { ToolsPanel } from "View/ToolsPanel";
 import { ShapesPanelContextProvider } from "View/ShapesPanel";
+import { useAIContext } from "View/AIInput/AIContext";
 
 export function LocalAppView(): JSX.Element {
 	const { app, board } = useAppContext();
 	const forceUpdate = useForceUpdate();
 	const animationId = useRef<number | null>(null);
 	const containerRef = useRef<HTMLDivElement | null>(null);
+	const { setQuotedText } = useAIContext();
 	let canPasteAgain = true;
 
 	function update(): void {
@@ -124,7 +126,11 @@ export function LocalAppView(): JSX.Element {
 			<InactiveBoardHidder>
 				<div ref={containerRef}>
 					<CanvasNoRouter app={app} board={board} />
-					<TextEditors app={app} board={board} />
+					<TextEditors
+						app={app}
+						board={board}
+						setQuotedText={setQuotedText}
+					/>
 				</div>
 			</InactiveBoardHidder>
 			<ExportVisible>
