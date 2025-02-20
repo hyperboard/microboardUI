@@ -165,7 +165,9 @@ export class TextEditor extends React.Component<
 
 		event.preventDefault();
 		event.stopPropagation();
-		if (!data) return;
+		if (!data) {
+			return;
+		}
 
 		const richText = this.props.text;
 
@@ -197,7 +199,9 @@ export class TextEditor extends React.Component<
 		}
 
 		let text = data.getData("text/plain");
-		if (!text) return;
+		if (!text) {
+			return;
+		}
 
 		if (richText.insideOf === "Frame") {
 			text = text.replace(/\n+/g, " ").trim();

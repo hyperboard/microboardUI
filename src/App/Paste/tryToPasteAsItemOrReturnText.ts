@@ -7,7 +7,9 @@ import {
 import { transformHtmlOrTextToMarkdown } from "Board/Items/RichText/transformHtmlToMarkdown";
 
 const isMarkdown = (text: string): boolean => {
-	if (!text) return false;
+	if (!text) {
+		return false;
+	}
 
 	const markdownPatterns = [
 		/^#{1,6}\s.+/, // Заголовки (# H1, ## H2, ...)
