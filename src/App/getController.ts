@@ -33,6 +33,8 @@ export function getController(
 	clipboard: Clipboard,
 	isLoggedIn: () => boolean,
 ): Controller {
+	let lastEventTime = 0;
+	let isTouchpad = false;
 	function onWheel(event: WheelEvent): void {
 		event.preventDefault();
 		event.stopPropagation();
@@ -45,20 +47,57 @@ export function getController(
 		if (wheel.isIgnore()) {
 			return;
 		}
-		if (wheel.isProbablyMouseWheel()) {
-			board.camera.zoomRelativeToPointerBy(
-				wheel.getWheelScaleMultiplier(),
-			);
-		} else if (wheel.isTouchpadPinch()) {
+		console.log("event", event);
+		// if (wheel.isProbablyMouseWheel()) {
+		// 	console.log("wheel", wheel.getWheelScaleMultiplier());
+		// 	board.camera.zoomRelativeToPointerBy(
+		// 		wheel.getWheelScaleMultiplier(),
+		// 	);
+		// } else if (wheel.isTouchpadPinch()) {
+		// 	console.log("touchpad", wheel.getTouchpadPinchMultiplier());
+		// 	board.camera.zoomRelativeToPointerBy(
+		// 		wheel.getTouchpadPinchMultiplier(),
+		// 	);
+		// } else {
+		// 	console.log("translate");
+		// 	const scale = board.camera.getScale();
+		// 	board.camera.translateBy(
+		// 		wheel.getTouchpadPanDeltaX() / scale,
+		// 		wheel.getTouchpadPanDeltaY() / scale,
+		// 	);
+		// }
+
+		const currentTime = Date.now();
+		const deltaTime = currentTime - lastEventTime;
+		lastEventTime = currentTime;
+
+		const scale = board.camera.getScale();
+		if (event.ctrlKey) {
+			console.log("Touchpad pinch detected");
 			board.camera.zoomRelativeToPointerBy(
 				wheel.getTouchpadPinchMultiplier(),
 			);
-		} else {
-			const scale = board.camera.getScale();
-			board.camera.translateBy(
-				wheel.getTouchpadPanDeltaX() / scale,
-				wheel.getTouchpadPanDeltaY() / scale,
+		} else if (event.deltaMode === WheelEvent.DOM_DELTA_PIXEL) {
+			const isSmallDelta = Math.abs(event.deltaY) < 10;
+			isTouchpad = isSmallDelta
+				? deltaTime < 100
+				: deltaTime <= 100 && isTouchpad;
+			console.log(
+				isTouchpad
+					? "Touchpad scroll detected"
+					: "Mouse wheel detected",
 			);
+
+			if (isTouchpad) {
+				board.camera.translateBy(
+					wheel.getTouchpadPanDeltaX() / scale,
+					wheel.getTouchpadPanDeltaY() / scale,
+				);
+			} else {
+				board.camera.zoomRelativeToPointerBy(
+					wheel.getWheelScaleMultiplier(),
+				);
+			}
 		}
 	}
 
