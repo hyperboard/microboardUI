@@ -47,6 +47,12 @@ class LinkItemElement extends HTMLElement {
 	}
 }
 
+class AINodeItemElement extends HTMLElement {
+	constructor() {
+		super();
+	}
+}
+
 customElements.define("rich-text", RichTextElement);
 customElements.define("shape-item", ShapeItemElement);
 customElements.define("sticker-item", StickerElement);
@@ -55,6 +61,7 @@ customElements.define("connector-item", ConnectorElement);
 customElements.define("frame-item", FrameItemElement);
 customElements.define("image-item", ImageItemElement);
 customElements.define("link-item", LinkItemElement);
+customElements.define("ainode-item", AINodeItemElement);
 
 document.addEventListener("DOMContentLoaded", () => {
 	const button = document.createElement("button");
