@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		button.textContent = "Loading...";
 
 		const { createApp } = await import(
-			"https://www.unpkg.com/test_package_board@0.0.44/dist/bundle.js"
+			"https://www.unpkg.com/test_package_board@0.0.45/dist/bundle.js"
 		);
 		const app = createApp();
 		window.app = app;
