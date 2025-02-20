@@ -582,19 +582,14 @@ export function getController(
 		}
 		board.camera.unsubscribeFromItem();
 
-		const text = await tryToPasteAsItemOrReturnText(
+		const data = await tryToPasteAsItemOrReturnText(
 			event,
 			board,
 			isLoggedIn(),
 		);
 
-		if (typeof text === "object" && text?.markdown) {
-			pasteTextToTheBoard(board, text.markdown);
-			return;
-		}
-
-		if (text && event.clipboardData) {
-			pasteTextToTheBoard(board, event.clipboardData);
+		if (data) {
+			pasteTextToTheBoard(board, data);
 		}
 	}
 

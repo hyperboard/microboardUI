@@ -14,6 +14,7 @@ import { tryToPasteAsItemOrReturnText } from "App/Paste";
 import { Transforms } from "slate";
 import { EditorContainer } from "Board/Items/RichText/EditorContainer";
 import { t } from "i18next";
+import { BlockNode } from "Board/Items/RichText/Editor/BlockNode";
 
 export class TextEditors extends React.Component<
 	{
@@ -160,34 +161,49 @@ export class TextEditor extends React.Component<
 		const board = this.props.board;
 
 		// TODO: actually check login
-		let text = await tryToPasteAsItemOrReturnText(event, board, true);
+		const data = await tryToPasteAsItemOrReturnText(event, board, true);
 
 		event.preventDefault();
 		event.stopPropagation();
-
-		if (!text) {
-			return;
-		}
+		if (!data) return;
 
 		const richText = this.props.text;
 
-		if (
-			richText.insideOf !== "Frame" &&
-			typeof text === "object" &&
-			text.markdown
-		) {
-			richText.editor.deserializeMarkdown(
-				false,
-				text.markdown,
-				this.props.text.editor.getSelection()?.anchor,
-			);
-			return;
+		const slateFragment = data.getData("application/x-slate-fragment");
+		if (slateFragment) {
+			try {
+				const nodes: BlockNode[] = JSON.parse(
+					decodeURIComponent(window.atob(slateFragment)),
+				);
+				if (
+					nodes.length === 1 &&
+					nodes[0].type === "paragraph" &&
+					nodes[0].children.length === 1 &&
+					nodes[0].children[0].type === "text"
+				) {
+					Transforms.insertText(
+						richText.editor.editor,
+						nodes[0].children[0].text,
+					);
+					return false;
+				}
+				Transforms.insertNodes(richText.editor.editor, nodes, {
+					at: richText.editor.getSelection() || undefined,
+				});
+				return false;
+			} catch (error) {
+				console.error("Error while parsing slate nodes:", error);
+			}
 		}
+
+		let text = data.getData("text/plain");
+		if (!text) return;
 
 		if (richText.insideOf === "Frame") {
 			text = text.replace(/\n+/g, " ").trim();
-			Transforms.insertText(richText.editor.editor, text);
 		}
+
+		Transforms.insertText(richText.editor.editor, text);
 
 		return false;
 	};
