@@ -31,7 +31,7 @@
 	margin: 0;
 	border: none;
 	background: none;
-	font-family: "Manrope", sans-serif;
+	font-family: inherit;
 }
 
 html {
@@ -43,6 +43,7 @@ body {
 	font-size: 1.6rem;
 	font-optical-sizing: auto;
 	font-style: normal;
+	font-family: "Manrope", sans-serif;
 }
 
 input:-webkit-autofill,

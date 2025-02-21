@@ -1,7 +1,7 @@
 import { DefaultTextStyles } from "Board/Items/RichText/RichText";
 
 export const DEFAULT_TEXT_STYLES: DefaultTextStyles = {
-	fontFamily: "Open Sans",
+	fontFamily: "Manrope",
 	fontSize: 14,
 	fontColor: "rgb(20, 21, 26)",
 	fontHighlight: "",
