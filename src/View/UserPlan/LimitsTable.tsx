@@ -4,6 +4,9 @@ import { useAccount } from "App/useAccount";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { UiButton } from "View/Ui/UiButton";
+import { useBoundingClientRect } from "lib/useClientRect";
+import { createPortal } from "react-dom";
+import { useHoverState } from "lib/useHoverState";
 
 // Воняет конкретно, TODO - переписать
 
@@ -106,7 +109,7 @@ export function PerMonthLimitsTable() {
 					description={DESCRIPTION_MAP[id] ?? ""}
 					limit={limits.monthly?.limit || 0}
 					remaining={limits.monthly?.remaining || 0}
-					enabled={true}
+					enabled={isEnabled}
 					isAudio
 				/>
 			))}
@@ -132,7 +135,8 @@ function ModelRow({
 	isAudio = false,
 }: ModelRowProps) {
 	const { t } = useTranslation();
-	console.log(name, limit, remaining);
+	const { elementRef, rect } = useBoundingClientRect<HTMLTableCellElement>();
+	const { handlePointerEnter, handlePointerLeave, isHover } = useHoverState();
 	return (
 		<tr className={styles.row}>
 			<td className={styles.model}>
@@ -140,6 +144,9 @@ function ModelRow({
 				<p className={styles.modelDescription}>{description}</p>
 			</td>
 			<td
+				onPointerEnter={handlePointerEnter}
+				onPointerLeave={handlePointerLeave}
+				ref={elementRef}
 				className={clsx(
 					styles.limit,
 					!enabled && styles.modelDisabled,
@@ -155,17 +162,44 @@ function ModelRow({
 						`${remaining}/${limit} ${isAudio ? t("userPlan.limitsTable.symbols") : ""}`
 					)
 				) : (
-					<UiButton
-						className={clsx(styles.limits)}
-						variant="secondary"
-						disabled
-						tooltipPosition="bottom-left"
-						tooltip={t("userPlan.limitsTable.availableOnPlus")}
-					>
+					<>
 						0/0
-					</UiButton>
+						<Tooltip
+							text={t("userPlan.limitsTable.availableOnPlus")}
+							x={(rect?.left ?? 0) + (rect?.width ?? 0) - 55}
+							y={(rect?.top ?? 0) + (rect?.height ?? 0) + 12}
+							visible={isHover}
+						/>
+					</>
 				)}
 			</td>
 		</tr>
+	);
+}
+
+type Props = {
+	text: string;
+	x?: number;
+	y?: number;
+	visible?: boolean;
+};
+
+function Tooltip({ text, x, y, visible }: Props) {
+	return createPortal(
+		<div
+			className={clsx(
+				styles.tipContainer,
+				styles.bottomRight,
+				visible && styles.visible,
+			)}
+			style={{ left: x, top: y }}
+		>
+			<div className={clsx(styles.tip)}>
+				<span className={clsx(styles.tipText, styles.center)}>
+					{text}
+				</span>
+			</div>
+		</div>,
+		document.getElementById("tooltip")!,
 	);
 }

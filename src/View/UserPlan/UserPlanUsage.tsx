@@ -78,7 +78,7 @@ export function UserPlanUsage({
 									onClick={handleOpenHistoryModal}
 									className={styles.limitsBtn}
 								>
-									История платежей
+									{t("userPlan.paymentHistoryHeading")}
 								</span>
 							) : null
 						) : (
@@ -119,7 +119,7 @@ export function UserPlanUsage({
 									onClick={handleOpenHistoryModal}
 									className={styles.limitsBtn}
 								>
-									История платежей.
+									{t("userPlan.paymentHistoryHeading")}.
 								</span>
 							) : null
 						) : (
@@ -144,7 +144,7 @@ export function UserPlanUsage({
 				)}{" "}
 				{status === "active" && onCancel && (
 					<span onClick={onCancel} className={styles.cancel}>
-						Отменить
+						{t("userPlan.cancelPayment")}
 					</span>
 				)}
 			</p>

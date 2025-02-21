@@ -47,7 +47,6 @@ export function getController(
 		if (wheel.isIgnore()) {
 			return;
 		}
-		console.log("event", event);
 		// if (wheel.isProbablyMouseWheel()) {
 		// 	console.log("wheel", wheel.getWheelScaleMultiplier());
 		// 	board.camera.zoomRelativeToPointerBy(
@@ -73,7 +72,6 @@ export function getController(
 
 		const scale = board.camera.getScale();
 		if (event.ctrlKey) {
-			console.log("Touchpad pinch detected");
 			board.camera.zoomRelativeToPointerBy(
 				wheel.getTouchpadPinchMultiplier(),
 			);
@@ -82,11 +80,6 @@ export function getController(
 			isTouchpad = isSmallDelta
 				? deltaTime < 100
 				: deltaTime <= 100 && isTouchpad;
-			console.log(
-				isTouchpad
-					? "Touchpad scroll detected"
-					: "Mouse wheel detected",
-			);
 
 			if (isTouchpad) {
 				board.camera.translateBy(
