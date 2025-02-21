@@ -1085,7 +1085,7 @@ export class EventsManager {
             events = queue.events;
         }
         return events.map((event) => {
-            return event.data;
+            return { body: event.data, order: event.data.order };
         });
     }
 
