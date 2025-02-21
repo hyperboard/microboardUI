@@ -2,7 +2,7 @@ import Web3 from "web3";
 import winston from "winston";
 import { Job, Queue, Worker } from "bullmq";
 import { db } from "drizzle/db";
-import { and, eq, gt, gte, isNotNull, lte } from "drizzle-orm";
+import { and, eq, gte, isNotNull, lte } from "drizzle-orm";
 import { plans, userCryptoCheckout, userPlans, walletLastCheckedBlock } from "drizzle/entities/plans";
 import { Redis } from "Redis";
 import { catchAsync } from "shared/lib/catchAsync";
@@ -11,10 +11,21 @@ import { Request, Response, NextFunction } from "express";
 import { HttpException } from "shared/exceptions/http-exception";
 import { USD } from "drizzle/scripts/plans";
 
+type CryptoRate = {
+    annualPrice: string;
+    price: string;
+};
+
+export type CryptoRates = {
+    ETH: CryptoRate;
+    POL: CryptoRate;
+};
+
 export interface CryptoService {
     createCheckout: (req: Request, res: Response, next: NextFunction) => void;
     cancelCheckout: (req: Request, res: Response, next: NextFunction) => void;
     confirmCheckout: (req: Request, res: Response, next: NextFunction) => void;
+    getApproxRates: (req: Request, res: Response, next: NextFunction) => void;
     handlePlanExpiry(userId: number): void;
     cleanup: () => Promise<void>;
 }
@@ -71,6 +82,34 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
             delayMS: 1_000,
         },
     };
+
+    const expiryQueue = new Queue("expiry", {
+        connection: redis.client,
+        defaultJobOptions: {
+            attempts: 3,
+            backoff: {
+                type: "exponential",
+                delay: 1000,
+            },
+        },
+    });
+
+    const expiryWorker = new Worker(
+        "expiry",
+        async (job: Job) => {
+            switch (job.name) {
+                case "checkout-expiry":
+                    await handleCheckoutExpiry(job);
+                    break;
+                // case "plan-expiry":
+                //     await handlePlanExpiry(job);
+                //     break;
+                default:
+                    throw new Error(`Unknown job type: ${job.name}`);
+            }
+        },
+        { connection: redis.client }
+    );
 
     async function startIntervalForChain(chain: Chain): Promise<void> {
         if (chainExplorerMap[chain].interval) {
@@ -226,8 +265,10 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
         }
     }
 
-    async function fetchRates(symbol: string, convert = "USD") {
-        const url = `https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${symbol}&convert=${convert}`;
+    async function fetchRates(symbols: string[], convert = "USD") {
+        const url = `https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${symbols.join(
+            ","
+        )}&convert=${convert}`;
         const options = {
             method: "GET",
             headers: {
@@ -238,7 +279,7 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
 
         const response = await fetch(url, options);
         if (!response.ok) {
-            throw new HttpException(500, `Unable to fetch rates for ${symbol}`);
+            throw new HttpException(500, `Unable to fetch rates for ${symbols.join(",")}`);
         }
         const data = await response.json();
         return data.data;
@@ -343,6 +384,45 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
         }
     }
 
+    async function handleCheckoutExpiry(job: Job) {
+        const { checkoutId } = job.data;
+        const [checkout] = await db
+            .select()
+            .from(userCryptoCheckout)
+            .where(
+                and(
+                    eq(userCryptoCheckout.id, checkoutId),
+                    eq(userCryptoCheckout.status, "active"),
+                    lte(userCryptoCheckout.endDate, new Date())
+                )
+            )
+            .limit(1)
+            .execute();
+
+        if (checkout) {
+            const chain = checkout.chainName.toLowerCase();
+
+            await db
+                .update(userCryptoCheckout)
+                .set({ status: "expired" })
+                .where(eq(userCryptoCheckout.id, checkoutId))
+                .execute();
+
+            unsubscribe(chain);
+        }
+    }
+
+    async function scheduleCheckoutExpiry(checkoutId: string, endDate: Date) {
+        await scheduleExpiry("checkout-expiry", { checkoutId }, endDate);
+    }
+
+    async function scheduleExpiry(name: string, data: any, endDate: Date) {
+        const delay = endDate.getTime() - Date.now();
+        const safeDelay = delay > 0 ? delay : 0;
+
+        await expiryQueue.add(name, { ...data }, { delay: safeDelay });
+    }
+
     async function createCheckoutDb(checkoutData: Omit<Checkout, "id">): Promise<Checkout & { id: string }> {
         const { userId, planId, symbol, valueWei, chainName, addressFrom, annualPayment } = checkoutData;
         const checkoutId = crypto.randomUUID();
@@ -365,8 +445,58 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
             })
             .returning();
 
+        await scheduleCheckoutExpiry(checkoutId, endDate);
+
         return checkout;
     }
+
+    const rateCache: Record<string, { timestamp: number; data: CryptoRates }> = {};
+    const getApproxRates = catchAsync(async (_req, res) => {
+        const normalizedSymbols = ["ETH", "POL"].sort();
+        const cacheKey = normalizedSymbols.join(",");
+
+        const now = Date.now();
+        if (rateCache[cacheKey] && now - rateCache[cacheKey].timestamp < 5 * 60 * 1000) {
+            return res.status(HttpStatus.OK).json(rateCache[cacheKey].data);
+        }
+
+        const [plan] = await db.select().from(plans).where(eq(plans.id, "plus")); // todo upd route to fetch by planId
+        if (!plan) {
+            return res
+                .status(HttpStatus.BAD_REQUEST)
+                .json({ error: "Unable to fetch rates: The selected plan is not found." });
+        }
+
+        const rawRates = await fetchRates(normalizedSymbols);
+        const polRate = rawRates.POL?.quote.USD.price;
+        const ethRate = rawRates.ETH?.quote.USD.price;
+
+        const price = plan.price / USD;
+        const annualPrice = plan.annualPrice / USD;
+
+        const web3 = new Web3();
+        const weiPol = web3.utils.toWei((price / polRate).toString(), "ether");
+        const weiPolAnnual = web3.utils.toWei((annualPrice / polRate).toString(), "ether");
+        const weiEth = web3.utils.toWei((price / ethRate).toString(), "ether");
+        const weiEthAnnual = web3.utils.toWei((annualPrice / ethRate).toString(), "ether");
+
+        const rates = {
+            ETH: {
+                annualPrice: weiEthAnnual,
+                price: weiEth,
+            },
+            POL: {
+                annualPrice: weiPolAnnual,
+                price: weiPol,
+            },
+        };
+        rateCache[cacheKey] = {
+            timestamp: now,
+            data: rates,
+        };
+
+        res.status(HttpStatus.OK).json(rates);
+    });
 
     const createCheckout = catchAsync(async (req, res) => {
         const { symbol, chain, sender, planId, annualPayment } = req.body;
@@ -402,13 +532,13 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
                 .json({ error: "Unable to create checkout: The selected plan is not found." });
         }
 
-        const rates = await fetchRates(symbol.toString());
+        const rates = await fetchRates([symbol.toString()]);
         const quote = rates[symbol.toString()]?.quote;
         if (!quote) throw new HttpException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to fetch rates");
 
         const { price } = quote.USD;
         const web3 = new Web3();
-        // const PRICE = 0.001;
+        // const PRICE = 0.001; // TEST VALUE, MAKE SURE TO COMMENT OUT!!!
         const PRICE = (annualPayment ? plan.annualPrice : plan.price) / USD;
         const wei = web3.utils.toWei((PRICE / price).toString(), "ether");
 
@@ -494,14 +624,17 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
                 and(
                     eq(userCryptoCheckout.userId, userId),
                     eq(userCryptoCheckout.planId, planId),
-                    eq(userCryptoCheckout.status, "active")
+                    eq(userCryptoCheckout.status, "active"),
+                    gte(userCryptoCheckout.endDate, new Date())
                 )
             )
             .limit(1)
             .execute();
 
         if (!checkout) {
-            return res.status(HttpStatus.NOT_FOUND).json({ error: "Checkout not found or already confirmed." });
+            return res.status(HttpStatus.NOT_FOUND).json({
+                message: "Checkout not found or already confirmed. Contact support if transaction completed but your plan didn't update.",
+            });
         }
 
         const isValidTransaction = await verifyTransactionByHash(
@@ -578,6 +711,9 @@ export const createCryptoService = (redis: Redis, logger: winston.Logger): Crypt
         cancelCheckout,
         confirmCheckout,
         handlePlanExpiry,
-        async cleanup() {},
+        getApproxRates,
+        async cleanup() {
+            await expiryWorker.close();
+        },
     };
 };

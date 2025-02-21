@@ -1,10 +1,14 @@
 import express from "express";
 import winston from "winston";
-import { createCryptoService, CryptoService } from "./cryptoService";
+import { CryptoService } from "./cryptoService";
 import { jwtMiddleware, validateBody } from "Middlewares";
 import { body } from "express-validator";
 import { Redis } from "Redis";
-import { cancelCheckoutSchema, confirmCheckoutSchema, createCheckoutSchema } from "./crypto-checkout-schema";
+import {
+    cancelCheckoutSchema,
+    confirmCheckoutSchema,
+    createCheckoutSchema,
+} from "./crypto-checkout-schema";
 
 export const getCryptoRouter = (cryptoService: CryptoService, redis: Redis, logger: winston.Logger): express.Router => {
     const router = express.Router();
@@ -15,6 +19,11 @@ export const getCryptoRouter = (cryptoService: CryptoService, redis: Redis, logg
         .post(validateBody(createCheckoutSchema), cryptoService.createCheckout)
         .delete(validateBody(cancelCheckoutSchema), cryptoService.cancelCheckout)
         .patch(validateBody(confirmCheckoutSchema), cryptoService.confirmCheckout);
+
+    router
+        .route("/crypto/rates")
+        .all(jwtMiddleware(logger))
+        .get(cryptoService.getApproxRates);
 
     return router;
 };
