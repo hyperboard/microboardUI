@@ -10,6 +10,11 @@
 	min-width: 65px;
 }
 
+.defaultPosition {
+	bottom: var(--absolute-position-panel-padding) !important;
+	right: var(--absolute-position-panel-padding) !important;
+}
+
 @media screen and (max-width: 1200px) {
 	.tableHide {
 		display: none;

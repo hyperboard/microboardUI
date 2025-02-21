@@ -44,12 +44,9 @@ export async function tryToPasteAsItemOrReturnText(
 	const html = dataTransfer?.getData("text/html");
 	const text = dataTransfer?.getData("text/plain");
 
-	if (
-		text &&
-		html &&
-		!dataTransfer?.getData("application/x-slate-fragment")
-	) {
+	if (text && !dataTransfer?.getData("application/x-slate-fragment")) {
 		try {
+			console.log(isMarkdown(text));
 			if (!isMarkdown(text) && html) {
 				dataTransfer = await transformHtmlOrTextToMarkdown(text, html);
 			} else {

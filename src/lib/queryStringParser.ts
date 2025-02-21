@@ -12,3 +12,7 @@ type PanelType = "titlePanel" | "userPanel";
 export function shouldShow(panel: PanelType): boolean {
 	return getBooleanParam(panel, true);
 }
+
+export function isTemplateView(): boolean {
+	return getBooleanParam("isTemplateView", false);
+}

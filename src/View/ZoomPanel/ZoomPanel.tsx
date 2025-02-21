@@ -46,7 +46,13 @@ export function ZoomPanel() {
 	const currentScale = scale < 0.01 ? 1 : Math.round(scale * 100);
 
 	return (
-		<UiPanel className={style.panel} padding={0}>
+		<UiPanel
+			className={clsx(
+				style.panel,
+				board.getInterfaceType() === "view" && style.defaultPosition,
+			)}
+			padding={0}
+		>
 			<UiButton
 				className={style.zoomToFit}
 				id="zoom-to-fit"
