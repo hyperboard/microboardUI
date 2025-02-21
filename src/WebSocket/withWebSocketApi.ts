@@ -290,6 +290,16 @@ export function withWebSocketApi({
         const snapshot = await boardsService.getLatestBoardSnapshot(boardId);
         const lastSnapshotEventOrder = snapshot?.lastIndex || 0;
         const eventsSinceLastSnapshot = await getEventsSinceLastSnapshot(boardId, lastSnapshotEventOrder);
+        /*
+        error: Failed to subscribe to board events: Do not know how to serialize a BigInt
+        error: Do not know how to serialize a BigInt
+        "stack":"TypeError: Do not know how to serialize a BigInt\n    
+        at JSON.stringify (<anonymous>)\n    
+        at sendWsMsg (/usr/api/dist/api.js:916567:22)\n    
+        at sendSubscriptionCompleted (/usr/api/dist/api.js:916604:5)\n    
+        at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    
+        at async handleSubscribeMsg (/usr/api/dist/api.js:916596:5)"}}
+        */
         sendWsMsg(ws, {
             type: "BoardSubscriptionCompleted",
             boardId,
@@ -1074,7 +1084,9 @@ export class EventsManager {
         if (queue) {
             events = queue.events;
         }
-        return events;
+        return events.map((event) => {
+            return event.data;
+        });
     }
 
     isBoardReady(boardId: string): boolean {

@@ -115,21 +115,35 @@ export class Presence {
         return results
             .map(([err, data]) => {
                 if (err || !data) return null;
-
-                const event: PresenceEventMsg = {
-                    type: "PresenceEvent",
-                    boardId: (data as any).boardId,
-                    userId: (data as any).userId,
-                    messageId: (data as any).messageId,
-                    event: JSON.parse((data as any).event) as PresenceEventType,
-                    nickname: (data as any).nickname || "Anonymous",
-                    color: (data as any).color,
-                    avatar: (data as any)?.avatar || null,
-                    hardId: (data as any)?.hardId || null,
-                    softId: (data as any)?.softId || null,
-                };
-
-                return event;
+                try {
+                    const event: PresenceEventMsg = {
+                        type: "PresenceEvent",
+                        boardId: (data as any).boardId,
+                        userId: (data as any).userId,
+                        messageId: (data as any).messageId,
+                        /*
+                        error: Failed to subscribe to board events: "undefined" is not valid JSON
+                        error: "undefined" is not valid JSON 
+                        "stack":"SyntaxError: \"undefined\" is not valid JSON\n    at JSON.parse (<anonymous>)\n    
+                        at /usr/api/dist/api.js:916231:21\n    
+                        at Array.map (<anonymous>)\n    
+                        at Presence.getEventsFromIds (/usr/api/dist/api.js:916223:20)\n    
+                        at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    
+                        at async Presence.createBoardPresenceSnapshots (/usr/api/dist/api.js:916329:26)\n    
+                        at async sendPresenceSnapshots (/usr/api/dist/api.js:916619:23)\n    
+                        at async handleSubscribeMsg (/usr/api/dist/api.js:916597:5)"}}
+                        */
+                        event: JSON.parse((data as any).event) as PresenceEventType,
+                        nickname: (data as any).nickname || "Anonymous",
+                        color: (data as any).color,
+                        avatar: (data as any)?.avatar || null,
+                        hardId: (data as any)?.hardId || null,
+                        softId: (data as any)?.softId || null,
+                    };
+                    return event;
+                } catch (error) {
+                    return null;
+                }
             })
             .filter((event): event is PresenceEventMsg => event !== null);
     }
