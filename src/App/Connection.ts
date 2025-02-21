@@ -376,7 +376,6 @@ export function createConnection(
 		}
 
 		const board = getBoard();
-		clearConnectionError();
 		switch (msg.type) {
 			case "AiChat":
 			case "SubscribeConfirmation":
@@ -389,6 +388,7 @@ export function createConnection(
 			case "UserJoin":
 			case "Mode":
 			case "PresenceEvent":
+				clearConnectionError();
 				const subscribeTimeout = subscribeTimeouts.get(msg.boardId);
 				if (subscribeTimeout) {
 					clearTimeout(subscribeTimeout.timeout);
