@@ -7,26 +7,26 @@ import {
 import { transformHtmlOrTextToMarkdown } from "Board/Items/RichText/transformHtmlToMarkdown";
 
 const isMarkdown = (text: string): boolean => {
-	if (!text) {
-		return false;
-	}
+	if (!text || typeof text !== "string") return false;
 
+	// Улучшенные паттерны Markdown
 	const markdownPatterns = [
-		/^#{1,6}\s.+/, // Заголовки (# H1, ## H2, ...)
-		/^\*\s.+|^-\s.+/, // Маркированные списки (* item, - item)
-		/^\d+\.\s.+/, // Нумерованные списки (1. item)
-		/\*\*(.*?)\*\*/, // Жирный текст (**bold**)
-		/\*(.*?)\*/, // Курсив (*italic*)
+		/^#{1,6}\s.+/m, // Заголовки (# H1, ## H2, ...)
+		/^\s*[-*]\s.+/m, // Маркированные списки (* item, - item)
+		/^\s*\d+\.\s.+/m, // Нумерованные списки (1. item)
+		/\*\*[^*]+\*\*/, // Жирный текст (**bold**)
+		/(^|\s)\*[^*]+\*(\s|$)/, // Курсив (*italic*) (исключаем случайные * в тексте)
 		/__(.*?)__/, // Альтернативный жирный (__bold__)
-		/_(.*?)_/, // Альтернативный курсив (_italic_)
-		/~~(.*?)~~/, // Зачеркнутый текст (~~strikethrough~~)
-		/\[.*?\]\(.*?\)/, // Ссылки [text](url)
+		/(^|\s)_[^_]+_(\s|$)/, // Альтернативный курсив (_italic_)
+		/~~[^~]+~~/, // Зачеркнутый текст (~~strikethrough~~)
+		/\[.+\]\(.+\)/, // Ссылки [text](url)
 		/!\[.*?\]\(.*?\)/, // Картинки ![alt](url)
-		/^> .+/, // Цитаты (> quote)
-		/^```[\s\S]*```/, // Блоки кода (```code```)
-		/^-{3,}$/, // Горизонтальная линия (---)
+		/^> .+/m, // Цитаты (> quote)
+		/^```[\s\S]*```$/m, // Блоки кода (```code```)
+		/^-{3,}$/m, // Горизонтальная линия (---)
 	];
 
+	// Проверяем, содержит ли текст хотя бы ОДИН из markdown-паттернов
 	return markdownPatterns.some(pattern => pattern.test(text));
 };
 
@@ -44,19 +44,6 @@ export async function tryToPasteAsItemOrReturnText(
 	const html = dataTransfer?.getData("text/html");
 	const text = dataTransfer?.getData("text/plain");
 
-	if (text && !dataTransfer?.getData("application/x-slate-fragment")) {
-		try {
-			console.log(isMarkdown(text));
-			if (!isMarkdown(text) && html) {
-				dataTransfer = await transformHtmlOrTextToMarkdown(text, html);
-			} else {
-				dataTransfer = await transformHtmlOrTextToMarkdown(text);
-			}
-		} catch (err) {
-			console.warn("Error while parsing html to markdown", err);
-		}
-	}
-
 	if (!text) {
 		if (tryToPasteImages(event, board)) {
 			preventPasteDefault(event);
@@ -67,6 +54,19 @@ export async function tryToPasteAsItemOrReturnText(
 	if (tryToPasteFromMicroboard(text, board)) {
 		preventPasteDefault(event);
 		return null;
+	}
+
+	if (!dataTransfer?.getData("application/x-slate-fragment")) {
+		try {
+			console.log(isMarkdown(text));
+			if (!isMarkdown(text) && html) {
+				dataTransfer = await transformHtmlOrTextToMarkdown(text, html);
+			} else {
+				dataTransfer = await transformHtmlOrTextToMarkdown(text);
+			}
+		} catch (err) {
+			console.warn("Error while parsing html to markdown", err);
+		}
 	}
 
 	if (tryToPasteImages(event, board)) {
