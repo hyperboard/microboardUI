@@ -2,7 +2,7 @@
 	padding: 32px 64px;
 	display: flex;
 	flex-direction: column;
-	gap: 40px;
+	gap: 24px;
 	align-items: center;
 }
 
@@ -12,15 +12,16 @@
 }
 
 .cards {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(320px, 1fr));
-	gap: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
 	align-items: stretch;
+	width: 50vw;
 }
 
 @media (max-width: 600px) {
 	.cards {
-		grid-template-columns: repeat(1, minmax(320px, 1fr));
+		width: 85vw;
 	}
 }
 
@@ -39,9 +40,7 @@
 		0px 10px 16px -3px rgba(20, 21, 26, 0.08),
 		0px 3px 6px -2px rgba(20, 21, 26, 0.05);
 	border-radius: 16px;
-
 	box-sizing: border-box;
-
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
@@ -49,10 +48,51 @@
 	padding: 24px;
 	gap: 8px;
 	isolation: isolate;
+
+	> div {
+		text-align: left;
+	}
+
+	.title {
+		align-items: flex-start;
+		display: flex;
+		flex-direction: row;
+		padding: 0px;
+		gap: 12px;
+		width: 100%;
+		.icons {
+			display: flex;
+			padding-top: 4px;
+			gap: 4px;
+		}
+		.text {
+			display: flex;
+			justify-content: space-between;
+		}
+		.main-content {
+			width: 100%;
+		}
+	}
 }
 
-.card > div {
-	text-align: left;
+.footer {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 12px;
+	button {
+		padding: 6px 10px;
+		display: flex;
+		font-family: Manrope;
+		font-weight: 500;
+		font-size: 14px;
+		line-height: 20px;
+		letter-spacing: -0.5%;
+		text-align: center;
+		white-space: nowrap;
+		flex: 0 0 auto;
+		width: auto;
+	}
 }
 
 .inline-buttons {
@@ -70,9 +110,79 @@
 	color: #0f132499;
 }
 
+.paddingTop {
+	padding-top: 8px;
+}
+
 .back {
 	align-self: flex-start;
 	flex: 1 1;
 	width: auto;
 	padding: 12px 16px;
+}
+
+.cardEnter {
+	overflow: hidden;
+}
+.cardEnterActive {
+	transition: height 400ms ease-in-out;
+}
+.cardExit {
+	overflow: hidden;
+}
+.cardExitActive {
+	transition: height 400ms ease-in-out;
+}
+
+.coins {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: flex-start;
+	align-content: flex-start;
+	padding: 0px;
+	gap: 12px;
+	padding-bottom: 16px;
+	width: 100%;
+}
+
+.coin {
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	padding: 9px;
+	gap: 9px;
+	width: 26%;
+
+	background: #ffffff;
+	border: 1px solid #dee0e3;
+	border-radius: 10px;
+
+	flex: none;
+	order: 1;
+	flex-grow: 0;
+}
+
+.coin-title {
+	align-items: flex-start;
+	display: flex;
+	flex-direction: column;
+	padding: 0px;
+	gap: 9px;
+	width: 100%;
+	.main-content {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		width: 100%;
+	}
+}
+
+.active {
+	background: #ecdffb;
+}
+
+.coin.active:hover {
+	background-color: #ecdffb;
 }

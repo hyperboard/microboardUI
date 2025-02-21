@@ -1,6 +1,11 @@
 import { useUiModalContext } from "View/Ui/UiModal";
 import { UiModal } from "View/Ui/UiModal/UiModal";
-import React, { useEffect, useState, type MouseEventHandler } from "react";
+import React, {
+	useEffect,
+	useRef,
+	useState,
+	type MouseEventHandler,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "shared/ui-lib/Button";
 import styles from "./SelectPaymentModal.module.css";
@@ -15,58 +20,15 @@ import {
 	useChainModal,
 	useConnectModal,
 } from "@rainbow-me/rainbowkit";
-
 import { useSendTransaction, useAccount as useWalletAccount } from "wagmi";
 import { parseEther } from "viem";
-import { api } from "shared/api";
 import "@rainbow-me/rainbowkit/styles.css";
+import { Icon } from "View/Icon";
+import { CSSTransition } from "react-transition-group";
+import { Tooltip } from "View/Ui/UiButton/Tooltip";
+import clsx from "clsx";
 
 export const SELECT_PAYMENT_MODAL_ID = Symbol("selectPaymentModal");
-
-type CryptoCheckout = {
-	price: string;
-	symbol: string;
-	address: string;
-};
-
-// TODO move to cryptoApi
-async function createCheckout(
-	currency: string,
-	chain: string,
-	sender: string,
-	planId: string,
-	annualPayment: boolean,
-): Promise<CryptoCheckout> {
-	const url = `/crypto/checkout`;
-	const body = { symbol: currency, chain, sender, planId, annualPayment };
-
-	const res = await api.post(url, body);
-	return res.data as CryptoCheckout;
-}
-
-async function cancelCheckout(
-	from: string,
-	to: string,
-	value: string,
-): Promise<void> {
-	const url = "/crypto/checkout";
-	const body = { sender: from, to, value };
-
-	await api.delete(url, undefined, body);
-}
-
-async function confirmCheckout(
-	currency: string,
-	chain: string,
-	sender: string,
-	planId: string,
-	hash: string,
-): Promise<void> {
-	const url = `/crypto/checkout`;
-	const body = { symbol: currency, chain, sender, planId, hash };
-
-	await api.patch(url, body);
-}
 
 export function SelectPaymentModal(): JSX.Element {
 	const { openModal } = useUiModalContext();
@@ -76,6 +38,7 @@ export function SelectPaymentModal(): JSX.Element {
 	const { t } = useTranslation();
 	const [isDisabled, setIsDisabled] = useState(false);
 	const [plan, setPlan] = useState<billingApi.Plan | null>(null);
+	const [active, setActive] = useState<"stripe" | "crypto">("stripe");
 
 	const { accountModalOpen } = useAccountModal();
 	const { chainModalOpen } = useChainModal();
@@ -107,25 +70,8 @@ export function SelectPaymentModal(): JSX.Element {
 	};
 
 	const handleStripe = async (): Promise<void> => {
-		// const successUrl = `${window.location.href}?paymentStatus=success`;
-		// const cancelUrl = `${window.location.href}?paymentStatus=error`;
-
 		try {
 			assertPlanExists(plan);
-
-			// const { data } = await billingApi.createCheckout({
-			// 	planId: plan.id,
-			// 	successUrl,
-			// 	cancelUrl,
-			// });
-
-			// if (!data) {
-			// 	throw new Error();
-			// }
-			// const linkElem = document.createElement("a");
-			// linkElem.href = data?.url;
-			// linkElem.target = "_blank";
-			// linkElem.click();
 			await account.createCheckout(plan.id);
 		} catch (err) {
 			if (
@@ -157,13 +103,13 @@ export function SelectPaymentModal(): JSX.Element {
 		}
 	};
 
-	const handleCrypto: MouseEventHandler<HTMLButtonElement> = async event => {
-		if (
-			event.target instanceof HTMLElement &&
-			/^crypto.*button$/.test(event.target.id)
-		) {
-			return;
-		}
+	const handleCrypto: MouseEventHandler<HTMLButtonElement> = async _event => {
+		// if (
+		// 	event.target instanceof HTMLElement &&
+		// 	/^crypto.*button$/.test(event.target.id)
+		// ) {
+		// 	return;
+		// }
 
 		if (!isConnected) {
 			if (openConnectModal) {
@@ -188,7 +134,14 @@ export function SelectPaymentModal(): JSX.Element {
 					variant: "success",
 				});
 
-				confirmCheckout(currency, chain, sender, planId, hash)
+				billingApi
+					.confirmCryptoCheckout({
+						symbol: currency,
+						chain,
+						sender,
+						planId,
+						hash,
+					})
 					.then(() => {
 						notify({
 							header: "Confirmed successfully",
@@ -203,8 +156,25 @@ export function SelectPaymentModal(): JSX.Element {
 						console.error(err);
 						notify({
 							header: "Confirmation failed",
-							body: "There was an error confirming your checkout.",
+							body: (
+								<>
+									There was an error confirming your checkout:{" "}
+									{err.message.includes("support") ? (
+										<span
+											dangerouslySetInnerHTML={{
+												__html: err.message.replace(
+													/support/g,
+													'<a href="mailto:ceo@microboard.io">support</a>',
+												),
+											}}
+										/>
+									) : (
+										err.message
+									)}
+								</>
+							),
 							variant: "error",
+							duration: 10_000,
 						});
 					});
 			};
@@ -232,7 +202,12 @@ export function SelectPaymentModal(): JSX.Element {
 				const from = splitted[2];
 				const to = splitted[4];
 				const price = splitted[6];
-				cancelCheckout(from, to, parseEther(price).toString());
+
+				billingApi.cancelCryptoCheckout({
+					sender: from,
+					to,
+					value: parseEther(price).toString(),
+				});
 			}
 		};
 
@@ -242,12 +217,11 @@ export function SelectPaymentModal(): JSX.Element {
 			}
 			assertPlanExists(plan);
 
-			const checkout = await createCheckout(
+			const checkout = await account.createCryptoCheckout(
 				chain.nativeCurrency.symbol,
 				chain.name,
 				address,
 				plan.id,
-				account.getIsAnnualPayment(),
 			);
 
 			if (!checkout.address.startsWith("0x")) {
@@ -291,63 +265,228 @@ export function SelectPaymentModal(): JSX.Element {
 				<h1 className={styles.heading}>Payment</h1>
 				<div className={styles.cards}>
 					<Card
-						onClick={handleCrypto}
-						title="Pay in crypto"
-						description="Make a payment directly from your cryptocurrency wallet, in seconds."
+						onClick={
+							active === "stripe"
+								? undefined
+								: () => setActive("stripe")
+						}
+						active={active === "stripe"}
+						title={
+							<div className={styles.text}>
+								Pay by card, $USD
+								<div className={styles.icons}>
+									<Icon
+										iconName="Visa"
+										width={28}
+										height={20}
+									/>
+									<Icon
+										iconName="Mastercard"
+										width={28}
+										height={20}
+									/>
+								</div>
+							</div>
+						}
+						description={`Total: $${account.getIsAnnualPayment() ? `${(plan?.annualPrice || 0) / 100} ($${(plan?.annualPrice || 0) / 12 / 100} per month)` : +(plan?.price || 0) / 100}`}
 						disabled={isDisabled}
-						optional={
+						footer={
+							<>
+								<div className={styles.footer}>
+									<Button
+										id="pay_stripe"
+										pattern="primary"
+										onClick={handleStripe}
+										disabled={
+											isDisabled || !account.info?.email
+										}
+									>
+										Pay with Stripe
+									</Button>
+									{!account.info?.email && (
+										<Button
+											id="add_email"
+											pattern="primary"
+											onClick={() =>
+												navigate(
+													`/bind-email/add-email?${window.location.search.substring(1)}`,
+												)
+											}
+											disabled={isDisabled}
+										>
+											Add email
+										</Button>
+									)}
+								</div>
+								<div
+									className={clsx(
+										styles.description,
+										styles.paddingTop,
+									)}
+								>
+									{account.info?.email
+										? "By confirming your subscription, you authorize Microboard to charge your account for future payments in accordance with the company's terms. You can cancel your subscription at any time."
+										: "Add email to pay with card"}
+								</div>
+							</>
+						}
+					/>
+					<Card
+						onClick={
+							active === "crypto"
+								? undefined
+								: () => setActive("crypto")
+						}
+						active={active === "crypto"}
+						title={
+							<div className={styles.text}>
+								Pay in crypto
+								<div className={styles.icons}>
+									<Icon
+										iconName="XRP"
+										width={25}
+										height={25}
+									/>
+									<Icon
+										iconName="BTC"
+										width={24}
+										height={24}
+									/>
+									<Icon
+										iconName="ETH"
+										width={24}
+										height={24}
+									/>
+								</div>
+							</div>
+						}
+						description={`Total payment for ${account.getIsAnnualPayment() ? "12 months" : "a month"}`}
+						disabled={isDisabled}
+						footer={
 							<ConnectButton.Custom>
 								{({
-									account,
+									account: walletAccount,
 									chain,
 									openAccountModal,
 									openChainModal,
 									openConnectModal,
 									mounted,
 								}) => {
-									if (!account || !mounted) {
+									if (!walletAccount || !mounted) {
 										return (
 											<Button
 												id="crypto_connect_button"
-												pattern="tertiary"
+												pattern="primary"
 												onClick={openConnectModal}
 												disabled={isDisabled}
+												className={styles.footer}
 											>
 												Connect wallet
 											</Button>
 										);
 									}
 									return (
-										<div className={styles.inlineButtons}>
-											<Button
-												id="crypto_chain_button"
-												pattern="tertiary"
-												onClick={openChainModal}
-												disabled={isDisabled}
+										// todo fix DRY
+										<div>
+											From wallet:{" "}
+											{walletAccount.displayName}
+											<div
+												className={styles.description}
+												style={{ paddingBottom: "8px" }}
 											>
-												{chain?.name}
-											</Button>
-											<Button
-												id="crypto_account_button"
-												pattern="tertiary"
-												onClick={openAccountModal}
-												disabled={isDisabled}
+												Balance:{" "}
+												{walletAccount.displayBalance}
+											</div>
+											<div className={styles.coins}>
+												<CoinCard
+													onClick={() => {}} // todo set active coin when many coins
+													disabled={isDisabled}
+													active={true}
+													coin={
+														(walletAccount?.balanceSymbol ||
+															"ETH") as "ETH"
+													}
+													title={
+														<>
+															<div>
+																{
+																	// todo fix DRY
+																	(+account
+																		.cryptoRates[
+																		walletAccount?.balanceSymbol ||
+																			"ETH"
+																	][
+																		account.getIsAnnualPayment()
+																			? "annualPrice"
+																			: "price"
+																	]).toFixed(
+																		5,
+																	)
+																}
+															</div>
+															<div
+																className={
+																	styles.description
+																}
+															>
+																on {chain?.name}
+															</div>
+														</>
+													}
+												/>
+											</div>
+											<div className={styles.footer}>
+												<Button
+													id="crypto_chain_button"
+													pattern="primary"
+													onClick={openAccountModal}
+													disabled={isDisabled}
+												>
+													Switch Wallet
+												</Button>
+												<Button
+													id="crypto_chain_button"
+													pattern="primary"
+													onClick={openChainModal}
+													disabled={isDisabled}
+												>
+													Switch Network
+												</Button>
+												<Button
+													id="crypto_account_button"
+													pattern="primary"
+													onClick={handleCrypto}
+													disabled={isDisabled}
+												>
+													Pay{" "}
+													{
+														// todo fix DRY
+														(+account.cryptoRates[
+															walletAccount?.balanceSymbol ||
+																"ETH"
+														][
+															account.getIsAnnualPayment()
+																? "annualPrice"
+																: "price"
+														]).toFixed(5)
+													}{" "}
+													with{" "}
+													{walletAccount.displayName}
+												</Button>
+											</div>
+											<div
+												className={clsx(
+													styles.description,
+													styles.paddingTop,
+												)}
 											>
-												{account.displayBalance}{" "}
-												{account.address.slice(0, 4)}...
-												{account.address.slice(-4)}
-											</Button>
+												Final price may vary
+											</div>
 										</div>
 									);
 								}}
 							</ConnectButton.Custom>
 						}
-					/>
-					<Card
-						onClick={handleStripe}
-						title="Pay with Visa/MasterCard/, $USD"
-						description="Payment of bills in dollars, debit and credit cards by stripe."
-						disabled={isDisabled}
 					/>
 				</div>
 				{!location.pathname.includes("user") && (
@@ -365,12 +504,13 @@ export function SelectPaymentModal(): JSX.Element {
 }
 
 const Card: React.FC<{
-	onClick: MouseEventHandler<HTMLButtonElement>;
+	onClick?: MouseEventHandler<HTMLButtonElement>;
 	disabled: boolean;
-	title: string;
+	title: JSX.Element;
 	description: string;
-	optional?: JSX.Element;
-}> = ({ onClick, disabled, title, description, optional }) => {
+	active: boolean;
+	footer: JSX.Element;
+}> = ({ onClick, disabled, title, description, footer, active }) => {
 	return (
 		<Button
 			className={styles.card}
@@ -378,9 +518,105 @@ const Card: React.FC<{
 			onClick={onClick}
 			disabled={disabled}
 		>
-			<div>{title}</div>
-			<div className={styles.description}>{description}</div>
-			{optional}
+			<div className={styles.title}>
+				<div className={styles.icons}>
+					<Icon
+						iconName={active ? "CheckboxFilled" : "Checkbox"}
+						width={20}
+						height={20}
+					/>
+				</div>
+				<div className={styles.mainContent}>
+					{title}
+					<Transition active={active}>
+						<div className={styles.description}>{description}</div>
+					</Transition>
+				</div>
+			</div>
+			<Transition active={active}>{footer}</Transition>
 		</Button>
+	);
+};
+
+const CoinCard: React.FC<{
+	onClick: MouseEventHandler<HTMLButtonElement>;
+	disabled: boolean;
+	title: JSX.Element;
+	coin: "POL" | "ETH";
+	active: boolean;
+}> = ({ onClick, disabled, title, active, coin }) => {
+	return (
+		<Button
+			className={clsx(
+				styles.card,
+				styles.coin,
+				(active && styles.active) || "",
+			)}
+			pattern="tertiary"
+			onClick={onClick}
+			disabled={disabled}
+		>
+			<div className={styles.coinTitle}>
+				<Icon iconName={coin} width={24} height={24} />
+				<div className={styles.mainContent}>{title}</div>
+			</div>
+			<Tooltip
+				tooltip="Total price may various little bit"
+				tooltipPosition="top"
+			/>
+		</Button>
+	);
+};
+
+const Transition: React.FC<{ active: boolean; children: React.ReactNode }> = ({
+	active,
+	children,
+}) => {
+	const nodeRef = useRef<HTMLDivElement>(null);
+
+	return (
+		<CSSTransition
+			nodeRef={nodeRef}
+			in={active}
+			timeout={400}
+			classNames={{
+				enter: styles.cardEnter,
+				enterActive: styles.cardEnterActive,
+				exit: styles.cardExit,
+				exitActive: styles.cardExitActive,
+			}}
+			unmountOnExit
+			onEnter={() => {
+				if (nodeRef.current) {
+					nodeRef.current.style.height = "0px";
+				}
+			}}
+			onEntering={() => {
+				if (nodeRef.current) {
+					const height = nodeRef.current.scrollHeight;
+					nodeRef.current.style.height = `${height}px`;
+				}
+			}}
+			onEntered={() => {
+				if (nodeRef.current) {
+					nodeRef.current.style.height = "auto";
+				}
+			}}
+			onExit={() => {
+				if (nodeRef.current) {
+					const height = nodeRef.current.scrollHeight;
+					nodeRef.current.style.height = `${height}px`;
+				}
+			}}
+			onExiting={() => {
+				if (nodeRef.current) {
+					nodeRef.current.style.height = "0px";
+				}
+			}}
+		>
+			<div ref={nodeRef} style={{ width: "100%" }}>
+				{children}
+			</div>
+		</CSSTransition>
 	);
 };

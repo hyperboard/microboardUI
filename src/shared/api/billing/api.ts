@@ -1,33 +1,71 @@
 import { api } from "../base/base";
+import { HTTPResponse } from "../base/httpResponse";
 import type { MessageResponse } from "../types";
 import {
+	CancelCryptoCheckoutPayload,
 	CheckoutUrl,
+	ConfirmCryptoCheckoutPayload,
+	CreateCryptoCheckoutPayload,
+	CryptoCheckout,
+	CryptoRates,
 	type CreateCheckoutPayload,
 	type HistoryRecord,
 	type Plan,
 	type UserLimits,
 } from "./types";
 
-export function getUserPlanDetails() {
+const CRYPTO_CHECKOUT_BASE_URL = "/crypto/checkout";
+
+export function getUserPlanDetails(): Promise<HTTPResponse<UserLimits>> {
 	return api.get<UserLimits>("/billing/limits");
 }
 
-export function getPlans() {
+export function getPlans(): Promise<HTTPResponse<Plan[]>> {
 	return api.get<Plan[]>("/billing/plans");
 }
 
-export function createCheckout(payload: CreateCheckoutPayload) {
+export function createCheckout(
+	payload: CreateCheckoutPayload,
+): Promise<HTTPResponse<CheckoutUrl>> {
 	return api.post<CheckoutUrl>("/billing/create-checkout", payload);
 }
 
-export function unsubscribe() {
+export function createCryptoCheckout(
+	payload: CreateCryptoCheckoutPayload,
+): Promise<HTTPResponse<CryptoCheckout>> {
+	return api.post<CryptoCheckout>(CRYPTO_CHECKOUT_BASE_URL, payload);
+}
+
+export async function cancelCryptoCheckout(
+	payload: CancelCryptoCheckoutPayload,
+): Promise<HTTPResponse<MessageResponse>> {
+	return await api.delete<MessageResponse>(
+		CRYPTO_CHECKOUT_BASE_URL,
+		undefined,
+		payload,
+	);
+}
+
+export async function confirmCryptoCheckout(
+	payload: ConfirmCryptoCheckoutPayload,
+): Promise<HTTPResponse<MessageResponse>> {
+	return await api.patch<MessageResponse>(CRYPTO_CHECKOUT_BASE_URL, payload);
+}
+
+export async function getApproxCryptoRates(): Promise<
+	HTTPResponse<CryptoRates>
+> {
+	return await api.get<CryptoRates>("/crypto/rates");
+}
+
+export function unsubscribe(): Promise<HTTPResponse<MessageResponse>> {
 	return api.delete<MessageResponse>("/billing/subscriptions");
 }
 
-export function verifyPayment() {
+export function verifyPayment(): Promise<HTTPResponse<MessageResponse>> {
 	return api.get<MessageResponse>("/billing/sync-after-success");
 }
 
-export function getHistory() {
+export function getHistory(): Promise<HTTPResponse<HistoryRecord[]>> {
 	return api.get<HistoryRecord[]>("/billing/history");
 }

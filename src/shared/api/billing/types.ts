@@ -66,6 +66,44 @@ export type CreateCheckoutPayload = {
 	annualPayment?: boolean;
 };
 
+export type CreateCryptoCheckoutPayload = {
+	symbol: string;
+	chain: string;
+	sender: string;
+	planId: string;
+	annualPayment: boolean;
+};
+
+export type CryptoCheckout = {
+	price: string;
+	symbol: string;
+	address: string;
+};
+
+export type CancelCryptoCheckoutPayload = {
+	sender: string;
+	to: string;
+	value: string;
+};
+
+export type ConfirmCryptoCheckoutPayload = {
+	symbol: string;
+	chain: string;
+	sender: string;
+	planId: string;
+	hash: string;
+};
+
+type CryptoRate = {
+	annualPrice: string;
+	price: string;
+};
+
+export type CryptoRates = {
+	ETH: CryptoRate;
+	POL: CryptoRate;
+};
+
 export type CheckoutUrl = { url: string };
 
 export type HistoryRecord = {

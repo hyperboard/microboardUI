@@ -14,6 +14,8 @@ import { Storage } from "./Storage";
 import { SessionStorage } from "App/SessionStorage";
 import { UniqueString } from "shared/api/auth";
 import { MessageResponse } from "shared/api/types";
+import { CryptoCheckout } from "shared/api/billing";
+import { ethers } from "ethers";
 
 type AccountInfo = {
 	id: number;
@@ -40,6 +42,16 @@ export class Account {
 	info: null | AccountInfo = null;
 	billingInfo: null | billingApi.UserLimits = null;
 	billingHistory: billingApi.HistoryRecord[] = [];
+	cryptoRates: billingApi.CryptoRates = {
+		ETH: {
+			price: "",
+			annualPrice: "",
+		},
+		POL: {
+			price: "",
+			annualPrice: "",
+		},
+	};
 	isTokenLoading = false;
 	isInitialized = false;
 	tokenData: TokenData | null = null;
@@ -133,6 +145,7 @@ export class Account {
 			}
 
 			await this.fetchBillingHistory();
+			await this.fetchCryptoRates();
 		} catch {
 			console.error("Error fetching billing user info");
 		} finally {
@@ -177,6 +190,29 @@ export class Account {
 			this.billingHistory = data ?? [];
 		} catch {
 			console.error("Error fetching billing user history");
+		} finally {
+			this.subject.publish(this.info);
+		}
+	}
+
+	async fetchCryptoRates(): Promise<void> {
+		try {
+			const { data } = await billingApi.getApproxCryptoRates();
+			if (!data) {
+				throw new Error();
+			}
+
+			const ethAnnualPrice = ethers.formatEther(data.ETH.annualPrice);
+			const ethPrice = ethers.formatEther(data.ETH.price);
+			const polAnnualPrice = ethers.formatEther(data.POL.annualPrice);
+			const polPrice = ethers.formatEther(data.POL.price);
+
+			this.cryptoRates.ETH.annualPrice = ethAnnualPrice;
+			this.cryptoRates.ETH.price = ethPrice;
+			this.cryptoRates.POL.annualPrice = polAnnualPrice;
+			this.cryptoRates.POL.price = polPrice;
+		} catch {
+			console.error("Error fetching crypto rates");
 		} finally {
 			this.subject.publish(this.info);
 		}
@@ -356,6 +392,26 @@ export class Account {
 		linkElem.href = data?.url;
 		linkElem.target = "_blank";
 		linkElem.click();
+	}
+
+	async createCryptoCheckout(
+		currency: string,
+		chain: string,
+		sender: string,
+		planId: string,
+	): Promise<CryptoCheckout> {
+		const { data } = await billingApi.createCryptoCheckout({
+			symbol: currency,
+			chain,
+			sender,
+			planId,
+			annualPayment: this.annualPayment,
+		});
+
+		if (!data) {
+			throw new Error();
+		}
+		return data;
 	}
 
 	setOnLogout(cb: () => Promise<void>): void {

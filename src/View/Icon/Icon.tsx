@@ -130,7 +130,15 @@ export type IconId =
 	| "ArrowRight"
 	| "ArrowRightSm"
 	| "CryptoIcon"
-	| "GoogleIcon";
+	| "GoogleIcon"
+	| "Checkbox"
+	| "CheckboxFilled"
+	| "Visa"
+	| "Mastercard"
+	| "XRP"
+	| "BTC"
+	| "ETH"
+	| "POL";
 
 type Props = {
 	iconName: IconId;
