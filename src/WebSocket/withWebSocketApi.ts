@@ -230,6 +230,7 @@ export function withWebSocketApi({
     async function handleError(ws: WebSocket, error: unknown, context: string): Promise<void> {
         const msg = getErrorMsg(error, context);
         logger.error(msg);
+        logger.error(error);
         if (error instanceof WsError) {
             return sendWsMsg(ws, error);
         }
