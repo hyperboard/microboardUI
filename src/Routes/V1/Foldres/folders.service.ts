@@ -232,17 +232,10 @@ export class FoldersService {
                 .returning()
                 .prepare("init");
 
-            const [rootFolder] = await query.execute({ folderType: FolderType.ROOT });
-            const [draftFolder] = await query.execute({ folderType: FolderType.DRAFTS });
+            await query.execute({ folderType: FolderType.ROOT });
+            await query.execute({ folderType: FolderType.DRAFTS });
             await query.execute({ folderType: FolderType.TRASH });
             await query.execute({ folderType: FolderType.VISITED });
-
-            const insertFolderQuery = tx
-                .insert(foldersToFolders)
-                .values({ folderId: rootFolder.id, containsFolderId: sql.placeholder("containsFolderId") })
-                .prepare("insertFolder");
-
-            await insertFolderQuery.execute({ containsFolderId: draftFolder.id });
         });
     }
 
