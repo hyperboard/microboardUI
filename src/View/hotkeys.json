@@ -8,6 +8,15 @@
 			"mac": "V"
 		}
 	},
+	"navigateMode": {
+		"key": {
+			"button": "Space"
+		},
+		"label": {
+			"windows": "Space",
+			"mac": "Space"
+		}
+	},
 	"text": {
 		"key": {
 			"button": "KeyT"

@@ -94,6 +94,7 @@ export function getController(
 		}
 	}
 
+	let isSpacePressed = false;
 	function onKeyDown(event: KeyboardEvent): void {
 		const board = getBoard();
 		if (!board || !board.events) {
@@ -218,6 +219,13 @@ export function getController(
 			zoomDefault: () => board.camera.zoomToViewCenter(1),
 			frameNavigationNext: () => board.tools.frameNavigation("next"),
 			frameNavigationPrev: () => board.tools.frameNavigation("prev"),
+			navigateMode: {
+				cb: () => {
+					board.tools.setNavigateMode(isSpacePressed);
+					isSpacePressed = true;
+				},
+				selectionContext: ["None", "EditUnderPointer", "SelectByRect"],
+			},
 		};
 		const viewModeHotkeys = {
 			zoomIn: () => board.camera.zoomInToViewCenter(),
@@ -239,6 +247,7 @@ export function getController(
 			isSingleItemInSelection &&
 			!(event.ctrlKey || event.metaKey || event.altKey) &&
 			!isControlCharacter(event.key);
+
 		if (isTextEditStarted) {
 			board.selection.editText(event.key);
 		}
@@ -256,6 +265,17 @@ export function getController(
 		const board = getBoard();
 		if (!board) {
 			return;
+		}
+
+		const editModeHotkeys: HotkeysMap = {
+			navigateMode: () => {
+				isSpacePressed = false;
+				board.tools.exitNavigateMode();
+			},
+		};
+
+		if (board.getInterfaceType() === "edit") {
+			checkHotkeys(editModeHotkeys, event, board);
 		}
 
 		board.keyboard.keyUp(event);
