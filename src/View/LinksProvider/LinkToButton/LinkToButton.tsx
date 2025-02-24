@@ -37,7 +37,6 @@ interface Props {
 
 export const LinkToButton = ({ item, handleClick }: Props): JSX.Element => {
 	const linkToButtonRef = useRef<HTMLButtonElement | null>(null);
-	const [isTooltipShown, setIsTooltipShown] = useState(false);
 	const [iconUrl, setIconUrl] = useState<string | undefined>(undefined);
 	const imgRef = useRef<HTMLImageElement | null>(null);
 	const { app, board } = useAppContext();
@@ -85,13 +84,14 @@ export const LinkToButton = ({ item, handleClick }: Props): JSX.Element => {
 				left: mbr.left,
 				top: mbr.top,
 			}}
-			onMouseEnter={() => setIsTooltipShown(true)}
-			onMouseLeave={() => setIsTooltipShown(false)}
 			className={styles.btn}
 			ref={linkToButtonRef}
 			onClick={() => handleClick(item)}
 			variant="secondary"
 			rounded="none"
+			tooltip={item.getLinkTo()}
+			tooltipVariant="secondary"
+			tooltipPosition={"bottom-left-noWhitespace"}
 		>
 			{iconUrl ? (
 				<img
@@ -103,9 +103,6 @@ export const LinkToButton = ({ item, handleClick }: Props): JSX.Element => {
 				/>
 			) : (
 				<Icon iconName="linkTo" width={16} height={16} />
-			)}
-			{isTooltipShown && (
-				<div className={styles.tooltip}>{item.getLinkTo()}</div>
 			)}
 		</UiButton>
 	);

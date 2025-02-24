@@ -45,6 +45,7 @@ import { InactiveBoardHidder } from "./InactiveBoardHidder";
 import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
 import { UIMainLoader } from "View/Ui/UIMainLoader/UIMainLoader";
+import { HyperLink } from "View/hyperLink/HyperLink";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -217,6 +218,7 @@ export function AppView(): JSX.Element {
 				<QuickAddPanel />
 				<ExportPanel />
 			</ViewModeGuard>
+			<HyperLink />
 			<ToastProvider />
 			{authCode && teamIdSearch ? <ImportMiro /> : null}
 			<ImportMiroStartModal />

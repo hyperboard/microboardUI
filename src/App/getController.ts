@@ -409,6 +409,10 @@ export function getController(
 		const dx = newPoint.x - oldPoint.x;
 		const dy = newPoint.y - oldPoint.y;
 		const isSelect = tools.getSelect() !== undefined;
+		const itemsUnderPointer = board.items.getUnderPointer();
+		if (itemsUnderPointer.length) {
+			board.pointer.subject.publish(board.pointer);
+		}
 		if (isSelect) {
 			return (
 				selection.tool.pointerMoveBy(dx, dy) ||

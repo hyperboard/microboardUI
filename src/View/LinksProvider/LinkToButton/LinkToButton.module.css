@@ -15,16 +15,3 @@
 	height: 20px;
 	background: none;
 }
-
-.tooltip {
-	border-radius: 12px;
-	padding: 12px;
-	box-shadow: 0px 10px 16px -3px rgba(20, 21, 26, 0.08);
-	position: absolute;
-	color: rgba(71, 120, 245, 1);
-	text-decoration: underline;
-	top: 30px;
-	left: 0;
-	background-color: #ffffff;
-	white-space: nowrap;
-}

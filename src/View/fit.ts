@@ -210,6 +210,25 @@ export function fitLinkToBtn(
 	return newPanel;
 }
 
+export function fitHyperLink(
+	linkMbr: Mbr,
+	panel: Mbr,
+	verticalOffset = 0,
+): Mbr {
+	const panelHeight = panel.getHeight();
+	const newPanel = new Mbr();
+
+	newPanel.top = linkMbr.bottom - verticalOffset;
+	newPanel.bottom = panelHeight + newPanel.top;
+
+	const panelWidth = panel.getWidth();
+
+	newPanel.left = linkMbr.left;
+	newPanel.right = newPanel.left + panelWidth;
+
+	return newPanel;
+}
+
 export function fitComment(
 	anchor: Mbr,
 	panel: Mbr,

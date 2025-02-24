@@ -194,14 +194,29 @@
 
 .tip {
 	padding: 8px 12px;
-	border-radius: 6px;
 	display: flex;
 	align-items: center;
 	gap: 4px;
 	font-size: 1.4rem;
 	font-weight: 400;
+}
+
+.primaryTip {
+	border-radius: 6px;
 	background-color: rgb(11, 12, 14);
 	color: rgb(247, 247, 247);
+}
+
+.secondaryTip {
+	display: block;
+	padding: 12px;
+	border-radius: 12px;
+	box-shadow: 0px 10px 16px -3px rgba(20, 21, 26, 0.08);
+	color: rgba(71, 120, 245, 1);
+	background-color: #ffffff;
+	max-width: 400px;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .tip.padding-md {
@@ -225,7 +240,7 @@
 	text-align: left;
 }
 
-.tip::before {
+.primaryTip::before {
 	content: "";
 	position: absolute;
 	width: 0;
@@ -236,20 +251,20 @@
 	border-radius: 8px;
 }
 
-.tip-container.top-center-fixed .tip::before {
+.tip-container.top-center-fixed .primaryTip::before {
 	left: 4%;
 	margin-left: -0.7rem;
 	bottom: -0.6rem;
 	transform: rotate(180deg);
 }
 
-.tip-container.top-right-fixed .tip::before {
+.tip-container.top-right-fixed .primaryTip::before {
 	left: 0.5rem;
 	bottom: -0.6rem;
 	transform: rotate(180deg);
 }
 
-.tip-container.right .tip::before {
+.tip-container.right .primaryTip::before {
 	left: -0.8rem;
 	transform: rotate(-90deg);
 }
@@ -258,7 +273,7 @@
 	left: calc(100% + 1.2rem);
 }
 
-.tip-container.top .tip::before {
+.tip-container.top .primaryTip::before {
 	left: 50%;
 	margin-left: -0.7rem;
 	bottom: -0.6rem;
@@ -269,7 +284,7 @@
 	bottom: calc(100% + 1.2rem);
 }
 
-.tip-container.top-right .tip::before {
+.tip-container.top-right .primaryTip::before {
 	right: 2.5rem;
 	margin-right: -0.7rem;
 	bottom: -0.6rem;
@@ -281,7 +296,7 @@
 	right: -1rem;
 }
 
-.tip-container.top-left .tip::before {
+.tip-container.top-left .primaryTip::before {
 	left: 2.5rem;
 	margin-right: -0.7rem;
 	bottom: -0.6rem;
@@ -293,7 +308,7 @@
 	left: -1rem;
 }
 
-.tip-container.bottom-right .tip::before {
+.tip-container.bottom-right .primaryTip::before {
 	right: 2.5rem;
 	margin-right: -0.7rem;
 	top: -0.6rem;
@@ -304,7 +319,7 @@
 	right: -1rem;
 }
 
-.tip-container.bottom-left .tip::before {
+.tip-container.bottom-left .primaryTip::before {
 	left: 2.5rem;
 	margin-right: -0.7rem;
 	top: -0.6rem;
@@ -315,7 +330,12 @@
 	left: -1rem;
 }
 
-.tip-container.bottom .tip::before {
+.tip-container.bottom-left-noWhitespace {
+	top: calc(100% + 0.5rem);
+	left: 0;
+}
+
+.tip-container.bottom .primaryTip::before {
 	left: 50%;
 	margin-left: -0.7rem;
 	top: -0.6rem;

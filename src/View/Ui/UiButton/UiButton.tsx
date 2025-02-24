@@ -23,7 +23,8 @@ type CommonUiButtonProps = {
 		| "top-right-fixed"
 		| "bottom"
 		| "bottom-right"
-		| "bottom-left";
+		| "bottom-left"
+		| "bottom-left-noWhitespace";
 	variant?: "default" | "secondary" | "tertiary";
 	size?: "lg" | "md" | "sm";
 	rounded?:
@@ -35,6 +36,7 @@ type CommonUiButtonProps = {
 		| "none"
 		| "bottom-left"
 		| "bottom-right";
+	tooltipVariant?: "primary" | "secondary";
 	radius?: "xl" | "md" | "sm";
 	className?: string;
 	toolTipStyle?: CSSProperties;
@@ -67,6 +69,7 @@ export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
 			radius = "xl",
 			rounded = "full",
 			toolTipStyle,
+			tooltipVariant = "primary",
 			...props
 		},
 		ref,
@@ -100,6 +103,7 @@ export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
 				{children}
 				{tooltip && (
 					<Tooltip
+						variant={tooltipVariant}
 						inlineStyle={toolTipStyle}
 						tooltip={tooltip}
 						tooltipPosition={tooltipPosition}

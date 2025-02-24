@@ -16,6 +16,7 @@ import { LocalFileSaveProgress } from "View/LocalFileSavingProgress";
 import { ToolsPanel } from "View/ToolsPanel";
 import { ShapesPanelContextProvider } from "View/ShapesPanel";
 import { useAIContext } from "View/AIInput/AIContext";
+import { HyperLink } from "View/hyperLink/HyperLink";
 
 export function LocalAppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -141,6 +142,7 @@ export function LocalAppView(): JSX.Element {
 			<InactiveBoardHidder>
 				<ZoomPanel />
 			</InactiveBoardHidder>
+			<HyperLink />
 			<ViewModeGuard>
 				<LinksProvider />
 				<ContextPanel />

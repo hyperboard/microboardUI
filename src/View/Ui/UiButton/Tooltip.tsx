@@ -14,7 +14,9 @@ interface TooltipProps {
 		| "top-right-fixed"
 		| "bottom"
 		| "bottom-right"
-		| "bottom-left";
+		| "bottom-left"
+		| "bottom-left-noWhitespace";
+	variant?: "primary" | "secondary";
 	tooltipAlign?: "center" | "left";
 	inlineStyle?: CSSProperties;
 	borderRadius?: "radiusMd";
@@ -30,6 +32,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
 			tooltip,
 			tooltipPosition = "right",
 			tooltipAlign = "center",
+			variant = "primary",
 			hotkey,
 			borderRadius,
 			padding,
@@ -55,6 +58,8 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
 						[style.bottom]: tooltipPosition === "bottom",
 						[style.bottomRight]: tooltipPosition === "bottom-right",
 						[style.bottomLeft]: tooltipPosition === "bottom-left",
+						[style.bottomLeftNoWhitespace]:
+							tooltipPosition === "bottom-left-noWhitespace",
 					},
 					className,
 				)}
@@ -64,6 +69,10 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
 				<div
 					className={clsx(
 						style.tip,
+						{
+							[style.primaryTip]: variant === "primary",
+							[style.secondaryTip]: variant === "secondary",
+						},
 						borderRadius && style[borderRadius],
 						padding && style[padding],
 					)}
