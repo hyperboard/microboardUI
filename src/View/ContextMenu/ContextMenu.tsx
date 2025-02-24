@@ -43,7 +43,7 @@ export function ContextMenu(): JSX.Element | null {
 	const [isDeletingBoard, setIsDeletingBoard] = useState(false);
 	const [isDeletingFolder, setIsDeletingFolder] = useState(false);
 
-	const { setBoard, setFolder } = useOpenedFoldersContext();
+	const { setId } = useOpenedFoldersContext();
 	const navigate = useNavigate();
 	const currentBoardId = board.getBoardId();
 
@@ -54,7 +54,8 @@ export function ContextMenu(): JSX.Element | null {
 		? account.permissions.checkPermissions("owns", "boards", boardId)
 		: false;
 	const isFolderEditable = folderInfo
-		? folderInfo.type === foldersApi.FolderType.NESTED
+		? folderInfo.type === foldersApi.FolderType.NESTED ||
+			folderInfo.type === foldersApi.FolderType.DRAFTS
 		: false;
 	const isFolderExtendable = folderInfo
 		? folderInfo.type !== foldersApi.FolderType.TRASH &&
@@ -78,8 +79,12 @@ export function ContextMenu(): JSX.Element | null {
 		const boardInfo = boardsList.getBoardInfo(boardId);
 		setRenamingId(boardId);
 		setNewName(boardInfo?.title ?? "");
-		setBoard(boardId);
-		setFolder(null);
+		setId(boardId);
+
+		if (board.getBoardId() === "blank") {
+			app.openBoard(boardId);
+			navigate(`/boards/${boardId}`);
+		}
 	};
 
 	const deserializeBoard = (stringedHTML: string): void => {
@@ -107,8 +112,7 @@ export function ContextMenu(): JSX.Element | null {
 		const stringedHTML = await app.openAndEditFile();
 		if (stringedHTML) {
 			close();
-			setBoard(boardId);
-			setFolder(null);
+			setId(boardId);
 			app.openBoardFromFile();
 			navigate(`/boards/local`);
 			deserializeBoard(stringedHTML);
@@ -163,8 +167,7 @@ export function ContextMenu(): JSX.Element | null {
 				folderId ?? undefined,
 			);
 			close();
-			setBoard(boardId);
-			setFolder(null);
+			setId(boardId);
 			await app.openBoard(boardId);
 			navigate(`/boards/${boardId}`);
 			deserializeBoard(stringedHTML);
@@ -186,8 +189,7 @@ export function ContextMenu(): JSX.Element | null {
 		);
 		setIsCreatingFolder(false);
 		close();
-		setBoard(null);
-		setFolder(createdFolderId ?? null);
+		setId(createdFolderId ?? null);
 		setRenamingId(createdFolderId ?? null);
 		setNewName(t("board.untitled"));
 	};

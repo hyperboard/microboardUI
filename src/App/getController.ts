@@ -211,7 +211,7 @@ export function getController(
 			},
 			undo: () => board.events?.undo(),
 			redo: () => board.events?.redo(),
-			cancel: () => board.tools.cancel(),
+			cancel: { cb: () => board.tools.cancel(), preventDefault: false },
 			confirm: () => board.tools.confirm(),
 			zoomIn: () => board.camera.zoomInToViewCenter(),
 			zoomOut: () => board.camera.zoomOutFromViewCenter(),

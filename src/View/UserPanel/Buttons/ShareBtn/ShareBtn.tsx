@@ -27,6 +27,10 @@ export const ShareBtn: React.FC = () => {
 		openModal(SHARE_MODAL_ID);
 	};
 
+	if (board.getBoardId() === "blank") {
+		return null;
+	}
+
 	return (
 		<Button
 			onClick={handleShare}

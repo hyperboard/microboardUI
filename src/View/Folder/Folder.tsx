@@ -33,6 +33,7 @@ import styles from "./Folder.module.css";
 import { FolderItem } from "./FolderItem";
 import { useFoldersContext } from "./FoldersContext";
 import { FolderType } from "shared/apiV2/folders";
+import { useOpenedFoldersContext } from "./OpenedFoldersContext";
 
 type Props = {
 	folder: foldersApi.Folder | null;
@@ -71,6 +72,7 @@ export const Folder = ({
 	const accordionRef = useRef<AccordionState>(null);
 	const currentBoardRef = useRef<HTMLDivElement>();
 	const currentFolderRef = useRef<HTMLButtonElement>(null);
+	const { id } = useOpenedFoldersContext();
 	const [openedByDragging, setOpenedByDragging] = useState(false);
 	const { overFolderId, setOverFolderId } = useFoldersContext();
 	const [originalPosition, setOriginalPosition] = useState<
@@ -101,12 +103,19 @@ export const Folder = ({
 			}
 		: undefined;
 
-	const openFolders = (boardId: string | null) => {
-		if (!boardId) {
+	const openFolders = (id: string | number | null) => {
+		if (!id) {
 			return;
 		}
 
-		const folderIds = boardsList.getPathToBoard(boardId);
+		let folderIds;
+		if (typeof id === "string") {
+			folderIds = boardsList.getPathToBoard(id);
+		}
+
+		if (typeof id === "number") {
+			folderIds = boardsList.getPathToFolder(id);
+		}
 
 		if (!folderIds) {
 			return;
@@ -126,15 +135,10 @@ export const Folder = ({
 	};
 
 	useEffect(() => {
-		if (isSidePanelOpen) {
-			openFolders(boardId);
+		if (id) {
+			return openFolders(id);
 		}
-	}, [
-		isSidePanelOpen,
-		boardsList.getRootFolder(),
-		boardsList.getSharedFolder(),
-		boardId,
-	]);
+	}, [id]);
 
 	useEffect(() => {
 		if (isOver && !accordionRef.current?.isOpen) {

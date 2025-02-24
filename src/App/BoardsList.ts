@@ -8,6 +8,7 @@ export class BoardsList {
 	subject = new Subject<void>();
 	private sharedFolder: foldersApi.Folder | null = null;
 	private rootFolder: foldersApi.Folder | null = null;
+	private draftsFolder: foldersApi.Folder | null = null;
 	isLoading = true;
 
 	constructor(
@@ -21,6 +22,10 @@ export class BoardsList {
 
 	getRootFolder(): foldersApi.Folder | null {
 		return this.rootFolder;
+	}
+
+	getDraftsFolder(): foldersApi.Folder | null {
+		return this.draftsFolder;
 	}
 
 	async createFolder(title?: string, parentFolder?: number) {
@@ -94,7 +99,11 @@ export class BoardsList {
 			return null;
 		};
 
-		return searchFolder(this.rootFolder) || searchFolder(this.sharedFolder);
+		return (
+			searchFolder(this.rootFolder) ||
+			searchFolder(this.sharedFolder) ||
+			searchFolder(this.draftsFolder)
+		);
 	}
 
 	private findPathToBoard(
@@ -128,7 +137,8 @@ export class BoardsList {
 	getPathToBoard(boardId: string): number[] | null {
 		return (
 			this.findPathToBoard(boardId, this.rootFolder) ||
-			this.findPathToBoard(boardId, this.sharedFolder)
+			this.findPathToBoard(boardId, this.sharedFolder) ||
+			this.findPathToBoard(boardId, this.draftsFolder)
 		);
 	}
 
@@ -164,7 +174,8 @@ export class BoardsList {
 	getPathToFolder(folderId: number): number[] | null {
 		return (
 			this.findPathToFolder(folderId, this.rootFolder) ||
-			this.findPathToFolder(folderId, this.sharedFolder)
+			this.findPathToFolder(folderId, this.sharedFolder) ||
+			this.findPathToFolder(folderId, this.draftsFolder)
 		);
 	}
 
@@ -198,6 +209,9 @@ export class BoardsList {
 		if (this.sharedFolder?.id === folderId) {
 			return this.sharedFolder;
 		}
+		if (this.draftsFolder?.id === folderId) {
+			return this.draftsFolder;
+		}
 		const searchFolder = (
 			folder: foldersApi.Folder | null,
 		): foldersApi.Folder | null => {
@@ -218,7 +232,11 @@ export class BoardsList {
 			return null;
 		};
 
-		return searchFolder(this.rootFolder) || searchFolder(this.sharedFolder);
+		return (
+			searchFolder(this.rootFolder) ||
+			searchFolder(this.sharedFolder) ||
+			searchFolder(this.draftsFolder)
+		);
 	}
 
 	getFolderByType(
@@ -246,7 +264,8 @@ export class BoardsList {
 
 		return (
 			searchFolderByType(this.rootFolder) ||
-			searchFolderByType(this.sharedFolder)
+			searchFolderByType(this.sharedFolder) ||
+			searchFolderByType(this.draftsFolder)
 		);
 	}
 
@@ -257,26 +276,20 @@ export class BoardsList {
 			const { data: sharedFolder } = await foldersApi.getRootFolder(
 				foldersApi.FolderType.VISITED,
 			);
-			if (!rootFolder) {
-				throw new Error("Failed to load folders");
-			}
-			if (!sharedFolder) {
+			const { data: draftsFolder } = await foldersApi.getRootFolder(
+				foldersApi.FolderType.DRAFTS,
+			);
+			if (!rootFolder || !sharedFolder || !draftsFolder) {
 				throw new Error("Failed to load folders");
 			}
 			this.rootFolder = rootFolder;
 			this.sharedFolder = sharedFolder;
+			this.draftsFolder = draftsFolder;
 			this.updateEmptyTitles(this.rootFolder);
 			this.updateEmptyTitles(this.sharedFolder);
 			this.rootFolder.title = t("sidePanel.folders.myBoards");
 			this.sharedFolder.title = t("sidePanel.folders.sharedBoards");
-
-			const publicDrafts = this.getFolderByType(
-				foldersApi.FolderType.DRAFTS,
-			);
-			if (!publicDrafts) {
-				throw new Error("Failed to load folders");
-			}
-			publicDrafts.title = t("sidePanel.folders.publicDrafts");
+			this.draftsFolder.title = t("sidePanel.folders.publicDrafts");
 			this.isLoading = false;
 			this.subject.publish();
 		} else {
@@ -300,6 +313,7 @@ export class BoardsList {
 				title: t("sidePanel.folders.sharedBoards"),
 				type: foldersApi.FolderType.VISITED,
 			};
+			this.draftsFolder = null;
 			await this.updateDetails();
 			this.isLoading = false;
 			this.subject.publish();
@@ -363,8 +377,13 @@ export class BoardsList {
 	}
 
 	async claim(): Promise<void> {
+		console.log("claim call");
+		if (!this.account.isLoggedIn) {
+			return;
+		}
 		const publicBoards = this.storage.listCreatedBoards();
 		const sharedBoards = this.storage.listVisitedBoards();
+		console.log("claim", publicBoards, sharedBoards);
 		if (publicBoards.length === 0 && sharedBoards.length === 0) {
 			return;
 		}
@@ -493,7 +512,9 @@ export class BoardsList {
 		};
 
 		const targetFolder =
-			findFolder(this.rootFolder) || findFolder(this.sharedFolder);
+			findFolder(this.rootFolder) ||
+			findFolder(this.sharedFolder) ||
+			findFolder(this.draftsFolder);
 
 		if (targetFolder) {
 			targetFolder.items.splice(order, 0, item);
@@ -545,7 +566,9 @@ export class BoardsList {
 		};
 
 		return (
-			findItemIndex(this.rootFolder) || findItemIndex(this.sharedFolder)
+			findItemIndex(this.rootFolder) ||
+			findItemIndex(this.sharedFolder) ||
+			findItemIndex(this.draftsFolder)
 		);
 	}
 
@@ -587,8 +610,12 @@ export class BoardsList {
 		const removedFromShared = removedFromRoot
 			? false
 			: findAndRemoveItem(this.sharedFolder);
+		const removedFromDrafts =
+			removedFromRoot || removedFromShared
+				? false
+				: findAndRemoveItem(this.draftsFolder);
 
-		if (removedFromRoot || removedFromShared) {
+		if (removedFromRoot || removedFromShared || removedFromDrafts) {
 			this.subject.publish();
 			if (typeof itemId === "string") {
 				await foldersApi.deleteFolderContent(folderId, {

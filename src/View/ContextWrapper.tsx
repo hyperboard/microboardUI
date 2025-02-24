@@ -3,7 +3,6 @@ import type { Board } from "Board";
 import React from "react";
 import { Outlet } from "react-router-dom";
 import { AppContext } from "./AppContext";
-import { BoardRenameContextProvider } from "./BoardName";
 import { ContextMenuContextProvider } from "./ContextMenu";
 import { OpenedFoldersContextProvider } from "./Folder";
 import ModalsWrapper from "./Modal/ModalsWrapper";
@@ -46,16 +45,14 @@ export function ContextWrapper({ app, board }: Props) {
 				<AIContextProvider>
 					<ModalsWrapper>
 						<ContextMenuContextProvider>
-							<BoardRenameContextProvider>
-								<RenameContextProvider>
-									<OpenedFoldersContextProvider>
-										<SidePanelContextProvider>
-											<Outlet />
-											<ToastProvider />
-										</SidePanelContextProvider>
-									</OpenedFoldersContextProvider>
-								</RenameContextProvider>
-							</BoardRenameContextProvider>
+							<RenameContextProvider>
+								<OpenedFoldersContextProvider>
+									<SidePanelContextProvider>
+										<Outlet />
+										<ToastProvider />
+									</SidePanelContextProvider>
+								</OpenedFoldersContextProvider>
+							</RenameContextProvider>
 						</ContextMenuContextProvider>
 					</ModalsWrapper>
 				</AIContextProvider>

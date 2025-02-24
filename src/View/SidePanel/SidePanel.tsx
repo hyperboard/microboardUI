@@ -2,7 +2,7 @@ import { useAccount } from "App/useAccount";
 import { useBoardsList } from "App/useBoardsList";
 import clsx from "clsx";
 import { useClickOutside } from "lib/useClickOutside";
-import React, { useState, type MouseEventHandler } from "react";
+import React, { useEffect, useState, type MouseEventHandler } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "shared/ui-lib/Button";
 import { useContextMenuContext } from "View/ContextMenu";
@@ -17,11 +17,14 @@ import style from "./SidePanel.module.css";
 import { useSidePanelContext } from "./SidePanelContext";
 import { SortableContext } from "@dnd-kit/sortable";
 import { FoldersContextProvider } from "View/Folder/FoldersContext";
+import { useAppContext } from "View/AppContext";
 
 const MIN_PANEL_WIDTH = 280;
 
 export function SidePanel(): JSX.Element {
-	const { isOpen, toggleSideMenu, isHighlighted } = useSidePanelContext();
+	const { board } = useAppContext();
+	const { isOpen, toggleSideMenu, isHighlighted, openMenu } =
+		useSidePanelContext();
 	const { open, close } = useContextMenuContext();
 	const { t } = useTranslation();
 	const [width, setWidth] = useState(300);
@@ -48,6 +51,12 @@ export function SidePanel(): JSX.Element {
 		const buttonRect = ev.currentTarget.getBoundingClientRect();
 		open(ev.clientX, buttonRect.top + MENU_Y_POS_OFFSET);
 	};
+
+	useEffect(() => {
+		if (board.getBoardId() === "blank") {
+			openMenu();
+		}
+	}, [board.getBoardId()]);
 
 	const newWidth = width <= MIN_PANEL_WIDTH ? MIN_PANEL_WIDTH : width;
 	return (
@@ -79,12 +88,17 @@ export function SidePanel(): JSX.Element {
 								<SortableContext
 									items={[
 										boardsList.getRootFolder()?.id ?? 0,
-										boardsList.getSharedFolder()?.id ?? 1,
+										boardsList.getDraftsFolder()?.id ?? 1,
+										boardsList.getSharedFolder()?.id ?? 2,
 									]}
 								>
 									<Folder
 										accordionClassName={style.rootFolder}
 										folder={boardsList.getRootFolder()}
+									/>
+									<Folder
+										accordionClassName={style.rootFolder}
+										folder={boardsList.getDraftsFolder()}
 									/>
 									<Folder
 										folder={boardsList.getSharedFolder()}

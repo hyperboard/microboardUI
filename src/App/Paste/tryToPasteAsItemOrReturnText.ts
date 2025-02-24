@@ -7,7 +7,9 @@ import {
 import { transformHtmlOrTextToMarkdown } from "Board/Items/RichText/transformHtmlToMarkdown";
 
 const isMarkdown = (text: string): boolean => {
-	if (!text || typeof text !== "string") return false;
+	if (!text || typeof text !== "string") {
+		return false;
+	}
 
 	// Улучшенные паттерны Markdown
 	const markdownPatterns = [

@@ -2,10 +2,8 @@ import { createStrictContext, useStrictContext } from "lib/strictContext";
 import React, { useState, type PropsWithChildren } from "react";
 
 type OpenedFoldersContextPayload = {
-	boardId: string | null;
-	setBoard: (boardId: string | null) => void;
-	folderId: number | null;
-	setFolder: (folderId: number | null) => void;
+	id: string | number | null;
+	setId: (id: string | number | null) => void;
 };
 
 const OpenedFoldersContext = createStrictContext<OpenedFoldersContextPayload>();
@@ -16,20 +14,10 @@ export const useOpenedFoldersContext = () =>
 export const OpenedFoldersContextProvider = ({
 	children,
 }: PropsWithChildren<{}>) => {
-	const [boardId, setBoardId] = useState<string | null>(null);
-	const setBoard = (boardId: string | null) => {
-		setBoardId(boardId);
-	};
-
-	const [folderId, setFolderId] = useState<number | null>(null);
-	const setFolder = (folderId: number | null) => {
-		setFolderId(folderId);
-	};
+	const [id, setId] = useState<string | number | null>(null);
 
 	return (
-		<OpenedFoldersContext.Provider
-			value={{ boardId, setBoard, folderId, setFolder }}
-		>
+		<OpenedFoldersContext.Provider value={{ setId, id }}>
 			{children}
 		</OpenedFoldersContext.Provider>
 	);

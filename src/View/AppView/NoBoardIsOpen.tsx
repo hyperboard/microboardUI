@@ -1,13 +1,13 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { useRenameContext } from "View/Rename";
 import { useSidePanelContext } from "View/SidePanel/SidePanelContext";
 import styles from "./NoBoardIsOpen.module.css";
-import { useBoardRenameContext } from "View/BoardName";
 
 const NoBoardIsOpen: React.FC = () => {
 	const { t } = useTranslation();
 	const { openMenu, handleAddNew, isOpen } = useSidePanelContext();
-	const { setNewBoardName, setRenamingBoardId } = useBoardRenameContext();
+	const { setRenamingId, setNewName } = useRenameContext();
 
 	const handleOpenMenu: React.MouseEventHandler = event => {
 		event.stopPropagation();
@@ -24,8 +24,8 @@ const NoBoardIsOpen: React.FC = () => {
 		event.stopPropagation();
 		handleAddNew(boardId => {
 			openMenu();
-			setNewBoardName(t("board.untitled"));
-			setRenamingBoardId(boardId);
+			setNewName(t("board.untitled"));
+			setRenamingId(boardId);
 		});
 	};
 

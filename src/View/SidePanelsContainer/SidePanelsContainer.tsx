@@ -1,16 +1,16 @@
 import { isIframe } from "lib/isIframe";
 import { shouldShow } from "lib/queryStringParser";
 import { useClickOutside } from "lib/useClickOutside";
-import React, { memo, useEffect } from "react";
+import React, { memo } from "react";
 import { InactiveBoardHidder } from "View/AppView/InactiveBoardHidder";
-import { useBoardRenameContext } from "View/BoardName";
+import { useRenameContext } from "View/Rename";
 import { SidePanel, useSidePanelContext } from "View/SidePanel";
 import { TitlePanel } from "View/TitlePanel";
+import { ToolsPanel } from "View/ToolsPanel";
+import { ViewToolsPanel } from "View/ToolsPanel/ViewToolsPanel";
 import { ViewModeGuard } from "View/ViewModeGuard";
 import { ShapesPanel, ShapesPanelContextProvider } from "../ShapesPanel";
 import style from "./SidePanelsContainer.module.css";
-import { ViewToolsPanel } from "View/ToolsPanel/ViewToolsPanel";
-import { ToolsPanel } from "View/ToolsPanel";
 
 interface SidePanelsContainerProps {
 	isBlank: boolean;
@@ -19,9 +19,9 @@ interface SidePanelsContainerProps {
 export const SidePanelsContainer = memo(
 	({ isBlank }: SidePanelsContainerProps) => {
 		const { toggleSideMenu, isOpen } = useSidePanelContext();
-		const { renamingBoardId } = useBoardRenameContext();
+		const { renamingId } = useRenameContext();
 		const containerRef = useClickOutside(() => {
-			if (isOpen && !renamingBoardId) {
+			if (isOpen && renamingId !== null) {
 				toggleSideMenu();
 			}
 		});

@@ -32,20 +32,18 @@ export function SidePanelContextProvider({
 	const navigate = useNavigate();
 	const boardsList = useBoardsList();
 	const timeoutRef = useRef<NodeJS.Timeout>();
-	const { setBoard, setFolder } = useOpenedFoldersContext();
+	const { setId } = useOpenedFoldersContext();
 	const { close } = useContextMenuContext();
 	const boardId = board?.getBoardId();
 
 	const toggleSideMenu = (): void => {
 		setIsOpen(prev => {
 			if (boardId !== "blank") {
-				setBoard(boardId);
-				setFolder(null);
+				setId(boardId);
 			}
 			if (prev) {
 				close();
-				setBoard(null);
-				setFolder(null);
+				setId(null);
 			}
 			return !prev;
 		});
