@@ -6,18 +6,21 @@ import React from "react";
 import { Frame } from "Board/Items";
 import { notify } from "View/Ui/Toast";
 import { Icon } from "View/Icon";
+import { getLinkToItem } from "./getLinkToItem";
 
-export function CopyFrameLink() {
+export function CopyFrameLink(): JSX.Element {
 	const { board } = useAppContext();
 	const { toggleMenu } = usePanelContext();
 	const { t } = useTranslation();
 
-	const handleCopyFrameLink = async () => {
+	const handleCopyFrameLink = async (): Promise<void> => {
 		const item = board.selection.items.getSingle();
 
 		if (item instanceof Frame) {
 			try {
-				await navigator.clipboard.writeText(item.getLink());
+				await navigator.clipboard.writeText(
+					getLinkToItem(item.getId()),
+				);
 				notify({
 					body: t("contextPanel.copyFrameLink.success.description"),
 					variant: "success",

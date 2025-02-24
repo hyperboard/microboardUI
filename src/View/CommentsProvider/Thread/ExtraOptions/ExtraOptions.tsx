@@ -8,6 +8,7 @@ import { UiPanel } from "../../../Ui/UiPanel";
 import styles from "./ExtraOptions.module.css";
 import { notify } from "View/Ui/Toast/notify";
 import { useTranslation } from "react-i18next";
+import { getLinkToItem } from "View/ContextPanel/Buttons/RestOptionsMenu/Items/getLinkToItem";
 
 interface Props {
 	comment: Comment;
@@ -45,7 +46,7 @@ export const ExtraOptions = ({ comment, canEdit }: Props): JSX.Element => {
 
 	const handleCopyLink = async (): Promise<void> => {
 		try {
-			await navigator.clipboard.writeText(comment.getLink());
+			await navigator.clipboard.writeText(getLinkToItem(comment.getId()));
 			notify({
 				body: t("contextPanel.copyItemLink.success.description"),
 				variant: "success",

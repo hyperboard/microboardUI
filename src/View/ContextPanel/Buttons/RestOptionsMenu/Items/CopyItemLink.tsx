@@ -5,6 +5,7 @@ import { RestOptionsMenuItem } from "../RestOptionsMenuItem";
 import React from "react";
 import { notify } from "View/Ui/Toast";
 import { Icon } from "View/Icon";
+import { getLinkToItem } from "./getLinkToItem";
 
 export function CopyItemLink(): React.ReactElement {
 	const { board } = useAppContext();
@@ -18,7 +19,7 @@ export function CopyItemLink(): React.ReactElement {
 		}
 
 		try {
-			await navigator.clipboard.writeText(item.getLink());
+			await navigator.clipboard.writeText(getLinkToItem(item.getId()));
 			notify({
 				body: t("contextPanel.copyItemLink.success.description"),
 				variant: "success",
