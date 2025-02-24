@@ -33,8 +33,9 @@ import {
 } from "./types";
 import { HttpStatus } from "shared/enums/http-status.enum";
 import { HttpException } from "shared/exceptions/http-exception";
-import { BoardsService } from "../Boards/boards.service";
+import { BoardEventData, BoardsService } from "../Boards/boards.service";
 import WebSocket from "ws";
+import { BoardEventMsg } from "WebSocket/withWebSocketApi";
 
 config();
 
@@ -83,17 +84,17 @@ interface RawEvent {
 
 export class DevelopersService {
     private readonly BOARD_LAST_ORDER_KEY = "board:last_order:";
-    private broadcastEventFn?: (boardUUID: string, eventData: any) => void;
+    private broadcastEventFn?: (boardUUID: string, msg: BoardEventMsg, eventData: BoardEventData) => void;
 
     constructor(private boards: BoardsService, private logger: winston.Logger, private redis: Redis) {}
 
-    setBroadcastEventFunction(fn: (boardUUID: string, eventData: any) => void) {
+    setBroadcastEventFunction(fn: (boardUUID: string, msg: BoardEventMsg, eventData: BoardEventData) => void) {
         this.broadcastEventFn = fn;
     }
 
-    private broadcastBoardEvent(boardUUID: string, eventData: any): void {
+    private broadcastBoardEvent(boardUUID: string, msg: BoardEventMsg, eventData: BoardEventData): void {
         if (this.broadcastEventFn) {
-            this.broadcastEventFn(boardUUID, eventData);
+            this.broadcastEventFn(boardUUID, msg, eventData);
         }
     }
 
@@ -501,7 +502,21 @@ export class DevelopersService {
 
         await this.redis.client.set(this.BOARD_LAST_ORDER_KEY + boardId, order.toString());
 
-        this.broadcastBoardEvent(boardUUID, event.operation);
+        this.broadcastBoardEvent(
+            boardUUID,
+            {
+                type: "BoardEvent",
+                boardId: boardUUID,
+                event: event.operation,
+                sequenceNumber: 1,
+            },
+            {
+                order,
+                eventId: event.eventId,
+                operation: event.operation,
+                body: event,
+            }
+        );
 
         return {
             id: newItemId,
@@ -638,7 +653,21 @@ export class DevelopersService {
 
         await this.redis.client.set(this.BOARD_LAST_ORDER_KEY + boardId, order.toString());
 
-        this.broadcastBoardEvent(boardUUID, transformedEvent.operation);
+        this.broadcastBoardEvent(
+            boardUUID,
+            {
+                type: "BoardEvent",
+                boardId: boardUUID,
+                event: transformedEvent,
+                sequenceNumber: 1,
+            },
+            {
+                order,
+                eventId: transformedEvent.eventId,
+                operation: transformedEvent.operation,
+                body: transformedEvent,
+            }
+        );
     }
 
     async deleteBoardItem(options: {
@@ -940,7 +969,21 @@ export class DevelopersService {
 
             await this.redis.client.set(this.BOARD_LAST_ORDER_KEY + boardId, order.toString());
 
-            this.broadcastBoardEvent(boardId, event.operation);
+            this.broadcastBoardEvent(
+                boardId,
+                {
+                    type: "BoardEvent",
+                    boardId: boardId,
+                    event: event.operation,
+                    sequenceNumber: 1,
+                },
+                {
+                    order,
+                    eventId: eventId,
+                    operation: event.operation,
+                    body: event.operation,
+                }
+            );
         }
     }
 }

@@ -55,7 +55,7 @@ export class TelegramService {
 
         return this.retryWithBackoff(async () => {
             try {
-                this.logger.debug(`Sending request to Telegram API: ${method}`, { params });
+                this.logger.silly(`Sending request to Telegram API: ${method}`, { params });
                 const response = await fetch(`${this.baseUrl}/${method}`, {
                     method: params ? "POST" : "GET",
                     headers: params ? { "Content-Type": "application/json" } : undefined,
@@ -65,7 +65,7 @@ export class TelegramService {
                 if (!response.ok) {
                     throw new Error(`Telegram API error: ${response.status} ${response.statusText}`);
                 }
-                this.logger.debug(`Telegram API response: ${method}`, { status: response.status });
+                this.logger.silly(`Telegram API response: ${method}`, { status: response.status });
 
                 return await response.json();
             } catch (error) {
@@ -141,7 +141,7 @@ export class TelegramService {
     }
 
     private async handleUpdate(update: any) {
-        this.logger.debug("Received update:", JSON.stringify(update));
+        this.logger.silly("Received update:", JSON.stringify(update));
         if (!update.message?.text || !update.message?.chat?.id) return;
 
         const chatId = update.message.chat.id.toString();
@@ -257,13 +257,13 @@ export class TelegramService {
             let offset = 0;
             const poll = async () => {
                 try {
-                    this.logger.debug("Polling Telegram updates...");
+                    this.logger.silly("Polling Telegram updates...");
                     const updates = await this.sendTelegramRequest("getUpdates", {
                         offset,
                         timeout: 30,
                     });
 
-                    this.logger.debug(`Received ${updates.result?.length || 0} updates`);
+                    this.logger.silly(`Received ${updates.result?.length || 0} updates`);
 
                     for (const update of updates.result) {
                         offset = update.update_id + 1;
@@ -322,7 +322,7 @@ export class TelegramService {
             };
         }
     ) {
-        this.logger.debug("Starting broadcast message process", {
+        this.logger.silly("Starting broadcast message process", {
             textLength: text.length,
             hasMeta: !!meta,
             source: this.source,
@@ -334,7 +334,7 @@ export class TelegramService {
         }
 
         try {
-            this.logger.debug("Fetching telegram chats from database...");
+            this.logger.silly("Fetching telegram chats from database...");
             const chats = await db.select().from(telegramChats);
             this.logger.info(`Found ${chats.length} telegram chats to broadcast to`);
 
@@ -344,7 +344,7 @@ export class TelegramService {
             }
 
             for (const chat of chats) {
-                this.logger.debug(`Processing broadcast for chat ${chat.chatId}`);
+                this.logger.silly(`Processing broadcast for chat ${chat.chatId}`);
 
                 try {
                     const operationInfo = meta?.operationContext

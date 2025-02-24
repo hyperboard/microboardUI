@@ -77,8 +77,9 @@ export function withWebSocketApi({
         telegramService,
     });
 
-    developersService.setBroadcastEventFunction((boardUUID: string, eventData: any) => {
+    developersService.setBroadcastEventFunction((boardUUID: string, msg: BoardEventMsg, eventData: BoardEventData) => {
         const clients = boardClients.get(boardUUID) ?? [];
+
         sendWsMsg(clients, {
             type: "BoardEvent",
             boardId: boardUUID,
