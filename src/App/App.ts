@@ -280,6 +280,8 @@ export function createApp(isHistory = true): App {
 			boardsList.subject.publish();
 		});
 		account.setOnLogin(async () => {
+			await foldersApi.initFolders();
+			await boardsList.claim();
 			storage.softClean();
 			const boardId = board?.getBoardId();
 			if (boardId && boardId !== "blank") {
