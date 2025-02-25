@@ -807,11 +807,12 @@
 		"backToCurrentPlan": "Назад к текущему плану",
 		"limitsTable": {
 			"modelName": "Модель",
-			"requestsPerWeek": "Доступно запросов в неделю",
-			"requestsPerDay": "Доступно запросов в день",
-			"requestsPerMonth": "Доступно запросов в месяц",
+			"requestsPerWeek": "Доступно в неделю",
+			"requestsPerDay": "Доступно в день",
+			"requestsPerMonth": "Доступно в месяц",
 			"availableOnPlus": "Доступно на тарифе Plus",
-			"symbols": "символов"
+			"symbols": "символов",
+			"audioLengthMinutes": "мин аудио"
 		},
 		"historyTable": {
 			"plan": "Тариф",

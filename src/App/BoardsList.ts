@@ -287,6 +287,7 @@ export class BoardsList {
 			this.draftsFolder = draftsFolder;
 			this.updateEmptyTitles(this.rootFolder);
 			this.updateEmptyTitles(this.sharedFolder);
+			this.updateEmptyTitles(this.draftsFolder);
 			this.rootFolder.title = t("sidePanel.folders.myBoards");
 			this.sharedFolder.title = t("sidePanel.folders.sharedBoards");
 			this.draftsFolder.title = t("sidePanel.folders.publicDrafts");

@@ -810,11 +810,12 @@
 		"backToCurrentPlan": "Back to Current Plan",
 		"limitsTable": {
 			"modelName": "Model",
-			"requestsPerWeek": "Remaining requests per week",
-			"requestsPerDay": "Remaining requests per day",
-			"requestsPerMonth": "Remaining requests per month",
+			"requestsPerWeek": "Remaining per week",
+			"requestsPerDay": "Remaining per day",
+			"requestsPerMonth": "Remaining per month",
 			"availableOnPlus": "Available on Plus plan",
-			"symbols": "symbols"
+			"symbols": "symbols",
+			"audioLengthMinutes": "audio minutes"
 		},
 		"historyTable": {
 			"plan": "Plan",

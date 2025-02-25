@@ -8,6 +8,7 @@
 	align-items: stretch;
 	gap: 20px;
 	min-height: 500px;
+	max-width: 360px;
 }
 
 .current {

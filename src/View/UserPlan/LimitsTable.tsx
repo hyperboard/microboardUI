@@ -1,14 +1,13 @@
-import React from "react";
-import styles from "./LimitsTable.module.css";
 import { useAccount } from "App/useAccount";
 import clsx from "clsx";
-import { useTranslation } from "react-i18next";
-import { UiButton } from "View/Ui/UiButton";
 import { useBoundingClientRect } from "lib/useClientRect";
-import { createPortal } from "react-dom";
 import { useHoverState } from "lib/useHoverState";
+import React from "react";
+import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
+import styles from "./LimitsTable.module.css";
 
-// Воняет конкретно, TODO - переписать
+// Smells
 
 const DISPLAYNAME_MAP = {
 	"gpt-4o-mini": "GPT-4o mini",
@@ -117,6 +116,11 @@ export function PerMonthLimitsTable() {
 	);
 }
 
+function calculateAudioLength(symbolsCount: number): number {
+	const symbolsPerMinute = 750;
+	return Math.floor(symbolsCount / symbolsPerMinute);
+}
+
 type ModelRowProps = {
 	name: string;
 	description: string;
@@ -159,7 +163,14 @@ function ModelRow({
 							{t("userPlan.unlimited")}
 						</span>
 					) : (
-						`${remaining}/${limit} ${isAudio ? t("userPlan.limitsTable.symbols") : ""}`
+						<>
+							{remaining}/{limit}{" "}
+							{isAudio ? t("userPlan.limitsTable.symbols") : ""}
+							{isAudio && <br />}
+							{isAudio
+								? `(~${calculateAudioLength(remaining)}/${calculateAudioLength(limit ?? 0)} ${t("userPlan.limitsTable.audioLengthMinutes")})`
+								: ""}
+						</>
 					)
 				) : (
 					<>
