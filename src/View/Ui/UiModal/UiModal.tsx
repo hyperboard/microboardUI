@@ -27,7 +27,7 @@ export function UiModal({
 	className,
 	onClose,
 	closeByBgClick = true,
-}: Props): JSX.Element {
+}: Props) {
 	const { closeModal, openedModalId, transitionFrom } = useUiModalContext();
 	const isCloseTransition = transitionFrom === modalId;
 
@@ -44,46 +44,50 @@ export function UiModal({
 
 	const ref = useClickOutside(handleOutsideClose);
 
+	if (modalId !== openedModalId) {
+		return null;
+	}
+
 	return (
-		<CSSTransition
-			in={modalId === openedModalId}
-			timeout={isCloseTransition ? 450 : 300}
-			classNames={{
-				enter: styles.opacityEnter,
-				enterActive: styles.opacityEnterActive,
-				enterDone: styles.opacityEnterDone,
-				exit: styles.opacityExit,
-				exitActive: isCloseTransition
-					? styles.opacityExitActiveTransition
-					: styles.opacityExitActive,
-				exitDone: styles.opacityExitDone,
-			}}
-			unmountOnExit
-		>
-			<div className={styles.modalWrapper}>
-				<UiPanel padding={0} className={clsx(styles.panel, className)}>
-					<div className={styles.closeBtnWrapper}>
-						{closeButton ? (
-							closeButton(handleClose)
-						) : (
-							<UiButton
-								variant="secondary"
-								className={styles.closeBtn}
-								onClick={handleClose}
-							>
-								<Icon width={28} height={28} iconName="Close" />
-							</UiButton>
-						)}
-					</div>
-					<header className={styles.header}>
-						<Logo />
-						<span>Microboard</span>
-					</header>
-					<div ref={ref} className={styles.content}>
-						{children}
-					</div>
-				</UiPanel>
-			</div>
-		</CSSTransition>
+		// <CSSTransition
+		// 	in={modalId === openedModalId}
+		// 	timeout={isCloseTransition ? 450 : 300}
+		// 	classNames={{
+		// 		enter: styles.opacityEnter,
+		// 		enterActive: styles.opacityEnterActive,
+		// 		enterDone: styles.opacityEnterDone,
+		// 		exit: styles.opacityExit,
+		// 		exitActive: isCloseTransition
+		// 			? styles.opacityExitActiveTransition
+		// 			: styles.opacityExitActive,
+		// 		exitDone: styles.opacityExitDone,
+		// 	}}
+		// 	unmountOnExit
+		// >
+		<div className={styles.modalWrapper}>
+			<UiPanel padding={0} className={clsx(styles.panel, className)}>
+				<div className={styles.closeBtnWrapper}>
+					{closeButton ? (
+						closeButton(handleClose)
+					) : (
+						<UiButton
+							variant="secondary"
+							className={styles.closeBtn}
+							onClick={handleClose}
+						>
+							<Icon width={28} height={28} iconName="Close" />
+						</UiButton>
+					)}
+				</div>
+				<header className={styles.header}>
+					<Logo />
+					<span>Microboard</span>
+				</header>
+				<div ref={ref} className={styles.content}>
+					{children}
+				</div>
+			</UiPanel>
+		</div>
+		// </CSSTransition>
 	);
 }
