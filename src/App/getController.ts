@@ -125,7 +125,6 @@ export function getController(
 		}
 	}
 
-	let isSpacePressed = false;
 	function onKeyDown(event: KeyboardEvent): void {
 		const board = getBoard();
 		if (!board || !board.events) {
@@ -251,10 +250,8 @@ export function getController(
 			frameNavigationNext: () => board.tools.frameNavigation("next"),
 			frameNavigationPrev: () => board.tools.frameNavigation("prev"),
 			navigateMode: {
-				cb: () => {
-					board.tools.setNavigateMode(isSpacePressed);
-					isSpacePressed = true;
-				},
+				cb: () =>
+					board.tools.setNavigateMode(board.keyboard.isSpacePressed),
 				selectionContext: ["None", "EditUnderPointer", "SelectByRect"],
 			},
 		};
@@ -299,10 +296,7 @@ export function getController(
 		}
 
 		const editModeHotkeys: HotkeysMap = {
-			navigateMode: () => {
-				isSpacePressed = false;
-				board.tools.exitNavigateMode();
-			},
+			navigateMode: () => board.tools.exitNavigateMode(),
 		};
 
 		if (board.getInterfaceType() === "edit") {
