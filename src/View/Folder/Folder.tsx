@@ -72,7 +72,7 @@ export const Folder = ({
 	const accordionRef = useRef<AccordionState>(null);
 	const currentBoardRef = useRef<HTMLDivElement>();
 	const currentFolderRef = useRef<HTMLButtonElement>(null);
-	const { id } = useOpenedFoldersContext();
+	const { id, foldersRefState } = useOpenedFoldersContext();
 	const [openedByDragging, setOpenedByDragging] = useState(false);
 	const { overFolderId, setOverFolderId } = useFoldersContext();
 	const [originalPosition, setOriginalPosition] = useState<
@@ -129,16 +129,20 @@ export const Folder = ({
 			if (currentBoardRef.current && folderIds.at(-1) === folder?.id) {
 				currentBoardRef.current.scrollIntoView({
 					behavior: "smooth",
+					block: "nearest",
 				});
+
+				foldersRefState?.scrollTo({ left: 0, behavior: "instant" });
 			}
 		}, 500);
 	};
 
 	useEffect(() => {
+		console.log(id, isSidePanelOpen);
 		if (id) {
 			return openFolders(id);
 		}
-	}, [id]);
+	}, [id, isSidePanelOpen]);
 
 	useEffect(() => {
 		if (isOver && !accordionRef.current?.isOpen) {

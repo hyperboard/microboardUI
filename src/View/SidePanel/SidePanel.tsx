@@ -2,11 +2,20 @@ import { useAccount } from "App/useAccount";
 import { useBoardsList } from "App/useBoardsList";
 import clsx from "clsx";
 import { useClickOutside } from "lib/useClickOutside";
-import React, { useEffect, useState, type MouseEventHandler } from "react";
+import React, {
+	useEffect,
+	useRef,
+	useState,
+	type MouseEventHandler,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "shared/ui-lib/Button";
 import { useContextMenuContext } from "View/ContextMenu";
-import { Folder, FoldersDndContext } from "View/Folder";
+import {
+	Folder,
+	FoldersDndContext,
+	useOpenedFoldersContext,
+} from "View/Folder";
 import { Icon } from "View/Icon";
 import { useModal } from "View/Modal/ModalProvider";
 import { UiButton } from "View/Ui/UiButton";
@@ -18,18 +27,34 @@ import { useSidePanelContext } from "./SidePanelContext";
 import { SortableContext } from "@dnd-kit/sortable";
 import { FoldersContextProvider } from "View/Folder/FoldersContext";
 import { useAppContext } from "View/AppContext";
+import { useAppSubscription } from "Board/useBoardSubscription";
+import { useForceUpdate } from "lib/useForceUpdate";
 
 const MIN_PANEL_WIDTH = 280;
 
 export function SidePanel(): JSX.Element {
-	const { board } = useAppContext();
+	const { board, app } = useAppContext();
 	const { isOpen, toggleSideMenu, isHighlighted, openMenu } =
 		useSidePanelContext();
+	const { setFoldersRefState, setId } = useOpenedFoldersContext();
 	const { open, close } = useContextMenuContext();
 	const { t } = useTranslation();
 	const [width, setWidth] = useState(300);
 	const account = useAccount();
 	const boardsList = useBoardsList();
+	const foldersRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		if (!foldersRef.current) {
+			return;
+		}
+
+		setFoldersRefState(foldersRef.current);
+	}, [foldersRef.current]);
+
+	useEffect(() => {
+		setId(board.getBoardId());
+	}, [board.getBoardId()]);
 
 	const { showModal } = useModal();
 
@@ -81,7 +106,7 @@ export function SidePanel(): JSX.Element {
 						<Icon iconName="Close" />
 					</UiButton>
 				</div>
-				<div className={style.folders}>
+				<div className={style.folders} ref={foldersRef}>
 					<div className={style.foldersWrapper}>
 						<FoldersContextProvider>
 							<FoldersDndContext>

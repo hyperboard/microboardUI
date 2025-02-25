@@ -1,5 +1,6 @@
 import { useBoardsList } from "App/useBoardsList";
 import { createStrictContext, useStrictContext } from "lib/strictContext";
+import { useForceUpdate } from "lib/useForceUpdate";
 import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "View/AppContext";
@@ -28,22 +29,27 @@ export function SidePanelContextProvider({
 	const [isOpen, setIsOpen] = useState(false);
 	const [stamp, setStamp] = useState<null | number>(null);
 	const [highlighted, setHighlighted] = useState(false);
-	const { app, board } = useAppContext();
+	const { app } = useAppContext();
 	const navigate = useNavigate();
 	const boardsList = useBoardsList();
 	const timeoutRef = useRef<NodeJS.Timeout>();
-	const { setId } = useOpenedFoldersContext();
 	const { close } = useContextMenuContext();
-	const boardId = board?.getBoardId();
+	const forceUpdate = useForceUpdate();
+	useEffect(() => {
+		app.boardSubject.subscribe(forceUpdate);
+
+		return () => app.boardSubject.unsubscribe(forceUpdate);
+	}, []);
 
 	const toggleSideMenu = (): void => {
 		setIsOpen(prev => {
-			if (boardId !== "blank") {
-				setId(boardId);
-			}
+			console.log(prev);
+			// const boardId = board?.getBoardId();
+			// console.log("boardId set", boardId);
 			if (prev) {
+				console.log("boardId set", null);
 				close();
-				setId(null);
+				// setId(null);
 			}
 			return !prev;
 		});

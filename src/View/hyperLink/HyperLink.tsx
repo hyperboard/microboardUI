@@ -67,6 +67,7 @@ export const HyperLink = () => {
 				className={styles.link}
 				target="_blank"
 				href={currentLink?.hyperLink}
+				rel="noreferrer"
 			>
 				{currentLink?.hyperLink}
 			</a>

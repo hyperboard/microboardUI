@@ -261,6 +261,16 @@ export function ContextMenu(): JSX.Element | null {
 					return;
 				}
 
+				if (
+					boardsList.isFolderContainsBoard(
+						folderId,
+						board.getBoardId(),
+					)
+				) {
+					app.openBoard("blank");
+					navigate("/boards/blank");
+				}
+
 				boardsList.removeFolder(folderId);
 				setIsDeletingFolder(false);
 				Promise.resolve();
