@@ -23,6 +23,7 @@ import { foldersApi } from "shared/apiV2";
 import { getLocalRender } from "View/router";
 import { wagmiConfig } from "View/ContextWrapper";
 import { disconnect } from "@wagmi/core";
+import { MemoryLogger } from "Logger";
 
 export const LAST_BOARD_KEY = "lastSeenBoard";
 export const LAST_BOARD_KEY_QS = LAST_BOARD_KEY.concat("Wqs");
@@ -49,6 +50,8 @@ export interface App {
 	sessionStorage: SessionStorage;
 	getConnectedBoard: (boardId: string) => Board | null;
 	openAndEditFile(): Promise<string | undefined>;
+	enableLogger(): void;
+	disableLogger(): void;
 }
 
 export function createApp(isHistory = true): App {
@@ -64,6 +67,17 @@ export function createApp(isHistory = true): App {
 
 	let board: Board;
 	let fileHandle: FileSystemFileHandle | undefined = undefined;
+
+	function enableLogger() {
+		MemoryLogger.enable();
+	}
+
+	function disableLogger() {
+		MemoryLogger.downloadLogs(
+			`microboard-logs-${new Date().toLocaleString()}.txt`,
+		);
+		MemoryLogger.disable();
+	}
 
 	function getConnection(): Connection {
 		return connection;
@@ -250,6 +264,8 @@ export function createApp(isHistory = true): App {
 		sessionStorage,
 		getConnectedBoard,
 		openAndEditFile,
+		enableLogger,
+		disableLogger,
 	};
 
 	account.setOnInit(async () => {

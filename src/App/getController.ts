@@ -9,6 +9,7 @@ import { HotkeysMap } from "Board/Keyboard/types";
 import { throttle } from "shared/utils";
 import { PRESENCE_CURSOR_THROTTLE } from "Board/Presence/Presence";
 import { pasteTextToTheBoard, tryToPasteAsItemOrReturnText } from "./Paste";
+import { MemoryLogger } from "Logger";
 
 export interface Controller {
 	onWheel: (event: WheelEvent) => void;
@@ -26,6 +27,24 @@ export interface Controller {
 	onCopy: (event: ClipboardEvent) => void;
 	onPaste: (event: ClipboardEvent) => void;
 	onDrop: (event: DragEvent) => void;
+}
+
+function getEventDataAsString(event: Event): string {
+	let eventData = "";
+	const keys = Object.keys(event).concat(
+		Object.getOwnPropertyNames(Object.getPrototypeOf(event)),
+	);
+	keys.forEach(key => {
+		try {
+			const value = event[key as keyof Event];
+			if (typeof value !== "function") {
+				eventData += `${key}: ${value}, `;
+			}
+		} catch (error) {
+			eventData += `${key}: [unavailable], `;
+		}
+	});
+	return eventData;
 }
 
 export function getController(
@@ -71,7 +90,13 @@ export function getController(
 		lastEventTime = currentTime;
 
 		const scale = board.camera.getScale();
+		const eventJson = getEventDataAsString(event);
+
+		MemoryLogger.setContext("WheelHandler");
 		if (event.ctrlKey) {
+			MemoryLogger.log(
+				`Delta: ${deltaTime}; Touchpad pinch detected: ${eventJson}`,
+			);
 			board.camera.zoomRelativeToPointerBy(
 				wheel.getTouchpadPinchMultiplier(),
 			);
@@ -82,11 +107,17 @@ export function getController(
 				: deltaTime <= 100 && isTouchpad;
 
 			if (isTouchpad) {
+				MemoryLogger.log(
+					`Delta: ${deltaTime}; Is small delta: ${isSmallDelta}; Touchpad scroll detected: ${eventJson}`,
+				);
 				board.camera.translateBy(
 					wheel.getTouchpadPanDeltaX() / scale,
 					wheel.getTouchpadPanDeltaY() / scale,
 				);
 			} else {
+				MemoryLogger.log(
+					`Delta: ${deltaTime}; Is small delta: ${isSmallDelta}; Mouse wheel detected: ${eventJson}`,
+				);
 				board.camera.zoomRelativeToPointerBy(
 					wheel.getWheelScaleMultiplier(),
 				);
