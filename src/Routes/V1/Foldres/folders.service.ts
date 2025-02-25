@@ -198,12 +198,36 @@ export class FoldersService {
 
     async init(ownerId: number) {
         const rootFolder = await this.getRoot(ownerId);
+        const draftsFolder = await this.getRoot(ownerId, FolderType.DRAFTS);
+        const trashFolder = await this.getRoot(ownerId, FolderType.TRASH);
+        const visitedFolder = await this.getRoot(ownerId, FolderType.VISITED);
+
+        await this.db.transaction(async (tx) => {
+            const query = tx
+                .insert(folders)
+                .values({ ownerId, type: sql.placeholder("folderType") })
+                .returning()
+                .prepare("init");
+
+            if (!rootFolder) {
+                await query.execute({ folderType: FolderType.ROOT });
+            }
+
+            if (!draftsFolder) {
+                await query.execute({ folderType: FolderType.DRAFTS });
+            }
+
+            if (!trashFolder) {
+                await query.execute({ folderType: FolderType.TRASH });
+            }
+
+            if (!visitedFolder) {
+                await query.execute({ folderType: FolderType.VISITED });
+            }
+        });
 
         if (rootFolder) {
-            if (
-                rootFolder.items.length === 0 ||
-                (rootFolder.items.length === 1 && rootFolder.items[0].type === FolderType.VISITED)
-            ) {
+            if (rootFolder.items.length === 0) {
                 const ownedBoards = await this.db
                     .select({ id: boards.id })
                     .from(boards)
@@ -219,24 +243,7 @@ export class FoldersService {
                     await addBoardQuery.execute({ boardId: board.id });
                 }
             }
-
-            if (rootFolder.items.length > 1) {
-                return;
-            }
         }
-
-        await this.db.transaction(async (tx) => {
-            const query = tx
-                .insert(folders)
-                .values({ ownerId, type: sql.placeholder("folderType") })
-                .returning()
-                .prepare("init");
-
-            await query.execute({ folderType: FolderType.ROOT });
-            await query.execute({ folderType: FolderType.DRAFTS });
-            await query.execute({ folderType: FolderType.TRASH });
-            await query.execute({ folderType: FolderType.VISITED });
-        });
     }
 
     async reorder(folderId: number, items: FolderItems) {
