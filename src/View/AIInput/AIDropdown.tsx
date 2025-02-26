@@ -7,7 +7,6 @@ import { Chevron } from "shared/ui-lib/Dropdown/Chevron";
 import { OpenAIModels } from "App/Connection";
 import { Board } from "Board";
 import { Tooltip } from "View/Ui/UiButton/Tooltip";
-import { t } from "i18next";
 import { Account } from "App/Account";
 import { useAIContext } from "./AIContext";
 import { USER_PLAN_MODAL_ID } from "View/UserPlan";
@@ -15,6 +14,7 @@ import { AI_UNAVAILABLE_MODAL_ID } from "View/AiUnavailableModal/AiUnavailableMo
 import { useUiModalContext } from "View/Ui/UiModal";
 import { createPortal } from "react-dom";
 import { useOutsideClickHandler } from "shared/hooks/useOutsideClickHandler";
+import { useTranslation } from "react-i18next";
 
 type AIDropdownProps = {
 	board: Board;
@@ -32,30 +32,31 @@ const models: OpenAIModels[] = [
 	"deepseek-reasoner",
 ];
 
-const getModelDisplayName = (
-	model: OpenAIModels,
-	isPhoneScreen: boolean,
-): string => {
-	switch (model) {
-		case "gpt-4o":
-			return "GPT-4o";
-		case "gpt-4o-mini":
-			return "GPT-4o mini";
-		case "image-generation":
-			return "Flux.1 schnell";
-		case "deepseek-reasoner":
-			return "DeepSeek-R1";
-		case "tts-1-hd":
-			return isPhoneScreen ? "TTS" : "Text to speech HD";
-		default:
-			return model;
-	}
-};
+// const getModelDisplayName = (
+// 	model: OpenAIModels,
+// 	isPhoneScreen: boolean,
+// ): string => {
+// 	switch (model) {
+// 		case "gpt-4o":
+// 			return "GPT-4o";
+// 		case "gpt-4o-mini":
+// 			return "GPT-4o mini";
+// 		case "image-generation":
+// 			return "Flux.1 schnell";
+// 		case "deepseek-reasoner":
+// 			return "DeepSeek-R1";
+// 		case "tts-1-hd":
+// 			return isPhoneScreen ? "TTS" : "Text to speech HD";
+// 		default:
+// 			return model;
+// 	}
+// };
 
 export const AIDropdown = (props: AIDropdownProps): JSX.Element => {
 	const { board, isPhoneScreen, account, isDropdownOpen, setIsDropdownOpen } =
 		props;
 	const { model } = useAIContext();
+	const { t } = useTranslation();
 
 	const toggleModelDropdown = (): void => {
 		if (!board.aiGeneratingOnItem) {
@@ -70,7 +71,7 @@ export const AIDropdown = (props: AIDropdownProps): JSX.Element => {
 		>
 			<StarIcon className={styles.starIcon} width={20} height={20} />
 			<div className={styles.selectedModel} onClick={toggleModelDropdown}>
-				<span>{getModelDisplayName(model, isPhoneScreen)}</span>
+				<span>{t(`ai.models.${model}.title`)}</span>
 				<Chevron
 					className={clsx(styles.arrow, {
 						[styles.activeArrow]: isDropdownOpen,
@@ -101,6 +102,7 @@ const Dropdown = (
 	const { setModel } = useAIContext();
 	const { openModal } = useUiModalContext();
 	const dropdownRef = useRef<HTMLDivElement | null>(null);
+	const { t } = useTranslation();
 
 	const getDropDownTooltip = (model: OpenAIModels): boolean | JSX.Element => {
 		const dropdownTooltip = account.isLoggedIn
@@ -140,19 +142,14 @@ const Dropdown = (
 				{models.map((model, index) => (
 					<button
 						key={index}
-						className={clsx(
-							styles.modelBtn,
-							isModelDisabled(model) && styles.disabled,
-						)}
+						className={clsx(styles.modelBtn)}
 						onClick={
 							isModelDisabled(model)
 								? handleOpenModal
 								: selectModel(model)
 						}
 					>
-						<strong>
-							{getModelDisplayName(model, isPhoneScreen)}
-						</strong>
+						<strong>{t(`ai.models.${model}.title`)}</strong>
 						<p>{t(`ai.models.${model}.description`)}</p>
 						{getDropDownTooltip(model)}
 					</button>

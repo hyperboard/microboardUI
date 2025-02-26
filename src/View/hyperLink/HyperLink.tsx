@@ -21,7 +21,6 @@ export const HyperLink = () => {
 		.pop()
 		?.getRichText()
 		?.getHyperLinkByPointerCoordinates(board.pointer.point);
-	console.log("link", link);
 	if (
 		link &&
 		!isTooltipUnderPointer &&

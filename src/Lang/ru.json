@@ -681,19 +681,24 @@
 		"generate": "Сгенерировать",
 		"models": {
 			"gpt-4o-mini": {
+				"title": "Запрос к GPT 4o-mini",
 				"description": "Быстрее для повседневных задач"
 			},
 			"gpt-4o": {
-				"description": "Отлично подходит для большинства задач"
+				"title": "Запрос к GPT 4o",
+				"description": "Подходит для большинства задач"
 			},
 			"image-generation": {
-				"description": "Превратит текст в изображение"
+				"title": "Генерация изображения",
+				"description": "Flux schnell"
 			},
 			"deepseek-reasoner": {
-				"description": "Лучше чем o1 для множества задач"
+				"title": "Запрос к Deepseek R1",
+				"description": "Лучше, чем 4o во многих случаях"
 			},
 			"tts-1-hd": {
-				"description": "Превратит текст в речь"
+				"title": "Генерация речи",
+				"description": "OpenAI TTS HD"
 			}
 		},
 		"unauth": {
@@ -812,6 +817,7 @@
 			"requestsPerMonth": "Доступно в месяц",
 			"availableOnPlus": "Доступно на тарифе Plus",
 			"symbols": "символов",
+			"requests": "запросов",
 			"audioLengthMinutes": "мин аудио"
 		},
 		"historyTable": {

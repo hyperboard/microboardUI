@@ -165,7 +165,9 @@ function ModelRow({
 					) : (
 						<>
 							{remaining}/{limit}{" "}
-							{isAudio ? t("userPlan.limitsTable.symbols") : ""}
+							{isAudio
+								? t("userPlan.limitsTable.symbols")
+								: t("userPlan.limitsTable.requests")}
 							{isAudio && <br />}
 							{isAudio
 								? `(~${calculateAudioLength(remaining)}/${calculateAudioLength(limit ?? 0)} ${t("userPlan.limitsTable.audioLengthMinutes")})`
