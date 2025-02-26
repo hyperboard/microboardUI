@@ -22,6 +22,8 @@ import { TelegramService } from "services/TelegramService";
 import { getAppVersion } from "../shared/utils/getAppVersion";
 import { StripeService } from "Routes/V1/Billing/stripe";
 import { CryptoService } from "Routes/V1/Crypto/cryptoService";
+// for generating URL-friendly pod IDs that are shorter than UUID
+import { nanoid } from "nanoid";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
@@ -63,11 +65,55 @@ export function withWebSocketApi({
     stripeService: StripeService;
     cryptoService: CryptoService;
 }): WebSocketType {
+    const podId = nanoid();
+    const BOARD_EVENT_CHANNEL = "board:events";
+    const PRESENCE_EVENT_CHANNEL = "presence:events";
+
+    // Setup Redis pub/sub subscribers
+    const subscriber = redis.client.duplicate();
+
+    subscriber.subscribe(BOARD_EVENT_CHANNEL);
+    subscriber.subscribe(PRESENCE_EVENT_CHANNEL);
+
     const boardClients = new Map<string, WebSocket.WebSocket[]>();
     const wsTokens = new Map<WebSocket, AccessToken>();
     const wsAccessKeys = new Map<WebSocket, string>();
     const snapshotRequestTimers = new Map<string, NodeJS.Timeout>();
     const presence = new Presence(redis);
+
+    // Handle incoming messages from other pods
+    subscriber.on("message", (channel, message) => {
+        try {
+            const { sourceId, boardId, eventData, type } = JSON.parse(message);
+
+            // Ignore our own messages
+            if (sourceId === podId) return;
+
+            // Get clients for this board
+            const clients = boardClients.get(boardId) ?? [];
+            if (clients.length === 0) return;
+
+            // Forward the message to connected clients
+            if (channel === BOARD_EVENT_CHANNEL && type === "BoardEvent") {
+                sendWsMsg(clients, {
+                    type: "BoardEvent",
+                    boardId: boardId,
+                    event: { body: eventData, order: eventData.order },
+                    sequenceNumber: 1, // Forwarded events don't need sequence numbers
+                });
+            } else if (channel === PRESENCE_EVENT_CHANNEL && type === "PresenceEvent") {
+                sendWsMsg(clients, eventData);
+            }
+        } catch (error) {
+            logger.error("Error processing Redis pub/sub message:", error);
+        }
+    });
+
+    // Clean up when the application shuts down
+    process.on("SIGTERM", () => {
+        subscriber.quit();
+    });
+
     const chatStreamHandler = new ChatStreamHandler({
         stripeService,
         cryptoService,
@@ -123,11 +169,25 @@ export function withWebSocketApi({
 
     async function sendInvalidateRightsMsg(boardUUID: string, byUser = false) {
         const clients = boardClients.get(boardUUID) ?? [];
-        sendWsMsg(clients, {
+
+        const eventData = {
             type: "InvalidateRights",
             boardId: boardUUID,
             byUser,
-        });
+        };
+
+        sendWsMsg(clients, eventData);
+
+        // Publish to Redis for other pods
+        redis.client.publish(
+            BOARD_EVENT_CHANNEL,
+            JSON.stringify({
+                sourceId: podId,
+                type: "InvalidateRights",
+                boardId: boardUUID,
+                eventData,
+            })
+        );
     }
     boardsService.setInvalidateBoardRights(sendInvalidateRightsMsg);
 
@@ -393,19 +453,19 @@ export function withWebSocketApi({
     const eventsManager = new EventsManager(logger, boardsService, redis, boardClients);
 
     async function handleBoardEventMsg(msg: BoardEventMsg, ws: WebSocket): Promise<void> {
-        const startTime = process.hrtime.bigint();
+        const startTime = Date.now();
         enshureEditMode(msg.boardId, ws);
         enshureExpectedSequenceNumber(msg, ws);
 
         const eventData = await eventsManager.processEvent(msg.boardId, msg.event.body, {
             startTime: startTime,
-            queueTime: process.hrtime.bigint(),
+            queueTime: Date.now(),
         });
         sendBoardEventConfirmation(ws, msg, eventData);
         broadcastBoardEvent(msg.boardId, msg, eventData);
 
-        const totalEndTime = process.hrtime.bigint();
-        const totalLatency = Number(totalEndTime - startTime);
+        const totalEndTime = Date.now();
+        const totalLatency = totalEndTime - startTime;
         boardEventTotalLatency.observe(totalLatency);
     }
 
@@ -551,17 +611,29 @@ export function withWebSocketApi({
 
     function broadcastBoardEvent(boardUUID: string, msg: BoardEventMsg, eventData: BoardEventData): void {
         const clients = boardClients.get(boardUUID) ?? [];
+        // Send to local clients
         sendWsMsg(clients, {
             type: msg.type,
             boardId: msg.boardId,
             event: { body: eventData, order: eventData.order },
             sequenceNumber: msg.sequenceNumber,
         });
+
+        // Publish to Redis for other pods
+        redis.client.publish(
+            BOARD_EVENT_CHANNEL,
+            JSON.stringify({
+                sourceId: podId,
+                type: "BoardEvent",
+                boardId: boardUUID,
+                eventData,
+            })
+        );
     }
 
     function broadcastPresenceEvent(boardUUID: string, msg: PresenceEventMsg): void {
         const clients = boardClients.get(boardUUID) ?? [];
-        sendWsMsg(clients, {
+        const eventData = {
             type: "PresenceEvent",
             boardId: msg.boardId,
             event: msg.event,
@@ -572,7 +644,21 @@ export function withWebSocketApi({
             avatar: msg.avatar,
             hardId: msg.hardId,
             softId: msg.softId,
-        });
+        };
+
+        // Send to local clients
+        sendWsMsg(clients, eventData);
+
+        // Publish to Redis for other pods
+        redis.client.publish(
+            PRESENCE_EVENT_CHANNEL,
+            JSON.stringify({
+                sourceId: podId,
+                type: "PresenceEvent",
+                boardId: boardUUID,
+                eventData,
+            })
+        );
     }
 
     function requestSnapshotFromClient(boardId: string, sinceLast: number): void {
@@ -844,10 +930,9 @@ export type SocketMsg =
     | AiChatMsg;
 
 type BoardEventBody = any;
-
 export interface EventMetadata {
-    startTime: bigint;
-    queueTime: bigint;
+    startTime: number;
+    queueTime: number;
 }
 
 export class EventsManager {
@@ -859,6 +944,9 @@ export class EventsManager {
     private presenceEventHandlers: Map<string, (event: PresenceEventType) => void> = new Map();
     private boardClients: Map<string, WebSocket.WebSocket[]>;
 
+    /*
+    TODO store this structure in Redis
+    IN-MEMORY VERSION:
     private queues: {
         [boardId: string]: {
             boardId: string;
@@ -866,6 +954,11 @@ export class EventsManager {
             isSaving: boolean;
         };
     } = {};
+    */
+
+    // Constants for Redis keys
+    private readonly QUEUE_KEY_PREFIX = "board:event:queue:";
+    private readonly QUEUE_SAVING_KEY_PREFIX = "board:event:queue:saving:";
 
     requestSnapshotCallback: (boardId: string, sinceLast: number) => void = () => {};
 
@@ -959,22 +1052,60 @@ export class EventsManager {
     }
 
     async incrementLastEventOrder(boardUuid: string): Promise<number> {
-        const key = this.BOARD_LAST_ORDER_KEY + boardUuid;
-        const order = await this.redis.client.get(key);
+        // IN-MEMORY/ORIGINAL VERSION:
+        // const key = this.BOARD_LAST_ORDER_KEY + boardUuid;
+        // const order = await this.redis.client.get(key);
+        //
+        // if (!order) {
+        //     const lastOrder = await this.getLastEventOrder(boardUuid);
+        //     await this.redis.client.set(key, lastOrder.toString());
+        //     const newOrder = lastOrder + 1;
+        //     await this.redis.client.set(key, newOrder.toString());
+        //     return newOrder;
+        // }
+        //
+        // const newOrder = parseInt(order) + 1;
+        // await this.redis.client.set(key, newOrder.toString());
+        // return newOrder;
 
-        if (!order) {
+        const key = this.BOARD_LAST_ORDER_KEY + boardUuid;
+
+        // First check if the key exists
+        const exists = await this.redis.client.exists(key);
+
+        if (!exists) {
+            // Initialize with last order from database
             const lastOrder = await this.getLastEventOrder(boardUuid);
-            await this.redis.client.set(key, lastOrder.toString());
-            const newOrder = lastOrder + 1;
-            await this.redis.client.set(key, newOrder.toString());
+
+            // Using a Lua script to ensure atomicity when initializing
+            const script = `
+                if redis.call('EXISTS', KEYS[1]) == 0 then
+                    redis.call('SET', KEYS[1], ARGV[1])
+                    return redis.call('INCR', KEYS[1])
+                else
+                    return redis.call('INCR', KEYS[1])
+                end
+            `;
+
+            // Execute the initialization script
+            const result = await this.redis.client.eval(
+                script,
+                1, // number of keys
+                key, // KEYS[1]
+                lastOrder.toString() // ARGV[1]
+            );
+
+            const newOrder = typeof result === "number" ? result : parseInt(String(result), 10);
+
+            return parseInt(newOrder.toString());
+        } else {
+            // If key exists, we can simply increment
+            const newOrder = await this.redis.client.incr(key);
             return newOrder;
         }
-
-        const newOrder = parseInt(order) + 1;
-        await this.redis.client.set(key, newOrder.toString());
-        return newOrder;
     }
 
+    // Smell: unused method, remove when multipod implementation is tested
     async getLastEventOrder(boardUuid: string): Promise<number> {
         const key = this.BOARD_LAST_ORDER_KEY + boardUuid;
         const order = await this.redis.client.get(key);
@@ -991,22 +1122,34 @@ export class EventsManager {
         return parseInt(order);
     }
 
-    enqueueEventForSaving(
+    async enqueueEventForSaving(
         boardUuid: string,
         eventBody: BoardEventBody,
         metadata: EventMetadata,
         newOrder: number
-    ): BoardEventData {
-        const queue = this.queues[boardUuid] || {
-            boardId: boardUuid,
-            events: [],
-        };
+    ): Promise<BoardEventData> {
+        // IN-MEMORY VERSION:
+        // const queue = this.queues[boardUuid] || {
+        //    boardId: boardUuid,
+        //    events: [],
+        // };
+        // const data = { ...eventBody, order: newOrder };
+        // queue.events.push({
+        //    data,
+        //    metadata,
+        // });
+        // this.queues[boardUuid] = queue;
+        // return data;
+
         const data = { ...eventBody, order: newOrder };
-        queue.events.push({
+        const eventToSave = {
             data,
             metadata,
-        });
-        this.queues[boardUuid] = queue;
+        };
+
+        // Push to the Redis list for this board's queue
+        await this.redis.client.rpush(this.QUEUE_KEY_PREFIX + boardUuid, JSON.stringify(eventToSave));
+
         return data;
     }
 
@@ -1055,20 +1198,64 @@ export class EventsManager {
     }
 
     async tryToSaveEvents(): Promise<void> {
-        for (const [boardId, queue] of Object.entries(this.queues)) {
-            if (queue.events.length > 0 && !queue.isSaving) {
-                queue.isSaving = true;
-                try {
-                    const eventsToSave = [...queue.events];
-                    const before = eventsToSave.length;
+        // IN-MEMORY VERSION:
+        // for (const [boardId, queue] of Object.entries(this.queues)) {
+        //     if (queue.events.length > 0 && !queue.isSaving) {
+        //         queue.isSaving = true;
+        //         try {
+        //             const eventsToSave = [...queue.events];
+        //             const before = eventsToSave.length;
+        //
+        //             await this.saveEvents(boardId, eventsToSave);
+        //             // New events could have been enqueued after saving
+        //             queue.events.splice(0, before);
+        //         } catch (error) {
+        //             this.logger.error(`Failed to save events for board ${boardId}:`, error);
+        //         } finally {
+        //             queue.isSaving = false;
+        //         }
+        //     }
+        // }
 
-                    await this.saveEvents(boardId, eventsToSave);
-                    // New events could have been enqueued after saving
-                    queue.events.splice(0, before);
+        // Get all queue keys
+        const queueKeys = await this.redis.client.keys(this.QUEUE_KEY_PREFIX + "*");
+
+        for (const queueKey of queueKeys) {
+            const boardId = queueKey.replace(this.QUEUE_KEY_PREFIX, "");
+
+            // Check if queue is already being processed by another instance
+            const lockAcquired = await this.redis.client.set(
+                this.QUEUE_SAVING_KEY_PREFIX + boardId,
+                "1",
+                "EX",
+                30, // Lock expiration in seconds
+                "NX"
+            );
+
+            if (lockAcquired) {
+                try {
+                    // Get the length of the queue
+                    const queueLength = await this.redis.client.llen(queueKey);
+
+                    if (queueLength > 0) {
+                        // Get all events (up to a reasonable batch size)
+                        const batchSize = Math.min(queueLength, 100);
+                        const events = await this.redis.client.lrange(queueKey, 0, batchSize - 1);
+
+                        // Parse events
+                        const parsedEvents = events.map((event) => JSON.parse(event));
+
+                        // Save events
+                        await this.saveEvents(boardId, parsedEvents);
+
+                        // Remove saved events from the queue
+                        await this.redis.client.ltrim(queueKey, batchSize, -1);
+                    }
                 } catch (error) {
                     this.logger.error(`Failed to save events for board ${boardId}:`, error);
                 } finally {
-                    queue.isSaving = false;
+                    // Release the lock
+                    await this.redis.client.del(this.QUEUE_SAVING_KEY_PREFIX + boardId);
                 }
             }
         }
@@ -1091,12 +1278,21 @@ export class EventsManager {
     }
 
     async getEnqueuedEvents(boardId: string): Promise<any[]> {
-        const queue = this.queues[boardId];
-        let events = [];
-        if (queue) {
-            events = queue.events;
-        }
-        return events.map((event) => {
+        // IN-MEMORY VERSION:
+        // const queue = this.queues[boardId];
+        // let events = [];
+        // if (queue) {
+        //     events = queue.events;
+        // }
+        // return events.map((event) => {
+        //     return { body: event.data, order: event.data.order };
+        // });
+
+        const queueKey = this.QUEUE_KEY_PREFIX + boardId;
+        const events = await this.redis.client.lrange(queueKey, 0, -1);
+
+        return events.map((eventStr) => {
+            const event = JSON.parse(eventStr);
             return { body: event.data, order: event.data.order };
         });
     }
