@@ -477,7 +477,8 @@ export function withWebSocketApi({
     async function getAccessMode(ws: WebSocket, boardId: string): Promise<AccessMode> {
         const board = await boardsService.get(boardId);
         if (!board) {
-            throw new WsError("Board not found", boardId);
+            sendBoardAccessDeniedMsg(ws, boardId);
+            throw new Error(`Board not found ${boardId}`);
         }
         const accessKey = wsAccessKeys.get(ws);
         if (accessKey) {
@@ -490,7 +491,8 @@ export function withWebSocketApi({
                 return "view";
             }
 
-            throw new WsError("Invalid access key", boardId);
+            sendBoardAccessDeniedMsg(ws, boardId);
+            throw new Error(`Invalid access key for board ${boardId}`);
         }
 
         const userToken = wsTokens.get(ws);
@@ -516,7 +518,12 @@ export function withWebSocketApi({
             }
         }
 
-        throw new WsError("Not authorized", boardId);
+        sendBoardAccessDeniedMsg(ws, boardId);
+        throw new Error(`Invalid access key for board ${boardId}`);
+    }
+
+    function sendBoardAccessDeniedMsg(ws: WebSocket, boardId: string): void {
+        sendWsMsg(ws, { type: "BoardAccessDenied", boardId });
     }
 
     function handleUnsubscribeMsg(msg: UnsubscribeMsg, ws: WebSocket): void {
@@ -688,9 +695,13 @@ export interface UnsubscribeMsg {
 export interface ErrorMsg {
     type: "Error";
     message: string;
-    deniedBoardId?: string;
     expectedSequence?: number;
     receivedSequence?: number;
+}
+
+export interface BoardAccessDeniedMsg {
+    type: "BoardAccessDenied";
+    boardId: string;
 }
 
 export interface SnapshotRequestMsg {
