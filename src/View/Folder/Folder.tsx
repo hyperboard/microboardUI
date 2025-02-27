@@ -182,6 +182,30 @@ export const Folder = ({
 		}
 	}, [isSidePanelOpen]);
 
+	const calcOriginalPosition = () => {
+		if (isDragging && itemRef.current) {
+			const rect = itemRef.current.getBoundingClientRect();
+			setOriginalPosition({
+				top: rect.y,
+				left: rect.x,
+				width: rect.width,
+				height: rect.height,
+			});
+		}
+	};
+
+	useEffect(() => {
+		calcOriginalPosition();
+		document.addEventListener("scroll", calcOriginalPosition, true);
+
+		if (isDragging) {
+			accordionRef.current?.close();
+		}
+		return () => {
+			document.removeEventListener("scroll", calcOriginalPosition, true);
+		};
+	}, [isDragging]);
+
 	if (!folder || folder.type === foldersApi.FolderType.TRASH) {
 		return null;
 	}
@@ -210,29 +234,6 @@ export const Folder = ({
 		ev.stopPropagation();
 		open(ev.clientX, ev.clientY, undefined, folder.id);
 	};
-
-	const calcOriginalPosition = () => {
-		if (isDragging && itemRef.current) {
-			const rect = itemRef.current.getBoundingClientRect();
-			setOriginalPosition({
-				top: rect.y,
-				left: rect.x,
-				width: rect.width,
-				height: rect.height,
-			});
-		}
-	};
-	useEffect(() => {
-		calcOriginalPosition();
-		document.addEventListener("scroll", calcOriginalPosition, true);
-
-		if (isDragging) {
-			accordionRef.current?.close();
-		}
-		return () => {
-			document.removeEventListener("scroll", calcOriginalPosition, true);
-		};
-	}, [isDragging]);
 
 	const stopPropagation = (ev: SyntheticEvent) => {
 		ev.stopPropagation();
