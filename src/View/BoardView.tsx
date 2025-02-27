@@ -31,7 +31,7 @@ const BoardView = ({ app }: Props): JSX.Element => {
 	const account = useAccount();
 	const { openModal } = useUiModalContext();
 
-	app.connection.wsClient.onAccessDenied = async (
+	app.connection.onAccessDenied = async (
 		deniedBoardId: string,
 		forceUpdate = false,
 	) => {
