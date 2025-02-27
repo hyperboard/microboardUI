@@ -46,6 +46,7 @@ import { AIGeneration } from "View/ContextPanel/Buttons/AIGeneration";
 import { getIdeaFromSelection } from "View/AIInput";
 import { FrameNavNext } from "./Buttons/FrameNavNext";
 import { FrameNavPrev } from "./Buttons/FrameNavPrev";
+import { HyperLinkBtn } from "View/ContextPanel/Buttons/HyperLinkBtn";
 
 const isReady = false;
 
@@ -159,7 +160,7 @@ export function ContextPanel(): React.ReactElement | null {
 						<FontSize rounded="left" />
 						<FontStyle />
 						<TextAlignment />
-						<Hyperlink isReady={isReady} />
+						<HyperLinkBtn />
 						<UiSeparator vertical />
 						<TextColor />
 						<TextHighlight />
@@ -183,7 +184,7 @@ export function ContextPanel(): React.ReactElement | null {
 						<UiSeparator vertical />
 						<FontStyle />
 						<TextAlignment />
-						<Hyperlink isReady={isReady} />
+						<HyperLinkBtn />
 						<UiSeparator vertical />
 						<TextColor />
 						<TextHighlight />
@@ -215,7 +216,7 @@ export function ContextPanel(): React.ReactElement | null {
 								<UiSeparator vertical />
 								<FontStyle />
 								<TextAlignment />
-								<Hyperlink isReady={isReady} />
+								<HyperLinkBtn />
 								<UiSeparator vertical />
 								<TextColor />
 								<TextHighlight />
@@ -328,7 +329,7 @@ export function ContextPanel(): React.ReactElement | null {
 						<UiSeparator vertical />
 						<FontStyle />
 						<TextAlignment />
-						<Hyperlink isReady={isReady} />
+						<HyperLinkBtn />
 						<UiSeparator vertical />
 						<TextColor />
 						<TextHighlight />

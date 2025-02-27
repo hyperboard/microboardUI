@@ -15,6 +15,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider, Config } from "wagmi";
 import { arbitrum, mainnet, polygon } from "wagmi/chains";
 import { AIContextProvider } from "./AIInput/AIContext";
+import { HyperLinkContextProvider } from "View/hyperLink/HyperLinkContext";
 
 type Props = {
 	app: App;
@@ -42,20 +43,22 @@ export function ContextWrapper({ app, board }: Props) {
 	return (
 		<AppContext.Provider value={{ app, board }}>
 			<CryptoWrapper>
-				<AIContextProvider>
-					<ModalsWrapper>
-						<ContextMenuContextProvider>
-							<RenameContextProvider>
-								<OpenedFoldersContextProvider>
-									<SidePanelContextProvider>
-										<Outlet />
-										<ToastProvider />
-									</SidePanelContextProvider>
-								</OpenedFoldersContextProvider>
-							</RenameContextProvider>
-						</ContextMenuContextProvider>
-					</ModalsWrapper>
-				</AIContextProvider>
+				<HyperLinkContextProvider>
+					<AIContextProvider>
+						<ModalsWrapper>
+							<ContextMenuContextProvider>
+								<RenameContextProvider>
+									<OpenedFoldersContextProvider>
+										<SidePanelContextProvider>
+											<Outlet />
+											<ToastProvider />
+										</SidePanelContextProvider>
+									</OpenedFoldersContextProvider>
+								</RenameContextProvider>
+							</ContextMenuContextProvider>
+						</ModalsWrapper>
+					</AIContextProvider>
+				</HyperLinkContextProvider>
 			</CryptoWrapper>
 		</AppContext.Provider>
 	);

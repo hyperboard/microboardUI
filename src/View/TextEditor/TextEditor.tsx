@@ -15,12 +15,14 @@ import { Transforms } from "slate";
 import { EditorContainer } from "Board/Items/RichText/EditorContainer";
 import { t } from "i18next";
 import { BlockNode } from "Board/Items/RichText/Editor/BlockNode";
+import { HyperLinkCreationData } from "View/hyperLink/HyperLinkContext";
 
 export class TextEditors extends React.Component<
 	{
 		app: App;
 		board: Board;
 		setQuotedText: (text: string) => void;
+		setHyperLinkData: (data: HyperLinkCreationData) => void;
 	},
 	{}
 > {
@@ -49,6 +51,7 @@ export class TextEditors extends React.Component<
 					board={this.props.board}
 					text={text}
 					setQuotedText={this.props.setQuotedText}
+					setHyperLinkData={this.props.setHyperLinkData}
 				/>
 			);
 		}
@@ -61,6 +64,7 @@ export class TextEditor extends React.Component<
 		board: Board;
 		text: RichText;
 		setQuotedText: (text: string) => void;
+		setHyperLinkData: (data: HyperLinkCreationData) => void;
 	},
 	{
 		hasError: boolean;
@@ -100,12 +104,7 @@ export class TextEditor extends React.Component<
 	containerRef = React.createRef<HTMLDivElement>();
 	editableRef = React.createRef<HTMLDivElement>();
 
-	getSlateSelectionRect(editor: EditorContainer): {
-		top: number;
-		left: number;
-		right: number;
-		bottom: number;
-	} | null {
+	getSlateSelectionRect(editor: EditorContainer) {
 		if (!editor.getSelection() || !editor.hasTextInSelection()) {
 			return null;
 		}
@@ -123,26 +122,34 @@ export class TextEditor extends React.Component<
 		}
 
 		const firstRect = clientRects[0];
+		const lastRect = clientRects[clientRects.length - 1];
 
 		return {
-			top: firstRect.top,
-			left: firstRect.left,
-			right: firstRect.right,
-			bottom: firstRect.bottom,
+			firstRect,
+			lastRect,
 		};
 	}
 
 	handleSelectionChange = (): void => {
 		const editor = this.props.text.editor;
-		const rect = this.getSlateSelectionRect(editor);
+		const rects = this.getSlateSelectionRect(editor);
 
-		if (rect) {
+		if (rects) {
+			const { firstRect, lastRect } = rects;
 			this.setState({
 				buttonPosition: {
-					top: rect.top + window.scrollY - 40,
-					left: (rect.left + rect.right) / 2 + window.scrollX,
+					top: firstRect.top + window.scrollY - 40,
+					left:
+						(firstRect.left + firstRect.right) / 2 + window.scrollX,
 				},
 				isButtonVisible: true,
+			});
+			this.props.setHyperLinkData({
+				inputPosition: {
+					top: lastRect.bottom,
+					left: lastRect.left,
+				},
+				selection: structuredClone(editor.getSelection()),
 			});
 		} else {
 			this.setState({ isButtonVisible: false });

@@ -163,7 +163,7 @@ export function Element(props: RenderElementProps): React.ReactElement {
 			);
 		default:
 			return (
-				<p
+				<span
 					{...attributes}
 					style={{
 						textAlign: props.element.horisontalAlignment,
@@ -171,7 +171,7 @@ export function Element(props: RenderElementProps): React.ReactElement {
 					}}
 				>
 					{children}
-				</p>
+				</span>
 			);
 	}
 }

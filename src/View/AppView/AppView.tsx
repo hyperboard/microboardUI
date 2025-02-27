@@ -46,10 +46,13 @@ import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
 import { UIMainLoader } from "View/Ui/UIMainLoader/UIMainLoader";
 import { HyperLink } from "View/hyperLink/HyperLink";
+import { useHyperLinkContext } from "View/hyperLink/HyperLinkContext";
+import { HyperLinkInput } from "View/hyperLink/HyperLinkInput/HyperLinkInput";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
 	const { setQuotedText } = useAIContext();
+	const { setHyperLinkData } = useHyperLinkContext();
 	const location = useLocation();
 	const navigate = useNavigate();
 	const params = useParams();
@@ -181,6 +184,7 @@ export function AppView(): JSX.Element {
 						app={app}
 						board={board}
 						setQuotedText={setQuotedText}
+						setHyperLinkData={setHyperLinkData}
 					/>
 				</div>
 			</InactiveBoardHidder>
@@ -219,6 +223,7 @@ export function AppView(): JSX.Element {
 				<ExportPanel />
 			</ViewModeGuard>
 			<HyperLink />
+			<HyperLinkInput />
 			<ToastProvider />
 			{authCode && teamIdSearch ? <ImportMiro /> : null}
 			<ImportMiroStartModal />

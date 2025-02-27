@@ -6,6 +6,7 @@ import styles from "./HyperLink.module.css";
 import { Mbr } from "Board/Items/Mbr/Mbr";
 import { useForceUpdate } from "lib/useForceUpdate";
 import { Connector } from "Board/Items/Connector/Connector";
+import { useHyperLinkContext } from "View/hyperLink/HyperLinkContext";
 
 export const HyperLink = () => {
 	const [currentLink, setCurrentLink] = useState<{
@@ -15,6 +16,7 @@ export const HyperLink = () => {
 	const [isTooltipUnderPointer, setIsTooltipUnderPointer] = useState(false);
 	const { board, app } = useAppContext();
 	const forceUpdate = useForceUpdate();
+	const { isEditingLink } = useHyperLinkContext();
 
 	const link = board.items
 		.getUnderPointer()
@@ -47,7 +49,7 @@ export const HyperLink = () => {
 		fit: "hyperLink",
 	});
 
-	if (!isTooltipUnderPointer && !currentLink) {
+	if ((!isTooltipUnderPointer && !currentLink) || isEditingLink) {
 		return null;
 	}
 
