@@ -10,4 +10,7 @@ export const DEFAULT_TEXT_STYLES: DefaultTextStyles = {
 	underline: false,
 	italic: false,
 	"line-through": false,
+	overline: false,
+	subscript: false,
+	superscript: false,
 };

@@ -59,9 +59,16 @@ export async function tryToPasteAsItemOrReturnText(
 	}
 
 	const urlRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
+	const textEditor = board.selection.items.getSingle()?.getRichText()?.editor;
+	const shouldSkipMarkdownTransform = Boolean(
+		textEditor?.getSelection() &&
+			textEditor.hasTextInSelection() &&
+			urlRegex.test(text),
+	);
+
 	if (
 		!dataTransfer?.getData("application/x-slate-fragment") &&
-		!urlRegex.test(text)
+		!shouldSkipMarkdownTransform
 	) {
 		try {
 			if (!isMarkdown(text) && html) {

@@ -54,6 +54,7 @@ export function getController(
 ): Controller {
 	let lastEventTime = 0;
 	let isTouchpad = false;
+	let isItemUnderPointer = false;
 	function onWheel(event: WheelEvent): void {
 		event.preventDefault();
 		event.stopPropagation();
@@ -436,6 +437,10 @@ export function getController(
 		const isSelect = tools.getSelect() !== undefined;
 		const itemsUnderPointer = board.items.getUnderPointer();
 		if (itemsUnderPointer.length) {
+			isItemUnderPointer = true;
+			board.pointer.subject.publish(board.pointer);
+		} else if (isItemUnderPointer) {
+			isItemUnderPointer = false;
 			board.pointer.subject.publish(board.pointer);
 		}
 		if (isSelect) {

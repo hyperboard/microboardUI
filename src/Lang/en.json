@@ -72,7 +72,7 @@
 			"bottom": "Bottom"
 		},
 		"hyperLink": {
-			"tooltip": "Hyperlink"
+			"tooltip": "Add link"
 		},
 		"textColor": {
 			"tooltip": "Text color"
@@ -909,5 +909,9 @@
 			"body": "Failed to generate audio.\nPlease try again"
 		},
 		"authTooltip": "Sign in to access all features of Microboard"
+	},
+	"hyperLink": {
+		"done": "Done",
+		"addLink": "Insert a link"
 	}
 }

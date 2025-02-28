@@ -6,12 +6,14 @@ import { useAppContext } from "View/AppContext";
 import { useClickOutside } from "lib/useClickOutside";
 import { Icon } from "View/Icon/Icon";
 import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
+import { useTranslation } from "react-i18next";
 
 export const HyperLinkInput = () => {
 	const [inputValue, setInputValue] = useState<string>("");
 	const { isEditingLink, setIsEditingLink, hyperLinkData, setHyperLinkData } =
 		useHyperLinkContext();
 	const { board, app } = useAppContext();
+	const { t } = useTranslation();
 	const containerRef = useClickOutside(
 		() => {
 			if (isEditingLink) {
@@ -43,6 +45,13 @@ export const HyperLinkInput = () => {
 			if (link !== inputValue) {
 				setInputValue(link || "");
 			}
+		}
+		if (hyperLinkData && isEditingLink) {
+			(
+				document.querySelector(
+					"#hyper-link-input",
+				) as HTMLInputElement | null
+			)?.focus();
 		}
 		if (!hyperLinkData) {
 			setInputValue("");
@@ -115,7 +124,7 @@ export const HyperLinkInput = () => {
 						className={styles.iconButton}
 						onClick={handleDeleteBtnClick}
 					>
-						<Icon iconName={"Delete"} width={18} height={18} />
+						<Icon iconName={"Delete"} width={19} height={19} />
 					</button>
 				</>
 			) : (
@@ -123,8 +132,9 @@ export const HyperLinkInput = () => {
 					<Input
 						onKeyDown={onKeyDown}
 						shouldSelect={true}
+						shouldFocus={true}
 						id="hyper-link-input"
-						placeholder="Вставьте ссылку"
+						placeholder={t("hyperLink.addLink")}
 						value={inputValue}
 						onClick={handleInputClick}
 						onFocus={event => event.currentTarget.select()}
@@ -135,7 +145,7 @@ export const HyperLinkInput = () => {
 						onClick={handleConfirmBtnClick}
 						className={styles.confirmBtn}
 					>
-						Принять
+						{t("hyperLink.done")}
 					</button>
 				</div>
 			)}
