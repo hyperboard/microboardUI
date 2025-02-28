@@ -56,7 +56,7 @@ export async function getApp(): Promise<{
 
     await createVectorExtension(pool).catch(console.error);
 
-    await runMigration();
+    // await runMigration();
     // if (process.env.NODE_ENV?.toLocaleLowerCase() === "production") {
     //     await runMigration();
     // }
@@ -188,6 +188,7 @@ export async function getApp(): Promise<{
         isEnabled: process.env.TELEGRAM_ENABLED === "true",
         logger,
         source: (process.env.NODE_ENV || "development") as "development" | "staging" | "production",
+        notifierUrl: process.env.TELEGRAM_NOTIFIER_URL || "http://localhost:8080",
     });
     await telegramService.start();
 

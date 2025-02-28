@@ -956,7 +956,6 @@ export class DevelopersService {
                 boardId: event.boardId,
                 eventId,
                 operation: event.operation,
-                operations: event.operations || [],
                 lastKnownOrder: order - 1,
             };
 
