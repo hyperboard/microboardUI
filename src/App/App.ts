@@ -24,6 +24,7 @@ import { getLocalRender } from "View/router";
 import { wagmiConfig } from "View/ContextWrapper";
 import { disconnect } from "@wagmi/core";
 import { MemoryLogger } from "Logger";
+import { BrowserDocumentFactory } from "Board/api/BrowserDocumentFactory";
 
 export const LAST_BOARD_KEY = "lastSeenBoard";
 export const LAST_BOARD_KEY_QS = LAST_BOARD_KEY.concat("Wqs");
@@ -62,6 +63,7 @@ export function createApp(isHistory = true): App {
 	const sessionStorage = new SessionStorage();
 	const account = new Account(storage, sessionStorage, connection);
 	const boardsList = new BoardsList(storage, account);
+	const documentFactory = new BrowserDocumentFactory();
 
 	const test = createTester(getBoard);
 
@@ -207,7 +209,7 @@ export function createApp(isHistory = true): App {
 		}
 
 		async function getData(): Promise<string> {
-			const items = getBoard().items.getWholeHTML();
+			const items = getBoard().items.getWholeHTML(documentFactory);
 			const docCopy = document.cloneNode(true) as Document;
 
 			const head = document.head.cloneNode(true);
@@ -236,7 +238,7 @@ export function createApp(isHistory = true): App {
 				? getData
 				: getBoard().serializeHTML;
 
-		const data = await serializer();
+		const data = await serializer(documentFactory);
 		const writable = await fileHandle.createWritable();
 		await writable.write(data);
 		await writable.close();
