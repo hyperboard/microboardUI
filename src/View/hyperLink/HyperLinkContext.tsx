@@ -3,8 +3,9 @@ import React, { useEffect, useState } from "react";
 import { BaseSelection } from "slate";
 
 export type HyperLinkCreationData = {
-	inputPosition: { top: number; left: number };
+	inputPosition: { top: number; left: number } | null;
 	selection: BaseSelection;
+	isWatchMode: boolean;
 };
 
 interface Context {

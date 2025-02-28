@@ -58,9 +58,12 @@ export async function tryToPasteAsItemOrReturnText(
 		return null;
 	}
 
-	if (!dataTransfer?.getData("application/x-slate-fragment")) {
+	const urlRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
+	if (
+		!dataTransfer?.getData("application/x-slate-fragment") &&
+		!urlRegex.test(text)
+	) {
 		try {
-			console.log(isMarkdown(text));
 			if (!isMarkdown(text) && html) {
 				dataTransfer = await transformHtmlOrTextToMarkdown(text, html);
 			} else {

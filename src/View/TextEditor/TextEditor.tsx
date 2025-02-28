@@ -22,7 +22,8 @@ export class TextEditors extends React.Component<
 		app: App;
 		board: Board;
 		setQuotedText: (text: string) => void;
-		setHyperLinkData: (data: HyperLinkCreationData) => void;
+		setHyperLinkData: (data: HyperLinkCreationData | null) => void;
+		hyperLinkData: HyperLinkCreationData | null;
 	},
 	{}
 > {
@@ -52,6 +53,7 @@ export class TextEditors extends React.Component<
 					text={text}
 					setQuotedText={this.props.setQuotedText}
 					setHyperLinkData={this.props.setHyperLinkData}
+					hyperLinkData={this.props.hyperLinkData}
 				/>
 			);
 		}
@@ -64,7 +66,8 @@ export class TextEditor extends React.Component<
 		board: Board;
 		text: RichText;
 		setQuotedText: (text: string) => void;
-		setHyperLinkData: (data: HyperLinkCreationData) => void;
+		setHyperLinkData: (data: HyperLinkCreationData | null) => void;
+		hyperLinkData: HyperLinkCreationData | null;
 	},
 	{
 		hasError: boolean;
@@ -87,6 +90,17 @@ export class TextEditor extends React.Component<
 	}
 
 	componentWillUnmount(): void {
+		if (this.props.hyperLinkData) {
+			this.props.setHyperLinkData({
+				...this.props.hyperLinkData,
+				isWatchMode: false,
+			});
+		} else {
+			this.updateHyperLinkDataFromSelectionAnchor(
+				this.props.text.editor,
+				false,
+			);
+		}
 		if (this.state.timeoutId) {
 			clearTimeout(this.state.timeoutId);
 		}
@@ -130,6 +144,31 @@ export class TextEditor extends React.Component<
 		};
 	}
 
+	updateHyperLinkDataFromSelectionAnchor(
+		editor: EditorContainer,
+		isWatchMode: boolean,
+	) {
+		const link = editor.getFirstSelectionLink(editor.getSelection());
+		if (link) {
+			const selection = window.getSelection();
+			if (!selection) {
+				return;
+			}
+			const range = selection.getRangeAt(0);
+			const rect = range.getBoundingClientRect();
+			this.props.setHyperLinkData({
+				inputPosition: {
+					top: rect.bottom,
+					left: rect.left,
+				},
+				selection: editor.getLinkNodeRange(),
+				isWatchMode,
+			});
+		} else {
+			this.props.setHyperLinkData(null);
+		}
+	}
+
 	handleSelectionChange = (): void => {
 		const editor = this.props.text.editor;
 		const rects = this.getSlateSelectionRect(editor);
@@ -150,9 +189,11 @@ export class TextEditor extends React.Component<
 					left: lastRect.left,
 				},
 				selection: structuredClone(editor.getSelection()),
+				isWatchMode: false,
 			});
 		} else {
 			this.setState({ isButtonVisible: false });
+			this.updateHyperLinkDataFromSelectionAnchor(editor, true);
 		}
 	};
 
@@ -214,7 +255,15 @@ export class TextEditor extends React.Component<
 			text = text.replace(/\n+/g, " ").trim();
 		}
 
-		Transforms.insertText(richText.editor.editor, text);
+		const urlRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
+		if (urlRegex.test(text)) {
+			richText.editor.setSelectionLink(
+				text,
+				richText.editor.getSelection(),
+			);
+		} else {
+			Transforms.insertText(richText.editor.editor, text);
+		}
 
 		return false;
 	};

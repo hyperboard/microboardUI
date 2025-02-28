@@ -7,7 +7,7 @@ interface LeafProps extends RenderLeafProps {
 }
 
 export function Leaf(props: LeafProps): React.ReactElement {
-	const { attributes, leaf, fontSize, isAutoSize } = props;
+	const { attributes, leaf, fontSize, isAutoSize, text } = props;
 	let { children } = props;
 	const styles = new Set<string>();
 	if (leaf.bold) {
@@ -16,7 +16,7 @@ export function Leaf(props: LeafProps): React.ReactElement {
 	if (leaf.italic) {
 		styles.add("italic");
 	}
-	if (leaf.underline) {
+	if (leaf.underline || !!text.link) {
 		styles.add("underline");
 	}
 	if (leaf["line-through"]) {

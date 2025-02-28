@@ -120,6 +120,7 @@ export type IconId =
 	| "EyeDashed"
 	| "addLink"
 	| "Hyperlink"
+	| "EditPen"
 	| "StopAiGeneration"
 	| "Vector"
 	| "ArrowUpCircle"

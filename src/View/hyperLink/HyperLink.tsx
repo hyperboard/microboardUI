@@ -16,7 +16,6 @@ export const HyperLink = () => {
 	const [isTooltipUnderPointer, setIsTooltipUnderPointer] = useState(false);
 	const { board, app } = useAppContext();
 	const forceUpdate = useForceUpdate();
-	const { isEditingLink } = useHyperLinkContext();
 
 	const link = board.items
 		.getUnderPointer()
@@ -45,11 +44,14 @@ export const HyperLink = () => {
 		board,
 		ref: linkContainerRef,
 		targetMbr: currentLink?.linkMbr,
-		subjects: ["pointer"],
+		subjects: ["selection", "selectionItem"],
 		fit: "hyperLink",
 	});
 
-	if ((!isTooltipUnderPointer && !currentLink) || isEditingLink) {
+	if (
+		(!isTooltipUnderPointer && !currentLink) ||
+		board.selection.getContext() === "EditTextUnderPointer"
+	) {
 		return null;
 	}
 
