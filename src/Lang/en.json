@@ -684,22 +684,27 @@
 		"generate": "Generate",
 		"models": {
 			"gpt-4o-mini": {
+				"mobileTitle": "4o-mini",
 				"title": "Chat with GPT 4o-mini",
 				"description": "Fastest for everyday tasks"
 			},
 			"gpt-4o": {
+				"mobileTitle": "4o",
 				"title": "Chat with GPT 4o",
 				"description": "Great for most tasks"
 			},
 			"image-generation": {
+				"mobileTitle": "Flux",
 				"title": "Generate image",
 				"description": "Flux schnell"
 			},
 			"deepseek-reasoner": {
+				"mobileTitle": "DeepSeek",
 				"title": "Chat with Deepseek R1",
 				"description": "Better than 4o in many cases"
 			},
 			"tts-1-hd": {
+				"mobileTitle": "TTS",
 				"title": "Generate speech",
 				"description": "OpenAI TTS HD"
 			}

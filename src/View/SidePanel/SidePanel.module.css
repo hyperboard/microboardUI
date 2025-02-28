@@ -44,6 +44,8 @@
 	flex-direction: column;
 	align-items: stretch;
 	flex: 1 0;
+	padding-bottom: 0;
+	padding-left: 14px;
 }
 
 .folders {
@@ -64,8 +66,8 @@
 
 .folders::-webkit-scrollbar {
 	appearance: none;
-	width: 2px;
-	height: 2px;
+	width: 4px;
+	height: 4px;
 }
 
 .folders::-webkit-scrollbar-button {

@@ -109,6 +109,7 @@
 	width: 100%;
 	font-family: "Manrope";
 	text-align: left;
+	font-size: 14px;
 }
 
 .modelBtn:hover:not(.disabled) {
@@ -363,8 +364,7 @@
 
 	.dropdownContainer {
 		min-width: 200px;
-		max-width: unset;
-		width: max-content;
+		max-width: 250px;
 	}
 
 	.modelDropdown {

@@ -71,7 +71,12 @@ export const AIDropdown = (props: AIDropdownProps): JSX.Element => {
 		>
 			<StarIcon className={styles.starIcon} width={20} height={20} />
 			<div className={styles.selectedModel} onClick={toggleModelDropdown}>
-				<span>{t(`ai.models.${model}.title`)}</span>
+				<span>
+					{" "}
+					{isPhoneScreen
+						? t(`ai.models.${model}.mobileTitle`)
+						: t(`ai.models.${model}.title`)}
+				</span>
 				<Chevron
 					className={clsx(styles.arrow, {
 						[styles.activeArrow]: isDropdownOpen,
@@ -149,7 +154,11 @@ const Dropdown = (
 								: selectModel(model)
 						}
 					>
-						<strong>{t(`ai.models.${model}.title`)}</strong>
+						<strong>
+							{isPhoneScreen
+								? t(`ai.models.${model}.mobileTitle`)
+								: t(`ai.models.${model}.title`)}
+						</strong>
 						<p>{t(`ai.models.${model}.description`)}</p>
 						{getDropDownTooltip(model)}
 					</button>
