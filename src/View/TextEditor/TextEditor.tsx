@@ -257,10 +257,7 @@ export class TextEditor extends React.Component<
 
 		const urlRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
 		if (urlRegex.test(text)) {
-			richText.editor.setSelectionLink(
-				text,
-				richText.editor.getSelection(),
-			);
+			board.selection.setHyperLink(text, richText.editor.getSelection());
 		} else {
 			Transforms.insertText(richText.editor.editor, text);
 		}
