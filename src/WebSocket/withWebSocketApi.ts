@@ -349,6 +349,9 @@ export function withWebSocketApi({
     async function sendSubscriptionCompleted(ws: WebSocket, boardId: string, mode: string) {
         const initialSequenceNumber = getInitialSeqNum(ws, boardId);
         const snapshot = await boardsService.getLatestBoardSnapshot(boardId);
+        if (snapshot) {
+            snapshot.events = [];
+        }
         const lastSnapshotEventOrder = snapshot?.lastIndex || 0;
         const eventsSinceLastSnapshot = await getEventsSinceLastSnapshot(boardId, lastSnapshotEventOrder);
         /*
