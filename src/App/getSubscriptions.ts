@@ -139,7 +139,7 @@ export function getSubscriptions(getBoard: () => Board): Subscriptions {
 				);
 				return;
 			}
-			subject().unsubscribe(subscription.observer);
+			subject()?.unsubscribe(subscription.observer);
 		}
 	}
 

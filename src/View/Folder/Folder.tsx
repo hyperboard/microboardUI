@@ -138,7 +138,6 @@ export const Folder = ({
 	};
 
 	useEffect(() => {
-		console.log(id, isSidePanelOpen);
 		if (id) {
 			return openFolders(id);
 		}

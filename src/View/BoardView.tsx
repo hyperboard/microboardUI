@@ -47,7 +47,7 @@ const BoardView = ({ app }: Props): JSX.Element => {
 			if (!account.isLoggedIn) {
 				await boardsList.removeBoard(board.getBoardId());
 			}
-			navigate("/boards");
+			navigate("/boards/blank");
 			await app.openBoard("blank");
 			app.render();
 		}

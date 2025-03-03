@@ -43,13 +43,8 @@ export function SidePanelContextProvider({
 
 	const toggleSideMenu = (): void => {
 		setIsOpen(prev => {
-			console.log(prev);
-			// const boardId = board?.getBoardId();
-			// console.log("boardId set", boardId);
 			if (prev) {
-				console.log("boardId set", null);
 				close();
-				// setId(null);
 			}
 			return !prev;
 		});
