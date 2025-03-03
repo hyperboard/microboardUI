@@ -239,6 +239,7 @@ export async function getApp(): Promise<{
         boardsService,
         foldersService,
         googleOAuthService,
+        telegramService,
     });
 
     app.use(v1Router);

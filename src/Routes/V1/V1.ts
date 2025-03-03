@@ -34,6 +34,7 @@ import type { FoldersService } from "./Foldres/folders.service";
 import type { AccessKeysService } from "./Boards/access-keys.service";
 import type { GoogleOAuth } from "Routes/V1/Auth/GoogleOAuth";
 import { CryptoService } from "./Crypto/cryptoService";
+import type { TelegramService } from "services/TelegramService";
 
 function createFileRoute(
     router: express.Router,
@@ -85,6 +86,7 @@ export function getV1Router({
     accessKeysService,
     foldersService,
     googleOAuthService,
+    telegramService,
 }: {
     config: Config;
     mailer: Mailer;
@@ -105,11 +107,12 @@ export function getV1Router({
     foldersService: FoldersService;
     accessKeysService: AccessKeysService;
     googleOAuthService: GoogleOAuth;
+    telegramService: TelegramService;
 }): express.Router {
     const router = express.Router();
     const apiBase = "/api/v1";
     router.use(apiBase, createHealthRouter(logger, redis));
-    router.use(apiBase, getAuthRouter(auth, users, googleOAuthService, logger));
+    router.use(apiBase, getAuthRouter(auth, users, googleOAuthService, telegramService, logger));
     router.use(apiBase, getBoardsRouter(boardsService, foldersService, accessKeysService));
     router.use(apiBase, getFoldersRouter(foldersService));
     router.use(apiBase, getTemplatesRouter(templates, logger), getAIRouter(ai, logger));
