@@ -41,14 +41,11 @@ import { ConnectorTextColor } from "./Buttons/ConnectorTextColor";
 import { ConnectorTextHighlight } from "./Buttons/ConnectorTextHighlight";
 import { CopyItemLink } from "./Buttons/RestOptionsMenu/Items/CopyItemLink";
 import { SetLinkTo } from "./Buttons/RestOptionsMenu/Items/SetLinkTo";
-import { Hyperlink } from "./Buttons/Hyperlink";
 import { AIGeneration } from "View/ContextPanel/Buttons/AIGeneration";
 import { getIdeaFromSelection } from "View/AIInput";
 import { FrameNavNext } from "./Buttons/FrameNavNext";
 import { FrameNavPrev } from "./Buttons/FrameNavPrev";
 import { HyperLinkBtn } from "View/ContextPanel/Buttons/HyperLinkBtn";
-
-const isReady = false;
 
 export function ContextPanel(): React.ReactElement | null {
 	const { app, board } = useAppContext();

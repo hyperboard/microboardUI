@@ -225,22 +225,7 @@ export class TextEditor extends React.Component<
 				const nodes: BlockNode[] = JSON.parse(
 					decodeURIComponent(window.atob(slateFragment)),
 				);
-				if (
-					nodes.length === 1 &&
-					nodes[0].type === "paragraph" &&
-					nodes[0].children.length === 1 &&
-					nodes[0].children[0].type === "text"
-				) {
-					Transforms.insertText(
-						richText.editor.editor,
-						nodes[0].children[0].text,
-					);
-					return false;
-				}
-				Transforms.insertNodes(richText.editor.editor, nodes, {
-					at: richText.editor.getSelection() || undefined,
-				});
-				return false;
+				return richText.editor.insertCopiedNodes(nodes);
 			} catch (error) {
 				console.error("Error while parsing slate nodes:", error);
 			}
@@ -317,10 +302,10 @@ export class TextEditor extends React.Component<
 		const editorWidth =
 			text.insideOf === "Sticker"
 				? container.getWidth() / editorScale
-				: Math.ceil(container.getWidth() / editorScale);
+				: Math.floor(container.getWidth() / editorScale);
 		const editorMaxWidth =
 			// @ts-expect-error maxWidth undefined
-			text.insideOf === "Sticker" ? maxWidth : Math.ceil(maxWidth);
+			text.insideOf === "Sticker" ? maxWidth : Math.floor(maxWidth);
 
 		if (this.state.hasError) {
 			return (
@@ -342,10 +327,10 @@ export class TextEditor extends React.Component<
 						top: `${top}px`,
 
 						// @ts-expect-error maxWidth undefined
-						maxWidth: `${Math.ceil(maxWidth)}px`,
+						maxWidth: `${Math.floor(maxWidth)}px`,
 						maxHeight: `${maxHeight}px`,
 						// @ts-expect-error maxWidth undefined
-						width: `${Math.ceil(maxWidth)}px`,
+						width: `${Math.floor(maxWidth)}px`,
 						height: `${maxHeight}px`,
 
 						// transformOrigin: "left top",
@@ -403,9 +388,9 @@ export class TextEditor extends React.Component<
 						left: `${left}px`,
 						top: `${top}px`,
 
-						maxWidth: `${Math.ceil(editorMaxWidth)}px`,
+						maxWidth: `${Math.floor(editorMaxWidth)}px`,
 						maxHeight: `${editorMaxHeight}px`,
-						width: `${Math.ceil(editorWidth) + ((text.shouldShrink() && 2) || 0)}px`,
+						width: `${Math.floor(editorWidth) + ((text.shouldShrink() && 2) || 0)}px`,
 						// width: `${Math.ceil(editorWidth)}px`,
 						height: `${editorHeight}px`,
 
@@ -445,12 +430,6 @@ export class TextEditor extends React.Component<
 							transform: `translate(0px) scale(${editorScale})`,
 							transformOrigin: `left top`,
 							pointerEvents: "all",
-							fontSize:
-								((text.getTextString().length === 0
-									? text.getFontSize()
-									: text.getMinFontSize()) /
-									editorScale) *
-								camera.getScale(),
 						}}
 						className={clsx(
 							styles.editorContainer,

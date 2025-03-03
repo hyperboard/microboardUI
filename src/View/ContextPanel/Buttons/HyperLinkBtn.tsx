@@ -34,7 +34,9 @@ export const HyperLinkBtn = () => {
 	return (
 		<UiButton
 			id="Hyperlink"
-			tooltip={t("contextPanel.hyperLink.tooltip")}
+			tooltip={
+				isEditingLink ? undefined : t("contextPanel.hyperLink.tooltip")
+			}
 			onClick={toggleIsEditing}
 			variant="secondary"
 			tooltipPosition="top"
