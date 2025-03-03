@@ -92,18 +92,18 @@ export class OpenAI {
     private defaultModel: OpenAIModels = "gpt-4o";
     private defaultMaxTokens = 10000; // max 128k per completion for gpt-4o
 
-    constructor(apiKey: string, options: { deepseekApiKey?: string } = {}) {
-        const { deepseekApiKey } = options;
+    constructor(apiKey: string, options: { nebiusApiKey?: string } = {}) {
+        const { nebiusApiKey } = options;
 
         this.client = new LLM({
             apiKey,
             baseURL: "https://openai-api.microboard.io/v1",
         });
 
-        if (deepseekApiKey) {
+        if (nebiusApiKey) {
             this.deepseek = new LLM({
-                apiKey: deepseekApiKey,
-                baseURL: "https://api.deepseek.com",
+                apiKey: nebiusApiKey,
+                baseURL: "https://api.studio.nebius.ai/v1/",
             });
         }
     }
@@ -126,10 +126,14 @@ export class OpenAI {
 
         try {
             let response = null;
+            const deepseekModels = {
+                "deepseek-chat": "deepseek-ai/DeepSeek-V3",
+                "deepseek-reasoner": "deepseek-ai/DeepSeek-R1",
+            };
 
             if (customModel && this.deepseek && customModel.startsWith("deepseek-")) {
                 response = await this.deepseek.chat.completions.create({
-                    model: customModel,
+                    model: deepseekModels[customModel],
                     messages,
                     temperature,
                 });
@@ -159,6 +163,11 @@ export class OpenAI {
             customModel?: "deepseek-chat" | "deepseek-reasoner";
         } = {}
     ) {
+        const deepseekModels = {
+            "deepseek-chat": "deepseek-ai/DeepSeek-V3",
+            "deepseek-reasoner": "deepseek-ai/DeepSeek-R1",
+        };
+
         const { model = this.defaultModel, temperature = 0.7, maxTokens = this.defaultMaxTokens, signal } = options;
 
         try {
@@ -167,7 +176,7 @@ export class OpenAI {
             if (options?.customModel && options.customModel.startsWith("deepseek-") && this.deepseek) {
                 response = await this.deepseek.chat.completions.create(
                     {
-                        model: options.customModel,
+                        model: deepseekModels[options.customModel],
                         messages,
                         temperature,
                         stream: true,

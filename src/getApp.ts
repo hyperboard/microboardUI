@@ -1,5 +1,6 @@
 import { createMiddleware } from "@trigger.dev/express";
 import { OpenAI } from "ai/openai";
+import { createImageGenerator } from "ai/openai/image-generator";
 import bodyParser from "body-parser";
 import compression from "compression";
 import cookieParser from "cookie-parser";
@@ -13,19 +14,26 @@ import express from "express";
 import helmet from "helmet";
 import http from "http";
 import { exceptionMiddleware } from "Middlewares/exception.middleware";
+import { language } from "Middlewares/language.middleware";
 import morgan from "morgan";
 import path from "path";
 import { getRedis } from "Redis";
 import { AI } from "Routes/V1/AI/AI";
+import { GoogleOAuth } from "Routes/V1/Auth/GoogleOAuth";
 import { AccessKeysService } from "Routes/V1/Boards/access-keys.service";
 import { BoardsService } from "Routes/V1/Boards/boards.service";
+import { createCryptoService } from "Routes/V1/Crypto";
+import { CryptoService } from "Routes/V1/Crypto/cryptoService";
+import { DevelopersService } from "Routes/V1/Developers/Service";
 import { FoldersService } from "Routes/V1/Foldres/folders.service";
 import { createMinioMediaDAL } from "Routes/V1/Media";
+import { TelegramService } from "services/TelegramService";
+import { HttpStatus } from "shared/enums/http-status.enum";
+import { HttpException } from "shared/exceptions/http-exception";
 import { catchAsync } from "shared/lib/catchAsync";
 import { getLoggerLevel } from "shared/lib/logger";
 import Stripe from "stripe";
 import { client } from "trigger";
-import { createImageGenerator } from "ai/openai/image-generator";
 import winston from "winston";
 import { WebSocketServer } from "ws";
 import { nocache } from "./nocache";
@@ -37,14 +45,6 @@ import { Users } from "./Routes/V1/Users";
 import { Config } from "./shared/config/config";
 import { Mailer } from "./shared/modules/mailer/mailer";
 import { WebSocketType, withWebSocketApi } from "./WebSocket";
-import { HttpException } from "shared/exceptions/http-exception";
-import { HttpStatus } from "shared/enums/http-status.enum";
-import { TelegramService } from "services/TelegramService";
-import { language } from "Middlewares/language.middleware";
-import { DevelopersService } from "Routes/V1/Developers/Service";
-import { GoogleOAuth } from "Routes/V1/Auth/GoogleOAuth";
-import { createCryptoService } from "Routes/V1/Crypto";
-import { CryptoService } from "Routes/V1/Crypto/cryptoService";
 
 export async function getApp(): Promise<{
     server: http.Server;
@@ -56,7 +56,7 @@ export async function getApp(): Promise<{
 
     await createVectorExtension(pool).catch(console.error);
 
-    // await runMigration();
+    await runMigration();
     // if (process.env.NODE_ENV?.toLocaleLowerCase() === "production") {
     //     await runMigration();
     // }
@@ -163,7 +163,7 @@ export async function getApp(): Promise<{
 
     const config = new Config();
     const openai = new OpenAI(process.env.OPENAI_API_KEY!, {
-        deepseekApiKey: process.env.DEEPSEEK_API_KEY,
+        nebiusApiKey: process.env.NEBIUS_API_KEY,
     });
     const mailer = new Mailer(config, logger, process.env.BASE_URL ?? "example");
     const templates = new Templates(logger);
@@ -183,11 +183,9 @@ export async function getApp(): Promise<{
     const developersService = new DevelopersService(boardsService, logger, redis);
 
     const telegramService = new TelegramService({
-        token: process.env.TELEGRAM_BOT_TOKEN!,
-        appToken: process.env.TELEGRAM_APP_TOKEN!,
         isEnabled: process.env.TELEGRAM_ENABLED === "true",
         logger,
-        source: (process.env.NODE_ENV || "development") as "development" | "staging" | "production",
+        source: process.env.APP_ENV || "development",
         notifierUrl: process.env.TELEGRAM_NOTIFIER_URL || "http://localhost:8080",
     });
     await telegramService.start();

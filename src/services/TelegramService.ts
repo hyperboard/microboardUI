@@ -13,11 +13,9 @@ import {
 } from "drizzle/functions/board/MetricsDashboard";
 
 export interface TelegramServiceConfig {
-    token: string;
-    appToken: string;
     isEnabled?: boolean;
     logger: winston.Logger;
-    source: "development" | "staging" | "production";
+    source: string;
     notifierUrl: string; // New config option for notifier service URL
 }
 
@@ -34,7 +32,7 @@ export class TelegramService {
         this.logger.info(`TelegramService initialized with source: ${this.config.source}`);
     }
 
-    private async sendNotifierRequest(endpoint: string, method: "GET" | "POST" | "DELETE", body?: any) {
+    private sendNotifierRequest = async (endpoint: string, method: "GET" | "POST" | "DELETE", body?: any) => {
         try {
             const response = await fetch(`${this.notifierUrl}${endpoint}`, {
                 method,
@@ -53,9 +51,9 @@ export class TelegramService {
             this.logger.error("Failed to send request to notifier service:", error);
             throw error;
         }
-    }
+    };
 
-    private async getDashboardMetrics() {
+    private getDashboardMetrics = async () => {
         try {
             const [
                 totalBoards,
@@ -86,6 +84,7 @@ export class TelegramService {
                 firstPaymentsToday,
                 renewalsToday,
                 totalPayingUsers,
+                env: this.config.source,
             });
 
             this.logger.debug("Dashboard metrics sent to notifier service");
@@ -93,9 +92,9 @@ export class TelegramService {
             this.logger.error("Failed to send dashboard metrics:", error);
             throw error;
         }
-    }
+    };
 
-    private scheduleDailyMetrics() {
+    private scheduleDailyMetrics = () => {
         this.metricsJob = cron.schedule("0 8,20 * * *", async () => {
             try {
                 await this.getDashboardMetrics();
@@ -103,9 +102,9 @@ export class TelegramService {
                 this.logger.error("Error in scheduled metrics job:", error);
             }
         });
-    }
+    };
 
-    public async start() {
+    public start = async () => {
         if (!this.isEnabled) {
             this.logger.info("Telegram service disabled");
             return;
@@ -113,16 +112,16 @@ export class TelegramService {
 
         this.scheduleDailyMetrics();
         this.logger.info("Telegram service started");
-    }
+    };
 
-    public async stop() {
+    public stop = async () => {
         if (this.metricsJob) {
             this.metricsJob.stop();
         }
         this.logger.info("Telegram service stopped");
-    }
+    };
 
-    public async broadcastMessage(
+    public broadcastMessage = async (
         text: string,
         meta?: {
             boardId?: string;
@@ -149,22 +148,22 @@ export class TelegramService {
                 activeStreams: string[];
             };
         }
-    ) {
+    ) => {
         if (!this.isEnabled) {
             this.logger.info("Broadcast skipped - Telegram service is disabled");
             return;
         }
 
         try {
-            await this.sendNotifierRequest("/notify", "POST", { text, meta });
+            await this.sendNotifierRequest("/notify", "POST", { text, meta, env: this.config.source });
             this.logger.debug("Message broadcast sent to notifier service");
         } catch (error) {
             this.logger.error("Failed to broadcast message:", error);
             throw error;
         }
-    }
+    };
 
-    public async sendMessage(chatId: number, text: string, options: any = {}) {
+    public sendMessage = async (chatId: number, text: string, options: any = {}) => {
         if (!this.isEnabled) {
             this.logger.debug(`Telegram disabled: skipping message to ${chatId}`);
             return;
@@ -179,10 +178,11 @@ export class TelegramService {
                         options,
                     },
                 },
+                env: this.config.source,
             });
         } catch (error) {
             this.logger.error(`Failed to send message to chat ${chatId}:`, error);
             throw error;
         }
-    }
+    };
 }

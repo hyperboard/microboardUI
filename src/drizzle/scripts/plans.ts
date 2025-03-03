@@ -1,6 +1,6 @@
 import { db } from "drizzle/db";
 import { Plan, plans, aiModels, AiModel, ModelLimit, modelLimits } from "drizzle/entities/plans";
-import { and, eq, sql } from "drizzle-orm";
+import { eq, desc, not } from "drizzle-orm";
 
 const BYTES_IN_MB = 1024 * 1024;
 const BYTES_IN_GB = BYTES_IN_MB * 1024;
@@ -9,7 +9,7 @@ export const USD = 100;
 export type PlanDefinition = Omit<Plan, "version" | "isActive">;
 export type ModelLimitDefinition = Omit<ModelLimit, "planVersion">;
 
-export const AI_MODELS: AiModel[] = [
+export const AI_MODELS: Omit<AiModel, "isArchived">[] = [
     {
         id: "gpt-4o-mini",
         name: "gpt-4o-mini",
@@ -137,12 +137,20 @@ export const PLAN_MODEL_LIMITS: ModelLimitDefinition[] = [
         isEnabled: false,
     },
     {
+        id: "plus-deepseek-chat",
+        planId: "plus",
+        modelId: "deepseek-chat",
+        dailyRequestLimit: null,
+        weeklyRequestLimit: null,
+        isEnabled: true,
+    },
+    {
         id: "basic-deepseek-reasoner",
         planId: "basic",
         modelId: "deepseek-reasoner",
         dailyRequestLimit: null,
-        weeklyRequestLimit: 30,
-        isEnabled: true,
+        weeklyRequestLimit: null,
+        isEnabled: false,
     },
     {
         id: "plus-deepseek-reasoner",
@@ -190,58 +198,42 @@ function isEqual<T extends Record<string, any>>(existing: T, updated: T, fields:
     return fields.every((field) => existing[field] === updated[field]);
 }
 export async function updatePlans() {
-    console.log("Starting system initialization...");
-
     try {
         await db.transaction(async (tx) => {
             console.log("Syncing AI models...");
-            const existingModels = await tx.select().from(aiModels);
-            const existingModelMap = new Map(existingModels.map((m) => [m.id, m]));
-
+            // ssot for models
             for (const model of AI_MODELS) {
-                const existingModel = existingModelMap.get(model.id);
-
-                if (existingModel) {
-                    if (!isEqual(existingModel, model, ["name", "displayName", "isDefault"])) {
-                        await tx.update(aiModels).set(model).where(eq(aiModels.id, model.id));
-                        console.log(`Updated AI model: ${model.name}`);
-                    }
-                } else {
-                    await tx.insert(aiModels).values(model);
-                    console.log(`Created new AI model: ${model.name}`);
-                }
+                await tx
+                    .insert(aiModels)
+                    .values(model)
+                    .onConflictDoUpdate({
+                        target: aiModels.id,
+                        set: {
+                            name: model.name,
+                            displayName: model.displayName,
+                            isDefault: model.isDefault,
+                        },
+                    });
+                await tx
+                    .update(aiModels)
+                    .set({ isArchived: true })
+                    .where(not(eq(aiModels.id, model.id)));
             }
 
             console.log("Syncing plans...");
-            const existingActivePlans = await tx.select().from(plans).where(eq(plans.isActive, true));
-
-            const existingActivePlanMap = new Map(existingActivePlans.map((p) => [p.id, p]));
-
             for (const planDef of PLANS) {
-                const existingPlan = existingActivePlanMap.get(planDef.id);
+                const existingPlans = await tx
+                    .select()
+                    .from(plans)
+                    .where(eq(plans.id, planDef.id))
+                    .orderBy(desc(plans.version));
 
-                if (existingPlan) {
-                    const existingLimits = await tx
-                        .select()
-                        .from(modelLimits)
-                        .where(
-                            and(eq(modelLimits.planId, planDef.id), eq(modelLimits.planVersion, existingPlan.version))
-                        );
+                let currentVersion = 1;
+                let shouldCreateNewVersion = false;
 
-                    const existingLimitIds = new Set(existingLimits.map((limit) => limit.id));
-
-                    const newLimits = PLAN_MODEL_LIMITS.filter((l) => l.planId === planDef.id)
-                        .filter((l) => !existingLimitIds.has(l.id))
-                        .map((limit) => ({
-                            ...limit,
-                            planVersion: existingPlan.version,
-                        }));
-
-                    if (newLimits.length > 0) {
-                        for (const limit of newLimits) {
-                            await tx.insert(modelLimits).values(limit).onConflictDoNothing();
-                        }
-                    }
+                if (existingPlans.length > 0) {
+                    const existingPlan = existingPlans[0];
+                    currentVersion = existingPlan.version;
 
                     if (
                         !isEqual(existingPlan, planDef, [
@@ -253,67 +245,49 @@ export async function updatePlans() {
                             "storageLimit",
                         ])
                     ) {
+                        shouldCreateNewVersion = true;
+                        currentVersion += 1;
+
                         await tx.update(plans).set({ isActive: false }).where(eq(plans.id, planDef.id));
-
-                        const newPlan = {
-                            ...planDef,
-                            version: existingPlan.version + 1,
-                            isActive: true,
-                        };
-                        await tx.insert(plans).values(newPlan);
-
-                        const planLimits = PLAN_MODEL_LIMITS.filter((l) => l.planId === planDef.id).map((limit) => ({
-                            ...limit,
-                            planVersion: newPlan.version,
-                        }));
-
-                        for (const limit of planLimits) {
-                            await tx.insert(modelLimits).values(limit).onConflictDoNothing();
-                        }
-
-                        console.log(`Updated plan ${planDef.name} to version ${newPlan.version}`);
-                    } else {
-                        console.log(`Plan ${planDef.name} is up to date`);
                     }
-                } else {
-                    const latestVersion = await tx
-                        .select({ version: sql<number>`MAX(version)` })
-                        .from(plans)
-                        .where(eq(plans.id, planDef.id));
+                }
 
-                    const newVersion = (latestVersion[0]?.version ?? 0) + 1;
-
+                if (shouldCreateNewVersion || existingPlans.length === 0) {
                     const newPlan = {
                         ...planDef,
-                        version: newVersion,
+                        version: currentVersion,
                         isActive: true,
                     };
                     await tx.insert(plans).values(newPlan);
+                }
 
-                    const planLimits = PLAN_MODEL_LIMITS.filter((l) => l.planId === planDef.id).map((limit) => ({
-                        ...limit,
-                        planVersion: newVersion,
-                    }));
+                const planModelLimits = PLAN_MODEL_LIMITS.filter((l) => l.planId === planDef.id).map((limit) => ({
+                    ...limit,
+                    planVersion: currentVersion,
+                }));
 
-                    for (const limit of planLimits) {
-                        await tx.insert(modelLimits).values(limit).onConflictDoNothing();
-                    }
-
-                    console.log(`Created new plan: ${planDef.name} (v${newVersion})`);
+                for (const limit of planModelLimits) {
+                    await tx
+                        .insert(modelLimits)
+                        .values(limit)
+                        .onConflictDoUpdate({
+                            target: [modelLimits.id, modelLimits.planVersion],
+                            set: {
+                                modelId: limit.modelId,
+                                dailyRequestLimit: limit.dailyRequestLimit,
+                                weeklyRequestLimit: limit.weeklyRequestLimit,
+                                isEnabled: limit.isEnabled,
+                            },
+                        });
                 }
             }
 
-            for (const [planId, plan] of existingActivePlanMap) {
-                if (!PLANS.some((p) => p.id === planId)) {
-                    await tx.update(plans).set({ isActive: false }).where(eq(plans.id, planId));
-                    console.log(`Deactivated plan: ${plan.name} (v${plan.version})`);
-                }
-            }
+            console.log("Plans synchronized successfully");
         });
 
-        console.log("System initialization completed successfully");
+        console.log("All plans and models updated successfully");
     } catch (error) {
-        console.error("Error during system initialization:", error);
+        console.error("Error updating plans:", error);
         throw error;
     }
 }

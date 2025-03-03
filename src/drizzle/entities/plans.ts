@@ -1,4 +1,4 @@
-import { boolean, integer, pgTable, serial, text, timestamp, unique, uuid, varchar } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, primaryKey, serial, text, timestamp, unique, varchar } from "drizzle-orm/pg-core";
 import { users } from "./users";
 
 export const aiModels = pgTable("ai_models", {
@@ -6,6 +6,7 @@ export const aiModels = pgTable("ai_models", {
     name: varchar("name").notNull(),
     displayName: varchar("display_name").notNull(),
     isDefault: boolean("is_default").default(false).notNull(),
+    isArchived: boolean("is_archived").default(false).notNull(),
 });
 
 export const plans = pgTable("plans", {
@@ -72,19 +73,25 @@ export const walletLastCheckedBlock = pgTable(
     })
 );
 
-export const modelLimits = pgTable("plan_model_limits", {
-    id: text("id").primaryKey(),
-    planId: varchar("plan_id")
-        .references(() => plans.id)
-        .notNull(),
-    modelId: varchar("model_id")
-        .references(() => aiModels.id)
-        .notNull(),
-    dailyRequestLimit: integer("daily_request_limit"), // null means unlimited
-    weeklyRequestLimit: integer("weekly_request_limit"), // null means unlimited
-    isEnabled: boolean("is_enabled").notNull().default(true),
-    planVersion: integer("plan_version").notNull().default(1),
-});
+export const modelLimits = pgTable(
+    "plan_model_limits",
+    {
+        id: text("id").notNull(),
+        planId: varchar("plan_id")
+            .references(() => plans.id)
+            .notNull(),
+        modelId: varchar("model_id")
+            .references(() => aiModels.id)
+            .notNull(),
+        dailyRequestLimit: integer("daily_request_limit"), // null means unlimited
+        weeklyRequestLimit: integer("weekly_request_limit"), // null means unlimited
+        isEnabled: boolean("is_enabled").notNull().default(true),
+        planVersion: integer("plan_version").notNull().default(1),
+    },
+    (t) => ({
+        pk: primaryKey({ columns: [t.id, t.planVersion] }),
+    })
+);
 
 export const userStorageUsage = pgTable("user_storage_usage", {
     id: varchar("id").primaryKey(),
