@@ -316,6 +316,7 @@
 		"submit": "Submit",
 		"signUp": "Sign up",
 		"unknownError": "Unknown error",
+		"googleError": "Google authentication error. Try again",
 		"resendCode": "Resend Code",
 		"privacyPolicy": "Privacy Policy",
 		"termsAndConditions": "Terms & Conditions",
