@@ -367,18 +367,15 @@ export class BoardsList {
 					return;
 				}
 				const { data } = await boardsApiV2.getBoard(id);
-				if (data) {
+				if (data && data.isPublic) {
 					this.storage.addVisitedBoard(data);
 					await this.updateList();
-				} else {
-					throw new Error("Cannot get board data");
 				}
 			},
 		);
 	}
 
 	async claim(): Promise<void> {
-		console.log("claim call");
 		if (!this.account.isLoggedIn) {
 			return;
 		}
