@@ -24,6 +24,7 @@ export class TextEditors extends React.Component<
 		setQuotedText: (text: string) => void;
 		setHyperLinkData: (data: HyperLinkCreationData | null) => void;
 		hyperLinkData: HyperLinkCreationData | null;
+		sendGenerationRequest: () => void;
 	},
 	{}
 > {
@@ -54,6 +55,7 @@ export class TextEditors extends React.Component<
 					setQuotedText={this.props.setQuotedText}
 					setHyperLinkData={this.props.setHyperLinkData}
 					hyperLinkData={this.props.hyperLinkData}
+					sendGenerationRequest={this.props.sendGenerationRequest}
 				/>
 			);
 		}
@@ -68,6 +70,7 @@ export class TextEditor extends React.Component<
 		setQuotedText: (text: string) => void;
 		setHyperLinkData: (data: HyperLinkCreationData | null) => void;
 		hyperLinkData: HyperLinkCreationData | null;
+		sendGenerationRequest: () => void;
 	},
 	{
 		hasError: boolean;
@@ -202,6 +205,16 @@ export class TextEditor extends React.Component<
 			event.preventDefault();
 			event.stopPropagation();
 			this.props.board.selection.setContext("EditUnderPointer");
+		}
+		if (
+			event.key === "Enter" &&
+			!event.shiftKey &&
+			this.props.text.insideOf === "AINode"
+		) {
+			event.preventDefault();
+			event.stopPropagation();
+			this.props.board.selection.setContext("EditUnderPointer");
+			this.props.sendGenerationRequest();
 		}
 	};
 

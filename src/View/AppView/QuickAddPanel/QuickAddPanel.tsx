@@ -12,6 +12,8 @@ import style from "./QuickAddPanel.module.css";
 import { ShapeType } from "Board/Items/Shape";
 import { quickAddItem } from "Board/Selection/QuickAddButtons";
 import { getHotkeyLabel } from "Board/Keyboard";
+import styles from "../../AIInput/AIInput.module.css";
+import { StarIcon } from "View/AIInput/StarIcon";
 
 export function QuickAddPanel(): React.ReactElement | null {
 	const { app } = useAppContext();
@@ -32,11 +34,19 @@ export function QuickAddPanel(): React.ReactElement | null {
 	) {
 		return null;
 	}
+	const startPoint = single.getStartPoint();
+	let isAINode = false;
+	if (
+		startPoint.pointType !== "Board" &&
+		startPoint.item.itemType === "AINode"
+	) {
+		isAINode = true;
+	}
 
 	const endPoint = single.getEndPoint();
 	const cameraMatrix = appBoard.camera.getMatrix();
 
-	const handlePick = (type: ShapeType | "copy"): void => {
+	const handlePick = (type: ShapeType | "copy" | "AIRequest"): void => {
 		quickAddItem(appBoard, type, single);
 	};
 
@@ -54,7 +64,7 @@ export function QuickAddPanel(): React.ReactElement | null {
 			rounded="full"
 		>
 			<UiButton
-				onClick={() => handlePick("copy")}
+				onClick={() => handlePick("AIRequest")}
 				size="md"
 				variant="tertiary"
 				style={{
@@ -63,8 +73,6 @@ export function QuickAddPanel(): React.ReactElement | null {
 					display: "flex",
 					gap: "2px",
 				}}
-				tooltip={getHotkeyLabel("confirm")}
-				tooltipPosition="top"
 			>
 				<div
 					style={{
@@ -72,10 +80,35 @@ export function QuickAddPanel(): React.ReactElement | null {
 						padding: "6px 0px",
 					}}
 				>
-					Same object
+					AI request
 				</div>
-				<Icon iconName="Duplicate" width={16} height={16} />
+				<StarIcon className={styles.starIcon} width={16} height={16} />
 			</UiButton>
+			{!isAINode && (
+				<UiButton
+					onClick={() => handlePick("copy")}
+					size="md"
+					variant="tertiary"
+					style={{
+						maxHeight: "52px",
+						width: "96px",
+						display: "flex",
+						gap: "2px",
+					}}
+					tooltip={getHotkeyLabel("confirm")}
+					tooltipPosition="top"
+				>
+					<div
+						style={{
+							maxWidth: "56px",
+							padding: "6px 0px",
+						}}
+					>
+						Same object
+					</div>
+					<Icon iconName="Duplicate" width={16} height={16} />
+				</UiButton>
+			)}
 			<UiAccordion
 				className={style.wrapper}
 				contentClassName={style.panel}

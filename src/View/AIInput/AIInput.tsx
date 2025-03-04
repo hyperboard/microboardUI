@@ -14,7 +14,6 @@ import { useForceUpdate } from "lib/useForceUpdate";
 import { UiPanel } from "View/Ui/UiPanel";
 import { useAccount } from "App/useAccount";
 import { useUiModalContext } from "View/Ui/UiModal";
-import { AI_UNAVAILABLE_MODAL_ID } from "View/AiUnavailableModal/AiUnavailableModal";
 import clsx from "clsx";
 import { USER_PLAN_MODAL_ID } from "View/UserPlan";
 import { getCorrectEnding } from "utils";
@@ -50,6 +49,7 @@ export const AIInput = () => {
 		createNodesWithConnectors,
 		quotedText,
 		setQuotedText,
+		tryToSendGenerationRequest,
 	} = useAIContext();
 
 	const ideaFromSelection = getIdeaFromSelection(
@@ -104,39 +104,16 @@ export const AIInput = () => {
 		if (!inputValue.trim() && !ideaFromSelection) {
 			return;
 		}
-		if (!account.isLoggedIn) {
-			return openModal(AI_UNAVAILABLE_MODAL_ID);
-		}
-		await account.fetchBillingInfo();
-		const currentModel = account.billingInfo?.models.find(
-			({ id }) => id === model,
-		);
 
-		if (
-			!currentModel ||
-			(currentModel.limits.daily?.remaining != null &&
-				currentModel.limits.daily.remaining <= 0) ||
-			(currentModel.limits.weekly?.remaining != null &&
-				currentModel.limits.weekly.remaining <= 0) ||
-			(currentModel.limits.monthly?.remaining != null &&
-				currentModel.limits.monthly.remaining <= 0)
-		) {
+		const fallback = () => {
 			setIsShaking(true);
 			setTimeout(() => {
 				setIsShaking(false);
-
-				// if (isMediaMatches) {
-				// 	navigate("/user/plan");
-				// } else {
 				openModal(USER_PLAN_MODAL_ID);
-				// }
 			}, 1000);
-			return;
-		}
-		board.aiGeneratingOnItem = "unknown";
-		sessionStorage.removeLastAIRequest();
-		setQuotedText(undefined);
-		await sendInputData();
+		};
+
+		await tryToSendGenerationRequest(fallback, sendInputData);
 	};
 
 	const handleInputClick = (
@@ -248,10 +225,10 @@ export const AIInput = () => {
 			};
 			connection.wsClient.send(message);
 		} else {
-			const contextRequest = nodeWithParents
+			const contextRequest = nodeWithParents?.lastAssistantMessageId
 				? {
 						range: 5,
-						messageId: nodeWithParents.node.getId(),
+						messageId: nodeWithParents.lastAssistantMessageId,
 					}
 				: undefined;
 

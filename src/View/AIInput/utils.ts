@@ -1,5 +1,5 @@
 import { Item } from "Board/Items/Item";
-import { AINode } from "Board/Items/AINode/AINode";
+import { AINode, ThreadDirection } from "Board/Items/AINode/AINode";
 import { Shape } from "Board/Items/Shape/Shape";
 import { RichText } from "Board/Items/RichText/RichText";
 import { Sticker } from "Board/Items/Sticker/Sticker";
@@ -72,16 +72,28 @@ export function calculateNodePosition(
 	const newNodeData = newNode.serialize();
 	const width = DEFAULT_MAX_NODE_WIDTH - DEFAULT_MAX_NODE_WIDTH / 5;
 	const height = 150;
+	const adjustmentIndex =
+		selectedItem.itemType === "AINode"
+			? selectedItem.getThreadDirection()
+			: 3;
 
-	const iterAdjustment = { x: -2 * width, y: 0 };
+	const iterAdjustment = {
+		0: { x: 0, y: -2 * width },
+		1: { x: 0, y: -2 * width },
+		2: { x: -2 * width, y: 0 },
+		3: { x: -2 * width, y: 0 },
+	};
 
 	const baseAdjustments = {
-		translateX: currMbr.getWidth() / 2,
-		translateY: height,
+		0: { translateX: -width * 2, translateY: 0 },
+		1: { translateX: width * 2, translateY: 0 },
+		2: { translateX: currMbr.getWidth() / 2, translateY: -height * 2 },
+		3: { translateX: currMbr.getWidth() / 2, translateY: height },
 	};
+
 	const adjustmentPoint = new Point(
-		baseAdjustments.translateX + currMbr.left,
-		baseAdjustments.translateY + currMbr.top,
+		baseAdjustments[adjustmentIndex].translateX + currMbr.left,
+		baseAdjustments[adjustmentIndex].translateY + currMbr.top,
 	);
 
 	if (newNodeData.transformation) {
@@ -89,11 +101,11 @@ export function calculateNodePosition(
 			newNodeData.transformation.translateX = adjustmentPoint.x;
 		} else {
 			newNodeData.transformation.translateX =
-				baseAdjustments.translateX +
+				baseAdjustments[adjustmentIndex].translateX +
 				(currData.transformation?.translateX || 0);
 		}
 		newNodeData.transformation.translateY =
-			baseAdjustments.translateY +
+			baseAdjustments[adjustmentIndex].translateY +
 			(currData?.transformation?.translateY || 0) +
 			currMbr.getHeight();
 	}
@@ -102,8 +114,9 @@ export function calculateNodePosition(
 		.copy()
 		.getTransformed(
 			new Matrix(
-				baseAdjustments.translateX,
-				baseAdjustments.translateY + currMbr.getHeight(),
+				baseAdjustments[adjustmentIndex].translateX,
+				baseAdjustments[adjustmentIndex].translateY +
+					currMbr.getHeight(),
 			),
 		);
 
@@ -121,15 +134,15 @@ export function calculateNodePosition(
 		const direction = step % 2 === 0 ? -1 : 1;
 		newMbr.transform(
 			new Matrix(
-				iterAdjustment.x * direction * step,
-				iterAdjustment.y * direction * step,
+				iterAdjustment[adjustmentIndex].x * direction * step,
+				iterAdjustment[adjustmentIndex].y * direction * step,
 			),
 		);
 		if (newNodeData.transformation) {
 			newNodeData.transformation.translateX +=
-				iterAdjustment.x * direction * step;
+				iterAdjustment[adjustmentIndex].x * direction * step;
 			newNodeData.transformation.translateY +=
-				iterAdjustment.y * direction * step;
+				iterAdjustment[adjustmentIndex].y * direction * step;
 		}
 		step += 1;
 	}
@@ -269,8 +282,10 @@ export function createNode(
 	isImage = false,
 ): { node: AINode | ImageItem; connectorData: ConnectorData | null } {
 	let parentNodeId: string | undefined;
+	let threadDirection: ThreadDirection | undefined;
 	if (parentItem && parentItem.itemType === "AINode") {
 		parentNodeId = parentItem.getId();
+		threadDirection = parentItem.getThreadDirection();
 	}
 	let node: AINode;
 	if (isImage) {
@@ -284,7 +299,13 @@ export function createNode(
 		);
 		node.setId(crypto.randomUUID());
 	} else {
-		node = new AINode(board, isUserRequest, parentNodeId, contextItems);
+		node = new AINode(
+			board,
+			isUserRequest,
+			parentNodeId,
+			contextItems,
+			threadDirection,
+		);
 		const nodeRichText = node.getRichText();
 		nodeRichText.setMaxWidth(600);
 		nodeRichText.setSelectionHorisontalAlignment("left");

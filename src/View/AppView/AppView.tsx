@@ -51,7 +51,7 @@ import { HyperLinkInput } from "View/hyperLink/HyperLinkInput/HyperLinkInput";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
-	const { setQuotedText } = useAIContext();
+	const { setQuotedText, tryToSendGenerationRequest } = useAIContext();
 	const { setHyperLinkData, hyperLinkData } = useHyperLinkContext();
 	const location = useLocation();
 	const navigate = useNavigate();
@@ -186,6 +186,7 @@ export function AppView(): JSX.Element {
 						setQuotedText={setQuotedText}
 						setHyperLinkData={setHyperLinkData}
 						hyperLinkData={hyperLinkData}
+						sendGenerationRequest={tryToSendGenerationRequest}
 					/>
 				</div>
 			</InactiveBoardHidder>

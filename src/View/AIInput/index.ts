@@ -6,3 +6,4 @@ export {
 	PossibleParentNode,
 } from "./utils.ts";
 export { useAIContext, AIContextProvider } from "./AIContext.tsx";
+export { StarIcon } from "./StarIcon.tsx";
