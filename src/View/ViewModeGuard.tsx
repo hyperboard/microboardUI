@@ -3,7 +3,7 @@ import type { InterfaceType } from "Board/Board";
 import { useAppSubscription } from "Board/useBoardSubscription";
 import { isIframe } from "lib/isIframe";
 import { useForceUpdate } from "lib/useForceUpdate";
-import React, { type ReactNode } from "react";
+import React, { useEffect, type ReactNode } from "react";
 import { useAppContext } from "./AppContext";
 
 type Props = {
@@ -38,15 +38,18 @@ export function ViewModeGuard({
 			(Array.isArray(mode) && !mode.includes(interfaceType))) &&
 		(!iframe || isIframe());
 
-	if (shouldUseFallback) {
-		if (fallbackCb) {
+	useEffect(() => {
+		if (shouldUseFallback && fallbackCb) {
 			fallbackCb();
 		}
-		return <>{fallback}</>;
-	}
 
-	if (callback) {
-		callback();
+		if (callback) {
+			callback();
+		}
+	}, [shouldUseFallback, fallbackCb, callback]);
+
+	if (shouldUseFallback) {
+		return <>{fallback}</>;
 	}
 
 	return (
