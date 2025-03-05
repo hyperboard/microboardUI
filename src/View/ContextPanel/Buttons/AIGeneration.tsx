@@ -7,7 +7,6 @@ import btnStyle from "./ContextPanelButton.module.css";
 import { useAIContext } from "View/AIInput/AIContext";
 import { getIdeaFromSelection } from "View/AIInput";
 import { useAccount } from "App/useAccount";
-import { useUiModalContext } from "View/Ui/UiModal/UiModalContext";
 
 type Props = {
 	rounded?: "left" | "right" | "none" | "full";

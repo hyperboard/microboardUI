@@ -46,6 +46,7 @@ import { getIdeaFromSelection } from "View/AIInput";
 import { FrameNavNext } from "./Buttons/FrameNavNext";
 import { FrameNavPrev } from "./Buttons/FrameNavPrev";
 import { HyperLinkBtn } from "View/ContextPanel/Buttons/HyperLinkBtn";
+import { AIModel } from "View/ContextPanel/Buttons/AIModel";
 
 export function ContextPanel(): React.ReactElement | null {
 	const { app, board } = useAppContext();
@@ -335,6 +336,7 @@ export function ContextPanel(): React.ReactElement | null {
 						<UiSeparator vertical />
 						<Duplicate />
 						<Delete />
+						<AIModel />
 						<AIGeneration />
 						<UiSeparator vertical />
 						<RestOptionsMenu>

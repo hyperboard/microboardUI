@@ -65,12 +65,15 @@ export function calculateNodePosition(
 	selectedItem: PossibleParentNode,
 	isResponseNode: boolean,
 	board: Board,
+	isImage: boolean,
 ): { newItem: Item; connectorData: ConnectorData } {
 	const connectorStorage = new SessionStorage();
 	const currMbr = selectedItem?.getMbr() || null;
 	const currData = selectedItem?.serialize() || null;
 	const newNodeData = newNode.serialize();
-	const width = DEFAULT_MAX_NODE_WIDTH - DEFAULT_MAX_NODE_WIDTH / 5;
+	const width =
+		(DEFAULT_MAX_NODE_WIDTH - DEFAULT_MAX_NODE_WIDTH / 5) *
+		(isImage ? 1.25 : 1);
 	const height = 150;
 	const adjustmentIndex =
 		selectedItem.itemType === "AINode"
@@ -289,7 +292,13 @@ export function createNode(
 	}
 	let node: AINode;
 	if (isImage) {
-		node = new AINode(board, isUserRequest, parentNodeId, contextItems);
+		node = new AINode(
+			board,
+			isUserRequest,
+			parentNodeId,
+			contextItems,
+			threadDirection,
+		);
 		const nodeRichText = node.getRichText();
 		nodeRichText.setMaxWidth(600);
 		nodeRichText.setSelectionHorisontalAlignment("left");
@@ -333,6 +342,7 @@ export function createNode(
 		parentItem,
 		!isUserRequest,
 		board,
+		isImage,
 	);
 	return { node: newItem, connectorData };
 }

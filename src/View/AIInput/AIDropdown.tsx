@@ -97,13 +97,14 @@ export const AIDropdown = (props: AIDropdownProps): JSX.Element => {
 	);
 };
 
-const Dropdown = (
+export const Dropdown = (
 	props: Pick<
 		AIDropdownProps,
 		"account" | "setIsDropdownOpen" | "isPhoneScreen"
-	>,
+	> & { isRelativePosition?: boolean },
 ): JSX.Element => {
-	const { account, setIsDropdownOpen, isPhoneScreen } = props;
+	const { account, setIsDropdownOpen, isPhoneScreen, isRelativePosition } =
+		props;
 	const { setModel } = useAIContext();
 	const { openModal } = useUiModalContext();
 	const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -140,7 +141,12 @@ const Dropdown = (
 
 	return (
 		<div
-			className={clsx(styles.inputContainer, styles.dropdownContainer)}
+			className={clsx(
+				!isRelativePosition && [
+					styles.inputContainer,
+					styles.dropdownContainer,
+				],
+			)}
 			ref={dropdownRef}
 		>
 			<div className={styles.modelDropdown}>
