@@ -2,7 +2,7 @@ import { ButtonWithMenu } from "View/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "View/ContextPanel/PanelContext";
 import { FillColorIndicator } from "View/Icon/FillColorIndicator";
 import { ColorPicker } from "View/Pickers/ColorPicker/ColorPicker";
-import { STICKER_COLORS } from "View/Tools/AddSticker";
+import { STICKER_COLORS } from "Board/Settings";
 import { UiButton } from "View/Ui/UiButton/UiButton";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import React from "react";

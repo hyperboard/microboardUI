@@ -3,7 +3,7 @@ import styles from "./ShapesCategory.module.css";
 import { ShapePicker } from "../../Pickers/ShapeTypePicker";
 import { useTranslation } from "react-i18next";
 import { ShapeType } from "../../../Board/Items/Shape";
-import { ShapeCategoryName } from "../../Tools/AddShape";
+import { ShapeCategoryName } from "Board/Items/Shape/ShapeData";
 import { Icon } from "../../Icon";
 import { UiButton } from "../../Ui/UiButton";
 import clsx from "clsx";

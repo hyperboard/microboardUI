@@ -3,7 +3,7 @@ import styles from "./templateItem.module.css";
 import { Button } from "shared/ui-lib/Button/Button";
 import { useAppContext } from "View/AppContext";
 import { pasteSnapshot } from "utils";
-import { Template } from "View/Tools/Template";
+import { Template } from "Board/Settings";
 import { useModal } from "View/Modal/ModalProvider";
 import PlaceholderImg from "shared/assets/imgs/no-img-icon.svg";
 import clsx from "clsx";

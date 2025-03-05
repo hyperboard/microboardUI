@@ -12,7 +12,7 @@ import { CategoriesMenu } from "./CategoriesMenu/CategoriesMenu";
 import i18next from "i18next";
 import { useDebounce } from "shared/hooks/useDebounce";
 import { TemplateItemsGrid } from "./TemplateItemsGrid/TemplateItemsGrid";
-import { Template, TemplateCategory } from "View/Tools/Template";
+import { Template, TemplateCategory } from "Board/Settings";
 import { LanguagesDropdown } from "./LanguagesDropdown/LanguagesDropdown";
 import { useModal } from "View/Modal/ModalProvider";
 import { getCorrectEnding } from "utils";

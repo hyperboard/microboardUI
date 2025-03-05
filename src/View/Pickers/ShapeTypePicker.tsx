@@ -1,7 +1,10 @@
 import { ShapeType } from "Board/Items/Shape";
 import React, { CSSProperties, useRef, useState } from "react";
 import { ShapeIcon } from "View/Icon";
-import { ShapeCategoryName, SHAPES_CATEGORIES } from "View/Tools/AddShape";
+import {
+	ShapeCategoryName,
+	SHAPES_CATEGORIES,
+} from "Board/Items/Shape/ShapeData";
 import { UiButton } from "View/Ui/UiButton/UiButton";
 import { useTranslation } from "react-i18next";
 

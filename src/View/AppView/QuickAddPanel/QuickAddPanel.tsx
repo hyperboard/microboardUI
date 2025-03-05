@@ -1,6 +1,6 @@
 import React from "react";
 import { Icon, ShapeIcon } from "View/Icon";
-import { BASIC_SHAPES } from "View/Tools/AddShape";
+import { BASIC_SHAPES } from "Board/Items/Shape/ShapeData";
 import { UiButton } from "View/Ui/UiButton/UiButton";
 import { useAppContext } from "View/AppContext";
 import { useAppSubscription } from "Board/useBoardSubscription";

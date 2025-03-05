@@ -6,11 +6,11 @@ import { Icon } from "View/Icon";
 import { ColorPicker } from "View/Pickers/ColorPicker/ColorPicker";
 import { SliderPicker } from "View/Pickers/SliderPicker/SliderPicker";
 import {
-	MAX_DRAWING_STROKE_WIDTH,
-	MIN_DRAWING_STROKE_WIDTH,
+	PEN_MAX_STROKE_WIDTH,
+	PEN_MIN_STROKE_WIDTH,
 	PEN_COLORS,
-	STEP_DRAWING_STROKE_WIDTH,
-} from "View/Tools/AddDrawing";
+	PEN_STEP_STROKE_WIDTH,
+} from "Board/Settings";
 import { UiButton } from "View/Ui/UiButton";
 import { UiColorInput } from "View/Ui/UiColorInput";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
@@ -102,9 +102,9 @@ export function AddPen() {
 				<div className={style.slider}>
 					<SliderPicker
 						onPick={handleSliderPick}
-						min={MIN_DRAWING_STROKE_WIDTH}
-						max={MAX_DRAWING_STROKE_WIDTH}
-						step={STEP_DRAWING_STROKE_WIDTH}
+						min={PEN_MIN_STROKE_WIDTH}
+						max={PEN_MAX_STROKE_WIDTH}
+						step={PEN_STEP_STROKE_WIDTH}
 						value={strokeWidth}
 						showLabel
 					/>

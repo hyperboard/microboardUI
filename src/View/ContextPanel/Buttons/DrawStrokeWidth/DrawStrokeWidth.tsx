@@ -1,9 +1,9 @@
 import { SliderPicker } from "View/Pickers/SliderPicker/SliderPicker";
 import {
-	MAX_DRAWING_STROKE_WIDTH,
-	MIN_DRAWING_STROKE_WIDTH,
-	STEP_DRAWING_STROKE_WIDTH,
-} from "View/Tools/AddDrawing";
+	PEN_MAX_STROKE_WIDTH,
+	PEN_MIN_STROKE_WIDTH,
+	PEN_STEP_STROKE_WIDTH,
+} from "Board/Settings";
 import React from "react";
 import style from "./DrawStrokeWidth.module.css";
 import { useAppContext } from "View/AppContext";
@@ -22,14 +22,12 @@ export function DrawStrokeWidth(): React.ReactElement {
 			<SliderPicker
 				id={"drawing-stroke-width"}
 				value={
-					width < MAX_DRAWING_STROKE_WIDTH
-						? width
-						: MAX_DRAWING_STROKE_WIDTH
+					width < PEN_MAX_STROKE_WIDTH ? width : PEN_MAX_STROKE_WIDTH
 				}
 				onPick={handleSliderPick}
-				min={MIN_DRAWING_STROKE_WIDTH}
-				max={MAX_DRAWING_STROKE_WIDTH}
-				step={STEP_DRAWING_STROKE_WIDTH}
+				min={PEN_MIN_STROKE_WIDTH}
+				max={PEN_MAX_STROKE_WIDTH}
+				step={PEN_STEP_STROKE_WIDTH}
 			/>
 		</div>
 	);

@@ -35,7 +35,7 @@ import { FixedPoint } from "Board/Items/Connector";
 import { Descendant } from "slate";
 import { TextNode } from "Board/Items/RichText/Editor/TextNode";
 import type { HorisontalAlignment } from "Board/Items/Alignment";
-import { STICKER_COLORS } from "../../../Tools/AddSticker";
+import { STICKER_COLORS } from "Board/Settings";
 import {
 	BoardPoint,
 	toRelativePoint,

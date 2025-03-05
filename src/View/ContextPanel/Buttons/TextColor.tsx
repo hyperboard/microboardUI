@@ -2,7 +2,7 @@ import { ButtonWithMenu } from "View/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "View/ContextPanel/PanelContext";
 import { TextColorIndicator } from "View/Icon";
 import { ColorPicker } from "View/Pickers/ColorPicker/ColorPicker";
-import { TEXT_COLORS } from "View/Tools/AddText";
+import { TEXT_COLORS } from "Board/Settings";
 import { UiButton } from "View/Ui/UiButton/UiButton";
 import { UiColorInput } from "View/Ui/UiColorInput";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";

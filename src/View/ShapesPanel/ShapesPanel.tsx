@@ -6,7 +6,10 @@ import { UiPanel } from "View/Ui/UiPanel";
 import styles from "./ShapesPanel.module.css";
 import { useShapesPanelContext } from "./ShapesPanelContext";
 import { ShapeType } from "../../Board/Items/Shape";
-import { ShapeCategoryName, SHAPES_CATEGORIES } from "../Tools/AddShape";
+import {
+	ShapeCategoryName,
+	SHAPES_CATEGORIES,
+} from "Board/Items/Shape/ShapeData";
 import { UiButton } from "../Ui/UiButton";
 import { Icon } from "../Icon";
 import { ShapesCategory } from "./ShapesCategory/ShapesCategory";

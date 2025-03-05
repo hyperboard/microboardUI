@@ -5,7 +5,7 @@ import { UiButton } from "../../../Ui/UiButton";
 import { Icon } from "../../../Icon";
 import { ButtonWithMenu } from "../ButtonWithMenu";
 import { useTranslation } from "react-i18next";
-import { DrawingTool } from "../../../Tools/AddDrawing";
+import { DrawingTool } from "Board/Settings";
 import style from "./AddDrawing.module.css";
 import { AddHighlighter } from "./AddHighlighter/AddHighlighter";
 import { AddPen } from "./AddPen/AddPen";

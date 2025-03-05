@@ -1,5 +1,5 @@
 import { createStrictContext, useStrictContext } from "lib/strictContext";
-import { DrawingTool } from "../../../Tools/AddDrawing";
+import { DrawingTool } from "Board/Settings";
 
 export const AddDrawingContext = createStrictContext<{
 	setLastOpenedMenu: (menu: DrawingTool | null) => void;

@@ -9,7 +9,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
 import { ConnectionLineWidths } from "../../../../Board/Items/Connector/Connector";
-import { STEP_STROKE_WIDTH } from "../../../Tools/AddShape";
+import { STEP_STROKE_WIDTH } from "Board/Items/Shape/ShapeData";
 import { SliderPicker } from "../../../Pickers/SliderPicker";
 import { StrokeStylePicker } from "../../../Pickers/StrokeStylePicker";
 import styles from "./ConnectorType.module.css";

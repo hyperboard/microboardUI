@@ -2,7 +2,7 @@ import { getHotkeyLabel } from "Board/Keyboard";
 import { useAppContext } from "View/AppContext";
 import { Icon } from "View/Icon";
 import { ColorPicker } from "View/Pickers/ColorPicker/ColorPicker";
-import { STICKER_COLORS } from "View/Tools/AddSticker";
+import { STICKER_COLORS } from "Board/Settings";
 import { UiButton } from "View/Ui/UiButton";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import React, { useEffect, useState } from "react";

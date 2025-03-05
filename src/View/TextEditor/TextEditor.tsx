@@ -6,7 +6,6 @@ import { App } from "App";
 import { Board } from "Board";
 import { verticalAlignmentToFlex } from "./verticalAlignmentToFlex";
 import { RichText } from "Board/Items/RichText/RichText";
-import { DEFAULT_TEXT_STYLES } from "View/Items/RichText";
 import styles from "./TextEditor.module.css";
 import clsx from "clsx";
 import { Icon } from "View/Icon";

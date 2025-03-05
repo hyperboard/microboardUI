@@ -1,5 +1,5 @@
 import { ConnectorPointerIcon } from "View/Icon";
-import { CONNECTOR_POINTER_TYPES } from "View/Tools/AddConnector";
+import { CONNECTOR_POINTER_TYPES } from "Board/Items/Connector/Connector";
 import { UiButton } from "View/Ui/UiButton/UiButton";
 import React from "react";
 import style from "./ConnectorPointerPicker.module.css";

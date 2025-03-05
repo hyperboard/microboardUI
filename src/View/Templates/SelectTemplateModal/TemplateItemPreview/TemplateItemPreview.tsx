@@ -6,7 +6,7 @@ import styles from "./TemplateItemPreview.module.css";
 import { pasteSnapshot } from "../../../../utils";
 import { Icon } from "../../../Icon";
 import { TemplateItemsGrid } from "../TemplateItemsGrid/TemplateItemsGrid";
-import { Template } from "../../../Tools/Template";
+import { Template } from "Board/Settings";
 import { useModal } from "../../../Modal/ModalProvider";
 import { useTranslation } from "react-i18next";
 

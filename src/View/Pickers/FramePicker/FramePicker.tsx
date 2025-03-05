@@ -1,9 +1,9 @@
 import type { FrameType } from "Board/Items/Frame/Basic";
 import React from "react";
 import { FrameIcon } from "View/Icon";
-import { FRAME_TYPES } from "View/Items/Frame";
 import { UiButton } from "View/Ui/UiButton";
 import style from "./FramePicker.module.css";
+import { FRAME_TYPES } from "Board/Items/Frame/FrameData";
 
 type Props = {
 	onPick: (type: FrameType) => void;

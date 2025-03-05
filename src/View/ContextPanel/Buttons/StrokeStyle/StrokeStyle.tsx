@@ -9,8 +9,8 @@ import {
 	MAX_STROKE_WIDTH,
 	MIN_STROKE_WIDTH,
 	STEP_STROKE_WIDTH,
-	STROKE_COLORS,
-} from "View/Tools/AddShape";
+} from "Board/Items/Shape/ShapeData";
+import { SHAPE_STROKE_COLORS } from "Board/Settings";
 import { UiButton } from "View/Ui/UiButton/UiButton";
 import { UiColorInput } from "View/Ui/UiColorInput";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
@@ -68,7 +68,7 @@ export function StrokeStyle(): React.ReactElement | null {
 		board.selection.setStrokeColor(color);
 	};
 
-	const isPredefinedColor = STROKE_COLORS.some(
+	const isPredefinedColor = SHAPE_STROKE_COLORS.some(
 		color => color === borderColor,
 	);
 
@@ -120,7 +120,7 @@ export function StrokeStyle(): React.ReactElement | null {
 					<div className={style.colors}>
 						<ColorPicker
 							id={"stroke-style"}
-							colors={STROKE_COLORS}
+							colors={SHAPE_STROKE_COLORS}
 							onPick={handleStrokeColorPick}
 							selectedColor={borderColor}
 						/>

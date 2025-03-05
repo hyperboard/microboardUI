@@ -12,7 +12,7 @@ import style from "./ItemType.module.css";
 import { useAppContext } from "View/AppContext";
 import clsx from "clsx";
 import { Shape } from "Board/Items";
-import { ShapeCategoryName } from "../../../Tools/AddShape";
+import { ShapeCategoryName } from "Board/Items/Shape/ShapeData";
 import btnStyle from "../ContextPanelButton.module.css";
 
 const MENU_NAME = "ItemType";

@@ -4,12 +4,12 @@ import { useAppContext } from "View/AppContext";
 import { ButtonWithMenu } from "View/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "View/ContextPanel/PanelContext";
 import { FillColorIndicator } from "View/Icon/FillColorIndicator";
-import { FRAME_FILL_COLORS } from "View/Items/Frame";
 import { ColorPicker } from "View/Pickers/ColorPicker/ColorPicker";
 import { UiButton } from "View/Ui/UiButton/UiButton";
 import { UiColorInput } from "View/Ui/UiColorInput";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import btnStyle from "./ContextPanelButton.module.css";
+import { FRAME_FILL_COLORS } from "Board/Items/Frame/FrameData";
 
 const MENU_NAME = "FrameFill";
 
