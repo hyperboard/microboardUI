@@ -262,8 +262,11 @@ export const AIContextProvider = ({ children }: Props): JSX.Element => {
 		const selectedItems = board.selection.items.list();
 
 		const { boardContext, contextItems } = getContextItems(
-			selectedItems,
-			parentNodes,
+			[
+				...selectedItems,
+				...parentNodes.filter(node => node.getIsUserRequest()),
+			],
+			parentNodes.filter(node => !node.getIsUserRequest()),
 			ideaFromSelection?.item.getId(),
 		);
 

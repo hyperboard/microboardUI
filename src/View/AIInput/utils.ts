@@ -16,6 +16,7 @@ import { ImageItem } from "Board/Items/Image";
 export type PossibleParentNode = AINode | Shape | RichText | Sticker;
 
 export const DEFAULT_MAX_NODE_WIDTH = 640;
+export const DEFAULT_IMAGE_WIDTH = 640;
 const PLACEHOLDER_OFFSET = "												";
 
 export const getTextFromItem = (item: Item) => {
@@ -60,6 +61,9 @@ export const getIdeaFromSelection = (
 	return null;
 };
 
+const offsetX = 320;
+const offsetY = 160;
+
 export function calculateNodePosition(
 	newNode: Item,
 	selectedItem: PossibleParentNode,
@@ -71,55 +75,57 @@ export function calculateNodePosition(
 	const currMbr = selectedItem?.getMbr() || null;
 	const currData = selectedItem?.serialize() || null;
 	const newNodeData = newNode.serialize();
-	const width =
-		(DEFAULT_MAX_NODE_WIDTH - DEFAULT_MAX_NODE_WIDTH / 5) *
-		(isImage ? 1.25 : 1);
-	const height = 150;
+	const width = isImage
+		? DEFAULT_IMAGE_WIDTH
+		: currMbr?.getWidth() > DEFAULT_MAX_NODE_WIDTH
+			? currMbr.getWidth()
+			: DEFAULT_MAX_NODE_WIDTH;
+	const height = currMbr?.getHeight() || offsetY;
 	const adjustmentIndex =
 		selectedItem.itemType === "AINode"
 			? selectedItem.getThreadDirection()
 			: 3;
 
 	const iterAdjustment = {
-		0: { x: 0, y: -2 * width },
-		1: { x: 0, y: -2 * width },
-		2: { x: -2 * width, y: 0 },
-		3: { x: -2 * width, y: 0 },
+		0: { x: 0, y: -2 * height },
+		1: { x: 0, y: -2 * height },
+		2: { x: -2 * offsetX, y: 0 },
+		3: { x: -2 * offsetX, y: 0 },
 	};
 
 	const baseAdjustments = {
-		0: { translateX: -width * 2, translateY: 0 },
-		1: { translateX: width * 2, translateY: 0 },
-		2: { translateX: currMbr.getWidth() / 2, translateY: -height * 2 },
-		3: { translateX: currMbr.getWidth() / 2, translateY: height },
+		0: {
+			translateX: -width - offsetX - (isResponseNode ? 0 : offsetX),
+			translateY: 0,
+		},
+		1: {
+			translateX: width + offsetX + (isResponseNode ? 0 : offsetX),
+			translateY: 0,
+		},
+		2: {
+			translateX: currMbr.getWidth() / 2,
+			translateY: -height - offsetY,
+		},
+		3: { translateX: currMbr.getWidth() / 2, translateY: height + offsetY },
 	};
-
-	const adjustmentPoint = new Point(
-		baseAdjustments[adjustmentIndex].translateX + currMbr.left,
-		baseAdjustments[adjustmentIndex].translateY + currMbr.top,
-	);
+	console.log(adjustmentIndex);
 
 	if (newNodeData.transformation) {
-		if (isResponseNode) {
-			newNodeData.transformation.translateX = adjustmentPoint.x;
-		} else {
-			newNodeData.transformation.translateX =
-				baseAdjustments[adjustmentIndex].translateX +
-				(currData.transformation?.translateX || 0);
-		}
+		newNodeData.transformation.translateX =
+			baseAdjustments[adjustmentIndex].translateX +
+			(currData.transformation?.translateX || 0);
 		newNodeData.transformation.translateY =
 			baseAdjustments[adjustmentIndex].translateY +
-			(currData?.transformation?.translateY || 0) +
-			currMbr.getHeight();
+			(currData?.transformation?.translateY || 0);
 	}
 
 	const newMbr = currMbr
 		.copy()
 		.getTransformed(
 			new Matrix(
-				baseAdjustments[adjustmentIndex].translateX,
-				baseAdjustments[adjustmentIndex].translateY +
-					currMbr.getHeight(),
+				baseAdjustments[adjustmentIndex].translateX +
+					currMbr.getWidth(),
+				baseAdjustments[adjustmentIndex].translateY,
 			),
 		);
 
@@ -134,18 +140,19 @@ export function calculateNodePosition(
 			)
 			.filter(item => item.itemType !== "Connector").length > 0
 	) {
-		const direction = step % 2 === 0 ? -1 : 1;
+		const xDirection = step % 2 === 0 ? -1 : 1;
+		const yDirection = -1;
 		newMbr.transform(
 			new Matrix(
-				iterAdjustment[adjustmentIndex].x * direction * step,
-				iterAdjustment[adjustmentIndex].y * direction * step,
+				iterAdjustment[adjustmentIndex].x * xDirection * step,
+				iterAdjustment[adjustmentIndex].y * yDirection,
 			),
 		);
 		if (newNodeData.transformation) {
 			newNodeData.transformation.translateX +=
-				iterAdjustment[adjustmentIndex].x * direction * step;
+				iterAdjustment[adjustmentIndex].x * xDirection * step;
 			newNodeData.transformation.translateY +=
-				iterAdjustment[adjustmentIndex].y * direction * step;
+				iterAdjustment[adjustmentIndex].y * yDirection;
 		}
 		step += 1;
 	}
