@@ -17,13 +17,15 @@ import { ToolsPanel } from "View/ToolsPanel";
 import { ShapesPanelContextProvider } from "View/ShapesPanel";
 import { useAIContext } from "View/AIInput/AIContext";
 import { HyperLink } from "View/hyperLink/HyperLink";
+import { useHyperLinkContext } from "View/hyperLink/HyperLinkContext";
 
 export function LocalAppView(): JSX.Element {
 	const { app, board } = useAppContext();
 	const forceUpdate = useForceUpdate();
 	const animationId = useRef<number | null>(null);
 	const containerRef = useRef<HTMLDivElement | null>(null);
-	const { setQuotedText } = useAIContext();
+	const { setQuotedText, tryToSendGenerationRequest } = useAIContext();
+	const { setHyperLinkData, hyperLinkData } = useHyperLinkContext();
 	let canPasteAgain = true;
 
 	function update(): void {
@@ -131,6 +133,9 @@ export function LocalAppView(): JSX.Element {
 						app={app}
 						board={board}
 						setQuotedText={setQuotedText}
+						setHyperLinkData={setHyperLinkData}
+						hyperLinkData={hyperLinkData}
+						sendGenerationRequest={tryToSendGenerationRequest}
 					/>
 				</div>
 			</InactiveBoardHidder>
