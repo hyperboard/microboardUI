@@ -13,6 +13,7 @@
 	font-size: 14px;
 	line-height: 20px;
 	min-height: 56px;
+	z-index: 1000;
 }
 
 .confirmBtn {
