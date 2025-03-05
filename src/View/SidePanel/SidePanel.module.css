@@ -56,7 +56,7 @@
 }
 
 .foldersWrapper {
-	min-width: max-content;
+	max-width: 100%;
 }
 
 /* .rootFolder {

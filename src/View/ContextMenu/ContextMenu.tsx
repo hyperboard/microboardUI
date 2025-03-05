@@ -54,8 +54,7 @@ export function ContextMenu(): JSX.Element | null {
 		? account.permissions.checkPermissions("owns", "boards", boardId)
 		: false;
 	const isFolderEditable = folderInfo
-		? folderInfo.type === foldersApi.FolderType.NESTED ||
-			folderInfo.type === foldersApi.FolderType.DRAFTS
+		? folderInfo.type === foldersApi.FolderType.NESTED
 		: false;
 	const isFolderExtendable = folderInfo
 		? folderInfo.type !== foldersApi.FolderType.TRASH &&
@@ -81,10 +80,8 @@ export function ContextMenu(): JSX.Element | null {
 		setNewName(boardInfo?.title ?? "");
 		setId(boardId);
 
-		if (board.getBoardId() === "blank") {
-			app.openBoard(boardId);
-			navigate(`/boards/${boardId}`);
-		}
+		app.openBoard(boardId);
+		navigate(`/boards/${boardId}`);
 	};
 
 	const deserializeBoard = (stringedHTML: string): void => {
