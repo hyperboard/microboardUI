@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect } from "react";
 import { Icon, ShapeIcon } from "View/Icon";
 import { BASIC_SHAPES } from "Board/Items/Shape/ShapeData";
 import { UiButton } from "View/Ui/UiButton/UiButton";
@@ -11,7 +11,6 @@ import style from "./QuickAddPanel.module.css";
 import { ShapeType } from "Board/Items/Shape";
 import { quickAddItem } from "Board/Selection/QuickAddButtons";
 import { getHotkeyLabel } from "Board/Keyboard";
-import styles from "../../AIInput/AIInput.module.css";
 import { StarIcon } from "View/AIInput/StarIcon";
 
 export function QuickAddPanel(): React.ReactElement | null {
@@ -26,6 +25,7 @@ export function QuickAddPanel(): React.ReactElement | null {
 	});
 	const appBoard = app.getBoard();
 	const single = appBoard.selection.items.getSingle();
+
 	if (
 		!appBoard.selection.showQuickAddPanel ||
 		!single ||
@@ -144,7 +144,7 @@ export function QuickAddPanel(): React.ReactElement | null {
 			<div className={style.wrapper}>
 				<div className={style.panel}>{gridButtons}</div>
 			</div>
-			{/*<UiAccordion*/}
+			{/* <UiAccordion*/}
 
 			{/*	closedHeight={128}*/}
 			{/*	openedHeight={300}*/}
@@ -160,9 +160,9 @@ export function QuickAddPanel(): React.ReactElement | null {
 			{/*				: t("toolsPanel.addText.showAll")}*/}
 			{/*		</UiButton>*/}
 			{/*	)}*/}
-			{/*>*/}
+			{/* >*/}
 
-			{/*</UiAccordion>*/}
+			{/* </UiAccordion>*/}
 		</UiPanel>
 	);
 }

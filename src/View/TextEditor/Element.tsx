@@ -150,6 +150,7 @@ export function Element(props: RenderElementProps): React.ReactElement {
 						paddingTop: `${element.paddingTop ?? 0}em`,
 						paddingBottom: `${element.paddingBottom ?? 0}em`,
 						whiteSpace: "pre-wrap",
+						fontSize: "14px",
 					}}
 				>
 					{children}

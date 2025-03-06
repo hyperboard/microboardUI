@@ -339,10 +339,10 @@ export class TextEditor extends React.Component<
 						top: `${top}px`,
 
 						// @ts-expect-error maxWidth undefined
-						maxWidth: `${Math.floor(maxWidth)}px`,
+						maxWidth: `${Math.ceil(maxWidth)}px`,
 						maxHeight: `${maxHeight}px`,
 						// @ts-expect-error maxWidth undefined
-						width: `${Math.floor(maxWidth)}px`,
+						width: `${Math.ceil(maxWidth)}px`,
 						height: `${maxHeight}px`,
 
 						// transformOrigin: "left top",
@@ -400,9 +400,9 @@ export class TextEditor extends React.Component<
 						left: `${left}px`,
 						top: `${top}px`,
 
-						maxWidth: `${Math.floor(editorMaxWidth)}px`,
+						maxWidth: `${Math.ceil(editorMaxWidth)}px`,
 						maxHeight: `${editorMaxHeight}px`,
-						width: `${Math.floor(editorWidth) + ((text.shouldShrink() && 2) || 0)}px`,
+						width: `${Math.ceil(editorWidth) + ((text.shouldShrink() && 2) || 0)}px`,
 						// width: `${Math.ceil(editorWidth)}px`,
 						height: `${editorHeight}px`,
 
@@ -442,6 +442,12 @@ export class TextEditor extends React.Component<
 							transform: `translate(0px) scale(${editorScale})`,
 							transformOrigin: `left top`,
 							pointerEvents: "all",
+							fontSize:
+								((text.getTextString().length === 0
+									? text.getFontSize()
+									: text.getMinFontSize()) /
+									editorScale) *
+								camera.getScale(),
 						}}
 						className={clsx(
 							styles.editorContainer,

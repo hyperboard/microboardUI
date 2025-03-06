@@ -344,6 +344,18 @@ export function getController(
 			zoomOut: () => board.camera.zoomOutFromViewCenter(),
 			zoomDefault: () => board.camera.zoomToViewCenter(1),
 		};
+
+		const single = board.selection.items.getSingle();
+		const shouldRemoveConnector =
+			event.key === "Escape" &&
+			single &&
+			single.itemType === "Connector" &&
+			board.selection.showQuickAddPanel;
+		if (shouldRemoveConnector) {
+			board.remove(single);
+			return;
+		}
+
 		const isHotkeyTriggered = checkHotkeys(
 			board.getInterfaceType() === "edit"
 				? editModeHotkeys
