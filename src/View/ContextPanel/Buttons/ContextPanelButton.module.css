@@ -1,9 +1,13 @@
 .frameNavIcon {
-	color: #696B76;
+	color: #696b76;
 }
 
 .frameNavIconPrev {
 	transform: rotate(180deg);
+}
+
+.bold {
+	font-weight: 500;
 }
 
 @media screen and (max-width: 768px) {

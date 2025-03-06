@@ -165,14 +165,17 @@ export function ContextPanel(): React.ReactElement | null {
 						<UiSeparator vertical />
 						<Lock />
 						<UiSeparator vertical />
-						<Duplicate />
 						<Delete />
+						<UiSeparator vertical />
+						<AIModel />
 						<AIGeneration />
+						<UiSeparator vertical />
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
 							<CopyItemLink />
 							<SetLinkTo />
+							<Duplicate />
 						</RestOptionsMenu>
 					</>
 				)}
@@ -191,14 +194,17 @@ export function ContextPanel(): React.ReactElement | null {
 						<UiSeparator vertical />
 						<Lock />
 						<UiSeparator vertical />
-						<Duplicate />
 						<Delete />
+						<UiSeparator vertical />
+						<AIModel />
 						<AIGeneration />
+						<UiSeparator vertical />
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
 							<CopyItemLink />
 							<SetLinkTo />
+							<Duplicate />
 						</RestOptionsMenu>
 					</>
 				)}
@@ -229,14 +235,17 @@ export function ContextPanel(): React.ReactElement | null {
 						<UiSeparator vertical />
 						<Lock />
 						<UiSeparator vertical />
-						<Duplicate />
 						<Delete />
+						<UiSeparator vertical />
+						<AIModel />
 						<AIGeneration />
+						<UiSeparator vertical />
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
 							<CopyItemLink />
 							<SetLinkTo />
+							<Duplicate />
 						</RestOptionsMenu>
 					</>
 				)}
@@ -256,13 +265,14 @@ export function ContextPanel(): React.ReactElement | null {
 						<ConnectorTextHighlight />
 						<Lock />
 						<UiSeparator vertical />
-						<Duplicate />
 						<Delete />
+						<UiSeparator vertical />
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
 							<CopyItemLink />
 							<SetLinkTo />
+							<Duplicate />
 						</RestOptionsMenu>
 					</>
 				)}
@@ -274,13 +284,14 @@ export function ContextPanel(): React.ReactElement | null {
 						<UiSeparator vertical />
 						<Lock />
 						<UiSeparator vertical />
-						<Duplicate />
 						<Delete />
+						<UiSeparator vertical />
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
 							<CopyItemLink />
 							<SetLinkTo />
+							<Duplicate />
 						</RestOptionsMenu>
 					</>
 				)}
@@ -288,7 +299,6 @@ export function ContextPanel(): React.ReactElement | null {
 					<>
 						<Lock rounded="left" />
 						<UiSeparator vertical />
-						<Duplicate />
 						<Delete />
 						<UiSeparator vertical />
 						<RestOptionsMenu>
@@ -296,6 +306,7 @@ export function ContextPanel(): React.ReactElement | null {
 							<SendToBack />
 							<CopyItemLink />
 							<SetLinkTo />
+							<Duplicate />
 						</RestOptionsMenu>
 					</>
 				)}
@@ -308,8 +319,8 @@ export function ContextPanel(): React.ReactElement | null {
 						<UiSeparator vertical />
 						<Lock />
 						<UiSeparator vertical />
-						<Duplicate />
 						<Delete />
+						<UiSeparator vertical />
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
@@ -317,6 +328,7 @@ export function ContextPanel(): React.ReactElement | null {
 							<FrameNavPrev />
 							<CopyItemLink />
 							<SetLinkTo />
+							<Duplicate />
 							<ExportFrame />
 						</RestOptionsMenu>
 					</>
@@ -334,8 +346,8 @@ export function ContextPanel(): React.ReactElement | null {
 						<UiSeparator vertical />
 						<Lock />
 						<UiSeparator vertical />
-						<Duplicate />
 						<Delete />
+						<UiSeparator vertical />
 						<AIModel />
 						<AIGeneration />
 						<UiSeparator vertical />
@@ -344,6 +356,7 @@ export function ContextPanel(): React.ReactElement | null {
 							<SendToBack />
 							<CopyItemLink />
 							{/* <SetLinkTo />*/}
+							<Duplicate />
 						</RestOptionsMenu>
 					</>
 				)}
@@ -351,11 +364,11 @@ export function ContextPanel(): React.ReactElement | null {
 					<>
 						<Lock rounded="left" />
 						<UiSeparator vertical />
-						<Duplicate rounded={isLocked > 1 ? "right" : "none"} />
 						{isLocked <= 1 ? (
 							<RestOptionsMenu rounded="right">
 								<CopyItemLink />
 								<ExportFrame />
+								<Duplicate />
 							</RestOptionsMenu>
 						) : null}
 					</>
@@ -366,12 +379,12 @@ export function ContextPanel(): React.ReactElement | null {
 						<>
 							<Lock rounded="left" />
 							<UiSeparator vertical />
-							<Duplicate />
 							<Delete />
 							{ideaFromSelection && <AIGeneration />}
 							<RestOptionsMenu rounded="full">
 								<BringToFront />
 								<SendToBack />
+								<Duplicate />
 							</RestOptionsMenu>
 						</>
 					)}

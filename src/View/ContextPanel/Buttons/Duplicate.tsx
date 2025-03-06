@@ -1,34 +1,25 @@
 import { Icon } from "View/Icon";
-import { UiButton } from "View/Ui/UiButton/UiButton";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "View/AppContext";
 import { getHotkeyLabel } from "Board/Keyboard";
-import btnStyle from "./ContextPanelButton.module.css";
+import { RestOptionsMenuItem } from "View/ContextPanel/Buttons/RestOptionsMenu/RestOptionsMenuItem";
 
-type Props = {
-	rounded?: "none" | "left" | "right";
-};
-
-export function Duplicate({ rounded = "none" }: Props): React.ReactElement {
+export function Duplicate(): React.ReactElement {
 	const { board } = useAppContext();
 	const { t } = useTranslation();
 
 	const handleClick = (): void => {
 		board.selection.duplicate();
 	};
+
 	return (
-		<UiButton
-			className={btnStyle.contextPanelButton}
-			id={"duplicate"}
+		<RestOptionsMenuItem
 			onClick={handleClick}
-			variant="secondary"
-			rounded={rounded}
+			icon={<Icon width={20} height={20} iconName="Duplicate" />}
 			hotkey={getHotkeyLabel("duplicate")}
-			tooltip={t("contextPanel.duplicate.tooltip")}
-			tooltipPosition="top"
 		>
-			<Icon iconName="Duplicate" />
-		</UiButton>
+			{t("contextPanel.duplicate.tooltip")}
+		</RestOptionsMenuItem>
 	);
 }

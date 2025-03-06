@@ -144,7 +144,8 @@
 		},
 		"ai": {
 			"tooltip": "Ask AI",
-			"stop": "Stop generation"
+			"stop": "Stop generation",
+			"model": "Request mode"
 		},
 		"frameNavigation": {
 			"next": "To next frame",

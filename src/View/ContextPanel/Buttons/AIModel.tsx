@@ -10,6 +10,7 @@ import { useAccount } from "App/useAccount";
 import { ButtonWithMenu } from "View/ContextPanel/Buttons/ButtonWithMenu/ButtonWithMenu";
 import { UiPanel } from "View/Ui/UiPanel/UiPanel";
 import { usePanelContext } from "View/ContextPanel/PanelContext";
+import clsx from "clsx";
 
 type Props = {
 	rounded?: "left" | "right" | "none" | "full";
@@ -43,9 +44,9 @@ export function AIModel({ rounded = "none" }: Props): React.ReactElement {
 			align="left"
 			button={
 				<UiButton
-					className={btnStyle.contextPanelButton}
+					className={clsx(btnStyle.contextPanelButton, btnStyle.bold)}
 					id="SelectAiModel"
-					tooltip={t("contextPanel.textColor.tooltip")}
+					tooltip={t("contextPanel.ai.model")}
 					tooltipPosition="top"
 					onClick={handleClick}
 					variant="secondary"
