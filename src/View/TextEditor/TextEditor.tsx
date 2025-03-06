@@ -199,22 +199,40 @@ export class TextEditor extends React.Component<
 		}
 	};
 
-	onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>): void => {
-		if (event.key === "Enter" && this.props.text.insideOf === "Frame") {
+	onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>): boolean => {
+		const text = this.props.text;
+		if (event.key === "Enter" && text.insideOf === "Frame") {
 			event.preventDefault();
 			event.stopPropagation();
 			this.props.board.selection.setContext("EditUnderPointer");
+			return true;
 		}
 		if (
 			event.key === "Enter" &&
 			!event.shiftKey &&
-			this.props.text.insideOf === "AINode"
+			text.insideOf === "AINode"
 		) {
 			event.preventDefault();
 			event.stopPropagation();
 			this.props.board.selection.setContext("EditUnderPointer");
 			this.props.sendGenerationRequest();
+			return true;
 		}
+		if (text.editor.isEmpty()) {
+			event.preventDefault();
+			event.stopPropagation();
+			if (event.key.length === 1 || event.key === "Space") {
+				Transforms.insertText(text.editor.editor, event.key, {
+					at: [0, 0],
+				});
+				Transforms.removeNodes(text.editor.editor, {
+					match: node => node.type === "text" && node.text === "",
+				});
+				text.editor.moveCursorToEndOfTheText();
+			}
+			return true;
+		}
+		return false;
 	};
 
 	onPaste = async (event): Promise<void | boolean> => {
