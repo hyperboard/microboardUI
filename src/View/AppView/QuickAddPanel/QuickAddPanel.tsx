@@ -6,7 +6,6 @@ import { useAppContext } from "View/AppContext";
 import { useAppSubscription } from "Board/useBoardSubscription";
 import { useForceUpdate } from "lib/useForceUpdate";
 import { UiPanel } from "View/Ui/UiPanel";
-import { UiAccordion } from "View/Ui/UiAccordion";
 import { useTranslation } from "react-i18next";
 import style from "./QuickAddPanel.module.css";
 import { ShapeType } from "Board/Items/Shape";
@@ -35,20 +34,75 @@ export function QuickAddPanel(): React.ReactElement | null {
 		return null;
 	}
 	const startPoint = single.getStartPoint();
-	let isAINode = false;
-	if (
-		startPoint.pointType !== "Board" &&
-		startPoint.item.itemType === "AINode"
-	) {
-		isAINode = true;
+	if (startPoint.pointType === "Board") {
+		return null;
 	}
+	const startPointItem = startPoint.item;
+	const itemToAddType =
+		startPointItem.itemType === "Shape"
+			? startPointItem.getShapeType()
+			: startPointItem.itemType;
 
 	const endPoint = single.getEndPoint();
 	const cameraMatrix = appBoard.camera.getMatrix();
 
-	const handlePick = (type: ShapeType | "copy" | "AIRequest"): void => {
+	const handlePick = (
+		type: ShapeType | "RichText" | "AINode" | "Sticker",
+	): void => {
 		quickAddItem(appBoard, type, single);
 	};
+
+	const shapesButtons = [BASIC_SHAPES[0], ...BASIC_SHAPES.slice(2, 7)].map(
+		shape => (
+			<UiButton
+				id={`quickAdd-${shape}`}
+				onClick={() => handlePick(shape)}
+				key={`quickAdd-${shape}`}
+				size="md"
+				variant="secondary"
+			>
+				<ShapeIcon iconName={shape} width={24} height={24} />
+			</UiButton>
+		),
+	);
+
+	const aiButton = (
+		<UiButton
+			id={"quickAdd-AINode"}
+			onClick={() => handlePick("AINode")}
+			key={"quickAdd-AINode"}
+			size="md"
+			variant="secondary"
+		>
+			<StarIcon width={24} height={24} />
+		</UiButton>
+	);
+
+	const textButton = (
+		<UiButton
+			id={"quickAdd-text"}
+			onClick={() => handlePick("RichText")}
+			key={"quickAdd-text"}
+			size="md"
+			variant="secondary"
+		>
+			<Icon width={24} height={24} iconName={"Text"} />
+		</UiButton>
+	);
+
+	const stickerButton = (
+		<UiButton
+			id={"quickAdd-sticker"}
+			onClick={() => handlePick("Sticker")}
+			key={"quickAdd-sticker"}
+			size="md"
+			variant="secondary"
+		>
+			<Icon width={24} height={24} iconName={"Sticker"} />
+		</UiButton>
+	);
+
+	const gridButtons = [aiButton, textButton, stickerButton, ...shapesButtons];
 
 	return (
 		<UiPanel
@@ -60,11 +114,12 @@ export function QuickAddPanel(): React.ReactElement | null {
 				transform: "translate(-50%, -50%)",
 				display: "flex",
 				flexDirection: "column",
+				zIndex: 3,
 			}}
 			rounded="full"
 		>
 			<UiButton
-				onClick={() => handlePick("AIRequest")}
+				onClick={() => handlePick(itemToAddType)}
 				size="md"
 				variant="tertiary"
 				style={{
@@ -73,6 +128,8 @@ export function QuickAddPanel(): React.ReactElement | null {
 					display: "flex",
 					gap: "2px",
 				}}
+				tooltip={getHotkeyLabel("confirm")}
+				tooltipPosition="top"
 			>
 				<div
 					style={{
@@ -80,65 +137,32 @@ export function QuickAddPanel(): React.ReactElement | null {
 						padding: "6px 0px",
 					}}
 				>
-					AI request
+					{t("quickAdd.panel.sameObj")}
 				</div>
-				<StarIcon className={styles.starIcon} width={16} height={16} />
+				<Icon iconName="Duplicate" width={16} height={16} />
 			</UiButton>
-			{!isAINode && (
-				<UiButton
-					onClick={() => handlePick("copy")}
-					size="md"
-					variant="tertiary"
-					style={{
-						maxHeight: "52px",
-						width: "96px",
-						display: "flex",
-						gap: "2px",
-					}}
-					tooltip={getHotkeyLabel("confirm")}
-					tooltipPosition="top"
-				>
-					<div
-						style={{
-							maxWidth: "56px",
-							padding: "6px 0px",
-						}}
-					>
-						Same object
-					</div>
-					<Icon iconName="Duplicate" width={16} height={16} />
-				</UiButton>
-			)}
-			<UiAccordion
-				className={style.wrapper}
-				contentClassName={style.panel}
-				closedHeight={128}
-				openedHeight={300}
-				renderButton={(toggle, isOpen) => (
-					<UiButton
-						onClick={toggle}
-						variant="tertiary"
-						size="sm"
-						style={{ maxWidth: "96px" }}
-					>
-						{isOpen
-							? t("toolsPanel.addText.showBasic")
-							: t("toolsPanel.addText.showAll")}
-					</UiButton>
-				)}
-			>
-				{BASIC_SHAPES.map(shape => (
-					<UiButton
-						id={`quickAdd-${shape}`}
-						onClick={() => handlePick(shape)}
-						key={`quickAdd-${shape}`}
-						size="md"
-						variant="secondary"
-					>
-						<ShapeIcon iconName={shape} width={24} height={24} />
-					</UiButton>
-				))}
-			</UiAccordion>
+			<div className={style.wrapper}>
+				<div className={style.panel}>{gridButtons}</div>
+			</div>
+			{/*<UiAccordion*/}
+
+			{/*	closedHeight={128}*/}
+			{/*	openedHeight={300}*/}
+			{/*	renderButton={(toggle, isOpen) => (*/}
+			{/*		<UiButton*/}
+			{/*			onClick={toggle}*/}
+			{/*			variant="tertiary"*/}
+			{/*			size="sm"*/}
+			{/*			style={{ maxWidth: "96px" }}*/}
+			{/*		>*/}
+			{/*			{isOpen*/}
+			{/*				? t("toolsPanel.addText.showBasic")*/}
+			{/*				: t("toolsPanel.addText.showAll")}*/}
+			{/*		</UiButton>*/}
+			{/*	)}*/}
+			{/*>*/}
+
+			{/*</UiAccordion>*/}
 		</UiPanel>
 	);
 }

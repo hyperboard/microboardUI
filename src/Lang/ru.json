@@ -911,5 +911,10 @@
 	"hyperLink": {
 		"done": "Готово",
 		"addLink": "Вставьте ссылку"
+	},
+	"quickAdd": {
+		"panel": {
+			"sameObj": "Тот же объект"
+		}
 	}
 }

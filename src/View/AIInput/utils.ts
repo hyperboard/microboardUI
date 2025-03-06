@@ -75,7 +75,7 @@ export function calculateNodePosition(
 	const currMbr = selectedItem?.getMbr() || null;
 	const currData = selectedItem?.serialize() || null;
 	const newNodeData = newNode.serialize();
-	const width = isImage
+	let width = isImage
 		? DEFAULT_IMAGE_WIDTH
 		: currMbr?.getWidth() > DEFAULT_MAX_NODE_WIDTH
 			? currMbr.getWidth()
@@ -85,6 +85,9 @@ export function calculateNodePosition(
 		selectedItem.itemType === "AINode"
 			? selectedItem.getThreadDirection()
 			: 3;
+	if (adjustmentIndex === 0 || adjustmentIndex === 1) {
+		width = currMbr.getWidth();
+	}
 
 	const iterAdjustment = {
 		0: { x: 0, y: -2 * height },
@@ -95,11 +98,11 @@ export function calculateNodePosition(
 
 	const baseAdjustments = {
 		0: {
-			translateX: -width - offsetX - (isResponseNode ? 0 : offsetX),
+			translateX: -width - 2 * offsetX,
 			translateY: 0,
 		},
 		1: {
-			translateX: width + offsetX + (isResponseNode ? 0 : offsetX),
+			translateX: width + 2 * offsetX,
 			translateY: 0,
 		},
 		2: {
@@ -108,7 +111,6 @@ export function calculateNodePosition(
 		},
 		3: { translateX: currMbr.getWidth() / 2, translateY: height + offsetY },
 	};
-	console.log(adjustmentIndex);
 
 	if (newNodeData.transformation) {
 		newNodeData.transformation.translateX =
@@ -123,8 +125,7 @@ export function calculateNodePosition(
 		.copy()
 		.getTransformed(
 			new Matrix(
-				baseAdjustments[adjustmentIndex].translateX +
-					currMbr.getWidth(),
+				baseAdjustments[adjustmentIndex].translateX,
 				baseAdjustments[adjustmentIndex].translateY,
 			),
 		);

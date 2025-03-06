@@ -914,5 +914,10 @@
 	"hyperLink": {
 		"done": "Done",
 		"addLink": "Insert a link"
+	},
+	"quickAdd": {
+		"panel": {
+			"sameObj": "Same object"
+		}
 	}
 }
