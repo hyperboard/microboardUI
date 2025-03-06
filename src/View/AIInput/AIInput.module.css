@@ -23,6 +23,18 @@
 	bottom: 72px;
 }
 
+.relativeDropdown {
+	position: absolute;
+	top: 100%;
+	right: 0;
+	background-color: white;
+	border: 1px solid rgba(204, 204, 204, 0.5);
+	width: 300px;
+	border-radius: 0 0 8px 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	padding: 5px;
+}
+
 @keyframes shake {
 	0%,
 	100% {

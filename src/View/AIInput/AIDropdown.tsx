@@ -1,4 +1,4 @@
-import React, { MouseEventHandler, useRef } from "react";
+import React, { MouseEventHandler, RefObject, useRef } from "react";
 import { UiPanel } from "View/Ui/UiPanel";
 import { StarIcon } from "./StarIcon";
 import clsx from "clsx";
@@ -15,6 +15,7 @@ import { useUiModalContext } from "View/Ui/UiModal";
 import { createPortal } from "react-dom";
 import { useOutsideClickHandler } from "shared/hooks/useOutsideClickHandler";
 import { useTranslation } from "react-i18next";
+import { useClickOutside } from "lib/useClickOutside";
 
 type AIDropdownProps = {
 	board: Board;
@@ -101,13 +102,20 @@ export const Dropdown = (
 	props: Pick<
 		AIDropdownProps,
 		"account" | "setIsDropdownOpen" | "isPhoneScreen"
-	> & { isRelativePosition?: boolean },
+	> & {
+		isRelativePosition?: boolean;
+		relativeBlockRef?: RefObject<HTMLElement>;
+	},
 ): JSX.Element => {
-	const { account, setIsDropdownOpen, isPhoneScreen, isRelativePosition } =
-		props;
+	const {
+		account,
+		setIsDropdownOpen,
+		isPhoneScreen,
+		isRelativePosition,
+		relativeBlockRef,
+	} = props;
 	const { setModel } = useAIContext();
 	const { openModal } = useUiModalContext();
-	const dropdownRef = useRef<HTMLDivElement | null>(null);
 	const { t } = useTranslation();
 
 	const getDropDownTooltip = (model: OpenAIModels): boolean | JSX.Element => {
@@ -137,7 +145,16 @@ export const Dropdown = (
 		}
 	};
 
-	useOutsideClickHandler(dropdownRef, () => setIsDropdownOpen(false));
+	const refs: RefObject<HTMLElement>[] = [];
+	if (relativeBlockRef) {
+		refs.push(relativeBlockRef);
+	}
+
+	const dropdownRef = useClickOutside(
+		() => setIsDropdownOpen(false),
+		refs,
+		true,
+	);
 
 	return (
 		<div
@@ -146,10 +163,11 @@ export const Dropdown = (
 					styles.inputContainer,
 					styles.dropdownContainer,
 				],
+				isRelativePosition && styles.relativeDropdown,
 			)}
 			ref={dropdownRef}
 		>
-			<div className={styles.modelDropdown}>
+			<div className={clsx(!isRelativePosition && styles.modelDropdown)}>
 				{models.map((model, index) => (
 					<button
 						key={index}
