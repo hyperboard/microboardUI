@@ -25,6 +25,9 @@ import { wagmiConfig } from "View/ContextWrapper";
 import { disconnect } from "@wagmi/core";
 import { MemoryLogger } from "Logger";
 import { BrowserDocumentFactory } from "Board/api/BrowserDocumentFactory";
+import { createEvents } from "Board/Events/Events";
+import { v4 as uuidv4 } from "uuid";
+import toast from "react-hot-toast";
 
 export const LAST_BOARD_KEY = "lastSeenBoard";
 export const LAST_BOARD_KEY_QS = LAST_BOARD_KEY.concat("Wqs");
@@ -70,11 +73,11 @@ export function createApp(isHistory = true): App {
 	let board: Board;
 	let fileHandle: FileSystemFileHandle | undefined = undefined;
 
-	function enableLogger() {
+	function enableLogger(): void {
 		MemoryLogger.enable();
 	}
 
-	function disableLogger() {
+	function disableLogger(): void {
 		MemoryLogger.downloadLogs(
 			`microboard-logs-${new Date().toLocaleString()}.txt`,
 		);
@@ -121,7 +124,7 @@ export function createApp(isHistory = true): App {
 		if (!currentBoard) {
 			currentBoard = new Board(id, accessKey);
 			if (id !== "blank") {
-				currentBoard.connect(connection);
+				connectBoard(currentBoard);
 			}
 			boards.set(id, currentBoard);
 		}
@@ -155,6 +158,46 @@ export function createApp(isHistory = true): App {
 		}
 	}
 
+	async function connectBoard(board: Board): Promise<void> {
+		if (board.getBoardId() === "blank") {
+			return;
+		}
+		const currIndex = board.getSnapshot().lastIndex;
+		// temporaly disable snapshot cache
+		// TODO: reenable when fixed multiple snapshots for one board
+		// const snapshot = await this.getSnapshotFromCache();
+		const snapshot = undefined;
+		board.events = createEvents(
+			board,
+			connection,
+			currIndex || snapshot?.lastIndex || 0,
+			notify,
+			(id: string) => {
+				toast.dismiss(id);
+			},
+		);
+		board.presence.addEvents(board.events);
+		board.presence.setCurrentUser(
+			localStorage.getItem(`currentUser`) ||
+				(() => {
+					const uuid = uuidv4();
+					localStorage.setItem(`currentUser`, uuid);
+					return uuid;
+				})(),
+		);
+		board.selection.events = board.events;
+		if (snapshot && currIndex === 0) {
+			board.deserialize(snapshot);
+		}
+		board.resolveConnecting();
+		setTimeout(() => {
+			board.items.subject.publish(board.items);
+		}, 0);
+		setTimeout(() => {
+			board.items.subject.publish(board.items);
+		}, 1000);
+	}
+
 	async function openBoardFromFile(): Promise<void> {
 		app.getBoard()?.selection.quickAddButtons.clear();
 		const id = "local";
@@ -164,7 +207,7 @@ export function createApp(isHistory = true): App {
 			undefined,
 			saveEditingFile.bind(app),
 		);
-		currentBoard.connect(connection);
+		connectBoard(currentBoard);
 		subscriptions.setBoard(currentBoard);
 		boardSubject.publish(currentBoard);
 		currentBoard.setInterfaceType("edit");

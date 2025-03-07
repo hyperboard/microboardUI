@@ -5,7 +5,6 @@
 import { App } from "App";
 import { createApp } from "App/App";
 import "./index.css";
-import { isMicroboard } from "lib/isMicroboard";
 
 declare global {
 	interface Window {
@@ -18,7 +17,7 @@ declare global {
 	}
 }
 
-var showDebug = isMicroboard() ? true : false;
+var showDebug = true;
 window.showDebug = showDebug;
 window.enableTemplateCreating = false;
 window.enableDiagrams = true;
