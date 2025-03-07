@@ -48,6 +48,7 @@ import { UIMainLoader } from "View/Ui/UIMainLoader/UIMainLoader";
 import { HyperLink } from "View/hyperLink/HyperLink";
 import { useHyperLinkContext } from "View/hyperLink/HyperLinkContext";
 import { HyperLinkInput } from "View/hyperLink/HyperLinkInput/HyperLinkInput";
+import { AiGenerationButton } from "View/AIInput/AIGenerationButton";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -225,6 +226,7 @@ export function AppView(): JSX.Element {
 				<ExportPanel />
 			</ViewModeGuard>
 			<HyperLink />
+			<AiGenerationButton />
 			<HyperLinkInput />
 			<ToastProvider />
 			{authCode && teamIdSearch ? <ImportMiro /> : null}
