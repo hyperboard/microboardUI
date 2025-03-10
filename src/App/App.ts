@@ -1,9 +1,7 @@
 import { Board } from "Board";
 import { BoardSnapshot } from "Board/Board";
-import "Lang";
-import { getRender } from "View";
-import { Subject } from "../Subject";
-import { Account } from "./Account";
+import "shared/Lang";
+import { Subject } from "../shared/Subject";
 import { BoardsList } from "./BoardsList";
 import { Clipboard } from "./Clipboard";
 import { Connection, createConnection } from "./Connection";
@@ -14,20 +12,21 @@ import { Location } from "./Location";
 import { Storage } from "./Storage";
 import { TestRecorder, createTester } from "./testRecorder";
 import { api } from "shared/api";
-import { getAuthInterceptor } from "./AuthInterceptor";
-import { notify } from "View/Ui/Toast";
+import { notify } from "shared/ui-lib/Toast";
 import i18next from "i18next";
 import { SessionStorage } from "./SessionStorage";
 import { apiV2 } from "shared/apiV2/base";
 import { foldersApi } from "shared/apiV2";
-import { getLocalRender } from "View/router";
-import { wagmiConfig } from "View/ContextWrapper";
+import { wagmiConfig } from "features/ContextWrapper";
 import { disconnect } from "@wagmi/core";
-import { MemoryLogger } from "Logger";
 import { BrowserDocumentFactory } from "Board/api/BrowserDocumentFactory";
 import { createEvents } from "Board/Events/Events";
 import { v4 as uuidv4 } from "uuid";
 import toast from "react-hot-toast";
+import { getLocalRender, getRender } from "./router";
+import { Account } from "entities/account";
+import { MemoryLogger } from "shared/Logger";
+import { getAuthInterceptor } from "entities/account/AuthInterceptor";
 
 export const LAST_BOARD_KEY = "lastSeenBoard";
 export const LAST_BOARD_KEY_QS = LAST_BOARD_KEY.concat("Wqs");
@@ -70,7 +69,7 @@ export function createApp(isHistory = true): App {
 
 	const test = createTester(getBoard);
 
-	let board: Board;
+	let board: Board = new Board("blank");
 	let fileHandle: FileSystemFileHandle | undefined = undefined;
 
 	function enableLogger(): void {

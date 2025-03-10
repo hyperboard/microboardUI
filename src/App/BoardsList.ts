@@ -1,6 +1,6 @@
 import i18next, { t } from "i18next";
 import { boardsApiV2, foldersApi } from "shared/apiV2";
-import { Subject } from "Subject";
+import { Subject } from "shared/Subject";
 import { Account } from "./Account";
 import { Storage } from "./Storage";
 

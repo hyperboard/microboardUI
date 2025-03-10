@@ -1,7 +1,7 @@
-import React, { useRef, useState } from "react";
-import styles from "./Dropdown.module.css";
+import React, { useState } from "react";
+import { useClickOutside } from "shared/lib/useClickOutside";
 import { Chevron } from "./Chevron";
-import { useOutsideClickHandler } from "shared/hooks/useOutsideClickHandler";
+import styles from "./Dropdown.module.css";
 
 interface DropdownProps {
 	items: React.ReactNode[];
@@ -10,7 +10,6 @@ interface DropdownProps {
 
 export const Dropdown: React.FC<DropdownProps> = ({ items, label }) => {
 	const [isOpen, setIsOpen] = useState(false);
-	const ref = useRef<HTMLUListElement>(null);
 
 	const toggleDropdown = (
 		event: React.MouseEvent<HTMLButtonElement>,
@@ -21,7 +20,7 @@ export const Dropdown: React.FC<DropdownProps> = ({ items, label }) => {
 
 	const closeDropdown = (): void => setIsOpen(false);
 
-	useOutsideClickHandler(ref, closeDropdown);
+	const ref = useClickOutside<HTMLUListElement>(closeDropdown);
 
 	return (
 		<div className={styles.dropdown}>

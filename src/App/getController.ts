@@ -6,10 +6,10 @@ import { createWheel } from "./Wheel/Wheel";
 import { isSafari } from "./isSafari";
 import { prepareImage } from "Board/Items/Image/ImageHelpers";
 import { HotkeysMap } from "Board/Keyboard/types";
-import { throttle } from "shared/utils";
 import { PRESENCE_CURSOR_THROTTLE } from "Board/Presence/Presence";
 import { pasteTextToTheBoard, tryToPasteAsItemOrReturnText } from "./Paste";
-import { MemoryLogger } from "Logger";
+import { throttle } from "shared/lib/throttle";
+import { MemoryLogger } from "shared/Logger";
 
 export interface Controller {
 	onWheel: (event: WheelEvent) => void;

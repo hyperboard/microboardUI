@@ -5,11 +5,11 @@ import {
 	PresenceEventType,
 	UserJoinMsg,
 } from "Board/Presence/Events";
-import { getApiUrl, getPublicUrl } from "Config";
-import { Subject } from "Subject";
+import { getApiUrl } from "Config";
+import { Subject } from "shared/Subject";
 import { getWebsocketUrl } from "../Config";
-import { Account } from "./Account";
 import { Storage } from "./Storage";
+import type { Account } from "entities/account";
 
 const SECOND = 1000;
 const WS_RECONNECT_TIMEOUT = 5 * SECOND;

@@ -3,8 +3,8 @@ import { ReactNode } from "react";
 import clsx from "clsx";
 import styles from "./Modal.module.css";
 import { createPortal } from "react-dom";
-import { Icon } from "View/Icon";
-import { ModalName } from "View/Modal/ModalProvider";
+import { Icon } from "shared/ui-lib/Icon";
+import { ModalName } from "features/Modal/ModalProvider";
 
 export enum ModalSize {
 	S = "sizeS",

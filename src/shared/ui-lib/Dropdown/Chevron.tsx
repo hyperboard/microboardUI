@@ -2,7 +2,7 @@ import React from "react";
 
 interface Props {
 	fill?: string;
-	className: string;
+	className?: string;
 }
 
 export const Chevron: React.FC<Props> = ({ fill = "#14151A", className }) => {

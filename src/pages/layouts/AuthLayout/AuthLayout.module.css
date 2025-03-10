@@ -1,0 +1,45 @@
+.authView {
+	width: 100%;
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	height: 100vh;
+
+	font-family: "Manrope", "Arial";
+}
+
+.navbar {
+	width: 1280px;
+}
+
+.content {
+	margin-top: 104px;
+	width: 500px;
+	height: 100%;
+}
+
+@media screen and (max-width: 1280px) {
+	.authView .content {
+		width: 500px;
+		padding: 0 16px;
+		margin-top: 116px;
+	}
+
+	.authView .navbar {
+		width: 100%;
+	}
+}
+
+@media (max-width: 640px) {
+	.authView .navbar {
+		width: 100%;
+	}
+
+	.authView .content {
+		width: 100%;
+		/*padding: 0 12px;*/
+		margin-top: 104px;
+	}
+}

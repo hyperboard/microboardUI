@@ -1,6 +1,6 @@
-import { useForceUpdate } from "lib/useForceUpdate";
+import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { useLayoutEffect } from "react";
-import { useAppContext } from "View/AppContext";
+import { useAppContext } from "features/AppContext";
 import { Account } from "./Account";
 
 export function useAccount(): Account {

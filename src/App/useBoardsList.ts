@@ -1,6 +1,6 @@
-import { useForceUpdate } from "lib/useForceUpdate";
+import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { useEffect } from "react";
-import { useAppContext } from "View/AppContext";
+import { useAppContext } from "features/AppContext";
 import { BoardsList } from "./BoardsList";
 
 export function useBoardsList(): BoardsList {

@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import styles from "./Notification.module.css";
 import clsx from "clsx";
-import { Icon } from "View/Icon";
+import { Icon } from "shared/ui-lib/Icon";
 import { createPortal } from "react-dom";
 
 export enum InfoColor {

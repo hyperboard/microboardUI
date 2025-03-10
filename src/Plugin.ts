@@ -21,7 +21,7 @@ import { BoardTool } from "Board/Tools/BoardTool";
 import { Navigate } from "Board/Tools/Navigate";
 import { Select } from "Board/Tools/Select";
 import { Point } from "slate";
-import { Subject } from "Subject";
+import { Subject } from "shared/Subject";
 
 interface WhiteboardPlugin {
 	install: (whiteboard: WhiteboardApp) => void;

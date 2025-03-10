@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import styles from "./Loader.module.css";
 import React from "react";
-import { Icon } from "View/Icon";
+import { Icon } from "shared/ui-lib/Icon";
 
 interface LoaderProps {
 	className?: string;

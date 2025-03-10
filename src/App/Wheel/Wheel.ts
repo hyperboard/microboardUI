@@ -1,4 +1,4 @@
-import { isFiniteNumber, toFiniteNumber } from "utils";
+import { isFiniteNumber, toFiniteNumber } from "Board/lib";
 import { isSafari } from "../isSafari";
 
 export const DeltaModes = ["pixel", "line", "page"] as const;

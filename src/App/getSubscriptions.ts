@@ -1,7 +1,7 @@
 import { Board } from "Board";
 import { BoardEvent } from "Board/Events/Events";
 import { SyncLogSubject } from "Board/Events/SyncLog";
-import { Subject } from "../Subject";
+import { Subject } from "../shared/Subject";
 
 export type SubjectName =
 	| "camera"

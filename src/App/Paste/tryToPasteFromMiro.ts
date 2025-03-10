@@ -1,6 +1,6 @@
 import { Board } from "Board";
-import { pasteMiroClipboard } from "View/ImportMiro/ImportMiroBoards/ImportBoardItem/MiroClipboardTransformer";
-import { getGlobalModalFunctions } from "View/Modal/ModalProvider";
+import { pasteMiroClipboard } from "features/ImportMiro/ImportMiroBoards/ImportBoardItem/MiroClipboardTransformer";
+import { getGlobalModalFunctions } from "features/Modal/ModalProvider";
 
 export function tryToPasteFromMiro(
 	event: ClipboardEvent,
