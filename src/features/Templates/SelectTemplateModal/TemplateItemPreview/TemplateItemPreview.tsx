@@ -7,8 +7,8 @@ import { pasteSnapshot } from "features/Templates/lib";
 import { Button } from "shared/ui-lib/Button";
 import type { BoardSnapshot } from "Board/Board";
 import { useAppContext } from "features/AppContext";
-import { useModal } from "features/Modal/ModalProvider";
 import { Icon } from "shared/ui-lib/Icon";
+import { useUiModalContext } from "shared/ui-lib/UiModal";
 
 interface TemplateItemPreviewProps {
 	name: string;
@@ -30,12 +30,12 @@ export const TemplateItemPreview = ({
 	relatedTemplates,
 }: TemplateItemPreviewProps) => {
 	const { board } = useAppContext();
-	const { hideModal } = useModal();
+	const { closeModal } = useUiModalContext();
 	const { t } = useTranslation();
 
 	const pasteSnapshotAndClose = () => {
 		setPresentedTemplate(null);
-		hideModal("selectTemplate");
+		closeModal();
 		pasteSnapshot({ board, snapshot });
 	};
 

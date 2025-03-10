@@ -21,12 +21,13 @@ import {
 } from "entities/Folder";
 import { FoldersContextProvider } from "entities/Folder/FoldersContext";
 import { Icon } from "shared/ui-lib/Icon";
-import { useModal } from "features/Modal/ModalProvider";
 import { ResizableEdge } from "./ResizableEdge";
 import style from "./SidePanel.module.css";
 import { useSidePanelContext } from "./SidePanelContext";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { Tooltip } from "shared/ui-lib/UiButton/Tooltip";
+import { useUiModalContext } from "shared/ui-lib/UiModal";
+import { IMPORT_MIRO_START_MODAL } from "features/ImportMiro/ImportMiroStartModal/ImportMiroStartModal";
 
 const MIN_PANEL_WIDTH = 280;
 
@@ -41,6 +42,7 @@ export function SidePanel(): JSX.Element {
 	const account = useAccount();
 	const boardsList = useBoardsList();
 	const foldersRef = useRef<HTMLDivElement>(null);
+	const { openModal } = useUiModalContext();
 
 	useEffect(() => {
 		if (!foldersRef.current) {
@@ -53,8 +55,6 @@ export function SidePanel(): JSX.Element {
 	useEffect(() => {
 		setId(board.getBoardId());
 	}, [board.getBoardId()]);
-
-	const { showModal } = useModal();
 
 	const panelRef = useClickOutside(() => {
 		close();
@@ -140,7 +140,7 @@ export function SidePanel(): JSX.Element {
 				<Button
 					id={"miro"}
 					pattern="primary"
-					onClick={() => showModal("startImportMiro")}
+					onClick={() => openModal(IMPORT_MIRO_START_MODAL)}
 					disabled={!account.isLoggedIn}
 					className={style.importMiroBtn}
 				>

@@ -23,10 +23,12 @@ export const LanguagesDropdown = ({
 		setIsDropdownOpen(!isDropdownOpen);
 	};
 
-	const handleSelectLanguage = (language: string): void => {
-		setSelectedLanguage(language);
-		setIsDropdownOpen(false);
-	};
+	const handleSelectLanguage =
+		(language: string) => (ev: React.MouseEvent<HTMLLIElement>) => {
+			ev.stopPropagation();
+			setSelectedLanguage(language);
+			setIsDropdownOpen(false);
+		};
 
 	return (
 		<div ref={dropdownRef} className={styles.dropdown}>
@@ -51,7 +53,7 @@ export const LanguagesDropdown = ({
 								selectedLanguage === value &&
 									styles.dropdownItemActive,
 							)}
-							onClick={() => handleSelectLanguage(value)}
+							onClick={handleSelectLanguage(value)}
 						>
 							{t(`common.languages.${value}`)}
 							{selectedLanguage === value && (

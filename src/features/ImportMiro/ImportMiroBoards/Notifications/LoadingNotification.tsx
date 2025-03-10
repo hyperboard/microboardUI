@@ -3,8 +3,10 @@ import { useTranslation } from "react-i18next";
 import styles from "../ImportMiro.module.css";
 import React, { useEffect } from "react";
 import { Loader } from "shared/ui-lib/Loader/Loader";
-import { useModal } from "features/Modal/ModalProvider";
 import { useAccount } from "App/useAccount";
+import { useUiModalContext } from "shared/ui-lib/UiModal";
+
+export const LOADING_NOTIFICATION = Symbol("loadingNotification");
 
 interface LoadingNotificationProps {
 	className?: string;
@@ -13,21 +15,21 @@ interface LoadingNotificationProps {
 export const LoadingNotification = ({
 	className,
 }: LoadingNotificationProps): JSX.Element => {
-	const { isModalOpen, data, hideModal } = useModal();
+	const { isModalOpen, data, closeModal } = useUiModalContext();
 	const { t } = useTranslation();
 	const { isLoggedIn } = useAccount();
 
 	useEffect(() => {
-		if (isModalOpen?.("loadingNotification") && !isLoggedIn) {
-			hideModal("loadingNotification");
+		if (isModalOpen(LOADING_NOTIFICATION) && !isLoggedIn) {
+			closeModal();
 		}
 	}, [isLoggedIn]);
 
 	return (
 		<Notification
-			isOpen={isModalOpen("loadingNotification")}
+			isOpen={isModalOpen(LOADING_NOTIFICATION)}
 			className={className}
-			setIsOpen={() => hideModal("loadingNotification")}
+			setIsOpen={closeModal}
 			cross
 		>
 			<Loader

@@ -3,11 +3,11 @@ import styles from "./templateItem.module.css";
 import { Button } from "shared/ui-lib/Button/Button";
 import { useAppContext } from "features/AppContext";
 import { Template } from "Board/Settings";
-import { useModal } from "features/Modal/ModalProvider";
 import PlaceholderImg from "shared/assets/imgs/no-img-icon.svg";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { pasteSnapshot } from "features/Templates/lib";
+import { useUiModalContext } from "shared/ui-lib/UiModal";
 
 interface TemplateItemProps {
 	template: Template;
@@ -21,7 +21,7 @@ export const TemplateItem = ({
 	const [isLoading, setIsLoading] = useState(true);
 	const [isImageError, setIsImageError] = useState(!template.preview);
 	const { board } = useAppContext();
-	const { hideModal } = useModal();
+	const { closeModal } = useUiModalContext();
 	const { t } = useTranslation();
 
 	const handleImageLoad = () => {
@@ -35,7 +35,7 @@ export const TemplateItem = ({
 
 	const pasteSnapshotAndClose = () => {
 		setPresentedTemplate(null);
-		hideModal("selectTemplate");
+		closeModal();
 		pasteSnapshot({ board, snapshot: template.snapshot });
 	};
 

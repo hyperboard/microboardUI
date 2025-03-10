@@ -18,7 +18,12 @@ import { ContextMenu } from "features/ContextMenu";
 import { ContextPanel } from "features/ContextPanel";
 import { ExportPanel } from "features/ExportPanel";
 import { ExportVisible } from "features/ExportPanel/ExportVisible";
-import { ImportMiro, ImportMiroStartModal } from "features/ImportMiro";
+import {
+	AuthClipboardModal,
+	ImgAuthClipboardModal,
+	ImportMiro,
+	ImportMiroStartModal,
+} from "features/ImportMiro";
 import { ItemTooltip } from "features/ItemTooltip";
 import { LandingMenu, MobileLandingMenu } from "features/LandingMenu";
 import { LocalFileSaveProgress } from "features/LocalFileSavingProgress";
@@ -52,6 +57,14 @@ import { useHyperLinkContext } from "features/hyperLink/HyperLinkContext";
 import { HyperLinkInput } from "features/hyperLink/HyperLinkInput/HyperLinkInput";
 import { AiGenerationButton } from "entities/AIInput/AIGenerationButton";
 import { UiModalBackground } from "shared/ui-lib/UiModal";
+import { SelectTemplateModal } from "features/Templates";
+import {
+	ErrorNotification,
+	LoadingNotification,
+	SuccessNotification,
+	WarnClipboardNotification,
+	WarnNotification,
+} from "features/ImportMiro/ImportMiroBoards/Notifications";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -236,7 +249,6 @@ export function AppView(): JSX.Element {
 			{authCode && teamIdSearch ? <ImportMiro /> : null}
 			<ImportMiroStartModal />
 			<CookiesModal />
-			<SetLinkToModal />
 			<UiModalBackground>
 				<SelectPaymentModal />
 				<UserPlanModal />
@@ -247,6 +259,15 @@ export function AppView(): JSX.Element {
 				<ChangePasswordModal />
 				<AccessDeniedModal />
 				<AiUnavailableModal />
+				<SelectTemplateModal />
+				<AuthClipboardModal />
+				<ImgAuthClipboardModal />
+				<LoadingNotification />
+				<ErrorNotification />
+				<SuccessNotification />
+				<WarnClipboardNotification />
+				<WarnNotification />
+				<SetLinkToModal />
 			</UiModalBackground>
 			<LocalFileSaveProgress />
 		</div>

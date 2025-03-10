@@ -9,7 +9,17 @@ class UiModalState {
 	isTransition = false;
 	transitionFrom: ModalId = null;
 	transitionTo: ModalId = null;
+	data: unknown | null;
 	subject = new Subject<void>();
+
+	setModalData = (data: unknown): void => {
+		this.data = data;
+		this.subject.publish();
+	};
+
+	isModalOpen = (modalId: ModalId): boolean => {
+		return this.openedModalId === modalId;
+	};
 
 	openModal = (modalId: ModalId): void => {
 		if (this.openedModalId && modalId) {
@@ -31,6 +41,22 @@ class UiModalState {
 }
 
 export const UiModalStateInstance = new UiModalState();
+
+export const openModal = (modalId: ModalId): void => {
+	UiModalStateInstance.openModal(modalId);
+};
+
+export const closeModal = (): void => {
+	UiModalStateInstance.closeModal();
+};
+
+export const isModalOpen = (modalId: ModalId): boolean => {
+	return UiModalStateInstance.isModalOpen(modalId);
+};
+
+export const setModalData = (data: unknown): void => {
+	UiModalStateInstance.setModalData(data);
+};
 
 export const useUiModalContext = (): UiModalState => {
 	const forceUpdate = useForceUpdate();

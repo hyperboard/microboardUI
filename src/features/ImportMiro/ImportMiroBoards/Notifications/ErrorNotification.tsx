@@ -3,7 +3,9 @@ import { useTranslation } from "react-i18next";
 import React from "react";
 import { Button } from "shared/ui-lib/Button";
 import { Notification } from "shared/ui-lib/Notification";
-import { useModal } from "features/Modal/ModalProvider";
+import { useUiModalContext } from "shared/ui-lib/UiModal";
+
+export const ERROR_NOTIFICATION = Symbol("errorNotification");
 
 interface ErrorNotificationProps {
 	className?: string;
@@ -13,13 +15,13 @@ export const ErrorNotification = ({
 	className,
 }: ErrorNotificationProps): React.ReactElement => {
 	const { t } = useTranslation();
-	const { isModalOpen, hideModal } = useModal();
+	const { isModalOpen, closeModal } = useUiModalContext();
 
 	return (
 		<Notification
-			isOpen={isModalOpen("errorNotification")}
+			isOpen={isModalOpen(ERROR_NOTIFICATION)}
 			className={className}
-			setIsOpen={() => hideModal("errorNotification")}
+			setIsOpen={closeModal}
 			infoIcon
 			cross
 		>
@@ -33,7 +35,7 @@ export const ErrorNotification = ({
 				<div className={styles.notificationBtns}>
 					<Button
 						pattern="secondary"
-						onClick={() => hideModal("errorNotification")}
+						onClick={closeModal}
 						className={styles.notificationBtn}
 					>
 						{t("miro.notifications.okBtn")}

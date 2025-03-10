@@ -19,19 +19,20 @@ import { UiPanel } from "shared/ui-lib/UiPanel";
 import { ViewModeGuard } from "features/ViewModeGuard";
 import { getApiUrl } from "../../Config";
 import { Icon, Logo } from "../../shared/ui-lib/Icon";
-import { useModal } from "../Modal/ModalProvider";
 import { CreateTemplateModal } from "../Templates";
 import style from "./TitlePanel.module.css";
 import { useClickOutside } from "shared/lib/useClickOutside";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";
 import { UiButton } from "shared/ui-lib/UiButton";
+import { useUiModalContext } from "shared/ui-lib/UiModal";
+import { CREATE_TEMPLATE_MODAL } from "features/Templates/CreateTemplateModal/CreateTemplateModal";
 
 const MAX_BOARD_TITLE_LENGTH = 32;
 
 export function TitlePanel(): JSX.Element | null {
 	const forceUpdate = useForceUpdate();
 	const { t } = useTranslation();
-	const { showModal } = useModal();
+	const { openModal } = useUiModalContext();
 	const { board } = useAppContext();
 	const { isOpen, toggleSideMenu } = useSidePanelContext();
 	useAppSubscription({ observer: forceUpdate, subjects: ["tools"] });
@@ -131,7 +132,7 @@ export function TitlePanel(): JSX.Element | null {
 			);
 
 			if (response.status === 204) {
-				return showModal("createTemplate");
+				return openModal(CREATE_TEMPLATE_MODAL);
 			}
 
 			if (!response.ok) {

@@ -4,23 +4,25 @@ import React, { useEffect } from "react";
 import { Button } from "shared/ui-lib/Button";
 import { Notification } from "shared/ui-lib/Notification";
 import { InfoColor } from "shared/ui-lib/Notification/Notification";
-import { useModal } from "features/Modal/ModalProvider";
+import { useUiModalContext } from "shared/ui-lib/UiModal";
 
 interface WarnClipboardNotificationProps {
 	className?: string;
 }
 
+export const WARN_CLIPBOARD_NOTIFICATION = Symbol("warnClipboardNotification");
+
 export const WarnClipboardNotification = ({
 	className,
 }: WarnClipboardNotificationProps): React.ReactElement => {
 	const { t } = useTranslation();
-	const { isModalOpen, hideModal } = useModal();
-	const isOpen = isModalOpen("warnClipboardNotification");
+	const { isModalOpen, closeModal } = useUiModalContext();
+	const isOpen = isModalOpen(WARN_CLIPBOARD_NOTIFICATION);
 
 	useEffect(() => {
 		if (isOpen) {
 			setTimeout(() => {
-				hideModal("warnClipboardNotification");
+				closeModal();
 			}, 10000);
 		}
 	}, [isOpen]);
@@ -29,7 +31,7 @@ export const WarnClipboardNotification = ({
 		<Notification
 			isOpen={isOpen}
 			className={className}
-			setIsOpen={() => hideModal("warnClipboardNotification")}
+			setIsOpen={closeModal}
 			infoIcon
 			infoColor={InfoColor.warn}
 			cross
@@ -43,7 +45,7 @@ export const WarnClipboardNotification = ({
 				</p>
 				<Button
 					pattern="secondary"
-					onClick={() => hideModal("warnClipboardNotification")}
+					onClick={closeModal}
 					className={styles.notificationBtn}
 				>
 					{t("miro.notifications.okBtn")}

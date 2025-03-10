@@ -10,7 +10,6 @@ import styles from "./UiModal.module.css";
 import { useUiModalContext, type ModalId } from "./UiModalContext";
 import clsx from "clsx";
 import { useClickOutside } from "shared/lib/useClickOutside";
-import { CSSTransition } from "react-transition-group";
 
 type Props = PropsWithChildren<{
 	modalId: ModalId;
@@ -18,6 +17,8 @@ type Props = PropsWithChildren<{
 	onClose?: () => void;
 	className?: string;
 	closeByBgClick?: boolean;
+	wrClassName?: string;
+	[key: string]: unknown;
 }>;
 
 export function UiModal({
@@ -27,16 +28,17 @@ export function UiModal({
 	className,
 	onClose,
 	closeByBgClick = true,
-}: Props) {
-	const { closeModal, openedModalId, transitionFrom } = useUiModalContext();
-	const isCloseTransition = transitionFrom === modalId;
+	wrClassName,
+	...otherProps
+}: Props): JSX.Element | null {
+	const { closeModal, openedModalId } = useUiModalContext();
 
 	const handleClose = (): void => {
 		closeModal();
 		onClose?.();
 	};
 
-	const handleOutsideClose = () => {
+	const handleOutsideClose = (): void => {
 		if (closeByBgClick) {
 			handleClose();
 		}
@@ -64,8 +66,8 @@ export function UiModal({
 		// 	}}
 		// 	unmountOnExit
 		// >
-		<div className={styles.modalWrapper}>
-			<UiPanel padding={0} className={clsx(styles.panel, className)}>
+		<div className={clsx(styles.modalWrapper, wrClassName)} {...otherProps}>
+			<UiPanel className={clsx(styles.panel, className)}>
 				<div className={styles.closeBtnWrapper}>
 					{closeButton ? (
 						closeButton(handleClose)

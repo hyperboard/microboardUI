@@ -4,23 +4,25 @@ import React, { useEffect } from "react";
 import { Button } from "shared/ui-lib/Button";
 import { Notification } from "shared/ui-lib/Notification";
 import { InfoColor } from "shared/ui-lib/Notification/Notification";
-import { useModal } from "features/Modal/ModalProvider";
+import { useUiModalContext } from "shared/ui-lib/UiModal";
 
 interface WarnNotificationProps {
 	className?: string;
 }
 
+export const WARN_NOTIFICATION = Symbol("warnNotification");
+
 export const WarnNotification = ({
 	className,
 }: WarnNotificationProps): React.ReactElement => {
 	const { t } = useTranslation();
-	const { isModalOpen, hideModal } = useModal();
+	const { isModalOpen, closeModal } = useUiModalContext();
 	const isOpen = isModalOpen("warnNotification");
 
 	useEffect(() => {
 		if (isOpen) {
 			setTimeout(() => {
-				hideModal("warnNotification");
+				closeModal();
 			}, 10000);
 		}
 	}, [isOpen]);
@@ -29,7 +31,7 @@ export const WarnNotification = ({
 		<Notification
 			isOpen={isOpen}
 			className={className}
-			setIsOpen={() => hideModal("warnNotification")}
+			setIsOpen={closeModal}
 			infoIcon
 			infoColor={InfoColor.warn}
 			cross
@@ -54,7 +56,7 @@ export const WarnNotification = ({
 				</p>
 				<Button
 					pattern="secondary"
-					onClick={() => hideModal("successNotification")}
+					onClick={closeModal}
 					className={styles.notificationBtn}
 				>
 					{t("miro.notifications.okBtn")}

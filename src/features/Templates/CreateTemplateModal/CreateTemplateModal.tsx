@@ -1,4 +1,3 @@
-import { Modal } from "shared/ui-lib/Modal";
 import React, { ChangeEventHandler, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Input } from "shared/ui-lib/Input/Input";
@@ -9,7 +8,6 @@ import Cookies from "js-cookie";
 import styles from "./CreateTemplateModal.module.css";
 import { SETTINGS } from "Board/Settings.ts";
 import { useTolgee } from "@tolgee/react";
-import { useModal } from "features/Modal/ModalProvider.tsx";
 import { useForceUpdate } from "shared/lib/useForceUpdate.ts";
 import { notify } from "shared/ui-lib/Toast/notify.tsx";
 import { TolgeeProviderProvider } from "../TolgeeProvider.tsx";
@@ -18,6 +16,8 @@ import { createAccessKey } from "shared/apiV2/boards/api";
 import { AccessKeyType } from "shared/apiV2/boards/types";
 import { detectLanguage } from "../lib.ts";
 import { Selector, type SelectorHandle } from "shared/ui-lib/Selector";
+import { UiModal } from "shared/ui-lib/UiModal/UiModal.tsx";
+import { useUiModalContext } from "shared/ui-lib/UiModal/UiModalContext.tsx";
 
 interface TranslatableInput {
 	id: string;
@@ -25,6 +25,8 @@ interface TranslatableInput {
 	label?: string;
 	defaultValue?: string;
 }
+
+export const CREATE_TEMPLATE_MODAL = Symbol("createTemplate");
 
 const CreateTemplate = (): JSX.Element => {
 	const formRef = useRef<HTMLFormElement>(null);
@@ -44,7 +46,7 @@ const CreateTemplate = (): JSX.Element => {
 	>([{ id: "description", placeholder: "Description" }]);
 	const { t } = useTranslation();
 	const { board } = useAppContext();
-	const { isModalOpen, hideModal } = useModal();
+	const { closeModal } = useUiModalContext();
 	const forceUpdate = useForceUpdate();
 
 	const categories = SETTINGS.TEMPLATE_CATEGORIES.map(category => {
@@ -60,7 +62,6 @@ const CreateTemplate = (): JSX.Element => {
 		languagesSelectorRef.current?.setSelectedOptions([
 			SETTINGS.TEMPLATE_LANGUAGES[0],
 		]);
-		hideModal("createTemplate");
 	};
 
 	const getLanguages = async () => {
@@ -162,9 +163,9 @@ const CreateTemplate = (): JSX.Element => {
 	};
 
 	const handleTranslateClick = async (
-		e: React.MouseEvent<HTMLButtonElement>,
+		ev: React.MouseEvent<HTMLButtonElement>,
 	) => {
-		e.preventDefault();
+		ev.preventDefault();
 		setTranslateDisabled(true);
 		const languages = await getLanguages();
 		if (!languages) {
@@ -337,7 +338,7 @@ const CreateTemplate = (): JSX.Element => {
 				});
 				setSubmitDisabled(false);
 				setIsSubmitLoading(false);
-				hideModal("createTemplate");
+				closeModal();
 			})
 			.catch(() => {
 				setErrors([t("template.createError")]);
@@ -349,13 +350,12 @@ const CreateTemplate = (): JSX.Element => {
 	};
 
 	return (
-		<Modal
-			isOpen={isModalOpen("createTemplate")}
-			hideModal={hideModalAndResetForm}
-			onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) =>
-				e.stopPropagation()
+		<UiModal
+			modalId={CREATE_TEMPLATE_MODAL}
+			onClose={hideModalAndResetForm}
+			onKeyDown={(ev: React.KeyboardEvent<HTMLDivElement>) =>
+				ev.stopPropagation()
 			}
-			modalName="createTemplate"
 		>
 			<form
 				id="create-template-form"
@@ -442,7 +442,7 @@ const CreateTemplate = (): JSX.Element => {
 					<p className={styles.errorText}>{errors[0]}</p>
 				)}
 			</form>
-		</Modal>
+		</UiModal>
 	);
 };
 

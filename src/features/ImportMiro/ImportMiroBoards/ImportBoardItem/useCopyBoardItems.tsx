@@ -42,7 +42,17 @@ import {
 } from "Board/Items/Connector/ControlPoint";
 import { Drawing } from "Board/Items/Drawing";
 import { Placeholder } from "Board/Items/Placeholder/Placeholder";
-import { getGlobalModalFunctions } from "features/Modal/ModalProvider";
+import {
+	closeModal,
+	isModalOpen,
+	openModal,
+	setModalData,
+} from "shared/ui-lib/UiModal/UiModalContext";
+import { MIRO_IMG_AUTH_CLIPBOARD } from "features/ImportMiro/ImgAuthClipboardModal/ImgAuthClipboardModal";
+import { ERROR_NOTIFICATION } from "../Notifications/ErrorNotification";
+import { LOADING_NOTIFICATION } from "../Notifications/LoadingNotification";
+import { SUCCESS_NOTIFICATION } from "../Notifications/SuccessNotification";
+import { WARN_CLIPBOARD_NOTIFICATION } from "../Notifications/WarnClipboardNotification";
 
 interface MiroImage {
 	type: string;
@@ -181,8 +191,7 @@ export const useCopyBoardItems = (
 	};
 
 	const getMiroToken = (): void => {
-		const { showModal } = getGlobalModalFunctions();
-		showModal?.("imgAuthClipboardNotification");
+		openModal(MIRO_IMG_AUTH_CLIPBOARD);
 	};
 
 	const getMiroBoardItems = (): IMiroBoardItem[] => {
@@ -773,12 +782,9 @@ export const useCopyBoardItems = (
 				setBoardMiroId(id);
 			})
 			.catch(() => {
-				const { showModal, hideModal, setModalData } =
-					getGlobalModalFunctions();
-
-				hideModal?.("loadingNotification");
-				showModal?.("errorNotification");
-				setModalData?.("clipboard");
+				closeModal();
+				openModal(ERROR_NOTIFICATION);
+				setModalData("clipboard");
 			});
 	};
 
@@ -1073,9 +1079,6 @@ export const useCopyBoardItems = (
 	};
 
 	const copyBoardItems = async (): Promise<void> => {
-		const { isModalOpen, showModal, hideModal, setModalData } =
-			getGlobalModalFunctions();
-
 		const miroBoardItems = getMiroBoardItems();
 		const token = Cookies.get("miro_accessToken");
 
@@ -1088,7 +1091,7 @@ export const useCopyBoardItems = (
 			return;
 		}
 
-		showModal?.("loadingNotification");
+		openModal(LOADING_NOTIFICATION);
 
 		miroBoardItems
 			.filter(item => item.type === MiroBoardItemTypes.IMAGE)
@@ -1096,10 +1099,10 @@ export const useCopyBoardItems = (
 
 		for (const [index, item] of miroBoardItems.entries()) {
 			const type = item.type as MiroItemsTypes;
-			setModalData?.(Math.floor((index / miroBoardItems.length) * 100));
+			setModalData(Math.floor((index / miroBoardItems.length) * 100));
 
-			if (!!isModalOpen?.("errorNotification")) {
-				setModalData?.("clipboard");
+			if (!!isModalOpen(ERROR_NOTIFICATION)) {
+				setModalData("clipboard");
 				return;
 			}
 
@@ -1115,7 +1118,7 @@ export const useCopyBoardItems = (
 			}
 		}
 
-		if (!!isModalOpen?.("errorNotification")) {
+		if (!!isModalOpen(ERROR_NOTIFICATION)) {
 			return;
 		}
 
@@ -1127,11 +1130,11 @@ export const useCopyBoardItems = (
 			item => item.type === MiroBoardItemTypes.UNSUPPORTED,
 		);
 
-		hideModal?.("loadingNotification");
-		showModal?.(
+		closeModal();
+		openModal(
 			hasUnsupportedItems
-				? "warnClipboardNotification"
-				: "successNotification",
+				? WARN_CLIPBOARD_NOTIFICATION
+				: SUCCESS_NOTIFICATION,
 		);
 
 		localStorage.removeItem("miroItems");

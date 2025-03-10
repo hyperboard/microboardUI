@@ -1,6 +1,7 @@
 import { Board } from "Board";
+import { AUTH_CLIPBOARD_MODAL } from "features/ImportMiro/AuthClipboardModal/AuthClipboardModal";
 import { pasteMiroClipboard } from "features/ImportMiro/ImportMiroBoards/ImportBoardItem/MiroClipboardTransformer";
-import { getGlobalModalFunctions } from "features/Modal/ModalProvider";
+import { openModal } from "shared/ui-lib/UiModal/UiModalContext";
 
 export function tryToPasteFromMiro(
 	event: ClipboardEvent,
@@ -19,8 +20,7 @@ export function tryToPasteFromMiro(
 			const miroData = JSON.parse(decoded);
 
 			if (!isLoggedIn && miroData !== null) {
-				const { showModal } = getGlobalModalFunctions();
-				showModal?.("authClipboardMiro");
+				openModal(AUTH_CLIPBOARD_MODAL);
 				return true;
 			}
 

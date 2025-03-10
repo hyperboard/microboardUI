@@ -1,16 +1,17 @@
 import { Icon } from "shared/ui-lib/Icon";
 import { UiButton } from "shared/ui-lib/UiButton";
-import React, { useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
-import { SelectTemplateModal } from "../../Templates";
-import { useModal } from "../../Modal/ModalProvider";
+import { useUiModalContext } from "shared/ui-lib/UiModal";
+import { SELECT_TEMPLATE_MODAL } from "features/Templates/SelectTemplateModal/SelectTemplateModal";
 
 export function AddTemplate() {
-	const { showModal } = useModal();
+	const { openModal } = useUiModalContext();
 	const { t } = useTranslation();
 
-	const handleClick = async () => {
-		showModal("selectTemplate");
+	const handleClick = async event => {
+		event.stopPropagation();
+		openModal(SELECT_TEMPLATE_MODAL);
 	};
 
 	return (
@@ -22,7 +23,6 @@ export function AddTemplate() {
 			rounded="top"
 		>
 			<Icon iconName="Template" />
-			<SelectTemplateModal />
 		</UiButton>
 	);
 }

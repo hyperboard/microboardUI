@@ -1,19 +1,21 @@
-import { Modal } from "shared/ui-lib/Modal";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./ImgAuthClipboardModal.module.css";
-import { useModal } from "features/Modal/ModalProvider";
 import { Button } from "shared/ui-lib/Button";
 import { useCopyBoardItems } from "../ImportMiroBoards/ImportBoardItem/useCopyBoardItems";
 import { useAppContext } from "features/AppContext";
+import { UiModal } from "shared/ui-lib/UiModal/UiModal";
+import { useUiModalContext } from "shared/ui-lib/UiModal";
+
+export const MIRO_IMG_AUTH_CLIPBOARD = Symbol("imgAuthClipboardNotification");
 
 export const ImgAuthClipboardModal = (): JSX.Element => {
 	const { t } = useTranslation();
-	const { isModalOpen, hideModal } = useModal();
+	const { closeModal } = useUiModalContext();
 	const { app } = useAppContext();
 
 	const onAuthClick = (): void => {
-		hideModal("imgAuthClipboardNotification");
+		closeModal();
 
 		// @ts-expect-error import.meta object didn't exists in common-js modules
 		const clientId = import.meta.env.MIRO_CLIENT_ID;
@@ -28,15 +30,15 @@ export const ImgAuthClipboardModal = (): JSX.Element => {
 	};
 
 	const onContinueClick = (): void => {
-		hideModal("imgAuthClipboardNotification");
+		closeModal();
 		useCopyBoardItems(app.getBoard(), undefined, true);
 	};
 
 	return (
-		<Modal
-			isOpen={isModalOpen("imgAuthClipboardNotification")}
-			setIsOpen={onContinueClick}
-			modalName="imgAuthClipboardNotification"
+		<UiModal
+			modalId={MIRO_IMG_AUTH_CLIPBOARD}
+			wrClassName={styles.modal}
+			className={styles.wr}
 		>
 			<h3 className={styles.title}>
 				{t("miro.imgAuthClipboardModal.title")}
@@ -60,6 +62,6 @@ export const ImgAuthClipboardModal = (): JSX.Element => {
 					{t("miro.imgAuthClipboardModal.continueBtn")}
 				</Button>
 			</div>
-		</Modal>
+		</UiModal>
 	);
 };

@@ -1,23 +1,23 @@
-import { Modal } from "shared/ui-lib/Modal";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./AuthClipboardModal.module.css";
-import { useModal } from "features/Modal/ModalProvider";
 import { Button } from "shared/ui-lib/Button";
+import { UiModal } from "shared/ui-lib/UiModal/UiModal";
+
+export const AUTH_CLIPBOARD_MODAL = Symbol("authClipboardMiro");
 
 export const AuthClipboardModal = (): JSX.Element => {
 	const { t } = useTranslation();
-	const { isModalOpen, hideModal } = useModal();
 
 	const onClick = (): void => {
 		window.location.href = "/auth/sign-in";
 	};
 
 	return (
-		<Modal
-			isOpen={isModalOpen("authClipboardMiro")}
-			hideModal={hideModal}
-			modalName="authClipboardMiro"
+		<UiModal
+			modalId={AUTH_CLIPBOARD_MODAL}
+			wrClassName={styles.modal}
+			className={styles.wr}
 		>
 			<h3 className={styles.title}>
 				{t("miro.authClipboardModal.title")}
@@ -28,6 +28,6 @@ export const AuthClipboardModal = (): JSX.Element => {
 			<Button onClick={onClick} className={styles.btn} pattern="primary">
 				{t("miro.authClipboardModal.authBtn")}
 			</Button>
-		</Modal>
+		</UiModal>
 	);
 };

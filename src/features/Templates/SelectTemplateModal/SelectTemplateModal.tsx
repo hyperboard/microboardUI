@@ -1,8 +1,6 @@
-import { Modal } from "shared/ui-lib/Modal";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./SelectTemplateModal.module.css";
-import { ModalSize } from "shared/ui-lib/Modal/Modal";
 import { TemplateItemPreview } from "./TemplateItemPreview/TemplateItemPreview";
 import { getApiUrl } from "Config";
 import { Icon } from "../../../shared/ui-lib/Icon";
@@ -14,8 +12,11 @@ import { useDebounce } from "shared/lib/useDebounce";
 import { TemplateItemsGrid } from "./TemplateItemsGrid/TemplateItemsGrid";
 import { Template, TemplateCategory } from "Board/Settings";
 import { LanguagesDropdown } from "./LanguagesDropdown/LanguagesDropdown";
-import { useModal } from "features/Modal/ModalProvider";
 import { getCorrectEnding } from "shared/lib/getCorrectEnding";
+import { UiModal } from "shared/ui-lib/UiModal/UiModal";
+import { useUiModalContext } from "shared/ui-lib/UiModal";
+
+export const SELECT_TEMPLATE_MODAL = Symbol("selectTemplate");
 
 export const SelectTemplateModal = (): JSX.Element => {
 	const { t } = useTranslation();
@@ -23,7 +24,7 @@ export const SelectTemplateModal = (): JSX.Element => {
 	const [presentedTemplate, setPresentedTemplate] = useState<Template | null>(
 		null,
 	);
-	const { hideModal, isModalOpen } = useModal();
+	const { isModalOpen } = useUiModalContext();
 	const [selectedLanguage, setSelectedLanguage] = useState<string>(
 		i18next.language,
 	);
@@ -33,7 +34,7 @@ export const SelectTemplateModal = (): JSX.Element => {
 	const [isBurgerActive, setIsBurgerActive] = useState(false);
 
 	useEffect(() => {
-		if (isModalOpen("selectTemplate")) {
+		if (isModalOpen(SELECT_TEMPLATE_MODAL)) {
 			const tag =
 				selectedCategory === "All templates"
 					? undefined
@@ -44,15 +45,15 @@ export const SelectTemplateModal = (): JSX.Element => {
 			);
 		}
 	}, [
-		isModalOpen("selectTemplate"),
+		isModalOpen(SELECT_TEMPLATE_MODAL),
 		selectedCategory,
 		selectedLanguage,
 		inputValue,
 	]);
 
 	const handleInputChange = useDebounce(
-		(e: React.ChangeEvent<HTMLInputElement>) =>
-			setInputValue(e.target.value),
+		(ev: React.ChangeEvent<HTMLInputElement>) =>
+			setInputValue(ev.target.value),
 	);
 
 	const getTemplates = async ({
@@ -83,19 +84,17 @@ export const SelectTemplateModal = (): JSX.Element => {
 		setSelectedCategory("All templates");
 		setSelectedLanguage(i18next.language);
 		setPresentedTemplate(null);
-		hideModal("selectTemplate");
 	};
 
 	return (
-		<Modal
-			isOpen={isModalOpen("selectTemplate")}
-			hideModal={hideModalAndReset}
-			size={ModalSize.M}
+		<UiModal
+			modalId={SELECT_TEMPLATE_MODAL}
 			wrClassName={styles.modal}
-			onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) =>
-				e.stopPropagation()
+			className={styles.modalWr}
+			onKeyDown={(ev: React.KeyboardEvent<HTMLDivElement>) =>
+				ev.stopPropagation()
 			}
-			modalName="selectTemplate"
+			onClose={hideModalAndReset}
 		>
 			<div className={styles.wrapper}>
 				<div className={styles.sidebar}>
@@ -201,6 +200,6 @@ export const SelectTemplateModal = (): JSX.Element => {
 					)}
 				</div>
 			</div>
-		</Modal>
+		</UiModal>
 	);
 };

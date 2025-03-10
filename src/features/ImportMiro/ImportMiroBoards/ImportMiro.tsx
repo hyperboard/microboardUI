@@ -5,7 +5,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAppContext } from "features/AppContext";
 import { getApiUrl } from "Config";
 import Cookies from "js-cookie";
-import { useModal } from "features/Modal/ModalProvider";
+import { useUiModalContext } from "shared/ui-lib/UiModal";
+import { ERROR_NOTIFICATION } from "./Notifications/ErrorNotification";
 
 export function ImportMiro(): React.ReactElement | null {
 	const { app } = useAppContext();
@@ -14,7 +15,7 @@ export function ImportMiro(): React.ReactElement | null {
 	const searchParams = new URLSearchParams(location.search);
 	const authCode = searchParams.get("code");
 	const teamIdSearch = searchParams.get("team_id");
-	const { showModal } = useModal();
+	const { openModal } = useUiModalContext();
 
 	const fetchToken = async () => {
 		try {
@@ -52,7 +53,7 @@ export function ImportMiro(): React.ReactElement | null {
 			}
 		} catch (error) {
 			console.error(error);
-			showModal?.("errorNotification");
+			openModal(ERROR_NOTIFICATION);
 		}
 	};
 

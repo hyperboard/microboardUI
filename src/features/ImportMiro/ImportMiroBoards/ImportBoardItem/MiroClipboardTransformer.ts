@@ -13,8 +13,8 @@ import {
 } from "../MiroModels";
 import { Board } from "Board";
 import { useCopyBoardItems } from "./useCopyBoardItems";
-import { SETTINGS } from "Board/Settings";
-import { getGlobalModalFunctions } from "features/Modal/ModalProvider";
+import { openModal, setModalData } from "shared/ui-lib/UiModal/UiModalContext";
+import { LOADING_NOTIFICATION } from "../Notifications/LoadingNotification";
 
 type SupportedMiroType =
 	| IMiroBoardItemConnector
@@ -734,9 +734,8 @@ export const pasteMiroClipboard = (board: Board, clipboardJson: any): any => {
 	//     x: 0,
 	//     y: 0,
 	// };
-	const { showModal, setModalData } = getGlobalModalFunctions();
-	showModal?.("loadingNotification");
-	setModalData?.(0);
+	openModal(LOADING_NOTIFICATION);
+	setModalData(0);
 
 	const miroItems = clipboardItems.reduce((acc, item, index) => {
 		const transformedItem = parseItem(

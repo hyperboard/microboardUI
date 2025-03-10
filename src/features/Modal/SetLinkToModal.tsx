@@ -1,16 +1,18 @@
-import { Modal } from "shared/ui-lib/Modal";
 import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./SetLinkToModal.module.css";
-import { useModal } from "features/Modal/ModalProvider";
 import { Input } from "../../shared/ui-lib/Input";
 import { Button } from "../../shared/ui-lib/Button";
 import { useAppContext } from "../AppContext";
+import { UiModal } from "shared/ui-lib/UiModal/UiModal";
+import { useUiModalContext } from "shared/ui-lib/UiModal";
+
+export const LINK_MODAL = Symbol("setLinkTo");
 
 export const SetLinkToModal = (): JSX.Element => {
 	const { t } = useTranslation();
 	const { board } = useAppContext();
-	const { isModalOpen, hideModal, setModalData, data } = useModal();
+	const { closeModal, setModalData, data } = useUiModalContext();
 	const formRef = useRef<HTMLFormElement | null>(null);
 	const [error, setError] = useState<"modalLinkTo.error" | undefined>(
 		undefined,
@@ -32,7 +34,7 @@ export const SetLinkToModal = (): JSX.Element => {
 		}
 		form.reset();
 		setModalData(undefined);
-		hideModal("setLinkTo");
+		closeModal();
 	};
 
 	const removeError = (): void => {
@@ -48,20 +50,18 @@ export const SetLinkToModal = (): JSX.Element => {
 		if (item && item.itemType !== "Placeholder") {
 			item.linkTo.removeLinkTo();
 			setModalData(undefined);
-			hideModal("setLinkTo");
+			closeModal();
 		}
 	};
 
 	const handleCloseModal = (): void => {
 		setModalData(undefined);
-		hideModal("setLinkTo");
 	};
 
 	return (
-		<Modal
-			isOpen={isModalOpen("setLinkTo")}
-			hideModal={handleCloseModal}
-			modalName="setLinkTo"
+		<UiModal
+			modalId={LINK_MODAL}
+			onClose={handleCloseModal}
 			onPaste={(event: React.KeyboardEvent<HTMLDivElement>) =>
 				event.stopPropagation()
 			}
@@ -102,6 +102,6 @@ export const SetLinkToModal = (): JSX.Element => {
 				</div>
 				{error && <p className={styles.error}>{t(error)}</p>}
 			</form>
-		</Modal>
+		</UiModal>
 	);
 };
