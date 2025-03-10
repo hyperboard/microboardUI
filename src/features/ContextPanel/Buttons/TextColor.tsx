@@ -2,7 +2,7 @@ import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
 import { TextColorIndicator } from "shared/ui-lib/Icon";
 import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
-import { TEXT_COLORS } from "Board/Settings";
+import { SETTINGS } from "Board/Settings";
 import { UiColorInput } from "shared/ui-lib/UiColorInput";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import React from "react";
@@ -35,7 +35,9 @@ export function TextColor(): React.ReactElement | null {
 		board.selection.setFontColor(rgbColor);
 	};
 
-	const isPredefinedColor = TEXT_COLORS.some(color => color === fontColor);
+	const isPredefinedColor = SETTINGS.TEXT_COLORS.some(
+		color => color === fontColor,
+	);
 	return (
 		<ButtonWithMenu
 			menuName={MENU_NAME}
@@ -67,7 +69,7 @@ export function TextColor(): React.ReactElement | null {
 				>
 					<ColorPicker
 						id={"TextColor"}
-						colors={TEXT_COLORS}
+						colors={SETTINGS.TEXT_COLORS}
 						selectedColor={fontColor}
 						onPick={handlePick}
 					/>

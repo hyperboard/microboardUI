@@ -4,15 +4,7 @@ import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
 import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
 import { SliderPicker } from "features/Pickers/SliderPicker/SliderPicker";
-import {
-	PEN_MIN_STROKE_WIDTH,
-	PEN_STEP_STROKE_WIDTH,
-	PEN_COLORS,
-	HIGHLIGHTER_COLORS,
-	PEN_DEFAULT_COLOR,
-	HIGHLIGHTER_DEFAULT_COLOR,
-	HIGHLIGHTER_MAX_STROKE_WIDTH,
-} from "Board/Settings";
+import { SETTINGS } from "Board/Settings";
 import { UiColorInput } from "shared/ui-lib/UiColorInput";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import { ButtonWithMenu } from "../../ButtonWithMenu";
@@ -65,9 +57,11 @@ export function AddHighlighter() {
 
 	const handleColorPick = (color: string): void => {
 		if (addHighlighter) {
-			setSelectedColor(rgbToRgba(color, 0.5, HIGHLIGHTER_DEFAULT_COLOR));
+			setSelectedColor(
+				rgbToRgba(color, 0.5, SETTINGS.HIGHLIGHTER_DEFAULT_COLOR),
+			);
 			addHighlighter.setStrokeColor(
-				rgbToRgba(color, 0.5, HIGHLIGHTER_DEFAULT_COLOR),
+				rgbToRgba(color, 0.5, SETTINGS.HIGHLIGHTER_DEFAULT_COLOR),
 			);
 			setIsColorSelected(true);
 		}
@@ -81,7 +75,7 @@ export function AddHighlighter() {
 		}
 	};
 
-	const isPredefinedColor = HIGHLIGHTER_COLORS.some(
+	const isPredefinedColor = SETTINGS.HIGHLIGHTER_COLORS.some(
 		color => color === selectedColor,
 	);
 
@@ -109,9 +103,9 @@ export function AddHighlighter() {
 				<div className={style.slider}>
 					<SliderPicker
 						onPick={handleSliderPick}
-						min={PEN_MIN_STROKE_WIDTH}
-						max={HIGHLIGHTER_MAX_STROKE_WIDTH}
-						step={PEN_STEP_STROKE_WIDTH}
+						min={SETTINGS.PEN_MIN_STROKE_WIDTH}
+						max={SETTINGS.HIGHLIGHTER_MAX_STROKE_WIDTH}
+						step={SETTINGS.PEN_STEP_STROKE_WIDTH}
 						value={strokeWidth}
 						showLabel
 					/>
@@ -120,10 +114,10 @@ export function AddHighlighter() {
 					<ColorPicker
 						selectedColor={
 							selectedColor &&
-							rgbaToRgb(selectedColor, PEN_DEFAULT_COLOR)
+							rgbaToRgb(selectedColor, SETTINGS.PEN_DEFAULT_COLOR)
 						}
 						onPick={handleColorPick}
-						colors={PEN_COLORS}
+						colors={SETTINGS.PEN_COLORS}
 					/>
 					<UiColorInput
 						color={isPredefinedColor ? "none" : selectedColor}

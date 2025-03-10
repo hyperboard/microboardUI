@@ -13,7 +13,7 @@ import {
 } from "../MiroModels";
 import { Board } from "Board";
 import { useCopyBoardItems } from "./useCopyBoardItems";
-import { PEN_INITIAL_STROKE_WIDTH, PEN_MAX_STROKE_WIDTH } from "Board/Settings";
+import { SETTINGS } from "Board/Settings";
 import { getGlobalModalFunctions } from "features/Modal/ModalProvider";
 
 type SupportedMiroType =
@@ -581,7 +581,9 @@ const transformDrawing = (
 	const json = paint.widgetData.json!;
 	const style = parseStyle(json.style);
 	const strokeWidth =
-		style.t > PEN_MAX_STROKE_WIDTH ? PEN_MAX_STROKE_WIDTH : style.t;
+		style.t > SETTINGS.PEN_MAX_STROKE_WIDTH
+			? SETTINGS.PEN_MAX_STROKE_WIDTH
+			: style.t;
 	const { x: offsetX = 0, y: offsetY = 0 } = json._position?.offsetPx || {};
 
 	const transformDrawing: IMiroBoardItemPaint = {
@@ -593,7 +595,7 @@ const transformDrawing = (
 		},
 		style: {
 			color: getColor(style.lc, style.lo),
-			strokeWidth: strokeWidth || PEN_INITIAL_STROKE_WIDTH,
+			strokeWidth: strokeWidth || SETTINGS.PEN_INITIAL_STROKE_WIDTH,
 			strokeOpacity: style.lo,
 		},
 		data: {

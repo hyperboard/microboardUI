@@ -23,12 +23,10 @@ import { useModal } from "../Modal/ModalProvider";
 import { CreateTemplateModal } from "../Templates";
 import style from "./TitlePanel.module.css";
 import { useClickOutside } from "shared/lib/useClickOutside";
-import { BrowserDocumentFactory } from "Board/api/BrowserDocumentFactory";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";
 import { UiButton } from "shared/ui-lib/UiButton";
 
 const MAX_BOARD_TITLE_LENGTH = 32;
-const documentFactory = new BrowserDocumentFactory();
 
 export function TitlePanel(): JSX.Element | null {
 	const forceUpdate = useForceUpdate();
@@ -91,7 +89,7 @@ export function TitlePanel(): JSX.Element | null {
 	};
 
 	const exportHTML = async (): Promise<string> => {
-		const htmlContent = await board.serializeHTML(documentFactory);
+		const htmlContent = await board.serializeHTML();
 		const blob = new Blob([htmlContent], {
 			type: "text/html;charset=utf-8",
 		});

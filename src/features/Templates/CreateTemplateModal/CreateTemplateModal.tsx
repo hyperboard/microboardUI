@@ -7,7 +7,7 @@ import { useAppContext } from "features/AppContext.tsx";
 import { getApiUrl } from "Config";
 import Cookies from "js-cookie";
 import styles from "./CreateTemplateModal.module.css";
-import { TEMPLATE_CATEGORIES, TEMPLATE_LANGUAGES } from "Board/Settings.ts";
+import { SETTINGS } from "Board/Settings.ts";
 import { useTolgee } from "@tolgee/react";
 import { useModal } from "features/Modal/ModalProvider.tsx";
 import { useForceUpdate } from "shared/lib/useForceUpdate.ts";
@@ -47,7 +47,7 @@ const CreateTemplate = (): JSX.Element => {
 	const { isModalOpen, hideModal } = useModal();
 	const forceUpdate = useForceUpdate();
 
-	const categories = TEMPLATE_CATEGORIES.map(category => {
+	const categories = SETTINGS.TEMPLATE_CATEGORIES.map(category => {
 		return {
 			value: category,
 			label: t(`modalTemplate.category.useCaseItems.${category}`),
@@ -58,7 +58,7 @@ const CreateTemplate = (): JSX.Element => {
 		formRef.current?.reset();
 		categoriesSelectorRef.current?.setSelectedOptions([categories[0]]);
 		languagesSelectorRef.current?.setSelectedOptions([
-			TEMPLATE_LANGUAGES[0],
+			SETTINGS.TEMPLATE_LANGUAGES[0],
 		]);
 		hideModal("createTemplate");
 	};
@@ -328,7 +328,7 @@ const CreateTemplate = (): JSX.Element => {
 					categories[0],
 				]);
 				languagesSelectorRef.current?.setSelectedOptions([
-					TEMPLATE_LANGUAGES[0],
+					SETTINGS.TEMPLATE_LANGUAGES[0],
 				]);
 				notify({
 					body: t("template.createSuccess"),
@@ -387,7 +387,7 @@ const CreateTemplate = (): JSX.Element => {
 				</Button>
 				<Selector
 					multiselect={true}
-					options={TEMPLATE_LANGUAGES.map(item => {
+					options={SETTINGS.TEMPLATE_LANGUAGES.map(item => {
 						item.label = t(`common.languages.${item.value}`);
 						return item;
 					})}

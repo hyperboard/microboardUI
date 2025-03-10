@@ -5,7 +5,7 @@ import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
 import { FillColorIndicator } from "shared/ui-lib/Icon/FillColorIndicator";
 import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
-import { SHAPE_FILL_COLORS } from "Board/Settings";
+import { SETTINGS } from "Board/Settings";
 import { UiColorInput } from "shared/ui-lib/UiColorInput";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import btnStyle from "./ContextPanelButton.module.css";
@@ -35,7 +35,7 @@ export function FillStyle(): React.ReactElement | null {
 		board.selection.setFillColor(color);
 	};
 
-	const isPredefinedColor = SHAPE_FILL_COLORS.some(
+	const isPredefinedColor = SETTINGS.SHAPE_FILL_COLORS.some(
 		color => color === fillColor,
 	);
 	return (
@@ -74,7 +74,7 @@ export function FillStyle(): React.ReactElement | null {
 					<ColorPicker
 						id={"fill-style"}
 						selectedColor={fillColor}
-						colors={SHAPE_FILL_COLORS}
+						colors={SETTINGS.SHAPE_FILL_COLORS}
 						onPick={handlePick}
 					/>
 					<UiColorInput

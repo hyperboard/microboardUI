@@ -5,12 +5,7 @@ import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
 import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
 import { SliderPicker } from "features/Pickers/SliderPicker/SliderPicker";
-import {
-	PEN_MAX_STROKE_WIDTH,
-	PEN_MIN_STROKE_WIDTH,
-	PEN_COLORS,
-	PEN_STEP_STROKE_WIDTH,
-} from "Board/Settings";
+import { SETTINGS } from "Board/Settings";
 import { UiColorInput } from "shared/ui-lib/UiColorInput";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import { ButtonWithMenu } from "../../ButtonWithMenu";
@@ -75,7 +70,9 @@ export function AddPen() {
 		}
 	};
 
-	const isPredefinedColor = PEN_COLORS.some(color => color === selectedColor);
+	const isPredefinedColor = SETTINGS.PEN_COLORS.some(
+		color => color === selectedColor,
+	);
 
 	return (
 		<ButtonWithMenu
@@ -102,9 +99,9 @@ export function AddPen() {
 				<div className={style.slider}>
 					<SliderPicker
 						onPick={handleSliderPick}
-						min={PEN_MIN_STROKE_WIDTH}
-						max={PEN_MAX_STROKE_WIDTH}
-						step={PEN_STEP_STROKE_WIDTH}
+						min={SETTINGS.PEN_MIN_STROKE_WIDTH}
+						max={SETTINGS.PEN_MAX_STROKE_WIDTH}
+						step={SETTINGS.PEN_STEP_STROKE_WIDTH}
 						value={strokeWidth}
 						showLabel
 					/>
@@ -113,7 +110,7 @@ export function AddPen() {
 					<ColorPicker
 						selectedColor={selectedColor}
 						onPick={handleColorPick}
-						colors={PEN_COLORS}
+						colors={SETTINGS.PEN_COLORS}
 					/>
 					<UiColorInput
 						color={isPredefinedColor ? "none" : selectedColor}

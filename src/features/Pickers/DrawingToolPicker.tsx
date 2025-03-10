@@ -1,7 +1,7 @@
 import React from "react";
 import { UiButton } from "../Ui/UiButton";
 import { Icon } from "../../shared/ui-lib/Icon";
-import { DRAWING_TOOLS, DrawingTool } from "Board/Settings";
+import { SETTINGS, DrawingTool } from "Board/Settings";
 
 type Props = {
 	onPick: (type: DrawingTool) => void;
@@ -14,7 +14,7 @@ export const DrawingToolPicker = ({
 }: Props): React.ReactElement => {
 	return (
 		<>
-			{DRAWING_TOOLS.map(drawing => (
+			{SETTINGS.DRAWING_TOOLS.map(drawing => (
 				<UiButton
 					id={`drawing-${drawing}`}
 					onClick={() => onPick(drawing)}

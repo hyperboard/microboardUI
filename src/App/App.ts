@@ -19,7 +19,6 @@ import { apiV2 } from "shared/apiV2/base";
 import { foldersApi } from "shared/apiV2";
 import { wagmiConfig } from "features/ContextWrapper";
 import { disconnect } from "@wagmi/core";
-import { BrowserDocumentFactory } from "Board/api/BrowserDocumentFactory";
 import { createEvents } from "Board/Events/Events";
 import { v4 as uuidv4 } from "uuid";
 import toast from "react-hot-toast";
@@ -27,6 +26,8 @@ import { getLocalRender, getRender } from "./router";
 import { Account } from "entities/account";
 import { MemoryLogger } from "shared/Logger";
 import { getAuthInterceptor } from "entities/account/AuthInterceptor";
+import { initBrowserSettings } from "Board/api/initBrowserSettings";
+import { SETTINGS } from "Board/Settings";
 
 export const LAST_BOARD_KEY = "lastSeenBoard";
 export const LAST_BOARD_KEY_QS = LAST_BOARD_KEY.concat("Wqs");
@@ -47,7 +48,7 @@ export interface App {
 	getConnection: () => Connection;
 	getLastBoardId: () => string | null;
 	render: () => void;
-	localRender: () => void;
+	localRender: (id: string) => void;
 	test: TestRecorder;
 	getSnapshot(boardId: string): BoardSnapshot | null;
 	sessionStorage: SessionStorage;
@@ -58,6 +59,8 @@ export interface App {
 }
 
 export function createApp(isHistory = true): App {
+	initBrowserSettings();
+
 	const connection = createConnection(getBoard, getAccount, getStorage);
 	const clipboard = new Clipboard();
 	const location = new Location();
@@ -65,7 +68,6 @@ export function createApp(isHistory = true): App {
 	const sessionStorage = new SessionStorage();
 	const account = new Account(storage, sessionStorage, connection);
 	const boardsList = new BoardsList(storage, account);
-	const documentFactory = new BrowserDocumentFactory();
 
 	const test = createTester(getBoard);
 
@@ -251,7 +253,7 @@ export function createApp(isHistory = true): App {
 		}
 
 		async function getData(): Promise<string> {
-			const items = getBoard().items.getWholeHTML(documentFactory);
+			const items = getBoard().items.getWholeHTML(SETTINGS.documentFactory);
 			const docCopy = document.cloneNode(true) as Document;
 
 			const head = document.head.cloneNode(true);
@@ -280,13 +282,13 @@ export function createApp(isHistory = true): App {
 				? getData
 				: getBoard().serializeHTML;
 
-		const data = await serializer(documentFactory);
+		const data = await serializer();
 		const writable = await fileHandle.createWritable();
 		await writable.write(data);
 		await writable.close();
 	}
 
-	const app = {
+	const app: App = {
 		connection,
 		clipboard,
 		location,
