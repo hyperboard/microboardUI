@@ -1,7 +1,7 @@
 import { ConnectorLineStyle } from "Board/Items/Connector";
 import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
-import { Icon } from "shared/ui-lib/Icon";
+import { Icon } from "features/Icon";
 import { ConnectorLineStylePicker } from "features/Pickers/ConnectorLineStylePicker";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import React from "react";
@@ -15,6 +15,7 @@ import styles from "./ConnectorType.module.css";
 import { BorderStyle } from "../../../../Board/Items/Path";
 import btnStyle from "../ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
+import { ConnectorIcon } from "shared/ui-lib/Icon";
 
 const MENU_NAME = "ConnectorType";
 
@@ -67,13 +68,7 @@ export function ConnectorType(): React.ReactElement | null {
 					rounded="none"
 					active={openedMenu === MENU_NAME}
 				>
-					<Icon
-						iconName={
-							connectorType === "curved"
-								? "CurvedLine"
-								: "DiagonalLine"
-						}
-					/>
+					<ConnectorIcon iconName={connectorType} />
 				</UiButton>
 			}
 		>
