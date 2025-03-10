@@ -227,7 +227,7 @@ export function TitlePanel(): JSX.Element | null {
 					onClick={toggleExportDropdown}
 					variant="secondary"
 					rounded="right"
-					tooltip={t("export.tooltip")}
+					tooltip={isDropdownOpen ? undefined : t("export.tooltip")}
 					tooltipPosition="bottom"
 				>
 					<Icon iconName="Export" />
