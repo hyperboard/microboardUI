@@ -218,7 +218,7 @@ export class TextEditor extends React.Component<
 			this.props.sendGenerationRequest();
 			return true;
 		}
-		if (text.editor.isEmpty()) {
+		if (text.editor.isEmpty() && !event.ctrlKey) {
 			event.preventDefault();
 			event.stopPropagation();
 			if (event.key.length === 1 || event.key === "Space") {
