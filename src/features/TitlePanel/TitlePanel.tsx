@@ -96,7 +96,7 @@ export function TitlePanel(): JSX.Element | null {
 		const url = URL.createObjectURL(blob);
 		const anch = document.createElement("a");
 		anch.href = url;
-		anch.download = `${board.getBoardId()}.html`;
+		anch.download = `${boardName}.html`;
 		anch.click();
 		URL.revokeObjectURL(url);
 		return htmlContent;
@@ -235,13 +235,28 @@ export function TitlePanel(): JSX.Element | null {
 				{isDropdownOpen && (
 					<div className={style.exportDropdown}>
 						<div onClick={openExport}>
-							<strong>PNG</strong>
+							<div className={style.exportDropdownItemTitle}>
+								<Icon
+									iconName="ExportPNG"
+									width={20}
+									height={20}
+								/>
+								<strong>{t("export.PNGTitle")}</strong>
+							</div>
 							<p>{t("export.PNGDescription")}</p>
 						</div>
 						<div onClick={exportHTML}>
-							<strong>
-								HTML<span className={style.betaTag}>Beta</span>
-							</strong>
+							<div className={style.exportDropdownItemTitle}>
+								<Icon
+									iconName="ExportFile"
+									width={20}
+									height={20}
+								/>
+								<strong>
+									{t("export.HTMLTitle")}
+									<span className={style.betaTag}>Beta</span>
+								</strong>
+							</div>
 							<p>{t("export.HTMLDescription")}</p>
 						</div>
 					</div>

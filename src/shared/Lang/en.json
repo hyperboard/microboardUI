@@ -545,8 +545,10 @@
 	"export": {
 		"tooltip": "Export this board",
 		"confirm": "Export",
-		"PNGDescription": "Select a section of the board to save as a PNG",
-		"HTMLDescription": "Save board as HTML and browse it locally",
+		"PNGTitle": "Export as image",
+		"PNGDescription": "Save the selected board area as a PNG file",
+		"HTMLTitle": "Export as File",
+		"HTMLDescription": "Save the entire board as an HTML file",
 		"cancel": "Cancel",
 		"error": {
 			"title": "Export error",

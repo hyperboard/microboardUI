@@ -57,22 +57,28 @@ input.rename {
 	gap: 5px;
 }
 
-.exportDropdown div {
+.exportDropdown > div {
 	padding: 10px;
 	cursor: pointer;
 	border-radius: 8px;
 }
 
-.exportDropdown div:hover {
+.exportDropdown > div:hover {
 	background-color: #0a0f290a;
 }
 
+.exportDropdownItemTitle {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
 .exportDropdown strong {
+	font-size: 12px;
 	display: flex;
 	justify-content: space-between;
-	margin-bottom: 5px;
-	font-weight: normal;
-	color: black;
+	align-items: center;
+	flex-grow: 1;
 }
 
 .exportDropdown p {

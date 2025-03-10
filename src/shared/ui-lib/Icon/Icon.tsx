@@ -139,7 +139,9 @@ export type IconId =
 	| "XRP"
 	| "BTC"
 	| "ETH"
-	| "POL";
+	| "POL"
+	| "ExportFile"
+	| "ExportPNG";
 
 type Props = {
 	iconName: IconId;
