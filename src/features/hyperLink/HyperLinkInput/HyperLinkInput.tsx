@@ -92,8 +92,26 @@ export const HyperLinkInput = () => {
 	const handleDeleteBtnClick = () => {
 		board.selection.setHyperLink(undefined, hyperLinkData.selection);
 	};
-	const left = hyperLinkData.inputPosition?.left || mbr.left;
-	const top = hyperLinkData.inputPosition?.top || mbr.top;
+	let left = hyperLinkData.inputPosition?.left || mbr.left;
+	let top = hyperLinkData.inputPosition?.top || mbr.top;
+	const width = containerRef.current?.clientWidth || 0;
+	const height = containerRef.current?.clientHeight || 0;
+	const right = left + width;
+	const bottom = top + height;
+	const offset = 20;
+	const view = board.camera.window.getMbr();
+
+	if (right >= view.right - offset) {
+		left = view.right - offset - width;
+	} else if (left <= view.left + offset) {
+		left = view.left + offset;
+	}
+
+	if (bottom >= view.bottom - offset) {
+		top = view.bottom - offset - height;
+	} else if (top <= view.top + offset) {
+		top = view.top + offset;
+	}
 
 	return (
 		<div

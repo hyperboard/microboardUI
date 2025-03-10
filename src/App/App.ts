@@ -72,7 +72,7 @@ export function createApp(isHistory = true): App {
 	const test = createTester(getBoard);
 
 	let board: Board = new Board("blank");
-	let fileHandle: FileSystemFileHandle | undefined = undefined;
+	const fileHandle: FileSystemFileHandle | undefined = undefined;
 
 	function enableLogger(): void {
 		MemoryLogger.enable();
@@ -230,22 +230,6 @@ export function createApp(isHistory = true): App {
 	function getConnectedBoard(boardId: string): Board | undefined {
 		return boards.get(boardId);
 	}
-
-	// async function openAndEditFile(): Promise<string | undefined> {
-	// 	try {
-	// 		const [newFileHandle] = await window.showOpenFilePicker();
-	// 		fileHandle = newFileHandle;
-	//
-	// 		const file = await newFileHandle.getFile();
-	// 		const contents = await file.text();
-	//
-	// 		return contents;
-	// 	} catch (err) {
-	// 		fileHandle = undefined;
-	// 		console.error("Streaming file err:", err);
-	// 	}
-	// 	return;
-	// }
 
 	async function openAndEditFile(): Promise<string | undefined> {
 		try {
