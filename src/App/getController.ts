@@ -90,7 +90,7 @@ export function getController(
 		const deltaTime = currentTime - lastEventTime;
 		lastEventTime = currentTime;
 
-		if (deltaTime > 200) {
+		if (deltaTime > 200 && !wheel.isProbablyMouseWheel()) {
 			return;
 		}
 
