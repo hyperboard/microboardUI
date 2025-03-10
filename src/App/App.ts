@@ -231,20 +231,57 @@ export function createApp(isHistory = true): App {
 		return boards.get(boardId);
 	}
 
+	// async function openAndEditFile(): Promise<string | undefined> {
+	// 	try {
+	// 		const [newFileHandle] = await window.showOpenFilePicker();
+	// 		fileHandle = newFileHandle;
+	//
+	// 		const file = await newFileHandle.getFile();
+	// 		const contents = await file.text();
+	//
+	// 		return contents;
+	// 	} catch (err) {
+	// 		fileHandle = undefined;
+	// 		console.error("Streaming file err:", err);
+	// 	}
+	// 	return;
+	// }
+
 	async function openAndEditFile(): Promise<string | undefined> {
 		try {
-			const [newFileHandle] = await window.showOpenFilePicker();
-			fileHandle = newFileHandle;
+			let file: File;
+			if ("showOpenFilePicker" in window) {
+				const [newFileHandle] = await window.showOpenFilePicker();
+				file = await newFileHandle.getFile();
+			} else {
+				file = await new Promise<File>((resolve, reject) => {
+					const input = document.createElement("input");
+					input.type = "file";
 
-			const file = await newFileHandle.getFile();
+					input.onchange = event => {
+						const selectedFile = (event.target as HTMLInputElement)
+							.files?.[0];
+						if (selectedFile) {
+							resolve(selectedFile);
+						} else {
+							reject(new Error("No selected file"));
+						}
+					};
+
+					input.onerror = () => {
+						reject(new Error("Error while selecting file"));
+					};
+
+					input.click();
+				});
+			}
+
 			const contents = await file.text();
-
 			return contents;
 		} catch (err) {
-			fileHandle = undefined;
 			console.error("Streaming file err:", err);
+			return undefined;
 		}
-		return;
 	}
 
 	async function saveEditingFile(): Promise<void> {
@@ -253,7 +290,9 @@ export function createApp(isHistory = true): App {
 		}
 
 		async function getData(): Promise<string> {
-			const items = getBoard().items.getWholeHTML(SETTINGS.documentFactory);
+			const items = getBoard().items.getWholeHTML(
+				SETTINGS.documentFactory,
+			);
 			const docCopy = document.cloneNode(true) as Document;
 
 			const head = document.head.cloneNode(true);
