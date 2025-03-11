@@ -919,7 +919,8 @@
 	},
 	"hyperLink": {
 		"done": "Done",
-		"addLink": "Insert a link"
+		"addLink": "Insert a link",
+		"error": "Unsupported link format"
 	},
 	"quickAdd": {
 		"panel": {

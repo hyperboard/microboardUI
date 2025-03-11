@@ -7,6 +7,9 @@ import { useClickOutside } from "shared/lib/useClickOutside";
 import { Icon } from "shared/ui-lib/Icon/Icon";
 import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
 import { useTranslation } from "react-i18next";
+import { SETTINGS } from "Board/Settings";
+import { t } from "i18next";
+import { notify } from "shared/ui-lib/Toast/notify";
 
 export const HyperLinkInput = () => {
 	const [inputValue, setInputValue] = useState<string>("");
@@ -63,7 +66,15 @@ export const HyperLinkInput = () => {
 	}
 
 	const handleConfirmBtnClick = () => {
-		board.selection.setHyperLink(inputValue, hyperLinkData.selection);
+		if (!SETTINGS.URL_REGEX.test(inputValue)) {
+			notify({
+				header: t("hyperLink.error"),
+				variant: "error",
+				duration: 3000,
+			});
+		} else {
+			board.selection.setHyperLink(inputValue, hyperLinkData.selection);
+		}
 		setInputValue("");
 		setIsEditingLink(false);
 	};

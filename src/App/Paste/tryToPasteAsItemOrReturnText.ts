@@ -5,6 +5,7 @@ import {
 	tryToPasteFromMicroboard,
 } from ".";
 import { transformHtmlOrTextToMarkdown } from "Board/Items/RichText/transformHtmlToMarkdown";
+import { SETTINGS } from "Board/Settings";
 
 const isMarkdown = (text: string): boolean => {
 	if (!text || typeof text !== "string") {
@@ -58,12 +59,11 @@ export async function tryToPasteAsItemOrReturnText(
 		return null;
 	}
 
-	const urlRegex = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
 	const textEditor = board.selection.items.getSingle()?.getRichText()?.editor;
 	const shouldSkipMarkdownTransform = Boolean(
 		textEditor?.getSelection() &&
 			textEditor.hasTextInSelection() &&
-			urlRegex.test(text),
+			SETTINGS.URL_REGEX.test(text),
 	);
 
 	if (
