@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useRenameContext } from "features/Rename";
 import { useSidePanelContext } from "features/SidePanel/SidePanelContext";
 import styles from "./NoBoardIsOpen.module.css";
-import { Button } from "shared/ui-lib/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 
 const NoBoardIsOpen: React.FC = () => {
 	const { t } = useTranslation();
@@ -35,20 +35,21 @@ const NoBoardIsOpen: React.FC = () => {
 			<div className={styles.innerContainer}>
 				<span className={styles.title}>{t("noBoard.title")}</span>
 				<div className={styles.btns}>
-					<Button
+					<UiButton
 						className={styles.btn}
-						pattern="secondary"
+						variant="quaternary"
 						onClick={handleOpenMenu}
+						size="lg"
 					>
 						{t("noBoard.chooseBoard")}
-					</Button>
-					<Button
+					</UiButton>
+					<UiButton
 						className={styles.btn}
-						pattern="quaternary"
 						onClick={handleCreateNewBoard}
+						size="lg"
 					>
 						{t("noBoard.createNewBoard")}
-					</Button>
+					</UiButton>
 				</div>
 			</div>
 		</div>
