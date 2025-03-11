@@ -57,7 +57,7 @@ import { useHyperLinkContext } from "features/hyperLink/HyperLinkContext";
 import { HyperLinkInput } from "features/hyperLink/HyperLinkInput/HyperLinkInput";
 import { AiGenerationButton } from "entities/AIInput/AIGenerationButton";
 import { UiModalBackground } from "shared/ui-lib/UiModal";
-import { SelectTemplateModal } from "features/Templates";
+import { CreateTemplateModal, SelectTemplateModal } from "features/Templates";
 import {
 	ErrorNotification,
 	LoadingNotification,
@@ -247,9 +247,9 @@ export function AppView(): JSX.Element {
 			<HyperLinkInput />
 			<ToastProvider />
 			{authCode && teamIdSearch ? <ImportMiro /> : null}
-			<ImportMiroStartModal />
 			<CookiesModal />
 			<UiModalBackground>
+				<ImportMiroStartModal />
 				<SelectPaymentModal />
 				<UserPlanModal />
 				<LimitsModal />
@@ -268,6 +268,7 @@ export function AppView(): JSX.Element {
 				<WarnClipboardNotification />
 				<WarnNotification />
 				<SetLinkToModal />
+				<CreateTemplateModal />
 			</UiModalBackground>
 			<LocalFileSaveProgress />
 		</div>

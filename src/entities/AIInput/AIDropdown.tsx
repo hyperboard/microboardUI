@@ -8,12 +8,12 @@ import React, { MouseEventHandler } from "react";
 import { useTranslation } from "react-i18next";
 import { useClickOutside } from "shared/lib/useClickOutside";
 import { Chevron } from "shared/ui-lib/Dropdown/Chevron";
-import { Tooltip } from "shared/ui-lib/UiButton/Tooltip";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { UiPanel } from "shared/ui-lib/UiPanel";
 import { useAIContext } from "./AIContext";
 import styles from "./AIInput.module.css";
 import { StarIcon } from "./StarIcon";
+import { Tooltip } from "shared/ui-lib/Tooltip";
 
 type AIDropdownProps = {
 	board: Board;

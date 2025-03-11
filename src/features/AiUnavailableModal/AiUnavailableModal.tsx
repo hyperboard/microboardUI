@@ -1,7 +1,7 @@
 import React from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { Button } from "shared/ui-lib/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { Link } from "shared/ui-lib/Link";
 import styles from "./AiUnavailableModal.module.css";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
@@ -42,15 +42,17 @@ export function AiUnavailableModal(): JSX.Element {
 					/>
 				</div>
 
-				<Button
+				<UiButton
+					variant="primary"
 					className={styles.btn}
 					onClick={() => {
 						navigate("/auth/sign-in");
 						closeModal();
 					}}
+					size="lg"
 				>
 					{t("auth.signIn")}
-				</Button>
+				</UiButton>
 			</div>
 		</UiModal>
 	);

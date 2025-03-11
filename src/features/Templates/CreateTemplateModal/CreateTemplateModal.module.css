@@ -1,3 +1,12 @@
+.modal {
+	max-width: 608px;
+	width: 100%;
+}
+
+.wr {
+	padding: 32px 64px !important;
+}
+
 .form {
 	display: flex;
 	flex-wrap: nowrap;
@@ -21,5 +30,5 @@
 }
 
 .btn {
-	min-height: 40px;
+	width: 100%;
 }

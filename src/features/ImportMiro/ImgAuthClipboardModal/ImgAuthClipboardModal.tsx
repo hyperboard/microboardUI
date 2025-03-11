@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./ImgAuthClipboardModal.module.css";
-import { Button } from "shared/ui-lib/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { useCopyBoardItems } from "../ImportMiroBoards/ImportBoardItem/useCopyBoardItems";
 import { useAppContext } from "features/AppContext";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
@@ -47,20 +47,22 @@ export const ImgAuthClipboardModal = (): JSX.Element => {
 				{t("miro.imgAuthClipboardModal.description")}
 			</p>
 			<div className={styles.btnWrapper}>
-				<Button
+				<UiButton
 					onClick={onAuthClick}
 					className={styles.btn}
-					pattern="primary"
+					variant="primary"
+					size="lg"
 				>
 					{t("miro.imgAuthClipboardModal.authBtn")}
-				</Button>
-				<Button
+				</UiButton>
+				<UiButton
 					onClick={onContinueClick}
 					className={styles.btnContinue}
-					pattern="tertiary"
+					variant="tertiary"
+					size="lg"
 				>
 					{t("miro.imgAuthClipboardModal.continueBtn")}
-				</Button>
+				</UiButton>
 			</div>
 		</UiModal>
 	);

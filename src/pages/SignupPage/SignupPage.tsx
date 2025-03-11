@@ -8,7 +8,7 @@ import { Tail } from "pages/layouts/AuthLayout/Tail";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { createSearchParams, useNavigate } from "react-router-dom";
-import { Button } from "shared/ui-lib/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { Checkbox } from "shared/ui-lib/Checkbox";
 import { Input } from "shared/ui-lib/Input/Input";
 import { OuterLink } from "shared/ui-lib/OuterLink";
@@ -206,18 +206,18 @@ export const SignupPage = (): React.ReactElement => {
 
 			<div className={styles.btns}>
 				{showNameInput ? (
-					<div>
-						<Button
-							disabled={isDisabled}
-							type="button"
-							onClick={ev => {
-								ev.preventDefault();
-								next();
-							}}
-						>
-							{t("auth.next")}
-						</Button>
-					</div>
+					<UiButton
+						variant="primary"
+						disabled={isDisabled}
+						type="button"
+						onClick={ev => {
+							ev.preventDefault();
+							next();
+						}}
+						size="lg"
+					>
+						{t("auth.next")}
+					</UiButton>
 				) : (
 					<>
 						<Checkbox
@@ -238,27 +238,30 @@ export const SignupPage = (): React.ReactElement => {
 								</OuterLink>
 							</span>
 						</Checkbox>
-						<Button
+						<UiButton
 							type="submit"
 							disabled={isDisabled}
 							loading={isSubmitLoading}
+							variant="primary"
+							size="lg"
 						>
 							{t("auth.submit")}
 							<Tail />
-						</Button>
+						</UiButton>
 					</>
 				)}
-				<Button
-					pattern="ghost"
+				<UiButton
+					variant="ghost"
 					onClick={ev => {
 						ev.preventDefault();
 						navigate(`/auth/sign-in${location.search}`);
 					}}
 					className={styles.login}
 					type="button"
+					size="lg"
 				>
 					{t("auth.signIn")}
-				</Button>
+				</UiButton>
 
 				<LoginWith />
 				<WalletLoginButton />

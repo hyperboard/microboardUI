@@ -2,7 +2,7 @@ import React, { type MouseEventHandler } from "react";
 import styles from "./PlanCard.module.css";
 import clsx from "clsx";
 import { Icon } from "shared/ui-lib/Icon";
-import { Button } from "shared/ui-lib/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { useTranslation } from "react-i18next";
 import { UiSkeleton } from "shared/ui-lib/UiSkeleton";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";
@@ -140,14 +140,15 @@ export function PlanCard({
 			{state !== "downgrade" && (
 				<>
 					<UiSeparator />
-					<Button
+					<UiButton
 						onClick={getHandler()}
 						className={styles.button}
 						disabled={state === "current" || state === "pending"}
-						pattern={state === "pending" ? "tertiary" : "primary"}
+						variant={state === "pending" ? "tertiary" : "primary"}
+						size="lg"
 					>
 						{getButtonLabel()}
-					</Button>
+					</UiButton>
 				</>
 			)}
 		</div>

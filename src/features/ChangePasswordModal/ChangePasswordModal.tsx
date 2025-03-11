@@ -4,7 +4,7 @@ import React, { useRef, useState, type MouseEventHandler } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./ChangePassword.module.css";
 import { Input } from "shared/ui-lib/Input";
-import { Button } from "shared/ui-lib/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { Tail } from "pages/layouts/AuthLayout/Tail";
 import { PROFILE_SETTINGS_MODAL_ID } from "features/ProfileSettingsModal";
 import { Icon } from "shared/ui-lib/Icon";
@@ -154,14 +154,15 @@ export function ChangePasswordModal(): JSX.Element {
 	return (
 		<UiModal modalId={CHANGE_PASSWORD_MODAL}>
 			<div className={styles.modal}>
-				<Button
+				<UiButton
 					onClick={closeModal}
 					className={styles.backBtn}
-					pattern="ghost"
+					variant="ghost"
+					size="lg"
 				>
 					<Icon width={20} height={20} iconName="BackArrow" />{" "}
 					{t("profile.title")}
-				</Button>
+				</UiButton>
 				<h2 className={styles.modalTitle}>
 					{t("profile.changePassword")}
 				</h2>
@@ -222,16 +223,22 @@ export function ChangePasswordModal(): JSX.Element {
 					</div>
 
 					<div className={styles.modalBtns}>
-						<Button
+						<UiButton
 							type="submit"
+							variant="primary"
 							disabled={isSubmitDisabled}
 							loading={isSubmitLoading}
+							size="lg"
 						>
 							{t("profile.savePassword")} <Tail />
-						</Button>
-						<Button pattern="ghost" onClick={closeModal}>
+						</UiButton>
+						<UiButton
+							variant="ghost"
+							onClick={closeModal}
+							size="lg"
+						>
 							{t("auth.cancel")}
-						</Button>
+						</UiButton>
 					</div>
 				</form>
 			</div>

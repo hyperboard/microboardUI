@@ -4,7 +4,7 @@ import { LayoutEngine } from "features/GenerateChart/lib/engine/index";
 import { generateChart } from "shared/api/ai";
 import { Board } from "Board";
 import { useTranslation } from "react-i18next";
-import { Button } from "shared/ui-lib/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { useClickOutside } from "shared/lib/useClickOutside";
 
 const CHARACTER_LIMIT = 500;
@@ -178,9 +178,14 @@ export const AIChat: React.FC<Props> = ({
 				<div className={styles.charCount}>
 					{prompt.length} / {CHARACTER_LIMIT} {t("ai.symbols")}
 				</div>
-				<Button type="submit" pattern="primary" disabled={isLoading}>
+				<UiButton
+					type="submit"
+					variant="primary"
+					disabled={isLoading}
+					size="lg"
+				>
 					{isLoading ? t("ai.generating") : t("ai.generate")}
-				</Button>
+				</UiButton>
 			</form>
 			{error && <div className={styles.errorMessage}>{error}</div>}
 			{isLoading && (

@@ -1,7 +1,7 @@
 import { useBoardsList } from "App/useBoardsList";
 import React, { MouseEventHandler } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "shared/ui-lib/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { useAppContext } from "features/AppContext";
 import { useContextMenuContext } from "features/ContextMenu";
 import { Icon } from "shared/ui-lib/Icon";
@@ -32,10 +32,11 @@ export const ShareBtn: React.FC = () => {
 	}
 
 	return (
-		<Button
+		<UiButton
 			onClick={handleShare}
-			pattern="primary"
+			variant="primary"
 			className={commonStyles.shareButton}
+			size="sm"
 		>
 			<Icon
 				width={16}
@@ -43,6 +44,6 @@ export const ShareBtn: React.FC = () => {
 				iconName={boardInfo?.isPublic ? "publicDrafts" : "lock"}
 			/>
 			{t("sharing.share")}
-		</Button>
+		</UiButton>
 	);
 };

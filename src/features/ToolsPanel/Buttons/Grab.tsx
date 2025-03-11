@@ -1,4 +1,3 @@
-import { getHotkeyLabel } from "Board/Keyboard";
 import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
 import { UiButton } from "shared/ui-lib/UiButton";

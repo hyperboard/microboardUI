@@ -14,7 +14,7 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { Button } from "shared/ui-lib/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { Input } from "shared/ui-lib/Input";
 import styles from "./ProfileSettingsModal.module.css";
 import { UserAvatar } from "features/UserPanel/UserAvatar/UserAvatar";
@@ -194,21 +194,23 @@ export function ProfileSettingsModal(): ReactElement {
 						onChange={handleAvatarChange}
 					/>
 					<div className={styles.avatarBtns}>
-						<Button
+						<UiButton
 							onClick={handleAvatarSelectOpen}
 							className={styles.avatarBtn}
-							pattern="tertiary"
+							variant="tertiary"
+							size="lg"
 						>
 							{t("profile.upload")}
-						</Button>
-						<Button
+						</UiButton>
+						<UiButton
 							className={styles.avatarBtn}
-							pattern="secondary"
+							variant="quaternary"
 							onClick={handleAvatarRemove}
 							disabled={account.info?.avatarGenerated}
+							size="lg"
 						>
 							{t("profile.remove")}
-						</Button>
+						</UiButton>
 					</div>
 				</div>
 				<div className={styles.inputs}>
@@ -238,32 +240,35 @@ export function ProfileSettingsModal(): ReactElement {
 					onChange={handleNewsletterChange}
 				/>
 				<div className={styles.btns}>
-					<Button
+					<UiButton
 						type="button"
 						onClick={handleOpenPasswordChange}
-						pattern="ghost"
+						variant="ghost"
 						className={styles.btn}
+						size="lg"
 					>
 						<ChangePassword /> {t("profile.changePassword")}
-					</Button>
+					</UiButton>
 					{!account.info?.email && (
-						<Button
+						<UiButton
 							type="button"
 							onClick={handleAddEmail}
-							pattern="ghost"
+							variant="ghost"
 							className={styles.btn}
+							size="lg"
 						>
 							<span className={styles.icon}>
 								<Icon iconName="Plus" width={20} height={20} />
 							</span>{" "}
 							{t("profile.addEmail")}
-						</Button>
+						</UiButton>
 					)}
-					<Button
+					<UiButton
 						type="button"
 						onClick={handlePlanModalOpen}
-						pattern="ghost"
+						variant="ghost"
 						className={styles.btn}
+						size="lg"
 					>
 						<span className={styles.icon}>
 							<Icon
@@ -273,15 +278,16 @@ export function ProfileSettingsModal(): ReactElement {
 							/>
 						</span>{" "}
 						{t("userPlan.upgradePlan")}
-					</Button>
-					<Button
+					</UiButton>
+					<UiButton
 						type="button"
 						onClick={handleLogout}
-						pattern="ghost"
+						variant="ghost"
 						className={styles.btn}
+						size="lg"
 					>
 						<Logout /> {t("profile.logout")}
-					</Button>
+					</UiButton>
 				</div>
 			</div>
 		</UiModal>

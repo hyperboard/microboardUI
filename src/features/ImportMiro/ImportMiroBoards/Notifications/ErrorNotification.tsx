@@ -1,7 +1,7 @@
 import styles from "../ImportMiro.module.css";
 import { useTranslation } from "react-i18next";
 import React from "react";
-import { Button } from "shared/ui-lib/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { Notification } from "shared/ui-lib/Notification";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 
@@ -33,13 +33,14 @@ export const ErrorNotification = ({
 					{t("miro.notifications.errorItemsText")}
 				</p>
 				<div className={styles.notificationBtns}>
-					<Button
-						pattern="secondary"
+					<UiButton
+						variant="quaternary"
 						onClick={closeModal}
 						className={styles.notificationBtn}
+						size="lg"
 					>
 						{t("miro.notifications.okBtn")}
-					</Button>
+					</UiButton>
 				</div>
 			</div>
 		</Notification>

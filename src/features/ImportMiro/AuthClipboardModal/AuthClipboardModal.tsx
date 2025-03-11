@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./AuthClipboardModal.module.css";
-import { Button } from "shared/ui-lib/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
 
 export const AUTH_CLIPBOARD_MODAL = Symbol("authClipboardMiro");
@@ -25,9 +25,14 @@ export const AuthClipboardModal = (): JSX.Element => {
 			<p className={styles.text}>
 				{t("miro.authClipboardModal.description")}
 			</p>
-			<Button onClick={onClick} className={styles.btn} pattern="primary">
+			<UiButton
+				onClick={onClick}
+				className={styles.btn}
+				variant="primary"
+				size="lg"
+			>
 				{t("miro.authClipboardModal.authBtn")}
-			</Button>
+			</UiButton>
 		</UiModal>
 	);
 };

@@ -7,7 +7,7 @@ import {
 	useNavigate,
 	useSearchParams,
 } from "react-router-dom";
-import { Button } from "shared/ui-lib/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { Input } from "shared/ui-lib/Input";
 import { Link } from "shared/ui-lib/Link";
 import { PasswordChanged } from "features/Widgets/form-notifications/password-changed";
@@ -112,9 +112,14 @@ export const RestorePasswordPage: React.FC = () => {
 		return (
 			<div className={styles.passwordChanged}>
 				<PasswordChanged />
-				<Button onClick={() => navigate("/auth/sign-in")}>
+				<UiButton
+					onClick={() => navigate("/auth/sign-in")}
+					variant="primary"
+					size="lg"
+					className={styles.btn}
+				>
 					{t("auth.backToLogIn")}
-				</Button>
+				</UiButton>
 			</div>
 		);
 	}
@@ -130,11 +135,11 @@ export const RestorePasswordPage: React.FC = () => {
 				<Link to="/auth/forgot-password">
 					{t("auth.restorePassword")}
 				</Link>
-				<Button>
+				<UiButton variant="primary" size="lg">
 					<RRDLink to="/auth/sign-in" className={styles.link}>
 						{t("common.backToMain")}
 					</RRDLink>
-				</Button>
+				</UiButton>
 			</div>
 		);
 	}
@@ -168,21 +173,24 @@ export const RestorePasswordPage: React.FC = () => {
 				hasError={!!error.length}
 			/>
 			<div className={styles.btns}>
-				<Button
+				<UiButton
+					variant="primary"
 					disabled={isDisabled}
 					type="submit"
 					className={styles.submit}
 					loading={isSubmitLoading}
+					size="lg"
 				>
 					{t("auth.submit")}
 					<Tail />
-				</Button>
-				<Button
-					pattern="ghost"
+				</UiButton>
+				<UiButton
+					variant="ghost"
 					onClick={() => navigate("/auth/sign-in")}
+					size="lg"
 				>
 					{t("auth.backToLogIn")}
-				</Button>
+				</UiButton>
 			</div>
 		</AuthForm>
 	);

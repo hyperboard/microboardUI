@@ -256,7 +256,6 @@ export function TitlePanel(): JSX.Element | null {
 						>
 							<Icon iconName="Pen" />
 						</UiButton>
-						<CreateTemplateModal />
 					</>
 				)}
 			</ViewModeGuard>

@@ -6,7 +6,6 @@ import { useForceUpdate } from "shared/lib/useForceUpdate";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { Button } from "shared/ui-lib/Button";
 import { Folder } from "entities/Folder";
 import { boardsApiV2 } from "shared/apiV2";
 import { AccessKeyType } from "shared/apiV2/boards";
@@ -174,18 +173,19 @@ export const SelectBoardPage: React.FC = () => {
 							buttons={
 								isAuth
 									? [
-											<Button
+											<UiButton
 												key="userDropDown2"
-												pattern="ghost"
+												variant="ghost"
 												onClick={async () => {
 													await account.logout();
 												}}
+												size="lg"
 											>
 												<Logout /> {t("auth.logout")}
-											</Button>,
+											</UiButton>,
 										]
 									: [
-											<Button
+											<UiButton
 												key="userDropDown1"
 												onClick={() => {
 													setIsDropdownOpen(false);
@@ -193,7 +193,8 @@ export const SelectBoardPage: React.FC = () => {
 														"/auth/sign-in?backToSelect=true",
 													);
 												}}
-												pattern="ghost"
+												variant="ghost"
+												size="lg"
 											>
 												<Icon
 													iconName="SignIn"
@@ -201,16 +202,17 @@ export const SelectBoardPage: React.FC = () => {
 													height={20}
 												/>{" "}
 												{t("auth.signIn")}
-											</Button>,
-											<Button
+											</UiButton>,
+											<UiButton
 												key="userDropDown2"
-												pattern="ghost"
+												variant="ghost"
 												onClick={() => {
 													setIsDropdownOpen(false);
 													navigate(
 														"/auth/sign-up?backToSelect=true",
 													);
 												}}
+												size="lg"
 											>
 												<Icon
 													iconName="BoxedPlus"
@@ -218,7 +220,7 @@ export const SelectBoardPage: React.FC = () => {
 													height={20}
 												/>{" "}
 												{t("auth.signUp")}
-											</Button>,
+											</UiButton>,
 										]
 							}
 						/>

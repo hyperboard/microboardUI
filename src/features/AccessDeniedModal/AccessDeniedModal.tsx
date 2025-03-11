@@ -2,7 +2,7 @@ import { useAccount } from "App/useAccount";
 import React from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { Button } from "shared/ui-lib/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { Link } from "shared/ui-lib/Link";
 import styles from "./AccessDeniedModal.module.css";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
@@ -69,12 +69,14 @@ export function AccessDeniedModal(): JSX.Element {
 					)}
 				</div>
 				{!account.isLoggedIn && (
-					<Button
+					<UiButton
+						variant="primary"
 						className={styles.btn}
 						onClick={() => navigate("/auth/sign-in")}
+						size="lg"
 					>
 						{t("auth.signIn")}
-					</Button>
+					</UiButton>
 				)}
 				{account.isLoggedIn && (
 					<Button

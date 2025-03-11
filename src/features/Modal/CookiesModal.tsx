@@ -5,7 +5,7 @@ import {
 	InfoColor,
 	Notification,
 } from "shared/ui-lib/Notification/Notification";
-import { Button } from "shared/ui-lib/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import Cookies from "js-cookie";
 
 interface CookiesModalProps {
@@ -51,20 +51,20 @@ export const CookiesModal = ({
 				<h4 className={styles.title}>{t("cookiesModal.title")}</h4>
 				<p className={styles.text}>{t("cookiesModal.text")}</p>
 				<div className={styles.btns}>
-					<Button
-						pattern="tertiary"
+					<UiButton
+						variant="tertiary"
 						onClick={redirectOnPolicy}
 						className={styles.btn}
 					>
 						{t("cookiesModal.learnMoreBtn")}
-					</Button>
-					<Button
-						pattern="primary"
+					</UiButton>
+					<UiButton
+						variant="primary"
 						onClick={onAccept}
 						className={styles.btn}
 					>
 						{t("cookiesModal.acceptBtn")}
-					</Button>
+					</UiButton>
 				</div>
 			</div>
 		</Notification>

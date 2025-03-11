@@ -1,7 +1,7 @@
 import React from "react";
-import { UiButton } from "../Ui/UiButton";
 import { Icon } from "../../shared/ui-lib/Icon";
 import { SETTINGS, DrawingTool } from "Board/Settings";
+import { UiButton } from "shared/ui-lib/UiButton";
 
 type Props = {
 	onPick: (type: DrawingTool) => void;

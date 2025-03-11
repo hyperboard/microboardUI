@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import style from "./FontSize.module.css";
 import { useAppContext } from "features/AppContext";
 import btnStyle from "../ContextPanelButton.module.css";
-import { UiDivButton } from "shared/ui-lib/UiButton";
+import { UiButton } from "shared/ui-lib/UiButton";
 
 const MENU_NAME = "FontSize";
 
@@ -144,7 +144,7 @@ export function FontSize({ rounded = "none" }: Props): React.ReactElement {
 			align="left"
 			offset="Right"
 			button={verticalAlign => (
-				<UiDivButton
+				<UiButton
 					id="pick-font-size"
 					tooltip={t("contextPanel.fontSize.tooltip")}
 					tooltipPosition="top"
@@ -180,7 +180,7 @@ export function FontSize({ rounded = "none" }: Props): React.ReactElement {
 					>
 						<Icon width={20} height={20} iconName="Chevron" />
 					</span>
-				</UiDivButton>
+				</UiButton>
 			)}
 		>
 			{verticalAlign => (

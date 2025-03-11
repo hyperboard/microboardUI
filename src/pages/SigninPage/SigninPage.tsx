@@ -12,7 +12,7 @@ import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { createSearchParams, useNavigate } from "react-router-dom";
 import { isEmail } from "shared/lib/regex";
-import { Button } from "shared/ui-lib/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { Input } from "shared/ui-lib/Input/Input";
 import styles from "./SigninPage.module.css";
 
@@ -152,31 +152,35 @@ export const SigninPage: React.FC = (): React.ReactElement => {
 			/>
 
 			<div className={styles.btns}>
-				<Button
+				<UiButton
 					type="submit"
 					disabled={submitDisabled}
 					loading={isSubmitLoading}
+					variant="primary"
+					size="lg"
 				>
 					{t("auth.submit")}
 					<Tail />
-				</Button>
+				</UiButton>
 
-				<Button
-					pattern="secondary"
+				<UiButton
+					variant="secondary"
 					className={styles.forgot}
 					onClick={() =>
 						navigate(`/auth/forgot-password${location.search}`)
 					}
+					size="lg"
 				>
 					{t("auth.forgotPassword")}
-				</Button>
+				</UiButton>
 
-				<Button
-					pattern="ghost"
+				<UiButton
+					variant="ghost"
 					onClick={() => navigate(`/auth/sign-up${location.search}`)}
+					size="lg"
 				>
 					{t("auth.signUpForFree")}
-				</Button>
+				</UiButton>
 
 				<LoginWith />
 				<WalletLoginButton />

@@ -1,7 +1,7 @@
 import React, { ChangeEventHandler, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Input } from "shared/ui-lib/Input/Input";
-import { Button } from "shared/ui-lib/Button/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { useAppContext } from "features/AppContext.tsx";
 import { getApiUrl } from "Config";
 import Cookies from "js-cookie";
@@ -356,6 +356,8 @@ const CreateTemplate = (): JSX.Element => {
 			onKeyDown={(ev: React.KeyboardEvent<HTMLDivElement>) =>
 				ev.stopPropagation()
 			}
+			className={styles.wr}
+			wrClassName={styles.modal}
 		>
 			<form
 				id="create-template-form"
@@ -376,15 +378,17 @@ const CreateTemplate = (): JSX.Element => {
 					type="file"
 					style={{ display: "none" }}
 				/>
-				<Button
+				<UiButton
+					variant="primary"
 					disabled={submitDisabled}
 					onClick={handleChangeImageClick}
 					className={styles.btn}
+					size="lg"
 				>
 					{t(
 						`modalTemplate.UI.buttons.${imageSrc ? "previewChosen" : "choosePreview"}`,
 					)}
-				</Button>
+				</UiButton>
 				<Selector
 					multiselect={true}
 					options={SETTINGS.TEMPLATE_LANGUAGES.map(item => {
@@ -422,22 +426,26 @@ const CreateTemplate = (): JSX.Element => {
 				{languagesSelectorRef.current &&
 					languagesSelectorRef.current.getSelectedOptions().length >
 						1 && (
-						<Button
+						<UiButton
+							variant="primary"
 							className={styles.btn}
 							disabled={submitDisabled || translateDisabled}
 							onClick={handleTranslateClick}
+							size="lg"
 						>
 							{t("modalTemplate.UI.buttons.translate")}
-						</Button>
+						</UiButton>
 					)}
-				<Button
+				<UiButton
+					variant="primary"
 					className={styles.btn}
 					type="submit"
 					disabled={submitDisabled && translateDisabled}
 					loading={isSubmitLoading}
+					size="lg"
 				>
 					{t("modalTemplate.UI.buttons.save")}
-				</Button>
+				</UiButton>
 				{errors.length > 0 && (
 					<p className={styles.errorText}>{errors[0]}</p>
 				)}

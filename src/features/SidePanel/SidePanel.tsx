@@ -10,7 +10,6 @@ import React, {
 	type MouseEventHandler,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "shared/ui-lib/Button";
 import { UiPanel } from "shared/ui-lib/UiPanel";
 import { useAppContext } from "features/AppContext";
 import { useContextMenuContext } from "features/ContextMenu";
@@ -25,7 +24,7 @@ import { ResizableEdge } from "./ResizableEdge";
 import style from "./SidePanel.module.css";
 import { useSidePanelContext } from "./SidePanelContext";
 import { UiButton } from "shared/ui-lib/UiButton";
-import { Tooltip } from "shared/ui-lib/UiButton/Tooltip";
+import { Tooltip } from "shared/ui-lib/Tooltip";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { IMPORT_MIRO_START_MODAL } from "features/ImportMiro/ImportMiroStartModal/ImportMiroStartModal";
 
@@ -137,12 +136,16 @@ export function SidePanel(): JSX.Element {
 					<Icon iconName="Plus" width={16} height={16} />
 					<span>{t("sidePanel.addNew")}</span>
 				</button>
-				<Button
+				<UiButton
 					id={"miro"}
-					pattern="primary"
-					onClick={() => openModal(IMPORT_MIRO_START_MODAL)}
+					variant="primary"
+					onClick={e => {
+						e.stopPropagation();
+						openModal(IMPORT_MIRO_START_MODAL);
+					}}
 					disabled={!account.isLoggedIn}
 					className={style.importMiroBtn}
+					size="lg"
 				>
 					<span>{t("miro.importMiroBtn")}</span>
 					<Tooltip
@@ -154,7 +157,7 @@ export function SidePanel(): JSX.Element {
 						tooltipPosition="top-center-fixed"
 						tooltipAlign="left"
 					/>
-				</Button>
+				</UiButton>
 			</div>
 			<ResizableEdge panelWidth={width} setWidth={setWidth} />
 		</UiPanel>

@@ -16,7 +16,7 @@ import {
 } from "shared/apiV2/boards";
 import { debounce } from "shared/lib/debounce";
 import { getEmailPrefix } from "shared/lib/getEmailPrefix";
-import { Button } from "shared/ui-lib/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { Icon } from "shared/ui-lib/Icon";
 import { Link } from "shared/ui-lib/Link";
 import { notify } from "shared/ui-lib/Toast";
@@ -452,23 +452,26 @@ export function ShareModal() {
 					)}
 				</div>
 				<div className={styles.btns}>
-					<Button
+					<UiButton
 						onClick={handleCopy}
 						className={clsx(styles.btn, styles.copyBtn)}
-						pattern="ghostFilled"
+						variant="ghostFilled"
+						size="lg"
 					>
 						<span className={styles.copyIcon}>
 							<Icon iconName="CopyLink" />{" "}
 						</span>
 						<span>{t("sharing.copyLink.label")}</span>
-					</Button>
-					<Button
+					</UiButton>
+					<UiButton
+						variant="primary"
 						onClick={handleSubmit}
 						className={styles.btn}
 						disabled={disabled}
+						size="lg"
 					>
 						{t("sharing.submit")}
-					</Button>
+					</UiButton>
 				</div>
 			</div>
 			{isSubmitting && <div className={styles.loader} />}

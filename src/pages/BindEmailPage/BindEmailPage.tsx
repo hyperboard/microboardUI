@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Button } from "shared/ui-lib/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { Input } from "shared/ui-lib/Input/Input";
 import { Tail } from "pages/layouts/AuthLayout/Tail";
 import { useAccount } from "App/useAccount";
@@ -233,26 +233,29 @@ export const BindEmailPage: React.FC = () => {
 					onInput={() => checkForm()}
 				/>
 				<div className={styles.btns}>
-					<Button
+					<UiButton
 						disabled={isAttemptsExceeded || submitDisabled}
 						type="submit"
 						loading={isSubmitLoading}
+						variant="primary"
+						size="lg"
 					>
 						{t("auth.submit")}
 						<Tail />
-					</Button>
-					<Button
-						pattern="ghost"
+					</UiButton>
+					<UiButton
+						variant="ghost"
 						disabled={retryDisabled || retryCount > 0}
 						loading={isRetryLoading}
 						type="button"
 						onClick={onResend}
+						size="lg"
 					>
 						{t("auth.resendCode")}{" "}
 						{retryCount > 0
 							? `(${secondsToHumanReadable(retryCount)})`
 							: null}
-					</Button>
+					</UiButton>
 				</div>
 			</form>
 		</div>

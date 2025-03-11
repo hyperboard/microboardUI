@@ -1,3 +1,12 @@
+.modal {
+	max-width: 608px;
+	width: 100%;
+}
+
+.wr {
+	padding: 32px 64px !important;
+}
+
 .title {
 	font-size: 36px;
 	line-height: 1.22;

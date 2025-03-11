@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./SetLinkToModal.module.css";
 import { Input } from "../../shared/ui-lib/Input";
-import { Button } from "../../shared/ui-lib/Button";
+import { UiButton } from "../../shared/ui-lib/UiButton";
 import { useAppContext } from "../AppContext";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
@@ -86,18 +86,23 @@ export const SetLinkToModal = (): JSX.Element => {
 					defaultValue={typeof data === "string" ? data : undefined}
 				/>
 				<div className={styles.buttonsBox}>
-					<Button className={styles.btn} type="submit">
+					<UiButton
+						className={styles.btn}
+						type="submit"
+						variant="primary"
+						size="lg"
+					>
 						{t("modalLinkTo.submit")}
-					</Button>
+					</UiButton>
 					{data && (
-						<Button
+						<UiButton
 							className={styles.btn}
-							pattern="tertiary"
+							variant="tertiary"
 							onClick={ev => handleRemoveLink(ev)}
 							type="button"
 						>
 							{t("modalLinkTo.deleteLink")}
-						</Button>
+						</UiButton>
 					)}
 				</div>
 				{error && <p className={styles.error}>{t(error)}</p>}

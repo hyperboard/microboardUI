@@ -4,7 +4,7 @@ import { PanelContext } from "features/ContextPanel/PanelContext";
 import { MiroBoardItemTypes } from "features/ImportMiro/ImportMiroBoards/MiroModels";
 import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Tooltip } from "shared/ui-lib/UiButton/Tooltip";
+import { Tooltip } from "shared/ui-lib/Tooltip";
 
 export function ItemTooltip(): JSX.Element {
 	const { app, board } = useAppContext();

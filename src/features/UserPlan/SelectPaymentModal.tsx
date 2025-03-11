@@ -5,7 +5,7 @@ import React, {
 	type MouseEventHandler,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "shared/ui-lib/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import styles from "./SelectPaymentModal.module.css";
 import { USER_PLAN_MODAL_ID } from "./UserPlanModal";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -26,7 +26,7 @@ import { CSSTransition } from "react-transition-group";
 import clsx from "clsx";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
-import { Tooltip } from "shared/ui-lib/UiButton/Tooltip";
+import { Tooltip } from "shared/ui-lib/Tooltip";
 
 export const SELECT_PAYMENT_MODAL_ID = Symbol("selectPaymentModal");
 
@@ -293,29 +293,31 @@ export function SelectPaymentModal(): JSX.Element {
 						footer={
 							<>
 								<div className={styles.footer}>
-									<Button
+									<UiButton
 										id="pay_stripe"
-										pattern="primary"
+										variant="primary"
 										onClick={handleStripe}
 										disabled={
 											isDisabled || !account.info?.email
 										}
+										size="lg"
 									>
 										Pay with Stripe
-									</Button>
+									</UiButton>
 									{!account.info?.email && (
-										<Button
+										<UiButton
 											id="add_email"
-											pattern="primary"
+											variant="primary"
 											onClick={() =>
 												navigate(
 													`/bind-email/add-email?${window.location.search.substring(1)}`,
 												)
 											}
 											disabled={isDisabled}
+											size="lg"
 										>
 											Add email
-										</Button>
+										</UiButton>
 									)}
 								</div>
 								<div
@@ -374,15 +376,16 @@ export function SelectPaymentModal(): JSX.Element {
 								}) => {
 									if (!walletAccount || !mounted) {
 										return (
-											<Button
+											<UiButton
 												id="crypto_connect_button"
-												pattern="primary"
+												variant="primary"
 												onClick={openConnectModal}
 												disabled={isDisabled}
 												className={styles.footer}
+												size="lg"
 											>
 												Connect wallet
-											</Button>
+											</UiButton>
 										);
 									}
 									return (
@@ -436,27 +439,30 @@ export function SelectPaymentModal(): JSX.Element {
 												/>
 											</div>
 											<div className={styles.footer}>
-												<Button
+												<UiButton
 													id="crypto_chain_button"
-													pattern="primary"
+													variant="primary"
 													onClick={openAccountModal}
 													disabled={isDisabled}
+													size="lg"
 												>
 													Switch Wallet
-												</Button>
-												<Button
+												</UiButton>
+												<UiButton
 													id="crypto_chain_button"
-													pattern="primary"
+													variant="primary"
 													onClick={openChainModal}
 													disabled={isDisabled}
+													size="lg"
 												>
 													Switch Network
-												</Button>
-												<Button
+												</UiButton>
+												<UiButton
 													id="crypto_account_button"
-													pattern="primary"
+													variant="primary"
 													onClick={handleCrypto}
 													disabled={isDisabled}
+													size="lg"
 												>
 													Pay{" "}
 													{
@@ -472,7 +478,7 @@ export function SelectPaymentModal(): JSX.Element {
 													}{" "}
 													with{" "}
 													{walletAccount.displayName}
-												</Button>
+												</UiButton>
 											</div>
 											<div
 												className={clsx(
@@ -490,13 +496,14 @@ export function SelectPaymentModal(): JSX.Element {
 					/>
 				</div>
 				{!location.pathname.includes("user") && (
-					<Button
-						pattern="ghostFilled"
+					<UiButton
+						variant="ghostFilled"
 						className={styles.back}
 						onClick={handleOpenPlans}
+						size="lg"
 					>
 						Back to Plans
-					</Button>
+					</UiButton>
 				)}
 			</div>
 		</UiModal>
@@ -512,11 +519,12 @@ const Card: React.FC<{
 	footer: JSX.Element;
 }> = ({ onClick, disabled, title, description, footer, active }) => {
 	return (
-		<Button
+		<UiButton
 			className={styles.card}
-			pattern="tertiary"
+			variant="tertiary"
 			onClick={onClick}
 			disabled={disabled}
+			size="lg"
 		>
 			<div className={styles.title}>
 				<div className={styles.icons}>
@@ -534,7 +542,7 @@ const Card: React.FC<{
 				</div>
 			</div>
 			<Transition active={active}>{footer}</Transition>
-		</Button>
+		</UiButton>
 	);
 };
 
@@ -546,15 +554,16 @@ const CoinCard: React.FC<{
 	active: boolean;
 }> = ({ onClick, disabled, title, active, coin }) => {
 	return (
-		<Button
+		<UiButton
 			className={clsx(
 				styles.card,
 				styles.coin,
 				(active && styles.active) || "",
 			)}
-			pattern="tertiary"
+			variant="tertiary"
 			onClick={onClick}
 			disabled={disabled}
+			size="lg"
 		>
 			<div className={styles.coinTitle}>
 				<Icon iconName={coin} width={24} height={24} />
@@ -564,7 +573,7 @@ const CoinCard: React.FC<{
 				tooltip="Total price may various little bit"
 				tooltipPosition="top"
 			/>
-		</Button>
+		</UiButton>
 	);
 };
 

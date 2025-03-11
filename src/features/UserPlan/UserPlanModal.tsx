@@ -5,7 +5,7 @@ import { UiSwitch } from "shared/ui-lib/UiSwitch";
 import clsx from "clsx";
 import React, { useEffect, type MouseEventHandler } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "shared/ui-lib/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import {
 	BasicPlanCard,
 	PLAN_NAMES,
@@ -103,13 +103,14 @@ export function UserPlanModal() {
 					<PlusPlanCard />
 					<ProPlanCard />
 				</div>
-				<Button
-					pattern="ghostFilled"
+				<UiButton
+					variant="ghostFilled"
 					className={styles.back}
 					onClick={handleOpenProfileSettings}
+					size="lg"
 				>
 					{t("userPlan.backToProfile")}
-				</Button>
+				</UiButton>
 			</div>
 		</UiModal>
 	);

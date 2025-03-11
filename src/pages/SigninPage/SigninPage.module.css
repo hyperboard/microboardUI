@@ -8,6 +8,10 @@
 	margin: 8px 0 40px;
 }
 
+.btn {
+	min-height: 40px;
+}
+
 .forgot {
 	font-weight: 600 !important;
 }

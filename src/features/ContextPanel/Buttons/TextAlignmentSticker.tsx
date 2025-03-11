@@ -7,9 +7,9 @@ import { usePanelContext } from "features/ContextPanel/PanelContext";
 import { Icon } from "shared/ui-lib/Icon";
 import { HorizontalAlignmentPicker } from "features/Pickers/HorizontalAlignmentPicker";
 import { VerticalAlignmentPicker } from "features/Pickers/VerticalAlignmentPicker";
-import { UiButton } from "features/Ui/UiButton/UiButton";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import btnStyle from "./ContextPanelButton.module.css";
+import { UiButton } from "shared/ui-lib/UiButton";
 
 const MENU_NAME = "TextAlignmentSticker";
 

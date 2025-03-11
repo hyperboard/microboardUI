@@ -2,7 +2,7 @@ import { useAccount } from "App/useAccount";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { createSearchParams, useNavigate } from "react-router-dom";
-import { Button } from "shared/ui-lib/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { Input } from "shared/ui-lib/Input/Input";
 import isEmail from "validator/lib/isEmail";
 import { Tail } from "pages/layouts/AuthLayout/Tail";
@@ -100,14 +100,16 @@ export const AddEmailPage = (): React.ReactElement => {
 				/>
 
 				<div className={styles.btns}>
-					<Button
+					<UiButton
 						type="submit"
 						disabled={isDisabled}
 						loading={isSubmitLoading}
+						variant="primary"
+						size="lg"
 					>
 						{t("auth.submit")}
 						<Tail />
-					</Button>
+					</UiButton>
 				</div>
 			</form>
 		</div>

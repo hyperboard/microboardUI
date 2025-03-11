@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { Icon } from "shared/ui-lib/Icon";
-import { UiButton } from "features/Ui/UiButton/UiButton";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import style from "./Hyperlink.module.css";
 import { useAppContext } from "features/AppContext";
 import { useTranslation } from "react-i18next";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
 import btnStyle from "../ContextPanelButton.module.css";
+import { UiButton } from "shared/ui-lib/UiButton";
 
 type HyperlinkProps = {
 	isReady: boolean;

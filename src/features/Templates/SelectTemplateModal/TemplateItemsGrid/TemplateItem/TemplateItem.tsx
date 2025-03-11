@@ -1,6 +1,6 @@
 import React, { SyntheticEvent, useState } from "react";
 import styles from "./templateItem.module.css";
-import { Button } from "shared/ui-lib/Button/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { useAppContext } from "features/AppContext";
 import { Template } from "Board/Settings";
 import PlaceholderImg from "shared/assets/imgs/no-img-icon.svg";
@@ -62,18 +62,16 @@ export const TemplateItem = ({
 					onClick={() => setPresentedTemplate(template)}
 				>
 					<div>
-						<Button
+						<UiButton
 							onClick={() => setPresentedTemplate(template)}
-							pattern="tertiary"
+							variant="tertiary"
+							size="lg"
 						>
 							{t("modalTemplate.UI.buttons.Preview")}
-						</Button>
-						<Button
-							onClick={pasteSnapshotAndClose}
-							pattern="quaternary"
-						>
+						</UiButton>
+						<UiButton onClick={pasteSnapshotAndClose} size="lg">
 							{t("modalTemplate.UI.buttons.Use")}
-						</Button>
+						</UiButton>
 					</div>
 				</div>
 			</div>

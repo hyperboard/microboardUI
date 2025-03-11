@@ -6,14 +6,14 @@ import {
 	useConnect,
 	useDisconnect,
 } from "wagmi";
-import { Button } from "shared/ui-lib/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { useTranslation } from "react-i18next";
 import { injected } from "@wagmi/connectors";
 import { useAccount } from "App/useAccount";
 import { notify } from "shared/ui-lib/Toast";
 import { Icon } from "shared/ui-lib/Icon";
 import styles from "./WalletLoginButton.module.css";
-import { Tooltip } from "shared/ui-lib/UiButton/Tooltip";
+import { Tooltip } from "shared/ui-lib/Tooltip";
 
 interface WalletLoginButtonProps {}
 
@@ -52,10 +52,11 @@ const WalletLoginButton: React.FC<WalletLoginButtonProps> = () => {
 	return (
 		<ConnectButton.Custom>
 			{() => (
-				<Button
-					pattern="primary"
+				<UiButton
+					variant="primary"
 					onClick={handleLogin}
 					className={styles.btn}
+					size="lg"
 				>
 					<Icon iconName={"CryptoIcon"} />
 					{t("auth.cryptoSignIn")}
@@ -66,7 +67,7 @@ const WalletLoginButton: React.FC<WalletLoginButtonProps> = () => {
 							tooltipAlign="left"
 						/>
 					)}
-				</Button>
+				</UiButton>
 			)}
 		</ConnectButton.Custom>
 	);

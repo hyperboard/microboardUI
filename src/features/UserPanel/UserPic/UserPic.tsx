@@ -2,7 +2,7 @@ import { useAccount } from "App/useAccount";
 import { PresenceUser } from "Board/Presence/Presence";
 import React, { MouseEventHandler, RefObject, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "shared/ui-lib/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
 import {
@@ -110,39 +110,42 @@ export const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 				followers={props.followers}
 				presenceUsers={props.presenceUsers}
 				buttons={[
-					<Button
+					<UiButton
 						type="button"
 						key="userDropDown1"
 						onClick={handlePlanModalOpen}
-						pattern="ghost"
+						variant="ghost"
+						size="lg"
 					>
 						<Icon iconName="ArrowUpCircle" width={20} height={20} />{" "}
 						<span className={styles.userDropDownButton}>
 							{t("userPlan.upgradePlan")}
 						</span>
-					</Button>,
-					<Button
+					</UiButton>,
+					<UiButton
 						type="button"
 						key="userDropDown2"
 						onClick={handleOpenProfileSettings}
-						pattern="ghost"
+						variant="ghost"
+						size="lg"
 					>
 						<Icon width={20} height={20} iconName="human" />{" "}
 						<span className={styles.userDropDownButton}>
 							{t("profile.title")}
 						</span>
-					</Button>,
-					<Button
+					</UiButton>,
+					<UiButton
 						type="button"
 						key="userDropDown3"
 						onClick={handleLogout}
-						pattern="ghost"
+						variant="ghost"
+						size="lg"
 					>
 						<Logout />
 						<span className={styles.userDropDownButton}>
 							{t("profile.logout")}
 						</span>
-					</Button>,
+					</UiButton>,
 				]}
 			/>
 		</>

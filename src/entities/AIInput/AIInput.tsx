@@ -24,7 +24,7 @@ import { useAIContext } from "entities/AIInput";
 import { SessionStorage } from "App/SessionStorage";
 import { AIDropdown } from "./AIDropdown";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
-import { Tooltip } from "shared/ui-lib/UiButton/Tooltip";
+import { Tooltip } from "shared/ui-lib/Tooltip";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { getCorrectEnding } from "shared/lib/getCorrectEnding";
 

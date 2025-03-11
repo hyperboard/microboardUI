@@ -2,7 +2,7 @@ import React, { forwardRef, useEffect, useRef, useState } from "react";
 import { UiPanel } from "../../../shared/ui-lib/UiPanel/index.ts";
 import styles from "./ThreadPanel.module.css";
 import { Icon } from "../../../shared/ui-lib/Icon/index.ts";
-import { Button } from "shared/ui-lib/Button/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { Comment } from "Board/Items/Comment/Comment";
 import { Message } from "./message/Message.tsx";
 import clsx from "clsx";
@@ -18,7 +18,6 @@ import { Avatar } from "features/UserPanel/Avatar/Avatar.tsx";
 import { useAccount } from "App/useAccount.ts";
 import { useClickOutside } from "shared/lib/useClickOutside.ts";
 import { useScrollToUnreadMessage } from "entities/comments/useScrollToUnreadMessage.ts";
-import { UiButton } from "shared/ui-lib/UiButton/UiButton.tsx";
 import { UiSeparator } from "shared/ui-lib/UiSeparator/UiSeparator.tsx";
 
 interface MessageOptionsData {
@@ -170,10 +169,11 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 						)}
 					>
 						{canEditThread && (
-							<Button
+							<UiButton
 								className={styles.threadBtn}
-								pattern="secondary"
+								variant="quaternary"
 								onClick={toggleResolved}
+								size="sm"
 							>
 								{!comment.getResolved() && (
 									<Icon
@@ -185,7 +185,7 @@ export const ThreadPanel = forwardRef<HTMLDivElement, Props>(
 								{comment.getResolved()
 									? t("comment.openThread")
 									: t("comment.closeThread")}
-							</Button>
+							</UiButton>
 						)}
 						<div className={styles.headerOptions}>
 							<ExtraOptions

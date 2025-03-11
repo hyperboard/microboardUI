@@ -4,7 +4,7 @@ import { TemplateItemsGrid } from "../TemplateItemsGrid/TemplateItemsGrid";
 import { Template } from "Board/Settings";
 import { useTranslation } from "react-i18next";
 import { pasteSnapshot } from "features/Templates/lib";
-import { Button } from "shared/ui-lib/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import type { BoardSnapshot } from "Board/Board";
 import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
@@ -59,12 +59,9 @@ export const TemplateItemPreview = ({
 					<div className={styles.infoBox}>
 						<h2>{name}</h2>
 						<p className={styles.description}>{description}</p>
-						<Button
-							pattern="quaternary"
-							onClick={pasteSnapshotAndClose}
-						>
+						<UiButton onClick={pasteSnapshotAndClose} size="lg">
 							{t("modalTemplate.UI.buttons.Use")}
-						</Button>
+						</UiButton>
 					</div>
 				</div>
 				<h3 className={styles.relatedTemplatesHeader}>

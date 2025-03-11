@@ -1,7 +1,7 @@
 import { getApiUrl } from "Config";
 import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "shared/ui-lib/Button";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { Input } from "shared/ui-lib/Input";
 import styles from "./ForgotPasswordPage.module.css";
 import { isEmail } from "shared/lib/regex";
@@ -98,12 +98,14 @@ export const ForgotPasswordPage: React.FC = () => {
 				<p className={styles.resetPasswordParagraph}>
 					{t("auth.requestReceivedSuccessfully")}
 				</p>
-				<Button
+				<UiButton
+					variant="primary"
 					onClick={() => navigate(`/auth/sign-in${location.search}`)}
 					className={styles.backToLogin}
+					size="lg"
 				>
 					{t("auth.backToLogIn")}
-				</Button>
+				</UiButton>
 			</div>
 		);
 	}
@@ -121,22 +123,25 @@ export const ForgotPasswordPage: React.FC = () => {
 				onInput={dbCheckForm}
 			/>
 			<div className={styles.btns}>
-				<Button
+				<UiButton
 					type="submit"
 					disabled={disabled}
 					className={styles.submitBtn}
 					loading={isSubmitLoading}
+					variant="primary"
+					size="lg"
 				>
 					{t("auth.submit")} <Tail />
-				</Button>
-				<Button
-					pattern="ghost"
+				</UiButton>
+				<UiButton
+					variant="ghost"
 					onClick={() => {
 						navigate(`/auth/sign-in${location.search}`);
 					}}
+					size="lg"
 				>
 					{t("auth.backToLogIn")}
-				</Button>
+				</UiButton>
 			</div>
 		</form>
 	);

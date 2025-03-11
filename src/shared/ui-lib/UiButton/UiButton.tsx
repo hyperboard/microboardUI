@@ -1,13 +1,8 @@
 import clsx from "clsx";
-import React, {
-	CSSProperties,
-	forwardRef,
-	HTMLAttributes,
-	PropsWithChildren,
-	ReactNode,
-} from "react";
+import React, { CSSProperties, forwardRef, ReactNode } from "react";
 import style from "./UiButton.module.css";
-import { Tooltip } from "./Tooltip";
+import { Tooltip } from "shared/ui-lib/Tooltip/Tooltip";
+import { Loader } from "./Loader";
 
 type CommonUiButtonProps = {
 	active?: boolean;
@@ -25,8 +20,15 @@ type CommonUiButtonProps = {
 		| "bottom-right"
 		| "bottom-left"
 		| "bottom-left-noWhitespace";
-	variant?: "default" | "secondary" | "tertiary";
-	size?: "lg" | "md" | "sm";
+	variant?:
+		| "default"
+		| "secondary"
+		| "tertiary"
+		| "quaternary"
+		| "primary"
+		| "ghost"
+		| "ghostFilled";
+	size?: "xl" | "lg" | "md" | "sm";
 	rounded?:
 		| "top"
 		| "bottom"
@@ -41,20 +43,11 @@ type CommonUiButtonProps = {
 	className?: string;
 	toolTipStyle?: CSSProperties;
 	children: ReactNode;
+	loading?: boolean;
+	[key: string]: unknown;
 };
 
-type UiButtonProps = PropsWithChildren<
-	HTMLAttributes<HTMLButtonElement> &
-		CommonUiButtonProps & {
-			disabled?: boolean;
-		}
->;
-
-type UiDivButtonProps = PropsWithChildren<
-	HTMLAttributes<HTMLDivElement> & CommonUiButtonProps
->;
-
-export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
+export const UiButton = forwardRef<HTMLButtonElement, CommonUiButtonProps>(
 	(
 		{
 			children,
@@ -65,11 +58,12 @@ export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
 			tooltipPosition = "right",
 			hotkey,
 			variant = "default",
-			size = "lg",
+			size = "xl",
 			radius = "xl",
 			rounded = "full",
 			toolTipStyle,
 			tooltipVariant = "primary",
+			loading,
 			...props
 		},
 		ref,
@@ -94,12 +88,18 @@ export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
 						[style.radiusMd]: radius === "md",
 						[style.radiusSm]: radius === "sm",
 					},
+					loading && style.loading, // Use loading here
 					className,
 				)}
 				ref={ref}
 				disabled={disabled}
 				{...props}
 			>
+				{loading && (
+					<div className={style.loader}>
+						<Loader />
+					</div>
+				)}
 				{children}
 				{tooltip && (
 					<Tooltip
@@ -115,60 +115,4 @@ export const UiButton = forwardRef<HTMLButtonElement, UiButtonProps>(
 	},
 );
 
-export const UiDivButton = forwardRef<HTMLDivElement, UiDivButtonProps>(
-	(
-		{
-			children,
-			className,
-			active = false,
-			tooltip,
-			tooltipPosition = "right",
-			hotkey,
-			variant = "default",
-			size = "lg",
-			radius = "xl",
-			rounded = "full",
-			...props
-		},
-		ref,
-	) => {
-		return (
-			<div
-				className={clsx(
-					style.button,
-					active && style.active,
-					style[variant],
-					style[size],
-					{
-						[style.topRounded]: rounded === "top",
-						[style.bottomRounded]: rounded === "bottom",
-						[style.fullRounded]: rounded === "full",
-						[style.leftRounded]: rounded === "left",
-						[style.rightRounded]: rounded === "right",
-						[style.fullRounded]: rounded === "full",
-					},
-					{
-						[style.radiusXl]: radius === "xl",
-						[style.radiusMd]: radius === "md",
-						[style.radiusSm]: radius === "sm",
-					},
-					className,
-				)}
-				ref={ref}
-				{...props}
-			>
-				{children}
-				{tooltip && (
-					<Tooltip
-						tooltip={tooltip}
-						tooltipPosition={tooltipPosition}
-						hotkey={hotkey}
-					/>
-				)}
-			</div>
-		);
-	},
-);
-
 UiButton.displayName = "UiButton";
-UiDivButton.displayName = "UiDivButton";
