@@ -6,6 +6,8 @@ import { Button } from "shared/ui-lib/Button";
 import { Link } from "shared/ui-lib/Link";
 import styles from "./AccessDeniedModal.module.css";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
+import { useUiModalContext } from "shared/ui-lib/UiModal";
+import { PROFILE_SETTINGS_MODAL_ID } from "features/ProfileSettingsModal";
 
 export const ACCESS_DENIED_MODAL = Symbol("accessDeniedModal");
 
@@ -13,6 +15,9 @@ export function AccessDeniedModal(): JSX.Element {
 	const account = useAccount();
 	const { t } = useTranslation();
 	const navigate = useNavigate();
+	const { openModal } = useUiModalContext();
+
+	const isEmailAccount = Boolean(account.info?.email);
 
 	return (
 		<UiModal modalId={ACCESS_DENIED_MODAL}>
@@ -21,7 +26,7 @@ export function AccessDeniedModal(): JSX.Element {
 				<div className={styles.msg}>
 					<p>
 						{t("sharing.privateBoard")}{" "}
-						{account.isLoggedIn
+						{account.isLoggedIn && isEmailAccount
 							? t("sharing.requestAccessMsg")
 							: ""}
 					</p>
@@ -59,6 +64,9 @@ export function AccessDeniedModal(): JSX.Element {
 							.
 						</p>
 					)}
+					{account.isLoggedIn && !isEmailAccount && (
+						<p>{t("sharing.privateBoardCrypto")}</p>
+					)}
 				</div>
 				{!account.isLoggedIn && (
 					<Button
@@ -66,6 +74,14 @@ export function AccessDeniedModal(): JSX.Element {
 						onClick={() => navigate("/auth/sign-in")}
 					>
 						{t("auth.signIn")}
+					</Button>
+				)}
+				{account.isLoggedIn && (
+					<Button
+						className={styles.btn}
+						onClick={() => openModal(PROFILE_SETTINGS_MODAL_ID)}
+					>
+						{t("userPanel.profileSettings")}
 					</Button>
 				)}
 			</div>
