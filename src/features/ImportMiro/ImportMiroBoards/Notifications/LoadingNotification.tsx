@@ -2,9 +2,10 @@ import { Notification } from "shared/ui-lib/Notification";
 import { useTranslation } from "react-i18next";
 import styles from "../ImportMiro.module.css";
 import React, { useEffect } from "react";
-import { Loader } from "shared/ui-lib/Loader/Loader";
 import { useAccount } from "App/useAccount";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
+import clsx from "clsx";
+import { Icon } from "shared/ui-lib/Icon";
 
 export const LOADING_NOTIFICATION = Symbol("loadingNotification");
 
@@ -32,10 +33,11 @@ export const LoadingNotification = ({
 			setIsOpen={closeModal}
 			cross
 		>
-			<Loader
-				className={styles.notificationIcon}
+			<Icon
+				iconName={"loader"}
 				width={20}
 				height={20}
+				className={clsx(styles.loader, styles.notificationIcon)}
 			/>
 			<div className={styles.notificationLoaderWr}>
 				<h4 className={styles.notificationTitle}>

@@ -145,3 +145,13 @@
 .notification-success-link {
 	text-decoration-thickness: 0.5px;
 }
+
+.loader {
+	animation: loaderAnimation 1s infinite steps(12);
+}
+
+@keyframes loaderAnimation {
+	100% {
+		transform: rotate(1turn);
+	}
+}
