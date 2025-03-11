@@ -1,7 +1,7 @@
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { useLayoutEffect } from "react";
 import { useAppContext } from "features/AppContext";
-import { Account } from "./Account";
+import type { Account } from "entities/account";
 
 export function useAccount(): Account {
 	const { app } = useAppContext();

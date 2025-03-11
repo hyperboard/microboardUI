@@ -466,9 +466,8 @@
 	"ok": "Ok",
 	"noBoard": {
 		"title": "No board is open",
-		"chooseBoard": "Open a board from",
-		"chooseBoardButton": "the board list",
-		"createNewBoard": "Create a new board"
+		"chooseBoard": "Open a board",
+		"createNewBoard": "New board"
 	},
 	"colors": {
 		"White": "White",
@@ -754,6 +753,7 @@
 			"bodyEdit": "You can now view and edit the board"
 		},
 		"privateBoard": "This is a private board. The owner of the board has restricted access to viewing and editing.",
+		"privateBoardCrypto": "Access can only be granted to profiles with a linked email. Log in with an authorized account or link your email in profile settings.",
 		"requestAccess": "Request access",
 		"requestAccessMsg": "Request access or log in to a permissioned account.",
 		"loggedIn": "You are logged in to your <1>{{account}}</1> account.",
