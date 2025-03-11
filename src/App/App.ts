@@ -141,6 +141,9 @@ export function createApp(isHistory = true): App {
 		subscriptions.setBoard(currentBoard);
 		boardSubject.publish(currentBoard);
 		board = currentBoard;
+		if (!board.getName()) {
+			board.setName(boardsList.getBoardInfo(id)?.title);
+		}
 
 		const newBoard = app.getBoard();
 		if (!newBoard.camera.useSavedSnapshot(newBoard.getCameraSnapshot())) {
