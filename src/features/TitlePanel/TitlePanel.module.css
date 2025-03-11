@@ -2,6 +2,7 @@
 	position: absolute;
 	top: -60px;
 	left: var(--absolute-position-panel-padding);
+	overflow: hidden;
 }
 
 .logoWrapper.viewMode {

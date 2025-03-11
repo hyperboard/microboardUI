@@ -8,22 +8,25 @@ import {
 	type ChangeEventHandler,
 	MouseEventHandler,
 	default as React,
+	type RefObject,
+	useEffect,
 	useState,
 } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "features/AppContext";
-import { BoardRename } from "entities/BoardName";
 import { useSidePanelContext } from "features/SidePanel/SidePanelContext";
 import { notify } from "shared/ui-lib/Toast/notify";
 import { UiPanel } from "shared/ui-lib/UiPanel";
 import { ViewModeGuard } from "features/ViewModeGuard";
 import { getApiUrl } from "../../Config";
-import { Icon, Logo } from "../../shared/ui-lib/Icon";
 import { CreateTemplateModal } from "../Templates";
 import style from "./TitlePanel.module.css";
 import { useClickOutside } from "shared/lib/useClickOutside";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";
 import { UiButton } from "shared/ui-lib/UiButton";
+import { Icon, Logo } from "shared/ui-lib/Icon";
+import { BoardRename } from "entities/BoardName";
+import { createPortal } from "react-dom";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { CREATE_TEMPLATE_MODAL } from "features/Templates/CreateTemplateModal/CreateTemplateModal";
 
@@ -234,33 +237,11 @@ export function TitlePanel(): JSX.Element | null {
 					<Icon iconName="Export" />
 				</UiButton>
 				{isDropdownOpen && (
-					<div className={style.exportDropdown}>
-						<div onClick={openExport}>
-							<div className={style.exportDropdownItemTitle}>
-								<Icon
-									iconName="ExportPNG"
-									width={20}
-									height={20}
-								/>
-								<strong>{t("export.PNGTitle")}</strong>
-							</div>
-							<p>{t("export.PNGDescription")}</p>
-						</div>
-						<div onClick={exportHTML}>
-							<div className={style.exportDropdownItemTitle}>
-								<Icon
-									iconName="ExportFile"
-									width={20}
-									height={20}
-								/>
-								<strong>
-									{t("export.HTMLTitle")}
-									<span className={style.betaTag}>Beta</span>
-								</strong>
-							</div>
-							<p>{t("export.HTMLDescription")}</p>
-						</div>
-					</div>
+					<ExportDropdown
+						buttonRef={clickOutsideRef}
+						exportHTML={exportHTML}
+						openExport={openExport}
+					/>
 				)}
 				{window.enableTemplateCreating && (
 					<>
@@ -312,5 +293,53 @@ function SidePanelButton({
 		>
 			<Icon iconName={isOpen ? "SidePanelClose" : "SidePanelOpen"} />
 		</UiButton>
+	);
+}
+
+type ExportDropdownProps = {
+	buttonRef: RefObject<HTMLButtonElement>;
+	openExport: () => void;
+	exportHTML: () => void;
+};
+
+function ExportDropdown({
+	buttonRef,
+	openExport,
+	exportHTML,
+}: ExportDropdownProps) {
+	const { t } = useTranslation();
+	const [position, setPosition] = useState({ top: 0, left: 0 });
+
+	useEffect(() => {
+		if (buttonRef.current) {
+			const rect = buttonRef.current.getBoundingClientRect();
+			setPosition({
+				top: rect.bottom + window.scrollY,
+				left: rect.left + window.scrollX,
+			});
+		}
+	}, [buttonRef]);
+
+	return createPortal(
+		<div
+			className={style.exportDropdown}
+			style={{
+				position: "absolute",
+				top: position.top + 8,
+				left: position.left,
+			}}
+		>
+			<div onClick={openExport}>
+				<strong>PNG</strong>
+				<p>{t("export.PNGDescription")}</p>
+			</div>
+			<div onClick={exportHTML}>
+				<strong>
+					HTML<span className={style.betaTag}>Beta</span>
+				</strong>
+				<p>{t("export.HTMLDescription")}</p>
+			</div>
+		</div>,
+		document.body,
 	);
 }
