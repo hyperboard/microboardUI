@@ -10,11 +10,10 @@ import {
 	UserRequest,
 } from "App/Connection";
 import { useAppContext } from "features/AppContext";
-import { Account } from "App/Account";
+import { Account } from "entities/account";
 import { getControlPointData } from "Board/Selection/QuickAddButtons/quickAddHelpers";
 import {
 	createNode,
-	DEFAULT_MAX_NODE_WIDTH,
 	getContextItems,
 	getIdeaFromSelection,
 	PossibleParentNode,
@@ -25,6 +24,7 @@ import { USER_PLAN_MODAL_ID } from "features/UserPlan/UserPlanModal";
 import { useAccount } from "App/useAccount";
 import { SessionStorage } from "App/SessionStorage";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
+import { SETTINGS } from "Board/Settings";
 
 interface Context {
 	stopStream: (
@@ -51,6 +51,7 @@ interface Context {
 }
 
 export const AIContext = createStrictContext<Context>();
+const DEFAULT_NODE_WIDTH = SETTINGS.AI_NODE_DEFAULT_NODE_WIDTH;
 
 export function useAIContext() {
 	return useStrictContext(AIContext);
@@ -157,11 +158,15 @@ export const AIContextProvider = ({
 				board.selection.items.removeAll();
 				board.selection.add(responseAdded);
 				const itemWidth = responseAdded.getMbr().getWidth();
-				if (itemWidth < DEFAULT_MAX_NODE_WIDTH) {
-					const offset = (DEFAULT_MAX_NODE_WIDTH - itemWidth) / 2;
+				if (itemWidth < DEFAULT_NODE_WIDTH) {
+					const offset = (DEFAULT_NODE_WIDTH - itemWidth) / 2;
 					responseAdded.transformation.translateBy(offset, 0);
 				}
-				board.camera.zoomToFit(responseAdded.getMbr(), 20);
+				const mbrToFit = responseAdded.getMbr();
+				const offsetX = (640 - mbrToFit.getWidth()) / 2;
+				mbrToFit.left -= offsetX;
+				mbrToFit.right += offsetX;
+				board.camera.zoomToFit(mbrToFit, 20);
 				board.aiGeneratingOnItem = undefined;
 			});
 		}
