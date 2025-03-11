@@ -47,6 +47,7 @@ import { FrameNavPrev } from "./Buttons/FrameNavPrev";
 import { HyperLinkBtn } from "features/ContextPanel/Buttons/HyperLinkBtn";
 import { AIModel } from "features/ContextPanel/Buttons/AIModel/AIModel";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";
+import { SaveImg } from "./Buttons/RestOptionsMenu/Items/SaveImg";
 
 export function ContextPanel(): React.ReactElement | null {
 	const { app, board } = useAppContext();
@@ -307,6 +308,7 @@ export function ContextPanel(): React.ReactElement | null {
 							<CopyItemLink />
 							<SetLinkTo />
 							<Duplicate />
+							<SaveImg />
 						</RestOptionsMenu>
 					</>
 				)}
