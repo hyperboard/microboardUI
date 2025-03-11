@@ -4,7 +4,7 @@ type ClickOutsideCb = () => void;
 
 export const useClickOutside = <T extends HTMLElement = HTMLDivElement>(
 	callback: ClickOutsideCb,
-	refs: RefObject<HTMLElement>[] = [],
+	refs: (RefObject<HTMLElement> | undefined)[] = [],
 	considerCanvasAsOutside = false,
 	disable?: boolean,
 ): RefObject<T> => {
@@ -16,7 +16,7 @@ export const useClickOutside = <T extends HTMLElement = HTMLDivElement>(
 			!ref.current.contains(event.target as Node) &&
 			refs.every(
 				ref =>
-					ref.current && !ref.current.contains(event.target as Node),
+					ref?.current && !ref.current.contains(event.target as Node),
 			);
 
 		if (

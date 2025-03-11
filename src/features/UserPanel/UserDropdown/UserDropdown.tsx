@@ -34,7 +34,7 @@ export const UserDropDown: React.FC<UserDropDownProps> = ({
 		setIsDropdownOpen(false);
 	};
 
-	const dropdownRef = useClickOutside(closeDropdown);
+	const dropdownRef = useClickOutside(closeDropdown, [openerRef]);
 
 	if (!isOpen) {
 		return null;
