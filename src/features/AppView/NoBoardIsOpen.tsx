@@ -4,11 +4,13 @@ import { useRenameContext } from "features/Rename";
 import { useSidePanelContext } from "features/SidePanel/SidePanelContext";
 import styles from "./NoBoardIsOpen.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
+import { useAppContext } from "features/AppContext";
 
 const NoBoardIsOpen: React.FC = () => {
 	const { t } = useTranslation();
 	const { openMenu, handleAddNew, isOpen } = useSidePanelContext();
 	const { setRenamingId, setNewName } = useRenameContext();
+	const { board } = useAppContext();
 
 	const handleOpenMenu: React.MouseEventHandler = event => {
 		event.stopPropagation();
@@ -29,6 +31,10 @@ const NoBoardIsOpen: React.FC = () => {
 			setRenamingId(boardId);
 		});
 	};
+
+	if (board.getBoardId() !== "blank") {
+		return null;
+	}
 
 	return (
 		<div className={styles.container}>
