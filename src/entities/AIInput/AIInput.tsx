@@ -159,8 +159,11 @@ export const AIInput = () => {
 		const selectedItems = board.selection.items.list();
 
 		const { boardContext, contextItems } = getContextItems(
-			selectedItems,
-			parentNodes,
+			[
+				...selectedItems,
+				...parentNodes.filter(node => node.getIsUserRequest()),
+			],
+			parentNodes.filter(node => !node.getIsUserRequest()),
 			inputValue.trim().length
 				? undefined
 				: ideaFromSelection?.item.getId(),
