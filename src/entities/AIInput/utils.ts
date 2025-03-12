@@ -16,7 +16,6 @@ import { SETTINGS } from "Board/Settings";
 
 export type PossibleParentNode = AINode | Shape | RichText | Sticker;
 
-const DEFAULT_NODE_WIDTH = SETTINGS.AI_NODE_DEFAULT_NODE_WIDTH;
 const PLACEHOLDER_OFFSET = "												";
 
 export const getTextFromItem = (item: Item) => {
@@ -76,10 +75,10 @@ export function calculateNodePosition(
 	const currData = selectedItem?.serialize() || null;
 	const newNodeData = newNode.serialize();
 	let width = isImage
-		? DEFAULT_NODE_WIDTH
-		: currMbr?.getWidth() > DEFAULT_NODE_WIDTH
+		? SETTINGS.AI_NODE_DEFAULT_NODE_WIDTH
+		: currMbr?.getWidth() > SETTINGS.AI_NODE_DEFAULT_NODE_WIDTH
 			? currMbr.getWidth()
-			: DEFAULT_NODE_WIDTH;
+			: SETTINGS.AI_NODE_DEFAULT_NODE_WIDTH;
 	const height = currMbr?.getHeight() || offsetY;
 	const adjustmentIndex =
 		selectedItem.itemType === "AINode"
@@ -198,7 +197,7 @@ function calculateParentItemPosition(
 
 	const iterAdjustment = [
 		{ x: 0, y: 1.5 },
-		{ x: DEFAULT_NODE_WIDTH / 2, y: 0 },
+		{ x: SETTINGS.AI_NODE_DEFAULT_NODE_WIDTH / 2, y: 0 },
 	];
 
 	const cameraMbr = board.camera.getMbr();
@@ -217,7 +216,7 @@ function calculateParentItemPosition(
 					(otherItem: Item) =>
 						otherItem.itemType !== "Connector" &&
 						otherItem.isInView(cameraMbr),
-					DEFAULT_NODE_WIDTH,
+					SETTINGS.AI_NODE_DEFAULT_NODE_WIDTH,
 				).length === 0
 			) {
 				nearbyItemMbr = item.getMbr().copy();
@@ -227,7 +226,7 @@ function calculateParentItemPosition(
 
 	let bestPosition = iterAdjustment[1];
 	let step = 0.5;
-	let maxDistance = DEFAULT_NODE_WIDTH;
+	let maxDistance = SETTINGS.AI_NODE_DEFAULT_NODE_WIDTH;
 	if (board.selection.items.list().length) {
 		nearbyItemMbr = board.selection.items.getMbr()?.copy()!;
 		bestPosition = iterAdjustment[0];

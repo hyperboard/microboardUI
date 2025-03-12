@@ -202,7 +202,6 @@ export class TextEditor extends React.Component<
 
 	onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>): boolean => {
 		const text = this.props.text;
-		console.log(text.getText());
 		if (event.key === "Enter" && text.insideOf === "Frame") {
 			event.preventDefault();
 			event.stopPropagation();
