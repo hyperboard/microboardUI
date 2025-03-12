@@ -5,6 +5,7 @@
 import { App } from "App";
 import { createApp } from "App/App";
 import "./index.css";
+import "features/Cursors";
 
 declare global {
 	interface Window {

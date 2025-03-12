@@ -26,3 +26,5 @@ cursorsMap["sticker-orange"] = `url(${stickerOrange}) 12 12, auto`;
 cursorsMap["sticker-yellow"] = `url(${stickerYellow}) 12 12, auto`;
 cursorsMap["sticker-light-gray"] = `url(${stickerLightGray}) 12 12, auto`;
 cursorsMap["sticker-gray"] = `url(${stickerGray}) 12 12, auto`;
+
+export default {};
