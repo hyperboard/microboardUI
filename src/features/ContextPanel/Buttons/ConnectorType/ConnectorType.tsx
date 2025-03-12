@@ -66,6 +66,7 @@ export function ConnectorType(): React.ReactElement | null {
 					variant="secondary"
 					rounded="none"
 					active={openedMenu === MENU_NAME}
+					hideTooltip={openedMenu === MENU_NAME}
 				>
 					<ConnectorIcon iconName={connectorType} />
 				</UiButton>

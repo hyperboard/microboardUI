@@ -60,6 +60,7 @@ export function ItemType(): React.ReactElement | null {
 					onClick={handleClick}
 					variant="secondary"
 					active={openedMenu === MENU_NAME}
+					hideTooltip={openedMenu === MENU_NAME}
 					rounded="left"
 					className={clsx(
 						btnStyle.contextPanelButton,

@@ -63,6 +63,7 @@ export const UiButton = forwardRef<HTMLButtonElement, CommonUiButtonProps>(
 			rounded = "full",
 			toolTipStyle,
 			tooltipVariant = "primary",
+			hideTooltip,
 			loading,
 			...props
 		},
@@ -101,7 +102,7 @@ export const UiButton = forwardRef<HTMLButtonElement, CommonUiButtonProps>(
 					</div>
 				)}
 				{children}
-				{tooltip && (
+				{tooltip && !hideTooltip && (
 					<Tooltip
 						variant={tooltipVariant}
 						inlineStyle={toolTipStyle}

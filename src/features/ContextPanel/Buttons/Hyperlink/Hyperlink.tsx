@@ -97,6 +97,7 @@ export const Hyperlink = ({
 							onClick={handleClick}
 							variant="secondary"
 							active={openedMenu === MENU_NAME}
+							hideTooltip={openedMenu === MENU_NAME}
 							rounded="none"
 						>
 							<Icon iconName={`Hyperlink`} />

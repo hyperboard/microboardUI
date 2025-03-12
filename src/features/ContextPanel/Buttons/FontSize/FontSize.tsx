@@ -158,6 +158,7 @@ export function FontSize({ rounded = "none" }: Props): React.ReactElement {
 					variant="secondary"
 					rounded={rounded}
 					active={openedMenu === MENU_NAME}
+					hideTooltip={openedMenu === MENU_NAME}
 				>
 					<div className={style.fontSize}>
 						<input

@@ -54,6 +54,7 @@ export function FrameFill(): React.ReactElement | null {
 					tooltipPosition="top"
 					variant="secondary"
 					active={openedMenu === MENU_NAME}
+					hideTooltip={openedMenu === MENU_NAME}
 					rounded="none"
 				>
 					<FillColorIndicator

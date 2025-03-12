@@ -72,6 +72,7 @@ export function AIModel({ rounded = "none" }: Props): React.ReactElement {
 					onClick={handleClick}
 					variant="secondary"
 					active={openedMenu === MENU_NAME}
+					hideTooltip={openedMenu === MENU_NAME}
 					rounded={rounded}
 				>
 					{t(`ai.models.${model}.mobileTitle`)}

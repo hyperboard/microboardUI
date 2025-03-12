@@ -56,6 +56,7 @@ export function TextAlignmentSticker(): React.ReactElement | null {
 					tooltip={t("contextPanel.textAlignment.tooltip")}
 					tooltipPosition="top"
 					onClick={handleClick}
+					hideTooltip={openedMenu === MENU_NAME}
 				>
 					<Icon
 						iconName={`TextAlign${

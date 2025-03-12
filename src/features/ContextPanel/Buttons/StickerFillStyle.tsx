@@ -49,6 +49,7 @@ export function StickerFillStyle(): React.ReactElement | null {
 					variant="secondary"
 					rounded="none"
 					active={openedMenu === MENU_NAME}
+					hideTooltip={openedMenu === MENU_NAME}
 				>
 					<FillColorIndicator color={color} />
 				</UiButton>

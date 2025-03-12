@@ -46,6 +46,7 @@ export function EndPointer(): React.ReactElement | null {
 					variant="secondary"
 					rounded="none"
 					active={openedMenu === MENU_NAME}
+					hideTooltip={openedMenu === MENU_NAME}
 					className={clsx(style.button, btnStyle.contextPanelButton)}
 				>
 					{pointerStartStyle === "None" ? (

@@ -88,6 +88,7 @@ export function StrokeStyle(): React.ReactElement | null {
 					onClick={handleClick}
 					variant="secondary"
 					active={openedMenu === MENU_NAME}
+					hideTooltip={openedMenu === MENU_NAME}
 					rounded="none"
 				>
 					<StrokeColorIndicator color={borderColor} />

@@ -46,6 +46,7 @@ export function StartPointer(): React.ReactElement | null {
 					variant="secondary"
 					rounded="left"
 					active={openedMenu === MENU_NAME}
+					hideTooltip={openedMenu === MENU_NAME}
 					className={clsx(
 						btnStyle.contextPanelButton,
 						style.button,
