@@ -79,12 +79,14 @@ export function AccessDeniedModal(): JSX.Element {
 					</UiButton>
 				)}
 				{account.isLoggedIn && (
-					<Button
+					<UiButton
 						className={styles.btn}
 						onClick={() => openModal(PROFILE_SETTINGS_MODAL_ID)}
+						variant="primary"
+						size="lg"
 					>
 						{t("userPanel.profileSettings")}
-					</Button>
+					</UiButton>
 				)}
 			</div>
 		</UiModal>
