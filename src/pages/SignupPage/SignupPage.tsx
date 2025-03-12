@@ -1,9 +1,6 @@
 import { useAccount } from "App/useAccount";
 import { AuthForm } from "entities/account";
-import { GoogleAuthBtn } from "features/GoogleAuthBtn/GoogleAuthBtn";
 import { Icon } from "shared/ui-lib/Icon";
-import { LoginWith } from "features/LoginWith/LoginWith";
-import { WalletLoginButton } from "features/WalletLoginButton";
 import { Tail } from "pages/layouts/AuthLayout/Tail";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -163,6 +160,7 @@ export const SignupPage = (): React.ReactElement => {
 			ref={formRef}
 			id="sign-up"
 			title={t("auth.signUpForFree")}
+			showAnotherAuthWay
 		>
 			{showNameInput ? (
 				<Input
@@ -262,10 +260,6 @@ export const SignupPage = (): React.ReactElement => {
 				>
 					{t("auth.signIn")}
 				</UiButton>
-
-				<LoginWith />
-				<WalletLoginButton />
-				<GoogleAuthBtn />
 			</div>
 		</AuthForm>
 	);

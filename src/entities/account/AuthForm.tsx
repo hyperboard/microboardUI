@@ -6,16 +6,23 @@ import React, {
 import { useTranslation } from "react-i18next";
 import { OuterLink } from "shared/ui-lib/OuterLink";
 import styles from "./AuthForm.module.css";
+import { LoginWith } from "features/LoginWith/LoginWith";
+import { WalletLoginButton } from "features/WalletLoginButton";
+import { GoogleAuthBtn } from "features/GoogleAuthBtn";
 
 type Props = PropsWithChildren<{
 	onSubmit: FormEventHandler;
 	title: string;
 	id: string;
 	showPolicies?: boolean;
+	showAnotherAuthWay?: boolean;
 }>;
 
 export const AuthForm = forwardRef<HTMLFormElement, Props>(
-	({ onSubmit, title, id, children, showPolicies }, ref) => {
+	(
+		{ onSubmit, title, id, children, showPolicies, showAnotherAuthWay },
+		ref,
+	) => {
 		const { t, i18n } = useTranslation();
 		return (
 			<div className={styles.wrapper}>
@@ -28,6 +35,13 @@ export const AuthForm = forwardRef<HTMLFormElement, Props>(
 					<h1 className={styles.title}>{title}</h1>
 					{children}
 				</form>
+				{showAnotherAuthWay && (
+					<div className={styles.anotherBtns}>
+						<LoginWith />
+						<WalletLoginButton />
+						<GoogleAuthBtn />
+					</div>
+				)}
 				{showPolicies && (
 					<div className={styles.policy}>
 						{t("auth.policyWith")}{" "}

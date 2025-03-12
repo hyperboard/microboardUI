@@ -2,9 +2,6 @@ import { LAST_BOARD_KEY_QS } from "App/App";
 import { useAccount } from "App/useAccount";
 import { useBoardsList } from "App/useBoardsList";
 import { AuthForm } from "entities/account";
-import { GoogleAuthBtn } from "features/GoogleAuthBtn/GoogleAuthBtn";
-import { LoginWith } from "features/LoginWith/LoginWith";
-import { WalletLoginButton } from "features/WalletLoginButton";
 import { Tail } from "pages/layouts/AuthLayout/Tail";
 import { EmailIcon } from "pages/SignupPage/EmailIcon";
 import { LockIcon } from "pages/SignupPage/LockIcon";
@@ -124,68 +121,69 @@ export const SigninPage: React.FC = (): React.ReactElement => {
 	const dbCheckForm = checkForm;
 
 	return (
-		<AuthForm
-			title={t("auth.signIn")}
-			id="signin-form"
-			onSubmit={onSubmit}
-			ref={formRef}
-			showPolicies
-		>
-			<Input
-				id="email"
-				prefixIcon={<EmailIcon />}
-				placeholder={t("auth.emailPlaceholder")}
-				hasError={!!emailError.length}
-				errorText={emailError}
-				onBlur={() => {
-					checkEmail();
-				}}
-			/>
-			<Input
-				id="password"
-				prefixIcon={<LockIcon />}
-				placeholder={t("auth.passwordPlaceholder")}
-				password
-				onInput={dbCheckForm}
-				errorText={errorText}
-				hasError={!!errorText}
-			/>
+		<>
+			<AuthForm
+				title={t("auth.signIn")}
+				id="signin-form"
+				onSubmit={onSubmit}
+				ref={formRef}
+				showPolicies
+				showAnotherAuthWay
+			>
+				<Input
+					id="email"
+					prefixIcon={<EmailIcon />}
+					placeholder={t("auth.emailPlaceholder")}
+					hasError={!!emailError.length}
+					errorText={emailError}
+					onBlur={() => {
+						checkEmail();
+					}}
+				/>
+				<Input
+					id="password"
+					prefixIcon={<LockIcon />}
+					placeholder={t("auth.passwordPlaceholder")}
+					password
+					onInput={dbCheckForm}
+					errorText={errorText}
+					hasError={!!errorText}
+				/>
 
-			<div className={styles.btns}>
-				<UiButton
-					type="submit"
-					disabled={submitDisabled}
-					loading={isSubmitLoading}
-					variant="primary"
-					size="lg"
-				>
-					{t("auth.submit")}
-					<Tail />
-				</UiButton>
+				<div className={styles.btns}>
+					<UiButton
+						type="submit"
+						disabled={submitDisabled}
+						loading={isSubmitLoading}
+						variant="primary"
+						size="lg"
+					>
+						{t("auth.submit")}
+						<Tail />
+					</UiButton>
 
-				<UiButton
-					variant="secondary"
-					className={styles.forgot}
-					onClick={() =>
-						navigate(`/auth/forgot-password${location.search}`)
-					}
-					size="lg"
-				>
-					{t("auth.forgotPassword")}
-				</UiButton>
+					<UiButton
+						variant="secondary"
+						className={styles.forgot}
+						onClick={() =>
+							navigate(`/auth/forgot-password${location.search}`)
+						}
+						size="lg"
+					>
+						{t("auth.forgotPassword")}
+					</UiButton>
 
-				<UiButton
-					variant="ghost"
-					onClick={() => navigate(`/auth/sign-up${location.search}`)}
-					size="lg"
-				>
-					{t("auth.signUpForFree")}
-				</UiButton>
-
-				<LoginWith />
-				<WalletLoginButton />
-				<GoogleAuthBtn />
-			</div>
-		</AuthForm>
+					<UiButton
+						variant="ghost"
+						onClick={() =>
+							navigate(`/auth/sign-up${location.search}`)
+						}
+						size="lg"
+					>
+						{t("auth.signUpForFree")}
+					</UiButton>
+				</div>
+			</AuthForm>
+		</>
 	);
 };
