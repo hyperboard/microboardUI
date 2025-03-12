@@ -1,4 +1,6 @@
 import React, {
+	useLayoutEffect,
+	type HTMLProps,
 	type MouseEventHandler,
 	type PropsWithChildren,
 	type ReactNode,
@@ -11,15 +13,18 @@ import { useUiModalContext, type ModalId } from "./UiModalContext";
 import clsx from "clsx";
 import { useClickOutside } from "shared/lib/useClickOutside";
 
-type Props = PropsWithChildren<{
-	modalId: ModalId;
-	closeButton?: (closeModal: MouseEventHandler) => ReactNode;
-	onClose?: () => void;
-	className?: string;
-	closeByBgClick?: boolean;
-	wrClassName?: string;
-	[key: string]: unknown;
-}>;
+type Props = PropsWithChildren<
+	HTMLProps<HTMLDivElement> & {
+		modalId: ModalId;
+		closeButton?: (closeModal: MouseEventHandler) => ReactNode;
+		onClose?: () => void;
+		className?: string;
+		closeByBgClick?: boolean;
+		renderAsPageOnMobile?: boolean;
+		wrClassName?: string;
+		[key: string]: unknown;
+	}
+>;
 
 export function UiModal({
 	modalId,
@@ -28,10 +33,25 @@ export function UiModal({
 	className,
 	onClose,
 	closeByBgClick = true,
+	renderAsPageOnMobile = true,
 	wrClassName,
 	...otherProps
 }: Props): JSX.Element | null {
-	const { closeModal, openedModalId } = useUiModalContext();
+	const {
+		closeModal,
+		openedModalId,
+		addRenderAsPage,
+		removeRenderAsPage,
+		isRenderedAsPage,
+	} = useUiModalContext();
+
+	useLayoutEffect(() => {
+		if (renderAsPageOnMobile) {
+			addRenderAsPage(modalId);
+		}
+
+		return () => removeRenderAsPage(modalId);
+	}, []);
 
 	const handleClose = (): void => {
 		closeModal();
@@ -50,6 +70,8 @@ export function UiModal({
 		return null;
 	}
 
+	const renderAsPage = isRenderedAsPage(modalId);
+
 	return (
 		// <CSSTransition
 		// 	in={modalId === openedModalId}
@@ -66,26 +88,55 @@ export function UiModal({
 		// 	}}
 		// 	unmountOnExit
 		// >
-		<div className={clsx(styles.modalWrapper, wrClassName)} {...otherProps}>
-			<UiPanel className={clsx(styles.panel, className)}>
-				<div className={styles.closeBtnWrapper}>
+		<div
+			className={clsx(
+				styles.modalWrapper,
+				wrClassName,
+				renderAsPage && styles.page,
+			)}
+			{...otherProps}
+		>
+			<UiPanel
+				className={clsx(
+					styles.panel,
+					className,
+					renderAsPage && styles.page,
+				)}
+			>
+				<div
+					className={clsx(
+						styles.closeBtnWrapper,
+						renderAsPage && styles.page,
+					)}
+				>
 					{closeButton ? (
 						closeButton(handleClose)
 					) : (
 						<UiButton
 							variant="secondary"
-							className={styles.closeBtn}
+							className={clsx(
+								styles.closeBtn,
+								renderAsPage && styles.page,
+							)}
 							onClick={handleClose}
 						>
 							<Icon width={28} height={28} iconName="Close" />
 						</UiButton>
 					)}
 				</div>
-				<header className={styles.header}>
+				<header
+					className={clsx(styles.header, renderAsPage && styles.page)}
+				>
 					<Logo />
 					<span>Microboard</span>
 				</header>
-				<div ref={ref} className={styles.content}>
+				<div
+					ref={ref}
+					className={clsx(
+						styles.content,
+						renderAsPage && styles.page,
+					)}
+				>
 					{children}
 				</div>
 			</UiPanel>

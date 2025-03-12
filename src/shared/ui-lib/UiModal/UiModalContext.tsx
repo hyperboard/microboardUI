@@ -11,6 +11,7 @@ class UiModalState {
 	transitionTo: ModalId = null;
 	data: unknown | null;
 	subject = new Subject<void>();
+	private renderAsPageIds: ModalId[] = [];
 
 	setModalData = (data: unknown): void => {
 		this.data = data;
@@ -29,6 +30,20 @@ class UiModalState {
 		}
 		this.openedModalId = modalId;
 		this.subject.publish();
+	};
+
+	addRenderAsPage = (id: ModalId) => {
+		this.renderAsPageIds = [...this.renderAsPageIds, id];
+		this.subject.publish();
+	};
+
+	removeRenderAsPage = (id: ModalId) => {
+		this.renderAsPageIds = this.renderAsPageIds.filter(item => item !== id);
+		this.subject.publish();
+	};
+
+	isRenderedAsPage = (id: ModalId) => {
+		return this.renderAsPageIds.includes(id);
 	};
 
 	closeModal = (): void => {

@@ -15,7 +15,7 @@ const modalsContainer = document.getElementById("modal")!;
 export function UiModalBackground({
 	children,
 }: PropsWithChildren<{}>): JSX.Element {
-	const { openedModalId, closeModal } = useUiModalContext();
+	const { openedModalId, closeModal, isRenderedAsPage } = useUiModalContext();
 
 	useEffect(() => {
 		const controller = new AbortController();
@@ -39,13 +39,20 @@ export function UiModalBackground({
 		openedModalId !== WARN_CLIPBOARD_NOTIFICATION &&
 		openedModalId !== WARN_NOTIFICATION;
 
+	const renderAsPage = isRenderedAsPage(openedModalId);
+
 	return createPortal(
 		<OpacityTransition
 			timeout={500}
 			inProp={Boolean(openedModalId)}
 			unmountOnExit
 		>
-			<div className={clsx({ [styles.blackout]: isBlackout })}>
+			<div
+				className={clsx({
+					[styles.blackout]: isBlackout,
+					[styles.page]: renderAsPage,
+				})}
+			>
 				{children}
 			</div>
 		</OpacityTransition>,

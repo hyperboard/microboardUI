@@ -20,7 +20,7 @@ export function AccessDeniedModal(): JSX.Element {
 	const isEmailAccount = Boolean(account.info?.email);
 
 	return (
-		<UiModal modalId={ACCESS_DENIED_MODAL}>
+		<UiModal modalId={ACCESS_DENIED_MODAL} renderAsPageOnMobile={false}>
 			<div className={styles.wrapper}>
 				<h1 className={styles.heading}>{t("sharing.accessDenied")}</h1>
 				<div className={styles.msg}>

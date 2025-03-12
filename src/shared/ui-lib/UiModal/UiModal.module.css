@@ -127,16 +127,16 @@ body {
 }
 
 @media screen and (max-width: 1028px) {
-	.closeBtn {
+	.page.closeBtn {
 		display: none;
 	}
-	.header {
+	.page.header {
 		display: flex;
 	}
 
-	.modalWrapper,
-	.panel,
-	.content {
+	.page.modalWrapper,
+	.page.panel,
+	.page.content {
 		max-width: 100%;
 		max-height: none;
 		width: 100%;
@@ -144,7 +144,11 @@ body {
 		min-height: 100%;
 	}
 
-	.modalWrapper {
+	.page.blackout {
+		padding: 0;
+	}
+
+	.page.modalWrapper {
 		inset: 0;
 		top: 0;
 		left: 0;
@@ -153,14 +157,14 @@ body {
 		border-radius: 0;
 	}
 
-	.panel {
+	.page.panel {
 		border-radius: 0;
 		height: max-content;
 		min-height: 100%;
 		align-items: start;
 	}
 
-	.content {
+	.page.content {
 		height: max-content;
 		min-height: 100%;
 	}

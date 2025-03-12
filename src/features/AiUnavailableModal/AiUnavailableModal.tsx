@@ -15,7 +15,7 @@ export function AiUnavailableModal(): JSX.Element {
 	const { closeModal } = useUiModalContext();
 
 	return (
-		<UiModal modalId={AI_UNAVAILABLE_MODAL_ID}>
+		<UiModal modalId={AI_UNAVAILABLE_MODAL_ID} renderAsPageOnMobile={false}>
 			<div className={styles.wrapper}>
 				<h1 className={styles.heading}>{t("ai.unauth.heading")}</h1>
 				<div className={styles.msg}>
