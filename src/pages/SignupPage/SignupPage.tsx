@@ -37,7 +37,7 @@ export const SignupPage = (): React.ReactElement => {
 
 	const checkEmail = (): boolean => {
 		const email = formRef.current?.email.value;
-		if (!isEmail(email)) {
+		if (email && !isEmail(email)) {
 			setEmailError(t("auth.enterAValidEmailAddress"));
 			return false;
 		}
