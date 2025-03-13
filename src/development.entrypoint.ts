@@ -2,6 +2,8 @@
 // import { textInit } from "TextInit";
 // textInit();
 
+import { initBrowserSettings } from "Board/api/initBrowserSettings";
+initBrowserSettings();
 import { App } from "App";
 import { createApp } from "App/App";
 import "./index.css";
