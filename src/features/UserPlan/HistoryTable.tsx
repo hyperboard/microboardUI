@@ -11,6 +11,7 @@ const PAYMENT_TYPE_DISPLAYNAME = {
 
 const PLAN_DISPLAYNAME = {
 	plus: "Подписка Plus",
+	"Token Purchase": "Покупка токенов",
 };
 
 export function HistoryTable() {

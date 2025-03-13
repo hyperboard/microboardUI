@@ -5,7 +5,7 @@ import React, {
 	type MouseEventHandler,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { UiButton } from "shared/ui-lib/UiButton";
+import { Button } from "shared/ui-lib/Button";
 import styles from "./SelectPaymentModal.module.css";
 import { USER_PLAN_MODAL_ID } from "./UserPlanModal";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -26,12 +26,17 @@ import { CSSTransition } from "react-transition-group";
 import clsx from "clsx";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
-import { Tooltip } from "shared/ui-lib/Tooltip";
+import { Tooltip } from "shared/ui-lib/UiButton/Tooltip";
 
 export const SELECT_PAYMENT_MODAL_ID = Symbol("selectPaymentModal");
 
+type ModalData = {
+	mode?: "tokens";
+	amount?: number;
+};
+
 export function SelectPaymentModal(): JSX.Element {
-	const { openModal } = useUiModalContext();
+	const { openModal, data } = useUiModalContext();
 	const location = useLocation();
 	const navigate = useNavigate();
 	const account = useAccount();
@@ -39,6 +44,8 @@ export function SelectPaymentModal(): JSX.Element {
 	const [isDisabled, setIsDisabled] = useState(false);
 	const [plan, setPlan] = useState<billingApi.Plan | null>(null);
 	const [active, setActive] = useState<"stripe" | "crypto">("stripe");
+	const [isPurchaseTokensMode, setIsPurchaseTokensMode] = useState(false);
+	const [tokenAmount, setTokenAmount] = useState(1000);
 
 	const { accountModalOpen } = useAccountModal();
 	const { chainModalOpen } = useChainModal();
@@ -52,7 +59,25 @@ export function SelectPaymentModal(): JSX.Element {
 
 			setPlan(plusPlan ?? null);
 		});
-	}, [account.isLoggedIn]);
+
+		const modalData = data as ModalData | null;
+		if (modalData?.mode === "tokens") {
+			setIsPurchaseTokensMode(true);
+			if (modalData.amount && modalData.amount >= 100) {
+				setTokenAmount(modalData.amount);
+			}
+		} else {
+			const searchParams = new URLSearchParams(location.search);
+			if (searchParams.get("mode") === "tokens") {
+				setIsPurchaseTokensMode(true);
+				const amount = parseInt(
+					searchParams.get("amount") || "1000",
+					10,
+				);
+				setTokenAmount(isNaN(amount) ? 1000 : amount);
+			}
+		}
+	}, [account.isLoggedIn, location.search, data]);
 
 	function assertPlanExists(
 		plan: billingApi.Plan | null,
@@ -69,10 +94,38 @@ export function SelectPaymentModal(): JSX.Element {
 		openModal(USER_PLAN_MODAL_ID);
 	};
 
+	const handleTokenAmountChange = (
+		event: React.ChangeEvent<HTMLInputElement>,
+	) => {
+		const value = parseInt(event.target.value, 10);
+		if (!isNaN(value) && value >= 100) {
+			setTokenAmount(value);
+		}
+	};
+
+	const calculateTokenPrice = (amount: number): number => {
+		return Math.ceil((amount / 1000) * 8 * 100) / 100;
+	};
+
 	const handleStripe = async (): Promise<void> => {
 		try {
-			assertPlanExists(plan);
-			await account.createCheckout(plan.id);
+			if (isPurchaseTokensMode) {
+				const data = await account.purchaseTokens(
+					tokenAmount,
+					"stripe",
+					`${window.location.origin}/boards`,
+					`${window.location.origin}/boards`,
+				);
+
+				if (data?.paymentUrl) {
+					window.location.href = data.paymentUrl;
+				} else {
+					throw new Error("No payment URL received");
+				}
+			} else {
+				assertPlanExists(plan);
+				await account.createCheckout(plan.id);
+			}
 		} catch (err) {
 			if (
 				err instanceof Error &&
@@ -95,22 +148,16 @@ export function SelectPaymentModal(): JSX.Element {
 				});
 			} else {
 				notify({
-					header: "Оплата",
-					body: "Ошибка оплаты",
+					header: "Payment",
+					body: "Payment error",
 					variant: "error",
 				});
+				console.error(err);
 			}
 		}
 	};
 
 	const handleCrypto: MouseEventHandler<HTMLButtonElement> = async _event => {
-		// if (
-		// 	event.target instanceof HTMLElement &&
-		// 	/^crypto.*button$/.test(event.target.id)
-		// ) {
-		// 	return;
-		// }
-
 		if (!isConnected) {
 			if (openConnectModal) {
 				openConnectModal();
@@ -125,15 +172,25 @@ export function SelectPaymentModal(): JSX.Element {
 			chain: string,
 			sender: string,
 			planId: string,
-		): ((hash: `0x${string}`) => void) => {
-			return (hash: `0x${string}`): void => {
-				setIsDisabled(false);
+			hash: `0x${string}`,
+		): void => {
+			setIsDisabled(false);
+			notify({
+				header: "Transaction Successful",
+				body: `Your transaction with ${currency} on ${chain} by ${sender} was completed successfully, wait for confirmations`,
+				variant: "success",
+			});
+
+			if (isPurchaseTokensMode) {
 				notify({
-					header: "Transaction Successful",
-					body: `Your transaction with ${currency} on ${chain} by ${sender} was completed successfully, wait for confirmations`,
+					header: "Tokens purchased",
+					body: "Your tokens purchase is being processed",
 					variant: "success",
 				});
-
+				setTimeout(() => {
+					navigate(0);
+				}, 2000);
+			} else {
 				billingApi
 					.confirmCryptoCheckout({
 						symbol: currency,
@@ -177,7 +234,7 @@ export function SelectPaymentModal(): JSX.Element {
 							duration: 10_000,
 						});
 					});
-			};
+			}
 		};
 
 		const onError = (error): void => {
@@ -215,35 +272,48 @@ export function SelectPaymentModal(): JSX.Element {
 			if (!isConnected || !address || !chain) {
 				throw new Error("Wallet is not connected");
 			}
-			assertPlanExists(plan);
 
-			const checkout = await account.createCryptoCheckout(
-				chain.nativeCurrency.symbol,
-				chain.name,
-				address,
-				plan.id,
-			);
+			if (isPurchaseTokensMode) {
+				notify({
+					header: "Not implemented",
+					body: "Token purchase with crypto is not yet implemented",
+					variant: "error",
+				});
+				setIsDisabled(false);
+				return;
+			} else {
+				assertPlanExists(plan);
 
-			if (!checkout.address.startsWith("0x")) {
-				throw new Error("Recieved address has wrong format");
+				const checkout = await account.createCryptoCheckout(
+					chain.nativeCurrency.symbol,
+					chain.name,
+					address,
+					plan.id,
+				);
+
+				if (!checkout.address.startsWith("0x")) {
+					throw new Error("Received address has wrong format");
+				}
+				const guardedAddress = checkout.address as `0x${string}`;
+
+				sendTransaction(
+					{
+						to: guardedAddress,
+						value: BigInt(checkout.price),
+					},
+					{
+						onSuccess: hash =>
+							onSuccessGetter(
+								chain.nativeCurrency.symbol,
+								chain.name,
+								address,
+								plan.id,
+								hash,
+							),
+						onError: onError,
+					},
+				);
 			}
-			const guardedAddress = checkout.address as `0x${string}`;
-
-			sendTransaction(
-				{
-					to: guardedAddress,
-					value: BigInt(checkout.price),
-				},
-				{
-					onSuccess: onSuccessGetter(
-						chain.nativeCurrency.symbol,
-						chain.name,
-						address,
-						plan.id,
-					),
-					onError: onError,
-				},
-			);
 		} catch (err) {
 			console.error(err);
 			notify({
@@ -254,6 +324,8 @@ export function SelectPaymentModal(): JSX.Element {
 		}
 	};
 
+	const tokenPriceAmount = calculateTokenPrice(tokenAmount);
+
 	return (
 		<UiModal
 			modalId={SELECT_PAYMENT_MODAL_ID}
@@ -262,7 +334,29 @@ export function SelectPaymentModal(): JSX.Element {
 			}
 		>
 			<div className={styles.wrapper}>
-				<h1 className={styles.heading}>Payment</h1>
+				<h1 className={styles.heading}>
+					{isPurchaseTokensMode ? "Purchase Tokens" : "Payment"}
+				</h1>
+
+				{/* {isPurchaseTokensMode && (
+					<div className={styles.tokenAmountWrapper}>
+						<label htmlFor="tokenAmount">Token amount:</label>
+						<Input
+							id="tokenAmount"
+							type="number"
+							min="100"
+							step="100"
+							value={tokenAmount}
+							onChange={handleTokenAmountChange}
+							className={styles.tokenAmountInput}
+						/>
+						<div className={styles.tokenPrice}>
+							Price: ${tokenPriceAmount} ({tokenAmount} tokens at
+							$8 per 1000 tokens)
+						</div>
+					</div>
+				)} */}
+
 				<div className={styles.cards}>
 					<Card
 						onClick={
@@ -288,36 +382,40 @@ export function SelectPaymentModal(): JSX.Element {
 								</div>
 							</div>
 						}
-						description={`Total: $${account.getIsAnnualPayment() ? `${(plan?.annualPrice || 0) / 100} ($${(plan?.annualPrice || 0) / 12 / 100} per month)` : +(plan?.price || 0) / 100}`}
+						description={
+							isPurchaseTokensMode
+								? `Total: $${tokenPriceAmount} for ${tokenAmount} tokens`
+								: `Total: $${account.getIsAnnualPayment() ? `${(plan?.annualPrice || 0) / 100} ($${(plan?.annualPrice || 0) / 12 / 100} per month)` : +(plan?.price || 0) / 100}`
+						}
 						disabled={isDisabled}
 						footer={
 							<>
 								<div className={styles.footer}>
-									<UiButton
+									<Button
 										id="pay_stripe"
-										variant="primary"
+										pattern="primary"
 										onClick={handleStripe}
 										disabled={
 											isDisabled || !account.info?.email
 										}
-										size="lg"
 									>
-										Pay with Stripe
-									</UiButton>
+										{isPurchaseTokensMode
+											? t("userPlan.buyTokensBtn")
+											: `Pay with Stripe`}
+									</Button>
 									{!account.info?.email && (
-										<UiButton
+										<Button
 											id="add_email"
-											variant="primary"
+											pattern="primary"
 											onClick={() =>
 												navigate(
 													`/bind-email/add-email?${window.location.search.substring(1)}`,
 												)
 											}
 											disabled={isDisabled}
-											size="lg"
 										>
 											Add email
-										</UiButton>
+										</Button>
 									)}
 								</div>
 								<div
@@ -362,7 +460,11 @@ export function SelectPaymentModal(): JSX.Element {
 								</div>
 							</div>
 						}
-						description={`Total payment for ${account.getIsAnnualPayment() ? "12 months" : "a month"}`}
+						description={
+							isPurchaseTokensMode
+								? `Total: $${tokenPriceAmount} for ${tokenAmount} tokens`
+								: `Total payment for ${account.getIsAnnualPayment() ? "12 months" : "a month"}`
+						}
 						disabled={isDisabled}
 						footer={
 							<ConnectButton.Custom>
@@ -376,16 +478,15 @@ export function SelectPaymentModal(): JSX.Element {
 								}) => {
 									if (!walletAccount || !mounted) {
 										return (
-											<UiButton
+											<Button
 												id="crypto_connect_button"
-												variant="primary"
+												pattern="primary"
 												onClick={openConnectModal}
 												disabled={isDisabled}
 												className={styles.footer}
-												size="lg"
 											>
 												Connect wallet
-											</UiButton>
+											</Button>
 										);
 									}
 									return (
@@ -412,20 +513,20 @@ export function SelectPaymentModal(): JSX.Element {
 													title={
 														<>
 															<div>
-																{
-																	// todo fix DRY
-																	(+account
-																		.cryptoRates[
-																		walletAccount?.balanceSymbol ||
-																			"ETH"
-																	][
-																		account.getIsAnnualPayment()
-																			? "annualPrice"
-																			: "price"
-																	]).toFixed(
-																		5,
-																	)
-																}
+																{isPurchaseTokensMode
+																	? tokenPriceAmount
+																	: // todo fix DRY
+																		(+account
+																			.cryptoRates[
+																			walletAccount?.balanceSymbol ||
+																				"ETH"
+																		][
+																			account.getIsAnnualPayment()
+																				? "annualPrice"
+																				: "price"
+																		]).toFixed(
+																			5,
+																		)}
 															</div>
 															<div
 																className={
@@ -439,46 +540,45 @@ export function SelectPaymentModal(): JSX.Element {
 												/>
 											</div>
 											<div className={styles.footer}>
-												<UiButton
+												<Button
 													id="crypto_chain_button"
-													variant="primary"
+													pattern="primary"
 													onClick={openAccountModal}
 													disabled={isDisabled}
-													size="lg"
 												>
 													Switch Wallet
-												</UiButton>
-												<UiButton
+												</Button>
+												<Button
 													id="crypto_chain_button"
-													variant="primary"
+													pattern="primary"
 													onClick={openChainModal}
 													disabled={isDisabled}
-													size="lg"
 												>
 													Switch Network
-												</UiButton>
-												<UiButton
+												</Button>
+												<Button
 													id="crypto_account_button"
-													variant="primary"
+													pattern="primary"
 													onClick={handleCrypto}
 													disabled={isDisabled}
-													size="lg"
 												>
-													Pay{" "}
-													{
-														// todo fix DRY
-														(+account.cryptoRates[
-															walletAccount?.balanceSymbol ||
-																"ETH"
-														][
-															account.getIsAnnualPayment()
-																? "annualPrice"
-																: "price"
-														]).toFixed(5)
-													}{" "}
+													{isPurchaseTokensMode
+														? `Buy ${tokenAmount} tokens`
+														: `Pay ${
+																// todo fix DRY
+																(+account
+																	.cryptoRates[
+																	walletAccount?.balanceSymbol ||
+																		"ETH"
+																][
+																	account.getIsAnnualPayment()
+																		? "annualPrice"
+																		: "price"
+																]).toFixed(5)
+															}`}{" "}
 													with{" "}
 													{walletAccount.displayName}
-												</UiButton>
+												</Button>
 											</div>
 											<div
 												className={clsx(
@@ -496,14 +596,13 @@ export function SelectPaymentModal(): JSX.Element {
 					/>
 				</div>
 				{!location.pathname.includes("user") && (
-					<UiButton
-						variant="ghostFilled"
+					<Button
+						pattern="ghostFilled"
 						className={styles.back}
 						onClick={handleOpenPlans}
-						size="lg"
 					>
 						Back to Plans
-					</UiButton>
+					</Button>
 				)}
 			</div>
 		</UiModal>
@@ -519,12 +618,11 @@ const Card: React.FC<{
 	footer: JSX.Element;
 }> = ({ onClick, disabled, title, description, footer, active }) => {
 	return (
-		<UiButton
+		<Button
 			className={styles.card}
-			variant="tertiary"
+			pattern="tertiary"
 			onClick={onClick}
 			disabled={disabled}
-			size="lg"
 		>
 			<div className={styles.title}>
 				<div className={styles.icons}>
@@ -542,7 +640,7 @@ const Card: React.FC<{
 				</div>
 			</div>
 			<Transition active={active}>{footer}</Transition>
-		</UiButton>
+		</Button>
 	);
 };
 
@@ -554,16 +652,15 @@ const CoinCard: React.FC<{
 	active: boolean;
 }> = ({ onClick, disabled, title, active, coin }) => {
 	return (
-		<UiButton
+		<Button
 			className={clsx(
 				styles.card,
 				styles.coin,
 				(active && styles.active) || "",
 			)}
-			variant="tertiary"
+			pattern="tertiary"
 			onClick={onClick}
 			disabled={disabled}
-			size="lg"
 		>
 			<div className={styles.coinTitle}>
 				<Icon iconName={coin} width={24} height={24} />
@@ -573,7 +670,7 @@ const CoinCard: React.FC<{
 				tooltip="Total price may various little bit"
 				tooltipPosition="top"
 			/>
-		</UiButton>
+		</Button>
 	);
 };
 

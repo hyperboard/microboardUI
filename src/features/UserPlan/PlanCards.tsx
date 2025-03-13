@@ -9,6 +9,7 @@ import { PlanCard, type PlanState } from "./PlanCard";
 import styles from "./PlanCards.module.css";
 import { SELECT_PAYMENT_MODAL_ID } from "./SelectPaymentModal";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
+import { setModalData } from "shared/ui-lib/UiModal/UiModalContext";
 
 const annualToMonthlyPrice = (price?: number) =>
 	price ? Math.round(price / 12) : 0;
@@ -74,9 +75,7 @@ export function BasicPlanCard() {
 						year: "numeric",
 						month: "numeric",
 						day: "numeric",
-					}).format(
-						new Date(account.billingInfo?.plan.periodEnd ?? 0),
-					),
+					}).format(new Date(account.billingInfo?.plan.endDate ?? 0)),
 				})}
 			</p>,
 			async () => {
@@ -96,7 +95,7 @@ export function BasicPlanCard() {
 								day: "numeric",
 							},
 						).format(
-							new Date(account.billingInfo?.plan.periodEnd ?? 0),
+							new Date(account.billingInfo?.plan.endDate ?? 0),
 						),
 					}),
 				});
@@ -119,12 +118,14 @@ export function BasicPlanCard() {
 			features={t("userPlan.plans.basic.features", {
 				returnObjects: true,
 			})}
+			additionalFeature={t("userPlan.plans.basic.tokensFeature")}
+			additionalFeatureTooltip={t("userPlan.tokensTooltip")}
 			activationDate={new Intl.DateTimeFormat(i18n.language, {
 				year: "numeric",
 				month: "numeric",
 				day: "numeric",
 			}).format(
-				new Date(account.billingInfo?.plan.periodEnd ?? 0).getTime() +
+				new Date(account.billingInfo?.plan.endDate ?? 0).getTime() +
 					24 * 60 * 60 * 1000,
 			)}
 			price={t("userPlan.free")}
@@ -139,6 +140,7 @@ export function PlusPlanCard(): JSX.Element {
 	const { t } = useTranslation();
 	const account = useAccount();
 	const { openModal } = useUiModalContext();
+	const { openModalConfirm } = useConfirmModalContext();
 
 	const [plan, setPlan] = useState<billingApi.Plan | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
@@ -157,8 +159,7 @@ export function PlusPlanCard(): JSX.Element {
 	const getPlusSubState = (): PlanState => {
 		if (
 			!account.billingInfo ||
-			account.billingInfo?.plan.name === "basic" ||
-			account.billingInfo?.plan.name === "pro"
+			account.billingInfo?.plan.name === "basic"
 		) {
 			return "available";
 		}
@@ -167,7 +168,60 @@ export function PlusPlanCard(): JSX.Element {
 			return "current";
 		}
 
+		if (account.billingInfo.plan.name === "pro") {
+			if (account.billingInfo.plan.status === "pending_cancellation") {
+				return "pending";
+			}
+			return "downgrade";
+		}
+
 		return "available";
+	};
+
+	const onDowngrade = () => {
+		openModalConfirm(
+			<h2 className={styles.downgradeHeading}>
+				{t("userPlan.downgradeModal.heading", {
+					planName: PLAN_NAMES["plus"],
+				})}
+			</h2>,
+			<p className={styles.downgradeDesc}>
+				{t("userPlan.downgradeModal.description", {
+					planName: PLAN_NAMES["plus"],
+					currentPeriodEnd: new Intl.DateTimeFormat(i18n.language, {
+						year: "numeric",
+						month: "numeric",
+						day: "numeric",
+					}).format(new Date(account.billingInfo?.plan.endDate ?? 0)),
+				})}
+			</p>,
+			async () => {
+				await account.unsubscribe();
+				notify({
+					header: "Тариф обновлен",
+					body: t("userPlan.downgradeModal.description", {
+						planName: PLAN_NAMES["plus"],
+						currentPeriodEnd: new Intl.DateTimeFormat(
+							i18n.language,
+							{
+								year: "numeric",
+								month: "numeric",
+								day: "numeric",
+							},
+						).format(
+							new Date(account.billingInfo?.plan.endDate ?? 0),
+						),
+					}),
+				});
+				Promise.resolve();
+			},
+			async () => {},
+			t("userPlan.downgradeModal.confirm", {
+				planName: PLAN_NAMES["plus"],
+			}),
+			t("userPlan.downgradeModal.cancel"),
+			styles.downgradeConfirmation,
+		);
 	};
 
 	const handleOpenPaymentModal = async (ev): Promise<void> => {
@@ -177,6 +231,23 @@ export function PlusPlanCard(): JSX.Element {
 		openModal(SELECT_PAYMENT_MODAL_ID);
 		return;
 	};
+
+	const handleBuyTokens = async (ev): Promise<void> => {
+		ev.preventDefault();
+		ev.stopPropagation();
+
+		setModalData({
+			mode: "tokens",
+			amount: 1000,
+		});
+
+		openModal(SELECT_PAYMENT_MODAL_ID);
+		return;
+	};
+
+	const isPlusPlan = account.billingInfo?.plan.name === plan?.name;
+	const planState = getPlusSubState();
+
 	return (
 		<PlanCard
 			name={t("userPlan.plans.plus.name")}
@@ -184,15 +255,29 @@ export function PlusPlanCard(): JSX.Element {
 			features={t("userPlan.plans.plus.features", {
 				returnObjects: true,
 			})}
+			additionalFeature={t("userPlan.plans.plus.tokensFeature")}
+			additionalFeatureTooltip={t("userPlan.tokensTooltip")}
 			variant="plus"
 			price={
-				account.getIsAnnualPayment()
-					? annualToMonthlyPrice(plan?.annualPrice)
-					: plan?.price
+				isPlusPlan
+					? 8
+					: account.getIsAnnualPayment()
+						? annualToMonthlyPrice(plan?.annualPrice)
+						: plan?.price
 			}
-			state={getPlusSubState()}
-			onSubscribe={handleOpenPaymentModal}
+			isTokenPrice={isPlusPlan}
+			oldPrice={
+				!isPlusPlan && account.getIsAnnualPayment()
+					? typeof plan?.price === "number"
+						? plan.price
+						: null
+					: null
+			}
+			state={planState}
+			onSubscribe={isPlusPlan ? handleBuyTokens : handleOpenPaymentModal}
+			onDowngrade={onDowngrade}
 			isLoading={isLoading}
+			buttonText={isPlusPlan ? t("userPlan.buyTokens") : undefined}
 		/>
 	);
 }

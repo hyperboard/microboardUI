@@ -186,3 +186,21 @@
 .coin.active:hover {
 	background-color: #ecdffb;
 }
+
+.tokenAmountWrapper {
+	margin-bottom: 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.tokenAmountInput {
+	width: 100%;
+	max-width: 200px;
+}
+
+.tokenPrice {
+	margin-top: 8px;
+	font-size: 14px;
+	color: var(--text-secondary);
+}

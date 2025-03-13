@@ -401,15 +401,44 @@ export class Account {
 	): Promise<CryptoCheckout> {
 		const { data } = await billingApi.createCryptoCheckout({
 			symbol: currency,
-			chain,
-			sender,
-			planId,
+			chain: chain,
+			sender: sender,
+			planId: planId,
 			annualPayment: this.annualPayment,
 		});
 
 		if (!data) {
-			throw new Error();
+			throw new Error("Failed to create crypto checkout");
 		}
+
+		return data;
+	}
+
+	async purchaseTokens(
+		amount: number,
+		paymentMethod: "stripe" | "crypto",
+		successUrl?: string,
+		cancelUrl?: string,
+	): Promise<billingApi.TokenPurchaseResponse> {
+		const payload: billingApi.TokenPurchasePayload = {
+			amount,
+			paymentMethod,
+		};
+
+		if (successUrl) {
+			payload.successUrl = successUrl;
+		}
+
+		if (cancelUrl) {
+			payload.cancelUrl = cancelUrl;
+		}
+
+		const { data } = await billingApi.purchaseTokens(payload);
+
+		if (!data) {
+			throw new Error("Failed to purchase tokens");
+		}
+
 		return data;
 	}
 

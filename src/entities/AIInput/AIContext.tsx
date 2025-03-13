@@ -25,6 +25,8 @@ import { useAccount } from "App/useAccount";
 import { SessionStorage } from "App/SessionStorage";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { SETTINGS } from "Board/Settings";
+import { notify } from "shared/ui-lib/Toast";
+import { useTranslation } from "react-i18next";
 
 interface Context {
 	stopStream: (
@@ -62,6 +64,7 @@ const sessionStorage = new SessionStorage();
 export const AIContextProvider = ({
 	children,
 }: PropsWithChildren<{}>): JSX.Element => {
+	const { t } = useTranslation();
 	const { app } = useAppContext();
 	const [model, setModel] = useState<OpenAIModels>("gpt-4o-mini");
 	const [responseNodeId, setResponseNodeId] = useState<string | undefined>();
@@ -145,7 +148,7 @@ export const AIContextProvider = ({
 			requestAdded,
 			undefined,
 			true,
-			model === "image-generation",
+			model === "flux-schnell" || model === "flux-pro",
 		);
 		const responseAdded = board.add(responseNode.node);
 
@@ -209,19 +212,24 @@ export const AIContextProvider = ({
 			return openModal(AI_UNAVAILABLE_MODAL_ID);
 		}
 		await account.fetchBillingInfo();
+		const balance = account.billingInfo?.tokens.totalTokensBalance || 0;
+		const isBasicPlan = account.billingInfo?.plan.planId === "basic";
+		console.log("balance", balance);
 		const currentModel = account.billingInfo?.models.find(
 			({ id }) => id === model,
 		);
 
-		if (
-			!currentModel ||
-			(currentModel.limits.daily?.remaining != null &&
-				currentModel.limits.daily.remaining <= 0) ||
-			(currentModel.limits.weekly?.remaining != null &&
-				currentModel.limits.weekly.remaining <= 0) ||
-			(currentModel.limits.monthly?.remaining != null &&
-				currentModel.limits.monthly.remaining <= 0)
-		) {
+		if (!currentModel || currentModel.tokenCost > balance) {
+			if (!isBasicPlan) {
+				notify({
+					header: t("tokensNotification.header"),
+					body: t("tokensNotification.body", {
+						price: "$8",
+					}),
+					variant: "warning",
+				});
+			}
+
 			if (fallback) {
 				fallback();
 			} else {
@@ -286,9 +294,9 @@ export const AIContextProvider = ({
 		board.aiGeneratingOnItem = responseAdded.getId();
 		board.camera.subscribeToItem(responseAdded);
 
-		if (model === "image-generation") {
+		if (model === "flux-schnell" || model === "flux-pro") {
 			const options = {
-				model: "flux-schnell",
+				model: model === "flux-pro" ? "flux-pro" : "flux-schnell",
 				aspect_ratio: "1:1",
 			};
 

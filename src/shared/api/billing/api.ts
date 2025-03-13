@@ -12,6 +12,8 @@ import {
 	type HistoryRecord,
 	type Plan,
 	type UserLimits,
+	type TokenPurchasePayload,
+	type TokenPurchaseResponse,
 } from "./types";
 
 const CRYPTO_CHECKOUT_BASE_URL = "/crypto/checkout";
@@ -68,4 +70,10 @@ export function verifyPayment(): Promise<HTTPResponse<MessageResponse>> {
 
 export function getHistory(): Promise<HTTPResponse<HistoryRecord[]>> {
 	return api.get<HistoryRecord[]>("/billing/history");
+}
+
+export function purchaseTokens(
+	payload: TokenPurchasePayload,
+): Promise<HTTPResponse<TokenPurchaseResponse>> {
+	return api.post<TokenPurchaseResponse>("/billing/purchase-tokens", payload);
 }

@@ -22,29 +22,45 @@ export type AvailableModel = {
 	displayName: string;
 	isDefault: boolean;
 	isEnabled: boolean;
-	limits: {
-		daily?: ModelLimit;
-		weekly?: ModelLimit;
-		monthly?: ModelLimit;
-	};
+	tokenCost: number;
+	// limits: {
+	// 	daily?: ModelLimit;
+	// 	weekly?: ModelLimit;
+	// 	monthly?: ModelLimit;
+	// };
 };
 
 type Status = "pending_cancellation" | "active";
 type PaymentType = "card" | "crypto";
 
 export type UserPlan = {
+	planId: string;
 	name: string;
-	periodStart: string;
-	periodEnd: string;
+	monthlyTokenLimit: number;
+	startDate: string;
+	endDate: string;
 	status: Status;
+	version: number;
 	isAnnual: boolean;
+	allowTokenPurchase: boolean;
+};
+
+export type TokensLimits = {
+	planTokensBalance: number;
+	purchasedTokensBalance: number;
+	totalTokensBalance: number;
+	monthlyTokensLimit: number;
+	nextResetDate: string;
+	currentPeriodUsage: number;
+	allowTokenPurchase: boolean;
 };
 
 export type UserLimits = {
-	tokens: AiTokensUsage;
+	// tokens: AiTokensUsage;
 	storage: StorageUsage;
 	models: AvailableModel[];
 	plan: UserPlan;
+	tokens: TokensLimits;
 };
 
 export type Plan = {
@@ -121,4 +137,17 @@ export type HistoryRecord = {
 	isAnnual: boolean;
 	symbol?: string;
 	paymentType: PaymentType;
+};
+
+export type TokenPurchasePayload = {
+	amount: number;
+	paymentMethod: "stripe" | "crypto";
+	successUrl?: string;
+	cancelUrl?: string;
+};
+
+export type TokenPurchaseResponse = {
+	paymentUrl?: string;
+	paymentInfo?: any;
+	purchaseId: string;
 };

@@ -579,6 +579,10 @@
 		"newFolder": "Новая папка",
 		"manageSharing": "Управление доступом"
 	},
+	"tokensNotification": {
+		"header": "Кончились токены",
+		"body": "Приобретите дополнительные 1000 запросов за {{price}}"
+	},
 	"miro": {
 		"boards": {
 			"title": "Выберите доску для импорта",
@@ -594,6 +598,7 @@
 			"title": "Идёт импорт из Miro",
 			"text": "Чтобы не потерять прогресс, не закрывайте окно браузера до окончания. Завершено на"
 		},
+
 		"notifications": {
 			"success": "Импорт из Miro завершен успешно",
 			"warn": "Импорт из Miro завершен",
@@ -610,24 +615,24 @@
 		},
 		"authClipboardModal": {
 			"title": "Ошибка импорта",
-			"description": "Для импорта доски из Miro необходимо авторизоваться. Пожалуйста, войдите, чтобы сохранить прогресс.",
+			"description": "Для импорта доски из Miro необходимо авторизоваться. Пожалуйста, войдите, чтобы сохранить прогресс.",
 			"authBtn": "Войти"
 		},
 		"imgAuthClipboardModal": {
 			"title": "Вы скопировали изображения",
-			"description": "Miro не разрешает импорт изображений без авторизации. Чтобы продолжить, пожалуйста, авторизуйтесь.",
+			"description": "Miro не разрешает импорт изображений без авторизации. Чтобы продолжить, пожалуйста, авторизуйтесь.",
 			"authBtn": "Авторизоваться в Miro",
 			"continueBtn": "Продолжить без изображений"
 		},
 		"startModal": {
-			"text": "Скопируйте объекты (Ctrl+C) в Miro и вставьте их на доску Microboard (Ctrl+V). Некоторые объекты пока не поддерживаются, но со временем все элементы будут отображаться корректно",
+			"text": "Скопируйте объекты (Ctrl+C) в Miro и вставьте их на доску Microboard (Ctrl+V). Некоторые объекты пока не поддерживаются, но со временем все элементы будут отображаться корректно",
 			"cancel": "Отмена",
 			"goToMiroBtn": "Перейти в Miro"
 		},
 		"importMiro": "Импорт из Miro",
 		"importMiroBtn": "Импортировать из Miro",
 		"authTooltip": "Войдите, чтобы получить доступ <br /> ко всем функциям Microboard",
-		"tooltipClipboardImport": "Есть еще один способ импорта<br /> доски из Miro <br /> <span style='opacity: 60%'>Скопируйте объекты (Ctrl+C)<br /> в Miro и вставьте их на доску<br /> (Ctrl+V). Некоторые объекты<br /> пока не поддерживаются,<br /> но со временем все элементы будут<br /> отображаться корректно</span>",
+		"tooltipClipboardImport": "Есть еще один способ импорта<br /> доски из Miro <br /> <span style='opacity: 60%'>Скопируйте объекты (Ctrl+C)<br /> в Miro и вставьте их на доску<br /> (Ctrl+V). Некоторые объекты<br /> пока не поддерживаются,<br /> но со временем все элементы будут<br /> отображаться корректно</span>",
 		"miroError": "Произошла ошибка. Попробуйте импортировать еще раз",
 		"loading": "Загрузка...",
 		"nextStepBtn": "Продолжить"
@@ -678,7 +683,7 @@
 		"createError": "Ошибка при создании шаблона"
 	},
 	"itemTooltips": {
-		"placeholder": "Этот тип объектов пока<br /> не поддерживается<br /> <span style='opacity: 60%'>Но мы уже работаем над этим.<br /> Скоро все будет доступно!</span>"
+		"placeholder": "Этот тип объектов пока<br /> не поддерживается<br /> <span style='opacity: 60%'>Но мы уже работаем над этим.<br /> Скоро все будет доступно!</span>"
 	},
 	"ai": {
 		"flowChart": "Диаграмма",
@@ -702,10 +707,15 @@
 				"title": "Запрос к GPT 4o",
 				"description": "Подходит для большинства задач"
 			},
-			"image-generation": {
+			"flux-schnell": {
 				"mobileTitle": "Flux",
 				"title": "Генерация изображения",
 				"description": "Flux schnell"
+			},
+			"flux-pro": {
+				"mobileTitle": "Flux Pro",
+				"title": "Генерация изображения",
+				"description": "Flux Pro"
 			},
 			"deepseek-reasoner": {
 				"mobileTitle": "DeepSeek",
@@ -816,24 +826,28 @@
 		"avatarTypeConstraint": "Изображение должно быть в формате jpeg, png или svg"
 	},
 	"userPlan": {
+		"tokensTooltip": "Токены начисляются на месяц и сгорают, если не использовать. Дополнительно: +1000 токенов за $8, срок действия — 1 месяц.",
 		"paymentHistoryHeading": "История платежей",
 		"currentPlanHeading": "Текущий тариф",
 		"upgradePlan": "Выбрать тариф",
 		"currentPlanFree": "Тариф Базовый активен.",
 		"limits": "Лимиты",
 		"currentPlanPending": "Тариф {{planName}} оплачен до {{cancellationDate}}.",
-		"currentPlanActive": "Тариф {{planName}} оплачен до {{cancellationDate}}. Подключен автоплатеж.",
+		"currentPlanActive": "Тариф {{planName}} оплачен до {{cancellationDate}}. Баланс токенов: {{tokensBalance}}. Подключен автоплатеж.",
 		"nextPayment": "Следующее списание: {{paymentDate}}",
 		"pendingBtn": "Будет действовать с {{activationDate}}",
 		"cancelPayment": "Отказаться",
 		"unlimited": "Без ограничений",
 		"free": "Бесплатно",
 		"perMonth": "в месяц",
+		"perThousandTokens": "за 1000 токенов",
 		"customPrice": "По запросу",
 		"upgradeTooltip": "Увеличить лимит",
 		"backToProfile": "Вернуться к настройкам профиля",
 		"backToPlans": "Назад к выбору тарифа",
 		"backToCurrentPlan": "Назад к текущему плану",
+		"buyTokens": "Купить дополнительные токены",
+		"buyTokensBtn": "Купить токены",
 		"limitsTable": {
 			"modelName": "Модель",
 			"requestsPerWeek": "Доступно в неделю",
@@ -842,7 +856,9 @@
 			"availableOnPlus": "Доступно на тарифе Plus",
 			"symbols": "символов",
 			"requests": "запросов",
-			"audioLengthMinutes": "мин аудио"
+			"audioLengthMinutes": "мин аудио",
+			"costPerRequest": "Стоимость запроса в токенах",
+			"unavailable": "Недоступно"
 		},
 		"historyTable": {
 			"plan": "Тариф",
@@ -871,7 +887,8 @@
 					"30 запросов в неделю к DeepSeek-R1",
 					"Доски, фигуры — без ограничений",
 					"Картинки — до 100 МБ"
-				]
+				],
+				"tokensFeature": "10 токенов"
 			},
 			"plus": {
 				"name": "Plus",
@@ -884,7 +901,8 @@
 					"Text to speech HD — 15 000 символов в сумме всех запросов (~20 минут аудио)",
 					"Доски, фигуры — без ограничений",
 					"Картинки — до 100 ГБ"
-				]
+				],
+				"tokensFeature": "1000 токенов"
 			},
 			"pro": {
 				"name": "Pro",
@@ -935,6 +953,16 @@
 	"quickAdd": {
 		"panel": {
 			"sameObj": "Тот же объект"
+		}
+	},
+	"models": {
+		"descriptions": {
+			"gpt-4o-mini": "Легкая версия GPT-4o для быстрых задач",
+			"gpt-4o": "Мощная модель для сложных текстов и аналитики",
+			"deepseek-reasoner": "Для анализа и извлечения информации из текстов",
+			"flux-schnell": "Для анализа и извлечения информации из текстов",
+			"flux-pro": "Для анализа и извлечения информации из текстов",
+			"tts-1-hd": "за 1000 символов"
 		}
 	}
 }

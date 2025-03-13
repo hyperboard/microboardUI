@@ -8,6 +8,7 @@ import styles from "./AccessDeniedModal.module.css";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { PROFILE_SETTINGS_MODAL_ID } from "features/ProfileSettingsModal";
+import { Button } from "shared/ui-lib/Button";
 
 export const ACCESS_DENIED_MODAL = Symbol("accessDeniedModal");
 
@@ -87,6 +88,14 @@ export function AccessDeniedModal(): JSX.Element {
 					>
 						{t("userPanel.profileSettings")}
 					</UiButton>
+				)}
+				{account.isLoggedIn && (
+					<Button
+						className={styles.btn}
+						onClick={() => openModal(PROFILE_SETTINGS_MODAL_ID)}
+					>
+						{t("userPanel.profileSettings")}
+					</Button>
 				)}
 			</div>
 		</UiModal>

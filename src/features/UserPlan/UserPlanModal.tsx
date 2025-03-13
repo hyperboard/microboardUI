@@ -40,6 +40,7 @@ export function UserPlanModal() {
 	useEffect(() => {
 		account.fetchBillingInfo();
 	}, []);
+
 	return (
 		<UiModal modalId={USER_PLAN_MODAL_ID} closeByBgClick={false}>
 			<div className={styles.wrapper}>
@@ -50,7 +51,7 @@ export function UserPlanModal() {
 						PLAN_NAMES[account.billingInfo?.plan.name ?? "basic"]
 					}
 					status={account.billingInfo?.plan.status ?? "active"}
-					cancellationDate={account.billingInfo?.plan.periodEnd}
+					cancellationDate={account.billingInfo?.plan.endDate}
 				/>
 				<UiSwitch
 					options={[

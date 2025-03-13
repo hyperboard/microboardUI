@@ -581,6 +581,10 @@
 		"newFolder": "New folder",
 		"manageSharing": "Manage sharing"
 	},
+	"tokensNotification": {
+		"header": "Tokens exhausted",
+		"body": "Purchase additional 1000 requests for {{price}}"
+	},
 	"miro": {
 		"boards": {
 			"title": "Select a board to import",
@@ -596,6 +600,7 @@
 			"title": "Import from Miro in progress",
 			"text": "To avoid losing progress, do not close the browser window until the end. Completed on"
 		},
+
 		"notifications": {
 			"success": "Import from Miro completed successfully",
 			"warn": "Import from Miro completed",
@@ -704,10 +709,15 @@
 				"title": "Chat with GPT 4o",
 				"description": "Great for most tasks"
 			},
-			"image-generation": {
+			"flux-schnell": {
 				"mobileTitle": "Flux",
 				"title": "Generate image",
 				"description": "Flux schnell"
+			},
+			"flux-pro": {
+				"mobileTitle": "Flux Pro",
+				"title": "Generate image",
+				"description": "Flux Pro"
 			},
 			"deepseek-reasoner": {
 				"mobileTitle": "DeepSeek",
@@ -818,24 +828,28 @@
 		"avatarTypeConstraint": "The image must be in jpeg, png or svg format"
 	},
 	"userPlan": {
+		"tokensTooltip": "Tokens are credited on a monthly basis and expire if not used. Additional: +1000 tokens for $8, term of use - 1 month.",
 		"paymentHistoryHeading": "Payment History",
 		"currentPlanHeading": "Current Plan",
 		"upgradePlan": "Upgrade Plan",
 		"currentPlanFree": "The Basic plan is active.",
 		"limits": "Limits",
 		"currentPlanPending": "The {{planName}} plan is paid until {{cancellationDate}}.",
-		"currentPlanActive": "The current {{planName}} plan is paid until {{cancellationDate}}. Auto-payment is enabled.",
+		"currentPlanActive": "The current {{planName}} plan is paid until {{cancellationDate}}. Tokens balance: {{tokensBalance}}. Auto-payment is enabled.",
 		"nextPayment": "Next payment: {{paymentDate}}",
 		"pendingBtn": "The plan will be effective as of {{activationDate}}",
 		"cancelPayment": "Cancel upcoming payment",
 		"unlimited": "Unlimited",
 		"free": "Free",
 		"perMonth": "per month",
+		"perThousandTokens": "per 1000 tokens",
 		"customPrice": "Custom Pricing",
 		"upgradeTooltip": "Upgrade your plan",
 		"backToProfile": "Back to Profile settings",
 		"backToPlans": "Back to All Plans",
 		"backToCurrentPlan": "Back to Current Plan",
+		"buyTokens": "Buy additional tokens",
+		"buyTokensBtn": "Buy tokens",
 		"limitsTable": {
 			"modelName": "Model",
 			"requestsPerWeek": "Remaining per week",
@@ -844,7 +858,9 @@
 			"availableOnPlus": "Available on Plus plan",
 			"symbols": "symbols",
 			"requests": "requests",
-			"audioLengthMinutes": "audio minutes"
+			"audioLengthMinutes": "audio minutes",
+			"costPerRequest": "Cost per request in tokens",
+			"unavailable": "Unavailable"
 		},
 		"historyTable": {
 			"plan": "Plan",
@@ -873,7 +889,8 @@
 					"30 requests per week to DeepSeek-R1",
 					"Unlimited boards and figures",
 					"Images — up to 100 MB"
-				]
+				],
+				"tokensFeature": "10 tokens"
 			},
 			"plus": {
 				"name": "Plus",
@@ -886,7 +903,8 @@
 					"Text-to-speech HD — 15,000 characters total (~20 min audio)",
 					"Unlimited boards, figures and storage space",
 					"Images — up to 100 GB"
-				]
+				],
+				"tokensFeature": "1000 tokens"
 			},
 			"pro": {
 				"name": "Pro",
@@ -937,6 +955,16 @@
 	"quickAdd": {
 		"panel": {
 			"sameObj": "Same object"
+		}
+	},
+	"models": {
+		"descriptions": {
+			"gpt-4o-mini": "Lightweight version of GPT-4o for quick tasks",
+			"gpt-4o": "Powerful model for complex text and analytics",
+			"deepseek-reasoner": "For analysis and information extraction from texts",
+			"flux-schnell": "For analysis and information extraction from texts",
+			"flux-pro": "For analysis and information extraction from texts",
+			"tts-1-hd": "per 1000 characters"
 		}
 	}
 }

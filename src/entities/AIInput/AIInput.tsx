@@ -198,9 +198,9 @@ export const AIInput = () => {
 		board.aiGeneratingOnItem = responseAdded.getId();
 		board.camera.subscribeToItem(responseAdded);
 
-		if (model === "image-generation") {
+		if (model === "flux-schnell" || model === "flux-pro") {
 			const options = {
-				model: "flux-schnell",
+				model: model === "flux-pro" ? "flux-pro" : "flux-schnell",
 				aspect_ratio: "1:1",
 			};
 
@@ -407,9 +407,11 @@ export const AIInput = () => {
 						width={20}
 						height={20}
 						iconName={
-							!!board.aiGeneratingOnItem
-								? "StopAiGeneration"
-								: "AIChatSendArrow"
+							isSendBtnDisabled
+								? "AIChatArrowDisabled"
+								: !!board.aiGeneratingOnItem
+									? "StopAiGeneration"
+									: "AIChatSendArrow"
 						}
 						className={clsx(styles.icon, {
 							[styles.activeIcon]:

@@ -2,10 +2,11 @@ import React, { type MouseEventHandler } from "react";
 import styles from "./PlanCard.module.css";
 import clsx from "clsx";
 import { Icon } from "shared/ui-lib/Icon";
-import { UiButton } from "shared/ui-lib/UiButton";
+import { Button } from "shared/ui-lib/Button";
 import { useTranslation } from "react-i18next";
 import { UiSkeleton } from "shared/ui-lib/UiSkeleton";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";
+import { Tooltip } from "shared/ui-lib/UiButton/Tooltip";
 
 export type PlanState = "current" | "downgrade" | "available" | "pending";
 
@@ -18,12 +19,17 @@ type Props = {
 	unlimited?: boolean;
 	name: string;
 	price?: string | number | null;
+	oldPrice?: number | null;
 	description?: string;
 	features: string[];
+	additionalFeature?: string;
+	additionalFeatureTooltip?: string;
 	onDowngrade?: MouseEventHandler;
 	onSubscribe?: MouseEventHandler;
 	activationDate?: string | Date;
 	isLoading?: boolean;
+	buttonText?: string;
+	isTokenPrice?: boolean;
 };
 
 export function PlanCard({
@@ -33,15 +39,24 @@ export function PlanCard({
 	unlimited,
 	name,
 	price = 0,
+	oldPrice,
 	description,
 	features,
 	onDowngrade,
 	onSubscribe,
 	activationDate,
 	isLoading = false,
+	buttonText,
+	isTokenPrice = false,
+	additionalFeature,
+	additionalFeatureTooltip,
 }: Props) {
 	const { t } = useTranslation();
 	const getButtonLabel = () => {
+		if (buttonText && state === "current") {
+			return buttonText;
+		}
+
 		switch (state) {
 			case "available":
 				return contact
@@ -72,6 +87,10 @@ export function PlanCard({
 			return onSubscribe;
 		}
 
+		if (state === "current" && buttonText) {
+			return onSubscribe;
+		}
+
 		if (state === "downgrade") {
 			return onDowngrade;
 		}
@@ -99,30 +118,75 @@ export function PlanCard({
 						</div>
 					)}
 				</div>
+
 				<div className={styles.price}>
-					{typeof price === "string" ? (
+					{typeof price === "string" && !isTokenPrice ? (
 						price
 					) : (
 						<p className={styles.priceWrapper}>
 							<span>$</span>
 							<span className={styles.priceValue}>
-								{centToUsd(price)}
+								{isTokenPrice
+									? "8"
+									: centToUsd(
+											typeof price === "number"
+												? price
+												: 0,
+										)}
 							</span>
+
 							<span
 								className={clsx(styles.slash, styles.perMonth)}
 							>
 								/
 							</span>
-							<span className={styles.perMonth}>
-								{t("userPlan.perMonth")}
-							</span>
+							<div className={styles.priceWrapper2}>
+								{oldPrice && !isTokenPrice && (
+									<span className={styles.oldPrice}>
+										${centToUsd(oldPrice)}
+									</span>
+								)}
+								<span className={styles.perMonth}>
+									{isTokenPrice
+										? t("userPlan.perThousandTokens")
+										: t("userPlan.perMonth")}
+								</span>
+							</div>
 						</p>
 					)}
 				</div>
+				{state === "downgrade" && (
+					<>
+						{/* <UiSeparator /> */}
+						<Button
+							onClick={getHandler()}
+							className={styles.button}
+							pattern="tertiary"
+						>
+							{getButtonLabel()}
+						</Button>
+					</>
+				)}
 				{description && (
 					<div className={styles.models}>{description}</div>
 				)}
 			</div>
+			{state !== "downgrade" && (
+				<>
+					{/* <UiSeparator /> */}
+					<Button
+						onClick={getHandler()}
+						className={styles.button}
+						disabled={
+							(state === "current" && !buttonText) ||
+							state === "pending"
+						}
+						pattern={state === "pending" ? "tertiary" : "primary"}
+					>
+						{getButtonLabel()}
+					</Button>
+				</>
+			)}
 			<UiSeparator />
 			<ul className={styles.features}>
 				{features.map(feature => (
@@ -136,8 +200,37 @@ export function PlanCard({
 						<span>{feature}</span>
 					</li>
 				))}
+				{additionalFeature && (
+					<li className={styles.feature} key={additionalFeature}>
+						<Icon
+							className={styles.markIcon}
+							width={24}
+							height={24}
+							iconName="checkMark"
+						/>
+						<span>{additionalFeature}</span>
+						<div className={styles.tooltipContainer}>
+							<Icon
+								iconName="InformationLine"
+								width={24}
+								height={24}
+								className={styles.tooltipIcon}
+							/>
+							<Tooltip
+								id={`${name}-${additionalFeature}-tooltip`}
+								tooltip={additionalFeatureTooltip}
+								tooltipPosition="right"
+								tooltipAlign="left"
+								className={styles.tooltip}
+								allowTextWrap={true}
+								width="232px"
+							/>
+						</div>
+					</li>
+				)}
 			</ul>
-			{state !== "downgrade" && (
+
+			{/* {state !== "downgrade" && (
 				<>
 					<UiSeparator />
 					<UiButton
@@ -150,7 +243,7 @@ export function PlanCard({
 						{getButtonLabel()}
 					</UiButton>
 				</>
-			)}
+			)} */}
 		</div>
 	);
 }

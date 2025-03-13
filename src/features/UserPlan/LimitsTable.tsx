@@ -8,42 +8,37 @@ import { useTranslation } from "react-i18next";
 import styles from "./LimitsTable.module.css";
 
 // Smells
-
 const DISPLAYNAME_MAP = {
 	"gpt-4o-mini": "GPT-4o mini",
 	"gpt-4o": "GPT-4o",
-	"deepseek-reasoner": "DeepSeek-R1",
+	"deepseek-reasoner": "DeepSeek",
 	"flux-schnell": "Flux.1 schnell",
-	"tts-1-hd": "Text to speech",
+	"flux-pro": "Flux pro",
+	"tts-1-hd": "Text to speech HD",
 };
 
 const MODELS_ORDER = [
-	"deepseek-reasoner",
 	"gpt-4o-mini",
 	"gpt-4o",
+	"deepseek-reasoner",
 	"flux-schnell",
+	"flux-pro",
+	"tts-1-hd",
 ];
-
-const PER_MONTH_MODELS_ORDER = ["tts-1-hd"];
 
 export function LimitsTable() {
 	const account = useAccount();
 	const models = account.billingInfo?.models;
 	const { t } = useTranslation();
-	const DESCRIPTION_MAP = {
-		"gpt-4o-mini": t("ai.models.gpt-4o-mini.description"),
-		"gpt-4o": t("ai.models.gpt-4o.description"),
-		"deepseek-reasoner": t("ai.models.deepseek-reasoner.description"),
-		"flux-schnell": t("ai.models.image-generation.description"),
-	};
 
 	const sortedModels = models
 		?.filter(({ id }) => MODELS_ORDER.includes(id))
 		.sort(
-			(a, b) => MODELS_ORDER.indexOf(a.id) - MODELS_ORDER.indexOf(b.id),
+			(model1, model2) =>
+				MODELS_ORDER.indexOf(model1.id) -
+				MODELS_ORDER.indexOf(model2.id),
 		);
 
-	const isPerDayLimits = account.billingInfo?.plan.name === "plus";
 	return (
 		<table className={styles.table}>
 			<thead className={styles.row}>
@@ -52,95 +47,47 @@ export function LimitsTable() {
 						{t("userPlan.limitsTable.modelName")}
 					</th>
 					<th>
-						{" "}
-						{isPerDayLimits
-							? t("userPlan.limitsTable.requestsPerDay")
-							: t("userPlan.limitsTable.requestsPerWeek")}
+						Basic
+						<div>{t("userPlan.limitsTable.costPerRequest")}</div>
+					</th>
+					<th>
+						Plus
+						<div>{t("userPlan.limitsTable.costPerRequest")}</div>
 					</th>
 				</tr>
 			</thead>
-			{sortedModels?.map(({ limits, isEnabled, id }) => (
-				<ModelRow
-					name={DISPLAYNAME_MAP[id]}
-					description={DESCRIPTION_MAP[id] ?? ""}
-					limit={limits.daily?.limit || limits.weekly?.limit || 0}
-					remaining={
-						limits.daily?.remaining || limits.weekly?.remaining || 0
-					}
-					enabled={isEnabled}
-				/>
-			))}
+			<tbody>
+				{sortedModels?.map(model => (
+					<ModelRow
+						key={model.id}
+						name={DISPLAYNAME_MAP[model.id] || model.displayName}
+						description={t(`models.descriptions.${model.id}`, "")}
+						tokenCost={model.tokenCost}
+						id={model.id}
+					/>
+				))}
+			</tbody>
 		</table>
 	);
-}
-
-export function PerMonthLimitsTable() {
-	const account = useAccount();
-	const models = account.billingInfo?.models;
-	const { t } = useTranslation();
-	const DESCRIPTION_MAP = {
-		"tts-1-hd": t("ai.models.tts-1-hd.description"),
-	};
-
-	const sortedModels = models
-		?.filter(({ id }) => PER_MONTH_MODELS_ORDER.includes(id))
-		.sort(
-			(a, b) =>
-				PER_MONTH_MODELS_ORDER.indexOf(a.id) -
-				PER_MONTH_MODELS_ORDER.indexOf(b.id),
-		);
-
-	return (
-		<table className={styles.table}>
-			<thead className={styles.row}>
-				<tr className={styles.header}>
-					<th className={styles.modelsHeading}>
-						{t("userPlan.limitsTable.modelName")}
-					</th>
-					<th className={styles.limit}>
-						{t("userPlan.limitsTable.requestsPerMonth")}
-					</th>
-				</tr>
-			</thead>
-			{sortedModels?.map(({ limits, isEnabled, id }) => (
-				<ModelRow
-					name={DISPLAYNAME_MAP[id]}
-					description={DESCRIPTION_MAP[id] ?? ""}
-					limit={limits.monthly?.limit || 0}
-					remaining={limits.monthly?.remaining || 0}
-					enabled={isEnabled}
-					isAudio
-				/>
-			))}
-		</table>
-	);
-}
-
-function calculateAudioLength(symbolsCount: number): number {
-	const symbolsPerMinute = 750;
-	return Math.floor(symbolsCount / symbolsPerMinute);
 }
 
 type ModelRowProps = {
 	name: string;
 	description: string;
-	remaining: number | null;
-	limit: number | null;
-	enabled: boolean;
-	isAudio?: boolean;
+	tokenCost: number;
+	id: string;
 };
 
-function ModelRow({
-	description,
-	limit,
-	name,
-	remaining,
-	enabled,
-	isAudio = false,
-}: ModelRowProps) {
+function ModelRow({ description, name, tokenCost, id }: ModelRowProps) {
 	const { t } = useTranslation();
 	const { elementRef, rect } = useBoundingClientRect<HTMLTableCellElement>();
 	const { handlePointerEnter, handlePointerLeave, isHover } = useHoverState();
+
+	const isAvailableInBasic = id === "gpt-4o-mini";
+	const isAvailableInPlus = tokenCost > 0;
+
+	const basicCost = isAvailableInBasic ? tokenCost : null;
+
 	return (
 		<tr className={styles.row}>
 			<td className={styles.model}>
@@ -148,35 +95,30 @@ function ModelRow({
 				<p className={styles.modelDescription}>{description}</p>
 			</td>
 			<td
-				onPointerEnter={handlePointerEnter}
-				onPointerLeave={handlePointerLeave}
-				ref={elementRef}
 				className={clsx(
 					styles.limit,
-					!enabled && styles.modelDisabled,
-					remaining === 0 && styles.modelLimitReached,
+					!isAvailableInBasic && styles.modelDisabled,
 				)}
 			>
-				{enabled ? (
-					!remaining ? (
-						<span className={styles.unlimited}>
-							{t("userPlan.unlimited")}
-						</span>
-					) : (
-						<>
-							{remaining}/{limit}{" "}
-							{isAudio
-								? t("userPlan.limitsTable.symbols")
-								: t("userPlan.limitsTable.requests")}
-							{isAudio && <br />}
-							{isAudio
-								? `(~${calculateAudioLength(remaining)}/${calculateAudioLength(limit ?? 0)} ${t("userPlan.limitsTable.audioLengthMinutes")})`
-								: ""}
-						</>
-					)
+				{isAvailableInBasic
+					? basicCost
+					: t("userPlan.limitsTable.unavailable")}
+			</td>
+			<td
+				onPointerEnter={
+					!isAvailableInPlus ? handlePointerEnter : undefined
+				}
+				onPointerLeave={
+					!isAvailableInPlus ? handlePointerLeave : undefined
+				}
+				ref={elementRef}
+				className={styles.limit}
+			>
+				{isAvailableInPlus ? (
+					tokenCost
 				) : (
 					<>
-						0/0
+						{t("userPlan.limitsTable.unavailable")}
 						<Tooltip
 							text={t("userPlan.limitsTable.availableOnPlus")}
 							x={(rect?.left ?? 0) + (rect?.width ?? 0) - 55}
@@ -190,14 +132,14 @@ function ModelRow({
 	);
 }
 
-type Props = {
+type TooltipProps = {
 	text: string;
 	x?: number;
 	y?: number;
 	visible?: boolean;
 };
 
-function Tooltip({ text, x, y, visible }: Props) {
+function Tooltip({ text, x, y, visible }: TooltipProps) {
 	return createPortal(
 		<div
 			className={clsx(

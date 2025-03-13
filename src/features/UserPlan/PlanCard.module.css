@@ -12,7 +12,7 @@
 }
 
 .current {
-	box-shadow: 0px 0px 0px 2px #9117f0;
+	/* box-shadow: 0px 0px 0px 2px #9117f0; */
 }
 
 .basic {
@@ -66,6 +66,8 @@
 	color: rgba(20, 21, 26, 1);
 	font-size: 16px;
 	position: relative;
+	display: flex;
+	align-items: center;
 }
 
 .markIcon {
@@ -108,6 +110,23 @@
 	color: rgba(20, 21, 26, 1);
 }
 
+.priceWrapper2 {
+	display: flex;
+	align-items: flex-end;
+	flex-direction: column;
+	color: rgba(13, 17, 38, 0.4);
+	font-size: 36px;
+	font-weight: 500;
+}
+
+.oldPrice {
+	font-size: 14px;
+	text-decoration: line-through;
+	color: #9ea0a8;
+	align-self: flex-start;
+	transform: translateY(-6px);
+}
+
 .perMonth {
 	font-size: 14px;
 	align-self: flex-end;
@@ -116,4 +135,31 @@
 
 .slash {
 	margin: 0 4px;
+}
+
+.tooltipContainer {
+	margin-left: 8px;
+	position: relative;
+	display: inline-flex;
+	cursor: pointer;
+}
+
+.tooltipIcon {
+	color: rgba(15, 19, 36, 0.6);
+}
+
+.tooltip {
+	display: none;
+	position: absolute;
+	top: 0;
+	right: 100%;
+	margin-right: 8px;
+	z-index: 100;
+}
+
+@media screen and (hover: hover) {
+	.tooltipContainer:hover .tooltip {
+		display: flex;
+		width: 232px;
+	}
 }

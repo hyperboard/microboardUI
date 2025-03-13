@@ -122,6 +122,7 @@ export type IconId =
 	| "Hyperlink"
 	| "EditPen"
 	| "StopAiGeneration"
+	| "AIChatArrowDisabled"
 	| "Vector"
 	| "ArrowUpCircle"
 	| "ai"
@@ -141,7 +142,8 @@ export type IconId =
 	| "ETH"
 	| "POL"
 	| "ExportFile"
-	| "ExportPNG";
+	| "ExportPNG"
+	| "InformationLine";
 
 type Props = {
 	iconName: IconId;

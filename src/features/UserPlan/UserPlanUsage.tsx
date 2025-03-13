@@ -5,6 +5,7 @@ import { Icon } from "shared/ui-lib/Icon";
 import { LIMITS_MODAL_ID } from "features/UserPlan/LimitsModal";
 import { HISTORY_MODAL_ID } from "features/UserPlan/HistoryModal";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
+import { useAccount } from "App/useAccount";
 
 type Props = {
 	cancellationDate?: string | Date;
@@ -38,6 +39,7 @@ export function UserPlanUsage({
 }: Props) {
 	const { t, i18n } = useTranslation();
 	const { openModal } = useUiModalContext();
+	const account = useAccount();
 
 	const handleOpenLimitsModal = () => openModal(LIMITS_MODAL_ID);
 	const handleOpenHistoryModal = () => openModal(HISTORY_MODAL_ID);
@@ -64,90 +66,91 @@ export function UserPlanUsage({
 
 	return (
 		<div className={styles.container}>
-			<p className={styles.planUsage}>
-				{isFree ? (
-					<>
-						<Trans
-							t={t}
-							i18nKey={"userPlan.currentPlanFree"}
-							components={[<span />]}
-						/>{" "}
-						{history ? (
-							hasHistory ? (
+			<div className={styles.planUsageText}>
+				<p className={styles.planUsage}>
+					{isFree ? (
+						<>
+							<Trans
+								t={t}
+								i18nKey={"userPlan.currentPlanFree"}
+								components={[<span key="freeSpan" />]}
+							/>{" "}
+							{!history && (
+								<span
+									className={styles.limitsBtn}
+									onClick={handleOpenLimitsModal}
+								>
+									{t("userPlan.limits")}{" "}
+									<Icon
+										width={24}
+										height={24}
+										iconName="ArrowRightSm"
+									/>
+								</span>
+							)}
+						</>
+					) : (
+						<>
+							{status === "pending_cancellation" ? (
+								<span>
+									{t("userPlan.currentPlanPending", {
+										planName,
+										cancellationDate:
+											formattedCancellationDate,
+									})}
+								</span>
+							) : (
+								<span>
+									{t("userPlan.currentPlanActive", {
+										planName,
+										cancellationDate:
+											formattedPreviousCancellationDate,
+										tokensBalance:
+											account.billingInfo?.tokens
+												.totalTokensBalance || 0,
+									})}
+								</span>
+							)}
+						</>
+					)}
+				</p>
+
+				<p className={styles.paymentActions}>
+					{status === "active" && onCancel && (
+						<span onClick={onCancel} className={styles.cancel}>
+							{t("userPlan.cancelPayment")}
+						</span>
+					)}
+					{history
+						? hasHistory && (
 								<span
 									onClick={handleOpenHistoryModal}
 									className={styles.limitsBtn}
 								>
 									{t("userPlan.paymentHistoryHeading")}
+									{!isFree && "."}
 								</span>
-							) : null
-						) : (
-							<span
-								className={styles.limitsBtn}
-								onClick={handleOpenLimitsModal}
-							>
-								{t("userPlan.limits")}{" "}
-								<Icon
-									width={24}
-									height={24}
-									iconName="ArrowRightSm"
-								/>
-							</span>
-						)}
-					</>
-				) : (
-					<>
-						{status === "pending_cancellation" ? (
-							<span>
-								{t("userPlan.currentPlanPending", {
-									planName,
-									cancellationDate: formattedCancellationDate,
-								})}
-							</span>
-						) : (
-							<span>
-								{t("userPlan.currentPlanActive", {
-									planName,
-									cancellationDate:
-										formattedPreviousCancellationDate,
-								})}
-							</span>
-						)}{" "}
-						{history ? (
-							hasHistory ? (
+							)
+						: !isFree && (
 								<span
-									onClick={handleOpenHistoryModal}
 									className={styles.limitsBtn}
+									onClick={handleOpenLimitsModal}
 								>
-									{t("userPlan.paymentHistoryHeading")}.
+									{status === "active"
+										? t("userPlan.nextPayment", {
+												paymentDate:
+													formattedCancellationDate,
+											})
+										: t("userPlan.limits")}
+									<Icon
+										width={24}
+										height={24}
+										iconName="ArrowRightSm"
+									/>
 								</span>
-							) : null
-						) : (
-							<span
-								className={styles.limitsBtn}
-								onClick={handleOpenLimitsModal}
-							>
-								{status === "active"
-									? t("userPlan.nextPayment", {
-											paymentDate:
-												formattedCancellationDate,
-										})
-									: t("userPlan.limits")}
-								<Icon
-									width={24}
-									height={24}
-									iconName="ArrowRightSm"
-								/>
-							</span>
-						)}
-					</>
-				)}{" "}
-				{status === "active" && onCancel && (
-					<span onClick={onCancel} className={styles.cancel}>
-						{t("userPlan.cancelPayment")}
-					</span>
-				)}
-			</p>
+							)}{" "}
+				</p>
+			</div>
 		</div>
 	);
 }

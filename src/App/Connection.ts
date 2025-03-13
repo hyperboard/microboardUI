@@ -169,8 +169,7 @@ type ImageModels =
 	| "midjourney"
 	| "flux-schnell"
 	| "flux-pro"
-	| "recraft"
-	| "image-generation";
+	| "recraft";
 
 type TextToSpeechModels = "tts-1-hd";
 

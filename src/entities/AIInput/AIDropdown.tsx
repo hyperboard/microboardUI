@@ -8,12 +8,12 @@ import React, { MouseEventHandler } from "react";
 import { useTranslation } from "react-i18next";
 import { useClickOutside } from "shared/lib/useClickOutside";
 import { Chevron } from "shared/ui-lib/Dropdown/Chevron";
+import { Tooltip } from "shared/ui-lib/UiButton/Tooltip";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { UiPanel } from "shared/ui-lib/UiPanel";
 import { useAIContext } from "./AIContext";
 import styles from "./AIInput.module.css";
 import { StarIcon } from "./StarIcon";
-import { Tooltip } from "shared/ui-lib/Tooltip";
 
 type AIDropdownProps = {
 	board: Board;
@@ -23,12 +23,19 @@ type AIDropdownProps = {
 	setIsDropdownOpen: (isDropdownOpen: boolean) => void;
 };
 
-const models: OpenAIModels[] = [
-	"tts-1-hd",
-	"image-generation",
-	"gpt-4o",
-	"gpt-4o-mini",
-	"deepseek-reasoner",
+type ModelInfo = {
+	id: OpenAIModels;
+	tokens: number;
+};
+
+// TODO: Fetch from api?
+const modelTokens: ModelInfo[] = [
+	{ id: "tts-1-hd", tokens: 6 }, // per 1000 characters
+	{ id: "gpt-4o", tokens: 4 },
+	{ id: "gpt-4o-mini", tokens: 0.3 },
+	{ id: "deepseek-reasoner", tokens: 2 },
+	{ id: "flux-schnell", tokens: 2 },
+	{ id: "flux-pro", tokens: 12 },
 ];
 
 // const getModelDisplayName = (
@@ -142,23 +149,28 @@ export const Dropdown = (
 
 	return (
 		<>
-			{models.map((model, index) => (
+			{modelTokens.map((modelInfo, index) => (
 				<button
 					key={index}
 					className={clsx(styles.modelBtn)}
 					onClick={
-						isModelDisabled(model)
+						isModelDisabled(modelInfo.id)
 							? handleOpenModal
-							: selectModel(model)
+							: selectModel(modelInfo.id)
 					}
 				>
-					<strong>
-						{isPhoneScreen
-							? t(`ai.models.${model}.mobileTitle`)
-							: t(`ai.models.${model}.title`)}
-					</strong>
-					<p>{t(`ai.models.${model}.description`)}</p>
-					{getDropDownTooltip(model)}
+					<div className={styles.modelBtnHeader}>
+						<strong>
+							{isPhoneScreen
+								? t(`ai.models.${modelInfo.id}.mobileTitle`)
+								: t(`ai.models.${modelInfo.id}.title`)}
+						</strong>
+						<span className={styles.tokenBadge}>
+							{modelInfo.tokens} tokens
+						</span>
+					</div>
+					<p>{t(`ai.models.${modelInfo.id}.description`)}</p>
+					{getDropDownTooltip(modelInfo.id)}
 				</button>
 			))}
 		</>

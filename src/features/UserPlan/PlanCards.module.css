@@ -16,3 +16,11 @@
 	text-align: left;
 	padding: 32px 64px;
 }
+
+.tooltip {
+	display: none;
+	position: absolute;
+	top: -35px;
+	left: 50%;
+	transform: translateX(-50%);
+}

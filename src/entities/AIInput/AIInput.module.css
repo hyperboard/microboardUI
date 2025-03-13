@@ -112,6 +112,24 @@
 	padding: 5px;
 }
 
+.modelBtnHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+	margin-bottom: 5px;
+}
+
+.tokenBadge {
+	background: #fff;
+	padding: 2px 8px;
+	border-radius: 6px;
+	border: 1px solid rgba(10, 15, 41, 0.08);
+	font-size: 12px;
+	color: #666;
+	font-weight: 500;
+}
+
 .modelBtn {
 	padding: 10px 15px;
 	cursor: pointer;
@@ -129,9 +147,12 @@
 	background-color: #0a0f290a;
 }
 
+.modelBtn:hover:not(.disabled) .tokenBadge {
+	border-color: white;
+}
+
 .modelBtn strong {
 	display: block;
-	margin-bottom: 5px;
 	font-weight: normal;
 	color: black;
 }

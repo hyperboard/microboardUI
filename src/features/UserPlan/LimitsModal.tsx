@@ -4,10 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Icon } from "shared/ui-lib/Icon";
 import { useConfirmModalContext } from "features/Modal/ConfirmModal";
 import { notify } from "shared/ui-lib/Toast";
-import {
-	LimitsTable,
-	PerMonthLimitsTable,
-} from "features/UserPlan/LimitsTable";
+import { LimitsTable } from "features/UserPlan/LimitsTable";
 import { PLAN_NAMES } from "features/UserPlan/PlanCards";
 import { USER_PLAN_MODAL_ID } from "features/UserPlan/UserPlanModal";
 import { UserPlanUsage } from "features/UserPlan/UserPlanUsage";
@@ -40,9 +37,7 @@ export function LimitsModal() {
 						year: "numeric",
 						month: "numeric",
 						day: "numeric",
-					}).format(
-						new Date(account.billingInfo?.plan.periodEnd ?? 0),
-					),
+					}).format(new Date(account.billingInfo?.plan.endDate ?? 0)),
 				})}
 			</p>,
 			async () => {
@@ -69,7 +64,7 @@ export function LimitsModal() {
 					{t("userPlan.currentPlanHeading")}
 				</h1>
 				<UserPlanUsage
-					cancellationDate={account.billingInfo?.plan.periodEnd}
+					cancellationDate={account.billingInfo?.plan.endDate}
 					planName={
 						PLAN_NAMES[account.billingInfo?.plan.name ?? "basic"]
 					}
@@ -85,7 +80,6 @@ export function LimitsModal() {
 				/>
 				<main className={styles.tables}>
 					<LimitsTable />
-					<PerMonthLimitsTable />
 				</main>
 				<button className={styles.plansBtn} onClick={handleBackButton}>
 					<Icon iconName="ArrowLeft1" />
