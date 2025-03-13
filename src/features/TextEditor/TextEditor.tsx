@@ -224,6 +224,8 @@ export class TextEditor extends React.Component<
 				text.editor.moveCursorToEndOfTheText(50);
 				return false;
 			}
+			event.preventDefault();
+			event.stopPropagation();
 			return true;
 		}
 		return false;

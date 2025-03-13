@@ -1,4 +1,4 @@
-import type { ShapeData } from "Board/Items";
+import type { ItemType, ShapeData } from "Board/Items";
 import { ConnectorLineStyle } from "Board/Items/Connector";
 import type { ConnectionLineWidth } from "Board/Items/Connector/Connector";
 import { ConnectorEdge } from "Board/Items/Connector/Pointers";
@@ -6,6 +6,7 @@ import { ConnectorPointerStyle } from "Board/Items/Connector/Pointers/Pointers";
 import type { BorderStyle } from "Board/Items/Path";
 import type { TextStyle } from "Board/Items/RichText";
 import type { StickerData } from "Board/Items/Sticker/StickerOperation";
+import { DefaultTextStyles } from "Board/Items/RichText/RichText";
 
 export class SessionStorage {
 	private set<T>(key: string, value: T): void {
