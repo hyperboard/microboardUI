@@ -369,7 +369,15 @@
 		"sessionExpired": "Session expired. Please login again",
 		"newsletter": "I agree to receive product updates and promotional materials from",
 		"loginWith": "Other options",
-		"googleAuth": "Sing in with Google"
+		"googleAuth": "Sing in with Google",
+		"signinNotifyError": {
+			"title": "Login failed",
+			"text": "Please try again later."
+		},
+		"signupNotifyError": {
+			"title": "Sign up failed",
+			"text": "Please try again later."
+		}
 	},
 	"modal": {
 		"canEdit": "Can edit",

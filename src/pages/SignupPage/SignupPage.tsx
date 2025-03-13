@@ -13,6 +13,11 @@ import isEmail from "validator/lib/isEmail";
 import styles from "./SignupPage.module.css";
 import { EmailIcon } from "./EmailIcon";
 import { LockIcon } from "./LockIcon";
+import { useUiModalContext } from "shared/ui-lib/UiModal";
+import {
+	ERROR_SIGNUP_NOTIFY,
+	SignupErrorNotification,
+} from "features/Notifications";
 
 export const SignupPage = (): React.ReactElement => {
 	const { t } = useTranslation();
@@ -26,6 +31,7 @@ export const SignupPage = (): React.ReactElement => {
 	const [error, setError] = useState<string>("");
 	const [emailError, setEmailError] = useState<string>("");
 	const account = useAccount();
+	const { openModal } = useUiModalContext();
 
 	const next = (): void => {
 		if (isDisabled) {
@@ -142,6 +148,9 @@ export const SignupPage = (): React.ReactElement => {
 			})
 			.catch(error => {
 				// setErrorMessage(error.message);
+				if (error.status === 500 || error.status === 400) {
+					openModal(ERROR_SIGNUP_NOTIFY);
+				}
 			})
 			.finally(() => {
 				setIsDisabled(false);
@@ -155,112 +164,115 @@ export const SignupPage = (): React.ReactElement => {
 	// const dbCheckForm = checkForm;
 
 	return (
-		<AuthForm
-			onSubmit={onSubmit}
-			ref={formRef}
-			id="sign-up"
-			title={t("auth.signUpForFree")}
-			showAnotherAuthWay
-		>
-			{showNameInput ? (
-				<Input
-					id="name"
-					onChange={ev => {
-						setUsername(ev.target.value);
-						checkName(ev.target.value);
-					}}
-					prefixIcon={
-						<Icon iconName="human" width={20} height={20} />
-					}
-					iconColor="rgba(13, 17, 38, 0.4)"
-					placeholder={t("auth.name")}
-					hasError={!!error}
-					errorText={error}
-					helperText={error ? "" : t("auth.nameDesc")}
-				/>
-			) : (
-				<>
-					<Input
-						prefixIcon={<EmailIcon />}
-						id="email"
-						type="text"
-						placeholder={t("auth.emailPlaceholder")}
-						onBlur={checkForm}
-						hasError={!!emailError}
-						errorText={emailError}
-					/>
-					<Input
-						prefixIcon={<LockIcon />}
-						id="password"
-						errorText={error}
-						password
-						hasError={!!error}
-						placeholder={t("auth.passwordPlaceholder")}
-						helperText={t("auth.passwordAtLeast")}
-						onInput={checkForm}
-					/>
-				</>
-			)}
-
-			<div className={styles.btns}>
+		<>
+			<AuthForm
+				onSubmit={onSubmit}
+				ref={formRef}
+				id="sign-up"
+				title={t("auth.signUpForFree")}
+				showAnotherAuthWay
+			>
 				{showNameInput ? (
-					<UiButton
-						variant="primary"
-						disabled={isDisabled}
-						type="button"
-						onClick={ev => {
-							ev.preventDefault();
-							next();
+					<Input
+						id="name"
+						onChange={ev => {
+							setUsername(ev.target.value);
+							checkName(ev.target.value);
 						}}
-						size="lg"
-					>
-						{t("auth.next")}
-					</UiButton>
+						prefixIcon={
+							<Icon iconName="human" width={20} height={20} />
+						}
+						iconColor="rgba(13, 17, 38, 0.4)"
+						placeholder={t("auth.name")}
+						hasError={!!error}
+						errorText={error}
+						helperText={error ? "" : t("auth.nameDesc")}
+					/>
 				) : (
 					<>
-						<Checkbox
-							checked
-							onChange={onNewsletterChange}
-							className={styles.checkboxWr}
-						>
-							<span className={styles.newsletter}>
-								{t("auth.newsletter")}
-								<OuterLink
-									href={
-										"https://microboard.io/privacy-policy"
-									}
-									className={styles.newsletterLink}
-								>
-									{" "}
-									Microboard.io
-								</OuterLink>
-							</span>
-						</Checkbox>
-						<UiButton
-							type="submit"
-							disabled={isDisabled}
-							loading={isSubmitLoading}
-							variant="primary"
-							size="lg"
-						>
-							{t("auth.submit")}
-							<Tail />
-						</UiButton>
+						<Input
+							prefixIcon={<EmailIcon />}
+							id="email"
+							type="text"
+							placeholder={t("auth.emailPlaceholder")}
+							onBlur={checkForm}
+							hasError={!!emailError}
+							errorText={emailError}
+						/>
+						<Input
+							prefixIcon={<LockIcon />}
+							id="password"
+							errorText={error}
+							password
+							hasError={!!error}
+							placeholder={t("auth.passwordPlaceholder")}
+							helperText={t("auth.passwordAtLeast")}
+							onInput={checkForm}
+						/>
 					</>
 				)}
-				<UiButton
-					variant="ghost"
-					onClick={ev => {
-						ev.preventDefault();
-						navigate(`/auth/sign-in${location.search}`);
-					}}
-					className={styles.login}
-					type="button"
-					size="lg"
-				>
-					{t("auth.signIn")}
-				</UiButton>
-			</div>
-		</AuthForm>
+
+				<div className={styles.btns}>
+					{showNameInput ? (
+						<UiButton
+							variant="primary"
+							disabled={isDisabled}
+							type="button"
+							onClick={ev => {
+								ev.preventDefault();
+								next();
+							}}
+							size="lg"
+						>
+							{t("auth.next")}
+						</UiButton>
+					) : (
+						<>
+							<Checkbox
+								checked
+								onChange={onNewsletterChange}
+								className={styles.checkboxWr}
+							>
+								<span className={styles.newsletter}>
+									{t("auth.newsletter")}
+									<OuterLink
+										href={
+											"https://microboard.io/privacy-policy"
+										}
+										className={styles.newsletterLink}
+									>
+										{" "}
+										Microboard.io
+									</OuterLink>
+								</span>
+							</Checkbox>
+							<UiButton
+								type="submit"
+								disabled={isDisabled}
+								loading={isSubmitLoading}
+								variant="primary"
+								size="lg"
+							>
+								{t("auth.submit")}
+								<Tail />
+							</UiButton>
+						</>
+					)}
+					<UiButton
+						variant="ghost"
+						onClick={ev => {
+							ev.preventDefault();
+							navigate(`/auth/sign-in${location.search}`);
+						}}
+						className={styles.login}
+						type="button"
+						size="lg"
+					>
+						{t("auth.signIn")}
+					</UiButton>
+				</div>
+			</AuthForm>
+			<SignupErrorNotification />
+		</>
 	);
 };

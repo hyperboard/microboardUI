@@ -12,6 +12,11 @@ import { isEmail } from "shared/lib/regex";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { Input } from "shared/ui-lib/Input/Input";
 import styles from "./SigninPage.module.css";
+import {
+	ERROR_SIGNIN_NOTIFY,
+	SigninErrorNotification,
+} from "features/Notifications";
+import { useUiModalContext } from "shared/ui-lib/UiModal";
 
 export const SigninPage: React.FC = (): React.ReactElement => {
 	const { t } = useTranslation();
@@ -24,6 +29,7 @@ export const SigninPage: React.FC = (): React.ReactElement => {
 	const [errorText, setErrorText] = useState<string>("");
 	const account = useAccount();
 	const boards = useBoardsList();
+	const { openModal } = useUiModalContext();
 
 	const onSubmit = async (
 		event: React.FormEvent<HTMLFormElement>,
@@ -63,6 +69,9 @@ export const SigninPage: React.FC = (): React.ReactElement => {
 					"sign in error:",
 					error?.message === "User not activated",
 				);
+				if (error.status === 400) {
+					openModal(ERROR_SIGNIN_NOTIFY);
+				}
 				if (error?.message === "User not activated") {
 					const form = formRef.current;
 					const email = form?.email.value;
@@ -182,6 +191,7 @@ export const SigninPage: React.FC = (): React.ReactElement => {
 					</UiButton>
 				</div>
 			</AuthForm>
+			<SigninErrorNotification />
 		</>
 	);
 };
