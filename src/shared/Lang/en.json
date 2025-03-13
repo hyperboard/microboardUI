@@ -465,7 +465,7 @@
 	},
 	"ok": "Ok",
 	"noBoard": {
-		"title": "No board is open",
+		"title": "Ready to begin?",
 		"chooseBoard": "Open a board",
 		"createNewBoard": "New board"
 	},

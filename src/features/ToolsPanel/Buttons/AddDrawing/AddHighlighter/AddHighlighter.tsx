@@ -11,7 +11,11 @@ import { ButtonWithMenu } from "../../ButtonWithMenu";
 import style from "./AddHighlighter.module.css";
 import { useAddDrawingContext } from "../AddDrawingContext";
 import { UiButton } from "shared/ui-lib/UiButton";
-import { convertHexToRGBA, rgbToRgba } from "shared/lib/convertColors";
+import {
+	convertHexToRGBA,
+	rgbaToRgb,
+	rgbToRgba,
+} from "shared/lib/convertColors";
 
 export function AddHighlighter() {
 	const [isColorSelected, setIsColorSelected] = useState(false);
