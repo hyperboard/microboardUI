@@ -19,7 +19,6 @@ import { notify } from "shared/ui-lib/Toast/notify";
 import { UiPanel } from "shared/ui-lib/UiPanel";
 import { ViewModeGuard } from "features/ViewModeGuard";
 import { getApiUrl } from "../../Config";
-import { CreateTemplateModal } from "../Templates";
 import style from "./TitlePanel.module.css";
 import { useClickOutside } from "shared/lib/useClickOutside";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";
@@ -329,14 +328,12 @@ function ExportDropdown({
 			}}
 		>
 			<div onClick={openExport}>
-				<strong>PNG</strong>
-				<p>{t("export.PNGDescription")}</p>
+				<Icon iconName="ExportPNG" width={15} height={15} />
+				<p>{t("export.PNGTitle")}</p>
 			</div>
 			<div onClick={exportHTML}>
-				<strong>
-					HTML<span className={style.betaTag}>Beta</span>
-				</strong>
-				<p>{t("export.HTMLDescription")}</p>
+				<Icon iconName="ExportFile" width={15} height={15} />
+				<p>{t("export.HTMLTitle")}</p>
 			</div>
 		</div>,
 		document.body,

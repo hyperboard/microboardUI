@@ -2,7 +2,6 @@
 	position: absolute;
 	top: -60px;
 	left: var(--absolute-position-panel-padding);
-	overflow: hidden;
 }
 
 .logoWrapper.viewMode {
@@ -48,20 +47,22 @@ input.rename {
 	left: 86%;
 	background-color: white;
 	border: 1px solid rgba(204, 204, 204, 0.5);
-	width: 300px;
-	z-index: 10;
 	border-radius: 8px;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	padding: 5px;
 	display: flex;
 	flex-direction: column;
 	gap: 5px;
+	z-index: 100;
 }
 
 .exportDropdown > div {
 	padding: 10px;
 	cursor: pointer;
 	border-radius: 8px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
 }
 
 .exportDropdown > div:hover {
@@ -84,8 +85,9 @@ input.rename {
 
 .exportDropdown p {
 	margin: 0;
-	color: #666;
-	font-size: 12px;
+	color: rgba(20, 21, 26, 1);
+	font-size: 14px;
+	line-height: 20px;
 }
 
 .betaTag {

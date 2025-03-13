@@ -8,7 +8,6 @@ import { Icon } from "shared/ui-lib/Icon/Icon";
 import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
 import { useTranslation } from "react-i18next";
 import { SETTINGS } from "Board/Settings";
-import { t } from "i18next";
 import { notify } from "shared/ui-lib/Toast/notify";
 
 export const HyperLinkInput = () => {
@@ -68,15 +67,16 @@ export const HyperLinkInput = () => {
 	const handleConfirmBtnClick = () => {
 		if (!SETTINGS.URL_REGEX.test(inputValue)) {
 			notify({
-				header: t("hyperLink.error"),
+				header: t("hyperLink.errorTitle"),
+				body: t("hyperLink.errorBody"),
 				variant: "error",
 				duration: 3000,
 			});
 		} else {
 			board.selection.setHyperLink(inputValue, hyperLinkData.selection);
+			setInputValue("");
+			setIsEditingLink(false);
 		}
-		setInputValue("");
-		setIsEditingLink(false);
 	};
 
 	const handleInputClick = (
@@ -85,6 +85,21 @@ export const HyperLinkInput = () => {
 		event.stopPropagation();
 		if (board.selection.getContext() === "EditTextUnderPointer") {
 			board.selection.setContext("EditUnderPointer");
+		}
+	};
+
+	const onPaste = (event: React.ClipboardEvent<HTMLInputElement>): void => {
+		event.stopPropagation();
+		if (
+			!SETTINGS.URL_REGEX.test(event.clipboardData.getData("text/plain"))
+		) {
+			event.preventDefault();
+			notify({
+				header: t("hyperLink.errorTitle"),
+				body: t("hyperLink.errorBody"),
+				variant: "error",
+				duration: 3000,
+			});
 		}
 	};
 
@@ -167,7 +182,7 @@ export const HyperLinkInput = () => {
 						value={inputValue}
 						onClick={handleInputClick}
 						onFocus={event => event.currentTarget.select()}
-						onPaste={event => event.stopPropagation()}
+						onPaste={onPaste}
 						onChange={e => setInputValue(e.target.value)}
 					/>
 					<button
