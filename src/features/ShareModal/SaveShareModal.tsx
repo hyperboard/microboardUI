@@ -5,6 +5,7 @@ import styles from "./SaveShareModal.module.css";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { SHARE_MODAL_ID } from "./ShareModal";
 import { Icon } from "shared/ui-lib/Icon";
+import { useTranslation } from "react-i18next";
 
 export const SAVE_SHARE_MODAL = Symbol("saveShareModal");
 type SaveShareModalType = {
@@ -13,6 +14,7 @@ type SaveShareModalType = {
 
 export function SaveShareModal({ onSave }: SaveShareModalType): JSX.Element {
 	const { openModal, closeModal } = useUiModalContext();
+	const { t } = useTranslation();
 	const onBackBtnClick: React.MouseEventHandler<HTMLButtonElement> = (
 		ev,
 	): void => {
@@ -30,20 +32,22 @@ export function SaveShareModal({ onSave }: SaveShareModalType): JSX.Element {
 			disableClose
 		>
 			<div className={styles.container}>
-				<h2 className={styles.title}>Сохранить изменения?</h2>
+				<h2 className={styles.title}>
+					{t("sharing.saveSharing.title")}
+				</h2>
 				<UiButton
 					variant="quaternary"
 					onClick={closeModal}
 					className={styles.btn}
 				>
-					Не сохранять
+					{t("sharing.saveSharing.notSaveBtn")}
 				</UiButton>
 				<UiButton
 					variant="primary"
 					onClick={onSave}
 					className={styles.btn}
 				>
-					Сохранить
+					{t("sharing.saveSharing.saveBtn")}
 				</UiButton>
 			</div>
 			<UiButton
@@ -52,7 +56,7 @@ export function SaveShareModal({ onSave }: SaveShareModalType): JSX.Element {
 				className={styles.backBtn}
 			>
 				<Icon iconName={"ArrowLeft1"} />
-				Back to access settings
+				{t("sharing.saveSharing.backBtn")}
 			</UiButton>
 		</UiModal>
 	);

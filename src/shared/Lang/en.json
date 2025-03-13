@@ -29,7 +29,6 @@
 		"connectorEndPointer": {
 			"tooltip": "End style"
 		},
-
 		"connectorStartPointer": {
 			"tooltip": "Start style"
 		},
@@ -757,7 +756,13 @@
 		"loggedIn": "You are logged in to your <1>{{account}}</1> account.",
 		"loggedInCrypto": "You are logged in to your Crypto wallet: <1>{{account}}</1> account.",
 		"accessDenied": "Access denied",
-		"addAccessLevel": "Add one more access level"
+		"addAccessLevel": "Add one more access level",
+		"saveSharing": {
+			"title": "Save changes?",
+			"saveBtn": "Save",
+			"notSaveBtn": "Don't Save",
+			"backBtn": "Back to access settings"
+		}
 	},
 	"presence": {
 		"anonymous": "Anonymous",
