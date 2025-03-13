@@ -22,6 +22,7 @@ type Props = PropsWithChildren<
 		closeByBgClick?: boolean;
 		renderAsPageOnMobile?: boolean;
 		wrClassName?: string;
+		disableClose?: boolean;
 		[key: string]: unknown;
 	}
 >;
@@ -35,6 +36,7 @@ export function UiModal({
 	closeByBgClick = true,
 	renderAsPageOnMobile = true,
 	wrClassName,
+	disableClose = false,
 	...otherProps
 }: Props): JSX.Element | null {
 	const {
@@ -103,27 +105,29 @@ export function UiModal({
 					renderAsPage && styles.page,
 				)}
 			>
-				<div
-					className={clsx(
-						styles.closeBtnWrapper,
-						renderAsPage && styles.page,
-					)}
-				>
-					{closeButton ? (
-						closeButton(handleClose)
-					) : (
-						<UiButton
-							variant="secondary"
-							className={clsx(
-								styles.closeBtn,
-								renderAsPage && styles.page,
-							)}
-							onClick={handleClose}
-						>
-							<Icon width={28} height={28} iconName="Close" />
-						</UiButton>
-					)}
-				</div>
+				{!disableClose && (
+					<div
+						className={clsx(
+							styles.closeBtnWrapper,
+							renderAsPage && styles.page,
+						)}
+					>
+						{closeButton ? (
+							closeButton(handleClose)
+						) : (
+							<UiButton
+								variant="secondary"
+								className={clsx(
+									styles.closeBtn,
+									renderAsPage && styles.page,
+								)}
+								onClick={handleClose}
+							>
+								<Icon width={28} height={28} iconName="Close" />
+							</UiButton>
+						)}
+					</div>
+				)}
 				<header
 					className={clsx(styles.header, renderAsPage && styles.page)}
 				>

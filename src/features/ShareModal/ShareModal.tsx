@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { useContextMenuContext } from "features/ContextMenu";
 import { UserAvatar } from "features/UserPanel/UserAvatar/UserAvatar";
 import i18next from "i18next";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { usersApi } from "shared/api";
@@ -27,6 +27,7 @@ import { UiSeparator } from "shared/ui-lib/UiSeparator";
 import { UiSkeleton } from "shared/ui-lib/UiSkeleton";
 import { SearchInput } from "./SearchInput";
 import styles from "./ShareModal.module.css";
+import { SAVE_SHARE_MODAL, SaveShareModal } from "./SaveShareModal";
 
 export const SHARE_MODAL_ID = Symbol("shareModal");
 
@@ -58,7 +59,7 @@ const MODE_SELECTOR_OPTIONS: Option[] = [
 
 export function ShareModal() {
 	const { boardId } = useContextMenuContext();
-	const { closeModal } = useUiModalContext();
+	const { openModal, closeModal } = useUiModalContext();
 	const boardsList = useBoardsList();
 	const account = useAccount();
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -81,6 +82,7 @@ export function ShareModal() {
 		null,
 	);
 	const { t } = useTranslation();
+	const isSettingsChange = useRef(false);
 
 	const loadInfo = async () => {
 		if (!boardId) {
@@ -138,6 +140,7 @@ export function ShareModal() {
 			return;
 		}
 		copy[targetIdx].accessType = info.accessType;
+		isSettingsChange.current = true;
 		setGrantedUsers(copy);
 	};
 	const handleCopy = async () => {
@@ -158,6 +161,7 @@ export function ShareModal() {
 		const { data } = await usersApi.getUsers(val, 1);
 		if (data) {
 			setSearchOptions(data);
+			isSettingsChange.current = true;
 		}
 		setIsSearchOptionsLoading(false);
 	};
@@ -223,259 +227,294 @@ export function ShareModal() {
 
 			setUserEmails(values);
 		};
+
+	const onCloseModal = (): void => {
+		if (isSettingsChange.current) {
+			openModal(SAVE_SHARE_MODAL);
+		}
+	};
+
 	return (
-		<UiModal className={styles.modalContainer} modalId={SHARE_MODAL_ID}>
-			<div className={styles.wrapper}>
-				<h1 className={styles.heading}>
-					{t("sharing.share")} - {boardInfo?.title}
-				</h1>
-				{account.isLoggedIn && isOwner && (
-					<>
-						<div
-							className={clsx(
-								styles.selectors,
-								styles.searchInputWrapper,
-								userEmails.length > 0 &&
-									styles.modeVisibleShort,
-							)}
-						>
-							<div>
-								<SearchInput
-									excludeValues={grantedUsers.map(
-										({ email }) => email,
-									)}
-									isLoading={isSearchOptionsLoading}
-									onValuesChange={handleAddUser(
-										setUserEmails,
-									)}
-									onInput={handleInputChange}
-									options={searchOptions
-										.filter(
-											user =>
-												user.id !== account.info?.id &&
-												!grantedUsers.find(
-													granted =>
-														granted.id === user.id,
-												) &&
-												!userEmails2.find(
-													added =>
-														added === user.email,
-												),
-										)
-										.map(user => ({
-											value: user.email,
-											label: user.email,
-											icon: (
-												<UserAvatar
-													width={20}
-													height={20}
-													src={user.avatar}
-												/>
-											),
-										}))}
-									placeholder={t("sharing.addUsers")}
-								/>
-							</div>
-							<div className={styles.selector}>
-								<UiSelector
-									value={usersMode}
-									options={MODE_SELECTOR_OPTIONS}
-									iconColor="rgba(105, 107, 118, 1)"
-									onChange={val =>
-										setUsersMode(val as UserAccessType)
-									}
-								/>
-							</div>
-						</div>
-						{isSecondInputVisible && (
+		<>
+			<UiModal
+				className={styles.modalContainer}
+				modalId={SHARE_MODAL_ID}
+				onClose={onCloseModal}
+			>
+				<div className={styles.wrapper}>
+					<h1 className={styles.heading}>
+						{t("sharing.share")} - {boardInfo?.title}
+					</h1>
+					{account.isLoggedIn && isOwner && (
+						<>
 							<div
 								className={clsx(
 									styles.selectors,
 									styles.searchInputWrapper,
-									userEmails2.length > 0 &&
+									userEmails.length > 0 &&
 										styles.modeVisibleShort,
 								)}
 							>
-								<SearchInput
-									excludeValues={grantedUsers.map(
-										({ email }) => email,
-									)}
-									isLoading={isSearchOptionsLoading}
-									onValuesChange={handleAddUser(
-										setUserEmails2,
-									)}
-									onInput={handleInputChange}
-									options={searchOptions
-										.filter(
-											user =>
-												user.id !== account.info?.id &&
-												!grantedUsers.find(
-													granted =>
-														granted.id === user.id,
-												) &&
-												!userEmails.find(
-													added =>
-														added === user.email,
+								<div>
+									<SearchInput
+										excludeValues={grantedUsers.map(
+											({ email }) => email,
+										)}
+										isLoading={isSearchOptionsLoading}
+										onValuesChange={handleAddUser(
+											setUserEmails,
+										)}
+										onInput={handleInputChange}
+										options={searchOptions
+											.filter(
+												user =>
+													user.id !==
+														account.info?.id &&
+													!grantedUsers.find(
+														granted =>
+															granted.id ===
+															user.id,
+													) &&
+													!userEmails2.find(
+														added =>
+															added ===
+															user.email,
+													),
+											)
+											.map(user => ({
+												value: user.email,
+												label: user.email,
+												icon: (
+													<UserAvatar
+														width={20}
+														height={20}
+														src={user.avatar}
+													/>
 												),
-										)
-										.map(user => ({
-											value: user.email,
-											label: user.email,
-											icon: (
-												<UserAvatar
-													width={20}
-													height={20}
-													src={user.avatar}
-												/>
-											),
-										}))}
-									placeholder={t("sharing.addUsers")}
-								/>
+											}))}
+										placeholder={t("sharing.addUsers")}
+									/>
+								</div>
 								<div className={styles.selector}>
 									<UiSelector
+										value={usersMode}
 										options={MODE_SELECTOR_OPTIONS}
-										value={usersMode2}
 										iconColor="rgba(105, 107, 118, 1)"
-										onChange={val =>
-											setUsersMode2(val as UserAccessType)
-										}
+										onChange={val => {
+											isSettingsChange.current = true;
+											setUsersMode(val as UserAccessType);
+										}}
 									/>
 								</div>
 							</div>
-						)}
-						{!isSecondInputVisible && userEmails.length > 0 && (
-							<button
-								className={styles.secondInputBtn}
-								onClick={ev => {
-									ev.stopPropagation();
-									setIsSecondInputVisible(true);
-								}}
-							>
-								<Icon iconName="Plus" width={20} height={20} />{" "}
-								{t("sharing.addAccessLevel")}
-							</button>
-						)}
-						<div className={styles.grantedUsers}>
-							<h2 className={styles.settingsHeading}>
-								{t("sharing.grantedUsers")}
-							</h2>
-							<div className={styles.usersList}>
-								{isGrantedUsersLoading ? (
-									<GrantedUserSkeleton />
-								) : (
-									<TransitionGroup component={null}>
-										{grantedUsers.map(user => (
-											<CSSTransition
-												key={user.id}
-												timeout={500}
-												classNames={{
-													enter: styles.fadeEnter,
-													enterActive:
-														styles.fadeEnterActive,
-													exit: styles.fadeExit,
-													exitActive:
-														styles.fadeExitActive,
-												}}
-											>
-												<GrantedUser
-													highlighted={
-														highlightedEmail ===
-														user.email
-													}
-													onChange={
-														handleUserAccessChange
-													}
-													{...user}
-												/>
-											</CSSTransition>
-										))}
-									</TransitionGroup>
-								)}
+							{isSecondInputVisible && (
+								<div
+									className={clsx(
+										styles.selectors,
+										styles.searchInputWrapper,
+										userEmails2.length > 0 &&
+											styles.modeVisibleShort,
+									)}
+								>
+									<SearchInput
+										excludeValues={grantedUsers.map(
+											({ email }) => email,
+										)}
+										isLoading={isSearchOptionsLoading}
+										onValuesChange={handleAddUser(
+											setUserEmails2,
+										)}
+										onInput={handleInputChange}
+										options={searchOptions
+											.filter(
+												user =>
+													user.id !==
+														account.info?.id &&
+													!grantedUsers.find(
+														granted =>
+															granted.id ===
+															user.id,
+													) &&
+													!userEmails.find(
+														added =>
+															added ===
+															user.email,
+													),
+											)
+											.map(user => ({
+												value: user.email,
+												label: user.email,
+												icon: (
+													<UserAvatar
+														width={20}
+														height={20}
+														src={user.avatar}
+													/>
+												),
+											}))}
+										placeholder={t("sharing.addUsers")}
+									/>
+									<div className={styles.selector}>
+										<UiSelector
+											options={MODE_SELECTOR_OPTIONS}
+											value={usersMode2}
+											iconColor="rgba(105, 107, 118, 1)"
+											onChange={val =>
+												setUsersMode2(
+													val as UserAccessType,
+												)
+											}
+										/>
+									</div>
+								</div>
+							)}
+							{!isSecondInputVisible && userEmails.length > 0 && (
+								<button
+									className={styles.secondInputBtn}
+									onClick={ev => {
+										ev.stopPropagation();
+										setIsSecondInputVisible(true);
+									}}
+								>
+									<Icon
+										iconName="Plus"
+										width={20}
+										height={20}
+									/>{" "}
+									{t("sharing.addAccessLevel")}
+								</button>
+							)}
+							<div className={styles.grantedUsers}>
+								<h2 className={styles.settingsHeading}>
+									{t("sharing.grantedUsers")}
+								</h2>
+								<div className={styles.usersList}>
+									{isGrantedUsersLoading ? (
+										<GrantedUserSkeleton />
+									) : (
+										<TransitionGroup component={null}>
+											{grantedUsers.map(user => (
+												<CSSTransition
+													key={user.id}
+													timeout={500}
+													classNames={{
+														enter: styles.fadeEnter,
+														enterActive:
+															styles.fadeEnterActive,
+														exit: styles.fadeExit,
+														exitActive:
+															styles.fadeExitActive,
+													}}
+												>
+													<GrantedUser
+														highlighted={
+															highlightedEmail ===
+															user.email
+														}
+														onChange={
+															handleUserAccessChange
+														}
+														{...user}
+													/>
+												</CSSTransition>
+											))}
+										</TransitionGroup>
+									)}
+								</div>
+								<UiSeparator />
 							</div>
-							<UiSeparator />
-						</div>
-					</>
-				)}
-				{!account.isLoggedIn && isOwner && (
-					<p className={styles.notAuth}>
-						{t("sharing.notAuthMsg")}{" "}
-						<Link to="/auth/sign-in">{t("sharing.login")}</Link>{" "}
-						{t("sharing.or")}{" "}
-						<Link to="/auth/sign-up">{t("sharing.register")}</Link>.
-					</p>
-				)}
-				<div className={styles.settings}>
-					{account.isLoggedIn && isOwner && (
-						<h2 className={styles.settingsHeading}>
-							{t("sharing.publicAccess")}
-						</h2>
+						</>
 					)}
-					<div
-						className={clsx(
-							styles.selectors,
-							isPublic && styles.modeVisible,
+					{!account.isLoggedIn && isOwner && (
+						<p className={styles.notAuth}>
+							{t("sharing.notAuthMsg")}{" "}
+							<Link to="/auth/sign-in">{t("sharing.login")}</Link>{" "}
+							{t("sharing.or")}{" "}
+							<Link to="/auth/sign-up">
+								{t("sharing.register")}
+							</Link>
+							.
+						</p>
+					)}
+					<div className={styles.settings}>
+						{account.isLoggedIn && isOwner && (
+							<h2 className={styles.settingsHeading}>
+								{t("sharing.publicAccess")}
+							</h2>
 						)}
-					>
-						<UiSelector
-							isLoading={boardsList.isLoading}
-							disabled={disabled}
-							iconColor="rgba(105, 107, 118, 1)"
-							options={PRIVACY_SELECTOR_OPTIONS}
-							onChange={opt => setIsPublic(opt === "public")}
-							value={
-								isPublic
-									? PRIVACY_SELECTOR_OPTIONS[0].value
-									: PRIVACY_SELECTOR_OPTIONS[1].value
-							}
-						/>
-						<div className={styles.selector}>
+						<div
+							className={clsx(
+								styles.selectors,
+								isPublic && styles.modeVisible,
+							)}
+						>
 							<UiSelector
 								isLoading={boardsList.isLoading}
 								disabled={disabled}
 								iconColor="rgba(105, 107, 118, 1)"
-								options={MODE_SELECTOR_OPTIONS}
-								onChange={opt =>
-									setMode(opt as DirectAccessType)
-								}
+								options={PRIVACY_SELECTOR_OPTIONS}
+								onChange={opt => {
+									isSettingsChange.current = true;
+									setIsPublic(opt === "public");
+								}}
 								value={
-									mode === boardsApiV2.DirectAccessType.EDIT
-										? MODE_SELECTOR_OPTIONS[0].value
-										: MODE_SELECTOR_OPTIONS[1].value
+									isPublic
+										? PRIVACY_SELECTOR_OPTIONS[0].value
+										: PRIVACY_SELECTOR_OPTIONS[1].value
 								}
 							/>
+							<div className={styles.selector}>
+								<UiSelector
+									isLoading={boardsList.isLoading}
+									disabled={disabled}
+									iconColor="rgba(105, 107, 118, 1)"
+									options={MODE_SELECTOR_OPTIONS}
+									onChange={opt => {
+										isSettingsChange.current = true;
+										setMode(opt as DirectAccessType);
+									}}
+									value={
+										mode ===
+										boardsApiV2.DirectAccessType.EDIT
+											? MODE_SELECTOR_OPTIONS[0].value
+											: MODE_SELECTOR_OPTIONS[1].value
+									}
+								/>
+							</div>
 						</div>
+						{boardInfo?.isPublic && (
+							<p className={styles.publicMsg}>
+								{t("sharing.publicBoard")}
+							</p>
+						)}
 					</div>
-					{boardInfo?.isPublic && (
-						<p className={styles.publicMsg}>
-							{t("sharing.publicBoard")}
-						</p>
-					)}
+					<div className={styles.btns}>
+						<UiButton
+							onClick={handleCopy}
+							className={clsx(styles.btn, styles.copyBtn)}
+							variant="ghostFilled"
+							size="lg"
+						>
+							<span className={styles.copyIcon}>
+								<Icon iconName="CopyLink" />{" "}
+							</span>
+							<span>{t("sharing.copyLink.label")}</span>
+						</UiButton>
+						<UiButton
+							variant="primary"
+							onClick={handleSubmit}
+							className={styles.btn}
+							disabled={disabled}
+							size="lg"
+						>
+							{t("sharing.submit")}
+						</UiButton>
+					</div>
 				</div>
-				<div className={styles.btns}>
-					<UiButton
-						onClick={handleCopy}
-						className={clsx(styles.btn, styles.copyBtn)}
-						variant="ghostFilled"
-						size="lg"
-					>
-						<span className={styles.copyIcon}>
-							<Icon iconName="CopyLink" />{" "}
-						</span>
-						<span>{t("sharing.copyLink.label")}</span>
-					</UiButton>
-					<UiButton
-						variant="primary"
-						onClick={handleSubmit}
-						className={styles.btn}
-						disabled={disabled}
-						size="lg"
-					>
-						{t("sharing.submit")}
-					</UiButton>
-				</div>
-			</div>
-			{isSubmitting && <div className={styles.loader} />}
-		</UiModal>
+				{isSubmitting && <div className={styles.loader} />}
+			</UiModal>
+			<SaveShareModal onSave={handleSubmit} />
+		</>
 	);
 }
 
