@@ -330,10 +330,10 @@ export class TextEditor extends React.Component<
 		const editorWidth =
 			text.insideOf === "Sticker"
 				? container.getWidth() / editorScale
-				: Math.floor(container.getWidth() / editorScale);
+				: Math.ceil(container.getWidth() / editorScale);
 		const editorMaxWidth =
 			// @ts-expect-error maxWidth undefined
-			text.insideOf === "Sticker" ? maxWidth : Math.floor(maxWidth);
+			text.insideOf === "Sticker" ? maxWidth : Math.ceil(maxWidth);
 
 		if (this.state.hasError) {
 			return (
