@@ -223,6 +223,7 @@ export interface GenerateImageResponse {
 	base64: string | null;
 	imageUrl: string | null;
 	itemId: string;
+	isExternalApiError?: boolean;
 }
 
 export interface GenerateAudioRequest {
@@ -237,6 +238,7 @@ export interface GenerateAudioResponse {
 	message?: string;
 	base64: string | null;
 	audioUrl: string | null;
+	isExternalApiError?: boolean;
 }
 
 export type TTextAction =
@@ -259,6 +261,7 @@ export interface ChatChunk {
 	itemId: string;
 	content?: string;
 	error?: string;
+	isExternalApiError?: boolean;
 }
 
 export type EventsMsg =

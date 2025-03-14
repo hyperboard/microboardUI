@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import React, { ChangeEvent, useRef } from "react";
 import styles from "./UiColorInput.module.css";
+import { rgbToHex } from "shared/lib/convertColors";
 
 interface Props {
 	onChange: (color: string) => void;
@@ -31,6 +32,10 @@ export function UiColorInput({
 		setIsCloseMenu?.(true);
 	};
 
+	if (color && color !== "none" && !color.startsWith("#")) {
+		color = rgbToHex(color);
+	}
+
 	return (
 		<div
 			className={clsx(
@@ -49,10 +54,11 @@ export function UiColorInput({
 				onClick={() => inputRef.current?.click()}
 			/>
 			<input
+				key={color}
 				className={clsx(styles.input, inputClassName)}
 				ref={inputRef}
 				type="color"
-				value={color}
+				value={color === "none" ? "#000000" : color}
 				onChange={handleColorChange}
 				onBlur={onBlur}
 			/>

@@ -30,3 +30,22 @@ export function rgbaToRgb(rgbaColor: string, defaultColor: string) {
 		return defaultColor;
 	}
 }
+
+export function rgbToHex(rgb: string) {
+	let r, g, b;
+
+	const rgbArr = rgb.match(/\d+/g);
+	if (!rgbArr) {
+		return "#000000";
+	}
+	[r, g, b] = rgbArr.map(Number);
+
+	const clamp = (value: number) => Math.min(255, Math.max(0, value));
+
+	const toHex = (n: number) => {
+		const hex = clamp(n).toString(16);
+		return hex.length === 1 ? "0" + hex : hex;
+	};
+
+	return `#${toHex(r)}${toHex(g)}${toHex(b)}`.toLowerCase();
+}

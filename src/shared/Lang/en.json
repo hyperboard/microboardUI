@@ -932,6 +932,7 @@
 		"disableWhenGenerating": "Wait for the response",
 		"quoteBtnTooltip": "Quote to clarify",
 		"sendBtnTooltip": "Write a question or select an item on the board",
+		"nodeErrorText": "AI server is unavailable. Please try again later.",
 		"textGenerationError": {
 			"header": "Response generation Error",
 			"body": "Failed to get a response.\nPlease try again"

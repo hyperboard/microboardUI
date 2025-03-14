@@ -10,6 +10,12 @@ import { useTranslation } from "react-i18next";
 import { useAppContext } from "features/AppContext";
 import btnStyle from "./ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
+import { AddHighlighter } from "Board/Tools/AddDrawing/AddHighlighter";
+import {
+	convertHexToRGBA,
+	rgbaToRgb,
+	rgbToRgba,
+} from "shared/lib/convertColors";
 
 const MENU_NAME = "DrawFillStyle";
 
@@ -19,17 +25,34 @@ export function DrawFillStyle(): React.ReactElement | null {
 
 	const { board } = useAppContext();
 	const { t } = useTranslation();
+	const single = board.selection.items.getSingle();
+	let isHighlight = false;
+	if (single?.itemType === "Drawing") {
+		if (single.getStrokeColor().split(",").length === 4) {
+			isHighlight = true;
+		}
+	}
 
-	const drawingColor = board.selection.getStrokeColor();
+	let drawingColor = board.selection.getStrokeColor();
+
+	if (isHighlight) {
+		drawingColor = rgbaToRgb(drawingColor, drawingColor);
+	}
 
 	const handleClick = (): void => {
 		toggleMenu(MENU_NAME);
 	};
 	const handlePick = (color: string): void => {
+		if (isHighlight) {
+			color = rgbToRgba(color, 0.5, color);
+		}
 		board.selection.setStrokeColor(color);
 		toggleMenu("None");
 	};
 	const handleCustomPick = (color: string): void => {
+		if (isHighlight) {
+			color = convertHexToRGBA(color, true, 0.5);
+		}
 		board.selection.setStrokeColor(color);
 	};
 
