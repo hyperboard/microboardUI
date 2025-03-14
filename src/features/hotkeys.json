@@ -201,7 +201,10 @@
 	},
 	"delete": {
 		"key": {
-			"button": ["Delete", "Backspace"]
+			"button": [
+				"Delete",
+				"Backspace"
+			]
 		},
 		"label": {
 			"mac": "Delete",
@@ -274,6 +277,42 @@
 		"label": {
 			"mac": "⌘←",
 			"windows": "Ctrl←"
+		}
+	},
+	"navigationRight": {
+		"key": {
+			"button": "ArrowRight"
+		},
+		"label": {
+			"mac": "→",
+			"windows": "→"
+		}
+	},
+	"navigationLeft": {
+		"key": {
+			"button": "ArrowLeft"
+		},
+		"label": {
+			"mac": "←",
+			"windows": "←"
+		}
+	},
+	"navigationUp": {
+		"key": {
+			"button": "ArrowUp"
+		},
+		"label": {
+			"mac": "↑",
+			"windows": "↑"
+		}
+	},
+	"navigationDown": {
+		"key": {
+			"button": "ArrowDown"
+		},
+		"label": {
+			"mac": "↓",
+			"windows": "↓"
 		}
 	}
 }

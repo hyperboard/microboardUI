@@ -12,7 +12,6 @@ export const ERROR_SIGNIN_NOTIFY = Symbol("errorSignin");
 export const SigninErrorNotification = (): JSX.Element => {
 	const { isModalOpen, closeModal } = useUiModalContext();
 	const { t } = useTranslation();
-	console.log("ERROR_SIGNIN_NOTIFY");
 
 	return (
 		<Notification
