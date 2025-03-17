@@ -28,7 +28,8 @@
 	place-items: center;
 }
 
-.active {
+.active,
+.dragging {
 	background-color: rgba(10, 15, 41, 0.04);
 }
 

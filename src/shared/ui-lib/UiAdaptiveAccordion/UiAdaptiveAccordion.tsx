@@ -24,7 +24,7 @@ type Props = HTMLProps<HTMLDivElement> & {
 	renderHeader: RenderPropsFunc;
 	renderContent: RenderPropsFunc;
 	elemRef?: Ref<HTMLDivElement>;
-	className: string;
+	className?: string;
 };
 
 export const UiAdaptiveAccordion = forwardRef<AccordionState, Props>(

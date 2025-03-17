@@ -1,14 +1,23 @@
+import type { Account } from "entities/account";
 import i18next, { t } from "i18next";
 import { boardsApiV2, foldersApi } from "shared/apiV2";
 import { Subject } from "shared/Subject";
-import { Account } from "./Account";
 import { Storage } from "./Storage";
+
+type FolderItem = {
+	id: string | number;
+	title: string;
+	itemType: "board" | "folder";
+	type?: foldersApi.FolderType;
+};
 
 export class BoardsList {
 	subject = new Subject<void>();
 	private sharedFolder: foldersApi.Folder | null = null;
 	private rootFolder: foldersApi.Folder | null = null;
 	private draftsFolder: foldersApi.Folder | null = null;
+	private activeDndItem: FolderItem | null = null;
+	private overDndItem: FolderItem | null = null;
 	isLoading = true;
 
 	constructor(
@@ -668,6 +677,30 @@ export class BoardsList {
 
 		await boardsApiV2.manageAccess(boardId, payload);
 		this.loadBoards();
+	}
+
+	setDraggableDndItem(item: FolderItem | null) {
+		if (item?.id === this.activeDndItem?.id) {
+			return;
+		}
+		this.activeDndItem = item;
+		this.subject.publish();
+	}
+
+	getDraggableDndItem() {
+		return this.activeDndItem;
+	}
+
+	setOverDndItem(item: FolderItem | null) {
+		if (item?.id === this.overDndItem?.id) {
+			return;
+		}
+		this.overDndItem = item;
+		this.subject.publish();
+	}
+
+	getOverDndItem() {
+		return this.overDndItem;
 	}
 
 	private async updateList(): Promise<void> {

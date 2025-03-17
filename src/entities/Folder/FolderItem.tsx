@@ -1,27 +1,23 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { useAccount } from "App/useAccount";
 import clsx from "clsx";
-import { handleClickDetection } from "shared/lib/handleClickDetection";
+import { useAppContext } from "features/AppContext";
+import { useContextMenuContext } from "features/ContextMenu";
+import { RenameInput, useRenameContext } from "features/Rename";
 import React, {
 	forwardRef,
 	useCallback,
-	useEffect,
 	useRef,
-	useState,
 	type CSSProperties,
 	type MouseEventHandler,
 	type SyntheticEvent,
 } from "react";
 import { useNavigate } from "react-router-dom";
 import type { boardsApiV2, foldersApi } from "shared/apiV2";
-import { useAppContext } from "features/AppContext";
-import { useContextMenuContext } from "features/ContextMenu";
-import { RenameInput, useRenameContext } from "features/Rename";
-import { DraggingItem } from "./DraggingItem";
-import { DraggingWrapper } from "./DraggingWrapper";
-import styles from "./FolderItem.module.css";
-import { useFoldersContext } from "./FoldersContext";
+import { handleClickDetection } from "shared/lib/handleClickDetection";
 import { Icon } from "shared/ui-lib/Icon";
+import { DragPlaceholder } from "./DragPlaceholder";
+import styles from "./FolderItem.module.css";
 
 type Props = {
 	board: foldersApi.NestedBoard;
@@ -37,55 +33,18 @@ export const FolderItem = forwardRef<HTMLDivElement, Props>(
 		const { setRenamingId, setNewName, renamingId } = useRenameContext();
 		const account = useAccount();
 		const itemRef = useRef<HTMLDivElement | null>(null);
-		const [originalPosition, setOriginalPosition] = useState<
-			Record<"left" | "top" | "width" | "height", number>
-		>({ left: 0, top: 0, width: 0, height: 0 });
-
-		const { setOverFolderId } = useFoldersContext();
 
 		const {
 			attributes,
 			listeners,
-			setNodeRef,
 			transform,
+			setNodeRef,
 			isDragging,
 			isOver,
 		} = useSortable({
 			id: board.id,
 			data: { ...board, parentFolderId: folder?.id },
 		});
-
-		const calcOriginalPosition = () => {
-			if (isDragging && itemRef.current) {
-				const rect = itemRef.current.getBoundingClientRect();
-				setOriginalPosition({
-					top: rect.y,
-					left: rect.x,
-					width: rect.width,
-					height: rect.height,
-				});
-			}
-		};
-		useEffect(() => {
-			calcOriginalPosition();
-			document.addEventListener("scroll", calcOriginalPosition, true);
-
-			return () => {
-				document.removeEventListener(
-					"scroll",
-					calcOriginalPosition,
-					true,
-				);
-			};
-		}, [isDragging]);
-
-		useEffect(() => {
-			if (isOver) {
-				setOverFolderId(folder?.id);
-			} else {
-				setOverFolderId(null);
-			}
-		}, [isOver]);
 
 		const style: CSSProperties | undefined = transform
 			? {
@@ -139,33 +98,9 @@ export const FolderItem = forwardRef<HTMLDivElement, Props>(
 		};
 
 		return (
-			<DraggingWrapper
-				isDragging={isDragging}
-				style={{ ...style, ...originalPosition }}
-				draggableItem={
-					<DraggingItem
-						style={{
-							width: originalPosition.width,
-							height: originalPosition.height,
-						}}
-						name={board.title}
-						icon={
-							<span className={styles.icon}>
-								<Icon
-									width={20}
-									height={20}
-									iconName={
-										board.isPublic
-											? "EmbedBoardIcon"
-											: "lock"
-									}
-								/>
-							</span>
-						}
-					/>
-				}
-			>
+			<>
 				<div
+					// style={style}
 					ref={node => {
 						itemRef.current = node;
 						if (node) {
@@ -195,7 +130,8 @@ export const FolderItem = forwardRef<HTMLDivElement, Props>(
 						className={clsx(
 							styles.item,
 							{
-								[styles.active]: isActive || isDragging,
+								[styles.active]: isActive,
+								[styles.dragging]: isDragging,
 							},
 							isOver && styles.disableHover,
 						)}
@@ -220,8 +156,8 @@ export const FolderItem = forwardRef<HTMLDivElement, Props>(
 						)}
 					</button>
 				</div>
-				{isOver && <div className={styles.placeholder}></div>}
-			</DraggingWrapper>
+				{isOver && <DragPlaceholder />}
+			</>
 		);
 	},
 );

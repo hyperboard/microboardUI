@@ -2,31 +2,33 @@ import { SortableContext } from "@dnd-kit/sortable";
 import { useAccount } from "App/useAccount";
 import { useBoardsList } from "App/useBoardsList";
 import clsx from "clsx";
-import { useClickOutside } from "shared/lib/useClickOutside";
+import {
+	Folder,
+	FoldersDndContext,
+	useOpenedFoldersContext,
+} from "entities/Folder";
+import { DraggingWrapper } from "entities/Folder/DraggingWrapper";
+import { DraggingItem } from "entities/Folder/DragOverlay";
+import { useAppContext } from "features/AppContext";
+import { useContextMenuContext } from "features/ContextMenu";
+import { IMPORT_MIRO_START_MODAL } from "features/ImportMiro/ImportMiroStartModal/ImportMiroStartModal";
 import React, {
 	useEffect,
 	useRef,
 	useState,
 	type MouseEventHandler,
 } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
-import { UiPanel } from "shared/ui-lib/UiPanel";
-import { useAppContext } from "features/AppContext";
-import { useContextMenuContext } from "features/ContextMenu";
-import {
-	Folder,
-	FoldersDndContext,
-	useOpenedFoldersContext,
-} from "entities/Folder";
-import { FoldersContextProvider } from "entities/Folder/FoldersContext";
+import { useClickOutside } from "shared/lib/useClickOutside";
 import { Icon } from "shared/ui-lib/Icon";
+import { Tooltip } from "shared/ui-lib/Tooltip";
+import { UiButton } from "shared/ui-lib/UiButton";
+import { useUiModalContext } from "shared/ui-lib/UiModal";
+import { UiPanel } from "shared/ui-lib/UiPanel";
 import { ResizableEdge } from "./ResizableEdge";
 import style from "./SidePanel.module.css";
 import { useSidePanelContext } from "./SidePanelContext";
-import { UiButton } from "shared/ui-lib/UiButton";
-import { Tooltip } from "shared/ui-lib/Tooltip";
-import { useUiModalContext } from "shared/ui-lib/UiModal";
-import { IMPORT_MIRO_START_MODAL } from "features/ImportMiro/ImportMiroStartModal/ImportMiroStartModal";
 
 const MIN_PANEL_WIDTH = 280;
 
@@ -105,29 +107,31 @@ export function SidePanel(): JSX.Element {
 				</div>
 				<div className={style.folders} ref={foldersRef}>
 					<div className={style.foldersWrapper}>
-						<FoldersContextProvider>
-							<FoldersDndContext>
-								<SortableContext
-									items={[
-										boardsList.getRootFolder()?.id ?? 0,
-										boardsList.getDraftsFolder()?.id ?? 1,
-										boardsList.getSharedFolder()?.id ?? 2,
-									]}
-								>
-									<Folder
-										accordionClassName={style.rootFolder}
-										folder={boardsList.getRootFolder()}
-									/>
-									<Folder
-										accordionClassName={style.rootFolder}
-										folder={boardsList.getDraftsFolder()}
-									/>
-									<Folder
-										folder={boardsList.getSharedFolder()}
-									/>
-								</SortableContext>
-							</FoldersDndContext>
-						</FoldersContextProvider>
+						<FoldersDndContext>
+							<SortableContext
+								items={[
+									boardsList.getRootFolder()?.id ?? 0,
+									boardsList.getDraftsFolder()?.id ?? 1,
+									boardsList.getSharedFolder()?.id ?? 2,
+								]}
+							>
+								<Folder
+									accordionClassName={style.rootFolder}
+									folder={boardsList.getRootFolder()}
+								/>
+								<Folder
+									accordionClassName={style.rootFolder}
+									folder={boardsList.getDraftsFolder()}
+								/>
+								<Folder folder={boardsList.getSharedFolder()} />
+							</SortableContext>
+							{createPortal(
+								<DraggingWrapper>
+									<DraggingItem />
+								</DraggingWrapper>,
+								document.body,
+							)}
+						</FoldersDndContext>
 					</div>
 				</div>
 			</div>

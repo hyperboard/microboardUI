@@ -6,24 +6,24 @@ import {
 	useSensors,
 	type DragEndEvent,
 	type DragOverEvent,
+	type DragStartEvent,
 } from "@dnd-kit/core";
 import { useBoardsList } from "App/useBoardsList";
 import type { PropsWithChildren } from "react";
-import React from "react";
-import type { foldersApi } from "shared/apiV2";
+import React, { useState } from "react";
+import { foldersApi } from "shared/apiV2";
 
 type Props = PropsWithChildren<{}>;
 
-const isBoard = (
-	item: unknown,
-): item is foldersApi.NestedBoard & { parentFolderId: number } =>
+type Board = foldersApi.NestedBoard & { parentFolderId: number };
+type Folder = foldersApi.NestedFolder & { parentFolderId: number };
+
+const isBoard = (item: unknown): item is Board =>
 	typeof item === "object" &&
 	item !== null &&
 	(item as { itemType?: string }).itemType === "board";
 
-const isFolder = (
-	item: unknown,
-): item is foldersApi.NestedFolder & { parentFolderId: number } =>
+const isFolder = (item: unknown): item is Folder =>
 	typeof item === "object" &&
 	item !== null &&
 	(("itemType" in item &&
@@ -39,54 +39,80 @@ export function FoldersDndContext({ children }: Props) {
 			tolerance: 10,
 		},
 	});
+	const [activeItem, setActiveItem] = useState<Board | Folder | null>(null);
 
 	const sensors = useSensors(pointerSensor);
-	const handleDragEnd = async (evt: DragEndEvent) => {
+
+	const handleDragStart = (evt: DragStartEvent) => {
 		const draggable = evt.active.data.current;
+		if (isBoard(draggable) || isFolder(draggable)) {
+			boardsList.setDraggableDndItem(draggable);
+			setActiveItem(draggable);
+		}
+	};
+
+	const handleDragEnd = async (evt: DragEndEvent) => {
 		const target = evt.over?.data.current;
 
+		boardsList.setDraggableDndItem(null);
+		boardsList.setOverDndItem(null);
 		if (
-			(!isBoard(draggable) && !isFolder(draggable)) ||
+			(!isBoard(activeItem) && !isFolder(activeItem)) ||
 			!target ||
-			draggable.id === target.id ||
-			draggable.parentFolderId === target.id
+			activeItem.id === target.id
 		) {
+			setActiveItem(null);
+			await boardsList.loadBoards();
 			return;
 		}
 		if (isFolder(target)) {
+			if (
+				target.type === foldersApi.FolderType.VISITED ||
+				target.type === foldersApi.FolderType.DRAFTS
+			) {
+				setActiveItem(null);
+				await boardsList.loadBoards();
+				return;
+			}
 			await boardsList.removeItemFromFolder(
-				draggable.parentFolderId,
-				draggable.id,
+				activeItem.parentFolderId,
+				activeItem.id,
 			);
-
-			await boardsList.addItemToFolder(target.id, draggable);
+			await boardsList.addItemToFolder(target.id, activeItem, 0);
 		} else if (isBoard(target)) {
+			const targetOrder = target.order;
 			await boardsList.removeItemFromFolder(
-				draggable.parentFolderId,
-				draggable.id,
+				activeItem.parentFolderId,
+				activeItem.id,
 			);
-
 			const targetFolderId = target.parentFolderId;
-			const targetIdx = boardsList.getItemIndexInFolder(
-				targetFolderId,
-				target.id,
-			);
+			const folderInfo = boardsList.getFolder(targetFolderId);
+
+			if (
+				folderInfo?.type === foldersApi.FolderType.VISITED ||
+				folderInfo?.type === foldersApi.FolderType.DRAFTS
+			) {
+				setActiveItem(null);
+				await boardsList.loadBoards();
+				return;
+			}
 			await boardsList.addItemToFolder(
 				targetFolderId,
-				draggable,
-				targetIdx ? targetIdx + 1 : undefined,
+				activeItem,
+				targetOrder + 1,
 			);
 		}
+		setActiveItem(null);
+		await boardsList.loadBoards();
 	};
 
 	const handleDragOver = (evt: DragOverEvent) => {
 		const target = evt.over?.data.current;
-		// if (isBoard(target)) {
-		// 	const targetIdx = boardsList.getItemIndexInFolder(
-		// 		target.parentFolderId,
-		// 		target.id,
-		// 	);
-		// }
+		if (isBoard(target) || isFolder(target)) {
+			boardsList.setOverDndItem(target);
+		} else {
+			boardsList.setOverDndItem(null);
+		}
 	};
 
 	return (
@@ -94,6 +120,7 @@ export function FoldersDndContext({ children }: Props) {
 			collisionDetection={closestCenter}
 			onDragOver={handleDragOver}
 			sensors={sensors}
+			onDragStart={handleDragStart}
 			onDragEnd={handleDragEnd}
 		>
 			{children}

@@ -16,6 +16,7 @@ export type Board = {
 	authorKey: string | null;
 	isPublic: boolean;
 	directAccessType: DirectAccessType;
+	order: number;
 };
 
 export type BoardPayload = Partial<

@@ -1,4 +1,3 @@
-import { useDraggable } from "@dnd-kit/core";
 import {
 	SortableContext,
 	useSortable,
@@ -6,7 +5,10 @@ import {
 } from "@dnd-kit/sortable";
 import { useBoardsList } from "App/useBoardsList";
 import clsx from "clsx";
-import { handleClickDetection } from "shared/lib/handleClickDetection";
+import { useAppContext } from "features/AppContext";
+import { useContextMenuContext } from "features/ContextMenu";
+import { RenameInput, useRenameContext } from "features/Rename";
+import { useSidePanelContext } from "features/SidePanel";
 import React, {
 	useEffect,
 	useRef,
@@ -15,25 +17,19 @@ import React, {
 	type MouseEventHandler,
 	type SyntheticEvent,
 } from "react";
-import { CSSTransition, TransitionGroup } from "react-transition-group";
+import { useTranslation } from "react-i18next";
 import { foldersApi, type boardsApiV2 } from "shared/apiV2";
-import { useAppContext } from "features/AppContext";
-import { useContextMenuContext } from "features/ContextMenu";
-import { RenameInput, useRenameContext } from "features/Rename";
-import { useSidePanelContext } from "features/SidePanel";
+import { FolderType } from "shared/apiV2/folders";
+import { handleClickDetection } from "shared/lib/handleClickDetection";
+import { Icon } from "shared/ui-lib/Icon";
 import {
 	UiAdaptiveAccordion,
 	type AccordionState,
 } from "shared/ui-lib/UiAdaptiveAccordion";
-import { DraggingItem } from "./DraggingItem";
-import { DraggingWrapper } from "./DraggingWrapper";
+import { DragPlaceholder } from "./DragPlaceholder";
 import styles from "./Folder.module.css";
 import { FolderItem } from "./FolderItem";
-import { useFoldersContext } from "./FoldersContext";
-import { FolderType } from "shared/apiV2/folders";
 import { useOpenedFoldersContext } from "./OpenedFoldersContext";
-import { Icon } from "shared/ui-lib/Icon";
-import { useTranslation } from "react-i18next";
 
 type Props = {
 	folder: foldersApi.Folder | null;
@@ -44,7 +40,7 @@ type Props = {
 };
 
 // @ts-expect-error TODO add icons for all folder types
-const folderIcons: Record<foldersApi.FolderType, IconId> = {
+export const folderIcons: Record<foldersApi.FolderType, IconId> = {
 	[foldersApi.FolderType.DRAFTS]: "publicDrafts",
 	[foldersApi.FolderType.ROOT]: "myBoards",
 	[foldersApi.FolderType.VISITED]: "sharedBoards",
@@ -74,14 +70,15 @@ export const Folder = ({
 	const currentFolderRef = useRef<HTMLButtonElement>(null);
 	const { id, foldersRefState } = useOpenedFoldersContext();
 	const [openedByDragging, setOpenedByDragging] = useState(false);
-	const { overFolderId, setOverFolderId } = useFoldersContext();
 	const [originalPosition, setOriginalPosition] = useState<
 		Record<"left" | "top" | "width" | "height", number>
 	>({ left: 0, top: 0, width: 0, height: 0 });
 	const { isOver, setNodeRef } = useSortable({
 		id: folder?.id || "unknown",
 		data: folder ?? undefined,
-		disabled: folder?.type === foldersApi.FolderType.VISITED,
+		disabled:
+			folder?.type !== foldersApi.FolderType.ROOT &&
+			folder?.type !== foldersApi.FolderType.NESTED,
 	});
 	const {
 		attributes,
@@ -89,10 +86,14 @@ export const Folder = ({
 		setNodeRef: setNodeRefHeader,
 		transform,
 		isDragging,
-	} = useDraggable({
-		id: folder?.id ?? 0,
+	} = useSortable({
+		id: `header-${folder?.id ?? 0}`,
 		data: { ...folder, parentFolderId },
+		disabled:
+			folder?.type !== foldersApi.FolderType.ROOT &&
+			folder?.type !== foldersApi.FolderType.NESTED,
 	});
+
 	const isOverTimerRef = useRef<NodeJS.Timeout>();
 	const itemRef = useRef<HTMLDivElement | null>(null);
 
@@ -145,7 +146,6 @@ export const Folder = ({
 
 	useEffect(() => {
 		if (isOver && !accordionRef.current?.isOpen) {
-			setOverFolderId(folder?.id);
 			clearTimeout(isOverTimerRef.current);
 			isOverTimerRef.current = setTimeout(() => {
 				setOpenedByDragging(true);
@@ -159,7 +159,7 @@ export const Folder = ({
 		// }
 
 		if (!isOver) {
-			setOverFolderId(null);
+			null;
 			clearTimeout(isOverTimerRef.current);
 		}
 
@@ -245,105 +245,73 @@ export const Folder = ({
 		>
 			<UiAdaptiveAccordion
 				className={clsx(accordionClassName, styles.folder)}
-				style={{ zIndex }}
+				style={{ zIndex, ...style }}
 				ref={accordionRef}
 				elemRef={setNodeRef}
 				renderHeader={({ toggle, isOpen }) => (
-					<DraggingWrapper
-						isDragging={isDragging}
-						style={{ ...style, ...originalPosition }}
-						draggableItem={
-							<DraggingItem
-								style={{
-									width: originalPosition.width,
-									height: originalPosition.height,
-								}}
-								name={folder.title}
-								icon={
-									<span className={styles.icon}>
-										<Icon
-											width={20}
-											height={20}
-											iconName={folderIcons[folder.type]}
-										/>
-									</span>
-								}
-							/>
-						}
+					<div
+						style={{ border: "1px solid red" }}
+						className={styles.wrapper}
+						{...listeners}
+						{...attributes}
+						ref={node => {
+							setNodeRefHeader(node);
+							itemRef.current = node;
+						}}
 					>
-						<div
-							className={styles.wrapper}
-							{...listeners}
-							{...attributes}
-							ref={node => {
-								setNodeRefHeader(node);
-								itemRef.current = node;
-							}}
-						>
-							{folder.type !== FolderType.VISITED && (
-								<button
-									className={styles.contextMenuBtn}
-									onClick={handleContextMenuOpen}
-									onMouseDown={stopPropagation}
-									onMouseUp={stopPropagation}
-								>
-									<Icon
-										width={16}
-										height={16}
-										iconName="ThreeDots"
-									/>
-								</button>
-							)}
+						{folder.type !== FolderType.VISITED && (
 							<button
-								ref={currentFolderRef}
-								className={clsx(
-									styles.header,
-									isOver && styles.over,
-								)}
-								onClick={handleClick(toggle)}
-								onContextMenu={handleContextMenuOpen}
+								className={styles.contextMenuBtn}
+								onClick={handleContextMenuOpen}
+								onMouseDown={stopPropagation}
+								onMouseUp={stopPropagation}
 							>
-								<span className={styles.icon}>
-									<Icon
-										width={20}
-										height={20}
-										iconName={
-											isOpen ? "ArrowUp" : "ArrowDown"
-										}
-									/>
-									<Icon
-										width={20}
-										height={20}
-										iconName={folderIcons[folder.type]}
-									/>
-								</span>
-								{isRenaming ? (
-									<RenameInput />
-								) : (
-									<span>{folder.title}</span>
-								)}
+								<Icon
+									width={16}
+									height={16}
+									iconName="ThreeDots"
+								/>
 							</button>
-						</div>
-					</DraggingWrapper>
+						)}
+						<button
+							ref={currentFolderRef}
+							className={clsx(
+								styles.header,
+								isOver && styles.over,
+							)}
+							onClick={handleClick(toggle)}
+							onContextMenu={handleContextMenuOpen}
+						>
+							<span className={styles.icon}>
+								<Icon
+									width={20}
+									height={20}
+									iconName={isOpen ? "ArrowUp" : "ArrowDown"}
+								/>
+								<Icon
+									width={20}
+									height={20}
+									iconName={folderIcons[folder.type]}
+								/>
+							</span>
+							{isRenaming ? (
+								<RenameInput />
+							) : (
+								<span>{folder.title}</span>
+							)}
+						</button>
+					</div>
 				)}
 				renderContent={() => (
 					<div className={styles.contentWrapper}>
 						<div className={styles.content}>
+							{boardsList.getOverDndItem()?.id === folder.id && (
+								<DragPlaceholder />
+							)}
 							{folder.items.length > 0 ? (
-								<TransitionGroup component={null}>
+								<>
 									{folder.items.map((item, idx) => (
-										<CSSTransition
-											key={item.id}
-											timeout={500}
-											classNames={{
-												enter: styles.fadeEnter,
-												enterActive:
-													styles.fadeEnterActive,
-												exit: styles.fadeExit,
-												exitActive:
-													styles.fadeExitActive,
-											}}
-										>
+										<>
 											{item.itemType === "board" ? (
 												<FolderItem
 													ref={el => {
@@ -370,9 +338,9 @@ export const Folder = ({
 													folder={item}
 												/>
 											)}
-										</CSSTransition>
+										</>
 									))}
-								</TransitionGroup>
+								</>
 							) : (
 								<span className={styles.noContent}>
 									{t("sidePanel.folders.notAvailable")}
