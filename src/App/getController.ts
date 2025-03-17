@@ -141,6 +141,26 @@ export function getController(
 
 		const context = board.selection.getContext();
 		board.keyboard.keyDown(event);
+
+		const navigationActions = ["Right", "Left", "Up", "Down"];
+		const navigationConfig = Object.fromEntries(
+			navigationActions.map(direction => [
+				`navigation${direction}`,
+				{
+					cb: () =>
+						board.camera.smoothTranslateTo(
+							board.keyboard,
+							!!board.tools.getSelect(),
+						),
+					selectionContext: [
+						"None",
+						"EditUnderPointer",
+						"SelectByRect",
+					],
+				},
+			]),
+		);
+
 		const editModeHotkeys: HotkeysMap = {
 			select: {
 				cb: () => {
@@ -260,44 +280,13 @@ export function getController(
 					board.tools.setNavigateMode(board.keyboard.isSpacePressed),
 				selectionContext: ["None", "EditUnderPointer", "SelectByRect"],
 			},
-			navigationRight: {
-				cb: () => board.camera.smoothTranslateTo(board.keyboard),
-				selectionContext: ["None", "EditUnderPointer", "SelectByRect"],
-			},
-			navigationLeft: {
-				cb: () => board.camera.smoothTranslateTo(board.keyboard),
-				selectionContext: ["None", "EditUnderPointer", "SelectByRect"],
-			},
-			navigationUp: {
-				cb: () => board.camera.smoothTranslateTo(board.keyboard),
-				selectionContext: ["None", "EditUnderPointer", "SelectByRect"],
-			},
-			navigationDown: {
-				cb: () => board.camera.smoothTranslateTo(board.keyboard),
-				selectionContext: ["None", "EditUnderPointer", "SelectByRect"],
-			},
+			...navigationConfig,
 		};
 		const viewModeHotkeys = {
 			zoomIn: () => board.camera.zoomInToViewCenter(),
 			zoomOut: () => board.camera.zoomOutFromViewCenter(),
 			zoomDefault: () => board.camera.zoomToViewCenter(1),
-			navigationRight: {
-				cb: () => board.camera.smoothTranslateTo(board.keyboard),
-
-				selectionContext: ["None", "EditUnderPointer", "SelectByRect"],
-			},
-			navigationLeft: {
-				cb: () => board.camera.smoothTranslateTo(board.keyboard),
-				selectionContext: ["None", "EditUnderPointer", "SelectByRect"],
-			},
-			navigationUp: {
-				cb: () => board.camera.smoothTranslateTo(board.keyboard),
-				selectionContext: ["None", "EditUnderPointer", "SelectByRect"],
-			},
-			navigationDown: {
-				cb: () => board.camera.smoothTranslateTo(board.keyboard),
-				selectionContext: ["None", "EditUnderPointer", "SelectByRect"],
-			},
+			...navigationConfig,
 		};
 
 		const single = board.selection.items.getSingle();
