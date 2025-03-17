@@ -64,17 +64,21 @@ export function UserPlanUsage({
 		},
 	).format(previousCancellationDate);
 
+	const tokensBalance = account.billingInfo?.tokens.totalTokensBalance || 0;
+
 	return (
 		<div className={styles.container}>
 			<div className={styles.planUsageText}>
 				<p className={styles.planUsage}>
 					{isFree ? (
 						<>
-							<Trans
-								t={t}
-								i18nKey={"userPlan.currentPlanFree"}
-								components={[<span key="freeSpan" />]}
-							/>{" "}
+							{t("userPlan.currentPlanFree.part1")}
+							<span className={styles.planHighlight}>
+								{t("userPlan.plans.basic.name")}
+							</span>
+							{t("userPlan.currentPlanFree.part2", {
+								tokensBalance,
+							})}{" "}
 							{!history && (
 								<span
 									className={styles.limitsBtn}
@@ -92,24 +96,28 @@ export function UserPlanUsage({
 					) : (
 						<>
 							{status === "pending_cancellation" ? (
-								<span>
-									{t("userPlan.currentPlanPending", {
-										planName,
+								<>
+									{t("userPlan.currentPlanPending.part1")}
+									<span className={styles.planHighlight}>
+										{planName}
+									</span>
+									{t("userPlan.currentPlanPending.part2", {
 										cancellationDate:
 											formattedCancellationDate,
 									})}
-								</span>
+								</>
 							) : (
-								<span>
-									{t("userPlan.currentPlanActive", {
-										planName,
+								<>
+									{t("userPlan.currentPlanActive.part1")}
+									<span className={styles.planHighlight}>
+										{planName}
+									</span>
+									{t("userPlan.currentPlanActive.part2", {
 										cancellationDate:
 											formattedPreviousCancellationDate,
-										tokensBalance:
-											account.billingInfo?.tokens
-												.totalTokensBalance || 0,
+										tokensBalance,
 									})}
-								</span>
+								</>
 							)}
 						</>
 					)}

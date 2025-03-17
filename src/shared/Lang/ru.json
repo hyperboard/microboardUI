@@ -405,7 +405,7 @@
 		},
 		"deleteVisitedBoard": {
 			"title": "Удалить из списка",
-			"description": " Вы уверены, что хотите удалить из вашего списка доску ‘{{name}}’?"
+			"description": " Вы уверены, что хотите удалить из вашего списка доску '{{name}}'?"
 		},
 		"deleteFolder": {
 			"title": "Удалить папку",
@@ -826,14 +826,24 @@
 		"avatarTypeConstraint": "Изображение должно быть в формате jpeg, png или svg"
 	},
 	"userPlan": {
-		"tokensTooltip": "Токены начисляются на месяц и сгорают, если не использовать. Дополнительно: +1000 токенов за $8, срок действия — 1 месяц.",
+		"tokens": "токенов",
+		"tokensTooltip": "Токены начисляются на месяц и сгорают, если не использовать. Дополнительно: +1000 токенов за $8, срок действия — 1 месяц.",
 		"paymentHistoryHeading": "История платежей",
 		"currentPlanHeading": "Текущий тариф",
 		"upgradePlan": "Выбрать тариф",
-		"currentPlanFree": "Тариф Базовый активен.",
+		"currentPlanFree": {
+			"part1": "Тариф ",
+			"part2": " активен. Баланс токенов: {{tokensBalance}}."
+		},
 		"limits": "Лимиты",
-		"currentPlanPending": "Тариф {{planName}} оплачен до {{cancellationDate}}.",
-		"currentPlanActive": "Тариф {{planName}} оплачен до {{cancellationDate}}. Баланс токенов: {{tokensBalance}}. Подключен автоплатеж.",
+		"currentPlanPending": {
+			"part1": "Тариф ",
+			"part2": " оплачен до {{cancellationDate}}."
+		},
+		"currentPlanActive": {
+			"part1": "Тариф ",
+			"part2": " оплачен до {{cancellationDate}}. Баланс токенов: {{tokensBalance}}. Подключен автоплатеж."
+		},
 		"nextPayment": "Следующее списание: {{paymentDate}}",
 		"pendingBtn": "Будет действовать с {{activationDate}}",
 		"cancelPayment": "Отказаться",

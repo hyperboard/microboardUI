@@ -22,6 +22,8 @@ interface TooltipProps {
 	borderRadius?: "radiusMd";
 	padding?: "paddingMd";
 	className?: string;
+	width?: string | number;
+	allowTextWrap?: boolean;
 	[key: string]: unknown;
 }
 
@@ -38,6 +40,8 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
 			padding,
 			inlineStyle,
 			className,
+			width,
+			allowTextWrap = false,
 			...props
 		},
 		ref,
@@ -76,11 +80,13 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
 						borderRadius && style[borderRadius],
 						padding && style[padding],
 					)}
+					style={{ width: width || undefined }}
 				>
 					<span
 						className={clsx(style.tipText, {
 							[style.center]: tooltipAlign === "center",
 							[style.left]: tooltipAlign === "left",
+							[style.wrap]: allowTextWrap,
 						})}
 						dangerouslySetInnerHTML={{ __html: tooltip }}
 					/>

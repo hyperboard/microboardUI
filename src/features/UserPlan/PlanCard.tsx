@@ -6,7 +6,7 @@ import { Button } from "shared/ui-lib/Button";
 import { useTranslation } from "react-i18next";
 import { UiSkeleton } from "shared/ui-lib/UiSkeleton";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";
-import { Tooltip } from "shared/ui-lib/UiButton/Tooltip";
+import { Tooltip } from "shared/ui-lib/Tooltip";
 
 export type PlanState = "current" | "downgrade" | "available" | "pending";
 

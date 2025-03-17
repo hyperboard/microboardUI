@@ -128,6 +128,85 @@ export function getController(
 				);
 			}
 		}
+
+		// const isMac =
+		// 	navigator.userAgentData?.platform === "macOS" ||
+		// 	/Mac|iP(hone|od|ad)/.test(navigator.userAgent);
+		// const isTrackpadEvent = event.deltaMode === WheelEvent.DOM_DELTA_PIXEL;
+		// const isSmoothScroll = deltaTime < 150; // Быстрое последовательное событие
+
+		// // Улучшенная логика определения тачпада
+		// if (isMac) {
+		// 	isTouchpad = isTrackpadEvent || isSmoothScroll;
+		// } else {
+		// 	isTouchpad = isSmoothScroll || Math.abs(event.deltaY) < 50;
+		// }
+
+		// console.log("event.deltaY:", event.deltaY, "isTouchpad:", isTouchpad);
+
+		// if (event.ctrlKey && isMac) {
+		// 	// На Mac `ctrlKey` может указывать на pinch-to-zoom
+		// 	MemoryLogger.log(
+		// 		`Delta: ${deltaTime}; Touchpad pinch detected: ${eventJson}`,
+		// 	);
+		// 	board.camera.zoomRelativeToPointerBy(
+		// 		wheel.getTouchpadPinchMultiplier(),
+		// 	);
+		// } else if (isTouchpad) {
+		// 	// Это тачпад → панорамирование
+		// 	MemoryLogger.log(
+		// 		`Delta: ${deltaTime}; Touchpad scroll detected: ${eventJson}`,
+		// 	);
+		// 	board.camera.translateBy(
+		// 		wheel.getTouchpadPanDeltaX() / scale,
+		// 		wheel.getTouchpadPanDeltaY() / scale,
+		// 	);
+		// } else {
+		// 	// Это мышь → зум
+		// 	MemoryLogger.log(
+		// 		`Delta: ${deltaTime}; Mouse wheel detected: ${eventJson}`,
+		// 	);
+		// 	board.camera.zoomRelativeToPointerBy(
+		// 		wheel.getWheelScaleMultiplier(),
+		// 	);
+		// }
+
+		// const isTrackpadEvent = event.deltaMode === WheelEvent.DOM_DELTA_PIXEL;
+		// const isSmoothScroll = deltaTime < 100; // Быстрое последовательное событие
+		// const isSmallDelta = Math.abs(event.deltaY) < 50; // Малые значения deltaY
+
+		// // Универсальная логика определения тачпада
+		// const isTouchpad = isTrackpadEvent && (isSmoothScroll || isSmallDelta);
+
+		// console.log("event.deltaY:", deltaTime, "isTouchpad:", isTouchpad);
+		// console.log("deltaTime", deltaTime);
+
+		// if (event.ctrlKey) {
+		// 	// На Mac `ctrlKey` может указывать на pinch-to-zoom
+		// 	MemoryLogger.log(
+		// 		`Delta: ${deltaTime}; Touchpad pinch detected: ${eventJson}`,
+		// 	);
+		// 	board.camera.zoomRelativeToPointerBy(
+		// 		wheel.getTouchpadPinchMultiplier(),
+		// 	);
+		// } else if (isTouchpad) {
+		// 	// Это тачпад → панорамирование
+		// 	MemoryLogger.log(
+		// 		`Delta: ${deltaTime}; Touchpad scroll detected: ${eventJson}`,
+		// 	);
+		// 	board.camera.translateBy(
+		// 		wheel.getTouchpadPanDeltaX() / scale,
+		// 		wheel.getTouchpadPanDeltaY() / scale,
+		// 	);
+		// } else {
+		// 	// Это мышь → зум
+		// 	MemoryLogger.log(
+		// 		`Delta: ${deltaTime}; Mouse wheel detected: ${eventJson}`,
+		// 	);
+		// 	board.camera.zoomRelativeToPointerBy(
+		// 		wheel.getWheelScaleMultiplier(),
+		// 	);
+		// }
 	}
 
 	function onKeyDown(event: KeyboardEvent): void {

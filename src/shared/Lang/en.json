@@ -342,10 +342,10 @@
 		"restorePassword": "Restore password",
 		"checkInbox": "Check your inbox",
 		"weSentCode": "We have sent a verification code to",
-		"enterCodeBelow": "Please enter it below to confirm your email address. Make sure to check your Spam or Junk folder.",
+		"enterCodeBelow": "Please enter it below to confirm your email address. Make sure to check your Spam or Junk folder.",
 		"codePlaceholder": "Verification code",
 		"enterNewCodeBelow": "We have sent you a new code, please enter it below",
-		"emailIfNotFind": "If you haven’t received it, make sure to check your Spam or Junk folder",
+		"emailIfNotFind": "If you haven't received it, make sure to check your Spam or Junk folder",
 		"passwordLengthError": "The password must be at least 8 and no more than 14 characters long",
 		"backToLogIn": "Back to Log in",
 		"passwordDontAMatch": "Passwords do not match",
@@ -401,17 +401,17 @@
 	"modalConfirm": {
 		"deleteBoard": {
 			"title": "Delete board",
-			"description": "Are you sure you want to delete the board ‘{{name}}’?",
+			"description": "Are you sure you want to delete the board '{{name}}'?",
 			"delete": "Remove",
 			"cancel": "Cancel"
 		},
 		"deleteVisitedBoard": {
 			"title": "Remove board",
-			"description": "Are you sure you want to remove from your list the board ‘{{name}}’?"
+			"description": "Are you sure you want to remove from your list the board '{{name}}'?"
 		},
 		"deleteFolder": {
 			"title": "Delete folder",
-			"description": "Are you sure you want to delete the folder ‘{{name}}’?"
+			"description": "Are you sure you want to delete the folder '{{name}}'?"
 		}
 	},
 	"modalLinkTo": {
@@ -431,7 +431,7 @@
 	},
 	"modalTemplate": {
 		"templates": "Templates",
-		"noTemplates": "We couldn’t find a matching template.",
+		"noTemplates": "We couldn't find a matching template.",
 		"createTemplate": "Create template",
 		"backToTemplates": "Back to template center",
 		"relatedTemplates": "Related templates",
@@ -685,7 +685,7 @@
 		"createError": "Error while creating template"
 	},
 	"itemTooltips": {
-		"placeholder": "This type of object isn’t<br /> supported yet,<br /> <span style='opacity: 60%'>but we’re working on it.<br /> It will be available soon!</span>"
+		"placeholder": "This type of object isn't<br /> supported yet,<br /> <span style='opacity: 60%'>but we're working on it.<br /> It will be available soon!</span>"
 	},
 	"ai": {
 		"flowChart": "Flow chart",
@@ -828,14 +828,24 @@
 		"avatarTypeConstraint": "The image must be in jpeg, png or svg format"
 	},
 	"userPlan": {
+		"tokens": "tokens",
 		"tokensTooltip": "Tokens are credited on a monthly basis and expire if not used. Additional: +1000 tokens for $8, term of use - 1 month.",
 		"paymentHistoryHeading": "Payment History",
 		"currentPlanHeading": "Current Plan",
 		"upgradePlan": "Upgrade Plan",
-		"currentPlanFree": "The Basic plan is active.",
+		"currentPlanFree": {
+			"part1": "The ",
+			"part2": " plan is active. Tokens balance: {{tokensBalance}}."
+		},
 		"limits": "Limits",
-		"currentPlanPending": "The {{planName}} plan is paid until {{cancellationDate}}.",
-		"currentPlanActive": "The current {{planName}} plan is paid until {{cancellationDate}}. Tokens balance: {{tokensBalance}}. Auto-payment is enabled.",
+		"currentPlanPending": {
+			"part1": "The ",
+			"part2": " plan is paid until {{cancellationDate}}."
+		},
+		"currentPlanActive": {
+			"part1": "The current ",
+			"part2": " plan is paid until {{cancellationDate}}. Tokens balance: {{tokensBalance}}. Auto-payment is enabled."
+		},
 		"nextPayment": "Next payment: {{paymentDate}}",
 		"pendingBtn": "The plan will be effective as of {{activationDate}}",
 		"cancelPayment": "Cancel upcoming payment",

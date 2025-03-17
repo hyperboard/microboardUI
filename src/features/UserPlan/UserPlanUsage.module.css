@@ -5,6 +5,11 @@
 	width: 100%;
 }
 
+.planHighlight {
+	color: #b78af0;
+	font-weight: 600;
+}
+
 .planUsageText {
 	display: flex;
 	flex-direction: column;

@@ -8,7 +8,7 @@ import React, { MouseEventHandler } from "react";
 import { useTranslation } from "react-i18next";
 import { useClickOutside } from "shared/lib/useClickOutside";
 import { Chevron } from "shared/ui-lib/Dropdown/Chevron";
-import { Tooltip } from "shared/ui-lib/UiButton/Tooltip";
+import { Tooltip } from "shared/ui-lib/Tooltip";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { UiPanel } from "shared/ui-lib/UiPanel";
 import { useAIContext } from "./AIContext";
@@ -166,7 +166,7 @@ export const Dropdown = (
 								: t(`ai.models.${modelInfo.id}.title`)}
 						</strong>
 						<span className={styles.tokenBadge}>
-							{modelInfo.tokens} tokens
+							{modelInfo.tokens} {t("userPlan.tokens")}
 						</span>
 					</div>
 					<p>{t(`ai.models.${modelInfo.id}.description`)}</p>

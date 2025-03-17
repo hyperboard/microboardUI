@@ -335,7 +335,8 @@ export function SelectPaymentModal(): JSX.Element {
 		>
 			<div className={styles.wrapper}>
 				<h1 className={styles.heading}>
-					{isPurchaseTokensMode ? "Purchase Tokens" : "Payment"}
+					{/* {isPurchaseTokensMode ? "Purchase Tokens" : "Payment"} */}
+					{t("userPlan.historyTable.paymentType")}
 				</h1>
 
 				{/* {isPurchaseTokensMode && (

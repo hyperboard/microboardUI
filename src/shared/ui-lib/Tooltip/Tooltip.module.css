@@ -67,6 +67,10 @@
 	white-space: nowrap;
 }
 
+.tip-text.wrap {
+	white-space: normal;
+}
+
 .tip-text.center {
 	text-align: center;
 }

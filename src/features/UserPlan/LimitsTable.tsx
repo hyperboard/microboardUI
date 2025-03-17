@@ -30,6 +30,8 @@ export function LimitsTable() {
 	const account = useAccount();
 	const models = account.billingInfo?.models;
 	const { t } = useTranslation();
+	const currentPlanName = account.billingInfo?.plan.name || "basic";
+	const isPlus = currentPlanName.toLowerCase() === "plus";
 
 	const sortedModels = models
 		?.filter(({ id }) => MODELS_ORDER.includes(id))
@@ -41,18 +43,16 @@ export function LimitsTable() {
 
 	return (
 		<table className={styles.table}>
-			<thead className={styles.row}>
+			<thead>
 				<tr className={styles.header}>
-					<th className={styles.modelsHeading}>
-						{t("userPlan.limitsTable.modelName")}
-					</th>
-					<th>
+					<th className={styles.modelsHeading}>Model</th>
+					<th className={clsx(!isPlus && styles.currentTariff)}>
 						Basic
-						<div>{t("userPlan.limitsTable.costPerRequest")}</div>
+						<div>Cost per request in tokens</div>
 					</th>
-					<th>
+					<th className={clsx(isPlus && styles.currentTariff)}>
 						Plus
-						<div>{t("userPlan.limitsTable.costPerRequest")}</div>
+						<div>Cost per request in tokens</div>
 					</th>
 				</tr>
 			</thead>
@@ -64,6 +64,7 @@ export function LimitsTable() {
 						description={t(`models.descriptions.${model.id}`, "")}
 						tokenCost={model.tokenCost}
 						id={model.id}
+						isPlus={isPlus}
 					/>
 				))}
 			</tbody>
@@ -76,9 +77,10 @@ type ModelRowProps = {
 	description: string;
 	tokenCost: number;
 	id: string;
+	isPlus: boolean;
 };
 
-function ModelRow({ description, name, tokenCost, id }: ModelRowProps) {
+function ModelRow({ description, name, tokenCost, id, isPlus }: ModelRowProps) {
 	const { t } = useTranslation();
 	const { elementRef, rect } = useBoundingClientRect<HTMLTableCellElement>();
 	const { handlePointerEnter, handlePointerLeave, isHover } = useHoverState();
@@ -98,6 +100,7 @@ function ModelRow({ description, name, tokenCost, id }: ModelRowProps) {
 				className={clsx(
 					styles.limit,
 					!isAvailableInBasic && styles.modelDisabled,
+					!isPlus && styles.currentTariff,
 				)}
 			>
 				{isAvailableInBasic
@@ -112,7 +115,7 @@ function ModelRow({ description, name, tokenCost, id }: ModelRowProps) {
 					!isAvailableInPlus ? handlePointerLeave : undefined
 				}
 				ref={elementRef}
-				className={styles.limit}
+				className={clsx(styles.limit, isPlus && styles.currentTariff)}
 			>
 				{isAvailableInPlus ? (
 					tokenCost

@@ -70,7 +70,11 @@ export function LimitsModal() {
 					}
 					isFree={account.billingInfo?.plan.name === "basic"}
 					history
-					hasHistory={account.billingHistory.length > 0}
+					hasHistory={
+						account.billingHistory.filter(
+							entry => entry.planId !== "basic",
+						).length > 0
+					}
 					onCancel={
 						account.billingInfo?.plan.name !== "basic"
 							? onDowngrade

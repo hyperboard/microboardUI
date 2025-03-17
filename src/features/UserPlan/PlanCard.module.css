@@ -155,11 +155,16 @@
 	right: 100%;
 	margin-right: 8px;
 	z-index: 100;
+	width: 232px;
 }
 
 @media screen and (hover: hover) {
 	.tooltipContainer:hover .tooltip {
 		display: flex;
+		width: 232px;
+	}
+
+	.tooltipContainer:hover .tooltip span {
 		width: 232px;
 	}
 }

@@ -16,7 +16,9 @@ const PLAN_DISPLAYNAME = {
 
 export function HistoryTable() {
 	const account = useAccount();
-	const historyRecords = account.billingHistory;
+	const historyRecords = account.billingHistory.filter(
+		entry => entry.planId !== "basic",
+	);
 	const { t } = useTranslation();
 
 	return (
@@ -33,6 +35,7 @@ export function HistoryTable() {
 			</thead>
 			{historyRecords?.map(
 				({
+					id,
 					startDate,
 					endDate,
 					planName,
@@ -41,6 +44,7 @@ export function HistoryTable() {
 					paymentType,
 				}) => (
 					<ModelRow
+						key={id}
 						name={planName}
 						startDate={startDate}
 						endDate={endDate}

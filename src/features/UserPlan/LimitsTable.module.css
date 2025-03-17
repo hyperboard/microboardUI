@@ -2,6 +2,7 @@
 	font-size: 14px;
 	font-weight: 400;
 	border-collapse: collapse;
+	width: 100%;
 }
 
 .row {
@@ -9,7 +10,7 @@
 }
 
 .limit {
-	text-align: right;
+	text-align: left;
 }
 
 .unlimited {
@@ -23,10 +24,21 @@
 
 .table th {
 	font-weight: 400;
+	text-align: left;
+	border-right: 1px solid #e9eaec;
+}
+
+.table th:last-child {
+	border-right: none;
 }
 
 .header {
 	background-color: rgb(247, 247, 248);
+}
+
+td.currentTariff {
+	background-color: rgba(245, 242, 251, 1);
+	color: rgba(114, 86, 171, 1);
 }
 
 .modelsHeading {
@@ -35,6 +47,7 @@
 
 .model {
 	gap: 2px;
+	text-align: left;
 }
 
 .modelName {
@@ -50,6 +63,10 @@
 
 .modelDisabled {
 	color: rgba(10, 15, 41, 0.25);
+}
+
+.modelDisabled.currentTariff {
+	color: rgba(197, 178, 234, 1);
 }
 
 .modelLimitReached {
