@@ -116,7 +116,7 @@ export function createApp(isHistory = true): App {
 	apiV2.interceptors.addRequestInterceptor(authInterceptor);
 
 	async function openBoard(id: string, accessKey?: string): Promise<void> {
-		app.getBoard()?.selection.quickAddButtons.clear();
+		app.getBoard()?.cleanup();
 		if (id === "boards") {
 			return;
 		}
@@ -203,7 +203,7 @@ export function createApp(isHistory = true): App {
 	}
 
 	async function openBoardFromFile(): Promise<void> {
-		app.getBoard()?.selection.quickAddButtons.clear();
+		app.getBoard()?.cleanup();
 		const id = "local";
 
 		const currentBoard = new Board(
