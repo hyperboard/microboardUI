@@ -250,7 +250,6 @@ export const Folder = ({
 				elemRef={setNodeRef}
 				renderHeader={({ toggle, isOpen }) => (
 					<div
-						style={{ border: "1px solid red" }}
 						className={styles.wrapper}
 						{...listeners}
 						{...attributes}
