@@ -6,6 +6,7 @@ export type LogEntryType = {
 	userAgent: string;
 	devicePixelRatio: number;
 	platform: string;
+	isCtrlKey: boolean;
 };
 
 export class WheelEventLogger {
@@ -39,6 +40,7 @@ export class WheelEventLogger {
 			userAgent: navigator.userAgent,
 			devicePixelRatio: window.devicePixelRatio,
 			platform: navigator.platform,
+			isCtrlKey: event.ctrlKey || event.metaKey,
 		};
 		this.setEvents(prev => [logEntry, ...prev]);
 	};
