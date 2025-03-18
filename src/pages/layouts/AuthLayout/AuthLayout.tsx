@@ -1,15 +1,18 @@
+import QuickAddButtonsClear from "Board/Selection/QuickAddButtons/QuickAddButtonsClear";
 import { Navbar } from "features/Widgets/Navbar/Navbar";
 import React, { useEffect } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import style from "./AuthLayout.module.css";
-import QuickAddButtonsClear from "Board/Selection/QuickAddButtons/QuickAddButtonsClear";
-import { notify } from "shared/ui-lib/Toast";
 import { useTranslation } from "react-i18next";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { OuterLink } from "shared/ui-lib/OuterLink";
+import { notify } from "shared/ui-lib/Toast";
+import style from "./AuthLayout.module.css";
 
-export const AuthLayout: React.FC = () => {
+type Props = { showPolicies?: boolean };
+
+export const AuthLayout = ({ showPolicies }: Props) => {
 	const location = useLocation();
 	const navigate = useNavigate();
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 
 	useEffect(() => {
 		const params = new URLSearchParams(location.search);
@@ -35,6 +38,36 @@ export const AuthLayout: React.FC = () => {
 				<div className={style.content}>
 					<Outlet />
 				</div>
+				{showPolicies && (
+					<div className={style.policy}>
+						{t("auth.policyWith")}{" "}
+						<OuterLink
+							href={
+								i18n.language === "ru"
+									? window.location.origin +
+										"/pdf/terms_conditions_ru.pdf"
+									: window.location.origin +
+										"/pdf/terms_conditions_en.pdf"
+							}
+							className={style.policyLink}
+						>
+							{t("auth.termsAndConditions")}
+						</OuterLink>{" "}
+						{t("common.and")}{" "}
+						<OuterLink
+							href={
+								i18n.language === "ru"
+									? window.location.origin +
+										"/pdf/privacy_policy_ru.pdf"
+									: window.location.origin +
+										"/pdf/privacy_policy_en.pdf"
+							}
+							className={style.policyLink}
+						>
+							{t("auth.privacyPolicy")}
+						</OuterLink>
+					</div>
+				)}
 			</div>
 		</QuickAddButtonsClear>
 	);

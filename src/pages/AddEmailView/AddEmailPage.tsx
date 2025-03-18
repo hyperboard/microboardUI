@@ -1,13 +1,14 @@
 import { useAccount } from "App/useAccount";
+import { Tail } from "pages/layouts/AuthLayout/Tail";
+import { EmailIcon } from "pages/SignupPage/EmailIcon";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { createSearchParams, useNavigate } from "react-router-dom";
-import { UiButton } from "shared/ui-lib/UiButton";
+import { HTTPError } from "shared/api";
 import { Input } from "shared/ui-lib/Input/Input";
+import { UiButton } from "shared/ui-lib/UiButton";
 import isEmail from "validator/lib/isEmail";
-import { Tail } from "pages/layouts/AuthLayout/Tail";
 import styles from "./AddEmailPage.module.css";
-import { EmailIcon } from "pages/SignupPage/EmailIcon";
 
 export const AddEmailPage = (): React.ReactElement => {
 	const { t } = useTranslation();
@@ -79,9 +80,15 @@ export const AddEmailPage = (): React.ReactElement => {
 					email: added,
 				}).toString(),
 			});
-		} catch {
-			setIsDisabled(false);
-			setIsSubmitLoading(false);
+		} catch (err) {
+			if (err instanceof HTTPError && err.status === 409) {
+				setEmailError(t("auth.emailAlreadyInUse"));
+				setIsDisabled(true);
+				setIsSubmitLoading(false);
+			} else {
+				setIsSubmitLoading(false);
+				setIsDisabled(false);
+			}
 		}
 	};
 
@@ -95,6 +102,7 @@ export const AddEmailPage = (): React.ReactElement => {
 					type="text"
 					placeholder={t("auth.emailPlaceholder")}
 					onBlur={checkForm}
+					onChange={checkForm}
 					hasError={!!emailError}
 					errorText={emailError}
 				/>

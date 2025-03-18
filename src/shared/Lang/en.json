@@ -370,6 +370,7 @@
 		"newsletter": "I agree to receive product updates and promotional materials from",
 		"loginWith": "Other options",
 		"googleAuth": "Sing in with Google",
+		"emailAlreadyInUse": "User with this email already exists",
 		"signinNotifyError": {
 			"title": "Login failed",
 			"text": "Please try again later."
