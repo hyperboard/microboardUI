@@ -167,8 +167,8 @@ export function createWheelDetector(): WheelDetector {
 	const maxWheelDelta = 50;
 	const log: number[] = [];
 	let lastEventTimestamp = performance.now();
-	let lastDeltaY = 0;
-	let lastSpeed = 0;
+	const lastDeltaY = 0;
+	const lastSpeed = 0;
 
 	let isMouseWheel = true;
 	let isTouchpad = true;

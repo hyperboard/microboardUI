@@ -33,8 +33,8 @@ export function getController(
 	clipboard: Clipboard,
 	isLoggedIn: () => boolean,
 ): Controller {
-	let lastEventTime = 0;
-	let isTouchpad = false;
+	const lastEventTime = 0;
+	const isTouchpad = false;
 	let isItemUnderPointer = false;
 	function onWheel(event: WheelEvent): void {
 		event.preventDefault();
