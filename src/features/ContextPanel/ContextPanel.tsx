@@ -320,11 +320,11 @@ export function ContextPanel(): React.ReactElement | null {
 						<Delete rounded="left" />
 						<UiSeparator vertical />
 						<RestOptionsMenu>
-							{/*<BringToFront />*/}
-							{/*<SendToBack />*/}
-							{/*<CopyItemLink />*/}
-							{/*<SetLinkTo />*/}
-							{/*<Duplicate />*/}
+							{/* <BringToFront />*/}
+							{/* <SendToBack />*/}
+							{/* <CopyItemLink />*/}
+							{/* <SetLinkTo />*/}
+							{/* <Duplicate />*/}
 							<SaveVideo />
 						</RestOptionsMenu>
 					</>
