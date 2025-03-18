@@ -9,7 +9,6 @@ import { HotkeysMap } from "Board/Keyboard/types";
 import { PRESENCE_CURSOR_THROTTLE } from "Board/Presence/Presence";
 import { pasteTextToTheBoard, tryToPasteAsItemOrReturnText } from "./Paste";
 import { throttle } from "shared/lib/throttle";
-import { MemoryLogger } from "shared/Logger";
 
 export interface Controller {
 	onWheel: (event: WheelEvent) => void;
@@ -27,24 +26,6 @@ export interface Controller {
 	onCopy: (event: ClipboardEvent) => void;
 	onPaste: (event: ClipboardEvent) => void;
 	onDrop: (event: DragEvent) => void;
-}
-
-function getEventDataAsString(event: Event): string {
-	let eventData = "";
-	const keys = Object.keys(event).concat(
-		Object.getOwnPropertyNames(Object.getPrototypeOf(event)),
-	);
-	keys.forEach(key => {
-		try {
-			const value = event[key as keyof Event];
-			if (typeof value !== "function") {
-				eventData += `${key}: ${value}, `;
-			}
-		} catch (error) {
-			eventData += `${key}: [unavailable], `;
-		}
-	});
-	return eventData;
 }
 
 export function getController(
@@ -67,67 +48,68 @@ export function getController(
 		if (wheel.isIgnore()) {
 			return;
 		}
-		// if (wheel.isProbablyMouseWheel()) {
-		// 	console.log("wheel", wheel.getWheelScaleMultiplier());
-		// 	board.camera.zoomRelativeToPointerBy(
-		// 		wheel.getWheelScaleMultiplier(),
-		// 	);
-		// } else if (wheel.isTouchpadPinch()) {
-		// 	console.log("touchpad", wheel.getTouchpadPinchMultiplier());
-		// 	board.camera.zoomRelativeToPointerBy(
-		// 		wheel.getTouchpadPinchMultiplier(),
-		// 	);
-		// } else {
-		// 	console.log("translate");
-		// 	const scale = board.camera.getScale();
-		// 	board.camera.translateBy(
-		// 		wheel.getTouchpadPanDeltaX() / scale,
-		// 		wheel.getTouchpadPanDeltaY() / scale,
-		// 	);
-		// }
 
-		const currentTime = Date.now();
-		const deltaTime = currentTime - lastEventTime;
-		lastEventTime = currentTime;
-
-		if (deltaTime > 200 && !wheel.isProbablyMouseWheel()) {
-			return;
-		}
-
-		const scale = board.camera.getScale();
-		const eventJson = getEventDataAsString(event);
-
-		MemoryLogger.setContext("WheelHandler");
-		if (event.ctrlKey) {
-			MemoryLogger.log(
-				`Delta: ${deltaTime}; Touchpad pinch detected: ${eventJson}`,
+		if (wheel.isProbablyMouseWheel()) {
+			console.log("wheel", wheel.getWheelScaleMultiplier());
+			board.camera.zoomRelativeToPointerBy(
+				wheel.getWheelScaleMultiplier(),
 			);
+		} else if (wheel.isTouchpadPinch()) {
+			console.log("touchpad", wheel.getTouchpadPinchMultiplier());
 			board.camera.zoomRelativeToPointerBy(
 				wheel.getTouchpadPinchMultiplier(),
 			);
-		} else if (event.deltaMode === WheelEvent.DOM_DELTA_PIXEL) {
-			const isSmallDelta = Math.abs(event.deltaY) < 10;
-			isTouchpad = isSmallDelta
-				? deltaTime < 100
-				: deltaTime <= 100 && isTouchpad;
-
-			if (isTouchpad) {
-				MemoryLogger.log(
-					`Delta: ${deltaTime}; Is small delta: ${isSmallDelta}; Touchpad scroll detected: ${eventJson}`,
-				);
-				board.camera.translateBy(
-					wheel.getTouchpadPanDeltaX() / scale,
-					wheel.getTouchpadPanDeltaY() / scale,
-				);
-			} else {
-				MemoryLogger.log(
-					`Delta: ${deltaTime}; Is small delta: ${isSmallDelta}; Mouse wheel detected: ${eventJson}`,
-				);
-				board.camera.zoomRelativeToPointerBy(
-					wheel.getWheelScaleMultiplier(),
-				);
-			}
+		} else {
+			console.log("translate");
+			const scale = board.camera.getScale();
+			board.camera.translateBy(
+				wheel.getTouchpadPanDeltaX() / scale,
+				wheel.getTouchpadPanDeltaY() / scale,
+			);
 		}
+
+		// const currentTime = Date.now();
+		// const deltaTime = currentTime - lastEventTime;
+		// lastEventTime = currentTime;
+
+		// if (deltaTime > 200 && !wheel.isProbablyMouseWheel()) {
+		// 	return;
+		// }
+
+		// const scale = board.camera.getScale();
+		// const eventJson = getEventDataAsString(event);
+
+		// MemoryLogger.setContext("WheelHandler");
+		// if (event.ctrlKey) {
+		// 	MemoryLogger.log(
+		// 		`Delta: ${deltaTime}; Touchpad pinch detected: ${eventJson}`,
+		// 	);
+		// 	board.camera.zoomRelativeToPointerBy(
+		// 		wheel.getTouchpadPinchMultiplier(),
+		// 	);
+		// } else if (event.deltaMode === WheelEvent.DOM_DELTA_PIXEL) {
+		// 	const isSmallDelta = Math.abs(event.deltaY) < 10;
+		// 	isTouchpad = isSmallDelta
+		// 		? deltaTime < 100
+		// 		: deltaTime <= 100 && isTouchpad;
+
+		// 	if (isTouchpad) {
+		// 		MemoryLogger.log(
+		// 			`Delta: ${deltaTime}; Is small delta: ${isSmallDelta}; Touchpad scroll detected: ${eventJson}`,
+		// 		);
+		// 		board.camera.translateBy(
+		// 			wheel.getTouchpadPanDeltaX() / scale,
+		// 			wheel.getTouchpadPanDeltaY() / scale,
+		// 		);
+		// 	} else {
+		// 		MemoryLogger.log(
+		// 			`Delta: ${deltaTime}; Is small delta: ${isSmallDelta}; Mouse wheel detected: ${eventJson}`,
+		// 		);
+		// 		board.camera.zoomRelativeToPointerBy(
+		// 			wheel.getWheelScaleMultiplier(),
+		// 		);
+		// 	}
+		// }
 	}
 
 	function onKeyDown(event: KeyboardEvent): void {
