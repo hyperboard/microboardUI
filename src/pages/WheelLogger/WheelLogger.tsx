@@ -21,11 +21,11 @@ export const WheelEventLoggerPage: React.FC = () => {
 		});
 		const a = document.createElement("a");
 		a.href = URL.createObjectURL(blob);
-		const timestamp = new Date()
-			.toISOString()
-			.replace(/:/g, "-")
-			.split(".")[0];
-		a.download = `wheel_events_${timestamp}.json`;
+		const browserInfo =
+			navigator.userAgent.match(
+				/(Firefox|Chrome|Safari|Edge|Opera)/,
+			)?.[0] || "UnknownBrowser";
+		a.download = `wheel_events_${browserInfo}.json`;
 		document.body.appendChild(a);
 		a.click();
 		document.body.removeChild(a);
