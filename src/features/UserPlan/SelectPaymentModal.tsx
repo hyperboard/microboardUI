@@ -133,23 +133,25 @@ export function SelectPaymentModal(): JSX.Element {
 					"Unable to checkout user without email, add email first"
 			) {
 				notify({
-					header: "Email not found",
+					header: t("userPlan.notifications.emailNotFound.header"),
 					body: (
 						<>
 							<Link
 								to={`/bind-email/add-email?${window.location.search.substring(1)}`}
 							>
-								Add email
+								{t("auth.addEmail")}
 							</Link>{" "}
-							to your account to pay with stripe.
+							{t(
+								"userPlan.notifications.emailNotFound.linkMessage",
+							)}
 						</>
 					),
 					variant: "error",
 				});
 			} else {
 				notify({
-					header: "Payment",
-					body: "Payment error",
+					header: t("userPlan.notifications.paymentError.header"),
+					body: t("userPlan.notifications.paymentError.body"),
 					variant: "error",
 				});
 				console.error(err);
@@ -176,15 +178,21 @@ export function SelectPaymentModal(): JSX.Element {
 		): void => {
 			setIsDisabled(false);
 			notify({
-				header: "Transaction Successful",
-				body: `Your transaction with ${currency} on ${chain} by ${sender} was completed successfully, wait for confirmations`,
+				header: t(
+					"userPlan.notifications.transactionSuccessful.header",
+				),
+				body: t("userPlan.notifications.transactionSuccessful.body", {
+					currency,
+					chain,
+					sender,
+				}),
 				variant: "success",
 			});
 
 			if (isPurchaseTokensMode) {
 				notify({
-					header: "Tokens purchased",
-					body: "Your tokens purchase is being processed",
+					header: t("userPlan.notifications.tokensPurchased.header"),
+					body: t("userPlan.notifications.tokensPurchased.body"),
 					variant: "success",
 				});
 				setTimeout(() => {
@@ -201,8 +209,12 @@ export function SelectPaymentModal(): JSX.Element {
 					})
 					.then(() => {
 						notify({
-							header: "Confirmed successfully",
-							body: "Your checkout has been confirmed successfully. Reloading...",
+							header: t(
+								"userPlan.notifications.confirmedSuccessfully.header",
+							),
+							body: t(
+								"userPlan.notifications.confirmedSuccessfully.body",
+							),
 							variant: "success",
 						});
 						setTimeout(() => {
@@ -212,10 +224,15 @@ export function SelectPaymentModal(): JSX.Element {
 					.catch(err => {
 						console.error(err);
 						notify({
-							header: "Confirmation failed",
+							header: t(
+								"userPlan.notifications.confirmationFailed.header",
+							),
 							body: (
 								<>
-									There was an error confirming your checkout:{" "}
+									{t(
+										"userPlan.notifications.confirmationFailed.body",
+										{ message: "" },
+									)}{" "}
 									{err.message.includes("support") ? (
 										<span
 											dangerouslySetInnerHTML={{
@@ -241,14 +258,22 @@ export function SelectPaymentModal(): JSX.Element {
 			setIsDisabled(false);
 			if (error.shortMessage === "User rejected the request.") {
 				notify({
-					header: "Transaction Failed",
-					body: `You canceled the transaction`,
+					header: t(
+						"userPlan.notifications.transactionFailed.header",
+					),
+					body: t(
+						"userPlan.notifications.transactionFailed.body.canceled",
+					),
 					variant: "warning",
 				});
 			} else {
 				notify({
-					header: "Transaction Failed",
-					body: `There was an error processing your transaction`,
+					header: t(
+						"userPlan.notifications.transactionFailed.header",
+					),
+					body: t(
+						"userPlan.notifications.transactionFailed.body.error",
+					),
 					variant: "error",
 				});
 				console.error(`Transaction Failed: ${error}`);
@@ -275,8 +300,8 @@ export function SelectPaymentModal(): JSX.Element {
 
 			if (isPurchaseTokensMode) {
 				notify({
-					header: "Not implemented",
-					body: "Token purchase with crypto is not yet implemented",
+					header: t("userPlan.notifications.notImplemented.header"),
+					body: t("userPlan.notifications.notImplemented.body"),
 					variant: "error",
 				});
 				setIsDisabled(false);
@@ -317,7 +342,8 @@ export function SelectPaymentModal(): JSX.Element {
 		} catch (err) {
 			console.error(err);
 			notify({
-				body: "An unexpected error occurred",
+				header: t("userPlan.notifications.unexpectedError.header"),
+				body: t("userPlan.notifications.unexpectedError.body"),
 				variant: "error",
 			});
 			setIsDisabled(false);
@@ -368,7 +394,7 @@ export function SelectPaymentModal(): JSX.Element {
 						active={active === "stripe"}
 						title={
 							<div className={styles.text}>
-								Pay by card, $USD
+								{t("userPlan.paymentMethods.payByCard")}
 								<div className={styles.icons}>
 									<Icon
 										iconName="Visa"
@@ -385,8 +411,13 @@ export function SelectPaymentModal(): JSX.Element {
 						}
 						description={
 							isPurchaseTokensMode
-								? `Total: $${tokenPriceAmount} for ${tokenAmount} tokens`
-								: `Total: $${account.getIsAnnualPayment() ? `${(plan?.annualPrice || 0) / 100} ($${(plan?.annualPrice || 0) / 12 / 100} per month)` : +(plan?.price || 0) / 100}`
+								? t("userPlan.paymentMethods.totalTokens", {
+										tokenPriceAmount,
+										tokenAmount,
+									})
+								: account.getIsAnnualPayment()
+									? `${t("userPlan.paymentMethods.total")}: $${(Number(plan?.annualPrice) || 0) / 100} ($${(Number(plan?.annualPrice) || 0) / 12 / 100} ${t("userPlan.paymentMethods.perMonth")})`
+									: `${t("userPlan.paymentMethods.total")}: $${(Number(plan?.price) || 0) / 100}`
 						}
 						disabled={isDisabled}
 						footer={
@@ -402,7 +433,9 @@ export function SelectPaymentModal(): JSX.Element {
 									>
 										{isPurchaseTokensMode
 											? t("userPlan.buyTokensBtn")
-											: `Pay with Stripe`}
+											: t(
+													"userPlan.paymentMethods.payWithStripe",
+												)}
 									</Button>
 									{!account.info?.email && (
 										<Button
@@ -426,8 +459,12 @@ export function SelectPaymentModal(): JSX.Element {
 									)}
 								>
 									{account.info?.email
-										? "By confirming your subscription, you authorize Microboard to charge your account for future payments in accordance with the company's terms. You can cancel your subscription at any time."
-										: "Add email to pay with card"}
+										? t(
+												"userPlan.paymentMethods.subscriptionTerms",
+											)
+										: t(
+												"userPlan.paymentMethods.addEmailToPayByCard",
+											)}
 								</div>
 							</>
 						}
@@ -441,7 +478,7 @@ export function SelectPaymentModal(): JSX.Element {
 						active={active === "crypto"}
 						title={
 							<div className={styles.text}>
-								Pay in crypto
+								{t("userPlan.paymentMethods.payByCrypto")}
 								<div className={styles.icons}>
 									<Icon
 										iconName="XRP"
@@ -463,8 +500,22 @@ export function SelectPaymentModal(): JSX.Element {
 						}
 						description={
 							isPurchaseTokensMode
-								? `Total: $${tokenPriceAmount} for ${tokenAmount} tokens`
-								: `Total payment for ${account.getIsAnnualPayment() ? "12 months" : "a month"}`
+								? t("userPlan.paymentMethods.totalTokens", {
+										tokenPriceAmount,
+										tokenAmount,
+									})
+								: t(
+										"userPlan.paymentMethods.totalPaymentPeriod",
+										{
+											period: account.getIsAnnualPayment()
+												? t(
+														"userPlan.paymentMethods.period.annual",
+													)
+												: t(
+														"userPlan.paymentMethods.period.monthly",
+													),
+										},
+									)
 						}
 						disabled={isDisabled}
 						footer={
@@ -486,21 +537,31 @@ export function SelectPaymentModal(): JSX.Element {
 												disabled={isDisabled}
 												className={styles.footer}
 											>
-												Connect wallet
+												{t(
+													"userPlan.paymentMethods.connectWallet",
+												)}
 											</Button>
 										);
 									}
 									return (
 										// todo fix DRY
 										<div>
-											From wallet:{" "}
-											{walletAccount.displayName}
+											{t(
+												"userPlan.paymentMethods.fromWallet",
+												{
+													name: walletAccount.displayName,
+												},
+											)}
 											<div
 												className={styles.description}
 												style={{ paddingBottom: "8px" }}
 											>
-												Balance:{" "}
-												{walletAccount.displayBalance}
+												{t(
+													"userPlan.paymentMethods.balance",
+													{
+														amount: walletAccount.displayBalance,
+													},
+												)}
 											</div>
 											<div className={styles.coins}>
 												<CoinCard
@@ -547,7 +608,9 @@ export function SelectPaymentModal(): JSX.Element {
 													onClick={openAccountModal}
 													disabled={isDisabled}
 												>
-													Switch Wallet
+													{t(
+														"userPlan.paymentMethods.switchWallet",
+													)}
 												</Button>
 												<Button
 													id="crypto_chain_button"
@@ -555,7 +618,9 @@ export function SelectPaymentModal(): JSX.Element {
 													onClick={openChainModal}
 													disabled={isDisabled}
 												>
-													Switch Network
+													{t(
+														"userPlan.paymentMethods.switchNetwork",
+													)}
 												</Button>
 												<Button
 													id="crypto_account_button"
@@ -564,21 +629,27 @@ export function SelectPaymentModal(): JSX.Element {
 													disabled={isDisabled}
 												>
 													{isPurchaseTokensMode
-														? `Buy ${tokenAmount} tokens`
-														: `Pay ${
-																// todo fix DRY
-																(+account
-																	.cryptoRates[
-																	walletAccount?.balanceSymbol ||
-																		"ETH"
-																][
-																	account.getIsAnnualPayment()
-																		? "annualPrice"
-																		: "price"
-																]).toFixed(5)
-															}`}{" "}
-													with{" "}
-													{walletAccount.displayName}
+														? t(
+																"userPlan.paymentMethods.buyTokens",
+																{ tokenAmount },
+															)
+														: `${t(
+																"userPlan.paymentMethods.payWithWallet",
+																{
+																	amount: (+account
+																		.cryptoRates[
+																		walletAccount?.balanceSymbol ||
+																			"ETH"
+																	][
+																		account.getIsAnnualPayment()
+																			? "annualPrice"
+																			: "price"
+																	]).toFixed(
+																		5,
+																	),
+																	wallet: walletAccount.displayName,
+																},
+															)}`}
 												</Button>
 											</div>
 											<div
@@ -587,7 +658,9 @@ export function SelectPaymentModal(): JSX.Element {
 													styles.paddingTop,
 												)}
 											>
-												Final price may vary
+												{t(
+													"userPlan.paymentMethods.finalPriceAdjusted",
+												)}
 											</div>
 										</div>
 									);
@@ -602,7 +675,7 @@ export function SelectPaymentModal(): JSX.Element {
 						className={styles.back}
 						onClick={handleOpenPlans}
 					>
-						Back to Plans
+						{t("userPlan.paymentMethods.backToPlans")}
 					</Button>
 				)}
 			</div>
@@ -652,6 +725,8 @@ const CoinCard: React.FC<{
 	coin: "POL" | "ETH";
 	active: boolean;
 }> = ({ onClick, disabled, title, active, coin }) => {
+	const { t } = useTranslation();
+
 	return (
 		<Button
 			className={clsx(
@@ -668,7 +743,7 @@ const CoinCard: React.FC<{
 				<div className={styles.mainContent}>{title}</div>
 			</div>
 			<Tooltip
-				tooltip="Total price may various little bit"
+				tooltip={t("userPlan.paymentMethods.priceTooltip")}
 				tooltipPosition="top"
 			/>
 		</Button>

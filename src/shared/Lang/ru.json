@@ -368,7 +368,6 @@
 		"newsletter": "Даю согласие на получение информационных материалов и новостей о продукте",
 		"loginWith": "Другие способы",
 		"googleAuth": "Войти с Google",
-		"emailAlreadyInUse": "Пользователь с таким email уже существует",
 		"signinNotifyError": {
 			"title": "Не удаётся выполнить вход",
 			"text": "Пожалуйста, попробуйте позже."
@@ -828,6 +827,9 @@
 	},
 	"userPlan": {
 		"tokens": "токенов",
+		"tokensOne": "токен",
+		"tokensFew": "токена",
+		"tokensMany": "токенов",
 		"tokensTooltip": "Токены начисляются на месяц и сгорают, если не использовать. Дополнительно: +1000 токенов за $8, срок действия — 1 месяц.",
 		"paymentHistoryHeading": "История платежей",
 		"currentPlanHeading": "Текущий тариф",
@@ -859,6 +861,33 @@
 		"backToCurrentPlan": "Назад к текущему плану",
 		"buyTokens": "Купить дополнительные токены",
 		"buyTokensBtn": "Купить токены",
+		"paymentMethods": {
+			"payByCard": "Оплатить картой",
+			"payByCrypto": "Оплатить криптовалютой",
+			"totalTokens": "Сумма к оплате: ${{tokenPriceAmount}} за {{tokenAmount}} токенов",
+			"subscriptionTerms": "Подтверждая подписку, вы разрешаете Microboard списывать будущие платежи согласно её условиям. Отменить можно в любой момент.",
+			"addEmailToPayByCard": "Для оплаты картой необходимо привязать почту",
+			"finalPriceAdjusted": "Итоговая цена может измениться",
+			"backToPlans": "Вернуться к выбору тарифа",
+			"buyTokens": "Купить {{tokenAmount}} токенов",
+			"totalAnnual": "Сумма: ${{annualPrice}} (${{monthlyPrice}} в месяц)",
+			"totalMonthly": "Сумма: ${{price}}",
+			"payWithStripe": "Оплатить через Stripe",
+			"totalPaymentPeriod": "Общая сумма за {{period}}",
+			"period": {
+				"annual": "12 месяцев",
+				"monthly": "месяц"
+			},
+			"connectWallet": "Подключить кошелек",
+			"fromWallet": "Из кошелька: {{name}}",
+			"balance": "Баланс: {{amount}}",
+			"switchWallet": "Сменить кошелек",
+			"switchNetwork": "Сменить сеть",
+			"payWithWallet": "Оплатить {{amount}} с {{wallet}}",
+			"priceTooltip": "Итоговая цена может незначительно отличаться",
+			"total": "Сумма",
+			"perMonth": "в месяц"
+		},
 		"limitsTable": {
 			"modelName": "Модель",
 			"requestsPerWeek": "Доступно в неделю",
@@ -873,9 +902,13 @@
 		},
 		"historyTable": {
 			"plan": "Тариф",
-			"paymentDate": "Дата оплаты",
-			"price": "Сумма",
-			"paymentType": "Способ оплаты"
+			"paymentDate": "Дата платежа",
+			"price": "Цена",
+			"paymentType": "Способ оплаты",
+			"planDisplayName": {
+				"plus": "Подписка Plus",
+				"Token Purchase": "Покупка токенов"
+			}
 		},
 		"subscribe": {
 			"current": "Действует",
@@ -925,6 +958,48 @@
 					"Доски, фигуры, картинки — без ограничений"
 				]
 			}
+		},
+		"notifications": {
+			"emailNotFound": {
+				"header": "Почта не найдена",
+				"body": "Добавьте почту к вашему аккаунту для оплаты через Stripe.",
+				"linkMessage": "к вашему аккаунту для оплаты через Stripe."
+			},
+			"paymentError": {
+				"header": "Оплата",
+				"body": "Ошибка оплаты"
+			},
+			"transactionSuccessful": {
+				"header": "Транзакция успешна",
+				"body": "Ваша транзакция с {{currency}} в сети {{chain}} от {{sender}} успешно выполнена, ожидайте подтверждений"
+			},
+			"tokensPurchased": {
+				"header": "Токены куплены",
+				"body": "Ваша покупка токенов обрабатывается"
+			},
+			"confirmedSuccessfully": {
+				"header": "Успешно подтверждено",
+				"body": "Ваша оплата успешно подтверждена. Перезагрузка..."
+			},
+			"confirmationFailed": {
+				"header": "Ошибка подтверждения",
+				"body": "Произошла ошибка при подтверждении вашей оплаты: {{message}}"
+			},
+			"transactionFailed": {
+				"header": "Ошибка транзакции",
+				"body": {
+					"canceled": "Вы отменили транзакцию",
+					"error": "Произошла ошибка при обработке вашей транзакции"
+				}
+			},
+			"notImplemented": {
+				"header": "Не реализовано",
+				"body": "Покупка токенов за криптовалюту пока не реализована"
+			},
+			"unexpectedError": {
+				"header": "Ошибка",
+				"body": "Произошла непредвиденная ошибка"
+			}
 		}
 	},
 	"AIInput": {
@@ -969,12 +1044,12 @@
 	},
 	"models": {
 		"descriptions": {
-			"gpt-4o-mini": "Легкая версия GPT-4o для быстрых задач",
-			"gpt-4o": "Мощная модель для сложных текстов и аналитики",
-			"deepseek-reasoner": "Для анализа и извлечения информации из текстов",
-			"flux-schnell": "Для анализа и извлечения информации из текстов",
-			"flux-pro": "Для анализа и извлечения информации из текстов",
-			"tts-1-hd": "за 1000 символов"
+			"gpt-4o-mini": "Быстрее для повседневных задач",
+			"gpt-4o": "Подходит для большинства задач",
+			"deepseek-reasoner": "Лучше, чем 4o во многих случаях",
+			"flux-schnell": "Генерация изображения",
+			"flux-pro": "Генерация изображения (высокое качество)",
+			"tts-1-hd": "Генерация речи"
 		}
 	}
 }

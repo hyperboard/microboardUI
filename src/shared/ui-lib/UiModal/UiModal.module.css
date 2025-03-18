@@ -24,6 +24,7 @@
 	min-width: 20px;
 	min-height: 20px;
 	color: rgba(13, 17, 38, 0.4);
+	cursor: pointer;
 }
 
 .modalWrapper {
@@ -100,8 +101,9 @@
 
 .panel::-webkit-scrollbar {
 	appearance: none;
-	width: 3px;
+	width: 23px;
 	height: 3px;
+	margin-right: 8px;
 }
 .panel::-webkit-scrollbar-button {
 	display: none;
@@ -110,6 +112,8 @@
 	display: block;
 	background-color: rgba(233, 234, 236, 1);
 	border-radius: 2px;
+	border: 10px solid rgba(0, 0, 0, 0);
+	background-clip: padding-box;
 }
 body {
 	background-color: rgba(200, 200, 200, 0.2);
@@ -162,10 +166,14 @@ body {
 		height: max-content;
 		min-height: 100%;
 		align-items: start;
+		-webkit-overflow-scrolling: touch;
+		touch-action: pan-y;
+		overscroll-behavior: contain;
 	}
 
 	.page.content {
 		height: max-content;
 		min-height: 100%;
+		touch-action: pan-y;
 	}
 }

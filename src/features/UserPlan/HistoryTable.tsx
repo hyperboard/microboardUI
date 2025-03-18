@@ -9,9 +9,10 @@ const PAYMENT_TYPE_DISPLAYNAME = {
 	crypto: "Crypto",
 };
 
+// Plan display name mapping
 const PLAN_DISPLAYNAME = {
-	plus: "Подписка Plus",
-	"Token Purchase": "Покупка токенов",
+	plus: "Plus Subscription",
+	"Token Purchase": "Token Purchase",
 };
 
 export function HistoryTable() {
@@ -84,10 +85,18 @@ function ModelRow({
 	paymentType,
 	symbol,
 }: ModelRowProps) {
+	const { t } = useTranslation();
+
+	const getPlanDisplayName = (planName: string) => {
+		return i18n.language === "ru"
+			? t(`userPlan.historyTable.planDisplayName.${planName}`, planName)
+			: PLAN_DISPLAYNAME[planName] || planName;
+	};
+
 	return (
 		<tr>
 			<td className={styles.model}>
-				<p className={styles.modelName}>{PLAN_DISPLAYNAME[name]}</p>
+				<p className={styles.modelName}>{getPlanDisplayName(name)}</p>
 				<p className={styles.modelDescription}>
 					{formatDate(startDate)} - {formatDate(endDate)}
 				</p>

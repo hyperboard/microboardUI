@@ -370,7 +370,6 @@
 		"newsletter": "I agree to receive product updates and promotional materials from",
 		"loginWith": "Other options",
 		"googleAuth": "Sing in with Google",
-		"emailAlreadyInUse": "User with this email already exists",
 		"signinNotifyError": {
 			"title": "Login failed",
 			"text": "Please try again later."
@@ -830,6 +829,9 @@
 	},
 	"userPlan": {
 		"tokens": "tokens",
+		"tokensOne": "token",
+		"tokensFew": "tokens",
+		"tokensMany": "tokens",
 		"tokensTooltip": "Tokens are credited on a monthly basis and expire if not used. Additional: +1000 tokens for $8, term of use - 1 month.",
 		"paymentHistoryHeading": "Payment History",
 		"currentPlanHeading": "Current Plan",
@@ -877,7 +879,11 @@
 			"plan": "Plan",
 			"paymentDate": "Payment date",
 			"price": "Price",
-			"paymentType": "Payment type"
+			"paymentType": "Payment type",
+			"planDisplayName": {
+				"plus": "Plus Subscription",
+				"Token Purchase": "Token Purchase"
+			}
 		},
 		"subscribe": {
 			"current": "Current Plan",
@@ -927,6 +933,75 @@
 					"Unlimited boards, figures and storage space"
 				]
 			}
+		},
+		"paymentMethods": {
+			"payByCard": "Pay by card, $USD",
+			"payByCrypto": "Pay in crypto",
+			"totalTokens": "Total: ${{tokenPriceAmount}} for {{tokenAmount}} tokens",
+			"subscriptionTerms": "By confirming your subscription, you authorize Microboard to charge your account for future payments in accordance with the company's terms. You can cancel your subscription at any time.",
+			"addEmailToPayByCard": "Add email to pay with card",
+			"finalPriceAdjusted": "Final price may be adjusted",
+			"backToPlans": "Back to Plans",
+			"buyTokens": "Buy {{tokenAmount}} tokens",
+			"totalAnnual": "Total: ${{annualPrice}} (${{monthlyPrice}} per month)",
+			"totalMonthly": "Total: ${{price}}",
+			"payWithStripe": "Pay with Stripe",
+			"totalPaymentPeriod": "Total payment for {{period}}",
+			"period": {
+				"annual": "12 months",
+				"monthly": "a month"
+			},
+			"connectWallet": "Connect wallet",
+			"fromWallet": "From wallet: {{name}}",
+			"balance": "Balance: {{amount}}",
+			"switchWallet": "Switch Wallet",
+			"switchNetwork": "Switch Network",
+			"payWithWallet": "Pay {{amount}} with {{wallet}}",
+			"priceTooltip": "Total price may vary slightly",
+			"total": "Total",
+			"perMonth": "per month"
+		},
+		"notifications": {
+			"emailNotFound": {
+				"header": "Email not found",
+				"body": "Add email to your account to pay with stripe.",
+				"linkMessage": "to your account to pay with stripe."
+			},
+			"paymentError": {
+				"header": "Payment",
+				"body": "Payment error"
+			},
+			"transactionSuccessful": {
+				"header": "Transaction Successful",
+				"body": "Your transaction with {{currency}} on {{chain}} by {{sender}} was completed successfully, wait for confirmations"
+			},
+			"tokensPurchased": {
+				"header": "Tokens purchased",
+				"body": "Your tokens purchase is being processed"
+			},
+			"confirmedSuccessfully": {
+				"header": "Confirmed successfully",
+				"body": "Your checkout has been confirmed successfully. Reloading..."
+			},
+			"confirmationFailed": {
+				"header": "Confirmation failed",
+				"body": "There was an error confirming your checkout: {{message}}"
+			},
+			"transactionFailed": {
+				"header": "Transaction Failed",
+				"body": {
+					"canceled": "You canceled the transaction",
+					"error": "There was an error processing your transaction"
+				}
+			},
+			"notImplemented": {
+				"header": "Not implemented",
+				"body": "Token purchase with crypto is not yet implemented"
+			},
+			"unexpectedError": {
+				"header": "Error",
+				"body": "An unexpected error occurred"
+			}
 		}
 	},
 	"AIInput": {
@@ -971,12 +1046,12 @@
 	},
 	"models": {
 		"descriptions": {
-			"gpt-4o-mini": "Lightweight version of GPT-4o for quick tasks",
-			"gpt-4o": "Powerful model for complex text and analytics",
-			"deepseek-reasoner": "For analysis and information extraction from texts",
-			"flux-schnell": "For analysis and information extraction from texts",
-			"flux-pro": "For analysis and information extraction from texts",
-			"tts-1-hd": "per 1000 characters"
+			"gpt-4o-mini": "Faster for everyday tasks",
+			"gpt-4o": "Great for everyday tasks",
+			"deepseek-reasoner": "Better than 4o in many cases",
+			"flux-schnell": "Image generation",
+			"flux-pro": "Image generation (higher quality)",
+			"tts-1-hd": "Speech generation"
 		}
 	}
 }

@@ -19,6 +19,7 @@ const DISPLAYNAME_MAP = {
 
 const MODELS_ORDER = [
 	"gpt-4o-mini",
+	"deepseek-reasoner",
 	"gpt-4o",
 	"deepseek-reasoner",
 	"flux-schnell",
@@ -45,14 +46,16 @@ export function LimitsTable() {
 		<table className={styles.table}>
 			<thead>
 				<tr className={styles.header}>
-					<th className={styles.modelsHeading}>Model</th>
+					<th className={styles.modelsHeading}>
+						{t("userPlan.limitsTable.modelName")}
+					</th>
 					<th className={clsx(!isPlus && styles.currentTariff)}>
-						Basic
-						<div>Cost per request in tokens</div>
+						{t("userPlan.plans.basic.name")}
+						<div>{t("userPlan.limitsTable.costPerRequest")}</div>
 					</th>
 					<th className={clsx(isPlus && styles.currentTariff)}>
-						Plus
-						<div>Cost per request in tokens</div>
+						{t("userPlan.plans.plus.name")}
+						<div>{t("userPlan.limitsTable.costPerRequest")}</div>
 					</th>
 				</tr>
 			</thead>
@@ -85,7 +88,9 @@ function ModelRow({ description, name, tokenCost, id, isPlus }: ModelRowProps) {
 	const { elementRef, rect } = useBoundingClientRect<HTMLTableCellElement>();
 	const { handlePointerEnter, handlePointerLeave, isHover } = useHoverState();
 
-	const isAvailableInBasic = id === "gpt-4o-mini";
+	const isAvailableInBasic =
+		id === "gpt-4o-mini" || id === "deepseek-reasoner";
+	console.log(id, isAvailableInBasic);
 	const isAvailableInPlus = tokenCost > 0;
 
 	const basicCost = isAvailableInBasic ? tokenCost : null;

@@ -4,6 +4,8 @@ import React, {
 	type MouseEventHandler,
 	type PropsWithChildren,
 	type ReactNode,
+	useRef,
+	useCallback,
 } from "react";
 import { Icon, Logo } from "shared/ui-lib/Icon";
 import { UiButton } from "../UiButton";
@@ -47,26 +49,46 @@ export function UiModal({
 		isRenderedAsPage,
 	} = useUiModalContext();
 
+	const panelRef = useRef<HTMLDivElement>(null);
+	const contentRef = useRef<HTMLDivElement>(null);
+
+	const handleClose = useCallback((): void => {
+		closeModal();
+		onClose?.();
+	}, [closeModal, onClose]);
+
+	const handleOutsideClose = useCallback((): void => {
+		if (closeByBgClick) {
+			handleClose();
+		}
+	}, [closeByBgClick, handleClose]);
+
+	const clickOutsideRef = useClickOutside(handleOutsideClose);
+
 	useLayoutEffect(() => {
 		if (renderAsPageOnMobile) {
 			addRenderAsPage(modalId);
 		}
 
 		return () => removeRenderAsPage(modalId);
-	}, []);
+	}, [addRenderAsPage, modalId, removeRenderAsPage, renderAsPageOnMobile]);
 
-	const handleClose = (): void => {
-		closeModal();
-		onClose?.();
-	};
+	useLayoutEffect(() => {
+		const panelElement = panelRef.current;
+		const contentElement = contentRef.current;
 
-	const handleOutsideClose = (): void => {
-		if (closeByBgClick) {
-			handleClose();
+		if (panelElement && contentElement && isRenderedAsPage(modalId)) {
+			panelElement.style.overflowY = "auto";
+			(panelElement.style as any)["-webkit-overflow-scrolling"] = "touch";
 		}
-	};
 
-	const ref = useClickOutside(handleOutsideClose);
+		return () => {
+			if (panelElement && contentElement) {
+				panelElement.style.overflowY = "";
+				(panelElement.style as any)["-webkit-overflow-scrolling"] = "";
+			}
+		};
+	}, [openedModalId, modalId, isRenderedAsPage]);
 
 	if (modalId !== openedModalId) {
 		return null;
@@ -99,6 +121,7 @@ export function UiModal({
 			{...otherProps}
 		>
 			<UiPanel
+				ref={panelRef}
 				className={clsx(
 					styles.panel,
 					className,
@@ -135,7 +158,7 @@ export function UiModal({
 					<span>Microboard</span>
 				</header>
 				<div
-					ref={ref}
+					ref={clickOutsideRef}
 					className={clsx(
 						styles.content,
 						renderAsPage && styles.page,

@@ -58,6 +58,30 @@ const modelTokens: ModelInfo[] = [
 // 	}
 // };
 
+const getTokenForm = (count: number, t: (key: string) => string): string => {
+	const wholePart = Math.floor(count);
+
+	const hasDecimal = count !== wholePart;
+
+	if (wholePart % 100 >= 11 && wholePart % 100 <= 14) {
+		return t("userPlan.tokensMany");
+	}
+
+	if (hasDecimal) {
+		return t("userPlan.tokensFew");
+	}
+
+	const lastDigit = wholePart % 10;
+
+	if (lastDigit === 1) {
+		return t("userPlan.tokensOne");
+	} else if (lastDigit >= 2 && lastDigit <= 4) {
+		return t("userPlan.tokensFew");
+	} else {
+		return t("userPlan.tokensMany");
+	}
+};
+
 export const AIDropdown = (props: AIDropdownProps): JSX.Element => {
 	const { board, isPhoneScreen, account, isDropdownOpen, setIsDropdownOpen } =
 		props;
@@ -166,7 +190,8 @@ export const Dropdown = (
 								: t(`ai.models.${modelInfo.id}.title`)}
 						</strong>
 						<span className={styles.tokenBadge}>
-							{modelInfo.tokens} {t("userPlan.tokens")}
+							{modelInfo.tokens}{" "}
+							{getTokenForm(modelInfo.tokens, t)}
 						</span>
 					</div>
 					<p>{t(`ai.models.${modelInfo.id}.description`)}</p>
