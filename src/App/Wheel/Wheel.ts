@@ -158,24 +158,12 @@ export function createWheel(event: ChromeWheelEvent): Wheel {
 interface WheelDetector {
 	handle: (event: WheelEvent) => void;
 	readonly isMouseWheel: boolean;
-	readonly isIgnore: boolean;
 }
 
 export function createWheelDetector(): WheelDetector {
-	const logSize = 10;
-	const detectionFrequency = 8;
-	const maxWheelDelta = 50;
-	const log: number[] = [];
 	let lastEventTimestamp = performance.now();
-	const lastDeltaY = 0;
-	const lastSpeed = 0;
-
 	let isMouseWheel = true;
 	let isTouchpad = true;
-	let isIgnore = false;
-
-	let wheelDeltaConstant: number;
-	let highDeltaPrevious: number | undefined;
 
 	function handle(event: WheelEvent): void {
 		const currentTime = Date.now();
@@ -234,95 +222,10 @@ export function createWheelDetector(): WheelDetector {
 		return eventData;
 	}
 
-	// function handle(event: WheelEvent): void {
-	// 	const wheelDelta = event.deltaY;
-	// 	const absWheelDelta = Math.abs(wheelDelta);
-
-	// 	const currentTimestamp = performance.now();
-	// 	const timeSinceLastEvent = currentTimestamp - lastEventTimestamp;
-	// 	lastEventTimestamp = currentTimestamp;
-	// 	console.log("timeSinceLastEvent", timeSinceLastEvent);
-	// 	log.push(absWheelDelta);
-	// 	if (log.length > logSize) {
-	// 		log.shift();
-	// 	}
-
-	// 	let localIsMouseWheel = true;
-
-	// 	if (absWheelDelta >= maxWheelDelta) {
-	// 		let frequency = 0;
-
-	// 		for (const value of log) {
-	// 			if (value === absWheelDelta) {
-	// 				frequency++;
-	// 			}
-	// 		}
-
-	// 		if (frequency >= detectionFrequency) {
-	// 			wheelDeltaConstant = absWheelDelta;
-	// 			clearHighDeltaPrevious();
-	// 		}
-	// 	}
-
-	// 	if (wheelDeltaConstant) {
-	// 		if (isMouseDelta(absWheelDelta, wheelDeltaConstant)) {
-	// 			localIsMouseWheel = true;
-	// 		} else {
-	// 			localIsMouseWheel = false;
-	// 		}
-	// 	} else {
-	// 		if (absWheelDelta > maxWheelDelta) {
-	// 			if (!highDeltaPrevious) {
-	// 				highDeltaPrevious = absWheelDelta;
-	// 				isIgnore = true;
-	// 			} else {
-	// 				if (isMouseDelta(absWheelDelta, highDeltaPrevious)) {
-	// 					localIsMouseWheel = true;
-	// 				} else {
-	// 					localIsMouseWheel = false;
-	// 				}
-	// 				clearHighDeltaPrevious();
-	// 			}
-	// 		} else {
-	// 			localIsMouseWheel = false;
-	// 			clearHighDeltaPrevious();
-	// 		}
-	// 	}
-
-	// 	const speed = Math.abs(absWheelDelta - lastDeltaY) / timeSinceLastEvent;
-	// 	lastDeltaY = absWheelDelta;
-
-	// 	if (absWheelDelta > maxWheelDelta && speed < lastSpeed / 2) {
-	// 		localIsMouseWheel = false;
-	// 	}
-
-	// 	lastSpeed = speed;
-	// 	isMouseWheel = localIsMouseWheel;
-	// 	console.log("isMouseWheel", isMouseWheel);
-	// }
-
-	function isMouseDelta(
-		absWheelDelta: number,
-		wheelConstant: number,
-	): boolean {
-		return (
-			absWheelDelta === wheelConstant ||
-			absWheelDelta % wheelConstant === 0
-		);
-	}
-
-	function clearHighDeltaPrevious(): void {
-		isIgnore = false;
-		highDeltaPrevious = undefined;
-	}
-
 	return {
 		handle,
 		get isMouseWheel() {
 			return isMouseWheel;
-		},
-		get isIgnore() {
-			return isIgnore;
 		},
 	};
 }

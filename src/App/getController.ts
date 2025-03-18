@@ -33,8 +33,6 @@ export function getController(
 	clipboard: Clipboard,
 	isLoggedIn: () => boolean,
 ): Controller {
-	const lastEventTime = 0;
-	const isTouchpad = false;
 	let isItemUnderPointer = false;
 	function onWheel(event: WheelEvent): void {
 		event.preventDefault();
@@ -67,49 +65,6 @@ export function getController(
 				wheel.getTouchpadPanDeltaY() / scale,
 			);
 		}
-
-		// const currentTime = Date.now();
-		// const deltaTime = currentTime - lastEventTime;
-		// lastEventTime = currentTime;
-
-		// if (deltaTime > 200 && !wheel.isProbablyMouseWheel()) {
-		// 	return;
-		// }
-
-		// const scale = board.camera.getScale();
-		// const eventJson = getEventDataAsString(event);
-
-		// MemoryLogger.setContext("WheelHandler");
-		// if (event.ctrlKey) {
-		// 	MemoryLogger.log(
-		// 		`Delta: ${deltaTime}; Touchpad pinch detected: ${eventJson}`,
-		// 	);
-		// 	board.camera.zoomRelativeToPointerBy(
-		// 		wheel.getTouchpadPinchMultiplier(),
-		// 	);
-		// } else if (event.deltaMode === WheelEvent.DOM_DELTA_PIXEL) {
-		// 	const isSmallDelta = Math.abs(event.deltaY) < 10;
-		// 	isTouchpad = isSmallDelta
-		// 		? deltaTime < 100
-		// 		: deltaTime <= 100 && isTouchpad;
-
-		// 	if (isTouchpad) {
-		// 		MemoryLogger.log(
-		// 			`Delta: ${deltaTime}; Is small delta: ${isSmallDelta}; Touchpad scroll detected: ${eventJson}`,
-		// 		);
-		// 		board.camera.translateBy(
-		// 			wheel.getTouchpadPanDeltaX() / scale,
-		// 			wheel.getTouchpadPanDeltaY() / scale,
-		// 		);
-		// 	} else {
-		// 		MemoryLogger.log(
-		// 			`Delta: ${deltaTime}; Is small delta: ${isSmallDelta}; Mouse wheel detected: ${eventJson}`,
-		// 		);
-		// 		board.camera.zoomRelativeToPointerBy(
-		// 			wheel.getWheelScaleMultiplier(),
-		// 		);
-		// 	}
-		// }
 	}
 
 	function onKeyDown(event: KeyboardEvent): void {
