@@ -1,0 +1,54 @@
+export type LogEntryType = {
+	deltaX: number;
+	deltaY: number;
+	deltaZ: number;
+	deltaMode: number;
+	userAgent: string;
+	devicePixelRatio: number;
+	platform: string;
+};
+
+export class WheelEventLogger {
+	private setEvents: React.Dispatch<React.SetStateAction<any[]>>;
+	private setMousePosition: React.Dispatch<
+		React.SetStateAction<{ x: number; y: number }>
+	>;
+
+	constructor(
+		setEvents: React.Dispatch<React.SetStateAction<any[]>>,
+		setMousePosition: React.Dispatch<
+			React.SetStateAction<{ x: number; y: number }>
+		>,
+	) {
+		this.setEvents = setEvents;
+		this.setMousePosition = setMousePosition;
+		this.init();
+	}
+
+	private init(): void {
+		window.addEventListener("wheel", this.logEvent);
+		window.addEventListener("mousemove", this.updateMousePosition);
+	}
+
+	private logEvent = (event: WheelEvent): void => {
+		const logEntry: LogEntryType = {
+			deltaX: event.deltaX,
+			deltaY: event.deltaY,
+			deltaZ: event.deltaZ,
+			deltaMode: event.deltaMode,
+			userAgent: navigator.userAgent,
+			devicePixelRatio: window.devicePixelRatio,
+			platform: navigator.platform,
+		};
+		this.setEvents(prev => [logEntry, ...prev]);
+	};
+
+	private updateMousePosition = (event: MouseEvent): void => {
+		this.setMousePosition({ x: event.clientX, y: event.clientY });
+	};
+
+	cleanup(): void {
+		window.removeEventListener("wheel", this.logEvent);
+		window.removeEventListener("mousemove", this.updateMousePosition);
+	}
+}

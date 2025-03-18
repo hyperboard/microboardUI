@@ -23,6 +23,7 @@ import { AppContext } from "features/AppContext";
 import { LocalAppView } from "features/AppView";
 import { LocalSidePanelContextProvider } from "features/SidePanel/LocalSidePanelContext";
 import { UnauthGuard } from "entities/account";
+import { WheelEventLoggerPage } from "pages/WheelLogger/WheelLogger";
 
 export function getRender(app: App): {
 	render: () => void;
@@ -102,6 +103,10 @@ export function getRender(app: App): {
 				{
 					path: "/selectBoard",
 					element: <SelectBoardPage />,
+				},
+				{
+					path: "/test-wheel",
+					element: <WheelEventLoggerPage />,
 				},
 			],
 		},
