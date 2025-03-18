@@ -9,6 +9,8 @@ import { HotkeysMap } from "Board/Keyboard/types";
 import { PRESENCE_CURSOR_THROTTLE } from "Board/Presence/Presence";
 import { pasteTextToTheBoard, tryToPasteAsItemOrReturnText } from "./Paste";
 import { throttle } from "shared/lib/throttle";
+import { MemoryLogger } from "shared/Logger";
+import { Item } from "Board/Items/Item";
 
 export interface Controller {
 	onWheel: (event: WheelEvent) => void;
@@ -33,7 +35,7 @@ export function getController(
 	clipboard: Clipboard,
 	isLoggedIn: () => boolean,
 ): Controller {
-	let isItemUnderPointer = false;
+	let itemUnderPointer: Item | undefined = undefined;
 	function onWheel(event: WheelEvent): void {
 		event.preventDefault();
 		event.stopPropagation();
@@ -412,10 +414,19 @@ export function getController(
 		const isSelect = tools.getSelect() !== undefined;
 		const itemsUnderPointer = board.items.getUnderPointer();
 		if (itemsUnderPointer.length) {
-			isItemUnderPointer = true;
+			if (itemUnderPointer && itemUnderPointer.itemType === "Video") {
+				itemUnderPointer.setShouldShowControls(false);
+			}
+			itemUnderPointer = itemsUnderPointer[itemsUnderPointer.length - 1];
+			if (itemUnderPointer.itemType === "Video") {
+				itemUnderPointer.setShouldShowControls(true);
+			}
 			board.pointer.subject.publish(board.pointer);
-		} else if (isItemUnderPointer) {
-			isItemUnderPointer = false;
+		} else if (itemUnderPointer) {
+			if (itemUnderPointer.itemType === "Video") {
+				itemUnderPointer.setShouldShowControls(false);
+			}
+			itemUnderPointer = undefined;
 			board.pointer.subject.publish(board.pointer);
 		}
 		if (isSelect) {

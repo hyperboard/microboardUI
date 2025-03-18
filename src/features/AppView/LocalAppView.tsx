@@ -18,6 +18,7 @@ import { ShapesPanelContextProvider } from "features/ShapesPanel";
 import { useAIContext } from "entities/AIInput/AIContext";
 import { HyperLink } from "features/hyperLink/HyperLink";
 import { useHyperLinkContext } from "features/hyperLink/HyperLinkContext";
+import { VideosProvider } from "features/VideoPlayer/VideosProvider";
 
 export function LocalAppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -148,6 +149,7 @@ export function LocalAppView(): JSX.Element {
 				<ZoomPanel />
 			</InactiveBoardHidder>
 			<HyperLink />
+			<VideosProvider />
 			<ViewModeGuard>
 				<LinksProvider />
 				<ContextPanel />

@@ -65,6 +65,7 @@ import {
 	WarnClipboardNotification,
 	WarnNotification,
 } from "features/ImportMiro/ImportMiroBoards/Notifications";
+import { VideosProvider } from "features/VideoPlayer/VideosProvider";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -243,6 +244,7 @@ export function AppView(): JSX.Element {
 				<ExportPanel />
 			</ViewModeGuard>
 			<HyperLink />
+			<VideosProvider />
 			<AiGenerationButton />
 			<HyperLinkInput />
 			<ToastProvider />

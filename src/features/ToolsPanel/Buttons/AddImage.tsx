@@ -6,6 +6,7 @@ import { notify } from "shared/ui-lib/Toast";
 import React, { ChangeEventHandler, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { UiButton } from "shared/ui-lib/UiButton";
+import { uploadVideo } from "Board/Items/Video/uploadVideo";
 
 function bytesToGigabytes(bytes: number): number {
 	return bytes / 1024 ** 3;
@@ -51,7 +52,12 @@ export function AddImage(): JSX.Element {
 				duration: 10000,
 			});
 		}
-		uploadImage(file, board);
+		const fileExtension = file.name.split(".").pop()?.toLowerCase();
+		if (fileExtension === "mp4" || fileExtension === "webm") {
+			uploadVideo(file, board);
+		} else {
+			uploadImage(file, board);
+		}
 		input.value = "";
 	};
 
@@ -69,6 +75,7 @@ export function AddImage(): JSX.Element {
 				ref={inputRef}
 				type="file"
 				style={{ display: "none" }}
+				// accept="image/*,application/pdf,video/mp4,video/webm"
 				accept="image/*,application/pdf"
 			/>
 		</UiButton>

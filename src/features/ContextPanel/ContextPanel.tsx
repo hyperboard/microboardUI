@@ -48,6 +48,7 @@ import { HyperLinkBtn } from "features/ContextPanel/Buttons/HyperLinkBtn";
 import { AIModel } from "features/ContextPanel/Buttons/AIModel/AIModel";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";
 import { SaveImg } from "./Buttons/RestOptionsMenu/Items/SaveImg";
+import { SaveVideo } from "features/ContextPanel/Buttons/RestOptionsMenu/Items/SaveVideo";
 
 export function ContextPanel(): React.ReactElement | null {
 	const { app, board } = useAppContext();
@@ -101,6 +102,7 @@ export function ContextPanel(): React.ReactElement | null {
 	const isFrame = board.selection.items.isAllItemsType("Frame");
 	const isPlaceholder = board.selection.items.isAllItemsType("Placeholder");
 	const isAINode = board.selection.items.isAllItemsType("AINode");
+	const isVideo = board.selection.items.isAllItemsType("Video");
 	const isDifferentItems =
 		!isText &&
 		!isSticker &&
@@ -110,7 +112,8 @@ export function ContextPanel(): React.ReactElement | null {
 		!isImage &&
 		!isFrame &&
 		!isPlaceholder &&
-		!isAINode;
+		!isAINode &&
+		!isVideo;
 
 	return (
 		<PanelContext.Provider
@@ -309,6 +312,20 @@ export function ContextPanel(): React.ReactElement | null {
 							<SetLinkTo />
 							<Duplicate />
 							<SaveImg />
+						</RestOptionsMenu>
+					</>
+				)}
+				{isVideo && !isSelectUnderPointer && !isLocked && (
+					<>
+						<Delete rounded="left" />
+						<UiSeparator vertical />
+						<RestOptionsMenu>
+							{/*<BringToFront />*/}
+							{/*<SendToBack />*/}
+							{/*<CopyItemLink />*/}
+							{/*<SetLinkTo />*/}
+							{/*<Duplicate />*/}
+							<SaveVideo />
 						</RestOptionsMenu>
 					</>
 				)}
