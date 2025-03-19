@@ -103,12 +103,13 @@ export const AIDropdown = (props: AIDropdownProps): JSX.Element => {
 
 	return (
 		<UiPanel zIndex={2} className={clsx(styles.panel)} ref={elementRef}>
-			<div ref={dropdownRef} className={styles.modelSelector}>
+			<div
+				ref={dropdownRef}
+				className={styles.modelSelector}
+				onClick={toggleModelDropdown}
+			>
 				<StarIcon className={styles.starIcon} width={20} height={20} />
-				<div
-					className={styles.selectedModel}
-					onClick={toggleModelDropdown}
-				>
+				<div className={styles.selectedModel}>
 					<span>
 						{" "}
 						{isPhoneScreen
@@ -121,31 +122,29 @@ export const AIDropdown = (props: AIDropdownProps): JSX.Element => {
 						})}
 					/>
 				</div>
-				{isDropdownOpen &&
-					!board.aiGeneratingOnItem &&
-					createPortal(
-						<div className={clsx(styles.dropdownContainer)}>
-							<div
-								className={clsx(styles.modelDropdown)}
-								style={{
-									right: !isPhoneScreen
-										? rect?.right
-										: "unset",
-									left: !isPhoneScreen
-										? rect?.left - (300 - rect?.width)
-										: "69px",
-								}}
-							>
-								<Dropdown
-									isPhoneScreen={isPhoneScreen}
-									account={account}
-									setIsDropdownOpen={setIsDropdownOpen}
-								/>
-							</div>
-						</div>,
-						window.document.body,
-					)}
 			</div>
+			{isDropdownOpen &&
+				!board.aiGeneratingOnItem &&
+				createPortal(
+					<div className={clsx(styles.dropdownContainer)}>
+						<div
+							className={clsx(styles.modelDropdown)}
+							style={{
+								right: !isPhoneScreen ? rect?.right : "unset",
+								left: !isPhoneScreen
+									? rect?.right - 300
+									: "69px",
+							}}
+						>
+							<Dropdown
+								isPhoneScreen={isPhoneScreen}
+								account={account}
+								setIsDropdownOpen={setIsDropdownOpen}
+							/>
+						</div>
+					</div>,
+					window.document.body,
+				)}
 		</UiPanel>
 	);
 };
@@ -181,11 +180,11 @@ export const Dropdown = (
 		evt.preventDefault();
 		evt.stopPropagation();
 		setIsDropdownOpen(false);
-		if (account.isLoggedIn) {
-			openModal(USER_PLAN_MODAL_ID);
-		} else {
-			openModal(AI_UNAVAILABLE_MODAL_ID);
-		}
+		// if (account.isLoggedIn) {
+		// 	openModal(USER_PLAN_MODAL_ID);
+		// } else {
+		// 	openModal(AI_UNAVAILABLE_MODAL_ID);
+		// }
 	};
 
 	return (
@@ -195,9 +194,10 @@ export const Dropdown = (
 					key={index}
 					className={clsx(styles.modelBtn)}
 					onClick={
-						isModelDisabled(modelInfo.id)
-							? handleOpenModal
-							: selectModel(modelInfo.id)
+						// isModelDisabled(modelInfo.id)
+						// 	? handleOpenModal
+						// 	: selectModel(modelInfo.id)
+						selectModel(modelInfo.id)
 					}
 				>
 					<div className={styles.modelBtnHeader}>

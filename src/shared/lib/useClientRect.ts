@@ -11,14 +11,24 @@ export function useBoundingClientRect<T extends HTMLElement>() {
 	}, []);
 
 	useLayoutEffect(() => {
-		const handleResize = () => updateRect();
-		window.addEventListener("resize", handleResize);
 		updateRect();
 
+		const observer = new MutationObserver(() => updateRect());
+		if (elementRef.current) {
+			observer.observe(elementRef.current, {
+				attributes: true,
+				childList: true,
+				subtree: true,
+			});
+		}
+
+		window.addEventListener("resize", updateRect);
+
 		return () => {
-			window.removeEventListener("resize", handleResize);
+			observer.disconnect();
+			window.removeEventListener("resize", updateRect);
 		};
-	}, [updateRect]);
+	}, [elementRef.current]);
 
 	return { elementRef, rect };
 }
