@@ -2,8 +2,6 @@ import { OpenAIModels } from "App/Connection";
 import { Board } from "Board";
 import clsx from "clsx";
 import type { Account } from "entities/account";
-import { AI_UNAVAILABLE_MODAL_ID } from "features/AiUnavailableModal/AiUnavailableModal";
-import { USER_PLAN_MODAL_ID } from "features/UserPlan";
 import React, { MouseEventHandler } from "react";
 import { useTranslation } from "react-i18next";
 import { useClickOutside } from "shared/lib/useClickOutside";
@@ -16,6 +14,8 @@ import styles from "./AIInput.module.css";
 import { StarIcon } from "./StarIcon";
 import { createPortal } from "react-dom";
 import { useBoundingClientRect } from "shared/lib/useClientRect";
+import { USER_PLAN_MODAL_ID } from "features/UserPlan";
+import { AI_UNAVAILABLE_MODAL_ID } from "features/AiUnavailableModal/AiUnavailableModal";
 
 type AIDropdownProps = {
 	board: Board;
@@ -180,11 +180,11 @@ export const Dropdown = (
 		evt.preventDefault();
 		evt.stopPropagation();
 		setIsDropdownOpen(false);
-		// if (account.isLoggedIn) {
-		// 	openModal(USER_PLAN_MODAL_ID);
-		// } else {
-		// 	openModal(AI_UNAVAILABLE_MODAL_ID);
-		// }
+		if (account.isLoggedIn) {
+			openModal(USER_PLAN_MODAL_ID);
+		} else {
+			openModal(AI_UNAVAILABLE_MODAL_ID);
+		}
 	};
 
 	return (
@@ -194,10 +194,9 @@ export const Dropdown = (
 					key={index}
 					className={clsx(styles.modelBtn)}
 					onClick={
-						// isModelDisabled(modelInfo.id)
-						// 	? handleOpenModal
-						// 	: selectModel(modelInfo.id)
-						selectModel(modelInfo.id)
+						isModelDisabled(modelInfo.id)
+							? handleOpenModal
+							: selectModel(modelInfo.id)
 					}
 				>
 					<div className={styles.modelBtnHeader}>
