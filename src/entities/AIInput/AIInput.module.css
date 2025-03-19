@@ -20,9 +20,7 @@
 .dropdownContainer {
 	z-index: 1000;
 	max-width: 1022px;
-	right: 0;
-	bottom: calc(100% + 12px);
-	position: absolute;
+	bottom: 72px;
 }
 
 .relativeDropdown {
@@ -101,7 +99,8 @@
 }
 
 .modelDropdown {
-	bottom: 0;
+	position: absolute;
+	bottom: 72px;
 	left: 0;
 	background-color: white;
 	border: 1px solid rgba(204, 204, 204, 0.5);
@@ -402,10 +401,9 @@
 	}
 
 	.modelDropdown {
-		width: 100%;
 		min-width: 200px;
-		left: 0;
-		bottom: 0;
+		left: 69px;
+		bottom: 72px;
 	}
 
 	.selectedModel {

@@ -14,6 +14,8 @@ import { UiPanel } from "shared/ui-lib/UiPanel";
 import { useAIContext } from "./AIContext";
 import styles from "./AIInput.module.css";
 import { StarIcon } from "./StarIcon";
+import { createPortal } from "react-dom";
+import { useBoundingClientRect } from "shared/lib/useClientRect";
 
 type AIDropdownProps = {
 	board: Board;
@@ -85,6 +87,7 @@ const getTokenForm = (count: number, t: (key: string) => string): string => {
 export const AIDropdown = (props: AIDropdownProps): JSX.Element => {
 	const { board, isPhoneScreen, account, isDropdownOpen, setIsDropdownOpen } =
 		props;
+	const { elementRef, rect } = useBoundingClientRect<HTMLDivElement>();
 	const { model } = useAIContext();
 	const { t } = useTranslation();
 	const dropdownRef = useClickOutside(
@@ -99,36 +102,50 @@ export const AIDropdown = (props: AIDropdownProps): JSX.Element => {
 	};
 
 	return (
-		<UiPanel
-			zIndex={2}
-			className={clsx(styles.modelSelector, styles.panel)}
-			ref={dropdownRef}
-		>
-			<StarIcon className={styles.starIcon} width={20} height={20} />
-			<div className={styles.selectedModel} onClick={toggleModelDropdown}>
-				<span>
-					{" "}
-					{isPhoneScreen
-						? t(`ai.models.${model}.mobileTitle`)
-						: t(`ai.models.${model}.title`)}
-				</span>
-				<Chevron
-					className={clsx(styles.arrow, {
-						[styles.activeArrow]: isDropdownOpen,
-					})}
-				/>
-			</div>
-			{isDropdownOpen && !board.aiGeneratingOnItem && (
-				<div className={clsx([styles.dropdownContainer])}>
-					<div className={clsx(styles.modelDropdown)}>
-						<Dropdown
-							isPhoneScreen={isPhoneScreen}
-							account={account}
-							setIsDropdownOpen={setIsDropdownOpen}
-						/>
-					</div>
+		<UiPanel zIndex={2} className={clsx(styles.panel)} ref={elementRef}>
+			<div ref={dropdownRef} className={styles.modelSelector}>
+				<StarIcon className={styles.starIcon} width={20} height={20} />
+				<div
+					className={styles.selectedModel}
+					onClick={toggleModelDropdown}
+				>
+					<span>
+						{" "}
+						{isPhoneScreen
+							? t(`ai.models.${model}.mobileTitle`)
+							: t(`ai.models.${model}.title`)}
+					</span>
+					<Chevron
+						className={clsx(styles.arrow, {
+							[styles.activeArrow]: isDropdownOpen,
+						})}
+					/>
 				</div>
-			)}
+				{isDropdownOpen &&
+					!board.aiGeneratingOnItem &&
+					createPortal(
+						<div className={clsx(styles.dropdownContainer)}>
+							<div
+								className={clsx(styles.modelDropdown)}
+								style={{
+									right: !isPhoneScreen
+										? rect?.right
+										: "unset",
+									left: !isPhoneScreen
+										? rect?.left - 59
+										: "69px",
+								}}
+							>
+								<Dropdown
+									isPhoneScreen={isPhoneScreen}
+									account={account}
+									setIsDropdownOpen={setIsDropdownOpen}
+								/>
+							</div>
+						</div>,
+						window.document.body,
+					)}
+			</div>
 		</UiPanel>
 	);
 };
