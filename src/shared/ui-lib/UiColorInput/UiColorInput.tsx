@@ -54,6 +54,7 @@ export function UiColorInput({
 				onClick={() => inputRef.current?.click()}
 			/>
 			<input
+				key={color}
 				className={clsx(styles.input, inputClassName)}
 				ref={inputRef}
 				type="color"

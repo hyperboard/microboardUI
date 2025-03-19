@@ -26,7 +26,6 @@ import { CSSTransition } from "react-transition-group";
 import clsx from "clsx";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
-import { Tooltip } from "shared/ui-lib/UiButton/Tooltip";
 
 export const SELECT_PAYMENT_MODAL_ID = Symbol("selectPaymentModal");
 
@@ -742,10 +741,10 @@ const CoinCard: React.FC<{
 				<Icon iconName={coin} width={24} height={24} />
 				<div className={styles.mainContent}>{title}</div>
 			</div>
-			<Tooltip
+			{/* <Tooltip
 				tooltip={t("userPlan.paymentMethods.priceTooltip")}
 				tooltipPosition="top"
-			/>
+			/> */}
 		</Button>
 	);
 };
