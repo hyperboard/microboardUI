@@ -29,6 +29,7 @@ import { UiPanel } from "shared/ui-lib/UiPanel";
 import { ResizableEdge } from "./ResizableEdge";
 import style from "./SidePanel.module.css";
 import { useSidePanelContext } from "./SidePanelContext";
+import { useIsPhoneScreen } from "shared/lib/useIsPhoneScreen";
 
 const MIN_PANEL_WIDTH = 280;
 
@@ -44,6 +45,7 @@ export function SidePanel(): JSX.Element {
 	const boardsList = useBoardsList();
 	const foldersRef = useRef<HTMLDivElement>(null);
 	const { openModal } = useUiModalContext();
+	const isPhoneScreen = useIsPhoneScreen();
 
 	useEffect(() => {
 		if (!foldersRef.current) {
@@ -77,8 +79,12 @@ export function SidePanel(): JSX.Element {
 	};
 
 	useEffect(() => {
-		if (board.getBoardId() === "blank") {
+		if (board.getBoardId() === "blank" && !isPhoneScreen) {
 			openMenu();
+		}
+
+		if (board.getBoardId() !== "blank" && isPhoneScreen) {
+			toggleSideMenu();
 		}
 	}, [board.getBoardId()]);
 
