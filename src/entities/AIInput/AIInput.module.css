@@ -74,10 +74,6 @@
 	align-items: center;
 }
 
-.modelSelector:hover {
-	background: rgba(200, 202, 208, 1);
-}
-
 .selectedModel {
 	display: flex;
 	align-items: center;
@@ -339,10 +335,6 @@
 	.selectionInfo:hover .itemsCountTooltip {
 		display: flex;
 	}
-
-	.modelSelector:hover {
-		background: rgba(247, 247, 248, 1);
-	}
 }
 
 .inputContainer:hover .tooltip div::before {
@@ -420,11 +412,5 @@
 	.sendButton {
 		min-width: 20px !important;
 		min-height: 20px !important;
-	}
-}
-
-@media (hover: none) {
-	.modelSelector:hover {
-		background-color: inherit;
 	}
 }

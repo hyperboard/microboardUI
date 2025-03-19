@@ -132,7 +132,7 @@ export const AIDropdown = (props: AIDropdownProps): JSX.Element => {
 										? rect?.right
 										: "unset",
 									left: !isPhoneScreen
-										? rect?.left - 59
+										? rect?.left - (300 - rect?.width)
 										: "69px",
 								}}
 							>
