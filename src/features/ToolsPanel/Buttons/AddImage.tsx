@@ -61,6 +61,10 @@ export function AddImage(): JSX.Element {
 		input.value = "";
 	};
 
+	const accept = window.enableVideos
+		? "image/*,application/pdf,video/mp4,video/webm"
+		: "image/*,application/pdf";
+
 	return (
 		<UiButton
 			id={"tool-add-image"}
@@ -75,8 +79,7 @@ export function AddImage(): JSX.Element {
 				ref={inputRef}
 				type="file"
 				style={{ display: "none" }}
-				// accept="image/*,application/pdf,video/mp4,video/webm"
-				accept="image/*,application/pdf"
+				accept={accept}
 			/>
 		</UiButton>
 	);

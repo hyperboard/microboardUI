@@ -150,6 +150,9 @@
 		"frameNavigation": {
 			"next": "To next frame",
 			"prev": "To prev frame"
+		},
+		"video": {
+			"saveVideo": "Save video"
 		}
 	},
 	"toolsPanel": {

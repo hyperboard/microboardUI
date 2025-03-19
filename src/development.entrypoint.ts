@@ -15,6 +15,7 @@ declare global {
 		useHTTPSubscription: boolean;
 		showDebug: boolean;
 		enableTemplateCreating: boolean;
+		enableVideos: boolean;
 		enableDiagrams: boolean;
 		showOpenFilePicker: () => Promise<FileSystemFileHandle[]>; // should be there
 	}
@@ -24,6 +25,7 @@ var showDebug = true;
 window.showDebug = showDebug;
 window.enableTemplateCreating = false;
 window.enableDiagrams = true;
+window.enableVideos = false;
 
 window.app = createApp();
 window.app.account.init().finally(() => {

@@ -6,9 +6,12 @@ import {
 } from ".";
 import { transformHtmlOrTextToMarkdown } from "Board/Items/RichText/transformHtmlToMarkdown";
 import { SETTINGS } from "Board/Settings";
-import * as url from "node:url";
 import { VideoItem } from "Board/Items/Video/Video";
 import { calculatePosition } from "Board/Items/Image/calculatePosition";
+import {
+	getYouTubeThumbnail,
+	getYouTubeVideoPreview,
+} from "Board/Items/Video/VideoHelpers";
 
 const isMarkdown = (text: string): boolean => {
 	if (!text || typeof text !== "string") {
@@ -34,27 +37,37 @@ const isMarkdown = (text: string): boolean => {
 	return markdownPatterns.some(pattern => pattern.test(text));
 };
 
-// const createVideoItem = (url: string, board: Board) => {
-//     const videoItem = new VideoItem(
-//         { videoDimension: { width: 640, height: 640 }, videoUrl: url },
-//         board,
-//         board.events,
-//         ""
-//     );
-//
-//     const { scaleX, scaleY, translateX, translateY } =
-//         calculatePosition(videoItem, board);
-//     videoItem.transformation.applyTranslateTo(
-//         translateX,
-//         translateY
-//     );
-//     videoItem.transformation.applyScaleTo(scaleX, scaleY);
-//     videoItem.updateMbr();
-//     const boardVideo = board.add(videoItem);
-//     board.selection.removeAll();
-//     board.selection.add(boardVideo);
-//
-// };
+const createVideoItem = (url: string, youtubeId: string, board: Board) => {
+	getYouTubeVideoPreview(getYouTubeThumbnail(youtubeId, "maxres"))
+		.then(preview => {
+			const videoItem = new VideoItem(
+				{
+					videoDimension: {
+						width: preview.width,
+						height: preview.height,
+					},
+					url: url,
+				},
+				board,
+				board.events,
+				"",
+				preview,
+			);
+			videoItem.updateMbr();
+
+			const { scaleX, scaleY, translateX, translateY } =
+				calculatePosition(videoItem, board);
+			videoItem.transformation.applyTranslateTo(translateX, translateY);
+			videoItem.transformation.applyScaleTo(scaleX, scaleY);
+			videoItem.updateMbr();
+			const boardVideo = board.add(videoItem);
+			board.selection.removeAll();
+			board.selection.add(boardVideo);
+		})
+		.catch(err => {
+			console.error(err);
+		});
+};
 
 export async function tryToPasteAsItemOrReturnText(
 	event: ClipboardEvent,
@@ -89,12 +102,16 @@ export async function tryToPasteAsItemOrReturnText(
 			SETTINGS.URL_REGEX.test(text),
 	);
 
-	// if (!textEditor?.getSelection()) {
-	//     if (SETTINGS.getYouTubeId(text)) {
-	//         createVideoItem(text, board);
-	//     }
-	//     return null;
-	// }
+	if (!textEditor?.getSelection() && window.enableVideos) {
+		const url = new URL(text);
+		url.pathname = url.pathname.replace("/shorts/", "/embed/");
+		const finalUrl = url.toString();
+		const youtubeId = SETTINGS.getYouTubeId(finalUrl);
+		if (youtubeId) {
+			createVideoItem(finalUrl, youtubeId, board);
+			return null;
+		}
+	}
 
 	if (
 		!dataTransfer?.getData("application/x-slate-fragment") &&

@@ -10,14 +10,13 @@ export function SaveVideo(): JSX.Element {
 	const { board } = useAppContext();
 	const { toggleMenu } = usePanelContext();
 	const { t } = useTranslation();
+	const item = board.selection.items.getSingle();
+	if (!item || !(item instanceof VideoItem) || !item.getIsStorageUrl()) {
+		return <></>;
+	}
 
 	const handleSaveVideo = (): void => {
-		const item = board.selection.items.getSingle();
-
-		if (item instanceof VideoItem) {
-			item.download();
-		}
-
+		item.download();
 		toggleMenu("None");
 	};
 
@@ -26,7 +25,7 @@ export function SaveVideo(): JSX.Element {
 			onClick={handleSaveVideo}
 			icon={<Icon iconName="SaveAsImage" width={20} height={20} />}
 		>
-			{t("contextPanel.exportFrame.text")}
+			{t("contextPanel.video.saveVideo")}
 		</RestOptionsMenuItem>
 	);
 }
