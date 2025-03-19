@@ -9,8 +9,8 @@ import { HotkeysMap } from "Board/Keyboard/types";
 import { PRESENCE_CURSOR_THROTTLE } from "Board/Presence/Presence";
 import { pasteTextToTheBoard, tryToPasteAsItemOrReturnText } from "./Paste";
 import { throttle } from "shared/lib/throttle";
-import { MemoryLogger } from "shared/Logger";
 import { Item } from "Board/Items/Item";
+import { Select } from "features/ToolsPanel/Buttons/Select";
 
 export interface Controller {
 	onWheel: (event: WheelEvent) => void;
@@ -83,21 +83,26 @@ export function getController(
 
 		const navigationActions = ["Right", "Left", "Up", "Down"];
 		const navigationConfig = Object.fromEntries(
-			navigationActions.map(direction => [
-				`navigation${direction}`,
-				{
-					cb: () =>
-						board.camera.smoothTranslateTo(
-							board.keyboard,
-							!!board.tools.getSelect(),
-						),
-					selectionContext: [
-						"None",
-						"EditUnderPointer",
-						"SelectByRect",
-					],
-				},
-			]),
+			navigationActions.map(direction => {
+				const shouldTranslate = Boolean(
+					board.tools.getSelect() || board.tools.getNavigate(),
+				);
+				return [
+					`navigation${direction}`,
+					{
+						cb: () =>
+							board.camera.smoothTranslateTo(
+								board.keyboard,
+								shouldTranslate,
+							),
+						selectionContext: [
+							"None",
+							"EditUnderPointer",
+							"SelectByRect",
+						],
+					},
+				];
+			}),
 		);
 
 		const editModeHotkeys: HotkeysMap = {
