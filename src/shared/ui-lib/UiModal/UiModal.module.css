@@ -131,8 +131,8 @@ body {
 }
 
 @media screen and (max-width: 1028px) {
-	.page.closeBtn {
-		display: none;
+	.closeBtn {
+		top: 74px;
 	}
 	.page.header {
 		display: flex;
