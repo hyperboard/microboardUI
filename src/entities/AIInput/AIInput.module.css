@@ -231,7 +231,6 @@
 	line-height: 1.5;
 }
 
-.disabled .selectedModel,
 .disabled .aiInput::placeholder,
 .disabled .selectionInfo {
 	color: rgba(10, 15, 41, 0.25);
@@ -421,5 +420,11 @@
 	.sendButton {
 		min-width: 20px !important;
 		min-height: 20px !important;
+	}
+}
+
+@media (hover: none) {
+	.modelSelector:hover {
+		background-color: inherit;
 	}
 }
