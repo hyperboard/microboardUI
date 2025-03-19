@@ -45,9 +45,9 @@ export function getController(
 			return;
 		}
 		board.camera.unsubscribeFromItem();
-		if (wheel.isIgnore()) {
-			return;
-		}
+		// if (wheel.isIgnore()) {
+		// 	return;
+		// }
 
 		if (wheel.isProbablyMouseWheel()) {
 			console.log("wheel", wheel.getWheelScaleMultiplier());

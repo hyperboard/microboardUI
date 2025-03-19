@@ -1,12 +1,17 @@
+import { ChromeWheelEvent } from "./Wheel";
+
 export type LogEntryType = {
 	deltaX: number;
 	deltaY: number;
 	deltaZ: number;
+	wheelDeltaX?: number;
+	wheelDeltaY?: number;
 	deltaMode: number;
 	userAgent: string;
 	devicePixelRatio: number;
 	platform: string;
 	isCtrlKey: boolean;
+	isShiftKey: boolean;
 };
 
 export class WheelEventLogger {
@@ -31,16 +36,19 @@ export class WheelEventLogger {
 		window.addEventListener("mousemove", this.updateMousePosition);
 	}
 
-	private logEvent = (event: WheelEvent): void => {
+	private logEvent = (event: ChromeWheelEvent): void => {
 		const logEntry: LogEntryType = {
 			deltaX: event.deltaX,
 			deltaY: event.deltaY,
 			deltaZ: event.deltaZ,
+			wheelDeltaX: event.wheelDeltaX,
+			wheelDeltaY: event.wheelDeltaY,
 			deltaMode: event.deltaMode,
 			userAgent: navigator.userAgent,
 			devicePixelRatio: window.devicePixelRatio,
 			platform: navigator.platform,
 			isCtrlKey: event.ctrlKey || event.metaKey,
+			isShiftKey: event.shiftKey,
 		};
 		this.setEvents(prev => [logEntry, ...prev]);
 	};

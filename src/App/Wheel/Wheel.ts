@@ -6,27 +6,27 @@ export const DeltaModes = ["pixel", "line", "page"] as const;
 
 export type DeltaMode = (typeof DeltaModes)[number];
 
-interface ChromeWheelEvent extends WheelEvent {
+export interface ChromeWheelEvent extends WheelEvent {
 	wheelDelta?: number;
 	wheelDeltaX?: number;
 	wheelDeltaY?: number;
 }
 
-const WHEEL_BASE_DELTA = 120;
+// const WHEEL_BASE_DELTA = 120;
 
-function getExpectedWheelDelta(): number {
-	return Math.floor(WHEEL_BASE_DELTA / window.devicePixelRatio);
-}
+// function getExpectedWheelDelta(): number {
+// 	return Math.floor(WHEEL_BASE_DELTA / window.devicePixelRatio);
+// }
 
-function isMouseWheelDelta(wheelDelta: number): boolean {
-	const expectedDelta = getExpectedWheelDelta();
-	const absWheelDelta = Math.abs(wheelDelta);
-	return (
-		expectedDelta === absWheelDelta ||
-		expectedDelta * 2 === absWheelDelta ||
-		expectedDelta * 3 === absWheelDelta
-	);
-}
+// function isMouseWheelDelta(wheelDelta: number): boolean {
+// 	const expectedDelta = getExpectedWheelDelta();
+// 	const absWheelDelta = Math.abs(wheelDelta);
+// 	return (
+// 		expectedDelta === absWheelDelta ||
+// 		expectedDelta * 2 === absWheelDelta ||
+// 		expectedDelta * 3 === absWheelDelta
+// 	);
+// }
 
 const detector = createWheelDetector();
 
@@ -51,7 +51,7 @@ interface Wheel {
 	isProbablyTouchpadPanHorisontal: () => boolean;
 	isTouchpadPinch: () => boolean;
 	isProbablyMouseWheel: () => boolean;
-	isIgnore: () => boolean;
+	// isIgnore: () => boolean;
 }
 
 export function createWheel(event: ChromeWheelEvent): Wheel {
@@ -126,9 +126,9 @@ export function createWheel(event: ChromeWheelEvent): Wheel {
 			: deltaMode !== "pixel";
 	}
 
-	function isIgnore(): boolean {
-		return detector.isIgnore;
-	}
+	// function isIgnore(): boolean {
+	// 	return detector.isIgnore;
+	// }
 
 	return {
 		isWheelDelta,
@@ -151,7 +151,7 @@ export function createWheel(event: ChromeWheelEvent): Wheel {
 		isProbablyTouchpadPanHorisontal,
 		isTouchpadPinch,
 		isProbablyMouseWheel,
-		isIgnore,
+		// isIgnore,
 	};
 }
 
@@ -169,8 +169,6 @@ export function createWheelDetector(): WheelDetector {
 		const currentTime = Date.now();
 		const deltaTime = currentTime - lastEventTimestamp;
 		lastEventTimestamp = currentTime;
-		console.log("isMouseWheel", isMouseWheel);
-		console.log("deltaTime", deltaTime);
 
 		if (deltaTime > 200 && !isMouseWheel) {
 			return;
