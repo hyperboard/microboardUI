@@ -1,14 +1,14 @@
+import { LAST_BOARD_KEY_QS } from "App/App";
+import { useAccount } from "App/useAccount";
+import { useBoardsList } from "App/useBoardsList";
+import { Tail } from "pages/layouts/AuthLayout/Tail";
+import { LockIcon } from "pages/SignupPage/LockIcon";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { UiButton } from "shared/ui-lib/UiButton";
 import { Input } from "shared/ui-lib/Input/Input";
-import { Tail } from "pages/layouts/AuthLayout/Tail";
-import { useAccount } from "App/useAccount";
-import styles from "../VerifyMailPage/VerifyMailPage.module.css";
-import { LAST_BOARD_KEY_QS } from "App/App";
-import { useBoardsList } from "App/useBoardsList";
-import { LockIcon } from "pages/SignupPage/LockIcon";
+import { UiButton } from "shared/ui-lib/UiButton";
+import styles from "./BindEmailPage.module.css";
 
 const secondsToHumanReadable = (seconds: number): string => {
 	const minutes = Math.floor(seconds / 60);

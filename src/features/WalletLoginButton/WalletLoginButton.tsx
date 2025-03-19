@@ -1,19 +1,19 @@
-import React from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import {
-	useAccount as useWalletAccount,
-	useSignMessage,
-	useConnect,
-	useDisconnect,
-} from "wagmi";
-import { UiButton } from "shared/ui-lib/UiButton";
-import { useTranslation } from "react-i18next";
 import { injected } from "@wagmi/connectors";
 import { useAccount } from "App/useAccount";
-import { notify } from "shared/ui-lib/Toast";
+import React from "react";
+import { useTranslation } from "react-i18next";
 import { Icon } from "shared/ui-lib/Icon";
-import styles from "./WalletLoginButton.module.css";
+import { notify } from "shared/ui-lib/Toast";
 import { Tooltip } from "shared/ui-lib/Tooltip";
+import { UiButton } from "shared/ui-lib/UiButton";
+import {
+	useConnect,
+	useDisconnect,
+	useSignMessage,
+	useAccount as useWalletAccount,
+} from "wagmi";
+import styles from "./WalletLoginButton.module.css";
 
 interface WalletLoginButtonProps {}
 
@@ -21,7 +21,7 @@ const WalletLoginButton: React.FC<WalletLoginButtonProps> = () => {
 	const { t } = useTranslation();
 	const { address } = useWalletAccount();
 	const account = useAccount();
-	const { connectAsync } = useConnect();
+	const { connectAsync, error } = useConnect();
 	const { disconnectAsync } = useDisconnect();
 	const { signMessageAsync } = useSignMessage();
 
@@ -40,10 +40,11 @@ const WalletLoginButton: React.FC<WalletLoginButtonProps> = () => {
 			const signature = await signMessageAsync({ message: nonce });
 			await account.verifySignature(res.accounts[0], signature);
 		} catch (err) {
+			console.error(err);
 			notify({
 				variant: "error",
-				header: "Error while logging in",
-				body: err instanceof Error ? err.message : "Unexpected error",
+				header: t("auth.signinNotifyError.title"),
+				body: t("auth.signinNotifyError.crypto"),
 			});
 			disconnectAsync();
 		}

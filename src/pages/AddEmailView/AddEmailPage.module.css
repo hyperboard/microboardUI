@@ -6,7 +6,7 @@
 	width: 100%;
 	height: 100%;
 	background-color: white;
-	margin-top: -64px;
+	transform: translateY(-86px);
 }
 
 .form {

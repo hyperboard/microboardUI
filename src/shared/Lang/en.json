@@ -372,7 +372,8 @@
 		"googleAuth": "Sing in with Google",
 		"signinNotifyError": {
 			"title": "Login failed",
-			"text": "Please try again later."
+			"text": "Please try again later.",
+			"crypto": "Crypto wallet is not connected"
 		},
 		"signupNotifyError": {
 			"title": "Sign up failed",

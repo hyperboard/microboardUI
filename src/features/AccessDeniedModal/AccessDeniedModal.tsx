@@ -1,14 +1,13 @@
 import { useAccount } from "App/useAccount";
+import { PROFILE_SETTINGS_MODAL_ID } from "features/ProfileSettingsModal";
 import React from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { UiButton } from "shared/ui-lib/UiButton";
 import { Link } from "shared/ui-lib/Link";
-import styles from "./AccessDeniedModal.module.css";
-import { UiModal } from "shared/ui-lib/UiModal/UiModal";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
-import { PROFILE_SETTINGS_MODAL_ID } from "features/ProfileSettingsModal";
-import { Button } from "shared/ui-lib/Button";
+import { UiModal } from "shared/ui-lib/UiModal/UiModal";
+import styles from "./AccessDeniedModal.module.css";
 
 export const ACCESS_DENIED_MODAL = Symbol("accessDeniedModal");
 
@@ -79,7 +78,7 @@ export function AccessDeniedModal(): JSX.Element {
 						{t("auth.signIn")}
 					</UiButton>
 				)}
-				{account.isLoggedIn && (
+				{account.isLoggedIn && !account.info?.email && (
 					<UiButton
 						className={styles.btn}
 						onClick={() => openModal(PROFILE_SETTINGS_MODAL_ID)}
@@ -88,14 +87,6 @@ export function AccessDeniedModal(): JSX.Element {
 					>
 						{t("userPanel.profileSettings")}
 					</UiButton>
-				)}
-				{account.isLoggedIn && (
-					<Button
-						className={styles.btn}
-						onClick={() => openModal(PROFILE_SETTINGS_MODAL_ID)}
-					>
-						{t("userPanel.profileSettings")}
-					</Button>
 				)}
 			</div>
 		</UiModal>
