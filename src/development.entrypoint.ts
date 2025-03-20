@@ -25,7 +25,7 @@ var showDebug = true;
 window.showDebug = showDebug;
 window.enableTemplateCreating = false;
 window.enableDiagrams = true;
-window.enableVideos = false;
+window.enableVideos = true;
 
 window.app = createApp();
 window.app.account.init().finally(() => {

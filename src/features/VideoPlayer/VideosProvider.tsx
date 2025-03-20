@@ -18,14 +18,6 @@ export const VideosProvider = (): JSX.Element => {
 		},
 	});
 
-	const setRef = (id: string) => (el: HTMLVideoElement) => {
-		videoRefs.current[id] = el;
-	};
-
-	const startVideo = (id: string) => {
-		videoRefs.current[id].play();
-	};
-
 	const playingVideos = board.items
 		.listAll()
 		.filter(
@@ -35,12 +27,7 @@ export const VideosProvider = (): JSX.Element => {
 	return (
 		<>
 			{playingVideos.map(video => (
-				<VideoPlayer
-					key={video.getId()}
-					videoItem={video}
-					ref={setRef(video.getId())}
-					startVideo={startVideo}
-				/>
+				<VideoPlayer key={video.getId()} videoItem={video} />
 			))}
 			<VideoCanvasControls />
 		</>

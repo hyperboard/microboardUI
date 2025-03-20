@@ -38,7 +38,8 @@ const isMarkdown = (text: string): boolean => {
 };
 
 const createVideoItem = (url: string, youtubeId: string, board: Board) => {
-	getYouTubeVideoPreview(getYouTubeThumbnail(youtubeId, "maxres"))
+	const previewUrl = getYouTubeThumbnail(youtubeId, "maxres");
+	getYouTubeVideoPreview(previewUrl)
 		.then(preview => {
 			const videoItem = new VideoItem(
 				{
@@ -46,23 +47,36 @@ const createVideoItem = (url: string, youtubeId: string, board: Board) => {
 						width: preview.width,
 						height: preview.height,
 					},
-					url: url,
+					url,
+					previewUrl,
 				},
 				board,
 				board.events,
 				"",
-				preview,
 			);
-			videoItem.updateMbr();
-
-			const { scaleX, scaleY, translateX, translateY } =
-				calculatePosition(videoItem, board);
-			videoItem.transformation.applyTranslateTo(translateX, translateY);
-			videoItem.transformation.applyScaleTo(scaleX, scaleY);
-			videoItem.updateMbr();
-			const boardVideo = board.add(videoItem);
-			board.selection.removeAll();
-			board.selection.add(boardVideo);
+			videoItem.doOnceBeforeOnLoad(() => {
+				const { scaleX, scaleY, translateX, translateY } =
+					calculatePosition(videoItem, board);
+				videoItem.transformation.applyTranslateTo(
+					translateX,
+					translateY,
+				);
+				videoItem.transformation.applyScaleTo(scaleX, scaleY);
+				videoItem.updateMbr();
+				const boardVideo = board.add(videoItem);
+				board.selection.removeAll();
+				board.selection.add(boardVideo);
+			});
+			// videoItem.updateMbr();
+			//
+			// const { scaleX, scaleY, translateX, translateY } =
+			// 	calculatePosition(videoItem, board);
+			// videoItem.transformation.applyTranslateTo(translateX, translateY);
+			// videoItem.transformation.applyScaleTo(scaleX, scaleY);
+			// videoItem.updateMbr();
+			// const boardVideo = board.add(videoItem);
+			// board.selection.removeAll();
+			// board.selection.add(boardVideo);
 		})
 		.catch(err => {
 			console.error(err);
