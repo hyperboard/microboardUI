@@ -602,7 +602,6 @@
 			"title": "Идёт импорт из Miro",
 			"text": "Чтобы не потерять прогресс, не закрывайте окно браузера до окончания. Завершено на"
 		},
-
 		"notifications": {
 			"success": "Импорт из Miro завершен успешно",
 			"warn": "Импорт из Miro завершен",
@@ -859,7 +858,7 @@
 		"perMonth": "в месяц",
 		"perThousandTokens": "за 1000 токенов",
 		"customPrice": "По запросу",
-		"upgradeTooltip": "Увеличить лимит",
+		"upgradeTooltip": "Подключить тариф Plus",
 		"backToProfile": "Вернуться к настройкам профиля",
 		"backToPlans": "Назад к выбору тарифа",
 		"backToCurrentPlan": "Назад к текущему плану",

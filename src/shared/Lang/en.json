@@ -604,7 +604,6 @@
 			"title": "Import from Miro in progress",
 			"text": "To avoid losing progress, do not close the browser window until the end. Completed on"
 		},
-
 		"notifications": {
 			"success": "Import from Miro completed successfully",
 			"warn": "Import from Miro completed",
@@ -861,7 +860,7 @@
 		"perMonth": "per month",
 		"perThousandTokens": "per 1000 tokens",
 		"customPrice": "Custom Pricing",
-		"upgradeTooltip": "Upgrade your plan",
+		"upgradeTooltip": "Upgrade to Plus",
 		"backToProfile": "Back to Profile settings",
 		"backToPlans": "Back to All Plans",
 		"backToCurrentPlan": "Back to Current Plan",
