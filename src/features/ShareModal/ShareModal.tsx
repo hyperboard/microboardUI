@@ -161,7 +161,8 @@ export function ShareModal() {
 		const { data } = await usersApi.getUsers(val, 1);
 		if (data) {
 			setSearchOptions(data);
-			isSettingsChange.current = true;
+			isSettingsChange.current =
+				val.length !== 0 || userEmails.length !== 0;
 		}
 		setIsSearchOptionsLoading(false);
 	};

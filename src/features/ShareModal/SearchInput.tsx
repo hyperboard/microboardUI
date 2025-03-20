@@ -110,6 +110,16 @@ export function SearchInput({
 	}, [isFocused, filteredOptions.length]);
 
 	useEffect(() => {
+		options.forEach(option => {
+			const value = option.value;
+			const isExistsInOptions = isEmail(value.trim());
+			const isValidInputValue =
+				value.trim() && isExistsInOptions && highlightedIndex === null;
+			if (isValidInputValue) {
+				addValue(value.trim());
+			}
+		});
+
 		const observer = new ResizeObserver(nodes => {
 			nodes.forEach(node => {
 				if (node.target === inputRef.current) {
@@ -200,7 +210,8 @@ export function SearchInput({
 	const handleKeyPress = (evt: React.KeyboardEvent) => {
 		evt.stopPropagation();
 		switch (evt.key) {
-			case "Enter": {
+			case "Enter":
+			case " ": {
 				evt.preventDefault();
 				const isExistsInOptions = isEmail(currValue.trim());
 				const isValidInputValue =
