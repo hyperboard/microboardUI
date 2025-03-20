@@ -5,12 +5,14 @@ import { useSidePanelContext } from "features/SidePanel/SidePanelContext";
 import styles from "./NoBoardIsOpen.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { useAppContext } from "features/AppContext";
+import { useIsPhoneScreen } from "shared/lib/useIsPhoneScreen";
 
 const NoBoardIsOpen: React.FC = () => {
 	const { t } = useTranslation();
 	const { openMenu, handleAddNew, isOpen } = useSidePanelContext();
 	const { setRenamingId, setNewName } = useRenameContext();
 	const { board } = useAppContext();
+	const isProneScreen = useIsPhoneScreen();
 
 	const handleOpenMenu: React.MouseEventHandler = event => {
 		event.stopPropagation();
@@ -26,7 +28,9 @@ const NoBoardIsOpen: React.FC = () => {
 		event.preventDefault();
 		event.stopPropagation();
 		handleAddNew(boardId => {
-			openMenu();
+			if (!isProneScreen) {
+				openMenu();
+			}
 			setNewName(t("board.untitled"));
 			setRenamingId(boardId);
 		});

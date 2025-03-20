@@ -84,7 +84,11 @@ export function SidePanel(): JSX.Element {
 		}
 
 		if (board.getBoardId() !== "blank" && isPhoneScreen) {
-			toggleSideMenu();
+			if (isOpen) {
+				toggleSideMenu();
+				return;
+			}
+			close();
 		}
 	}, [board.getBoardId()]);
 
