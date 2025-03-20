@@ -93,6 +93,10 @@ export const SigninPage: React.FC = (): React.ReactElement => {
 	};
 
 	const checkEmail = (): boolean => {
+		if (formRef.current && formRef.current.email) {
+			formRef.current.email.value = formRef.current.email.value.trim();
+		}
+
 		const email = formRef.current?.email.value;
 		if (email && !isEmail(email)) {
 			setEmailError(t("auth.enterAValidEmailAddress"));

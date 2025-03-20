@@ -52,6 +52,10 @@ export const SignupPage = (): React.ReactElement => {
 	};
 
 	const checkForm = (): boolean => {
+		if (formRef.current && formRef.current.email) {
+			formRef.current.email.value = formRef.current.email.value.trim();
+		}
+
 		const form = formRef.current;
 		if (!form) {
 			setIsDisabled(true);
