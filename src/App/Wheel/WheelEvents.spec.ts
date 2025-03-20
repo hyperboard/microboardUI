@@ -285,7 +285,6 @@ describe("WheelEventLogger", () => {
 			browsers: "safari",
 			speed: "default",
 		},
-
 		{
 			system: "mac",
 			type: "mousePinch",
