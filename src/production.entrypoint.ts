@@ -10,6 +10,7 @@ declare global {
 	interface Window {
 		showDebug: boolean;
 		enableTemplateCreating: boolean;
+		enableVideos: boolean;
 		enableLogger: () => void;
 		disableLogger: () => void;
 	}
@@ -19,6 +20,7 @@ declare global {
 window.showDebug = false;
 window.enableTemplateCreating = false;
 window.enableDiagrams = false;
+window.enableVideos = true;
 
 const app = createApp();
 

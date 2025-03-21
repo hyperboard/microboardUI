@@ -11,6 +11,9 @@ import { pasteTextToTheBoard, tryToPasteAsItemOrReturnText } from "./Paste";
 import { throttle } from "shared/lib/throttle";
 import { Item } from "Board/Items/Item";
 import { Select } from "features/ToolsPanel/Buttons/Select";
+import { uploadVideo } from "Board/Items/Video/uploadVideo";
+import { notify } from "shared/ui-lib/Toast/notify";
+import { uploadImage } from "Board/Items/Image/uploadImage";
 
 export interface Controller {
 	onWheel: (event: WheelEvent) => void;
@@ -639,6 +642,12 @@ export function getController(
 		}
 
 		const file = event.dataTransfer.files[0];
+		const fileExtension = file.name.split(".").pop()?.toLowerCase();
+		if (fileExtension === "mp4" || fileExtension === "webm") {
+			uploadVideo(file, board, notify, fileExtension);
+			return;
+		}
+
 		const reader = new FileReader();
 
 		reader.onload = function (event) {

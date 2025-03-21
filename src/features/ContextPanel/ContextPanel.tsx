@@ -317,16 +317,19 @@ export function ContextPanel(): React.ReactElement | null {
 				)}
 				{isVideo && !isSelectUnderPointer && !isLocked && (
 					<>
-						<Delete rounded="left" />
+						<Lock rounded="left" />
+						<UiSeparator vertical />
+						<Delete />
 						<UiSeparator vertical />
 						<RestOptionsMenu>
+							<BringToFront />
+							<SendToBack />
 							{/* <BringToFront />*/}
 							{/* <SendToBack />*/}
 							{/* <CopyItemLink />*/}
 							{/* <SetLinkTo />*/}
 							{/* <Duplicate />*/}
-							<SaveVideo extension={"mp4"} />
-							<SaveVideo extension={"webm"} />
+							<SaveVideo />
 						</RestOptionsMenu>
 					</>
 				)}

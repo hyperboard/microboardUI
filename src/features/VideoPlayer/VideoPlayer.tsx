@@ -18,6 +18,7 @@ export const VideoPlayer = ({ videoItem }: Props) => {
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const stopTimeoutRef = useRef<number | null>(null);
+	const timeoutDuration = videoId ? 300 : 10;
 
 	useEffect(() => {
 		containerRef.current?.addEventListener(
@@ -72,9 +73,9 @@ export const VideoPlayer = ({ videoItem }: Props) => {
 						videoItem.setPreviewImage(currentFrame);
 					}
 				}
-
+				videoItem.transformationRenderBlock = false;
 				videoItem.setIsPlaying(false);
-			}, 10);
+			}, timeoutDuration);
 			stopTimeoutRef.current = timeoutId;
 		}
 	};
@@ -84,11 +85,9 @@ export const VideoPlayer = ({ videoItem }: Props) => {
 			const timeoutId = setTimeout(() => {
 				const currentTime = event.target.getCurrentTime();
 				videoItem.setCurrentTime(currentTime);
-				// const currentFrame = new Image();
-				// videoItem.setPreviewImage(currentFrame);
-				// currentFrame.src = videoItem.getPreviewUrl() + `&t=${Math.floor(currentTime)}s`;
+				videoItem.transformationRenderBlock = false;
 				videoItem.setIsPlaying(false);
-			}, 10);
+			}, timeoutDuration);
 			stopTimeoutRef.current = timeoutId;
 		}
 	};
@@ -109,14 +108,19 @@ export const VideoPlayer = ({ videoItem }: Props) => {
 	const onEnded = () => {
 		clearStopTimeout();
 		videoItem.setCurrentTime(0);
+		videoItem.transformationRenderBlock = false;
 		videoItem.setIsPlaying(false);
+	};
+
+	const onPlay = () => {
+		videoItem.transformationRenderBlock = true;
 	};
 
 	const mbr = videoItem.getMbr().getTransformed(board.camera.getMatrix());
 
 	const opts = {
-		width: mbr.getWidth().toString(),
-		height: mbr.getHeight().toString(),
+		width: (mbr.getWidth() > 48 ? mbr.getWidth() : 48).toString(),
+		height: (mbr.getHeight() > 32 ? mbr.getHeight() : 32).toString(),
 		playerVars: {
 			autoplay: 0,
 			controls: 1,
@@ -141,6 +145,7 @@ export const VideoPlayer = ({ videoItem }: Props) => {
 						event.target.seekTo(videoItem.getCurrentTime());
 						event.target.playVideo();
 					}}
+					onPlay={onPlay}
 					onStateChange={onStateChange}
 					onPause={stopYoutubeVideo}
 					onEnd={onEnded}
@@ -155,6 +160,7 @@ export const VideoPlayer = ({ videoItem }: Props) => {
 					onSeeking={clearStopTimeout}
 					onSeeked={clearStopTimeout}
 					onEnded={onEnded}
+					onPlay={onPlay}
 				>
 					<source src={videoItem.getUrl()} type="video/mp4" />
 				</video>

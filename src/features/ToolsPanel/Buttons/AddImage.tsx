@@ -54,7 +54,7 @@ export function AddImage(): JSX.Element {
 		}
 		const fileExtension = file.name.split(".").pop()?.toLowerCase();
 		if (fileExtension === "mp4" || fileExtension === "webm") {
-			uploadVideo(file, board, notify);
+			uploadVideo(file, board, notify, fileExtension);
 		} else {
 			uploadImage(file, board);
 		}

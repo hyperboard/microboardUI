@@ -6,11 +6,7 @@ import { Icon } from "shared/ui-lib/Icon";
 import { RestOptionsMenuItem } from "../RestOptionsMenuItem";
 import { VideoItem } from "Board/Items/Video/Video";
 
-interface Props {
-	extension: "mp4" | "webm";
-}
-
-export function SaveVideo({ extension }: Props): JSX.Element {
+export function SaveVideo(): JSX.Element {
 	const { board } = useAppContext();
 	const { toggleMenu } = usePanelContext();
 	const { t } = useTranslation();
@@ -20,7 +16,7 @@ export function SaveVideo({ extension }: Props): JSX.Element {
 	}
 
 	const handleSaveVideo = (): void => {
-		item.download(extension);
+		item.download();
 		toggleMenu("None");
 	};
 
@@ -29,7 +25,7 @@ export function SaveVideo({ extension }: Props): JSX.Element {
 			onClick={handleSaveVideo}
 			icon={<Icon iconName="Export" width={20} height={20} />}
 		>
-			{t(`contextPanel.video.save.${extension}`)}
+			{t(`contextPanel.video.save`)}
 		</RestOptionsMenuItem>
 	);
 }

@@ -8,11 +8,10 @@ import { VideoCanvasControls } from "features/VideoPlayer/VideoCanvasControls";
 
 export const VideosProvider = (): JSX.Element => {
 	const { board } = useAppContext();
-	const videoRefs = useRef<Record<string, HTMLVideoElement>>({});
 	const forceUpdate = useForceUpdate();
 
 	useAppSubscription({
-		subjects: ["items", "camera", "tools", "selectionItems", "selection"],
+		subjects: ["items", "camera"],
 		observer: () => {
 			forceUpdate();
 		},

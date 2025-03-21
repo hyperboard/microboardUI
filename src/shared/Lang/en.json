@@ -152,10 +152,7 @@
 			"prev": "To prev frame"
 		},
 		"video": {
-			"save": {
-				"mp4": "Save as mp4",
-				"webm": "Save as webm"
-			}
+			"save": "Save video"
 		}
 	},
 	"toolsPanel": {
