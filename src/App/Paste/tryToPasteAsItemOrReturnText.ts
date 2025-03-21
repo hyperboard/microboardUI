@@ -115,14 +115,16 @@ export async function tryToPasteAsItemOrReturnText(
 	);
 
 	if (!textEditor?.getSelection() && window.enableVideos) {
-		const url = new URL(text);
-		url.pathname = url.pathname.replace("/shorts/", "/embed/");
-		const finalUrl = url.toString();
-		const youtubeId = SETTINGS.getYouTubeId(finalUrl);
-		if (youtubeId) {
-			createVideoItem(finalUrl, youtubeId, board);
-			return null;
-		}
+		try {
+			const url = new URL(text);
+			url.pathname = url.pathname.replace("/shorts/", "/embed/");
+			const finalUrl = url.toString();
+			const youtubeId = SETTINGS.getYouTubeId(finalUrl);
+			if (youtubeId) {
+				createVideoItem(finalUrl, youtubeId, board);
+				return null;
+			}
+		} catch {}
 	}
 
 	if (
