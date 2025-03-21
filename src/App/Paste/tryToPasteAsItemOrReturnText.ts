@@ -12,6 +12,8 @@ import {
 	getYouTubeThumbnail,
 	getYouTubeVideoPreview,
 } from "Board/Items/Video/VideoHelpers";
+import { t } from "i18next";
+import { notify } from "shared/ui-lib/Toast/notify";
 
 const isMarkdown = (text: string): boolean => {
 	if (!text || typeof text !== "string") {
@@ -67,18 +69,14 @@ const createVideoItem = (url: string, youtubeId: string, board: Board) => {
 				board.selection.removeAll();
 				board.selection.add(boardVideo);
 			});
-			// videoItem.updateMbr();
-			//
-			// const { scaleX, scaleY, translateX, translateY } =
-			// 	calculatePosition(videoItem, board);
-			// videoItem.transformation.applyTranslateTo(translateX, translateY);
-			// videoItem.transformation.applyScaleTo(scaleX, scaleY);
-			// videoItem.updateMbr();
-			// const boardVideo = board.add(videoItem);
-			// board.selection.removeAll();
-			// board.selection.add(boardVideo);
 		})
 		.catch(err => {
+			notify({
+				variant: "error",
+				header: t("video.error.header"),
+				body: t("video.error.body"),
+				duration: 5000,
+			});
 			console.error(err);
 		});
 };

@@ -325,7 +325,8 @@ export function ContextPanel(): React.ReactElement | null {
 							{/* <CopyItemLink />*/}
 							{/* <SetLinkTo />*/}
 							{/* <Duplicate />*/}
-							<SaveVideo />
+							<SaveVideo extension={"mp4"} />
+							<SaveVideo extension={"webm"} />
 						</RestOptionsMenu>
 					</>
 				)}

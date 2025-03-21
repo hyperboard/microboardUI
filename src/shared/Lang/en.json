@@ -152,7 +152,10 @@
 			"prev": "To prev frame"
 		},
 		"video": {
-			"saveVideo": "Save video"
+			"save": {
+				"mp4": "Save as mp4",
+				"webm": "Save as webm"
+			}
 		}
 	},
 	"toolsPanel": {
@@ -1055,6 +1058,12 @@
 			"flux-schnell": "Image generation",
 			"flux-pro": "Image generation (higher quality)",
 			"tts-1-hd": "Speech generation"
+		}
+	},
+	"video": {
+		"error": {
+			"header": "Failed to load video",
+			"body": "Ensure that the resource from which the video is requested is accessible"
 		}
 	}
 }
