@@ -324,9 +324,7 @@ export function ContextPanel(): React.ReactElement | null {
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
-							{/* <BringToFront />*/}
-							{/* <SendToBack />*/}
-							{/* <CopyItemLink />*/}
+							<CopyItemLink />
 							{/* <SetLinkTo />*/}
 							{/* <Duplicate />*/}
 							<SaveVideo />
