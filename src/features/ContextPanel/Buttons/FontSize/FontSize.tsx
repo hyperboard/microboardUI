@@ -85,10 +85,10 @@ export function FontSize({ rounded = "none" }: Props): React.ReactElement {
 		const items = board.selection.items.list();
 		items.forEach(item => {
 			if (
-				item.itemType === "RichText" &&
-				item.transformation.getScale().x !== 1
+				(item.itemType === "RichText" || item.itemType === "AINode") &&
+				item.getRichText().transformation.getScale().x !== 1
 			) {
-				item.transformation.scaleTo(1, 1);
+				item.getRichText().transformation.scaleTo(1, 1);
 			}
 		});
 	};
