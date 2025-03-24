@@ -35,9 +35,9 @@ export function AccessDeniedModal(): JSX.Element {
 							<Trans
 								t={t}
 								i18nKey={
-									account.info?.address
-										? "sharing.loggedInCrypto"
-										: "sharing.loggedIn"
+									isEmailAccount
+										? "sharing.loggedIn"
+										: "sharing.loggedInCrypto"
 								}
 							>
 								You are logged in to your
@@ -78,7 +78,7 @@ export function AccessDeniedModal(): JSX.Element {
 						{t("auth.signIn")}
 					</UiButton>
 				)}
-				{account.isLoggedIn && !account.info?.email && (
+				{account.isLoggedIn && !isEmailAccount && (
 					<UiButton
 						className={styles.btn}
 						onClick={() => openModal(PROFILE_SETTINGS_MODAL_ID)}
