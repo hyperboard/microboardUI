@@ -1,5 +1,9 @@
+import type { Connection } from "App/Connection";
+import { Permissions } from "App/Permissions";
+import { SessionStorage } from "App/SessionStorage";
+import type { Storage } from "App/Storage";
+import { ethers } from "ethers";
 import { jwtDecode } from "jwt-decode";
-import { getEmailPrefix } from "shared/lib/getEmailPrefix";
 import {
 	authApi,
 	billingApi,
@@ -7,15 +11,11 @@ import {
 	HTTPResponse,
 	usersApi,
 } from "shared/api";
-import { Subject } from "shared/Subject";
-import { SessionStorage } from "App/SessionStorage";
 import { UniqueString } from "shared/api/auth";
-import { MessageResponse } from "shared/api/types";
 import { CryptoCheckout } from "shared/api/billing";
-import { ethers } from "ethers";
-import { Permissions } from "App/Permissions";
-import type { Storage } from "App/Storage";
-import type { Connection } from "App/Connection";
+import { MessageResponse } from "shared/api/types";
+import { getEmailPrefix } from "shared/lib/getEmailPrefix";
+import { Subject } from "shared/Subject";
 
 type AccountInfo = {
 	id: number;
@@ -35,6 +35,13 @@ type TokenData = {
 	jti: string; // JWT ID
 	aud: string; // Audience
 	iss: string; // Issuer
+};
+
+type AccountEvent = "logout";
+
+type ChannelMsg = {
+	event: AccountEvent;
+	account: AccountInfo | null;
 };
 
 export class Account {
@@ -62,6 +69,7 @@ export class Account {
 	onLogout: (() => Promise<void>) | null = null;
 	onLogin: (() => Promise<void>) | null = null;
 	onInit: (() => Promise<void>) | null = null;
+	broadcastChannel = new BroadcastChannel("account");
 
 	constructor(
 		private readonly storage: Storage,
@@ -69,6 +77,7 @@ export class Account {
 		private readonly connection: Connection,
 	) {
 		this.permissions = new Permissions(this, this.storage);
+		this.setupBroadcastChannel();
 	}
 
 	async init(): Promise<void> {
@@ -287,6 +296,7 @@ export class Account {
 
 	async logout(): Promise<void> {
 		await authApi.logout();
+		this.postMsg("logout");
 		this.cleanup();
 		await this.onLogout?.();
 		this.subject.publish(null);
@@ -448,5 +458,31 @@ export class Account {
 
 	setOnLogin(cb: () => Promise<void>): void {
 		this.onLogin = cb;
+	}
+
+	postMsg(evt: AccountEvent) {
+		this.broadcastChannel.postMessage(
+			JSON.stringify({
+				event: evt,
+				account: this.info,
+			} as ChannelMsg),
+		);
+	}
+
+	handleBroadcastEvent = async (msg: ChannelMsg) => {
+		switch (msg.event) {
+			case "logout": {
+				if (msg.account?.id === this.info?.id) {
+					await this.logout();
+				}
+				break;
+			}
+		}
+	};
+
+	setupBroadcastChannel() {
+		this.broadcastChannel.addEventListener("message", evt => {
+			this.handleBroadcastEvent(JSON.parse(evt.data));
+		});
 	}
 }
