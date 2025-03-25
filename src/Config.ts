@@ -1,26 +1,38 @@
+const LOCATION =
+	typeof location !== "undefined"
+		? `${location.protocol}//${location.host}`
+		: "http://localhost";
+
+const baseUrl =
+	typeof process !== "undefined" && process.env.BASE_URL
+		? process.env.BASE_URL
+		: LOCATION;
+
+const parsedUrl = new URL(baseUrl);
+
+export const PROTOCOL = parsedUrl.protocol;
+export const HOST = parsedUrl.host;
+
 export function getApiUrl(path?: string): string {
 	if (!path) {
 		path = "";
 	}
-	return `${location.protocol}//${location.host}/api/v1${path}`;
+	return `${PROTOCOL}//${HOST}/api/v1${path}`;
 }
 
 export function getPublicUrl(path?: string): string {
 	if (!path) {
 		path = "";
 	}
-	return `${location.protocol}//${location.host}${path}`;
+	return `${PROTOCOL}//${HOST}${path}`;
 }
 
 export function getWebsocketUrl(): string {
-	return `${location.protocol === "https:" ? "wss" : "ws"}://${
-		location.host
-	}/ws`;
+	return `${PROTOCOL === "https:" ? "wss" : "ws"}://${HOST}/ws`;
 }
-
 export function getApiUrlV2(path?: string): string {
 	if (!path) {
 		path = "";
 	}
-	return `${location.protocol}//${location.host}/api/v2${path}`;
+	return `${PROTOCOL}//${HOST}/api/v2${path}`;
 }

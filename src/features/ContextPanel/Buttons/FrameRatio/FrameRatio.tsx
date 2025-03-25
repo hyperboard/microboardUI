@@ -12,7 +12,8 @@ import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import style from "./FrameRatio.module.css";
 import btnStyle from "../ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
-import i18n from "shared/Lang";
+import { SETTINGS } from "Board/Settings";
+const { i18n } = SETTINGS;
 
 const MENU_NAME = "FrameType";
 

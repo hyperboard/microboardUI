@@ -13,7 +13,6 @@ import { Storage } from "./Storage";
 import { TestRecorder, createTester } from "./testRecorder";
 import { api } from "shared/api";
 import { notify } from "shared/ui-lib/Toast";
-import i18next from "i18next";
 import { SessionStorage } from "./SessionStorage";
 import { apiV2 } from "shared/apiV2/base";
 import { foldersApi } from "shared/apiV2";
@@ -21,13 +20,12 @@ import { wagmiConfig } from "features/ContextWrapper";
 import { disconnect } from "@wagmi/core";
 import { createEvents } from "Board/Events/Events";
 import { v4 as uuidv4 } from "uuid";
-import toast from "react-hot-toast";
 import { getLocalRender, getRender } from "./router";
 import { Account } from "entities/account";
 import { MemoryLogger } from "shared/Logger";
 import { getAuthInterceptor } from "entities/account/AuthInterceptor";
-import { initBrowserSettings } from "Board/api/initBrowserSettings";
 import { SETTINGS } from "Board/Settings";
+const { i18n } = SETTINGS;
 
 export const LAST_BOARD_KEY = "lastSeenBoard";
 export const LAST_BOARD_KEY_QS = LAST_BOARD_KEY.concat("Wqs");
@@ -59,8 +57,6 @@ export interface App {
 }
 
 export function createApp(isHistory = true): App {
-	initBrowserSettings();
-
 	const connection = createConnection(getBoard, getAccount, getStorage);
 	const clipboard = new Clipboard();
 	const location = new Location();
@@ -171,14 +167,12 @@ export function createApp(isHistory = true): App {
 		// TODO: reenable when fixed multiple snapshots for one board
 		// const snapshot = await this.getSnapshotFromCache();
 		const snapshot = undefined;
+
 		board.events = createEvents(
 			board,
 			connection,
 			currIndex || snapshot?.lastIndex || 0,
 			notify,
-			(id: string) => {
-				toast.dismiss(id);
-			},
 		);
 		board.presence.addEvents(board.events);
 		board.presence.setCurrentUser(
@@ -190,8 +184,9 @@ export function createApp(isHistory = true): App {
 				})(),
 		);
 		board.selection.events = board.events;
+
 		if (snapshot && currIndex === 0) {
-			board.deserialize(snapshot);
+			// board.deserialize(snapshot);
 		}
 		board.resolveConnecting();
 		setTimeout(() => {
@@ -237,6 +232,31 @@ export function createApp(isHistory = true): App {
 	async function openAndEditFile(): Promise<string | undefined> {
 		try {
 			let file: File;
+			// TOdo fix
+			// if (window.location.href.includes("/snapshots/")) {
+			// 	// assume we have html snapshot
+			// 	const iframe = document.getElementsByTagName("iframe");
+			// 	const snapshotDoc = Array.from(iframe).find(
+			// 		iframe => iframe.title === "HTML Snapshot",
+			// 	);
+			// 	const htmlContent =
+			// 		snapshotDoc?.contentDocument?.documentElement.outerHTML;
+			// 	if (!htmlContent) {
+			// 		return;
+			// 	}
+
+			// 	const blob = new Blob([htmlContent], { type: "text/html" });
+			// 	file = new File([blob], "snapshot.html", { type: "text/html" });
+
+			// 	const url = URL.createObjectURL(blob);
+			// 	const link = document.createElement("a");
+			// 	link.href = url;
+			// 	link.download = "test";
+
+			// 	link.click();
+			// 	URL.revokeObjectURL(url);
+
+			// } else
 			if ("showOpenFilePicker" in window) {
 				const [newFileHandle] = await window.showOpenFilePicker();
 				file = await newFileHandle.getFile();
@@ -382,7 +402,7 @@ export function createApp(isHistory = true): App {
 		account.setOnSessionExpired(() => {
 			router.navigate(`/auth/sign-in${window.location.search}`);
 			notify({
-				body: i18next.t("auth.sessionExpired"),
+				body: i18n.t("auth.sessionExpired"),
 				variant: "error",
 			});
 			Cookies.remove("first_visit");

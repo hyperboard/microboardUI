@@ -10,9 +10,9 @@ import { Matrix } from "Board/Items/Transformation/Matrix";
 import { Connector } from "Board/Items/Connector/Connector";
 import { Mbr } from "Board/Items/Mbr/Mbr";
 import { Board } from "Board/Board";
-import { t } from "i18next";
 import { ImageItem } from "Board/Items/Image";
 import { SETTINGS } from "Board/Settings";
+const { i18n } = SETTINGS;
 
 export type PossibleParentNode = AINode | Shape | RichText | Sticker;
 
@@ -311,7 +311,7 @@ export function createNode(
 		nodeRichText.setSelectionHorisontalAlignment("left");
 		nodeRichText.container.right = nodeRichText.container.left + 600;
 		nodeRichText.editor.insertCopiedText(
-			t("AIInput.awaitingImageGeneration"),
+			i18n.t("AIInput.awaitingImageGeneration"),
 		);
 		node.setId(crypto.randomUUID());
 	} else {
@@ -328,7 +328,7 @@ export function createNode(
 		nodeRichText.container.right = nodeRichText.container.left + 600;
 		if (withPlaceholder) {
 			nodeRichText.editor.insertCopiedText(
-				t("AIInput.generatingResponse") + PLACEHOLDER_OFFSET,
+				i18n.t("AIInput.generatingResponse") + PLACEHOLDER_OFFSET,
 			);
 		} else {
 			nodeRichText.editor.insertCopiedText(inputValue);

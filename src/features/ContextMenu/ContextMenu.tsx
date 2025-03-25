@@ -84,8 +84,12 @@ export function ContextMenu(): JSX.Element | null {
 		navigate(`/boards/${boardId}`);
 	};
 
-	const deserializeBoard = (stringedHTML: string): void => {
-		app.getBoard().deserializeHTML(stringedHTML);
+	const deserializeBoard = (stringedHTML: string, emit = false): void => {
+		if (emit) {
+			app.getBoard().deserializeHTMLAndEmit(stringedHTML);
+		} else {
+			app.getBoard().deserializeHTML(stringedHTML);
+		}
 		app.render();
 		const sumMbr = [
 			...app.getBoard().items.listAll(),
@@ -167,7 +171,7 @@ export function ContextMenu(): JSX.Element | null {
 			setId(boardId);
 			await app.openBoard(boardId);
 			navigate(`/boards/${boardId}`);
-			deserializeBoard(stringedHTML);
+			deserializeBoard(stringedHTML, true);
 		}
 
 		setIsImportingBoard(false);

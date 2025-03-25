@@ -201,10 +201,7 @@
 	},
 	"delete": {
 		"key": {
-			"button": [
-				"Delete",
-				"Backspace"
-			]
+			"button": ["Delete", "Backspace"]
 		},
 		"label": {
 			"mac": "Delete",

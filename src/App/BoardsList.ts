@@ -1,8 +1,9 @@
 import type { Account } from "entities/account";
-import i18next, { t } from "i18next";
 import { boardsApiV2, foldersApi } from "shared/apiV2";
 import { Subject } from "shared/Subject";
 import { Storage } from "./Storage";
+import { SETTINGS } from "Board/Settings";
+const { i18n } = SETTINGS;
 
 type FolderItem = {
 	id: string | number;
@@ -297,9 +298,9 @@ export class BoardsList {
 			this.updateEmptyTitles(this.rootFolder);
 			this.updateEmptyTitles(this.sharedFolder);
 			this.updateEmptyTitles(this.draftsFolder);
-			this.rootFolder.title = t("sidePanel.folders.myBoards");
-			this.sharedFolder.title = t("sidePanel.folders.sharedBoards");
-			this.draftsFolder.title = t("sidePanel.folders.publicDrafts");
+			this.rootFolder.title = i18n.t("sidePanel.folders.myBoards");
+			this.sharedFolder.title = i18n.t("sidePanel.folders.sharedBoards");
+			this.draftsFolder.title = i18n.t("sidePanel.folders.publicDrafts");
 			this.isLoading = false;
 			this.subject.publish();
 		} else {
@@ -308,9 +309,9 @@ export class BoardsList {
 				items: this.storage.listCreatedBoards().map(board => ({
 					...board,
 					itemType: "board",
-					title: board.title || t("board.untitled"),
+					title: board.title || i18n.t("board.untitled"),
 				})),
-				title: t("sidePanel.folders.publicDrafts"),
+				title: i18n.t("sidePanel.folders.publicDrafts"),
 				type: foldersApi.FolderType.DRAFTS,
 			};
 			this.sharedFolder = {
@@ -318,9 +319,9 @@ export class BoardsList {
 				items: this.storage.listVisitedBoards().map(board => ({
 					...board,
 					itemType: "board" as const,
-					title: board.title || t("board.untitled"),
+					title: board.title || i18n.t("board.untitled"),
 				})),
-				title: t("sidePanel.folders.sharedBoards"),
+				title: i18n.t("sidePanel.folders.sharedBoards"),
 				type: foldersApi.FolderType.VISITED,
 			};
 			this.draftsFolder = null;
@@ -354,7 +355,7 @@ export class BoardsList {
 		}
 		for (const item of folder.items) {
 			if (!item.title) {
-				item.title = t("board.untitled");
+				item.title = i18n.t("board.untitled");
 			}
 			if (item.itemType === "folder") {
 				this.updateEmptyTitles(item as foldersApi.Folder);
@@ -408,7 +409,7 @@ export class BoardsList {
 	}
 
 	async rename(boardId: string, name: string): Promise<void> {
-		if (name === i18next.t("board.untitled")) {
+		if (name === i18n.t("board.untitled")) {
 			return;
 		}
 
@@ -417,7 +418,7 @@ export class BoardsList {
 			return;
 		}
 
-		board.title = name || t("board.untitled");
+		board.title = name || i18n.t("board.untitled");
 
 		this.subject.publish();
 
@@ -443,7 +444,7 @@ export class BoardsList {
 			return;
 		}
 
-		if (name === i18next.t("board.untitled")) {
+		if (name === i18n.t("board.untitled")) {
 			return;
 		}
 
@@ -453,7 +454,7 @@ export class BoardsList {
 			return;
 		}
 
-		folder.title = name || t("board.untitled");
+		folder.title = name || i18n.t("board.untitled");
 
 		this.subject.publish();
 

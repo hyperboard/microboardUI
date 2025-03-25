@@ -9,7 +9,8 @@ import type {
 	MutationRequestBody,
 	ParamsRecord,
 } from "./types";
-import i18n from "shared/Lang";
+import { SETTINGS } from "Board/Settings";
+const { i18n } = SETTINGS;
 
 const RETRY_DELAY = 5_000;
 const RETRY_ATTEMPTS = 3;

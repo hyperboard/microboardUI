@@ -1,4 +1,4 @@
-import { Board, BoardSnapshot } from "Board/Board";
+import { Board } from "Board/Board";
 import { SyncBoardEvent, SyncEvent } from "Board/Events/Events";
 import {
 	PresenceEventMsg,
@@ -10,6 +10,10 @@ import { Subject } from "shared/Subject";
 import { getWebsocketUrl } from "../Config";
 import { Storage } from "./Storage";
 import type { Account } from "entities/account";
+import { notify } from "shared/ui-lib/Toast";
+import toast from "react-hot-toast";
+import { SETTINGS } from "Board/Settings";
+const { i18n } = SETTINGS;
 
 const SECOND = 1000;
 const WS_RECONNECT_TIMEOUT = 5 * SECOND;
@@ -96,7 +100,8 @@ export interface SnapshotRequestMsg {
 export interface SnapshotResponseMsg {
 	type: "BoardSnapshot";
 	boardId: string;
-	snapshot: BoardSnapshot;
+	// snapshot: BoardSnapshot;
+	snapshot: string;
 	lastEventOrder: number;
 }
 
@@ -125,7 +130,8 @@ export interface BoardSubscriptionCompletedMsg {
 	type: "BoardSubscriptionCompleted";
 	boardId: string;
 	mode: "view" | "edit";
-	snapshot: BoardSnapshot | null;
+	// snapshot: BoardSnapshot | null;
+	snapshot: string | null;
 	lastSnapshotEventOrder: number;
 	eventsSinceLastSnapshot: SyncBoardEvent[];
 	initialSequenceNumber: number;
@@ -298,16 +304,8 @@ export interface Connection {
 	connectionId: number;
 	userId: number;
 	connect(): Promise<void>;
-	subscribe(
-		boardId: string,
-		callback: (serverMessage: EventsMsg) => void,
-		getLastOrder: () => number,
-		accessKey?: string,
-	): void;
-	unsubscribe(
-		boardId: string,
-		callback: (serverMessage: EventsMsg) => void,
-	): void;
+	subscribe(board: Board): void;
+	unsubscribe(board: Board): void;
 	publishBoardEvent(
 		boardId: string,
 		event: SyncEvent,
@@ -317,20 +315,24 @@ export interface Connection {
 	publishAuth(): Promise<void>;
 	publishLogout(): void;
 	publishGetMode(): void;
-	publishSnapshot(boardId: string, snapshot: BoardSnapshot): void;
+	// publishSnapshot(boardId: string, snapshot: BoardSnapshot): void;
+	publishSnapshot(boardId: string, snapshot: string, lastIndex: number): void;
 	wsClient: WsClient;
 	onMessage?: (msg: SocketMsg) => void;
 	onAccessDenied: (boardId: string, forceUpdate?: boolean) => void;
+	notifyAboutLostConnection: () => void;
+	dismissNotificationAboutLostConnection: () => void;
 }
 
-interface Subscription {
+type Subscription = {
+	board: Board;
 	publish: (message: EventsMsg) => void;
 	subscribe: () => void;
 	unsubscribe: () => void;
-}
+};
 
 export function createConnection(
-	getBoard: () => Board,
+	getCurrentBoard: () => Board,
 	getAccount: () => Account,
 	getStorage: () => Storage,
 ): Connection {
@@ -365,7 +367,11 @@ export function createConnection(
 	>();
 
 	function clearConnectionError(): void {
-		getBoard().events?.removeBeforeUnloadListener();
+		window.removeEventListener(
+			"beforeunload",
+			warnAboutDataLossBeforeUnload,
+		);
+		window.addEventListener("beforeunload", publishSnapshotBeforeUnload);
 	}
 
 	let onAccessDenied = (boardId: string): void => {
@@ -388,7 +394,7 @@ export function createConnection(
 			return;
 		}
 
-		const board = getBoard();
+		const board = getCurrentBoard();
 		switch (msg.type) {
 			case "AiChat":
 			case "SubscribeConfirmation":
@@ -451,11 +457,11 @@ export function createConnection(
 		onMessage,
 		setConnectionErrorTimeout,
 		onErorr,
-		getBoard,
+		getCurrentBoard,
 	);
 
 	async function connect(): Promise<void> {
-		if (getBoard()?.getBoardId().includes("local")) {
+		if (getCurrentBoard()?.getBoardId().includes("local")) {
 			return;
 		}
 
@@ -483,23 +489,14 @@ export function createConnection(
 		}
 	}
 
-	function subscribe(
-		boardId: string,
-		callback: (serverMessage: EventsMsg) => void,
-		getLastOrder: () => number,
-		accessKey?: string,
-	): void {
+	function subscribe(board: Board): void {
+		const boardId = board.getBoardId();
 		const subject = subscriptions.get(boardId);
 		if (subject) {
 			return;
 		}
 
 		function onSocketOpen(): void {
-			sendSubscribeMsg();
-		}
-
-		function subscribe(): void {
-			ws.onOpenSubject.subscribe(onSocketOpen);
 			sendSubscribeMsg();
 		}
 
@@ -529,32 +526,39 @@ export function createConnection(
 			ws.send({
 				type: "Subscribe",
 				boardId,
-				index: getLastOrder(),
+				index: board.events?.getLastIndex() || 0,
 				userId: generatedClientId,
-				accessKey,
+				accessKey: board.getAccessKey(),
 			});
-		}
-
-		function unsubscribe(): void {
-			ws.onOpenSubject.unsubscribe(onSocketOpen);
-			sendUnsubscribeMsg();
-			postDisconnectedMsg();
 		}
 
 		function sendUnsubscribeMsg(): void {
 			ws.send({ type: "Unsubscribe", boardId: boardId });
 		}
 
-		subscriptions.set(boardId, {
-			publish: callback,
-			subscribe,
-			unsubscribe,
-		});
+		const subscription = {
+			board,
+			publish: function publish(event: EventsMsg): void {
+				board.events?.handleEvent(event);
+			},
+			subscribe: function subscribe(): void {
+				ws.onOpenSubject.subscribe(onSocketOpen);
+				sendSubscribeMsg();
+			},
+			unsubscribe: function unsubscribe(): void {
+				ws.onOpenSubject.unsubscribe(onSocketOpen);
+				sendUnsubscribeMsg();
+				postDisconnectedMsg();
+			},
+		};
 
-		subscribe();
+		subscriptions.set(boardId, subscription);
+
+		subscription.subscribe();
 	}
 
-	function unsubscribe(boardId: string): void {
+	function unsubscribe(board: Board): void {
+		const boardId = board.getBoardId();
 		const subscription = subscriptions.get(boardId);
 		if (!subscription) {
 			return;
@@ -595,7 +599,7 @@ export function createConnection(
 	}
 
 	function publishGetMode(): void {
-		const board = getBoard();
+		const board = getCurrentBoard();
 		const boardId = board?.getBoardId();
 		const account = getAccount();
 
@@ -637,7 +641,7 @@ export function createConnection(
 		const messageId = generateMessageId();
 		const updateCurrentUser = (): string => {
 			const currentUser = storage.setUser();
-			getBoard().presence.setCurrentUser(currentUser);
+			getCurrentBoard().presence.setCurrentUser(currentUser);
 			return currentUser;
 		};
 		const storage = getStorage();
@@ -650,7 +654,7 @@ export function createConnection(
 			: "Anonymous";
 		const generatedColor =
 			storage.getUserColor() ||
-			getBoard().presence.generateUserColor(false);
+			getCurrentBoard().presence.generateUserColor(false);
 		const message: PresenceEventMsg = {
 			type: "PresenceEvent",
 			boardId,
@@ -671,17 +675,62 @@ export function createConnection(
 		return Date.now().toString(36) + Math.random().toString(36).substr(2);
 	}
 
-	function publishSnapshot(boardId: string, snapshot: BoardSnapshot): void {
+	// function publishSnapshot(boardId: string, snapshot: BoardSnapshot): void {
+	function publishSnapshot(
+		boardId: string,
+		snapshot: string,
+		lastIndex: number,
+	): void {
 		ws.send({
 			type: "BoardSnapshot",
 			boardId,
 			snapshot,
-			lastEventOrder: snapshot.lastIndex,
+			lastEventOrder: lastIndex,
+			// lastEventOrder: snapshot.lastIndex,
 		});
 	}
 
 	let connectionId = 0;
 	const userId = 0;
+
+	let notificationId: null | string = null;
+
+	function publishSnapshotBeforeUnload(): void {}
+
+	window.addEventListener("beforeunload", publishSnapshotBeforeUnload);
+
+	function warnAboutDataLossBeforeUnload(event: BeforeUnloadEvent): void {
+		event.preventDefault();
+		event.returnValue = "Do not leave the page to avoid losing data";
+	}
+
+	function notifyAboutLostConnection(): void {
+		if (notificationId) {
+			return;
+		}
+		window.removeEventListener("beforeunload", publishSnapshotBeforeUnload);
+		window.addEventListener("beforeunload", warnAboutDataLossBeforeUnload);
+		notificationId = notify({
+			header: i18n.t("notifications.restoringConnectionHeader"),
+			body: i18n.t("notifications.restoringConnectionBody"),
+			variant: "warning",
+			duration: Infinity,
+		});
+	}
+
+	function dismissNotificationAboutLostConnection(): void {
+		if (!notificationId) {
+			return;
+		}
+
+		window.removeEventListener(
+			"beforeunload",
+			warnAboutDataLossBeforeUnload,
+		);
+		toast.dismiss(notificationId);
+		notificationId = null;
+		window.addEventListener("beforeunload", publishSnapshotBeforeUnload);
+	}
 
 	const connection: Connection = {
 		get connectionId() {
@@ -707,6 +756,8 @@ export function createConnection(
 		) {
 			onAccessDenied = handler;
 		},
+		notifyAboutLostConnection,
+		dismissNotificationAboutLostConnection,
 	};
 
 	return connection;
@@ -757,7 +808,7 @@ export function createWsClient(
 	msgHandler: SocketMsgHandler,
 	setConnectionErrorTimeout: () => void,
 	onError: (error: unknown) => void,
-	getBoard: () => Board,
+	getCurrentBoard: () => Board,
 ): WsClient {
 	let socket: WebSocket | null;
 	const onOpenSubject = new Subject();
@@ -795,7 +846,7 @@ export function createWsClient(
 		if (
 			socket &&
 			isConnected() &&
-			!getBoard()?.getBoardId().includes("local")
+			!getCurrentBoard()?.getBoardId().includes("local")
 		) {
 			socket.send(JSON.stringify(message));
 		}
@@ -819,7 +870,7 @@ export function createWsClient(
 	const pingMsg = JSON.stringify({ type: "ping" });
 
 	function keepAlivePing(): void {
-		const board = getBoard();
+		const board = getCurrentBoard();
 		if (isConnected() && !board?.getBoardId().includes("local")) {
 			send(pingMsg);
 			if (board) {
