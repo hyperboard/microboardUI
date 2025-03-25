@@ -15,6 +15,7 @@ import { Board } from "Board";
 import { useCopyBoardItems } from "./useCopyBoardItems";
 import { openModal, setModalData } from "shared/ui-lib/UiModal/UiModalContext";
 import { LOADING_NOTIFICATION } from "../Notifications/LoadingNotification";
+import { conf } from "Board/Settings";
 
 type SupportedMiroType =
 	| IMiroBoardItemConnector
@@ -581,8 +582,8 @@ const transformDrawing = (
 	const json = paint.widgetData.json!;
 	const style = parseStyle(json.style);
 	const strokeWidth =
-		style.t > SETTINGS.PEN_MAX_STROKE_WIDTH
-			? SETTINGS.PEN_MAX_STROKE_WIDTH
+		style.t > conf.PEN_MAX_STROKE_WIDTH
+			? conf.PEN_MAX_STROKE_WIDTH
 			: style.t;
 	const { x: offsetX = 0, y: offsetY = 0 } = json._position?.offsetPx || {};
 
@@ -595,7 +596,7 @@ const transformDrawing = (
 		},
 		style: {
 			color: getColor(style.lc, style.lo),
-			strokeWidth: strokeWidth || SETTINGS.PEN_INITIAL_STROKE_WIDTH,
+			strokeWidth: strokeWidth || conf.PEN_INITIAL_STROKE_WIDTH,
 			strokeOpacity: style.lo,
 		},
 		data: {

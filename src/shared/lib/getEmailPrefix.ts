@@ -1,5 +1,5 @@
-import { SETTINGS } from "Board/Settings";
-const { i18n } = SETTINGS;
+import { conf } from "Board/Settings";
+const { i18n } = conf;
 
 export function getEmailPrefix(
 	email: string | null,

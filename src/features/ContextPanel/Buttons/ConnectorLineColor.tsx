@@ -5,7 +5,7 @@ import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
 import { FillColorIndicator } from "shared/ui-lib/Icon/FillColorIndicator";
 import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
-import { SETTINGS } from "Board/Settings";
+import { conf } from "Board/Settings";
 import { UiColorInput } from "shared/ui-lib/UiColorInput";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import btnStyle from "./ContextPanelButton.module.css";
@@ -37,7 +37,7 @@ export function ConnectorLineColor(): React.ReactElement | null {
 		board.selection.setStrokeColor(color);
 	};
 
-	const isPredefinedColor = SETTINGS.SHAPE_STROKE_COLORS.some(
+	const isPredefinedColor = conf.SHAPE_STROKE_COLORS.some(
 		color => color === connectorLineColor,
 	);
 
@@ -78,7 +78,7 @@ export function ConnectorLineColor(): React.ReactElement | null {
 					<ColorPicker
 						id={"connector-line-color"}
 						selectedColor={connectorLineColor}
-						colors={SETTINGS.SHAPE_STROKE_COLORS}
+						colors={conf.SHAPE_STROKE_COLORS}
 						onPick={handlePick}
 					/>
 					<UiColorInput

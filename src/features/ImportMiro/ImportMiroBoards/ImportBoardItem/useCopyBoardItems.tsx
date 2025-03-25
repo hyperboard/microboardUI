@@ -35,7 +35,7 @@ import { FixedPoint } from "Board/Items/Connector";
 import { Descendant } from "slate";
 import { TextNode } from "Board/Items/RichText/Editor/TextNode";
 import type { HorisontalAlignment } from "Board/Items/Alignment";
-import { SETTINGS } from "Board/Settings";
+import { conf } from "Board/Settings";
 import {
 	BoardPoint,
 	toRelativePoint,
@@ -93,22 +93,22 @@ const TEXT_VERTICAL_ALIGNMENT = {
 };
 
 const STICKER_COLOR = {
-	dark_blue: SETTINGS.STICKER_COLORS[2],
-	blue: SETTINGS.STICKER_COLORS[2],
-	light_blue: SETTINGS.STICKER_COLORS[3],
-	red: SETTINGS.STICKER_COLORS[1],
-	orange: SETTINGS.STICKER_COLORS[6],
-	violet: SETTINGS.STICKER_COLORS[0],
-	pink: SETTINGS.STICKER_COLORS[1],
-	light_pink: SETTINGS.STICKER_COLORS[1],
-	cyan: SETTINGS.STICKER_COLORS[5],
-	dark_green: SETTINGS.STICKER_COLORS[4],
-	green: SETTINGS.STICKER_COLORS[4],
-	light_green: SETTINGS.STICKER_COLORS[4],
-	yellow: SETTINGS.STICKER_COLORS[7],
-	light_yellow: SETTINGS.STICKER_COLORS[7],
-	gray: SETTINGS.STICKER_COLORS[8],
-	black: SETTINGS.STICKER_COLORS[9],
+	dark_blue: conf.STICKER_COLORS[2],
+	blue: conf.STICKER_COLORS[2],
+	light_blue: conf.STICKER_COLORS[3],
+	red: conf.STICKER_COLORS[1],
+	orange: conf.STICKER_COLORS[6],
+	violet: conf.STICKER_COLORS[0],
+	pink: conf.STICKER_COLORS[1],
+	light_pink: conf.STICKER_COLORS[1],
+	cyan: conf.STICKER_COLORS[5],
+	dark_green: conf.STICKER_COLORS[4],
+	green: conf.STICKER_COLORS[4],
+	light_green: conf.STICKER_COLORS[4],
+	yellow: conf.STICKER_COLORS[7],
+	light_yellow: conf.STICKER_COLORS[7],
+	gray: conf.STICKER_COLORS[8],
+	black: conf.STICKER_COLORS[9],
 };
 
 const SHAPE_TYPES = {
@@ -300,7 +300,7 @@ export const useCopyBoardItems = (
 			const stickerColor =
 				item &&
 				item.itemType === "Sticker" &&
-				item.getBackgroundColor() === SETTINGS.STICKER_COLORS[7] &&
+				item.getBackgroundColor() === conf.STICKER_COLORS[7] &&
 				"white";
 			const textColor =
 				textStyles?.color || style?.color || stickerColor || "black";

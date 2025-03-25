@@ -5,7 +5,7 @@ import {
 	PresenceEventType,
 	UserJoinMsg,
 } from "Board/Presence/Events";
-import { SETTINGS } from "Board/Settings";
+import { conf } from "Board/Settings";
 import { getApiUrl } from "Config";
 import type { Account } from "entities/account";
 import toast from "react-hot-toast";
@@ -13,7 +13,7 @@ import { Subject } from "shared/Subject";
 import { notify } from "shared/ui-lib/Toast";
 import { getWebsocketUrl } from "../Config";
 import { Storage } from "./Storage";
-const { i18n } = SETTINGS;
+const { i18n } = conf;
 
 const SECOND = 1000;
 const WS_RECONNECT_TIMEOUT = 5 * SECOND;

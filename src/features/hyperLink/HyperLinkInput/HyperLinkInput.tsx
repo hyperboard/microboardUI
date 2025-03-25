@@ -7,7 +7,7 @@ import { useClickOutside } from "shared/lib/useClickOutside";
 import { Icon } from "shared/ui-lib/Icon/Icon";
 import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
 import { useTranslation } from "react-i18next";
-import { SETTINGS } from "Board/Settings";
+import { conf } from "Board/Settings";
 import { notify } from "shared/ui-lib/Toast/notify";
 
 export const HyperLinkInput = () => {
@@ -65,7 +65,7 @@ export const HyperLinkInput = () => {
 	}
 
 	const handleConfirmBtnClick = () => {
-		if (!SETTINGS.URL_REGEX.test(inputValue)) {
+		if (!conf.URL_REGEX.test(inputValue)) {
 			notify({
 				header: t("hyperLink.errorTitle"),
 				body: t("hyperLink.errorBody"),
@@ -90,9 +90,7 @@ export const HyperLinkInput = () => {
 
 	const onPaste = (event: React.ClipboardEvent<HTMLInputElement>): void => {
 		event.stopPropagation();
-		if (
-			!SETTINGS.URL_REGEX.test(event.clipboardData.getData("text/plain"))
-		) {
+		if (!conf.URL_REGEX.test(event.clipboardData.getData("text/plain"))) {
 			event.preventDefault();
 			notify({
 				header: t("hyperLink.errorTitle"),

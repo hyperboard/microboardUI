@@ -24,7 +24,7 @@ import { USER_PLAN_MODAL_ID } from "features/UserPlan/UserPlanModal";
 import { useAccount } from "App/useAccount";
 import { SessionStorage } from "App/SessionStorage";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
-import { SETTINGS } from "Board/Settings";
+import { conf } from "Board/Settings";
 import { notify } from "shared/ui-lib/Toast";
 import { useTranslation } from "react-i18next";
 
@@ -53,7 +53,7 @@ interface Context {
 }
 
 export const AIContext = createStrictContext<Context>();
-const DEFAULT_NODE_WIDTH = SETTINGS.AI_NODE_DEFAULT_NODE_WIDTH;
+const DEFAULT_NODE_WIDTH = conf.AI_NODE_DEFAULT_NODE_WIDTH;
 
 export function useAIContext() {
 	return useStrictContext(AIContext);

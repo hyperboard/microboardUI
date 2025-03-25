@@ -2,8 +2,8 @@ import type { Account } from "entities/account";
 import { boardsApiV2, foldersApi } from "shared/apiV2";
 import { Subject } from "shared/Subject";
 import { Storage } from "./Storage";
-import { SETTINGS } from "Board/Settings";
-const { i18n } = SETTINGS;
+import { conf } from "Board/Settings";
+const { i18n } = conf;
 
 type FolderItem = {
 	id: string | number;

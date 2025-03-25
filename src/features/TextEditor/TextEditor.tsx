@@ -15,7 +15,7 @@ import { EditorContainer } from "Board/Items/RichText/EditorContainer";
 import { t } from "i18next";
 import { BlockNode } from "Board/Items/RichText/Editor/BlockNode";
 import { HyperLinkCreationData } from "features/hyperLink/HyperLinkContext";
-import { SETTINGS } from "Board/Settings";
+import { conf } from "Board/Settings";
 
 export class TextEditors extends React.Component<
 	{
@@ -266,10 +266,7 @@ export class TextEditor extends React.Component<
 			text = text.replace(/\n+/g, " ").trim();
 		}
 
-		if (
-			SETTINGS.URL_REGEX.test(text) &&
-			richText.editor.hasTextInSelection()
-		) {
+		if (conf.URL_REGEX.test(text) && richText.editor.hasTextInSelection()) {
 			board.selection.setHyperLink(text, richText.editor.getSelection());
 		} else {
 			Transforms.insertText(richText.editor.editor, text);

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import clsx from "clsx";
 import { Icon } from "../../../../shared/ui-lib/Icon";
 import styles from "./LanguagesDropdown.module.css";
-import { SETTINGS } from "Board/Settings";
+import { conf } from "Board/Settings";
 import { useTranslation } from "react-i18next";
 import { useClickOutside } from "shared/lib/useClickOutside";
 
@@ -45,7 +45,7 @@ export const LanguagesDropdown = ({
 			</button>
 			{isDropdownOpen && (
 				<ul className={styles.dropdownMenu}>
-					{SETTINGS.TEMPLATE_LANGUAGES.map(({ value }) => (
+					{conf.TEMPLATE_LANGUAGES.map(({ value }) => (
 						<li
 							key={value}
 							className={clsx(

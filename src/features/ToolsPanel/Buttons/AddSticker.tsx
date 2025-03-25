@@ -2,7 +2,7 @@ import { getHotkeyLabel } from "Board/Keyboard";
 import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
 import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
-import { SETTINGS } from "Board/Settings";
+import { conf } from "Board/Settings";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -64,7 +64,7 @@ export function AddSticker() {
 			<UiPanel grid columns={2}>
 				<ColorPicker
 					selectedColor={selectedColor}
-					colors={SETTINGS.STICKER_COLORS}
+					colors={conf.STICKER_COLORS}
 					onPick={handlePick}
 					variant="square"
 				/>

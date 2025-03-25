@@ -2,7 +2,7 @@ import { disconnect } from "@wagmi/core";
 import { Board } from "Board";
 import { BoardSnapshot } from "Board/Board";
 import { createEvents } from "Board/Events/Events";
-import { SETTINGS } from "Board/Settings";
+import { conf } from "Board/Settings";
 import { Account } from "entities/account";
 import { getAuthInterceptor } from "entities/account/AuthInterceptor";
 import { wagmiConfig } from "features/ContextWrapper";
@@ -24,7 +24,7 @@ import { getLocalRender, getRender } from "./router";
 import { SessionStorage } from "./SessionStorage";
 import { Storage } from "./Storage";
 import { TestRecorder, createTester } from "./testRecorder";
-const { i18n } = SETTINGS;
+const { i18n } = conf;
 
 export const LAST_BOARD_KEY = "lastSeenBoard";
 export const LAST_BOARD_KEY_QS = LAST_BOARD_KEY.concat("Wqs");
@@ -296,9 +296,7 @@ export function createApp(isHistory = true): App {
 		}
 
 		async function getData(): Promise<string> {
-			const items = getBoard().items.getWholeHTML(
-				SETTINGS.documentFactory,
-			);
+			const items = getBoard().items.getWholeHTML(conf.documentFactory);
 			const docCopy = document.cloneNode(true) as Document;
 
 			const head = document.head.cloneNode(true);

@@ -5,7 +5,7 @@ import {
 	tryToPasteFromMicroboard,
 } from ".";
 import { transformHtmlOrTextToMarkdown } from "Board/Items/RichText/transformHtmlToMarkdown";
-import { SETTINGS } from "Board/Settings";
+import { conf } from "Board/Settings";
 import { VideoItem } from "Board/Items/Video/Video";
 import { calculatePosition } from "Board/Items/Image/calculatePosition";
 import {
@@ -111,7 +111,7 @@ export async function tryToPasteAsItemOrReturnText(
 	const shouldSkipMarkdownTransform = Boolean(
 		textEditor?.getSelection() &&
 			textEditor.hasTextInSelection() &&
-			SETTINGS.URL_REGEX.test(text),
+			conf.URL_REGEX.test(text),
 	);
 
 	if (!textEditor?.getSelection() && window.enableVideos) {
@@ -119,7 +119,7 @@ export async function tryToPasteAsItemOrReturnText(
 			const url = new URL(text);
 			url.pathname = url.pathname.replace("/shorts/", "/embed/");
 			const finalUrl = url.toString();
-			const youtubeId = SETTINGS.getYouTubeId(finalUrl);
+			const youtubeId = conf.getYouTubeId(finalUrl);
 			if (youtubeId) {
 				createVideoItem(finalUrl, youtubeId, board);
 				return null;

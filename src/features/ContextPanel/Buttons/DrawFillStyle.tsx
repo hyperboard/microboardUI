@@ -2,7 +2,7 @@ import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
 import { FillColorIndicator } from "shared/ui-lib/Icon/FillColorIndicator";
 import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
-import { SETTINGS } from "Board/Settings";
+import { conf } from "Board/Settings";
 import { UiColorInput } from "shared/ui-lib/UiColorInput";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import React from "react";
@@ -56,7 +56,7 @@ export function DrawFillStyle(): React.ReactElement | null {
 		board.selection.setStrokeColor(color);
 	};
 
-	const isPredefinedColor = SETTINGS.PEN_COLORS.some(
+	const isPredefinedColor = conf.PEN_COLORS.some(
 		color => color === drawingColor,
 	);
 	return (
@@ -92,7 +92,7 @@ export function DrawFillStyle(): React.ReactElement | null {
 					<ColorPicker
 						id={"drawing"}
 						selectedColor={drawingColor}
-						colors={SETTINGS.PEN_COLORS}
+						colors={conf.PEN_COLORS}
 						onPick={handlePick}
 					/>
 					<UiColorInput

@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { VideoItem } from "Board/Items/Video/Video";
 import { useAppContext } from "features/AppContext";
 import styles from "./VideoPlayer.module.css";
-import { SETTINGS } from "Board/Settings";
+import { conf } from "Board/Settings";
 import { captureFrame } from "Board/Items/Video/VideoHelpers";
 import YouTube from "react-youtube";
 
@@ -13,7 +13,7 @@ interface Props {
 export const VideoPlayer = ({ videoItem }: Props) => {
 	const { board, app } = useAppContext();
 
-	const videoId = SETTINGS.getYouTubeId(videoItem.getUrl());
+	const videoId = conf.getYouTubeId(videoItem.getUrl());
 
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const containerRef = useRef<HTMLDivElement | null>(null);
