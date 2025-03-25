@@ -6,16 +6,12 @@ import clsx from "clsx";
 import React, { useEffect, type MouseEventHandler } from "react";
 import { useTranslation } from "react-i18next";
 import { UiButton } from "shared/ui-lib/UiButton";
-import {
-	BasicPlanCard,
-	PLAN_NAMES,
-	PlusPlanCard,
-	ProPlanCard,
-} from "./PlanCards";
+import { BasicPlanCard, PlusPlanCard, ProPlanCard } from "./PlanCards";
 import styles from "./UserPlanModal.module.css";
 import { UserPlanUsage } from "./UserPlanUsage";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
+import { conf } from "Board/Settings";
 
 export const USER_PLAN_MODAL_ID = Symbol("userPlanModal");
 
@@ -48,7 +44,9 @@ export function UserPlanModal() {
 				<UserPlanUsage
 					isFree={account.billingInfo?.plan.name === "basic"}
 					planName={
-						PLAN_NAMES[account.billingInfo?.plan.name ?? "basic"]
+						conf.planNames[
+							account.billingInfo?.plan.name ?? "basic"
+						]
 					}
 					status={account.billingInfo?.plan.status ?? "active"}
 					cancellationDate={account.billingInfo?.plan.endDate}

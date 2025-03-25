@@ -15,11 +15,6 @@ import { setModalData } from "shared/ui-lib/UiModal/UiModalContext";
 const annualToMonthlyPrice = (price?: number) =>
 	price ? Math.round(price / 12) : 0;
 
-export const PLAN_NAMES = {
-	basic: i18n.t("userPlan.plans.basic.name"),
-	plus: i18n.t("userPlan.plans.plus.name"),
-};
-
 export function BasicPlanCard() {
 	const { t } = useTranslation();
 	const account = useAccount();
@@ -65,13 +60,17 @@ export function BasicPlanCard() {
 			<h2 className={styles.downgradeHeading}>
 				{t("userPlan.downgradeModal.heading", {
 					planName:
-						PLAN_NAMES[account.billingInfo?.plan.name ?? "basic"],
+						conf.planNames[
+							account.billingInfo?.plan.name ?? "basic"
+						],
 				})}
 			</h2>,
 			<p className={styles.downgradeDesc}>
 				{t("userPlan.downgradeModal.description", {
 					planName:
-						PLAN_NAMES[account.billingInfo?.plan.name ?? "basic"],
+						conf.planNames[
+							account.billingInfo?.plan.name ?? "basic"
+						],
 					currentPeriodEnd: new Intl.DateTimeFormat(i18n.language, {
 						year: "numeric",
 						month: "numeric",
@@ -85,7 +84,7 @@ export function BasicPlanCard() {
 					header: "Тариф обновлен",
 					body: t("userPlan.downgradeModal.description", {
 						planName:
-							PLAN_NAMES[
+							conf.planNames[
 								account.billingInfo?.plan.name ?? "basic"
 							],
 						currentPeriodEnd: new Intl.DateTimeFormat(
@@ -104,7 +103,8 @@ export function BasicPlanCard() {
 			},
 			async () => {},
 			t("userPlan.downgradeModal.confirm", {
-				planName: PLAN_NAMES[account.billingInfo?.plan.name ?? "basic"],
+				planName:
+					conf.planNames[account.billingInfo?.plan.name ?? "basic"],
 			}),
 			t("userPlan.downgradeModal.cancel"),
 			styles.downgradeConfirmation,
@@ -183,12 +183,12 @@ export function PlusPlanCard(): JSX.Element {
 		openModalConfirm(
 			<h2 className={styles.downgradeHeading}>
 				{t("userPlan.downgradeModal.heading", {
-					planName: PLAN_NAMES["plus"],
+					planName: conf.planNames["plus"],
 				})}
 			</h2>,
 			<p className={styles.downgradeDesc}>
 				{t("userPlan.downgradeModal.description", {
-					planName: PLAN_NAMES["plus"],
+					planName: conf.planNames["plus"],
 					currentPeriodEnd: new Intl.DateTimeFormat(i18n.language, {
 						year: "numeric",
 						month: "numeric",
@@ -201,7 +201,7 @@ export function PlusPlanCard(): JSX.Element {
 				notify({
 					header: "Тариф обновлен",
 					body: t("userPlan.downgradeModal.description", {
-						planName: PLAN_NAMES["plus"],
+						planName: conf.planNames["plus"],
 						currentPeriodEnd: new Intl.DateTimeFormat(
 							i18n.language,
 							{
@@ -218,7 +218,7 @@ export function PlusPlanCard(): JSX.Element {
 			},
 			async () => {},
 			t("userPlan.downgradeModal.confirm", {
-				planName: PLAN_NAMES["plus"],
+				planName: conf.planNames["plus"],
 			}),
 			t("userPlan.downgradeModal.cancel"),
 			styles.downgradeConfirmation,

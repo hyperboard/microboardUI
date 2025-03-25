@@ -5,12 +5,12 @@ import { Icon } from "shared/ui-lib/Icon";
 import { useConfirmModalContext } from "features/Modal/ConfirmModal";
 import { notify } from "shared/ui-lib/Toast";
 import { LimitsTable } from "features/UserPlan/LimitsTable";
-import { PLAN_NAMES } from "features/UserPlan/PlanCards";
 import { USER_PLAN_MODAL_ID } from "features/UserPlan/UserPlanModal";
 import { UserPlanUsage } from "features/UserPlan/UserPlanUsage";
 import styles from "./UserPlanModal.module.css";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
+import { conf } from "Board/Settings";
 
 export const LIMITS_MODAL_ID = Symbol("limitsModal");
 
@@ -26,13 +26,17 @@ export function LimitsModal() {
 			<h2 className={styles.downgradeHeading}>
 				{t("userPlan.downgradeModal.heading", {
 					planName:
-						PLAN_NAMES[account.billingInfo?.plan.name ?? "basic"],
+						conf.planNames[
+							account.billingInfo?.plan.name ?? "basic"
+						],
 				})}
 			</h2>,
 			<p className={styles.downgradeDesc}>
 				{t("userPlan.downgradeModal.description", {
 					planName:
-						PLAN_NAMES[account.billingInfo?.plan.name ?? "basic"],
+						conf.planNames[
+							account.billingInfo?.plan.name ?? "basic"
+						],
 					currentPeriodEnd: new Intl.DateTimeFormat(i18n.language, {
 						year: "numeric",
 						month: "numeric",
@@ -50,7 +54,8 @@ export function LimitsModal() {
 			},
 			async () => {},
 			t("userPlan.downgradeModal.confirm", {
-				planName: PLAN_NAMES[account.billingInfo?.plan.name ?? "basic"],
+				planName:
+					conf.planNames[account.billingInfo?.plan.name ?? "basic"],
 			}),
 			t("userPlan.downgradeModal.cancel"),
 			styles.downgradeConfirmation,
@@ -66,7 +71,9 @@ export function LimitsModal() {
 				<UserPlanUsage
 					cancellationDate={account.billingInfo?.plan.endDate}
 					planName={
-						PLAN_NAMES[account.billingInfo?.plan.name ?? "basic"]
+						conf.planNames[
+							account.billingInfo?.plan.name ?? "basic"
+						]
 					}
 					isFree={account.billingInfo?.plan.name === "basic"}
 					history
