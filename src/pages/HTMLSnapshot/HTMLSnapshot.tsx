@@ -31,6 +31,8 @@ const HTMLSnapshot = (): JSX.Element => {
 
 	if (errStatus === 404) {
 		return <div>Not found</div>;
+	} else if (errStatus) {
+		return <div>Unkown error</div>;
 	}
 	if (!htmlContent) {
 		return <div>Loading...</div>;
