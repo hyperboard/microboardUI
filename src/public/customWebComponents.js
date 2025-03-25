@@ -53,6 +53,18 @@ class AINodeItemElement extends HTMLElement {
 	}
 }
 
+class VideoItemElement extends HTMLElement {
+	constructor() {
+		super();
+	}
+}
+
+class CommentElement extends HTMLElement {
+	constructor() {
+		super();
+	}
+}
+
 customElements.define("rich-text", RichTextElement);
 customElements.define("shape-item", ShapeItemElement);
 customElements.define("sticker-item", StickerElement);
@@ -62,6 +74,8 @@ customElements.define("frame-item", FrameItemElement);
 customElements.define("image-item", ImageItemElement);
 customElements.define("link-item", LinkItemElement);
 customElements.define("ainode-item", AINodeItemElement);
+customElements.define("video-item", VideoItemElement);
+customElements.define("comment-item", CommentElement);
 
 document.addEventListener("DOMContentLoaded", () => {
 	const titlePanel = document.createElement("div");
@@ -160,7 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		editButton.textContent = "Loading...";
 
 		// TODO UPDATE HERE
-		const { 
+		const {
 			initBrowserSettings, createApp } = await import(
 			"https://www.unpkg.com/test_package_board@0.0.46/dist/bundle.js"
 		);
