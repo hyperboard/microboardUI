@@ -57,11 +57,11 @@ export function Leaf(props: LeafProps): React.ReactElement {
 			style={{
 				color: props.text.fontColor,
 				backgroundColor: props.text.fontHighlight,
-				fontSize:
-					props.text.text === "" && !isAutoSize
-						? fontSize
-						: props.text.fontSize,
-				// fontSize: props.text.fontSize,
+				// fontSize:
+				// 	props.text.text === "" && !isAutoSize
+				// 		? fontSize
+				// 		: props.text.fontSize,
+				fontSize: props.text.fontSize,
 				/* lineHeight: lineHeight + 'px', */
 				fontFamily: props.text.fontFamily,
 			}}

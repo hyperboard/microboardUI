@@ -507,6 +507,7 @@ export class TextEditor extends React.Component<
 										? "auto"
 										: "visible",
 									// fontSize: "inherit",
+									fontSize: `${DEFAULT_TEXT_STYLES.fontSize}px`,
 									// transform: `scale(${editorScale})`,
 									// transformOrigin: `left top`,
 								}}
