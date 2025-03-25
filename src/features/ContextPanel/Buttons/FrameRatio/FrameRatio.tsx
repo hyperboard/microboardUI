@@ -23,7 +23,8 @@ const frameTypeTitle: Record<FrameType, string> = {
 	Frame16x9: "16 : 9",
 	Frame4x3: "4 : 3",
 	Frame1x1: "1 : 1",
-	Custom: i18n.t("frame.custom"),
+	// Custom: i18n.t("frame.custom"),
+	Custom: "Custom",
 	Frame3x2: "3 : 2",
 	Frame9x18: "9 : 18",
 };
