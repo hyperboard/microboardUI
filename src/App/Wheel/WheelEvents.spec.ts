@@ -103,7 +103,19 @@ describe("WheelEventLogger", () => {
 			system: "windows",
 			type: "pinch",
 			browsers: "chrome",
+			speed: "fastFailed",
+		},
+		{
+			system: "windows",
+			type: "pinch",
+			browsers: "chrome",
 			speed: "default",
+		},
+		{
+			system: "windows",
+			type: "pinch",
+			browsers: "chrome",
+			speed: "defaultFailed",
 		},
 		{
 			system: "windows",
@@ -160,6 +172,12 @@ describe("WheelEventLogger", () => {
 			speed: "default",
 		},
 		{
+			system: "windows",
+			type: "mouse",
+			browsers: "firefox",
+			speed: "defaultFailed",
+		},
+		{
 			system: "mac",
 			type: "pan",
 			browsers: "chrome",
@@ -301,6 +319,12 @@ describe("WheelEventLogger", () => {
 			system: "mac",
 			type: "mousePinch",
 			browsers: "chrome",
+			speed: "fastFailed",
+		},
+		{
+			system: "mac",
+			type: "mousePinch",
+			browsers: "chrome",
 			speed: "default",
 		},
 		{
@@ -331,7 +355,19 @@ describe("WheelEventLogger", () => {
 			system: "mac",
 			type: "mousePinch",
 			browsers: "safari",
+			speed: "slowFailed",
+		},
+		{
+			system: "mac",
+			type: "mousePinch",
+			browsers: "safari",
 			speed: "fast",
+		},
+		{
+			system: "mac",
+			type: "mousePinch",
+			browsers: "safari",
+			speed: "fastFailed",
 		},
 		{
 			system: "mac",
