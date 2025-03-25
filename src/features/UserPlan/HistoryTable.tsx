@@ -1,8 +1,9 @@
 import { useAccount } from "App/useAccount";
-import i18n from "shared/Lang";
 import React from "react";
 import styles from "./LimitsTable.module.css";
 import { useTranslation } from "react-i18next";
+import { SETTINGS } from "Board/Settings";
+const { i18n } = SETTINGS;
 
 const PAYMENT_TYPE_DISPLAYNAME = {
 	card: "Card",

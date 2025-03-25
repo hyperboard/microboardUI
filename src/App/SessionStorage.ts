@@ -8,26 +8,64 @@ import type { TextStyle } from "Board/Items/RichText";
 import type { StickerData } from "Board/Items/Sticker/StickerOperation";
 import { DefaultTextStyles } from "Board/Items/RichText/RichText";
 
+// Create a node-safe storage: use sessionStorage if available, otherwise a polyfill.
+let _sessionStorage: Storage;
+
+if (typeof window !== "undefined" && window.sessionStorage) {
+	_sessionStorage = window.sessionStorage;
+} else {
+	class NodeStoragePolyfill implements Storage {
+		private _store: Record<string, string> = {};
+
+		clear(): void {
+			this._store = {};
+		}
+
+		getItem(key: string): string | null {
+			return Object.prototype.hasOwnProperty.call(this._store, key)
+				? this._store[key]
+				: null;
+		}
+
+		key(index: number): string | null {
+			const keys = Object.keys(this._store);
+			return keys[index] ?? null;
+		}
+
+		removeItem(key: string): void {
+			delete this._store[key];
+		}
+
+		setItem(key: string, value: string): void {
+			this._store[key] = value;
+		}
+
+		get length(): number {
+			return Object.keys(this._store).length;
+		}
+	}
+
+	_sessionStorage = new NodeStoragePolyfill();
+}
+
 export class SessionStorage {
 	private set<T>(key: string, value: T): void {
 		const boardId = this.getBoardId() || "";
-		sessionStorage.setItem(boardId + "_" + key, JSON.stringify(value));
+		_sessionStorage.setItem(boardId + "_" + key, JSON.stringify(value));
 	}
 
 	private get<T>(key: string): T | undefined {
 		const boardId = this.getBoardId() || "";
-		const item = sessionStorage.getItem(boardId + "_" + key);
-
+		const item = _sessionStorage.getItem(boardId + "_" + key);
 		if (!item) {
 			return;
 		}
-
 		return JSON.parse(item) as T;
 	}
 
 	remove(key: string): void {
 		const boardId = this.getBoardId() || "";
-		sessionStorage.removeItem(boardId + "_" + key);
+		_sessionStorage.removeItem(boardId + "_" + key);
 	}
 
 	setConnectorStrokeStyle(color: BorderStyle): void {
@@ -38,8 +76,8 @@ export class SessionStorage {
 		return this.get("connectorStrokeStyle");
 	}
 
-	setConnectorLineWidth(color: number): void {
-		this.set(`connectorLineWidth`, color);
+	setConnectorLineWidth(width: number): void {
+		this.set(`connectorLineWidth`, width);
 	}
 
 	getConnectorLineWidth(): ConnectionLineWidth | undefined {
@@ -175,22 +213,26 @@ export class SessionStorage {
 	}
 
 	setLastAIRequest(request: string): void {
-		sessionStorage.setItem("lastAIRequest", request);
+		_sessionStorage.setItem("lastAIRequest", request);
 	}
 
 	getLastAIRequest(): string | null {
-		return sessionStorage.getItem("lastAIRequest");
+		return _sessionStorage.getItem("lastAIRequest");
 	}
 
 	removeLastAIRequest(): void {
-		sessionStorage.removeItem("lastAIRequest");
+		_sessionStorage.removeItem("lastAIRequest");
 	}
 
 	clear(): void {
-		sessionStorage.clear();
+		_sessionStorage.clear();
 	}
 
 	private getBoardId(): string | undefined {
+		// In a Node environment, window is undefined so we return undefined.
+		if (typeof window === "undefined") {
+			return undefined;
+		}
 		return window.location.href.split("/").pop()?.split("?")[0];
 	}
 }

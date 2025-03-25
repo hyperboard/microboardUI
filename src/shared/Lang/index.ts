@@ -14,22 +14,22 @@ export const resources = {
 	},
 };
 
-i18n.use(initReactI18next)
-	.use(LanguageDetector)
-	.init({
-		// @ts-expect-error import.meta object didn't exists in common-js modules
-		debug: import.meta.env.NODE_ENV === "development",
-		detection: {
-			order: ["navigator"],
-		},
-		supportedLngs: ["en", "ru"],
-		defaultNS,
-		resources,
-		// @ts-expect-error import.meta object didn't exists in common-js modules
-		fallbackLng: import.meta.env.FALLBACK_LNG ?? "en",
-		interpolation: {
-			escapeValue: false,
-		},
-	});
+// i18n.use(initReactI18next)
+// 	.use(LanguageDetector)
+// 	.init({
+// 		// @ts-expect-error import.meta object didn't exists in common-js modules
+// 		debug: import.meta.env.NODE_ENV === "development",
+// 		detection: {
+// 			order: ["navigator"],
+// 		},
+// 		supportedLngs: ["en", "ru"],
+// 		defaultNS,
+// 		resources,
+// 		// @ts-expect-error import.meta object didn't exists in common-js modules
+// 		fallbackLng: import.meta.env.FALLBACK_LNG ?? "en",
+// 		interpolation: {
+// 			escapeValue: false,
+// 		},
+// 	});
 
-export default i18n;
+// export default i18n;

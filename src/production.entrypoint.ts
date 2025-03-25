@@ -4,6 +4,7 @@
 
 import { createApp } from "App/App";
 import "./index.css";
+import { initBrowserSettings } from "Board/api/initBrowserSettings";
 import "features/Cursors";
 
 declare global {
@@ -16,6 +17,7 @@ declare global {
 	}
 }
 
+initBrowserSettings();
 // var showDebug = isMicroboard() ? true : false;
 window.showDebug = false;
 window.enableTemplateCreating = false;

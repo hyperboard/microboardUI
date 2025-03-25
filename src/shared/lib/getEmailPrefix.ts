@@ -1,4 +1,5 @@
-import i18n from "shared/Lang";
+import { SETTINGS } from "Board/Settings";
+const { i18n } = SETTINGS;
 
 export function getEmailPrefix(
 	email: string | null,

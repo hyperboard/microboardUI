@@ -7,6 +7,7 @@ import { AddEmailPage } from "pages/AddEmailView";
 import { BindEmailPage } from "pages/BindEmailPage";
 import { BoardPage } from "pages/BoardPage";
 import { ForgotPasswordPage } from "pages/ForgotPasswordPage";
+import { HTMLSnapshot } from "pages/HTMLSnapshot";
 import { AppLayout } from "pages/layouts/AppLayout";
 import { AuthLayout } from "pages/layouts/AuthLayout";
 import { RestorePasswordPage } from "pages/RestorePasswordPage";
@@ -19,6 +20,7 @@ import { WelcomePage } from "pages/WelcomePage/WelcomePage";
 import { WheelEventLoggerPage } from "pages/WheelLogger/WheelLogger";
 import React from "react";
 import ReactDOM from "react-dom";
+// import { createRoot } from "react-dom/client";
 import {
 	createBrowserRouter,
 	Navigate,
@@ -96,10 +98,10 @@ export function getRender(app: App): {
 					element: <BoardPage />,
 				},
 
-				{
-					path: "/test",
-					element: <TestPage />,
-				},
+				// {
+				// 	path: "/test",
+				// 	element: <TestPage />,
+				// },
 				{
 					path: "/selectBoard",
 					element: <SelectBoardPage />,
@@ -108,13 +110,23 @@ export function getRender(app: App): {
 					path: "/test-wheel",
 					element: <WheelEventLoggerPage />,
 				},
+				window.enableSnapshots
+					? {
+							path: "/snapshots/:uid?",
+							element: <HTMLSnapshot />,
+						}
+					: {},
 			],
 		},
 	]);
+	// const root = createRoot(
+	// 	document.getElementById("root") as HTMLElement,
+	// );
 
 	return {
 		render: function () {
 			ReactDOM.render(
+				// root.render(
 				<RouterProvider router={router} />,
 				document.getElementById("root") as HTMLDivElement,
 			);
@@ -124,8 +136,10 @@ export function getRender(app: App): {
 }
 
 export function getLocalRender(app: App, customId: string): () => void {
+	// const root = createRoot(document.getElementById(customId) as HTMLElement);
 	return () => {
 		ReactDOM.render(
+			// root.render(
 			<AppContext.Provider value={{ app, board: app.getBoard() }}>
 				<LocalSidePanelContextProvider>
 					<LocalAppView />

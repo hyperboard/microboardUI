@@ -159,9 +159,12 @@ document.addEventListener("DOMContentLoaded", () => {
 		editButton.disabled = true;
 		editButton.textContent = "Loading...";
 
-		const { createApp } = await import(
+		// TODO UPDATE HERE
+		const { 
+			initBrowserSettings, createApp } = await import(
 			"https://www.unpkg.com/test_package_board@0.0.46/dist/bundle.js"
 		);
+		// initBrowserSettings();
 		const app = createApp();
 		window.app = app;
 		const stringed = await app.openAndEditFile();

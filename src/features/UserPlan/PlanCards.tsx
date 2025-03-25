@@ -1,5 +1,4 @@
 import { useAccount } from "App/useAccount";
-import i18n from "shared/Lang";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { billingApi } from "shared/api";
@@ -9,6 +8,8 @@ import { PlanCard, type PlanState } from "./PlanCard";
 import styles from "./PlanCards.module.css";
 import { SELECT_PAYMENT_MODAL_ID } from "./SelectPaymentModal";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
+import { SETTINGS } from "Board/Settings";
+const { i18n } = SETTINGS;
 import { setModalData } from "shared/ui-lib/UiModal/UiModalContext";
 
 const annualToMonthlyPrice = (price?: number) =>

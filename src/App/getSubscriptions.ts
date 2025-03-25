@@ -2,6 +2,7 @@ import { Board } from "Board";
 import { BoardEvent } from "Board/Events/Events";
 import { SyncLogSubject } from "Board/Events/SyncLog";
 import { Subject } from "../shared/Subject";
+import { safeRequestAnimationFrame } from "Board/api/safeRequestAnimationFrame";
 
 export type SubjectName =
 	| "camera"
@@ -71,10 +72,10 @@ export function getSubscriptions(getBoard: () => Board): Subscriptions {
 			observer();
 		}
 		updateQueue.clear();
-		requestAnimationFrame(updateScheduledObservers);
+		safeRequestAnimationFrame(updateScheduledObservers);
 	}
 
-	requestAnimationFrame(updateScheduledObservers);
+	safeRequestAnimationFrame(updateScheduledObservers);
 
 	function findSubscription(subscription: {
 		subjects: string[];
