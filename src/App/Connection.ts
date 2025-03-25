@@ -355,7 +355,7 @@ export function createConnection(
 	const subscriptions = new Map<string, Subscription>();
 
 	let tokenPromise: PromiseWithResolvers<void> | null = null;
-	let isAuthPublishing = false;
+	const isAuthPublishing: { flag: boolean } = { flag: false };
 
 	const onConnectionLost = (): void => {
 		postDisconnectedMsg();
@@ -465,6 +465,7 @@ export function createConnection(
 			case "AuthConfirmation":
 				tokenPromise?.resolve();
 				tokenPromise = null;
+				isAuthPublishing.flag = false;
 				publishGetMode();
 				break;
 			case "InvalidateRights":
@@ -525,7 +526,8 @@ export function createConnection(
 		}
 	}
 
-	function subscribe(board: Board): void {
+	async function subscribe(board: Board): Promise<void> {
+		await invalidateToken();
 		const boardId = board.getBoardId();
 		const subject = subscriptions.get(boardId);
 		if (subject) {
@@ -614,10 +616,10 @@ export function createConnection(
 
 	async function publishAuth(): Promise<void> {
 		try {
-			if (isAuthPublishing) {
+			if (isAuthPublishing.flag) {
 				return tokenPromise?.promise;
 			}
-			isAuthPublishing = true;
+			isAuthPublishing.flag = true;
 			const account = getAccount();
 			if (!tokenPromise) {
 				tokenPromise = createPromiseWithResolvers();
@@ -636,7 +638,7 @@ export function createConnection(
 		} catch {
 			console.info("Unauthorized");
 		} finally {
-			isAuthPublishing = false;
+			isAuthPublishing.flag = false;
 			tokenPromise = null;
 		}
 	}
@@ -673,6 +675,9 @@ export function createConnection(
 		event: SyncEvent,
 		sequenceNumber: number,
 	): void {
+		if (isAuthPublishing.flag) {
+			return;
+		}
 		const message: BoardEventMsg = {
 			type: "BoardEvent",
 			boardId,
@@ -730,6 +735,9 @@ export function createConnection(
 		snapshot: string,
 		lastIndex: number,
 	): void {
+		if (isAuthPublishing.flag) {
+			return;
+		}
 		ws.send({
 			type: "BoardSnapshot",
 			boardId,
@@ -816,7 +824,7 @@ interface WsClient {
 	onOpenSubject: Subject<unknown>;
 	onCloseSubject: Subject<unknown>;
 	connect: () => void;
-	send: (message: SocketMsg) => Promise<void>;
+	send: (message: SocketMsg) => void;
 	isConnected: () => boolean;
 	onConnect: () => void;
 }
@@ -892,8 +900,8 @@ export function createWsClient(
 		}
 	}
 
-	async function send(message: SocketMsg): Promise<void> {
-		await invalidateToken();
+	function send(message: SocketMsg): void {
+		invalidateToken();
 		if (
 			socket &&
 			isConnected() &&

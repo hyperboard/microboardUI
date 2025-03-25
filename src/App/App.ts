@@ -120,6 +120,7 @@ export function createApp(isHistory = true): App {
 		if (!currentBoard) {
 			currentBoard = new Board(id, accessKey);
 			if (id !== "blank") {
+				await connection.publishAuth();
 				connectBoard(currentBoard);
 			}
 			boards.set(id, currentBoard);
