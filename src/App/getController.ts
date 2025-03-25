@@ -1,19 +1,17 @@
 import { Board } from "Board";
 import { ImageItem, ImageItemData } from "Board/Items/Image";
-import { checkHotkeys, isControlCharacter } from "Board/Keyboard";
-import { Clipboard } from "./Clipboard";
-import { createWheel } from "./Wheel/Wheel";
-import { isSafari } from "./isSafari";
 import { prepareImage } from "Board/Items/Image/ImageHelpers";
+import { Item } from "Board/Items/Item";
+import { uploadVideo } from "Board/Items/Video/uploadVideo";
+import { checkHotkeys, isControlCharacter } from "Board/Keyboard";
 import { HotkeysMap } from "Board/Keyboard/types";
 import { PRESENCE_CURSOR_THROTTLE } from "Board/Presence/Presence";
-import { pasteTextToTheBoard, tryToPasteAsItemOrReturnText } from "./Paste";
 import { throttle } from "shared/lib/throttle";
-import { Item } from "Board/Items/Item";
-import { Select } from "features/ToolsPanel/Buttons/Select";
-import { uploadVideo } from "Board/Items/Video/uploadVideo";
 import { notify } from "shared/ui-lib/Toast/notify";
-import { uploadImage } from "Board/Items/Image/uploadImage";
+import { Clipboard } from "./Clipboard";
+import { pasteTextToTheBoard, tryToPasteAsItemOrReturnText } from "./Paste";
+import { createWheel } from "./Wheel/Wheel";
+import { isSafari } from "./isSafari";
 
 export interface Controller {
 	onWheel: (event: WheelEvent) => void;

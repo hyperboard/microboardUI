@@ -1,15 +1,15 @@
 /* eslint-disable react/prop-types */
 import { useAccount } from "App/useAccount";
 import { useBoardsList } from "App/useBoardsList";
+import { ACCESS_DENIED_MODAL } from "features/AccessDeniedModal";
+import { AppContext, useAppContext } from "features/AppContext";
+import { AppView } from "features/AppView";
+import { USER_PLAN_MODAL_ID } from "features/UserPlan";
 import React, { useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { billingApi } from "shared/api";
-import { ACCESS_DENIED_MODAL } from "features/AccessDeniedModal";
-import { AppContext, useAppContext } from "features/AppContext";
-import { AppView } from "features/AppView";
 import { notify } from "shared/ui-lib/Toast";
-import { USER_PLAN_MODAL_ID } from "features/UserPlan";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 
 export const BoardPage = (): JSX.Element => {
@@ -30,6 +30,8 @@ export const BoardPage = (): JSX.Element => {
 		deniedBoardId: string,
 		forceUpdate = false,
 	) => {
+		if (account.isLoggedIn) {
+		}
 		if (
 			forceUpdate ||
 			(deniedBoardId === board.getBoardId() && !isOpenMiroBoards)

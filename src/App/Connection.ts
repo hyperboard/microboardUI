@@ -5,20 +5,36 @@ import {
 	PresenceEventType,
 	UserJoinMsg,
 } from "Board/Presence/Events";
+import { SETTINGS } from "Board/Settings";
 import { getApiUrl } from "Config";
+import type { Account } from "entities/account";
+import toast from "react-hot-toast";
 import { Subject } from "shared/Subject";
+import { notify } from "shared/ui-lib/Toast";
 import { getWebsocketUrl } from "../Config";
 import { Storage } from "./Storage";
-import type { Account } from "entities/account";
-import { notify } from "shared/ui-lib/Toast";
-import toast from "react-hot-toast";
-import { SETTINGS } from "Board/Settings";
 const { i18n } = SETTINGS;
 
 const SECOND = 1000;
 const WS_RECONNECT_TIMEOUT = 5 * SECOND;
 const WS_PING_INTERVAL = 10 * SECOND;
 const SUBSCRIBE_TIMEOUT = 4 * SECOND;
+
+const createPromiseWithResolvers = <T>(): {
+	promise: Promise<T>;
+	resolve: (value: T) => void;
+	reject: (error: unknown) => void;
+} => {
+	let resolve!: (value: T) => void;
+	let reject!: (error: unknown) => void;
+	const promise = new Promise<T>((res, rej) => {
+		resolve = res;
+		reject = rej;
+	});
+	return { promise, resolve, reject };
+};
+
+type PromiseWithResolvers<T> = ReturnType<typeof createPromiseWithResolvers<T>>;
 
 export interface AuthMsg {
 	type: "Auth";
@@ -338,6 +354,9 @@ export function createConnection(
 ): Connection {
 	const subscriptions = new Map<string, Subscription>();
 
+	let tokenPromise: PromiseWithResolvers<void> | null = null;
+	let isAuthPublishing = false;
+
 	const onConnectionLost = (): void => {
 		postDisconnectedMsg();
 	};
@@ -378,7 +397,21 @@ export function createConnection(
 		console.error("Not implemented. Access denied to board:", boardId);
 	};
 
-	function onMessage(msg: SocketMsg): void {
+	const invalidateToken = async () => {
+		const account = getAccount();
+		if (account.isLoggedIn && account.tokenData?.exp) {
+			const currentTime = Math.floor(Date.now() / 1000);
+			const tokenExpiryTime = account.tokenData.exp;
+			const bufferTime = 10;
+
+			if (currentTime >= tokenExpiryTime - bufferTime) {
+				await publishAuth();
+			}
+		}
+	};
+
+	async function onMessage(msg: SocketMsg): Promise<void> {
+		// await invalidateToken();
 		if (msg.type === "VersionCheck") {
 			const scriptElement = document.getElementsByTagName("script")[0];
 			if (scriptElement) {
@@ -393,6 +426,7 @@ export function createConnection(
 
 			return;
 		}
+		const account = getAccount();
 
 		const board = getCurrentBoard();
 		switch (msg.type) {
@@ -429,12 +463,13 @@ export function createConnection(
 				board.presence.ping();
 				break;
 			case "AuthConfirmation":
+				tokenPromise?.resolve();
+				tokenPromise = null;
 				publishGetMode();
 				break;
 			case "InvalidateRights":
-				const account = getAccount();
 				if (account.isLoggedIn) {
-					publishAuth();
+					await publishAuth();
 				} else {
 					publishGetMode();
 				}
@@ -458,6 +493,7 @@ export function createConnection(
 		setConnectionErrorTimeout,
 		onErorr,
 		getCurrentBoard,
+		invalidateToken,
 	);
 
 	async function connect(): Promise<void> {
@@ -500,8 +536,9 @@ export function createConnection(
 			sendSubscribeMsg();
 		}
 
+		ws.onOpenSubject.subscribe(publishAuth);
+
 		async function sendSubscribeMsg(): Promise<void> {
-			await publishAuth();
 			let subscribeTimeout = subscribeTimeouts.get(boardId);
 			if (!subscribeTimeout) {
 				subscribeTimeout = {
@@ -577,7 +614,14 @@ export function createConnection(
 
 	async function publishAuth(): Promise<void> {
 		try {
+			if (isAuthPublishing) {
+				return tokenPromise?.promise;
+			}
+			isAuthPublishing = true;
 			const account = getAccount();
+			if (!tokenPromise) {
+				tokenPromise = createPromiseWithResolvers();
+			}
 			await account.refreshTokens();
 			const jwt = account.accessToken;
 			if (!jwt) {
@@ -587,8 +631,13 @@ export function createConnection(
 				type: "Auth",
 				jwt,
 			});
+
+			await tokenPromise.promise;
 		} catch {
 			console.info("Unauthorized");
+		} finally {
+			isAuthPublishing = false;
+			tokenPromise = null;
 		}
 	}
 
@@ -767,7 +816,7 @@ interface WsClient {
 	onOpenSubject: Subject<unknown>;
 	onCloseSubject: Subject<unknown>;
 	connect: () => void;
-	send: (message: SocketMsg) => void;
+	send: (message: SocketMsg) => Promise<void>;
 	isConnected: () => boolean;
 	onConnect: () => void;
 }
@@ -809,6 +858,7 @@ export function createWsClient(
 	setConnectionErrorTimeout: () => void,
 	onError: (error: unknown) => void,
 	getCurrentBoard: () => Board,
+	invalidateToken: () => Promise<void>,
 ): WsClient {
 	let socket: WebSocket | null;
 	const onOpenSubject = new Subject();
@@ -842,7 +892,8 @@ export function createWsClient(
 		}
 	}
 
-	function send(message): void {
+	async function send(message: SocketMsg): Promise<void> {
+		await invalidateToken();
 		if (
 			socket &&
 			isConnected() &&
@@ -867,7 +918,8 @@ export function createWsClient(
 		}, WS_RECONNECT_TIMEOUT);
 	}
 
-	const pingMsg = JSON.stringify({ type: "ping" });
+	// Double stringify
+	const pingMsg: SocketMsg = JSON.stringify({ type: "ping" });
 
 	function keepAlivePing(): void {
 		const board = getCurrentBoard();
