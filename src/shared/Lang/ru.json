@@ -734,6 +734,11 @@
 				"mobileTitle": "TTS",
 				"title": "Text to speech HD",
 				"description": "Озвученный текст"
+			},
+			"sonar-deep-research": {
+				"mobileTitle": "Perplexity AI",
+				"title": "Запрос к Perplexity AI",
+				"description": "ИИ с поиском в интернете"
 			}
 		},
 		"unauth": {

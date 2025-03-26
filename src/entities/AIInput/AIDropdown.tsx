@@ -1,24 +1,23 @@
 import { OpenAIModels } from "App/Connection";
+import { useAccount } from "App/useAccount";
 import { Board } from "Board";
 import clsx from "clsx";
 import type { Account } from "entities/account";
+import { AI_UNAVAILABLE_MODAL_ID } from "features/AiUnavailableModal/AiUnavailableModal";
+import { USER_PLAN_MODAL_ID } from "features/UserPlan";
 import React, { MouseEventHandler } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
-import { useClickOutside } from "shared/lib/useClickOutside";
+import { useBoundingClientRect } from "shared/lib/useClientRect";
+import { useIsPhoneScreen } from "shared/lib/useIsPhoneScreen";
 import { Chevron } from "shared/ui-lib/Dropdown/Chevron";
+import { Icon } from "shared/ui-lib/Icon";
 import { Tooltip } from "shared/ui-lib/Tooltip";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { UiPanel } from "shared/ui-lib/UiPanel";
 import { useAIContext } from "./AIContext";
 import styles from "./AIInput.module.css";
 import { StarIcon } from "./StarIcon";
-import { createPortal } from "react-dom";
-import { useBoundingClientRect } from "shared/lib/useClientRect";
-import { USER_PLAN_MODAL_ID } from "features/UserPlan";
-import { AI_UNAVAILABLE_MODAL_ID } from "features/AiUnavailableModal/AiUnavailableModal";
-import { Icon } from "shared/ui-lib/Icon";
-import { useIsPhoneScreen } from "shared/lib/useIsPhoneScreen";
-import { useAccount } from "App/useAccount";
 
 type AIDropdownProps = {
 	board: Board;
@@ -45,6 +44,7 @@ const modelTokens: Record<ModelCategory, ModelInfo[]> = {
 		{ id: "gpt-4o", tokens: 4 },
 		{ id: "gpt-4o-mini", tokens: 0.3 },
 		{ id: "deepseek-reasoner", tokens: 2 },
+		{ id: "sonar-deep-research", tokens: 4 },
 	],
 };
 

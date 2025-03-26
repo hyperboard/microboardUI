@@ -195,7 +195,10 @@ type ImageModels =
 
 type TextToSpeechModels = "tts-1-hd";
 
-type CustomModels = "deepseek-chat" | "deepseek-reasoner";
+type CustomModels =
+	| "deepseek-chat"
+	| "deepseek-reasoner"
+	| "sonar-deep-research";
 
 export interface UserRequest {
 	method: "UserRequest";
