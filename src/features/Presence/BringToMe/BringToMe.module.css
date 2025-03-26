@@ -74,6 +74,20 @@
 .btnStop {
 	background-color: transparent;
 	border: 1px solid #dee0e3;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+}
+
+.btns {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.btnStop .text {
+	max-width: min-content;
 }
 
 .noResults {

@@ -1,18 +1,18 @@
+import { rgbToRgba } from "Board/Presence/helpers";
 import { Presence, PresenceUser } from "Board/Presence/Presence";
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { User } from "../PresenceUsers/PresenceUsers";
+import clsx from "clsx";
 import { useAppContext } from "features/AppContext";
+import i18next from "i18next";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Icon } from "shared/ui-lib/Icon";
+import { Input } from "shared/ui-lib/Input";
+import { notify } from "shared/ui-lib/Toast";
+import { UiButton } from "shared/ui-lib/UiButton";
+import { EyeIcon } from "../PresenceUsers/EyeIcon";
+import { User } from "../PresenceUsers/PresenceUsers";
 import commonStyles from "../PresenceUsers/PresenceUsers.module.css";
 import styles from "./BringToMe.module.css";
-import { Input } from "shared/ui-lib/Input";
-import { Icon } from "shared/ui-lib/Icon";
-import { rgbToRgba } from "Board/Presence/helpers";
-import clsx from "clsx";
-import { notify } from "shared/ui-lib/Toast";
-import i18next from "i18next";
-import { EyeIcon } from "../PresenceUsers/EyeIcon";
-import { UiButton } from "shared/ui-lib/UiButton";
 
 interface UserActionsDropdownProps {
 	userId: string;
@@ -289,67 +289,76 @@ export const BringToMe: React.FC<{
 					<span>{t("presence.noUsersFoundPostfix")}</span>
 				</div>
 			)}
-			<UiButton
-				size="md"
-				className={styles.btnBring}
-				onClick={() => {
-					const presence = board.presence;
-					const allUsers = presence.getUsers(
-						board.getBoardId(),
-						true,
-					);
-					const uniqueUsersByHardId = [
-						...new Map(
-							allUsers
-								.filter(user => user.hardId !== null)
-								.map(user => [user.hardId, user]),
-						).values(),
-						...allUsers.filter(user => user.hardId === null),
-					];
-					if (uniqueUsersByHardId.length > 0) {
-						presence.emit({
-							method: "BringToMe",
-							timestamp: Date.now(),
-							users: uniqueUsersByHardId.map(user => user.userId),
-						});
-						notify({
-							header: t("presence.bringAllNotify"),
-							variant: "black",
-							duration: 3_000,
-							unclosable: true,
-							position: notifyPosition,
-						});
-					}
-				}}
-			>
-				{t("presence.bringToMe")}
-			</UiButton>
-			{followers.length > 0 && (
+			<div className={styles.btns}>
 				<UiButton
-					className={styles.btnStop}
-					variant="secondary"
 					size="md"
+					className={styles.btnBring}
 					onClick={() => {
 						const presence = board.presence;
-						presence.emit({
-							method: "StopFollowing",
-							timestamp: Date.now(),
-							users: followers.map(follower => follower.userId),
-						});
+						const allUsers = presence.getUsers(
+							board.getBoardId(),
+							true,
+						);
+						const uniqueUsersByHardId = [
+							...new Map(
+								allUsers
+									.filter(user => user.hardId !== null)
+									.map(user => [user.hardId, user]),
+							).values(),
+							...allUsers.filter(user => user.hardId === null),
+						];
+						if (uniqueUsersByHardId.length > 0) {
+							presence.emit({
+								method: "BringToMe",
+								timestamp: Date.now(),
+								users: uniqueUsersByHardId.map(
+									user => user.userId,
+								),
+							});
+							notify({
+								header: t("presence.bringAllNotify"),
+								variant: "black",
+								duration: 3_000,
+								unclosable: true,
+								position: notifyPosition,
+							});
+						}
 					}}
 				>
-					<Icon
-						iconName="EyeDashed"
-						width={16}
-						height={16}
-						style={{ color: "#696B76" }}
-					/>{" "}
-					{t("presence.stop")} {followers.length}{" "}
-					{followers?.length > 1
-						? t("presence.followers")
-						: t("presence.follower")}
+					{t("presence.bringToMe")}
 				</UiButton>
-			)}
+				{followers.length > 0 && (
+					<UiButton
+						className={styles.btnStop}
+						variant="secondary"
+						size="md"
+						onClick={() => {
+							const presence = board.presence;
+							presence.emit({
+								method: "StopFollowing",
+								timestamp: Date.now(),
+								users: followers.map(
+									follower => follower.userId,
+								),
+							});
+						}}
+					>
+						<Icon
+							iconName="EyeDashed"
+							width={16}
+							height={16}
+							style={{ color: "#696B76" }}
+						/>
+						<span className={styles.text}>
+							{`${t("presence.stop")} ${followers.length} ${
+								followers?.length > 1
+									? t("presence.followers")
+									: t("presence.follower")
+							}`}
+						</span>
+					</UiButton>
+				)}
+			</div>
 		</div>
 	);
 };
