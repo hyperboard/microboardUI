@@ -699,36 +699,41 @@
 		"processingIdea": "Обработка идеи...",
 		"generating": "Генерируем...",
 		"generate": "Сгенерировать",
+		"categories": {
+			"speech": "Речь",
+			"img": "Изображения",
+			"texts": "Тексты"
+		},
 		"models": {
 			"gpt-4o-mini": {
 				"mobileTitle": "4o-mini",
-				"title": "Запрос к GPT 4o-mini",
-				"description": "Быстрее для повседневных задач"
+				"title": "GPT-4o mini",
+				"description": "Простой запрос"
 			},
 			"gpt-4o": {
 				"mobileTitle": "4o",
-				"title": "Запрос к GPT 4o",
-				"description": "Подходит для большинства задач"
+				"title": "GPT-4o",
+				"description": "Универсальный запрос"
 			},
 			"flux-schnell": {
-				"mobileTitle": "Flux",
-				"title": "Генерация изображения",
-				"description": "Flux schnell"
+				"mobileTitle": "Flux.1 Schnell",
+				"title": "Flux.1 Schnell",
+				"description": "Быстрая генерация изображения"
 			},
 			"flux-pro": {
-				"mobileTitle": "Flux Pro",
-				"title": "Генерация изображения",
-				"description": "Flux Pro"
+				"mobileTitle": "Flux.1 Pro",
+				"title": "Flux.1 Pro",
+				"description": "Профессиональная генерация изображения"
 			},
 			"deepseek-reasoner": {
 				"mobileTitle": "DeepSeek",
-				"title": "Запрос к Deepseek R1",
-				"description": "Лучше, чем 4o во многих случаях"
+				"title": "DeepSeek-R1",
+				"description": "Сложная задача"
 			},
 			"tts-1-hd": {
 				"mobileTitle": "TTS",
-				"title": "Генерация речи",
-				"description": "OpenAI TTS HD"
+				"title": "Text to speech HD",
+				"description": "Озвученный текст"
 			}
 		},
 		"unauth": {
@@ -1046,6 +1051,7 @@
 		}
 	},
 	"models": {
+		"tokenTooltip": "за запрос",
 		"descriptions": {
 			"gpt-4o-mini": "Быстрее для повседневных задач",
 			"gpt-4o": "Подходит для большинства задач",

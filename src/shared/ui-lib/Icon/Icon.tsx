@@ -143,7 +143,10 @@ export type IconId =
 	| "POL"
 	| "ExportFile"
 	| "ExportPNG"
-	| "InformationLine";
+	| "InformationLine"
+	| "Sound"
+	| "Img"
+	| "TextAiModel";
 
 type Props = {
 	iconName: IconId;

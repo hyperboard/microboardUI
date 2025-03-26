@@ -701,36 +701,41 @@
 		"processingIdea": "Processing your idea...",
 		"generating": "Generating...",
 		"generate": "Generate",
+		"categories": {
+			"speech": "Speech",
+			"img": "Images",
+			"texts": "Texts"
+		},
 		"models": {
 			"gpt-4o-mini": {
 				"mobileTitle": "4o-mini",
-				"title": "Chat with GPT 4o-mini",
-				"description": "Fastest for everyday tasks"
+				"title": "GPT-4o mini",
+				"description": "Simple Prompt"
 			},
 			"gpt-4o": {
 				"mobileTitle": "4o",
-				"title": "Chat with GPT 4o",
-				"description": "Great for most tasks"
+				"title": "GPT-4o",
+				"description": "Universal Prompt"
 			},
 			"flux-schnell": {
-				"mobileTitle": "Flux",
-				"title": "Generate image",
-				"description": "Flux schnell"
+				"mobileTitle": "Flux.1 Schnell",
+				"title": "Flux.1 Schnell",
+				"description": "Fast Image Generation"
 			},
 			"flux-pro": {
-				"mobileTitle": "Flux Pro",
-				"title": "Generate image",
-				"description": "Flux Pro"
+				"mobileTitle": "Flux.1 Pro",
+				"title": "Flux.1 Pro",
+				"description": "Professional Image Generation"
 			},
 			"deepseek-reasoner": {
 				"mobileTitle": "DeepSeek",
-				"title": "Chat with Deepseek R1",
-				"description": "Better than 4o in many cases"
+				"title": "DeepSeek-R1",
+				"description": "Hard Problem"
 			},
 			"tts-1-hd": {
 				"mobileTitle": "TTS",
-				"title": "Generate speech",
-				"description": "OpenAI TTS HD"
+				"title": "Text to speech HD",
+				"description": "Text to Speech"
 			}
 		},
 		"unauth": {
@@ -1048,6 +1053,7 @@
 		}
 	},
 	"models": {
+		"tokenTooltip": "for request",
 		"descriptions": {
 			"gpt-4o-mini": "Faster for everyday tasks",
 			"gpt-4o": "Great for everyday tasks",

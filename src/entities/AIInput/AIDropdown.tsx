@@ -16,6 +16,9 @@ import { createPortal } from "react-dom";
 import { useBoundingClientRect } from "shared/lib/useClientRect";
 import { USER_PLAN_MODAL_ID } from "features/UserPlan";
 import { AI_UNAVAILABLE_MODAL_ID } from "features/AiUnavailableModal/AiUnavailableModal";
+import { Icon } from "shared/ui-lib/Icon";
+import { useIsPhoneScreen } from "shared/lib/useIsPhoneScreen";
+import { useAccount } from "App/useAccount";
 
 type AIDropdownProps = {
 	board: Board;
@@ -30,15 +33,30 @@ type ModelInfo = {
 	tokens: number;
 };
 
+type ModelCategory = "speech" | "img" | "texts";
+
+const modelTokens: Record<ModelCategory, ModelInfo[]> = {
+	speech: [{ id: "tts-1-hd", tokens: 6 }],
+	img: [
+		{ id: "flux-schnell", tokens: 2 },
+		{ id: "flux-pro", tokens: 12 },
+	],
+	texts: [
+		{ id: "gpt-4o", tokens: 4 },
+		{ id: "gpt-4o-mini", tokens: 0.3 },
+		{ id: "deepseek-reasoner", tokens: 2 },
+	],
+};
+
 // TODO: Fetch from api?
-const modelTokens: ModelInfo[] = [
-	{ id: "tts-1-hd", tokens: 6 }, // per 1000 characters
-	{ id: "gpt-4o", tokens: 4 },
-	{ id: "gpt-4o-mini", tokens: 0.3 },
-	{ id: "deepseek-reasoner", tokens: 2 },
-	{ id: "flux-schnell", tokens: 2 },
-	{ id: "flux-pro", tokens: 12 },
-];
+// const modelTokens: ModelInfo[] = [
+// 	{ id: "tts-1-hd", tokens: 6 }, // per 1000 characters
+// 	{ id: "gpt-4o", tokens: 4 },
+// 	{ id: "gpt-4o-mini", tokens: 0.3 },
+// 	{ id: "deepseek-reasoner", tokens: 2 },
+// 	{ id: "flux-schnell", tokens: 2 },
+// 	{ id: "flux-pro", tokens: 12 },
+// ];
 
 // const getModelDisplayName = (
 // 	model: OpenAIModels,
@@ -90,11 +108,11 @@ export const AIDropdown = (props: AIDropdownProps): JSX.Element => {
 	const { elementRef, rect } = useBoundingClientRect<HTMLDivElement>();
 	const { model } = useAIContext();
 	const { t } = useTranslation();
-	const dropdownRef = useClickOutside(
-		() => setIsDropdownOpen(false),
-		[],
-		true,
-	);
+	// const dropdownRef = useClickOutside(
+	// 	() => setIsDropdownOpen(false),
+	// 	[],
+	// 	true,
+	// );
 	const toggleModelDropdown = (): void => {
 		if (!board.aiGeneratingOnItem) {
 			setIsDropdownOpen(!isDropdownOpen);
@@ -104,7 +122,7 @@ export const AIDropdown = (props: AIDropdownProps): JSX.Element => {
 	return (
 		<UiPanel zIndex={2} className={clsx(styles.panel)} ref={elementRef}>
 			<div
-				ref={dropdownRef}
+				// ref={dropdownRef}
 				className={styles.modelSelector}
 				onClick={toggleModelDropdown}
 			>
@@ -137,7 +155,6 @@ export const AIDropdown = (props: AIDropdownProps): JSX.Element => {
 							}}
 						>
 							<Dropdown
-								isPhoneScreen={isPhoneScreen}
 								account={account}
 								setIsDropdownOpen={setIsDropdownOpen}
 							/>
@@ -150,22 +167,12 @@ export const AIDropdown = (props: AIDropdownProps): JSX.Element => {
 };
 
 export const Dropdown = (
-	props: Pick<
-		AIDropdownProps,
-		"account" | "setIsDropdownOpen" | "isPhoneScreen"
-	>,
-) => {
-	const { account, setIsDropdownOpen, isPhoneScreen } = props;
-	const { setModel } = useAIContext();
+	props: Pick<AIDropdownProps, "account" | "setIsDropdownOpen">,
+): JSX.Element => {
+	const { account, setIsDropdownOpen } = props;
+	const { model, setModel } = useAIContext();
 	const { openModal } = useUiModalContext();
 	const { t } = useTranslation();
-
-	const getDropDownTooltip = (model: OpenAIModels): boolean | JSX.Element => {
-		const dropdownTooltip = account.isLoggedIn
-			? t("userPlan.upgradeTooltip")
-			: t("AIInput.authTooltip");
-		return isModelDisabled(model) && <Tooltip tooltip={dropdownTooltip} />;
-	};
 
 	const isModelDisabled = (model: OpenAIModels): boolean =>
 		!account.billingInfo?.models.find(
@@ -173,7 +180,6 @@ export const Dropdown = (
 		);
 	const selectModel = (model: OpenAIModels) => (): void => {
 		setModel(model);
-		setIsDropdownOpen(false);
 	};
 
 	const handleOpenModal: MouseEventHandler = evt => {
@@ -189,31 +195,104 @@ export const Dropdown = (
 
 	return (
 		<>
-			{modelTokens.map((modelInfo, index) => (
-				<button
-					key={index}
-					className={clsx(styles.modelBtn)}
-					onClick={
-						isModelDisabled(modelInfo.id)
-							? handleOpenModal
-							: selectModel(modelInfo.id)
-					}
-				>
-					<div className={styles.modelBtnHeader}>
-						<strong>
-							{isPhoneScreen
-								? t(`ai.models.${modelInfo.id}.mobileTitle`)
-								: t(`ai.models.${modelInfo.id}.title`)}
-						</strong>
-						<span className={styles.tokenBadge}>
-							{modelInfo.tokens}{" "}
-							{getTokenForm(modelInfo.tokens, t)}
-						</span>
+			{Object.entries(modelTokens).map(([category, models]) => {
+				return (
+					<div className={styles.categoryWr} key={category}>
+						<div className={styles.category}>
+							<Icon iconName={"Sound"} width={20} height={20} />
+							{t(`ai.categories.${category}`)}
+						</div>
+
+						{models.map((modelInfo, i) => {
+							const id = `${category}_${i}`;
+							return (
+								<AiRadioBtn
+									key={id}
+									id={id}
+									name={modelInfo.id}
+									checked={model === modelInfo.id}
+									onChange={
+										isModelDisabled(modelInfo.id)
+											? handleOpenModal
+											: selectModel(modelInfo.id)
+									}
+									modelInfo={modelInfo}
+								/>
+							);
+						})}
 					</div>
-					<p>{t(`ai.models.${modelInfo.id}.description`)}</p>
-					{getDropDownTooltip(modelInfo.id)}
-				</button>
-			))}
+				);
+			})}
 		</>
+	);
+};
+
+interface AiRadioBtnButtonProps {
+	id: string;
+	name: string;
+	checked: boolean;
+	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	modelInfo: ModelInfo;
+}
+
+const AiRadioBtn: React.FC<AiRadioBtnButtonProps> = ({
+	id,
+	name,
+	checked,
+	onChange,
+	modelInfo,
+}) => {
+	const { t } = useTranslation();
+	const isPhoneScreen = useIsPhoneScreen();
+	const { billingInfo, isLoggedIn } = useAccount();
+
+	const isModelDisabled = (model: OpenAIModels): boolean =>
+		!billingInfo?.models.find(item => item.id === model && item.isEnabled);
+
+	const getDropDownTooltip = (model: OpenAIModels): boolean | JSX.Element => {
+		const dropdownTooltip = isLoggedIn
+			? t("userPlan.upgradeTooltip")
+			: t("AIInput.authTooltip");
+		return isModelDisabled(model) && <Tooltip tooltip={dropdownTooltip} />;
+	};
+
+	return (
+		<label className={styles.customRadio} htmlFor={id}>
+			<input
+				type="radio"
+				id={id}
+				name={name}
+				checked={checked}
+				onChange={onChange}
+			/>
+			<div className={styles.radioMark}></div>
+			<div className={styles.modelText}>
+				<h5 className={styles.modelTitle}>
+					{isPhoneScreen
+						? t(`ai.models.${modelInfo.id}.mobileTitle`)
+						: t(`ai.models.${modelInfo.id}.title`)}
+				</h5>
+				<p className={styles.modelDescription}>
+					{t(`ai.models.${modelInfo.id}.description`)}
+				</p>
+			</div>
+			<span className={styles.tokenBadge}>
+				<StarIcon
+					className={styles.starDropdown}
+					width={14}
+					height={14}
+				/>
+				{modelInfo.tokens}
+				<Tooltip
+					tooltip={
+						modelInfo.tokens +
+						" " +
+						getTokenForm(modelInfo.tokens, t) +
+						t("models.tokenTooltip")
+					}
+				/>
+			</span>
+			{/* {getDropDownTooltip(modelInfo.id)} */}
+		</label>
 	);
 };
