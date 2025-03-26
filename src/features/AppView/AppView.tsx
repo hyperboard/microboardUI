@@ -66,6 +66,7 @@ import {
 	WarnNotification,
 } from "features/ImportMiro/ImportMiroBoards/Notifications";
 import { VideosProvider } from "features/VideoPlayer/VideosProvider";
+import { AudioProvider } from "features/AudioPlayer/AudioProvider";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -245,6 +246,7 @@ export function AppView(): JSX.Element {
 			</ViewModeGuard>
 			<HyperLink />
 			<VideosProvider />
+			<AudioProvider />
 			<AiGenerationButton />
 			<HyperLinkInput />
 			<ToastProvider />

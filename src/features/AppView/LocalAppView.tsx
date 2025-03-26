@@ -19,6 +19,7 @@ import { useAIContext } from "entities/AIInput/AIContext";
 import { HyperLink } from "features/hyperLink/HyperLink";
 import { useHyperLinkContext } from "features/hyperLink/HyperLinkContext";
 import { VideosProvider } from "features/VideoPlayer/VideosProvider";
+import { AudioProvider } from "features/AudioPlayer/AudioProvider";
 
 export function LocalAppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -150,6 +151,7 @@ export function LocalAppView(): JSX.Element {
 			</InactiveBoardHidder>
 			<HyperLink />
 			<VideosProvider />
+			<AudioProvider />
 			<ViewModeGuard>
 				<LinksProvider />
 				<ContextPanel />

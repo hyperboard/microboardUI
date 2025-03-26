@@ -12,6 +12,7 @@ import { Clipboard } from "./Clipboard";
 import { pasteTextToTheBoard, tryToPasteAsItemOrReturnText } from "./Paste";
 import { createWheel } from "./Wheel/Wheel";
 import { isSafari } from "./isSafari";
+import { uploadAudio } from "Board/Items/Audio/uploadAudio";
 
 export interface Controller {
 	onWheel: (event: WheelEvent) => void;
@@ -643,6 +644,9 @@ export function getController(
 		const fileExtension = file.name.split(".").pop()?.toLowerCase();
 		if (fileExtension === "mp4" || fileExtension === "webm") {
 			uploadVideo(file, board, notify, fileExtension);
+			return;
+		} else if (fileExtension === "mp3" || fileExtension === "wav") {
+			uploadAudio(file, board, notify, fileExtension);
 			return;
 		}
 

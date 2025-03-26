@@ -7,6 +7,7 @@ import React, { ChangeEventHandler, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { uploadVideo } from "Board/Items/Video/uploadVideo";
+import { uploadAudio } from "Board/Items/Audio/uploadAudio";
 
 function bytesToGigabytes(bytes: number): number {
 	return bytes / 1024 ** 3;
@@ -55,6 +56,8 @@ export function AddImage(): JSX.Element {
 		const fileExtension = file.name.split(".").pop()?.toLowerCase();
 		if (fileExtension === "mp4" || fileExtension === "webm") {
 			uploadVideo(file, board, notify, fileExtension);
+		} else if (fileExtension === "mp3" || fileExtension === "wav") {
+			uploadAudio(file, board, notify, fileExtension);
 		} else {
 			uploadImage(file, board);
 		}
@@ -62,7 +65,7 @@ export function AddImage(): JSX.Element {
 	};
 
 	const accept = window.enableVideos
-		? "image/*,application/pdf,video/mp4,video/webm"
+		? "image/*,application/pdf,video/mp4,video/webm,audio/mp3,audio/wav"
 		: "image/*,application/pdf";
 
 	return (

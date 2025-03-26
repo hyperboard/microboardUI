@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import { useAppSubscription } from "Board/useBoardSubscription";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { useAppContext } from "../../features/AppContext";
