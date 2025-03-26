@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import { useAppContext } from "features/AppContext";
 import { AudioItem } from "Board/Items/Audio/Audio";
+import styles from "./AudioPlayer.module.css";
+import { Mbr } from "Board/Items/Mbr/Mbr";
 
 interface Props {
 	audioItem: AudioItem;
@@ -11,8 +13,6 @@ export const AudioPlayer = ({ audioItem }: Props) => {
 
 	const audioRef = useRef<HTMLAudioElement>(null);
 	const containerRef = useRef<HTMLDivElement | null>(null);
-	// const stopTimeoutRef = useRef<number | null>(null);
-	// const timeoutDuration = videoId ? 300 : 10;
 
 	useEffect(() => {
 		containerRef.current?.addEventListener(
@@ -24,7 +24,24 @@ export const AudioPlayer = ({ audioItem }: Props) => {
 			},
 		);
 
+		const audio = audioRef.current;
+		if (!audio) {
+			return;
+		}
+
+		const handleLoadedMetadata = () => {
+			audio.currentTime = audioItem.getCurrentTime();
+		};
+
+		audio.addEventListener("loadedmetadata", handleLoadedMetadata);
+
 		return () => {
+			if (audioRef.current) {
+				audioRef.current.removeEventListener(
+					"loadedmetadata",
+					handleLoadedMetadata,
+				);
+			}
 			containerRef.current?.removeEventListener(
 				"wheel",
 				app.controller.onWheel,
@@ -32,37 +49,14 @@ export const AudioPlayer = ({ audioItem }: Props) => {
 		};
 	}, []);
 
-	// const stopVideo = () => {
-	//     if (!stopTimeoutRef.current) {
-	//         const timeoutId = setTimeout(() => {
-	//             if (videoRef.current) {
-	//                 videoItem.setCurrentTime(
-	//                     videoRef.current.currentTime || 0.1
-	//                 );
-	//                 const currentFrame = captureFrame(
-	//                     videoItem.getCurrentTime(),
-	//                     videoRef.current
-	//                 );
-	//                 if (currentFrame) {
-	//                     videoItem.setPreviewImage(currentFrame);
-	//                 }
-	//             }
-	//             videoItem.transformationRenderBlock = false;
-	//             videoItem.setIsPlaying(false);
-	//         }, timeoutDuration);
-	//         stopTimeoutRef.current = timeoutId;
-	//     }
-	// };
-	//
-	// const clearStopTimeout = () => {
-	//     if (stopTimeoutRef.current) {
-	//         clearTimeout(stopTimeoutRef.current);
-	//         stopTimeoutRef.current = null;
-	//     }
-	// };
+	const onPause = () => {
+		audioItem.setIsPlaying(false);
+		if (audioRef.current) {
+			audioItem.setCurrentTime(audioRef.current.currentTime);
+		}
+	};
 
 	const onEnded = () => {
-		// clearStopTimeout();
 		audioItem.setCurrentTime(0);
 		audioItem.setIsPlaying(false);
 	};
@@ -71,41 +65,38 @@ export const AudioPlayer = ({ audioItem }: Props) => {
 		audioItem.setIsPlaying(true);
 	};
 
-	const mbr = audioItem.getMbr().getTransformed(board.camera.getMatrix());
+	const audioMbr = audioItem.getMbr();
+	const mbr = new Mbr(
+		audioMbr.left,
+		audioMbr.top + 20 * audioItem.transformation.matrix.scaleY,
+		audioMbr.right,
+		audioMbr.bottom,
+	).getTransformed(board.camera.getMatrix());
 
 	return (
 		<div
-			className={styles.container}
 			style={{
+				position: "absolute",
 				left: mbr.left,
 				top: mbr.top,
 			}}
 			ref={containerRef}
 		>
 			<audio
+				className={styles.audio}
 				ref={audioRef}
 				controls
 				src={audioItem.getUrl()}
+				onPause={onPause}
 				style={{
 					width: mbr.getWidth(),
 					height: mbr.getHeight(),
+					minHeight: "16px",
+					minWidth: "200px",
 				}}
 				onPlay={onPlay}
 				onEnded={onEnded}
 			></audio>
-			{/*<video*/}
-			{/*    ref={videoRef}*/}
-			{/*    controls*/}
-			{/*    width={mbr.getWidth()}*/}
-			{/*    height={mbr.getHeight()}*/}
-			{/*    onPause={stopVideo}*/}
-			{/*    onSeeking={clearStopTimeout}*/}
-			{/*    onSeeked={clearStopTimeout}*/}
-			{/*    onEnded={onEnded}*/}
-			{/*    onPlay={onPlay}*/}
-			{/*>*/}
-			{/*    <source src={videoItem.getUrl()} type="video/mp4" />*/}
-			{/*</video>*/}
 		</div>
 	);
 };
