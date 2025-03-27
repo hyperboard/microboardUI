@@ -307,7 +307,7 @@ export function createNode(
 			threadDirection,
 		);
 		const nodeRichText = node.getRichText();
-		nodeRichText.setMaxWidth(600);
+		nodeRichText.applyMaxWidth(600);
 		nodeRichText.setSelectionHorisontalAlignment("left");
 		nodeRichText.container.right = nodeRichText.container.left + 600;
 		nodeRichText.editor.insertCopiedText(
@@ -323,7 +323,7 @@ export function createNode(
 			threadDirection,
 		);
 		const nodeRichText = node.getRichText();
-		nodeRichText.setMaxWidth(600);
+		nodeRichText.applyMaxWidth(600);
 		nodeRichText.setSelectionHorisontalAlignment("left");
 		nodeRichText.container.right = nodeRichText.container.left + 600;
 		if (withPlaceholder) {

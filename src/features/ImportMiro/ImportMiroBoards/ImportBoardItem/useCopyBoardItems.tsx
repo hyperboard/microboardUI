@@ -976,7 +976,7 @@ export const useCopyBoardItems = (
 		const richtext = new RichText(board, new Mbr(), id);
 
 		const richTextWidth = geometry?.width ?? RICH_TEXT_MAX_WIDTH;
-		richtext.setMaxWidth(richTextWidth);
+		richtext.applyMaxWidth(richTextWidth);
 		setItemText(richtext, data.content, style);
 		if (linkTo) {
 			richtext.linkTo.setLinkTo(linkTo);

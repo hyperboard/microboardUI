@@ -108,7 +108,7 @@ function transformText(data: AiText, board: Board): void {
 	];
 
 	applyTransformation(textItem, data.x, data.y);
-	textItem.setMaxWidth(multiplySize(data.width));
+	textItem.applyMaxWidth(multiplySize(data.width));
 
 	const newRichText = board.add<RichText>(textItem);
 	itemsById.set(data.id, newRichText);
