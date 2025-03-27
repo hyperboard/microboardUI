@@ -1,5 +1,8 @@
 .icon {
+	transform: scale(7);
+}
+
+.animateLogo {
 	filter: grayscale(100%);
 	opacity: 0.1;
-	transform: scale(7);
 }
