@@ -146,7 +146,8 @@ export type IconId =
 	| "InformationLine"
 	| "Sound"
 	| "Img"
-	| "TextAiModel";
+	| "TextAiModel"
+	| "Save";
 
 type Props = {
 	iconName: IconId;

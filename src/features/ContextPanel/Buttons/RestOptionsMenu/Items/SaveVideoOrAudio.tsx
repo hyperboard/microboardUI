@@ -4,28 +4,41 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Icon } from "shared/ui-lib/Icon";
 import { RestOptionsMenuItem } from "../RestOptionsMenuItem";
-import { VideoItem } from "Board/Items/Video/Video";
 
-export function SaveVideo(): JSX.Element {
+interface Props {
+	itemType: "Audio" | "Video";
+}
+
+export function SaveVideoOrAudio({ itemType }: Props): JSX.Element {
 	const { board } = useAppContext();
 	const { toggleMenu } = usePanelContext();
 	const { t } = useTranslation();
 	const item = board.selection.items.getSingle();
-	if (!item || !(item instanceof VideoItem) || !item.getIsStorageUrl()) {
+	if (
+		item?.itemType !== itemType ||
+		(item.itemType === "Video" && !item.getIsStorageUrl())
+	) {
 		return <></>;
 	}
 
-	const handleSaveVideo = (): void => {
+	const onClick = (): void => {
 		item.download();
 		toggleMenu("None");
 	};
 
 	return (
 		<RestOptionsMenuItem
-			onClick={handleSaveVideo}
-			icon={<Icon iconName="Export" width={20} height={20} />}
+			onClick={onClick}
+			icon={
+				<Icon
+					style={{ color: "#696B76" }}
+					iconName="Save"
+					width={17}
+					height={17}
+				/>
+			}
 		>
-			{t(`contextPanel.video.save`)}
+			{t(`contextPanel.${itemType}.save`)}
 		</RestOptionsMenuItem>
 	);
 }

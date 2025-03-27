@@ -10,8 +10,7 @@ export function tryToPasteFromMicroboard(text: string, board: Board): boolean {
 			return true;
 		}
 	} catch (error) {
-		console.error(error);
-		// TODO: popup notification
+		console.warn("Data is not an item, trying to paste as text");
 	}
 	return false;
 }

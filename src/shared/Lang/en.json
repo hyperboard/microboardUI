@@ -151,8 +151,11 @@
 			"next": "To next frame",
 			"prev": "To prev frame"
 		},
-		"video": {
+		"Video": {
 			"save": "Save video"
+		},
+		"Audio": {
+			"save": "Save audio"
 		}
 	},
 	"toolsPanel": {
