@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import React, {
 	useEffect,
 	useRef,
@@ -5,10 +6,9 @@ import React, {
 	type KeyboardEventHandler,
 	type MouseEventHandler,
 } from "react";
-import "./Input.css";
-import { EyeOpen } from "./EyeOpen";
 import { EyeClose } from "./EyeClose";
-import clsx from "clsx";
+import { EyeOpen } from "./EyeOpen";
+import "./Input.css";
 
 interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
 	id: string;
@@ -52,6 +52,7 @@ export const Input: React.FC<Props> = ({
 	shouldFocus,
 	successText,
 	shouldSelect,
+	disabled,
 	...props
 }) => {
 	const [inputType, setInputType] = useState<string>(() => {
@@ -114,7 +115,10 @@ export const Input: React.FC<Props> = ({
 	return (
 		<div className="InputWrapper">
 			{label && (
-				<label htmlFor={id} className="InputLabel">
+				<label
+					htmlFor={id}
+					className={clsx("InputLabel", disabled && "Disabled")}
+				>
 					{label}
 				</label>
 			)}
@@ -140,6 +144,7 @@ export const Input: React.FC<Props> = ({
 						<textarea
 							ref={textareaRef}
 							className="textarea"
+							disabled={disabled}
 							id={id}
 							rows={1}
 							{...props}
@@ -157,6 +162,8 @@ export const Input: React.FC<Props> = ({
 							onCopy={event => event.stopPropagation()}
 							id={id}
 							type={inputType}
+							className="Input"
+							disabled={disabled}
 							onKeyDown={stopPropagation(props.onKeyDown)}
 							onKeyUp={stopPropagation(props.onKeyUp)}
 							onKeyPress={stopPropagation(props.onKeyPress)}

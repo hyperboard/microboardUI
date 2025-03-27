@@ -119,3 +119,12 @@
 	overflow: hidden;
 	height: 20px;
 }
+
+.InputLabel.Disabled {
+	color: rgba(10, 15, 41, 0.25);
+}
+
+.Input:disabled,
+.Input:disabled::placeholder {
+	color: rgba(10, 15, 41, 0.25);
+}

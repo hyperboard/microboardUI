@@ -56,12 +56,8 @@
 }
 
 .btn {
-	padding: 6px;
-	display: flex;
-	justify-content: flex-start;
-	font-weight: 400;
-	font-size: 14px;
-	color: rgba(20, 21, 26, 1);
+	align-self: flex-start;
+	padding: 6px 12px;
 }
 
 .newsletter {
@@ -96,4 +92,9 @@
 		font-size: 24px;
 		align-self: flex-start;
 	}
+}
+
+.cryptoWallet {
+	align-self: flex-start;
+	font-size: 14px;
 }

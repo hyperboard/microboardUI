@@ -2,7 +2,8 @@ import { useAccount } from "App/useAccount";
 import { CHANGE_PASSWORD_MODAL } from "features/ChangePasswordModal";
 import { ChangePassword } from "features/UserPanel/icons/ChangePassword";
 import { Logout } from "features/UserPanel/icons/Logout";
-import { debounce } from "shared/lib/debounce";
+import { UserAvatar } from "features/UserPanel/UserAvatar/UserAvatar";
+import { USER_PLAN_MODAL_ID } from "features/UserPlan";
 import React, {
 	ReactElement,
 	useCallback,
@@ -14,17 +15,16 @@ import React, {
 } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { UiButton } from "shared/ui-lib/UiButton";
-import { Input } from "shared/ui-lib/Input";
-import styles from "./ProfileSettingsModal.module.css";
-import { UserAvatar } from "features/UserPanel/UserAvatar/UserAvatar";
-import { notify } from "shared/ui-lib/Toast";
-import { USER_PLAN_MODAL_ID } from "features/UserPlan";
-import { Icon } from "shared/ui-lib/Icon";
-import { OuterLink } from "shared/ui-lib/OuterLink";
+import { debounce } from "shared/lib/debounce";
 import { Checkbox } from "shared/ui-lib/Checkbox";
-import { UiModal } from "shared/ui-lib/UiModal/UiModal";
+import { Icon } from "shared/ui-lib/Icon";
+import { Input } from "shared/ui-lib/Input";
+import { OuterLink } from "shared/ui-lib/OuterLink";
+import { notify } from "shared/ui-lib/Toast";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
+import { UiModal } from "shared/ui-lib/UiModal/UiModal";
+import styles from "./ProfileSettingsModal.module.css";
 
 export const PROFILE_SETTINGS_MODAL_ID = Symbol("profileSettingsModal");
 const MAX_AVATAR_SIZE = 10 * 1024 * 1024; // 10MB
@@ -43,6 +43,7 @@ export function ProfileSettingsModal(): ReactElement {
 	const avatarInputRef = useRef<HTMLInputElement>(null);
 	const setIdleTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const abortController = useRef(new AbortController());
+	const isEmailExist = Boolean(account.info?.email);
 
 	const debouncedChangeInfo = useCallback(
 		debounce(async (newName: string) => {
@@ -213,8 +214,32 @@ export function ProfileSettingsModal(): ReactElement {
 						</UiButton>
 					</div>
 				</div>
+				{account.info?.address && (
+					<div className={styles.cryptoWallet}>
+						{t("profile.cryptoWallet")}: {account.info?.address}
+					</div>
+				)}
 				<div className={styles.inputs}>
-					<p className={styles.email}>{account.info?.email}</p>
+					<Input
+						label={t("profile.email")}
+						placeholder={t("profile.email")}
+						disabled
+						value={account.info?.email ?? ""}
+						id="email"
+						autoFocus={false}
+						isSuccess={updateState === "success"}
+						helperText={isEmailExist ? "" : t("profile.emailDesc")}
+					/>
+					{!isEmailExist && (
+						<UiButton
+							variant="quaternary"
+							size="md"
+							className={styles.btn}
+							onClick={handleAddEmail}
+						>
+							{t("profile.addEmail")}
+						</UiButton>
+					)}
 					<Input
 						label={t("profile.name")}
 						value={name}
@@ -249,20 +274,6 @@ export function ProfileSettingsModal(): ReactElement {
 					>
 						<ChangePassword /> {t("profile.changePassword")}
 					</UiButton>
-					{!account.info?.email && (
-						<UiButton
-							type="button"
-							onClick={handleAddEmail}
-							variant="ghost"
-							className={styles.btn}
-							size="lg"
-						>
-							<span className={styles.icon}>
-								<Icon iconName="Plus" width={20} height={20} />
-							</span>{" "}
-							{t("profile.addEmail")}
-						</UiButton>
-					)}
 					<UiButton
 						type="button"
 						onClick={handlePlanModalOpen}
