@@ -5,7 +5,7 @@ import clsx from "clsx";
 import type { Account } from "entities/account";
 import { AI_UNAVAILABLE_MODAL_ID } from "features/AiUnavailableModal/AiUnavailableModal";
 import { USER_PLAN_MODAL_ID } from "features/UserPlan";
-import React, { MouseEventHandler } from "react";
+import React, { MouseEventHandler, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { useBoundingClientRect } from "shared/lib/useClientRect";
@@ -18,6 +18,7 @@ import { UiPanel } from "shared/ui-lib/UiPanel";
 import { useAIContext } from "./AIContext";
 import styles from "./AIInput.module.css";
 import { StarIcon } from "./StarIcon";
+import { useClickOutside } from "shared/lib/useClickOutside";
 
 type AIDropdownProps = {
 	board: Board;
@@ -108,11 +109,12 @@ export const AIDropdown = (props: AIDropdownProps): JSX.Element => {
 	const { elementRef, rect } = useBoundingClientRect<HTMLDivElement>();
 	const { model } = useAIContext();
 	const { t } = useTranslation();
-	// const dropdownRef = useClickOutside(
-	// 	() => setIsDropdownOpen(false),
-	// 	[],
-	// 	true,
-	// );
+	const dropdownContentRef = useRef<HTMLDivElement>(null);
+	const dropdownRef = useClickOutside(
+		() => setIsDropdownOpen(false),
+		[dropdownContentRef],
+		true,
+	);
 	const toggleModelDropdown = (): void => {
 		if (!board.aiGeneratingOnItem) {
 			setIsDropdownOpen(!isDropdownOpen);
@@ -122,9 +124,9 @@ export const AIDropdown = (props: AIDropdownProps): JSX.Element => {
 	return (
 		<UiPanel zIndex={2} className={clsx(styles.panel)} ref={elementRef}>
 			<div
-				// ref={dropdownRef}
 				className={styles.modelSelector}
 				onClick={toggleModelDropdown}
+				ref={dropdownRef}
 			>
 				<StarIcon className={styles.starIcon} width={20} height={20} />
 				<div className={styles.selectedModel}>
@@ -144,7 +146,10 @@ export const AIDropdown = (props: AIDropdownProps): JSX.Element => {
 			{isDropdownOpen &&
 				!board.aiGeneratingOnItem &&
 				createPortal(
-					<div className={clsx(styles.dropdownContainer)}>
+					<div
+						className={clsx(styles.dropdownContainer)}
+						ref={dropdownContentRef}
+					>
 						<div
 							className={clsx(styles.modelDropdown)}
 							style={{
@@ -244,17 +249,6 @@ const AiRadioBtn: React.FC<AiRadioBtnButtonProps> = ({
 }) => {
 	const { t } = useTranslation();
 	const isPhoneScreen = useIsPhoneScreen();
-	const { billingInfo, isLoggedIn } = useAccount();
-
-	const isModelDisabled = (model: OpenAIModels): boolean =>
-		!billingInfo?.models.find(item => item.id === model && item.isEnabled);
-
-	const getDropDownTooltip = (model: OpenAIModels): boolean | JSX.Element => {
-		const dropdownTooltip = isLoggedIn
-			? t("userPlan.upgradeTooltip")
-			: t("AIInput.authTooltip");
-		return isModelDisabled(model) && <Tooltip tooltip={dropdownTooltip} />;
-	};
 
 	return (
 		<label className={styles.customRadio} htmlFor={id}>
@@ -292,7 +286,6 @@ const AiRadioBtn: React.FC<AiRadioBtnButtonProps> = ({
 					}
 				/>
 			</span>
-			{/* {getDropDownTooltip(modelInfo.id)} */}
 		</label>
 	);
 };

@@ -108,13 +108,14 @@
 
 .tokenBadge {
 	background: #fff;
-	padding: 2px 8px;
+	padding: 3px 8px;
 	border-radius: 6px;
 	border: 1px solid rgba(10, 15, 41, 0.08);
 	font-size: 12px;
 	color: #666;
 	font-weight: 500;
 	display: flex;
+	align-items: center;
 	white-space: nowrap;
 }
 
@@ -346,8 +347,9 @@
 }
 
 .customRadio .radioMark {
-	width: 24px;
-	height: 24px;
+	width: 16px;
+	height: 16px;
+	margin-top: 2px;
 	border-radius: 50%;
 	background-color: white;
 	border: 1px solid #ddd;
@@ -359,8 +361,8 @@
 
 .customRadio input[type="radio"]:checked + .radioMark {
 	background-color: #14151a;
-	box-shadow: inset 0 0 0 5px white;
-	border: 3px solid #14151a;
+	border: 2px solid #14151a;
+	box-shadow: inset 0 0 0 3px #fff;
 }
 
 .modelText {
