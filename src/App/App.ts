@@ -66,7 +66,7 @@ export function createApp(isHistory = true): App {
 
 	const test = createTester(getBoard);
 
-	let board: Board = new Board("blank");
+	let board: Board;
 	const fileHandle: FileSystemFileHandle | undefined = undefined;
 
 	function enableLogger(): void {
