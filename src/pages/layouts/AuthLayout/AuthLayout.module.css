@@ -18,6 +18,7 @@
 .navbar {
 	width: 1280px;
 	min-height: 64px;
+	z-index: 100;
 }
 
 .content {
