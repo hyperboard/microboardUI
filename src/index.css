@@ -49,6 +49,7 @@ body {
 html,
 body {
 	overscroll-behavior-x: none;
+	-webkit-user-select: none;
 }
 
 input:-webkit-autofill,
