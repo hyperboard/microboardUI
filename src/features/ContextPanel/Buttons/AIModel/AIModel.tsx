@@ -83,6 +83,7 @@ export function AIModel({ rounded = "none" }: Props): React.ReactElement {
 				<UiPanel
 					rounded={verticalAlign === "bottom" ? "bottom" : "full"}
 					className={style.menu}
+					padding={0}
 				>
 					<Dropdown
 						isPhoneScreen={true}

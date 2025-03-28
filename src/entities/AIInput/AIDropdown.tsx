@@ -185,6 +185,7 @@ export const Dropdown = (
 		);
 	const selectModel = (model: OpenAIModels) => (): void => {
 		setModel(model);
+		setIsDropdownOpen(false);
 	};
 
 	const handleOpenModal: MouseEventHandler = evt => {
@@ -282,6 +283,7 @@ const AiRadioBtn: React.FC<AiRadioBtnButtonProps> = ({
 						modelInfo.tokens +
 						" " +
 						getTokenForm(modelInfo.tokens, t) +
+						" " +
 						t("models.tokenTooltip")
 					}
 				/>
