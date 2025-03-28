@@ -199,7 +199,10 @@ export function AppView(): JSX.Element {
 						router={{ location, navigate, params }}
 						app={app}
 						board={board}
-					/>
+					>
+						<VideosProvider />
+						<AudioProvider />
+					</Canvas>
 					<TextEditors
 						app={app}
 						board={board}
@@ -245,8 +248,6 @@ export function AppView(): JSX.Element {
 				<ExportPanel />
 			</ViewModeGuard>
 			<HyperLink />
-			<VideosProvider />
-			<AudioProvider />
 			<AiGenerationButton />
 			<HyperLinkInput />
 			<ToastProvider />

@@ -4,9 +4,11 @@ import { Board } from "Board";
 import { DrawingContext } from "Board/Items/DrawingContext";
 import { WithRouterProps, withRouter } from "shared/lib/withRouter";
 import * as React from "react";
+
 export interface Props extends WithRouterProps {
 	app: App;
 	board: Board;
+	children?: React.ReactNode;
 }
 
 export class CanvasBase extends React.Component<Props> {
@@ -47,6 +49,7 @@ export class CanvasBase extends React.Component<Props> {
 		context.setCamera(board.camera);
 		context.clear();
 		context.clearCursor();
+
 		board.items.render(context);
 		board.selection.render(context);
 		board.tools.render(context);
@@ -174,10 +177,13 @@ export class CanvasBase extends React.Component<Props> {
 					height={Math.floor(height * window.devicePixelRatio)}
 					className="NoContextMenu"
 					style={{
+						pointerEvents: "none",
+						position: "absolute",
+						zIndex: 1,
 						padding: "0px",
 						margin: "0px",
 						border: "0px",
-						background: "rgb(246, 246, 246)",
+						background: "none",
 						top: "0px",
 						left: "0px",
 						display: "block",
@@ -223,6 +229,7 @@ export class CanvasBase extends React.Component<Props> {
 						pointerEvents: "none",
 					}}
 				/>
+				<div>{this.props.children}</div>
 			</div>
 		);
 	}

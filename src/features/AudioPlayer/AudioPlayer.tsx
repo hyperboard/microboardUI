@@ -79,7 +79,8 @@ export const AudioPlayer = ({ audioItem }: Props) => {
 				position: "absolute",
 				left: mbr.left,
 				top: mbr.top,
-				visibility: mbr.getHeight() <= 16 ? "hidden" : "visible",
+				visibility: mbr.getHeight() <= 22 ? "hidden" : "visible",
+				backgroundColor: "#ffffff",
 			}}
 			ref={containerRef}
 		>
@@ -91,7 +92,7 @@ export const AudioPlayer = ({ audioItem }: Props) => {
 				onPause={onPause}
 				style={{
 					width: mbr.getWidth(),
-					height: mbr.getHeight(),
+					height: mbr.getHeight() - 5,
 				}}
 				onPlay={onPlay}
 				onEnded={onEnded}
