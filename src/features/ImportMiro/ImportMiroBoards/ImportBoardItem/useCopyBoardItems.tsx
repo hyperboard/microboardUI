@@ -1028,7 +1028,7 @@ export const useCopyBoardItems = (
 			return;
 		}
 
-		const drawing = new Drawing([]);
+		const drawing = new Drawing(board, []);
 		INITIAL_GEOMETRY.paint.width = 1000;
 		INITIAL_GEOMETRY.paint.height = 1000;
 

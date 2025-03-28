@@ -5,6 +5,7 @@ import { useAppContext } from "features/AppContext";
 import { Icon } from "../../../shared/ui-lib/Icon";
 import styles from "./LinkToButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
+import { createPortal } from "react-dom";
 
 async function getFavicon(url: string): Promise<string | undefined> {
 	try {
@@ -39,7 +40,9 @@ export const LinkToButton = ({ item, handleClick }: Props): JSX.Element => {
 	const linkToButtonRef = useRef<HTMLButtonElement | null>(null);
 	const [iconUrl, setIconUrl] = useState<string | undefined>(undefined);
 	const imgRef = useRef<HTMLImageElement | null>(null);
+	const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 	const { app, board } = useAppContext();
+	const closeTooltipTimeoutId = useRef<number | undefined>();
 
 	const mbr = useDomMbr({
 		app,
@@ -77,34 +80,96 @@ export const LinkToButton = ({ item, handleClick }: Props): JSX.Element => {
 		}
 	};
 
+	const closeTooltip = () => {
+		closeTooltipTimeoutId.current = setTimeout(
+			() => setIsTooltipOpen(false),
+			50,
+		);
+	};
+
+	const openTooltip = () => {
+		if (closeTooltipTimeoutId.current) {
+			clearTimeout(closeTooltipTimeoutId.current);
+			closeTooltipTimeoutId.current = undefined;
+		}
+		setIsTooltipOpen(true);
+	};
+
 	return (
-		<UiButton
-			style={{
-				position: "absolute",
-				left: mbr.left,
-				top: mbr.top,
-				zIndex: board.getZIndex(item),
-			}}
-			className={styles.btn}
-			ref={linkToButtonRef}
-			onClick={() => handleClick(item)}
-			variant="secondary"
-			rounded="none"
-			tooltip={item.getLinkTo()}
-			tooltipVariant="secondary"
-			tooltipPosition={"bottom-left-noWhitespace"}
-		>
-			{iconUrl ? (
-				<img
-					ref={imgRef}
-					className={styles.icon}
-					src={iconUrl}
-					alt="#"
-					onError={setIcon}
+		<div onMouseEnter={openTooltip} onMouseLeave={closeTooltip}>
+			<UiButton
+				style={{
+					position: "absolute",
+					left: mbr.left,
+					top: mbr.top,
+					zIndex: board.getZIndex(item),
+				}}
+				className={styles.btn}
+				ref={linkToButtonRef}
+				onClick={() => handleClick(item)}
+				variant="secondary"
+				rounded="none"
+			>
+				<LinkTooltip
+					link={item.getLinkTo()}
+					isOpen={isTooltipOpen}
+					onClick={() => handleClick(item)}
+					left={mbr.left}
+					top={mbr.top + 24}
+					openTooltip={openTooltip}
+					closeTooltip={closeTooltip}
 				/>
-			) : (
-				<Icon iconName="linkTo" width={16} height={16} />
-			)}
-		</UiButton>
+				{iconUrl ? (
+					<img
+						ref={imgRef}
+						className={styles.icon}
+						src={iconUrl}
+						alt="#"
+						onError={setIcon}
+					/>
+				) : (
+					<Icon iconName="linkTo" width={16} height={16} />
+				)}
+			</UiButton>
+		</div>
+	);
+};
+
+interface LinkTooltipProps {
+	top: number;
+	left: number;
+	link?: string;
+	onClick: () => void;
+	isOpen: boolean;
+	openTooltip: () => void;
+	closeTooltip: () => void;
+}
+
+const LinkTooltip = ({
+	top,
+	left,
+	link,
+	onClick,
+	isOpen,
+	openTooltip,
+	closeTooltip,
+}: LinkTooltipProps) => {
+	if (!link || !isOpen) {
+		return null;
+	}
+	return createPortal(
+		<div
+			onMouseEnter={openTooltip}
+			onMouseLeave={closeTooltip}
+			onClick={onClick}
+			className={styles.tooltip}
+			style={{
+				top,
+				left,
+			}}
+		>
+			{link}
+		</div>,
+		document.body,
 	);
 };
