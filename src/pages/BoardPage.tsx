@@ -11,12 +11,14 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { billingApi } from "shared/api";
 import { notify } from "shared/ui-lib/Toast";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
+import { pasteWelcomeBoardData } from "./WelcomePage/WelcomePage";
+import Cookies from "js-cookie";
 
 export const BoardPage = (): JSX.Element => {
 	const { app } = useAppContext();
 	const board = app.getBoard();
 	const params = useParams<{ boardId: string }>();
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const navigate = useNavigate();
 	const [searchParams] = useSearchParams();
 	const codeSearch = searchParams.get("code");
@@ -59,7 +61,7 @@ export const BoardPage = (): JSX.Element => {
 					});
 					app.render();
 				});
-			} else if (params.boardId) {
+			} else if (params.boardId && params.boardId !== "blank") {
 				app.openBoard(
 					params.boardId,
 					searchParams.get("accessKey") ?? undefined,
@@ -70,30 +72,39 @@ export const BoardPage = (): JSX.Element => {
 					app.render();
 				});
 			} else {
-				// const lastSeenBoard = localStorage.getItem("lastSeenBoard");
-				// if (lastSeenBoard) {
-				// 	app.openBoard(lastSeenBoard).then(() => {
-				// 		navigate(`/boards/${lastSeenBoard}`, {
-				// 			replace: true,
-				// 		});
-				// 		app.render();
-				// 	});
-				// } else {
-				// 	boardsList.createBoard().then(boardId => {
-				// 		app.openBoard(boardId).then(() => {
-				// 			navigate(`/boards/${boardId}`, {
-				// 				replace: true,
-				// 			});
-				// 			app.render();
-				// 		});
-				// 	});
-				// }
-				app.openBoard("blank").then(() => {
-					navigate(`/boards/blank`, {
-						replace: true,
+				const lastSeenBoard = localStorage.getItem("lastSeenBoard");
+				const isFirstVisit = !Cookies.get("first_visit");
+				if (lastSeenBoard) {
+					app.openBoard(lastSeenBoard).then(() => {
+						navigate(`/boards/${lastSeenBoard}`, {
+							replace: true,
+						});
+						app.render();
 					});
-					app.render();
-				});
+				} else if (isFirstVisit) {
+					boardsList
+						.createBoard(t("board.welcomeBoardTitle"), true)
+						.then(boardId => {
+							app.openBoard(boardId).then(() => {
+								navigate(`/boards/${boardId}`, {
+									replace: true,
+								});
+								app.render();
+
+								const board = app.getBoard();
+								pasteWelcomeBoardData(board, i18n.language);
+							});
+						});
+				} else {
+					boardsList.createBoard().then(boardId => {
+						app.openBoard(boardId).then(() => {
+							navigate(`/boards/${boardId}`, {
+								replace: true,
+							});
+							app.render();
+						});
+					});
+				}
 			}
 
 			const paymentStatus = searchParams.get("paymentStatus");

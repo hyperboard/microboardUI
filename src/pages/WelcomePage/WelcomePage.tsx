@@ -2,11 +2,43 @@ import { useBoardsList } from "App/useBoardsList";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { App } from "../../App";
 import boardDataRu from "./welcomeBoard.json";
 import boardDataEn from "./welcomeBoardEn.json";
 import { useAppContext } from "features/AppContext";
 import { Item } from "Board/Items";
+import { App } from "App";
+import { Board } from "Board";
+
+export const pasteWelcomeBoardData = (board: Board, lang: string) => {
+	const baseUrl = window.location.origin;
+	const storageIndex = baseUrl === "https://dev-app.microboard.io" ? 0 : 1;
+	const boardData = lang === "ru" ? boardDataRu : boardDataEn;
+	const filteredBoardData = Object.fromEntries(
+		Object.entries(boardData).map(([id, item]) => {
+			if (item.itemType === "Image" && Array.isArray(item.storageLink)) {
+				return [
+					id,
+					{
+						...item,
+						storageLink: item.storageLink[storageIndex],
+					},
+				];
+			}
+			return [id, item];
+		}),
+	);
+
+	board.paste(
+		filteredBoardData as unknown as {
+			[key: string]: Item;
+		},
+		false,
+	);
+
+	const mbr = board.items.getMbr();
+	board.selection.removeAll();
+	board.camera.zoomToFit(mbr);
+};
 
 export function WelcomePage(): React.ReactElement {
 	const { app } = useAppContext();
@@ -27,39 +59,7 @@ export function WelcomePage(): React.ReactElement {
 		);
 		await app.openBoard(boardId);
 		const board = app.getBoard();
-
-		const baseUrl = window.location.origin;
-		const storageIndex =
-			baseUrl === "https://dev-app.microboard.io" ? 0 : 1;
-		const boardData = i18n.language === "ru" ? boardDataRu : boardDataEn;
-		const filteredBoardData = Object.fromEntries(
-			Object.entries(boardData).map(([id, item]) => {
-				if (
-					item.itemType === "Image" &&
-					Array.isArray(item.storageLink)
-				) {
-					return [
-						id,
-						{
-							...item,
-							storageLink: item.storageLink[storageIndex],
-						},
-					];
-				}
-				return [id, item];
-			}),
-		);
-
-		board.paste(
-			filteredBoardData as unknown as {
-				[key: string]: Item;
-			},
-			false,
-		);
-
-		const mbr = app.getBoard().items.getMbr();
-		board.selection.removeAll();
-		board.camera.zoomToFit(mbr);
+		pasteWelcomeBoardData(board, i18n.language);
 		return boardId;
 	};
 
