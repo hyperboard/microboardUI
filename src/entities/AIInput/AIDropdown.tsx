@@ -1,5 +1,4 @@
 import { OpenAIModels } from "App/Connection";
-import { useAccount } from "App/useAccount";
 import { Board } from "Board";
 import clsx from "clsx";
 import type { Account } from "entities/account";
@@ -205,7 +204,11 @@ export const Dropdown = (
 				return (
 					<div className={styles.categoryWr} key={category}>
 						<div className={styles.category}>
-							<Icon iconName={"Sound"} width={20} height={20} />
+							<Icon
+								iconName={"Dropdown_" + category}
+								width={20}
+								height={20}
+							/>
 							{t(`ai.categories.${category}`)}
 						</div>
 

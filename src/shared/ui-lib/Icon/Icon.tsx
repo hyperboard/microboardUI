@@ -144,9 +144,9 @@ export type IconId =
 	| "ExportFile"
 	| "ExportPNG"
 	| "InformationLine"
-	| "Sound"
-	| "Img"
-	| "TextAiModel"
+	| "Dropdown_speech"
+	| "Dropdown_img"
+	| "Dropdown_texts"
 	| "Save";
 
 type Props = {
