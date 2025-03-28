@@ -81,6 +81,7 @@ export const AudioPlayer = ({ audioItem }: Props) => {
 				top: mbr.top,
 				visibility: mbr.getHeight() <= 22 ? "hidden" : "visible",
 				backgroundColor: "#ffffff",
+				zIndex: board.getZIndex(audioItem),
 			}}
 			ref={containerRef}
 		>

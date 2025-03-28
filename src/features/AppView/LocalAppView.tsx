@@ -130,7 +130,11 @@ export function LocalAppView(): JSX.Element {
 		<div className={style.wrapper}>
 			<InactiveBoardHidder>
 				<div ref={containerRef}>
-					<CanvasNoRouter app={app} board={board} />
+					<CanvasNoRouter app={app} board={board}>
+						<LinksProvider />
+						<VideosProvider />
+						<AudioProvider />
+					</CanvasNoRouter>
 					<TextEditors
 						app={app}
 						board={board}
@@ -153,7 +157,6 @@ export function LocalAppView(): JSX.Element {
 			<VideosProvider />
 			<AudioProvider />
 			<ViewModeGuard>
-				<LinksProvider />
 				<ContextPanel />
 				<QuickAddPanel />
 			</ViewModeGuard>

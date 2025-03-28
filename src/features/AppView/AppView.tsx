@@ -200,6 +200,7 @@ export function AppView(): JSX.Element {
 						app={app}
 						board={board}
 					>
+						<LinksProvider />
 						<VideosProvider />
 						<AudioProvider />
 					</Canvas>
@@ -242,7 +243,6 @@ export function AppView(): JSX.Element {
 				<ZoomPanel />
 			</InactiveBoardHidder>
 			<ViewModeGuard>
-				<LinksProvider />
 				<ContextPanel />
 				<QuickAddPanel />
 				<ExportPanel />

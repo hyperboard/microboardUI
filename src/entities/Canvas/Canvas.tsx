@@ -198,6 +198,7 @@ export class CanvasBase extends React.Component<Props> {
 					className="NoContextMenu"
 					id="ExportLayer"
 					style={{
+						zIndex: 1,
 						padding: "0px",
 						margin: "0px",
 						border: "0px",
@@ -207,6 +208,7 @@ export class CanvasBase extends React.Component<Props> {
 						position: "absolute",
 						width: `${width}px`,
 						height: `${height}px`,
+						pointerEvents: "none",
 					}}
 				/>
 
@@ -216,6 +218,7 @@ export class CanvasBase extends React.Component<Props> {
 					height={Math.floor(height * window.devicePixelRatio)}
 					className="NoContextMenu"
 					style={{
+						zIndex: 1,
 						padding: "0px",
 						margin: "0px",
 						border: "0px",
@@ -229,7 +232,16 @@ export class CanvasBase extends React.Component<Props> {
 						pointerEvents: "none",
 					}}
 				/>
-				<div>{this.props.children}</div>
+				<div
+					style={{
+						position: "relative",
+						zIndex: 0,
+						width: `${width}px`,
+						height: `${height}px`,
+					}}
+				>
+					{this.props.children}
+				</div>
 			</div>
 		);
 	}

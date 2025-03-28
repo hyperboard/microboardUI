@@ -73,7 +73,6 @@ export const VideoPlayer = ({ videoItem }: Props) => {
 						videoItem.setPreviewImage(currentFrame);
 					}
 				}
-				videoItem.transformationRenderBlock = false;
 				videoItem.setIsPlaying(false);
 			}, timeoutDuration);
 			stopTimeoutRef.current = timeoutId;
@@ -85,7 +84,6 @@ export const VideoPlayer = ({ videoItem }: Props) => {
 			const timeoutId = setTimeout(() => {
 				const currentTime = event.target.getCurrentTime();
 				videoItem.setCurrentTime(currentTime);
-				videoItem.transformationRenderBlock = false;
 				videoItem.setIsPlaying(false);
 			}, timeoutDuration);
 			stopTimeoutRef.current = timeoutId;
@@ -108,12 +106,7 @@ export const VideoPlayer = ({ videoItem }: Props) => {
 	const onEnded = () => {
 		clearStopTimeout();
 		videoItem.setCurrentTime(0);
-		videoItem.transformationRenderBlock = false;
 		videoItem.setIsPlaying(false);
-	};
-
-	const onPlay = () => {
-		videoItem.transformationRenderBlock = true;
 	};
 
 	const mbr = videoItem.getMbr().getTransformed(board.camera.getMatrix());
@@ -134,6 +127,7 @@ export const VideoPlayer = ({ videoItem }: Props) => {
 			style={{
 				left: mbr.left,
 				top: mbr.top,
+				zIndex: board.getZIndex(videoItem),
 			}}
 			ref={containerRef}
 		>
@@ -145,7 +139,6 @@ export const VideoPlayer = ({ videoItem }: Props) => {
 						event.target.seekTo(videoItem.getCurrentTime());
 						event.target.playVideo();
 					}}
-					onPlay={onPlay}
 					onStateChange={onStateChange}
 					onPause={stopYoutubeVideo}
 					onEnd={onEnded}
@@ -160,7 +153,6 @@ export const VideoPlayer = ({ videoItem }: Props) => {
 					onSeeking={clearStopTimeout}
 					onSeeked={clearStopTimeout}
 					onEnded={onEnded}
-					onPlay={onPlay}
 				>
 					<source src={videoItem.getUrl()} type="video/mp4" />
 				</video>

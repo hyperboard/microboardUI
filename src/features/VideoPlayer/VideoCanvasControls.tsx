@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import { useAppSubscription } from "Board/useBoardSubscription";
 import { useAppContext } from "features/AppContext";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
+import { createPortal } from "react-dom";
 
 export const VideoCanvasControls = () => {
 	const { board } = useAppContext();
@@ -38,18 +39,20 @@ export const VideoCanvasControls = () => {
 		return null;
 	}
 
-	return (
+	return createPortal(
 		<div
 			ref={playBtnRef}
 			style={{
-				position: "absolute",
+				position: "fixed",
 				cursor: "pointer",
 				top: mbr.top,
 				left: mbr.left,
 				width: mbr.getWidth(),
 				height: mbr.getHeight(),
+				zIndex: 3,
 			}}
 			onClick={onClick}
-		></div>
+		></div>,
+		document.body,
 	);
 };

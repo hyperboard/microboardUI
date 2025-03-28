@@ -65,6 +65,12 @@ class CommentElement extends HTMLElement {
 	}
 }
 
+class AudioItemElement extends HTMLElement {
+	constructor() {
+		super();
+	}
+}
+
 customElements.define("rich-text", RichTextElement);
 customElements.define("shape-item", ShapeItemElement);
 customElements.define("sticker-item", StickerElement);
@@ -76,6 +82,7 @@ customElements.define("link-item", LinkItemElement);
 customElements.define("ainode-item", AINodeItemElement);
 customElements.define("video-item", VideoItemElement);
 customElements.define("comment-item", CommentElement);
+customElements.define("audio-item", AudioItemElement);
 
 document.addEventListener("DOMContentLoaded", () => {
 	const titlePanel = document.createElement("div");

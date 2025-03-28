@@ -7,9 +7,10 @@ import React, { useCallback, useEffect, useRef } from "react";
 interface Props {
 	app: App;
 	board: Board;
+	children?: React.ReactNode;
 }
 
-export const CanvasNoRouter: React.FC<Props> = ({ app, board }) => {
+export const CanvasNoRouter: React.FC<Props> = ({ app, board, children }) => {
 	const stageRef = useRef<HTMLDivElement>(null);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const cursorsCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -147,10 +148,12 @@ export const CanvasNoRouter: React.FC<Props> = ({ app, board }) => {
 				height={Math.floor(height * window.devicePixelRatio)}
 				className="NoContextMenu"
 				style={{
+					zIndex: 1,
+					pointerEvents: "none",
 					padding: "0px",
 					margin: "0px",
 					border: "0px",
-					background: "rgb(246, 246, 246)",
+					background: "none",
 					top: "0px",
 					left: "0px",
 					display: "block",
@@ -165,6 +168,8 @@ export const CanvasNoRouter: React.FC<Props> = ({ app, board }) => {
 				className="NoContextMenu"
 				id="ExportLayer"
 				style={{
+					zIndex: 1,
+					pointerEvents: "none",
 					padding: "0px",
 					margin: "0px",
 					border: "0px",
@@ -183,6 +188,7 @@ export const CanvasNoRouter: React.FC<Props> = ({ app, board }) => {
 				height={Math.floor(height * window.devicePixelRatio)}
 				className="NoContextMenu"
 				style={{
+					zIndex: 1,
 					padding: "0px",
 					margin: "0px",
 					border: "0px",
@@ -196,6 +202,16 @@ export const CanvasNoRouter: React.FC<Props> = ({ app, board }) => {
 					pointerEvents: "none",
 				}}
 			/>
+			<div
+				style={{
+					position: "relative",
+					zIndex: 0,
+					width: `${width}px`,
+					height: `${height}px`,
+				}}
+			>
+				{children}
+			</div>
 		</div>
 	);
 };

@@ -83,6 +83,7 @@ export const LinkToButton = ({ item, handleClick }: Props): JSX.Element => {
 				position: "absolute",
 				left: mbr.left,
 				top: mbr.top,
+				zIndex: board.getZIndex(item),
 			}}
 			className={styles.btn}
 			ref={linkToButtonRef}
