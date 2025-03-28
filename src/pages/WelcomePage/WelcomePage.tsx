@@ -1,5 +1,4 @@
 import { useBoardsList } from "App/useBoardsList";
-import { Mbr } from "Board/Items";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -7,13 +6,7 @@ import { App } from "../../App";
 import boardDataRu from "./welcomeBoard.json";
 import boardDataEn from "./welcomeBoardEn.json";
 import { useAppContext } from "features/AppContext";
-
-const INITIAL_FIT_AREA = {
-	left: 0,
-	top: -150,
-	right: 1550,
-	bottom: 850,
-};
+import { Item } from "Board/Items";
 
 export function WelcomePage(): React.ReactElement {
 	const { app } = useAppContext();
@@ -35,28 +28,36 @@ export function WelcomePage(): React.ReactElement {
 		await app.openBoard(boardId);
 		const board = app.getBoard();
 
-		if (i18n.language === "ru") {
-			board.paste(
-				boardDataRu as unknown as {
-					[key: string]: ItemData;
-				},
-				false,
-			);
-		} else {
-			board.paste(
-				boardDataEn as unknown as {
-					[key: string]: ItemData;
-				},
-				false,
-			);
-		}
-
-		const mbr = new Mbr(
-			INITIAL_FIT_AREA.left,
-			INITIAL_FIT_AREA.top,
-			INITIAL_FIT_AREA.right,
-			INITIAL_FIT_AREA.bottom,
+		const baseUrl = window.location.origin;
+		const storageIndex =
+			baseUrl === "https://dev-app.microboard.io" ? 0 : 1;
+		const boardData = i18n.language === "ru" ? boardDataRu : boardDataEn;
+		const filteredBoardData = Object.fromEntries(
+			Object.entries(boardData).map(([id, item]) => {
+				if (
+					item.itemType === "Image" &&
+					Array.isArray(item.storageLink)
+				) {
+					return [
+						id,
+						{
+							...item,
+							storageLink: item.storageLink[storageIndex],
+						},
+					];
+				}
+				return [id, item];
+			}),
 		);
+
+		board.paste(
+			filteredBoardData as unknown as {
+				[key: string]: Item;
+			},
+			false,
+		);
+
+		const mbr = app.getBoard().items.getMbr();
 		board.selection.removeAll();
 		board.camera.zoomToFit(mbr);
 		return boardId;
