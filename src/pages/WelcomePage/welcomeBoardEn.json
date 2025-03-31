@@ -1,16 +1,13 @@
 {
-	"0d188952-9d5f-4fa9-8362-6680c46c86d5": {
+	"7812d6fd-6bf4-4384-8d49-ff6ccf3e5089": {
 		"itemType": "Image",
-		"storageLink": [
-			"https://dev-app.microboard.io/api/v1/media/99810421b90edcf10d9d5c7d9abe1072ccd1707f367cce2a50c7ebd1bc7d7b36.svg",
-			"https://app.microboard.io/api/v1/media/f557b2fb2e88facca2b5dad92a382267f70be695b6d87f845c189010bb9fe94a.svg"
-		],
+		"storageLink": "http://localhost:8000/api/v1/media/f557b2fb2e88facca2b5dad92a382267f70be695b6d87f845c189010bb9fe94a.svg",
 		"imageDimension": {
 			"width": 347,
 			"height": 146
 		},
 		"transformation": {
-			"translateX": 13570.5,
+			"translateX": 13568.5,
 			"translateY": 4690.58,
 			"scaleX": 6.2997,
 			"scaleY": 6.2997,
@@ -19,18 +16,15 @@
 		},
 		"zIndex": 0
 	},
-	"b336876c-377d-4e8b-872c-d8ad2924748b": {
+	"36901b0f-5987-403c-8e73-d4ab8c6c8ad9": {
 		"itemType": "Image",
-		"storageLink": [
-			"https://dev-app.microboard.io/api/v1/media/a221fbf861a600c464366845e538b72a5862de687c79c5d49d058ff2f3b29416.svg",
-			"https://app.microboard.io/api/v1/media/2f5637702101584ed6dfe7dbfa9d137b68153efec18b2aa965cbfff6fca29b32.svg"
-		],
+		"storageLink": "http://localhost:8000/api/v1/media/2f5637702101584ed6dfe7dbfa9d137b68153efec18b2aa965cbfff6fca29b32.svg",
 		"imageDimension": {
 			"width": 327,
 			"height": 152
 		},
 		"transformation": {
-			"translateX": 2804.72,
+			"translateX": 2802.72,
 			"translateY": 315.089,
 			"scaleX": 9.39986,
 			"scaleY": 9.39986,
@@ -39,177 +33,7 @@
 		},
 		"zIndex": 1
 	},
-	"fd7d0115-27f3-4142-810d-a20828e8e9fa": {
-		"itemType": "Shape",
-		"shapeType": "Circle",
-		"backgroundColor": "rgb(255, 255, 255)",
-		"backgroundOpacity": 1,
-		"borderColor": "rgb(255, 255, 255)",
-		"borderOpacity": 1,
-		"borderStyle": "solid",
-		"borderWidth": 1,
-		"transformation": {
-			"translateX": 9602.43,
-			"translateY": 669.298,
-			"scaleX": 28.0395,
-			"scaleY": 19.6283,
-			"rotate": 0,
-			"isLocked": false
-		},
-		"text": {
-			"itemType": "RichText",
-			"verticalAlignment": "center",
-			"children": [
-				{
-					"type": "paragraph",
-					"horisontalAlignment": "left",
-					"lineHeight": 1.4,
-					"children": [
-						{
-							"type": "text",
-							"text": " ",
-							"bold": false,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "black",
-							"fontHighlight": "",
-							"fontSize": 28,
-							"fontFamily": "\"Open Sans\"",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						}
-					]
-				}
-			],
-			"maxWidth": 2804,
-			"containerMaxWidth": 2243.16,
-			"placeholderText": " ",
-			"insideOf": "Shape",
-			"realSize": 28
-		},
-		"zIndex": 2
-	},
-	"2534a3ba-fb23-4f73-a912-03986d468220": {
-		"itemType": "Shape",
-		"shapeType": "Circle",
-		"backgroundColor": "rgb(255, 255, 255)",
-		"backgroundOpacity": 1,
-		"borderColor": "rgb(255, 255, 255)",
-		"borderOpacity": 1,
-		"borderStyle": "solid",
-		"borderWidth": 1,
-		"transformation": {
-			"translateX": 13533.4,
-			"translateY": 5642.73,
-			"scaleX": 7.2017,
-			"scaleY": 4.80892,
-			"rotate": 0,
-			"isLocked": false
-		},
-		"text": {
-			"itemType": "RichText",
-			"verticalAlignment": "center",
-			"children": [
-				{
-					"type": "paragraph",
-					"horisontalAlignment": "left",
-					"lineHeight": 1.4,
-					"children": [
-						{
-							"type": "text",
-							"text": "Save and Revisit Boards Anytime",
-							"bold": true,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "black",
-							"fontHighlight": "",
-							"fontSize": 36,
-							"fontFamily": "\"Open Sans\"",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						}
-					]
-				},
-				{
-					"type": "paragraph",
-					"horisontalAlignment": "left",
-					"lineHeight": 1.4,
-					"children": [
-						{
-							"type": "text",
-							"text": " ",
-							"bold": false,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "black",
-							"fontHighlight": "",
-							"fontSize": 36,
-							"fontFamily": "\"Open Sans\"",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						}
-					]
-				},
-				{
-					"type": "paragraph",
-					"horisontalAlignment": "left",
-					"lineHeight": 1.4,
-					"children": [
-						{
-							"type": "text",
-							"text": " ",
-							"bold": false,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "black",
-							"fontHighlight": "",
-							"fontSize": 36,
-							"fontFamily": "\"Open Sans\"",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						}
-					]
-				},
-				{
-					"type": "paragraph",
-					"horisontalAlignment": "left",
-					"lineHeight": 1.4,
-					"children": [
-						{
-							"type": "text",
-							"text": " ",
-							"bold": false,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "black",
-							"fontHighlight": "",
-							"fontSize": 28,
-							"fontFamily": "\"Open Sans\"",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						}
-					]
-				}
-			],
-			"maxWidth": 721,
-			"containerMaxWidth": 576.1360000000004,
-			"placeholderText": " ",
-			"insideOf": "Shape",
-			"realSize": 36
-		},
-		"zIndex": 3
-	},
-	"219cbb9d-d289-4e19-a66e-102781d48658": {
+	"351433bf-a496-4901-bc01-ec0a86883b17": {
 		"itemType": "Drawing",
 		"points": [
 			{
@@ -230,7 +54,7 @@
 			}
 		],
 		"transformation": {
-			"translateX": 5461.38,
+			"translateX": 5459.38,
 			"translateY": 9701.45,
 			"scaleX": 5.6313,
 			"scaleY": 6.11298,
@@ -239,9 +63,9 @@
 		},
 		"strokeStyle": "rgb(255, 177, 60)",
 		"strokeWidth": 24,
-		"zIndex": 4
+		"zIndex": 2
 	},
-	"7df1b9fc-f814-49f4-9362-5b1d9bcacc8a": {
+	"4ce806f7-26ab-4821-84e9-a087f40af684": {
 		"itemType": "Drawing",
 		"points": [
 			{
@@ -262,7 +86,7 @@
 			}
 		],
 		"transformation": {
-			"translateX": 4805.48,
+			"translateX": 4803.48,
 			"translateY": 9701.45,
 			"scaleX": 5.6313,
 			"scaleY": 6.11298,
@@ -271,9 +95,9 @@
 		},
 		"strokeStyle": "rgb(204, 241, 0)",
 		"strokeWidth": 24,
-		"zIndex": 5
+		"zIndex": 3
 	},
-	"2dde8452-4fe5-481a-a93f-6a4c08481db1": {
+	"82fe60ed-35ca-45ad-856a-2a2e8f6d6003": {
 		"itemType": "Drawing",
 		"points": [
 			{
@@ -294,7 +118,7 @@
 			}
 		],
 		"transformation": {
-			"translateX": 4149.58,
+			"translateX": 4147.58,
 			"translateY": 9701.45,
 			"scaleX": 5.6313,
 			"scaleY": 6.11298,
@@ -303,29 +127,26 @@
 		},
 		"strokeStyle": "rgba(218, 0, 99, 0.5)",
 		"strokeWidth": 24,
-		"zIndex": 6
+		"zIndex": 4
 	},
-	"2ddb85c2-eb85-4e81-80eb-84be0881d8ce": {
+	"776857a9-0aa6-45a1-96fe-b0d2bd6c0398": {
 		"itemType": "Image",
-		"storageLink": [
-			"https://dev-app.microboard.io/api/v1/media/7d436213a39bed5c7aa2b76999db515d10f4a16a4c5a0b2b4b4e7fd054ffd4c7.svg",
-			"https://app.microboard.io/api/v1/media/f7e6cf18915427a5d80334840b474477508f020ee68cc46c4ab8d1fbfb963653.svg"
-		],
+		"storageLink": "http://localhost:8000/api/v1/media/f7e6cf18915427a5d80334840b474477508f020ee68cc46c4ab8d1fbfb963653.svg",
 		"imageDimension": {
 			"width": 205,
 			"height": 200
 		},
 		"transformation": {
-			"translateX": 5638.9,
+			"translateX": 5636.9,
 			"translateY": 3966.09,
 			"scaleX": 9.02308,
 			"scaleY": 9.02308,
 			"rotate": 0,
 			"isLocked": false
 		},
-		"zIndex": 7
+		"zIndex": 5
 	},
-	"601812e6-bda3-4577-bf06-3806f894706f": {
+	"9eefab93-75b2-4739-8859-7db956fed845": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -356,7 +177,7 @@
 		"containerMaxWidth": 890,
 		"placeholderText": "Напишите что-нибудь",
 		"transformation": {
-			"translateX": 7351.28,
+			"translateX": 7349.28,
 			"translateY": 5199.97,
 			"scaleX": 2.86484,
 			"scaleY": 2.86484,
@@ -365,9 +186,9 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 429.726,
-		"zIndex": 8
+		"zIndex": 6
 	},
-	"7e9b2b9e-06ad-4d3e-be7c-81e1de469de6": {
+	"a584348c-3cc8-4a3f-b96b-38ca58a9a714": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -465,7 +286,7 @@
 		"containerMaxWidth": 1199,
 		"placeholderText": "Напишите что-нибудь",
 		"transformation": {
-			"translateX": 6369.82,
+			"translateX": 6367.82,
 			"translateY": 5905.32,
 			"scaleX": 2.86484,
 			"scaleY": 2.86484,
@@ -474,9 +295,9 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 229.18720000000002,
-		"zIndex": 9
+		"zIndex": 7
 	},
-	"46e937e9-0b16-4d24-a541-cf89fff551af": {
+	"258ed9e4-c72c-47cd-83bb-679e605ec5fa": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -507,7 +328,7 @@
 		"containerMaxWidth": 600,
 		"placeholderText": "Напишите что-нибудь",
 		"transformation": {
-			"translateX": 3883.37,
+			"translateX": 3881.37,
 			"translateY": 676.953,
 			"scaleX": 1,
 			"scaleY": 1,
@@ -516,9 +337,9 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 144,
-		"zIndex": 10
+		"zIndex": 8
 	},
-	"b3bd05e4-2e7e-4af0-b6e5-04683859469e": {
+	"826af8f0-7229-4475-86d0-74dcfa3b4ee6": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -544,7 +365,7 @@
 					},
 					{
 						"type": "text",
-						"text": " context for AI queries",
+						"text": "context for AI queries",
 						"bold": true,
 						"italic": false,
 						"underline": false,
@@ -579,7 +400,7 @@
 		"containerMaxWidth": 798,
 		"placeholderText": "Напишите что-нибудь",
 		"transformation": {
-			"translateX": 4012.6,
+			"translateX": 4010.6,
 			"translateY": 804.913,
 			"scaleX": 1,
 			"scaleY": 1,
@@ -588,9 +409,9 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 56,
-		"zIndex": 11
+		"zIndex": 9
 	},
-	"04431433-5c71-4d88-9865-08e792276f55": {
+	"0c1fc537-fe21-4f23-bdf3-4fa4362bd004": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -623,7 +444,7 @@
 				"children": [
 					{
 						"type": "text",
-						"text": " ",
+						"text": "",
 						"bold": false,
 						"italic": false,
 						"underline": false,
@@ -643,7 +464,7 @@
 		"containerMaxWidth": 872,
 		"placeholderText": "Напишите что-нибудь",
 		"transformation": {
-			"translateX": 4012.6,
+			"translateX": 4010.6,
 			"translateY": 676.953,
 			"scaleX": 1,
 			"scaleY": 1,
@@ -652,9 +473,9 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 80,
-		"zIndex": 12
+		"zIndex": 10
 	},
-	"7c03a00f-a6a3-4b60-85b3-e4ee5cb5d37c": {
+	"9478fc66-dfe3-435d-9a62-3eb52cdadfa7": {
 		"itemType": "Shape",
 		"shapeType": "Circle",
 		"backgroundColor": "rgb(255, 255, 255)",
@@ -664,7 +485,7 @@
 		"borderStyle": "solid",
 		"borderWidth": 10,
 		"transformation": {
-			"translateX": 3742.44,
+			"translateX": 3740.44,
 			"translateY": 1286.57,
 			"scaleX": 7.29887,
 			"scaleY": 5.17825,
@@ -704,9 +525,9 @@
 			"insideOf": "Shape",
 			"realSize": 80
 		},
-		"zIndex": 13
+		"zIndex": 11
 	},
-	"a1ca6a0d-0d2c-4811-939e-fb978c3eac84": {
+	"e8985e0a-b63d-4a36-8319-ad97d6f719c0": {
 		"itemType": "Shape",
 		"shapeType": "Circle",
 		"backgroundColor": "rgb(255, 255, 255)",
@@ -716,7 +537,7 @@
 		"borderStyle": "solid",
 		"borderWidth": 10,
 		"transformation": {
-			"translateX": 4124.92,
+			"translateX": 4122.92,
 			"translateY": 1667.87,
 			"scaleX": 4.84712,
 			"scaleY": 3.63902,
@@ -756,9 +577,9 @@
 			"insideOf": "Shape",
 			"realSize": 80
 		},
-		"zIndex": 14
+		"zIndex": 12
 	},
-	"8198071b-95e5-4abc-a560-b508a63fe275": {
+	"e6cc7c2f-e31a-422c-87a1-689b8d4375ce": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -811,7 +632,7 @@
 		"containerMaxWidth": 990,
 		"placeholderText": "Напишите что-нибудь",
 		"transformation": {
-			"translateX": 9948.93,
+			"translateX": 9946.93,
 			"translateY": 1432.52,
 			"scaleX": 1,
 			"scaleY": 1,
@@ -820,9 +641,9 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 64,
-		"zIndex": 15
+		"zIndex": 13
 	},
-	"b8fb0274-570a-46f0-8ad4-7785c47f1764": {
+	"9fe716ac-70c1-4c31-a8c1-e9eeb43d7217": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -855,7 +676,7 @@
 				"children": [
 					{
 						"type": "text",
-						"text": " ",
+						"text": "",
 						"bold": false,
 						"italic": false,
 						"underline": false,
@@ -875,7 +696,7 @@
 		"containerMaxWidth": 841,
 		"placeholderText": "Напишите что-нибудь",
 		"transformation": {
-			"translateX": 9943.83,
+			"translateX": 9941.83,
 			"translateY": 1300.92,
 			"scaleX": 1,
 			"scaleY": 1,
@@ -884,9 +705,9 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 80,
-		"zIndex": 16
+		"zIndex": 14
 	},
-	"a838cb04-8384-4748-b4bf-fa2c64ccca89": {
+	"a06bd179-dc15-465c-b39a-ac4b60874934": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -917,7 +738,7 @@
 		"containerMaxWidth": 600,
 		"placeholderText": "Напишите что-нибудь",
 		"transformation": {
-			"translateX": 9797.23,
+			"translateX": 9795.23,
 			"translateY": 1300.92,
 			"scaleX": 1,
 			"scaleY": 1,
@@ -926,9 +747,9 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 144,
-		"zIndex": 17
+		"zIndex": 15
 	},
-	"b215aeb8-0b81-42da-87c5-4d89e218ff78": {
+	"84580a3d-2e0f-4881-a3d7-0ba142fc49c9": {
 		"itemType": "Shape",
 		"shapeType": "Circle",
 		"backgroundColor": "none",
@@ -938,7 +759,7 @@
 		"borderStyle": "dot",
 		"borderWidth": 9,
 		"transformation": {
-			"translateX": 9990.53,
+			"translateX": 9988.53,
 			"translateY": 1758.43,
 			"scaleX": 3.02919,
 			"scaleY": 2.41016,
@@ -978,9 +799,9 @@
 			"insideOf": "Shape",
 			"realSize": 36
 		},
-		"zIndex": 18
+		"zIndex": 16
 	},
-	"d16c33ec-6630-44dd-82fd-57e51db72920": {
+	"72cac1a3-9f11-4ae3-875f-f8e3c39ebcb0": {
 		"itemType": "Shape",
 		"shapeType": "Circle",
 		"backgroundColor": "none",
@@ -990,7 +811,7 @@
 		"borderStyle": "dot",
 		"borderWidth": 8,
 		"transformation": {
-			"translateX": 10495.3,
+			"translateX": 10493.3,
 			"translateY": 2000.33,
 			"scaleX": 3.53497,
 			"scaleY": 3.07013,
@@ -1030,29 +851,26 @@
 			"insideOf": "Shape",
 			"realSize": 36
 		},
-		"zIndex": 19
+		"zIndex": 17
 	},
-	"1d472a62-c5f1-48ff-a494-9301526768c2": {
+	"064b7690-7a85-4a7d-a987-ffa2b23e01f3": {
 		"itemType": "Image",
-		"storageLink": [
-			"https://dev-app.microboard.io/api/v1/media/99810421b90edcf10d9d5c7d9abe1072ccd1707f367cce2a50c7ebd1bc7d7b36.svg",
-			"https://app.microboard.io/api/v1/media/f557b2fb2e88facca2b5dad92a382267f70be695b6d87f845c189010bb9fe94a.svg"
-		],
+		"storageLink": "http://localhost:8000/api/v1/media/f557b2fb2e88facca2b5dad92a382267f70be695b6d87f845c189010bb9fe94a.svg",
 		"imageDimension": {
 			"width": 347,
 			"height": 146
 		},
 		"transformation": {
-			"translateX": 114.053,
+			"translateX": 112.053,
 			"translateY": 3571.48,
 			"scaleX": 6.2997,
 			"scaleY": 6.2997,
 			"rotate": 0,
 			"isLocked": false
 		},
-		"zIndex": 20
+		"zIndex": 18
 	},
-	"6145ddc9-6c26-4371-b8c8-063425a546a3": {
+	"711e070b-1755-4030-8940-2b203db87bff": {
 		"itemType": "Shape",
 		"shapeType": "Circle",
 		"backgroundColor": "rgb(255, 255, 255)",
@@ -1062,7 +880,7 @@
 		"borderStyle": "solid",
 		"borderWidth": 1,
 		"transformation": {
-			"translateX": 1372.34,
+			"translateX": 1370.34,
 			"translateY": 3095.98,
 			"scaleX": 14.6042,
 			"scaleY": 9.51004,
@@ -1080,7 +898,7 @@
 					"children": [
 						{
 							"type": "text",
-							"text": " ",
+							"text": "",
 							"bold": false,
 							"italic": false,
 							"underline": false,
@@ -1102,9 +920,9 @@
 			"insideOf": "Shape",
 			"realSize": 36
 		},
-		"zIndex": 21
+		"zIndex": 19
 	},
-	"7646c35c-7f00-4ea0-a947-9201df5468f2": {
+	"722069ef-f925-4273-a7c4-ea04ce1a596d": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -1157,8 +975,8 @@
 		"containerMaxWidth": 872,
 		"placeholderText": "Напишите что-нибудь",
 		"transformation": {
-			"translateX": 1754.90280056234,
-			"translateY": 3516.11326789692,
+			"translateX": 1752.902801,
+			"translateY": 3516.113268,
 			"scaleX": 1,
 			"scaleY": 1,
 			"rotate": 0,
@@ -1166,9 +984,9 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 64,
-		"zIndex": 22
+		"zIndex": 20
 	},
-	"e30f0879-0633-44e7-ad87-5d19883501c7": {
+	"ff4cf293-6637-4314-b5ca-add632cedbac": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -1201,7 +1019,7 @@
 				"children": [
 					{
 						"type": "text",
-						"text": " ",
+						"text": "",
 						"bold": false,
 						"italic": false,
 						"underline": false,
@@ -1221,8 +1039,8 @@
 		"containerMaxWidth": 1090,
 		"placeholderText": "Напишите что-нибудь",
 		"transformation": {
-			"translateX": 1757.44280056234,
-			"translateY": 3385.92326789692,
+			"translateX": 1755.442801,
+			"translateY": 3385.923268,
 			"scaleX": 1,
 			"scaleY": 1,
 			"rotate": 0,
@@ -1230,9 +1048,9 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 80,
-		"zIndex": 23
+		"zIndex": 21
 	},
-	"2ef56ba8-e1ec-43aa-ac07-0def05aecc9d": {
+	"914a8eb7-8848-4e49-bc1d-70a5569da74c": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -1263,7 +1081,7 @@
 		"containerMaxWidth": 600,
 		"placeholderText": "Напишите что-нибудь",
 		"transformation": {
-			"translateX": 1552.42,
+			"translateX": 1550.42,
 			"translateY": 3390.42,
 			"scaleX": 1,
 			"scaleY": 1,
@@ -1272,12 +1090,12 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 160,
-		"zIndex": 24
+		"zIndex": 22
 	},
-	"30a6fb7d-1eff-4c81-bc97-ada13bb47e9f": {
+	"1c311fa4-1e57-4ec2-8848-009a133f88b3": {
 		"itemType": "AINode",
 		"transformation": {
-			"translateX": 728,
+			"translateX": 726,
 			"translateY": 3777,
 			"scaleX": 1,
 			"scaleY": 1,
@@ -1315,7 +1133,7 @@
 			"containerMaxWidth": 239,
 			"placeholderText": " ",
 			"transformation": {
-				"translateX": 728,
+				"translateX": 726,
 				"translateY": 3777,
 				"scaleX": 1,
 				"scaleY": 1,
@@ -1328,13 +1146,13 @@
 		"isUserRequest": true,
 		"contextItems": [],
 		"threadDirection": 3,
-		"zIndex": 25
+		"zIndex": 23
 	},
-	"409cac9e-2d5d-4bc1-8b5e-2b7ab9bd709e": {
+	"40022189-edf1-45af-9df6-87caa18eed93": {
 		"itemType": "Sticker",
 		"backgroundColor": "rgb(233, 208, 255)",
 		"transformation": {
-			"translateX": 11341,
+			"translateX": 11339,
 			"translateY": 10234,
 			"scaleX": 2.62176,
 			"scaleY": 2.62176,
@@ -1376,9 +1194,9 @@
 			"linkTo": "https://mail.google.com/mail/?view=cm&fs=1&to=ceo@microboard.io"
 		},
 		"linkTo": "https://mail.google.com/mail/?view=cm&fs=1&to=ceo@microboard.io",
-		"zIndex": 26
+		"zIndex": 24
 	},
-	"f8bb1ef5-7b02-4cc7-a64f-01b629f5a392": {
+	"9d7dc29b-88f1-470e-862d-1f0f9b857297": {
 		"itemType": "Shape",
 		"shapeType": "Circle",
 		"backgroundColor": "none",
@@ -1388,7 +1206,7 @@
 		"borderStyle": "dot",
 		"borderWidth": 10,
 		"transformation": {
-			"translateX": 10668.2,
+			"translateX": 10666.2,
 			"translateY": 1613.4,
 			"scaleX": 3.02919,
 			"scaleY": 2.41016,
@@ -1428,9 +1246,9 @@
 			"insideOf": "Shape",
 			"realSize": 36
 		},
-		"zIndex": 27
+		"zIndex": 25
 	},
-	"9bbc784e-f677-486a-9d67-aedd930a0452": {
+	"fb052030-8b02-4a21-9a5d-7dab48345c28": {
 		"itemType": "Shape",
 		"shapeType": "Circle",
 		"backgroundColor": "none",
@@ -1440,7 +1258,7 @@
 		"borderStyle": "dot",
 		"borderWidth": 9,
 		"transformation": {
-			"translateX": 11201.2,
+			"translateX": 11199.2,
 			"translateY": 1604.67,
 			"scaleX": 3.62899,
 			"scaleY": 2.58475,
@@ -1480,9 +1298,9 @@
 			"insideOf": "Shape",
 			"realSize": 36
 		},
-		"zIndex": 28
+		"zIndex": 26
 	},
-	"7d45ee1c-5d07-4dc2-bec0-6f85c372fa65": {
+	"63ee3025-60e1-4d80-b0c9-4d2a9b0aa98d": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -1508,7 +1326,7 @@
 					},
 					{
 						"type": "text",
-						"text": " ",
+						"text": "",
 						"bold": false,
 						"italic": false,
 						"underline": false,
@@ -1543,7 +1361,7 @@
 		"containerMaxWidth": 919,
 		"placeholderText": "Type something",
 		"transformation": {
-			"translateX": 14300.8,
+			"translateX": 14298.8,
 			"translateY": 5113.01,
 			"scaleX": 1,
 			"scaleY": 1,
@@ -1552,9 +1370,9 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 100,
-		"zIndex": 29
+		"zIndex": 27
 	},
-	"ca8d7ce7-9af2-477e-b5e1-50fe3e37ad31": {
+	"72d6f562-470e-4535-aae9-c3f4c2a5f0c3": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -1585,7 +1403,7 @@
 		"containerMaxWidth": 1423,
 		"placeholderText": "Напишите что-нибудь",
 		"transformation": {
-			"translateX": 10740,
+			"translateX": 10738,
 			"translateY": 9580.68,
 			"scaleX": 1.10279,
 			"scaleY": 1.10279,
@@ -1594,9 +1412,9 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 158.80176,
-		"zIndex": 30
+		"zIndex": 28
 	},
-	"26706a81-9874-4de4-91fa-18e0a095d4a1": {
+	"a5728884-3474-4d71-9f0d-cdbbc8d5f030": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -1649,7 +1467,7 @@
 		"containerMaxWidth": 1818,
 		"placeholderText": "Type something",
 		"transformation": {
-			"translateX": 10802.1,
+			"translateX": 10800.1,
 			"translateY": 9893.03,
 			"scaleX": 1.10279,
 			"scaleY": 1.10279,
@@ -1658,9 +1476,9 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 88.22319999999999,
-		"zIndex": 31
+		"zIndex": 29
 	},
-	"e4c1509f-f8fe-4f6b-b979-6839f1d955ca": {
+	"13ec7c34-7b40-492b-b375-c5aff9c3ed6f": {
 		"itemType": "Shape",
 		"shapeType": "Circle",
 		"backgroundColor": "rgb(255, 255, 255)",
@@ -1670,7 +1488,7 @@
 		"borderStyle": "solid",
 		"borderWidth": 1,
 		"transformation": {
-			"translateX": 14010.1,
+			"translateX": 14008.1,
 			"translateY": 3788.57,
 			"scaleX": 7.2017,
 			"scaleY": 4.80892,
@@ -1710,7 +1528,7 @@
 					"children": [
 						{
 							"type": "text",
-							"text": " ",
+							"text": "",
 							"bold": false,
 							"italic": false,
 							"underline": false,
@@ -1732,9 +1550,9 @@
 			"insideOf": "Shape",
 			"realSize": 36
 		},
-		"zIndex": 32
+		"zIndex": 30
 	},
-	"64f00ccd-32f3-49a6-9aa7-8f882d69ed3a": {
+	"900189a2-2f4f-49aa-ad70-f7cc734db071": {
 		"itemType": "Shape",
 		"shapeType": "RoundedRectangle",
 		"backgroundColor": "none",
@@ -1744,7 +1562,7 @@
 		"borderStyle": "solid",
 		"borderWidth": 1,
 		"transformation": {
-			"translateX": 14264.6,
+			"translateX": 14262.6,
 			"translateY": 4108.61,
 			"scaleX": 6.4231,
 			"scaleY": 4.45104,
@@ -1784,7 +1602,7 @@
 					"children": [
 						{
 							"type": "text",
-							"text": " ",
+							"text": "",
 							"bold": false,
 							"italic": false,
 							"underline": false,
@@ -1858,9 +1676,9 @@
 			"insideOf": "Shape",
 			"realSize": 36
 		},
-		"zIndex": 33
+		"zIndex": 31
 	},
-	"f830df94-b1f3-4c6f-913b-d4088f4eb303": {
+	"43efc5ce-c0bf-496d-936d-931ce3b75c35": {
 		"itemType": "Drawing",
 		"points": [
 			{
@@ -1913,7 +1731,7 @@
 			}
 		],
 		"transformation": {
-			"translateX": 14214,
+			"translateX": 14212,
 			"translateY": 4160.86,
 			"scaleX": 1.71411,
 			"scaleY": 1.18993,
@@ -1922,9 +1740,9 @@
 		},
 		"strokeStyle": "#f4a4c0",
 		"strokeWidth": 24,
-		"zIndex": 34
+		"zIndex": 32
 	},
-	"01a79b64-0526-46ca-ad4c-fe783e2312b7": {
+	"6e319642-0371-4421-a97a-7c3848024e34": {
 		"itemType": "Drawing",
 		"points": [
 			{
@@ -1985,7 +1803,7 @@
 			}
 		],
 		"transformation": {
-			"translateX": 14296.7,
+			"translateX": 14294.7,
 			"translateY": 4038.3,
 			"scaleX": 1.66289,
 			"scaleY": 0.892267,
@@ -1994,9 +1812,9 @@
 		},
 		"strokeStyle": "#f4a4c0",
 		"strokeWidth": 24,
-		"zIndex": 35
+		"zIndex": 33
 	},
-	"94962f1b-8ed5-4f26-bb93-6e5b00cdece1": {
+	"da1ca9f0-82b6-4427-8ce8-ba2c2d8585cf": {
 		"itemType": "Shape",
 		"shapeType": "Circle",
 		"backgroundColor": "rgb(255, 255, 255)",
@@ -2006,7 +1824,7 @@
 		"borderStyle": "solid",
 		"borderWidth": 1,
 		"transformation": {
-			"translateX": 15253.3,
+			"translateX": 15251.3,
 			"translateY": 4442.06,
 			"scaleX": 5.38897,
 			"scaleY": 4.22817,
@@ -2046,7 +1864,7 @@
 					"children": [
 						{
 							"type": "text",
-							"text": " ",
+							"text": "",
 							"bold": false,
 							"italic": false,
 							"underline": false,
@@ -2068,9 +1886,9 @@
 			"insideOf": "Shape",
 			"realSize": 36
 		},
-		"zIndex": 36
+		"zIndex": 34
 	},
-	"37affbc2-352c-4a3c-9cba-68b13c90f8b8": {
+	"6e587dc4-e288-4dc4-8b1f-334c7e2325d1": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -2131,8 +1949,8 @@
 		"containerMaxWidth": 547,
 		"placeholderText": "Type something",
 		"transformation": {
-			"translateX": 15503.71480278449,
-			"translateY": 4802.384492503226,
+			"translateX": 15501.714803,
+			"translateY": 4802.384493,
 			"scaleX": 1,
 			"scaleY": 1,
 			"rotate": 0,
@@ -2140,9 +1958,9 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 36,
-		"zIndex": 37
+		"zIndex": 35
 	},
-	"e96bc055-8ae3-42b0-b5dc-fdbbbf7df1ae": {
+	"a2ae9241-beea-448b-a122-3778a205203a": {
 		"itemType": "Drawing",
 		"points": [
 			{
@@ -2203,7 +2021,7 @@
 			}
 		],
 		"transformation": {
-			"translateX": 15472.9,
+			"translateX": 15470.9,
 			"translateY": 4715.05,
 			"scaleX": 1.58637,
 			"scaleY": 0.553444,
@@ -2212,9 +2030,9 @@
 		},
 		"strokeStyle": "#a8c6fe",
 		"strokeWidth": 24,
-		"zIndex": 38
+		"zIndex": 36
 	},
-	"6439ea40-1722-48a5-98a2-eee49f3ae01c": {
+	"5a60b8c0-2821-4aad-9502-5419703d422a": {
 		"itemType": "Drawing",
 		"points": [
 			{
@@ -2267,7 +2085,7 @@
 			}
 		],
 		"transformation": {
-			"translateX": 15430,
+			"translateX": 15428,
 			"translateY": 4783.41,
 			"scaleX": 1.62679,
 			"scaleY": 0.748654,
@@ -2276,9 +2094,9 @@
 		},
 		"strokeStyle": "#a8c6fe",
 		"strokeWidth": 24,
-		"zIndex": 39
+		"zIndex": 37
 	},
-	"fdc59dc1-893d-44b3-bf14-ed04f2716658": {
+	"3f35e546-0a78-4ad7-8379-8cf3a05f366a": {
 		"itemType": "Shape",
 		"shapeType": "Circle",
 		"backgroundColor": "rgb(255, 255, 255)",
@@ -2288,7 +2106,7 @@
 		"borderStyle": "solid",
 		"borderWidth": 1,
 		"transformation": {
-			"translateX": 12852.7,
+			"translateX": 12850.7,
 			"translateY": 4547.6,
 			"scaleX": 7.2017,
 			"scaleY": 4.80892,
@@ -2328,7 +2146,7 @@
 					"children": [
 						{
 							"type": "text",
-							"text": " ",
+							"text": "",
 							"bold": false,
 							"italic": false,
 							"underline": false,
@@ -2350,7 +2168,7 @@
 					"children": [
 						{
 							"type": "text",
-							"text": " ",
+							"text": "",
 							"bold": false,
 							"italic": false,
 							"underline": false,
@@ -2372,9 +2190,9 @@
 			"insideOf": "Shape",
 			"realSize": 36
 		},
-		"zIndex": 40
+		"zIndex": 38
 	},
-	"b2719d9f-e3ad-4d1c-99b4-2b1f7fc985d8": {
+	"94ada1c4-0ab5-4ae6-b775-e8834c19ec3a": {
 		"itemType": "Drawing",
 		"points": [
 			{
@@ -2435,7 +2253,7 @@
 			}
 		],
 		"transformation": {
-			"translateX": 13068.4,
+			"translateX": 13066.4,
 			"translateY": 4758.42,
 			"scaleX": 1.43634,
 			"scaleY": 0.948473,
@@ -2444,9 +2262,9 @@
 		},
 		"strokeStyle": "#ffa57d",
 		"strokeWidth": 24,
-		"zIndex": 41
+		"zIndex": 39
 	},
-	"db005d93-5a85-4770-9fea-5c0c86358952": {
+	"4da50de9-d2be-4aa2-a3a5-f97d7a4f1d31": {
 		"itemType": "Shape",
 		"shapeType": "RoundedRectangle",
 		"backgroundColor": "none",
@@ -2456,255 +2274,7 @@
 		"borderStyle": "solid",
 		"borderWidth": 1,
 		"transformation": {
-			"translateX": 13802.409787694332,
-			"translateY": 5888.939367989864,
-			"scaleX": 4.57865,
-			"scaleY": 3.65206,
-			"rotate": 0,
-			"isLocked": false
-		},
-		"text": {
-			"itemType": "RichText",
-			"verticalAlignment": "center",
-			"children": [
-				{
-					"type": "paragraph",
-					"horisontalAlignment": "left",
-					"lineHeight": 1.4,
-					"children": [
-						{
-							"type": "text",
-							"text": "Export your boards as ",
-							"bold": false,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "black",
-							"fontHighlight": "",
-							"fontSize": 36,
-							"fontFamily": "\"Open Sans\"",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						},
-						{
-							"type": "text",
-							"text": "HTML ",
-							"bold": true,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "black",
-							"fontHighlight": "",
-							"fontSize": 36,
-							"fontFamily": "\"Open Sans\"",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						},
-						{
-							"type": "text",
-							"text": "files ",
-							"bold": false,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "black",
-							"fontHighlight": "",
-							"fontSize": 36,
-							"fontFamily": "\"Open Sans\"",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						},
-						{
-							"type": "text",
-							"text": "to store locally ",
-							"bold": true,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "black",
-							"fontHighlight": "",
-							"fontSize": 36,
-							"fontFamily": "\"Open Sans\"",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						},
-						{
-							"type": "text",
-							"text": "and re-upload them in case you need. Your ideas are always safe and accessible!",
-							"bold": false,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "black",
-							"fontHighlight": "",
-							"fontSize": 36,
-							"fontFamily": "\"Open Sans\"",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						}
-					]
-				}
-			],
-			"maxWidth": 458,
-			"containerMaxWidth": 412.07850000000144,
-			"placeholderText": " ",
-			"insideOf": "Shape",
-			"realSize": 36
-		},
-		"zIndex": 42
-	},
-	"b271e7bf-f692-4b03-9d02-4fccc204973a": {
-		"itemType": "Drawing",
-		"points": [
-			{
-				"x": 12,
-				"y": 12
-			},
-			{
-				"x": 12,
-				"y": 277.2209980838088
-			},
-			{
-				"x": 17.619088942454255,
-				"y": 399.71713702929674
-			},
-			{
-				"x": 114.26741875265543,
-				"y": 388.4789591443896
-			},
-			{
-				"x": 192.934663947005,
-				"y": 381.7360524134451
-			},
-			{
-				"x": 259.2399134679572,
-				"y": 379.4884168364638
-			},
-			{
-				"x": 334.53570529683566,
-				"y": 380.61223462495445
-			},
-			{
-				"x": 350.26915433570593,
-				"y": 382.859870201936
-			},
-			{
-				"x": 376.11696347099223,
-				"y": 389.60277693288026
-			},
-			{
-				"x": 378.36459904797357,
-				"y": 389.60277693288026
-			},
-			{
-				"x": 376.11696347099223,
-				"y": 388.4789591443896
-			},
-			{
-				"x": 376.11696347099223,
-				"y": 388.4789591443896
-			}
-		],
-		"transformation": {
-			"translateX": 13748.5,
-			"translateY": 5870.39,
-			"scaleX": 1.31997,
-			"scaleY": 1,
-			"rotate": 0,
-			"isLocked": false
-		},
-		"strokeStyle": "#c49fe4",
-		"strokeWidth": 24,
-		"zIndex": 43
-	},
-	"92d28b4b-58d7-458a-a6e1-9ed3d56828d7": {
-		"itemType": "Drawing",
-		"points": [
-			{
-				"x": 12,
-				"y": 12
-			},
-			{
-				"x": 274.97336250682656,
-				"y": 13.123817788490669
-			},
-			{
-				"x": 309.8117139500391,
-				"y": 17.619088942453573
-			},
-			{
-				"x": 333.4118875083441,
-				"y": 24.361995673397814
-			},
-			{
-				"x": 352.51678991268636,
-				"y": 33.35253798132362
-			},
-			{
-				"x": 363.75496779759305,
-				"y": 43.4668980777401
-			},
-			{
-				"x": 372.7455101055193,
-				"y": 56.95271153962858
-			},
-			{
-				"x": 378.36459904797266,
-				"y": 77.18143173246153
-			},
-			{
-				"x": 381.73605241344467,
-				"y": 108.6483298102014
-			},
-			{
-				"x": 383.983687990426,
-				"y": 189.56321058153299
-			},
-			{
-				"x": 383.983687990426,
-				"y": 330.0404341428723
-			},
-			{
-				"x": 386.23132356740734,
-				"y": 379.4884168364638
-			},
-			{
-				"x": 394.09804808684294,
-				"y": 443.54603078043465
-			},
-			{
-				"x": 394.09804808684294,
-				"y": 443.54603078043465
-			}
-		],
-		"transformation": {
-			"translateX": 13845.1,
-			"translateY": 5852.19,
-			"scaleX": 1.1605,
-			"scaleY": 0.730555,
-			"rotate": 0,
-			"isLocked": false
-		},
-		"strokeStyle": "#c49fe4",
-		"strokeWidth": 24,
-		"zIndex": 44
-	},
-	"6922e0c6-8db4-4b82-b100-ceb5eb96c489": {
-		"itemType": "Shape",
-		"shapeType": "RoundedRectangle",
-		"backgroundColor": "none",
-		"backgroundOpacity": 1,
-		"borderColor": "#f6f6f6",
-		"borderOpacity": 1,
-		"borderStyle": "solid",
-		"borderWidth": 1,
-		"transformation": {
-			"translateX": 13025.675201340515,
+			"translateX": 13023.675201,
 			"translateY": 4787.2845,
 			"scaleX": 5.37853,
 			"scaleY": 4.83415,
@@ -2789,7 +2359,7 @@
 						},
 						{
 							"type": "text",
-							"text": " copying (Ctrl+C) ",
+							"text": "copying (Ctrl+C) ",
 							"bold": true,
 							"italic": false,
 							"underline": false,
@@ -2856,9 +2426,9 @@
 			"insideOf": "Shape",
 			"realSize": 36
 		},
-		"zIndex": 45
+		"zIndex": 40
 	},
-	"19118b25-d1aa-4ba2-9fbe-27a773174d8b": {
+	"ea613c91-9dd0-41d5-823a-9cd1605b98a8": {
 		"itemType": "Shape",
 		"shapeType": "Circle",
 		"backgroundColor": "rgb(255, 255, 255)",
@@ -2868,7 +2438,7 @@
 		"borderStyle": "solid",
 		"borderWidth": 1,
 		"transformation": {
-			"translateX": 15035.8,
+			"translateX": 15033.8,
 			"translateY": 5626.12,
 			"scaleX": 7.2017,
 			"scaleY": 4.80892,
@@ -2930,7 +2500,7 @@
 					"children": [
 						{
 							"type": "text",
-							"text": " ",
+							"text": "",
 							"bold": false,
 							"italic": false,
 							"underline": false,
@@ -2952,7 +2522,7 @@
 					"children": [
 						{
 							"type": "text",
-							"text": " ",
+							"text": "",
 							"bold": false,
 							"italic": false,
 							"underline": false,
@@ -2974,7 +2544,7 @@
 					"children": [
 						{
 							"type": "text",
-							"text": " ",
+							"text": "",
 							"bold": false,
 							"italic": false,
 							"underline": false,
@@ -2996,7 +2566,7 @@
 					"children": [
 						{
 							"type": "text",
-							"text": " ",
+							"text": "",
 							"bold": false,
 							"italic": false,
 							"underline": false,
@@ -3018,9 +2588,9 @@
 			"insideOf": "Shape",
 			"realSize": 36
 		},
-		"zIndex": 46
+		"zIndex": 41
 	},
-	"afa3898f-3a28-4be8-85b0-d8173b277bb4": {
+	"356ee199-a702-4654-bd2a-f1a91c2d336f": {
 		"itemType": "Shape",
 		"shapeType": "RoundedRectangle",
 		"backgroundColor": "none",
@@ -3030,7 +2600,7 @@
 		"borderStyle": "solid",
 		"borderWidth": 1,
 		"transformation": {
-			"translateX": 15381.7,
+			"translateX": 15379.7,
 			"translateY": 5874.57,
 			"scaleX": 4.57865,
 			"scaleY": 4.71099,
@@ -3070,7 +2640,7 @@
 					"children": [
 						{
 							"type": "text",
-							"text": " ",
+							"text": "",
 							"bold": false,
 							"italic": false,
 							"underline": false,
@@ -3107,7 +2677,7 @@
 						},
 						{
 							"type": "text",
-							"text": " infinite workspace ",
+							"text": "infinite workspace ",
 							"bold": true,
 							"italic": false,
 							"underline": false,
@@ -3144,9 +2714,9 @@
 			"insideOf": "Shape",
 			"realSize": 36
 		},
-		"zIndex": 47
+		"zIndex": 42
 	},
-	"9f95a534-3b4e-4d63-baf5-c4113c314dd2": {
+	"6cab487b-0cf4-455c-af5a-6198a5f6377d": {
 		"itemType": "Drawing",
 		"points": [
 			{
@@ -3199,7 +2769,7 @@
 			}
 		],
 		"transformation": {
-			"translateX": 15335.1,
+			"translateX": 15333.1,
 			"translateY": 5849.44,
 			"scaleX": 1.31997,
 			"scaleY": 1.27636,
@@ -3208,9 +2778,9 @@
 		},
 		"strokeStyle": "#b1dd8c",
 		"strokeWidth": 24,
-		"zIndex": 48
+		"zIndex": 43
 	},
-	"bf782a2d-a1e8-4341-b441-10c853faf70b": {
+	"9eed5403-de54-4979-8976-fcbd3c433c1d": {
 		"itemType": "Drawing",
 		"points": [
 			{
@@ -3271,7 +2841,7 @@
 			}
 		],
 		"transformation": {
-			"translateX": 15431.7,
+			"translateX": 15429.7,
 			"translateY": 5830.7,
 			"scaleX": 1.1605,
 			"scaleY": 1.03275,
@@ -3280,9 +2850,9 @@
 		},
 		"strokeStyle": "#b1dd8c",
 		"strokeWidth": 24,
-		"zIndex": 49
+		"zIndex": 44
 	},
-	"082f41b8-cb39-4359-9ce2-1fe3002b700c": {
+	"bec276cb-a258-48ea-82e9-64d11e9e732c": {
 		"itemType": "Drawing",
 		"points": [
 			{
@@ -3299,7 +2869,7 @@
 			}
 		],
 		"transformation": {
-			"translateX": 10288.3,
+			"translateX": 10286.3,
 			"translateY": 8610.91,
 			"scaleX": 0.916581,
 			"scaleY": 0.916581,
@@ -3308,12 +2878,12 @@
 		},
 		"strokeStyle": "rgba(20, 21, 26, 0.5)",
 		"strokeWidth": 2,
-		"zIndex": 50
+		"zIndex": 45
 	},
-	"3bb721db-5a39-4372-80b4-50cb9e155b6c": {
+	"2077cf47-48c3-449c-a1dd-96d76637b312": {
 		"itemType": "AINode",
 		"transformation": {
-			"translateX": 409,
+			"translateX": 407,
 			"translateY": 3987,
 			"scaleX": 1,
 			"scaleY": 1,
@@ -3681,7 +3251,7 @@
 			"containerMaxWidth": 641,
 			"placeholderText": " ",
 			"transformation": {
-				"translateX": 409,
+				"translateX": 407,
 				"translateY": 3987,
 				"scaleX": 1,
 				"scaleY": 1,
@@ -3694,9 +3264,9 @@
 		"isUserRequest": false,
 		"contextItems": [],
 		"threadDirection": 3,
-		"zIndex": 51
+		"zIndex": 46
 	},
-	"418ad38e-ec2d-482c-9d5d-dc5b473bc1a2": {
+	"c561cab3-a67c-4278-b851-f426edf30d3f": {
 		"itemType": "Shape",
 		"shapeType": "Circle",
 		"backgroundColor": "none",
@@ -3706,7 +3276,7 @@
 		"borderStyle": "dot",
 		"borderWidth": 10,
 		"transformation": {
-			"translateX": 11047.1,
+			"translateX": 11045.1,
 			"translateY": 1024.19,
 			"scaleX": 3.80406,
 			"scaleY": 3.12497,
@@ -3768,9 +3338,9 @@
 			"insideOf": "Shape",
 			"realSize": 36
 		},
-		"zIndex": 52
+		"zIndex": 47
 	},
-	"fb1d43ef-4be8-4f99-a5f9-432e4e1edbe6": {
+	"dacac5d4-9828-4b31-ab67-24b52a36962b": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -3801,7 +3371,7 @@
 		"containerMaxWidth": 600,
 		"placeholderText": "Напишите что-нибудь",
 		"transformation": {
-			"translateX": 11334,
+			"translateX": 11332,
 			"translateY": 1134.81,
 			"scaleX": 1,
 			"scaleY": 1,
@@ -3810,9 +3380,9 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 14,
-		"zIndex": 53
+		"zIndex": 48
 	},
-	"705e82a5-63ff-4a9f-8eed-7c4175addcda": {
+	"b8a9d78b-156b-420f-9a6e-8d19b8820854": {
 		"itemType": "Shape",
 		"shapeType": "Circle",
 		"backgroundColor": "none",
@@ -3822,7 +3392,7 @@
 		"borderStyle": "dot",
 		"borderWidth": 9,
 		"transformation": {
-			"translateX": 11329.3,
+			"translateX": 11327.3,
 			"translateY": 2075.44,
 			"scaleX": 3.80406,
 			"scaleY": 3.12497,
@@ -3862,29 +3432,26 @@
 			"insideOf": "Shape",
 			"realSize": 36
 		},
-		"zIndex": 54
+		"zIndex": 49
 	},
-	"da5374bf-cdcd-4d46-b546-2af65b34aeca": {
+	"b2d939c7-36e8-4140-b6e7-a372dd340c99": {
 		"itemType": "Image",
-		"storageLink": [
-			"https://dev-app.microboard.io/api/v1/media/a221fbf861a600c464366845e538b72a5862de687c79c5d49d058ff2f3b29416.svg",
-			"https://app.microboard.io/api/v1/media/2f5637702101584ed6dfe7dbfa9d137b68153efec18b2aa965cbfff6fca29b32.svg"
-		],
+		"storageLink": "http://localhost:8000/api/v1/media/2f5637702101584ed6dfe7dbfa9d137b68153efec18b2aa965cbfff6fca29b32.svg",
 		"imageDimension": {
 			"width": 327,
 			"height": 152
 		},
 		"transformation": {
-			"translateX": 10412.3,
+			"translateX": 10410.3,
 			"translateY": 8623,
 			"scaleX": 9.39986,
 			"scaleY": 9.39986,
 			"rotate": 0,
 			"isLocked": false
 		},
-		"zIndex": 55
+		"zIndex": 50
 	},
-	"eb4c49b4-6008-4223-a252-e090a0c46eb2": {
+	"51630d94-c038-4fc1-b7f0-fbc1ade5c812": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -3954,7 +3521,7 @@
 				"children": [
 					{
 						"type": "text",
-						"text": " ",
+						"text": "",
 						"bold": false,
 						"italic": false,
 						"underline": false,
@@ -3974,7 +3541,7 @@
 		"containerMaxWidth": 1159,
 		"placeholderText": "Напишите что-нибудь",
 		"transformation": {
-			"translateX": 10358.5,
+			"translateX": 10356.5,
 			"translateY": 8502.29,
 			"scaleX": 1.55136,
 			"scaleY": 1.55136,
@@ -3983,9 +3550,9 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 124.1088,
-		"zIndex": 56
+		"zIndex": 51
 	},
-	"ee49268c-fc41-4061-84f3-57b1341e94bf": {
+	"a2acfe66-2e96-41eb-bb58-dff36ae7fd5d": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -4031,7 +3598,7 @@
 		"containerMaxWidth": 1543,
 		"placeholderText": "Напишите что-нибудь",
 		"transformation": {
-			"translateX": 10708.9,
+			"translateX": 10706.9,
 			"translateY": 8967.76,
 			"scaleX": 1.55136,
 			"scaleY": 1.55136,
@@ -4040,9 +3607,9 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 124.1088,
-		"zIndex": 57
+		"zIndex": 52
 	},
-	"21f03e83-cf4b-4e3a-8493-9e1ffc2f990c": {
+	"bbbb281a-183d-4894-9e3f-2fed3053e0c1": {
 		"itemType": "Drawing",
 		"points": [
 			{
@@ -4095,7 +3662,7 @@
 			}
 		],
 		"transformation": {
-			"translateX": 12968,
+			"translateX": 12966,
 			"translateY": 4823.07,
 			"scaleX": 1.3763,
 			"scaleY": 1.15777,
@@ -4104,9 +3671,9 @@
 		},
 		"strokeStyle": "#ffa57d",
 		"strokeWidth": 24,
-		"zIndex": 58
+		"zIndex": 53
 	},
-	"d8fe6fb9-881e-4e6d-a065-99c1a9a2a7a4": {
+	"7a9d40e8-56bb-45b7-986c-493a9834a17e": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -4132,7 +3699,7 @@
 					},
 					{
 						"type": "text",
-						"text": " ",
+						"text": "",
 						"bold": false,
 						"italic": false,
 						"underline": false,
@@ -4196,7 +3763,7 @@
 		"containerMaxWidth": 1875,
 		"placeholderText": "Напишите что-нибудь",
 		"transformation": {
-			"translateX": 3874.58,
+			"translateX": 3872.58,
 			"translateY": 9130.06,
 			"scaleX": 2.25332,
 			"scaleY": 2.25332,
@@ -4205,9 +3772,9 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 180.2656,
-		"zIndex": 59
+		"zIndex": 54
 	},
-	"40c262d0-4afd-4614-90a2-63c794cd3c55": {
+	"de5e9c31-8cdf-40ea-aef7-732de328baf5": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -4261,7 +3828,7 @@
 		"containerMaxWidth": 600,
 		"placeholderText": "Напишите что-нибудь",
 		"transformation": {
-			"translateX": 4941.78,
+			"translateX": 4939.78,
 			"translateY": 9572.54,
 			"scaleX": 2.25332,
 			"scaleY": 2.25332,
@@ -4270,9 +3837,9 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 103.65272,
-		"zIndex": 60
+		"zIndex": 55
 	},
-	"628bbab5-2383-41d0-b842-037f378567d0": {
+	"a21e43ec-5742-4a24-8f3a-8dc13411550a": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -4325,7 +3892,7 @@
 		"containerMaxWidth": 600,
 		"placeholderText": "Напишите что-нибудь",
 		"transformation": {
-			"translateX": 4313.18,
+			"translateX": 4311.18,
 			"translateY": 9573.86,
 			"scaleX": 2.853,
 			"scaleY": 2.853,
@@ -4334,9 +3901,9 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 102.70800000000001,
-		"zIndex": 61
+		"zIndex": 56
 	},
-	"16d573d7-93d4-43e4-a5d3-cfa42577fb84": {
+	"428e0280-8974-438a-a235-5aa8b743b580": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -4389,7 +3956,7 @@
 		"containerMaxWidth": 600,
 		"placeholderText": "Напишите что-нибудь",
 		"transformation": {
-			"translateX": 5558.38,
+			"translateX": 5556.38,
 			"translateY": 9572.54,
 			"scaleX": 2.25332,
 			"scaleY": 2.25332,
@@ -4398,109 +3965,94 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 103.65272,
-		"zIndex": 62
+		"zIndex": 57
 	},
-	"5300dc60-2e2e-493d-91e1-724218c950a5": {
+	"cff85e16-4006-4602-8496-00c735e342f0": {
 		"itemType": "Image",
-		"storageLink": [
-			"https://dev-app.microboard.io/api/v1/media/a179fd5bcaba08b38f48b537520592d8737d801fbfe9d7983bce493c720a0092",
-			"https://app.microboard.io/api/v1/media/c1b985f9093a09538ef758f88526cab1000dd674ffb8345fea1c04ee8796a289"
-		],
+		"storageLink": "http://localhost:8000/api/v1/media/c1b985f9093a09538ef758f88526cab1000dd674ffb8345fea1c04ee8796a289",
 		"imageDimension": {
 			"width": 192,
 			"height": 118
 		},
 		"transformation": {
-			"translateX": 3372.78,
+			"translateX": 3370.78,
 			"translateY": 8314.96,
 			"scaleX": 2.25332,
 			"scaleY": 2.25332,
 			"rotate": 0,
 			"isLocked": false
 		},
-		"zIndex": 63
+		"zIndex": 58
 	},
-	"5b1f3e08-97e6-4daf-a1d6-e8af9a27684e": {
+	"e2ca8ded-4dbb-4374-8eb2-a6a5c39cfa44": {
 		"itemType": "Image",
-		"storageLink": [
-			"https://dev-app.microboard.io/api/v1/media/a179fd5bcaba08b38f48b537520592d8737d801fbfe9d7983bce493c720a0092",
-			"https://app.microboard.io/api/v1/media/c1b985f9093a09538ef758f88526cab1000dd674ffb8345fea1c04ee8796a289"
-		],
+		"storageLink": "http://localhost:8000/api/v1/media/c1b985f9093a09538ef758f88526cab1000dd674ffb8345fea1c04ee8796a289",
 		"imageDimension": {
 			"width": 192,
 			"height": 118
 		},
 		"transformation": {
-			"translateX": 6717.58,
+			"translateX": 6715.58,
 			"translateY": 9953.53,
 			"scaleX": 2.25332,
 			"scaleY": 2.25332,
 			"rotate": 0,
 			"isLocked": false
 		},
-		"zIndex": 64
+		"zIndex": 59
 	},
-	"72d98b17-beac-42e5-97c4-6bbc35134e6a": {
+	"6b6b8d87-73cd-49af-90b3-1462f2a6fbe7": {
 		"itemType": "Image",
-		"storageLink": [
-			"https://dev-app.microboard.io/api/v1/media/ea81081ce815f9f7e1255e7fa71f4aa33940d9800fe124e1a387c9c62cd0b9e3",
-			"https://app.microboard.io/api/v1/media/20b78e8e9d5b0ce64e0f882cac7206fb444c2d6548293c4da1f680b5a3b0ae48"
-		],
+		"storageLink": "http://localhost:8000/api/v1/media/20b78e8e9d5b0ce64e0f882cac7206fb444c2d6548293c4da1f680b5a3b0ae48",
 		"imageDimension": {
 			"width": 210,
 			"height": 118
 		},
 		"transformation": {
-			"translateX": 5767.98,
+			"translateX": 5765.98,
 			"translateY": 8652.89,
 			"scaleX": 2.25332,
 			"scaleY": 2.25332,
 			"rotate": 0,
 			"isLocked": false
 		},
-		"zIndex": 65
+		"zIndex": 60
 	},
-	"3db4a941-dc3c-47f1-8d7a-78e13afbc8fa": {
+	"cb652672-bc09-4460-915d-ef855350c264": {
 		"itemType": "Image",
-		"storageLink": [
-			"https://dev-app.microboard.io/api/v1/media/df9065a9ccd1af21ea95bb8e03cc4aa82347766286129a6166730e080f02b4c0",
-			"https://app.microboard.io/api/v1/media/f6353ee92bcf741bac4b4866bd30e4309919094f4ae4594b1f423da369a9d8ab"
-		],
+		"storageLink": "http://localhost:8000/api/v1/media/f6353ee92bcf741bac4b4866bd30e4309919094f4ae4594b1f423da369a9d8ab",
 		"imageDimension": {
 			"width": 178,
 			"height": 118
 		},
 		"transformation": {
-			"translateX": 2869.98,
+			"translateX": 2867.98,
 			"translateY": 9284.52,
 			"scaleX": 2.25332,
 			"scaleY": 2.25332,
 			"rotate": 0,
 			"isLocked": false
 		},
-		"zIndex": 66
+		"zIndex": 61
 	},
-	"82b19c07-07bb-4506-a680-1452ce424dba": {
+	"7e3474c1-ff96-44ea-a11b-c056c2a4e49e": {
 		"itemType": "Image",
-		"storageLink": [
-			"https://dev-app.microboard.io/api/v1/media/df9065a9ccd1af21ea95bb8e03cc4aa82347766286129a6166730e080f02b4c0",
-			"https://app.microboard.io/api/v1/media/f6353ee92bcf741bac4b4866bd30e4309919094f4ae4594b1f423da369a9d8ab"
-		],
+		"storageLink": "http://localhost:8000/api/v1/media/f6353ee92bcf741bac4b4866bd30e4309919094f4ae4594b1f423da369a9d8ab",
 		"imageDimension": {
 			"width": 178,
 			"height": 118
 		},
 		"transformation": {
-			"translateX": 5030.58,
+			"translateX": 5028.58,
 			"translateY": 10364.4,
 			"scaleX": 2.25332,
 			"scaleY": 2.25332,
 			"rotate": 0,
 			"isLocked": false
 		},
-		"zIndex": 67
+		"zIndex": 62
 	},
-	"437a056c-bde2-451f-a5d6-022260705a7f": {
+	"ec32564f-782e-4734-9fb5-b1ea22c85113": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -4531,7 +4083,7 @@
 		"containerMaxWidth": 600,
 		"placeholderText": "Напишите что-нибудь",
 		"transformation": {
-			"translateX": 14130.6,
+			"translateX": 14128.6,
 			"translateY": 5093.4,
 			"scaleX": 1,
 			"scaleY": 1,
@@ -4540,12 +4092,12 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 144,
-		"zIndex": 68
+		"zIndex": 63
 	},
-	"87244ed8-ebef-455e-bcd7-2e6e6b05f260": {
+	"4bcde288-2bf9-4dc0-82ec-d845729f3ffb": {
 		"itemType": "AINode",
 		"transformation": {
-			"translateX": 358,
+			"translateX": 356,
 			"translateY": 4936,
 			"scaleX": 1,
 			"scaleY": 1,
@@ -4584,7 +4136,7 @@
 			"containerMaxWidth": 600,
 			"placeholderText": "Type your request...",
 			"transformation": {
-				"translateX": 358,
+				"translateX": 356,
 				"translateY": 4936,
 				"scaleX": 1,
 				"scaleY": 1,
@@ -4597,9 +4149,9 @@
 		"isUserRequest": true,
 		"contextItems": [],
 		"threadDirection": 3,
-		"zIndex": 69
+		"zIndex": 64
 	},
-	"3cd82d6c-4e26-418f-9c28-2e628fe9e08e": {
+	"355db443-e2af-4f7c-95da-555653c249a3": {
 		"itemType": "AINode",
 		"transformation": {
 			"translateX": 1,
@@ -5534,12 +5086,12 @@
 		"isUserRequest": false,
 		"contextItems": [],
 		"threadDirection": 3,
-		"zIndex": 70
+		"zIndex": 65
 	},
-	"a491b3f8-97ab-4bc0-9b74-b5e2655c8cac": {
+	"b0d4de09-751e-42ea-bda5-0e400e7360b6": {
 		"itemType": "AINode",
 		"transformation": {
-			"translateX": 955,
+			"translateX": 953,
 			"translateY": 4936,
 			"scaleX": 1,
 			"scaleY": 1,
@@ -5578,7 +5130,7 @@
 			"containerMaxWidth": 600,
 			"placeholderText": "Type your request...",
 			"transformation": {
-				"translateX": 955,
+				"translateX": 953,
 				"translateY": 4936,
 				"scaleX": 1,
 				"scaleY": 1,
@@ -5591,12 +5143,12 @@
 		"isUserRequest": true,
 		"contextItems": [],
 		"threadDirection": 3,
-		"zIndex": 71
+		"zIndex": 66
 	},
-	"f5e622f3-628e-4f8f-badb-ae5fcd39560d": {
+	"ed49f636-992b-4f99-8720-369185e15201": {
 		"itemType": "AINode",
 		"transformation": {
-			"translateX": 925,
+			"translateX": 923,
 			"translateY": 5167,
 			"scaleX": 1,
 			"scaleY": 1,
@@ -6223,7 +5775,7 @@
 			"containerMaxWidth": 600,
 			"placeholderText": " ",
 			"transformation": {
-				"translateX": 925,
+				"translateX": 923,
 				"translateY": 5167,
 				"scaleX": 1,
 				"scaleY": 1,
@@ -6236,12 +5788,12 @@
 		"isUserRequest": false,
 		"contextItems": [],
 		"threadDirection": 3,
-		"zIndex": 72
+		"zIndex": 67
 	},
-	"4baf7919-92e4-48be-b110-8f3246a49dc4": {
+	"3ee2f232-e865-4d25-8296-5083da3765d6": {
 		"itemType": "AINode",
 		"transformation": {
-			"translateX": 1447,
+			"translateX": 1445,
 			"translateY": 4300,
 			"scaleX": 1,
 			"scaleY": 1,
@@ -6280,7 +5832,7 @@
 			"containerMaxWidth": 600,
 			"placeholderText": "Type your request...",
 			"transformation": {
-				"translateX": 1447,
+				"translateX": 1445,
 				"translateY": 4300,
 				"scaleX": 1,
 				"scaleY": 1,
@@ -6293,12 +5845,12 @@
 		"isUserRequest": true,
 		"contextItems": [],
 		"threadDirection": 3,
-		"zIndex": 73
+		"zIndex": 68
 	},
-	"b4560015-8f89-45e5-b001-25d2d2265a49": {
+	"b2b851be-56e5-42fd-8442-e68871c11766": {
 		"itemType": "AINode",
 		"transformation": {
-			"translateX": 2339,
+			"translateX": 2337,
 			"translateY": 4300,
 			"scaleX": 1,
 			"scaleY": 1,
@@ -6702,7 +6254,7 @@
 			"containerMaxWidth": 600,
 			"placeholderText": " ",
 			"transformation": {
-				"translateX": 2339,
+				"translateX": 2337,
 				"translateY": 4300,
 				"scaleX": 1,
 				"scaleY": 1,
@@ -6715,12 +6267,12 @@
 		"isUserRequest": false,
 		"contextItems": [],
 		"threadDirection": 3,
-		"zIndex": 74
+		"zIndex": 69
 	},
-	"ceb0cf11-a1c3-4978-9cee-8abf86bb698c": {
+	"93262af4-3a02-4f3c-9155-d39fc719b5c7": {
 		"itemType": "AINode",
 		"transformation": {
-			"translateX": 2351,
+			"translateX": 2349,
 			"translateY": 5207,
 			"scaleX": 1,
 			"scaleY": 1,
@@ -6758,7 +6310,7 @@
 			"containerMaxWidth": 600,
 			"placeholderText": "Type your request...",
 			"transformation": {
-				"translateX": 2351,
+				"translateX": 2349,
 				"translateY": 5207,
 				"scaleX": 1,
 				"scaleY": 1,
@@ -6771,12 +6323,12 @@
 		"isUserRequest": true,
 		"contextItems": [],
 		"threadDirection": 3,
-		"zIndex": 75
+		"zIndex": 70
 	},
-	"a95d3a31-2ef0-4f1f-90d0-0a25e89be27e": {
+	"4c6a4ff9-31be-4247-919c-6159e35c6ff6": {
 		"itemType": "AINode",
 		"transformation": {
-			"translateX": 2161,
+			"translateX": 2159,
 			"translateY": 5510,
 			"scaleX": 1,
 			"scaleY": 1,
@@ -7650,7 +7202,7 @@
 			"containerMaxWidth": 600,
 			"placeholderText": " ",
 			"transformation": {
-				"translateX": 2161,
+				"translateX": 2159,
 				"translateY": 5510,
 				"scaleX": 1,
 				"scaleY": 1,
@@ -7663,9 +7215,9 @@
 		"isUserRequest": false,
 		"contextItems": [],
 		"threadDirection": 3,
-		"zIndex": 76
+		"zIndex": 71
 	},
-	"4ea09905-b4c8-42ce-8145-d905a5625cf8": {
+	"c55ba30f-9526-42b6-ad59-4d3fd6f2c8c8": {
 		"itemType": "Shape",
 		"shapeType": "Circle",
 		"backgroundColor": "none",
@@ -7675,7 +7227,7 @@
 		"borderStyle": "dot",
 		"borderWidth": 10,
 		"transformation": {
-			"translateX": 11653.6,
+			"translateX": 11651.6,
 			"translateY": 1288.68,
 			"scaleX": 3.02919,
 			"scaleY": 2.41016,
@@ -7715,9 +7267,9 @@
 			"insideOf": "Shape",
 			"realSize": 36
 		},
-		"zIndex": 77
+		"zIndex": 72
 	},
-	"f46828bb-8fe7-4af4-8bb0-8a46536c3921": {
+	"f4aff161-1f94-4f25-951e-bfade2bfd0c5": {
 		"itemType": "Shape",
 		"shapeType": "Circle",
 		"backgroundColor": "none",
@@ -7727,7 +7279,7 @@
 		"borderStyle": "dot",
 		"borderWidth": 10,
 		"transformation": {
-			"translateX": 11887.5,
+			"translateX": 11885.5,
 			"translateY": 1764.4,
 			"scaleX": 3.02919,
 			"scaleY": 2.41016,
@@ -7767,13 +7319,13 @@
 			"insideOf": "Shape",
 			"realSize": 36
 		},
-		"zIndex": 78
+		"zIndex": 73
 	},
-	"d1cd7d7e-65de-4d60-a292-e6d5fbdfca23": {
+	"8bd2194c-a88d-4d15-977c-eb47561f15f3": {
 		"itemType": "Sticker",
 		"backgroundColor": "rgb(233, 208, 255)",
 		"transformation": {
-			"translateX": 5090,
+			"translateX": 5088,
 			"translateY": 444,
 			"scaleX": 1.94159,
 			"scaleY": 1.94159,
@@ -7814,13 +7366,13 @@
 			"insideOf": "Sticker",
 			"realSize": "auto"
 		},
-		"zIndex": 79
+		"zIndex": 74
 	},
-	"36cf43c4-bd9b-49f9-b1ae-54218e3e37b4": {
+	"58fd94d2-baed-4414-8348-f80c211dcc1f": {
 		"itemType": "Sticker",
 		"backgroundColor": "rgb(255, 235, 163)",
 		"transformation": {
-			"translateX": 5950,
+			"translateX": 5948,
 			"translateY": 289,
 			"scaleX": 1.94159,
 			"scaleY": 1.94159,
@@ -7861,13 +7413,13 @@
 			"insideOf": "Sticker",
 			"realSize": "auto"
 		},
-		"zIndex": 80
+		"zIndex": 75
 	},
-	"5dcb54e9-cf37-4fab-a036-c960de3c9350": {
+	"c79fe9c4-e0c4-448f-b507-fc29bda1cae9": {
 		"itemType": "Sticker",
 		"backgroundColor": "rgb(203, 232, 150)",
 		"transformation": {
-			"translateX": 6247,
+			"translateX": 6245,
 			"translateY": 925,
 			"scaleX": 1.94159,
 			"scaleY": 1.94159,
@@ -7908,13 +7460,13 @@
 			"insideOf": "Sticker",
 			"realSize": "auto"
 		},
-		"zIndex": 81
+		"zIndex": 76
 	},
-	"14785058-b8e8-4b4c-bf50-a5f956758e49": {
+	"a3b437d7-503d-4325-a45a-b17c0d475d30": {
 		"itemType": "Sticker",
 		"backgroundColor": "rgb(255, 180, 126)",
 		"transformation": {
-			"translateX": 6014,
+			"translateX": 6012,
 			"translateY": 1422,
 			"scaleX": 1.94159,
 			"scaleY": 1.94159,
@@ -7955,16 +7507,16 @@
 			"insideOf": "Sticker",
 			"realSize": "auto"
 		},
-		"zIndex": 82
+		"zIndex": 77
 	},
-	"67226e19-50b3-43ba-b76e-8eefb9a3b3fc": {
+	"2e46eff1-7996-4a44-b2f4-18cafac496de": {
 		"itemType": "Sticker",
 		"backgroundColor": "rgb(255, 209, 211)",
 		"transformation": {
-			"translateX": 5534,
-			"translateY": 0,
-			"scaleX": 1.94159,
-			"scaleY": 1.94159,
+			"translateX": 5551.3865966796875,
+			"translateY": 55.17839743672542,
+			"scaleX": 1.665208436891837,
+			"scaleY": 1.6652084368918363,
 			"rotate": 0,
 			"isLocked": false
 		},
@@ -8002,12 +7554,12 @@
 			"insideOf": "Sticker",
 			"realSize": "auto"
 		},
-		"zIndex": 83
+		"zIndex": 78
 	},
-	"d14fa854-65e8-46f6-a66a-15b101e21365": {
+	"1877b4e6-1a55-4012-9faa-9392c3987376": {
 		"itemType": "AINode",
 		"transformation": {
-			"translateX": 5070,
+			"translateX": 5068,
 			"translateY": 1306,
 			"scaleX": 1,
 			"scaleY": 1,
@@ -8045,7 +7597,7 @@
 			"containerMaxWidth": 600,
 			"placeholderText": " ",
 			"transformation": {
-				"translateX": 5070,
+				"translateX": 5068,
 				"translateY": 1306,
 				"scaleX": 1,
 				"scaleY": 1,
@@ -8064,12 +7616,12 @@
 			"f48726fa-5c7d-4cbc-80d9-a277e0db470b"
 		],
 		"threadDirection": 3,
-		"zIndex": 84
+		"zIndex": 79
 	},
-	"71810f8c-eead-42e1-a181-fe0e28c68ca9": {
+	"4666a3d2-d376-48dd-b63d-7fc70339a5a6": {
 		"itemType": "AINode",
 		"transformation": {
-			"translateX": 5066,
+			"translateX": 5064,
 			"translateY": 1572,
 			"scaleX": 1,
 			"scaleY": 1,
@@ -8693,7 +8245,7 @@
 			"containerMaxWidth": 600,
 			"placeholderText": " ",
 			"transformation": {
-				"translateX": 5066,
+				"translateX": 5064,
 				"translateY": 1572,
 				"scaleX": 1,
 				"scaleY": 1,
@@ -8706,969 +8258,9 @@
 		"isUserRequest": false,
 		"contextItems": [],
 		"threadDirection": 3,
-		"zIndex": 85
+		"zIndex": 80
 	},
-	"5f36d526-93f1-4e39-83f0-9ac8562e18be": {
-		"itemType": "Connector",
-		"transformation": {
-			"translateX": 729,
-			"translateY": 3837.4,
-			"scaleX": 1,
-			"scaleY": 1,
-			"rotate": 0,
-			"isLocked": false
-		},
-		"startPoint": {
-			"pointType": "Fixed",
-			"itemId": "30a6fb7d-1eff-4c81-bc97-ada13bb47e9f",
-			"relativeX": 119.5,
-			"relativeY": 60.59999999999991
-		},
-		"endPoint": {
-			"pointType": "Fixed",
-			"itemId": "3bb721db-5a39-4372-80b4-50cb9e155b6c",
-			"relativeX": 320.5,
-			"relativeY": 0
-		},
-		"middlePoint": null,
-		"startPointerStyle": "None",
-		"endPointerStyle": "TriangleFilled",
-		"lineStyle": "curved",
-		"lineColor": "rgb(20, 21, 26)",
-		"lineWidth": 1,
-		"text": {
-			"itemType": "RichText",
-			"verticalAlignment": "center",
-			"children": [
-				{
-					"type": "paragraph",
-					"horisontalAlignment": "left",
-					"lineHeight": 1.4,
-					"children": [
-						{
-							"type": "text",
-							"text": " ",
-							"bold": false,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "rgb(20, 21, 26)",
-							"fontHighlight": "",
-							"fontSize": 14,
-							"fontFamily": "\"Open Sans\"",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						}
-					]
-				}
-			],
-			"maxWidth": 300,
-			"containerMaxWidth": 300,
-			"placeholderText": "Напишите что-нибудь",
-			"insideOf": "Connector",
-			"realSize": 14
-		},
-		"borderStyle": "solid",
-		"zIndex": 86
-	},
-	"0c600b81-b8c6-4b28-a340-a9f0f46a7ff4": {
-		"itemType": "Connector",
-		"transformation": {
-			"translateX": 461.5341110229492,
-			"translateY": 4753.4,
-			"scaleX": 1,
-			"scaleY": 1,
-			"rotate": 0,
-			"isLocked": false
-		},
-		"startPoint": {
-			"pointType": "Fixed",
-			"itemId": "3bb721db-5a39-4372-80b4-50cb9e155b6c",
-			"relativeX": 360.5244140625,
-			"relativeY": 766.5999999999995
-		},
-		"endPoint": {
-			"pointType": "Fixed",
-			"itemId": "87244ed8-ebef-455e-bcd7-2e6e6b05f260",
-			"relativeX": 104.03411102294922,
-			"relativeY": 0
-		},
-		"middlePoint": null,
-		"startPointerStyle": "None",
-		"endPointerStyle": "TriangleFilled",
-		"lineStyle": "curved",
-		"lineColor": "rgb(20, 21, 26)",
-		"lineWidth": 1,
-		"text": {
-			"itemType": "RichText",
-			"verticalAlignment": "center",
-			"children": [
-				{
-					"type": "paragraph",
-					"horisontalAlignment": "left",
-					"lineHeight": 1.4,
-					"children": [
-						{
-							"type": "text",
-							"text": " ",
-							"bold": false,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "rgb(20, 21, 26)",
-							"fontHighlight": "",
-							"fontSize": 14,
-							"fontFamily": "Manrope",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						}
-					]
-				}
-			],
-			"maxWidth": 300,
-			"containerMaxWidth": 300,
-			"placeholderText": "Напишите что-нибудь",
-			"insideOf": "Connector",
-			"realSize": 14
-		},
-		"borderStyle": "solid",
-		"zIndex": 87
-	},
-	"1f20207a-7d5d-4060-a9d1-82df5eca778b": {
-		"itemType": "Connector",
-		"transformation": {
-			"translateX": 239.65921020507812,
-			"translateY": 4996.400000000001,
-			"scaleX": 1,
-			"scaleY": 1,
-			"rotate": 0,
-			"isLocked": false
-		},
-		"startPoint": {
-			"pointType": "Fixed",
-			"itemId": "87244ed8-ebef-455e-bcd7-2e6e6b05f260",
-			"relativeX": 193.04351806640625,
-			"relativeY": 60.600000000000364
-		},
-		"endPoint": {
-			"pointType": "Fixed",
-			"itemId": "3cd82d6c-4e26-418f-9c28-2e628fe9e08e",
-			"relativeX": 239.15921020507812,
-			"relativeY": 0
-		},
-		"middlePoint": null,
-		"startPointerStyle": "None",
-		"endPointerStyle": "TriangleFilled",
-		"lineStyle": "curved",
-		"lineColor": "rgb(20, 21, 26)",
-		"lineWidth": 1,
-		"text": {
-			"itemType": "RichText",
-			"verticalAlignment": "center",
-			"children": [
-				{
-					"type": "paragraph",
-					"horisontalAlignment": "left",
-					"lineHeight": 1.4,
-					"children": [
-						{
-							"type": "text",
-							"text": " ",
-							"bold": false,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "rgb(20, 21, 26)",
-							"fontHighlight": "",
-							"fontSize": 14,
-							"fontFamily": "Manrope",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						}
-					]
-				}
-			],
-			"maxWidth": 300,
-			"containerMaxWidth": 300,
-			"placeholderText": "Напишите что-нибудь",
-			"insideOf": "Connector",
-			"realSize": 14
-		},
-		"borderStyle": "solid",
-		"zIndex": 88
-	},
-	"a8352908-8b80-44d8-a2a8-426e994cc1d0": {
-		"itemType": "Connector",
-		"transformation": {
-			"translateX": 769.0244140625,
-			"translateY": 4753.4,
-			"scaleX": 1,
-			"scaleY": 1,
-			"rotate": 0,
-			"isLocked": false
-		},
-		"startPoint": {
-			"pointType": "Fixed",
-			"itemId": "3bb721db-5a39-4372-80b4-50cb9e155b6c",
-			"relativeX": 360.5244140625,
-			"relativeY": 766.5999999999995
-		},
-		"endPoint": {
-			"pointType": "Fixed",
-			"itemId": "a491b3f8-97ab-4bc0-9b74-b5e2655c8cac",
-			"relativeX": 104.03411102294922,
-			"relativeY": 0
-		},
-		"middlePoint": null,
-		"startPointerStyle": "None",
-		"endPointerStyle": "TriangleFilled",
-		"lineStyle": "curved",
-		"lineColor": "rgb(20, 21, 26)",
-		"lineWidth": 1,
-		"text": {
-			"itemType": "RichText",
-			"verticalAlignment": "center",
-			"children": [
-				{
-					"type": "paragraph",
-					"horisontalAlignment": "left",
-					"lineHeight": 1.4,
-					"children": [
-						{
-							"type": "text",
-							"text": " ",
-							"bold": false,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "rgb(20, 21, 26)",
-							"fontHighlight": "",
-							"fontSize": 14,
-							"fontFamily": "Manrope",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						}
-					]
-				}
-			],
-			"maxWidth": 300,
-			"containerMaxWidth": 300,
-			"placeholderText": "Напишите что-нибудь",
-			"insideOf": "Connector",
-			"realSize": 14
-		},
-		"borderStyle": "solid",
-		"zIndex": 89
-	},
-	"e8b533f2-0d40-46b3-bb07-86e6d124c432": {
-		"itemType": "Connector",
-		"transformation": {
-			"translateX": 1136.112548828125,
-			"translateY": 4996.400000000001,
-			"scaleX": 1,
-			"scaleY": 1,
-			"rotate": 0,
-			"isLocked": false
-		},
-		"startPoint": {
-			"pointType": "Fixed",
-			"itemId": "a491b3f8-97ab-4bc0-9b74-b5e2655c8cac",
-			"relativeX": 181.612548828125,
-			"relativeY": 60.60000000000027
-		},
-		"endPoint": {
-			"pointType": "Fixed",
-			"itemId": "f5e622f3-628e-4f8f-badb-ae5fcd39560d",
-			"relativeX": 239.15921020507812,
-			"relativeY": 0
-		},
-		"middlePoint": null,
-		"startPointerStyle": "None",
-		"endPointerStyle": "TriangleFilled",
-		"lineStyle": "curved",
-		"lineColor": "rgb(20, 21, 26)",
-		"lineWidth": 1,
-		"text": {
-			"itemType": "RichText",
-			"verticalAlignment": "center",
-			"children": [
-				{
-					"type": "paragraph",
-					"horisontalAlignment": "left",
-					"lineHeight": 1.4,
-					"children": [
-						{
-							"type": "text",
-							"text": " ",
-							"bold": false,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "rgb(20, 21, 26)",
-							"fontHighlight": "",
-							"fontSize": 14,
-							"fontFamily": "Manrope",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						}
-					]
-				}
-			],
-			"maxWidth": 300,
-			"containerMaxWidth": 300,
-			"placeholderText": "Напишите что-нибудь",
-			"insideOf": "Connector",
-			"realSize": 14
-		},
-		"borderStyle": "solid",
-		"zIndex": 90
-	},
-	"156a21aa-4459-48c6-a9e5-7c3b1f077e25": {
-		"itemType": "Connector",
-		"transformation": {
-			"translateX": 1129.848828125,
-			"translateY": 4329.8,
-			"scaleX": 1,
-			"scaleY": 1,
-			"rotate": 0,
-			"isLocked": false
-		},
-		"startPoint": {
-			"pointType": "Fixed",
-			"itemId": "3bb721db-5a39-4372-80b4-50cb9e155b6c",
-			"relativeX": 721.048828125,
-			"relativeY": 383.2999999999997
-		},
-		"endPoint": {
-			"pointType": "Fixed",
-			"itemId": "4baf7919-92e4-48be-b110-8f3246a49dc4",
-			"relativeX": 0,
-			"relativeY": 30.300000000000182
-		},
-		"middlePoint": null,
-		"startPointerStyle": "None",
-		"endPointerStyle": "TriangleFilled",
-		"lineStyle": "curved",
-		"lineColor": "rgb(20, 21, 26)",
-		"lineWidth": 1,
-		"text": {
-			"itemType": "RichText",
-			"verticalAlignment": "center",
-			"children": [
-				{
-					"type": "paragraph",
-					"horisontalAlignment": "left",
-					"lineHeight": 1.4,
-					"children": [
-						{
-							"type": "text",
-							"text": " ",
-							"bold": false,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "rgb(20, 21, 26)",
-							"fontHighlight": "",
-							"fontSize": 14,
-							"fontFamily": "Manrope",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						}
-					]
-				}
-			],
-			"maxWidth": 300,
-			"containerMaxWidth": 300,
-			"placeholderText": "Напишите что-нибудь",
-			"insideOf": "Connector",
-			"realSize": 14
-		},
-		"borderStyle": "solid",
-		"zIndex": 91
-	},
-	"b8f14995-bc07-4ccf-8407-fc65314e01dc": {
-		"itemType": "Connector",
-		"transformation": {
-			"translateX": 1938.2878540039062,
-			"translateY": 4329.8,
-			"scaleX": 1,
-			"scaleY": 1,
-			"rotate": 0,
-			"isLocked": false
-		},
-		"startPoint": {
-			"pointType": "Fixed",
-			"itemId": "4baf7919-92e4-48be-b110-8f3246a49dc4",
-			"relativeX": 491.48785400390625,
-			"relativeY": 30.300000000000182
-		},
-		"endPoint": {
-			"pointType": "Fixed",
-			"itemId": "b4560015-8f89-45e5-b001-25d2d2265a49",
-			"relativeX": 0,
-			"relativeY": 30.300000000000182
-		},
-		"middlePoint": null,
-		"startPointerStyle": "None",
-		"endPointerStyle": "TriangleFilled",
-		"lineStyle": "curved",
-		"lineColor": "rgb(20, 21, 26)",
-		"lineWidth": 1,
-		"text": {
-			"itemType": "RichText",
-			"verticalAlignment": "center",
-			"children": [
-				{
-					"type": "paragraph",
-					"horisontalAlignment": "left",
-					"lineHeight": 1.4,
-					"children": [
-						{
-							"type": "text",
-							"text": " ",
-							"bold": false,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "rgb(20, 21, 26)",
-							"fontHighlight": "",
-							"fontSize": 14,
-							"fontFamily": "Manrope",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						}
-					]
-				}
-			],
-			"maxWidth": 300,
-			"containerMaxWidth": 300,
-			"placeholderText": "Напишите что-нибудь",
-			"insideOf": "Connector",
-			"realSize": 14
-		},
-		"borderStyle": "solid",
-		"zIndex": 92
-	},
-	"7f3d0096-976c-434e-9b30-0e18b037b0cb": {
-		"itemType": "Connector",
-		"transformation": {
-			"translateX": 2454.534111022949,
-			"translateY": 4919.6,
-			"scaleX": 1,
-			"scaleY": 1,
-			"rotate": 0,
-			"isLocked": false
-		},
-		"startPoint": {
-			"pointType": "Fixed",
-			"itemId": "b4560015-8f89-45e5-b001-25d2d2265a49",
-			"relativeX": 340.0816650390625,
-			"relativeY": 619.8000000000002
-		},
-		"endPoint": {
-			"pointType": "Fixed",
-			"itemId": "ceb0cf11-a1c3-4978-9cee-8abf86bb698c",
-			"relativeX": 104.03411102294922,
-			"relativeY": 0
-		},
-		"middlePoint": null,
-		"startPointerStyle": "None",
-		"endPointerStyle": "TriangleFilled",
-		"lineStyle": "curved",
-		"lineColor": "rgb(20, 21, 26)",
-		"lineWidth": 1,
-		"text": {
-			"itemType": "RichText",
-			"verticalAlignment": "center",
-			"children": [
-				{
-					"type": "paragraph",
-					"horisontalAlignment": "left",
-					"lineHeight": 1.4,
-					"children": [
-						{
-							"type": "text",
-							"text": " ",
-							"bold": false,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "rgb(20, 21, 26)",
-							"fontHighlight": "",
-							"fontSize": 14,
-							"fontFamily": "Manrope",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						}
-					]
-				}
-			],
-			"maxWidth": 300,
-			"containerMaxWidth": 300,
-			"placeholderText": "Напишите что-нибудь",
-			"insideOf": "Connector",
-			"realSize": 14
-		},
-		"borderStyle": "solid",
-		"zIndex": 93
-	},
-	"6a9e8d81-7ae4-40ad-8d33-2783fc65090d": {
-		"itemType": "Connector",
-		"transformation": {
-			"translateX": 2399.659210205078,
-			"translateY": 5267.400000000001,
-			"scaleX": 1,
-			"scaleY": 1,
-			"rotate": 0,
-			"isLocked": false
-		},
-		"startPoint": {
-			"pointType": "Fixed",
-			"itemId": "ceb0cf11-a1c3-4978-9cee-8abf86bb698c",
-			"relativeX": 250.99630737304688,
-			"relativeY": 60.600000000000364
-		},
-		"endPoint": {
-			"pointType": "Fixed",
-			"itemId": "a95d3a31-2ef0-4f1f-90d0-0a25e89be27e",
-			"relativeX": 239.15921020507812,
-			"relativeY": 0
-		},
-		"middlePoint": null,
-		"startPointerStyle": "None",
-		"endPointerStyle": "TriangleFilled",
-		"lineStyle": "curved",
-		"lineColor": "rgb(20, 21, 26)",
-		"lineWidth": 1,
-		"text": {
-			"itemType": "RichText",
-			"verticalAlignment": "center",
-			"children": [
-				{
-					"type": "paragraph",
-					"horisontalAlignment": "left",
-					"lineHeight": 1.4,
-					"children": [
-						{
-							"type": "text",
-							"text": " ",
-							"bold": false,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "rgb(20, 21, 26)",
-							"fontHighlight": "",
-							"fontSize": 14,
-							"fontFamily": "Manrope",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						}
-					]
-				}
-			],
-			"maxWidth": 300,
-			"containerMaxWidth": 300,
-			"placeholderText": "Напишите что-нибудь",
-			"insideOf": "Connector",
-			"realSize": 14
-		},
-		"borderStyle": "solid",
-		"zIndex": 94
-	},
-	"f467dbd1-be88-4de2-9da4-f650f3788787": {
-		"itemType": "Connector",
-		"transformation": {
-			"translateX": 5304.659210205078,
-			"translateY": 1366.3999999999999,
-			"scaleX": 1,
-			"scaleY": 1,
-			"rotate": 0,
-			"isLocked": false
-		},
-		"startPoint": {
-			"pointType": "Fixed",
-			"itemId": "d14fa854-65e8-46f6-a66a-15b101e21365",
-			"relativeX": 243.34303283691406,
-			"relativeY": 60.60000000000002
-		},
-		"endPoint": {
-			"pointType": "Fixed",
-			"itemId": "71810f8c-eead-42e1-a181-fe0e28c68ca9",
-			"relativeX": 239.15921020507812,
-			"relativeY": 0
-		},
-		"middlePoint": null,
-		"startPointerStyle": "None",
-		"endPointerStyle": "TriangleFilled",
-		"lineStyle": "curved",
-		"lineColor": "rgb(20, 21, 26)",
-		"lineWidth": 1,
-		"text": {
-			"itemType": "RichText",
-			"verticalAlignment": "center",
-			"children": [
-				{
-					"type": "paragraph",
-					"horisontalAlignment": "left",
-					"lineHeight": 1.4,
-					"children": [
-						{
-							"type": "text",
-							"text": " ",
-							"bold": false,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "rgb(20, 21, 26)",
-							"fontHighlight": "",
-							"fontSize": 14,
-							"fontFamily": "Manrope",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						}
-					]
-				}
-			],
-			"maxWidth": 300,
-			"containerMaxWidth": 300,
-			"placeholderText": "Напишите что-нибудь",
-			"insideOf": "Connector",
-			"realSize": 14
-		},
-		"borderStyle": "solid",
-		"zIndex": 95
-	},
-	"62ecdfe2-7810-4f54-b1ea-8719ac89e9b5": {
-		"itemType": "Connector",
-		"transformation": {
-			"translateX": 5312.343032836914,
-			"translateY": 677.1179999999999,
-			"scaleX": 1,
-			"scaleY": 1,
-			"rotate": 0,
-			"isLocked": false
-		},
-		"startPoint": {
-			"pointType": "Fixed",
-			"itemId": "36cf43c4-bd9b-49f9-b1ae-54218e3e37b4",
-			"relativeX": 100,
-			"relativeY": 200
-		},
-		"endPoint": {
-			"pointType": "Fixed",
-			"itemId": "d14fa854-65e8-46f6-a66a-15b101e21365",
-			"relativeX": 242.84303283691406,
-			"relativeY": -0.5
-		},
-		"middlePoint": null,
-		"startPointerStyle": "None",
-		"endPointerStyle": "None",
-		"lineStyle": "curved",
-		"lineColor": "rgb(20, 21, 26)",
-		"lineWidth": 1,
-		"text": {
-			"itemType": "RichText",
-			"verticalAlignment": "center",
-			"children": [
-				{
-					"type": "paragraph",
-					"horisontalAlignment": "left",
-					"lineHeight": 1.4,
-					"children": [
-						{
-							"type": "text",
-							"text": " ",
-							"bold": false,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "rgb(20, 21, 26)",
-							"fontHighlight": "",
-							"fontSize": 14,
-							"fontFamily": "Manrope",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						}
-					]
-				}
-			],
-			"maxWidth": 300,
-			"containerMaxWidth": 300,
-			"placeholderText": "Текст",
-			"insideOf": "Connector",
-			"realSize": 14
-		},
-		"borderStyle": "solid",
-		"zIndex": 96
-	},
-	"ab6e95e0-09e8-478a-88df-69a3c4dd8937": {
-		"itemType": "Connector",
-		"transformation": {
-			"translateX": 5283.6590000000015,
-			"translateY": 832.1179999999999,
-			"scaleX": 1,
-			"scaleY": 1,
-			"rotate": 0,
-			"isLocked": false
-		},
-		"startPoint": {
-			"pointType": "Fixed",
-			"itemId": "d1cd7d7e-65de-4d60-a292-e6d5fbdfca23",
-			"relativeX": 100.00000000000091,
-			"relativeY": 200.00000000000003
-		},
-		"endPoint": {
-			"pointType": "Fixed",
-			"itemId": "d14fa854-65e8-46f6-a66a-15b101e21365",
-			"relativeX": 246.6865470398734,
-			"relativeY": 0
-		},
-		"middlePoint": null,
-		"startPointerStyle": "None",
-		"endPointerStyle": "None",
-		"lineStyle": "curved",
-		"lineColor": "rgb(20, 21, 26)",
-		"lineWidth": 1,
-		"text": {
-			"itemType": "RichText",
-			"verticalAlignment": "center",
-			"children": [
-				{
-					"type": "paragraph",
-					"horisontalAlignment": "left",
-					"lineHeight": 1.4,
-					"children": [
-						{
-							"type": "text",
-							"text": " ",
-							"bold": false,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "rgb(20, 21, 26)",
-							"fontHighlight": "",
-							"fontSize": 14,
-							"fontFamily": "Manrope",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						}
-					]
-				}
-			],
-			"maxWidth": 300,
-			"containerMaxWidth": 300,
-			"placeholderText": "Текст",
-			"insideOf": "Connector",
-			"realSize": 14
-		},
-		"borderStyle": "solid",
-		"zIndex": 97
-	},
-	"55d5df64-70dd-43e0-b1b1-9b7c4859ea03": {
-		"itemType": "Connector",
-		"transformation": {
-			"translateX": 5327.115852974984,
-			"translateY": 1118.659,
-			"scaleX": 1,
-			"scaleY": 1,
-			"rotate": 0,
-			"isLocked": false
-		},
-		"startPoint": {
-			"pointType": "Fixed",
-			"itemId": "5dcb54e9-cf37-4fab-a036-c960de3c9350",
-			"relativeX": 0,
-			"relativeY": 100
-		},
-		"endPoint": {
-			"pointType": "Fixed",
-			"itemId": "d14fa854-65e8-46f6-a66a-15b101e21365",
-			"relativeX": 257.6158529749837,
-			"relativeY": 0
-		},
-		"middlePoint": null,
-		"startPointerStyle": "None",
-		"endPointerStyle": "None",
-		"lineStyle": "curved",
-		"lineColor": "rgb(20, 21, 26)",
-		"lineWidth": 1,
-		"text": {
-			"itemType": "RichText",
-			"verticalAlignment": "center",
-			"children": [
-				{
-					"type": "paragraph",
-					"horisontalAlignment": "left",
-					"lineHeight": 1.4,
-					"children": [
-						{
-							"type": "text",
-							"text": " ",
-							"bold": false,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "rgb(20, 21, 26)",
-							"fontHighlight": "",
-							"fontSize": 14,
-							"fontFamily": "Manrope",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						}
-					]
-				}
-			],
-			"maxWidth": 300,
-			"containerMaxWidth": 300,
-			"placeholderText": "Текст",
-			"insideOf": "Connector",
-			"realSize": 14
-		},
-		"borderStyle": "solid",
-		"zIndex": 98
-	},
-	"7b77f6b0-ef4b-4f72-937c-5e96817b1b38": {
-		"itemType": "Connector",
-		"transformation": {
-			"translateX": 5390.632006142866,
-			"translateY": 388.118,
-			"scaleX": 1,
-			"scaleY": 1,
-			"rotate": 0,
-			"isLocked": false
-		},
-		"startPoint": {
-			"pointType": "Fixed",
-			"itemId": "67226e19-50b3-43ba-b76e-8eefb9a3b3fc",
-			"relativeX": 100,
-			"relativeY": 200
-		},
-		"endPoint": {
-			"pointType": "Fixed",
-			"itemId": "d14fa854-65e8-46f6-a66a-15b101e21365",
-			"relativeX": 321.132006142866,
-			"relativeY": 0
-		},
-		"middlePoint": null,
-		"startPointerStyle": "None",
-		"endPointerStyle": "None",
-		"lineStyle": "curved",
-		"lineColor": "rgb(20, 21, 26)",
-		"lineWidth": 1,
-		"text": {
-			"itemType": "RichText",
-			"verticalAlignment": "center",
-			"children": [
-				{
-					"type": "paragraph",
-					"horisontalAlignment": "left",
-					"lineHeight": 1.4,
-					"children": [
-						{
-							"type": "text",
-							"text": " ",
-							"bold": false,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "rgb(20, 21, 26)",
-							"fontHighlight": "",
-							"fontSize": 14,
-							"fontFamily": "Manrope",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						}
-					]
-				}
-			],
-			"maxWidth": 300,
-			"containerMaxWidth": 300,
-			"placeholderText": "Текст",
-			"insideOf": "Connector",
-			"realSize": 14
-		},
-		"borderStyle": "solid",
-		"zIndex": 99
-	},
-	"ba12bca8-44b6-4a49-b335-50d385b38c1a": {
-		"itemType": "Connector",
-		"transformation": {
-			"translateX": 5293.121814820278,
-			"translateY": 1282.3658610890357,
-			"scaleX": 1,
-			"scaleY": 1,
-			"rotate": 0,
-			"isLocked": false
-		},
-		"startPoint": {
-			"pointType": "Fixed",
-			"itemId": "14785058-b8e8-4b4c-bf50-a5f956758e49",
-			"relativeX": 0,
-			"relativeY": 100.00000000000011
-		},
-		"endPoint": {
-			"pointType": "Fixed",
-			"itemId": "d14fa854-65e8-46f6-a66a-15b101e21365",
-			"relativeX": 223.6218148202779,
-			"relativeY": -10.010069078610968
-		},
-		"middlePoint": null,
-		"startPointerStyle": "None",
-		"endPointerStyle": "None",
-		"lineStyle": "curved",
-		"lineColor": "rgb(20, 21, 26)",
-		"lineWidth": 1,
-		"text": {
-			"itemType": "RichText",
-			"verticalAlignment": "center",
-			"children": [
-				{
-					"type": "paragraph",
-					"horisontalAlignment": "left",
-					"lineHeight": 1.4,
-					"children": [
-						{
-							"type": "text",
-							"text": " ",
-							"bold": false,
-							"italic": false,
-							"underline": false,
-							"line-through": false,
-							"fontColor": "rgb(20, 21, 26)",
-							"fontHighlight": "",
-							"fontSize": 14,
-							"fontFamily": "Manrope",
-							"overline": false,
-							"subscript": false,
-							"superscript": false
-						}
-					]
-				}
-			],
-			"maxWidth": 300,
-			"containerMaxWidth": 300,
-			"placeholderText": "Текст",
-			"insideOf": "Connector",
-			"realSize": 14
-		},
-		"borderStyle": "solid",
-		"zIndex": 100
-	},
-	"85f41938-3e05-4be0-a6d9-37bb774f1c8a": {
+	"3b7e734d-f4ba-4654-bad6-a7ae8f9fa7fb": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -9699,7 +8291,7 @@
 		"containerMaxWidth": 600,
 		"placeholderText": "Напишите что-нибудь",
 		"transformation": {
-			"translateX": 10434.87988005991,
+			"translateX": 10432.87988,
 			"translateY": 8964.17,
 			"scaleX": 1,
 			"scaleY": 1,
@@ -9708,9 +8300,9 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 144,
-		"zIndex": 101
+		"zIndex": 81
 	},
-	"738b5665-1d78-4cc6-b01e-52edd527e15e": {
+	"5ac30b09-cca1-43ff-9cf6-f3877a8b2b2d": {
 		"itemType": "RichText",
 		"verticalAlignment": "center",
 		"children": [
@@ -9741,7 +8333,7 @@
 		"containerMaxWidth": 600,
 		"placeholderText": "Напишите что-нибудь",
 		"transformation": {
-			"translateX": 3584.44,
+			"translateX": 3582.44,
 			"translateY": 9143.32,
 			"scaleX": 1,
 			"scaleY": 1,
@@ -9750,6 +8342,1312 @@
 		},
 		"insideOf": "RichText",
 		"realSize": 144,
-		"zIndex": 102
+		"zIndex": 82
+	},
+	"4c976ae1-d53b-4347-9685-78fa9f696353": {
+		"itemType": "Connector",
+		"transformation": {
+			"translateX": 727,
+			"translateY": 3836.9,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0,
+			"isLocked": false
+		},
+		"startPoint": {
+			"pointType": "Fixed",
+			"itemId": "1c311fa4-1e57-4ec2-8848-009a133f88b3",
+			"relativeX": 119.5,
+			"relativeY": 60.59999999999991
+		},
+		"endPoint": {
+			"pointType": "Fixed",
+			"itemId": "2077cf47-48c3-449c-a1dd-96d76637b312",
+			"relativeX": 320.5,
+			"relativeY": 0
+		},
+		"middlePoint": null,
+		"startPointerStyle": "None",
+		"endPointerStyle": "TriangleFilled",
+		"lineStyle": "curved",
+		"lineColor": "rgb(20, 21, 26)",
+		"lineWidth": 1,
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"horisontalAlignment": "left",
+					"lineHeight": 1.4,
+					"children": [
+						{
+							"type": "text",
+							"text": "",
+							"bold": false,
+							"italic": false,
+							"underline": false,
+							"line-through": false,
+							"fontColor": "rgb(20, 21, 26)",
+							"fontHighlight": "",
+							"fontSize": 14,
+							"fontFamily": "\"Open Sans\"",
+							"overline": false,
+							"subscript": false,
+							"superscript": false
+						}
+					]
+				}
+			],
+			"maxWidth": 300,
+			"containerMaxWidth": 300,
+			"placeholderText": "Напишите что-нибудь",
+			"insideOf": "Connector",
+			"realSize": 14
+		},
+		"borderStyle": "solid",
+		"zIndex": 83
+	},
+	"99bd35e9-6102-4e0e-bb7c-1b4a964e3d81": {
+		"itemType": "Connector",
+		"transformation": {
+			"translateX": 459.5341110229492,
+			"translateY": 4752.9,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0,
+			"isLocked": false
+		},
+		"startPoint": {
+			"pointType": "Fixed",
+			"itemId": "2077cf47-48c3-449c-a1dd-96d76637b312",
+			"relativeX": 360.5244140625,
+			"relativeY": 766.5999999999995
+		},
+		"endPoint": {
+			"pointType": "Fixed",
+			"itemId": "4bcde288-2bf9-4dc0-82ec-d845729f3ffb",
+			"relativeX": 104.03411102294922,
+			"relativeY": 0
+		},
+		"middlePoint": null,
+		"startPointerStyle": "None",
+		"endPointerStyle": "TriangleFilled",
+		"lineStyle": "curved",
+		"lineColor": "rgb(20, 21, 26)",
+		"lineWidth": 1,
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"horisontalAlignment": "left",
+					"lineHeight": 1.4,
+					"children": [
+						{
+							"type": "text",
+							"text": "",
+							"bold": false,
+							"italic": false,
+							"underline": false,
+							"line-through": false,
+							"fontColor": "rgb(20, 21, 26)",
+							"fontHighlight": "",
+							"fontSize": 14,
+							"fontFamily": "Manrope",
+							"overline": false,
+							"subscript": false,
+							"superscript": false
+						}
+					]
+				}
+			],
+			"maxWidth": 300,
+			"containerMaxWidth": 300,
+			"placeholderText": "Напишите что-нибудь",
+			"insideOf": "Connector",
+			"realSize": 14
+		},
+		"borderStyle": "solid",
+		"zIndex": 84
+	},
+	"f55a4caf-4fe3-4b32-ae8f-a7a79a2bfdd6": {
+		"itemType": "Connector",
+		"transformation": {
+			"translateX": 239.65921020507812,
+			"translateY": 4995.900000000001,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0,
+			"isLocked": false
+		},
+		"startPoint": {
+			"pointType": "Fixed",
+			"itemId": "4bcde288-2bf9-4dc0-82ec-d845729f3ffb",
+			"relativeX": 193.04351806640625,
+			"relativeY": 60.600000000000364
+		},
+		"endPoint": {
+			"pointType": "Fixed",
+			"itemId": "355db443-e2af-4f7c-95da-555653c249a3",
+			"relativeX": 239.15921020507812,
+			"relativeY": 0
+		},
+		"middlePoint": null,
+		"startPointerStyle": "None",
+		"endPointerStyle": "TriangleFilled",
+		"lineStyle": "curved",
+		"lineColor": "rgb(20, 21, 26)",
+		"lineWidth": 1,
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"horisontalAlignment": "left",
+					"lineHeight": 1.4,
+					"children": [
+						{
+							"type": "text",
+							"text": "",
+							"bold": false,
+							"italic": false,
+							"underline": false,
+							"line-through": false,
+							"fontColor": "rgb(20, 21, 26)",
+							"fontHighlight": "",
+							"fontSize": 14,
+							"fontFamily": "Manrope",
+							"overline": false,
+							"subscript": false,
+							"superscript": false
+						}
+					]
+				}
+			],
+			"maxWidth": 300,
+			"containerMaxWidth": 300,
+			"placeholderText": "Напишите что-нибудь",
+			"insideOf": "Connector",
+			"realSize": 14
+		},
+		"borderStyle": "solid",
+		"zIndex": 85
+	},
+	"04b45ac4-220b-4e51-ac07-be841957c9df": {
+		"itemType": "Connector",
+		"transformation": {
+			"translateX": 767.0244140625,
+			"translateY": 4752.9,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0,
+			"isLocked": false
+		},
+		"startPoint": {
+			"pointType": "Fixed",
+			"itemId": "2077cf47-48c3-449c-a1dd-96d76637b312",
+			"relativeX": 360.5244140625,
+			"relativeY": 766.5999999999995
+		},
+		"endPoint": {
+			"pointType": "Fixed",
+			"itemId": "b0d4de09-751e-42ea-bda5-0e400e7360b6",
+			"relativeX": 104.03411102294922,
+			"relativeY": 0
+		},
+		"middlePoint": null,
+		"startPointerStyle": "None",
+		"endPointerStyle": "TriangleFilled",
+		"lineStyle": "curved",
+		"lineColor": "rgb(20, 21, 26)",
+		"lineWidth": 1,
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"horisontalAlignment": "left",
+					"lineHeight": 1.4,
+					"children": [
+						{
+							"type": "text",
+							"text": "",
+							"bold": false,
+							"italic": false,
+							"underline": false,
+							"line-through": false,
+							"fontColor": "rgb(20, 21, 26)",
+							"fontHighlight": "",
+							"fontSize": 14,
+							"fontFamily": "Manrope",
+							"overline": false,
+							"subscript": false,
+							"superscript": false
+						}
+					]
+				}
+			],
+			"maxWidth": 300,
+			"containerMaxWidth": 300,
+			"placeholderText": "Напишите что-нибудь",
+			"insideOf": "Connector",
+			"realSize": 14
+		},
+		"borderStyle": "solid",
+		"zIndex": 86
+	},
+	"6c00fdb0-cc41-4833-a602-a8e0f3522b6c": {
+		"itemType": "Connector",
+		"transformation": {
+			"translateX": 1134.112548828125,
+			"translateY": 4995.900000000001,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0,
+			"isLocked": false
+		},
+		"startPoint": {
+			"pointType": "Fixed",
+			"itemId": "b0d4de09-751e-42ea-bda5-0e400e7360b6",
+			"relativeX": 181.612548828125,
+			"relativeY": 60.60000000000027
+		},
+		"endPoint": {
+			"pointType": "Fixed",
+			"itemId": "ed49f636-992b-4f99-8720-369185e15201",
+			"relativeX": 239.15921020507812,
+			"relativeY": 0
+		},
+		"middlePoint": null,
+		"startPointerStyle": "None",
+		"endPointerStyle": "TriangleFilled",
+		"lineStyle": "curved",
+		"lineColor": "rgb(20, 21, 26)",
+		"lineWidth": 1,
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"horisontalAlignment": "left",
+					"lineHeight": 1.4,
+					"children": [
+						{
+							"type": "text",
+							"text": "",
+							"bold": false,
+							"italic": false,
+							"underline": false,
+							"line-through": false,
+							"fontColor": "rgb(20, 21, 26)",
+							"fontHighlight": "",
+							"fontSize": 14,
+							"fontFamily": "Manrope",
+							"overline": false,
+							"subscript": false,
+							"superscript": false
+						}
+					]
+				}
+			],
+			"maxWidth": 300,
+			"containerMaxWidth": 300,
+			"placeholderText": "Напишите что-нибудь",
+			"insideOf": "Connector",
+			"realSize": 14
+		},
+		"borderStyle": "solid",
+		"zIndex": 87
+	},
+	"f9df6d0a-5023-42a2-b75f-14c3892e8d6d": {
+		"itemType": "Connector",
+		"transformation": {
+			"translateX": 1127.348828125,
+			"translateY": 4329.8,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0,
+			"isLocked": false
+		},
+		"startPoint": {
+			"pointType": "Fixed",
+			"itemId": "2077cf47-48c3-449c-a1dd-96d76637b312",
+			"relativeX": 721.048828125,
+			"relativeY": 383.2999999999997
+		},
+		"endPoint": {
+			"pointType": "Fixed",
+			"itemId": "3ee2f232-e865-4d25-8296-5083da3765d6",
+			"relativeX": 0,
+			"relativeY": 30.300000000000182
+		},
+		"middlePoint": null,
+		"startPointerStyle": "None",
+		"endPointerStyle": "TriangleFilled",
+		"lineStyle": "curved",
+		"lineColor": "rgb(20, 21, 26)",
+		"lineWidth": 1,
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"horisontalAlignment": "left",
+					"lineHeight": 1.4,
+					"children": [
+						{
+							"type": "text",
+							"text": "",
+							"bold": false,
+							"italic": false,
+							"underline": false,
+							"line-through": false,
+							"fontColor": "rgb(20, 21, 26)",
+							"fontHighlight": "",
+							"fontSize": 14,
+							"fontFamily": "Manrope",
+							"overline": false,
+							"subscript": false,
+							"superscript": false
+						}
+					]
+				}
+			],
+			"maxWidth": 300,
+			"containerMaxWidth": 300,
+			"placeholderText": "Напишите что-нибудь",
+			"insideOf": "Connector",
+			"realSize": 14
+		},
+		"borderStyle": "solid",
+		"zIndex": 88
+	},
+	"3f716a65-6359-4f62-81c9-269effd08034": {
+		"itemType": "Connector",
+		"transformation": {
+			"translateX": 1935.7883728027343,
+			"translateY": 4329.8,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0,
+			"isLocked": false
+		},
+		"startPoint": {
+			"pointType": "Fixed",
+			"itemId": "3ee2f232-e865-4d25-8296-5083da3765d6",
+			"relativeX": 491.48785400390625,
+			"relativeY": 30.300000000000182
+		},
+		"endPoint": {
+			"pointType": "Fixed",
+			"itemId": "b2b851be-56e5-42fd-8442-e68871c11766",
+			"relativeX": 0,
+			"relativeY": 30.300000000000182
+		},
+		"middlePoint": null,
+		"startPointerStyle": "None",
+		"endPointerStyle": "TriangleFilled",
+		"lineStyle": "curved",
+		"lineColor": "rgb(20, 21, 26)",
+		"lineWidth": 1,
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"horisontalAlignment": "left",
+					"lineHeight": 1.4,
+					"children": [
+						{
+							"type": "text",
+							"text": "",
+							"bold": false,
+							"italic": false,
+							"underline": false,
+							"line-through": false,
+							"fontColor": "rgb(20, 21, 26)",
+							"fontHighlight": "",
+							"fontSize": 14,
+							"fontFamily": "Manrope",
+							"overline": false,
+							"subscript": false,
+							"superscript": false
+						}
+					]
+				}
+			],
+			"maxWidth": 300,
+			"containerMaxWidth": 300,
+			"placeholderText": "Напишите что-нибудь",
+			"insideOf": "Connector",
+			"realSize": 14
+		},
+		"borderStyle": "solid",
+		"zIndex": 89
+	},
+	"3a3a9899-fdce-4969-89ae-0944e99eda3c": {
+		"itemType": "Connector",
+		"transformation": {
+			"translateX": 2452.534111022949,
+			"translateY": 4919.1,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0,
+			"isLocked": false
+		},
+		"startPoint": {
+			"pointType": "Fixed",
+			"itemId": "b2b851be-56e5-42fd-8442-e68871c11766",
+			"relativeX": 340.0816650390625,
+			"relativeY": 619.8000000000002
+		},
+		"endPoint": {
+			"pointType": "Fixed",
+			"itemId": "93262af4-3a02-4f3c-9155-d39fc719b5c7",
+			"relativeX": 104.03411102294922,
+			"relativeY": 0
+		},
+		"middlePoint": null,
+		"startPointerStyle": "None",
+		"endPointerStyle": "TriangleFilled",
+		"lineStyle": "curved",
+		"lineColor": "rgb(20, 21, 26)",
+		"lineWidth": 1,
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"horisontalAlignment": "left",
+					"lineHeight": 1.4,
+					"children": [
+						{
+							"type": "text",
+							"text": "",
+							"bold": false,
+							"italic": false,
+							"underline": false,
+							"line-through": false,
+							"fontColor": "rgb(20, 21, 26)",
+							"fontHighlight": "",
+							"fontSize": 14,
+							"fontFamily": "Manrope",
+							"overline": false,
+							"subscript": false,
+							"superscript": false
+						}
+					]
+				}
+			],
+			"maxWidth": 300,
+			"containerMaxWidth": 300,
+			"placeholderText": "Напишите что-нибудь",
+			"insideOf": "Connector",
+			"realSize": 14
+		},
+		"borderStyle": "solid",
+		"zIndex": 90
+	},
+	"a87990bf-498e-4474-b27c-f09b86a026de": {
+		"itemType": "Connector",
+		"transformation": {
+			"translateX": 2397.659210205078,
+			"translateY": 5266.900000000001,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0,
+			"isLocked": false
+		},
+		"startPoint": {
+			"pointType": "Fixed",
+			"itemId": "93262af4-3a02-4f3c-9155-d39fc719b5c7",
+			"relativeX": 250.99630737304688,
+			"relativeY": 60.600000000000364
+		},
+		"endPoint": {
+			"pointType": "Fixed",
+			"itemId": "4c6a4ff9-31be-4247-919c-6159e35c6ff6",
+			"relativeX": 239.15921020507812,
+			"relativeY": 0
+		},
+		"middlePoint": null,
+		"startPointerStyle": "None",
+		"endPointerStyle": "TriangleFilled",
+		"lineStyle": "curved",
+		"lineColor": "rgb(20, 21, 26)",
+		"lineWidth": 1,
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"horisontalAlignment": "left",
+					"lineHeight": 1.4,
+					"children": [
+						{
+							"type": "text",
+							"text": "",
+							"bold": false,
+							"italic": false,
+							"underline": false,
+							"line-through": false,
+							"fontColor": "rgb(20, 21, 26)",
+							"fontHighlight": "",
+							"fontSize": 14,
+							"fontFamily": "Manrope",
+							"overline": false,
+							"subscript": false,
+							"superscript": false
+						}
+					]
+				}
+			],
+			"maxWidth": 300,
+			"containerMaxWidth": 300,
+			"placeholderText": "Напишите что-нибудь",
+			"insideOf": "Connector",
+			"realSize": 14
+		},
+		"borderStyle": "solid",
+		"zIndex": 91
+	},
+	"cad68bc1-e9ef-4d57-9a2f-5e569f3f16c5": {
+		"itemType": "Connector",
+		"transformation": {
+			"translateX": 5302.659210205078,
+			"translateY": 1365.8999999999999,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0,
+			"isLocked": false
+		},
+		"startPoint": {
+			"pointType": "Fixed",
+			"itemId": "1877b4e6-1a55-4012-9faa-9392c3987376",
+			"relativeX": 243.34303283691406,
+			"relativeY": 60.60000000000002
+		},
+		"endPoint": {
+			"pointType": "Fixed",
+			"itemId": "4666a3d2-d376-48dd-b63d-7fc70339a5a6",
+			"relativeX": 239.15921020507812,
+			"relativeY": 0
+		},
+		"middlePoint": null,
+		"startPointerStyle": "None",
+		"endPointerStyle": "TriangleFilled",
+		"lineStyle": "curved",
+		"lineColor": "rgb(20, 21, 26)",
+		"lineWidth": 1,
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"horisontalAlignment": "left",
+					"lineHeight": 1.4,
+					"children": [
+						{
+							"type": "text",
+							"text": "",
+							"bold": false,
+							"italic": false,
+							"underline": false,
+							"line-through": false,
+							"fontColor": "rgb(20, 21, 26)",
+							"fontHighlight": "",
+							"fontSize": 14,
+							"fontFamily": "Manrope",
+							"overline": false,
+							"subscript": false,
+							"superscript": false
+						}
+					]
+				}
+			],
+			"maxWidth": 300,
+			"containerMaxWidth": 300,
+			"placeholderText": "Напишите что-нибудь",
+			"insideOf": "Connector",
+			"realSize": 14
+		},
+		"borderStyle": "solid",
+		"zIndex": 92
+	},
+	"08c1ab1a-26d6-40c5-ad8b-147a9f256258": {
+		"itemType": "Connector",
+		"transformation": {
+			"translateX": 5310.343032836914,
+			"translateY": 677.1179999999999,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0,
+			"isLocked": false
+		},
+		"startPoint": {
+			"pointType": "Fixed",
+			"itemId": "58fd94d2-baed-4414-8348-f80c211dcc1f",
+			"relativeX": 100,
+			"relativeY": 200
+		},
+		"endPoint": {
+			"pointType": "Fixed",
+			"itemId": "1877b4e6-1a55-4012-9faa-9392c3987376",
+			"relativeX": 242.84303283691406,
+			"relativeY": -0.5
+		},
+		"middlePoint": null,
+		"startPointerStyle": "None",
+		"endPointerStyle": "None",
+		"lineStyle": "curved",
+		"lineColor": "rgb(20, 21, 26)",
+		"lineWidth": 1,
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"horisontalAlignment": "left",
+					"lineHeight": 1.4,
+					"children": [
+						{
+							"type": "text",
+							"text": "",
+							"bold": false,
+							"italic": false,
+							"underline": false,
+							"line-through": false,
+							"fontColor": "rgb(20, 21, 26)",
+							"fontHighlight": "",
+							"fontSize": 14,
+							"fontFamily": "Manrope",
+							"overline": false,
+							"subscript": false,
+							"superscript": false
+						}
+					]
+				}
+			],
+			"maxWidth": 300,
+			"containerMaxWidth": 300,
+			"placeholderText": "Текст",
+			"insideOf": "Connector",
+			"realSize": 14
+		},
+		"borderStyle": "solid",
+		"zIndex": 93
+	},
+	"d1caaf9f-050c-42cd-9597-b4c4f3dd2ec3": {
+		"itemType": "Connector",
+		"transformation": {
+			"translateX": 5281.6590000000015,
+			"translateY": 832.1179999999999,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0,
+			"isLocked": false
+		},
+		"startPoint": {
+			"pointType": "Fixed",
+			"itemId": "8bd2194c-a88d-4d15-977c-eb47561f15f3",
+			"relativeX": 100.00000000000091,
+			"relativeY": 200.00000000000003
+		},
+		"endPoint": {
+			"pointType": "Fixed",
+			"itemId": "1877b4e6-1a55-4012-9faa-9392c3987376",
+			"relativeX": 246.6865470398734,
+			"relativeY": 0
+		},
+		"middlePoint": null,
+		"startPointerStyle": "None",
+		"endPointerStyle": "None",
+		"lineStyle": "curved",
+		"lineColor": "rgb(20, 21, 26)",
+		"lineWidth": 1,
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"horisontalAlignment": "left",
+					"lineHeight": 1.4,
+					"children": [
+						{
+							"type": "text",
+							"text": "",
+							"bold": false,
+							"italic": false,
+							"underline": false,
+							"line-through": false,
+							"fontColor": "rgb(20, 21, 26)",
+							"fontHighlight": "",
+							"fontSize": 14,
+							"fontFamily": "Manrope",
+							"overline": false,
+							"subscript": false,
+							"superscript": false
+						}
+					]
+				}
+			],
+			"maxWidth": 300,
+			"containerMaxWidth": 300,
+			"placeholderText": "Текст",
+			"insideOf": "Connector",
+			"realSize": 14
+		},
+		"borderStyle": "solid",
+		"zIndex": 94
+	},
+	"11de9e09-ef27-4291-8b7b-0eb033e6c88e": {
+		"itemType": "Connector",
+		"transformation": {
+			"translateX": 5325.115852974984,
+			"translateY": 1118.659,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0,
+			"isLocked": false
+		},
+		"startPoint": {
+			"pointType": "Fixed",
+			"itemId": "c79fe9c4-e0c4-448f-b507-fc29bda1cae9",
+			"relativeX": 0,
+			"relativeY": 100
+		},
+		"endPoint": {
+			"pointType": "Fixed",
+			"itemId": "1877b4e6-1a55-4012-9faa-9392c3987376",
+			"relativeX": 257.6158529749837,
+			"relativeY": 0
+		},
+		"middlePoint": null,
+		"startPointerStyle": "None",
+		"endPointerStyle": "None",
+		"lineStyle": "curved",
+		"lineColor": "rgb(20, 21, 26)",
+		"lineWidth": 1,
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"horisontalAlignment": "left",
+					"lineHeight": 1.4,
+					"children": [
+						{
+							"type": "text",
+							"text": "",
+							"bold": false,
+							"italic": false,
+							"underline": false,
+							"line-through": false,
+							"fontColor": "rgb(20, 21, 26)",
+							"fontHighlight": "",
+							"fontSize": 14,
+							"fontFamily": "Manrope",
+							"overline": false,
+							"subscript": false,
+							"superscript": false
+						}
+					]
+				}
+			],
+			"maxWidth": 300,
+			"containerMaxWidth": 300,
+			"placeholderText": "Текст",
+			"insideOf": "Connector",
+			"realSize": 14
+		},
+		"borderStyle": "solid",
+		"zIndex": 95
+	},
+	"ff479445-9987-4006-bb7c-c5bdc915faef": {
+		"itemType": "Connector",
+		"transformation": {
+			"translateX": 5388.632006142866,
+			"translateY": 388.02008481509273,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0,
+			"isLocked": false
+		},
+		"startPoint": {
+			"pointType": "Fixed",
+			"itemId": "2e46eff1-7996-4a44-b2f4-18cafac496de",
+			"relativeX": 100,
+			"relativeY": 200
+		},
+		"endPoint": {
+			"pointType": "Fixed",
+			"itemId": "1877b4e6-1a55-4012-9faa-9392c3987376",
+			"relativeX": 321.132006142866,
+			"relativeY": 0
+		},
+		"middlePoint": null,
+		"startPointerStyle": "None",
+		"endPointerStyle": "None",
+		"lineStyle": "curved",
+		"lineColor": "rgb(20, 21, 26)",
+		"lineWidth": 1,
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"horisontalAlignment": "left",
+					"lineHeight": 1.4,
+					"children": [
+						{
+							"type": "text",
+							"text": "",
+							"bold": false,
+							"italic": false,
+							"underline": false,
+							"line-through": false,
+							"fontColor": "rgb(20, 21, 26)",
+							"fontHighlight": "",
+							"fontSize": 14,
+							"fontFamily": "Manrope",
+							"overline": false,
+							"subscript": false,
+							"superscript": false
+						}
+					]
+				}
+			],
+			"maxWidth": 300,
+			"containerMaxWidth": 300,
+			"placeholderText": "Текст",
+			"insideOf": "Connector",
+			"realSize": 14
+		},
+		"borderStyle": "solid",
+		"zIndex": 96
+	},
+	"e95e55fb-9c34-4f00-9a3a-87e0defd6493": {
+		"itemType": "Connector",
+		"transformation": {
+			"translateX": 5291.121814820278,
+			"translateY": 1289.2243453136316,
+			"scaleX": 1,
+			"scaleY": 1,
+			"rotate": 0,
+			"isLocked": false
+		},
+		"startPoint": {
+			"pointType": "Fixed",
+			"itemId": "a3b437d7-503d-4325-a45a-b17c0d475d30",
+			"relativeX": 0,
+			"relativeY": 100.00000000000011
+		},
+		"endPoint": {
+			"pointType": "Fixed",
+			"itemId": "1877b4e6-1a55-4012-9faa-9392c3987376",
+			"relativeX": 223.6218148202779,
+			"relativeY": -10.010069078610968
+		},
+		"middlePoint": null,
+		"startPointerStyle": "None",
+		"endPointerStyle": "None",
+		"lineStyle": "curved",
+		"lineColor": "rgb(20, 21, 26)",
+		"lineWidth": 1,
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"horisontalAlignment": "left",
+					"lineHeight": 1.4,
+					"children": [
+						{
+							"type": "text",
+							"text": "",
+							"bold": false,
+							"italic": false,
+							"underline": false,
+							"line-through": false,
+							"fontColor": "rgb(20, 21, 26)",
+							"fontHighlight": "",
+							"fontSize": 14,
+							"fontFamily": "Manrope",
+							"overline": false,
+							"subscript": false,
+							"superscript": false
+						}
+					]
+				}
+			],
+			"maxWidth": 300,
+			"containerMaxWidth": 300,
+			"placeholderText": "Текст",
+			"insideOf": "Connector",
+			"realSize": 14
+		},
+		"borderStyle": "solid",
+		"zIndex": 97
+	},
+	"ca5fc977-1e50-40fc-92f1-3cb983e4c110": {
+		"itemType": "Shape",
+		"shapeType": "Circle",
+		"backgroundColor": "rgb(255, 255, 255)",
+		"backgroundOpacity": 1,
+		"borderColor": "rgb(255, 255, 255)",
+		"borderOpacity": 1,
+		"borderStyle": "solid",
+		"borderWidth": 1,
+		"transformation": {
+			"translateX": 13534.098681256262,
+			"translateY": 5595.440918247498,
+			"scaleX": 7.068790984144616,
+			"scaleY": 4.590651616139885,
+			"rotate": 0,
+			"isLocked": false
+		},
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"children": [
+						{
+							"bold": true,
+							"text": "Save and Revisit Boards Anytime",
+							"type": "text",
+							"italic": false,
+							"fontSize": 36,
+							"overline": false,
+							"fontColor": "rgb(20, 21, 26)",
+							"subscript": false,
+							"underline": false,
+							"enableAuto": false,
+							"fontFamily": "Manrope",
+							"lineHeight": 1.4,
+							"superscript": false,
+							"line-through": false,
+							"fontHighlight": ""
+						}
+					],
+					"horisontalAlignment": "left"
+				},
+				{
+					"type": "paragraph",
+					"children": [
+						{
+							"bold": true,
+							"text": "",
+							"type": "text",
+							"italic": false,
+							"fontSize": 36,
+							"overline": false,
+							"fontColor": "rgb(20, 21, 26)",
+							"subscript": false,
+							"underline": false,
+							"enableAuto": false,
+							"fontFamily": "Manrope",
+							"lineHeight": 1.4,
+							"superscript": false,
+							"line-through": false,
+							"fontHighlight": ""
+						}
+					],
+					"horisontalAlignment": "left"
+				},
+				{
+					"type": "paragraph",
+					"children": [
+						{
+							"bold": true,
+							"text": "",
+							"type": "text",
+							"italic": false,
+							"fontSize": 36,
+							"overline": false,
+							"fontColor": "rgb(20, 21, 26)",
+							"subscript": false,
+							"underline": false,
+							"enableAuto": false,
+							"fontFamily": "Manrope",
+							"lineHeight": 1.4,
+							"superscript": false,
+							"line-through": false,
+							"fontHighlight": ""
+						}
+					],
+					"horisontalAlignment": "left"
+				}
+			],
+			"containerMaxWidth": 565.5032787315686,
+			"placeholderText": " ",
+			"insideOf": "Shape",
+			"realSize": 36
+		},
+		"zIndex": 98
+	},
+	"8949e6a9-196a-4b09-b99d-f081a512fbb5": {
+		"itemType": "Shape",
+		"shapeType": "RoundedRectangle",
+		"backgroundColor": "none",
+		"backgroundOpacity": 1,
+		"borderColor": "#f6f6f6",
+		"borderOpacity": 1,
+		"borderStyle": "solid",
+		"borderWidth": 1,
+		"transformation": {
+			"translateX": 13800.409788,
+			"translateY": 5888.939368,
+			"scaleX": 4.57865,
+			"scaleY": 3.65206,
+			"rotate": 0,
+			"isLocked": false
+		},
+		"text": {
+			"itemType": "RichText",
+			"verticalAlignment": "center",
+			"children": [
+				{
+					"type": "paragraph",
+					"horisontalAlignment": "left",
+					"lineHeight": 1.4,
+					"children": [
+						{
+							"type": "text",
+							"text": "Export your boards as ",
+							"bold": false,
+							"italic": false,
+							"underline": false,
+							"line-through": false,
+							"fontColor": "black",
+							"fontHighlight": "",
+							"fontSize": 36,
+							"fontFamily": "\"Open Sans\"",
+							"overline": false,
+							"subscript": false,
+							"superscript": false
+						},
+						{
+							"type": "text",
+							"text": "HTML ",
+							"bold": true,
+							"italic": false,
+							"underline": false,
+							"line-through": false,
+							"fontColor": "black",
+							"fontHighlight": "",
+							"fontSize": 36,
+							"fontFamily": "\"Open Sans\"",
+							"overline": false,
+							"subscript": false,
+							"superscript": false
+						},
+						{
+							"type": "text",
+							"text": "files ",
+							"bold": false,
+							"italic": false,
+							"underline": false,
+							"line-through": false,
+							"fontColor": "black",
+							"fontHighlight": "",
+							"fontSize": 36,
+							"fontFamily": "\"Open Sans\"",
+							"overline": false,
+							"subscript": false,
+							"superscript": false
+						},
+						{
+							"type": "text",
+							"text": "to store locally ",
+							"bold": true,
+							"italic": false,
+							"underline": false,
+							"line-through": false,
+							"fontColor": "black",
+							"fontHighlight": "",
+							"fontSize": 36,
+							"fontFamily": "\"Open Sans\"",
+							"overline": false,
+							"subscript": false,
+							"superscript": false
+						},
+						{
+							"type": "text",
+							"text": "and re-upload them in case you need. Your ideas are always safe and accessible!",
+							"bold": false,
+							"italic": false,
+							"underline": false,
+							"line-through": false,
+							"fontColor": "black",
+							"fontHighlight": "",
+							"fontSize": 36,
+							"fontFamily": "\"Open Sans\"",
+							"overline": false,
+							"subscript": false,
+							"superscript": false
+						}
+					]
+				}
+			],
+			"maxWidth": 458,
+			"containerMaxWidth": 412.07850000000144,
+			"placeholderText": " ",
+			"insideOf": "Shape",
+			"realSize": 36
+		},
+		"zIndex": 99
+	},
+	"e1ac9da1-7f2b-43c9-95e9-54fcbe001faa": {
+		"itemType": "Drawing",
+		"points": [
+			{
+				"x": 12,
+				"y": 12
+			},
+			{
+				"x": 12,
+				"y": 277.2209980838088
+			},
+			{
+				"x": 17.619088942454255,
+				"y": 399.71713702929674
+			},
+			{
+				"x": 114.26741875265543,
+				"y": 388.4789591443896
+			},
+			{
+				"x": 192.934663947005,
+				"y": 381.7360524134451
+			},
+			{
+				"x": 259.2399134679572,
+				"y": 379.4884168364638
+			},
+			{
+				"x": 334.53570529683566,
+				"y": 380.61223462495445
+			},
+			{
+				"x": 350.26915433570593,
+				"y": 382.859870201936
+			},
+			{
+				"x": 376.11696347099223,
+				"y": 389.60277693288026
+			},
+			{
+				"x": 378.36459904797357,
+				"y": 389.60277693288026
+			},
+			{
+				"x": 376.11696347099223,
+				"y": 388.4789591443896
+			},
+			{
+				"x": 376.11696347099223,
+				"y": 388.4789591443896
+			}
+		],
+		"transformation": {
+			"translateX": 13746.5,
+			"translateY": 5870.39,
+			"scaleX": 1.31997,
+			"scaleY": 1,
+			"rotate": 0,
+			"isLocked": false
+		},
+		"strokeStyle": "#c49fe4",
+		"strokeWidth": 24,
+		"zIndex": 100
+	},
+	"6ffa4073-0073-4b46-8525-a25ee4ed2d70": {
+		"itemType": "Drawing",
+		"points": [
+			{
+				"x": 12,
+				"y": 12
+			},
+			{
+				"x": 274.97336250682656,
+				"y": 13.123817788490669
+			},
+			{
+				"x": 309.8117139500391,
+				"y": 17.619088942453573
+			},
+			{
+				"x": 333.4118875083441,
+				"y": 24.361995673397814
+			},
+			{
+				"x": 352.51678991268636,
+				"y": 33.35253798132362
+			},
+			{
+				"x": 363.75496779759305,
+				"y": 43.4668980777401
+			},
+			{
+				"x": 372.7455101055193,
+				"y": 56.95271153962858
+			},
+			{
+				"x": 378.36459904797266,
+				"y": 77.18143173246153
+			},
+			{
+				"x": 381.73605241344467,
+				"y": 108.6483298102014
+			},
+			{
+				"x": 383.983687990426,
+				"y": 189.56321058153299
+			},
+			{
+				"x": 383.983687990426,
+				"y": 330.0404341428723
+			},
+			{
+				"x": 386.23132356740734,
+				"y": 379.4884168364638
+			},
+			{
+				"x": 394.09804808684294,
+				"y": 443.54603078043465
+			},
+			{
+				"x": 394.09804808684294,
+				"y": 443.54603078043465
+			}
+		],
+		"transformation": {
+			"translateX": 13843.1,
+			"translateY": 5852.19,
+			"scaleX": 1.1605,
+			"scaleY": 0.730555,
+			"rotate": 0,
+			"isLocked": false
+		},
+		"strokeStyle": "#c49fe4",
+		"strokeWidth": 24,
+		"zIndex": 101
 	}
 }
