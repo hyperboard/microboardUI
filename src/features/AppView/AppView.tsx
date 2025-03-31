@@ -1,29 +1,32 @@
-import { shouldShow } from "shared/lib/queryStringParser";
-import { useForceUpdate } from "shared/lib/useForceUpdate";
-import React, { useEffect, useRef } from "react";
-import {
-	useLocation,
-	useNavigate,
-	useParams,
-	useSearchParams,
-} from "react-router-dom";
-import { AccessDeniedModal } from "features/AccessDeniedModal";
 import { useAIContext } from "entities/AIInput/AIContext";
+import { AiGenerationButton } from "entities/AIInput/AIGenerationButton";
 import { AIInput } from "entities/AIInput/AIInput";
+import { Canvas } from "entities/Canvas";
+import { AccessDeniedModal } from "features/AccessDeniedModal";
 import { AiUnavailableModal } from "features/AiUnavailableModal/AiUnavailableModal";
 import { useAppContext } from "features/AppContext";
-import { Canvas } from "entities/Canvas";
+import { AudioProvider } from "features/AudioPlayer/AudioProvider";
 import { ChangePasswordModal } from "features/ChangePasswordModal";
 import { ContextMenu } from "features/ContextMenu";
 import { ContextPanel } from "features/ContextPanel";
 import { ExportPanel } from "features/ExportPanel";
 import { ExportVisible } from "features/ExportPanel/ExportVisible";
+import { HyperLink } from "features/hyperLink/HyperLink";
+import { useHyperLinkContext } from "features/hyperLink/HyperLinkContext";
+import { HyperLinkInput } from "features/hyperLink/HyperLinkInput/HyperLinkInput";
 import {
 	AuthClipboardModal,
 	ImgAuthClipboardModal,
 	ImportMiro,
 	ImportMiroStartModal,
 } from "features/ImportMiro";
+import {
+	ErrorNotification,
+	LoadingNotification,
+	SuccessNotification,
+	WarnClipboardNotification,
+	WarnNotification,
+} from "features/ImportMiro/ImportMiroBoards/Notifications";
 import { ItemTooltip } from "features/ItemTooltip";
 import { LandingMenu, MobileLandingMenu } from "features/LandingMenu";
 import { LocalFileSaveProgress } from "features/LocalFileSavingProgress";
@@ -32,6 +35,7 @@ import { UserTracking } from "features/Presence/UserTracking/UserTracking";
 import { ProfileSettingsModal } from "features/ProfileSettingsModal";
 import { ShareModal } from "features/ShareModal";
 import { SidePanelsContainer } from "features/SidePanelsContainer";
+import { CreateTemplateModal, SelectTemplateModal } from "features/Templates";
 import { TextEditors } from "features/TextEditor/TextEditor";
 import { ToastProvider } from "features/ToastProvider";
 import { UserPanelLayout } from "features/UserPanel/UserPanel";
@@ -39,8 +43,20 @@ import { UserPlanModal } from "features/UserPlan";
 import { HistoryModal } from "features/UserPlan/HistoryModal";
 import { LimitsModal } from "features/UserPlan/LimitsModal";
 import { SelectPaymentModal } from "features/UserPlan/SelectPaymentModal";
+import { VideosProvider } from "features/VideoPlayer/VideosProvider";
 import { ViewModeGuard } from "features/ViewModeGuard";
 import { ZoomPanel } from "features/ZoomPanel";
+import React, { useEffect, useRef } from "react";
+import {
+	useLocation,
+	useNavigate,
+	useParams,
+	useSearchParams,
+} from "react-router-dom";
+import { shouldShow } from "shared/lib/queryStringParser";
+import { useForceUpdate } from "shared/lib/useForceUpdate";
+import { UIMainLoader } from "shared/ui-lib/UIMainLoader/UIMainLoader";
+import { UiModalBackground } from "shared/ui-lib/UiModal";
 import {
 	CommentsContextProvider,
 	CommentsProvider,
@@ -51,22 +67,6 @@ import style from "./AppView.module.css";
 import { InactiveBoardHidder } from "./InactiveBoardHidder";
 import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
-import { UIMainLoader } from "shared/ui-lib/UIMainLoader/UIMainLoader";
-import { HyperLink } from "features/hyperLink/HyperLink";
-import { useHyperLinkContext } from "features/hyperLink/HyperLinkContext";
-import { HyperLinkInput } from "features/hyperLink/HyperLinkInput/HyperLinkInput";
-import { AiGenerationButton } from "entities/AIInput/AIGenerationButton";
-import { UiModalBackground } from "shared/ui-lib/UiModal";
-import { CreateTemplateModal, SelectTemplateModal } from "features/Templates";
-import {
-	ErrorNotification,
-	LoadingNotification,
-	SuccessNotification,
-	WarnClipboardNotification,
-	WarnNotification,
-} from "features/ImportMiro/ImportMiroBoards/Notifications";
-import { VideosProvider } from "features/VideoPlayer/VideosProvider";
-import { AudioProvider } from "features/AudioPlayer/AudioProvider";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -186,7 +186,7 @@ export function AppView(): JSX.Element {
 			{shouldShow("titlePanel") && <LandingMenu />}
 			{shouldShow("titlePanel") && <MobileLandingMenu />}
 			<InactiveBoardHidder>
-				<div ref={containerRef}>
+				<div ref={containerRef} className="NoContextMenu">
 					<ViewModeGuard
 						mode={["edit", "view"]}
 						fallback={

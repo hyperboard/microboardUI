@@ -2,8 +2,8 @@ import { App } from "App";
 import { Subscription } from "App/getSubscriptions";
 import { Board } from "Board";
 import { DrawingContext } from "Board/Items/DrawingContext";
-import { WithRouterProps, withRouter } from "shared/lib/withRouter";
 import * as React from "react";
+import { WithRouterProps, withRouter } from "shared/lib/withRouter";
 
 export interface Props extends WithRouterProps {
 	app: App;
@@ -170,6 +170,7 @@ export class CanvasBase extends React.Component<Props> {
 					width: `${width}px`,
 					height: `${height}px`,
 				}}
+				onContextMenu={ev => ev.preventDefault()}
 			>
 				<canvas
 					ref={this.canvasRef}
