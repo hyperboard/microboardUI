@@ -245,6 +245,10 @@ export class TextEditor extends React.Component<
 
 		const richText = this.props.text;
 
+		if (richText.insideOf === "Sticker") {
+			richText.autosizeEnable();
+		}
+
 		const slateFragment = data.getData("application/x-slate-fragment");
 		if (slateFragment) {
 			try {
@@ -269,7 +273,7 @@ export class TextEditor extends React.Component<
 		if (conf.URL_REGEX.test(text) && richText.editor.hasTextInSelection()) {
 			board.selection.setHyperLink(text, richText.editor.getSelection());
 		} else {
-			Transforms.insertText(richText.editor.editor, text);
+			richText.editor.insertCopiedText(text);
 		}
 
 		return false;
@@ -506,7 +510,9 @@ export class TextEditor extends React.Component<
 										? "auto"
 										: "visible",
 									// fontSize: "inherit",
-									fontSize: `${DEFAULT_TEXT_STYLES.fontSize}px`,
+									fontSize: text.isEmpty()
+										? `${DEFAULT_TEXT_STYLES.fontSize}px`
+										: undefined,
 									// transform: `scale(${editorScale})`,
 									// transformOrigin: `left top`,
 								}}
