@@ -1,10 +1,10 @@
 import { useAccount } from "App/useAccount";
 import clsx from "clsx";
-import { useBoundingClientRect } from "shared/lib/useClientRect";
-import { useHoverState } from "shared/lib/useHoverState";
 import React from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
+import { useBoundingClientRect } from "shared/lib/useClientRect";
+import { useHoverState } from "shared/lib/useHoverState";
 import styles from "./LimitsTable.module.css";
 
 // Smells
@@ -15,13 +15,14 @@ const DISPLAYNAME_MAP = {
 	"flux-schnell": "Flux.1 schnell",
 	"flux-pro": "Flux pro",
 	"tts-1-hd": "Text to speech HD",
+	"sonar-deep-research": "Perplexity AI",
 };
 
 const MODELS_ORDER = [
 	"gpt-4o-mini",
 	"deepseek-reasoner",
 	"gpt-4o",
-	"deepseek-reasoner",
+	"sonar-deep-research",
 	"flux-schnell",
 	"flux-pro",
 	"tts-1-hd",
