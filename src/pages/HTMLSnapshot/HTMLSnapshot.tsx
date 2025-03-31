@@ -1,3 +1,4 @@
+import { useAccount } from "App/useAccount";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { api, HTTPError } from "shared/api";
@@ -6,8 +7,17 @@ const HTMLSnapshot = (): JSX.Element => {
 	const { uid } = useParams();
 	const [htmlContent, setHtmlContent] = useState("");
 	const [errStatus, setErrStatus] = useState<null | number>(null);
+	const account = useAccount();
 
 	useEffect(() => {
+		account.init();
+	}, []);
+
+	useEffect(() => {
+		if (!account.isInitialized) {
+			return;
+		}
+
 		const fetchSnapshot = async (): Promise<void> => {
 			setErrStatus(null);
 			try {
@@ -27,14 +37,13 @@ const HTMLSnapshot = (): JSX.Element => {
 		};
 
 		fetchSnapshot();
-	}, [uid]);
+	}, [uid, account]);
 
 	if (errStatus === 404) {
 		return <div>Not found</div>;
 	} else if (errStatus) {
 		return <div>Unkown error</div>;
-	}
-	if (!htmlContent) {
+	} else if (!htmlContent || !account.isInitialized) {
 		return <div>Loading...</div>;
 	}
 

@@ -110,12 +110,10 @@ export function getRender(app: App): {
 					path: "/test-wheel",
 					element: <WheelEventLoggerPage />,
 				},
-				window.enableSnapshots
-					? {
-							path: "/snapshots/:uid?",
-							element: <HTMLSnapshot />,
-						}
-					: {},
+				{
+					path: "/snapshots/:uid?",
+					element: <HTMLSnapshot />,
+				},
 			],
 		},
 	]);
