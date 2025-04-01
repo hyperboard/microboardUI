@@ -402,7 +402,7 @@ export class TextEditor extends React.Component<
 					ref={this.containerRef}
 					className="notranslate"
 					style={{
-						zIndex: 10,
+						zIndex: 2,
 						border: "none",
 						padding: "0px",
 						margin: "0px",
@@ -554,7 +554,7 @@ export class TextEditor extends React.Component<
 							className={styles.quoteBtn}
 							onClick={onQuoteBtnClick}
 							style={{
-								zIndex: 11,
+								zIndex: 3,
 								top: buttonPosition.top,
 								left: buttonPosition.left,
 							}}
