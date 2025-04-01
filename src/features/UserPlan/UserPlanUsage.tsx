@@ -1,11 +1,12 @@
 import React from "react";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import styles from "./UserPlanUsage.module.css";
 import { Icon } from "shared/ui-lib/Icon";
 import { LIMITS_MODAL_ID } from "features/UserPlan/LimitsModal";
 import { HISTORY_MODAL_ID } from "features/UserPlan/HistoryModal";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { useAccount } from "App/useAccount";
+import clsx from "clsx";
 
 type Props = {
 	cancellationDate?: string | Date;
@@ -73,7 +74,12 @@ export function UserPlanUsage({
 					{isFree ? (
 						<>
 							{t("userPlan.currentPlanFree.part1")}
-							<span className={styles.planHighlight}>
+							<span
+								className={clsx(
+									styles.planHighlight,
+									styles.basicPlan,
+								)}
+							>
 								{t("userPlan.plans.basic.name")}
 							</span>
 							{t("userPlan.currentPlanFree.part2", {
@@ -98,7 +104,14 @@ export function UserPlanUsage({
 							{status === "pending_cancellation" ? (
 								<>
 									{t("userPlan.currentPlanPending.part1")}
-									<span className={styles.planHighlight}>
+									<span
+										className={clsx(styles.planHighlight, {
+											[styles.plusPlan]:
+												planName === "plus",
+											[styles.proPlan]:
+												planName === "pro",
+										})}
+									>
 										{planName}
 									</span>
 									{t("userPlan.currentPlanPending.part2", {
@@ -109,7 +122,14 @@ export function UserPlanUsage({
 							) : (
 								<>
 									{t("userPlan.currentPlanActive.part1")}
-									<span className={styles.planHighlight}>
+									<span
+										className={clsx(styles.planHighlight, {
+											[styles.plusPlan]:
+												planName === "plus",
+											[styles.proPlan]:
+												planName === "pro",
+										})}
+									>
 										{planName}
 									</span>
 									{t("userPlan.currentPlanActive.part2", {

@@ -921,8 +921,8 @@
 				"name": "Basic",
 				"description": "GPT-4o mini",
 				"features": [
-					"30 requests per week to GPT-4o mini",
-					"30 requests per week to DeepSeek-R1",
+					"GPT-4o mini",
+					"DeepSeek-R1",
 					"Unlimited boards and figures",
 					"Images — up to 100 MB"
 				],
@@ -932,12 +932,11 @@
 				"name": "Plus",
 				"description": "GPT-4o mini and GPT-4o",
 				"features": [
-					"Unlimited access to GPT-4o mini",
-					"50 requests per week to GPT-4o",
-					"100 requests per week to  DeepSeek-R1",
-					"25 requests per day to Flux.1 schnell",
-					"Text-to-speech HD — 15,000 characters total (~20 min audio)",
-					"Unlimited boards, figures and storage space",
+					"All features of the Basic plan",
+					"GPT-4o",
+					"Flux.1 Pro",
+					"Flux.1 Schnell",
+					"Text to speech HD",
 					"Images — up to 100 GB"
 				],
 				"tokensFeature": "1000 tokens"
@@ -946,11 +945,12 @@
 				"name": "Pro",
 				"description": "For use without limits",
 				"features": [
+					"All features of the Plus plan",
 					"On-premise version",
 					"Embed into your own product",
-					"Bring your own LLM",
-					"Unlimited boards, figures and storage space"
-				]
+					"Bring your own LLM"
+				],
+				"tokensFeature": "Personalized terms"
 			}
 		},
 		"paymentMethods": {

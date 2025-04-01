@@ -315,6 +315,7 @@ export function ProPlanCard() {
 			features={t("userPlan.plans.pro.features", {
 				returnObjects: true,
 			})}
+			additionalFeature={t("userPlan.plans.pro.tokensFeature")}
 			price={t("userPlan.customPrice")}
 			variant="pro"
 			contact

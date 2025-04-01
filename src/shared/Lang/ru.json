@@ -946,8 +946,8 @@
 				"name": "Базовый",
 				"description": "GPT-4o mini",
 				"features": [
-					"30 запросов в неделю к GPT-4o mini",
-					"30 запросов в неделю к DeepSeek-R1",
+					"GPT-4o mini",
+					"DeepSeek-R1",
 					"Доски, фигуры — без ограничений",
 					"Картинки — до 100 МБ"
 				],
@@ -957,12 +957,11 @@
 				"name": "Plus",
 				"description": "GPT-4o mini and GPT-4o",
 				"features": [
-					"Безлимит запросов к GPT-4o mini",
-					"50 запросов в неделю к GPT-4o",
-					"100 запросов в день к DeepSeek-R1",
-					"25 запросов в день к Flux.1 schnell",
-					"Text to speech HD — 15 000 символов в сумме всех запросов (~20 минут аудио)",
-					"Доски, фигуры — без ограничений",
+					"Все возможности тарифа Basic",
+					"GPT-4o",
+					"Flux.1 Pro",
+					"Flux.1 Schnell",
+					"Text to speech HD",
 					"Картинки — до 100 ГБ"
 				],
 				"tokensFeature": "1000 токенов"
@@ -971,11 +970,12 @@
 				"name": "Pro",
 				"description": "For use without limits",
 				"features": [
+					"Все возможности тарифа Plus",
 					"Локальное размещение",
 					"Интеграция в ваш продукт",
-					"Собственная LLM",
-					"Доски, фигуры, картинки — без ограничений"
-				]
+					"Собственная LLM"
+				],
+				"tokensFeature": "Индивидуальные условия"
 			}
 		},
 		"notifications": {

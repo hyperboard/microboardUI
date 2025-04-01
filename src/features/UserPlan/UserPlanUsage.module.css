@@ -6,8 +6,19 @@
 }
 
 .planHighlight {
-	color: #b78af0;
 	font-weight: 600;
+}
+
+.basicPlan {
+	color: #14151a;
+}
+
+.plusPlan {
+	color: #b78af0;
+}
+
+.proPlan {
+	color: #7ccba1;
 }
 
 .planUsageText {

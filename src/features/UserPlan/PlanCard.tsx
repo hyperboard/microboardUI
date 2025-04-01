@@ -187,28 +187,10 @@ export function PlanCard({
 					</Button>
 				</>
 			)}
-			<UiSeparator />
-			<ul className={styles.features}>
-				{features.map(feature => (
-					<li className={styles.feature} key={feature}>
-						<Icon
-							className={styles.markIcon}
-							width={24}
-							height={24}
-							iconName="checkMark"
-						/>
-						<span>{feature}</span>
-					</li>
-				))}
-				{additionalFeature && (
-					<li className={styles.feature} key={additionalFeature}>
-						<Icon
-							className={styles.markIcon}
-							width={24}
-							height={24}
-							iconName="checkMark"
-						/>
-						<span>{additionalFeature}</span>
+			{additionalFeature && (
+				<div className={clsx(styles.feature, styles.tokenFeature)}>
+					<span>{additionalFeature}</span>
+					{additionalFeatureTooltip && (
 						<div className={styles.tooltipContainer}>
 							<Icon
 								iconName="InformationLine"
@@ -226,8 +208,22 @@ export function PlanCard({
 								width="232px"
 							/>
 						</div>
+					)}
+				</div>
+			)}
+			<UiSeparator />
+			<ul className={styles.features}>
+				{features.map(feature => (
+					<li className={styles.feature} key={feature}>
+						<Icon
+							className={styles.markIcon}
+							width={24}
+							height={24}
+							iconName="checkMark"
+						/>
+						<span>{feature}</span>
 					</li>
-				)}
+				))}
 			</ul>
 
 			{/* {state !== "downgrade" && (
