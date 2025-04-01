@@ -12,6 +12,7 @@ export type LogEntryType = {
 	platform: string;
 	isCtrlKey: boolean;
 	isShiftKey: boolean;
+	timestamp: number;
 };
 
 export class WheelEventLogger {
@@ -32,8 +33,12 @@ export class WheelEventLogger {
 	}
 
 	private init(): void {
-		window.addEventListener("wheel", this.logEvent);
-		window.addEventListener("mousemove", this.updateMousePosition);
+		window.addEventListener("wheel", this.logEvent, {
+			capture: true,
+		});
+		window.addEventListener("mousemove", this.updateMousePosition, {
+			capture: true,
+		});
 	}
 
 	private logEvent = (event: ChromeWheelEvent): void => {
@@ -49,6 +54,7 @@ export class WheelEventLogger {
 			platform: navigator.platform,
 			isCtrlKey: event.ctrlKey || event.metaKey,
 			isShiftKey: event.shiftKey,
+			timestamp: Date.now(),
 		};
 		this.setEvents(prev => [logEntry, ...prev]);
 	};

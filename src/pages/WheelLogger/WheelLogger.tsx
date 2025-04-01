@@ -1,5 +1,5 @@
 import { LogEntryType, WheelEventLogger } from "App/Wheel/WheelEventLogger";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import styles from "./WheelLogger.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { AppContext, useAppContext } from "features/AppContext";
@@ -15,10 +15,32 @@ export const WheelEventLoggerPage: React.FC = () => {
 		x: number;
 		y: number;
 	}>({ x: 0, y: 0 });
+	const loggerRef = useRef<WheelEventLogger | null>(null);
 
-	useEffect(() => {
-		const logger = new WheelEventLogger(setEvents, setMousePosition);
-		return () => logger.cleanup();
+	useLayoutEffect(() => {
+		const init = async (): Promise<void> => {
+			try {
+				await boardsList.loadBoards();
+				const boardId = await boardsList.createBoard();
+				await app.openBoard(boardId);
+				app.render();
+
+				loggerRef.current = new WheelEventLogger(
+					setEvents,
+					setMousePosition,
+				);
+
+				console.log("Logger initialized successfully");
+			} catch (error) {
+				console.error("Initialization failed:", error);
+			}
+		};
+
+		init();
+
+		return () => {
+			loggerRef.current?.cleanup();
+		};
 	}, []);
 
 	const exportData = (): void => {
@@ -36,16 +58,6 @@ export const WheelEventLoggerPage: React.FC = () => {
 		a.click();
 		document.body.removeChild(a);
 	};
-
-	useLayoutEffect(() => {
-		boardsList.loadBoards().then(() => {
-			boardsList.createBoard().then(boardId => {
-				app.openBoard(boardId).then(() => {
-					app.render();
-				});
-			});
-		});
-	}, []);
 
 	if (!board) {
 		return <div></div>;
