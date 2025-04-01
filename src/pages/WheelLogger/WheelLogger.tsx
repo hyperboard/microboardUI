@@ -1,9 +1,15 @@
 import { LogEntryType, WheelEventLogger } from "App/Wheel/WheelEventLogger";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import styles from "./WheelLogger.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
+import { AppContext, useAppContext } from "features/AppContext";
+import { AppView } from "features/AppView";
+import { useBoardsList } from "App/useBoardsList";
 
 export const WheelEventLoggerPage: React.FC = () => {
+	const { app } = useAppContext();
+	const board = app.getBoard();
+	const boardsList = useBoardsList();
 	const [events, setEvents] = useState<LogEntryType[]>([]);
 	const [mousePosition, setMousePosition] = useState<{
 		x: number;
@@ -31,27 +37,46 @@ export const WheelEventLoggerPage: React.FC = () => {
 		document.body.removeChild(a);
 	};
 
+	useLayoutEffect(() => {
+		boardsList.loadBoards().then(() => {
+			boardsList.createBoard().then(boardId => {
+				app.openBoard(boardId).then(() => {
+					app.render();
+				});
+			});
+		});
+	}, []);
+
+	if (!board) {
+		return <div></div>;
+	}
+
 	return (
-		<div className={styles.loggerContainer}>
-			<div className={styles.loggerTitle}>Wheel Event Logger</div>
-			<div className={styles.loggerMouse}>
-				Mouse: ({mousePosition.x}, {mousePosition.y})
+		<>
+			<AppContext.Provider value={{ app, board }}>
+				<AppView />
+			</AppContext.Provider>
+			<div className={styles.loggerContainer}>
+				<div className={styles.loggerTitle}>Wheel Event Logger</div>
+				<div className={styles.loggerMouse}>
+					Mouse: ({mousePosition.x}, {mousePosition.y})
+				</div>
+				<div className={styles.loggerEvents}>
+					{events.slice(0, 10).map((entry, index) => (
+						<div key={index}>
+							{`ΔX: ${entry.deltaX}, ΔY: ${entry.deltaY}, Mode: ${entry.deltaMode}`}
+						</div>
+					))}
+				</div>
+				<UiButton
+					variant="secondary"
+					className={styles.loggerButton}
+					onClick={exportData}
+					size="sm"
+				>
+					Export Data
+				</UiButton>
 			</div>
-			<div className={styles.loggerEvents}>
-				{events.slice(0, 10).map((entry, index) => (
-					<div key={index}>
-						{`ΔX: ${entry.deltaX}, ΔY: ${entry.deltaY}, Mode: ${entry.deltaMode}`}
-					</div>
-				))}
-			</div>
-			<UiButton
-				variant="secondary"
-				className={styles.loggerButton}
-				onClick={exportData}
-				size="sm"
-			>
-				Export Data
-			</UiButton>
-		</div>
+		</>
 	);
 };
