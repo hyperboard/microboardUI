@@ -1,32 +1,32 @@
-import React, { useEffect, useRef, useState, type SyntheticEvent } from "react";
-import styles from "./AIInput.module.css";
-import { useAppSubscription } from "Board/useBoardSubscription";
-import { useTranslation } from "react-i18next";
-import { useAppContext } from "features/AppContext";
-import { Icon } from "shared/ui-lib/Icon";
 import {
 	AiChatMsg,
 	GenerateAudioRequest,
 	GenerateImageRequest,
 	UserRequest,
 } from "App/Connection";
-import { useForceUpdate } from "shared/lib/useForceUpdate";
-import { UiPanel } from "shared/ui-lib/UiPanel";
+import { SessionStorage } from "App/SessionStorage";
 import { useAccount } from "App/useAccount";
+import { useAppSubscription } from "Board/useBoardSubscription";
 import clsx from "clsx";
-import { USER_PLAN_MODAL_ID } from "features/UserPlan";
 import {
 	getContextItems,
 	getIdeaFromSelection,
 	PossibleParentNode,
+	useAIContext,
 } from "entities/AIInput";
-import { useAIContext } from "entities/AIInput";
-import { SessionStorage } from "App/SessionStorage";
-import { AIDropdown } from "./AIDropdown";
-import { useUiModalContext } from "shared/ui-lib/UiModal";
+import { useAppContext } from "features/AppContext";
+import { USER_PLAN_MODAL_ID } from "features/UserPlan";
+import React, { useEffect, useRef, useState, type SyntheticEvent } from "react";
+import { useTranslation } from "react-i18next";
+import { getCorrectEnding } from "shared/lib/getCorrectEnding";
+import { useForceUpdate } from "shared/lib/useForceUpdate";
+import { Icon } from "shared/ui-lib/Icon";
 import { Tooltip } from "shared/ui-lib/Tooltip";
 import { UiButton } from "shared/ui-lib/UiButton";
-import { getCorrectEnding } from "shared/lib/getCorrectEnding";
+import { useUiModalContext } from "shared/ui-lib/UiModal";
+import { UiPanel } from "shared/ui-lib/UiPanel";
+import { AIDropdown } from "./AIDropdown";
+import styles from "./AIInput.module.css";
 
 const sessionStorage = new SessionStorage();
 
@@ -212,6 +212,7 @@ export const AIInput = () => {
 					prompt: idea,
 					itemId: responseAdded.getId(),
 					options,
+					userId: account.info?.id!,
 				},
 			};
 
@@ -224,6 +225,7 @@ export const AIInput = () => {
 					method: "GenerateAudio",
 					text: idea,
 					model: "tts-1-hd",
+					userId: account.info?.id!,
 				},
 			};
 			connection.wsClient.send(message);
@@ -247,6 +249,7 @@ export const AIInput = () => {
 					itemId: responseAdded.getId(),
 					requestItemId: requestAdded.getId(),
 					contextRequest,
+					userId: account.info?.id!,
 				},
 			};
 

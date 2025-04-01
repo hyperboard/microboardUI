@@ -212,6 +212,7 @@ export interface UserRequest {
 	itemId: string;
 	requestItemId: string;
 	action?: TextAction;
+	userId: number;
 	contextRequest?: {
 		messageId: string;
 		range?: number;
@@ -222,6 +223,7 @@ export interface GenerateImageRequest {
 	method: "GenerateImage";
 	prompt: string;
 	itemId: string;
+	userId: number;
 	options:
 		| {
 				model: "dall-e-2";
@@ -255,6 +257,7 @@ export interface GenerateAudioRequest {
 	method: "GenerateAudio";
 	text: string;
 	model: "tts-1-hd";
+	userId: number;
 }
 
 export interface GenerateAudioResponse {

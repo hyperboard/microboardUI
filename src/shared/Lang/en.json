@@ -1071,7 +1071,8 @@
 			"deepseek-reasoner": "Better than 4o in many cases",
 			"flux-schnell": "Image generation",
 			"flux-pro": "Image generation (higher quality)",
-			"tts-1-hd": "Speech generation"
+			"tts-1-hd": "Speech generation",
+			"sonar-deep-research": "AI with interne search"
 		}
 	},
 	"video": {

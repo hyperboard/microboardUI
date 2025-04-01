@@ -1,32 +1,32 @@
 import {
-	createStrictContext,
-	useStrictContext,
-} from "shared/lib/strictContext";
-import React, { useState, type PropsWithChildren } from "react";
-import {
 	AiChatMsg,
 	GenerateImageRequest,
 	OpenAIModels,
 	UserRequest,
 } from "App/Connection";
-import { useAppContext } from "features/AppContext";
-import { Account } from "entities/account";
+import { SessionStorage } from "App/SessionStorage";
+import { useAccount } from "App/useAccount";
+import { AINode } from "Board/Items/AINode/AINode";
 import { getControlPointData } from "Board/Selection/QuickAddButtons/quickAddHelpers";
+import { conf } from "Board/Settings";
+import { Account } from "entities/account";
 import {
 	createNode,
 	getContextItems,
 	getIdeaFromSelection,
 	PossibleParentNode,
 } from "entities/AIInput/utils";
-import { AINode } from "Board/Items/AINode/AINode";
 import { AI_UNAVAILABLE_MODAL_ID } from "features/AiUnavailableModal/AiUnavailableModal";
+import { useAppContext } from "features/AppContext";
 import { USER_PLAN_MODAL_ID } from "features/UserPlan/UserPlanModal";
-import { useAccount } from "App/useAccount";
-import { SessionStorage } from "App/SessionStorage";
-import { useUiModalContext } from "shared/ui-lib/UiModal";
-import { conf } from "Board/Settings";
-import { notify } from "shared/ui-lib/Toast";
+import React, { useState, type PropsWithChildren } from "react";
 import { useTranslation } from "react-i18next";
+import {
+	createStrictContext,
+	useStrictContext,
+} from "shared/lib/strictContext";
+import { notify } from "shared/ui-lib/Toast";
+import { useUiModalContext } from "shared/ui-lib/UiModal";
 
 interface Context {
 	stopStream: (
@@ -308,6 +308,7 @@ export const AIContextProvider = ({
 					prompt: idea,
 					itemId: responseAdded.getId(),
 					options,
+					userId: account.info?.id!,
 				},
 			};
 
@@ -332,6 +333,7 @@ export const AIContextProvider = ({
 					itemId: responseAdded.getId(),
 					requestItemId: requestAdded.getId(),
 					contextRequest,
+					userId: account.info?.id!,
 				},
 			};
 
