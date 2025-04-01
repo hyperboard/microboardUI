@@ -16,7 +16,8 @@ export function SaveVideoOrAudio({ itemType }: Props): JSX.Element {
 	const item = board.selection.items.getSingle();
 	if (
 		item?.itemType !== itemType ||
-		(item.itemType === "Video" && !item.getIsStorageUrl())
+		(item.itemType === "Video" && !item.getIsStorageUrl()) ||
+		(item.itemType === "Audio" && !item.getExtension())
 	) {
 		return <></>;
 	}
