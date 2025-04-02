@@ -52,17 +52,17 @@ export function getController(
 		// }
 
 		if (wheel.isProbablyMouseWheel()) {
-			console.log("wheel", wheel.getWheelScaleMultiplier());
+			// console.log("wheel", wheel.getWheelScaleMultiplier());
 			board.camera.zoomRelativeToPointerBy(
 				wheel.getWheelScaleMultiplier(),
 			);
 		} else if (wheel.isTouchpadPinch()) {
-			console.log("touchpad", wheel.getTouchpadPinchMultiplier());
+			// console.log("touchpad", wheel.getTouchpadPinchMultiplier());
 			board.camera.zoomRelativeToPointerBy(
 				wheel.getTouchpadPinchMultiplier(),
 			);
 		} else {
-			console.log("translate");
+			// console.log("translate");
 			const scale = board.camera.getScale();
 			board.camera.translateBy(
 				wheel.getTouchpadPanDeltaX() / scale,
