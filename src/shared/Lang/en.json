@@ -1080,5 +1080,8 @@
 			"header": "Failed to load video",
 			"body": "Ensure that the resource from which the video is requested is accessible"
 		}
+	},
+	"textEditor": {
+		"limitReached": "Character limit exceeded"
 	}
 }

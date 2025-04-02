@@ -16,6 +16,7 @@ import { t } from "i18next";
 import { BlockNode } from "Board/Items/RichText/Editor/BlockNode";
 import { HyperLinkCreationData } from "features/hyperLink/HyperLinkContext";
 import { conf } from "Board/Settings";
+import { notify } from "shared/ui-lib/Toast/notify";
 
 export class TextEditors extends React.Component<
 	{
@@ -310,6 +311,14 @@ export class TextEditor extends React.Component<
 		text.onLimitReached = () => {
 			if (this.state.timeoutId) {
 				clearTimeout(this.state.timeoutId);
+			}
+
+			if (!this.state.limitReached) {
+				notify({
+					header: t("textEditor.limitReached"),
+					duration: 3000,
+					variant: "warning",
+				});
 			}
 
 			this.setState({ limitReached: false }, () => {
