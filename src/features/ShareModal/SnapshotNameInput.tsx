@@ -38,7 +38,7 @@ const SnapshotNameInput: React.FC<{
 		setSnapshotURI(null);
 		setErrMsg(null);
 		try {
-			const snapshot = await board.serializeHTML();
+			const snapshot = board.serializeHTML();
 			const { data } = await api.post<
 				MessageResponse & { snapshotURI: string }
 			>("/media/snapshot", {

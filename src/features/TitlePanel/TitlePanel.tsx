@@ -91,8 +91,8 @@ export function TitlePanel(): JSX.Element | null {
 		board.tools.export();
 	};
 
-	const exportHTML = async (): Promise<string> => {
-		const htmlContent = await board.serializeHTML();
+	const exportHTML = (): string => {
+		const htmlContent = board.serializeHTML();
 		const blob = new Blob([htmlContent], {
 			type: "text/html;charset=utf-8",
 		});
