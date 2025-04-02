@@ -20,7 +20,7 @@ export function tryToPasteVideoByLink(link: string, board: Board): boolean {
 			return true;
 		}
 	} catch {
-		console.error("Error while parsing video url");
+		console.log("Can not get video id");
 	}
 	return false;
 }

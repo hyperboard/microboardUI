@@ -41,7 +41,7 @@ export async function tryToPasteAsItemOrReturnText(
 			return null;
 		}
 
-		if (await tryToPasteAudioByLink(text, board)) {
+		if (tryToPasteAudioByLink(text, board)) {
 			preventPasteDefault(event);
 			return null;
 		}

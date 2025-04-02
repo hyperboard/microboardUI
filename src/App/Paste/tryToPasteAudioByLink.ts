@@ -3,32 +3,18 @@ import { conf } from "Board/Settings";
 import { AudioItem } from "Board/Items/Audio/Audio";
 import { calculateAudioPosition } from "Board/Items/Audio/AudioHelpers";
 
-async function isAudioUrl(url: string): Promise<boolean> {
-	try {
-		const extension = url.split(".").pop()?.toLowerCase();
-		if (extension && conf.AUDIO_FORMATS.includes(`.${extension}`)) {
-			return true;
-		}
-		const response = await fetch(url, { method: "GET" });
-		const contentType = response.headers.get("content-type");
-
-		if (contentType) {
-			return contentType.startsWith("audio/");
-		}
-
-		return false;
-	} catch (error) {
-		console.error("Error checking audio URL:", error);
-		return false;
-	}
+function isAudioUrl(url: string): boolean {
+	const extension = url.split(".").pop()?.toLowerCase();
+	return !(
+		!url.startsWith("https://") ||
+		!extension ||
+		!conf.AUDIO_FORMATS.includes(extension)
+	);
 }
 
-export async function tryToPasteAudioByLink(
-	link: string,
-	board: Board,
-): Promise<boolean> {
+export function tryToPasteAudioByLink(link: string, board: Board): boolean {
 	try {
-		if (await isAudioUrl(link)) {
+		if (isAudioUrl(link)) {
 			const audio = new AudioItem(link, board, false, board.events, "");
 			const { scaleX, scaleY, translateX, translateY } =
 				calculateAudioPosition(board, audio);
