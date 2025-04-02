@@ -5,6 +5,7 @@ import { ACCESS_DENIED_MODAL } from "features/AccessDeniedModal";
 import { AppContext, useAppContext } from "features/AppContext";
 import { AppView } from "features/AppView";
 import { USER_PLAN_MODAL_ID } from "features/UserPlan";
+import Cookies from "js-cookie";
 import React, { useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -12,7 +13,6 @@ import { billingApi } from "shared/api";
 import { notify } from "shared/ui-lib/Toast";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { pasteWelcomeBoardData } from "./WelcomePage/WelcomePage";
-import Cookies from "js-cookie";
 
 export const BoardPage = (): JSX.Element => {
 	const { app } = useAppContext();
@@ -64,7 +64,7 @@ export const BoardPage = (): JSX.Element => {
 			} else if (params.boardId && params.boardId !== "blank") {
 				app.openBoard(
 					params.boardId,
-					searchParams.get("accessKey") ?? undefined,
+					searchParams.get("accessKey") || undefined,
 				).then(() => {
 					navigate(`/boards/${params.boardId}?${searchParams}`, {
 						replace: true,

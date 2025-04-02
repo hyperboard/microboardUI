@@ -403,14 +403,14 @@ export function createConnection(
 		console.error("Not implemented. Access denied to board:", boardId);
 	};
 
-	const invalidateToken = async () => {
+	const invalidateToken = async (alwaysSend = false) => {
 		const account = getAccount();
 		if (account.isLoggedIn && account.tokenData?.exp) {
 			const currentTime = Math.floor(Date.now() / 1000);
 			const tokenExpiryTime = account.tokenData.exp;
 			const bufferTime = 10;
 
-			if (currentTime >= tokenExpiryTime - bufferTime) {
+			if (currentTime >= tokenExpiryTime - bufferTime || alwaysSend) {
 				await publishAuth();
 			}
 		}
@@ -540,17 +540,19 @@ export function createConnection(
 			return;
 		}
 
-		function onSocketOpen(): void {
-			sendSubscribeMsg();
+		async function onSocketOpen(): Promise<void> {
+			await invalidateToken(true);
+			await sendSubscribeMsg();
 		}
-
-		ws.onOpenSubject.subscribe(publishAuth);
 
 		async function sendSubscribeMsg(): Promise<void> {
 			let subscribeTimeout = subscribeTimeouts.get(boardId);
 			if (!subscribeTimeout) {
 				subscribeTimeout = {
-					timeout: setTimeout(sendSubscribeMsg, SUBSCRIBE_TIMEOUT),
+					timeout: setTimeout(
+						() => sendSubscribeMsg,
+						SUBSCRIBE_TIMEOUT,
+					),
 					time: SUBSCRIBE_TIMEOUT,
 				};
 			} else {
@@ -586,9 +588,10 @@ export function createConnection(
 			publish: function publish(event: EventsMsg): void {
 				board.events?.handleEvent(event);
 			},
-			subscribe: function subscribe(): void {
+			subscribe: async function subscribe(): Promise<void> {
 				ws.onOpenSubject.subscribe(onSocketOpen);
-				sendSubscribeMsg();
+				await invalidateToken(true);
+				await sendSubscribeMsg();
 			},
 			unsubscribe: function unsubscribe(): void {
 				ws.onOpenSubject.unsubscribe(onSocketOpen);

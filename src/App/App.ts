@@ -6,6 +6,7 @@ import { conf } from "Board/Settings";
 import { Account } from "entities/account";
 import { getAuthInterceptor } from "entities/account/AuthInterceptor";
 import { wagmiConfig } from "features/ContextWrapper";
+import Cookies from "js-cookie";
 import { api } from "shared/api";
 import { foldersApi } from "shared/apiV2";
 import { apiV2 } from "shared/apiV2/base";
@@ -24,6 +25,7 @@ import { getLocalRender, getRender } from "./router";
 import { SessionStorage } from "./SessionStorage";
 import { Storage } from "./Storage";
 import { TestRecorder, createTester } from "./testRecorder";
+
 const { i18n } = conf;
 
 export const LAST_BOARD_KEY = "lastSeenBoard";
@@ -403,9 +405,8 @@ export function createApp(isHistory = true): App {
 				body: i18n.t("auth.sessionExpired"),
 				variant: "error",
 			});
-			Cookies.remove("first_visit");
 		});
-
+		Cookies.remove("first_visit");
 		render();
 	}
 
