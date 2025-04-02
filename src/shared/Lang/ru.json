@@ -957,7 +957,7 @@
 				"name": "Plus",
 				"description": "GPT-4o mini and GPT-4o",
 				"features": [
-					"Все возможности тарифа Basic",
+					"Все возможности тарифа Базовый",
 					"GPT-4o",
 					"Flux.1 Pro",
 					"Flux.1 Schnell",

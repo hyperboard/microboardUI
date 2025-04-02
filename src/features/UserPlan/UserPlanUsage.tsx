@@ -107,9 +107,9 @@ export function UserPlanUsage({
 									<span
 										className={clsx(styles.planHighlight, {
 											[styles.plusPlan]:
-												planName === "plus",
+												planName === "Plus",
 											[styles.proPlan]:
-												planName === "pro",
+												planName === "Pro",
 										})}
 									>
 										{planName}
@@ -125,9 +125,9 @@ export function UserPlanUsage({
 									<span
 										className={clsx(styles.planHighlight, {
 											[styles.plusPlan]:
-												planName === "plus",
+												planName === "Plus",
 											[styles.proPlan]:
-												planName === "pro",
+												planName === "Pro",
 										})}
 									>
 										{planName}
@@ -140,14 +140,6 @@ export function UserPlanUsage({
 								</>
 							)}
 						</>
-					)}
-				</p>
-
-				<p className={styles.paymentActions}>
-					{status === "active" && onCancel && (
-						<span onClick={onCancel} className={styles.cancel}>
-							{t("userPlan.cancelPayment")}
-						</span>
 					)}
 					{history
 						? hasHistory && (
@@ -176,7 +168,15 @@ export function UserPlanUsage({
 										iconName="ArrowRightSm"
 									/>
 								</span>
-							)}{" "}
+							)}
+				</p>
+
+				<p className={styles.paymentActions}>
+					{status === "active" && onCancel && (
+						<span onClick={onCancel} className={styles.cancel}>
+							{t("userPlan.cancelPayment")}
+						</span>
+					)}{" "}
 				</p>
 			</div>
 		</div>
