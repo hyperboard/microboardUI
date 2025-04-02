@@ -862,7 +862,7 @@
 		"limits": "Limits",
 		"currentPlanPending": {
 			"part1": "The ",
-			"part2": " plan is paid until {{cancellationDate}}."
+			"part2": " plan is paid until {{cancellationDate}}. Tokens balance: {{tokensBalance}}."
 		},
 		"currentPlanActive": {
 			"part1": "The current ",

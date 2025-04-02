@@ -860,7 +860,7 @@
 		"limits": "Лимиты",
 		"currentPlanPending": {
 			"part1": "Тариф ",
-			"part2": " оплачен до {{cancellationDate}}."
+			"part2": " оплачен до {{cancellationDate}}. Баланс токенов: {{tokensBalance}}."
 		},
 		"currentPlanActive": {
 			"part1": "Тариф ",

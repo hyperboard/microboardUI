@@ -1,12 +1,12 @@
-import React from "react";
-import { useTranslation } from "react-i18next";
-import styles from "./UserPlanUsage.module.css";
-import { Icon } from "shared/ui-lib/Icon";
-import { LIMITS_MODAL_ID } from "features/UserPlan/LimitsModal";
-import { HISTORY_MODAL_ID } from "features/UserPlan/HistoryModal";
-import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { useAccount } from "App/useAccount";
 import clsx from "clsx";
+import { HISTORY_MODAL_ID } from "features/UserPlan/HistoryModal";
+import { LIMITS_MODAL_ID } from "features/UserPlan/LimitsModal";
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { Icon } from "shared/ui-lib/Icon";
+import { useUiModalContext } from "shared/ui-lib/UiModal";
+import styles from "./UserPlanUsage.module.css";
 
 type Props = {
 	cancellationDate?: string | Date;
@@ -117,6 +117,7 @@ export function UserPlanUsage({
 									{t("userPlan.currentPlanPending.part2", {
 										cancellationDate:
 											formattedCancellationDate,
+										tokensBalance,
 									})}
 								</>
 							) : (
