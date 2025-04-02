@@ -13,6 +13,7 @@ import { Subject } from "shared/Subject";
 import { notify } from "shared/ui-lib/Toast";
 import { getWebsocketUrl } from "../Config";
 import { Storage } from "./Storage";
+import { VERSION } from "version";
 const { i18n } = conf;
 
 const SECOND = 1000;
@@ -419,15 +420,11 @@ export function createConnection(
 	async function onMessage(msg: SocketMsg): Promise<void> {
 		// await invalidateToken();
 		if (msg.type === "VersionCheck") {
-			const scriptElement = document.getElementsByTagName("script")[0];
-			if (scriptElement) {
-				const absoluteUrl = scriptElement.src;
-				const baseUrl = window.location.origin;
-				// <baseUrl>/app.<hash>.js > app.<hash>.js
-				const version = absoluteUrl.replace(baseUrl, "").split(".")[1];
-				if (version !== msg.version) {
-					window.location.reload();
-				}
+			if (VERSION !== msg.version) {
+				console.log("VERSION WARY, RELOADING...");
+				console.log("Current version: ", VERSION);
+				console.log("Server version: ", msg.version);
+				window.location.reload();
 			}
 
 			return;
