@@ -246,7 +246,9 @@ export class TextEditor extends React.Component<
 		const richText = this.props.text;
 
 		if (richText.insideOf === "Sticker") {
-			richText.autosizeEnable();
+			if (!board.selection.getAutosize()) {
+				board.selection.setFontSize("auto");
+			}
 		}
 
 		const slateFragment = data.getData("application/x-slate-fragment");
