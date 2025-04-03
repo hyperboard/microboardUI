@@ -212,7 +212,6 @@ export const AIInput = () => {
 					prompt: idea,
 					itemId: responseAdded.getId(),
 					options,
-					userId: account.info?.id!,
 				},
 			};
 
@@ -225,7 +224,6 @@ export const AIInput = () => {
 					method: "GenerateAudio",
 					text: idea,
 					model: "tts-1-hd",
-					userId: account.info?.id!,
 				},
 			};
 			connection.wsClient.send(message);
@@ -249,7 +247,6 @@ export const AIInput = () => {
 					itemId: responseAdded.getId(),
 					requestItemId: requestAdded.getId(),
 					contextRequest,
-					userId: account.info?.id!,
 				},
 			};
 

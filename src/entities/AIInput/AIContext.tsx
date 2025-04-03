@@ -308,7 +308,6 @@ export const AIContextProvider = ({
 					prompt: idea,
 					itemId: responseAdded.getId(),
 					options,
-					userId: account.info?.id!,
 				},
 			};
 
@@ -333,7 +332,6 @@ export const AIContextProvider = ({
 					itemId: responseAdded.getId(),
 					requestItemId: requestAdded.getId(),
 					contextRequest,
-					userId: account.info?.id!,
 				},
 			};
 
