@@ -1,12 +1,9 @@
-import { disconnect } from "@wagmi/core";
 import { Board } from "Board";
 import { BoardSnapshot } from "Board/Board";
 import { createEvents } from "Board/Events/Events";
 import { conf } from "Board/Settings";
 import { Account } from "entities/account";
 import { getAuthInterceptor } from "entities/account/AuthInterceptor";
-import { wagmiConfig } from "features/ContextWrapper";
-import Cookies from "js-cookie";
 import { api } from "shared/api";
 import { foldersApi } from "shared/apiV2";
 import { apiV2 } from "shared/apiV2/base";
@@ -134,6 +131,8 @@ export function createApp(isHistory = true): App {
 				`${id}${window.location.search}`,
 			);
 			boardsList.visitBoard(id);
+		} else {
+			localStorage.removeItem(LAST_BOARD_KEY);
 		}
 		// sessionStorage.clear();
 		subscriptions.setBoard(currentBoard);
@@ -158,6 +157,12 @@ export function createApp(isHistory = true): App {
 		if (newBoard.items.getItemsInView().length === 0 && isItemsOnBoard) {
 			newBoard.camera.zoomToFit(newBoard.items.getMbr());
 		}
+	}
+
+	function resetOpenedBoards(): void {
+		Object.values(boards).forEach(board => {
+			board.disconnect();
+		});
 	}
 
 	async function connectBoard(board: Board): Promise<void> {
@@ -375,38 +380,27 @@ export function createApp(isHistory = true): App {
 			await foldersApi.initFolders();
 			await boardsList.claim();
 			storage.softClean();
-			const boardId = board?.getBoardId();
-			if (boardId && boardId !== "blank") {
-				await openBoard(boardId);
-				router.navigate(`/boards/${boardId}${window.location.search}`);
-			} else {
-				router.navigate(`/${window.location.search}`);
-			}
 			boardsList.subject.publish();
 		});
 		account.setOnLogout(async () => {
-			const boardId = board.getBoardId();
 			storage.hardClean();
 			connection.publishLogout();
-			if (boardId && boardId !== "blank") {
-				await openBoard(boardId);
-				router.navigate(`/boards/${boardId}${window.location.search}`);
-				connection.publishGetMode();
-			} else {
-				router.navigate(`/${window.location.search}`);
-			}
+			resetOpenedBoards();
+			localStorage.removeItem(LAST_BOARD_KEY);
+
+			router.navigate(`/${window.location.search}`);
 			await boardsList.loadBoards();
-			await disconnect(wagmiConfig);
+			// await disconnect(wagmiConfig);
 			account.subject.publish(account.info);
 		});
 		account.setOnSessionExpired(() => {
+			account.onLogout?.();
 			router.navigate(`/auth/sign-in${window.location.search}`);
 			notify({
 				body: i18n.t("auth.sessionExpired"),
 				variant: "error",
 			});
 		});
-		Cookies.remove("first_visit");
 		render();
 	}
 

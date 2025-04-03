@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+import { LAST_BOARD_KEY } from "App/App";
 import { useAccount } from "App/useAccount";
 import { useBoardsList } from "App/useBoardsList";
 import { ACCESS_DENIED_MODAL } from "features/AccessDeniedModal";
@@ -32,8 +33,6 @@ export const BoardPage = (): JSX.Element => {
 		deniedBoardId: string,
 		forceUpdate = false,
 	) => {
-		if (account.isLoggedIn) {
-		}
 		if (
 			forceUpdate ||
 			(deniedBoardId === board.getBoardId() && !isOpenMiroBoards)
@@ -72,7 +71,7 @@ export const BoardPage = (): JSX.Element => {
 					app.render();
 				});
 			} else {
-				const lastSeenBoard = localStorage.getItem("lastSeenBoard");
+				const lastSeenBoard = localStorage.getItem(LAST_BOARD_KEY);
 				const isFirstVisit = !Cookies.get("first_visit");
 				if (lastSeenBoard) {
 					app.openBoard(lastSeenBoard).then(() => {

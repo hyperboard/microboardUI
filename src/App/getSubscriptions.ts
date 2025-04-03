@@ -1,8 +1,8 @@
 import { Board } from "Board";
+import { safeRequestAnimationFrame } from "Board/api/safeRequestAnimationFrame";
 import { BoardEvent } from "Board/Events/Events";
 import { SyncLogSubject } from "Board/Events/SyncLog";
 import { Subject } from "../shared/Subject";
-import { safeRequestAnimationFrame } from "Board/api/safeRequestAnimationFrame";
 
 export type SubjectName =
 	| "camera"

@@ -213,7 +213,6 @@ export interface UserRequest {
 	itemId: string;
 	requestItemId: string;
 	action?: TextAction;
-	userId: number;
 	contextRequest?: {
 		messageId: string;
 		range?: number;
@@ -224,7 +223,6 @@ export interface GenerateImageRequest {
 	method: "GenerateImage";
 	prompt: string;
 	itemId: string;
-	userId: number;
 	options:
 		| {
 				model: "dall-e-2";
@@ -258,7 +256,6 @@ export interface GenerateAudioRequest {
 	method: "GenerateAudio";
 	text: string;
 	model: "tts-1-hd";
-	userId: number;
 }
 
 export interface GenerateAudioResponse {
@@ -345,6 +342,7 @@ export interface Connection {
 	onAccessDenied: (boardId: string, forceUpdate?: boolean) => void;
 	notifyAboutLostConnection: () => void;
 	dismissNotificationAboutLostConnection: () => void;
+	resetConnection: () => void;
 }
 
 type Subscription = {
@@ -795,6 +793,19 @@ export function createConnection(
 		window.addEventListener("beforeunload", publishSnapshotBeforeUnload);
 	}
 
+	function resetConnection() {
+		subscriptions.forEach(subscription => {
+			subscription.unsubscribe();
+		});
+		subscriptions.clear();
+		if (ws.isConnected()) {
+			ws.send({ type: "Logout" }); // Optionally send a logout message
+			ws.onCloseSubject.publish(null);
+			// Reconnect the WebSocket
+			ws.connect();
+		}
+	}
+
 	const connection: Connection = {
 		get connectionId() {
 			return connectionId;
@@ -810,6 +821,7 @@ export function createConnection(
 		wsClient: ws,
 		publishAuth,
 		publishLogout,
+		resetConnection,
 		onMessage: undefined,
 		get onAccessDenied() {
 			return onAccessDenied;
