@@ -200,8 +200,15 @@
 			},
 			"strokeWidth": "Stroke width"
 		},
-		"addImage": {
-			"tooltip": "Add image"
+		"addMedia": {
+			"tooltip": "Add media",
+			"image": "Image",
+			"video": "Video",
+			"audio": "Audio",
+			"unsupportedFormat": {
+				"header": "This file format is not supported.",
+				"body": "Please try uploading a different file."
+			}
 		},
 		"addFrame": {
 			"tooltip": "Frame"

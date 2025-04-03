@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 import { AddConnector } from "./Buttons/AddConnector";
 import { AddDrawing } from "./Buttons/AddDrawing/AddDrawing";
 import { AddFrame } from "./Buttons/AddFrame";
-import { AddImage } from "./Buttons/AddImage";
+import { AddMedia } from "./Buttons/AddMedia/AddMedia.tsx";
 import { AddShape } from "./Buttons/AddShape/AddShape";
 import { AddSticker } from "./Buttons/AddSticker";
 import { AddText } from "./Buttons/AddText";
@@ -54,7 +54,7 @@ export function ToolsPanel(): JSX.Element {
 					<AddConnector />
 					<AddSticker />
 					<AddFrame />
-					<AddImage />
+					<AddMedia />
 				</UiPanel>
 				<UiPanel vertical padding={0}>
 					<Undo />
