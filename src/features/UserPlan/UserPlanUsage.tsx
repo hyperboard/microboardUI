@@ -90,6 +90,7 @@ export function UserPlanUsage({
 									className={styles.limitsBtn}
 									onClick={handleOpenLimitsModal}
 								>
+									{" "}
 									{t("userPlan.limits")}{" "}
 									<Icon
 										width={24}
@@ -141,14 +142,13 @@ export function UserPlanUsage({
 								</>
 							)}
 						</>
-					)}
+					)}{" "}
 					{history
 						? hasHistory && (
 								<span
 									onClick={handleOpenHistoryModal}
 									className={styles.limitsBtn}
 								>
-									{" "}
 									{t("userPlan.paymentHistoryHeading")}
 									{!isFree && "."}
 								</span>
@@ -158,7 +158,6 @@ export function UserPlanUsage({
 									className={styles.limitsBtn}
 									onClick={handleOpenLimitsModal}
 								>
-									{" "}
 									{status === "active"
 										? t("userPlan.nextPayment", {
 												paymentDate:
