@@ -1,6 +1,4 @@
 /* eslint-disable no-var */
-// import { textInit } from "TextInit";
-// textInit();
 
 import { initBrowserSettings } from "Board/api/initBrowserSettings";
 initBrowserSettings();
