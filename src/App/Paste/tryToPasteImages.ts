@@ -2,7 +2,11 @@ import { Board } from "Board";
 import { ImageItem } from "Board/Items/Image";
 import { prepareImage } from "Board/Items/Image/ImageHelpers";
 
-export function tryToPasteImages(event: ClipboardEvent, board: Board): boolean {
+export function tryToPasteImages(
+	event: ClipboardEvent,
+	board: Board,
+	accessToken: string | null,
+): boolean {
 	let isFoundImageInClipboard = false;
 	const items = event.clipboardData?.items;
 
@@ -21,7 +25,7 @@ export function tryToPasteImages(event: ClipboardEvent, board: Board): boolean {
 		isFoundImageInClipboard = true;
 		const reader = new FileReader();
 		reader.onload = event => {
-			prepareImage(event.target?.result)
+			prepareImage(event.target?.result, accessToken)
 				.then(imageData => {
 					const image = new ImageItem(imageData, board, board.events);
 					image.transformation.translateTo(

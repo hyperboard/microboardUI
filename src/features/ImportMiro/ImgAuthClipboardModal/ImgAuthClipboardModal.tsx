@@ -31,7 +31,12 @@ export const ImgAuthClipboardModal = (): JSX.Element => {
 
 	const onContinueClick = (): void => {
 		closeModal();
-		useCopyBoardItems(app.getBoard(), undefined, true);
+		useCopyBoardItems(
+			app.getBoard(),
+			app.account.accessToken,
+			undefined,
+			true,
+		);
 	};
 
 	return (

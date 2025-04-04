@@ -13,6 +13,7 @@ import { pasteTextToTheBoard, tryToPasteAsItemOrReturnText } from "./Paste";
 import { createWheel } from "./Wheel/Wheel";
 import { isSafari } from "./isSafari";
 import { uploadAudio } from "Board/Items/Audio/uploadAudio";
+import { Account } from "entities/account";
 
 export interface Controller {
 	onWheel: (event: WheelEvent) => void;
@@ -35,7 +36,7 @@ export interface Controller {
 export function getController(
 	getBoard: () => Board,
 	clipboard: Clipboard,
-	isLoggedIn: () => boolean,
+	account: Account,
 ): Controller {
 	let itemUnderPointer: Item | undefined = undefined;
 	function onWheel(event: WheelEvent): void {
@@ -625,7 +626,8 @@ export function getController(
 		const data = await tryToPasteAsItemOrReturnText(
 			event,
 			board,
-			isLoggedIn(),
+			account.isLoggedIn,
+			account.accessToken,
 		);
 
 		if (data) {
@@ -643,17 +645,29 @@ export function getController(
 		const file = event.dataTransfer.files[0];
 		const fileExtension = file.name.split(".").pop()?.toLowerCase();
 		if (fileExtension === "mp4" || fileExtension === "webm") {
-			uploadVideo(file, board, notify, fileExtension);
+			uploadVideo(
+				file,
+				board,
+				notify,
+				fileExtension,
+				account.accessToken,
+			);
 			return;
 		} else if (fileExtension === "mp3" || fileExtension === "wav") {
-			uploadAudio(file, board, notify, fileExtension);
+			uploadAudio(
+				file,
+				board,
+				notify,
+				fileExtension,
+				account.accessToken,
+			);
 			return;
 		}
 
 		const reader = new FileReader();
 
 		reader.onload = function (event) {
-			prepareImage(event.target?.result)
+			prepareImage(event.target?.result, account.accessToken)
 				.then(imageData => {
 					const image = new ImageItem(imageData, board, undefined);
 					image.transformation.translateTo(

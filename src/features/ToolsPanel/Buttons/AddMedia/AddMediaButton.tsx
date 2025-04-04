@@ -72,7 +72,7 @@ export function AddMediaButton({
 			notify({
 				variant: "warning",
 				header: "Закончилось место для картинок",
-				body: `На вашем тарифе доступно ${account.billingInfo.plan.name === "basic" ? `${bytesToMegabytes(account.billingInfo.storage.limit)} МБ` : `${bytesToGigabytes(account.billingInfo.storage.limit)} ГБ`} для хранения картинок. Пополните баланс, чтобы продолжить работу`,
+				body: `На вашем тарифе доступно ${account.billingInfo.plan.name === "basic" ? `${account.billingInfo.storage.limit} МБ` : `${account.billingInfo.storage.limit / 1024} ГБ`} для хранения картинок. Пополните баланс, чтобы продолжить работу`,
 				duration: 10000,
 			});
 		}
@@ -84,7 +84,13 @@ export function AddMediaButton({
 				if (fileExtension !== "mp4" && fileExtension !== "webm") {
 					return notifyAboutUnsupportedFormat();
 				}
-				uploadVideo(file, board, notify, fileExtension);
+				uploadVideo(
+					file,
+					board,
+					notify,
+					fileExtension,
+					account.accessToken,
+				);
 				break;
 			case "Audio":
 				if (
@@ -93,10 +99,16 @@ export function AddMediaButton({
 				) {
 					return notifyAboutUnsupportedFormat();
 				}
-				uploadAudio(file, board, notify, fileExtension);
+				uploadAudio(
+					file,
+					board,
+					notify,
+					fileExtension,
+					account.accessToken,
+				);
 				break;
 			default:
-				uploadImage(file, board);
+				uploadImage(file, board, account.accessToken);
 		}
 
 		input.value = "";

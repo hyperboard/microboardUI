@@ -202,9 +202,9 @@
 		},
 		"addMedia": {
 			"tooltip": "Add media",
-			"image": "Image",
-			"video": "Video",
-			"audio": "Audio",
+			"Image": "Image",
+			"Video": "Video",
+			"Audio": "Audio",
 			"unsupportedFormat": {
 				"header": "This file format is not supported.",
 				"body": "Please try uploading a different file."

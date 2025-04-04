@@ -96,11 +96,11 @@ export function createApp(isHistory = true): App {
 		return storage;
 	}
 
-	function isLoggedIn(): boolean {
-		return account.isLoggedIn;
-	}
+	// function isLoggedIn(): boolean {
+	// 	return account.isLoggedIn;
+	// }
 
-	const controller = getController(getBoard, clipboard, isLoggedIn);
+	const controller = getController(getBoard, clipboard, account);
 	const subscriptions = getSubscriptions(getBoard);
 
 	const boards = new Map<string, Board>();
@@ -181,6 +181,7 @@ export function createApp(isHistory = true): App {
 			connection,
 			currIndex || snapshot?.lastIndex || 0,
 			notify,
+			account,
 		);
 		board.presence.addEvents(board.events);
 		board.presence.setCurrentUser(

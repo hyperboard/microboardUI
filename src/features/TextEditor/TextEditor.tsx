@@ -51,6 +51,7 @@ export class TextEditors extends React.Component<
 		for (const text of this.props.board.selection.getTextToEdit()) {
 			Editors = (
 				<TextEditor
+					app={this.props.app}
 					board={this.props.board}
 					text={text}
 					setQuotedText={this.props.setQuotedText}
@@ -66,6 +67,7 @@ export class TextEditors extends React.Component<
 
 export class TextEditor extends React.Component<
 	{
+		app: App;
 		board: Board;
 		text: RichText;
 		setQuotedText: (text: string) => void;
@@ -236,7 +238,12 @@ export class TextEditor extends React.Component<
 		const board = this.props.board;
 
 		// TODO: actually check login
-		const data = await tryToPasteAsItemOrReturnText(event, board, true);
+		const data = await tryToPasteAsItemOrReturnText(
+			event,
+			board,
+			true,
+			this.props.app.account.accessToken,
+		);
 
 		event.preventDefault();
 		event.stopPropagation();

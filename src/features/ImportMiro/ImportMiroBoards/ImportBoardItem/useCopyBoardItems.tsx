@@ -179,6 +179,7 @@ const CONNECTOR_STYLES = {
 
 export const useCopyBoardItems = (
 	board: Board,
+	accessToken: string | null,
 	miroItems?: IMiroBoardItem[],
 	withoutImgs?: boolean,
 ): void => {
@@ -731,7 +732,7 @@ export const useCopyBoardItems = (
 			return;
 		}
 
-		await prepareImage(imgBase64)
+		await prepareImage(imgBase64, accessToken)
 			.then(imageData => {
 				// remove placeholder
 				const placeholder = board.items.getById(boardMiroId[id]);
