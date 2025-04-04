@@ -148,6 +148,7 @@ export function UserPlanUsage({
 									onClick={handleOpenHistoryModal}
 									className={styles.limitsBtn}
 								>
+									{" "}
 									{t("userPlan.paymentHistoryHeading")}
 									{!isFree && "."}
 								</span>
@@ -157,6 +158,7 @@ export function UserPlanUsage({
 									className={styles.limitsBtn}
 									onClick={handleOpenLimitsModal}
 								>
+									{" "}
 									{status === "active"
 										? t("userPlan.nextPayment", {
 												paymentDate:
