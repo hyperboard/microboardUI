@@ -66,7 +66,8 @@ export function createApp(isHistory = true): App {
 	const test = createTester(getBoard);
 
 	let board: Board;
-	const fileHandle: FileSystemFileHandle | undefined = undefined;
+	// chrome handler for saving file
+	let fileHandle: FileSystemFileHandle | undefined = undefined;
 
 	function enableLogger(): void {
 		MemoryLogger.enable();
@@ -236,10 +237,43 @@ export function createApp(isHistory = true): App {
 		return boards.get(boardId);
 	}
 
+	async function getFileForLocalEdit(): Promise<File> {
+		// chrome
+		if ("showOpenFilePicker" in window) {
+			const [newFileHandle] = await window.showOpenFilePicker();
+			fileHandle = newFileHandle;
+			const file = await newFileHandle.getFile();
+			return file;
+		}
+
+		// others
+		const file = await new Promise<File>((resolve, reject) => {
+			const input = document.createElement("input");
+			input.type = "file";
+
+			input.onchange = event => {
+				const selectedFile = (event.target as HTMLInputElement)
+					.files?.[0];
+				if (selectedFile) {
+					resolve(selectedFile);
+				} else {
+					reject(new Error("No selected file"));
+				}
+			};
+
+			input.onerror = () => {
+				reject(new Error("Error while selecting file"));
+			};
+
+			input.click();
+		});
+
+		return file;
+	}
+
 	async function openAndEditFile(): Promise<string | undefined> {
 		try {
-			let file: File;
-			// TOdo fix
+			// Todo update for snapshots opened
 			// if (window.location.href.includes("/snapshots/")) {
 			// 	// assume we have html snapshot
 			// 	const iframe = document.getElementsByTagName("iframe");
@@ -264,33 +298,9 @@ export function createApp(isHistory = true): App {
 			// 	URL.revokeObjectURL(url);
 
 			// } else
-			if ("showOpenFilePicker" in window) {
-				const [newFileHandle] = await window.showOpenFilePicker();
-				file = await newFileHandle.getFile();
-			} else {
-				file = await new Promise<File>((resolve, reject) => {
-					const input = document.createElement("input");
-					input.type = "file";
-
-					input.onchange = event => {
-						const selectedFile = (event.target as HTMLInputElement)
-							.files?.[0];
-						if (selectedFile) {
-							resolve(selectedFile);
-						} else {
-							reject(new Error("No selected file"));
-						}
-					};
-
-					input.onerror = () => {
-						reject(new Error("Error while selecting file"));
-					};
-
-					input.click();
-				});
-			}
-
+			const file = await getFileForLocalEdit();
 			const contents = await file.text();
+
 			return contents;
 		} catch (err) {
 			console.error("Streaming file err:", err);

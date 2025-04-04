@@ -11,6 +11,7 @@ import ModalsWrapper from "features/Modal/ModalsWrapper";
 import { RenameContextProvider } from "features/Rename";
 import { SidePanelContextProvider } from "features/SidePanel/SidePanelContext";
 import { ToastProvider } from "features/ToastProvider";
+import { LocalSidePanelContextProvider } from "features/SidePanel/LocalSidePanelContext";
 
 type Props = {
 	app: App;
@@ -46,7 +47,14 @@ const PROVIDERS: ComponentWithChildren[] = [
 	SidePanelContextProvider,
 ];
 
+const LOCAL_PROVIDERS: ComponentWithChildren[] = [
+	HyperLinkContextProvider,
+	AIContextProvider,
+	LocalSidePanelContextProvider,
+];
+
 const Provider = compose(PROVIDERS);
+const LocalProvider = compose(LOCAL_PROVIDERS);
 
 export function AppLayout({ app }: Props) {
 	const board = app.getBoard();
@@ -56,6 +64,21 @@ export function AppLayout({ app }: Props) {
 				<Outlet />
 				<ToastProvider />
 			</Provider>
+		</AppContext.Provider>
+	);
+}
+
+export function LocalAppLayout({
+	app,
+	children,
+}: Props & { children?: React.ReactNode }) {
+	const board = app.getBoard();
+	return (
+		<AppContext.Provider value={{ app, board }}>
+			<LocalProvider>
+				{children}
+				<Outlet />
+			</LocalProvider>
 		</AppContext.Provider>
 	);
 }

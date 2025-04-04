@@ -8,7 +8,7 @@ import { BindEmailPage } from "pages/BindEmailPage";
 import { BoardPage } from "pages/BoardPage";
 import { ForgotPasswordPage } from "pages/ForgotPasswordPage";
 import { HTMLSnapshot } from "pages/HTMLSnapshot";
-import { AppLayout } from "pages/layouts/AppLayout";
+import { AppLayout, LocalAppLayout } from "pages/layouts/AppLayout";
 import { AuthLayout } from "pages/layouts/AuthLayout";
 import { RestorePasswordPage } from "pages/RestorePasswordPage";
 import { SelectBoardPage } from "pages/SelectBoardPage";
@@ -138,11 +138,11 @@ export function getLocalRender(app: App, customId: string): () => void {
 	return () => {
 		ReactDOM.render(
 			// root.render(
-			<AppContext.Provider value={{ app, board: app.getBoard() }}>
+			<LocalAppLayout app={app}>
 				<LocalSidePanelContextProvider>
 					<LocalAppView />
 				</LocalSidePanelContextProvider>
-			</AppContext.Provider>,
+			</LocalAppLayout>,
 			document.getElementById(customId) as HTMLElement,
 		);
 	};
