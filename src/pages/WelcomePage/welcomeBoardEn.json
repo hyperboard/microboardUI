@@ -1203,9 +1203,9 @@
 			"placeholderText": " ",
 			"insideOf": "Sticker",
 			"realSize": 144,
-			"linkTo": "https://mail.google.com/mail/?view=cm&fs=1&to=ceo@microboard.io"
+			"linkTo": "mailto:ceo@microboard.io"
 		},
-		"linkTo": "https://mail.google.com/mail/?view=cm&fs=1&to=ceo@microboard.io",
+		"linkTo": "mailto:ceo@microboard.io",
 		"zIndex": 24
 	},
 	"9d7dc29b-88f1-470e-862d-1f0f9b857297": {

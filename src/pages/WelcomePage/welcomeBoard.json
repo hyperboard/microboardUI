@@ -1196,9 +1196,9 @@
 			"placeholderText": " ",
 			"insideOf": "Sticker",
 			"realSize": 64,
-			"linkTo": "https://mail.google.com/mail/?view=cm&fs=1&to=ceo@microboard.io"
+			"linkTo": "mailto:ceo@microboard.io"
 		},
-		"linkTo": "https://mail.google.com/mail/?view=cm&fs=1&to=ceo@microboard.io",
+		"linkTo": "mailto:ceo@microboard.io",
 		"zIndex": 26
 	},
 	"adab529e-d30a-4328-ae80-e939c61cb2cd": {
@@ -5880,9 +5880,7 @@
 			"realSize": 18
 		},
 		"isUserRequest": true,
-		"contextItems": [
-			"7dab7c3e-1bcb-46f3-87e0-75bac34a1307"
-		],
+		"contextItems": ["7dab7c3e-1bcb-46f3-87e0-75bac34a1307"],
 		"threadDirection": 3,
 		"zIndex": 83
 	},
@@ -6558,9 +6556,7 @@
 			"realSize": 18
 		},
 		"isUserRequest": true,
-		"contextItems": [
-			"7dab7c3e-1bcb-46f3-87e0-75bac34a1307"
-		],
+		"contextItems": ["7dab7c3e-1bcb-46f3-87e0-75bac34a1307"],
 		"threadDirection": 3,
 		"zIndex": 87
 	},
