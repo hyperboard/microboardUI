@@ -33,9 +33,7 @@ export const useClickOutside = <T extends HTMLElement = HTMLDivElement>(
 		if (disable) {
 			return;
 		}
-		document.body.addEventListener("click", handleClickOutside, {
-			capture: true,
-		});
+		document.body.addEventListener("click", handleClickOutside);
 		return () => {
 			if (disable) {
 				return;
