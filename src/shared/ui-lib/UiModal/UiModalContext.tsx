@@ -1,6 +1,7 @@
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { useLayoutEffect } from "react";
 import { Subject } from "shared/Subject";
+import { conf } from "Board/Settings";
 
 export type ModalId = string | symbol | null;
 
@@ -60,6 +61,8 @@ export const UiModalStateInstance = new UiModalState();
 export const openModal = (modalId: ModalId): void => {
 	UiModalStateInstance.openModal(modalId);
 };
+
+conf.openModal = openModal;
 
 export const closeModal = (): void => {
 	UiModalStateInstance.closeModal();

@@ -9,6 +9,8 @@ import { UiButton } from "shared/ui-lib/UiButton/index";
 import { uploadVideo } from "Board/Items/Video/uploadVideo";
 import { uploadAudio } from "Board/Items/Audio/uploadAudio";
 import { conf } from "Board/Settings";
+import { openModal } from "shared/ui-lib/UiModal/UiModalContext";
+import { USER_PLAN_MODAL_ID } from "features/UserPlan/UserPlanModal";
 
 function bytesToGigabytes(bytes: number): number {
 	return bytes / 1024 ** 3;
@@ -62,20 +64,9 @@ export function AddMediaButton({
 			return;
 		}
 
-		await account.fetchBillingInfo();
-		if (
-			account.billingInfo?.storage?.used !== undefined &&
-			account.billingInfo?.storage?.limit !== undefined &&
-			account.billingInfo.storage.used >=
-				account.billingInfo.storage.limit
-		) {
-			notify({
-				variant: "warning",
-				header: "Закончилось место для картинок",
-				body: `На вашем тарифе доступно ${account.billingInfo.plan.name === "basic" ? `${account.billingInfo.storage.limit} МБ` : `${account.billingInfo.storage.limit / 1024} ГБ`} для хранения картинок. Пополните баланс, чтобы продолжить работу`,
-				duration: 10000,
-			});
-		}
+		// if (!(await account.checkMediaStorageSpace())) {
+		// 	openModal(USER_PLAN_MODAL_ID)
+		// }
 
 		const fileExtension = file.name.split(".").pop()?.toLowerCase();
 

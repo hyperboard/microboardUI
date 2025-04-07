@@ -67,6 +67,7 @@ import style from "./AppView.module.css";
 import { InactiveBoardHidder } from "./InactiveBoardHidder";
 import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
+import { MediaUnavailableModal } from "features/MediaUnavailableModal/MediaUnavailableModal";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -264,6 +265,7 @@ export function AppView(): JSX.Element {
 				<ChangePasswordModal />
 				<AccessDeniedModal />
 				<AiUnavailableModal />
+				<MediaUnavailableModal />
 				<SelectTemplateModal />
 				<AuthClipboardModal />
 				<ImgAuthClipboardModal />

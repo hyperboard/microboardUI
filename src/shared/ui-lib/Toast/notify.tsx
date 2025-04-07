@@ -4,6 +4,7 @@ import toast, { ToastPosition } from "react-hot-toast";
 import { Icon } from "shared/ui-lib/Icon";
 import { UiButton } from "../UiButton";
 import style from "./Toast.module.css";
+import { conf } from "Board/Settings";
 
 type Props = {
 	header?: ReactNode;
@@ -84,4 +85,15 @@ export function notify({
 		),
 		{ duration, position, style: inlineStyle },
 	);
+}
+
+conf.notify = notify;
+
+export interface NotifyFunction {
+	(options: {
+		header: string;
+		body: string;
+		variant?: "info" | "success" | "warning" | "error";
+		duration?: number;
+	}): string; // Returns notification id
 }

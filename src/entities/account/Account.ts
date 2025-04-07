@@ -193,6 +193,31 @@ export class Account {
 		this.subject.publish(this.info);
 	}
 
+	// async checkMediaStorageSpace(): Promise<boolean> {
+	// 	await this.fetchBillingInfo();
+	// 	if (
+	// 		this.billingInfo?.storage?.used !== undefined &&
+	// 		this.billingInfo?.storage?.limit !== undefined &&
+	// 		this.billingInfo.storage.used >=
+	// 		this.billingInfo.storage.limit
+	// 	) {
+	// 		notify({
+	// 			variant: "warning",
+	// 			header: conf.i18n.t("toolsPanel.addMedia.limitReached.header"),
+	// 			body: conf.i18n.t("toolsPanel.addMedia.limitReached.body",
+	// 				{
+	// 					limit: this.billingInfo.plan.name === "basic" ?
+	// 						this.billingInfo.storage.limit + " " + conf.i18n.t("common.MB") :
+	// 						this.billingInfo.storage.limit / 1024  + " " + conf.i18n.t("common.GB")
+	// 				}
+	// 			),
+	// 			duration: 10000,
+	// 		});
+	// 		return false;
+	// 	}
+	// 	return true;
+	// }
+
 	async fetchBillingHistory(): Promise<void> {
 		try {
 			const { data } = await billingApi.getHistory();

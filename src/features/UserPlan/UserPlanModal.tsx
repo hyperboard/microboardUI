@@ -13,7 +13,7 @@ import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
 import { conf } from "Board/Settings";
 
-export const USER_PLAN_MODAL_ID = Symbol("userPlanModal");
+export const USER_PLAN_MODAL_ID = "USER_PLAN_MODAL_ID";
 
 export function UserPlanModal() {
 	const { openModal } = useUiModalContext();
