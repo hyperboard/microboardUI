@@ -33,7 +33,7 @@ export function AddConnector(): React.ReactElement {
 	const handlePick = (lineStyle: ConnectorLineStyle): void => {
 		const tool = board.tools.getAddConnector();
 		if (tool) {
-			tool.setLineStyle(lineStyle);
+			tool.applyLineStyle(lineStyle);
 			app.sessionStorage.setConnectorLineStyle(lineStyle);
 			setIsActive(false);
 		}
