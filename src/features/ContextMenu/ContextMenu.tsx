@@ -122,48 +122,51 @@ export function ContextMenu(): JSX.Element | null {
 		setIsEditingLocalFile(false);
 	};
 
-	const handleImportBoard: MouseEventHandler = async ev => {
+	const handleImportHTMLBoard: MouseEventHandler = async ev => {
 		ev.preventDefault();
 		ev.stopPropagation();
 		setIsImportingBoard(true);
 
-		const uploadPromise = new Promise<string | undefined>(
-			(resolve, reject) => {
-				const input = document.createElement("input");
-				input.type = "file";
-				input.accept = ".html";
+		const uploadPromise = new Promise<
+			{ htmlContent: string; boardName: string } | undefined
+		>((resolve, reject) => {
+			const input = document.createElement("input");
+			input.type = "file";
+			input.accept = ".html";
 
-				input.onchange = async (event: Event) => {
-					const file = (event.target as HTMLInputElement).files?.[0];
-					if (file) {
-						const reader = new FileReader();
-						reader.onload = ev => {
-							const htmlContent = ev.target?.result as string;
-							resolve(htmlContent);
-						};
-						reader.onerror = () => {
-							reject(new Error("Failed to read file"));
-						};
-						reader.readAsText(file);
-					} else {
-						resolve(undefined);
-					}
-				};
-
-				function resolver(): void {
+			input.onchange = async (event: Event) => {
+				const file = (event.target as HTMLInputElement).files?.[0];
+				if (file) {
+					const reader = new FileReader();
+					reader.onload = ev => {
+						const htmlContent = ev.target?.result as string;
+						const boardName = file.name.replace(/\.html$/i, "");
+						resolve({ htmlContent, boardName });
+					};
+					reader.onerror = () => {
+						reject(new Error("Failed to read file"));
+					};
+					reader.readAsText(file);
+				} else {
 					resolve(undefined);
 				}
-				input.onerror = resolver;
-				input.oncancel = resolver;
-				input.onabort = resolver;
+			};
 
-				input.click();
-			},
-		);
-		const stringedHTML = await uploadPromise;
-		if (stringedHTML) {
+			const resolver = (): void => {
+				resolve(undefined);
+			};
+			input.onerror = resolver;
+			input.oncancel = resolver;
+			input.onabort = resolver;
+
+			input.click();
+		});
+
+		const uploadResult = await uploadPromise;
+		if (uploadResult) {
+			const { htmlContent, boardName } = uploadResult;
 			const boardId = await boardsList.createBoard(
-				undefined,
+				boardName,
 				folderInfo?.type === foldersApi.FolderType.DRAFTS,
 				folderId ?? undefined,
 			);
@@ -171,7 +174,7 @@ export function ContextMenu(): JSX.Element | null {
 			setId(boardId);
 			await app.openBoard(boardId);
 			navigate(`/boards/${boardId}`);
-			deserializeBoard(stringedHTML, true);
+			deserializeBoard(htmlContent, true);
 		}
 
 		setIsImportingBoard(false);
@@ -338,7 +341,7 @@ export function ContextMenu(): JSX.Element | null {
 					</ContextMenuItem>
 					<ContextMenuItem
 						disabled={isMutationsDisabled}
-						onClick={handleImportBoard}
+						onClick={handleImportHTMLBoard}
 						icon={
 							<Icon
 								iconName="UploadBoardIcon"
