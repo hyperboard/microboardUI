@@ -342,7 +342,7 @@ export function createApp(isHistory = true): App {
 		const serializer =
 			window.location.protocol === "file:"
 				? getData
-				: getBoard().serializeHTML;
+				: getBoard().serializeHTML.bind(getBoard());
 
 		const data = await serializer();
 		const writable = await fileHandle.createWritable();
