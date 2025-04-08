@@ -13,7 +13,10 @@ const LocalFileSaveProgress: React.FC = () => {
 		observer: forceUpdate,
 	});
 
-	if (!app.getBoard().getBoardId().includes("local")) {
+	if (
+		!app.getBoard().getBoardId().includes("local") ||
+		!app.getLocalEditFileHandler()
+	) {
 		return null;
 	}
 

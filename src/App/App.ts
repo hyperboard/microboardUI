@@ -52,6 +52,7 @@ export interface App {
 	openAndEditFile(): Promise<string | undefined>;
 	enableLogger(): void;
 	disableLogger(): void;
+	getLocalEditFileHandler: () => FileSystemFileHandle | undefined;
 }
 
 export function createApp(isHistory = true): App {
@@ -234,8 +235,8 @@ export function createApp(isHistory = true): App {
 		return board.getSnapshot();
 	}
 
-	function getConnectedBoard(boardId: string): Board | undefined {
-		return boards.get(boardId);
+	function getConnectedBoard(boardId: string): Board | null {
+		return boards.get(boardId) || null;
 	}
 
 	async function getFileForLocalEdit(): Promise<File> {
@@ -374,6 +375,7 @@ export function createApp(isHistory = true): App {
 		openAndEditFile,
 		enableLogger,
 		disableLogger,
+		getLocalEditFileHandler: () => fileHandle,
 	};
 
 	account.setOnInit(async () => {
