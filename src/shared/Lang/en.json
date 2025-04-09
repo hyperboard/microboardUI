@@ -174,9 +174,7 @@
 			"tooltip": "Redo"
 		},
 		"addText": {
-			"tooltip": "Text",
-			"showAll": "All shapes",
-			"showBasic": "Basic shapes"
+			"tooltip": "Text"
 		},
 		"addSticker": {
 			"tooltip": "Sticker"
@@ -185,7 +183,9 @@
 			"tooltip": "Templates"
 		},
 		"addShape": {
-			"tooltip": "Shape"
+			"tooltip": "Shape",
+			"showAll": "All shapes",
+			"showBasic": "Basic shapes"
 		},
 		"addConnector": {
 			"tooltip": "Connection line"

@@ -1,19 +1,19 @@
+import { Shape } from "Board/Items";
 import { ShapeType } from "Board/Items/Shape";
+import { ShapeCategoryName } from "Board/Items/Shape/ShapeData";
+import clsx from "clsx";
+import { useAppContext } from "features/AppContext";
 import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
-import { Icon, ShapeIcon } from "shared/ui-lib/Icon";
 import { ShapePicker } from "features/Pickers/ShapeTypePicker";
-import { UiAccordion } from "shared/ui-lib/UiAccordion";
-import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import style from "./ItemType.module.css";
-import { useAppContext } from "features/AppContext";
-import clsx from "clsx";
-import { Shape } from "Board/Items";
-import { ShapeCategoryName } from "Board/Items/Shape/ShapeData";
-import btnStyle from "../ContextPanelButton.module.css";
+import { Icon, ShapeIcon } from "shared/ui-lib/Icon";
+import { UiAccordion } from "shared/ui-lib/UiAccordion";
 import { UiButton } from "shared/ui-lib/UiButton";
+import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
+import btnStyle from "../ContextPanelButton.module.css";
+import style from "./ItemType.module.css";
 
 const MENU_NAME = "ItemType";
 
@@ -95,8 +95,8 @@ export function ItemType(): React.ReactElement | null {
 								size="sm"
 							>
 								{isOpen
-									? t("toolsPanel.addText.showBasic")
-									: t("toolsPanel.addText.showAll")}
+									? t("toolsPanel.addShape.showBasic")
+									: t("toolsPanel.addShape.showAll")}
 							</UiButton>
 						)}
 					>

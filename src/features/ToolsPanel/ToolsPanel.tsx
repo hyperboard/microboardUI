@@ -1,24 +1,24 @@
 import { useAppSubscription } from "Board/useBoardSubscription";
 import { useAppContext } from "features/AppContext";
-import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
-import { useForceUpdate } from "shared/lib/useForceUpdate";
+import AIChatPanel from "features/GenerateChart/AIChatPanel";
 import React, { useEffect, useState } from "react";
+import { useForceUpdate } from "shared/lib/useForceUpdate";
+import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
+import { UiSeparator } from "shared/ui-lib/UiSeparator";
 import { AddConnector } from "./Buttons/AddConnector";
 import { AddDrawing } from "./Buttons/AddDrawing/AddDrawing";
 import { AddFrame } from "./Buttons/AddFrame";
 import { AddMedia } from "./Buttons/AddMedia/AddMedia.tsx";
 import { AddShape } from "./Buttons/AddShape/AddShape";
 import { AddSticker } from "./Buttons/AddSticker";
+import { AddTemplate } from "./Buttons/AddTemplate";
 import { AddText } from "./Buttons/AddText";
+import { EventList } from "./Buttons/EventList";
 import { Redo } from "./Buttons/Redo";
 import { Select } from "./Buttons/Select";
 import { Undo } from "./Buttons/Undo";
 import { PanelContext } from "./PanelContext";
 import style from "./ToolsPanel.module.css";
-import { AddTemplate } from "./Buttons/AddTemplate";
-import { EventList } from "./Buttons/EventList";
-import AIChatPanel from "features/GenerateChart/AIChatPanel";
-import { UiSeparator } from "shared/ui-lib/UiSeparator";
 
 export function ToolsPanel(): JSX.Element {
 	const [openedMenu, setOpenedMenu] = useState("None");
@@ -46,7 +46,7 @@ export function ToolsPanel(): JSX.Element {
 			>
 				<UiPanel vertical padding={0} zIndex={20}>
 					<AddTemplate />
-					<UiSeparator vertical={false} />
+					<UiSeparator />
 					<Select rounded={"none"} />
 					<AddDrawing />
 					<AddText />

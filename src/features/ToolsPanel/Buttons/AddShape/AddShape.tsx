@@ -1,15 +1,15 @@
 import { ShapeType } from "Board/Items/Shape";
 import { getHotkeyLabel } from "Board/Keyboard";
 import { useAppContext } from "features/AppContext";
-import { Icon, ShapeIcon } from "shared/ui-lib/Icon";
 import { ShapePicker } from "features/Pickers/ShapeTypePicker";
-import { UiButton } from "shared/ui-lib/UiButton";
-import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Icon, ShapeIcon } from "shared/ui-lib/Icon";
+import { UiButton } from "shared/ui-lib/UiButton";
+import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
+import { useShapesPanelContext } from "../../../ShapesPanel";
 import { ButtonWithMenu } from "../ButtonWithMenu";
 import style from "./AddShape.module.css";
-import { useShapesPanelContext } from "../../../ShapesPanel";
 
 export function AddShape() {
 	const [isShapeSelected, setIsShapeSelected] = useState(false);
@@ -89,7 +89,7 @@ export function AddShape() {
 					variant="tertiary"
 					size="sm"
 				>
-					{t("toolsPanel.addText.showAll")}
+					{t("toolsPanel.addShape.showAll")}
 				</UiButton>
 			</UiPanel>
 		</ButtonWithMenu>

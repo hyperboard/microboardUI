@@ -183,7 +183,9 @@
 			"tooltip": "Шаблоны"
 		},
 		"addShape": {
-			"tooltip": "Фигура"
+			"tooltip": "Фигура",
+			"showAll": "Все фигуры",
+			"showBasic": "Базовые фигуры"
 		},
 		"addConnector": {
 			"tooltip": "Соединительная линия"
