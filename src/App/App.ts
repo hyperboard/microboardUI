@@ -136,7 +136,7 @@ export function createApp(isHistory = true): App {
 		} else {
 			localStorage.removeItem(LAST_BOARD_KEY);
 		}
-		// sessionStorage.clear();
+		sessionStorage.clear();
 		subscriptions.setBoard(currentBoard);
 		boardSubject.publish(currentBoard);
 		board = currentBoard;
