@@ -34,7 +34,11 @@ export function AddMedia(): JSX.Element {
 				button={
 					<UiButton
 						id={"tool-add-media"}
-						tooltip={t("toolsPanel.addMedia.tooltip")}
+						tooltip={
+							isOpen
+								? undefined
+								: t("toolsPanel.addMedia.tooltip")
+						}
 						active={isOpen}
 						variant="secondary"
 						rounded="bottom"
