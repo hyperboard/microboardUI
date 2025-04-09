@@ -114,14 +114,6 @@ export interface SnapshotRequestMsg {
 	boardId: string;
 }
 
-export interface SnapshotResponseMsg {
-	type: "BoardSnapshot";
-	boardId: string;
-	// snapshot: BoardSnapshot;
-	snapshot: string;
-	lastEventOrder: number;
-}
-
 export type ViewMode = "view" | "edit" | "loading";
 
 export interface ModeMsg {
@@ -295,7 +287,6 @@ export type EventsMsg =
 	| BoardEventMsg
 	| BoardEventListMsg
 	| SnapshotRequestMsg
-	| SnapshotResponseMsg
 	| SubscribeConfirmationMsg
 	| ConfirmationMsg
 	| BoardSubscriptionCompletedMsg
