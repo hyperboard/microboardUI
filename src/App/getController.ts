@@ -14,6 +14,7 @@ import { createWheel } from "./Wheel/Wheel";
 import { isSafari } from "./isSafari";
 import { uploadAudio } from "Board/Items/Audio/uploadAudio";
 import { Account } from "entities/account";
+import { conf } from "Board/Settings";
 
 export interface Controller {
 	onWheel: (event: WheelEvent) => void;
@@ -644,7 +645,7 @@ export function getController(
 
 		const file = event.dataTransfer.files[0];
 		const fileExtension = file.name.split(".").pop()?.toLowerCase();
-		if (fileExtension === "mp4" || fileExtension === "webm") {
+		if (!fileExtension || !conf.AUDIO_FORMATS.includes(fileExtension)) {
 			uploadVideo(
 				file,
 				board,
@@ -653,7 +654,10 @@ export function getController(
 				account.accessToken,
 			);
 			return;
-		} else if (fileExtension === "mp3" || fileExtension === "wav") {
+		} else if (
+			!fileExtension ||
+			!conf.VIDEO_FORMATS.includes(fileExtension)
+		) {
 			uploadAudio(
 				file,
 				board,
@@ -678,7 +682,14 @@ export function getController(
 				})
 				.catch(er => {
 					console.error("Could not create image:", er);
-					// TODO notification
+					conf.notify({
+						variant: "error",
+						header: conf.i18n.t(
+							"toolsPanel.addMedia.unhandled.header",
+						),
+						body: conf.i18n.t("toolsPanel.addMedia.unhandled.body"),
+						duration: 4000,
+					});
 				});
 		};
 

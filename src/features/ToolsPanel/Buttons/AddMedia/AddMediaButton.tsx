@@ -9,8 +9,6 @@ import { UiButton } from "shared/ui-lib/UiButton/index";
 import { uploadVideo } from "Board/Items/Video/uploadVideo";
 import { uploadAudio } from "Board/Items/Audio/uploadAudio";
 import { conf } from "Board/Settings";
-import { openModal } from "shared/ui-lib/UiModal/UiModalContext";
-import { USER_PLAN_MODAL_ID } from "features/UserPlan/UserPlanModal";
 
 function bytesToGigabytes(bytes: number): number {
 	return bytes / 1024 ** 3;
@@ -19,6 +17,8 @@ function bytesToGigabytes(bytes: number): number {
 function bytesToMegabytes(bytes: number): number {
 	return bytes / 1024 ** 2;
 }
+
+const MAX_FILE_SIZE = 50 * 1024 * 1024;
 
 interface Props {
 	type: "Video" | "Audio" | "Image";
@@ -64,6 +64,19 @@ export function AddMediaButton({
 			return;
 		}
 
+		if (file.size > MAX_FILE_SIZE) {
+			notify({
+				variant: "warning",
+				header: t("toolsPanel.addMedia.tooLarge.header"),
+				body: t("toolsPanel.addMedia.tooLarge.body", {
+					limit: 50 + t("common.MB"),
+				}),
+				duration: 4000,
+			});
+			input.value = "";
+			return;
+		}
+
 		// if (!(await account.checkMediaStorageSpace())) {
 		// 	openModal(USER_PLAN_MODAL_ID)
 		// }
@@ -72,7 +85,10 @@ export function AddMediaButton({
 
 		switch (type) {
 			case "Video":
-				if (fileExtension !== "mp4" && fileExtension !== "webm") {
+				if (
+					!fileExtension ||
+					!conf.VIDEO_FORMATS.includes(fileExtension)
+				) {
 					return notifyAboutUnsupportedFormat();
 				}
 				uploadVideo(
@@ -109,11 +125,11 @@ export function AddMediaButton({
 	let accept = "image/*,application/pdf";
 
 	if (type === "Video") {
-		accept = conf.VIDEO_FORMATS.map(ext => "video/" + ext).join(",");
+		accept = conf.VIDEO_MIME_TYPES.join(",");
 	}
 
 	if (type === "Audio") {
-		accept = conf.AUDIO_FORMATS.map(ext => "audio/" + ext).join(",");
+		accept = conf.AUDIO_MIME_TYPES.join(",");
 	}
 
 	return (

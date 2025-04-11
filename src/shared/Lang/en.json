@@ -213,7 +213,17 @@
 			},
 			"limitReached": {
 				"header": "Out of storage space for media files",
-				"body": "Your plan allows for {{limit}} of storage for media files. Top up your balance to continue working."
+				"body": "Your plan allows for {{limit}} of storage for media files. Top up your balance to continue working.",
+				"bodyWithoutLimit": "Top up your balance to continue working."
+			},
+			"unhandled": {
+				"header": "Media file upload error",
+				"body": "Failed to add media file to the board.\nPlease try again."
+			},
+			"tooLarge": {
+				"header": "Media file upload error",
+				"body": "Maximum allowed file size: {{limit}}.",
+				"bodyWithoutLimit": "File exceeds maximum allowed size."
 			},
 			"unauth": {
 				"heading": "Media Files on the Microboard",
