@@ -645,7 +645,22 @@ export function getController(
 
 		const file = event.dataTransfer.files[0];
 		const fileExtension = file.name.split(".").pop()?.toLowerCase();
-		if (!fileExtension || !conf.AUDIO_FORMATS.includes(fileExtension)) {
+		if (
+			!file.type.startsWith("image") &&
+			!conf.AUDIO_FORMATS.includes(fileExtension) &&
+			!conf.VIDEO_FORMATS.includes(fileExtension)
+		) {
+			conf.notify({
+				variant: "warning",
+				header: conf.i18n.t(
+					"toolsPanel.addMedia.unsupportedFormat.header",
+				),
+				body: conf.i18n.t("toolsPanel.addMedia.unsupportedFormat.body"),
+				duration: 4000,
+			});
+			return;
+		}
+		if (fileExtension && conf.VIDEO_FORMATS.includes(fileExtension)) {
 			uploadVideo(
 				file,
 				board,
@@ -655,8 +670,8 @@ export function getController(
 			);
 			return;
 		} else if (
-			!fileExtension ||
-			!conf.VIDEO_FORMATS.includes(fileExtension)
+			fileExtension &&
+			conf.AUDIO_FORMATS.includes(fileExtension)
 		) {
 			uploadAudio(
 				file,
