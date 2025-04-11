@@ -211,12 +211,11 @@ export class TextEditor extends React.Component<
 			this.props.board.selection.setContext("EditUnderPointer");
 			return true;
 		}
-		// if (event.key === "Backspace") {
-		// 	event.preventDefault();
-		// 	event.stopPropagation();
-		// 	console.log(this.props.text.getText())
-		// 	console.log(this.props.text.editor.getAllNodesInSelection())
-		// }
+		if (event.key === "Backspace") {
+			event.preventDefault();
+			event.stopPropagation();
+			return this.props.text.editor.handleListMerge();
+		}
 		if (
 			event.key === "Enter" &&
 			!event.shiftKey &&

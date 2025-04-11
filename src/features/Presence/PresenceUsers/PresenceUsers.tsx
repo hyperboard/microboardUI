@@ -102,7 +102,7 @@ export const PresenceUsers: React.FC<Props> = () => {
 	const account = useAccount();
 	const { setIsPanelOpen } = useCommentsPanelContext();
 
-	const needsCollapse = users.length > USERS_IN_ROW;
+	const needsCollapse = users.length >= 3;
 	useEffect(() => {
 		const sortedUsers = [...users]
 			.sort((first, second) =>
@@ -204,7 +204,7 @@ export const PresenceUsers: React.FC<Props> = () => {
 					/>
 					{needsCollapse && (
 						<button
-							onMouseDown={event => {
+							onClick={event => {
 								event.stopPropagation();
 								if (!isUserDropdownOpen) {
 									setIsUserDropdownOpen(true);

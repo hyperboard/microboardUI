@@ -82,7 +82,7 @@ export const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 				className={styles.userPicWrapper}
 				{...props}
 				ref={userPanelRef}
-				onMouseDown={event => {
+				onClick={event => {
 					event.stopPropagation();
 					if (!props.isDropdownOpen) {
 						props.setIsDropdownOpen(true);
