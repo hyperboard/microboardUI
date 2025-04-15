@@ -7,6 +7,8 @@ export type AiTokensUsage = {
 export type StorageUsage = {
 	used: number;
 	limit: number;
+	maxMediaSize: number;
+	maxImageSize: number;
 };
 
 export type ModelLimit = {
@@ -43,8 +45,6 @@ export type UserPlan = {
 	version: number;
 	isAnnual: boolean;
 	allowTokenPurchase: boolean;
-	maxMediaSize: number;
-	maxImageSize: number;
 };
 
 export type TokensLimits = {

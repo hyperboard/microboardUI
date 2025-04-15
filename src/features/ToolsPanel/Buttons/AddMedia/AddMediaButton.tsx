@@ -9,6 +9,7 @@ import { UiButton } from "shared/ui-lib/UiButton/index";
 import { uploadVideo } from "Board/Items/Video/uploadVideo";
 import { uploadAudio } from "Board/Items/Audio/uploadAudio";
 import { conf } from "Board/Settings";
+import { validateMediaFile } from "Board/Items/Image/ImageHelpers";
 
 function bytesToGigabytes(bytes: number): number {
 	return bytes / 1024 ** 3;
@@ -64,19 +65,7 @@ export function AddMediaButton({
 			return;
 		}
 
-		if (
-			file.size / 1024 ** 2 >
-			(account.billingInfo?.plan.maxMediaSize || Infinity)
-		) {
-			notify({
-				variant: "warning",
-				header: t("toolsPanel.addMedia.tooLarge.header"),
-				body: t("toolsPanel.addMedia.tooLarge.body", {
-					limit: 50 + t("common.MB"),
-				}),
-				duration: 4000,
-			});
-			input.value = "";
+		if (!validateMediaFile(file, account)) {
 			return;
 		}
 
