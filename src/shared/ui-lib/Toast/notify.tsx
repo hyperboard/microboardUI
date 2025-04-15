@@ -15,6 +15,7 @@ type Props = {
 	position?: ToastPosition;
 	unclosable?: boolean;
 	inlineStyle?: CSSProperties;
+	button?: { text: string; onClick: () => void };
 };
 
 /** Triggers toast notification and returns notification id */
@@ -27,6 +28,7 @@ export function notify({
 	unclosable = false,
 	position = "top-right",
 	inlineStyle,
+	button,
 }: Props): string {
 	return toast.custom(
 		toastMsg => (
@@ -69,6 +71,14 @@ export function notify({
 						body
 					)}
 					{footer}
+					{button && (
+						<button
+							className={style.button}
+							onClick={button.onClick}
+						>
+							{button.text}
+						</button>
+					)}
 				</div>
 				{!unclosable && (
 					<UiButton
@@ -95,5 +105,6 @@ export interface NotifyFunction {
 		body: string;
 		variant?: "info" | "success" | "warning" | "error";
 		duration?: number;
+		button?: { text: string; onClick: () => void };
 	}): string; // Returns notification id
 }

@@ -645,7 +645,6 @@ export function getController(
 
 		const file = event.dataTransfer.files[0];
 		const fileExtension = file.name.split(".").pop()?.toLowerCase();
-		console.log(account.billingInfo?.plan.maxMediaSize);
 		if (
 			!file.type.startsWith("image") &&
 			!conf.AUDIO_FORMATS.includes(fileExtension) &&
@@ -661,6 +660,58 @@ export function getController(
 			});
 			return;
 		}
+
+		let isBasicPlan = account.billingInfo?.plan.name === "basic";
+		let errorBody = conf.i18n.t(
+			`toolsPanel.addMedia.tooLarge.imageBody.${isBasicPlan ? "basic" : "plus"}`,
+		);
+		if (
+			conf.AUDIO_FORMATS.includes(fileExtension) ||
+			conf.VIDEO_FORMATS.includes(fileExtension)
+		) {
+			errorBody = conf.i18n.t(
+				`toolsPanel.addMedia.tooLarge.audioOrVideoBody.${isBasicPlan ? "basic" : "plus"}`,
+			);
+			if (
+				file.size / 1024 ** 2 >
+				(account.billingInfo?.plan.maxMediaSize || Infinity)
+			) {
+				conf.notify({
+					variant: "warning",
+					header: conf.i18n.t("toolsPanel.addMedia.tooLarge.header"),
+					body: errorBody,
+					button: isBasicPlan
+						? {
+								text: conf.i18n.t(
+									"toolsPanel.addMedia.upgradeToPlus",
+								),
+								onClick: () =>
+									conf.openModal("USER_PLAN_MODAL_ID"),
+							}
+						: undefined,
+					duration: 4000,
+				});
+			}
+		} else if (
+			file.size / 1024 ** 2 >
+			(account.billingInfo?.plan.maxImageSize || Infinity)
+		) {
+			conf.notify({
+				variant: "warning",
+				header: conf.i18n.t("toolsPanel.addMedia.tooLarge.header"),
+				body: errorBody,
+				button: isBasicPlan
+					? {
+							text: conf.i18n.t(
+								"toolsPanel.addMedia.upgradeToPlus",
+							),
+							onClick: () => conf.openModal("USER_PLAN_MODAL_ID"),
+						}
+					: undefined,
+				duration: 4000,
+			});
+		}
+
 		if (fileExtension && conf.VIDEO_FORMATS.includes(fileExtension)) {
 			uploadVideo(
 				file,

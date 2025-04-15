@@ -207,22 +207,34 @@
 			"Image": "Image",
 			"Video": "Video",
 			"Audio": "Audio",
+			"upgradeToPlus": "Upgrade to Plus",
 			"unsupportedFormat": {
 				"header": "This file format is not supported.",
 				"body": "Please try uploading a different file."
 			},
 			"limitReached": {
-				"header": "Out of storage space for media files",
-				"body": "Your plan allows for {{limit}} of storage for media files. Top up your balance to continue working.",
-				"bodyWithoutLimit": "Top up your balance to continue working."
+				"header": "Media storage limit reached",
+				"body": {
+					"basic": "Your current plan includes 100 MB of media storage. Upgrade to Plus to increase the limit and keep working",
+					"plus": "Your current plan includes 100 GB of media storage."
+				},
+				"bodyWithoutLimit": "Upgrade to Plus to increase the limit and keep working",
+				"bodyOwner": "The board owner has reached the media storage limit.\nNew files can’t be added until the limit is increased"
 			},
 			"unhandled": {
 				"header": "Media file upload error",
 				"body": "Failed to add media file to the board.\nPlease try again."
 			},
 			"tooLarge": {
-				"header": "Media file upload error",
-				"body": "Maximum allowed file size: {{limit}}.",
+				"header": "File is too large",
+				"audioOrVideoBody": {
+					"basic": "With the Plus plan, you can upload video and audio files up to 50 MB.\nTo upload larger files, upgrade to the Plus plan",
+					"plus": "With the Plus plan, you can upload video and audio files up to 1 GB."
+				},
+				"imageBody": {
+					"basic": "Your current plan allows uploading images up to 5 MB.\nTo upload larger files, upgrade to the Plus plan",
+					"plus": "Your current plan allows uploading images up to 20 MB."
+				},
 				"bodyWithoutLimit": "File exceeds maximum allowed size."
 			},
 			"unauth": {
