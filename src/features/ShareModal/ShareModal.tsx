@@ -517,7 +517,9 @@ export function ShareModal() {
 							<UiSeparator />
 							<div className={styles.settings}>
 								<h2 className={styles.settingsHeading}>
-									Or share current state of the board
+									Or share current state of the board (be
+									careful, it has public access, everyone with
+									unique link will be able to see it)
 								</h2>
 								<SnapshotNameInput buttonDisabled={disabled} />
 							</div>
