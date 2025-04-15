@@ -139,9 +139,7 @@ export interface BoardSubscriptionCompletedMsg {
 	type: "BoardSubscriptionCompleted";
 	boardId: string;
 	mode: "view" | "edit";
-	// snapshot: BoardSnapshot | null;
 	snapshot: string | null;
-	lastSnapshotEventOrder: number;
 	eventsSinceLastSnapshot: SyncBoardEvent[];
 	initialSequenceNumber: number;
 }
