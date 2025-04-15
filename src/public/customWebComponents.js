@@ -119,8 +119,13 @@ document.addEventListener("DOMContentLoaded", () => {
 	editIcon.appendChild(editIconPath);
 	editButton.appendChild(editIcon);
 	const editFileText = document.createElement("p");
-	editFileText.textContent = "Edit file";
+	const isSnapshotInIframe =
+		window.parent &&
+		window.parent !== window &&
+		window.parent.location.href.includes("/snapshots/");
+	editFileText.textContent = isSnapshotInIframe ? "Edit copy" : "Edit file";
 	editButton.appendChild(editFileText);
+
 	editButton.style.backgroundColor = "rgba(20, 21, 26, 1)";
 	editButton.style.cursor = "pointer";
 	editButton.style.boxShadow = "0px 1px 2px 0px rgba(20, 21, 26, 0.05)";
@@ -197,12 +202,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		try {
 			const { initBrowserSettings } = await import(
-				"https://www.unpkg.com/test_package_board@0.0.51/dist/bundle.js"
+				"https://www.unpkg.com/test_package_board@0.0.85/dist/bundle.js"
 			);
 			initBrowserSettings();
 
 			const { createApp } = await import(
-				"https://www.unpkg.com/test_package_board@0.0.51/dist/bundle.js"
+				"https://www.unpkg.com/test_package_board@0.0.85/dist/bundle.js"
 			);
 			initBrowserSettings();
 			const app = createApp();
@@ -216,7 +221,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			}
 
 			const response = await fetch(
-				"https://www.unpkg.com/test_package_board@0.0.51/dist/bundle.css",
+				"https://www.unpkg.com/test_package_board@0.0.85/dist/bundle.css",
 			);
 			const cssText = await response.text();
 			const styleEl = document.createElement("style");
@@ -224,7 +229,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			document.body.appendChild(styleEl);
 
 			const responseSvg = await fetch(
-				"https://www.unpkg.com/test_package_board@0.0.51/dist/sprite.svg",
+				"https://www.unpkg.com/test_package_board@0.0.85/dist/sprite.svg",
 			);
 			const svgText = await responseSvg.text();
 			const div = document.createElement("div");

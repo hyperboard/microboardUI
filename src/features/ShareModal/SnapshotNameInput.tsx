@@ -2,7 +2,7 @@ import React, { SyntheticEvent, useRef, useState } from "react";
 import styles from "./SnapshotNameInput.module.css";
 import { notify } from "shared/ui-lib/Toast";
 import { useAppContext } from "features/AppContext";
-import { api, HTTPError } from "shared/api";
+import { api, boardsApi, HTTPError } from "shared/api";
 import { MessageResponse } from "shared/api/types";
 import { UiButton } from "shared/ui-lib/UiButton";
 import clsx from "clsx";
@@ -39,16 +39,11 @@ const SnapshotNameInput: React.FC<{
 		setErrMsg(null);
 		try {
 			const snapshot = board.serializeHTML();
-			const { data } = await api.post<
-				MessageResponse & { snapshotURI: string }
-			>("/media/snapshot", {
+			const data = await boardsApi.publishSnapshot(
 				snapshot,
-				snapshotUId: snapshotName,
-				boardUId: board.getBoardId(),
-			});
-			if (!data) {
-				throw new Error();
-			}
+				snapshotName,
+				board.getBoardId(),
+			);
 			setSnapshotURI(data.snapshotURI);
 			notify({
 				body: `Snapshot saved successfully`,

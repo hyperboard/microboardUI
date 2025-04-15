@@ -1,12 +1,15 @@
-const LOCATION =
-	typeof location !== "undefined"
-		? `${location.protocol}//${location.host}`
-		: "http://localhost";
+const isSnapshotInIframe =
+	typeof window !== "undefined" &&
+	window.parent &&
+	window.parent !== window &&
+	window.parent.location.href.includes("/snapshots/");
 
 const baseUrl =
 	typeof process !== "undefined" && process.env.BASE_URL
 		? process.env.BASE_URL
-		: LOCATION;
+		: isSnapshotInIframe
+			? `${window.parent.location.protocol}//${window.parent.location.host}`
+			: `${location.protocol}//${location.host}`;
 
 const parsedUrl = new URL(baseUrl);
 

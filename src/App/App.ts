@@ -4,7 +4,7 @@ import { createEvents } from "Board/Events/Events";
 import { conf } from "Board/Settings";
 import { Account } from "entities/account";
 import { getAuthInterceptor } from "entities/account/AuthInterceptor";
-import { api } from "shared/api";
+import { api, boardsApi } from "shared/api";
 import { foldersApi } from "shared/apiV2";
 import { apiV2 } from "shared/apiV2/base";
 import "shared/Lang";
@@ -22,6 +22,7 @@ import { getLocalRender, getRender } from "./router";
 import { SessionStorage } from "./SessionStorage";
 import { Storage } from "./Storage";
 import { TestRecorder, createTester } from "./testRecorder";
+import { Operation } from "Board/Events";
 
 const { i18n } = conf;
 
@@ -275,31 +276,60 @@ export function createApp(isHistory = true): App {
 
 	async function openAndEditFile(): Promise<string | undefined> {
 		try {
-			// Todo update for snapshots opened
-			// if (window.location.href.includes("/snapshots/")) {
-			// 	// assume we have html snapshot
-			// 	const iframe = document.getElementsByTagName("iframe");
-			// 	const snapshotDoc = Array.from(iframe).find(
-			// 		iframe => iframe.title === "HTML Snapshot",
-			// 	);
-			// 	const htmlContent =
-			// 		snapshotDoc?.contentDocument?.documentElement.outerHTML;
-			// 	if (!htmlContent) {
-			// 		return;
-			// 	}
+			const isSnapshotInIframe =
+				window.parent &&
+				window.parent !== window &&
+				window.parent.location.href.includes("/snapshots/");
 
-			// 	const blob = new Blob([htmlContent], { type: "text/html" });
-			// 	file = new File([blob], "snapshot.html", { type: "text/html" });
+			if (isSnapshotInIframe) {
+				const snapshotId =
+					window.parent.location.href.split("/snapshots/")[1];
+				const snapshot = document.documentElement.outerHTML;
 
-			// 	const url = URL.createObjectURL(blob);
-			// 	const link = document.createElement("a");
-			// 	link.href = url;
-			// 	link.download = "test";
+				const boardId = await boardsList.createBoard(
+					snapshotId + " copy",
+					!account.isLoggedIn,
+				);
+				await app.connection.connect();
+				window.parent.history.pushState({}, "", `/boards/${boardId}`);
+				await app.openBoard(boardId);
+				const addedIds = app
+					.getBoard()
+					.deserializeHTMLAndEmit(snapshot);
 
-			// 	link.click();
-			// 	URL.revokeObjectURL(url);
+				const promise = new Promise<void>(resolve => {
+					const reloadInterval = setInterval(() => {
+						const confirmedEvents = app
+							.getBoard()
+							.events?.getRaw().confirmedEvents;
+						const flatOperations: Operation[] =
+							confirmedEvents?.flatMap(ev =>
+								"operations" in ev.body
+									? (ev.body.operations as Operation[])
+									: ev.body.operation,
+							) || [];
+						const confirmedAddedIds = flatOperations
+							.filter(op => op.method === "add")
+							.flatMap(op => op.item);
+						if (confirmedAddedIds.length >= addedIds.length) {
+							const set1 = new Set(addedIds);
+							const set2 = new Set(confirmedAddedIds);
+							for (const val of set1) {
+								if (!set2.has(val)) {
+									return;
+								}
+							}
 
-			// } else
+							clearInterval(reloadInterval);
+							window.parent.location.reload();
+							resolve();
+						}
+					}, 5_000);
+				});
+				await promise;
+
+				return;
+			}
 			const file = await getFileForLocalEdit();
 			const contents = await file.text();
 

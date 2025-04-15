@@ -516,6 +516,7 @@ export function createConnection(
 		} catch (error) {
 			onErorr(error);
 		}
+		return;
 	}
 
 	async function subscribe(board: Board): Promise<void> {
