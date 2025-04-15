@@ -645,6 +645,7 @@ export function getController(
 
 		const file = event.dataTransfer.files[0];
 		const fileExtension = file.name.split(".").pop()?.toLowerCase();
+		console.log(account.billingInfo?.plan.maxMediaSize);
 		if (
 			!file.type.startsWith("image") &&
 			!conf.AUDIO_FORMATS.includes(fileExtension) &&
@@ -686,7 +687,11 @@ export function getController(
 		const reader = new FileReader();
 
 		reader.onload = function (event) {
-			prepareImage(event.target?.result, account.accessToken)
+			prepareImage(
+				event.target?.result,
+				account.accessToken,
+				board.getBoardId(),
+			)
 				.then(imageData => {
 					const image = new ImageItem(imageData, board, undefined);
 					image.transformation.translateTo(

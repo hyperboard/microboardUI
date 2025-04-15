@@ -43,6 +43,8 @@ export type UserPlan = {
 	version: number;
 	isAnnual: boolean;
 	allowTokenPurchase: boolean;
+	maxMediaSize: number;
+	maxImageSize: number;
 };
 
 export type TokensLimits = {

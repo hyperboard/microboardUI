@@ -64,7 +64,10 @@ export function AddMediaButton({
 			return;
 		}
 
-		if (file.size > MAX_FILE_SIZE) {
+		if (
+			file.size / 1024 ** 2 >
+			(account.billingInfo?.plan.maxMediaSize || Infinity)
+		) {
 			notify({
 				variant: "warning",
 				header: t("toolsPanel.addMedia.tooLarge.header"),

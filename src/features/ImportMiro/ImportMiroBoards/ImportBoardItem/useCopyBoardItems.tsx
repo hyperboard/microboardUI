@@ -732,7 +732,7 @@ export const useCopyBoardItems = (
 			return;
 		}
 
-		await prepareImage(imgBase64, accessToken)
+		await prepareImage(imgBase64, accessToken, board.getBoardId())
 			.then(imageData => {
 				// remove placeholder
 				const placeholder = board.items.getById(boardMiroId[id]);

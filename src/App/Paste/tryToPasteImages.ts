@@ -25,7 +25,7 @@ export function tryToPasteImages(
 		isFoundImageInClipboard = true;
 		const reader = new FileReader();
 		reader.onload = event => {
-			prepareImage(event.target?.result, accessToken)
+			prepareImage(event.target?.result, accessToken, board.getBoardId())
 				.then(imageData => {
 					const image = new ImageItem(imageData, board, board.events);
 					image.transformation.translateTo(

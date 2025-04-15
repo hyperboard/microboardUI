@@ -131,9 +131,6 @@ body {
 }
 
 @media screen and (max-width: 1028px) {
-	.closeBtn {
-		top: 74px;
-	}
 	.page.header {
 		display: flex;
 	}
@@ -175,5 +172,12 @@ body {
 		height: max-content;
 		min-height: 100%;
 		touch-action: pan-y;
+	}
+}
+
+@media screen and (max-width: 720px) {
+	.closeBtn {
+		top: 0px;
+		right: 0px;
 	}
 }
