@@ -16,6 +16,7 @@ import { CryptoCheckout } from "shared/api/billing";
 import { MessageResponse } from "shared/api/types";
 import { getEmailPrefix } from "shared/lib/getEmailPrefix";
 import { Subject } from "shared/Subject";
+import { conf } from "Board/Settings";
 
 type AccountInfo = {
 	id: number;
@@ -66,6 +67,7 @@ export class Account {
 	readonly permissions: Permissions;
 	private _accessToken: string | null = null;
 	private annualPayment = false;
+	private storageLimitNotificationShown = false;
 	onLogout: (() => Promise<void>) | null = null;
 	onLogin: (() => Promise<void>) | null = null;
 	onInit: (() => Promise<void>) | null = null;
@@ -151,6 +153,34 @@ export class Account {
 			if (billingInfo) {
 				this.billingInfo = billingInfo;
 				this.setIsAnnualPayment(billingInfo.plan.isAnnual ?? false);
+				if (
+					!this.storageLimitNotificationShown &&
+					billingInfo.storage.used / billingInfo.storage.limit >= 0.8
+				) {
+					this.storageLimitNotificationShown = true;
+					conf.notify({
+						variant: "warning",
+						header: conf.i18n.t(
+							"toolsPanel.addMedia.limitAlmostReached.header",
+						),
+						body: conf.i18n.t(
+							`toolsPanel.addMedia.limitAlmostReached.body.${billingInfo.plan.name}`,
+						),
+						button:
+							billingInfo.plan.name === "basic"
+								? {
+										text: conf.i18n.t(
+											"toolsPanel.addMedia.upgradeToPlus",
+										),
+										onClick: () =>
+											conf.openModal(
+												"USER_PLAN_MODAL_ID",
+											),
+									}
+								: undefined,
+						duration: 300_000,
+					});
+				}
 			}
 
 			await this.fetchBillingHistory();

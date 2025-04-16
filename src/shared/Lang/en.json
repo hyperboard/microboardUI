@@ -237,6 +237,13 @@
 				},
 				"bodyWithoutLimit": "File exceeds maximum allowed size."
 			},
+			"limitAlmostReached": {
+				"header": "Media storage limit almost reached",
+				"body": {
+					"basic": "Your current plan includes 100 MB of media storage.\nUpgrade to Plus to increase the limit and keep working",
+					"plus": "Your current plan includes 100 GB of media storage."
+				}
+			},
 			"unauth": {
 				"heading": "Media Files on the Microboard",
 				"description": "<p>Working with media files is available only to authorized users.</p><p><signinLink>Sign in</signinLink> or <signupLink>register</signupLink> to continue.</p>"
