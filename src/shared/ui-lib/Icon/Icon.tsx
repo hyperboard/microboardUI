@@ -150,7 +150,8 @@ export type IconId =
 	| "Dropdown_speech"
 	| "Dropdown_img"
 	| "Dropdown_texts"
-	| "Save";
+	| "Save"
+	| "ShareSnapshotLink";
 
 type Props = {
 	iconName: IconId;

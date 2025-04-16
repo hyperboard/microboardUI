@@ -606,6 +606,7 @@
 		"confirm": "Export",
 		"PNGTitle": "Save the selected board area as image",
 		"HTMLTitle": "Save the entire board as file",
+		"HTMLSnapshotLink": "Share board copy via link",
 		"cancel": "Cancel",
 		"error": {
 			"title": "Export error",

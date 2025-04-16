@@ -11,7 +11,7 @@ import { nanoid } from "nanoid";
 const SnapshotNameInput: React.FC<{
 	buttonDisabled?: boolean;
 }> = ({ buttonDisabled }) => {
-	const textareaRef = useRef<HTMLTextAreaElement>(null);
+	const inputRef = useRef<HTMLInputElement>(null);
 	const [snapshotName, setSnapshotName] = useState("");
 	const [errMsg, setErrMsg] = useState<null | string>(null);
 	const [snapshotURI, setSnapshotURI] = useState<null | string>(null);
@@ -21,12 +21,16 @@ const SnapshotNameInput: React.FC<{
 		ev.stopPropagation();
 	};
 
+	const handleFocusInput = (): void => {
+		inputRef.current?.focus();
+	};
+
 	const handleInputChange = (
-		ev: React.ChangeEvent<HTMLTextAreaElement>,
+		ev: React.ChangeEvent<HTMLInputElement>,
 	): void => {
 		ev.stopPropagation();
 		ev.preventDefault();
-		setSnapshotName(ev.target.value);
+		setSnapshotName(ev.target.value.replace(/[^A-Za-z0-9._~-]/g, ""));
 	};
 
 	const handleSnapshotSubmit = async (): Promise<void> => {
@@ -47,11 +51,15 @@ const SnapshotNameInput: React.FC<{
 				uniqueSnapshotName,
 				board.getBoardId(),
 			);
-			setSnapshotURI(decodeURIComponent(data.snapshotURI));
+			const userFriendlyURI = decodeURIComponent(data.snapshotURI);
+
+			setSnapshotURI(userFriendlyURI);
 			notify({
 				body: `Snapshot saved successfully`,
 				variant: "success",
 			});
+			navigator.clipboard.writeText(userFriendlyURI);
+			notify({ body: "Copied!", variant: "success" });
 			setSnapshotName("");
 		} catch (err) {
 			if (err instanceof HTTPError) {
@@ -78,17 +86,24 @@ const SnapshotNameInput: React.FC<{
 	return (
 		<div className={styles.wrapper}>
 			<div className={styles.inputWrapper}>
-				<textarea
-					rows={1}
-					ref={textareaRef}
-					value={snapshotName}
-					onChange={handleInputChange}
-					onKeyUp={stopPropagation}
-					onKeyDown={stopPropagation}
-					onKeyPress={stopPropagation}
-					placeholder="Snapshot name"
-					className={styles.nativeInput}
-				/>
+				<div className={styles.nativeInput}>
+					<div
+						className={styles.description}
+						onClick={handleFocusInput}
+						onFocus={handleFocusInput}
+						tabIndex={0}
+					>
+						{window.location.origin + "/snapshots/"}
+					</div>
+					<input
+						type="text"
+						className={styles.userInput}
+						onKeyDown={stopPropagation}
+						onChange={handleInputChange}
+						value={snapshotName}
+						ref={inputRef}
+					/>
+				</div>
 			</div>
 			<Description
 				error={errMsg}

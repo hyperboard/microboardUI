@@ -28,6 +28,7 @@ import { BoardRename } from "entities/BoardName";
 import { createPortal } from "react-dom";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { CREATE_TEMPLATE_MODAL } from "features/Templates/CreateTemplateModal/CreateTemplateModal";
+import { SHARE_SNAPSHOT_MODAL_ID } from "features/ShareSnapshotModal/ShareSnapshotModal";
 
 const MAX_BOARD_TITLE_LENGTH = 32;
 
@@ -89,6 +90,10 @@ export function TitlePanel(): JSX.Element | null {
 
 	const openExport = (): void => {
 		board.tools.export();
+	};
+
+	const openShareSnapshot = (): void => {
+		openModal(SHARE_SNAPSHOT_MODAL_ID);
 	};
 
 	const exportHTML = (): string => {
@@ -240,6 +245,7 @@ export function TitlePanel(): JSX.Element | null {
 						buttonRef={clickOutsideRef}
 						exportHTML={exportHTML}
 						openExport={openExport}
+						openShareSnapshot={openShareSnapshot}
 					/>
 				)}
 				{window.enableTemplateCreating && (
@@ -298,12 +304,14 @@ type ExportDropdownProps = {
 	buttonRef: RefObject<HTMLButtonElement>;
 	openExport: () => void;
 	exportHTML: () => void;
+	openShareSnapshot: () => void;
 };
 
 function ExportDropdown({
 	buttonRef,
 	openExport,
 	exportHTML,
+	openShareSnapshot,
 }: ExportDropdownProps) {
 	const { t } = useTranslation();
 	const [position, setPosition] = useState({ top: 0, left: 0 });
@@ -328,12 +336,16 @@ function ExportDropdown({
 			}}
 		>
 			<div onClick={openExport}>
-				<Icon iconName="ExportPNG" width={15} height={15} />
+				<Icon iconName="ExportPNG" width={20} height={20} />
 				<p>{t("export.PNGTitle")}</p>
 			</div>
 			<div onClick={exportHTML}>
-				<Icon iconName="ExportFile" width={15} height={15} />
+				<Icon iconName="ExportFile" width={20} height={20} />
 				<p>{t("export.HTMLTitle")}</p>
+			</div>
+			<div onClick={openShareSnapshot}>
+				<Icon iconName="ShareSnapshotLink" width={20} height={20} />
+				<p>{t("export.HTMLSnapshotLink")}</p>
 			</div>
 		</div>,
 		document.body,

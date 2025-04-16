@@ -202,12 +202,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		try {
 			const { initBrowserSettings } = await import(
-				"https://www.unpkg.com/test_package_board@0.0.85/dist/bundle.js"
+				"https://www.unpkg.com/test_package_board@0.0.92/dist/bundle.js"
 			);
 			initBrowserSettings();
 
 			const { createApp } = await import(
-				"https://www.unpkg.com/test_package_board@0.0.85/dist/bundle.js"
+				"https://www.unpkg.com/test_package_board@0.0.92/dist/bundle.js"
 			);
 			initBrowserSettings();
 			const app = createApp();
@@ -221,7 +221,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			}
 
 			const response = await fetch(
-				"https://www.unpkg.com/test_package_board@0.0.85/dist/bundle.css",
+				"https://www.unpkg.com/test_package_board@0.0.92/dist/bundle.css",
 			);
 			const cssText = await response.text();
 			const styleEl = document.createElement("style");
@@ -229,7 +229,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			document.body.appendChild(styleEl);
 
 			const responseSvg = await fetch(
-				"https://www.unpkg.com/test_package_board@0.0.85/dist/sprite.svg",
+				"https://www.unpkg.com/test_package_board@0.0.92/dist/sprite.svg",
 			);
 			const svgText = await responseSvg.text();
 			const div = document.createElement("div");

@@ -287,7 +287,7 @@ export function createApp(isHistory = true): App {
 				const snapshot = document.documentElement.outerHTML;
 
 				const boardId = await boardsList.createBoard(
-					snapshotId + " copy",
+					snapshotId.split("?")[0] + " copy",
 					!account.isLoggedIn,
 				);
 				await app.connection.connect();

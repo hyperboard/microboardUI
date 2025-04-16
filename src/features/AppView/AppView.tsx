@@ -68,6 +68,7 @@ import { InactiveBoardHidder } from "./InactiveBoardHidder";
 import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
 import { MediaUnavailableModal } from "features/MediaUnavailableModal/MediaUnavailableModal";
+import { ShareSnapshotModal } from "features/ShareSnapshotModal";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -261,6 +262,7 @@ export function AppView(): JSX.Element {
 				<LimitsModal />
 				<HistoryModal />
 				<ShareModal />
+				<ShareSnapshotModal />
 				<ProfileSettingsModal />
 				<ChangePasswordModal />
 				<AccessDeniedModal />

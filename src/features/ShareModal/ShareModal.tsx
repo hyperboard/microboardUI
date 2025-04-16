@@ -28,7 +28,6 @@ import { UiSkeleton } from "shared/ui-lib/UiSkeleton";
 import { SearchInput } from "./SearchInput";
 import styles from "./ShareModal.module.css";
 import { SAVE_SHARE_MODAL, SaveShareModal } from "./SaveShareModal";
-import SnapshotNameInput from "./SnapshotNameInput";
 
 export const SHARE_MODAL_ID = Symbol("shareModal");
 
@@ -512,19 +511,6 @@ export function ShareModal() {
 							{t("sharing.submit")}
 						</UiButton>
 					</div>
-					{account.isLoggedIn && isOwner && (
-						<>
-							<UiSeparator />
-							<div className={styles.settings}>
-								<h2 className={styles.settingsHeading}>
-									Or share current state of the board (be
-									careful, it has public access, everyone with
-									unique link will be able to see it)
-								</h2>
-								<SnapshotNameInput buttonDisabled={disabled} />
-							</div>
-						</>
-					)}
 				</div>
 				{isSubmitting && <div className={styles.loader} />}
 			</UiModal>
