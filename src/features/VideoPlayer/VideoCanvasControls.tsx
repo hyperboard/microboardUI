@@ -18,7 +18,8 @@ export const VideoCanvasControls = () => {
 		if (
 			hoveredItem &&
 			hoveredItem.itemType === "Video" &&
-			hoveredItem.getShouldShowControls()
+			hoveredItem.getShouldShowControls() &&
+			hoveredItem.getPreviewUrl()
 		) {
 			return hoveredItem
 				.getPlayBtnMbr()

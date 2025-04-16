@@ -5,6 +5,7 @@ import { Icon } from "shared/ui-lib/Icon";
 import { UiButton } from "../UiButton";
 import style from "./Toast.module.css";
 import { conf } from "Board/Settings";
+import { Loader } from "shared/ui-lib/Loader/Loader.tsx";
 
 type Props = {
 	header?: ReactNode;
@@ -16,6 +17,7 @@ type Props = {
 	unclosable?: boolean;
 	inlineStyle?: CSSProperties;
 	button?: { text: string; onClick: () => void };
+	loader?: "loader" | "MediaLoader";
 };
 
 /** Triggers toast notification and returns notification id */
@@ -29,6 +31,7 @@ export function notify({
 	position = "top-right",
 	inlineStyle,
 	button,
+	loader,
 }: Props): string {
 	return toast.custom(
 		toastMsg => (
@@ -44,12 +47,16 @@ export function notify({
 					} 0.3s ease`,
 				}}
 			>
-				<Icon
-					className={style.icon}
-					iconName="Notification"
-					width={20}
-					height={20}
-				/>
+				{loader ? (
+					<Loader width={20} height={20} variant={loader} />
+				) : (
+					<Icon
+						className={style.icon}
+						iconName="Notification"
+						width={20}
+						height={20}
+					/>
+				)}
 				<div className={style.content}>
 					{header && typeof header === "string" ? (
 						<h3 className={style.title}>{header}</h3>
@@ -98,6 +105,7 @@ export function notify({
 }
 
 conf.notify = notify;
+conf.disMissNotification = toast.dismiss;
 
 export interface NotifyFunction {
 	(options: {
@@ -106,5 +114,6 @@ export interface NotifyFunction {
 		variant?: "info" | "success" | "warning" | "error";
 		duration?: number;
 		button?: { text: string; onClick: () => void };
+		loader?: "loader" | "MediaLoader";
 	}): string; // Returns notification id
 }

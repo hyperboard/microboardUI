@@ -208,6 +208,7 @@
 			"Video": "Video",
 			"Audio": "Audio",
 			"upgradeToPlus": "Upgrade to Plus",
+			"loading": "Media files are uploading",
 			"unsupportedFormat": {
 				"header": "This file format is not supported.",
 				"body": "Please try uploading a different file."
