@@ -6,52 +6,53 @@ import { api, boardsApi, HTTPError } from "shared/api";
 import { MessageResponse } from "shared/api/types";
 import { UiButton } from "shared/ui-lib/UiButton";
 import clsx from "clsx";
-import { v4 as uuidv4 } from "uuid";
+import { nanoid } from "nanoid";
 
 const SnapshotNameInput: React.FC<{
 	buttonDisabled?: boolean;
 }> = ({ buttonDisabled }) => {
-	// const textareaRef = useRef<HTMLTextAreaElement>(null);
-	// const [snapshotName, setSnapshotName] = useState("");
+	const textareaRef = useRef<HTMLTextAreaElement>(null);
+	const [snapshotName, setSnapshotName] = useState("");
 	const [errMsg, setErrMsg] = useState<null | string>(null);
 	const [snapshotURI, setSnapshotURI] = useState<null | string>(null);
 	const { board } = useAppContext();
 
-	// const stopPropagation = (ev: SyntheticEvent): void => {
-	// 	ev.stopPropagation();
-	// };
+	const stopPropagation = (ev: SyntheticEvent): void => {
+		ev.stopPropagation();
+	};
 
-	// const handleInputChange = (
-	// 	ev: React.ChangeEvent<HTMLTextAreaElement>,
-	// ): void => {
-	// 	ev.stopPropagation();
-	// 	ev.preventDefault();
-	// 	setSnapshotName(ev.target.value);
-	// };
+	const handleInputChange = (
+		ev: React.ChangeEvent<HTMLTextAreaElement>,
+	): void => {
+		ev.stopPropagation();
+		ev.preventDefault();
+		setSnapshotName(ev.target.value);
+	};
 
 	const handleSnapshotSubmit = async (): Promise<void> => {
-		const snapshotName = uuidv4();
-		// if (!snapshotName.trim()) {
-		// 	notify({ body: "Name for snapshot is required", variant: "error" });
-		// 	setErrMsg("Name can not be empty");
-		// 	return;
-		// }
-
 		setSnapshotURI(null);
 		setErrMsg(null);
+
+		if (!snapshotName.trim()) {
+			notify({ body: "Name for snapshot is required", variant: "error" });
+			setErrMsg("Name can not be empty");
+			return;
+		}
+
+		const uniqueSnapshotName = snapshotName.trim() + "?" + nanoid(10);
 		try {
 			const snapshot = board.serializeHTML();
 			const data = await boardsApi.publishSnapshot(
 				snapshot,
-				snapshotName,
+				uniqueSnapshotName,
 				board.getBoardId(),
 			);
-			setSnapshotURI(data.snapshotURI);
+			setSnapshotURI(decodeURIComponent(data.snapshotURI));
 			notify({
 				body: `Snapshot saved successfully`,
 				variant: "success",
 			});
-			// setSnapshotName("");
+			setSnapshotName("");
 		} catch (err) {
 			if (err instanceof HTTPError) {
 				setErrMsg(err.message);
@@ -76,8 +77,7 @@ const SnapshotNameInput: React.FC<{
 
 	return (
 		<div className={styles.wrapper}>
-			{/* TODO add name for snapshot (THINK ON IT) */}
-			{/* <div className={styles.inputWrapper}>
+			<div className={styles.inputWrapper}>
 				<textarea
 					rows={1}
 					ref={textareaRef}
@@ -89,7 +89,7 @@ const SnapshotNameInput: React.FC<{
 					placeholder="Snapshot name"
 					className={styles.nativeInput}
 				/>
-			</div> */}
+			</div>
 			<Description
 				error={errMsg}
 				snapshotURI={snapshotURI}

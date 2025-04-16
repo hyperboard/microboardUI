@@ -5,6 +5,7 @@ import { api, HTTPError } from "shared/api";
 
 const HTMLSnapshot = (): JSX.Element => {
 	const { uid } = useParams();
+	const uniquePass = window.location.search;
 	const [htmlContent, setHtmlContent] = useState("");
 	const [errStatus, setErrStatus] = useState<null | number>(null);
 	const account = useAccount();
@@ -22,7 +23,7 @@ const HTMLSnapshot = (): JSX.Element => {
 			setErrStatus(null);
 			try {
 				const { data } = await api.get<{ htmlContent: string }>(
-					`/media/snapshot/${uid}`,
+					`/media/snapshot/${uid}${uniquePass}`,
 				);
 				if (!data) {
 					throw new Error();
