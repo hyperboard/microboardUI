@@ -1,12 +1,12 @@
+import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
-import styles from "./CookiesModal.module.css";
 import { useTranslation } from "react-i18next";
 import {
 	InfoColor,
 	Notification,
 } from "shared/ui-lib/Notification/Notification";
 import { UiButton } from "shared/ui-lib/UiButton";
-import Cookies from "js-cookie";
+import styles from "./CookiesModal.module.css";
 
 interface CookiesModalProps {
 	className?: string;
@@ -15,11 +15,14 @@ interface CookiesModalProps {
 export const CookiesModal = ({
 	className,
 }: CookiesModalProps): React.ReactElement => {
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const [open, setOpen] = useState<boolean>(false);
 
 	const redirectOnPolicy = (): void => {
-		const policyUrl = "https://microboard.io/privacy-policy";
+		const policyUrl =
+			i18n.language === "ru"
+				? "https://app.microboard.io/pdf/privacy_policy_ru.pdf"
+				: "https://app.microboard.io/pdf/privacy_policy_en.pdf";
 		window.location.href = policyUrl;
 	};
 
