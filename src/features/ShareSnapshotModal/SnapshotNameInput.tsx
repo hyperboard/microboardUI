@@ -30,20 +30,33 @@ const SnapshotNameInput: React.FC<{
 	): void => {
 		ev.stopPropagation();
 		ev.preventDefault();
-		setSnapshotName(ev.target.value.replace(/[^A-Za-z0-9._~-]/g, ""));
+		// setSnapshotName(ev.target.value.replace(/[^A-Za-z0-9._~-]/g, ""));
+		setSnapshotName(ev.target.value);
 	};
 
 	const handleSnapshotSubmit = async (): Promise<void> => {
 		setSnapshotURI(null);
 		setErrMsg(null);
 
-		if (!snapshotName.trim()) {
+		const trimmedName = snapshotName.trim();
+		if (!trimmedName) {
 			notify({ body: "Name for snapshot is required", variant: "error" });
 			setErrMsg("Name can not be empty");
 			return;
 		}
+		const forbiddenSymbols = trimmedName.match(/[^A-Za-z0-9._~-]/g);
+		if (forbiddenSymbols) {
+			notify({
+				body: "Name for snapshot contains forbidden symbols",
+				variant: "error",
+			});
+			setErrMsg(
+				`Some characters are not allowed: ${[...new Set(forbiddenSymbols.map(ch => (ch === " " ? "empty space" : ch)))].join(", ")}`,
+			);
+			return;
+		}
 
-		const uniqueSnapshotName = snapshotName.trim() + "?" + nanoid(10);
+		const uniqueSnapshotName = trimmedName + "?" + nanoid(10);
 		try {
 			const snapshot = board.serializeHTML();
 			const data = await boardsApi.publishSnapshot(
@@ -92,6 +105,11 @@ const SnapshotNameInput: React.FC<{
 						onClick={handleFocusInput}
 						onFocus={handleFocusInput}
 						tabIndex={0}
+						style={{
+							whiteSpace: "nowrap",
+							flexShrink: 0,
+							display: "inline-block",
+						}}
 					>
 						{window.location.origin + "/snapshots/"}
 					</div>
