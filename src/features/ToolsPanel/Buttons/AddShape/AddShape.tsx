@@ -86,7 +86,8 @@ export function AddShape() {
 				</div>
 				<UiButton
 					onClick={openShapesPanel}
-					variant="tertiary"
+					variant="quaternary"
+					className={style.button}
 					size="sm"
 				>
 					{t("toolsPanel.addShape.showAll")}

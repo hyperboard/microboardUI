@@ -1,6 +1,7 @@
 .panel {
 	display: grid;
 	grid-template-columns: repeat(3, 32px);
+	justify-content: center;
 	overflow: hidden;
 }
 
@@ -10,4 +11,8 @@
 	align-items: stretch;
 	gap: 8px;
 	height: 192px;
+}
+
+.button {
+	white-space: nowrap;
 }
