@@ -972,7 +972,7 @@
 					"GPT-4o mini",
 					"DeepSeek-R1",
 					"Unlimited boards and figures",
-					"Images — up to 100 MB"
+					"Images, audio, video — up to 100 MB"
 				],
 				"tokensFeature": "10 tokens"
 			},
@@ -985,7 +985,7 @@
 					"Flux.1 Pro",
 					"Flux.1 Schnell",
 					"Text to speech HD",
-					"Images — up to 100 GB"
+					"Images, audio, video — up to 100 GB"
 				],
 				"tokensFeature": "1000 tokens"
 			},
