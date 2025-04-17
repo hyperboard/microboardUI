@@ -10,3 +10,64 @@ audio::-webkit-media-controls-panel {
 audio::-webkit-media-controls-enclosure {
 	background-color: transparent;
 }
+
+.controls {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.playPauseButton {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	background-color: rgba(20, 21, 26, 1);
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+/*.playPauseButton:hover {*/
+/*	background-color: #106ebe;*/
+/*}*/
+
+.timeControls {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.duration {
+	font-family: Manrope;
+	font-weight: 500;
+	font-size: 14px;
+	line-height: 20px;
+	color: rgba(15, 19, 36, 0.6);
+}
+
+.progressBarContainer {
+	flex: 1;
+	height: 4px;
+	background-color: rgba(233, 234, 236, 1);
+	border-radius: 3px;
+	cursor: pointer;
+	position: relative;
+}
+
+.progressBar {
+	height: 100%;
+	background-color: rgba(20, 21, 26, 1);
+	border-radius: 2px;
+	position: absolute;
+}
+
+.bufferedProgressBar {
+	height: 100%;
+	background-color: rgba(200, 202, 208, 1);
+	border-radius: 2px;
+	position: absolute;
+}

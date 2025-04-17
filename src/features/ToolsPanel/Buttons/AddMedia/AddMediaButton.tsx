@@ -66,6 +66,9 @@ export function AddMediaButton({
 		}
 
 		if (!validateMediaFile(file, account)) {
+			if (inputRef.current) {
+				inputRef.current.value = "";
+			}
 			return;
 		}
 

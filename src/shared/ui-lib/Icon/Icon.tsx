@@ -152,7 +152,10 @@ export type IconId =
 	| "Dropdown_texts"
 	| "Save"
 	| "ShareSnapshotLink"
-	| "MediaLoader";
+	| "MediaLoader"
+	| "Play"
+	| "Pause"
+	| "Volume";
 
 type Props = {
 	iconName: IconId;

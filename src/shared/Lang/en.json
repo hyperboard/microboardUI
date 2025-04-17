@@ -219,6 +219,7 @@
 					"basic": "Your current plan includes 100 MB of media storage. Upgrade to Plus to increase the limit and keep working",
 					"plus": "Your current plan includes 100 GB of media storage."
 				},
+				"duplicateBody": "The media storage limit reached.\nNew files can’t be added until the limit is increased",
 				"bodyWithoutLimit": "Upgrade to Plus to increase the limit and keep working",
 				"bodyOwner": "The board owner has reached the media storage limit.\nNew files can’t be added until the limit is increased"
 			},
