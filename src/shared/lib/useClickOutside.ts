@@ -14,10 +14,14 @@ export const useClickOutside = <T extends HTMLElement = HTMLDivElement>(
 		const isOutside =
 			ref.current &&
 			!ref.current.contains(event.target as Node) &&
-			refs.every(
-				ref =>
-					ref?.current && !ref.current.contains(event.target as Node),
-			);
+			refs.every(ref => {
+				if (!ref?.current) {
+					return true;
+				}
+				return (
+					ref.current && !ref.current.contains(event.target as Node)
+				);
+			});
 
 		if (
 			isOutside ||

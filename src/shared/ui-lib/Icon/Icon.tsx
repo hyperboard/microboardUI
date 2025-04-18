@@ -156,6 +156,8 @@ export type IconId =
 	| "Play"
 	| "Pause"
 	| "Volume"
+	| "Download"
+	| "PlaybackRate"
 	| "Tick";
 
 type Props = {

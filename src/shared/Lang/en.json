@@ -1141,5 +1141,9 @@
 	},
 	"textEditor": {
 		"limitReached": "Character limit exceeded"
+	},
+	"audio": {
+		"download": "Download",
+		"playbackRate": "Playback speed"
 	}
 }

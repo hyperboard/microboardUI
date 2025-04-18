@@ -1141,5 +1141,9 @@
 	},
 	"textEditor": {
 		"limitReached": "Превышен лимит символов"
+	},
+	"audio": {
+		"download": "Загрузить",
+		"playbackRate": "Скорость воспроизведения"
 	}
 }
