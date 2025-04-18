@@ -608,8 +608,17 @@
 		"confirm": "Export",
 		"PNGTitle": "Save the selected board area as image",
 		"HTMLTitle": "Save the entire board as file",
-		"HTMLSnapshotLink": "Share board copy via link",
 		"cancel": "Cancel",
+		"HTMLSnapshot": {
+			"HTMLSnapshotLink": "Share board copy via link",
+			"HTMLSnapshotLinkSuccess": "The link has been successfully generated. Copy it",
+			"SnapshotSavingError": "Error occured during saving snapshot",
+			"alreadyTaken": "This name is already taken, please, use another one",
+			"nameCantBeEmpty": "Ссылка не может быть пустой",
+			"invalidURL": "Invalid URL. Please use A–Z, a–z, 0–9, –, _ ~.",
+			"successNotificationStart": "The board link ",
+			"successNotificationEnd": " is copied successfully"
+		},
 		"error": {
 			"title": "Export error",
 			"description": "An error occurred while exporting the selected area"

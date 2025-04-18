@@ -345,7 +345,7 @@ function ExportDropdown({
 			</div>
 			<div onClick={openShareSnapshot}>
 				<Icon iconName="ShareSnapshotLink" width={20} height={20} />
-				<p>{t("export.HTMLSnapshotLink")}</p>
+				<p>{t("export.HTMLSnapshot.HTMLSnapshotLink")}</p>
 			</div>
 		</div>,
 		document.body,

@@ -23,7 +23,7 @@ export function ShareSnapshotModal() {
 			>
 				<div className={styles.wrapper}>
 					<h1 className={styles.heading}>
-						{t("export.HTMLSnapshotLink")}{" "}
+						{t("export.HTMLSnapshot.HTMLSnapshotLink")}{" "}
 						{boardInfo?.title ? `- ${boardInfo?.title}` : ""}
 					</h1>
 					<div className={styles.settings}>

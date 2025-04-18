@@ -155,7 +155,8 @@ export type IconId =
 	| "MediaLoader"
 	| "Play"
 	| "Pause"
-	| "Volume";
+	| "Volume"
+	| "Tick";
 
 type Props = {
 	iconName: IconId;

@@ -608,8 +608,17 @@
 		"confirm": "Экспортировать",
 		"PNGTitle": "Сохранить фрагмент доски как изображение",
 		"HTMLTitle": "Сохранить всю доску как файл",
-		"HTMLSnapshotLink": "Поделиться ссылкой на копию доски",
 		"cancel": "Отменить",
+		"HTMLSnapshot": {
+			"HTMLSnapshotLink": "Поделиться ссылкой на копию доски",
+			"HTMLSnapshotLinkSuccess": "Ссылка успешно сгенерирована. Скопируйте её",
+			"SnapshotSavingError": "Произошла ошибка при сохранении",
+			"alreadyTaken": "Это имя уже занято, пожалуйста, используйте другое",
+			"invalidURL": "Неверный формат ссылки. Пожалуйста, используйте латинские буквы, цифры и знаки –, _ и ~.",
+			"nameCantBeEmpty": "Name can not be empty",
+			"successNotificationStart": "Ссылка на доску ",
+			"successNotificationEnd": " успешно скопирована"
+		},
 		"error": {
 			"title": "Ошибка при экспорте",
 			"description": "При экспорте выбранной области произошла ошибка"

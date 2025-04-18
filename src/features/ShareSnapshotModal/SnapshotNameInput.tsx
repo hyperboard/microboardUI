@@ -7,15 +7,18 @@ import { MessageResponse } from "shared/api/types";
 import { UiButton } from "shared/ui-lib/UiButton";
 import clsx from "clsx";
 import { nanoid } from "nanoid";
+import { Icon } from "shared/ui-lib/Icon";
+import { useTranslation } from "react-i18next";
 
 const SnapshotNameInput: React.FC<{
 	buttonDisabled?: boolean;
 }> = ({ buttonDisabled }) => {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [snapshotName, setSnapshotName] = useState("");
-	const [errMsg, setErrMsg] = useState<null | string>(null);
+	const [errMsg, setErrMsg] = useState<null | string | "InvalidURL">(null);
 	const [snapshotURI, setSnapshotURI] = useState<null | string>(null);
 	const { board } = useAppContext();
+	const { t } = useTranslation();
 
 	const stopPropagation = (ev: SyntheticEvent): void => {
 		ev.stopPropagation();
@@ -30,29 +33,27 @@ const SnapshotNameInput: React.FC<{
 	): void => {
 		ev.stopPropagation();
 		ev.preventDefault();
-		// setSnapshotName(ev.target.value.replace(/[^A-Za-z0-9._~-]/g, ""));
 		setSnapshotName(ev.target.value);
+		const forbiddenSymbols = ev.target.value
+			.trim()
+			.match(/[^A-Za-z0-9._~-]/g);
+		if (forbiddenSymbols) {
+			setErrMsg("InvalidURL");
+		} else {
+			setErrMsg(null);
+			setSnapshotURI(null);
+		}
 	};
 
 	const handleSnapshotSubmit = async (): Promise<void> => {
 		setSnapshotURI(null);
 		setErrMsg(null);
 
-		const trimmedName = snapshotName.trim();
+		const trimmedName = snapshotName
+			.trim()
+			.replace(/[^A-Za-z0-9._~-]/g, "");
 		if (!trimmedName) {
-			notify({ body: "Name for snapshot is required", variant: "error" });
-			setErrMsg("Name can not be empty");
-			return;
-		}
-		const forbiddenSymbols = trimmedName.match(/[^A-Za-z0-9._~-]/g);
-		if (forbiddenSymbols) {
-			notify({
-				body: "Name for snapshot contains forbidden symbols",
-				variant: "error",
-			});
-			setErrMsg(
-				`Some characters are not allowed: ${[...new Set(forbiddenSymbols.map(ch => (ch === " " ? "empty space" : ch)))].join(", ")}`,
-			);
+			setErrMsg(t("export.HTMLSnapshot.nameCantBeEmpty"));
 			return;
 		}
 
@@ -67,20 +68,23 @@ const SnapshotNameInput: React.FC<{
 			const userFriendlyURI = decodeURIComponent(data.snapshotURI);
 
 			setSnapshotURI(userFriendlyURI);
+			navigator.clipboard.writeText(userFriendlyURI);
 			notify({
-				body: `Snapshot saved successfully`,
+				body:
+					t("export.HTMLSnapshot.successNotificationStart") +
+					" " +
+					userFriendlyURI +
+					" " +
+					t("export.HTMLSnapshot.successNotificationEnd"),
 				variant: "success",
 			});
-			navigator.clipboard.writeText(userFriendlyURI);
-			notify({ body: "Copied!", variant: "success" });
-			setSnapshotName("");
 		} catch (err) {
 			if (err instanceof HTTPError) {
 				setErrMsg(err.message);
 			}
 			console.error("Error occured during saving snapshot", err);
 			notify({
-				body: "Error occured during saving snapshot",
+				body: t("export.HTMLSnapshot.SnapshotSavingError"),
 				variant: "error",
 			});
 		}
@@ -125,19 +129,35 @@ const SnapshotNameInput: React.FC<{
 			</div>
 			<Description
 				error={errMsg}
-				snapshotURI={snapshotURI}
-				handleCopy={handleCopySnapshotURI}
+				successMsg={
+					snapshotURI &&
+					t("export.HTMLSnapshot.HTMLSnapshotLinkSuccess")
+				}
 			/>
 			<div className={styles.btns}>
-				<UiButton
-					variant="primary"
-					onClick={handleSnapshotSubmit}
-					className={styles.btn}
-					disabled={buttonDisabled}
-					size="lg"
-				>
-					Share snapshot
-				</UiButton>
+				{snapshotURI ? (
+					<UiButton
+						variant="primary"
+						onClick={handleCopySnapshotURI}
+						className={styles.btn}
+						disabled={buttonDisabled}
+						size="lg"
+					>
+						<Icon iconName="CopyLink" width={20} height={20} />
+						Copy link
+					</UiButton>
+				) : (
+					<UiButton
+						variant="primary"
+						onClick={handleSnapshotSubmit}
+						className={styles.btn}
+						disabled={buttonDisabled || errMsg === "InvalidURL"}
+						size="lg"
+					>
+						<Icon iconName="Tick" width={20} height={20} />
+						Save
+					</UiButton>
+				)}
 			</div>
 		</div>
 	);
@@ -145,28 +165,33 @@ const SnapshotNameInput: React.FC<{
 
 const Description: React.FC<{
 	error?: string | null;
-	snapshotURI?: string | null;
-	handleCopy: (ev: React.MouseEvent<HTMLSpanElement>) => void;
-}> = ({ error, snapshotURI, handleCopy }) => {
-	if (!error && !snapshotURI) {
+	successMsg?: string | null;
+}> = ({ error, successMsg }) => {
+	const { t } = useTranslation();
+
+	if (!error && !successMsg) {
 		return null;
 	}
 
 	return (
-		<div className={clsx(styles.description, error && styles.error)}>
+		<div
+			className={clsx(
+				styles.description,
+				error && styles.error,
+				successMsg && styles.success,
+			)}
+		>
 			{error &&
 				error === "id already taken" &&
-				"This name is already taken, please, use another one"}
-			{error && error !== "id already taken" && error}
-			{snapshotURI && (
-				<>
-					Share{" "}
-					<span className={styles.snapshot} onClick={handleCopy}>
-						{snapshotURI}
-					</span>{" "}
-					with your friends
-				</>
-			)}
+				t("export.HTMLSnapshot.alreadyTaken")}
+			{error &&
+				error === "InvalidURL" &&
+				t("export.HTMLSnapshot.invalidURL")}
+			{error &&
+				error !== "id already taken" &&
+				error !== "InvalidURL" &&
+				error}
+			{successMsg}
 		</div>
 	);
 };
