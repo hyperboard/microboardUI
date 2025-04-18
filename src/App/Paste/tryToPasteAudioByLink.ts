@@ -15,7 +15,7 @@ function isAudioUrl(url: string): boolean {
 export function tryToPasteAudioByLink(link: string, board: Board): boolean {
 	try {
 		if (isAudioUrl(link)) {
-			const audio = new AudioItem(link, board, false, board.events, "");
+			const audio = new AudioItem(board, false, link, board.events, "");
 			const { scaleX, scaleY, translateX, translateY } =
 				calculateAudioPosition(board, audio);
 			audio.transformation.applyTranslateTo(translateX, translateY);

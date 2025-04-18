@@ -57,6 +57,7 @@ export const AudioPlayer = ({ audioItem }: Props) => {
 	const [isVolumeBarDown, setIsVolumeBarDown] = useState(false);
 	const [isProgressBarDown, setIsProgressBarDown] = useState(false);
 	const [openedMenu, setOpenedMenu] = useState<OpenedMenu>("none");
+	const [isMetadataLoaded, setIsMetadataLoaded] = useState(false);
 	const audioRef = useRef<HTMLAudioElement>(null);
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const progressBarRef = useRef<HTMLDivElement>(null);
@@ -66,6 +67,7 @@ export const AudioPlayer = ({ audioItem }: Props) => {
 	const volumeBtnRef = useRef<HTMLDivElement>(null);
 	const { t } = useTranslation();
 	const isPlaying = audioItem.getIsPlaying();
+	const isDisabled = !isMetadataLoaded || !audioItem.getUrl();
 
 	const optionsRef = useClickOutside(
 		() => setOpenedMenu("none"),
@@ -81,6 +83,7 @@ export const AudioPlayer = ({ audioItem }: Props) => {
 
 		const handleLoadedMetadata = () => {
 			audio.currentTime = audioItem.getCurrentTime();
+			setIsMetadataLoaded(true);
 		};
 
 		audio.addEventListener("loadedmetadata", handleLoadedMetadata);
@@ -109,6 +112,7 @@ export const AudioPlayer = ({ audioItem }: Props) => {
 			pos * duration > duration ? duration : pos * duration;
 		audio.currentTime = currentTime;
 		setCurrentTime(currentTime);
+		clearBoardSelection();
 	};
 
 	const onVolumeBarMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -257,13 +261,19 @@ export const AudioPlayer = ({ audioItem }: Props) => {
 
 			<div className={styles.controls}>
 				<button
-					className={styles.playPauseButton}
+					className={clsx(
+						styles.playPauseButton,
+						isDisabled && styles.disabledBackground,
+					)}
 					onClick={() => {
-						togglePlay();
-						clearBoardSelection();
+						if (!isDisabled) {
+							togglePlay();
+							clearBoardSelection();
+						}
 					}}
 				>
 					<Icon
+						className={clsx(isDisabled && styles.disabledColor)}
 						iconName={isPlaying ? "Pause" : "Play"}
 						width={16}
 						height={16}
@@ -271,7 +281,12 @@ export const AudioPlayer = ({ audioItem }: Props) => {
 				</button>
 
 				<div className={styles.timeControls}>
-					<span className={styles.duration}>
+					<span
+						className={clsx(
+							styles.duration,
+							isDisabled && styles.disabledColor,
+						)}
+					>
 						{secondsToHumanReadable(currentTime)} /{" "}
 						{secondsToHumanReadable(duration)}
 					</span>
@@ -280,21 +295,20 @@ export const AudioPlayer = ({ audioItem }: Props) => {
 						className={styles.barContainer}
 						onMouseMove={event => {
 							onProgressBarMove(event);
-							clearBoardSelection();
 						}}
 						onMouseDown={() => {
-							setIsProgressBarDown(true);
-							clearBoardSelection();
+							if (!isDisabled) {
+								setIsProgressBarDown(true);
+								clearBoardSelection();
+							}
 						}}
 						onMouseUp={event => {
 							setIsProgressBarDown(false);
 							onProgressBarMove(event);
-							clearBoardSelection();
 						}}
 						onMouseLeave={event => {
 							setIsProgressBarDown(false);
 							onProgressBarMove(event);
-							clearBoardSelection();
 						}}
 					>
 						<div className={styles.progressBarContainer}>
@@ -318,11 +332,20 @@ export const AudioPlayer = ({ audioItem }: Props) => {
 						<button
 							className={styles.controlsBtn}
 							onClick={() => {
-								toggleOpenedMenu("volume");
-								clearBoardSelection();
+								if (!isDisabled) {
+									toggleOpenedMenu("volume");
+									clearBoardSelection();
+								}
 							}}
 						>
-							<Icon iconName="Volume" width={16} height={16} />
+							<Icon
+								className={clsx(
+									isDisabled && styles.disabledColor,
+								)}
+								iconName="Volume"
+								width={16}
+								height={16}
+							/>
 						</button>
 						{openedMenu === "volume" && (
 							<Dropdown
@@ -365,13 +388,21 @@ export const AudioPlayer = ({ audioItem }: Props) => {
 					<div ref={extraOptionsBtnRef} className={styles.dropdown}>
 						<button
 							className={styles.controlsBtn}
-							style={{ color: "rgba(105, 107, 118, 1)" }}
 							onClick={() => {
-								toggleOpenedMenu("extraOptions");
-								clearBoardSelection();
+								if (!isDisabled) {
+									toggleOpenedMenu("extraOptions");
+									clearBoardSelection();
+								}
 							}}
 						>
-							<Icon iconName="Dots" width={16} height={16} />
+							<Icon
+								className={clsx(
+									isDisabled && styles.disabledColor,
+								)}
+								iconName="Dots"
+								width={16}
+								height={16}
+							/>
 						</button>
 						{openedMenu === "extraOptions" && (
 							<Dropdown

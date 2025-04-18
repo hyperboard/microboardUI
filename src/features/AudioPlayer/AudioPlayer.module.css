@@ -48,9 +48,13 @@ audio::-webkit-media-controls-enclosure {
 	transition: background-color 0.2s;
 }
 
-/*.playPauseButton:hover {*/
-/*	background-color: #106ebe;*/
-/*}*/
+.disabledColor {
+	color: rgba(10, 15, 41, 0.25);
+}
+
+.disabledBackground {
+	background-color: rgba(233, 234, 236, 1);
+}
 
 .timeControls {
 	flex: 1;
@@ -109,6 +113,7 @@ audio::-webkit-media-controls-enclosure {
 	border: none;
 	outline: none;
 	cursor: pointer;
+	color: rgba(105, 107, 118, 1);
 }
 
 .controlsBtn:hover {
