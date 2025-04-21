@@ -94,6 +94,7 @@ export function TitlePanel(): JSX.Element | null {
 
 	const openShareSnapshot = (): void => {
 		openModal(SHARE_SNAPSHOT_MODAL_ID);
+		setIsDropdownOpen(false);
 	};
 
 	const exportHTML = (): string => {

@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useRef, useState } from "react";
+import React, { SyntheticEvent, useEffect, useRef, useState } from "react";
 import styles from "./SnapshotNameInput.module.css";
 import { notify } from "shared/ui-lib/Toast";
 import { useAppContext } from "features/AppContext";
@@ -9,16 +9,32 @@ import clsx from "clsx";
 import { nanoid } from "nanoid";
 import { Icon } from "shared/ui-lib/Icon";
 import { useTranslation } from "react-i18next";
+import { Board } from "Board";
+import { TFunction } from "i18next";
+
+function getURLSafeBoardName(
+	board: Board,
+	tF: TFunction<"default", undefined>,
+) {
+	const boardName = board.getName();
+	if (boardName === tF("board.untitled")) {
+		return "Untitled";
+	}
+
+	return boardName;
+}
 
 const SnapshotNameInput: React.FC<{
 	buttonDisabled?: boolean;
 }> = ({ buttonDisabled }) => {
 	const inputRef = useRef<HTMLInputElement>(null);
-	const [snapshotName, setSnapshotName] = useState("");
+	const { t } = useTranslation();
+	const { board } = useAppContext();
+	const [snapshotName, setSnapshotName] = useState(
+		("Board" + getURLSafeBoardName(board, t)).replace(" ", ""),
+	);
 	const [errMsg, setErrMsg] = useState<null | string | "InvalidURL">(null);
 	const [snapshotURI, setSnapshotURI] = useState<null | string>(null);
-	const { board } = useAppContext();
-	const { t } = useTranslation();
 
 	const stopPropagation = (ev: SyntheticEvent): void => {
 		ev.stopPropagation();
@@ -27,6 +43,13 @@ const SnapshotNameInput: React.FC<{
 	const handleFocusInput = (): void => {
 		inputRef.current?.focus();
 	};
+
+	useEffect(() => {
+		if (inputRef.current) {
+			inputRef.current.focus();
+			inputRef.current.select();
+		}
+	}, []);
 
 	const handleInputChange = (
 		ev: React.ChangeEvent<HTMLInputElement>,
@@ -151,7 +174,11 @@ const SnapshotNameInput: React.FC<{
 						variant="primary"
 						onClick={handleSnapshotSubmit}
 						className={styles.btn}
-						disabled={buttonDisabled || errMsg === "InvalidURL"}
+						disabled={
+							buttonDisabled ||
+							errMsg === "InvalidURL" ||
+							!snapshotName?.trim()
+						}
 						size="lg"
 					>
 						<Icon iconName="Tick" width={20} height={20} />
