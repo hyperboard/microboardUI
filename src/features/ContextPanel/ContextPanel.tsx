@@ -49,6 +49,7 @@ import { AIModel } from "features/ContextPanel/Buttons/AIModel/AIModel";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";
 import { SaveImg } from "./Buttons/RestOptionsMenu/Items/SaveImg";
 import { SaveVideoOrAudio } from "features/ContextPanel/Buttons/RestOptionsMenu/Items/SaveVideoOrAudio";
+import { AddList } from "features/ContextPanel/Buttons/AddList/AddList";
 
 export function ContextPanel(): React.ReactElement | null {
 	const { app, board } = useAppContext();
@@ -164,6 +165,7 @@ export function ContextPanel(): React.ReactElement | null {
 						<FontSize rounded="left" />
 						<FontStyle />
 						<TextAlignment />
+						<AddList />
 						<HyperLinkBtn />
 						<UiSeparator vertical />
 						<TextColor />
@@ -191,6 +193,7 @@ export function ContextPanel(): React.ReactElement | null {
 						<UiSeparator vertical />
 						<FontStyle />
 						<TextAlignment />
+						<AddList />
 						<HyperLinkBtn />
 						<UiSeparator vertical />
 						<TextColor />
@@ -226,6 +229,7 @@ export function ContextPanel(): React.ReactElement | null {
 								<UiSeparator vertical />
 								<FontStyle />
 								<TextAlignment />
+								<AddList />
 								<HyperLinkBtn />
 								<UiSeparator vertical />
 								<TextColor />
@@ -377,6 +381,7 @@ export function ContextPanel(): React.ReactElement | null {
 						<UiSeparator vertical />
 						<FontStyle />
 						<TextAlignment />
+						<AddList />
 						<HyperLinkBtn />
 						<UiSeparator vertical />
 						<TextColor />

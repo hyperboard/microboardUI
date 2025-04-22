@@ -158,7 +158,9 @@ export type IconId =
 	| "Volume"
 	| "Download"
 	| "PlaybackRate"
-	| "Tick";
+	| "Tick"
+	| "BulletedList"
+	| "NumberedList";
 
 type Props = {
 	iconName: IconId;

@@ -236,6 +236,13 @@ export class TextEditor extends React.Component<
 			event.stopPropagation();
 			return true;
 		}
+		if (event.key === "Enter" && !event.shiftKey) {
+			return this.props.text.editor.handleSplitListItem();
+		}
+
+		if (event.key === "Tab" && !event.shiftKey) {
+			return this.props.text.editor.handleWrapIntoNestedList();
+		}
 		return false;
 	};
 

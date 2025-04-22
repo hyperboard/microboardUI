@@ -158,6 +158,9 @@
 		},
 		"Audio": {
 			"save": "Загрузить аудио"
+		},
+		"addList": {
+			"tooltip": "Список"
 		}
 	},
 	"toolsPanel": {

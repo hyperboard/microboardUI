@@ -151,6 +151,11 @@ export function Element(props: RenderElementProps): React.ReactElement {
 						paddingBottom: `${element.paddingBottom ?? 0}em`,
 						whiteSpace: "pre-wrap",
 						fontSize: "14px",
+						listStyle:
+							element.children[0].type === "ul_list" ||
+							element.children[0].type === "ol_list"
+								? "none"
+								: "inherit",
 					}}
 				>
 					{children}
