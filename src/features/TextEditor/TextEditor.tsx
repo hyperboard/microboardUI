@@ -227,8 +227,11 @@ export class TextEditor extends React.Component<
 		}
 		if (text.editor.isEmpty() && !event.ctrlKey) {
 			if (event.key.length === 1 || event.key === "Space") {
+				text.editor.moveCursorToEndOfTheText();
 				return false;
 			}
+			event.preventDefault();
+			event.stopPropagation();
 			return true;
 		}
 		if (event.key === "Enter" && !event.shiftKey) {
