@@ -241,7 +241,20 @@ export class TextEditor extends React.Component<
 		}
 
 		if (event.key === "Tab" && !event.shiftKey) {
+			event.preventDefault();
+			event.stopPropagation();
 			return this.props.text.editor.handleWrapIntoNestedList();
+		}
+
+		if (event.key === "Tab" && event.shiftKey) {
+			event.preventDefault();
+			event.stopPropagation();
+			const listType =
+				this.props.text.editor.getListTypeAtSelectionStart();
+			if (!listType) {
+				return false;
+			}
+			return this.props.text.editor.toggleListType(listType, false);
 		}
 		return false;
 	};
