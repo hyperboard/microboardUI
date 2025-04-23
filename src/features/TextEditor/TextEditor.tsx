@@ -206,8 +206,6 @@ export class TextEditor extends React.Component<
 	onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>): boolean => {
 		const text = this.props.text;
 		if (event.key === "Enter" && text.insideOf === "Frame") {
-			event.preventDefault();
-			event.stopPropagation();
 			this.props.board.selection.setContext("EditUnderPointer");
 			return true;
 		}
@@ -229,11 +227,8 @@ export class TextEditor extends React.Component<
 		}
 		if (text.editor.isEmpty() && !event.ctrlKey) {
 			if (event.key.length === 1 || event.key === "Space") {
-				text.editor.moveCursorToEndOfTheText(50);
 				return false;
 			}
-			event.preventDefault();
-			event.stopPropagation();
 			return true;
 		}
 		if (event.key === "Enter" && !event.shiftKey) {
