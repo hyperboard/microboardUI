@@ -113,7 +113,8 @@ export function createApp(isHistory = true): App {
 	apiV2.interceptors.addRequestInterceptor(authInterceptor);
 
 	async function openBoard(id: string, accessKey?: string): Promise<void> {
-		app.getBoard()?.cleanup();
+		const appBoard = app.getBoard();
+		appBoard?.cleanup();
 		if (id === "boards") {
 			return;
 		}
@@ -123,7 +124,7 @@ export function createApp(isHistory = true): App {
 			currentBoard = new Board(id, accessKey);
 			if (id !== "blank") {
 				await connection.publishAuth();
-				connectBoard(currentBoard);
+				connectBoard(currentBoard).then(() => appBoard?.cleanup());
 			}
 			boards.set(id, currentBoard);
 		}
@@ -133,7 +134,7 @@ export function createApp(isHistory = true): App {
 				LAST_BOARD_KEY_QS,
 				`${id}${window.location.search}`,
 			);
-			boardsList.visitBoard(id);
+			boardsList.visitBoard(id).then(() => appBoard?.cleanup());
 		} else {
 			localStorage.removeItem(LAST_BOARD_KEY);
 		}
