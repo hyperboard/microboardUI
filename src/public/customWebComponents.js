@@ -85,6 +85,73 @@ customElements.define("comment-item", CommentElement);
 customElements.define("audio-item", AudioItemElement);
 
 document.addEventListener("DOMContentLoaded", () => {
+	const itemsDiv = document.querySelector("#items");
+	if (!itemsDiv) {
+		console.error("ITEMS DIV NOT FOUND!");
+		return;
+	}
+	let isDragging = false;
+	let startX, startY;
+	let translateX = 0;
+	let translateY = 0;
+	let scale = 1;
+
+	itemsDiv.style.transformOrigin = "0 0";
+	document.body.style.cursor = "grab";
+
+	function updateTransform() {
+		itemsDiv.style.transform =
+			"translate(" +
+			translateX +
+			"px, " +
+			translateY +
+			"px) scale(" +
+			scale +
+			")";
+	}
+
+	function handleMouseDown(ev) {
+		isDragging = true;
+		startX = ev.clientX;
+		startY = ev.clientY;
+		itemsDiv.style.cursor = "grabbing";
+	}
+
+	function handleMouseMove(ev) {
+		if (!isDragging) {
+			return;
+		}
+		const dx = ev.clientX - startX;
+		const dy = ev.clientY - startY;
+		startX += dx;
+		startY += dy;
+		translateX += dx;
+		translateY += dy;
+		updateTransform();
+	}
+
+	function handleMouseUp(ev) {
+		if (!isDragging) {
+			return;
+		}
+		isDragging = false;
+		itemsDiv.style.cursor = "grab";
+	}
+
+	function handleWheel(ev) {
+		ev.preventDefault();
+		const factor = ev.deltaY < 0 ? 1.1 : 0.9;
+		translateX = ev.clientX - (ev.clientX - translateX) * factor;
+		translateY = ev.clientY - (ev.clientY - translateY) * factor;
+		scale *= factor;
+		updateTransform();
+	}
+
+	document.addEventListener("mousedown", handleMouseDown);
+	document.addEventListener("mousemove", handleMouseMove);
+	document.addEventListener("mouseup", handleMouseUp);
+	document.addEventListener("wheel", handleWheel, { passive: false });
+
 	const titlePanel = document.createElement("div");
 	titlePanel.style.boxShadow = "0px 10px 16px -3px rgba(20, 21, 26, 0.08)";
 	titlePanel.style.position = "fixed";
@@ -201,15 +268,26 @@ document.addEventListener("DOMContentLoaded", () => {
 		editButton.textContent = "Loading...";
 
 		try {
+			document.removeEventListener("mousedown", handleMouseDown);
+			document.removeEventListener("mousemove", handleMouseMove);
+			document.removeEventListener("mouseup", handleMouseUp);
+			document.removeEventListener("wheel", handleWheel, {
+				passive: false,
+			});
+			translateX = 0;
+			translateY = 0;
+			scale = 1;
+			updateTransform();
+
 			const { initBrowserSettings } = await import(
-				"https://www.unpkg.com/test_package_board@0.0.92/dist/bundle.js"
+				"https://www.unpkg.com/test_package_board@0.0.99/dist/bundle.js"
 			);
 			initBrowserSettings();
 
 			const { createApp } = await import(
-				"https://www.unpkg.com/test_package_board@0.0.92/dist/bundle.js"
+				"https://www.unpkg.com/test_package_board@0.0.99/dist/bundle.js"
 			);
-			initBrowserSettings();
+
 			const app = createApp();
 			window.app = app;
 			const stringed = await app.openAndEditFile();
@@ -221,7 +299,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			}
 
 			const response = await fetch(
-				"https://www.unpkg.com/test_package_board@0.0.92/dist/bundle.css",
+				"https://www.unpkg.com/test_package_board@0.0.99/dist/bundle.css",
 			);
 			const cssText = await response.text();
 			const styleEl = document.createElement("style");
@@ -229,7 +307,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			document.body.appendChild(styleEl);
 
 			const responseSvg = await fetch(
-				"https://www.unpkg.com/test_package_board@0.0.92/dist/sprite.svg",
+				"https://www.unpkg.com/test_package_board@0.0.99/dist/sprite.svg",
 			);
 			const svgText = await responseSvg.text();
 			const div = document.createElement("div");
