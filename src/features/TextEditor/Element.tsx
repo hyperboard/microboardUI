@@ -4,6 +4,20 @@ import styles from "./TextEditor.module.css";
 
 export function Element(props: RenderElementProps): React.ReactElement {
 	const { attributes, element, children } = props;
+	function getListMarkType(depth: number) {
+		const cycle = (depth - 1) % 3;
+
+		switch (cycle) {
+			case 0:
+				return styles.listLevel1;
+			case 1:
+				return styles.listLevel2;
+			case 2:
+				return styles.listLevel3;
+			default:
+				return styles.listLevel1;
+		}
+	}
 	switch (element.type) {
 		case "paragraph":
 			return (
@@ -43,6 +57,7 @@ export function Element(props: RenderElementProps): React.ReactElement {
 						paddingLeft: "16px",
 						whiteSpace: "nowrap",
 					}}
+					className={getListMarkType(element.listLevel || 1)}
 				>
 					{children}
 				</ol>

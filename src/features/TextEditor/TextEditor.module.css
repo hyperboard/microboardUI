@@ -103,3 +103,13 @@
 .listItem span {
 	left: 0 !important;
 }
+
+.listLevel1 {
+	list-style-type: decimal;
+}
+.listLevel2 {
+	list-style-type: lower-alpha;
+}
+.listLevel3 {
+	list-style-type: lower-roman;
+}
