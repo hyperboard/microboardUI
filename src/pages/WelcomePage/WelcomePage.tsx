@@ -1,13 +1,13 @@
+import { App } from "App";
 import { useBoardsList } from "App/useBoardsList";
+import { Board } from "Board";
+import { Item } from "Board/Items";
+import { useAppContext } from "features/AppContext";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import boardDataRu from "./welcomeBoard.json";
 import boardDataEn from "./welcomeBoardEn.json";
-import { useAppContext } from "features/AppContext";
-import { Item } from "Board/Items";
-import { App } from "App";
-import { Board } from "Board";
 
 export const pasteWelcomeBoardData = (board: Board, lang: string) => {
 	const baseUrl = window.location.origin;
@@ -72,5 +72,5 @@ export function WelcomePage(): React.ReactElement {
 		// TODO notify user
 	}, [app]);
 
-	return <div>WelcomeBoard</div>;
+	return null;
 }
