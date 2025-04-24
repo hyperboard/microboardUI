@@ -183,7 +183,7 @@ export const PresenceUsers: React.FC<Props> = () => {
 							user={user}
 							trackedUser={trackedUser}
 							index={index}
-							onClick={() => selectUser(user.id)}
+							onClick={() => {}}
 						/>
 					))}
 
