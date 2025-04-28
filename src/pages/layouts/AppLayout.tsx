@@ -4,7 +4,6 @@ import { Outlet } from "react-router-dom";
 import { AIContextProvider } from "entities/AIInput";
 import { AppContext } from "features/AppContext";
 import { ContextMenuContextProvider } from "features/ContextMenu";
-import { CryptoWrapper } from "features/ContextWrapper";
 import { OpenedFoldersContextProvider } from "entities/Folder";
 import { HyperLinkContextProvider } from "features/hyperLink";
 import ModalsWrapper from "features/Modal/ModalsWrapper";
@@ -12,6 +11,7 @@ import { RenameContextProvider } from "features/Rename";
 import { SidePanelContextProvider } from "features/SidePanel/SidePanelContext";
 import { ToastProvider } from "features/ToastProvider";
 import { LocalSidePanelContextProvider } from "features/SidePanel/LocalSidePanelContext";
+import { CryptoWrapper } from "features/CryptoWrapper";
 
 type Props = {
 	app: App;
@@ -56,7 +56,7 @@ const LOCAL_PROVIDERS: ComponentWithChildren[] = [
 const Provider = compose(PROVIDERS);
 const LocalProvider = compose(LOCAL_PROVIDERS);
 
-export function AppLayout({ app }: Props) {
+export function AppLayout({ app }: Props): JSX.Element {
 	const board = app.getBoard();
 	return (
 		<AppContext.Provider value={{ app, board }}>
@@ -71,7 +71,7 @@ export function AppLayout({ app }: Props) {
 export function LocalAppLayout({
 	app,
 	children,
-}: Props & { children?: React.ReactNode }) {
+}: Props & { children?: React.ReactNode }): JSX.Element {
 	const board = app.getBoard();
 	return (
 		<AppContext.Provider value={{ app, board }}>
