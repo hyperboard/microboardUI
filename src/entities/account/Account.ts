@@ -218,7 +218,7 @@ export class Account {
 			};
 		}
 
-		await this.fetchBillingInfo();
+		// await this.fetchBillingInfo();
 
 		this.subject.publish(this.info);
 	}
