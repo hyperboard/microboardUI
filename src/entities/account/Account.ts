@@ -184,7 +184,6 @@ export class Account {
 			}
 
 			await this.fetchBillingHistory();
-			await this.fetchCryptoRates();
 		} catch {
 			console.error("Error fetching billing user info");
 		} finally {

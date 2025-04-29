@@ -258,9 +258,7 @@ export function AppView(): JSX.Element {
 			<CookiesModal />
 			<UiModalBackground>
 				<ImportMiroStartModal />
-				<CryptoWrapper>
-					<SelectPaymentModal />
-				</CryptoWrapper>
+				<SelectPaymentModal />
 				<UserPlanModal />
 				<LimitsModal />
 				<HistoryModal />

@@ -53,6 +53,10 @@ export function SelectPaymentModal(): JSX.Element {
 	const { address, isConnected, chain } = useWalletAccount();
 
 	useEffect(() => {
+		account.fetchCryptoRates();
+	}, []);
+
+	useEffect(() => {
 		billingApi.getPlans().then(({ data }) => {
 			const plusPlan = data?.find(({ id }) => id === "plus");
 

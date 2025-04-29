@@ -11,6 +11,7 @@ import { SidePanelContextProvider } from "./SidePanel/SidePanelContext";
 import { ToastProvider } from "./ToastProvider";
 import { AIContextProvider } from "../entities/AIInput/AIContext";
 import { HyperLinkContextProvider } from "features/hyperLink/HyperLinkContext";
+import { CryptoWrapper } from "./CryptoWrapper";
 
 type Props = {
 	app: App;
@@ -19,23 +20,25 @@ type Props = {
 
 export function ContextWrapper({ app, board }: Props): JSX.Element {
 	return (
-		<AppContext.Provider value={{ app, board }}>
-			<HyperLinkContextProvider>
-				<AIContextProvider>
-					<ModalsWrapper>
-						<ContextMenuContextProvider>
-							<RenameContextProvider>
-								<OpenedFoldersContextProvider>
-									<SidePanelContextProvider>
-										<Outlet />
-										<ToastProvider />
-									</SidePanelContextProvider>
-								</OpenedFoldersContextProvider>
-							</RenameContextProvider>
-						</ContextMenuContextProvider>
-					</ModalsWrapper>
-				</AIContextProvider>
-			</HyperLinkContextProvider>
-		</AppContext.Provider>
+		<CryptoWrapper>
+			<AppContext.Provider value={{ app, board }}>
+				<HyperLinkContextProvider>
+					<AIContextProvider>
+						<ModalsWrapper>
+							<ContextMenuContextProvider>
+								<RenameContextProvider>
+									<OpenedFoldersContextProvider>
+										<SidePanelContextProvider>
+											<Outlet />
+											<ToastProvider />
+										</SidePanelContextProvider>
+									</OpenedFoldersContextProvider>
+								</RenameContextProvider>
+							</ContextMenuContextProvider>
+						</ModalsWrapper>
+					</AIContextProvider>
+				</HyperLinkContextProvider>
+			</AppContext.Provider>
+		</CryptoWrapper>
 	);
 }
