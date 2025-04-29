@@ -54,8 +54,9 @@ export type GrantedUser = {
 };
 
 export type GrantAccessPayload = {
-	userId: number;
+	userId: number | null;
 	accessType: UserAccessType;
+	email: string | null;
 };
 
 export type ManageAccessPayload = {

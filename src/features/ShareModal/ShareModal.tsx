@@ -190,16 +190,21 @@ export function ShareModal() {
 				...filteredGrantedUsers.map(user => ({
 					userId: user.id,
 					accessType: user.accessType,
+					email: null,
 				})),
 				...userEmails.map(email => ({
-					userId: searchOptions.find(user => user.email === email)
-						?.id!,
+					userId:
+						searchOptions.find(user => user.email === email)?.id ||
+						null,
 					accessType: usersMode,
+					email,
 				})),
 				...userEmails2.map(email => ({
-					userId: searchOptions.find(user => user.email === email)
-						?.id!,
+					userId:
+						searchOptions.find(user => user.email === email)?.id ||
+						null,
 					accessType: usersMode2,
+					email,
 				})),
 			],
 			directAccessType: mode,
