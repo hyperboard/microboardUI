@@ -84,6 +84,12 @@ export function ShareModal() {
 	const { t } = useTranslation();
 	const isSettingsChange = useRef(false);
 
+	const grantedUsersToRender = grantedUsers.filter(user => {
+		return ![...userEmails, ...userEmails2].some(
+			email => email === user.email,
+		);
+	});
+
 	const loadInfo = async () => {
 		if (!boardId) {
 			return;
@@ -122,6 +128,12 @@ export function ShareModal() {
 		"boards",
 		boardId,
 	);
+
+	useEffect(() => {
+		if (account.isLoggedIn && isOwner) {
+			handleSubmit();
+		}
+	}, [mode, userEmails, userEmails2, usersMode, usersMode2, isPublic]);
 
 	useEffect(() => {
 		setIsPublic(boardInfo?.isPublic ?? true);
@@ -184,7 +196,9 @@ export function ShareModal() {
 
 		setIsSubmitting(true);
 
-		const filteredGrantedUsers = grantedUsers.filter(user => !user.isOwner);
+		const filteredGrantedUsers = grantedUsersToRender.filter(user => {
+			return !user.isOwner;
+		});
 		await boardsList.manageAccess(boardId, {
 			users: [
 				...filteredGrantedUsers.map(user => ({
@@ -212,8 +226,8 @@ export function ShareModal() {
 		});
 
 		await loadInfo();
-		closeModal();
 		setIsSubmitting(false);
+		isSettingsChange.current = false;
 	};
 
 	const handleAddUser =
@@ -399,7 +413,7 @@ export function ShareModal() {
 										<GrantedUserSkeleton />
 									) : (
 										<TransitionGroup component={null}>
-											{grantedUsers.map(user => (
+											{grantedUsersToRender.map(user => (
 												<CSSTransition
 													key={user.id}
 													timeout={500}
@@ -419,6 +433,9 @@ export function ShareModal() {
 														}
 														onChange={
 															handleUserAccessChange
+														}
+														saveChanges={
+															handleSubmit
 														}
 														{...user}
 													/>
@@ -508,7 +525,7 @@ export function ShareModal() {
 						</UiButton>
 						<UiButton
 							variant="primary"
-							onClick={handleSubmit}
+							onClick={() => closeModal()}
 							className={styles.btn}
 							disabled={disabled}
 							size="lg"
@@ -548,6 +565,7 @@ type GrantedUserProps = GrantedUser & {
 		accessType: UserAccessType;
 	}) => void;
 	highlighted?: boolean;
+	saveChanges: () => Promise<void>;
 };
 
 function GrantedUser({
@@ -559,10 +577,18 @@ function GrantedUser({
 	isOwner,
 	onChange,
 	highlighted,
+	saveChanges,
 }: GrantedUserProps) {
 	const account = useAccount();
 	const isLoggedInUser = account.info?.id === id;
 	const { t } = useTranslation();
+	const accessChanged = useRef(false);
+
+	useEffect(() => {
+		if (accessChanged) {
+			saveChanges();
+		}
+	}, [accessType]);
 
 	return (
 		<div
@@ -597,12 +623,13 @@ function GrantedUser({
 						iconColor="rgba(105, 107, 118, 1)"
 						options={USER_ACCESS_SELECTOR_OPTIONS}
 						value={accessType}
-						onChange={type =>
+						onChange={type => {
 							onChange({
 								accessType: type as UserAccessType,
 								userId: id,
-							})
-						}
+							});
+							accessChanged.current = true;
+						}}
 					/>
 				)}
 			</div>

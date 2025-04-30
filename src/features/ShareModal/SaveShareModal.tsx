@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 
 export const SAVE_SHARE_MODAL = Symbol("saveShareModal");
 type SaveShareModalType = {
-	onSave: () => void;
+	onSave: () => Promise<void>;
 };
 
 export function SaveShareModal({ onSave }: SaveShareModalType): JSX.Element {
@@ -44,7 +44,7 @@ export function SaveShareModal({ onSave }: SaveShareModalType): JSX.Element {
 				</UiButton>
 				<UiButton
 					variant="primary"
-					onClick={onSave}
+					onClick={() => onSave().finally(() => closeModal())}
 					className={styles.btn}
 				>
 					{t("sharing.saveSharing.saveBtn")}
