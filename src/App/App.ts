@@ -115,6 +115,7 @@ export function createApp(isHistory = true): App {
 	async function openBoard(id: string, accessKey?: string): Promise<void> {
 		const appBoard = app.getBoard();
 		appBoard?.cleanup();
+		console.log("FIRST CLEANUP", appBoard);
 		if (id === "boards") {
 			return;
 		}
@@ -124,7 +125,10 @@ export function createApp(isHistory = true): App {
 			currentBoard = new Board(id, accessKey);
 			if (id !== "blank") {
 				await connection.publishAuth();
-				connectBoard(currentBoard).then(() => appBoard?.cleanup());
+				connectBoard(currentBoard).then(() => {
+					appBoard?.cleanup();
+					console.log("SECOND CLEANUP", appBoard);
+				});
 			}
 			boards.set(id, currentBoard);
 		}
@@ -134,7 +138,10 @@ export function createApp(isHistory = true): App {
 				LAST_BOARD_KEY_QS,
 				`${id}${window.location.search}`,
 			);
-			boardsList.visitBoard(id).then(() => appBoard?.cleanup());
+			boardsList.visitBoard(id).then(() => {
+				appBoard?.cleanup();
+				console.log("THIRD CLEANUP", appBoard);
+			});
 		} else {
 			localStorage.removeItem(LAST_BOARD_KEY);
 		}
@@ -161,6 +168,8 @@ export function createApp(isHistory = true): App {
 		if (newBoard.items.getItemsInView().length === 0 && isItemsOnBoard) {
 			newBoard.camera.zoomToFit(newBoard.items.getMbr());
 		}
+
+		console.log("NEW BOARD", newBoard);
 	}
 
 	function resetOpenedBoards(): void {
@@ -424,6 +433,8 @@ export function createApp(isHistory = true): App {
 			await foldersApi.initFolders();
 			await boardsList.claim();
 			storage.softClean();
+			app.getBoard().cleanup();
+			console.log("LOGIN CLEANUP", app.getBoard());
 			boardsList.subject.publish();
 		});
 		account.setOnLogout(async () => {
