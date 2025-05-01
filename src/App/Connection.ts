@@ -62,6 +62,7 @@ export interface BoardEventMsg {
 	boardId: string;
 	event: SyncEvent;
 	sequenceNumber: number;
+	userId: string;
 }
 
 export interface ConfirmationMsg {
@@ -69,12 +70,6 @@ export interface ConfirmationMsg {
 	boardId: string;
 	sequenceNumber: number;
 	order: number;
-}
-
-export interface BoardEventListMsg {
-	type: "BoardEventList";
-	boardId: string;
-	events: SyncBoardEvent[];
 }
 
 export interface SubscribeMsg {
@@ -311,7 +306,7 @@ export type SocketMsg =
 
 export interface Connection {
 	connectionId: number;
-	userId: number;
+	getCurrentUser: () => string;
 	connect(): Promise<void>;
 	subscribe(board: Board): void;
 	unsubscribe(board: Board): void;
@@ -424,7 +419,6 @@ export function createConnection(
 			case "SubscribeConfirmation":
 			case "Confirmation":
 			case "BoardEvent":
-			case "BoardEventList":
 			case "BoardSnapshot":
 			case "CreateSnapshotRequest":
 			case "BoardSubscriptionCompleted":
@@ -677,25 +671,31 @@ export function createConnection(
 			boardId,
 			event,
 			sequenceNumber,
+			userId: getCurrentUser(),
 		};
 
 		ws.send(message);
 	}
+
+	const getCurrentUser = (): string => {
+		const storage = getStorage();
+		const storageUser = storage.getUser();
+		if (storageUser) {
+			return storageUser;
+		}
+
+		const currentUser = storage.setUser();
+		getCurrentBoard().presence.setCurrentUser(currentUser);
+		return currentUser;
+	};
 
 	function publishPresenceEvent(
 		boardId: string,
 		event: PresenceEventType,
 	): void {
 		const messageId = generateMessageId();
-		const updateCurrentUser = (): string => {
-			const currentUser = storage.setUser();
-			getCurrentBoard().presence.setCurrentUser(currentUser);
-			return currentUser;
-		};
 		const storage = getStorage();
-		const generatedClientId = storage.getUser()
-			? storage.getUser()!
-			: updateCurrentUser();
+		const generatedClientId = getCurrentUser();
 		const account = getAccount();
 		const generatedNickname = account.isLoggedIn
 			? account.info?.name || account.info?.email || "Wild Cat"
@@ -742,7 +742,6 @@ export function createConnection(
 	}
 
 	let connectionId = 0;
-	const userId = 0;
 
 	let notificationId: null | string = null;
 
@@ -801,7 +800,7 @@ export function createConnection(
 			return connectionId;
 		},
 		publishGetMode,
-		userId,
+		getCurrentUser,
 		connect,
 		subscribe,
 		unsubscribe,
