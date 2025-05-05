@@ -25,6 +25,7 @@ type Props = PropsWithChildren<
 		renderAsPageOnMobile?: boolean;
 		wrClassName?: string;
 		disableClose?: boolean;
+		closeOnClickOutside?: boolean;
 		[key: string]: unknown;
 	}
 >;
@@ -39,6 +40,7 @@ export function UiModal({
 	renderAsPageOnMobile = true,
 	wrClassName,
 	disableClose = false,
+	closeOnClickOutside = true,
 	...otherProps
 }: Props): JSX.Element | null {
 	const {
@@ -80,12 +82,14 @@ export function UiModal({
 		if (panelElement && contentElement && isRenderedAsPage(modalId)) {
 			panelElement.style.overflowY = "auto";
 			(panelElement.style as any)["-webkit-overflow-scrolling"] = "touch";
+			panelElement.style.touchAction = "pan-y";
 		}
 
 		return () => {
 			if (panelElement && contentElement) {
 				panelElement.style.overflowY = "";
 				(panelElement.style as any)["-webkit-overflow-scrolling"] = "";
+				panelElement.style.touchAction = "";
 			}
 		};
 	}, [openedModalId, modalId, isRenderedAsPage]);
@@ -158,7 +162,7 @@ export function UiModal({
 					<span>Microboard</span>
 				</header>
 				<div
-					ref={clickOutsideRef}
+					ref={closeOnClickOutside ? clickOutsideRef : undefined}
 					className={clsx(
 						styles.content,
 						renderAsPage && styles.page,

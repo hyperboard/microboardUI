@@ -14,6 +14,8 @@
 	font-family: "Manrope", "Arial";
 	color: rgba(20, 21, 26, 1);
 	gap: 16px;
+	touch-action: auto;
+	-webkit-overflow-scrolling: touch;
 }
 
 .sidebar {
@@ -50,6 +52,15 @@
 .templatesContainer {
 	padding: 16px 0;
 	width: 100%;
+	touch-action: pan-y;
+	-webkit-overflow-scrolling: touch;
+	overflow-scrolling: touch;
+	overscroll-behavior: contain;
+	position: relative;
+	overflow-y: auto;
+	height: auto;
+	display: flex;
+	flex-direction: column;
 }
 
 .searchOptions {
@@ -85,28 +96,6 @@
 	display: none;
 }
 
-.templatesGrid {
-	max-height: calc(90vh - 152px);
-	overflow-y: auto;
-	padding-right: 8px;
-	scrollbar-gutter: stable;
-}
-
-.templatesGrid::-webkit-scrollbar {
-	appearance: none;
-	width: 4px;
-}
-
-.templatesGrid::-webkit-scrollbar-button {
-	display: none;
-}
-
-.templatesGrid::-webkit-scrollbar-thumb {
-	display: block;
-	background-color: rgba(222, 225, 232, 1);
-	border-radius: 4px;
-}
-
 .noTemplatesText {
 	color: #0f132499;
 	margin-top: 12px;
@@ -120,6 +109,14 @@
 @media (max-width: 768px) {
 	.sidebar {
 		display: none;
+	}
+
+	.templatesContainer {
+		height: auto;
+		position: relative;
+		touch-action: auto;
+		-webkit-overflow-scrolling: touch;
+		overflow-y: auto;
 	}
 
 	.burgerMenuContainer {

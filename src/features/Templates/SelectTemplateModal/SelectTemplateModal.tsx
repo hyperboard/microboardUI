@@ -95,6 +95,7 @@ export const SelectTemplateModal = (): JSX.Element => {
 				ev.stopPropagation()
 			}
 			onClose={hideModalAndReset}
+			closeOnClickOutside={false}
 		>
 			<div className={styles.wrapper}>
 				<div className={styles.sidebar}>
@@ -189,7 +190,7 @@ export const SelectTemplateModal = (): JSX.Element => {
 								<TemplateItemsGrid
 									templates={templates}
 									setPresentedTemplate={setPresentedTemplate}
-									className={styles.templatesGrid}
+									data-testid="templates-grid"
 								/>
 							) : (
 								<p className={styles.noTemplatesText}>

@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useState } from "react";
+import React, { SyntheticEvent, useState, useRef } from "react";
 import styles from "./templateItem.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { useAppContext } from "features/AppContext";
@@ -23,6 +23,11 @@ export const TemplateItem = ({
 	const { board } = useAppContext();
 	const { closeModal } = useUiModalContext();
 	const { t } = useTranslation();
+	const cardRef = useRef<HTMLDivElement>(null);
+
+	// Состояние для отслеживания начала касания
+	const [isTouchStart, setIsTouchStart] = useState(false);
+	const [touchStartY, setTouchStartY] = useState(0);
 
 	const handleImageLoad = () => {
 		setIsLoading(false);
@@ -39,8 +44,37 @@ export const TemplateItem = ({
 		pasteSnapshot({ board, snapshot: template.snapshot });
 	};
 
+	// Обрабатываем события касания для пропуска жестов скролла на родительский контейнер
+	const handleTouchStart = (e: React.TouchEvent) => {
+		setIsTouchStart(true);
+		setTouchStartY(e.touches[0].clientY);
+	};
+
+	const handleTouchMove = (e: React.TouchEvent) => {
+		if (!isTouchStart) return;
+
+		// Вычисляем вертикальное смещение
+		const touchY = e.touches[0].clientY;
+		const deltaY = touchStartY - touchY;
+
+		// Если обнаружен вертикальный скролл, предотвращаем обработку события карточкой
+		if (Math.abs(deltaY) > 10) {
+			e.stopPropagation();
+		}
+	};
+
+	const handleTouchEnd = () => {
+		setIsTouchStart(false);
+	};
+
 	return (
-		<div className={styles.card}>
+		<div
+			className={styles.card}
+			ref={cardRef}
+			onTouchStart={handleTouchStart}
+			onTouchMove={handleTouchMove}
+			onTouchEnd={handleTouchEnd}
+		>
 			<div className={styles.imageBox}>
 				<img
 					onClick={() => setPresentedTemplate(template)}
@@ -51,7 +85,7 @@ export const TemplateItem = ({
 					src={
 						isLoading || isImageError
 							? PlaceholderImg
-							: template.preview
+							: (template.preview as string) || ""
 					}
 					alt={template.name}
 					onLoad={handleImageLoad}

@@ -8,6 +8,8 @@
 	font-family: "Manrope", "Arial";
 	color: rgba(20, 21, 26, 1);
 	height: auto;
+	touch-action: auto;
+	-webkit-tap-highlight-color: transparent;
 }
 
 .imageBox {
