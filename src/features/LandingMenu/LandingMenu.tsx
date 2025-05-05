@@ -24,6 +24,7 @@ export function LandingMenu(): React.ReactElement | null {
 		<UiPanel
 			padding={0}
 			className={clsx(style.menuPanel, isOpen && style.open)}
+			zIndex={2}
 		>
 			<div className={style.linksWrapper}>
 				<UiLink

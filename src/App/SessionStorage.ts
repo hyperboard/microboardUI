@@ -150,6 +150,14 @@ export class SessionStorage {
 		return this.get<number>("shapeHeight");
 	}
 
+	setImageDimensions(dimension: { width: number; height: number }): void {
+		this.set("imageDimensions", dimension);
+	}
+
+	getImageDimensions(): { width: number; height: number } | undefined {
+		return this.get<{ width: number; height: number }>("imageDimensions");
+	}
+
 	setFontSize(itemType: string, size: number | "auto"): void {
 		this.set(`fontSize_${itemType}`, size);
 	}
