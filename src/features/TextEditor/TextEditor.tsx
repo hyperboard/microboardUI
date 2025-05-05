@@ -376,6 +376,9 @@ export class TextEditor extends React.Component<
 		const editorMaxWidth =
 			// @ts-expect-error maxWidth undefined
 			text.insideOf === "Sticker" ? maxWidth : Math.ceil(maxWidth);
+		const showPlaceholder =
+			!text.editor.includesListNode() &&
+			text.getTextString().length === 0;
 
 		if (this.state.hasError) {
 			return (
@@ -511,8 +514,7 @@ export class TextEditor extends React.Component<
 						}}
 						className={clsx(
 							styles.editorContainer,
-							text.getTextString().length === 0 &&
-								styles.showPlaceholder,
+							showPlaceholder && styles.showPlaceholder,
 						)}
 						data-placeholder={text.placeholderText}
 					>

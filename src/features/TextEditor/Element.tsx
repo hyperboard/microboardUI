@@ -1,9 +1,22 @@
 import React from "react";
 import { RenderElementProps } from "slate-react";
 import styles from "./TextEditor.module.css";
+import { BlockNode } from "Board/Items/RichText/Editor/BlockNode";
+import { TextNode } from "Board/Items/RichText/Editor/TextNode";
 
 export function Element(props: RenderElementProps): React.ReactElement {
 	const { attributes, element, children } = props;
+	function getFontSize(node: BlockNode | TextNode): number {
+		if ("fontSize" in node) {
+			return node.fontSize === "auto" ? 14 : (node.fontSize ?? 14);
+		}
+		if ("children" in node && node.children[0]) {
+			return getFontSize(node.children[0]);
+		}
+
+		return 14;
+	}
+	const fontSize = getFontSize(element);
 	function getListMarkType(depth: number) {
 		const cycle = (depth - 1) % 3;
 
@@ -40,7 +53,7 @@ export function Element(props: RenderElementProps): React.ReactElement {
 					style={{
 						textAlign: props.element.horisontalAlignment,
 						margin: 0,
-						paddingLeft: "16px",
+						paddingLeft: `${(fontSize / 14) * 16}px`,
 						whiteSpace: "nowrap",
 					}}
 				>
@@ -54,7 +67,7 @@ export function Element(props: RenderElementProps): React.ReactElement {
 					style={{
 						textAlign: props.element.horisontalAlignment,
 						margin: 0,
-						paddingLeft: "16px",
+						paddingLeft: `${(fontSize / 14) * 16}px`,
 						whiteSpace: "nowrap",
 					}}
 					className={getListMarkType(element.listLevel || 1)}
@@ -165,7 +178,7 @@ export function Element(props: RenderElementProps): React.ReactElement {
 						paddingTop: `${element.paddingTop ?? 0}em`,
 						paddingBottom: `${element.paddingBottom ?? 0}em`,
 						whiteSpace: "pre-wrap",
-						fontSize: "14px",
+						fontSize: `${fontSize}px`,
 						listStyle:
 							element.children[0].type === "ul_list" ||
 							element.children[0].type === "ol_list"
@@ -175,12 +188,6 @@ export function Element(props: RenderElementProps): React.ReactElement {
 				>
 					{children}
 				</li>
-			);
-		case "hyper-link":
-			return (
-				<a href={element.url} {...attributes}>
-					{children}
-				</a>
 			);
 		default:
 			return (

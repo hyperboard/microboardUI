@@ -51,7 +51,9 @@ export const TemplateItem = ({
 	};
 
 	const handleTouchMove = (e: React.TouchEvent) => {
-		if (!isTouchStart) return;
+		if (!isTouchStart) {
+			return;
+		}
 
 		// Вычисляем вертикальное смещение
 		const touchY = e.touches[0].clientY;
