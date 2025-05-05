@@ -18,6 +18,7 @@ import { isSafari } from "./isSafari";
 import { uploadAudio } from "Board/Items/Audio/uploadAudio";
 import { Account } from "entities/account";
 import { conf } from "Board/Settings";
+import { tempStorage } from "App/SessionStorage";
 
 export interface Controller {
 	onWheel: (event: WheelEvent) => void;
@@ -689,6 +690,19 @@ export function getController(
 						board.pointer.point.x,
 						board.pointer.point.y,
 					);
+					const prevDimensions = tempStorage.getImageDimensions();
+					if (prevDimensions) {
+						const imageMbr = image.getMbr();
+						const scaleX =
+							prevDimensions.width / imageMbr.getWidth();
+						const scaleY =
+							prevDimensions.height / imageMbr.getHeight();
+						const finalScale = Math.min(scaleX, scaleY);
+						image.transformation.applyScaleBy(
+							finalScale,
+							finalScale,
+						);
+					}
 					board.add(image);
 				})
 				.catch(er => {
