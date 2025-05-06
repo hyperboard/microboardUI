@@ -1,7 +1,7 @@
-import React from "react";
-import sprite from "./sprite.svg";
-import styles from "./Icon.module.css";
 import clsx from "clsx";
+import React from "react";
+import styles from "./Icon.module.css";
+import sprite from "./sprite.svg";
 
 export type IconId =
 	| "Select"
@@ -160,7 +160,8 @@ export type IconId =
 	| "PlaybackRate"
 	| "Tick"
 	| "BulletedList"
-	| "NumberedList";
+	| "NumberedList"
+	| "support";
 
 type Props = {
 	iconName: IconId;

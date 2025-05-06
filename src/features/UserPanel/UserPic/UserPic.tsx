@@ -1,23 +1,23 @@
 import { useAccount } from "App/useAccount";
 import { PresenceUser } from "Board/Presence/Presence";
-import React, { MouseEventHandler, RefObject, useRef } from "react";
-import { useTranslation } from "react-i18next";
-import { UiButton } from "shared/ui-lib/UiButton";
+import { useCommentsPanelContext } from "entities/comments/CommentsPanel/CommentsPanelContext";
 import { useAppContext } from "features/AppContext";
-import { Icon } from "shared/ui-lib/Icon";
 import {
 	FollowingUsersCount,
 	User,
 } from "features/Presence/PresenceUsers/PresenceUsers";
 import { PROFILE_SETTINGS_MODAL_ID } from "features/ProfileSettingsModal";
 import { USER_PLAN_MODAL_ID } from "features/UserPlan";
+import React, { MouseEventHandler, RefObject, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { Icon } from "shared/ui-lib/Icon";
+import { UiButton } from "shared/ui-lib/UiButton";
+import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { Logout } from "../icons/Logout";
 import { UserAvatar } from "../UserAvatar/UserAvatar";
 import { UserDropDown } from "../UserDropdown/UserDropdown";
 import styles from "../UserPanel.module.css";
-import { useUiModalContext } from "shared/ui-lib/UiModal";
-import { useNavigate } from "react-router-dom";
-import { useCommentsPanelContext } from "entities/comments/CommentsPanel/CommentsPanelContext";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
 	email?: string;
@@ -76,6 +76,12 @@ export const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 		navigate("/");
 	};
 
+	const handleOpenSupport: MouseEventHandler = ev => {
+		ev.preventDefault();
+		ev.stopPropagation();
+		window.open("https://x.com/Microboard_io", "_blank");
+	};
+
 	return (
 		<>
 			<div
@@ -132,6 +138,18 @@ export const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
 						<Icon width={20} height={20} iconName="human" />{" "}
 						<span className={styles.userDropDownButton}>
 							{t("profile.title")}
+						</span>
+					</UiButton>,
+					<UiButton
+						type="button"
+						key="userDropDown2"
+						onClick={handleOpenSupport}
+						variant="ghost"
+						size="lg"
+					>
+						<Icon width={20} height={20} iconName="support" />{" "}
+						<span className={styles.userDropDownButton}>
+							{t("profile.support")}
 						</span>
 					</UiButton>,
 					<UiButton

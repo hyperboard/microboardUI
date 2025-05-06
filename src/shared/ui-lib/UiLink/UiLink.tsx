@@ -10,7 +10,7 @@ type UiLinkProps = PropsWithChildren<
 	AnchorHTMLAttributes<HTMLAnchorElement> & {
 		active?: boolean;
 		disabled?: boolean;
-		variant?: "default" | "secondary" | "tertiary";
+		variant?: "default" | "secondary" | "tertiary" | "ghost";
 		size?: "lg" | "md" | "sm";
 		rounded?:
 			| "top"

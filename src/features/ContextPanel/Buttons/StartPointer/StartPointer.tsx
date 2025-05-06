@@ -1,17 +1,17 @@
+import { ConnectorPointerStyle } from "Board/Items/Connector/Pointers/Pointers";
+import clsx from "clsx";
+import { useAppContext } from "features/AppContext";
 import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
-import { ConnectorPointerIcon } from "shared/ui-lib/Icon";
 import { ConnectorPointerPicker } from "features/Pickers/ConnectorPointerPicker/ConnectorPointerPicker";
-import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import style from "./StartPointer.module.css";
-import { useAppContext } from "features/AppContext";
-import clsx from "clsx";
-import { ConnectorPointerStyle } from "Board/Items/Connector/Pointers/Pointers";
+import { ConnectorPointerIcon } from "shared/ui-lib/Icon";
 import { ConnectorPointerType } from "shared/ui-lib/Icon/ConnectorPointerIcon";
-import btnStyle from "../ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
+import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
+import btnStyle from "../ContextPanelButton.module.css";
+import style from "./StartPointer.module.css";
 
 const MENU_NAME = "StartPointer";
 
@@ -55,13 +55,16 @@ export function StartPointer(): React.ReactElement | null {
 							style.menuOpened,
 					)}
 				>
-					{pointerStartStyle === "None" ? (
+					{/* {pointerStartStyle === "None" ? (
 						t("contextPanel.connectorPointerNone")
 					) : (
 						<ConnectorPointerIcon
 							iconName={pointerStartStyle as ConnectorPointerType}
 						/>
-					)}
+					)} */}
+					<ConnectorPointerIcon
+						iconName={pointerStartStyle as ConnectorPointerType}
+					/>
 				</UiButton>
 			)}
 		>

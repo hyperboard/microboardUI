@@ -1,10 +1,10 @@
-import { ConnectorPointerIcon } from "shared/ui-lib/Icon";
 import { CONNECTOR_POINTER_TYPES } from "Board/Items/Connector/Connector";
-import React from "react";
-import style from "./ConnectorPointerPicker.module.css";
 import { ConnectorPointerStyle } from "Board/Items/Connector/Pointers/Pointers";
-import { UiButton } from "shared/ui-lib/UiButton";
+import React from "react";
 import { useTranslation } from "react-i18next";
+import { ConnectorPointerIcon } from "shared/ui-lib/Icon";
+import { UiButton } from "shared/ui-lib/UiButton";
+import style from "./ConnectorPointerPicker.module.css";
 
 type Props = {
 	onPick: (pointer: ConnectorPointerStyle) => void;
@@ -29,11 +29,7 @@ export function ConnectorPointerPicker({
 					variant="secondary"
 					className={style.button}
 				>
-					{type === "None" ? (
-						t("contextPanel.connectorPointerNone")
-					) : (
-						<ConnectorPointerIcon iconName={type} />
-					)}
+					<ConnectorPointerIcon iconName={type} />
 				</UiButton>
 			))}
 		</>

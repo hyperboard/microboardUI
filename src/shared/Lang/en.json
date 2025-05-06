@@ -821,8 +821,9 @@
 			"error": "Error copying link"
 		},
 		"owner": "Owner",
-		"notAuthMsg": "To restrict the circle of people who can view and edit the board,",
-		"login": "sign in",
+		"ownerAvailable": "Available to the board owner only",
+		"notAuthMsg": "to change access settings",
+		"login": "Log in",
 		"or": "or",
 		"register": "sign up",
 		"publicAccess": "Public access",
@@ -892,6 +893,7 @@
 		"changePassword": "Change Password",
 		"passwordChanged": "Password changed successfully",
 		"addEmail": "Add Email",
+		"support": "Support",
 		"logout": "Logout",
 		"name": "Name",
 		"email": "Email Address",
@@ -985,7 +987,7 @@
 					"GPT-4o mini",
 					"DeepSeek-R1",
 					"Unlimited boards and figures",
-					"Images, audio, video — up to 100 MB"
+					"Media storage — up to 100 MB"
 				],
 				"tokensFeature": "10 tokens"
 			},
@@ -998,7 +1000,7 @@
 					"Flux.1 Pro",
 					"Flux.1 Schnell",
 					"Text to speech HD",
-					"Images, audio, video — up to 100 GB"
+					"Media storage — up to 100 GB"
 				],
 				"tokensFeature": "1000 tokens"
 			},

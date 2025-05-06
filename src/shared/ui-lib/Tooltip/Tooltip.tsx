@@ -1,6 +1,6 @@
+import clsx from "clsx";
 import React, { CSSProperties, forwardRef } from "react";
 import style from "./Tooltip.module.css";
-import clsx from "clsx";
 
 interface TooltipProps {
 	tooltip: string;
@@ -16,7 +16,7 @@ interface TooltipProps {
 		| "bottom-right"
 		| "bottom-left"
 		| "bottom-left-noWhitespace";
-	variant?: "primary" | "secondary";
+	variant?: "primary" | "secondary" | "withoutArrow";
 	tooltipAlign?: "center" | "left";
 	inlineStyle?: CSSProperties;
 	borderRadius?: "radiusMd";
@@ -76,6 +76,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
 						{
 							[style.primaryTip]: variant === "primary",
 							[style.secondaryTip]: variant === "secondary",
+							[style.withoutArrowTip]: variant === "withoutArrow",
 						},
 						borderRadius && style[borderRadius],
 						padding && style[padding],

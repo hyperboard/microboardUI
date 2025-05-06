@@ -1,19 +1,19 @@
+import clsx from "clsx";
 import React, {
+	useCallback,
 	useLayoutEffect,
+	useRef,
 	type HTMLProps,
 	type MouseEventHandler,
 	type PropsWithChildren,
 	type ReactNode,
-	useRef,
-	useCallback,
 } from "react";
+import { useClickOutside } from "shared/lib/useClickOutside";
 import { Icon, Logo } from "shared/ui-lib/Icon";
 import { UiButton } from "../UiButton";
 import { UiPanel } from "../UiPanel";
 import styles from "./UiModal.module.css";
 import { useUiModalContext, type ModalId } from "./UiModalContext";
-import clsx from "clsx";
-import { useClickOutside } from "shared/lib/useClickOutside";
 
 type Props = PropsWithChildren<
 	HTMLProps<HTMLDivElement> & {

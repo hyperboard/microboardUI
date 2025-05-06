@@ -9,6 +9,8 @@
 .notAuth {
 	font-size: 14px;
 	line-height: 20px;
+	font-weight: 500;
+	padding-top: 8px;
 }
 
 .modalContainer {

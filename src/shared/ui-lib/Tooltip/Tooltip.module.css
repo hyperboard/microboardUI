@@ -183,3 +183,13 @@
 .tip-container.bottom {
 	top: calc(100% + 1.2rem);
 }
+
+.withoutArrowTip {
+	border-radius: 6px;
+	background-color: rgb(11, 12, 14);
+	color: rgb(247, 247, 247);
+}
+
+.withoutArrowTip::before {
+	display: none;
+}

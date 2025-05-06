@@ -508,4 +508,9 @@
 .userDropDownButton {
 	color: #14151a;
 	font-weight: 400;
+	font-size: 14px;
+}
+
+a.link {
+	justify-content: flex-start;
 }

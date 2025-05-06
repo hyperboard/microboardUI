@@ -16,18 +16,18 @@ import {
 } from "shared/apiV2/boards";
 import { debounce } from "shared/lib/debounce";
 import { getEmailPrefix } from "shared/lib/getEmailPrefix";
-import { UiButton } from "shared/ui-lib/UiButton";
 import { Icon } from "shared/ui-lib/Icon";
 import { Link } from "shared/ui-lib/Link";
 import { notify } from "shared/ui-lib/Toast";
+import { UiButton } from "shared/ui-lib/UiButton";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
 import { UiSelector, type Option } from "shared/ui-lib/UiSelector";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";
 import { UiSkeleton } from "shared/ui-lib/UiSkeleton";
+import { SAVE_SHARE_MODAL, SaveShareModal } from "./SaveShareModal";
 import { SearchInput } from "./SearchInput";
 import styles from "./ShareModal.module.css";
-import { SAVE_SHARE_MODAL, SaveShareModal } from "./SaveShareModal";
 
 export const SHARE_MODAL_ID = Symbol("shareModal");
 
@@ -448,15 +448,14 @@ export function ShareModal() {
 							</div>
 						</>
 					)}
-					{!account.isLoggedIn && isOwner && (
+					{!account.isLoggedIn && (
 						<p className={styles.notAuth}>
-							{t("sharing.notAuthMsg")}{" "}
 							<Link to="/auth/sign-in">{t("sharing.login")}</Link>{" "}
 							{t("sharing.or")}{" "}
 							<Link to="/auth/sign-up">
 								{t("sharing.register")}
 							</Link>
-							.
+							{t("sharing.notAuthMsg")} .
 						</p>
 					)}
 					<div className={styles.settings}>
@@ -474,6 +473,7 @@ export function ShareModal() {
 							<UiSelector
 								isLoading={boardsList.isLoading}
 								disabled={disabled}
+								disabledTooltip={t("sharing.ownerAvailable")}
 								iconColor="rgba(105, 107, 118, 1)"
 								options={PRIVACY_SELECTOR_OPTIONS}
 								onChange={opt => {
@@ -490,6 +490,9 @@ export function ShareModal() {
 								<UiSelector
 									isLoading={boardsList.isLoading}
 									disabled={disabled}
+									disabledTooltip={t(
+										"sharing.ownerAvailable",
+									)}
 									iconColor="rgba(105, 107, 118, 1)"
 									options={MODE_SELECTOR_OPTIONS}
 									onChange={opt => {
