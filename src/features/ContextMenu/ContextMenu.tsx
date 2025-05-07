@@ -80,8 +80,7 @@ export function ContextMenu(): JSX.Element | null {
 		setNewName(boardInfo?.title ?? "");
 		setId(boardId);
 
-		app.openBoard(boardId);
-		navigate(`/boards/${boardId}`);
+		app.openBoard(boardId).then(() => navigate(`/boards/${boardId}`));
 	};
 
 	const deserializeBoard = (stringedHTML: string, emit = false): void => {
