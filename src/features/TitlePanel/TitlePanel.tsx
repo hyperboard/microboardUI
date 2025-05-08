@@ -156,9 +156,6 @@ export function TitlePanel(): JSX.Element | null {
 		}
 	}
 
-	// @ts-expect-error import.meta object didn't exists in common-js modules
-	const isMicroboard = import.meta.env.INTEGRATION_UI === "microboard";
-
 	const strippedName =
 		(boardName?.length ?? 0) > MAX_BOARD_TITLE_LENGTH
 			? `${boardName?.slice(0, MAX_BOARD_TITLE_LENGTH)}...`
@@ -182,16 +179,10 @@ export function TitlePanel(): JSX.Element | null {
 					board.getInterfaceType() === "view" && style.viewMode,
 				)}
 			>
-				{isMicroboard ? (
-					<div className={style.logo}>
-						<Logo id="logo" />
-						<span translate="no">{t("appTitle")}</span>
-					</div>
-				) : (
-					<span className={style.logo} translate="no">
-						{t("appTitle")}
-					</span>
-				)}
+				<div className={style.logo}>
+					<Logo id="logo" />
+					<span translate="no">{t("appTitle")}</span>
+				</div>
 			</UiButton>
 			<ViewModeGuard
 				mode={["edit", "view"]}
@@ -280,10 +271,6 @@ function SidePanelButton({
 }): React.ReactElement {
 	const { t } = useTranslation();
 
-	// @ts-expect-error import.meta object didn't exists in common-js modules
-	if (import.meta.env.INTEGRATION_UI !== "microboard") {
-		return <></>;
-	}
 	return (
 		<UiButton
 			id={isOpen ? "CloseSidePanel" : "OpenSidePanel"}
