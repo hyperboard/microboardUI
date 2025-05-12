@@ -29,6 +29,7 @@ type Props = {
 	onInput: (value: string) => void;
 	options: SearchOption[];
 	onValuesChange: (values: string[], currValue: string) => void;
+	addedEmails?: string[];
 	isLoading?: boolean;
 	placeholder?: string;
 	excludeValues?: string[];
@@ -41,9 +42,10 @@ export function SearchInput({
 	isLoading,
 	placeholder,
 	excludeValues = [],
+	addedEmails = [],
 }: Props) {
 	const { t } = useTranslation();
-	const [addedValues, setAddedValues] = useState<string[]>([]);
+	const [addedValues, setAddedValues] = useState<string[]>(addedEmails);
 	const [currValue, setCurrValue] = useState("");
 	const [isFocused, setIsFocused] = useState(false);
 	const inputRef = useRef<HTMLDivElement>(null);
@@ -75,6 +77,10 @@ export function SearchInput({
 			width: inputRect.width,
 		});
 	};
+
+	useEffect(() => {
+		htmlInputRef.current?.focus();
+	}, []);
 
 	const handleFocus: FocusEventHandler = () => {
 		if (isFocused) {

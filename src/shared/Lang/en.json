@@ -858,6 +858,11 @@
 			"saveBtn": "Save",
 			"notSaveBtn": "Don't Save",
 			"backBtn": "Back to access settings"
+		},
+		"sharePanel": {
+			"cancel": "Cancel",
+			"openAccess": "Open access",
+			"access": "Access"
 		}
 	},
 	"presence": {

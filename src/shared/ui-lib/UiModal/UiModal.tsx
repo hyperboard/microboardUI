@@ -26,6 +26,7 @@ type Props = PropsWithChildren<
 		wrClassName?: string;
 		disableClose?: boolean;
 		closeOnClickOutside?: boolean;
+		clickOutsideRefs?: React.RefObject<HTMLElement>[];
 		[key: string]: unknown;
 	}
 >;
@@ -41,6 +42,7 @@ export function UiModal({
 	wrClassName,
 	disableClose = false,
 	closeOnClickOutside = true,
+	clickOutsideRefs,
 	...otherProps
 }: Props): JSX.Element | null {
 	const {
@@ -65,7 +67,10 @@ export function UiModal({
 		}
 	}, [closeByBgClick, handleClose]);
 
-	const clickOutsideRef = useClickOutside(handleOutsideClose);
+	const clickOutsideRef = useClickOutside(
+		handleOutsideClose,
+		clickOutsideRefs,
+	);
 
 	useLayoutEffect(() => {
 		if (renderAsPageOnMobile) {

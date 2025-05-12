@@ -67,6 +67,10 @@
 	min-width: 190px;
 }
 
+.inputContainer {
+	margin-top: 12px;
+}
+
 .secondInputBtn {
 	display: flex;
 	align-items: center;
@@ -197,6 +201,10 @@
 	color: rgba(13, 17, 38, 0.4);
 }
 
+.input {
+	margin-top: 12px;
+}
+
 .grantedUsers {
 	padding-top: 16px;
 }
@@ -266,6 +274,14 @@
 	top: 0;
 	left: -30%;
 	animation: loading 1.5s linear infinite;
+}
+
+@media screen and (max-width: 500px) {
+	.selectors {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
 }
 
 @keyframes loading {

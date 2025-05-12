@@ -858,6 +858,11 @@
 			"saveBtn": "Сохранить",
 			"notSaveBtn": "Не сохранять",
 			"backBtn": "Назад к настройкам доступа"
+		},
+		"sharePanel": {
+			"cancel": "Отмена",
+			"openAccess": "Открыть доступ",
+			"access": "Доступ"
 		}
 	},
 	"presence": {
