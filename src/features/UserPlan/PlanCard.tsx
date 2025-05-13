@@ -13,7 +13,7 @@ export type PlanState = "current" | "downgrade" | "available" | "pending";
 const centToUsd = (price: number) => price / 100;
 
 type Props = {
-	variant?: "basic" | "pro" | "plus";
+	variant?: "basic" | "pro" | "plus" | "plusAI";
 	state?: PlanState;
 	contact?: boolean;
 	unlimited?: boolean;

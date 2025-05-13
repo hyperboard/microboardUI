@@ -33,7 +33,7 @@ export function LimitsTable() {
 	const models = account.billingInfo?.models;
 	const { t } = useTranslation();
 	const currentPlanName = account.billingInfo?.plan.name || "basic";
-	const isPlus = currentPlanName.toLowerCase() === "plus";
+	const isPlusAI = currentPlanName.toLowerCase() === "plusai";
 
 	const sortedModels = models
 		?.filter(({ id }) => MODELS_ORDER.includes(id))
@@ -50,12 +50,14 @@ export function LimitsTable() {
 					<th className={styles.modelsHeading}>
 						{t("userPlan.limitsTable.modelName")}
 					</th>
-					<th className={clsx(!isPlus && styles.currentTariff)}>
-						{t("userPlan.plans.basic.name")}
+					<th className={clsx(!isPlusAI && styles.currentTariff)}>
+						{t("userPlan.plans.basic.name") +
+							"/" +
+							t("userPlan.plans.plus.name")}
 						<div>{t("userPlan.limitsTable.costPerRequest")}</div>
 					</th>
-					<th className={clsx(isPlus && styles.currentTariff)}>
-						{t("userPlan.plans.plus.name")}
+					<th className={clsx(isPlusAI && styles.currentTariff)}>
+						{t("userPlan.plans.plusAI.name")}
 						<div>{t("userPlan.limitsTable.costPerRequest")}</div>
 					</th>
 				</tr>
@@ -68,7 +70,7 @@ export function LimitsTable() {
 						description={t(`models.descriptions.${model.id}`, "")}
 						tokenCost={model.tokenCost}
 						id={model.id}
-						isPlus={isPlus}
+						isPlus={isPlusAI}
 					/>
 				))}
 			</tbody>

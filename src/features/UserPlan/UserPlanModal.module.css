@@ -2,7 +2,7 @@
 	padding: 32px 64px;
 	display: flex;
 	flex-direction: column;
-	gap: 24px;
+	gap: 16px;
 	align-items: center;
 }
 
@@ -19,10 +19,33 @@
 }
 
 .cards {
-	display: grid;
-	grid-template-columns: repeat(3, minmax(320px, 1fr));
+	display: flex;
 	gap: 16px;
 	align-items: stretch;
+}
+
+.cardsScroll {
+	display: block;
+	overflow-x: auto;
+	scrollbar-gutter: stable;
+	width: 85vw;
+	padding-bottom: 4px;
+}
+
+.cardsScroll::-webkit-scrollbar {
+	appearance: none;
+	width: 4px;
+	height: 6px;
+}
+
+.cardsScroll::-webkit-scrollbar-button {
+	display: none;
+}
+
+.cardsScroll::-webkit-scrollbar-thumb {
+	display: block;
+	background-color: rgba(222, 225, 232, 1);
+	border-radius: 2px;
 }
 
 .back {
@@ -55,6 +78,11 @@
 
 	.wrapper {
 		padding: 20px 16px;
+	}
+
+	.cardsScroll {
+		width: 100%;
+		padding-bottom: 0;
 	}
 
 	.cards {

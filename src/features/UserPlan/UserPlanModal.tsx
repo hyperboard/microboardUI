@@ -6,7 +6,12 @@ import clsx from "clsx";
 import React, { useEffect, type MouseEventHandler } from "react";
 import { useTranslation } from "react-i18next";
 import { UiButton } from "shared/ui-lib/UiButton";
-import { BasicPlanCard, PlusPlanCard, ProPlanCard } from "./PlanCards";
+import {
+	BasicPlanCard,
+	PlusAIPlanCard,
+	PlusPlanCard,
+	ProPlanCard,
+} from "./PlanCards";
 import styles from "./UserPlanModal.module.css";
 import { UserPlanUsage } from "./UserPlanUsage";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
@@ -21,7 +26,7 @@ export function UserPlanModal() {
 	const account = useAccount();
 
 	const currentModelId: OpenAIModels =
-		account.billingInfo?.plan.name === "plus" ? "gpt-4o" : "gpt-4o-mini";
+		account.billingInfo?.plan.name === "plusAI" ? "gpt-4o" : "gpt-4o-mini";
 	const currentModel = account.billingInfo?.models.find(
 		({ id }) => id === currentModelId,
 	);
@@ -97,10 +102,13 @@ export function UserPlanModal() {
 					onChange={val => account.setIsAnnualPayment(val as boolean)}
 					value={account.getIsAnnualPayment()}
 				/>
-				<div className={styles.cards}>
-					<BasicPlanCard />
-					<PlusPlanCard />
-					<ProPlanCard />
+				<div className={styles.cardsScroll}>
+					<div className={styles.cards}>
+						<BasicPlanCard />
+						<PlusPlanCard />
+						<PlusAIPlanCard />
+						<ProPlanCard />
+					</div>
 				</div>
 				<UiButton
 					variant="ghostFilled"

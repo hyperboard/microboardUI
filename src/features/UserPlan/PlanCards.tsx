@@ -43,7 +43,8 @@ export function BasicPlanCard() {
 
 		if (
 			account.billingInfo.plan.name === "pro" ||
-			account.billingInfo.plan.name === "plus"
+			account.billingInfo.plan.name === "plus" ||
+			account.billingInfo.plan.name === "plusAI"
 		) {
 			if (account.billingInfo.plan.status === "pending_cancellation") {
 				return "pending";
@@ -133,6 +134,154 @@ export function BasicPlanCard() {
 			variant="basic"
 			state={getBasicSubState()}
 			isLoading={isLoading}
+		/>
+	);
+}
+
+export function PlusAIPlanCard(): JSX.Element {
+	const { t } = useTranslation();
+	const account = useAccount();
+	const { openModal } = useUiModalContext();
+	const { openModalConfirm } = useConfirmModalContext();
+
+	const [plan, setPlan] = useState<billingApi.Plan | null>(null);
+	const [isLoading, setIsLoading] = useState(true);
+
+	useEffect(() => {
+		billingApi
+			.getPlans()
+			.then(({ data }) => {
+				const plusAIPlan = data?.find(({ id }) => id === "plusAI");
+
+				setPlan(plusAIPlan ?? null);
+			})
+			.finally(() => setIsLoading(false));
+	}, [account.isLoggedIn]);
+
+	const getPlusSubState = (): PlanState => {
+		if (
+			!account.billingInfo ||
+			account.billingInfo?.plan.name === "basic"
+		) {
+			return "available";
+		}
+
+		if (account.billingInfo.plan.name === plan?.name) {
+			return "current";
+		}
+
+		if (account.billingInfo.plan.name === "pro") {
+			if (account.billingInfo.plan.status === "pending_cancellation") {
+				return "pending";
+			}
+			return "downgrade";
+		}
+
+		return "available";
+	};
+
+	const onDowngrade = () => {
+		openModalConfirm(
+			<h2 className={styles.downgradeHeading}>
+				{t("userPlan.downgradeModal.heading", {
+					planName: conf.planNames["plusAI"],
+				})}
+			</h2>,
+			<p className={styles.downgradeDesc}>
+				{t("userPlan.downgradeModal.description", {
+					planName: conf.planNames["plusAI"],
+					currentPeriodEnd: new Intl.DateTimeFormat(i18n.language, {
+						year: "numeric",
+						month: "numeric",
+						day: "numeric",
+					}).format(new Date(account.billingInfo?.plan.endDate ?? 0)),
+				})}
+			</p>,
+			async () => {
+				await account.unsubscribe();
+				notify({
+					header: "Тариф обновлен",
+					body: t("userPlan.downgradeModal.description", {
+						planName: conf.planNames["plusAI"],
+						currentPeriodEnd: new Intl.DateTimeFormat(
+							i18n.language,
+							{
+								year: "numeric",
+								month: "numeric",
+								day: "numeric",
+							},
+						).format(
+							new Date(account.billingInfo?.plan.endDate ?? 0),
+						),
+					}),
+				});
+				Promise.resolve();
+			},
+			async () => {},
+			t("userPlan.downgradeModal.confirm", {
+				planName: conf.planNames["plusAI"],
+			}),
+			t("userPlan.downgradeModal.cancel"),
+			styles.downgradeConfirmation,
+		);
+	};
+
+	const handleOpenPaymentModal = async (ev): Promise<void> => {
+		ev.preventDefault();
+		ev.stopPropagation();
+
+		openModal(SELECT_PAYMENT_MODAL_ID);
+		return;
+	};
+
+	const handleBuyTokens = async (ev): Promise<void> => {
+		ev.preventDefault();
+		ev.stopPropagation();
+
+		setModalData({
+			mode: "tokens",
+			amount: 1000,
+		});
+
+		openModal(SELECT_PAYMENT_MODAL_ID);
+		return;
+	};
+
+	const isPlusAIPlan = account.billingInfo?.plan.name === plan?.name;
+	const planState = getPlusSubState();
+
+	return (
+		<PlanCard
+			name={t("userPlan.plans.plusAI.name")}
+			// description={t("userPlan.plans.plus.description")}
+			features={t("userPlan.plans.plusAI.features", {
+				returnObjects: true,
+			})}
+			additionalFeature={t("userPlan.plans.plusAI.tokensFeature")}
+			additionalFeatureTooltip={t("userPlan.tokensTooltip")}
+			variant="plus"
+			price={
+				isPlusAIPlan
+					? 8
+					: account.getIsAnnualPayment()
+						? annualToMonthlyPrice(plan?.annualPrice)
+						: plan?.price
+			}
+			isTokenPrice={isPlusAIPlan}
+			oldPrice={
+				!isPlusAIPlan && account.getIsAnnualPayment()
+					? typeof plan?.price === "number"
+						? plan.price
+						: null
+					: null
+			}
+			state={planState}
+			onSubscribe={
+				isPlusAIPlan ? handleBuyTokens : handleOpenPaymentModal
+			}
+			onDowngrade={onDowngrade}
+			isLoading={isLoading}
+			buttonText={isPlusAIPlan ? t("userPlan.buyTokens") : undefined}
 		/>
 	);
 }
@@ -233,19 +382,6 @@ export function PlusPlanCard(): JSX.Element {
 		return;
 	};
 
-	const handleBuyTokens = async (ev): Promise<void> => {
-		ev.preventDefault();
-		ev.stopPropagation();
-
-		setModalData({
-			mode: "tokens",
-			amount: 1000,
-		});
-
-		openModal(SELECT_PAYMENT_MODAL_ID);
-		return;
-	};
-
 	const isPlusPlan = account.billingInfo?.plan.name === plan?.name;
 	const planState = getPlusSubState();
 
@@ -256,16 +392,16 @@ export function PlusPlanCard(): JSX.Element {
 			features={t("userPlan.plans.plus.features", {
 				returnObjects: true,
 			})}
-			additionalFeature={t("userPlan.plans.plus.tokensFeature")}
-			additionalFeatureTooltip={t("userPlan.tokensTooltip")}
-			variant="plus"
+			variant="basic"
 			price={
 				isPlusPlan
-					? 8
+					? 6
 					: account.getIsAnnualPayment()
 						? annualToMonthlyPrice(plan?.annualPrice)
 						: plan?.price
 			}
+			additionalFeature={t("userPlan.plans.plus.tokensFeature")}
+			additionalFeatureTooltip={t("userPlan.tokensTooltip")}
 			isTokenPrice={isPlusPlan}
 			oldPrice={
 				!isPlusPlan && account.getIsAnnualPayment()
@@ -275,10 +411,9 @@ export function PlusPlanCard(): JSX.Element {
 					: null
 			}
 			state={planState}
-			onSubscribe={isPlusPlan ? handleBuyTokens : handleOpenPaymentModal}
+			onSubscribe={handleOpenPaymentModal}
 			onDowngrade={onDowngrade}
 			isLoading={isLoading}
-			buttonText={isPlusPlan ? t("userPlan.buyTokens") : undefined}
 		/>
 	);
 }

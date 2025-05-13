@@ -998,6 +998,17 @@
 			},
 			"plus": {
 				"name": "Plus",
+				"description": "GPT-4o mini",
+				"features": [
+					"All features of the Basic plan",
+					"All premium board features except extra AI",
+					"Media storage — up to 100 GB",
+					"Premium support"
+				],
+				"tokensFeature": "10 tokens"
+			},
+			"plusAI": {
+				"name": "Plus AI",
 				"description": "GPT-4o mini and GPT-4o",
 				"features": [
 					"All features of the Basic plan",

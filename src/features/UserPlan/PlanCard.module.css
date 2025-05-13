@@ -9,6 +9,7 @@
 	gap: 20px;
 	min-height: 430px;
 	max-width: 360px;
+	min-width: 320px;
 }
 
 .current {
@@ -178,5 +179,6 @@
 	.card {
 		grid-column: 1 / -1;
 		max-width: unset;
+		min-width: 240px;
 	}
 }
