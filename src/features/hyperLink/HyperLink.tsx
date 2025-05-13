@@ -5,8 +5,6 @@ import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
 import styles from "./HyperLink.module.css";
 import { Mbr } from "Board/Items/Mbr/Mbr";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
-import { Connector } from "Board/Items/Connector/Connector";
-import { useHyperLinkContext } from "features/hyperLink/HyperLinkContext";
 
 export const HyperLink = () => {
 	const [currentLink, setCurrentLink] = useState<{

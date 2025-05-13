@@ -9,7 +9,7 @@ const LocalFileSaveProgress: React.FC = () => {
 	const { app } = useAppContext();
 	const forceUpdate = useForceUpdate();
 	useAppSubscription({
-		subjects: ["events"],
+		subjects: ["board"], // previously used events subscription
 		observer: forceUpdate,
 	});
 
@@ -22,9 +22,7 @@ const LocalFileSaveProgress: React.FC = () => {
 
 	return (
 		<UiPanel className={styles.unauthText}>
-			{app.getBoard().events?.getSaveFileTimeout()
-				? "Saving..."
-				: "Saved"}
+			{app.getBoard().events?.log.saveFileTimeout ? "Saving..." : "Saved"}
 		</UiPanel>
 	);
 };

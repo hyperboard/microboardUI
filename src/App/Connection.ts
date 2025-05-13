@@ -14,6 +14,12 @@ import { notify } from "shared/ui-lib/Toast";
 import { getWebsocketUrl } from "../Config";
 import { Storage } from "./Storage";
 import { VERSION } from "version";
+import { messageRouter } from "Board/Events/MessageRouter/messageRouter";
+import { AiChatMsg } from "Board/Events/MessageRouter/handleAiChatMassage";
+import { BoardEventMsg } from "Board/Events/MessageRouter/handleBoardEventMessage";
+import { ConfirmationMsg } from "Board/Events/MessageRouter/handleConfirmation";
+import { SnapshotRequestMsg } from "Board/Events/MessageRouter/handleCreateSnapshotRequestMessage";
+import { ModeMsg } from "Board/Events/MessageRouter/handleModeMessage";
 const { i18n } = conf;
 
 const SECOND = 1000;
@@ -57,33 +63,12 @@ export interface GetModeMsg {
 	boardId: string;
 }
 
-export interface BoardEventMsg {
-	type: "BoardEvent";
-	boardId: string;
-	event: SyncEvent;
-	sequenceNumber: number;
-	userId: string;
-}
-
-export interface ConfirmationMsg {
-	type: "Confirmation";
-	boardId: string;
-	sequenceNumber: number;
-	order: number;
-}
-
 export interface SubscribeMsg {
 	type: "Subscribe";
 	boardId: string;
 	userId: string;
 	index: number;
 	accessKey?: string;
-}
-
-export interface SubscribeConfirmationMsg {
-	type: "SubscribeConfirmation";
-	boardId: string;
-	initialSequenceNumber: number;
 }
 
 export interface UnsubscribeMsg {
@@ -102,19 +87,6 @@ export interface ErrorMsg {
 export interface VersionCheckMsg {
 	type: "VersionCheck";
 	version: string;
-}
-
-export interface SnapshotRequestMsg {
-	type: "CreateSnapshotRequest";
-	boardId: string;
-}
-
-export type ViewMode = "view" | "edit" | "loading";
-
-export interface ModeMsg {
-	type: "Mode";
-	boardId: string;
-	mode: ViewMode;
 }
 
 export interface AuthConfirmationMsg {
@@ -139,148 +111,11 @@ export interface BoardSubscriptionCompletedMsg {
 	initialSequenceNumber: number;
 }
 
-export interface AiChatMsg<T = AiChatEventType> {
-	type: "AiChat";
-	boardId: string;
-	event: T;
-}
-
-export type AiChatEventType =
-	| UserRequest
-	| ChatChunk
-	| StopGeneration
-	| GenerateImageRequest
-	| GenerateImageResponse
-	| GenerateAudioRequest;
-
-export type OpenAIModels =
-	| "gpt-3.5-turbo"
-	| "gpt-4"
-	| "gpt-4o"
-	| "GPT-4o"
-	| "gpt-4o-mini"
-	| "GPT-4o mini"
-	| "gpt-4-32k"
-	| "gpt-3.5-turbo-0613"
-	| "gpt-4-0613"
-	| "gpt-3.5-turbo-16k"
-	| "gpt-4-16k"
-	| "o1-mini"
-	| "o1"
-	| ImageModels
-	| CustomModels
-	| TextToSpeechModels;
-
-type ImageModels =
-	| "dall-e-2"
-	| "dall-e-3"
-	| "midjourney"
-	| "flux-schnell"
-	| "flux-pro"
-	| "recraft";
-
-type TextToSpeechModels = "tts-1-hd";
-
-type CustomModels =
-	| "deepseek-chat"
-	| "deepseek-reasoner"
-	| "sonar-deep-research";
-
-export interface UserRequest {
-	method: "UserRequest";
-	context: number[]; // chat message context
-	boardContext: string[];
-	boardContextIds?: string[]; // just for frontend
-	idea: string;
-	model?: OpenAIModels; // default gpt-4-turbo-preview
-	images?: string[]; // only with 4o and later. Image link or base64. Better use: `data:{type};base64,${base64}`
-	updatedFrom?: number; // "user" message id
-	itemId: string;
-	requestItemId: string;
-	action?: TextAction;
-	contextRequest?: {
-		messageId: string;
-		range?: number;
-	};
-}
-
-export interface GenerateImageRequest {
-	method: "GenerateImage";
-	prompt: string;
-	itemId: string;
-	options:
-		| {
-				model: "dall-e-2";
-				size: "256x256" | "512x512" | "1024x1024";
-		  }
-		| {
-				model: "dall-e-3";
-				size: "1024x1024" | "1792x1024" | "1024x1792";
-				quality: "standard" | "hd";
-		  }
-		| {
-				model: "midjourney";
-		  }
-		| {
-				model: "flux-schnell" | "flux-pro";
-				aspect_ratio: string; // "1:1"
-		  };
-}
-
-export interface GenerateImageResponse {
-	method: "GenerateImage";
-	status: "generating" | "completed" | "error";
-	message?: string;
-	base64: string | null;
-	imageUrl: string | null;
-	itemId: string;
-	isExternalApiError?: boolean;
-}
-
-export interface GenerateAudioRequest {
-	method: "GenerateAudio";
-	text: string;
-	model: "tts-1-hd";
-}
-
-export interface GenerateAudioResponse {
-	method: "GenerateAudio";
-	status: "generating" | "completed" | "error";
-	message?: string;
-	base64: string | null;
-	audioUrl: string | null;
-	isExternalApiError?: boolean;
-}
-
-export type TTextAction =
-	| "adjust_text_length"
-	| "adjust_reading_level"
-	| "adjust_emojis";
-export interface TextAction {
-	action: TTextAction;
-	level: number;
-}
-export interface StopGeneration {
-	method: "StopGeneration";
-	itemId: string;
-}
-
-export interface ChatChunk {
-	method: "ChatChunk";
-	chatId: number;
-	type: "chunk" | "done" | "end" | "error";
-	itemId: string;
-	content?: string;
-	error?: string;
-	isExternalApiError?: boolean;
-}
-
 export type EventsMsg =
 	| ModeMsg
 	| BoardEventMsg
 	| BoardEventListMsg
 	| SnapshotRequestMsg
-	| SubscribeConfirmationMsg
 	| ConfirmationMsg
 	| BoardSubscriptionCompletedMsg
 	| UserJoinMsg
@@ -310,23 +145,17 @@ export interface Connection {
 	connect(): Promise<void>;
 	subscribe(board: Board): void;
 	unsubscribe(board: Board): void;
-	publishBoardEvent(
-		boardId: string,
-		event: SyncEvent,
-		sequenceNumber: number,
-	): void;
+
 	publishPresenceEvent(boardId: string, event: PresenceEventType): void;
 	publishAuth(): Promise<void>;
 	publishLogout(): void;
-	publishGetMode(): void;
-	// publishSnapshot(boardId: string, snapshot: BoardSnapshot): void;
-	publishSnapshot(boardId: string, snapshot: string, lastIndex: number): void;
-	wsClient: WsClient;
+
 	onMessage?: (msg: SocketMsg) => void;
 	onAccessDenied: (boardId: string, forceUpdate?: boolean) => void;
 	notifyAboutLostConnection: () => void;
 	dismissNotificationAboutLostConnection: () => void;
 	resetConnection: () => void;
+	send: (msg: SocketMsg) => void;
 }
 
 type Subscription = {
@@ -379,7 +208,6 @@ export function createConnection(
 			"beforeunload",
 			warnAboutDataLossBeforeUnload,
 		);
-		window.addEventListener("beforeunload", publishSnapshotBeforeUnload);
 	}
 
 	let onAccessDenied = (boardId: string): void => {
@@ -416,7 +244,6 @@ export function createConnection(
 		const board = getCurrentBoard();
 		switch (msg.type) {
 			case "AiChat":
-			case "SubscribeConfirmation":
 			case "Confirmation":
 			case "BoardEvent":
 			case "BoardSnapshot":
@@ -552,7 +379,7 @@ export function createConnection(
 			ws.send({
 				type: "Subscribe",
 				boardId,
-				index: board.events?.getLastIndex() || 0,
+				index: board.events?.log.getLastIndex() || 0,
 				userId: generatedClientId,
 				accessKey: board.getAccessKey(),
 			});
@@ -565,7 +392,7 @@ export function createConnection(
 		const subscription = {
 			board,
 			publish: function publish(event: EventsMsg): void {
-				board.events?.handleEvent(event);
+				messageRouter.handleMessage(event, board);
 			},
 			subscribe: async function subscribe(): Promise<void> {
 				ws.onOpenSubject.subscribe(onSocketOpen);
@@ -658,25 +485,6 @@ export function createConnection(
 		});
 	}
 
-	function publishBoardEvent(
-		boardId: string,
-		event: SyncEvent,
-		sequenceNumber: number,
-	): void {
-		if (isAuthPublishing.flag) {
-			return;
-		}
-		const message: BoardEventMsg = {
-			type: "BoardEvent",
-			boardId,
-			event,
-			sequenceNumber,
-			userId: getCurrentUser(),
-		};
-
-		ws.send(message);
-	}
-
 	const getCurrentUser = (): string => {
 		const storage = getStorage();
 		const storageUser = storage.getUser();
@@ -723,31 +531,9 @@ export function createConnection(
 		return Date.now().toString(36) + Math.random().toString(36).substr(2);
 	}
 
-	// function publishSnapshot(boardId: string, snapshot: BoardSnapshot): void {
-	function publishSnapshot(
-		boardId: string,
-		snapshot: string,
-		lastIndex: number,
-	): void {
-		if (isAuthPublishing.flag) {
-			return;
-		}
-		ws.send({
-			type: "BoardSnapshot",
-			boardId,
-			snapshot,
-			lastEventOrder: lastIndex,
-			// lastEventOrder: snapshot.lastIndex,
-		});
-	}
-
 	let connectionId = 0;
 
 	let notificationId: null | string = null;
-
-	function publishSnapshotBeforeUnload(): void {}
-
-	window.addEventListener("beforeunload", publishSnapshotBeforeUnload);
 
 	function warnAboutDataLossBeforeUnload(event: BeforeUnloadEvent): void {
 		event.preventDefault();
@@ -758,7 +544,6 @@ export function createConnection(
 		if (notificationId) {
 			return;
 		}
-		window.removeEventListener("beforeunload", publishSnapshotBeforeUnload);
 		window.addEventListener("beforeunload", warnAboutDataLossBeforeUnload);
 		notificationId = notify({
 			header: i18n.t("notifications.restoringConnectionHeader"),
@@ -779,7 +564,6 @@ export function createConnection(
 		);
 		toast.dismiss(notificationId);
 		notificationId = null;
-		window.addEventListener("beforeunload", publishSnapshotBeforeUnload);
 	}
 
 	function resetConnection() {
@@ -795,19 +579,22 @@ export function createConnection(
 		}
 	}
 
+	function send(msg: SocketMsg): void {
+		if (isAuthPublishing.flag) {
+			return;
+		}
+		ws.send(msg);
+	}
+
 	const connection: Connection = {
 		get connectionId() {
 			return connectionId;
 		},
-		publishGetMode,
 		getCurrentUser,
 		connect,
 		subscribe,
 		unsubscribe,
-		publishBoardEvent,
 		publishPresenceEvent,
-		publishSnapshot,
-		wsClient: ws,
 		publishAuth,
 		publishLogout,
 		resetConnection,
@@ -822,6 +609,7 @@ export function createConnection(
 		},
 		notifyAboutLostConnection,
 		dismissNotificationAboutLostConnection,
+		send,
 	};
 
 	return connection;

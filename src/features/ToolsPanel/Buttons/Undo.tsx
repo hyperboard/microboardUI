@@ -13,7 +13,7 @@ export function Undo() {
 	const forceUpdate = useForceUpdate();
 
 	useAppSubscription({
-		subjects: ["events"],
+		subjects: ["board"], // previously used events subscription
 		observer: forceUpdate,
 	});
 

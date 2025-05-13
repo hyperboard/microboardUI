@@ -22,7 +22,7 @@ export const EventList = React.memo(function EventList(): JSX.Element {
 	);
 
 	useAppSubscription({
-		subjects: ["syncLog"],
+		subjects: ["board"], // previously used syncLog subject
 		observer: forceUpdate,
 	});
 
@@ -118,13 +118,23 @@ export const EventList = React.memo(function EventList(): JSX.Element {
 					{board.events && viewMode === "history" && (
 						<History
 							style={listStyle}
-							events={board.events.getRaw()}
+							events={{
+								confirmedEvents: board.events.log.list
+									.getConfirmedRecords()
+									.map(record => record.event),
+								eventsToSend: board.events.log.list
+									.getRecordsToSend()
+									.map(record => record.event),
+								newEvents: board.events.log.list
+									.getNewRecords()
+									.map(record => record.event),
+							}}
 						/>
 					)}
 					{board.events && viewMode === "syncJournal" && (
 						<SyncJournal
 							style={listStyle}
-							log={board.events.getSyncLog()}
+							log={board.events.log.getSyncLog()}
 						/>
 					)}
 				</UiPanel>

@@ -1,4 +1,4 @@
-import { BoardEvent, RawEvents } from "Board/Events/Events";
+import { BoardEvent } from "Board/Events/Events";
 import React, { CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "features/AppContext";
@@ -6,6 +6,7 @@ import { UiButton } from "shared/ui-lib/UiButton";
 import { UiPanel } from "shared/ui-lib/UiPanel";
 import EventComponent from "./HistoryEvent";
 import { notify } from "shared/ui-lib/Toast";
+import { RawEvents } from "shared/RawEvents";
 
 interface Props {
 	style?: React.CSSProperties;

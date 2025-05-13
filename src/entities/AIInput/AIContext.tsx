@@ -90,7 +90,7 @@ export const AIContextProvider = ({
 			},
 		};
 
-		connection.wsClient.send(stopMessage);
+		connection.send(stopMessage);
 		await account.fetchBillingInfo();
 	};
 
@@ -311,7 +311,7 @@ export const AIContextProvider = ({
 				},
 			};
 
-			connection.wsClient.send(message);
+			connection.send(message);
 		} else {
 			const contextRequest = nodeWithParents?.lastAssistantMessageId
 				? {
@@ -335,7 +335,7 @@ export const AIContextProvider = ({
 				},
 			};
 
-			connection.wsClient.send(message);
+			connection.send(message);
 		}
 
 		const itemsInView = board.items.getInView();

@@ -58,6 +58,7 @@ export interface App {
 
 export function createApp(isHistory = true): App {
 	const connection = createConnection(getBoard, getAccount, getStorage);
+	conf.connection = connection;
 	const clipboard = new Clipboard();
 	const location = new Location();
 	const storage = new Storage();
@@ -194,9 +195,8 @@ export function createApp(isHistory = true): App {
 			board,
 			connection,
 			currIndex || snapshot?.lastIndex || 0,
-			notify,
-			account,
 		);
+
 		board.presence.addEvents(board.events);
 		board.presence.setCurrentUser(
 			localStorage.getItem(`currentUser`) ||

@@ -18,7 +18,7 @@ const PrettifiedEvent: React.FC<Props> = ({ event, style }) => {
 	const { board } = useAppContext();
 	const { operation, prependix } = getOperation(
 		event.body.operation,
-		board.events?.getAll(),
+		board.events?.log.list.getAllRecords().map(record => record.event),
 	);
 	const userId = event.body.userId;
 	const operationBase = operation.method

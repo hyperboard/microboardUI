@@ -22,7 +22,9 @@ export const SyncJournal = memo(function SyncJournal({
 
 	const handleExport = (): void => {
 		const data = eventsLog;
-		const confirmedEvents = board.events?.serialize();
+		const confirmedEvents = board.events?.log.list
+			.getConfirmedRecords()
+			.map(record => record.event);
 
 		const jsonData = JSON.stringify(data, null, 2);
 		const blob = new Blob([jsonData], { type: "application/json" });

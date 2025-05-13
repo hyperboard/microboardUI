@@ -215,7 +215,7 @@ export const AIInput = () => {
 				},
 			};
 
-			connection.wsClient.send(message);
+			connection.send(message);
 		} else if (model === "tts-1-hd") {
 			const message: AiChatMsg<GenerateAudioRequest> = {
 				type: "AiChat",
@@ -226,7 +226,7 @@ export const AIInput = () => {
 					model: "tts-1-hd",
 				},
 			};
-			connection.wsClient.send(message);
+			connection.send(message);
 		} else {
 			const contextRequest = nodeWithParents?.lastAssistantMessageId
 				? {
@@ -250,7 +250,7 @@ export const AIInput = () => {
 				},
 			};
 
-			connection.wsClient.send(message);
+			connection.send(message);
 		}
 
 		setInputValue("");

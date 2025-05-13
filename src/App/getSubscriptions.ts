@@ -12,8 +12,6 @@ export type SubjectName =
 	| "selectionItems"
 	| "items"
 	| "tools"
-	| "events"
-	| "syncLog"
 	| "pointer"
 	| "presence"
 	| "board";
@@ -40,8 +38,6 @@ export function getSubscriptions(getBoard: () => Board): Subscriptions {
 		["selectionItems", () => board.selection.itemsSubject],
 		["items", () => board.items.subject],
 		["tools", () => board.tools.subject],
-		["events", () => board.events?.subject as Subject<BoardEvent>],
-		["syncLog", () => board.events?.syncLogSubject as SyncLogSubject],
 		["pointer", () => board.pointer.subject],
 		["presence", () => board.presence.subject],
 		["board", () => board.subject],
