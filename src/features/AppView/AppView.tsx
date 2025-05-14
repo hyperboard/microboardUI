@@ -121,7 +121,7 @@ export function AppView(): JSX.Element {
 		const controller = app.controller;
 		const abortController = new AbortController();
 		if (container) {
-			document.addEventListener("touchmove", preventDefault, {
+			container.addEventListener("touchmove", preventDefault, {
 				passive: false,
 				signal: abortController.signal,
 			});
