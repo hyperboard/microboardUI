@@ -229,7 +229,7 @@ export function PlusAIPlanCard(): JSX.Element {
 	const handleOpenPaymentModal = async (ev): Promise<void> => {
 		ev.preventDefault();
 		ev.stopPropagation();
-
+		setModalData({ planName: plan?.name });
 		openModal(SELECT_PAYMENT_MODAL_ID);
 		return;
 	};
@@ -377,6 +377,19 @@ export function PlusPlanCard(): JSX.Element {
 	const handleOpenPaymentModal = async (ev): Promise<void> => {
 		ev.preventDefault();
 		ev.stopPropagation();
+		setModalData({ planName: plan?.name });
+		openModal(SELECT_PAYMENT_MODAL_ID);
+		return;
+	};
+
+	const handleBuyTokens = async (ev): Promise<void> => {
+		ev.preventDefault();
+		ev.stopPropagation();
+
+		setModalData({
+			mode: "tokens",
+			amount: 1000,
+		});
 
 		openModal(SELECT_PAYMENT_MODAL_ID);
 		return;
@@ -414,6 +427,7 @@ export function PlusPlanCard(): JSX.Element {
 			onSubscribe={handleOpenPaymentModal}
 			onDowngrade={onDowngrade}
 			isLoading={isLoading}
+			buttonText={isPlusPlan ? t("userPlan.buyTokens") : undefined}
 		/>
 	);
 }

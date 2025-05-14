@@ -30,6 +30,7 @@ import { UiModal } from "shared/ui-lib/UiModal/UiModal";
 export const SELECT_PAYMENT_MODAL_ID = Symbol("selectPaymentModal");
 
 type ModalData = {
+	planName?: "plusAI" | "plus";
 	mode?: "tokens";
 	amount?: number;
 };
@@ -57,13 +58,15 @@ export function SelectPaymentModal(): JSX.Element {
 	}, []);
 
 	useEffect(() => {
+		const modalData = data as ModalData | null;
 		billingApi.getPlans().then(({ data }) => {
-			const plusPlan = data?.find(({ id }) => id === "plus");
+			const selectedPlan = data?.find(
+				({ id }) => id === (modalData?.planName || "plus"),
+			);
 
-			setPlan(plusPlan ?? null);
+			setPlan(selectedPlan ?? null);
 		});
 
-		const modalData = data as ModalData | null;
 		if (modalData?.mode === "tokens") {
 			setIsPurchaseTokensMode(true);
 			if (modalData.amount && modalData.amount >= 100) {
