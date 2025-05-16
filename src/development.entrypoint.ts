@@ -10,7 +10,6 @@ import "features/Cursors";
 declare global {
 	interface Window {
 		app: App;
-		useHTTPSubscription: boolean;
 		showDebug: boolean;
 		enableTemplateCreating: boolean;
 		enableVideos: boolean;
@@ -31,5 +30,3 @@ window.app.account.init().finally(() => {
 		window.app.render();
 	});
 });
-
-window.useHTTPSubscription = false;

@@ -5,12 +5,13 @@
 import { initBrowserSettings } from "Board/api/initBrowserSettings";
 initBrowserSettings();
 
-import { createApp } from "App/App";
+import { App, createApp } from "App/App";
 import "./index.css";
 import "features/Cursors";
 
 declare global {
 	interface Window {
+		app: App;
 		showDebug: boolean;
 		enableTemplateCreating: boolean;
 		enableVideos: boolean;
@@ -25,13 +26,13 @@ window.enableTemplateCreating = false;
 window.enableDiagrams = false;
 window.enableVideos = true;
 
-const app = createApp();
+window.app = createApp();
 
-window.enableLogger = app.enableLogger;
-window.disableLogger = app.disableLogger;
+window.enableLogger = window.app.enableLogger;
+window.disableLogger = window.app.disableLogger;
 
-app.account.init().finally(() => {
-	app.connection.connect().then(() => {
-		app.render();
+window.app.account.init().finally(() => {
+	window.app.connection.connect().then(() => {
+		window.app.render();
 	});
 });
