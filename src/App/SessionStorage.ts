@@ -6,7 +6,8 @@ import { ConnectorPointerStyle } from "Board/Items/Connector/Pointers/Pointers";
 import type { BorderStyle } from "Board/Items/Path";
 import type { TextStyle } from "Board/Items/RichText";
 import type { StickerData } from "Board/Items/Sticker/StickerOperation";
-import { DefaultTextStyles } from "Board/Items/RichText/RichText";
+
+import { DefaultTextStyles } from "Board/Settings";
 
 // Create a node-safe storage: use sessionStorage if available, otherwise a polyfill.
 let _sessionStorage: Storage;

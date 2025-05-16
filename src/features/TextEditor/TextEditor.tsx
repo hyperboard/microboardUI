@@ -5,7 +5,7 @@ import { Element } from "./Element";
 import { App } from "App";
 import { Board } from "Board";
 import { verticalAlignmentToFlex } from "./verticalAlignmentToFlex";
-import { DEFAULT_TEXT_STYLES, RichText } from "Board/Items/RichText/RichText";
+import { RichText } from "Board/Items/RichText/RichText";
 import styles from "./TextEditor.module.css";
 import clsx from "clsx";
 import { Icon } from "shared/ui-lib/Icon";
@@ -421,10 +421,10 @@ export class TextEditor extends React.Component<
 						alignItems: verticalAlignmentToFlex(verticalAlignment), // vertical
 						justifyContent: "center", // horisontal
 
-						fontFamily: DEFAULT_TEXT_STYLES.fontFamily,
-						fontSize: `${DEFAULT_TEXT_STYLES.fontSize}px`,
-						lineHeight: DEFAULT_TEXT_STYLES.lineHeight,
-						color: DEFAULT_TEXT_STYLES.fontColor,
+						fontFamily: conf.DEFAULT_TEXT_STYLES.fontFamily,
+						fontSize: `${conf.DEFAULT_TEXT_STYLES.fontSize}px`,
+						lineHeight: conf.DEFAULT_TEXT_STYLES.lineHeight,
+						color: conf.DEFAULT_TEXT_STYLES.fontColor,
 					}}
 				>
 					{"An editor error has occured"}
@@ -483,14 +483,14 @@ export class TextEditor extends React.Component<
 						alignItems: verticalAlignmentToFlex(verticalAlignment), // vertical
 						justifyContent: "center", // horisontal
 
-						fontFamily: DEFAULT_TEXT_STYLES.fontFamily,
-						fontSize: `${DEFAULT_TEXT_STYLES.fontSize}px`,
+						fontFamily: conf.DEFAULT_TEXT_STYLES.fontFamily,
+						fontSize: `${conf.DEFAULT_TEXT_STYLES.fontSize}px`,
 						lineHeight:
 							text.isAutosize() && text.getAutoSizeScale() < 1
-								? DEFAULT_TEXT_STYLES.lineHeight *
+								? conf.DEFAULT_TEXT_STYLES.lineHeight *
 									text.getAutoSizeScale()
-								: DEFAULT_TEXT_STYLES.lineHeight,
-						color: DEFAULT_TEXT_STYLES.fontColor,
+								: conf.DEFAULT_TEXT_STYLES.lineHeight,
+						color: conf.DEFAULT_TEXT_STYLES.fontColor,
 						pointerEvents: "none",
 
 						willChange: "transform",
@@ -559,7 +559,7 @@ export class TextEditor extends React.Component<
 										: "visible",
 									// fontSize: "inherit",
 									fontSize: text.isEmpty()
-										? `${DEFAULT_TEXT_STYLES.fontSize}px`
+										? `${conf.DEFAULT_TEXT_STYLES.fontSize}px`
 										: undefined,
 									// transform: `scale(${editorScale})`,
 									// transformOrigin: `left top`,
