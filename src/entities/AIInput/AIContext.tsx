@@ -154,24 +154,26 @@ export const AIContextProvider = ({
 
 		if (
 			responseAdded.itemType === "AINode" &&
-			!responseAdded.text.editor.getStopProcessingMarkDownCb()
+			!responseAdded.text.editor.markdownProcessor.getStopProcessingMarkDownCb()
 		) {
-			responseAdded.text.editor.setStopProcessingMarkDownCb(() => {
-				board.camera.unsubscribeFromItem();
-				board.selection.items.removeAll();
-				board.selection.add(responseAdded);
-				const itemWidth = responseAdded.getMbr().getWidth();
-				if (itemWidth < DEFAULT_NODE_WIDTH) {
-					const offset = (DEFAULT_NODE_WIDTH - itemWidth) / 2;
-					responseAdded.transformation.translateBy(offset, 0);
-				}
-				const mbrToFit = responseAdded.getMbr();
-				const offsetX = (640 - mbrToFit.getWidth()) / 2;
-				mbrToFit.left -= offsetX;
-				mbrToFit.right += offsetX;
-				board.camera.zoomToFit(mbrToFit, 20);
-				board.aiGeneratingOnItem = undefined;
-			});
+			responseAdded.text.editor.markdownProcessor.setStopProcessingMarkDownCb(
+				() => {
+					board.camera.unsubscribeFromItem();
+					board.selection.items.removeAll();
+					board.selection.add(responseAdded);
+					const itemWidth = responseAdded.getMbr().getWidth();
+					if (itemWidth < DEFAULT_NODE_WIDTH) {
+						const offset = (DEFAULT_NODE_WIDTH - itemWidth) / 2;
+						responseAdded.transformation.translateBy(offset, 0);
+					}
+					const mbrToFit = responseAdded.getMbr();
+					const offsetX = (640 - mbrToFit.getWidth()) / 2;
+					mbrToFit.left -= offsetX;
+					mbrToFit.right += offsetX;
+					board.camera.zoomToFit(mbrToFit, 20);
+					board.aiGeneratingOnItem = undefined;
+				},
+			);
 		}
 
 		setResponseNodeId(responseAdded.getId());
