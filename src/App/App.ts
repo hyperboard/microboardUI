@@ -127,7 +127,6 @@ export function createApp(isHistory = true): App {
 				await connection.publishAuth();
 				connectBoard(currentBoard).then(() => {
 					appBoard?.cleanup();
-					console.log("SECOND CLEANUP", appBoard);
 				});
 			}
 			boards.set(id, currentBoard);
@@ -140,7 +139,6 @@ export function createApp(isHistory = true): App {
 			);
 			boardsList.visitBoard(id).then(() => {
 				appBoard?.cleanup();
-				console.log("THIRD CLEANUP", appBoard);
 			});
 		} else {
 			localStorage.removeItem(LAST_BOARD_KEY);
@@ -171,8 +169,6 @@ export function createApp(isHistory = true): App {
 		}
 
 		newBoard.setIsOpen(true);
-
-		console.log("NEW BOARD", newBoard);
 	}
 
 	function resetOpenedBoards(): void {
