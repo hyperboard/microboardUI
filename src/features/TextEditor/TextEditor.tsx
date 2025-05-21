@@ -17,6 +17,7 @@ import { BlockNode } from "Board/Items/RichText/Editor/BlockNode";
 import { HyperLinkCreationData } from "features/hyperLink/HyperLinkContext";
 import { conf } from "Board/Settings";
 import { notify } from "shared/ui-lib/Toast/notify";
+import { getSlateSelectionRect } from "Board/Items/RichText/getSlateSelectionRect";
 
 export class TextEditors extends React.Component<
 	{
@@ -124,32 +125,6 @@ export class TextEditor extends React.Component<
 	containerRef = React.createRef<HTMLDivElement>();
 	editableRef = React.createRef<HTMLDivElement>();
 
-	getSlateSelectionRect(editor: EditorContainer) {
-		if (!editor.getSelection() || !editor.hasTextInSelection()) {
-			return null;
-		}
-
-		const domSelection = window.getSelection();
-		if (!domSelection || domSelection.rangeCount === 0) {
-			return null;
-		}
-
-		const range = domSelection.getRangeAt(0);
-		const clientRects = range.getClientRects();
-
-		if (clientRects.length === 0) {
-			return null;
-		}
-
-		const firstRect = clientRects[0];
-		const lastRect = clientRects[clientRects.length - 1];
-
-		return {
-			firstRect,
-			lastRect,
-		};
-	}
-
 	updateHyperLinkDataFromSelectionAnchor(
 		editor: EditorContainer,
 		isWatchMode: boolean,
@@ -177,7 +152,7 @@ export class TextEditor extends React.Component<
 
 	handleSelectionChange = (): void => {
 		const editor = this.props.text.editor;
-		const rects = this.getSlateSelectionRect(editor);
+		const rects = getSlateSelectionRect(editor);
 
 		if (rects) {
 			const { firstRect, lastRect } = rects;
