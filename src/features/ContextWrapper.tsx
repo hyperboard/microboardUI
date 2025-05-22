@@ -12,6 +12,7 @@ import { ToastProvider } from "./ToastProvider";
 import { AIContextProvider } from "../entities/AIInput/AIContext";
 import { HyperLinkContextProvider } from "features/hyperLink/HyperLinkContext";
 import { CryptoWrapper } from "./CryptoWrapper";
+import { CommentsContextProvider } from "entities/comments/CommentsContext";
 
 type Props = {
 	app: App;
@@ -23,20 +24,22 @@ export function ContextWrapper({ app, board }: Props): JSX.Element {
 		<CryptoWrapper>
 			<AppContext.Provider value={{ app, board }}>
 				<HyperLinkContextProvider>
-					<AIContextProvider>
-						<ModalsWrapper>
-							<ContextMenuContextProvider>
-								<RenameContextProvider>
-									<OpenedFoldersContextProvider>
-										<SidePanelContextProvider>
-											<Outlet />
-											<ToastProvider />
-										</SidePanelContextProvider>
-									</OpenedFoldersContextProvider>
-								</RenameContextProvider>
-							</ContextMenuContextProvider>
-						</ModalsWrapper>
-					</AIContextProvider>
+					<CommentsContextProvider>
+						<AIContextProvider>
+							<ModalsWrapper>
+								<ContextMenuContextProvider>
+									<RenameContextProvider>
+										<OpenedFoldersContextProvider>
+											<SidePanelContextProvider>
+												<Outlet />
+												<ToastProvider />
+											</SidePanelContextProvider>
+										</OpenedFoldersContextProvider>
+									</RenameContextProvider>
+								</ContextMenuContextProvider>
+							</ModalsWrapper>
+						</AIContextProvider>
+					</CommentsContextProvider>
 				</HyperLinkContextProvider>
 			</AppContext.Provider>
 		</CryptoWrapper>

@@ -12,6 +12,7 @@ import { SidePanelContextProvider } from "features/SidePanel/SidePanelContext";
 import { ToastProvider } from "features/ToastProvider";
 import { LocalSidePanelContextProvider } from "features/SidePanel/LocalSidePanelContext";
 import { CryptoWrapper } from "features/CryptoWrapper";
+import { CommentsContextProvider } from "entities/comments/CommentsContext";
 
 type Props = {
 	app: App;
@@ -40,6 +41,7 @@ const PROVIDERS: ComponentWithChildren[] = [
 	CryptoWrapper,
 	HyperLinkContextProvider,
 	AIContextProvider,
+	CommentsContextProvider,
 	ModalsWrapper,
 	ContextMenuContextProvider,
 	RenameContextProvider,

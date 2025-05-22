@@ -161,7 +161,10 @@ export type IconId =
 	| "Tick"
 	| "BulletedList"
 	| "NumberedList"
-	| "support";
+	| "support"
+	| "Mouse"
+	| "Trackpad"
+	| "Auto";
 
 type Props = {
 	iconName: IconId;

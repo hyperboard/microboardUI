@@ -13,7 +13,7 @@ import { useClickOutside } from "shared/lib/useClickOutside";
 import { useAccount } from "App/useAccount";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { useCommentsPanelContext } from "./CommentsPanelContext";
-import { ToggleMark } from "./ToggleMark";
+import { ToggleMark } from "shared/ui-lib/ToggleMark/ToggleMark";
 import { CommentCard } from "./CommentCard/CommentCard";
 
 export const CommentsPanel: React.FC = () => {

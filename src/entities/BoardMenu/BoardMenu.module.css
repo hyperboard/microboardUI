@@ -2,9 +2,23 @@
 	border: none;
 	outline: none;
 	padding: 12px;
+	justify-content: space-between;
+}
+
+.buttonContainer {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.buttonWithMenu {
+	display: flex;
+	align-items: center;
+	justify-content: left;
+	width: 100%;
 }
 
 .btn:active {
-	border: none;
-	outline: none;
+	border: none !important;
+	outline: none !important;
 }

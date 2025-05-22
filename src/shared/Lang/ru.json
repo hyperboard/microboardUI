@@ -312,7 +312,13 @@
 	"boardMenu": {
 		"showResolved": "Показать решенные",
 		"hideResolved": "Скрыть решенные",
-		"resolveAll": "Разрешить все комментарии"
+		"resolveAll": "Разрешить все комментарии",
+		"controlMode": {
+			"tooltip": "Мышь или трекпад",
+			"auto": "Авто",
+			"mouse": "Мышь",
+			"trackpad": "Трекпад"
+		}
 	},
 	"comment": {
 		"create": "Оставьте комментарий",

@@ -1,6 +1,6 @@
 import React from "react";
 import clsx from "clsx";
-import styles from "./CommentsPanel.module.css";
+import styles from "./ToggleMark.module.css";
 
 interface Props {
 	isActive: boolean;

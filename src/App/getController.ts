@@ -19,6 +19,7 @@ import { uploadAudio } from "Board/Items/Audio/uploadAudio";
 import { Account } from "entities/account";
 import { conf } from "Board/Settings";
 import { tempStorage } from "App/SessionStorage";
+import { AppSettings } from "App/App";
 
 export interface Controller {
 	onWheel: (event: WheelEvent) => void;
@@ -42,6 +43,7 @@ export function getController(
 	getBoard: () => Board,
 	clipboard: Clipboard,
 	account: Account,
+	appSettings: AppSettings,
 ): Controller {
 	let itemUnderPointer: Item | undefined = undefined;
 	function onWheel(event: WheelEvent): void {
@@ -56,6 +58,20 @@ export function getController(
 		// if (wheel.isIgnore()) {
 		// 	return;
 		// }
+
+		const { controlMode } = appSettings;
+
+		if (controlMode === "mouse") {
+			board.camera.zoomRelativeToPointerBy(
+				wheel.getWheelScaleMultiplier(),
+			);
+			return;
+		} else if (controlMode === "trackpad") {
+			board.camera.zoomRelativeToPointerBy(
+				wheel.getTouchpadPinchMultiplier(),
+			);
+			return;
+		}
 
 		if (wheel.isProbablyMouseWheel()) {
 			// console.log("wheel", wheel.getWheelScaleMultiplier());
@@ -330,7 +346,6 @@ export function getController(
 			return false;
 		}
 		board.camera.unsubscribeFromItem();
-		board.isBoardMenuOpen = false;
 		const { tools, camera, selection } = board;
 		const transformerTool = selection.tool;
 		camera.saveDownEvent(event);
@@ -465,7 +480,6 @@ export function getController(
 			method: "CancelDrawSelect",
 			timestamp: Date.now(),
 		});
-		board.isBoardMenuOpen = false;
 		const { tools, selection, camera } = board;
 		camera.removeDownEvent(event);
 		if (isSafari()) {
@@ -504,6 +518,7 @@ export function getController(
 						tools.middleButtonUp()
 					);
 				case 2:
+					board.setIsBoardMenuOpen(true);
 					return (
 						transformerTool.rightButtonUp() || tools.rightButtonUp()
 					);
@@ -520,7 +535,7 @@ export function getController(
 				case 1:
 					return tools.middleButtonUp();
 				case 2:
-					board.isBoardMenuOpen = true;
+					board.setIsBoardMenuOpen(true);
 					return tools.rightButtonUp();
 				default:
 					return tools.leftButtonUp();
@@ -540,7 +555,6 @@ export function getController(
 		if (!board) {
 			return false;
 		}
-		board.isBoardMenuOpen = false;
 		const { tools, selection } = board;
 		const transformerTool = selection.tool;
 		switch (event.button) {

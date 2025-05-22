@@ -69,7 +69,7 @@ import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
 import { MediaUnavailableModal } from "features/MediaUnavailableModal/MediaUnavailableModal";
 import { ShareSnapshotModal } from "features/ShareSnapshotModal";
-import { CryptoWrapper } from "features/CryptoWrapper";
+import { BoardMenu } from "entities/BoardMenu/BoardMenu";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -234,10 +234,8 @@ export function AppView(): JSX.Element {
 				</ViewModeGuard>
 			</ExportVisible>
 			<ExportVisible>
-				<CommentsContextProvider>
-					<UserPanelLayout app={app} />
-					<CommentsProvider />
-				</CommentsContextProvider>
+				<UserPanelLayout app={app} />
+				<CommentsProvider />
 			</ExportVisible>
 			<ExportVisible>
 				<UserTracking board={board} />
@@ -249,6 +247,7 @@ export function AppView(): JSX.Element {
 				<ContextPanel />
 				<QuickAddPanel />
 				<ExportPanel />
+				<BoardMenu />
 			</ViewModeGuard>
 			<HyperLink />
 			<AiGenerationButton />

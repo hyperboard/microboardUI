@@ -312,7 +312,13 @@
 	"boardMenu": {
 		"showResolved": "Show Resolved",
 		"hideResolved": "Hide Resolved",
-		"resolveAll": "Resolve all comments"
+		"resolveAll": "Resolve all comments",
+		"controlMode": {
+			"tooltip": "Mouse or trackpad",
+			"auto": "Auto",
+			"mouse": "Mouse",
+			"trackpad": "Trackpad"
+		}
 	},
 	"comment": {
 		"create": "Add a comment",

@@ -28,6 +28,10 @@ const { i18n } = conf;
 
 export const LAST_BOARD_KEY = "lastSeenBoard";
 export const LAST_BOARD_KEY_QS = LAST_BOARD_KEY.concat("Wqs");
+type ControlMode = "auto" | "mouse" | "trackpad";
+export type AppSettings = {
+	controlMode: ControlMode;
+};
 
 export interface App {
 	connection: Connection;
@@ -54,6 +58,9 @@ export interface App {
 	enableLogger(): void;
 	disableLogger(): void;
 	getLocalEditFileHandler: () => FileSystemFileHandle | undefined;
+	settings: AppSettings;
+	setControlMode: (mode: ControlMode) => void;
+	getSettings: () => AppSettings;
 }
 
 export function createApp(isHistory = true): App {
@@ -65,6 +72,7 @@ export function createApp(isHistory = true): App {
 	const sessionStorage = new SessionStorage();
 	const account = new Account(storage, sessionStorage, connection);
 	const boardsList = new BoardsList(storage, account);
+	const settings = { controlMode: getControlModeFromStorage() };
 
 	const test = createTester(getBoard);
 
@@ -95,6 +103,23 @@ export function createApp(isHistory = true): App {
 		return account;
 	}
 
+	function getControlModeFromStorage(): ControlMode {
+		const mode = localStorage.getItem("controlMode");
+		if (mode === "auto" || mode === "mouse" || mode === "trackpad") {
+			return mode;
+		}
+		return "auto";
+	}
+
+	function setControlMode(mode: ControlMode): void {
+		localStorage.setItem("controlMode", mode);
+		settings.controlMode = mode;
+	}
+
+	function getSettings(): AppSettings {
+		return settings;
+	}
+
 	function getStorage(): Storage {
 		return storage;
 	}
@@ -103,7 +128,7 @@ export function createApp(isHistory = true): App {
 	// 	return account.isLoggedIn;
 	// }
 
-	const controller = getController(getBoard, clipboard, account);
+	const controller = getController(getBoard, clipboard, account, settings);
 	const subscriptions = getSubscriptions(getBoard);
 
 	const boards = new Map<string, Board>();
@@ -115,7 +140,6 @@ export function createApp(isHistory = true): App {
 
 	async function openBoard(id: string, accessKey?: string): Promise<void> {
 		const appBoard = app.getBoard();
-		window.localStorage.setItem("PrevBoardDEBUG", appBoard?.getBoardId());
 		if (id === "boards" || appBoard?.getBoardId() === id) {
 			return;
 		}
@@ -414,6 +438,8 @@ export function createApp(isHistory = true): App {
 		enableLogger,
 		disableLogger,
 		getLocalEditFileHandler: () => fileHandle,
+		setControlMode,
+		getSettings,
 	};
 
 	account.setOnInit(async () => {
