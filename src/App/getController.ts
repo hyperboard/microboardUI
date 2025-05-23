@@ -67,9 +67,17 @@ export function getController(
 			);
 			return;
 		} else if (controlMode === "trackpad") {
-			board.camera.zoomRelativeToPointerBy(
-				wheel.getTouchpadPinchMultiplier(),
-			);
+			if (wheel.isTouchpadPinch()) {
+				board.camera.zoomRelativeToPointerBy(
+					wheel.getTouchpadPinchMultiplier(),
+				);
+			} else {
+				const scale = board.camera.getScale();
+				board.camera.translateBy(
+					wheel.getTouchpadPanDeltaX() / scale,
+					wheel.getTouchpadPanDeltaY() / scale,
+				);
+			}
 			return;
 		}
 

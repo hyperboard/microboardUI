@@ -3,19 +3,20 @@ import styles from "../BoardMenu.module.css";
 import { Button } from "shared/ui-lib/Button/Button";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import { Icon } from "shared/ui-lib/Icon/Icon";
-import { ToggleMark } from "shared/ui-lib/ToggleMark/ToggleMark";
 import { ButtonWithMenu } from "features/ToolsPanel/Buttons/ButtonWithMenu/ButtonWithMenu";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "features/AppContext";
+import { useForceUpdate } from "shared/lib/useForceUpdate";
 
 export const MouseOrTrackpad = () => {
 	const [isSetControlModeOpen, setIsSetControlModeOpen] = useState(false);
 	const { app } = useAppContext();
 	const { t } = useTranslation();
+	const forceUpdate = useForceUpdate();
 
 	const setControlMode = (mode: "auto" | "mouse" | "trackpad") => {
 		app.setControlMode(mode);
-		setIsSetControlModeOpen(false);
+		forceUpdate();
 	};
 	return (
 		<ButtonWithMenu
@@ -43,8 +44,14 @@ export const MouseOrTrackpad = () => {
 						<Icon iconName="Mouse" width={16} height={16} />
 						{t("boardMenu.controlMode.mouse")}
 					</div>
-					<ToggleMark
-						isActive={app.getSettings().controlMode === "mouse"}
+					<Icon
+						iconName={
+							app.getSettings().controlMode === "mouse"
+								? "CheckboxFilled"
+								: "Checkbox"
+						}
+						width={16}
+						height={16}
 					/>
 				</Button>
 				<Button
@@ -56,8 +63,14 @@ export const MouseOrTrackpad = () => {
 						<Icon iconName="Trackpad" width={16} height={16} />
 						{t("boardMenu.controlMode.trackpad")}
 					</div>
-					<ToggleMark
-						isActive={app.getSettings().controlMode === "trackpad"}
+					<Icon
+						iconName={
+							app.getSettings().controlMode === "trackpad"
+								? "CheckboxFilled"
+								: "Checkbox"
+						}
+						width={16}
+						height={16}
 					/>
 				</Button>
 				<Button
@@ -69,8 +82,14 @@ export const MouseOrTrackpad = () => {
 						<Icon iconName="Auto" width={16} height={16} />
 						{t("boardMenu.controlMode.auto")}
 					</div>
-					<ToggleMark
-						isActive={app.getSettings().controlMode === "auto"}
+					<Icon
+						iconName={
+							app.getSettings().controlMode === "auto"
+								? "CheckboxFilled"
+								: "Checkbox"
+						}
+						width={16}
+						height={16}
 					/>
 				</Button>
 			</UiPanel>

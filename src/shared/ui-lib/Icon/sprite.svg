@@ -1356,10 +1356,10 @@
     <g filter="url(#filter0_d_7871_122128)">
       <path
         d="M3 10C3 5.58172 6.58172 2 11 2C15.4183 2 19 5.58172 19 10C19 14.4183 15.4183 18 11 18C6.58172 18 3 14.4183 3 10Z"
-        fill="white" stroke="#0B0C0E" stroke-width="2" />
+        fill="white" stroke="#924fe8" stroke-width="2" />
       <path
         d="M7 10C7 7.79086 8.79086 6 11 6C13.2091 6 15 7.79086 15 10C15 12.2091 13.2091 14 11 14C8.79086 14 7 12.2091 7 10Z"
-        fill="#14151A" />
+        fill="#924fe8" />
     </g>
     <defs>
       <filter id="filter0_d_7871_122128" x="0" y="0" width="22" height="22"
