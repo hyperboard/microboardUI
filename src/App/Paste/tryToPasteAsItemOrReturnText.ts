@@ -9,28 +9,28 @@ import { tryToPasteVideoByLink } from "App/Paste/tryToPasteVideoByLink";
 import { tryToPasteAudioByLink } from "App/Paste/tryToPasteAudioByLink";
 
 export async function tryToPasteAsItemOrReturnText(
-	event: ClipboardEvent,
+	event: ClipboardEvent | null,
+	dataTransfer: DataTransfer | null,
 	board: Board,
 	isLoggedIn: boolean,
 	accessToken: string | null,
 ): Promise<DataTransfer | null> {
-	if (tryToPasteFromMiro(event, board, accessToken, isLoggedIn)) {
-		preventPasteDefault(event);
+	if (tryToPasteFromMiro(dataTransfer, board, accessToken, isLoggedIn)) {
+		event && preventPasteDefault(event);
 		return null;
 	}
-	const dataTransfer = event?.clipboardData;
 
 	const text = dataTransfer?.getData("text/plain");
 
 	if (!text) {
-		if (tryToPasteImages(event, board, accessToken)) {
-			preventPasteDefault(event);
+		if (tryToPasteImages(dataTransfer, board, accessToken)) {
+			event && preventPasteDefault(event);
 		}
 		return null;
 	}
 
 	if (tryToPasteFromMicroboard(text, board)) {
-		preventPasteDefault(event);
+		event && preventPasteDefault(event);
 		return null;
 	}
 
@@ -38,12 +38,12 @@ export async function tryToPasteAsItemOrReturnText(
 
 	if (text && !textEditor?.getSelection() && window.enableVideos) {
 		if (tryToPasteVideoByLink(text, board)) {
-			preventPasteDefault(event);
+			event && preventPasteDefault(event);
 			return null;
 		}
 
 		if (tryToPasteAudioByLink(text, board)) {
-			preventPasteDefault(event);
+			event && preventPasteDefault(event);
 			return null;
 		}
 	}
@@ -58,8 +58,8 @@ export async function tryToPasteAsItemOrReturnText(
 		}
 	}
 
-	if (tryToPasteImages(event, board, accessToken)) {
-		preventPasteDefault(event);
+	if (tryToPasteImages(dataTransfer, board, accessToken)) {
+		event && preventPasteDefault(event);
 		return null;
 	}
 

@@ -69,7 +69,7 @@ import NoBoardIsOpen from "./NoBoardIsOpen";
 import { QuickAddPanel } from "./QuickAddPanel";
 import { MediaUnavailableModal } from "features/MediaUnavailableModal/MediaUnavailableModal";
 import { ShareSnapshotModal } from "features/ShareSnapshotModal";
-import { BoardMenu } from "entities/BoardMenu/BoardMenu";
+import { BoardMenu } from "entities/BoardMenu";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();

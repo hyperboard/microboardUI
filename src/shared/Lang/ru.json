@@ -310,9 +310,14 @@
 		"yourBoard": "Ваша доска"
 	},
 	"boardMenu": {
-		"showResolved": "Показать решенные",
-		"hideResolved": "Скрыть решенные",
-		"resolveAll": "Разрешить все комментарии",
+		"items": {
+			"paste": "Вставить"
+		},
+		"comments": {
+			"showResolved": "Показать решенные",
+			"hideResolved": "Скрыть решенные",
+			"resolveAll": "Разрешить все комментарии"
+		},
 		"controlMode": {
 			"tooltip": "Мышь или трекпад",
 			"auto": "Авто",

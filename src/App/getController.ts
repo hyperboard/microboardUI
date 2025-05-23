@@ -644,6 +644,7 @@ export function getController(
 
 		const data = await tryToPasteAsItemOrReturnText(
 			event,
+			event.clipboardData,
 			board,
 			account.isLoggedIn,
 			account.accessToken,

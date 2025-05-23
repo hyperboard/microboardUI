@@ -3,12 +3,12 @@ import { ImageItem } from "Board/Items/Image";
 import { prepareImage } from "Board/Items/Image/ImageHelpers";
 
 export function tryToPasteImages(
-	event: ClipboardEvent,
+	dataTransfer: DataTransfer | null,
 	board: Board,
 	accessToken: string | null,
 ): boolean {
 	let isFoundImageInClipboard = false;
-	const items = event.clipboardData?.items;
+	const items = dataTransfer?.items;
 
 	if (!items) {
 		return false;

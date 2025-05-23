@@ -4,12 +4,12 @@ import { pasteMiroClipboard } from "features/ImportMiro/ImportMiroBoards/ImportB
 import { openModal } from "shared/ui-lib/UiModal/UiModalContext";
 
 export function tryToPasteFromMiro(
-	event: ClipboardEvent,
+	dataTransfer: DataTransfer | null,
 	board: Board,
 	accessToken: string | null,
 	isLoggedIn: boolean,
 ): boolean {
-	const html = event?.clipboardData?.getData("text/html");
+	const html = dataTransfer?.getData("text/html");
 	const isDataFromMiro = html && /miro/i.test(html.substring(0, 100));
 	if (!isDataFromMiro) {
 		return false;

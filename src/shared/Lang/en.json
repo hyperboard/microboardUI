@@ -310,9 +310,14 @@
 		"yourBoard": "Your board"
 	},
 	"boardMenu": {
-		"showResolved": "Show Resolved",
-		"hideResolved": "Hide Resolved",
-		"resolveAll": "Resolve all comments",
+		"items": {
+			"paste": "Paste"
+		},
+		"comments": {
+			"showResolved": "Show Resolved",
+			"hideResolved": "Hide Resolved",
+			"resolveAll": "Resolve all comments"
+		},
 		"controlMode": {
 			"tooltip": "Mouse or trackpad",
 			"auto": "Auto",

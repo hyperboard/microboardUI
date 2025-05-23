@@ -243,6 +243,7 @@ export class TextEditor extends React.Component<
 		// TODO: actually check login
 		const data = await tryToPasteAsItemOrReturnText(
 			event,
+			event.clipboardData,
 			board,
 			true,
 			this.props.app.account.accessToken,
