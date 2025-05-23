@@ -55,49 +55,47 @@ export function getController(
 			return;
 		}
 		board.camera.unsubscribeFromItem();
-		// if (wheel.isIgnore()) {
-		// 	return;
-		// }
 
 		const { controlMode } = appSettings;
 
-		if (controlMode === "mouse") {
+		const onMouseWheel = () => {
 			board.camera.zoomRelativeToPointerBy(
 				wheel.getWheelScaleMultiplier(),
 			);
-			return;
-		} else if (controlMode === "trackpad") {
-			if (wheel.isTouchpadPinch()) {
-				board.camera.zoomRelativeToPointerBy(
-					wheel.getTouchpadPinchMultiplier(),
-				);
-			} else {
-				const scale = board.camera.getScale();
-				board.camera.translateBy(
-					wheel.getTouchpadPanDeltaX() / scale,
-					wheel.getTouchpadPanDeltaY() / scale,
-				);
-			}
-			return;
-		}
+		};
 
-		if (wheel.isProbablyMouseWheel()) {
-			// console.log("wheel", wheel.getWheelScaleMultiplier());
-			board.camera.zoomRelativeToPointerBy(
-				wheel.getWheelScaleMultiplier(),
-			);
-		} else if (wheel.isTouchpadPinch()) {
-			// console.log("touchpad", wheel.getTouchpadPinchMultiplier());
+		const onPinch = () => {
 			board.camera.zoomRelativeToPointerBy(
 				wheel.getTouchpadPinchMultiplier(),
 			);
-		} else {
-			// console.log("translate");
+		};
+
+		const onPan = () => {
 			const scale = board.camera.getScale();
 			board.camera.translateBy(
 				wheel.getTouchpadPanDeltaX() / scale,
 				wheel.getTouchpadPanDeltaY() / scale,
 			);
+		};
+
+		if (controlMode === "mouse") {
+			onMouseWheel();
+			return;
+		} else if (controlMode === "trackpad") {
+			if (wheel.isTouchpadPinch()) {
+				onPinch();
+			} else {
+				onPan();
+			}
+			return;
+		}
+
+		if (wheel.isProbablyMouseWheel()) {
+			onMouseWheel();
+		} else if (wheel.isTouchpadPinch()) {
+			onPinch();
+		} else {
+			onPan();
 		}
 	}
 
