@@ -48,21 +48,22 @@ export class TextEditors extends React.Component<
 	}
 
 	render(): React.ReactElement | null {
-		let Editors: React.ReactElement | null = null;
-		for (const text of this.props.board.selection.getTextToEdit()) {
-			Editors = (
-				<TextEditor
-					app={this.props.app}
-					board={this.props.board}
-					text={text}
-					setQuotedText={this.props.setQuotedText}
-					setHyperLinkData={this.props.setHyperLinkData}
-					hyperLinkData={this.props.hyperLinkData}
-					sendGenerationRequest={this.props.sendGenerationRequest}
-				/>
-			);
+		const text = this.props.board.selection.getTextToEdit();
+		if (!text) {
+			return null;
 		}
-		return Editors;
+
+		return (
+			<TextEditor
+				app={this.props.app}
+				board={this.props.board}
+				text={text}
+				setQuotedText={this.props.setQuotedText}
+				setHyperLinkData={this.props.setHyperLinkData}
+				hyperLinkData={this.props.hyperLinkData}
+				sendGenerationRequest={this.props.sendGenerationRequest}
+			/>
+		);
 	}
 }
 
@@ -502,7 +503,8 @@ export class TextEditor extends React.Component<
 						<Slate
 							editor={text.editor.editor}
 							value={text.getText()}
-							key={text.getId()}
+							// key={text.getId()}
+							key={text.rtCounter}
 							onChange={this.handleSelectionChange}
 						>
 							<Editable

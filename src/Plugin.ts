@@ -67,7 +67,7 @@ export interface Selection {
 	setStartPointerStyle(style: string): void;
 	setEndPointerStyle(style: string): void;
 	setConnectorLineStyle(style: ConnectorLineStyle): void;
-	getTextToEdit(): RichText[];
+	getTextToEdit(): RichText;
 
 	translateBy(x: number, y: number): void;
 	scaleBy(x: number, y: number): void;
