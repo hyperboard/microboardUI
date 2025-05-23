@@ -33,6 +33,7 @@ export const pasteWelcomeBoardData = (board: Board, lang: string) => {
 			[key: string]: Item;
 		},
 		false,
+		false,
 	);
 
 	const mbr = board.items.getMbr();

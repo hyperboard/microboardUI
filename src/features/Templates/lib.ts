@@ -49,7 +49,7 @@ export const pasteSnapshot = ({
 		itemsMap[id] = itemData;
 	}
 	if (board.events && snapshot) {
-		board.paste(itemsMap, true);
+		board.paste(itemsMap, true, false);
 		if (!board.tools.getSelect()) {
 			board.tools.select();
 		}
