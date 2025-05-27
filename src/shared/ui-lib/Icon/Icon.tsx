@@ -168,7 +168,11 @@ export type IconId =
 	| "MouseOrTrackpad"
 	| "Paste"
 	| "EyeOpen"
-	| "EyeCrossed";
+	| "EyeCrossed"
+	| "MouseRightClick"
+	| "MouseRollClick"
+	| "TrackpadMove"
+	| "TrackpadPinch";
 
 type Props = {
 	iconName: IconId;

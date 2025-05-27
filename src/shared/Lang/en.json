@@ -1,6 +1,7 @@
 {
 	"common": {
 		"and": "and",
+		"save": "Save",
 		"backToMain": "Back to main menu",
 		"confirm": "Confirm",
 		"loading": "Loading...",
@@ -322,7 +323,17 @@
 			"tooltip": "Mouse or trackpad",
 			"auto": "Auto",
 			"mouse": "Mouse",
-			"trackpad": "Trackpad"
+			"trackpad": "Trackpad",
+			"learnMore": "Learn more",
+			"modal": {
+				"title": "Choose mouse or trackpad",
+				"subtitle": "Applies to all tabs",
+				"autoDetect": "Auto-detect",
+				"MouseRightClick": "Click the right button and drag to move around",
+				"MouseRollClick": "Scroll the mouse wheel to zoom",
+				"TrackpadMove": "Side two fingers to move around",
+				"TrackpadPinch": "Pinch to zoom"
+			}
 		}
 	},
 	"comment": {

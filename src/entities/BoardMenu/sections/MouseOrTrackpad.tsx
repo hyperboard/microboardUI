@@ -6,12 +6,16 @@ import { ButtonWithMenu } from "features/ToolsPanel/Buttons/ButtonWithMenu/Butto
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "features/AppContext";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
+import { useUiModalContext } from "shared/ui-lib/UiModal/UiModalContext";
+import { MOUSE_OR_TRACKPAD_MODAL } from "entities/BoardMenu/MouseOrTracpadModal/MouseOrTrackpadModal";
+import { UiSeparator } from "shared/ui-lib/UiSeparator/UiSeparator";
 
 export const MouseOrTrackpad = () => {
 	const [isSetControlModeOpen, setIsSetControlModeOpen] = useState(false);
-	const { app } = useAppContext();
+	const { app, board } = useAppContext();
 	const { t } = useTranslation();
 	const forceUpdate = useForceUpdate();
+	const { openModal } = useUiModalContext();
 
 	const setControlMode = (mode: "auto" | "mouse" | "trackpad") => {
 		app.setControlMode(mode);
@@ -85,6 +89,18 @@ export const MouseOrTrackpad = () => {
 					{getIsActive("auto") && (
 						<Icon iconName="checkMark" width={16} height={16} />
 					)}
+				</button>
+				<UiSeparator className={styles.separator} />
+				<button
+					onClick={evt => {
+						evt.preventDefault();
+						evt.stopPropagation();
+						openModal(MOUSE_OR_TRACKPAD_MODAL);
+						board.setIsBoardMenuOpen(false);
+					}}
+					className={styles.btn}
+				>
+					{t("boardMenu.controlMode.learnMore")}
 				</button>
 			</UiPanel>
 		</ButtonWithMenu>

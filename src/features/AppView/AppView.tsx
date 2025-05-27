@@ -70,6 +70,7 @@ import { QuickAddPanel } from "./QuickAddPanel";
 import { MediaUnavailableModal } from "features/MediaUnavailableModal/MediaUnavailableModal";
 import { ShareSnapshotModal } from "features/ShareSnapshotModal";
 import { BoardMenu } from "entities/BoardMenu";
+import { MouseOrTrackpadModal } from "entities/BoardMenu/MouseOrTracpadModal/MouseOrTrackpadModal";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -278,6 +279,7 @@ export function AppView(): JSX.Element {
 				<WarnNotification />
 				<SetLinkToModal />
 				<CreateTemplateModal />
+				<MouseOrTrackpadModal />
 			</UiModalBackground>
 			<LocalFileSaveProgress />
 		</div>
