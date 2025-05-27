@@ -12,6 +12,7 @@
 	display: flex;
 	align-items: center;
 	min-width: 168px;
+	cursor: pointer;
 }
 
 .buttonContainer {

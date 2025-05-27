@@ -25,6 +25,7 @@
 	min-height: 20px;
 	color: rgba(13, 17, 38, 0.4);
 	cursor: pointer;
+	z-index: 5;
 }
 
 .modalWrapper {
