@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import styles from "../BoardMenu.module.css";
-import { Button } from "shared/ui-lib/Button/Button";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import { Icon } from "shared/ui-lib/Icon/Icon";
 import { ButtonWithMenu } from "features/ToolsPanel/Buttons/ButtonWithMenu/ButtonWithMenu";
@@ -18,80 +17,75 @@ export const MouseOrTrackpad = () => {
 		app.setControlMode(mode);
 		forceUpdate();
 	};
+
+	const getIsActive = (mode: "mouse" | "trackpad" | "auto"): boolean => {
+		return app.getSettings().controlMode === mode;
+	};
+
 	return (
 		<ButtonWithMenu
 			className={styles.buttonWithMenu}
 			isOpen={isSetControlModeOpen}
 			button={
-				<Button
+				<button
 					onClick={() =>
 						setIsSetControlModeOpen(!isSetControlModeOpen)
 					}
 					className={styles.btn}
-					pattern="tertiary"
 				>
-					{t("boardMenu.controlMode.tooltip")}
-				</Button>
+					<div className={styles.buttonContainer}>
+						<Icon
+							iconName="MouseOrTrackpad"
+							width={20}
+							height={20}
+						/>
+						{t("boardMenu.controlMode.tooltip")}
+					</div>
+				</button>
 			}
 		>
-			<UiPanel rounded={"full"} gap={8} grid vertical>
-				<Button
+			<UiPanel
+				rounded={"full"}
+				style={{ padding: "4px", gap: "2px" }}
+				grid
+				vertical
+			>
+				<button
 					onClick={() => setControlMode("mouse")}
 					className={styles.btn}
-					pattern="tertiary"
 				>
 					<div className={styles.buttonContainer}>
-						<Icon iconName="Mouse" width={16} height={16} />
+						<Icon iconName="Mouse" width={20} height={20} />
 						{t("boardMenu.controlMode.mouse")}
 					</div>
-					<Icon
-						iconName={
-							app.getSettings().controlMode === "mouse"
-								? "CheckboxFilled"
-								: "Checkbox"
-						}
-						width={16}
-						height={16}
-					/>
-				</Button>
-				<Button
+					{getIsActive("mouse") && (
+						<Icon iconName="checkMark" width={16} height={16} />
+					)}
+				</button>
+				<button
 					onClick={() => setControlMode("trackpad")}
 					className={styles.btn}
-					pattern="tertiary"
 				>
 					<div className={styles.buttonContainer}>
-						<Icon iconName="Trackpad" width={16} height={16} />
+						<Icon iconName="Trackpad" width={20} height={20} />
 						{t("boardMenu.controlMode.trackpad")}
 					</div>
-					<Icon
-						iconName={
-							app.getSettings().controlMode === "trackpad"
-								? "CheckboxFilled"
-								: "Checkbox"
-						}
-						width={16}
-						height={16}
-					/>
-				</Button>
-				<Button
+					{getIsActive("trackpad") && (
+						<Icon iconName="checkMark" width={16} height={16} />
+					)}
+				</button>
+				<button
 					onClick={() => setControlMode("auto")}
 					className={styles.btn}
-					pattern="tertiary"
 				>
 					<div className={styles.buttonContainer}>
-						<Icon iconName="Auto" width={16} height={16} />
+						<Icon iconName="Auto" width={20} height={20} />
 						{t("boardMenu.controlMode.auto")}
 					</div>
-					<Icon
-						iconName={
-							app.getSettings().controlMode === "auto"
-								? "CheckboxFilled"
-								: "Checkbox"
-						}
-						width={16}
-						height={16}
-					/>
-				</Button>
+					{getIsActive("auto") && (
+						<Icon iconName="checkMark" width={16} height={16} />
+					)}
+				</button>
 			</UiPanel>
 		</ButtonWithMenu>
 	);

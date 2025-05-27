@@ -3,13 +3,13 @@ import { UiPanel } from "shared/ui-lib/UiPanel";
 import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
 import { useAppContext } from "features/AppContext";
 import { Mbr } from "../../Board/Items";
-import { Button } from "../../shared/ui-lib/Button";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { useAppSubscription } from "Board/useBoardSubscription";
 import { UiSeparator } from "shared/ui-lib/UiSeparator/UiSeparator";
 import { Comments } from "entities/BoardMenu/sections/Comments";
 import { Items } from "entities/BoardMenu/sections/Items";
 import { MouseOrTrackpad } from "entities/BoardMenu/sections/MouseOrTrackpad";
+import styles from "./BoardMenu.module.css";
 
 export const BoardMenu = () => {
 	const menuRef = useRef<HTMLDivElement>(null);
@@ -69,14 +69,15 @@ export const BoardMenu = () => {
 				position: "absolute",
 				left: position.current.left,
 				top: position.current.top,
-				padding: "12px 0",
+				gap: "2px",
 			}}
+			padding={4}
 			zIndex={5}
 		>
 			<Items />
-			<UiSeparator vertical={false} />
+			<UiSeparator className={styles.separator} vertical={false} />
 			<MouseOrTrackpad />
-			<UiSeparator vertical={false} />
+			<UiSeparator className={styles.separator} vertical={false} />
 			<Comments />
 		</UiPanel>
 	) : (

@@ -1,8 +1,17 @@
 .btn {
 	border: none;
 	outline: none;
-	padding: 12px;
 	justify-content: space-between;
+	border-radius: 6px;
+	font-family: "Manrope", "Arial";
+	font-weight: 400;
+	font-size: 14px;
+	line-height: 20px;
+	padding: 6px;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	min-width: 168px;
 }
 
 .buttonContainer {
@@ -18,7 +27,11 @@
 	width: 100%;
 }
 
-.btn:active {
-	border: none !important;
-	outline: none !important;
+.separator {
+	transform: translateX(-4px);
+	width: calc(100% + 8px);
+}
+
+.btn:hover {
+	background-color: rgba(10, 15, 41, 0.04);
 }

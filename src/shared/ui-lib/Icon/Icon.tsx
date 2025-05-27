@@ -164,7 +164,11 @@ export type IconId =
 	| "support"
 	| "Mouse"
 	| "Trackpad"
-	| "Auto";
+	| "Auto"
+	| "MouseOrTrackpad"
+	| "Paste"
+	| "EyeOpen"
+	| "EyeCrossed";
 
 type Props = {
 	iconName: IconId;

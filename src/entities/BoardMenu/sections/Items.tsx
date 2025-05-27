@@ -6,6 +6,7 @@ import { useAppContext } from "features/AppContext";
 import { useAccount } from "App/useAccount";
 import { pasteTextToTheBoard } from "App/Paste/pasteTextToTheBoard";
 import { useTranslation } from "react-i18next";
+import { Icon } from "shared/ui-lib/Icon/Icon";
 
 export const Items = () => {
 	const { board } = useAppContext();
@@ -73,13 +74,12 @@ export const Items = () => {
 
 	return (
 		<>
-			<Button
-				onClick={handlePasteClick}
-				className={styles.btn}
-				pattern="tertiary"
-			>
-				{t("boardMenu.items.paste")}
-			</Button>
+			<button onClick={handlePasteClick} className={styles.btn}>
+				<div className={styles.buttonContainer}>
+					<Icon iconName="Paste" width={20} height={20} />
+					{t("boardMenu.items.paste")}
+				</div>
+			</button>
 		</>
 	);
 };
