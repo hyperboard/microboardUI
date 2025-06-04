@@ -3,7 +3,7 @@ import { Slate, Editable } from "slate-react";
 import { Leaf } from "./Leaf";
 import { Element } from "./Element";
 import { App } from "App";
-import { Board } from "Board";
+import { Board } from "microboard-temp";
 import { verticalAlignmentToFlex } from "./verticalAlignmentToFlex";
 import { RichText } from "Board/Items/RichText/RichText";
 import styles from "./TextEditor.module.css";
@@ -502,7 +502,7 @@ export class TextEditor extends React.Component<
 					>
 						<Slate
 							editor={text.editor.editor}
-							value={text.getText()}
+							initialValue={text.getText()}
 							// key={text.getId()}
 							key={text.rtCounter}
 							onChange={this.handleSelectionChange}
