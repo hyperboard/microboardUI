@@ -9,7 +9,7 @@ import type {
 	MutationRequestBody,
 	ParamsRecord,
 } from "./types";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 const { i18n } = conf;
 
 const RETRY_DELAY = 5_000;

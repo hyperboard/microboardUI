@@ -7,7 +7,7 @@ import { useClickOutside } from "shared/lib/useClickOutside";
 import { Icon } from "shared/ui-lib/Icon/Icon";
 import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
 import { useTranslation } from "react-i18next";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 import { notify } from "shared/ui-lib/Toast/notify";
 
 export const HyperLinkInput = () => {

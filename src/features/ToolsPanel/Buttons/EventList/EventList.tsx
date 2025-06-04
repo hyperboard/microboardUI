@@ -1,4 +1,4 @@
-import { useAppSubscription } from "Board/useBoardSubscription";
+import { useAppSubscription } from "App/useBoardSubscription";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import React, { CSSProperties, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";

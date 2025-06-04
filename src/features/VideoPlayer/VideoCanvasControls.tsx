@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { useAppSubscription } from "Board/useBoardSubscription";
+import { useAppSubscription } from "App/useBoardSubscription";
 import { useAppContext } from "features/AppContext";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { createPortal } from "react-dom";

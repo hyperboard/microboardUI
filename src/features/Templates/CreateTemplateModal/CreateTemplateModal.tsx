@@ -6,7 +6,7 @@ import { useAppContext } from "features/AppContext.tsx";
 import { getApiUrl } from "Config";
 import Cookies from "js-cookie";
 import styles from "./CreateTemplateModal.module.css";
-import { conf } from "Board/Settings.ts";
+import { conf } from "microboard-temp";
 import { useTolgee } from "@tolgee/react";
 import { useForceUpdate } from "shared/lib/useForceUpdate.ts";
 import { notify } from "shared/ui-lib/Toast/notify.tsx";

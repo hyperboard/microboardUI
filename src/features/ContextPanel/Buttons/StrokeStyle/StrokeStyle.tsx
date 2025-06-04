@@ -10,7 +10,7 @@ import {
 	MIN_STROKE_WIDTH,
 	STEP_STROKE_WIDTH,
 } from "Board/Items/Shape/ShapeData";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 import { UiColorInput } from "shared/ui-lib/UiColorInput";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import React from "react";

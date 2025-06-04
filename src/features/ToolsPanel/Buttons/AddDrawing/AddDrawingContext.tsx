@@ -2,7 +2,7 @@ import {
 	createStrictContext,
 	useStrictContext,
 } from "shared/lib/strictContext";
-import { DrawingTool } from "Board/Settings";
+import { DrawingTool } from "microboard-temp";
 
 export const AddDrawingContext = createStrictContext<{
 	setLastOpenedMenu: (menu: DrawingTool | null) => void;

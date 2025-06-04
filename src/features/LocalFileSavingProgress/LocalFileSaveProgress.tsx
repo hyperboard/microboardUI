@@ -1,7 +1,7 @@
 import React from "react";
 import { useAppContext } from "features/AppContext";
 import styles from "./LocalFileSaveProgress.module.css";
-import { useAppSubscription } from "Board/useBoardSubscription";
+import { useAppSubscription } from "App/useBoardSubscription";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { UiPanel } from "shared/ui-lib/UiPanel";
 

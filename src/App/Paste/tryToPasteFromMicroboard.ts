@@ -1,5 +1,5 @@
 import { Board } from "Board";
-import { validateItemsMap } from "Board/Validators";
+import { validateItemsMap } from "microboard-temp";
 
 export function tryToPasteFromMicroboard(text: string, board: Board): boolean {
 	try {

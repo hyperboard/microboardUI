@@ -6,7 +6,7 @@ import {
 } from "App/Connection";
 import { SessionStorage } from "App/SessionStorage";
 import { useAccount } from "App/useAccount";
-import { useAppSubscription } from "Board/useBoardSubscription";
+import { useAppSubscription } from "App/useBoardSubscription";
 import clsx from "clsx";
 import {
 	getContextItems,

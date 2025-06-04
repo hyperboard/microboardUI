@@ -1,5 +1,5 @@
 import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
-import { useAppSubscription } from "Board/useBoardSubscription";
+import { useAppSubscription } from "App/useBoardSubscription";
 import React, { useRef, useState } from "react";
 import { useAppContext } from "features/AppContext";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";

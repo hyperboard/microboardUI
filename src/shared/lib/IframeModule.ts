@@ -1,10 +1,9 @@
 import Cookies from "js-cookie";
 import { isIframe } from "./isIframe";
-import { exportBoardSnapshot } from "Board/Tools/ExportSnapshot/exportBoardSnapshot";
+import { exportBoardSnapshot, BoardTool } from "microboard-temp";
 import { App } from "App";
 import { Board } from "Board";
 import { ExportSnapshot } from "../../Board/Tools/ExportSnapshot/ExportSnapshot";
-import { BoardTool } from "Board/Tools/BoardTool";
 
 // type MessagePattern = "updateUserToken" | "iframeEvent" | "makeSnapshot";
 

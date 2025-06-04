@@ -5,7 +5,7 @@ import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
 import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
 import { SliderPicker } from "features/Pickers/SliderPicker/SliderPicker";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 import { UiColorInput } from "shared/ui-lib/UiColorInput";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import { ButtonWithMenu } from "../../ButtonWithMenu";

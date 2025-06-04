@@ -5,7 +5,7 @@ import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
 import { FillColorIndicator } from "shared/ui-lib/Icon/FillColorIndicator";
 import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 import { UiColorInput } from "shared/ui-lib/UiColorInput";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import btnStyle from "./ContextPanelButton.module.css";

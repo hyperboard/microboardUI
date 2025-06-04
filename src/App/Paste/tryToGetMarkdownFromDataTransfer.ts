@@ -1,5 +1,5 @@
 import { transformHtmlOrTextToMarkdown } from "Board/Items/RichText/transformHtmlToMarkdown";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 import { EditorContainer } from "Board/Items/RichText/EditorContainer";
 
 const isMarkdown = (text: string): boolean => {

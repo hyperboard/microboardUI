@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./TemplateItemsGrid.module.css";
 import { TemplateItem } from "./TemplateItem/TemplateItem";
 import clsx from "clsx";
-import { Template } from "Board/Settings";
+import { Template } from "microboard-temp";
 
 interface TemplateItemsGridProps {
 	templates: Template[];

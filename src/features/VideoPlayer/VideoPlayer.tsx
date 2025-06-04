@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { VideoItem } from "Board/Items/Video/Video";
 import { useAppContext } from "features/AppContext";
 import styles from "./VideoPlayer.module.css";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 import { captureFrame } from "Board/Items/Video/VideoHelpers";
 import YouTube from "react-youtube";
 

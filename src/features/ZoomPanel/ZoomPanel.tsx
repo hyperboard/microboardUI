@@ -1,5 +1,5 @@
 import { getHotkeyLabel } from "Board/Keyboard";
-import { useAppSubscription } from "Board/useBoardSubscription";
+import { useAppSubscription } from "App/useBoardSubscription";
 import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";

@@ -1,6 +1,6 @@
 import type { ViewMode } from "App/Connection";
 import type { InterfaceType } from "Board/Board";
-import { useAppSubscription } from "Board/useBoardSubscription";
+import { useAppSubscription } from "App/useBoardSubscription";
 import { isIframe } from "shared/lib/isIframe";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import React, { useEffect, type ReactNode } from "react";

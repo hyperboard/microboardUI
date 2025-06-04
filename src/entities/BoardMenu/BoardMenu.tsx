@@ -4,7 +4,7 @@ import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
 import { useAppContext } from "features/AppContext";
 import { Mbr } from "../../Board/Items";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
-import { useAppSubscription } from "Board/useBoardSubscription";
+import { useAppSubscription } from "App/useBoardSubscription";
 import { UiSeparator } from "shared/ui-lib/UiSeparator/UiSeparator";
 import { Comments } from "entities/BoardMenu/sections/Comments";
 import { Items } from "entities/BoardMenu/sections/Items";

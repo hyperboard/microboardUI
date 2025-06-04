@@ -2,7 +2,7 @@ import { useAccount } from "App/useAccount";
 import React from "react";
 import styles from "./LimitsTable.module.css";
 import { useTranslation } from "react-i18next";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 const { i18n } = conf;
 
 const PAYMENT_TYPE_DISPLAYNAME = {

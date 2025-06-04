@@ -35,7 +35,7 @@ import { FixedPoint } from "Board/Items/Connector";
 import { Descendant } from "slate";
 import { TextNode } from "Board/Items/RichText/Editor/TextNode";
 import type { HorisontalAlignment } from "Board/Items/Alignment";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 import {
 	BoardPoint,
 	toRelativePoint,

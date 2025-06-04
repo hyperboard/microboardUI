@@ -15,7 +15,7 @@ import { Board } from "Board";
 import { useCopyBoardItems } from "./useCopyBoardItems";
 import { openModal, setModalData } from "shared/ui-lib/UiModal/UiModalContext";
 import { LOADING_NOTIFICATION } from "../Notifications/LoadingNotification";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 
 type SupportedMiroType =
 	| IMiroBoardItemConnector

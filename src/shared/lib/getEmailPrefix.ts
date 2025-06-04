@@ -1,4 +1,4 @@
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 const { i18n } = conf;
 
 export function getEmailPrefix(

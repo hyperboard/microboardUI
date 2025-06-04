@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { useAppSubscription } from "Board/useBoardSubscription";
+import { useAppSubscription } from "App/useBoardSubscription";
 import { useAppContext } from "features/AppContext";
 import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
 import styles from "./HyperLink.module.css";

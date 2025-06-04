@@ -10,7 +10,7 @@ import { CategoriesMenu } from "./CategoriesMenu/CategoriesMenu";
 import i18next from "i18next";
 import { useDebounce } from "shared/lib/useDebounce";
 import { TemplateItemsGrid } from "./TemplateItemsGrid/TemplateItemsGrid";
-import { Template, TemplateCategory } from "Board/Settings";
+import { Template, TemplateCategory } from "microboard-temp";
 import { LanguagesDropdown } from "./LanguagesDropdown/LanguagesDropdown";
 import { getCorrectEnding } from "shared/lib/getCorrectEnding";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";

@@ -1,7 +1,7 @@
 import { Board } from "Board";
 import { BoardSnapshot } from "Board/Board";
 import { createEvents } from "Board/Events/Events";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 import { Account } from "entities/account";
 import { getAuthInterceptor } from "entities/account/AuthInterceptor";
 import { api, boardsApi } from "shared/api";

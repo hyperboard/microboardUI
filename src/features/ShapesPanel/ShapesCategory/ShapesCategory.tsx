@@ -8,7 +8,7 @@ import { Icon } from "../../../shared/ui-lib/Icon";
 import clsx from "clsx";
 import { useAppContext } from "features/AppContext";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
-import { useAppSubscription } from "Board/useBoardSubscription";
+import { useAppSubscription } from "App/useBoardSubscription";
 import { UiButton } from "shared/ui-lib/UiButton";
 
 interface Props {

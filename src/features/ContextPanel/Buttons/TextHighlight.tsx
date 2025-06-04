@@ -2,7 +2,7 @@ import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
 import { TextHighlightIndicator } from "shared/ui-lib/Icon";
 import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import React from "react";
 import { useTranslation } from "react-i18next";

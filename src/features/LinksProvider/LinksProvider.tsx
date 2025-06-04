@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { useAppSubscription } from "../../Board/useBoardSubscription";
+import { useAppSubscription } from "../../App/useBoardSubscription";
 import { useForceUpdate } from "../../shared/lib/useForceUpdate";
 import { useAppContext } from "../AppContext";
 import { LinkToButton } from "./LinkToButton/LinkToButton";

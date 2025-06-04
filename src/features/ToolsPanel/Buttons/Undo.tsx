@@ -4,7 +4,7 @@ import { Icon } from "shared/ui-lib/Icon";
 import { UiButton } from "shared/ui-lib/UiButton";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { useAppSubscription } from "Board/useBoardSubscription";
+import { useAppSubscription } from "App/useBoardSubscription";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 
 export function Undo() {

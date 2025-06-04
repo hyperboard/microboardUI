@@ -4,7 +4,7 @@ import { AddDrawingContext } from "./AddDrawingContext";
 import { Icon } from "../../../../shared/ui-lib/Icon";
 import { ButtonWithMenu } from "../ButtonWithMenu";
 import { useTranslation } from "react-i18next";
-import { DrawingTool } from "Board/Settings";
+import { DrawingTool } from "microboard-temp";
 import style from "./AddDrawing.module.css";
 import { AddHighlighter } from "./AddHighlighter/AddHighlighter";
 import { AddPen } from "./AddPen/AddPen";

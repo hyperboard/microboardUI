@@ -1,5 +1,5 @@
 import { Board } from "Board/Board";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 import { AudioItem } from "Board/Items/Audio/Audio";
 import { calculateAudioPosition } from "Board/Items/Audio/AudioHelpers";
 

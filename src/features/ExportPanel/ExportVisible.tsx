@@ -1,4 +1,4 @@
-import { useAppSubscription } from "Board/useBoardSubscription";
+import { useAppSubscription } from "App/useBoardSubscription";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import React, { PropsWithChildren } from "react";
 import { useAppContext } from "features/AppContext";

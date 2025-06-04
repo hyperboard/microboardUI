@@ -3,7 +3,7 @@ import { Icon } from "shared/ui-lib/Icon/index";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
-import { useAppSubscription } from "Board/useBoardSubscription";
+import { useAppSubscription } from "App/useBoardSubscription";
 import styles from "./AddComment.module.css";
 import { useAccount } from "App/useAccount";
 import { UiButton } from "shared/ui-lib/UiButton";

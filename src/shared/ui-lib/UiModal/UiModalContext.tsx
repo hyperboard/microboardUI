@@ -1,7 +1,7 @@
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { useLayoutEffect } from "react";
 import { Subject } from "shared/Subject";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 
 export type ModalId = string | symbol | null;
 

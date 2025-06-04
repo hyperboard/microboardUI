@@ -1,5 +1,5 @@
 import { SliderPicker } from "features/Pickers/SliderPicker/SliderPicker";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 import React from "react";
 import style from "./DrawStrokeWidth.module.css";
 import { useAppContext } from "features/AppContext";

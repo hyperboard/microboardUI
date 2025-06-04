@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import clsx from "clsx";
 import { Icon } from "../../../../shared/ui-lib/Icon";
 import styles from "./LanguagesDropdown.module.css";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 import { useTranslation } from "react-i18next";
 import { useClickOutside } from "shared/lib/useClickOutside";
 

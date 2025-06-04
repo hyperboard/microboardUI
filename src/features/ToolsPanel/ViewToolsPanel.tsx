@@ -1,4 +1,4 @@
-import { useAppSubscription } from "Board/useBoardSubscription";
+import { useAppSubscription } from "App/useBoardSubscription";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import React, { useEffect } from "react";

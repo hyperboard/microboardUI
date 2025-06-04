@@ -15,7 +15,7 @@ import { EditorContainer } from "Board/Items/RichText/EditorContainer";
 import { t } from "i18next";
 import { BlockNode } from "Board/Items/RichText/Editor/BlockNode";
 import { HyperLinkCreationData } from "features/hyperLink/HyperLinkContext";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 import { notify } from "shared/ui-lib/Toast/notify";
 import { getSlateSelectionRect } from "Board/Items/RichText/getSlateSelectionRect";
 

@@ -5,7 +5,7 @@ import {
 	PresenceEventType,
 	UserJoinMsg,
 } from "Board/Presence/Events";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 import { getApiUrl } from "Config";
 import type { Account } from "entities/account";
 import toast from "react-hot-toast";

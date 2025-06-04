@@ -8,7 +8,7 @@ import { SessionStorage } from "App/SessionStorage";
 import { useAccount } from "App/useAccount";
 import { AINode } from "Board/Items/AINode/AINode";
 import { getControlPointData } from "Board/Selection/QuickAddButtons/quickAddHelpers";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 import { Account } from "entities/account";
 import {
 	createNode,

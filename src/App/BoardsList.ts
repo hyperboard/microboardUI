@@ -2,7 +2,7 @@ import type { Account } from "entities/account";
 import { boardsApiV2, foldersApi } from "shared/apiV2";
 import { Subject } from "shared/Subject";
 import { Storage } from "./Storage";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 const { i18n } = conf;
 
 type FolderItem = {

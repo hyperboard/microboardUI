@@ -17,7 +17,7 @@ import styles from "./SearchInput.module.css";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import isEmail from "validator/lib/isEmail";
-import { validateItemsMap } from "Board/Validators";
+import { validateItemsMap } from "microboard-temp";
 
 export type SearchOption = {
 	value: string;

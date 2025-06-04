@@ -2,7 +2,7 @@ import { getHotkeyLabel } from "Board/Keyboard";
 import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
 import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";

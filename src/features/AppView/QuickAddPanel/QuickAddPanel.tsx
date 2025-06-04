@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { Icon, ShapeIcon } from "shared/ui-lib/Icon";
 import { BASIC_SHAPES } from "Board/Items/Shape/ShapeData";
 import { useAppContext } from "features/AppContext";
-import { useAppSubscription } from "Board/useBoardSubscription";
+import { useAppSubscription } from "App/useBoardSubscription";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { UiPanel } from "shared/ui-lib/UiPanel";
 import { useTranslation } from "react-i18next";

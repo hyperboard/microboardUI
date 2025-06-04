@@ -2,7 +2,7 @@ import React, { SyntheticEvent, useState, useRef } from "react";
 import styles from "./templateItem.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { useAppContext } from "features/AppContext";
-import { Template } from "Board/Settings";
+import { Template } from "microboard-temp";
 import PlaceholderImg from "shared/assets/imgs/no-img-icon.svg";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";

@@ -1,4 +1,4 @@
-import { useAppSubscription } from "Board/useBoardSubscription";
+import { useAppSubscription } from "App/useBoardSubscription.ts";
 import { useAppContext } from "features/AppContext";
 import AIChatPanel from "features/GenerateChart/AIChatPanel";
 import React, { useEffect, useState } from "react";

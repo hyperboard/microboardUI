@@ -7,7 +7,7 @@ import { Comment } from "Board/Items/Comment/Comment";
 import clsx from "clsx";
 import { ThreadPanel } from "../Thread/ThreadPanel.tsx";
 import { useCommentsContext } from "../CommentsContext.tsx";
-import { useAppSubscription } from "Board/useBoardSubscription";
+import { useAppSubscription } from "App/useBoardSubscription.ts";
 import { useForceUpdate } from "shared/lib/useForceUpdate.ts";
 import { Point } from "Board/Items/Point/Point";
 import { CommentPreview } from "./CommentPreview/CommentPreview.tsx";

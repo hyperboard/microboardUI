@@ -10,7 +10,7 @@ import { UserPlanUsage } from "features/UserPlan/UserPlanUsage";
 import styles from "./UserPlanModal.module.css";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 
 export const LIMITS_MODAL_ID = Symbol("limitsModal");
 

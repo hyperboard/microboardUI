@@ -17,7 +17,7 @@ import { createWheel } from "./Wheel/Wheel";
 import { isSafari } from "./isSafari";
 import { uploadAudio } from "Board/Items/Audio/uploadAudio";
 import { Account } from "entities/account";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 import { tempStorage } from "App/SessionStorage";
 import { AppSettings } from "App/App";
 

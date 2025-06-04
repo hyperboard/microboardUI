@@ -3,7 +3,7 @@ import styles from "./CategoriesMenu.module.css";
 import clsx from "clsx";
 import { Icon } from "../../../../shared/ui-lib/Icon";
 import { IconId } from "../../../../shared/ui-lib/Icon/Icon";
-import { TemplateCategory } from "Board/Settings";
+import { TemplateCategory } from "microboard-temp";
 import { useTranslation } from "react-i18next";
 
 interface CategoriesMenuProps {

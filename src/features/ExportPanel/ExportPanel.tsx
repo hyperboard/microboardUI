@@ -1,4 +1,4 @@
-import { useAppSubscription } from "Board/useBoardSubscription";
+import { useAppSubscription } from "App/useBoardSubscription";
 import clsx from "clsx";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import React, { useEffect, useState } from "react";

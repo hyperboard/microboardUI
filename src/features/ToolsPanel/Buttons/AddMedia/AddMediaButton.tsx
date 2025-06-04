@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { UiButton } from "shared/ui-lib/UiButton/index";
 import { uploadVideo } from "Board/Items/Video/uploadVideo";
 import { uploadAudio } from "Board/Items/Audio/uploadAudio";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 import { validateMediaFile } from "Board/Items/Image/ImageHelpers";
 
 function bytesToGigabytes(bytes: number): number {

@@ -1,6 +1,6 @@
 import { useAccount } from "App/useAccount";
 import { useBoardsList } from "App/useBoardsList";
-import { useAppSubscription } from "Board/useBoardSubscription";
+import { useAppSubscription } from "App/useBoardSubscription";
 import clsx from "clsx";
 import Cookies from "js-cookie";
 import { useForceUpdate } from "shared/lib/useForceUpdate";

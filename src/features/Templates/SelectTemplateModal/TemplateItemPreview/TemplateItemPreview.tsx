@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "./TemplateItemPreview.module.css";
 import { TemplateItemsGrid } from "../TemplateItemsGrid/TemplateItemsGrid";
-import { Template } from "Board/Settings";
+import { Template } from "microboard-temp";
 import { useTranslation } from "react-i18next";
 import { pasteSnapshot } from "features/Templates/lib";
 import { UiButton } from "shared/ui-lib/UiButton";

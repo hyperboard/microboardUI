@@ -11,7 +11,7 @@ import { Connector } from "Board/Items/Connector/Connector";
 import { Mbr } from "Board/Items/Mbr/Mbr";
 import { Board } from "Board/Board";
 import { ImageItem } from "Board/Items/Image";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 const { i18n } = conf;
 
 export type PossibleParentNode = AINode | Shape | RichText | Sticker;

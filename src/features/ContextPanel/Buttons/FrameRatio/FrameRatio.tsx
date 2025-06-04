@@ -12,7 +12,7 @@ import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import style from "./FrameRatio.module.css";
 import btnStyle from "../ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 const { i18n } = conf;
 
 const MENU_NAME = "FrameType";

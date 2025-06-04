@@ -16,7 +16,7 @@ import styles from "./UserPlanModal.module.css";
 import { UserPlanUsage } from "./UserPlanUsage";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 
 export const USER_PLAN_MODAL_ID = "USER_PLAN_MODAL_ID";
 

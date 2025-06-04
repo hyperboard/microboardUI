@@ -1,4 +1,4 @@
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 import { Board } from "Board/Board";
 import {
 	getYouTubeThumbnail,

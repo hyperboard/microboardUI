@@ -16,7 +16,7 @@ import { CryptoCheckout } from "shared/api/billing";
 import { MessageResponse } from "shared/api/types";
 import { getEmailPrefix } from "shared/lib/getEmailPrefix";
 import { Subject } from "shared/Subject";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 
 type AccountInfo = {
 	id: number;

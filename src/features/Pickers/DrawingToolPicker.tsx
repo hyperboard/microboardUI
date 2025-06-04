@@ -1,6 +1,6 @@
 import React from "react";
 import { Icon } from "../../shared/ui-lib/Icon";
-import { conf, DrawingTool } from "Board/Settings";
+import { conf, DrawingTool } from "microboard-temp";
 import { UiButton } from "shared/ui-lib/UiButton";
 
 type Props = {

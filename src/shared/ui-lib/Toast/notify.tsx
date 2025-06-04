@@ -4,7 +4,7 @@ import toast, { ToastPosition } from "react-hot-toast";
 import { Icon } from "shared/ui-lib/Icon";
 import { UiButton } from "../UiButton";
 import style from "./Toast.module.css";
-import { conf } from "Board/Settings";
+import { conf } from "microboard-temp";
 import { Loader } from "shared/ui-lib/Loader/Loader.tsx";
 
 type Props = {

@@ -8,7 +8,7 @@ import clsx from "clsx";
 import { useCommentsContext } from "entities/comments";
 import { useAppContext } from "features/AppContext";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
-import { useAppSubscription } from "Board/useBoardSubscription";
+import { useAppSubscription } from "App/useBoardSubscription";
 import { useClickOutside } from "shared/lib/useClickOutside";
 import { useAccount } from "App/useAccount";
 import { UiButton } from "shared/ui-lib/UiButton";
