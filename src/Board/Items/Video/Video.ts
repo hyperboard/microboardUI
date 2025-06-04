@@ -13,6 +13,7 @@ import { Point } from "Board/Items/Point/Point";
 import { Line } from "Board/Items/Line/Line";
 import { conf } from "Board/Settings";
 import { Placeholder } from "Board/Items/Placeholder/Placeholder";
+import { BaseItem } from "Board/Items/BaseItem/BaseItem";
 
 export interface VideoItemData {
 	itemType: "Video";
@@ -67,7 +68,7 @@ export const createPlaceholderImage = (
 	return image;
 };
 
-export class VideoItem extends Mbr {
+export class VideoItem extends BaseItem {
 	readonly itemType = "Video";
 	parent = "Board";
 	preview: HTMLImageElement;
@@ -91,10 +92,10 @@ export class VideoItem extends Mbr {
 		{ url, videoDimension, previewUrl }: VideoConstructorData,
 		board: Board,
 		private events?: Events,
-		private id = "",
+		id = "",
 		private extension: string = "mp4",
 	) {
-		super();
+		super(board, id);
 		this.isStorageUrl = !conf.getYouTubeId(url);
 		this.preview = createPlaceholderImage(
 			videoDimension.width,

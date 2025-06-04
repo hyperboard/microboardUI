@@ -50,6 +50,7 @@ import { UiSeparator } from "shared/ui-lib/UiSeparator";
 import { SaveImg } from "./Buttons/RestOptionsMenu/Items/SaveImg";
 import { SaveVideoOrAudio } from "features/ContextPanel/Buttons/RestOptionsMenu/Items/SaveVideoOrAudio";
 import { AddList } from "features/ContextPanel/Buttons/AddList/AddList";
+import { ToggleIsShining } from "features/ContextPanel/Buttons/ToggleIsShining";
 
 export function ContextPanel(): React.ReactElement | null {
 	const { app, board } = useAppContext();
@@ -105,6 +106,7 @@ export function ContextPanel(): React.ReactElement | null {
 	const isAINode = board.selection.items.isAllItemsType("AINode");
 	const isVideo = board.selection.items.isAllItemsType("Video");
 	const isAudio = board.selection.items.isAllItemsType("Audio");
+	const isStar = board.selection.items.isAllItemsType("Star");
 	const isDifferentItems =
 		!isText &&
 		!isSticker &&
@@ -116,7 +118,8 @@ export function ContextPanel(): React.ReactElement | null {
 		!isPlaceholder &&
 		!isAINode &&
 		!isVideo &&
-		!isAudio;
+		!isAudio &&
+		!isStar;
 
 	return (
 		<PanelContext.Provider
@@ -393,6 +396,22 @@ export function ContextPanel(): React.ReactElement | null {
 						<UiSeparator vertical />
 						<AIModel />
 						<AIGeneration />
+						<UiSeparator vertical />
+						<RestOptionsMenu>
+							<BringToFront />
+							<SendToBack />
+							<CopyItemLink />
+							<SetLinkTo />
+							<Duplicate />
+						</RestOptionsMenu>
+					</>
+				)}
+				{isStar && !isSelectUnderPointer && !isLocked && (
+					<>
+						<Lock rounded="left" />
+						<UiSeparator vertical />
+						<Delete />
+						<ToggleIsShining />
 						<UiSeparator vertical />
 						<RestOptionsMenu>
 							<BringToFront />

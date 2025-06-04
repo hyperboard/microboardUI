@@ -1,7 +1,6 @@
 import { Events, Operation } from "Board/Events";
 import { Subject } from "shared/Subject";
 import { DrawingContext } from "../DrawingContext";
-import { Mbr } from "../Mbr";
 import { Transformation } from "../Transformation";
 import { TransformationData } from "../Transformation/TransformationData";
 import { Board } from "Board/Board";
@@ -12,6 +11,7 @@ import { Point } from "Board/Items/Point/Point";
 import { Line } from "Board/Items/Line/Line";
 import { conf } from "Board/Settings";
 import { AudioCommand } from "Board/Items/Audio/AudioCommand";
+import { BaseItem } from "Board/Items/BaseItem/BaseItem";
 
 export interface AudioItemData {
 	itemType: "Audio";
@@ -21,7 +21,7 @@ export interface AudioItemData {
 	extension?: string;
 }
 
-export class AudioItem extends Mbr {
+export class AudioItem extends BaseItem {
 	readonly itemType = "Audio";
 	parent = "Board";
 	readonly transformation: Transformation;
@@ -31,7 +31,6 @@ export class AudioItem extends Mbr {
 	beforeLoadCallbacks: ((audio: AudioItem) => void)[] = [];
 	transformationRenderBlock?: boolean = undefined;
 	private url = "";
-	board: Board;
 	private isPlaying = false;
 	private currentTime = 0;
 	private isStorageUrl = true;
@@ -41,10 +40,10 @@ export class AudioItem extends Mbr {
 		isStorageUrl: boolean,
 		url?: string,
 		private events?: Events,
-		private id = "",
+		id = "",
 		private extension?: string,
 	) {
-		super();
+		super(board, id);
 		this.linkTo = new LinkTo(this.id, events);
 		this.board = board;
 		this.isStorageUrl = isStorageUrl;

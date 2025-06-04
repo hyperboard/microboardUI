@@ -9,7 +9,6 @@ import { Transformation } from "../Transformation";
 import { DrawingCommand } from "./DrawingCommand";
 import { DrawingOperation } from "./DrawingOperation";
 import { TransformationData } from "../Transformation/TransformationData";
-import { Geometry } from "../Geometry";
 import { isSafari } from "App/isSafari";
 import { LinkTo } from "../LinkTo/LinkTo";
 import {
@@ -19,6 +18,7 @@ import {
 import { DocumentFactory } from "Board/api/DocumentFactory";
 import { conf } from "Board/Settings";
 import { Board } from "Board/Board";
+import { BaseItem } from "Board/Items/BaseItem/BaseItem";
 
 export interface DrawingData {
 	itemType: "Drawing";
@@ -29,7 +29,7 @@ export interface DrawingData {
 	linkTo?: string;
 }
 
-export class Drawing extends Mbr implements Geometry {
+export class Drawing extends BaseItem {
 	readonly itemType = "Drawing";
 	parent = "Board";
 	readonly transformation: Transformation;
@@ -45,12 +45,12 @@ export class Drawing extends Mbr implements Geometry {
 	transformationRenderBlock?: boolean = undefined;
 
 	constructor(
-		private board: Board,
+		board: Board,
 		public points: Point[],
 		private events?: Events,
-		private id = "",
+		id = "",
 	) {
-		super();
+		super(board, id);
 		this.transformation = new Transformation(id, events);
 		this.linkTo = new LinkTo(this.id, this.events);
 		this.transformation.subject.subscribe(() => {

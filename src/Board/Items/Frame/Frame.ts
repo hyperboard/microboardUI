@@ -9,7 +9,6 @@ import {
 	RichText,
 	Matrix,
 } from "..";
-import { Geometry } from "../Geometry";
 import { Subject } from "shared/Subject";
 import { DrawingContext } from "../DrawingContext";
 import { Operation } from "Board/Events";
@@ -33,9 +32,10 @@ import { DefaultFrameData, FRAME_TITLE_COLOR, FrameData } from "./FrameData";
 import { DocumentFactory } from "Board/api/DocumentFactory";
 
 import { conf } from "Board/Settings";
+import { BaseItem } from "Board/Items/BaseItem/BaseItem";
 const defaultFrameData = new DefaultFrameData();
 
-export class Frame implements Geometry {
+export class Frame extends BaseItem {
 	readonly itemType = "Frame";
 	parent = "Board";
 	readonly transformation: Transformation;
@@ -51,18 +51,19 @@ export class Frame implements Geometry {
 	transformationRenderBlock?: boolean = undefined;
 
 	constructor(
-		private board: Board,
+		board: Board,
 		private getItemById: (id: string) => Item | undefined,
-		private id = "",
+		id = "",
 		private name = "",
 		private shapeType = defaultFrameData.shapeType,
-		private backgroundColor = defaultFrameData.backgroundColor,
-		private backgroundOpacity = defaultFrameData.backgroundOpacity,
-		private borderColor = defaultFrameData.borderColor,
-		private borderOpacity = defaultFrameData.borderOpacity,
-		private borderStyle = defaultFrameData.borderStyle,
-		private borderWidth = defaultFrameData.borderWidth,
+		public backgroundColor = defaultFrameData.backgroundColor,
+		public backgroundOpacity = defaultFrameData.backgroundOpacity,
+		public borderColor = defaultFrameData.borderColor,
+		public borderOpacity = defaultFrameData.borderOpacity,
+		public borderStyle = defaultFrameData.borderStyle,
+		public borderWidth = defaultFrameData.borderWidth,
 	) {
+		super(board, id);
 		this.textContainer = Frames[this.shapeType].textBounds.copy();
 		this.path = Frames[this.shapeType].path.copy();
 		this.transformation = new Transformation(this.id, this.board.events);

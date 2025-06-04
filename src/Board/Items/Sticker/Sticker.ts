@@ -29,6 +29,7 @@ import { SessionStorage } from "App/SessionStorage";
 import { Board } from "Board";
 import { DocumentFactory } from "Board/api/DocumentFactory";
 import { conf } from "Board/Settings";
+import { BaseItem } from "Board/Items/BaseItem/BaseItem";
 
 export const stickerColors = {
 	Purple: "rgb(233, 208, 255)",
@@ -74,7 +75,7 @@ const defaultStickerData = new StickerData();
 const _hypotenuse = Math.sqrt(height * height + width * width);
 const _relation = width / height;
 
-export class Sticker implements Geometry {
+export class Sticker extends BaseItem {
 	parent = "Board";
 	readonly itemType = "Sticker";
 	readonly transformation: Transformation;
@@ -86,10 +87,11 @@ export class Sticker implements Geometry {
 	transformationRenderBlock?: boolean = undefined;
 
 	constructor(
-		private board: Board,
-		private id = "",
-		private backgroundColor = defaultStickerData.backgroundColor,
+		board: Board,
+		id = "",
+		public backgroundColor = defaultStickerData.backgroundColor,
 	) {
+		super(board, id);
 		this.linkTo = new LinkTo(this.id, this.board.events);
 		this.transformation = new Transformation(this.id, this.board.events);
 		this.text = new RichText(

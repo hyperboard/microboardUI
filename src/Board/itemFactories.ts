@@ -1,4 +1,4 @@
-import type { RichTextData } from "./Items";
+import { registeredItemFactories, RichTextData } from "./Items";
 import {
 	Mbr,
 	Connector,
@@ -29,7 +29,7 @@ interface ItemFactory {
 	(id: string, data: ItemData, board: Board): Item;
 }
 
-export type ItemFactories = Record<ItemType, ItemFactory>;
+export type ItemFactories = Record<string, ItemFactory>;
 export const itemFactories: ItemFactories = {
 	Sticker: createSticker,
 	Shape: createShape,
@@ -58,7 +58,7 @@ function createComment(id: string, data: ItemData, board: Board): Comment {
 	if (!isCommentData(data)) {
 		throw new Error("Invalid data for Comment");
 	}
-	const comment = new Comment(new Point(), board.events)
+	const comment = new Comment(board, new Point(), board.events)
 		.setId(id)
 		.deserialize(data);
 	return comment;
@@ -172,7 +172,7 @@ function createPlaceholder(
 	if (!isPlaceholderData(data)) {
 		throw new Error("Invalid data for Placeholder");
 	}
-	const placeholder = new Placeholder(board.events, data.miroData)
+	const placeholder = new Placeholder(board, board.events, data.miroData)
 		.setId(id)
 		.deserialize(data);
 

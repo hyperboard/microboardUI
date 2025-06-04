@@ -12,6 +12,9 @@ import { Transformation, Matrix, TransformationData } from "../Transformation";
 import { PlaceholderOperation } from "./PlaceholderOperation";
 import { PlaceholderCommand } from "./PlaceholderCommand";
 import { getResize } from "../../Selection/Transformer/TransformerHelpers/getResizeMatrix.ts";
+import { BaseItem } from "Board/Items/BaseItem/BaseItem";
+import { Board } from "Board/Board";
+import { DocumentFactory } from "Board/api/DocumentFactory";
 
 const PlaceholderImg = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M5 11.1L7 9.1L12.5 14.6L16 11.1L19 14.1V5H5V11.1ZM4 3H20C20.2652 3 20.5196 3.10536 20.7071 3.29289C20.8946 3.48043 21 3.73478 21 4V20C21 20.2652 20.8946 20.5196 20.7071 20.7071C20.5196 20.8946 20.2652 21 20 21H4C3.73478 21 3.48043 20.8946 3.29289 20.7071C3.10536 20.5196 3 20.2652 3 20V4C3 3.73478 3.10536 3.48043 3.29289 3.29289C3.48043 3.10536 3.73478 3 4 3ZM15.5 10C15.1022 10 14.7206 9.84196 14.4393 9.56066C14.158 9.27936 14 8.89782 14 8.5C14 8.10218 14.158 7.72064 14.4393 7.43934C14.7206 7.15804 15.1022 7 15.5 7C15.8978 7 16.2794 7.15804 16.5607 7.43934C16.842 7.72064 17 8.10218 17 8.5C17 8.89782 16.842 9.27936 16.5607 9.56066C16.2794 9.84196 15.8978 10 15.5 10Z" fill="white" fill-opacity="0.6"/>
@@ -25,7 +28,7 @@ export interface PlaceholderData {
 	miroData?: unknown;
 }
 
-export class Placeholder {
+export class Placeholder extends BaseItem {
 	readonly itemType = "Placeholder";
 	shapeType = "Rectangle";
 	parent = "Board";
@@ -37,12 +40,14 @@ export class Placeholder {
 	iconImage;
 
 	constructor(
+		board: Board,
 		private events?: Events,
 		private miroData?: unknown,
-		private id = "",
-		private backgroundColor = "#E5E5EA",
+		id = "",
+		public backgroundColor = "#E5E5EA",
 		private icon: string = PlaceholderImg?.toString() || "",
 	) {
+		super(board, id);
 		this.transformation = new Transformation(this.id, this.events);
 		this.transformation.subject.subscribe((_subject: Transformation) => {
 			this.transformPath();
@@ -350,6 +355,10 @@ export class Placeholder {
 
 		this.renderShadowShape(context);
 		this.renderIcon(context);
+	}
+
+	renderHTML(documentFactory: DocumentFactory): HTMLElement {
+		return documentFactory.createElement("div");
 	}
 
 	getLinkTo(): undefined {

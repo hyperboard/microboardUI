@@ -1,15 +1,27 @@
-import { Matrix } from ".";
-import { Mbr, RichText } from "..";
-import { ResizeOp } from "./BaseItemOperation";
+import { Mbr } from "Board/Items/Mbr/Mbr";
+import { Geometry } from "Board/Items/Geometry";
+import { RichText } from "Board/Items/RichText/RichText";
+import { LinkTo } from "Board/Items/LinkTo/LinkTo";
+import { Transformation } from "Board/Items/Transformation/Transformation";
+import { Board } from "Board/Board";
+import { DrawingContext } from "Board/Items/DrawingContext";
+import { DocumentFactory } from "Board/api/DocumentFactory";
+import { Operation } from "Board/Events";
 
-export class BaseItem extends Mbr {
-	matrix = new Matrix();
-	previous = new Matrix();
-	isLocked = false;
-	link: string | null = null;
+export abstract class BaseItem extends Mbr implements Geometry {
+	readonly transformation: Transformation;
+	readonly linkTo: LinkTo;
+	readonly parent: string = "Board";
+	transformationRenderBlock?: boolean = undefined;
+	board: Board;
+	id: string;
 
-	constructor(private id = "") {
+	constructor(board: Board, id = "") {
 		super();
+		this.board = board;
+		this.id = id;
+		this.linkTo = new LinkTo(this.id, this.board.events);
+		this.transformation = new Transformation(this.id, this.board.events);
 	}
 
 	getId(): string {
@@ -18,55 +30,28 @@ export class BaseItem extends Mbr {
 
 	setId(id: string): this {
 		this.id = id;
+		this.transformation.setId(id);
+		this.linkTo.setId(id);
 		this.getRichText()?.setId(id);
 		return this;
 	}
 
-	/** Get RichText handle if exists */
+	getLinkTo(): string | undefined {
+		return this.linkTo.link;
+	}
+
 	getRichText(): RichText | null {
 		return null;
 	}
 
-	/** Get link from this item to another item */
-	getLinkFromItem(): string | null {
-		return this.link;
+	emit(operation: Operation): void {
+		this.board.events.emit(operation);
 	}
 
-	setLinkFromItem(link: string): void {
-		this.link = link;
-	}
-
-	/** Get link to this */
-	getLinkToItem(): string {
-		return `${window.location.origin}${
-			window.location.pathname
-		}?focus=${this.getId()}`;
-	}
-
-	isOnlyProportionalScalingAllowed(): boolean {
-		return false;
-	}
-
-	transform(matrix: Matrix): void {
-		this.matrix.multiplyByMatrix(matrix);
-	}
-
-	resize(data: ResizeOp): void {
-		const itemMbr = this.getMbr();
-
-		this.matrix.scaleX *= data.matrix.scaleX;
-		this.matrix.scaleY *= data.matrix.scaleY;
-
-		const deltaX = itemMbr.left - data.mbrBefore.left;
-		const deltaY = itemMbr.top - data.mbrBefore.top;
-
-		this.matrix.translateX +=
-			deltaX * data.matrix.scaleX - deltaX + data.matrix.translateX;
-		this.matrix.translateY +=
-			deltaY * data.matrix.scaleY - deltaY + data.matrix.translateY;
-	}
-
-	setLock(isLocked: boolean): void {
-		this.isLocked = isLocked;
-	}
+	abstract apply(op: Operation): void;
+	abstract render(context: DrawingContext): void;
+	abstract renderHTML(documentFactory: DocumentFactory): HTMLElement;
+	abstract serialize(): any;
+	abstract deserialize(data: any): this;
+	abstract isClosed(): boolean;
 }

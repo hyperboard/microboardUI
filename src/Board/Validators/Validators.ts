@@ -1,4 +1,4 @@
-import { ItemData } from "Board/Items";
+import { ItemData, registeredItemValidators } from "Board/Items";
 import { FrameData } from "Board/Items";
 import { DrawingData } from "Board/Items/Drawing";
 import { ImageItemData } from "Board/Items/Image";
@@ -47,7 +47,7 @@ export function validateItemsMap(parsedObject: any): parsedObject is ItemsMap {
 	return true;
 }
 
-const itemValidators: Record<string, (data: any) => boolean> = {
+export const validators = {
 	Sticker: validateStickerData,
 	Shape: validateShapeData,
 	RichText: validateRichTextData,
@@ -71,7 +71,7 @@ function validateItemData(itemData: any): boolean {
 		return false;
 	}
 
-	const validator = itemValidators[itemData.itemType];
+	const validator = validators[itemData.itemType];
 	return validator ? validator(itemData) : false;
 }
 

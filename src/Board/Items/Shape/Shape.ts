@@ -16,7 +16,6 @@ import { Subject } from "shared/Subject";
 import { RichText } from "../RichText";
 import { ShapeOperation } from "./ShapeOperation";
 import { DefaultShapeData, ShapeData } from "./ShapeData";
-import { Geometry } from "../Geometry";
 import { DrawingContext } from "../DrawingContext";
 import { Operation } from "Board/Events";
 import { ShapeCommand } from "./ShapeCommand";
@@ -37,13 +36,13 @@ import { FixedPoint } from "Board/Items/Connector";
 import { toRelativePoint } from "Board/Items/Connector/ControlPoint";
 import { DocumentFactory } from "Board/api/DocumentFactory";
 import { conf } from "Board/Settings";
-import { handleUpdate } from "./handleUpdate";
+import { BaseItem } from "Board/Items/BaseItem/BaseItem";
 
 const defaultShapeData = new DefaultShapeData();
 
 export const Shapes = { ...BasicShapes, ...BPMN };
 
-export class Shape implements Geometry {
+export class Shape extends BaseItem {
 	readonly itemType = "Shape";
 	parent = "Board";
 	readonly transformation: Transformation;
@@ -55,17 +54,18 @@ export class Shape implements Geometry {
 	transformationRenderBlock?: boolean = undefined;
 
 	constructor(
-		private board: Board,
-		private id = "",
-		private shapeType = defaultShapeData.shapeType,
-		private backgroundColor = defaultShapeData.backgroundColor,
-		private backgroundOpacity = defaultShapeData.backgroundOpacity,
-		private borderColor = defaultShapeData.borderColor,
-		private borderOpacity = defaultShapeData.borderOpacity,
-		private borderStyle = defaultShapeData.borderStyle,
-		private borderWidth = defaultShapeData.borderWidth,
+		board: Board,
+		id = "",
+		public shapeType = defaultShapeData.shapeType,
+		public backgroundColor = defaultShapeData.backgroundColor,
+		public backgroundOpacity = defaultShapeData.backgroundOpacity,
+		public borderColor = defaultShapeData.borderColor,
+		public borderOpacity = defaultShapeData.borderOpacity,
+		public borderStyle = defaultShapeData.borderStyle,
+		public borderWidth = defaultShapeData.borderWidth,
 		private mbr = Shapes[shapeType].path.getMbr().copy(),
 	) {
+		super(board, id);
 		this.linkTo = new LinkTo(this.id, this.board.events);
 		this.transformation = new Transformation(this.id, this.board.events);
 		this.path = Shapes[this.shapeType].path.copy();

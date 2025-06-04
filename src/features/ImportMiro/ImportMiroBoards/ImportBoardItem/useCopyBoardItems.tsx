@@ -793,6 +793,7 @@ export const useCopyBoardItems = (
 		const { id, geometry, data, position, parent } = item;
 
 		const placeholder = new Placeholder(
+			board,
 			undefined,
 			item,
 			item.id,
@@ -1059,7 +1060,14 @@ export const useCopyBoardItems = (
 		const { id, scale } = item;
 
 		const placeholder = board.add<Placeholder>(
-			new Placeholder(undefined, item, item.id, undefined, undefined),
+			new Placeholder(
+				board,
+				undefined,
+				item,
+				item.id,
+				undefined,
+				undefined,
+			),
 		);
 
 		setTransformation(placeholder, item, scale);

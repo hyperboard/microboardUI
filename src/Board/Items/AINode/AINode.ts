@@ -10,7 +10,6 @@ import {
 import { AINodeData, createNodePath } from "Board/Items/AINode/AINodeData";
 import { DrawingContext } from "Board/Items/DrawingContext";
 import { GeometricNormal } from "Board/Items/GeometricNormal";
-import { Geometry } from "Board/Items/Geometry";
 import { Line } from "Board/Items/Line/Line";
 import { LinkTo } from "Board/Items/LinkTo/LinkTo";
 import { Mbr } from "Board/Items/Mbr/Mbr";
@@ -23,6 +22,7 @@ import { Transformation } from "Board/Items/Transformation/Transformation";
 import { TransformationOperation } from "Board/Items/Transformation/TransformationOperations";
 import { conf } from "Board/Settings";
 import { Subject } from "shared/Subject";
+import { BaseItem } from "Board/Items/BaseItem/BaseItem";
 
 export const CONTEXT_NODE_HIGHLIGHT_COLOR = "rgba(183, 138, 240, 1)";
 const BUTTON_SIZE = 20;
@@ -33,7 +33,7 @@ const ICON_SRC =
 	"data:image/svg+xml;charset=utf-8,%3Csvg id='AIChatSendArrow' viewBox='0 0 21 21' xmlns='http://www.w3.org/2000/svg' fill='url(%23paint0_linear_7542_32550)'%3E%3Cpath d='M0.946815 7.31455C0.424815 7.14055 0.419815 6.85955 0.956815 6.68055L20.0438 0.318552C20.5728 0.142552 20.8758 0.438552 20.7278 0.956552L15.2738 20.0426C15.1238 20.5716 14.8188 20.5896 14.5948 20.0876L11.0008 11.9996L17.0008 3.99955L9.00081 9.99955L0.946815 7.31455Z'/%3E%3Cdefs%3E%3ClinearGradient id='paint0_linear_7542_32550' x1='10.66' y1='0.267578' x2='10.66' y2='20.452' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%23CD4FF2'/%3E%3Cstop offset='1' stop-color='%235F4AFF'/%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E";
 // arrowIcon.src = ICON_SRC;
 
-export class AINode implements Geometry {
+export class AINode extends BaseItem {
 	readonly itemType = "AINode";
 	parent = "Board";
 	readonly transformation: Transformation;
@@ -52,13 +52,14 @@ export class AINode implements Geometry {
 	prevMbr: Mbr | null = null;
 
 	constructor(
-		private board: Board,
+		board: Board,
 		isUserRequest = false,
 		parentNodeId?: string,
 		contextItems: string[] = [],
 		threadDirection?: ThreadDirection,
-		private id = "",
+		id = "",
 	) {
+		super(board, id);
 		this.buttonIcon = conf.documentFactory.createElement(
 			"img",
 		) as HTMLImageElement;

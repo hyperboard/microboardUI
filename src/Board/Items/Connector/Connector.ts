@@ -33,6 +33,7 @@ import {
 import { DocumentFactory } from "Board/api/DocumentFactory";
 import { ConnectorAnchorColors } from "./types";
 import { conf } from "Board/Settings";
+import { BaseItem } from "Board/Items/BaseItem/BaseItem";
 const { i18n } = conf;
 
 export const ConnectorLineStyles = [
@@ -66,16 +67,15 @@ export const CONNECTOR_ANCHOR_COLOR: ConnectorAnchorColors = {
 
 export const CONNECTOR_ANCHOR_TYPE = "rect";
 export const CONNECTOR_LINE_CAP = "round";
-export class Connector {
+export class Connector extends BaseItem {
 	readonly itemType = "Connector";
 	parent = "Board";
-	private id = "";
 	readonly transformation: Transformation;
 	private middlePoint: ControlPoint | null = new BoardPoint();
 	private lineColor: string;
 	readonly linkTo: LinkTo;
 	private lineWidth: ConnectionLineWidth;
-	private borderStyle: BorderStyle;
+	borderStyle: BorderStyle;
 	readonly subject = new Subject<Connector>();
 	lines = new Path([new Line(new Point(), new Point())]);
 	startPointer: Pointer;
@@ -85,7 +85,7 @@ export class Connector {
 	transformationRenderBlock?: boolean = undefined;
 	private optionalFindItemFn?: FindItemFn;
 	constructor(
-		private board: Board,
+		board: Board,
 		private startPoint: ControlPoint = new BoardPoint(),
 		private endPoint: ControlPoint = new BoardPoint(),
 		private lineStyle: ConnectorLineStyle = "straight",
@@ -94,7 +94,9 @@ export class Connector {
 		lineColor?: string,
 		lineWidth?: ConnectionLineWidth,
 		strokeStyle?: BorderStyle,
+		id = "",
 	) {
+		super(board, id);
 		this.transformation = new Transformation(this.id, this.board.events);
 		this.linkTo = new LinkTo(this.id, this.board.events);
 		this.lineColor = lineColor ?? CONNECTOR_COLOR;

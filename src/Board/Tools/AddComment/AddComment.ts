@@ -30,7 +30,9 @@ export class AddComment extends BoardTool {
 	leftButtonUp(): boolean {
 		this.isDown = false;
 		this.board.selection.removeAll();
-		this.comment = this.board.add(new Comment(this.board.pointer.point));
+		this.comment = this.board.add(
+			new Comment(this.board, this.board.pointer.point),
+		);
 		this.board.tools.publish();
 		return true;
 	}

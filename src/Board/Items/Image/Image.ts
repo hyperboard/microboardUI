@@ -2,7 +2,6 @@ import { Events, Operation } from "Board/Events";
 import { Subject } from "shared/Subject";
 import { DrawingContext } from "../DrawingContext";
 import { Line } from "../Line";
-import { Mbr } from "../Mbr";
 import { Path, Paths } from "../Path";
 import { Point } from "../Point";
 import { Transformation } from "../Transformation";
@@ -19,6 +18,7 @@ import { ImageOperation } from "./ImageOperation";
 import { ImageCommand } from "./ImageCommand";
 import { DocumentFactory } from "Board/api/DocumentFactory";
 import { conf } from "Board/Settings";
+import { BaseItem } from "Board/Items/BaseItem/BaseItem";
 
 export interface ImageItemData {
 	itemType: "Image";
@@ -45,7 +45,7 @@ export function getPlaceholderImage(
 
 	const context = new DrawingContext(board.camera, placeholderContext);
 
-	const placeholder = new Placeholder();
+	const placeholder = new Placeholder(board);
 
 	if (imageDimension) {
 		placeholderCanvas.width = imageDimension.width;
@@ -74,7 +74,7 @@ export interface ImageConstructorData {
 	imageDimension: Dimension;
 }
 
-export class ImageItem extends Mbr {
+export class ImageItem extends BaseItem {
 	readonly itemType = "Image";
 	parent = "Board";
 	image: HTMLImageElement;
@@ -92,9 +92,9 @@ export class ImageItem extends Mbr {
 		{ base64, storageLink, imageDimension }: ImageConstructorData,
 		board: Board,
 		private events?: Events,
-		private id = "",
+		id = "",
 	) {
-		super();
+		super(board, id);
 		this.linkTo = new LinkTo(this.id, events);
 		this.board = board;
 		this.setStorageLink(storageLink);

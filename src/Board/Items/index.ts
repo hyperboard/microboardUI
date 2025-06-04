@@ -19,3 +19,9 @@ export type { FrameData } from "./Frame";
 export type { Item, ItemType, ItemData } from "./Item";
 
 export { ItemsLocalCounter } from "./ItemsLocalCounter";
+
+export {
+	registerItem,
+	registeredItemValidators,
+	registeredItemFactories,
+} from "./RegisterItem.ts";

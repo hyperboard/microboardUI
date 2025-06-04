@@ -7,6 +7,8 @@ import { Events, Operation } from "Board/Events";
 import { Mbr, Line, Point, Transformation, Item } from "..";
 import { Board } from "Board/Board";
 import { LinkTo } from "../LinkTo/LinkTo";
+import { BaseItem } from "Board/Items/BaseItem/BaseItem";
+import { DocumentFactory } from "Board/api/DocumentFactory";
 
 export interface GroupData {
 	readonly itemType: "Group";
@@ -14,7 +16,7 @@ export interface GroupData {
 	transformation: TransformationData;
 }
 
-export class Group extends Mbr {
+export class Group extends BaseItem {
 	readonly linkTo: LinkTo;
 	readonly itemType = "Group";
 	parent = "Board";
@@ -24,12 +26,12 @@ export class Group extends Mbr {
 	transformationRenderBlock?: boolean = undefined;
 
 	constructor(
-		private board: Board,
+		board: Board,
 		private events?: Events,
 		private children: string[] = [],
-		private id = "",
+		id = "",
 	) {
-		super();
+		super(board, id);
 		this.linkTo = new LinkTo(this.id, this.events);
 		this.transformation = new Transformation(this.id, this.events);
 		this.children = children;
@@ -38,6 +40,10 @@ export class Group extends Mbr {
 			this.updateMbr();
 			this.subject.publish(this);
 		});
+	}
+
+	isClosed(): boolean {
+		return false;
 	}
 
 	getRichText(): null {
@@ -266,5 +272,9 @@ export class Group extends Mbr {
 		}
 
 		this.mbr.render(context);
+	}
+
+	renderHTML(documentFactory: DocumentFactory): HTMLElement {
+		return documentFactory.createElement("div");
 	}
 }
