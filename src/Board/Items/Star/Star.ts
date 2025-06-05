@@ -16,6 +16,7 @@ import { Item, ItemData } from "Board/Items/Item";
 import { registerItem } from "Board/Items/RegisterItem";
 import { StarOperation } from "Board/Items/Star/StarOperation";
 import { StarCommand } from "Board/Items/Star/StarCommand";
+import { AddStar } from "Board/Items/Star/AddStar";
 
 export interface StarData {
 	readonly itemType: "Star";
@@ -302,4 +303,5 @@ registerItem({
 	validator: validateStarData,
 	itemType: "Star",
 	commandFactory: createStarCommand,
+	toolData: { name: "AddStar", tool: new AddStar(new Board(), "AddStar") },
 });

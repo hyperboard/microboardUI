@@ -16,6 +16,10 @@ import { ToolContext } from "./ToolContext";
 import { Frame, Item, Point } from "Board/Items";
 import { Eraser } from "./Eraser";
 import { AddComment } from "./AddComment";
+import { Tool } from "Board/Tools/Tool";
+import { CustomTool } from "Board/Tools/CustomTool";
+
+export const registeredTools: Record<string, CustomTool> = {};
 
 export class Tools extends ToolContext {
 	readonly subject = new Subject<Tools>();
@@ -23,6 +27,9 @@ export class Tools extends ToolContext {
 
 	constructor(protected board: Board) {
 		super();
+		Object.values(registeredTools).forEach((customTool: CustomTool) => {
+			customTool.setBoard(board);
+		});
 	}
 
 	setTool(tool: BoardTool): void {
@@ -54,6 +61,35 @@ export class Tools extends ToolContext {
 
 	getSelect(): Select | undefined {
 		return this.tool instanceof Select ? this.tool : undefined;
+	}
+
+	addRegisteredTool(toolName: string, clearSelection = false): void {
+		if (this.board.getInterfaceType() !== "edit") {
+			this.tool = new Navigate(this.board);
+			return;
+		}
+		if (this.getAddRegisteredTool(toolName) && !isIframe()) {
+			this.cancel();
+		} else {
+			const tool = registeredTools[toolName];
+			if (!tool) {
+				console.warn(`Tool with name "${toolName}" not found`);
+				return;
+			}
+			this.tool = tool;
+			if (clearSelection) {
+				this.board.selection.removeAll();
+			}
+		}
+		this.publish();
+	}
+
+	getAddRegisteredTool(toolName: string): Tool | undefined {
+		const targetTool = registeredTools[toolName];
+		return this.tool instanceof CustomTool &&
+			this.tool.name === targetTool.name
+			? this.tool
+			: undefined;
 	}
 
 	addSticker(clearSelection = false): void {
