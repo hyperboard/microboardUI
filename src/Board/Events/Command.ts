@@ -297,7 +297,12 @@ export function createCommand(board: Board, operation: Operation): Command {
 					case "Audio":
 						return itemCommandFactories["Audio"](items, operation);
 					default:
-						return new NoOpCommand(`Unsupported command type`);
+						const commandFactory =
+							itemCommandFactories[operation.class];
+						if (!commandFactory) {
+							return new NoOpCommand(`Unsupported command type`);
+						}
+						return commandFactory(items, operation, board);
 				}
 			}
 		}
