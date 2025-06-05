@@ -46,7 +46,7 @@ export function ToolsPanel(): JSX.Element {
 				}
 			>
 				<UiPanel vertical padding={0} zIndex={20}>
-					<AddStar />
+					{/* <AddStar /> */}
 					<AddTemplate />
 					<UiSeparator />
 					<Select rounded={"none"} />
