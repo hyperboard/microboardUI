@@ -34,10 +34,6 @@
 	font-family: inherit;
 }
 
-*:focus {
-	outline: none;
-}
-
 html {
 	font-size: 62.5%;
 }
