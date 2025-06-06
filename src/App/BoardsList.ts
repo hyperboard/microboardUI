@@ -386,7 +386,10 @@ export class BoardsList {
 	}
 
 	async claim(): Promise<void> {
-		if (!this.account.isLoggedIn) {
+		const url = new URL(window.location.href);
+		const searchParams = new URLSearchParams(url.search);
+		const isTemplateView = searchParams.get("isTemplateView");
+		if (!this.account.isLoggedIn || isTemplateView) {
 			return;
 		}
 		const publicBoards = this.storage.listCreatedBoards();
