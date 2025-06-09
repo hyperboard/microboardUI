@@ -1,51 +1,36 @@
-import { BaseItem } from "Board/Items/BaseItem/BaseItem";
+import {
+	BaseItem,
+	BaseItemData,
+	SerializedItemData,
+} from "Board/Items/BaseItem/BaseItem";
 import { Board } from "Board/Board";
 import { DrawingContext } from "Board/Items/DrawingContext";
 import { DocumentFactory } from "Board/api/DocumentFactory";
-import { ItemOperation, Operation } from "Board/Events/index";
+import { Operation } from "Board/Events/index";
 import { Point } from "Board/Items/Point/Point";
 import { Path } from "Board/Items/Path/Path";
 import { Line } from "Board/Items/Line/Line";
 import { Subject } from "shared/Subject";
-import {
-	DefaultTransformationData,
-	TransformationData,
-} from "Board/Items/Transformation/TransformationData";
 import { Paths } from "Board/Items/Path/Paths";
-import { Item, ItemData } from "Board/Items/Item";
 import { registerItem } from "Board/Items/RegisterItem";
 import { CounterOperation } from "Board/Items/Examples/Counter/CounterOperation";
 import { CounterCommand } from "Board/Items/Examples/Counter/CounterCommand";
 import { AddCounter } from "Board/Items/Examples/Counter/AddCounter";
 
-export interface CounterData {
-	readonly itemType: "Counter";
-	count: number;
-	linkTo?: string;
-	transformation: TransformationData;
-}
-
-export class DefaultCounterData implements CounterData {
-	readonly itemType = "Counter";
-	constructor(
-		public count = 0,
-		public linkTo?: string,
-		public transformation = new DefaultTransformationData(),
-	) {}
-}
+export const defaultCounterData: BaseItemData = {
+	itemType: "Counter",
+	count: 0,
+};
 
 export const COUNTER_DIMENSIONS = { width: 200, height: 200 };
 
-const defaultPhotoData = new DefaultCounterData();
-
 export class Counter extends BaseItem {
-	readonly itemType = "Counter";
 	private count = 0;
 	readonly subject = new Subject<Counter>();
 	shouldUseCustomRender = true;
 
 	constructor(board: Board, id = "") {
-		super(board, id);
+		super(board, id, defaultCounterData);
 
 		this.transformation.subject.subscribe(() => {
 			this.updateMbr();
@@ -99,25 +84,8 @@ export class Counter extends BaseItem {
 		return div;
 	}
 
-	serialize(): CounterData {
-		return {
-			itemType: "Counter",
-			count: this.count,
-			linkTo: this.linkTo.serialize(),
-			transformation: this.transformation.serialize(),
-		};
-	}
-
-	deserialize(data: Partial<CounterData>): this {
-		if (data.transformation) {
-			this.transformation.deserialize(data.transformation);
-		}
-		if (data.linkTo) {
-			this.linkTo.deserialize(data.linkTo);
-		}
-		if (data.count) {
-			this.count = data.count;
-		}
+	deserialize(data: SerializedItemData): this {
+		super.deserialize(data);
 
 		this.updateMbr();
 		this.subject.publish(this);
@@ -149,6 +117,7 @@ export class Counter extends BaseItem {
 	}
 
 	apply(op: Operation): void {
+		super.apply(op);
 		switch (op.class) {
 			case "Counter":
 				switch (op.method) {
@@ -156,46 +125,14 @@ export class Counter extends BaseItem {
 						this.count = op.newState.counter;
 				}
 				break;
-			case "Transformation":
-				this.transformation.apply(op);
-				break;
-			case "LinkTo":
-				this.linkTo.apply(op);
-				break;
 		}
 		this.subject.publish(this);
 	}
 }
 
-function createCounter(id: string, data: ItemData, board: Board): Counter {
-	if (data.itemType !== "Counter") {
-		throw new Error("Invalid data for Counter");
-	}
-	const counter = new Counter(board, id).setId(id).deserialize(data);
-	return counter;
-}
-
-function validateCounterData(counterData: any): boolean {
-	const isValid =
-		counterData.hasOwnProperty("count") &&
-		typeof counterData.count === "number";
-	return isValid;
-}
-
-function createCounterCommand(
-	items: Item[],
-	operation: ItemOperation,
-): CounterCommand {
-	return new CounterCommand(
-		items.filter((item): item is Counter => item.itemType === "Counter"),
-		operation as CounterOperation,
-	);
-}
-
 registerItem({
-	itemFactory: createCounter,
-	validator: validateCounterData,
-	itemType: "Counter",
-	commandFactory: createCounterCommand,
+	item: Counter,
+	defaultData: defaultCounterData,
+	command: CounterCommand,
 	toolData: { name: "AddCounter", tool: AddCounter },
 });

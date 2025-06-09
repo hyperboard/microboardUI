@@ -2,14 +2,16 @@ import { Star } from "./Star.ts";
 import { StarOperation } from "./StarOperation.ts";
 import { Command } from "../../../Events";
 import { mapItemsByOperation } from "../../ItemsCommandUtils.ts";
+import { ItemCommand } from "Board/Events/Command";
 
-export class StarCommand implements Command {
+export class StarCommand extends ItemCommand {
 	private reverse: { item: Star; operation: StarOperation }[];
 
 	constructor(
 		private star: Star[],
-		private operation: StarOperation,
+		operation: StarOperation,
 	) {
+		super(star, operation);
 		this.reverse = this.getReverse();
 	}
 

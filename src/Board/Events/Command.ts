@@ -50,6 +50,15 @@ export interface Command {
 	revert(): void;
 }
 
+export class ItemCommand implements Command {
+	constructor(
+		private items: any,
+		public operation: any,
+	) {}
+	apply(): void {}
+	revert(): void {}
+}
+
 export interface ItemCommandFactory {
 	(
 		items: Item[],

@@ -1,18 +1,18 @@
-import { BaseItem } from "Board/Items/BaseItem/BaseItem";
+import {
+	BaseItem,
+	BaseItemData,
+	SerializedItemData,
+} from "Board/Items/BaseItem/BaseItem";
 import { Board } from "Board/Board";
 import { DrawingContext } from "Board/Items/DrawingContext";
 import { DocumentFactory } from "Board/api/DocumentFactory";
-import { ItemOperation, Operation } from "Board/Events/index";
+import { Operation } from "Board/Events/index";
 import { Point } from "Board/Items/Point/Point";
 import { BorderStyle, BorderWidth, Path } from "Board/Items/Path/Path";
 import { Line } from "Board/Items/Line/Line";
 import { Subject } from "shared/Subject";
-import {
-	DefaultTransformationData,
-	TransformationData,
-} from "Board/Items/Transformation/TransformationData";
+import { TransformationData } from "Board/Items/Transformation/TransformationData";
 import { Paths } from "Board/Items/Path/Paths";
-import { Item, ItemData } from "Board/Items/Item";
 import { registerItem } from "Board/Items/RegisterItem";
 import { StarOperation } from "../Star/StarOperation";
 import { StarCommand } from "../Star/StarCommand";
@@ -30,19 +30,15 @@ export interface StarData {
 	linkTo?: string;
 }
 
-export class DefaultStarData implements StarData {
-	readonly itemType = "Star";
-	constructor(
-		public backgroundColor = "#1f1255",
-		public backgroundOpacity = 1,
-		public borderColor = "#000207",
-		public borderOpacity = 1,
-		public borderStyle: BorderStyle = "solid",
-		public borderWidth: BorderWidth = 1,
-		public transformation = new DefaultTransformationData(),
-		public linkTo?: string,
-	) {}
-}
+export const defaultStarData: BaseItemData = {
+	itemType: "Star",
+	backgroundColor: "#1f1255",
+	backgroundOpacity: 1,
+	borderColor: "#000207",
+	borderOpacity: 1,
+	borderStyle: "solid",
+	borderWidth: 1,
+};
 
 const starPath = new Path(
 	[
@@ -60,8 +56,6 @@ const starPath = new Path(
 	true,
 );
 
-const defaultStarData = new DefaultStarData();
-
 export class Star extends BaseItem {
 	readonly itemType = "Star";
 	private path: Path;
@@ -69,26 +63,9 @@ export class Star extends BaseItem {
 	private borderWidth = 1;
 	isShining = false;
 
-	constructor(
-		board: Board,
-		id = "",
-		backgroundColor = defaultStarData.backgroundColor,
-		backgroundOpacity = defaultStarData.backgroundOpacity,
-		borderColor = defaultStarData.borderColor,
-		borderOpacity = defaultStarData.borderOpacity,
-		borderStyle = defaultStarData.borderStyle,
-		borderWidth = defaultStarData.borderWidth,
-	) {
-		super(board, id);
-
-		this.path = starPath.copy();
-		this.path.setBackgroundColor(backgroundColor);
-		this.path.setBackgroundOpacity(backgroundOpacity);
-		this.path.setBorderColor(borderColor);
-		this.path.setBorderOpacity(borderOpacity);
-		this.path.setBorderStyle(borderStyle);
-		this.path.setBorderWidth(borderWidth);
-		this.borderWidth = borderWidth;
+	constructor(board: Board, id = "") {
+		super(board, id, defaultStarData);
+		this.transformPath();
 
 		this.transformation.subject.subscribe(() => {
 			this.transformPath();
@@ -170,47 +147,8 @@ export class Star extends BaseItem {
 		return div;
 	}
 
-	serialize(): StarData {
-		return {
-			itemType: "Star",
-			backgroundColor: this.path.getBackgroundColor(),
-			backgroundOpacity: this.path.getBackgroundOpacity(),
-			borderColor: this.path.getBorderColor(),
-			borderOpacity: this.path.getBorderOpacity(),
-			borderStyle: this.path.getBorderStyle(),
-			borderWidth: this.path.getBorderWidth(),
-			transformation: this.transformation.serialize(),
-			linkTo: this.linkTo.serialize() || undefined,
-		};
-	}
-
-	deserialize(data: Partial<StarData>): this {
-		if (data.transformation) {
-			this.transformation.deserialize(data.transformation);
-		}
-		if (data.linkTo) {
-			this.linkTo.deserialize(data.linkTo);
-		}
-
-		this.path = starPath.copy();
-		if (data.backgroundColor) {
-			this.path.setBackgroundColor(data.backgroundColor);
-		}
-		if (data.backgroundOpacity) {
-			this.path.setBackgroundOpacity(data.backgroundOpacity);
-		}
-		if (data.borderColor) {
-			this.path.setBorderColor(data.borderColor);
-		}
-		if (data.borderOpacity) {
-			this.path.setBorderOpacity(data.borderOpacity);
-		}
-		if (data.borderStyle) {
-			this.path.setBorderStyle(data.borderStyle);
-		}
-		if (data.borderWidth) {
-			this.path.setBorderWidth(data.borderWidth);
-		}
+	deserialize(data: SerializedItemData): this {
+		super.deserialize(data);
 
 		this.transformPath();
 		this.subject.publish(this);
@@ -240,6 +178,7 @@ export class Star extends BaseItem {
 	}
 
 	apply(op: Operation): void {
+		super.apply(op);
 		switch (op.class) {
 			case "Star":
 				switch (op.method) {
@@ -255,53 +194,14 @@ export class Star extends BaseItem {
 						this.transformPath();
 				}
 				break;
-			case "Transformation":
-				this.transformation.apply(op);
-				break;
-			case "LinkTo":
-				this.linkTo.apply(op);
-				break;
 		}
 		this.subject.publish(this);
 	}
 }
 
-function createStar(id: string, data: ItemData, board: Board): Star {
-	if (data.itemType !== "Star") {
-		throw new Error("Invalid data for Star");
-	}
-	const star = new Star(board, id).setId(id).deserialize(data);
-	return star;
-}
-
-function validateStarData(starData: any): boolean {
-	const isValid =
-		starData.hasOwnProperty("backgroundColor") &&
-		starData.hasOwnProperty("borderColor") &&
-		starData.hasOwnProperty("borderStyle") &&
-		starData.hasOwnProperty("borderWidth") &&
-		starData.hasOwnProperty("transformation") &&
-		typeof starData.backgroundColor === "string" &&
-		typeof starData.borderColor === "string" &&
-		typeof starData.borderStyle === "string" &&
-		typeof starData.borderWidth === "number";
-	return isValid;
-}
-
-function createStarCommand(
-	items: Item[],
-	operation: ItemOperation,
-): StarCommand {
-	return new StarCommand(
-		items.filter((item): item is Star => item.itemType === "Star"),
-		operation as StarOperation,
-	);
-}
-
 registerItem({
-	itemFactory: createStar,
-	validator: validateStarData,
-	itemType: "Star",
-	commandFactory: createStarCommand,
+	item: Star,
+	defaultData: defaultStarData,
+	command: StarCommand,
 	toolData: { name: "AddStar", tool: AddStar },
 });

@@ -15,7 +15,8 @@ import { AINodeData } from "Board/Items/AINode/AINodeData";
 import { VideoItem, VideoItemData } from "Board/Items/Video/Video";
 import { AudioItem, AudioItemData } from "Board/Items/Audio/Audio";
 import { Star, StarData } from "./Examples/Star/Star";
-import { Counter, CounterData } from "Board/Items/Examples/Counter/Counter";
+import { Counter } from "Board/Items/Examples/Counter/Counter";
+import { SerializedItemData } from "Board/Items/BaseItem/BaseItem";
 
 export type Item =
 	| RichText
@@ -50,4 +51,4 @@ export type ItemData =
 	| VideoItemData
 	| AudioItemData
 	| StarData
-	| CounterData;
+	| SerializedItemData;

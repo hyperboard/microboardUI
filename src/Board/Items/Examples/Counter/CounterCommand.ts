@@ -1,15 +1,16 @@
-import { Command } from "../../../Events";
 import { mapItemsByOperation } from "../../ItemsCommandUtils.ts";
 import { Counter } from "Board/Items/Examples/Counter/Counter";
 import { CounterOperation } from "Board/Items/Examples/Counter/CounterOperation";
+import { ItemCommand } from "Board/Events/Command";
 
-export class CounterCommand implements Command {
+export class CounterCommand extends ItemCommand {
 	private reverse: { item: Counter; operation: CounterOperation }[];
 
 	constructor(
 		private counter: Counter[],
-		private operation: CounterOperation,
+		operation: CounterOperation,
 	) {
+		super(counter, operation);
 		this.reverse = this.getReverse();
 	}
 
