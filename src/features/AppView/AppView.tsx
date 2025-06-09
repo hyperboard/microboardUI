@@ -70,6 +70,7 @@ import { ItemsProvider } from "features/ItemsProvider";
 import { VideoPlayer } from "features/VideoPlayer/VideoPlayer";
 import { AudioPlayer } from "features/AudioPlayer/AudioPlayer";
 import { CounterComponent } from "features/Counter/Counter";
+import { ErrorBoundary } from "features/ErrorBoundary/ErrorBoundary";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -191,102 +192,104 @@ export function AppView(): JSX.Element {
 	const appBoard = app.getBoard();
 
 	return (
-		<div className={style.wrapper}>
-			{shouldShow("titlePanel") && <LandingMenu />}
-			{shouldShow("titlePanel") && <MobileLandingMenu />}
-			<InactiveBoardHidder>
-				<div ref={containerRef} className="NoContextMenu">
-					<ViewModeGuard
-						mode={["edit", "view"]}
-						fallback={
-							<div className={style.loaderWrapper}>
-								<UIMainLoader />
-							</div>
-						}
+		<ErrorBoundary>
+			<div className={style.wrapper}>
+				{shouldShow("titlePanel") && <LandingMenu />}
+				{shouldShow("titlePanel") && <MobileLandingMenu />}
+				<InactiveBoardHidder>
+					<div ref={containerRef} className="NoContextMenu">
+						<ViewModeGuard
+							mode={["edit", "view"]}
+							fallback={
+								<div className={style.loaderWrapper}>
+									<UIMainLoader />
+								</div>
+							}
+						/>
+						<Canvas
+							router={{ location, navigate, params }}
+							app={app}
+							board={board}
+						>
+							<LinksProvider />
+							<ItemsProvider itemsComponents={itemsComponents} />
+						</Canvas>
+						<TextEditors
+							app={app}
+							board={board}
+							setQuotedText={setQuotedText}
+							setHyperLinkData={setHyperLinkData}
+							hyperLinkData={hyperLinkData}
+							sendGenerationRequest={tryToSendGenerationRequest}
+						/>
+					</div>
+				</InactiveBoardHidder>
+				{appBoard.getBoardId() === "blank" && <NoBoardIsOpen />}
+				<ExportVisible>
+					<SidePanelsContainer
+						isBlank={appBoard.getBoardId() === "blank"}
 					/>
-					<Canvas
-						router={{ location, navigate, params }}
-						app={app}
-						board={board}
-					>
-						<LinksProvider />
-						<ItemsProvider itemsComponents={itemsComponents} />
-					</Canvas>
-					<TextEditors
-						app={app}
-						board={board}
-						setQuotedText={setQuotedText}
-						setHyperLinkData={setHyperLinkData}
-						hyperLinkData={hyperLinkData}
-						sendGenerationRequest={tryToSendGenerationRequest}
-					/>
-				</div>
-			</InactiveBoardHidder>
-			{appBoard.getBoardId() === "blank" && <NoBoardIsOpen />}
-			<ExportVisible>
-				<SidePanelsContainer
-					isBlank={appBoard.getBoardId() === "blank"}
-				/>
-				<ContextMenu />
-				<ItemTooltip />
-				<ViewModeGuard mode={"edit"}>
-					{interfaceType => {
-						if (interfaceType === "edit") {
-							return <AIInput />;
-						}
-						return null;
-					}}
+					<ContextMenu />
+					<ItemTooltip />
+					<ViewModeGuard mode={"edit"}>
+						{interfaceType => {
+							if (interfaceType === "edit") {
+								return <AIInput />;
+							}
+							return null;
+						}}
+					</ViewModeGuard>
+				</ExportVisible>
+				<ExportVisible>
+					<UserPanelLayout app={app} />
+					<CommentsProvider />
+				</ExportVisible>
+				<ExportVisible>
+					<UserTracking board={board} />
+				</ExportVisible>
+				<InactiveBoardHidder>
+					<ZoomPanel />
+				</InactiveBoardHidder>
+				<ViewModeGuard>
+					<ContextPanel />
+					<QuickAddPanel />
+					<ExportPanel />
+					<BoardMenu />
 				</ViewModeGuard>
-			</ExportVisible>
-			<ExportVisible>
-				<UserPanelLayout app={app} />
-				<CommentsProvider />
-			</ExportVisible>
-			<ExportVisible>
-				<UserTracking board={board} />
-			</ExportVisible>
-			<InactiveBoardHidder>
-				<ZoomPanel />
-			</InactiveBoardHidder>
-			<ViewModeGuard>
-				<ContextPanel />
-				<QuickAddPanel />
-				<ExportPanel />
-				<BoardMenu />
-			</ViewModeGuard>
-			<HyperLink />
-			<AiGenerationButton />
-			<HyperLinkInput />
-			<ToastProvider />
-			{authCode && teamIdSearch ? <ImportMiro /> : null}
-			<CookiesModal />
-			<UiModalBackground>
-				<ImportMiroStartModal />
-				<SelectPaymentModal />
-				<UserPlanModal />
-				<LimitsModal />
-				<HistoryModal />
-				<ShareModal />
-				<ShareSnapshotModal />
-				<ProfileSettingsModal />
-				<ChangePasswordModal />
-				<AccessDeniedModal />
-				<AiUnavailableModal />
-				<MediaUnavailableModal />
-				<SelectTemplateModal />
-				<AuthClipboardModal />
-				<ImgAuthClipboardModal />
-				<LoadingNotification />
-				<ErrorNotification />
-				<SuccessNotification />
-				<WarnClipboardNotification />
-				<WarnNotification />
-				<SetLinkToModal />
-				<CreateTemplateModal />
-				<MouseOrTrackpadModal />
-			</UiModalBackground>
-			<LocalFileSaveProgress />
-		</div>
+				<HyperLink />
+				<AiGenerationButton />
+				<HyperLinkInput />
+				<ToastProvider />
+				{authCode && teamIdSearch ? <ImportMiro /> : null}
+				<CookiesModal />
+				<UiModalBackground>
+					<ImportMiroStartModal />
+					<SelectPaymentModal />
+					<UserPlanModal />
+					<LimitsModal />
+					<HistoryModal />
+					<ShareModal />
+					<ShareSnapshotModal />
+					<ProfileSettingsModal />
+					<ChangePasswordModal />
+					<AccessDeniedModal />
+					<AiUnavailableModal />
+					<MediaUnavailableModal />
+					<SelectTemplateModal />
+					<AuthClipboardModal />
+					<ImgAuthClipboardModal />
+					<LoadingNotification />
+					<ErrorNotification />
+					<SuccessNotification />
+					<WarnClipboardNotification />
+					<WarnNotification />
+					<SetLinkToModal />
+					<CreateTemplateModal />
+					<MouseOrTrackpadModal />
+				</UiModalBackground>
+				<LocalFileSaveProgress />
+			</div>
+		</ErrorBoundary>
 	);
 }
 

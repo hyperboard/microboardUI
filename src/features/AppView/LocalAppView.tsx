@@ -21,6 +21,7 @@ import { useHyperLinkContext } from "features/hyperLink/HyperLinkContext";
 import { VideoPlayer } from "features/VideoPlayer/VideoPlayer";
 import { AudioPlayer } from "features/AudioPlayer/AudioPlayer";
 import { ItemsProvider } from "features/ItemsProvider";
+import { ErrorBoundary } from "features/ErrorBoundary/ErrorBoundary";
 
 export function LocalAppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -133,39 +134,41 @@ export function LocalAppView(): JSX.Element {
 	}, [containerRef.current]);
 
 	return (
-		<div className={style.wrapper}>
-			<InactiveBoardHidder>
-				<div ref={containerRef}>
-					<CanvasNoRouter app={app} board={board}>
-						<LinksProvider />
-					</CanvasNoRouter>
-					<TextEditors
-						app={app}
-						board={board}
-						setQuotedText={setQuotedText}
-						setHyperLinkData={setHyperLinkData}
-						hyperLinkData={hyperLinkData}
-						sendGenerationRequest={tryToSendGenerationRequest}
-					/>
-				</div>
-			</InactiveBoardHidder>
-			<ExportVisible>
-				<ShapesPanelContextProvider>
-					<ToolsPanel />
-				</ShapesPanelContextProvider>
-			</ExportVisible>
-			<InactiveBoardHidder>
-				<ZoomPanel />
-			</InactiveBoardHidder>
-			<HyperLink />
-			<ItemsProvider itemsComponents={itemsComponents} />
-			<ViewModeGuard>
-				<ContextPanel />
-				<QuickAddPanel />
-			</ViewModeGuard>
-			<ToastProvider />
-			<LocalFileSaveProgress />
-		</div>
+		<ErrorBoundary>
+			<div className={style.wrapper}>
+				<InactiveBoardHidder>
+					<div ref={containerRef}>
+						<CanvasNoRouter app={app} board={board}>
+							<LinksProvider />
+						</CanvasNoRouter>
+						<TextEditors
+							app={app}
+							board={board}
+							setQuotedText={setQuotedText}
+							setHyperLinkData={setHyperLinkData}
+							hyperLinkData={hyperLinkData}
+							sendGenerationRequest={tryToSendGenerationRequest}
+						/>
+					</div>
+				</InactiveBoardHidder>
+				<ExportVisible>
+					<ShapesPanelContextProvider>
+						<ToolsPanel />
+					</ShapesPanelContextProvider>
+				</ExportVisible>
+				<InactiveBoardHidder>
+					<ZoomPanel />
+				</InactiveBoardHidder>
+				<HyperLink />
+				<ItemsProvider itemsComponents={itemsComponents} />
+				<ViewModeGuard>
+					<ContextPanel />
+					<QuickAddPanel />
+				</ViewModeGuard>
+				<ToastProvider />
+				<LocalFileSaveProgress />
+			</div>
+		</ErrorBoundary>
 	);
 }
 
