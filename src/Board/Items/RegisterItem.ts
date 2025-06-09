@@ -13,7 +13,7 @@ type RegisterItemArgs = {
 	itemFactory: ItemFactory;
 	validator: Validator;
 	itemType: string;
-	toolData: { name: string; tool: CustomTool };
+	toolData: { name: string; tool: typeof CustomTool };
 	commandFactory?: ItemCommandFactory;
 };
 

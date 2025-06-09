@@ -18,8 +18,9 @@ import { ShapesPanelContextProvider } from "features/ShapesPanel";
 import { useAIContext } from "entities/AIInput/AIContext";
 import { HyperLink } from "features/hyperLink/HyperLink";
 import { useHyperLinkContext } from "features/hyperLink/HyperLinkContext";
-import { VideosProvider } from "features/VideoPlayer/VideosProvider";
-import { AudioProvider } from "features/AudioPlayer/AudioProvider";
+import { VideoPlayer } from "features/VideoPlayer/VideoPlayer";
+import { AudioPlayer } from "features/AudioPlayer/AudioPlayer";
+import { ItemsProvider } from "features/ItemsProvider";
 
 export function LocalAppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -29,6 +30,11 @@ export function LocalAppView(): JSX.Element {
 	const { setQuotedText, tryToSendGenerationRequest } = useAIContext();
 	const { setHyperLinkData, hyperLinkData } = useHyperLinkContext();
 	let canPasteAgain = true;
+
+	const itemsComponents = {
+		Video: VideoPlayer,
+		Audio: AudioPlayer,
+	};
 
 	function update(): void {
 		if (animationId.current) {
@@ -132,8 +138,6 @@ export function LocalAppView(): JSX.Element {
 				<div ref={containerRef}>
 					<CanvasNoRouter app={app} board={board}>
 						<LinksProvider />
-						<VideosProvider />
-						<AudioProvider />
 					</CanvasNoRouter>
 					<TextEditors
 						app={app}
@@ -154,8 +158,7 @@ export function LocalAppView(): JSX.Element {
 				<ZoomPanel />
 			</InactiveBoardHidder>
 			<HyperLink />
-			<VideosProvider />
-			<AudioProvider />
+			<ItemsProvider itemsComponents={itemsComponents} />
 			<ViewModeGuard>
 				<ContextPanel />
 				<QuickAddPanel />

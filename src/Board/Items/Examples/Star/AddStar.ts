@@ -1,10 +1,10 @@
 import { Board } from "Board/Board";
-import { Line, Mbr, Point } from "Board/Items";
+import { Line, Mbr, Point } from "Board/Items/index";
 import { DrawingContext } from "Board/Items/DrawingContext";
 import { ResizeType } from "Board/Selection/Transformer/TransformerHelpers/getResizeType";
 import { conf } from "Board/Settings";
 import { CustomTool } from "Board/Tools/CustomTool";
-import { Star } from "Board/Items/Star/Star";
+import { Star } from "../Star/Star";
 
 export class AddStar extends CustomTool {
 	line: Line | undefined;

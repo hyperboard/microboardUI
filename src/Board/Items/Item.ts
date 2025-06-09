@@ -14,7 +14,8 @@ import { AINode } from "Board/Items/AINode/AINode";
 import { AINodeData } from "Board/Items/AINode/AINodeData";
 import { VideoItem, VideoItemData } from "Board/Items/Video/Video";
 import { AudioItem, AudioItemData } from "Board/Items/Audio/Audio";
-import { Star, StarData } from "Board/Items/Star/Star";
+import { Star, StarData } from "./Examples/Star/Star";
+import { Counter, CounterData } from "Board/Items/Examples/Counter/Counter";
 
 export type Item =
 	| RichText
@@ -30,7 +31,8 @@ export type Item =
 	| AINode
 	| VideoItem
 	| AudioItem
-	| Star;
+	| Star
+	| Counter;
 
 export type ItemType = Item["itemType"];
 export type ItemData =
@@ -47,4 +49,5 @@ export type ItemData =
 	| AINodeData
 	| VideoItemData
 	| AudioItemData
-	| StarData;
+	| StarData
+	| CounterData;

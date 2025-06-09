@@ -58,6 +58,7 @@ export class AudioItem extends BaseItem {
 		this.transformation.subject.subscribe(this.onTransform);
 		this.right = this.left + conf.AUDIO_DIMENSIONS.width;
 		this.bottom = this.top + conf.AUDIO_DIMENSIONS.height;
+		this.shouldUseCustomRender = true;
 	}
 
 	setCurrentTime(time: number) {
@@ -87,6 +88,7 @@ export class AudioItem extends BaseItem {
 
 	setIsPlaying(isPlaying: boolean) {
 		this.isPlaying = isPlaying;
+		this.shouldRenderOutsideViewRect = isPlaying;
 		this.subject.publish(this);
 	}
 

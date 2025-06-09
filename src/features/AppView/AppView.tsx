@@ -5,7 +5,6 @@ import { Canvas } from "entities/Canvas";
 import { AccessDeniedModal } from "features/AccessDeniedModal";
 import { AiUnavailableModal } from "features/AiUnavailableModal/AiUnavailableModal";
 import { useAppContext } from "features/AppContext";
-import { AudioProvider } from "features/AudioPlayer/AudioProvider";
 import { ChangePasswordModal } from "features/ChangePasswordModal";
 import { ContextMenu } from "features/ContextMenu";
 import { ContextPanel } from "features/ContextPanel";
@@ -43,7 +42,6 @@ import { UserPlanModal } from "features/UserPlan";
 import { HistoryModal } from "features/UserPlan/HistoryModal";
 import { LimitsModal } from "features/UserPlan/LimitsModal";
 import { SelectPaymentModal } from "features/UserPlan/SelectPaymentModal";
-import { VideosProvider } from "features/VideoPlayer/VideosProvider";
 import { ViewModeGuard } from "features/ViewModeGuard";
 import { ZoomPanel } from "features/ZoomPanel";
 import React, { useEffect, useRef } from "react";
@@ -57,10 +55,7 @@ import { shouldShow } from "shared/lib/queryStringParser";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { UIMainLoader } from "shared/ui-lib/UIMainLoader/UIMainLoader";
 import { UiModalBackground } from "shared/ui-lib/UiModal";
-import {
-	CommentsContextProvider,
-	CommentsProvider,
-} from "../../entities/comments";
+import { CommentsProvider } from "../../entities/comments";
 import { LinksProvider } from "../LinksProvider/LinksProvider";
 import { SetLinkToModal } from "../Modal/SetLinkToModal";
 import style from "./AppView.module.css";
@@ -71,6 +66,10 @@ import { MediaUnavailableModal } from "features/MediaUnavailableModal/MediaUnava
 import { ShareSnapshotModal } from "features/ShareSnapshotModal";
 import { BoardMenu } from "entities/BoardMenu";
 import { MouseOrTrackpadModal } from "entities/BoardMenu/MouseOrTracpadModal/MouseOrTrackpadModal";
+import { ItemsProvider } from "features/ItemsProvider";
+import { VideoPlayer } from "features/VideoPlayer/VideoPlayer";
+import { AudioPlayer } from "features/AudioPlayer/AudioPlayer";
+import { CounterComponent } from "features/Counter/Counter";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -96,6 +95,12 @@ export function AppView(): JSX.Element {
 			animationId.current = null;
 		});
 	}
+
+	const itemsComponents = {
+		Video: VideoPlayer,
+		Audio: AudioPlayer,
+		Counter: CounterComponent,
+	};
 
 	useEffect(() => {
 		const handleCtrlWheel = (ev: WheelEvent): void => {
@@ -205,8 +210,7 @@ export function AppView(): JSX.Element {
 						board={board}
 					>
 						<LinksProvider />
-						<VideosProvider />
-						<AudioProvider />
+						<ItemsProvider itemsComponents={itemsComponents} />
 					</Canvas>
 					<TextEditors
 						app={app}

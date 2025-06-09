@@ -8,8 +8,4 @@ export class CustomTool extends BoardTool {
 	) {
 		super(board);
 	}
-
-	setBoard(board: Board): void {
-		this.board = board;
-	}
 }

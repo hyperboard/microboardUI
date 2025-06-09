@@ -20,8 +20,7 @@ export type { Item, ItemType, ItemData } from "./Item";
 
 export { ItemsLocalCounter } from "./ItemsLocalCounter";
 
-export {
-	registerItem,
-	registeredItemValidators,
-	registeredItemFactories,
-} from "./RegisterItem.ts";
+export { registerItem } from "./RegisterItem.ts";
+
+export { Star } from "./Examples/Star";
+export { Counter } from "./Examples/Counter";

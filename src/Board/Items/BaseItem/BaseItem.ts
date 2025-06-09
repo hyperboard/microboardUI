@@ -15,6 +15,8 @@ export abstract class BaseItem extends Mbr implements Geometry {
 	transformationRenderBlock?: boolean = undefined;
 	board: Board;
 	id: string;
+	shouldUseCustomRender = false;
+	shouldRenderOutsideViewRect = true;
 
 	constructor(board: Board, id = "") {
 		super();
@@ -53,5 +55,8 @@ export abstract class BaseItem extends Mbr implements Geometry {
 	abstract renderHTML(documentFactory: DocumentFactory): HTMLElement;
 	abstract serialize(): any;
 	abstract deserialize(data: any): this;
-	abstract isClosed(): boolean;
+
+	isClosed() {
+		return true;
+	}
 }

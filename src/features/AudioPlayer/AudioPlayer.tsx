@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 import { createPortal } from "react-dom";
 
 interface Props {
-	audioItem: AudioItem;
+	item: AudioItem;
 }
 
 const PLAYBACK_RATES = [
@@ -47,8 +47,8 @@ export function secondsToHumanReadable(seconds: number): string {
 	return `${formattedMinutes}:${formattedSeconds}`;
 }
 
-export const AudioPlayer = ({ audioItem }: Props) => {
-	const { board, app } = useAppContext();
+export const AudioPlayer = ({ item }: Props) => {
+	const { board } = useAppContext();
 	const [currentTime, setCurrentTime] = useState(0);
 	const [duration, setDuration] = useState(0);
 	const [volume, setVolume] = useState(1);
@@ -66,8 +66,8 @@ export const AudioPlayer = ({ audioItem }: Props) => {
 	const playbackRateBtnRef = useRef<HTMLDivElement>(null);
 	const volumeBtnRef = useRef<HTMLDivElement>(null);
 	const { t } = useTranslation();
-	const isPlaying = audioItem.getIsPlaying();
-	const isDisabled = !isMetadataLoaded || !audioItem.getUrl();
+	const isPlaying = item.getIsPlaying();
+	const isDisabled = !isMetadataLoaded || !item.getUrl();
 
 	const optionsRef = useClickOutside(
 		() => setOpenedMenu("none"),
@@ -82,7 +82,7 @@ export const AudioPlayer = ({ audioItem }: Props) => {
 		}
 
 		const handleLoadedMetadata = () => {
-			audio.currentTime = audioItem.getCurrentTime();
+			audio.currentTime = item.getCurrentTime();
 			setIsMetadataLoaded(true);
 		};
 
@@ -154,12 +154,12 @@ export const AudioPlayer = ({ audioItem }: Props) => {
 		if (isProgressBarDown) {
 			return;
 		}
-		audioItem.setCurrentTime(0);
+		item.setCurrentTime(0);
 		setCurrentTime(0);
 		if (audioRef.current) {
 			audioRef.current.currentTime = 0;
 		}
-		audioItem.setIsPlaying(false);
+		item.setIsPlaying(false);
 	};
 
 	const onProgress = () => {
@@ -187,17 +187,17 @@ export const AudioPlayer = ({ audioItem }: Props) => {
 	const togglePlay = () => {
 		if (audioRef.current) {
 			if (isPlaying) {
-				audioItem.setCurrentTime(audioRef.current.currentTime);
+				item.setCurrentTime(audioRef.current.currentTime);
 				audioRef.current.pause();
 			} else {
 				audioRef.current.play();
 			}
-			audioItem.setIsPlaying(!isPlaying);
+			item.setIsPlaying(!isPlaying);
 		}
 	};
 
 	const onDownloadClick = (): void => {
-		audioItem.download();
+		item.download();
 		toggleOpenedMenu("none");
 	};
 
@@ -226,7 +226,7 @@ export const AudioPlayer = ({ audioItem }: Props) => {
 		return { top: `${bottom}px`, right: `${window.innerWidth - right}px` };
 	};
 
-	const audioMbr = audioItem.getMbr();
+	const audioMbr = item.getMbr();
 	const mbr = new Mbr(
 		audioMbr.left,
 		audioMbr.top,
@@ -242,8 +242,8 @@ export const AudioPlayer = ({ audioItem }: Props) => {
 				height: "76px",
 				left: mbr.left,
 				top: mbr.top,
-				zIndex: board.getZIndex(audioItem),
-				transform: `scale(${audioItem.transformation.getScale().x * board.camera.getScale()})`,
+				zIndex: board.getZIndex(item),
+				transform: `scale(${item.transformation.getScale().x * board.camera.getScale()})`,
 				transformOrigin: "top left",
 			}}
 			ref={containerRef}
@@ -252,7 +252,7 @@ export const AudioPlayer = ({ audioItem }: Props) => {
 			<audio
 				ref={audioRef}
 				className={styles.displayNone}
-				src={audioItem.getUrl()}
+				src={item.getUrl()}
 				onEnded={onEnded}
 				onTimeUpdate={onTimeUpdate}
 				onLoadedData={onLoadedData}

@@ -19,7 +19,7 @@ import { AddComment } from "./AddComment";
 import { Tool } from "Board/Tools/Tool";
 import { CustomTool } from "Board/Tools/CustomTool";
 
-export const registeredTools: Record<string, CustomTool> = {};
+export const registeredTools: Record<string, typeof CustomTool> = {};
 
 export class Tools extends ToolContext {
 	readonly subject = new Subject<Tools>();
@@ -27,9 +27,6 @@ export class Tools extends ToolContext {
 
 	constructor(protected board: Board) {
 		super();
-		Object.values(registeredTools).forEach((customTool: CustomTool) => {
-			customTool.setBoard(board);
-		});
 	}
 
 	setTool(tool: BoardTool): void {
@@ -76,7 +73,8 @@ export class Tools extends ToolContext {
 				console.warn(`Tool with name "${toolName}" not found`);
 				return;
 			}
-			this.tool = tool;
+
+			this.tool = new tool(this.board, "");
 			if (clearSelection) {
 				this.board.selection.removeAll();
 			}

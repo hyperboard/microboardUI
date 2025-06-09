@@ -2,7 +2,7 @@ import { BaseItem } from "Board/Items/BaseItem/BaseItem";
 import { Board } from "Board/Board";
 import { DrawingContext } from "Board/Items/DrawingContext";
 import { DocumentFactory } from "Board/api/DocumentFactory";
-import { ItemOperation, Operation } from "Board/Events";
+import { ItemOperation, Operation } from "Board/Events/index";
 import { Point } from "Board/Items/Point/Point";
 import { BorderStyle, BorderWidth, Path } from "Board/Items/Path/Path";
 import { Line } from "Board/Items/Line/Line";
@@ -14,9 +14,9 @@ import {
 import { Paths } from "Board/Items/Path/Paths";
 import { Item, ItemData } from "Board/Items/Item";
 import { registerItem } from "Board/Items/RegisterItem";
-import { StarOperation } from "Board/Items/Star/StarOperation";
-import { StarCommand } from "Board/Items/Star/StarCommand";
-import { AddStar } from "Board/Items/Star/AddStar";
+import { StarOperation } from "../Star/StarOperation";
+import { StarCommand } from "../Star/StarCommand";
+import { AddStar } from "../Star/AddStar";
 
 export interface StarData {
 	readonly itemType: "Star";
@@ -303,5 +303,5 @@ registerItem({
 	validator: validateStarData,
 	itemType: "Star",
 	commandFactory: createStarCommand,
-	toolData: { name: "AddStar", tool: new AddStar(new Board(), "AddStar") },
+	toolData: { name: "AddStar", tool: AddStar },
 });

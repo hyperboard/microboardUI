@@ -83,7 +83,6 @@ export class VideoItem extends BaseItem {
 	private isStorageUrl = false;
 	videoDimension: Dimension;
 	board: Board;
-	private isPlaying = false;
 	private shouldShowControls = false;
 	private playBtnMbr: Mbr = new Mbr();
 	private currentTime = 0;
@@ -173,12 +172,8 @@ export class VideoItem extends BaseItem {
 	}
 
 	setIsPlaying(isPlaying: boolean) {
-		this.isPlaying = isPlaying;
+		this.shouldUseCustomRender = isPlaying;
 		this.subject.publish(this);
-	}
-
-	getIsPlaying() {
-		return this.isPlaying;
 	}
 
 	setShouldShowControls(shouldShowControls: boolean) {
@@ -285,7 +280,7 @@ export class VideoItem extends BaseItem {
 			return;
 		}
 		const ctx = context.ctx;
-		if (this.isPlaying) {
+		if (this.shouldUseCustomRender) {
 			ctx.save();
 			ctx.globalCompositeOperation = "destination-out";
 			ctx.fillRect(

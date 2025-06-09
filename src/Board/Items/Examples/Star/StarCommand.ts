@@ -1,7 +1,7 @@
-import { Star } from "./Star";
-import { StarOperation } from "./StarOperation";
-import { Command } from "../../Events";
-import { mapItemsByOperation } from "../ItemsCommandUtils";
+import { Star } from "./Star.ts";
+import { StarOperation } from "./StarOperation.ts";
+import { Command } from "../../../Events";
+import { mapItemsByOperation } from "../../ItemsCommandUtils.ts";
 
 export class StarCommand implements Command {
 	private reverse: { item: Star; operation: StarOperation }[];
