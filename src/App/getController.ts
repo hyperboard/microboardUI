@@ -385,6 +385,7 @@ export function getController(
 					);
 			}
 		} else {
+			tools.pointerDown();
 			switch (event.button) {
 				case 0:
 					return tools.leftButtonDown();
@@ -534,6 +535,7 @@ export function getController(
 					);
 			}
 		} else {
+			tools.pointerUp();
 			board.presence.disableTracking();
 			switch (event.button) {
 				case 0:

@@ -47,6 +47,8 @@ import {
 } from "../staticResources";
 import { deleteMedia, updateMediaUsage } from "Board/Items/Image/ImageHelpers";
 import { enforceMode } from "./Events/MessageRouter/handleModeMessage";
+import { BaseItem } from "Board/Items/BaseItem/BaseItem";
+import { CommonItem } from "Board/Items/Item";
 
 export type InterfaceType = "edit" | "view" | "loading";
 
@@ -369,7 +371,7 @@ export class Board {
 		return parser(el);
 	}
 
-	add<T extends Item>(item: T, timeStamp?: number): T {
+	add<T extends CommonItem>(item: T, timeStamp?: number): T {
 		const id = this.getNewItemId();
 		this.emit({
 			class: "Board",

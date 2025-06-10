@@ -1,15 +1,25 @@
 import { Board } from "Board/Board";
-import { CustomTool } from "Board/Tools/CustomTool";
+import { CustomTool, StickerTool } from "Board/Tools/CustomTool";
 import {
 	Counter,
 	COUNTER_DIMENSIONS,
 } from "Board/Items/Examples/Counter/Counter";
 
-export class AddCounter extends CustomTool {
+export class AddCounter extends StickerTool {
 	constructor(board: Board, name: string) {
-		super(board, name);
-		this.createCounterInCenter();
-		this.board.tools.navigate();
+		super(board, name, Counter, { width: 250, height: 250 });
+	}
+
+	override keyDown(key: string): boolean {
+		const result = super.keyDown(key);
+		if (result) {
+			return result;
+		}
+		if (key === " ") {
+			this.createCounterInCenter();
+			return true;
+		}
+		return false;
 	}
 
 	createCounterInCenter(): void {

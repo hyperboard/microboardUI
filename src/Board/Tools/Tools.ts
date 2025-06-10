@@ -74,7 +74,7 @@ export class Tools extends ToolContext {
 				return;
 			}
 
-			this.tool = new tool(this.board, "");
+			this.tool = new tool(this.board, toolName);
 			if (clearSelection) {
 				this.board.selection.removeAll();
 			}

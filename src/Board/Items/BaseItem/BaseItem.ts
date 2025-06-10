@@ -15,7 +15,7 @@ export type SerializedItemData<T extends BaseItemData = BaseItemData> = {
 	transformation: TransformationData;
 } & T;
 
-export abstract class BaseItem extends Mbr implements Geometry {
+export class BaseItem extends Mbr implements Geometry {
 	readonly transformation: Transformation;
 	readonly linkTo: LinkTo;
 	readonly parent: string = "Board";
@@ -24,7 +24,7 @@ export abstract class BaseItem extends Mbr implements Geometry {
 	id: string;
 	shouldUseCustomRender = false;
 	shouldRenderOutsideViewRect = true;
-	itemType: string = "";
+	itemType = "";
 
 	constructor(
 		board: Board,
@@ -83,9 +83,9 @@ export abstract class BaseItem extends Mbr implements Geometry {
 		const serializedData: SerializedItemData = {
 			linkTo: this.linkTo.serialize(),
 			transformation: this.transformation.serialize(),
-			itemType: this.defaultItemData.itemType,
+			itemType: this.defaultItemData?.itemType || this.itemType,
 		};
-		Object.keys(this.defaultItemData).forEach((key: string) => {
+		Object.keys(this.defaultItemData || {}).forEach((key: string) => {
 			const value = this[key];
 			serializedData[key] = value?.serialize?.() || value;
 		});
@@ -108,6 +108,8 @@ export abstract class BaseItem extends Mbr implements Geometry {
 		}
 	}
 
-	abstract render(context: DrawingContext): void;
-	abstract renderHTML(documentFactory: DocumentFactory): HTMLElement;
+	render(context: DrawingContext): void {}
+	renderHTML(documentFactory: DocumentFactory): HTMLElement {
+		return documentFactory.createElement("div");
+	}
 }
