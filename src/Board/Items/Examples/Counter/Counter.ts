@@ -6,16 +6,14 @@ import {
 import { Board } from "Board/Board";
 import { DrawingContext } from "Board/Items/DrawingContext";
 import { DocumentFactory } from "Board/api/DocumentFactory";
-import { Operation } from "Board/Events/index";
 import { Point } from "Board/Items/Point/Point";
 import { Path } from "Board/Items/Path/Path";
 import { Line } from "Board/Items/Line/Line";
 import { Subject } from "shared/Subject";
 import { Paths } from "Board/Items/Path/Paths";
 import { registerItem } from "Board/Items/RegisterItem";
-import { CounterOperation } from "Board/Items/Examples/Counter/CounterOperation";
-import { CounterCommand } from "Board/Items/Examples/Counter/CounterCommand";
 import { AddCounter } from "Board/Items/Examples/Counter/AddCounter";
+import { CounterOperation } from "Board/Items/Examples/Counter/CounterOperation";
 
 export const defaultCounterData: BaseItemData = {
 	itemType: "Counter",
@@ -92,16 +90,6 @@ export class Counter extends BaseItem {
 		return this;
 	}
 
-	emit(operation: CounterOperation): void {
-		if (this.board.events) {
-			const command = new CounterCommand([this], operation);
-			command.apply();
-			this.board.events.emit(operation, command);
-		} else {
-			this.apply(operation);
-		}
-	}
-
 	getCount(): number {
 		return this.count;
 	}
@@ -111,18 +99,18 @@ export class Counter extends BaseItem {
 			class: "Counter",
 			method: "updateCounter",
 			item: [this.getId()],
-			newState: { counter: count },
-			prevState: { counter: this.count },
+			newData: { count },
+			prevData: { count: this.count },
 		});
 	}
 
-	apply(op: Operation): void {
+	apply(op: CounterOperation): void {
 		super.apply(op);
 		switch (op.class) {
 			case "Counter":
 				switch (op.method) {
 					case "updateCounter":
-						this.count = op.newState.counter;
+						this.count = op.newData.count;
 				}
 				break;
 		}
@@ -133,6 +121,5 @@ export class Counter extends BaseItem {
 registerItem({
 	item: Counter,
 	defaultData: defaultCounterData,
-	command: CounterCommand,
 	toolData: { name: "AddCounter", tool: AddCounter },
 });

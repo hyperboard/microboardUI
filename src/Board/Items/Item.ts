@@ -14,7 +14,7 @@ import { AINode } from "Board/Items/AINode/AINode";
 import { AINodeData } from "Board/Items/AINode/AINodeData";
 import { VideoItem, VideoItemData } from "Board/Items/Video/Video";
 import { AudioItem, AudioItemData } from "Board/Items/Audio/Audio";
-import { BaseItem, SerializedItemData } from "Board/Items/BaseItem/BaseItem";
+import { SerializedItemData } from "Board/Items/BaseItem/BaseItem";
 
 export type Item =
 	| RichText
@@ -47,5 +47,3 @@ export type ItemData =
 	| VideoItemData
 	| AudioItemData
 	| SerializedItemData;
-
-export type CommonItem = Item | BaseItem;

@@ -5,6 +5,7 @@ import { Transformation, TransformationData } from "../Transformation";
 import { CommentOperation } from "./CommentOperation";
 import { CommentCommand } from "./CommentCommand";
 import { Mbr } from "../Mbr";
+import { Geometry } from "../Geometry";
 import { GeometricNormal } from "../GeometricNormal";
 import { RichText } from "../RichText";
 import { DrawingContext } from "../DrawingContext";
@@ -12,8 +13,6 @@ import { Line } from "../Line";
 import { v4 as uuidv4 } from "uuid";
 import { LinkTo } from "../LinkTo/LinkTo";
 import { DocumentFactory } from "Board/api/DocumentFactory";
-import { BaseItem } from "Board/Items/BaseItem/BaseItem";
-import { Board } from "Board/Board";
 
 export interface Commentator {
 	username: string;
@@ -42,7 +41,7 @@ export interface CommentData {
 
 const ANONYMOUS_ID = 9_999_999_999;
 
-export class Comment extends BaseItem {
+export class Comment implements Geometry {
 	readonly itemType = "Comment";
 	parent = "Board";
 	readonly transformation: Transformation;
@@ -56,12 +55,10 @@ export class Comment extends BaseItem {
 	transformationRenderBlock?: boolean = undefined;
 
 	constructor(
-		board: Board,
 		private anchor = new Point(),
 		private events?: Events,
-		id = "",
+		private id = "",
 	) {
-		super(board, id);
 		this.transformation = new Transformation(id, events);
 		this.transformation.subject.subscribe(() => {
 			this.transform();

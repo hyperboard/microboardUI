@@ -1,9 +1,10 @@
 import { Board } from "Board/Board";
-import { CustomTool, StickerTool } from "Board/Tools/CustomTool";
+import { StickerTool } from "Board/Tools/CustomTool";
 import {
 	Counter,
 	COUNTER_DIMENSIONS,
 } from "Board/Items/Examples/Counter/Counter";
+import { Item } from "Board/Items/Item";
 
 export class AddCounter extends StickerTool {
 	constructor(board: Board, name: string) {
@@ -26,7 +27,7 @@ export class AddCounter extends StickerTool {
 		const { left, top, bottom, right } = this.board.camera.getMbr();
 		const x = (left + right) / 2 - COUNTER_DIMENSIONS.width / 2;
 		const y = (top + bottom) / 2 - COUNTER_DIMENSIONS.height / 2;
-		const counter = new Counter(this.board, "");
+		const counter = new Counter(this.board, "") as unknown as Item;
 		counter.transformation.apply({
 			class: "Transformation",
 			method: "translateTo",

@@ -1,10 +1,8 @@
+import { BaseOperation } from "Board/Events/EventsOperations";
+
 export type StarOperation = ToggleShine;
 
-interface BaseStarOperation {
+interface ToggleShine extends BaseOperation<{ isShining: boolean }> {
 	class: "Star";
-	item: string[];
-}
-
-interface ToggleShine extends BaseStarOperation {
 	method: "toggleShine";
 }

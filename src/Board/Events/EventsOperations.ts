@@ -13,8 +13,6 @@ import { CommentOperation } from "../Items/Comment";
 import { ImageOperation } from "Board/Items/Image";
 import { VideoOperation } from "Board/Items/Video/VideoOperation";
 import { AudioOperation } from "Board/Items/Audio/AudioOperation";
-import { StarOperation } from "../Items/Examples/Star/StarOperation";
-import { CounterOperation } from "Board/Items/Examples/Counter/CounterOperation";
 
 interface Undo {
 	class: "Events";
@@ -30,6 +28,14 @@ interface Redo {
 
 export type EventsOperation = Undo | Redo;
 
+export interface BaseOperation<T extends Record<string, unknown> = {}> {
+	class: string;
+	item: string[];
+	method: string;
+	newData: T;
+	prevData: T;
+}
+
 export type ItemOperation =
 	| LinkToOperation
 	| TransformationOperation
@@ -44,9 +50,7 @@ export type ItemOperation =
 	| CommentOperation
 	| ImageOperation
 	| VideoOperation
-	| AudioOperation
-	| StarOperation
-	| CounterOperation;
+	| AudioOperation;
 
 export type UndoableOperation = BoardOps | ItemOperation;
 

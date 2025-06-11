@@ -8,6 +8,8 @@ import { DrawingContext } from "Board/Items/DrawingContext";
 import { DocumentFactory } from "Board/api/DocumentFactory";
 import { Operation } from "Board/Events";
 import { TransformationData } from "Board/Items/Transformation/TransformationData";
+import { BaseOperation } from "Board/Events/EventsOperations";
+import { BaseCommand } from "Board/Events/Command";
 
 export type BaseItemData = { itemType: string } & Record<string, any>;
 export type SerializedItemData<T extends BaseItemData = BaseItemData> = {
@@ -63,10 +65,6 @@ export class BaseItem extends Mbr implements Geometry {
 		return null;
 	}
 
-	emit(operation: Operation): void {
-		this.board.events.emit(operation);
-	}
-
 	deserialize(data: SerializedItemData): this {
 		Object.entries(data).forEach(([key, value]) => {
 			if (this[key]?.deserialize) {
@@ -97,7 +95,18 @@ export class BaseItem extends Mbr implements Geometry {
 		return true;
 	}
 
-	apply(op: Operation): void {
+	emit(operation: Operation | BaseOperation): void {
+		if (this.board.events) {
+			const command = new BaseCommand([this], operation as BaseOperation);
+			command.apply();
+			this.board.events.emit(operation as Operation, command);
+		} else {
+			this.apply(operation);
+		}
+	}
+
+	apply(op: Operation | BaseOperation): void {
+		op = op as Operation;
 		switch (op.class) {
 			case "Transformation":
 				this.transformation.apply(op);

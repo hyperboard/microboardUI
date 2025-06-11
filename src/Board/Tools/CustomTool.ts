@@ -7,6 +7,7 @@ import { conf } from "Board/Settings";
 import { DrawingContext } from "Board/Items/DrawingContext";
 import { ResizeType } from "Board/Selection/Transformer/TransformerHelpers/getResizeType";
 import { CursorName } from "Board/Pointer/Cursor";
+import { Item } from "Board/Items/Item";
 
 export interface ShapeToolSettings {
 	cursorName?: CursorName;
@@ -115,7 +116,7 @@ export class ShapeTool extends CustomTool {
 		const height =
 			this.bounds.getHeight() < 2 ? 100 : this.bounds.getHeight();
 		this.initTransformation(width / 100, height / 100);
-		const addedItem = this.board.add(this.item);
+		const addedItem = this.board.add(this.item as Item);
 		this.isDown = false;
 		this.board.selection.removeAll();
 		this.board.selection.add(addedItem);
@@ -173,7 +174,7 @@ export class StickerTool extends CustomTool {
 			x: width / this.settings.width,
 			y: height / this.settings.height,
 		});
-		const addedItem = this.board.add(this.item);
+		const addedItem = this.board.add(this.item as Item);
 		this.board.selection.removeAll();
 		this.board.selection.add(addedItem);
 		this.board.tools.publish();

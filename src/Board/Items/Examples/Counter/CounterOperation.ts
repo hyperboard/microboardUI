@@ -1,12 +1,8 @@
+import { BaseOperation } from "Board/Events/EventsOperations";
+
 export type CounterOperation = UpdateCounter;
 
-interface BaseCounterOperation {
+export interface UpdateCounter extends BaseOperation<{ count: number }> {
 	class: "Counter";
-	item: string[];
-}
-
-interface UpdateCounter extends BaseCounterOperation {
 	method: "updateCounter";
-	newState: { counter: number };
-	prevState: { counter: number };
 }

@@ -3,26 +3,24 @@ import { Board } from "Board/Board";
 import { itemFactories } from "Board/itemFactories";
 import { validators } from "Board/Validators/Validators";
 import {
+	BaseCommand,
 	Command,
-	ItemCommand,
 	itemCommandFactories,
 } from "Board/Events/Command";
 import { CustomTool } from "Board/Tools/CustomTool";
 import { registeredTools } from "Board/Tools/Tools";
-import { BaseItemData } from "Board/Items/BaseItem/BaseItem";
-import { ItemOperation } from "Board/Events/EventsOperations";
+import { BaseItem, BaseItemData } from "Board/Items/BaseItem/BaseItem";
+import { BaseOperation, ItemOperation } from "Board/Events/EventsOperations";
 
 type RegisterItemArgs = {
 	item: any;
 	defaultData: BaseItemData;
 	toolData: { name: string; tool: typeof CustomTool };
-	command?: typeof ItemCommand;
 };
 
 export function registerItem({
 	item,
 	defaultData,
-	command,
 	toolData,
 }: RegisterItemArgs): void {
 	const { itemType } = defaultData;
@@ -30,12 +28,7 @@ export function registerItem({
 	validators[itemType] = createItemValidator(defaultData);
 	registeredTools[toolData.name] = toolData.tool;
 
-	if (command) {
-		itemCommandFactories[itemType] = createItemCommandFactory(
-			command,
-			itemType,
-		);
-	}
+	itemCommandFactories[itemType] = createItemCommandFactory(itemType);
 }
 
 function createItemFactory(item: any, defaultData: BaseItemData) {
@@ -65,17 +58,16 @@ function createItemValidator(defaultData: BaseItemData) {
 	};
 }
 
-function createItemCommandFactory(
-	command: typeof ItemCommand,
-	itemType: string,
-) {
+function createItemCommandFactory(itemType: string) {
 	return function itemCommandFactory(
 		items: Item[],
 		operation: ItemOperation,
 	): Command {
-		return new command(
-			items.filter((item): boolean => item.itemType === itemType),
-			operation,
+		return new BaseCommand(
+			items.filter(
+				(item): boolean => item.itemType === itemType,
+			) as BaseItem[],
+			operation as BaseOperation,
 		);
 	};
 }

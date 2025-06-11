@@ -6,7 +6,6 @@ import {
 import { Board } from "Board/Board";
 import { DrawingContext } from "Board/Items/DrawingContext";
 import { DocumentFactory } from "Board/api/DocumentFactory";
-import { Operation } from "Board/Events/index";
 import { Point } from "Board/Items/Point/Point";
 import { BorderStyle, BorderWidth, Path } from "Board/Items/Path/Path";
 import { Line } from "Board/Items/Line/Line";
@@ -14,9 +13,8 @@ import { Subject } from "shared/Subject";
 import { TransformationData } from "Board/Items/Transformation/TransformationData";
 import { Paths } from "Board/Items/Path/Paths";
 import { registerItem } from "Board/Items/RegisterItem";
-import { StarOperation } from "../Star/StarOperation";
-import { StarCommand } from "../Star/StarCommand";
 import { AddStar } from "../Star/AddStar";
+import { StarOperation } from "Board/Items/Examples/Star/StarOperation";
 
 export interface StarData {
 	readonly itemType: "Star";
@@ -65,6 +63,7 @@ export class Star extends BaseItem {
 
 	constructor(board: Board, id = "") {
 		super(board, id, defaultStarData);
+		this.path = starPath.copy();
 		this.transformPath();
 
 		this.transformation.subject.subscribe(() => {
@@ -159,25 +158,17 @@ export class Star extends BaseItem {
 		return true;
 	}
 
-	emit(operation: StarOperation): void {
-		if (this.board.events) {
-			const command = new StarCommand([this], operation);
-			command.apply();
-			this.board.events.emit(operation, command);
-		} else {
-			this.apply(operation);
-		}
-	}
-
 	toggleIsShining(): void {
 		this.emit({
 			class: "Star",
 			method: "toggleShine",
 			item: [this.getId()],
+			prevData: { isShining: this.isShining },
+			newData: { isShining: !this.isShining },
 		});
 	}
 
-	apply(op: Operation): void {
+	apply(op: StarOperation): void {
 		super.apply(op);
 		switch (op.class) {
 			case "Star":
@@ -190,7 +181,7 @@ export class Star extends BaseItem {
 							this.backgroundColor = "#1f1255";
 							this.borderColor = "#000207";
 						}
-						this.isShining = !this.isShining;
+						this.isShining = op.newData.isShining;
 						this.transformPath();
 				}
 				break;
@@ -202,6 +193,5 @@ export class Star extends BaseItem {
 registerItem({
 	item: Star,
 	defaultData: defaultStarData,
-	command: StarCommand,
 	toolData: { name: "AddStar", tool: AddStar },
 });

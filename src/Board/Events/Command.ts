@@ -8,7 +8,7 @@ import {
 } from "../Items/RichText/RichTextCommand";
 import { EventsCommand } from "./EventsCommand";
 import { ConnectorCommand } from "Board/Items/Connector/ConnectorCommand";
-import { ItemOperation, Operation } from "./EventsOperations";
+import { BaseOperation, ItemOperation, Operation } from "./EventsOperations";
 import { DrawingCommand } from "Board/Items/Drawing/DrawingCommand";
 import { StickerCommand } from "../Items/Sticker/StickerCommand";
 import {
@@ -43,6 +43,8 @@ import { FrameOperation } from "Board/Items/Frame/FrameOperation";
 import { PlaceholderOperation } from "Board/Items/Placeholder/PlaceholderOperation";
 import { GroupOperation } from "Board/Items/Group/GroupOperation";
 import { LinkToOperation } from "Board/Items/LinkTo/LinkToOperation";
+import { BaseItem } from "Board/Items/BaseItem/BaseItem";
+import { mapItemsByOperation } from "Board/Items/ItemsCommandUtils";
 
 export interface Command {
 	apply(): void;
@@ -50,13 +52,44 @@ export interface Command {
 	revert(): void;
 }
 
-export class ItemCommand implements Command {
+export class BaseCommand {
+	private reverse: { item: BaseItem; operation: BaseOperation }[];
+
 	constructor(
-		private items: any,
-		public operation: any,
-	) {}
-	apply(): void {}
-	revert(): void {}
+		public items: BaseItem[],
+		public operation: BaseOperation,
+	) {
+		this.reverse = this.getReverse();
+	}
+
+	merge(op: BaseOperation): this {
+		this.operation = op;
+		return this;
+	}
+
+	apply(): void {
+		for (const item of this.items) {
+			item.apply(this.operation as Operation);
+		}
+	}
+
+	revert(): void {
+		for (const { item, operation } of this.reverse) {
+			item.apply(operation as Operation);
+		}
+	}
+
+	getReverse(): { item: BaseItem; operation: BaseOperation }[] {
+		const items = this.items;
+
+		return mapItemsByOperation(items, item => {
+			const op = this.operation;
+			return {
+				...op,
+				newData: op.prevData,
+			};
+		});
+	}
 }
 
 export interface ItemCommandFactory {
