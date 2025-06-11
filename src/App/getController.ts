@@ -6,11 +6,9 @@ import {
 	ImageItemData,
 	validateMediaFile,
 	Item,
-	uploadAudio,
 	PRESENCE_CURSOR_THROTTLE,
 	HotkeysMap,
 	checkHotkeys,
-	uploadVideo,
 	isControlCharacter,
 } from "microboard-temp";
 import { throttle } from "shared/lib/throttle";
@@ -22,6 +20,7 @@ import { isSafari } from "./isSafari";
 import { Account } from "entities/account";
 import { tempStorage } from "App/SessionStorage";
 import { AppSettings } from "App/App";
+import { mediaApi } from "shared/api";
 
 export interface Controller {
 	onWheel: (event: WheelEvent) => void;
@@ -679,7 +678,7 @@ export function getController(
 		}
 
 		if (fileExtension && conf.VIDEO_FORMATS.includes(fileExtension)) {
-			uploadVideo(
+			mediaApi.uploadVideo(
 				file,
 				board,
 				notify,
@@ -691,7 +690,7 @@ export function getController(
 			fileExtension &&
 			conf.AUDIO_FORMATS.includes(fileExtension)
 		) {
-			uploadAudio(
+			mediaApi.uploadAudio(
 				file,
 				board,
 				notify,

@@ -1,11 +1,11 @@
-import { Board } from "Board/Board";
+import { NotifyFunction } from "shared/ui-lib/Toast/notify";
 import {
+	conf,
+	Board,
 	calculateAudioPosition,
 	prepareAudio,
-} from "Board/Items/Audio/AudioHelpers";
-import { AudioItem } from "Board/Items/Audio/Audio";
-import { NotifyFunction } from "shared/ui-lib/Toast/notify";
-import { conf } from "Board/Settings";
+	AudioItem,
+} from "microboard-temp";
 
 export function uploadAudio(
 	file: File,

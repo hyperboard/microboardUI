@@ -1,7 +1,9 @@
-import { Board } from "Board/Board";
-import { ImageItem } from "./Image";
-import { calculatePosition } from "./calculatePosition";
-import { prepareImage } from "./ImageHelpers";
+import {
+	Board,
+	ImageItem,
+	calculatePosition,
+	prepareImage,
+} from "microboard-temp";
 import * as PDFJS from "@bundled-es-modules/pdfjs-dist";
 import { RenderParameters } from "@bundled-es-modules/pdfjs-dist/types/src/display/api";
 

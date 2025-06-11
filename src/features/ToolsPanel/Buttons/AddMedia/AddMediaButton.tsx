@@ -5,13 +5,8 @@ import { notify } from "shared/ui-lib/Toast/index";
 import React, { ChangeEventHandler, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { UiButton } from "shared/ui-lib/UiButton/index";
-import {
-	conf,
-	uploadVideo,
-	uploadImage,
-	uploadAudio,
-	validateMediaFile,
-} from "microboard-temp";
+import { conf, validateMediaFile } from "microboard-temp";
+import { mediaApi } from "shared/api";
 
 function bytesToGigabytes(bytes: number): number {
 	return bytes / 1024 ** 3;
@@ -88,7 +83,7 @@ export function AddMediaButton({
 				) {
 					return notifyAboutUnsupportedFormat();
 				}
-				uploadVideo(
+				mediaApi.uploadVideo(
 					file,
 					board,
 					notify,
@@ -103,7 +98,7 @@ export function AddMediaButton({
 				) {
 					return notifyAboutUnsupportedFormat();
 				}
-				uploadAudio(
+				mediaApi.uploadAudio(
 					file,
 					board,
 					notify,
@@ -112,7 +107,7 @@ export function AddMediaButton({
 				);
 				break;
 			default:
-				uploadImage(file, board, account.accessToken);
+				mediaApi.uploadImage(file, board, account.accessToken);
 		}
 
 		input.value = "";

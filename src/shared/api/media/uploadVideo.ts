@@ -1,12 +1,12 @@
-import { Board } from "Board/Board";
+import { NotifyFunction } from "shared/ui-lib/Toast/notify";
 import {
+	conf,
+	VideoItem,
 	createVideoItem,
 	getVideoMetadata,
 	prepareVideo,
-} from "./VideoHelpers";
-import { NotifyFunction } from "shared/ui-lib/Toast/notify";
-import { VideoItem } from "Board/Items/Video/Video";
-import { conf } from "Board/Settings";
+	Board,
+} from "microboard-temp";
 
 export function uploadVideo(
 	file: File,
