@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./UserTracking.module.css";
-import { Board } from "Board";
-import { Presence, PresenceUser } from "Board/Presence/Presence";
-import { rgbToRgba } from "Board/Presence/helpers";
+import { Presence, PresenceUser, Board } from "microboard-temp";
 import { useTranslation } from "react-i18next";
 
 interface Props {

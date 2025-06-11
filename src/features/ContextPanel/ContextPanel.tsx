@@ -1,4 +1,4 @@
-import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
+import { useDomMbr } from "App/useDomMbr";
 import { useAppSubscription } from "App/useBoardSubscription";
 import React, { useRef, useState } from "react";
 import { useAppContext } from "features/AppContext";

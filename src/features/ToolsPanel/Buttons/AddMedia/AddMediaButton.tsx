@@ -1,15 +1,17 @@
 import { useAccount } from "App/useAccount";
-import { uploadImage } from "Board/Items/Image/uploadImage";
 import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon/Icon";
 import { notify } from "shared/ui-lib/Toast/index";
 import React, { ChangeEventHandler, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { UiButton } from "shared/ui-lib/UiButton/index";
-import { uploadVideo } from "Board/Items/Video/uploadVideo";
-import { uploadAudio } from "Board/Items/Audio/uploadAudio";
-import { conf } from "microboard-temp";
-import { validateMediaFile } from "Board/Items/Image/ImageHelpers";
+import {
+	conf,
+	uploadVideo,
+	uploadImage,
+	uploadAudio,
+	validateMediaFile,
+} from "microboard-temp";
 
 function bytesToGigabytes(bytes: number): number {
 	return bytes / 1024 ** 3;

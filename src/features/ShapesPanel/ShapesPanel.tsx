@@ -5,11 +5,11 @@ import { useAppContext } from "features/AppContext";
 import { UiPanel } from "shared/ui-lib/UiPanel";
 import styles from "./ShapesPanel.module.css";
 import { useShapesPanelContext } from "./ShapesPanelContext";
-import { ShapeType } from "../../Board/Items/Shape";
 import {
 	ShapeCategoryName,
+	ShapeType,
 	SHAPES_CATEGORIES,
-} from "Board/Items/Shape/ShapeData";
+} from "microboard-temp";
 import { Icon } from "../../shared/ui-lib/Icon";
 import { ShapesCategory } from "./ShapesCategory/ShapesCategory";
 import { UiButton } from "shared/ui-lib/UiButton";

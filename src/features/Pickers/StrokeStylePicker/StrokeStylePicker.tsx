@@ -1,4 +1,4 @@
-import { BorderStyle } from "Board/Items/Path";
+import { BorderStyle } from "microboard-temp";
 import { Icon } from "shared/ui-lib/Icon";
 import React from "react";
 import style from "./StrokeStylePicker.module.css";

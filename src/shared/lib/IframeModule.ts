@@ -1,9 +1,12 @@
 import Cookies from "js-cookie";
 import { isIframe } from "./isIframe";
-import { exportBoardSnapshot, BoardTool } from "microboard-temp";
+import {
+	Board,
+	exportBoardSnapshot,
+	BoardTool,
+	ExportSnapshot,
+} from "microboard-temp";
 import { App } from "App";
-import { Board } from "Board";
-import { ExportSnapshot } from "../../Board/Tools/ExportSnapshot/ExportSnapshot";
 
 // type MessagePattern = "updateUserToken" | "iframeEvent" | "makeSnapshot";
 

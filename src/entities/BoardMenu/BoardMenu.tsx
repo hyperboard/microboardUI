@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { UiPanel } from "shared/ui-lib/UiPanel";
-import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
+import { useDomMbr } from "App/useDomMbr";
 import { useAppContext } from "features/AppContext";
-import { Mbr } from "../../Board/Items";
+import { Mbr } from "microboard-temp";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { useAppSubscription } from "App/useBoardSubscription";
 import { UiSeparator } from "shared/ui-lib/UiSeparator/UiSeparator";

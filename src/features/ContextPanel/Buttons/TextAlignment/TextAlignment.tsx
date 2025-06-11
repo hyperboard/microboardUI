@@ -1,4 +1,4 @@
-import { HorisontalAlignment, VerticalAlignment } from "Board/Items/Alignment";
+import { HorisontalAlignment, VerticalAlignment } from "microboard-temp";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "features/AppContext";

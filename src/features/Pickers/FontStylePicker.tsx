@@ -1,5 +1,4 @@
-import { TextStyle } from "Board/Items/RichText";
-import { getHotkeyLabel } from "Board/Keyboard";
+import { getHotkeyLabel, TextStyle } from "microboard-temp";
 import { Icon } from "shared/ui-lib/Icon";
 import React from "react";
 import { useTranslation } from "react-i18next";

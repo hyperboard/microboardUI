@@ -1,4 +1,4 @@
-import { BoardEvent } from "Board/Events/Events";
+import { BoardEvent } from "microboard-temp";
 import React, { CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "features/AppContext";

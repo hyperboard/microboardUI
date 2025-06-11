@@ -1,5 +1,7 @@
-import { CONNECTOR_POINTER_TYPES } from "Board/Items/Connector/Connector";
-import { ConnectorPointerStyle } from "Board/Items/Connector/Pointers/Pointers";
+import {
+	ConnectorPointerStyle,
+	CONNECTOR_POINTER_TYPES,
+} from "microboard-temp";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { ConnectorPointerIcon } from "shared/ui-lib/Icon";

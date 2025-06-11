@@ -20,7 +20,7 @@ import { useAppContext } from "features/AppContext";
 import { useNavigate } from "react-router-dom";
 import { useOpenedFoldersContext } from "entities/Folder";
 import { UiLoader } from "shared/ui-lib/UiLoader";
-import { Mbr } from "Board/Items";
+import { Mbr } from "microboard-temp";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 

@@ -1,5 +1,5 @@
 import type { App } from "App";
-import type { Board } from "Board";
+import type { Board } from "microboard-temp";
 import React from "react";
 import { Outlet } from "react-router-dom";
 import { AppContext } from "./AppContext";

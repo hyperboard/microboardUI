@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import { UiPanel } from "shared/ui-lib/UiPanel";
 import EventComponent from "./HistoryEvent";
-import { SyncLog } from "Board/Events/SyncLog";
+import { SyncLog } from "microboard-temp";
 import { useAppContext } from "features/AppContext";
 import { UiButton } from "shared/ui-lib/UiButton";
 

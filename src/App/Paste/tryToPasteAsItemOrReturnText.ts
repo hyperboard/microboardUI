@@ -1,4 +1,4 @@
-import { Board } from "Board";
+import { Board } from "microboard-temp";
 import {
 	tryToPasteImages,
 	tryToPasteFromMiro,

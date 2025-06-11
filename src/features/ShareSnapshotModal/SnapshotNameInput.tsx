@@ -2,14 +2,13 @@ import React, { SyntheticEvent, useEffect, useRef, useState } from "react";
 import styles from "./SnapshotNameInput.module.css";
 import { notify } from "shared/ui-lib/Toast";
 import { useAppContext } from "features/AppContext";
-import { api, boardsApi, HTTPError } from "shared/api";
-import { MessageResponse } from "shared/api/types";
+import { boardsApi, HTTPError } from "shared/api";
 import { UiButton } from "shared/ui-lib/UiButton";
 import clsx from "clsx";
 import { nanoid } from "nanoid";
 import { Icon } from "shared/ui-lib/Icon";
 import { useTranslation } from "react-i18next";
-import { Board } from "Board";
+import { Board } from "microboard-temp";
 import { TFunction } from "i18next";
 
 function getURLSafeBoardName(

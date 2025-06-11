@@ -1,9 +1,9 @@
 import React, { useRef, useState } from "react";
 import { useAppSubscription } from "App/useBoardSubscription";
 import { useAppContext } from "features/AppContext";
-import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
+import { useDomMbr } from "App/useDomMbr";
 import styles from "./HyperLink.module.css";
-import { Mbr } from "Board/Items/Mbr/Mbr";
+import { Mbr } from "microboard-temp";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 
 export const HyperLink = () => {

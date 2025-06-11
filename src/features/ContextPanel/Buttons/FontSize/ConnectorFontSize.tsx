@@ -1,7 +1,7 @@
 import React from "react";
 import { useAppContext } from "features/AppContext";
 import { FontSize } from "./FontSize";
-import type { Connector } from "Board/Items";
+import { Connector } from "microboard-temp";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";
 
 type Props = {

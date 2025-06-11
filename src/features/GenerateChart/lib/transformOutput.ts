@@ -1,4 +1,3 @@
-import { Board } from "Board";
 import {
 	AiConnector,
 	AiFrame,
@@ -9,6 +8,7 @@ import {
 	Point,
 } from "./types";
 import {
+	Board,
 	Connector,
 	Frame,
 	Item,
@@ -16,13 +16,12 @@ import {
 	Point as BoardPoint,
 	RichText,
 	Shape,
-} from "Board/Items";
-import { Sticker, stickerColors } from "Board/Items/Sticker";
-import {
+	Sticker,
+	stickerColors,
 	BoardPoint as ConnectorPoint,
 	FixedPoint,
-} from "Board/Items/Connector";
-import { toRelativePoint } from "Board/Items/Connector/ControlPoint";
+	toRelativePoint,
+} from "microboard-temp";
 
 const SIZE_MULTIPLIER = 1;
 function multiplySize(x: number): number {

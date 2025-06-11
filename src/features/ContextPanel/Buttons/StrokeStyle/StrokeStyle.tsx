@@ -1,4 +1,3 @@
-import { BorderStyle } from "Board/Items/Path";
 import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
 import { StrokeColorIndicator } from "shared/ui-lib/Icon";
@@ -6,18 +5,19 @@ import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
 import { SliderPicker } from "features/Pickers/SliderPicker";
 import { StrokeStylePicker } from "features/Pickers/StrokeStylePicker/StrokeStylePicker";
 import {
+	conf,
 	MAX_STROKE_WIDTH,
 	MIN_STROKE_WIDTH,
 	STEP_STROKE_WIDTH,
-} from "Board/Items/Shape/ShapeData";
-import { conf } from "microboard-temp";
+	BorderStyle,
+	Shape,
+} from "microboard-temp";
 import { UiColorInput } from "shared/ui-lib/UiColorInput";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import style from "./StrokeStyle.module.css";
 import { useAppContext } from "features/AppContext";
-import { Shape } from "../../../../Board/Items";
 import btnStyle from "../ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
 

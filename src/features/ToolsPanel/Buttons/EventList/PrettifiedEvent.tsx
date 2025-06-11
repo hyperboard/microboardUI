@@ -1,13 +1,7 @@
 import React, { CSSProperties, MouseEvent } from "react";
-import { BoardEvent } from "Board/Events/Events";
-import { Operation } from "Board/Events";
-import { MethodType } from "Board/Events/EventsOperations";
-import { Item, Mbr } from "Board/Items";
+import type { Operation, BoardEvent } from "microboard-temp";
+import { Item } from "microboard-temp";
 import { useAppContext } from "features/AppContext";
-
-type EventTypeMap = {
-	[K in MethodType]: string;
-};
 
 interface Props {
 	event: BoardEvent;

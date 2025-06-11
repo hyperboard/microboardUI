@@ -1,8 +1,7 @@
 import React from "react";
 import { RenderElementProps } from "slate-react";
 import styles from "./TextEditor.module.css";
-import { BlockNode } from "Board/Items/RichText/Editor/BlockNode";
-import { TextNode } from "Board/Items/RichText/Editor/TextNode";
+import { TextNode, BlockNode } from "microboard-temp";
 
 export function Element(props: RenderElementProps): React.ReactElement {
 	const { attributes, element, children } = props;

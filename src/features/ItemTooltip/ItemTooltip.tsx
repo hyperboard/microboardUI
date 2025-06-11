@@ -1,4 +1,4 @@
-import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
+import { useDomMbr } from "App/useDomMbr";
 import { useAppContext } from "features/AppContext";
 import { PanelContext } from "features/ContextPanel/PanelContext";
 import { MiroBoardItemTypes } from "features/ImportMiro/ImportMiroBoards/MiroModels";

@@ -3,7 +3,7 @@ import {
 	useStrictContext,
 } from "shared/lib/strictContext";
 import React, { useState } from "react";
-import { Comment } from "Board/Items/Comment/Comment";
+import { Comment } from "microboard-temp";
 
 interface Context {
 	openedThreadId: string | undefined;

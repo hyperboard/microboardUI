@@ -1,6 +1,4 @@
-import { Board } from "Board";
-import { ImageItem } from "Board/Items/Image";
-import { prepareImage } from "Board/Items/Image/ImageHelpers";
+import { Board, ImageItem, prepareImage } from "microboard-temp";
 
 export function tryToPasteImages(
 	dataTransfer: DataTransfer | null,

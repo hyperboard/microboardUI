@@ -1,4 +1,4 @@
-import QuickAddButtonsClear from "Board/Selection/QuickAddButtons/QuickAddButtonsClear";
+import QuickAddButtonsClear from "features/QuickAddButtons/QuickAddButtonsClear";
 import { Navbar } from "features/Widgets/Navbar/Navbar";
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";

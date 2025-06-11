@@ -1,4 +1,4 @@
-import { ConnectorPointerStyle } from "Board/Items/Connector/Pointers/Pointers";
+import { ConnectorPointerStyle } from "microboard-temp";
 import clsx from "clsx";
 import { useAppContext } from "features/AppContext";
 import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";

@@ -1,4 +1,4 @@
-import { ImageItem } from "Board/Items/Image";
+import { ImageItem } from "microboard-temp";
 import { useAppContext } from "features/AppContext";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
 import React from "react";

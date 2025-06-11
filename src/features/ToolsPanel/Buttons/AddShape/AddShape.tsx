@@ -1,5 +1,4 @@
-import { ShapeType } from "Board/Items/Shape";
-import { getHotkeyLabel } from "Board/Keyboard";
+import { getHotkeyLabel, ShapeType } from "microboard-temp";
 import { useAppContext } from "features/AppContext";
 import { ShapePicker } from "features/Pickers/ShapeTypePicker";
 import React, { useEffect, useState } from "react";

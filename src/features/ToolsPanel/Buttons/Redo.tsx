@@ -1,4 +1,4 @@
-import { getHotkeyLabel } from "Board/Keyboard";
+import { getHotkeyLabel } from "microboard-temp";
 import { useAppSubscription } from "App/useBoardSubscription";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import React from "react";

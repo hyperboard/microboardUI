@@ -1,9 +1,8 @@
 import React, { useEffect, useRef } from "react";
-import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
+import { useDomMbr } from "App/useDomMbr";
 import { useAppContext } from "features/AppContext";
 import styles from "./Cluster.module.css";
-import { Comment } from "Board/Items/Comment/Comment";
-import { Mbr } from "Board/Items/Mbr/Mbr";
+import { Mbr, Comment } from "microboard-temp";
 import { Icon } from "shared/ui-lib/Icon/Icon";
 import clsx from "clsx";
 import { useAccount } from "App/useAccount";

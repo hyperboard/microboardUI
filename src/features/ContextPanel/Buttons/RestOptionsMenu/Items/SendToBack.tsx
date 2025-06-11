@@ -4,7 +4,7 @@ import { usePanelContext } from "features/ContextPanel/PanelContext";
 import { RestOptionsMenuItem } from "../RestOptionsMenuItem";
 import React from "react";
 import { Icon } from "shared/ui-lib/Icon";
-import { getHotkeyLabel } from "Board/Keyboard";
+import { getHotkeyLabel } from "microboard-temp";
 
 export function SendToBack(): JSX.Element {
 	const { board } = useAppContext();

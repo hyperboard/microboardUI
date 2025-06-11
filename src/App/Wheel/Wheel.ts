@@ -1,4 +1,4 @@
-import { isFiniteNumber, toFiniteNumber } from "Board/lib";
+import { isFiniteNumber, toFiniteNumber } from "microboard-temp";
 import { isSafari } from "../isSafari";
 import { MemoryLogger } from "shared/Logger";
 

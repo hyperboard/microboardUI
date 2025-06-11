@@ -1,4 +1,4 @@
-import { Board } from "Board";
+import { Board } from "microboard-temp";
 import { AUTH_CLIPBOARD_MODAL } from "features/ImportMiro/AuthClipboardModal/AuthClipboardModal";
 import { pasteMiroClipboard } from "features/ImportMiro/ImportMiroBoards/ImportBoardItem/MiroClipboardTransformer";
 import { openModal } from "shared/ui-lib/UiModal/UiModalContext";

@@ -1,4 +1,3 @@
-import { Board } from "Board";
 import {
 	IMiroBoardItem,
 	IMiroBoardItemConnector,
@@ -17,7 +16,14 @@ import {
 	MiroRelativeTo,
 	MiroUnsupportedItem,
 } from "../MiroModels";
+import Cookies from "js-cookie";
+import { Descendant } from "slate";
+import type { HorisontalAlignment } from "microboard-temp";
 import {
+	Board,
+	conf,
+	Sticker,
+	ImageItem,
 	Connector,
 	Frame,
 	Item,
@@ -25,23 +31,15 @@ import {
 	Point,
 	RichText,
 	Shape,
-} from "Board/Items";
-import { Sticker } from "Board/Items/Sticker";
-import { ImageItem } from "Board/Items/Image";
-import Cookies from "js-cookie";
-import { ConnectionLineWidths } from "Board/Items/Connector/Connector";
-import { prepareImage } from "Board/Items/Image/ImageHelpers";
-import { FixedPoint } from "Board/Items/Connector";
-import { Descendant } from "slate";
-import { TextNode } from "Board/Items/RichText/Editor/TextNode";
-import type { HorisontalAlignment } from "Board/Items/Alignment";
-import { conf } from "microboard-temp";
-import {
+	ConnectionLineWidths,
+	prepareImage,
+	FixedPoint,
+	TextNode,
 	BoardPoint,
 	toRelativePoint,
-} from "Board/Items/Connector/ControlPoint";
-import { Drawing } from "Board/Items/Drawing";
-import { Placeholder } from "Board/Items/Placeholder/Placeholder";
+	Drawing,
+	Placeholder,
+} from "microboard-temp";
 import {
 	closeModal,
 	isModalOpen,

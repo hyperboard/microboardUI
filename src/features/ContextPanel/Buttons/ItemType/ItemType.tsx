@@ -1,6 +1,4 @@
-import { Shape } from "Board/Items";
-import { ShapeType } from "Board/Items/Shape";
-import { ShapeCategoryName } from "Board/Items/Shape/ShapeData";
+import { ShapeCategoryName, Shape, ShapeType } from "microboard-temp";
 import clsx from "clsx";
 import { useAppContext } from "features/AppContext";
 import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";

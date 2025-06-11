@@ -1,4 +1,4 @@
-import { getHotkeyLabel } from "Board/Keyboard";
+import { getHotkeyLabel } from "microboard-temp";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { UiButton } from "shared/ui-lib/UiButton";

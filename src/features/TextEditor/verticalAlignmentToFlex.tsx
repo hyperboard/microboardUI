@@ -1,4 +1,4 @@
-import { VerticalAlignment } from "Board/Items/Alignment";
+import { VerticalAlignment } from "microboard-temp";
 
 export function verticalAlignmentToFlex(
 	align: VerticalAlignment,

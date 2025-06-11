@@ -1,5 +1,5 @@
-import { ConnectorLineStyle } from "Board/Items/Connector";
-import { getHotkeyLabel } from "Board/Keyboard";
+import type { ConnectorLineStyle } from "microboard-temp";
+import { getHotkeyLabel } from "microboard-temp";
 import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
 import { ConnectorLineStylePicker } from "features/Pickers/ConnectorLineStylePicker";

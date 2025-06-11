@@ -1,5 +1,5 @@
 import { OpenAIModels } from "App/Connection";
-import { Board } from "Board";
+import { Board } from "microboard-temp";
 import clsx from "clsx";
 import type { Account } from "entities/account";
 import { AI_UNAVAILABLE_MODAL_ID } from "features/AiUnavailableModal/AiUnavailableModal";

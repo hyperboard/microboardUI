@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { UiPanel } from "shared/ui-lib/UiPanel";
 import { AIChat, ChartType } from "./AIChat";
 import styles from "./AIChatPanel.module.css";
-import { Board } from "Board";
+import { Board } from "microboard-temp";
 import { useTranslation } from "react-i18next";
 
 interface Props {

@@ -3,7 +3,7 @@ import { useAppContext } from "features/AppContext";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
 import { RestOptionsMenuItem } from "../RestOptionsMenuItem";
 import React from "react";
-import { Frame } from "Board/Items";
+import { Frame } from "microboard-temp";
 import { notify } from "shared/ui-lib/Toast";
 import { Icon } from "shared/ui-lib/Icon";
 import { getLinkToItem } from "./getLinkToItem";

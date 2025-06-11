@@ -1,8 +1,4 @@
-import { getParagraphWithPassedTextNode } from "Board/Items/RichText/editorHelpers/common/getParagraph";
-import { setNodeStyles } from "Board/Items/RichText/setNodeStyles";
 import { conf, DefaultTextStyles } from "Board/Settings";
-import markdown from "remark-parse";
-import slate from "remark-slate";
 import { Subject } from "shared/Subject";
 import {
 	BaseEditor,
@@ -10,35 +6,21 @@ import {
 	createEditor,
 	Descendant,
 	Editor,
-	Element,
-	Location,
-	Node,
-	Range,
 	Operation as SlateOp,
 	Transforms,
-	Path,
 	Operation,
 } from "slate";
 import { HistoryEditor, withHistory } from "slate-history";
 import { ReactEditor, withReact } from "slate-react";
-import { unified } from "unified";
 import { HorisontalAlignment, VerticalAlignment } from "../Alignment";
-import {
-	BlockNode,
-	BlockType,
-	ListType,
-	ListTypes,
-	ParagraphNode,
-} from "./Editor/BlockNode";
+import { BlockNode, ListType, ParagraphNode } from "./Editor/BlockNode";
 import { TextNode, TextStyle } from "./Editor/TextNode";
 import { isTextEmpty } from "./editorHelpers/common/isTextEmpty.ts";
 import {
 	RichTextOperation,
-	SelectionMethod,
 	SelectionOp,
 	WholeTextOp,
 } from "./RichTextOperations";
-import { findCommonStrings } from "./utils";
 import { handleListMerge } from "./editorHelpers/lists/handleListMerge.ts";
 import { handleSplitListItem } from "Board/Items/RichText/editorHelpers/lists/handleSplitListItem";
 import { createParagraphNode } from "Board/Items/RichText/editorHelpers/common/createParagraphNode";
@@ -54,11 +36,7 @@ import { hasTextInSelection } from "Board/Items/RichText/editorHelpers/common/ha
 import { MarkdownProcessor } from "Board/Items/RichText/editorHelpers/markdown/markdownProcessor";
 import { insertCopiedNodes } from "Board/Items/RichText/editorHelpers/selectionOps/insertCopiedNodes";
 import { moveCursorToEndOfTheText } from "Board/Items/RichText/editorHelpers/common/moveCursorToEndOfText";
-import { insertCopiedText } from "Board/Items/RichText/editorHelpers/selectionOps/insertCopiedText";
 import { getFirstSelectionLink } from "Board/Items/RichText/editorHelpers/links/getFirstSelectionLink";
-import { getAllTextNodesInSelection } from "Board/Items/RichText/editorHelpers/common/getAllTextNodesInSelection";
-import { getEachNodeInSelectionStyles } from "Board/Items/RichText/editorHelpers/common/getEachNodeInSelectionStyles";
-import { isBlockActive } from "Board/Items/RichText/editorHelpers/common/isBlockActive";
 import { setSelectionHorisontalAlignment } from "Board/Items/RichText/editorHelpers/selectionOps/setSelectionHorisontalAlignment";
 import { setSelectionFontHighlight } from "Board/Items/RichText/editorHelpers/selectionOps/setSelectionFontHighlight";
 import { setSelectionFontSize } from "Board/Items/RichText/editorHelpers/selectionOps/setSelectionFontSize";

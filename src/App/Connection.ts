@@ -1,11 +1,19 @@
-import { Board } from "Board/Board";
-import { SyncBoardEvent, SyncEvent } from "Board/Events/Events";
+import type {
+	AiChatMsg,
+	BoardEventMsg,
+	ConfirmationMsg,
+	SnapshotRequestMsg,
+	ModeMsg,
+	SyncBoardEvent,
+} from "microboard-temp";
 import {
+	conf,
+	Board,
+	messageRouter,
 	PresenceEventMsg,
 	PresenceEventType,
 	UserJoinMsg,
-} from "Board/Presence/Events";
-import { conf } from "microboard-temp";
+} from "microboard-temp";
 import { getApiUrl } from "Config";
 import type { Account } from "entities/account";
 import toast from "react-hot-toast";
@@ -14,12 +22,6 @@ import { notify } from "shared/ui-lib/Toast";
 import { getWebsocketUrl } from "../Config";
 import { Storage } from "./Storage";
 import { VERSION } from "version";
-import { messageRouter } from "Board/Events/MessageRouter/messageRouter";
-import { AiChatMsg } from "Board/Events/MessageRouter/handleAiChatMassage";
-import { BoardEventMsg } from "Board/Events/MessageRouter/handleBoardEventMessage";
-import { ConfirmationMsg } from "Board/Events/MessageRouter/handleConfirmation";
-import { SnapshotRequestMsg } from "Board/Events/MessageRouter/handleCreateSnapshotRequestMessage";
-import { ModeMsg } from "Board/Events/MessageRouter/handleModeMessage";
 const { i18n } = conf;
 
 const SECOND = 1000;

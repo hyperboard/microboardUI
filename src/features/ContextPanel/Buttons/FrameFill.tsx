@@ -8,7 +8,7 @@ import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
 import { UiColorInput } from "shared/ui-lib/UiColorInput";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import btnStyle from "./ContextPanelButton.module.css";
-import { FRAME_FILL_COLORS } from "Board/Items/Frame/FrameData";
+import { FRAME_FILL_COLORS } from "microboard-temp";
 import { UiButton } from "shared/ui-lib/UiButton";
 
 const MENU_NAME = "FrameFill";

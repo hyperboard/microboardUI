@@ -2,7 +2,7 @@ import { Icon } from "shared/ui-lib/Icon";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "features/AppContext";
-import { getHotkeyLabel } from "Board/Keyboard";
+import { getHotkeyLabel } from "microboard-temp";
 import { RestOptionsMenuItem } from "features/ContextPanel/Buttons/RestOptionsMenu/RestOptionsMenuItem";
 
 export function Duplicate(): React.ReactElement {

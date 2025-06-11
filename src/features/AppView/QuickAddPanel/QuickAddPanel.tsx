@@ -1,15 +1,17 @@
 import React, { useCallback, useEffect } from "react";
 import { Icon, ShapeIcon } from "shared/ui-lib/Icon";
-import { BASIC_SHAPES } from "Board/Items/Shape/ShapeData";
 import { useAppContext } from "features/AppContext";
 import { useAppSubscription } from "App/useBoardSubscription";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { UiPanel } from "shared/ui-lib/UiPanel";
 import { useTranslation } from "react-i18next";
 import style from "./QuickAddPanel.module.css";
-import { ShapeType } from "Board/Items/Shape";
-import { quickAddItem } from "Board/Selection/QuickAddButtons";
-import { getHotkeyLabel } from "Board/Keyboard";
+import {
+	quickAddItem,
+	getHotkeyLabel,
+	BASIC_SHAPES,
+	ShapeType,
+} from "microboard-temp";
 import { StarIcon } from "entities/AIInput/StarIcon";
 import { UiButton } from "shared/ui-lib/UiButton";
 

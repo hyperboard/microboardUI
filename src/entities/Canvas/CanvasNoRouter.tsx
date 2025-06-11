@@ -1,7 +1,6 @@
 import { App } from "App";
 import { Subscription } from "App/getSubscriptions";
-import { Board } from "Board";
-import { DrawingContext } from "Board/Items/DrawingContext";
+import { DrawingContext, Board } from "microboard-temp";
 import React, { useCallback, useEffect, useRef } from "react";
 
 interface Props {

@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
-import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
+import { useDomMbr } from "App/useDomMbr";
 import { useAppContext } from "features/AppContext";
-import { Comment } from "Board/Items/Comment/Comment";
+import { Comment } from "microboard-temp";
 import styles from "./CreateComment.module.css";
 import clsx from "clsx";
 import { CommentInput } from "../CommentInput/CommentInput";

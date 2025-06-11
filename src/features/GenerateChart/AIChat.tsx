@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "./AIChat.module.css";
 import { LayoutEngine } from "features/GenerateChart/lib/engine/index";
 import { generateChart } from "shared/api/ai";
-import { Board } from "Board";
+import { Board } from "microboard-temp";
 import { useTranslation } from "react-i18next";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { useClickOutside } from "shared/lib/useClickOutside";

@@ -1,5 +1,5 @@
 import { useAccount } from "App/useAccount";
-import { Comment } from "Board/Items/Comment/Comment";
+import { Comment } from "microboard-temp";
 import React, { useState } from "react";
 import { useAppContext } from "features/AppContext";
 import { Icon } from "../../../../shared/ui-lib/Icon";

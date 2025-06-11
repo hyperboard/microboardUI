@@ -1,5 +1,5 @@
 import React, { MouseEvent, useRef, useState } from "react";
-import { Comment } from "Board/Items/Comment/Comment";
+import { Comment } from "microboard-temp";
 import styles from "./CommentCard.module.css";
 import { Message } from "./Message/Message";
 import { useAppContext } from "features/AppContext";

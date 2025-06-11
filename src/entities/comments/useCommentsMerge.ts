@@ -1,4 +1,4 @@
-import { Comment } from "../../Board/Items/Comment";
+import { Comment } from "microboard-temp";
 import { useRef } from "react";
 
 type MergeComments = { clusters: Comment[][]; singleComments: Comment[] };

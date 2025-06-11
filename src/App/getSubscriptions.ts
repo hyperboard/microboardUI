@@ -1,7 +1,4 @@
-import { Board } from "Board";
-import { safeRequestAnimationFrame } from "Board/api/safeRequestAnimationFrame";
-import { BoardEvent } from "Board/Events/Events";
-import { SyncLogSubject } from "Board/Events/SyncLog";
+import { Board } from "microboard-temp";
 import { Subject } from "../shared/Subject";
 
 export type SubjectName =
@@ -68,10 +65,10 @@ export function getSubscriptions(getBoard: () => Board): Subscriptions {
 			observer();
 		}
 		updateQueue.clear();
-		safeRequestAnimationFrame(updateScheduledObservers);
+		requestAnimationFrame(updateScheduledObservers);
 	}
 
-	safeRequestAnimationFrame(updateScheduledObservers);
+	requestAnimationFrame(updateScheduledObservers);
 
 	function findSubscription(subscription: {
 		subjects: string[];

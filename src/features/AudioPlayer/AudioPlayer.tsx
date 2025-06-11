@@ -6,9 +6,8 @@ import React, {
 	useState,
 } from "react";
 import { useAppContext } from "features/AppContext";
-import { AudioItem } from "Board/Items/Audio/Audio";
 import styles from "./AudioPlayer.module.css";
-import { Mbr } from "Board/Items/Mbr/Mbr";
+import { Mbr, AudioItem } from "microboard-temp";
 import { Icon } from "shared/ui-lib/Icon/Icon";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import clsx from "clsx";

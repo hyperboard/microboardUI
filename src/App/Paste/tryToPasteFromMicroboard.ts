@@ -1,5 +1,4 @@
-import { Board } from "Board";
-import { validateItemsMap } from "microboard-temp";
+import { validateItemsMap, Board } from "microboard-temp";
 
 export function tryToPasteFromMicroboard(text: string, board: Board): boolean {
 	try {

@@ -1,5 +1,5 @@
 import { App } from "App";
-import type { Board } from "Board";
+import { Board } from "microboard-temp";
 import {
 	createStrictContext,
 	useStrictContext,

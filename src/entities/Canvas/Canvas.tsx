@@ -1,7 +1,6 @@
 import { App } from "App";
 import { Subscription } from "App/getSubscriptions";
-import { Board } from "Board";
-import { DrawingContext } from "Board/Items/DrawingContext";
+import { Board, DrawingContext } from "microboard-temp";
 import * as React from "react";
 import { WithRouterProps, withRouter } from "shared/lib/withRouter";
 

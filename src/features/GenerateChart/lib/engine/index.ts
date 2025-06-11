@@ -1,12 +1,12 @@
-import { Item } from "Board/Items/Item";
-import { Shape } from "Board/Items/Shape/Shape";
-import { Board } from "Board/Board";
-import { Connector } from "Board/Items/Connector/Connector";
 import {
+	Item,
+	Shape,
+	Board,
+	Connector,
+	Point,
 	FixedPoint,
 	toRelativePoint,
-} from "Board/Items/Connector/ControlPoint";
-import { Point } from "Board/Items/Point/Point";
+} from "microboard-temp";
 
 export interface Node {
 	id: number;

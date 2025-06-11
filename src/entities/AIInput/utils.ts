@@ -1,17 +1,20 @@
-import { Item } from "Board/Items/Item";
-import { AINode, ThreadDirection } from "Board/Items/AINode/AINode";
-import { Shape } from "Board/Items/Shape/Shape";
-import { RichText } from "Board/Items/RichText/RichText";
-import { Sticker } from "Board/Items/Sticker/Sticker";
-import { ConnectorData } from "Board/Items/Connector/ConnectorOperations";
 import { SessionStorage } from "App/SessionStorage";
-import { Point } from "Board/Items/Point/Point";
-import { Matrix } from "Board/Items/Transformation/Matrix";
-import { Connector } from "Board/Items/Connector/Connector";
-import { Mbr } from "Board/Items/Mbr/Mbr";
-import { Board } from "Board/Board";
-import { ImageItem } from "Board/Items/Image";
-import { conf } from "microboard-temp";
+import {
+	conf,
+	Matrix,
+	Item,
+	AINode,
+	Shape,
+	RichText,
+	Sticker,
+	ConnectorData,
+	Point,
+	Connector,
+	Mbr,
+	Board,
+	ImageItem,
+	ThreadDirection,
+} from "microboard-temp";
 const { i18n } = conf;
 
 export type PossibleParentNode = AINode | Shape | RichText | Sticker;

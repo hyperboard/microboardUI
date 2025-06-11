@@ -30,7 +30,6 @@ import { BaseRange, BaseSelection, Editor } from "slate";
 import { CONNECTOR_COLOR } from "Board/Items/Connector/Connector";
 import { safeRequestAnimationFrame } from "Board/api/safeRequestAnimationFrame";
 import { deleteMedia, updateMediaUsage } from "Board/Items/Image/ImageHelpers";
-import { getSlateSelectionRect } from "Board/Items/RichText/getSlateSelectionRect";
 import { ReactEditor } from "slate-react";
 const { i18n } = conf;
 

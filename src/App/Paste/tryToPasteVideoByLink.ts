@@ -1,11 +1,11 @@
-import { conf } from "microboard-temp";
-import { Board } from "Board/Board";
 import {
+	conf,
 	getYouTubeThumbnail,
 	getYouTubeVideoPreview,
-} from "Board/Items/Video/VideoHelpers";
-import { VideoItem } from "Board/Items/Video/Video";
-import { calculatePosition } from "Board/Items/Image/calculatePosition";
+	VideoItem,
+	Board,
+	calculatePosition,
+} from "microboard-temp";
 import { notify } from "shared/ui-lib/Toast/notify";
 import { t } from "i18next";
 

@@ -1,5 +1,3 @@
-import { Frame } from "Board/Items";
-import { FrameType } from "Board/Items/Frame/Basic";
 import clsx from "clsx";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -12,7 +10,7 @@ import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import style from "./FrameRatio.module.css";
 import btnStyle from "../ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
-import { conf } from "microboard-temp";
+import { conf, Frame, FrameType } from "microboard-temp";
 const { i18n } = conf;
 
 const MENU_NAME = "FrameType";

@@ -1,6 +1,6 @@
 import React from "react";
 import clsx from "clsx";
-import { rgbToRgba } from "Board/Presence/helpers";
+import { rgbToRgba } from "microboard-temp";
 import styles from "./PresenceUsers.module.css";
 import { EyeIcon } from "./EyeIcon";
 import { useTranslation } from "react-i18next";

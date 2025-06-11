@@ -1,4 +1,4 @@
-import type { FrameType } from "Board/Items/Frame/Basic";
+import type { FrameType } from "microboard-temp";
 import React from "react";
 import sprite from "./sprite.svg";
 

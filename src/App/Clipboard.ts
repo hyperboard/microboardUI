@@ -1,4 +1,5 @@
-import { Item, ItemData } from "Board/Items";
+import { Item } from "microboard-temp";
+import type { ItemData } from "microboard-temp";
 
 export class Clipboard {
 	items: { [key: string]: ItemData } = {};

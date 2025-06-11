@@ -1,5 +1,4 @@
-import { rgbToRgba } from "Board/Presence/helpers";
-import { Presence, PresenceUser } from "Board/Presence/Presence";
+import { Presence, PresenceUser, rgbToRgba } from "microboard-temp";
 import clsx from "clsx";
 import { useAppContext } from "features/AppContext";
 import i18next from "i18next";

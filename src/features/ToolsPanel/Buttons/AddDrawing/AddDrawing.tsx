@@ -10,7 +10,7 @@ import { AddHighlighter } from "./AddHighlighter/AddHighlighter";
 import { AddPen } from "./AddPen/AddPen";
 import { Eraser } from "./Eraser/Eraser";
 import { useAppContext } from "../../../AppContext";
-import { getHotkeyLabel } from "Board/Keyboard/getHotkeyLabel";
+import { getHotkeyLabel } from "microboard-temp";
 import { UiButton } from "shared/ui-lib/UiButton";
 
 export function AddDrawing() {

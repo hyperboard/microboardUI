@@ -3,7 +3,7 @@ import { useAppSubscription } from "../../App/useBoardSubscription";
 import { useForceUpdate } from "../../shared/lib/useForceUpdate";
 import { useAppContext } from "../AppContext";
 import { LinkToButton } from "./LinkToButton/LinkToButton";
-import { Item } from "Board/Items/Item";
+import { Item } from "microboard-temp";
 import { notify } from "shared/ui-lib/Toast/notify";
 import { useTranslation } from "react-i18next";
 

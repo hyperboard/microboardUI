@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Connector, Item } from "../../../Board/Items";
-import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
+import { Connector, Item } from "microboard-temp";
+import { useDomMbr } from "App/useDomMbr";
 import { useAppContext } from "features/AppContext";
 import { Icon } from "../../../shared/ui-lib/Icon";
 import styles from "./LinkToButton.module.css";

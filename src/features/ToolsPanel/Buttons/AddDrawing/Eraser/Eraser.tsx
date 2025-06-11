@@ -1,4 +1,4 @@
-import { getHotkeyLabel } from "Board/Keyboard";
+import { getHotkeyLabel } from "microboard-temp";
 import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
 import React, { useEffect, useState } from "react";

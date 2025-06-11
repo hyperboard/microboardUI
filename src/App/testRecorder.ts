@@ -1,5 +1,5 @@
-import { Board } from "Board";
-import { BoardSnapshot } from "Board/Board";
+import { Board } from "microboard-temp";
+import type { BoardSnapshot } from "microboard-temp";
 
 export interface TestRecorder {
 	start: () => void;

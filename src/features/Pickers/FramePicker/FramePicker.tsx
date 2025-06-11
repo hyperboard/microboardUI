@@ -1,8 +1,8 @@
-import type { FrameType } from "Board/Items/Frame/Basic";
+import type { FrameType } from "microboard-temp";
+import { FRAME_TYPES } from "microboard-temp";
 import React from "react";
 import { FrameIcon } from "shared/ui-lib/Icon";
 import style from "./FramePicker.module.css";
-import { FRAME_TYPES } from "Board/Items/Frame/FrameData";
 import { UiButton } from "shared/ui-lib/UiButton";
 
 type Props = {

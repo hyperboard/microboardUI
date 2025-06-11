@@ -5,7 +5,7 @@ import { useHyperLinkContext } from "features/hyperLink/HyperLinkContext";
 import { useAppContext } from "features/AppContext";
 import { useClickOutside } from "shared/lib/useClickOutside";
 import { Icon } from "shared/ui-lib/Icon/Icon";
-import { useDomMbr } from "Board/Items/Mbr/useDomMbr";
+import { useDomMbr } from "App/useDomMbr";
 import { useTranslation } from "react-i18next";
 import { conf } from "microboard-temp";
 import { notify } from "shared/ui-lib/Toast/notify";

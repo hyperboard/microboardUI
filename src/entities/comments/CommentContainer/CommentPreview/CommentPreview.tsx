@@ -1,7 +1,7 @@
 import React from "react";
 import clsx from "clsx";
 import { Icon } from "shared/ui-lib/Icon/Icon";
-import { Commentator, Message } from "Board/Items/Comment/Comment";
+import { Commentator, CommentMessage } from "microboard-temp";
 import styles from "./CommentPreview.module.css";
 import { useTranslation } from "react-i18next";
 import { Avatar } from "features/UserPanel/Avatar/Avatar";
@@ -10,7 +10,7 @@ import { getCorrectEnding } from "shared/lib/getCorrectEnding";
 
 interface Props {
 	commentators: Commentator[];
-	firstMessage: Message;
+	firstMessage: CommentMessage;
 	messagesCount: number;
 	handleClick: () => void;
 	isOpen: boolean;

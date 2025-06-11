@@ -1,4 +1,4 @@
-import { ConnectorLineStyle } from "Board/Items/Connector";
+import { ConnectorLineStyle } from "microboard-temp";
 import { ConnectorIcon } from "shared/ui-lib/Icon";
 import React from "react";
 import { UiButton } from "shared/ui-lib/UiButton";

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Comment } from "Board/Items/Comment/Comment";
+import { Comment } from "microboard-temp";
 
 interface Args {
 	comment: Comment;

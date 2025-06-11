@@ -3,21 +3,23 @@ import { Slate, Editable } from "slate-react";
 import { Leaf } from "./Leaf";
 import { Element } from "./Element";
 import { App } from "App";
-import { Board } from "Board";
 import { verticalAlignmentToFlex } from "./verticalAlignmentToFlex";
-import { RichText } from "Board/Items/RichText/RichText";
 import styles from "./TextEditor.module.css";
 import clsx from "clsx";
 import { Icon } from "shared/ui-lib/Icon";
 import { tryToPasteAsItemOrReturnText } from "App/Paste";
 import { Transforms } from "slate";
-import { EditorContainer } from "Board/Items/RichText/EditorContainer";
 import { t } from "i18next";
-import { BlockNode } from "Board/Items/RichText/Editor/BlockNode";
 import { HyperLinkCreationData } from "features/hyperLink/HyperLinkContext";
-import { conf } from "microboard-temp";
+import {
+	EditorContainer,
+	conf,
+	Board,
+	RichText,
+	getSlateSelectionRect,
+	BlockNode,
+} from "microboard-temp";
 import { notify } from "shared/ui-lib/Toast/notify";
-import { getSlateSelectionRect } from "Board/Items/RichText/getSlateSelectionRect";
 
 export class TextEditors extends React.Component<
 	{

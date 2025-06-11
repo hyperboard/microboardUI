@@ -1,6 +1,6 @@
 import React, { ForwardedRef, forwardRef } from "react";
 import clsx from "clsx";
-import { Message as IMessage } from "Board/Items/Comment/Comment";
+import { CommentMessage as IMessage } from "microboard-temp";
 import styles from "./Message.module.css";
 import { useCommentsContext } from "entities/comments";
 import { Avatar } from "features/UserPanel/Avatar/Avatar";

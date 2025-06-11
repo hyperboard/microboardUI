@@ -1,4 +1,4 @@
-import { getHotkeyLabel } from "Board/Keyboard";
+import { getHotkeyLabel, Mbr } from "microboard-temp";
 import { useAppSubscription } from "App/useBoardSubscription";
 import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
@@ -8,7 +8,6 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import style from "./ZoomPanel.module.css";
 import clsx from "clsx";
-import { Mbr } from "Board/Items/Mbr/Mbr";
 import { useMediaQuery } from "shared/lib/useMediaQuery";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";

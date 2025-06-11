@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import clsx from "clsx";
-import { rgbToRgba } from "Board/Presence/helpers";
+import { rgbToRgba } from "microboard-temp";
 import styles from "./PresenceUsers.module.css";
 import { useClickOutside } from "shared/lib/useClickOutside";
 

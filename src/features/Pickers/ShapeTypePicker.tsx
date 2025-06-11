@@ -1,10 +1,10 @@
-import { ShapeType } from "Board/Items/Shape";
 import React, { CSSProperties, useRef, useState } from "react";
 import { ShapeIcon } from "shared/ui-lib/Icon";
 import {
 	ShapeCategoryName,
 	SHAPES_CATEGORIES,
-} from "Board/Items/Shape/ShapeData";
+	ShapeType,
+} from "microboard-temp";
 import { useTranslation } from "react-i18next";
 import { UiButton } from "shared/ui-lib/UiButton";
 

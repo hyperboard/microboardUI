@@ -1,6 +1,6 @@
 import React from "react";
 import { useAppContext } from "features/AppContext";
-import { Connector } from "../../../Board/Items";
+import { Connector } from "microboard-temp";
 import { FontStyle } from "./FontStyle";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";
 

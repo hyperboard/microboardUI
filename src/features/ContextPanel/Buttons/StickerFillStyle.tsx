@@ -2,13 +2,12 @@ import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
 import { FillColorIndicator } from "shared/ui-lib/Icon/FillColorIndicator";
 import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
-import { conf } from "microboard-temp";
+import { conf, Sticker } from "microboard-temp";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "features/AppContext";
 import btnStyle from "./ContextPanelButton.module.css";
-import { Sticker } from "Board/Items/Sticker";
 import { UiButton } from "shared/ui-lib/UiButton";
 
 const MENU_NAME = "StickerFillStyle";

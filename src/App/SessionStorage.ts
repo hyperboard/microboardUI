@@ -1,11 +1,12 @@
-import type { ItemType, ShapeData } from "Board/Items";
-import { ConnectorLineStyle } from "Board/Items/Connector";
-import type { ConnectionLineWidth } from "Board/Items/Connector/Connector";
-import { ConnectorEdge } from "Board/Items/Connector/Pointers";
-import { ConnectorPointerStyle } from "Board/Items/Connector/Pointers/Pointers";
-import type { BorderStyle } from "Board/Items/Path";
-import type { TextStyle } from "Board/Items/RichText";
-import type { StickerData } from "Board/Items/Sticker/StickerOperation";
+import type {
+	ShapeData,
+	ConnectionLineWidth,
+	BorderStyle,
+	ConnectorLineStyle,
+	ConnectorEdge,
+	ConnectorPointerStyle,
+} from "microboard-temp";
+import type { StickerData, TextStyle } from "microboard-temp";
 
 // Create a node-safe storage: use sessionStorage if available, otherwise a polyfill.
 let _sessionStorage: Storage;

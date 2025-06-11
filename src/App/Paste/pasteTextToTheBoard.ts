@@ -1,6 +1,4 @@
-import { Board } from "Board";
-import { Mbr } from "Board/Items";
-import { RichText } from "Board/Items/RichText/RichText";
+import { RichText, Board, Mbr } from "microboard-temp";
 
 export function pasteTextToTheBoard(board: Board, data: DataTransfer): void {
 	const richText = new RichText(board, new Mbr());

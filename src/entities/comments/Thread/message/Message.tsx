@@ -3,7 +3,7 @@ import clsx from "clsx";
 import styles from "./Message.module.css";
 import { Avatar } from "features/UserPanel/Avatar/Avatar";
 import { useAccount } from "App/useAccount";
-import { Commentator } from "Board/Items/Comment/Comment";
+import { Commentator } from "microboard-temp";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { formatDate } from "entities/comments/lib";
 import { Icon } from "shared/ui-lib/Icon";

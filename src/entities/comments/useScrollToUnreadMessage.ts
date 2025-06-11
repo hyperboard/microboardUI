@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import { Message } from "Board/Items/Comment/Comment";
+import { CommentMessage } from "microboard-temp";
 
 interface Args {
 	refs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
-	unreadMessages?: Message[] | null;
+	unreadMessages?: CommentMessage[] | null;
 	deps?: unknown[];
 }
 

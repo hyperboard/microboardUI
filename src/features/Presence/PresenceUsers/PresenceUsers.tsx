@@ -4,7 +4,7 @@ import {
 	Presence,
 	PRESENCE_CLEANUP_IDLE_TIMER,
 	PresenceUser,
-} from "Board/Presence/Presence";
+} from "microboard-temp";
 import clsx from "clsx";
 import { useCommentsPanelContext } from "entities/comments/CommentsPanel/CommentsPanelContext";
 import { useAppContext } from "features/AppContext";

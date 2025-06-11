@@ -3,7 +3,7 @@ import { useAppContext } from "features/AppContext";
 import { RestOptionsMenuItem } from "./RestOptionsMenu/RestOptionsMenuItem";
 import { useTranslation } from "react-i18next";
 import { Icon } from "shared/ui-lib/Icon";
-import { getHotkeyLabel } from "Board/Keyboard";
+import { getHotkeyLabel } from "microboard-temp";
 import styles from "./ContextPanelButton.module.css";
 
 export function FrameNavNext(): JSX.Element {

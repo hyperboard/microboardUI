@@ -1,7 +1,9 @@
-import { Board } from "Board/Board";
-import { conf } from "microboard-temp";
-import { AudioItem } from "Board/Items/Audio/Audio";
-import { calculateAudioPosition } from "Board/Items/Audio/AudioHelpers";
+import {
+	conf,
+	Board,
+	AudioItem,
+	calculateAudioPosition,
+} from "microboard-temp";
 
 function isAudioUrl(url: string): boolean {
 	const extension = url.split(".").pop()?.toLowerCase();

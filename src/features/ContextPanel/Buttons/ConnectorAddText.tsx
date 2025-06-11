@@ -2,7 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
-import { Connector } from "../../../Board/Items";
+import { Connector } from "microboard-temp";
 import btnStyle from "./ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";

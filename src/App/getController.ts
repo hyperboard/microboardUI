@@ -1,23 +1,25 @@
-import { Board } from "Board";
-import { ImageItem, ImageItemData } from "Board/Items/Image";
 import {
+	Board,
+	conf,
 	prepareImage,
+	ImageItem,
+	ImageItemData,
 	validateMediaFile,
-} from "Board/Items/Image/ImageHelpers";
-import { Item } from "Board/Items/Item";
-import { uploadVideo } from "Board/Items/Video/uploadVideo";
-import { checkHotkeys, isControlCharacter } from "Board/Keyboard";
-import { HotkeysMap } from "Board/Keyboard/types";
-import { PRESENCE_CURSOR_THROTTLE } from "Board/Presence/Presence";
+	Item,
+	uploadAudio,
+	PRESENCE_CURSOR_THROTTLE,
+	HotkeysMap,
+	checkHotkeys,
+	uploadVideo,
+	isControlCharacter,
+} from "microboard-temp";
 import { throttle } from "shared/lib/throttle";
 import { notify } from "shared/ui-lib/Toast/notify";
 import { Clipboard } from "./Clipboard";
 import { pasteTextToTheBoard, tryToPasteAsItemOrReturnText } from "./Paste";
 import { createWheel } from "./Wheel/Wheel";
 import { isSafari } from "./isSafari";
-import { uploadAudio } from "Board/Items/Audio/uploadAudio";
 import { Account } from "entities/account";
-import { conf } from "microboard-temp";
 import { tempStorage } from "App/SessionStorage";
 import { AppSettings } from "App/App";
 

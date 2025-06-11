@@ -1,5 +1,5 @@
-import type { Board } from "Board";
-import type { BoardSnapshot } from "Board/Board";
+import { Board } from "microboard-temp";
+import type { BoardSnapshot } from "microboard-temp";
 
 export function detectLanguage(text: string) {
 	const scores = {};

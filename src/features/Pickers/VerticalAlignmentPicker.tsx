@@ -1,4 +1,4 @@
-import { VerticalAlignment } from "Board/Items/Alignment";
+import { VerticalAlignment } from "microboard-temp";
 import React from "react";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { Icon } from "shared/ui-lib/Icon";

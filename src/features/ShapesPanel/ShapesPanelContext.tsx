@@ -3,7 +3,7 @@ import {
 	useStrictContext,
 } from "shared/lib/strictContext";
 import React, { PropsWithChildren, useEffect, useState } from "react";
-import { ShapeCategoryName } from "Board/Items/Shape/ShapeData";
+import { ShapeCategoryName } from "microboard-temp";
 import { tempStorage } from "App/SessionStorage";
 
 type ShapesPanelContext = {

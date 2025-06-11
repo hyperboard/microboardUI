@@ -1,7 +1,6 @@
 import { App } from "App";
 import { useBoardsList } from "App/useBoardsList";
-import { Board } from "Board";
-import { Item } from "Board/Items";
+import { Item, Board } from "microboard-temp";
 import { useAppContext } from "features/AppContext";
 import React from "react";
 import { useTranslation } from "react-i18next";

@@ -1,5 +1,5 @@
-import { initNodeSettings } from "Board/api/initNodeSettings";
-initNodeSettings();
+// import { initNodeSettings } from "Board/api/initNodeSettings";
+// initNodeSettings();
 
 import { v4 as uuidv4 } from "uuid";
 import { Board } from "Board";

@@ -1,7 +1,10 @@
-import { Board } from "Board";
-import { BoardSnapshot } from "Board/Board";
-import { createEvents } from "Board/Events/Events";
-import { conf } from "microboard-temp";
+import {
+	conf,
+	Board,
+	BoardSnapshot,
+	createEvents,
+	Operation,
+} from "microboard-temp";
 import { Account } from "entities/account";
 import { getAuthInterceptor } from "entities/account/AuthInterceptor";
 import { api, boardsApi } from "shared/api";
@@ -22,7 +25,6 @@ import { getLocalRender, getRender } from "./router";
 import { SessionStorage } from "./SessionStorage";
 import { Storage } from "./Storage";
 import { TestRecorder, createTester } from "./testRecorder";
-import { Operation } from "Board/Events";
 
 const { i18n } = conf;
 

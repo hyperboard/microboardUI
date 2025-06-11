@@ -1,4 +1,4 @@
-import { Mbr } from "Board/Items";
+import { Mbr } from "microboard-temp";
 import clsx from "clsx";
 import React, { ReactNode, useEffect, useRef, useState } from "react";
 import style from "./UiButtonWithMenu.module.css";

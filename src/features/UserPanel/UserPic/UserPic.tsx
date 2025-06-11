@@ -1,5 +1,5 @@
 import { useAccount } from "App/useAccount";
-import { PresenceUser } from "Board/Presence/Presence";
+import { PresenceUser } from "microboard-temp";
 import { useCommentsPanelContext } from "entities/comments/CommentsPanel/CommentsPanelContext";
 import { useAppContext } from "features/AppContext";
 import {

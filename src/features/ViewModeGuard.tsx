@@ -1,5 +1,5 @@
 import type { ViewMode } from "App/Connection";
-import type { InterfaceType } from "Board/Board";
+import type { InterfaceType } from "microboard-temp";
 import { useAppSubscription } from "App/useBoardSubscription";
 import { isIframe } from "shared/lib/isIframe";
 import { useForceUpdate } from "shared/lib/useForceUpdate";

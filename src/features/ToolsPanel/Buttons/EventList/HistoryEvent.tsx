@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { BoardEvent } from "Board/Events/Events";
+import { BoardEvent } from "microboard-temp";
 import PrettifiedEvent from "./PrettifiedEvent";
 
 interface EventProps {

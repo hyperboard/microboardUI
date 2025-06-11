@@ -1,5 +1,9 @@
-import { ConnectorLineStyle } from "Board/Items/Connector";
-import { STEP_STROKE_WIDTH } from "Board/Items/Shape/ShapeData";
+import {
+	ConnectorLineStyle,
+	STEP_STROKE_WIDTH,
+	BorderStyle,
+	ConnectionLineWidths,
+} from "microboard-temp";
 import { useAppContext } from "features/AppContext";
 import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
@@ -9,8 +13,6 @@ import { useTranslation } from "react-i18next";
 import { ConnectorIcon } from "shared/ui-lib/Icon";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
-import { ConnectionLineWidths } from "../../../../Board/Items/Connector/Connector";
-import { BorderStyle } from "../../../../Board/Items/Path";
 import { SliderPicker } from "../../../Pickers/SliderPicker";
 import { StrokeStylePicker } from "../../../Pickers/StrokeStylePicker";
 import btnStyle from "../ContextPanelButton.module.css";

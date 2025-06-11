@@ -1,10 +1,8 @@
 import { type App } from "App";
-import { type Board } from "Board";
-import { Mbr } from "Board/Items";
+import { Mbr, updateRects, Board } from "microboard-temp";
 import { useAppSubscription } from "App/useBoardSubscription";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { useEffect, useState, type RefObject, useRef } from "react";
-import { updateRects } from "./updateRects";
 import type { SubjectName } from "App/getSubscriptions";
 
 type Params = {

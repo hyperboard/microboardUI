@@ -1,6 +1,6 @@
 import React from "react";
 import { useAppContext } from "features/AppContext";
-import { Connector } from "../../../Board/Items";
+import { Connector } from "microboard-temp";
 import { TextColor } from "./TextColor";
 
 export function ConnectorTextColor(): React.ReactElement | null {

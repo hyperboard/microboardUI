@@ -1,4 +1,4 @@
-import type { ConnectorLineStyle } from "Board/Items/Connector";
+import type { ConnectorLineStyle } from "microboard-temp";
 import React from "react";
 import sprite from "./sprite.svg";
 

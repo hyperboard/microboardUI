@@ -1,4 +1,4 @@
-import { Point } from "Board/Items";
+import { Point } from "microboard-temp";
 
 export interface IMiroBoards {
 	data: IMiroBoard[];

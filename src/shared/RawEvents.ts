@@ -1,4 +1,4 @@
-import { BoardEvent } from "Board/Events/Events";
+import { BoardEvent } from "microboard-temp";
 
 export interface RawEvents {
 	confirmedEvents: BoardEvent[];

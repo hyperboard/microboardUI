@@ -1,5 +1,5 @@
 import { useAccount } from "App/useAccount";
-import { PresenceUser } from "Board/Presence/Presence";
+import { PresenceUser } from "microboard-temp";
 import { BringToMe } from "features/Presence/BringToMe/BringToMe";
 import { User } from "features/Presence/PresenceUsers/PresenceUsers";
 import React, { RefObject } from "react";

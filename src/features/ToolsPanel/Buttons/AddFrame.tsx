@@ -1,5 +1,5 @@
-import type { FrameType } from "Board/Items/Frame/Basic";
-import { getHotkeyLabel } from "Board/Keyboard";
+import type { FrameType } from "microboard-temp";
+import { getHotkeyLabel } from "microboard-temp";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "features/AppContext";
