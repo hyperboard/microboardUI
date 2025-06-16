@@ -2,9 +2,6 @@
 // import { textInit } from "TextInit";
 // textInit();
 
-import { initBrowserSettings } from "Board/api/initBrowserSettings";
-initBrowserSettings();
-
 import { App, createApp } from "App/App";
 import "./index.css";
 import "features/Cursors";

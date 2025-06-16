@@ -11,8 +11,9 @@ import stickerLightGray from "./sticker/sticker-light-gray.svg";
 import stickerGray from "./sticker/sticker-gray.svg";
 import eraser from "./eraser.svg";
 import comment from "./comment.svg";
-import { cursorsMap } from "Board/Pointer/Pointer";
+import { conf } from "microboard-temp";
 
+const { cursorsMap } = conf;
 cursorsMap["eraser"] = `url(${eraser}) -10 10, auto`;
 cursorsMap["pen"] = `url(${pencil}) 1 24, auto`;
 cursorsMap["comment"] = `url(${comment}) 1 24, auto`;
