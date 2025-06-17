@@ -69,7 +69,7 @@ import { MouseOrTrackpadModal } from "entities/BoardMenu/MouseOrTracpadModal/Mou
 import { ItemsProvider } from "features/ItemsProvider";
 import { VideoPlayer } from "features/VideoPlayer/VideoPlayer";
 import { AudioPlayer } from "features/AudioPlayer/AudioPlayer";
-import { CounterComponent } from "features/Counter/Counter";
+// import { CounterComponent } from "features/Counter/Counter";
 import { ErrorBoundary } from "features/ErrorBoundary/ErrorBoundary";
 
 export function AppView(): JSX.Element {
@@ -100,7 +100,7 @@ export function AppView(): JSX.Element {
 	const itemsComponents = {
 		Video: VideoPlayer,
 		Audio: AudioPlayer,
-		Counter: CounterComponent,
+		// Counter: CounterComponent,
 	};
 
 	useEffect(() => {

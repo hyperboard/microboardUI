@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Counter } from "Board/Items/Examples/Counter";
-import { COUNTER_DIMENSIONS } from "Board/Items/Examples/Counter/Counter";
+// import { Counter } from "Board/Items/Examples/Counter";
+// import { COUNTER_DIMENSIONS } from "Board/Items/Examples/Counter/Counter";
 import { Mbr } from "microboard-temp";
 import { useAppContext } from "features/AppContext";
 import styles from "./Counter.module.css";
