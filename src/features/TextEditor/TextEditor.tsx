@@ -504,7 +504,7 @@ export class TextEditor extends React.Component<
 					>
 						<Slate
 							editor={text.editor.editor}
-							value={text.getText()}
+							initialValue={text.getText()}
 							// key={text.getId()}
 							key={text.rtCounter}
 							onChange={this.handleSelectionChange}
