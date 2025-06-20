@@ -9,7 +9,12 @@ import { USER_PLAN_MODAL_ID } from "features/UserPlan";
 import Cookies from "js-cookie";
 import React, { useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {
+	useLocation,
+	useNavigate,
+	useParams,
+	useSearchParams,
+} from "react-router-dom";
 import { billingApi } from "shared/api";
 import { notify } from "shared/ui-lib/Toast";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
@@ -21,6 +26,7 @@ export const BoardPage = (): JSX.Element => {
 	const params = useParams<{ boardId: string }>();
 	const { t, i18n } = useTranslation();
 	const navigate = useNavigate();
+	const { search } = useLocation();
 	const [searchParams] = useSearchParams();
 	const codeSearch = searchParams.get("code");
 	const teamIdSearch = searchParams.get("team_id");
@@ -55,7 +61,7 @@ export const BoardPage = (): JSX.Element => {
 		boardsList.loadBoards().then(() => {
 			if (params.boardId?.includes("local")) {
 				app.openBoardFromFile().then(() => {
-					navigate(`/boards/${params.boardId}?${searchParams}`, {
+					navigate(`/boards/${params.boardId}${search}`, {
 						replace: true,
 					});
 					app.render();
@@ -65,7 +71,7 @@ export const BoardPage = (): JSX.Element => {
 					params.boardId,
 					searchParams.get("accessKey") || undefined,
 				).then(() => {
-					navigate(`/boards/${params.boardId}?${searchParams}`, {
+					navigate(`/boards/${params.boardId}${search}`, {
 						replace: true,
 					});
 					app.render();
@@ -75,7 +81,7 @@ export const BoardPage = (): JSX.Element => {
 				const isFirstVisit = !Cookies.get("first_visit");
 				if (lastSeenBoard) {
 					app.openBoard(lastSeenBoard).then(() => {
-						navigate(`/boards/${lastSeenBoard}`, {
+						navigate(`/boards/${lastSeenBoard}${search}`, {
 							replace: true,
 						});
 						app.render();
