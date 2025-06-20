@@ -1,4 +1,6 @@
 /* eslint-disable no-var */
+import { initInter } from "initI18N";
+initInter();
 
 import { App } from "App";
 import { createApp } from "App/App";

@@ -1,6 +1,8 @@
 /* eslint-disable no-var */
 // import { textInit } from "TextInit";
 // textInit();
+import { initInter } from "initI18N";
+initInter();
 
 import { App, createApp } from "App/App";
 import "./index.css";

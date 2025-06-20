@@ -9,7 +9,6 @@ import clsx from "clsx";
 import { Icon } from "shared/ui-lib/Icon";
 import { tryToPasteAsItemOrReturnText } from "App/Paste";
 import { Transforms } from "slate";
-import { t } from "i18next";
 import { HyperLinkCreationData } from "features/hyperLink/HyperLinkContext";
 import {
 	EditorContainer,
@@ -329,7 +328,7 @@ export class TextEditor extends React.Component<
 
 			if (!this.state.limitReached) {
 				notify({
-					header: t("textEditor.limitReached"),
+					header: conf.i18n.t("textEditor.limitReached"),
 					duration: 3000,
 					variant: "warning",
 				});
@@ -589,7 +588,7 @@ export class TextEditor extends React.Component<
 						>
 							{this.state.isQuoteBtnTooltipVisible && (
 								<div className={styles.tooltip}>
-									{t("AIInput.quoteBtnTooltip")}
+									{conf.i18n.t("AIInput.quoteBtnTooltip")}
 								</div>
 							)}
 							<svg
