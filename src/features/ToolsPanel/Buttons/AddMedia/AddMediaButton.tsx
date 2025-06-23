@@ -5,8 +5,9 @@ import { notify } from "shared/ui-lib/Toast/index";
 import React, { ChangeEventHandler, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { UiButton } from "shared/ui-lib/UiButton/index";
-import { conf, validateMediaFile } from "microboard-temp";
+import { conf } from "microboard-temp";
 import { mediaApi } from "shared/api";
+import { validateMediaFile } from "App/MediaHelpers";
 
 function bytesToGigabytes(bytes: number): number {
 	return bytes / 1024 ** 3;

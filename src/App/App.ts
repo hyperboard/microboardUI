@@ -7,7 +7,7 @@ import {
 } from "microboard-temp";
 import { Account } from "entities/account";
 import { getAuthInterceptor } from "entities/account/AuthInterceptor";
-import { api, boardsApi } from "shared/api";
+import { api } from "shared/api";
 import { foldersApi } from "shared/apiV2";
 import { apiV2 } from "shared/apiV2/base";
 import "shared/Lang";
@@ -25,6 +25,11 @@ import { getLocalRender, getRender } from "./router";
 import { SessionStorage } from "./SessionStorage";
 import { Storage } from "./Storage";
 import { TestRecorder, createTester } from "./testRecorder";
+import {
+	beforeMediaRemove,
+	beforeMediaUpload,
+	catchMediaErrorResponse,
+} from "App/MediaHelpers";
 
 const { i18n } = conf;
 
@@ -77,6 +82,10 @@ export function createApp(isHistory = true): App {
 	const settings = { controlMode: getControlModeFromStorage() };
 
 	const test = createTester(getBoard);
+
+	conf.hooks.beforeMediaRemove = beforeMediaRemove;
+	conf.hooks.beforeMediaUpload = beforeMediaUpload;
+	conf.hooks.onUploadMediaError = catchMediaErrorResponse;
 
 	let board: Board;
 	// chrome handler for saving file

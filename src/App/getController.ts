@@ -4,7 +4,6 @@ import {
 	prepareImage,
 	ImageItem,
 	ImageItemData,
-	validateMediaFile,
 	Item,
 	PRESENCE_CURSOR_THROTTLE,
 	HotkeysMap,
@@ -21,6 +20,7 @@ import { Account } from "entities/account";
 import { tempStorage } from "App/SessionStorage";
 import { AppSettings } from "App/App";
 import { mediaApi } from "shared/api";
+import { validateMediaFile } from "App/MediaHelpers";
 
 export interface Controller {
 	onWheel: (event: WheelEvent) => void;
