@@ -11,7 +11,7 @@ import {
 	ImageItem,
 	prepareImage,
 } from "microboard-temp";
-import { mediaApi } from "shared/api";
+import { mediaApi } from "shared/api/index";
 import { validateMediaFile } from "App/MediaHelpers";
 import { useUiModalContext } from "shared/ui-lib/UiModal/UiModalContext";
 import { CREATE_CARDS_MODAL } from "features/CardGame/CreateCardsModal";

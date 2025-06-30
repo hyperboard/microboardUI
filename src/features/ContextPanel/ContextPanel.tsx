@@ -55,6 +55,7 @@ import { ShuffleDeck } from "features/ContextPanel/Buttons/CardGame/Deck/Shuffle
 import { GetCard } from "features/ContextPanel/Buttons/CardGame/Deck/GetCard";
 import { CreateDeck } from "features/ContextPanel/Buttons/CardGame/Card/CreateDeck";
 import { FlipCard } from "features/ContextPanel/Buttons/CardGame/Card/FlipCard";
+import { ThrowDice } from "features/ContextPanel/Buttons/CardGame/Dice/ThrowDice";
 
 export function ContextPanel(): React.ReactElement | null {
 	const { app, board } = useAppContext();
@@ -115,6 +116,7 @@ export function ContextPanel(): React.ReactElement | null {
 	const isDeck = board.selection.items.isAllItemsType("Deck");
 	const isCard = board.selection.items.isAllItemsType("Card");
 	const isCardOrDeck = board.selection.items.isItemTypes(["Card", "Deck"]);
+	const isDice = board.selection.items.isAllItemsType("Dice");
 	const isDifferentItems =
 		!isText &&
 		!isSticker &&
@@ -130,7 +132,8 @@ export function ContextPanel(): React.ReactElement | null {
 		!isStar &&
 		!isDeck &&
 		!isCard &&
-		!isCardOrDeck;
+		!isCardOrDeck &&
+		!isDice;
 
 	return (
 		<PanelContext.Provider
@@ -468,6 +471,22 @@ export function ContextPanel(): React.ReactElement | null {
 							<CreateDeck onlyCards={false} rounded="right" />
 						</>
 					)}
+				{isDice && !isSelectUnderPointer && !isLocked && (
+					<>
+						<ThrowDice rounded="left" />
+						<UiSeparator vertical />
+						<Delete />
+						<ToggleIsShining />
+						<UiSeparator vertical />
+						<RestOptionsMenu>
+							<BringToFront />
+							<SendToBack />
+							<CopyItemLink />
+							<SetLinkTo />
+							<Duplicate />
+						</RestOptionsMenu>
+					</>
+				)}
 				{!isDifferentItems && !!isLocked && (
 					<>
 						<Lock rounded="left" />
