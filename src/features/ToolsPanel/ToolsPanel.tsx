@@ -21,6 +21,7 @@ import { PanelContext } from "./PanelContext";
 import style from "./ToolsPanel.module.css";
 import { AddStar } from "features/ToolsPanel/Buttons/Star";
 import { AddCounter } from "features/ToolsPanel/Buttons/AddCounter";
+import { AddCard } from "features/ToolsPanel/Buttons/AddCard";
 
 export function ToolsPanel(): JSX.Element {
 	const [openedMenu, setOpenedMenu] = useState("None");
@@ -49,6 +50,7 @@ export function ToolsPanel(): JSX.Element {
 				<UiPanel vertical padding={0} zIndex={20}>
 					{/* <AddCounter /> */}
 					{/* <AddStar /> */}
+					{window.enableGames && <AddCard />}
 					<AddTemplate />
 					<UiSeparator />
 					<Select rounded={"none"} />

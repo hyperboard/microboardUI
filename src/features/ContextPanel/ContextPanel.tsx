@@ -51,6 +51,10 @@ import { SaveImg } from "./Buttons/RestOptionsMenu/Items/SaveImg";
 import { SaveVideoOrAudio } from "features/ContextPanel/Buttons/RestOptionsMenu/Items/SaveVideoOrAudio";
 import { AddList } from "features/ContextPanel/Buttons/AddList/AddList";
 import { ToggleIsShining } from "features/ContextPanel/Buttons/ToggleIsShining";
+import { ShuffleDeck } from "features/ContextPanel/Buttons/CardGame/Deck/ShuffleDeck";
+import { GetCard } from "features/ContextPanel/Buttons/CardGame/Deck/GetCard";
+import { CreateDeck } from "features/ContextPanel/Buttons/CardGame/Card/CreateDeck";
+import { FlipCard } from "features/ContextPanel/Buttons/CardGame/Card/FlipCard";
 
 export function ContextPanel(): React.ReactElement | null {
 	const { app, board } = useAppContext();
@@ -95,6 +99,7 @@ export function ContextPanel(): React.ReactElement | null {
 		board.selection.items.list(),
 	);
 
+	const isSingle = !!board.selection.items.getSingle();
 	const isText = board.selection.items.isAllItemsType("RichText");
 	const isSticker = board.selection.items.isAllItemsType("Sticker");
 	const isShape = board.selection.items.isAllItemsType("Shape");
@@ -107,6 +112,9 @@ export function ContextPanel(): React.ReactElement | null {
 	const isVideo = board.selection.items.isAllItemsType("Video");
 	const isAudio = board.selection.items.isAllItemsType("Audio");
 	const isStar = board.selection.items.isAllItemsType("Star");
+	const isDeck = board.selection.items.isAllItemsType("Deck");
+	const isCard = board.selection.items.isAllItemsType("Card");
+	const isCardOrDeck = board.selection.items.isItemTypes(["Card", "Deck"]);
 	const isDifferentItems =
 		!isText &&
 		!isSticker &&
@@ -119,7 +127,10 @@ export function ContextPanel(): React.ReactElement | null {
 		!isAINode &&
 		!isVideo &&
 		!isAudio &&
-		!isStar;
+		!isStar &&
+		!isDeck &&
+		!isCard &&
+		!isCardOrDeck;
 
 	return (
 		<PanelContext.Provider
@@ -422,6 +433,41 @@ export function ContextPanel(): React.ReactElement | null {
 						</RestOptionsMenu>
 					</>
 				)}
+				{isDeck && !isSelectUnderPointer && !isLocked && (
+					<>
+						<ShuffleDeck rounded="left" />
+						<UiSeparator vertical />
+						<GetCard cardPosition={"random"} />
+						<GetCard cardPosition={"top"} />
+						{isSingle ? (
+							<GetCard cardPosition={"bottom"} rounded="right" />
+						) : (
+							<>
+								<GetCard cardPosition={"bottom"} />
+								<UiSeparator vertical />
+								<CreateDeck onlyCards={false} rounded="right" />
+							</>
+						)}
+					</>
+				)}
+				{isCard && !isSelectUnderPointer && !isLocked && (
+					<>
+						<FlipCard rounded="left" />
+						<UiSeparator vertical />
+						<CreateDeck onlyCards={true} rounded="right" />
+					</>
+				)}
+				{isCardOrDeck &&
+					!isDeck &&
+					!isCard &&
+					!isSelectUnderPointer &&
+					!isLocked && (
+						<>
+							<FlipCard rounded="left" />
+							<UiSeparator vertical />
+							<CreateDeck onlyCards={false} rounded="right" />
+						</>
+					)}
 				{!isDifferentItems && !!isLocked && (
 					<>
 						<Lock rounded="left" />

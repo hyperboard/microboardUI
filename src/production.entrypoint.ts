@@ -14,6 +14,7 @@ declare global {
 		showDebug: boolean;
 		enableTemplateCreating: boolean;
 		enableVideos: boolean;
+		enableGames: boolean;
 		enableLogger: () => void;
 		disableLogger: () => void;
 	}
@@ -24,6 +25,7 @@ window.showDebug = false;
 window.enableTemplateCreating = false;
 window.enableDiagrams = false;
 window.enableVideos = true;
+window.enableGames = false;
 
 window.app = createApp();
 

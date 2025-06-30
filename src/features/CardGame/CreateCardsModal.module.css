@@ -1,0 +1,69 @@
+/* Контейнер для содержимого модалки */
+.modalContent {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 24px;
+	padding: 24px 16px 16px 16px;
+}
+
+.title {
+	font-size: 22px;
+	font-weight: 600;
+	margin-bottom: 8px;
+	text-align: center;
+}
+
+.cardsRow {
+	display: flex;
+	flex-direction: row;
+	gap: 32px;
+	justify-content: center;
+	margin-bottom: 8px;
+}
+
+.cardSilhouette {
+	width: 120px;
+	height: 180px;
+	border: 2px dashed #b78af0;
+	border-radius: 12px;
+	background: #faf8ff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	position: relative;
+	transition: border-color 0.2s;
+}
+.cardSilhouette:hover {
+	border-color: #924fe8;
+}
+
+.cardLabel {
+	color: #b78af0;
+	font-size: 14px;
+	text-align: center;
+	pointer-events: none;
+}
+
+.cardPreview {
+	width: 100%;
+	height: 100%;
+	border-radius: 8px;
+	object-fit: cover;
+	box-shadow: 0 2px 8px rgba(146, 79, 232, 0.08);
+}
+
+.cardsPreviewList {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	justify-content: center;
+	margin-top: 4px;
+}
+
+.acceptBtn {
+	margin-top: 24px;
+	width: 100%;
+	max-width: 320px;
+}

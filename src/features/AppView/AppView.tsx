@@ -71,6 +71,7 @@ import { VideoPlayer } from "features/VideoPlayer/VideoPlayer";
 import { AudioPlayer } from "features/AudioPlayer/AudioPlayer";
 // import { CounterComponent } from "features/Counter/Counter";
 import { ErrorBoundary } from "features/ErrorBoundary/ErrorBoundary";
+import { CreateCardsModal } from "features/CardGame/CreateCardsModal";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -286,6 +287,7 @@ export function AppView(): JSX.Element {
 					<SetLinkToModal />
 					<CreateTemplateModal />
 					<MouseOrTrackpadModal />
+					<CreateCardsModal />
 				</UiModalBackground>
 				<LocalFileSaveProgress />
 			</div>

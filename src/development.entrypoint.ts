@@ -13,6 +13,7 @@ declare global {
 		showDebug: boolean;
 		enableTemplateCreating: boolean;
 		enableVideos: boolean;
+		enableGames: boolean;
 		enableDiagrams: boolean;
 		showOpenFilePicker: () => Promise<FileSystemFileHandle[]>; // should be there
 	}
@@ -23,6 +24,7 @@ window.showDebug = showDebug;
 window.enableTemplateCreating = false;
 window.enableDiagrams = true;
 window.enableVideos = true;
+window.enableGames = false;
 
 window.app = createApp();
 window.app.account.init().finally(() => {
