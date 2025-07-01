@@ -1,11 +1,10 @@
 /* eslint-disable no-var */
-import { initInter } from "initI18N";
-initInter();
 
 import { App } from "App";
 import { createApp } from "App/App";
-import "./index.css";
 import "features/Cursors";
+import { initInter } from "initI18N";
+import "./index.css";
 
 declare global {
 	interface Window {
@@ -26,9 +25,14 @@ window.enableDiagrams = true;
 window.enableVideos = true;
 window.enableGames = true;
 
-window.app = createApp();
-window.app.account.init().finally(() => {
-	window.app.connection.connect().then(() => {
-		window.app.render();
+async function initializeApp() {
+	await initInter();
+	window.app = createApp();
+	window.app.account.init().finally(() => {
+		window.app.connection.connect().then(() => {
+			window.app.render();
+		});
 	});
-});
+}
+
+initializeApp();

@@ -1,18 +1,20 @@
-import { conf, initI18N } from "microboard-temp";
-import LanguageDetector from "i18next-browser-languagedetector";
-import { initReactI18next } from "react-i18next";
 import { createInstance } from "i18next";
-import ru from "shared/Lang/ru.json";
+import LanguageDetector from "i18next-browser-languagedetector";
+import { conf, initI18N } from "microboard-temp";
+import { initReactI18next } from "react-i18next";
 import en from "shared/Lang/en.json";
+import ru from "shared/Lang/ru.json";
 
-export function initInter(): void {
+let configuredI18n: any = null;
+
+export async function initInter(): Promise<void> {
 	const defaultNS = "default";
 	const resources = {
 		en: {
-			default: ru,
+			default: en,
 		},
 		ru: {
-			default: en,
+			default: ru,
 		},
 	};
 	const i18Instance = createInstance({
@@ -29,7 +31,12 @@ export function initInter(): void {
 		},
 	});
 
-	i18Instance.use(LanguageDetector).use(initReactI18next).init();
+	await i18Instance.use(LanguageDetector).use(initReactI18next).init();
 
+	configuredI18n = i18Instance;
 	initI18N(i18Instance);
+}
+
+export function getConfiguredI18n() {
+	return configuredI18n;
 }

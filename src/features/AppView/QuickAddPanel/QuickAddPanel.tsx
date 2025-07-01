@@ -1,19 +1,19 @@
-import React, { useCallback, useEffect } from "react";
-import { Icon, ShapeIcon } from "shared/ui-lib/Icon";
-import { useAppContext } from "features/AppContext";
 import { useAppSubscription } from "App/useBoardSubscription";
-import { useForceUpdate } from "shared/lib/useForceUpdate";
-import { UiPanel } from "shared/ui-lib/UiPanel";
-import { useTranslation } from "react-i18next";
-import style from "./QuickAddPanel.module.css";
+import { StarIcon } from "entities/AIInput/StarIcon";
+import { useAppContext } from "features/AppContext";
 import {
-	quickAddItem,
-	getHotkeyLabel,
 	BASIC_SHAPES,
+	getHotkeyLabel,
+	quickAddItem,
 	ShapeType,
 } from "microboard-temp";
-import { StarIcon } from "entities/AIInput/StarIcon";
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { useForceUpdate } from "shared/lib/useForceUpdate";
+import { Icon, ShapeIcon } from "shared/ui-lib/Icon";
 import { UiButton } from "shared/ui-lib/UiButton";
+import { UiPanel } from "shared/ui-lib/UiPanel";
+import style from "./QuickAddPanel.module.css";
 
 export function QuickAddPanel(): React.ReactElement | null {
 	const { app } = useAppContext();
@@ -54,6 +54,7 @@ export function QuickAddPanel(): React.ReactElement | null {
 		quickAddItem(appBoard, type, single);
 	};
 
+	console.log("render");
 	const shapesButtons = [BASIC_SHAPES[0], ...BASIC_SHAPES.slice(2, 7)].map(
 		shape => (
 			<UiButton

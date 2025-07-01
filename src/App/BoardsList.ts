@@ -1,9 +1,26 @@
 import type { Account } from "entities/account";
+import { getConfiguredI18n } from "initI18N";
 import { boardsApiV2, foldersApi } from "shared/apiV2";
 import { Subject } from "shared/Subject";
 import { Storage } from "./Storage";
-import { conf } from "microboard-temp";
-const { i18n } = conf;
+
+function getI18n() {
+	const i18nInstance = getConfiguredI18n();
+	console.log("getI18n called, instance:", i18nInstance);
+	if (i18nInstance) {
+		console.log("i18n instance isInitialized:", i18nInstance.isInitialized);
+		console.log("i18n instance language:", i18nInstance.language);
+		console.log("i18n instance resources:", i18nInstance.store?.data);
+	}
+	return (
+		i18nInstance || {
+			t: (key: string) => {
+				console.log("Using fallback i18n for key:", key);
+				return key;
+			},
+		}
+	);
+}
 
 type FolderItem = {
 	id: string | number;
@@ -298,9 +315,13 @@ export class BoardsList {
 			this.updateEmptyTitles(this.rootFolder);
 			this.updateEmptyTitles(this.sharedFolder);
 			this.updateEmptyTitles(this.draftsFolder);
-			this.rootFolder.title = i18n.t("sidePanel.folders.myBoards");
-			this.sharedFolder.title = i18n.t("sidePanel.folders.sharedBoards");
-			this.draftsFolder.title = i18n.t("sidePanel.folders.publicDrafts");
+			this.rootFolder.title = getI18n().t("sidePanel.folders.myBoards");
+			this.sharedFolder.title = getI18n().t(
+				"sidePanel.folders.sharedBoards",
+			);
+			this.draftsFolder.title = getI18n().t(
+				"sidePanel.folders.publicDrafts",
+			);
 			this.isLoading = false;
 			this.subject.publish();
 		} else {
@@ -309,9 +330,9 @@ export class BoardsList {
 				items: this.storage.listCreatedBoards().map(board => ({
 					...board,
 					itemType: "board",
-					title: board.title || i18n.t("board.untitled"),
+					title: board.title || getI18n().t("board.untitled"),
 				})),
-				title: i18n.t("sidePanel.folders.publicDrafts"),
+				title: getI18n().t("sidePanel.folders.publicDrafts"),
 				type: foldersApi.FolderType.DRAFTS,
 			};
 			this.sharedFolder = {
@@ -319,9 +340,9 @@ export class BoardsList {
 				items: this.storage.listVisitedBoards().map(board => ({
 					...board,
 					itemType: "board" as const,
-					title: board.title || i18n.t("board.untitled"),
+					title: board.title || getI18n().t("board.untitled"),
 				})),
-				title: i18n.t("sidePanel.folders.sharedBoards"),
+				title: getI18n().t("sidePanel.folders.sharedBoards"),
 				type: foldersApi.FolderType.VISITED,
 			};
 			this.draftsFolder = null;
@@ -355,7 +376,7 @@ export class BoardsList {
 		}
 		for (const item of folder.items) {
 			if (!item.title) {
-				item.title = i18n.t("board.untitled");
+				item.title = getI18n().t("board.untitled");
 			}
 			if (item.itemType === "folder") {
 				this.updateEmptyTitles(item as foldersApi.Folder);
@@ -412,7 +433,7 @@ export class BoardsList {
 	}
 
 	async rename(boardId: string, name: string): Promise<void> {
-		if (name === i18n.t("board.untitled")) {
+		if (name === getI18n().t("board.untitled")) {
 			return;
 		}
 
@@ -421,7 +442,7 @@ export class BoardsList {
 			return;
 		}
 
-		board.title = name || i18n.t("board.untitled");
+		board.title = name || getI18n().t("board.untitled");
 
 		this.subject.publish();
 
@@ -447,7 +468,7 @@ export class BoardsList {
 			return;
 		}
 
-		if (name === i18n.t("board.untitled")) {
+		if (name === getI18n().t("board.untitled")) {
 			return;
 		}
 
@@ -457,7 +478,7 @@ export class BoardsList {
 			return;
 		}
 
-		folder.title = name || i18n.t("board.untitled");
+		folder.title = name || getI18n().t("board.untitled");
 
 		this.subject.publish();
 
