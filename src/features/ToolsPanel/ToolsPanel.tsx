@@ -23,6 +23,7 @@ import { AddStar } from "features/ToolsPanel/Buttons/Star";
 import { AddCounter } from "features/ToolsPanel/Buttons/AddCounter";
 import { AddCard } from "features/ToolsPanel/Buttons/CardGame/AddCard";
 import { AddDice } from "features/ToolsPanel/Buttons/CardGame/AddDice";
+import { AddGameItem } from "features/ToolsPanel/Buttons/AddGameItem/AddGameItem";
 
 export function ToolsPanel(): JSX.Element {
 	const [openedMenu, setOpenedMenu] = useState("None");
@@ -53,8 +54,7 @@ export function ToolsPanel(): JSX.Element {
 					{/* <AddStar /> */}
 					{window.enableGames && (
 						<>
-							<AddDice />
-							<AddCard />
+							<AddGameItem />
 						</>
 					)}
 					<AddTemplate />

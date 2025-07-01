@@ -3,6 +3,7 @@ import React from "react";
 import { useAppContext } from "features/AppContext";
 import btnStyle from "../../ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton/UiButton";
+import { Dice } from "microboard-temp";
 
 interface Props {
 	rounded?: string;
@@ -11,15 +12,12 @@ interface Props {
 export function ThrowDice({ rounded = "none" }: Props) {
 	const { board } = useAppContext();
 
-	const single = board.selection.items.getSingle();
-
-	if (!single || single.itemType !== "Dice") {
-		return null;
-	}
+	const dices = board.selection.items.list() as Dice[];
 
 	const handleClick = (): void => {
-		const dice = single as Dice;
-		dice.throwDice();
+		dices.forEach((dice: Dice): void => {
+			dice.throwDice();
+		});
 	};
 
 	return (

@@ -1,10 +1,14 @@
 import { useAppContext } from "features/AppContext";
-import { Icon } from "shared/ui-lib/Icon";
-import { UiButton } from "shared/ui-lib/UiButton";
+import { Icon } from "shared/ui-lib/Icon/index";
+import { UiButton } from "shared/ui-lib/UiButton/index";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-export function AddDice() {
+interface Props {
+	rounded?: string;
+}
+
+export function AddDice({ rounded }: Props) {
 	const { board } = useAppContext();
 	const { t } = useTranslation();
 
@@ -21,7 +25,7 @@ export function AddDice() {
 			onClick={handleClick}
 			active={isActive}
 			variant="secondary"
-			rounded="none"
+			rounded={rounded}
 		>
 			<Icon iconName="Auto" />
 		</UiButton>

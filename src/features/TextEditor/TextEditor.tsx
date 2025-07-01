@@ -186,14 +186,12 @@ export class TextEditor extends React.Component<
 			this.props.board.selection.setContext("EditUnderPointer");
 			return true;
 		}
-		if (event.key === "Space" || event.key === " ") {
+		if (event.key === " ") {
 			if (text.editor.withAutoList()) {
 				return true;
 			}
 		}
 		if (event.key === "Backspace") {
-			event.preventDefault();
-			event.stopPropagation();
 			return this.props.text.editor.handleListMerge();
 		}
 		if (

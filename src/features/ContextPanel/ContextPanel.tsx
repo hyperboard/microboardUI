@@ -56,6 +56,7 @@ import { GetCard } from "features/ContextPanel/Buttons/CardGame/Deck/GetCard";
 import { CreateDeck } from "features/ContextPanel/Buttons/CardGame/Card/CreateDeck";
 import { FlipCard } from "features/ContextPanel/Buttons/CardGame/Card/FlipCard";
 import { ThrowDice } from "features/ContextPanel/Buttons/CardGame/Dice/ThrowDice";
+import { ChangeRange } from "features/ContextPanel/Buttons/CardGame/Dice/ChangeRange/ChangeRange";
 
 export function ContextPanel(): React.ReactElement | null {
 	const { app, board } = useAppContext();
@@ -474,15 +475,15 @@ export function ContextPanel(): React.ReactElement | null {
 				{isDice && !isSelectUnderPointer && !isLocked && (
 					<>
 						<ThrowDice rounded="left" />
+						<ChangeRange rangeValue="min" />
+						<ChangeRange rangeValue="max" />
 						<UiSeparator vertical />
 						<Delete />
-						<ToggleIsShining />
 						<UiSeparator vertical />
 						<RestOptionsMenu>
 							<BringToFront />
 							<SendToBack />
 							<CopyItemLink />
-							<SetLinkTo />
 							<Duplicate />
 						</RestOptionsMenu>
 					</>
