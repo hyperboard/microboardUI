@@ -1,4 +1,4 @@
-import { Icon } from "shared/ui-lib/Icon/index";
+import { Icon } from "shared/ui-lib/Icon/Icon";
 import clsx from "clsx";
 import React, { MouseEventHandler, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -7,7 +7,6 @@ import { useAppContext } from "features/AppContext";
 import btnStyle from "../../../ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton/index";
 import { Dice } from "microboard-temp";
-import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { useAppSubscription } from "App/useBoardSubscription";
 
 type Props = {
@@ -15,14 +14,25 @@ type Props = {
 	rangeValue: "min" | "max";
 };
 
+const getValuesFromRange = (range: { min: number; max: number }): number[] => {
+	const values: number[] = [];
+	for (let i = range.min; i <= range.max; i++) {
+		values.push(i);
+	}
+
+	return values;
+};
+
 export function ChangeRange({
 	rangeValue,
 	rounded = "none",
-}: Props): React.ReactElement {
+}: Props): React.ReactElement | null {
 	const { t } = useTranslation();
 	const { board } = useAppContext();
 	const dices = board.selection.items.list() as Dice[];
 	const [range, setRange] = useState(dices[0].getRange());
+	const chevronRef = useRef<HTMLSpanElement>(null);
+	const inputRef = useRef<HTMLInputElement | null>(null);
 	useAppSubscription({
 		subjects: ["items", "selectionItems", "selection"],
 		observer: () => {
@@ -30,9 +40,9 @@ export function ChangeRange({
 		},
 	});
 
-	const forceUpdate = useForceUpdate();
-	const chevronRef = useRef<HTMLSpanElement>(null);
-	const inputRef = useRef<HTMLInputElement | null>(null);
+	if (dices.some(dice => dice.getType() === "custom")) {
+		return null;
+	}
 
 	const handleFocus = (ev: React.FocusEvent<HTMLInputElement>): void => {
 		ev.currentTarget.select();
@@ -61,7 +71,7 @@ export function ChangeRange({
 		}
 
 		dices.forEach(dice => {
-			dice.setValuesRange(newRange);
+			dice.setValues(getValuesFromRange(newRange));
 		});
 		setRange(newRange);
 	};
@@ -80,7 +90,7 @@ export function ChangeRange({
 			range[rangeValue] = value;
 
 			dices.forEach(dice => {
-				dice.setValuesRange(range);
+				dice.setValues(getValuesFromRange(range));
 			});
 			setRange(range);
 		}

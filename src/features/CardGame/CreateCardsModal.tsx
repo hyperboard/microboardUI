@@ -10,7 +10,7 @@ import { Card, ItemsMap } from "microboard-temp";
 
 export const CREATE_CARDS_MODAL = Symbol("createCardsModal");
 
-async function uploadCardImages(
+export async function uploadImages(
 	files: File[],
 	boardId: string,
 	accessToken: string | null,
@@ -96,7 +96,7 @@ export function CreateCardsModal(): JSX.Element {
 		setLoading(true);
 		try {
 			if (cards.length > 0 && cover) {
-				const urls = await uploadCardImages(
+				const urls = await uploadImages(
 					[cover, ...cards],
 					board.getBoardId(),
 					account.accessToken,

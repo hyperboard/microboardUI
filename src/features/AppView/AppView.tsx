@@ -72,6 +72,7 @@ import { AudioPlayer } from "features/AudioPlayer/AudioPlayer";
 // import { CounterComponent } from "features/Counter/Counter";
 import { ErrorBoundary } from "features/ErrorBoundary/ErrorBoundary";
 import { CreateCardsModal } from "features/CardGame/CreateCardsModal";
+import { CreateDiceModal } from "features/CardGame/CreateDiceModal";
 
 export function AppView(): JSX.Element {
 	const { app, board } = useAppContext();
@@ -288,6 +289,7 @@ export function AppView(): JSX.Element {
 					<CreateTemplateModal />
 					<MouseOrTrackpadModal />
 					<CreateCardsModal />
+					<CreateDiceModal />
 				</UiModalBackground>
 				<LocalFileSaveProgress />
 			</div>
