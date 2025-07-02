@@ -3,10 +3,11 @@ import styles from "./Modal.module.css";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
 import { UiButton } from "shared/ui-lib/UiButton";
-import { uploadImages } from "./CreateCardsModal";
 import { useAppContext } from "features/AppContext";
 import { useAccount } from "App/useAccount";
 import { Dice } from "microboard-temp";
+import { uploadImages } from "shared/api/media/uploadImage";
+import { useTranslation } from "react-i18next";
 
 export const CREATE_DICE_MODAL = Symbol("createDiceModal");
 
@@ -21,9 +22,11 @@ export function CreateDiceModal(): JSX.Element {
 	const [previews, setPreviews] = useState<(string | null)[]>(
 		Array(MIN_SIDES).fill(null),
 	);
+	const [isLoading, setIsLoading] = useState(false);
 	const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 	const { board } = useAppContext();
 	const account = useAccount();
+	const { t } = useTranslation();
 
 	useEffect(() => {
 		faces.forEach((file, idx) => {
@@ -114,6 +117,7 @@ export function CreateDiceModal(): JSX.Element {
 	};
 
 	const handleAccept = async () => {
+		setIsLoading(true);
 		try {
 			const files = faces.filter(face => face !== null);
 			if (files.length) {
@@ -124,11 +128,13 @@ export function CreateDiceModal(): JSX.Element {
 				);
 				createDice(urls);
 			} else {
-				createDice();
+				createDice([]);
 			}
 			closeModal();
 		} catch (err) {
-			alert("Ошибка загрузки картинок");
+			console.error(err);
+		} finally {
+			setIsLoading(false);
 		}
 		closeModal();
 	};
@@ -140,7 +146,9 @@ export function CreateDiceModal(): JSX.Element {
 			renderAsPageOnMobile={true}
 		>
 			<div className={styles.modalContent}>
-				<div className={styles.title}>Создание кубика</div>
+				<div className={styles.title}>
+					{t("toolsPanel.addGameItem.addDice.title")}
+				</div>
 				<div
 					className={styles.cardsRow}
 					style={{ flexWrap: "wrap", gap: 16 }}
@@ -167,7 +175,7 @@ export function CreateDiceModal(): JSX.Element {
 								accept="image/*"
 								style={{ display: "none" }}
 								ref={el => (inputRefs.current[idx] = el)}
-								onChange={e => handleFileChange(idx, e)}
+								onChange={ev => handleFileChange(idx, ev)}
 							/>
 						</div>
 					))}
@@ -187,7 +195,7 @@ export function CreateDiceModal(): JSX.Element {
 							onClick={handleRemoveLastFace}
 							className={styles.removeFaceBtn}
 						>
-							Удалить последнее лицо
+							{t("toolsPanel.addGameItem.addDice.removeFace")}
 						</UiButton>
 					</div>
 				)}
@@ -195,8 +203,9 @@ export function CreateDiceModal(): JSX.Element {
 					className={styles.acceptBtn}
 					variant="primary"
 					onClick={handleAccept}
+					disabled={isLoading}
 				>
-					Принять
+					{t("common.confirm")}
 				</UiButton>
 			</div>
 		</UiModal>

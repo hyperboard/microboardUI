@@ -101,7 +101,7 @@ export function ChangeRange({
 	return (
 		<UiButton
 			id="pick-dice-range"
-			tooltip={`${rangeValue}`}
+			tooltip={t(`contextPanel.gameItems.dice.range.${rangeValue}`)}
 			tooltipPosition="top"
 			className={clsx(btnStyle.contextPanelButton, style.button)}
 			variant="secondary"

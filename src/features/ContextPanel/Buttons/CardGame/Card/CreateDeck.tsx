@@ -4,6 +4,7 @@ import { useAppContext } from "features/AppContext";
 import btnStyle from "../../ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton/UiButton";
 import { Card, Deck } from "microboard-temp";
+import { useTranslation } from "react-i18next";
 
 interface Props {
 	rounded?: string;
@@ -12,6 +13,7 @@ interface Props {
 
 export function CreateDeck({ rounded = "none", onlyCards }: Props) {
 	const { board } = useAppContext();
+	const { t } = useTranslation();
 	const single = board.selection.items.getSingle();
 	if (single && single.itemType === "Deck") {
 		return null;
@@ -50,8 +52,8 @@ export function CreateDeck({ rounded = "none", onlyCards }: Props) {
 	return (
 		<UiButton
 			className={btnStyle.contextPanelButton}
-			id="CreateDeck"
-			tooltip={"CreateDeck"}
+			id="create-deck"
+			tooltip={t("contextPanel.gameItems.deck.create")}
 			tooltipPosition="top"
 			onClick={handleClick}
 			variant="secondary"

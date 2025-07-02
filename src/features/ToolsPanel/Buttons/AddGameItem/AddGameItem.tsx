@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { Icon } from "shared/ui-lib/Icon/Icon";
 import { ButtonWithMenu } from "../ButtonWithMenu";
 import { useTranslation } from "react-i18next";
-import style from "./AddGameItem.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { AddDice } from "features/ToolsPanel/Buttons/AddGameItem/AddDice";
 import { AddCard } from "features/ToolsPanel/Buttons/AddGameItem/AddCard";
@@ -17,7 +16,7 @@ export function AddGameItem() {
 			button={
 				<UiButton
 					id={"tool-add-game-item"}
-					tooltip={"tool-add-game-item"}
+					tooltip={t("toolsPanel.addGameItem.tooltip")}
 					active={isOpen}
 					variant="secondary"
 					rounded="top"

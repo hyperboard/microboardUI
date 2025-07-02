@@ -3,8 +3,8 @@ import React from "react";
 import { useAppContext } from "features/AppContext";
 import btnStyle from "../../ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton/UiButton";
-import { Card } from "Board/Items/Examples/GameItems/Card/Card";
-import { Deck } from "Board/Items/Examples/GameItems/Deck/Deck";
+import { useTranslation } from "react-i18next";
+import { Card, Deck } from "microboard-temp";
 
 interface Props {
 	cardPosition: "random" | "top" | "bottom";
@@ -13,6 +13,7 @@ interface Props {
 
 export function GetCard({ cardPosition, rounded = "none" }: Props) {
 	const { board } = useAppContext();
+	const { t } = useTranslation();
 
 	const single = board.selection.items.getSingle();
 
@@ -47,8 +48,8 @@ export function GetCard({ cardPosition, rounded = "none" }: Props) {
 	return (
 		<UiButton
 			className={btnStyle.contextPanelButton}
-			id={`getCard-${cardPosition}`}
-			tooltip={`getCard-${cardPosition}`}
+			id={`get-card-${cardPosition}`}
+			tooltip={t(`contextPanel.gameItems.deck.getCard.${cardPosition}`)}
 			tooltipPosition="top"
 			onClick={handleClick}
 			variant="secondary"

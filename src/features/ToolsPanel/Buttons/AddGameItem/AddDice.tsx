@@ -1,10 +1,8 @@
-import { useAppContext } from "features/AppContext";
-import { Icon } from "shared/ui-lib/Icon/index";
+import { Icon } from "shared/ui-lib/Icon/Icon";
 import { UiButton } from "shared/ui-lib/UiButton/index";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useUiModalContext } from "shared/ui-lib/UiModal/UiModalContext";
-import { CREATE_CARDS_MODAL } from "../../../GameItems/CreateCardsModal";
 import { CREATE_DICE_MODAL } from "../../../GameItems/CreateDiceModal";
 
 interface Props {
@@ -12,16 +10,8 @@ interface Props {
 }
 
 export function AddDice({ rounded }: Props) {
-	const { board } = useAppContext();
-	const { t } = useTranslation();
-
-	// const handleClick = () => {
-	// 	board.tools.addRegisteredTool("AddDice", true);
-	// };
-	//
-	// const isActive = Boolean(board.tools.getAddRegisteredTool("AddDice"));
-
 	const { openModal } = useUiModalContext();
+	const { t } = useTranslation();
 
 	const handleClick = (): void => {
 		openModal(CREATE_DICE_MODAL);
@@ -30,7 +20,7 @@ export function AddDice({ rounded }: Props) {
 	return (
 		<UiButton
 			id={"tool-add-dice"}
-			tooltip={"tool-add-dice"}
+			tooltip={t("toolsPanel.addGameItem.addDice.tooltip")}
 			onClick={handleClick}
 			active={false}
 			variant="secondary"

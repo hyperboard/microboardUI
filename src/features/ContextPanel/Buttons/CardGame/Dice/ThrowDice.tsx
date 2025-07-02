@@ -4,6 +4,7 @@ import { useAppContext } from "features/AppContext";
 import btnStyle from "../../ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton/UiButton";
 import { Dice } from "microboard-temp";
+import { useTranslation } from "react-i18next";
 
 interface Props {
 	rounded?: string;
@@ -11,6 +12,7 @@ interface Props {
 
 export function ThrowDice({ rounded = "none" }: Props) {
 	const { board } = useAppContext();
+	const { t } = useTranslation();
 
 	const dices = board.selection.items.list() as Dice[];
 
@@ -23,8 +25,8 @@ export function ThrowDice({ rounded = "none" }: Props) {
 	return (
 		<UiButton
 			className={btnStyle.contextPanelButton}
-			id="ThrowDice"
-			tooltip={"ThrowDice"}
+			id="throw-dice"
+			tooltip={t("contextPanel.gameItems.dice.throw")}
 			tooltipPosition="top"
 			onClick={handleClick}
 			variant="secondary"

@@ -1,8 +1,5 @@
-import { useAccount } from "App/useAccount";
-import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon/Icon";
-import { notify } from "shared/ui-lib/Toast/index";
-import React, { useRef } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { UiButton } from "shared/ui-lib/UiButton/index";
 import { useUiModalContext } from "shared/ui-lib/UiModal/UiModalContext";
@@ -23,7 +20,7 @@ export function AddCard({ rounded = "none" }: Props): JSX.Element {
 	return (
 		<UiButton
 			id={`tool-add-card`}
-			tooltip="Add Card"
+			tooltip={t("toolsPanel.addGameItem.addCard.tooltip")}
 			onClick={handleClick}
 			rounded={rounded}
 			variant="secondary"

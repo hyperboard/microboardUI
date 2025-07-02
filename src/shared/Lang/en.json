@@ -162,6 +162,27 @@
 		},
 		"addList": {
 			"tooltip": "Add list"
+		},
+		"gameItems": {
+			"card": {
+				"flip": "Flip"
+			},
+			"deck": {
+				"create": "Create deck",
+				"shuffle": "Shuffle",
+				"getCard": {
+					"top": "Get top card",
+					"bottom": "Get bottom card",
+					"random": "Get random card"
+				}
+			},
+			"dice": {
+				"throw": "Roll dice",
+				"range": {
+					"min": "Minimum",
+					"max": "Maximum"
+				}
+			}
 		}
 	},
 	"toolsPanel": {
@@ -257,6 +278,20 @@
 		},
 		"addFrame": {
 			"tooltip": "Frame"
+		},
+		"addGameItem": {
+			"tooltip": "Game items",
+			"addDice": {
+				"tooltip": "Create a die",
+				"title": "Die creation",
+				"removeFace": "Remove the last face"
+			},
+			"addCard": {
+				"tooltip": "Create cards",
+				"cover": "Cover",
+				"cards": "Cards",
+				"title": "Card creation"
+			}
 		}
 	},
 	"shapesPanel": {

@@ -4,6 +4,7 @@ import { useAppContext } from "features/AppContext";
 import btnStyle from "../../ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton/UiButton";
 import { Card } from "microboard-temp";
+import { useTranslation } from "react-i18next";
 
 interface Props {
 	rounded?: string;
@@ -11,6 +12,7 @@ interface Props {
 
 export function FlipCard({ rounded = "none" }: Props) {
 	const { board } = useAppContext();
+	const { t } = useTranslation();
 
 	const single = board.selection.items.getSingle();
 
@@ -26,8 +28,8 @@ export function FlipCard({ rounded = "none" }: Props) {
 	return (
 		<UiButton
 			className={btnStyle.contextPanelButton}
-			id="FlipCard"
-			tooltip={"FlipCard"}
+			id="flip-card"
+			tooltip={t("contextPanel.gameItems.card.flip")}
 			tooltipPosition="top"
 			onClick={handleClick}
 			variant="secondary"

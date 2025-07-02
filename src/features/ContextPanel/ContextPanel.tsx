@@ -452,6 +452,8 @@ export function ContextPanel(): React.ReactElement | null {
 								<CreateDeck onlyCards={false} rounded="right" />
 							</>
 						)}
+						<UiSeparator vertical />
+						<Delete rounded="right" />
 					</>
 				)}
 				{isCard && !isSelectUnderPointer && !isLocked && (
@@ -459,6 +461,8 @@ export function ContextPanel(): React.ReactElement | null {
 						<FlipCard rounded="left" />
 						<UiSeparator vertical />
 						<CreateDeck onlyCards={true} rounded="right" />
+						<UiSeparator vertical />
+						<Delete rounded="right" />
 					</>
 				)}
 				{isCardOrDeck &&
@@ -470,6 +474,8 @@ export function ContextPanel(): React.ReactElement | null {
 							<FlipCard rounded="left" />
 							<UiSeparator vertical />
 							<CreateDeck onlyCards={false} rounded="right" />
+							<UiSeparator vertical />
+							<Delete rounded="right" />
 						</>
 					)}
 				{isDice && !isSelectUnderPointer && !isLocked && (

@@ -6,6 +6,7 @@ import {
 } from "microboard-temp";
 import * as PDFJS from "@bundled-es-modules/pdfjs-dist";
 import { RenderParameters } from "@bundled-es-modules/pdfjs-dist/types/src/display/api";
+import { catchMediaErrorResponse } from "App/MediaHelpers";
 
 export function uploadImage(
 	file: File,
@@ -155,4 +156,25 @@ export function uploadImage(
 		};
 		reader.readAsDataURL(file);
 	}
+}
+
+export async function uploadImages(
+	files: File[],
+	boardId: string,
+	accessToken: string | null,
+): Promise<string[]> {
+	const formData = new FormData();
+	files.forEach(file => formData.append("images", file, file.name));
+	const resp = await fetch(`/api/v1/media/images/${boardId}`, {
+		method: "POST",
+		body: formData,
+		headers: {
+			Authorization: `Bearer ${accessToken}`,
+		},
+	});
+	if (!resp.ok) {
+		await catchMediaErrorResponse(resp, "image");
+	}
+	const data = await resp.json();
+	return (data.results || []).map((r: any) => r.src);
 }

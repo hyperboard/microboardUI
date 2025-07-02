@@ -7,29 +7,10 @@ import { UiButton } from "shared/ui-lib/UiButton";
 import { useAppContext } from "features/AppContext";
 import { useAccount } from "App/useAccount";
 import { Card, ItemsMap } from "microboard-temp";
+import { catchMediaErrorResponse } from "App/MediaHelpers";
+import { uploadImages } from "shared/api/media/uploadImage";
 
 export const CREATE_CARDS_MODAL = Symbol("createCardsModal");
-
-export async function uploadImages(
-	files: File[],
-	boardId: string,
-	accessToken: string | null,
-): Promise<string[]> {
-	const formData = new FormData();
-	files.forEach(file => formData.append("images", file, file.name));
-	const resp = await fetch(`/api/v1/media/images/${boardId}`, {
-		method: "POST",
-		body: formData,
-		headers: {
-			Authorization: `Bearer ${accessToken}`,
-		},
-	});
-	if (!resp.ok) {
-		throw new Error("Ошибка загрузки картинок");
-	}
-	const data = await resp.json();
-	return (data.results || []).map((r: any) => r.src);
-}
 
 export function CreateCardsModal(): JSX.Element {
 	const { t } = useTranslation();
@@ -118,7 +99,7 @@ export function CreateCardsModal(): JSX.Element {
 			}
 			closeModal();
 		} catch (err) {
-			alert("Ошибка загрузки картинок");
+			console.error(err);
 		} finally {
 			setLoading(false);
 		}
@@ -131,7 +112,9 @@ export function CreateCardsModal(): JSX.Element {
 			renderAsPageOnMobile={true}
 		>
 			<div className={styles.modalContent}>
-				<div className={styles.title}>Создание карт</div>
+				<div className={styles.title}>
+					{t("toolsPanel.addGameItem.addCard.title")}
+				</div>
 				<div className={styles.cardsRow}>
 					<div
 						className={styles.cardSilhouette}
@@ -144,7 +127,9 @@ export function CreateCardsModal(): JSX.Element {
 								className={styles.cardPreview}
 							/>
 						) : (
-							<span className={styles.cardLabel}>Обложка</span>
+							<span className={styles.cardLabel}>
+								{t("toolsPanel.addGameItem.addCard.cover")}
+							</span>
 						)}
 						<input
 							type="file"
@@ -165,7 +150,9 @@ export function CreateCardsModal(): JSX.Element {
 								className={styles.cardPreview}
 							/>
 						) : (
-							<span className={styles.cardLabel}>Карты</span>
+							<span className={styles.cardLabel}>
+								{t("toolsPanel.addGameItem.addCard.cards")}
+							</span>
 						)}
 						<input
 							type="file"
@@ -181,8 +168,9 @@ export function CreateCardsModal(): JSX.Element {
 					className={styles.acceptBtn}
 					variant="primary"
 					onClick={handleAccept}
+					disabled={loading}
 				>
-					Принять
+					{t("common.confirm")}
 				</UiButton>
 			</div>
 		</UiModal>
