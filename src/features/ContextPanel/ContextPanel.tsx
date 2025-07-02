@@ -484,6 +484,8 @@ export function ContextPanel(): React.ReactElement | null {
 						<ChangeRange rangeValue="min" />
 						<ChangeRange rangeValue="max" />
 						<UiSeparator vertical />
+						<FillStyle />
+						<UiSeparator vertical />
 						<Delete />
 						<UiSeparator vertical />
 						<RestOptionsMenu>
