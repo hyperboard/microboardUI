@@ -30,13 +30,15 @@ export function ChangeRange({
 	const { t } = useTranslation();
 	const { board } = useAppContext();
 	const dices = board.selection.items.list() as Dice[];
-	const [range, setRange] = useState(dices[0].getRange());
+	const [range, setRange] = useState(
+		dices[0]?.getRange() || { min: 0, max: 0 },
+	);
 	const chevronRef = useRef<HTMLSpanElement>(null);
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	useAppSubscription({
 		subjects: ["items", "selectionItems", "selection"],
 		observer: () => {
-			setRange(dices[0].getRange());
+			setRange(dices[0]?.getRange());
 		},
 	});
 

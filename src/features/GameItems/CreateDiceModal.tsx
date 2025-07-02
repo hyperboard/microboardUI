@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import styles from "./CreateCardsModal.module.css";
+import styles from "./Modal.module.css";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
 import { UiButton } from "shared/ui-lib/UiButton";
-import { uploadImages } from "features/CardGame/CreateCardsModal";
+import { uploadImages } from "./CreateCardsModal";
 import { useAppContext } from "features/AppContext";
 import { useAccount } from "App/useAccount";
 import { Dice } from "microboard-temp";
@@ -25,7 +25,6 @@ export function CreateDiceModal(): JSX.Element {
 	const { board } = useAppContext();
 	const account = useAccount();
 
-	// Обновить превью при изменении faces
 	useEffect(() => {
 		faces.forEach((file, idx) => {
 			if (file) {
@@ -71,8 +70,15 @@ export function CreateDiceModal(): JSX.Element {
 		}
 	};
 
+	const handleRemoveLastFace = () => {
+		if (faces.length > MIN_SIDES) {
+			setFaces(prev => prev.slice(0, -1));
+			setPreviews(prev => prev.slice(0, -1));
+		}
+	};
+
 	const createDice = (urls: string[]) => {
-		const values: string[] | number[] = [];
+		const values: (string | number)[] = [];
 		let urlsIndex = 0;
 		faces.forEach((face, index) => {
 			if (!face) {
@@ -82,7 +88,29 @@ export function CreateDiceModal(): JSX.Element {
 				urlsIndex++;
 			}
 		});
-		board.add(new Dice(board, "", "custom", values));
+
+		const dice = new Dice(
+			board,
+			"",
+			values.some(value => typeof value === "string")
+				? "custom"
+				: "common",
+			values,
+		);
+
+		const { left, top, bottom, right } = board.camera.getMbr();
+		const x = (left + right) / 2 - dice.getWidth() / 2;
+		const y = (top + bottom) / 2 - dice.getHeight() / 2;
+
+		dice.transformation.apply({
+			class: "Transformation",
+			method: "translateTo",
+			item: [dice.getId()],
+			x,
+			y,
+		});
+
+		board.add(dice);
 	};
 
 	const handleAccept = async () => {
@@ -95,6 +123,8 @@ export function CreateDiceModal(): JSX.Element {
 					account.accessToken,
 				);
 				createDice(urls);
+			} else {
+				createDice();
 			}
 			closeModal();
 		} catch (err) {
@@ -118,34 +148,17 @@ export function CreateDiceModal(): JSX.Element {
 					{faces.map((face, idx) => (
 						<div
 							key={idx}
-							className={styles.cardSilhouette}
-							style={{
-								cursor: "pointer",
-								width: 80,
-								height: 80,
-								display: "flex",
-								alignItems: "center",
-								justifyContent: "center",
-								position: "relative",
-							}}
+							className={styles.diceFace}
 							onClick={() => handleFaceClick(idx)}
 						>
 							{previews[idx] ? (
 								<img
 									src={previews[idx] || undefined}
 									alt={`face-${idx + 1}`}
-									className={styles.cardPreview}
-									style={{
-										width: "100%",
-										height: "100%",
-										objectFit: "cover",
-									}}
+									className={styles.dicePreview}
 								/>
 							) : (
-								<span
-									className={styles.cardLabel}
-									style={{ fontSize: 32, color: "#aaa" }}
-								>
+								<span className={styles.diceLabel}>
 									{idx + 1}
 								</span>
 							)}
@@ -160,24 +173,24 @@ export function CreateDiceModal(): JSX.Element {
 					))}
 					{faces.length < MAX_SIDES && (
 						<div
-							className={styles.cardSilhouette}
-							style={{
-								cursor: "pointer",
-								width: 80,
-								height: 80,
-								display: "flex",
-								alignItems: "center",
-								justifyContent: "center",
-								border: "2px dashed #ccc",
-								color: "#888",
-								fontSize: 40,
-							}}
+							className={styles.addFaceBtn}
 							onClick={handleAddFace}
 						>
 							+
 						</div>
 					)}
 				</div>
+				{faces.length > MIN_SIDES && (
+					<div className={styles.removeFaceBtnWrapper}>
+						<UiButton
+							variant="secondary"
+							onClick={handleRemoveLastFace}
+							className={styles.removeFaceBtn}
+						>
+							Удалить последнее лицо
+						</UiButton>
+					</div>
+				)}
 				<UiButton
 					className={styles.acceptBtn}
 					variant="primary"

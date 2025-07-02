@@ -3,8 +3,8 @@ import React from "react";
 import { useAppContext } from "features/AppContext";
 import btnStyle from "../../ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton/UiButton";
-import { Card } from "Board/Items/Examples/CardGame/Card/Card";
-import { Deck } from "Board/Items/Examples/CardGame/Deck/Deck";
+import { Card } from "Board/Items/Examples/GameItems/Card/Card";
+import { Deck } from "Board/Items/Examples/GameItems/Deck/Deck";
 
 interface Props {
 	cardPosition: "random" | "top" | "bottom";

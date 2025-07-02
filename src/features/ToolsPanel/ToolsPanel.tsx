@@ -21,8 +21,8 @@ import { PanelContext } from "./PanelContext";
 import style from "./ToolsPanel.module.css";
 import { AddStar } from "features/ToolsPanel/Buttons/Star";
 import { AddCounter } from "features/ToolsPanel/Buttons/AddCounter";
-import { AddCard } from "features/ToolsPanel/Buttons/CardGame/AddCard";
-import { AddDice } from "features/ToolsPanel/Buttons/CardGame/AddDice";
+import { AddCard } from "features/ToolsPanel/Buttons/GameItems/AddCard";
+import { AddDice } from "features/ToolsPanel/Buttons/GameItems/AddDice";
 import { AddGameItem } from "features/ToolsPanel/Buttons/AddGameItem/AddGameItem";
 
 export function ToolsPanel(): JSX.Element {

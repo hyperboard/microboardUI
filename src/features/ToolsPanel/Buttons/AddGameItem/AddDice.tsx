@@ -4,8 +4,8 @@ import { UiButton } from "shared/ui-lib/UiButton/index";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useUiModalContext } from "shared/ui-lib/UiModal/UiModalContext";
-import { CREATE_CARDS_MODAL } from "features/CardGame/CreateCardsModal";
-import { CREATE_DICE_MODAL } from "features/CardGame/CreateDiceModal";
+import { CREATE_CARDS_MODAL } from "../../../GameItems/CreateCardsModal";
+import { CREATE_DICE_MODAL } from "../../../GameItems/CreateDiceModal";
 
 interface Props {
 	rounded?: string;
@@ -30,7 +30,7 @@ export function AddDice({ rounded }: Props) {
 	return (
 		<UiButton
 			id={"tool-add-dice"}
-			tooltip={false ? undefined : t("toolsPanel.addText.tooltip")}
+			tooltip={"tool-add-dice"}
 			onClick={handleClick}
 			active={false}
 			variant="secondary"

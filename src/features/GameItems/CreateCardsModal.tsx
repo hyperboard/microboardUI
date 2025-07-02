@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./CreateCardsModal.module.css";
+import styles from "./Modal.module.css";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
 import { useTranslation } from "react-i18next";
@@ -52,10 +52,23 @@ export function CreateCardsModal(): JSX.Element {
 	const createDeck = (backsideUrl: string, faceUrls: string[]) => {
 		const cards: Card[] = [];
 
+		const { left, top, bottom, right } = board.camera.getMbr();
+		const x = (left + right) / 2;
+		const y = (top + bottom) / 2;
+
 		faceUrls.forEach((faceUrl, index) => {
-			cards.push(
-				new Card(board, index + faceUrl, { backsideUrl, faceUrl }),
-			);
+			const card = new Card(board, index + faceUrl, {
+				backsideUrl,
+				faceUrl,
+			});
+			card.transformation.apply({
+				class: "Transformation",
+				method: "translateTo",
+				item: [card.getId()],
+				x: x,
+				y: y,
+			});
+			cards.push(card);
 		});
 
 		const itemsMap: ItemsMap = {};
