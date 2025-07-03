@@ -24,6 +24,9 @@ import { UiButton } from "shared/ui-lib/UiButton";
 const MENU_NAME = "StrokeStyle";
 
 const getIsBorderStyleEditable = (shapes: Shape[]): boolean => {
+	if (!shapes.length) {
+		return false;
+	}
 	for (const shape of shapes) {
 		if (!shape.getIsBorderStyleEditable()) {
 			return false;
