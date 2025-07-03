@@ -1,10 +1,10 @@
-import { Icon } from "shared/ui-lib/Icon";
-import React from "react";
 import { useAppContext } from "features/AppContext";
-import btnStyle from "../../ContextPanelButton.module.css";
-import { UiButton } from "shared/ui-lib/UiButton/UiButton";
 import { Dice } from "microboard-temp";
+import React from "react";
 import { useTranslation } from "react-i18next";
+import { Icon } from "shared/ui-lib/Icon";
+import { UiButton } from "shared/ui-lib/UiButton/UiButton";
+import btnStyle from "../../ContextPanelButton.module.css";
 
 interface Props {
 	rounded?: string;
