@@ -349,11 +349,24 @@ export class Account {
 	}
 
 	async logout(): Promise<void> {
-		await authApi.logout();
+		window.location.href = "/api/v1/auth/logout";
+		/*
+		const response = await authApi.logout();
 		this.postMsg("logout");
 		this.cleanup();
 		await this.onLogout?.();
 		this.subject.publish(null);
+
+		const data = await response.json();
+
+		if (data.keycloakLogoutUrl) {
+			// Redirect to Keycloak logout
+			window.location.href = data.keycloakLogoutUrl;
+		} else {
+			// Regular logout flow
+			window.location.href = "/login";
+		}
+		*/
 	}
 
 	verifyMail = async (

@@ -7,6 +7,7 @@ import React, {
 	forwardRef,
 } from "react";
 import styles from "./AuthForm.module.css";
+import { KeycloakAuthBtn } from "features/KeycloakAuthBtn";
 
 type Props = PropsWithChildren<{
 	onSubmit: FormEventHandler;
@@ -35,6 +36,7 @@ export const AuthForm = forwardRef<HTMLFormElement, Props>(
 				{showAnotherAuthWay && (
 					<div className={styles.anotherBtns}>
 						<LoginWith />
+						<KeycloakAuthBtn />
 						<WalletLoginButton />
 						<GoogleAuthBtn />
 					</div>

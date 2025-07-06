@@ -492,7 +492,8 @@
 		"signupNotifyError": {
 			"title": "Sign up failed",
 			"text": "Please try again later."
-		}
+		},
+		"loginWithSSO": "Login with corporate account"
 	},
 	"modal": {
 		"canEdit": "Can edit",

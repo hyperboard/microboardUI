@@ -16,6 +16,7 @@ import { ActionButtons } from "./ActionButtons/ActionButtons.tsx";
 import { ShareBtn } from "./Buttons/ShareBtn/ShareBtn.tsx";
 import { CommentsPanelContextProvider } from "entities/comments/CommentsPanel/CommentsPanelContext.tsx";
 import { CommentsPanel } from "entities/comments/CommentsPanel/CommentsPanel.tsx";
+import { KeycloakAuthBtn } from "features/KeycloakAuthBtn.tsx";
 
 export const UserPanel: React.FC = () => {
 	const { t } = useTranslation();
@@ -27,6 +28,9 @@ export const UserPanel: React.FC = () => {
 		document.referrer.includes("https://microboard.io/") ||
 		document.referrer.includes("https://microboard.ru/");
 
+	// Проверяем, является ли приложение on-premise версией
+	const isOnPremiseVersion = false; // conf.features?.isOnPremise || false;
+
 	if (!account.isLoggedIn) {
 		return (
 			<UiPanel
@@ -37,48 +41,12 @@ export const UserPanel: React.FC = () => {
 				)}
 			>
 				<div className={styles.unauthWrapper}>
-					{/* <span className={styles.unauthText}> */}
-					{/* 	Save&nbsp;this&nbsp;board&nbsp;to&nbsp;favorite. */}
-					{/* </span> */}
-
 					<div className={styles.unauthBtns}>
-						{/* <LanguagesDropdown */}
-						{/* 	items={[ */}
-						{/* 		<div key={1}> */}
-						{/* 			<p */}
-						{/* 				className={ */}
-						{/* 					styles.unauthDescriptionTitle */}
-						{/* 				} */}
-						{/* 			> */}
-						{/* 				You are the viewer on this board.{" "} */}
-						{/* 			</p>{" "} */}
-						{/* 			<p className={styles.unauthDescription}> */}
-						{/* 				To ask for editor rights to make */}
-						{/* 				changes, please{" "} */}
-						{/* 				<Link */}
-						{/* 					className={styles.unauthLink} */}
-						{/* 					to="/auth/login" */}
-						{/* 				> */}
-						{/* 					log in */}
-						{/* 				</Link>{" "} */}
-						{/* 				or{" "} */}
-						{/* 				<Link */}
-						{/* 					className={styles.unauthLink} */}
-						{/* 					to="/auth/sign-up" */}
-						{/* 				> */}
-						{/* 					sign up */}
-						{/* 				</Link> */}
-						{/* 				. */}
-						{/* 			</p> */}
-						{/* 		</div>, */}
-						{/* 	]} */}
-						{/* 	label={ */}
-						{/* 		<> */}
-						{/* 			<EyeOpen isCurrentColor /> View&nbsp;only */}
-						{/* 		</> */}
-						{/* 	} */}
-						{/* /> */}
-						{isMicroboardIframe() && insideOfMicroboard ? (
+						{isOnPremiseVersion ? (
+							// On-premise версия - только SSO
+							<KeycloakAuthBtn />
+						) : // SaaS версия - стандартные кнопки входа и регистрации
+						isMicroboardIframe() && insideOfMicroboard ? (
 							<>
 								<UiLink
 									variant="secondary"

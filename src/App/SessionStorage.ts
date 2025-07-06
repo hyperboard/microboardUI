@@ -243,6 +243,18 @@ export class SessionStorage {
 		}
 		return window.location.href.split("/").pop()?.split("?")[0];
 	}
+
+	setKeycloakIdToken(token: string): void {
+		sessionStorage.setItem("keycloak_id_token", token);
+	}
+
+	getKeycloakIdToken(): string | null {
+		return sessionStorage.getItem("keycloak_id_token");
+	}
+
+	removeKeycloakIdToken(): void {
+		sessionStorage.removeItem("keycloak_id_token");
+	}
 }
 
 export const tempStorage = new SessionStorage();

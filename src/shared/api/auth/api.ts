@@ -1,4 +1,5 @@
 import { api } from "../base/base";
+import { HTTPResponse } from "../base/httpResponse";
 import type { MessageResponse } from "../types";
 import type { User } from "../users";
 import type {
@@ -13,6 +14,7 @@ import type {
 	VerifyMailPayload,
 	GetNoncePayload,
 	VerifySignaturePayload,
+	KeycloakLogoutPayload,
 } from "./types";
 
 export const ACCESS_TOKEN_KEY = "accessToken";
@@ -35,7 +37,7 @@ export function register(body: RegisterPayload) {
 }
 
 export function logout() {
-	return api.put<MessageResponse>("/auth/logout");
+	return api.get<MessageResponse>("/auth/logout");
 }
 
 export function verifyMail(body: VerifyMailPayload) {
@@ -75,4 +77,18 @@ export function requestAddEmail(body: CheckVerificationCodesPayload) {
 
 export function addEmail(body: VerifyMailPayload) {
 	return api.post<MessageResponse>("/auth/email/verify", body);
+}
+
+export function logoutKeycloak(body: KeycloakLogoutPayload) {
+	return api.post<{ logoutUrl: string }>("/auth/keycloak/logout", body);
+}
+
+export function getKeycloakLoginUrl() {
+	return api.get<{ url: string }>("/auth/keycloak");
+}
+
+export function loginWithKeycloak(payload: {
+	code: string;
+}): Promise<HTTPResponse<Tokens>> {
+	return api.post("/auth/keycloak/callback", payload);
 }

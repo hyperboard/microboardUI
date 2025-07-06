@@ -49,3 +49,7 @@ export type VerifySignaturePayload = {
 	address: UniqueString;
 	signature: UniqueString;
 };
+
+export interface KeycloakLogoutPayload {
+	idToken?: string;
+}
