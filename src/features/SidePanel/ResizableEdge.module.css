@@ -1,9 +1,0 @@
-.resizeHandle {
-	position: absolute;
-	top: 0;
-	right: -10px;
-	width: 20px;
-	height: 100%;
-	cursor: ew-resize;
-	z-index: 1;
-}

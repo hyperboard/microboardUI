@@ -1,1 +1,0 @@
-export { FillColorIndicator } from "./FillColorIndicator";

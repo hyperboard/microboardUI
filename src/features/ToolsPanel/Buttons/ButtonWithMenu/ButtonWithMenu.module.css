@@ -1,9 +1,0 @@
-.container {
-	position: relative;
-}
-
-.menu {
-	position: absolute;
-	left: calc(100% + 0.8rem);
-	top: 0;
-}

@@ -1,0 +1,84 @@
+# Microboard License v1.0
+
+## License Terms
+
+This License governs the use of the accompanying Software. By using the Software, you accept the terms of this License.
+
+## Definitions
+
+"Licensor" means the copyright owner or entity authorized by the copyright owner that is granting the License.
+
+"You" (or "Your") means an individual or legal entity exercising permissions granted by this License.
+
+"Software" means the software, associated documentation, and any modifications or derivative works thereof.
+
+“Watermark” means the Licensor’s logo, name, or other identifying mark that is embedded within the user interface of the Software and clearly identifies the Licensor as the source of the Software, in the same form, position, and appearance as originally implemented by the Licensor. If the Watermark includes a clickable link, such link must also remain functional and unmodified in any copy or deployment of the Software.
+
+"Contribution" means any work of authorship, including the original version of the Software and any modifications or additions to the Software, that is intentionally submitted to Licensor for inclusion in the Software.
+
+"Commercial Use" means use of the Software in any way that is primarily intended for or directed toward commercial advantage or monetary compensation.
+
+## Permissions
+
+Subject to the following conditions, you are permitted to:
+
+- Use the Software in your commercial or non-commercial projects.
+- Modify the Software to suit your needs.
+- Bundle the Software with your own projects.
+- Submit modifications of the Software to Licensor.
+- Distribute the Software as part of any application.
+
+## Conditions
+
+In exchange for these permissions, you agree:
+
+- Not to disable, hide, remove, or alter the Watermark, unless you have purchased a Developer's License that explicitly permits removal of the Watermark.
+- Not to disable, change, or interfere with the license key validation process that governs the display of the Watermark.
+- Not to remove any copyright or other notices from the Software.
+- Not to make the Software available under a license that supersedes or negates the effect of this License.
+- To include a verbatim copy of this License in any distribution of the Software.
+- To comply with Licensor's trademark policy, if one is provided.
+
+## Contributions
+
+1. By intentionally submitting a Contribution to Licensor, You grant to Licensor and to recipients of the Software a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable license to reproduce, prepare derivative works of, publicly display, publicly perform, sublicense, and distribute Your Contributions and such derivative works under the terms of this License.
+
+2. By intentionally submitting a Contribution to Licensor, You grant Licensor and recipients of the Software a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable patent license to make, have made, use, offer to sell, sell, import, and otherwise transfer the Contribution, where such license applies only to those patent claims licensable by You that are necessarily infringed by Your Contribution alone or by combination of Your Contribution with the Software.
+
+3. If the Software contains a "NOTICE" text file as part of its distribution, then any derivative works that You distribute must include a readable copy of the attribution notices contained within such NOTICE file. You may add Your own attribution notices within derivative works that You distribute, provided that such additional attribution notices cannot be construed as modifying the License.
+
+## Patent Claims
+
+If you or your organization initiate a patent infringement lawsuit against Licensor or any contributor to the Software, your rights under this License will terminate immediately. This provision is intended to protect Licensor and the community from patent litigation.
+
+## Termination
+
+Your license to use the Software will terminate automatically if you breach any terms of this License or initiate a copyright, trade secret, or patent claim against Licensor, any of its affiliates, or any user of the Software (including as modified by you).
+
+## License Versions
+
+This License applies to the version of the Software with which it was provided. Licensor may publish revised versions of this License from time to time. Each version will be given a distinguishing version number. Once Software has been published under a particular version of the License, You may continue to use it under the terms of that version, or You may choose to use it under the terms of any subsequent version published by Licensor.
+
+## Disclaimer of Warranties
+
+The Software is provided "AS IS," without any warranties. This includes any implied warranties of merchantability, fitness for a particular purpose, or non-infringement. You must pass this disclaimer on whenever you distribute the Software or derivative works.
+
+## Limitation of Liability
+
+Licensor is not liable for any damages related to the Software or this License, including direct, indirect, special, or incidental damages, to the fullest extent permitted by law. You must pass this limitation of liability on whenever you distribute the Software or derivative works.
+
+## Governing Law
+
+This License is governed by the laws specified by the Licensor in the copyright notice for the Software, and the parties consent to exclusive jurisdiction in the courts specified in that notice. The parties waive all defenses of lack of personal jurisdiction and forum non-conveniens.
+
+## Entire Agreement / Assignment
+
+This License is the entire agreement between the parties, and supersedes any and all prior agreements, understandings or communications, written or oral, between the parties relating to the subject matter hereof. This License may be assigned by Licensor without your prior consent.
+
+## Reservation of Rights
+
+Licensor reserves all rights not expressly granted to you in this License. Licensor owns all right, title, and interest in and to the Software.
+
+## Alternative License
+
+For alternative licensing, please contact the Licensor. If you wish to use the Software without displaying the Watermark, please visit the Licensor's website or contact information provided with the Software to purchase a Developer's License.

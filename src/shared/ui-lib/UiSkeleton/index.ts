@@ -1,1 +1,0 @@
-export { UiSkeleton } from "./UiSkeleton";

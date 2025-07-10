@@ -1,1 +1,0 @@
-export { VerifyMailPage } from "./VerifyMailPage";

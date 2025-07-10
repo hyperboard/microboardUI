@@ -1,1 +1,0 @@
-export { EndPointer } from "./EndPointer";
