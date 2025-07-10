@@ -1,0 +1,66 @@
+.colorPickerContainer {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.colorPickerContainer.active::before {
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	position: absolute;
+	content: "";
+	width: 36px;
+	height: 36px;
+	border: 2px solid var(--border-select-primary);
+	border-radius: 50%;
+	z-index: 0;
+}
+
+.colorCircle {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	border: 1px solid rgba(31, 31, 31, 0.25);
+	cursor: pointer;
+	position: relative;
+	z-index: 1;
+	border: none;
+	display: inline-block;
+	padding: 0;
+	appearance: none;
+	padding-inline: 0;
+	padding-block: 0;
+}
+
+@media screen and (max-width: 748px) {
+	.colorPickerContainer.active::before {
+		width: 28px;
+		height: 28px;
+	}
+	.colorCircle {
+		width: 24px;
+		height: 24px;
+	}
+}
+
+.colorCircle.image {
+	background-position: center;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-image: url(./palette.png);
+}
+
+.input {
+	position: absolute;
+	opacity: 0;
+	z-index: 10;
+}
+
+.input::-webkit-color-swatch-wrapper {
+	padding: 0;
+	position: absolute;
+	top: 0;
+	left: 0;
+}

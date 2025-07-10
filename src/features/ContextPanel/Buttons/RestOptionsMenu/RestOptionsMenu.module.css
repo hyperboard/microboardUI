@@ -1,0 +1,51 @@
+.menu {
+	align-items: stretch;
+}
+
+.item {
+	background: none;
+	display: flex;
+	align-items: center;
+	border-radius: 6px;
+	gap: 4px;
+	padding: 6px;
+	min-width: 220px;
+	cursor: pointer;
+	transition: background 0.3s;
+	font-size: 1.4rem;
+}
+
+@media (hover: hover) {
+	.item:hover {
+		background: rgba(233, 234, 236, 1);
+	}
+}
+
+.menuBottom {
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+.hotkey {
+	font-family: "Manrope";
+	font-weight: 400;
+	font-size: 1.4rem;
+	color: rgba(13, 17, 38, 0.4);
+	margin-left: auto;
+	padding: 0 4px;
+}
+
+.text {
+	font-family: "Manrope";
+	font-weight: 400;
+	text-wrap: nowrap;
+	text-align: left;
+	flex: 1 0;
+	padding-right: 10px;
+}
+
+.hotkey {
+	text-wrap: nowrap;
+	color: rgba(0, 0, 0, 0.24);
+	text-align: right;
+}

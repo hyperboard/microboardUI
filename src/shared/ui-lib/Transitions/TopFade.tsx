@@ -1,0 +1,27 @@
+import React from "react";
+import { CSSTransition } from "react-transition-group";
+import type { TransitionProps } from "./types";
+import styles from "./TopFade.module.css";
+
+export function TopFade({
+	inProp,
+	timeout = 300,
+	unmountOnExit,
+	children,
+}: TransitionProps) {
+	return (
+		<CSSTransition
+			in={inProp}
+			timeout={timeout}
+			classNames={{
+				enter: styles.optionsEnter,
+				enterActive: styles.optionsEnterActive,
+				exit: styles.optionsExit,
+				exitActive: styles.optionsExitActive,
+			}}
+			unmountOnExit={unmountOnExit}
+		>
+			{children}
+		</CSSTransition>
+	);
+}

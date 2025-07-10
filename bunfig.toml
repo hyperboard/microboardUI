@@ -1,0 +1,1 @@
+preload = ["./bunPlugins/copyPlugin.ts"]

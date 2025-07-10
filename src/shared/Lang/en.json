@@ -1,0 +1,1227 @@
+{
+	"common": {
+		"and": "and",
+		"save": "Save",
+		"backToMain": "Back to main menu",
+		"confirm": "Confirm",
+		"loading": "Loading...",
+		"notFound": "Not found",
+		"anonymous": "Anonymous",
+		"you": "you",
+		"languages": {
+			"ru": "Russian",
+			"en": "English",
+			"de": "German",
+			"es": "Spanish",
+			"fr": "French",
+			"zh": "Chinese"
+		},
+		"GB": "GB",
+		"MB": "MB"
+	},
+	"contextPanel": {
+		"connectorAddText": {
+			"tooltip": "Add text"
+		},
+		"connectorType": {
+			"tooltip": "Type",
+			"straight": "Straight",
+			"curved": "Curved"
+		},
+		"connectorPointerNone": "None",
+		"connectorEndPointer": {
+			"tooltip": "End style"
+		},
+		"connectorStartPointer": {
+			"tooltip": "Start style"
+		},
+		"connectorSwitchPointers": {
+			"tooltip": "Switch pointers"
+		},
+		"connectorColor": {
+			"tooltip": "Color"
+		},
+		"changeShape": {
+			"tooltip": "Shape"
+		},
+		"changeFrameType": {
+			"tooltip": "Ratio"
+		},
+		"strokeStyle": {
+			"tooltip": "Border",
+			"strokeWidth": "Stroke width"
+		},
+		"fillStyle": {
+			"tooltip": "Shape color",
+			"none": "None"
+		},
+		"fontSize": {
+			"tooltip": "Font size",
+			"auto": "Auto"
+		},
+		"fontStyle": {
+			"tooltip": "Font style",
+			"bold": "Bold",
+			"italic": "Italic",
+			"strike": "Strikethrough",
+			"underline": "Underline"
+		},
+		"textAlignment": {
+			"tooltip": "Text alignment",
+			"left": "Left",
+			"center": "Center",
+			"right": "Right",
+			"top": "Top",
+			"bottom": "Bottom"
+		},
+		"hyperLink": {
+			"tooltip": "Add link"
+		},
+		"textColor": {
+			"tooltip": "Text color"
+		},
+		"textHighlight": {
+			"tooltip": "Highlight color",
+			"none": "None"
+		},
+		"stickerColor": {
+			"tooltip": "Sticker color"
+		},
+		"penColor": {
+			"tooltip": "Color"
+		},
+		"duplicate": {
+			"text": "Duplicate",
+			"tooltip": "Duplicate"
+		},
+		"bringToFront": {
+			"text": "Bring to front"
+		},
+		"sendToBack": {
+			"text": "Send to back"
+		},
+		"exportFrame": {
+			"text": "Save as image"
+		},
+		"lockFrameRatio": {
+			"tooltip": {
+				"lock": "Freeze ratio",
+				"unlock": "Unfreeze ratio"
+			}
+		},
+		"frameColor": {
+			"tooltip": "Frame color"
+		},
+		"copyItemLink": {
+			"text": "Copy link",
+			"error": {
+				"title": "Copy link error",
+				"description": "An error occurred while copying link"
+			},
+			"success": {
+				"description": "Link copied to clipboard"
+			}
+		},
+		"setLinkTo": {
+			"add": "Add link...",
+			"edit": "Edit link..."
+		},
+		"removeLinkTo": {
+			"text": "Remove Link"
+		},
+		"delete": {
+			"text": "Delete",
+			"tooltip": "Delete"
+		},
+		"edit": {
+			"text": "Edit"
+		},
+		"restMenu": {
+			"tooltip": "Options"
+		},
+		"lock": {
+			"tooltip": "Lock"
+		},
+		"unlock": {
+			"tooltip": "Unlock"
+		},
+		"ai": {
+			"tooltip": "Ask AI",
+			"stop": "Stop generation",
+			"model": "Request mode"
+		},
+		"frameNavigation": {
+			"next": "To next frame",
+			"prev": "To prev frame"
+		},
+		"Video": {
+			"save": "Save video"
+		},
+		"Audio": {
+			"save": "Save audio"
+		},
+		"addList": {
+			"tooltip": "Add list"
+		},
+		"gameItems": {
+			"card": {
+				"flip": "Flip"
+			},
+			"deck": {
+				"create": "Create deck",
+				"shuffle": "Shuffle",
+				"getCard": {
+					"top": "Get top card",
+					"bottom": "Get bottom card",
+					"random": "Get random card"
+				}
+			},
+			"dice": {
+				"throw": "Roll dice",
+				"range": {
+					"min": "Minimum",
+					"max": "Maximum"
+				}
+			}
+		}
+	},
+	"toolsPanel": {
+		"grab": {
+			"tooltip": "Grab"
+		},
+		"select": {
+			"tooltip": "Select"
+		},
+		"undo": {
+			"tooltip": "Undo"
+		},
+		"redo": {
+			"tooltip": "Redo"
+		},
+		"addText": {
+			"tooltip": "Text"
+		},
+		"addSticker": {
+			"tooltip": "Sticker"
+		},
+		"addTemplate": {
+			"tooltip": "Templates"
+		},
+		"addShape": {
+			"tooltip": "Shape",
+			"showAll": "All shapes",
+			"showBasic": "Basic shapes"
+		},
+		"addConnector": {
+			"tooltip": "Connection line"
+		},
+		"addDrawing": {
+			"addPen": {
+				"tooltip": "Pen"
+			},
+			"addHighlighter": {
+				"tooltip": "Highlighter"
+			},
+			"addEraser": {
+				"tooltip": "Eraser"
+			},
+			"strokeWidth": "Stroke width"
+		},
+		"addMedia": {
+			"tooltip": "Add media",
+			"Image": "Image",
+			"Video": "Video",
+			"Audio": "Audio",
+			"upgradeToPlus": "Upgrade to Plus",
+			"loading": "Media files are uploading",
+			"unsupportedFormat": {
+				"header": "This file format is not supported.",
+				"body": "Please try uploading a different file."
+			},
+			"limitReached": {
+				"header": "Media storage limit reached",
+				"body": {
+					"basic": "Your current plan includes 100 MB of media storage. Upgrade to Plus to increase the limit and keep working",
+					"plus": "Your current plan includes 100 GB of media storage."
+				},
+				"duplicateBody": "The media storage limit reached.\nNew files can’t be added until the limit is increased",
+				"bodyWithoutLimit": "Upgrade to Plus to increase the limit and keep working",
+				"bodyOwner": "The board owner has reached the media storage limit.\nNew files can’t be added until the limit is increased"
+			},
+			"unhandled": {
+				"header": "Media file upload error",
+				"body": "Failed to add media file to the board.\nPlease try again."
+			},
+			"tooLarge": {
+				"header": "File is too large",
+				"audioOrVideoBody": {
+					"basic": "With the Plus plan, you can upload video and audio files up to 50 MB.\nTo upload larger files, upgrade to the Plus plan",
+					"plus": "With the Plus plan, you can upload video and audio files up to 1 GB."
+				},
+				"imageBody": {
+					"basic": "Your current plan allows uploading images up to 5 MB.\nTo upload larger files, upgrade to the Plus plan",
+					"plus": "Your current plan allows uploading images up to 20 MB."
+				},
+				"bodyWithoutLimit": "File exceeds maximum allowed size."
+			},
+			"limitAlmostReached": {
+				"header": "Media storage limit almost reached",
+				"body": {
+					"basic": "Your current plan includes 100 MB of media storage.\nUpgrade to Plus to increase the limit and keep working",
+					"plus": "Your current plan includes 100 GB of media storage."
+				}
+			},
+			"unauth": {
+				"heading": "Media Files on the Microboard",
+				"description": "<p>Working with media files is available only to authorized users.</p><p><signinLink>Sign in</signinLink> or <signupLink>register</signupLink> to continue.</p>"
+			}
+		},
+		"addFrame": {
+			"tooltip": "Frame"
+		},
+		"addGameItem": {
+			"tooltip": "Game items",
+			"addDice": {
+				"tooltip": "Create a die",
+				"title": "Die creation",
+				"removeFace": "Remove the last face"
+			},
+			"addCard": {
+				"tooltip": "Create cards",
+				"cover": "Cover",
+				"cards": "Cards",
+				"title": "Card creation"
+			}
+		}
+	},
+	"shapesPanel": {
+		"title": "Shapes library",
+		"basicShapes": "Basic shapes",
+		"BPMN": "Diagramming shapes"
+	},
+	"shapePicker": {
+		"BPMN": {
+			"BPMN_Gateway": "Gateway",
+			"BPMN_DataStore": "Data store",
+			"BPMN_GatewayParallel": "Gateway parallel",
+			"BPMN_GatewayXOR": "Gateway XOR",
+			"BPMN_EndEvent": "End event",
+			"BPMN_StartEvent": "Start event",
+			"BPMN_StartEventNoneInterrupting": "Start event none interrupting",
+			"BPMN_IntermediateEvent": "Intermediate event",
+			"BPMN_IntermediateEventNoneInterrupting": "Intermediate event none interrupting",
+			"BPMN_Group": "Group",
+			"BPMN_Participant": "Participant",
+			"BPMN_Task": "Task",
+			"BPMN_Transaction": "Transaction",
+			"BPMN_EventSubprocess": "Event subprocess",
+			"BPMN_Annotation": "Annotation",
+			"BPMN_DataObject": "Data object"
+		}
+	},
+	"zoomPanel": {
+		"zoomOut": {
+			"tooltip": "Zoom out"
+		},
+		"zoomDefault": {
+			"tooltip": "Zoom 100%"
+		},
+		"zoomIn": {
+			"tooltip": "Zoom in"
+		},
+		"zoomToFit": {
+			"tooltip": "Zoom to fit"
+		}
+	},
+	"titlePanel": {
+		"menu": {
+			"open": "Open board list",
+			"close": "Close board list"
+		}
+	},
+	"userPanel": {
+		"comment": "Comment",
+		"profileSettings": "Profile settings",
+		"nameDescription": "It is displayed while you are working on the board",
+		"yourBoard": "Your board"
+	},
+	"boardMenu": {
+		"items": {
+			"paste": "Paste"
+		},
+		"comments": {
+			"showResolved": "Show Resolved",
+			"hideResolved": "Hide Resolved",
+			"resolveAll": "Resolve all comments"
+		},
+		"controlMode": {
+			"tooltip": "Mouse or trackpad",
+			"auto": "Auto",
+			"mouse": "Mouse",
+			"trackpad": "Trackpad",
+			"learnMore": "Learn more",
+			"modal": {
+				"title": "Choose mouse or trackpad",
+				"subtitle": "Applies to all tabs",
+				"autoDetect": "Auto-detect",
+				"MouseRightClick": "Click the right button and drag to move around",
+				"MouseRollClick": "Scroll the mouse wheel to zoom",
+				"TrackpadMove": "Side two fingers to move around",
+				"TrackpadPinch": "Pinch to zoom"
+			}
+		}
+	},
+	"comment": {
+		"create": "Add a comment",
+		"closeThread": "Close thread",
+		"openThread": "Open thread",
+		"deleteThread": "Delete",
+		"markAsUnread": "Mark as unread",
+		"copyLink": "Copy link",
+		"deleteMessage": "Delete",
+		"editMessage": "Edit...",
+		"reply": "Leave a reply",
+		"edit": "Edit comment",
+		"answer": {
+			"one": "Answer",
+			"few": "Answers",
+			"many": "Answers"
+		},
+		"panel": {
+			"title": "Comments",
+			"showComments": {
+				"all": "All comments",
+				"replies": "Replies"
+			},
+			"showResolved": "Show Resolved",
+			"showCommentsOnBoard": "Show comments on board",
+			"groupComments": "Group comments",
+			"markAllAsRead": "Mark all as read",
+			"card": {
+				"hideComments": "Hide comments",
+				"showNew": "Show {{count}}",
+				"showMore": "Show {{count}} more",
+				"comments": {
+					"one": "comment",
+					"few": "comments",
+					"many": "comments"
+				},
+				"new": {
+					"one": "new",
+					"few": "new",
+					"many": "new"
+				}
+			}
+		}
+	},
+	"auth": {
+		"name": "Name",
+		"nameDesc": "It is displayed during your work on the board",
+		"next": "Next",
+		"backToBoard": "Back to the board",
+		"backToBoardSelection": "Back to the board selection",
+		"checkEmail": "Check for an email with a pass code.",
+		"email": "Email",
+		"emailPlaceholder": "Your email",
+		"passcode": "Passcode",
+		"passcodePlaceholder": "Enter Passcode",
+		"signIn": "Log in",
+		"password": "Password",
+		"passwordPlaceholder": "Password",
+		"submit": "Submit",
+		"signUp": "Sign up",
+		"unknownError": "Unknown error",
+		"googleError": "Google authentication error. Try again",
+		"resendCode": "Resend Code",
+		"privacyPolicy": "Privacy Policy",
+		"termsAndConditions": "Terms & Conditions",
+		"policyWith": "By continuing, you agree to the",
+		"signUpForFree": "Sign up for free",
+		"addEmail": "Add email",
+		"cryptoSignIn": "Log in with crypto wallet",
+		"connectWallet": "Connect your wallet first",
+		"cyrptoSignInMsg": "Please sign this message to log in.",
+		"weSentACodeToYourInbox": "We sent a code to your inbox",
+		"restorationTokenIsNotProvided": "Restoration token is not provided",
+		"newPassword": "New password",
+		"confirmNewPassword": "Confirm new password",
+		"repeatNewPassword": "Repeat new password",
+		"forgotPassword": "Forgot password?",
+		"checkEmailForFurther": "Check your email for further instructions",
+		"notValidEmail": "Incorrect email address",
+		"rememberPassword": "Remember your password?",
+		"loginHere": "Login here",
+		"login": "Log in",
+		"logout": "Log out",
+		"restorePassword": "Restore password",
+		"checkInbox": "Check your inbox",
+		"weSentCode": "We have sent a verification code to",
+		"enterCodeBelow": "Please enter it below to confirm your email address. Make sure to check your Spam or Junk folder.",
+		"codePlaceholder": "Verification code",
+		"enterNewCodeBelow": "We have sent you a new code, please enter it below",
+		"emailIfNotFind": "If you haven't received it, make sure to check your Spam or Junk folder",
+		"passwordLengthError": "The password must be at least 8 and no more than 14 characters long",
+		"backToLogIn": "Back to Log in",
+		"passwordDontAMatch": "Passwords do not match",
+		"requestReceivedSuccessfully": "Request received successfully! We have sent you an email with a link to reset your password.",
+		"resetPassword": "Reset password",
+		"enterEmailForLink": "Enter your email and we will send you a link to reset your password",
+		"errorVerificationCode": "Verification code was incorrect. Please try again.",
+		"errorVerificationCodeAttempts": "Too many login attempts. Please try again later.",
+		"incorrectEmailOrPassword": "Incorrect email or password. Please try again.",
+		"userAlreadyExists": "A user with this email address already exists. Please use a different email address for registration.",
+		"userNotFound": "User with this email not found",
+		"passwordAtLeast": "The password must be at least 8 characters long",
+		"passwordMustBeDifferent": "Your password must be different to previous passwords",
+		"skip": "Skip",
+		"cancel": "Cancel",
+		"passwordDoNotMatch": "The entered passwords do not match",
+		"currentPasswordIsIncorrect": "The current password you entered is incorrect. Please try again",
+		"enterAValidEmailAddress": "Enter a valid email address",
+		"nameLengthShortError": "Name length too short, minimum 1 symbol.",
+		"nameLengthLongError": "Please enter a name no longer than 50 characters.",
+		"sessionExpired": "Session expired. Please login again",
+		"newsletter": "I agree to receive product updates and promotional materials from",
+		"loginWith": "Other options",
+		"googleAuth": "Sing in with Google",
+		"signinNotifyError": {
+			"title": "Login failed",
+			"text": "Please try again later.",
+			"crypto": "Crypto wallet is not connected"
+		},
+		"signupNotifyError": {
+			"title": "Sign up failed",
+			"text": "Please try again later."
+		}
+	},
+	"modal": {
+		"canEdit": "Can edit",
+		"canComment": "Can comment",
+		"canView": "Can view",
+		"noAccess": "No access",
+		"copyLink": "Copy link"
+	},
+	"cookiesModal": {
+		"title": "This site uses cookies",
+		"text": "We use cookies to ensure the proper functioning of the site and improve your experience.",
+		"learnMoreBtn": "Learn more",
+		"acceptBtn": "Accept"
+	},
+	"modalInfo": {
+		"accessDenied": {
+			"title": "Board is unavailable",
+			"description": "You do not have access to this board, or the board does not exist"
+		}
+	},
+	"modalConfirm": {
+		"deleteBoard": {
+			"title": "Delete board",
+			"description": "Are you sure you want to delete the board '{{name}}'?",
+			"delete": "Remove",
+			"cancel": "Cancel"
+		},
+		"deleteVisitedBoard": {
+			"title": "Remove board",
+			"description": "Are you sure you want to remove from your list the board '{{name}}'?"
+		},
+		"deleteFolder": {
+			"title": "Delete folder",
+			"description": "Are you sure you want to delete the folder '{{name}}'?"
+		}
+	},
+	"modalLinkTo": {
+		"error": "Incorrect link",
+		"title": "Link to Object",
+		"text": "Paste a link to an object on the board or a URL link:",
+		"input": "Paste a link",
+		"deleteLink": "Delete link",
+		"submit": "Submit"
+	},
+	"linkToToast": {
+		"noItem": "The linked item has been deleted from this board",
+		"error": {
+			"title": "Error when following the link",
+			"description": "An error occurred while following the link"
+		}
+	},
+	"modalTemplate": {
+		"templates": "Templates",
+		"noTemplates": "We couldn't find a matching template.",
+		"createTemplate": "Create template",
+		"backToTemplates": "Back to template center",
+		"relatedTemplates": "Related templates",
+		"searchResults": {
+			"one": "result",
+			"few": "results",
+			"many": "results"
+		},
+		"UI": {
+			"inputs": {
+				"search": "Search",
+				"name": "Template name",
+				"description": "Description"
+			},
+			"buttons": {
+				"choosePreview": "Choose preview",
+				"previewChosen": "Preview selected",
+				"save": "Save",
+				"translate": "Translate",
+				"Preview": "Preview",
+				"Use": "Use"
+			}
+		},
+		"category": {
+			"useCases": "Use cases",
+			"useCaseItems": {
+				"All templates": "All templates",
+				"Research & Analysis": "Research & Analysis",
+				"Diagramming": "Diagramming",
+				"Meeting & Workshop": "Meeting & Workshop",
+				"Strategy & Planning": "Strategy & Planning",
+				"Brainstorming": "Brainstorming",
+				"Agile Workflow": "Agile Workflow",
+				"Icebreaker & Game": "Icebreaker & Game",
+				"Education": "Education"
+			}
+		}
+	},
+	"ok": "Ok",
+	"noBoard": {
+		"title": "Ready to begin?",
+		"chooseBoard": "Open a board",
+		"createNewBoard": "New board"
+	},
+	"colors": {
+		"White": "White",
+		"Mustard Yellow": "Mustard Yellow",
+		"Gold": "Gold",
+		"Scarlet Red": "Scarlet Red",
+		"Light Gray": "Light Gray",
+		"Lime Green": "Lime Green",
+		"Mint Green": "Mint Green",
+		"Magenta": "Magenta",
+		"Dark Gray": "Dark Gray",
+		"Turquoise": "Turquoise",
+		"Forest Green": "Forest Green",
+		"Violet": "Violet",
+		"Jet Black": "Jet Black",
+		"Sky Blue": "Sky Blue",
+		"Royal Blue": "Royal Blue",
+		"Purple": "Purple",
+		"Brick Red": "Brick Red",
+		"Pale Yellow": "Pale Yellow",
+		"Sage Green": "Sage Green",
+		"Lavender": "Lavender",
+		"Aqua Cyan": "Aqua Cyan",
+		"Pastel Red": "Pastel Red"
+	},
+	"shapes": {
+		"Rectangle": "Rectangle",
+		"RoundedRectangle": "Rounded Rectangle",
+		"Circle": "Circle",
+		"Triangle": "Triangle",
+		"Rhombus": "Rhombus",
+		"Parallelogram": "Parallelogram",
+		"Hexagon": "Hexagon",
+		"Octagon": "Octagon",
+		"Pentagon": "Pentagon",
+		"Cross": "Cross",
+		"Star": "Star",
+		"Cloud": "Cloud",
+		"Cylinder": "Cylinder",
+		"Trapezoid": "Trapezoid",
+		"PredefinedProcess": "Predefined Process",
+		"ArrowLeft": "Arrow Left",
+		"ArrowLeftRight": "Arrow Left and Right",
+		"ArrowRight": "Arrow Right",
+		"SpeachBubble": "Speach Bubble",
+		"BracesRight": "Braces Right",
+		"BracesLeft": "Braces Left"
+	},
+	"pointerTypes": {
+		"None": "None",
+		"ArrowBroad": "Arrow (broad)",
+		"ArrowThin": "Arrow (thin)",
+		"TriangleFilled": "Triangle (filled)",
+		"CircleFilled": "Circle (filled)",
+		"Angle": "Angle",
+		"TriangleEmpty": "Triangle (empty)",
+		"DiamondFilled": "Diamond (filled)",
+		"DiamondEmpty": "Diamond (empty)",
+		"Zero": "Zero",
+		"One": "One",
+		"Many": "Many",
+		"ManyMandatory": "One or many",
+		"OneMandatory": "One (and only one)",
+		"ManyOptional": "Zero or many",
+		"OneOptional": "Zero or one"
+	},
+	"board": {
+		"textPlaceholder": "Type something",
+		"untitled": "Untitled",
+		"welcomeBoardTitle": "Welcome to Microboard!"
+	},
+	"thickness": "Thickness",
+	"appTitle": "Microboard",
+	"export": {
+		"tooltip": "Export this board",
+		"confirm": "Export",
+		"PNGTitle": "Save the selected board area as image",
+		"HTMLTitle": "Save the entire board as file",
+		"cancel": "Cancel",
+		"HTMLSnapshot": {
+			"HTMLSnapshotLink": "Share board copy via link",
+			"HTMLSnapshotLinkSuccess": "The link has been successfully generated. Copy it",
+			"SnapshotSavingError": "Error occured during saving snapshot",
+			"alreadyTaken": "This name is already taken, please, use another one",
+			"nameCantBeEmpty": "Ссылка не может быть пустой",
+			"invalidURL": "Invalid URL. Please use A–Z, a–z, 0–9, –, _ ~.",
+			"successNotificationStart": "The board link ",
+			"successNotificationEnd": " is copied successfully"
+		},
+		"error": {
+			"title": "Export error",
+			"description": "An error occurred while exporting the selected area"
+		}
+	},
+	"sidePanel": {
+		"title": "Boards",
+		"folders": {
+			"publicDrafts": "Public drafts",
+			"privateBoards": "Private boards",
+			"sharedBoards": "Shared with me",
+			"myBoards": "My boards",
+			"notAvailable": "No boards available yet"
+		},
+		"addNew": "Add new"
+	},
+	"contextMenu": {
+		"delete": "Delete",
+		"deleteShared": "Remove from my list",
+		"addNew": "Add new",
+		"importHTML": "Import from HTML",
+		"editHTML": "Edit local HTML",
+		"rename": "Rename",
+		"newBoard": "New board",
+		"newFolder": "New folder",
+		"manageSharing": "Manage sharing"
+	},
+	"tokensNotification": {
+		"header": "Tokens exhausted",
+		"body": "Purchase additional 1000 requests for {{price}}"
+	},
+	"miro": {
+		"boards": {
+			"title": "Select a board to import",
+			"text": "The speed of importing from Miro depends on the size of the board being imported - it may take some time.",
+			"teamTitle": "Team boards",
+			"showMoreBtn": "Show more"
+		},
+		"items": {
+			"modalText": "Please do not close the browser window until the import is complete. Completed on",
+			"closeModal": "Collapse"
+		},
+		"loadingNotification": {
+			"title": "Import from Miro in progress",
+			"text": "To avoid losing progress, do not close the browser window until the end. Completed on"
+		},
+		"notifications": {
+			"success": "Import from Miro completed successfully",
+			"warn": "Import from Miro completed",
+			"warnFirstDescription": "We successfully imported the board contents, except for objects that are restricted from importing by Miro, such as tables, kanban boards, and mind maps. Learn more about Miro's restrictions.",
+			"warnLinkDescription": "Learn more about Miro limitations.",
+			"warnSecondDescription": "We recommend taking screenshots of the missing objects and adding them to the board.",
+			"okBtn": "Ok",
+			"chooseBoardBtn": "Select another team",
+			"errorTitle": "Import error",
+			"errorItemsText": "Unable to complete import from Miro. Please try again later.",
+			"errorBoardsText": "We were unable to retrieve the list of boards from Miro. Please try again later.",
+			"boardsOkBtn": "Ok",
+			"warnClipboardDescription": "We have successfully imported the board content, except for some objects that are not supported yet. Do not delete them - they will be available soon."
+		},
+		"authClipboardModal": {
+			"title": "Import Error",
+			"description": "To import the board from Miro, you need to sign in. Please log in to save your progress.",
+			"authBtn": "Sign In"
+		},
+		"imgAuthClipboardModal": {
+			"title": "You copied the images",
+			"description": "Miro does not allow importing images without sign in. Please sign in to continue.",
+			"authBtn": "Sign in to Miro",
+			"continueBtn": "Continue without images"
+		},
+		"startModal": {
+			"text": "Copy the objects (Ctrl+C) in Miro and paste them onto the board (Ctrl+V). Some objects are not supported yet, but over time, all elements will be displayed correctly.",
+			"cancel": "Cancel",
+			"goToMiroBtn": "Switch to Miro"
+		},
+		"importMiro": "Import from Miro",
+		"importMiroBtn": "Import from Miro",
+		"authTooltip": "Sign in to access all features of Microboard",
+		"tooltipClipboardImport": "Аnother way to import<br /> a board from Miro<br /> <span style='opacity: 60%'>Copy the objects (Ctrl+C) in Miro<br /> and paste them onto the board<br /> (Ctrl+V). Some objects<br /> are not supported yet,<br /> but over time, all elements<br /> will be displayed correctly.</span>",
+		"miroError": "An error has occurred. Try importing again",
+		"loading": "Loading...",
+		"nextStepBtn": "Сontinue"
+	},
+	"connector": {
+		"textPlaceholder": "Text"
+	},
+	"notifications": {
+		"connectionLostHeader": "You are offline. Reconnecting...",
+		"connectionReestablished": "Connection restored.",
+		"restoringConnectionHeader": "Restoring connection.",
+		"restoringConnectionBody": "Do not refresh the page or close the tab to avoid losing your progress"
+	},
+	"landing": {
+		"menu": {
+			"about": "About Microboard",
+			"features": "Features",
+			"importFromMiro": "Import from Miro",
+			"price": "Pricing",
+			"buy": "Buy"
+		}
+	},
+	"embedding": {
+		"title": "Pick a board to embed",
+		"customize": "Customize your embed",
+		"startingView": "Starting view",
+		"fullBoard": "Full board",
+		"allVisitors": "All visitors",
+		"canEdit": "Can edit",
+		"canView": "Can view",
+		"inputPlaceholder": "Search",
+		"addNew": "New board",
+		"embedBoardButton": "Embed board",
+		"newBoardPlaceholder": "Board name",
+		"back": "Back",
+		"notOwner": "This board has been shared with you",
+		"optionsUnavailable": "But modifying permissions is not allowed. All other participants will have the same access level."
+	},
+	"frame": {
+		"copy": "Copy of ",
+		"custom": "Custom"
+	},
+	"template": {
+		"save": "Save template",
+		"saveSuccess": "Template updated",
+		"saveError": "Error while saving template",
+		"createSuccess": "Template created",
+		"createError": "Error while creating template"
+	},
+	"itemTooltips": {
+		"placeholder": "This type of object isn't<br /> supported yet,<br /> <span style='opacity: 60%'>but we're working on it.<br /> It will be available soon!</span>"
+	},
+	"ai": {
+		"flowChart": "Flow chart",
+		"database": "Database",
+		"cloudArch": "Cloud architecture",
+		"chatPlaceholder": "How to play Rock, Paper, Scissors?",
+		"enterIdea": "Suggest an idea for generating a diagram",
+		"generateAiChart": "Ai Charts",
+		"symbols": "characters",
+		"processingIdea": "Processing your idea...",
+		"generating": "Generating...",
+		"generate": "Generate",
+		"categories": {
+			"speech": "Speech",
+			"img": "Images",
+			"texts": "Texts"
+		},
+		"models": {
+			"gpt-4o-mini": {
+				"mobileTitle": "4o-mini",
+				"title": "GPT-4o mini",
+				"description": "Simple Prompt"
+			},
+			"gpt-4o": {
+				"mobileTitle": "4o",
+				"title": "GPT-4o",
+				"description": "Universal Prompt"
+			},
+			"flux-schnell": {
+				"mobileTitle": "Flux.1 Schnell",
+				"title": "Flux.1 Schnell",
+				"description": "Fast Image Generation"
+			},
+			"flux-pro": {
+				"mobileTitle": "Flux.1 Pro",
+				"title": "Flux.1 Pro",
+				"description": "Professional Image Generation"
+			},
+			"deepseek-reasoner": {
+				"mobileTitle": "DeepSeek",
+				"title": "DeepSeek-R1",
+				"description": "Hard Problem"
+			},
+			"tts-1-hd": {
+				"mobileTitle": "TTS",
+				"title": "Text to speech HD",
+				"description": "Text to Speech"
+			},
+			"sonar-deep-research": {
+				"mobileTitle": "Perplexity AI",
+				"title": "Perplexity AI",
+				"description": "AI with internet search"
+			}
+		},
+		"unauth": {
+			"heading": "AI chat on Microboard",
+			"description": "<p>AI chat is only available to authorized users.</p><p><signinLink>Sign in</signinLink> or <signupLink>sign up</signupLink> to proceed.</p>"
+		}
+	},
+	"sharing": {
+		"share": "Share",
+		"publicBoard": "This is a public board. It is accessible to everyone on the Internet.",
+		"copyLink": {
+			"label": "Copy link",
+			"success": "The link to the board has been successfully copied",
+			"error": "Error copying link"
+		},
+		"owner": "Owner",
+		"ownerAvailable": "Available to the board owner only",
+		"notAuthMsg": "to change access settings",
+		"login": "Log in",
+		"or": "or",
+		"register": "sign up",
+		"publicAccess": "Public access",
+		"itsYou": "yes, it's you",
+		"accessOptions": {
+			"edit": "Edit",
+			"view": "View",
+			"noAccess": "Revoke access"
+		},
+		"privacyOptions": {
+			"public": "Everyone with the link",
+			"private": "Access restricted"
+		},
+		"addUsers": "Add users",
+		"grantedUsers": "Users with access",
+		"submit": "Submit",
+		"settingsChanged": {
+			"heading": "The owner has changed the access settings",
+			"bodyView": "You can now view the board",
+			"bodyEdit": "You can now view and edit the board"
+		},
+		"privateBoard": "This is a private board. The owner of the board has restricted access to viewing and editing.",
+		"privateBoardCrypto": "Access can only be granted to profiles with a linked email. Log in with an authorized account or link your email in profile settings.",
+		"requestAccess": "Request access",
+		"requestAccessMsg": "Request access or log in to a permissioned account.",
+		"loggedIn": "You are logged in to your <1>{{account}}</1> account.",
+		"loggedInCrypto": "You are logged in to your Crypto wallet: <1>{{account}}</1> account.",
+		"accessDenied": "Access denied",
+		"addAccessLevel": "Add one more access level",
+		"saveSharing": {
+			"title": "Save changes?",
+			"saveBtn": "Save",
+			"notSaveBtn": "Don't Save",
+			"backBtn": "Back to access settings"
+		},
+		"sharePanel": {
+			"cancel": "Cancel",
+			"openAccess": "Open access",
+			"access": "Access"
+		}
+	},
+	"presence": {
+		"anonymous": "Anonymous",
+		"followingUser": "Following",
+		"stop": "Stop",
+		"bringToMe": "Bring everyone to me",
+		"bringAllToMe": "Bring everyone to me",
+		"follower": "follower",
+		"followers": "followers",
+		"following": "following",
+		"yourBoard": "Your board",
+		"(you)": "(you)",
+		"share": "Share",
+		"bringToMe...": "Bring to me",
+		"followUser": "Follow user",
+		"noUsersFound": "No users found matching",
+		"noUsersFoundPostfix": "",
+		"searchByName": "Search by name",
+		"idle": "idle",
+		"hideCursors": "Hide cursors",
+		"showCursors": "Show cursors",
+		"bringNotify1": "You brought",
+		"bringNotify2": "to your screen",
+		"bringAllNotify": "You brought everyone to your screen"
+	},
+	"profile": {
+		"title": "Profile settings",
+		"upload": "Upload",
+		"remove": "Remove",
+		"saved": "Name saved successfully",
+		"msg": "It is displayed during your work on the board",
+		"changePassword": "Change Password",
+		"passwordChanged": "Password changed successfully",
+		"addEmail": "Add Email",
+		"support": "Support",
+		"logout": "Logout",
+		"name": "Name",
+		"email": "Email Address",
+		"emailDesc": "Add email address to access all the Microboard features",
+		"cryptoWallet": "Crypto wallet",
+		"currentPassword": "Current password",
+		"newPassword": "New password",
+		"repeatPassword": "Repeat new password",
+		"passwordConstraint": "The password must be at least 8 characters long",
+		"savePassword": "Save",
+		"cancelPassword": "Cancel",
+		"avatarUploadError": "Avatar upload error",
+		"avatarSizeConstraint": "Maximum image size is 10 MB",
+		"avatarTypeConstraint": "The image must be in jpeg, png or svg format"
+	},
+	"userPlan": {
+		"tokens": "tokens",
+		"tokensOne": "token",
+		"tokensFew": "tokens",
+		"tokensMany": "tokens",
+		"tokensTooltip": "Tokens are credited on a monthly basis and expire if not used. Additional: +1000 tokens for $8, term of use - 1 month.",
+		"paymentHistoryHeading": "Payment History",
+		"currentPlanHeading": "Current Plan",
+		"upgradePlan": "Upgrade Plan",
+		"currentPlanFree": {
+			"part1": "The ",
+			"part2": " plan is active. Tokens balance: {{tokensBalance}}."
+		},
+		"limits": "Limits",
+		"currentPlanPending": {
+			"part1": "The ",
+			"part2": " plan is paid until {{cancellationDate}}. Tokens balance: {{tokensBalance}}."
+		},
+		"currentPlanActive": {
+			"part1": "The current ",
+			"part2": " plan is paid until {{cancellationDate}}. Tokens balance: {{tokensBalance}}. Auto-payment is enabled."
+		},
+		"nextPayment": "Next payment: {{paymentDate}}",
+		"pendingBtn": "The plan will be effective as of {{activationDate}}",
+		"cancelPayment": "Cancel upcoming payment",
+		"unlimited": "Unlimited",
+		"free": "Free",
+		"perMonth": "per month",
+		"perThousandTokens": "per 1000 tokens",
+		"customPrice": "Custom Pricing",
+		"upgradeTooltip": "Upgrade to Plus",
+		"backToProfile": "Back to Profile settings",
+		"backToPlans": "Back to All Plans",
+		"backToCurrentPlan": "Back to Current Plan",
+		"buyTokens": "Buy additional tokens",
+		"buyTokensBtn": "Buy tokens",
+		"limitsTable": {
+			"modelName": "Model",
+			"requestsPerWeek": "Remaining per week",
+			"requestsPerDay": "Remaining per day",
+			"requestsPerMonth": "Remaining per month",
+			"availableOnPlus": "Available on Plus plan",
+			"symbols": "symbols",
+			"requests": "requests",
+			"audioLengthMinutes": "audio minutes",
+			"costPerRequest": "Cost per request in tokens",
+			"unavailable": "Unavailable"
+		},
+		"historyTable": {
+			"plan": "Plan",
+			"paymentDate": "Payment date",
+			"price": "Price",
+			"paymentType": "Payment type",
+			"planDisplayName": {
+				"plus": "Plus Subscription",
+				"Token Purchase": "Token Purchase"
+			}
+		},
+		"subscribe": {
+			"current": "Current Plan",
+			"getPlan": "Get {{plan}}",
+			"contact": "Contact Us",
+			"downgrade": "Downgrade"
+		},
+		"downgradeModal": {
+			"heading": "Cancel {{planName}}?",
+			"description": "Access to {{planName}} will remain for the paid term until {{currentPeriodEnd}}, after which you will lose the benefits of the {{planName}} plan and revert to the Basic plan.",
+			"confirm": "Cancel {{planName}} plan",
+			"cancel": "Keep"
+		},
+		"plans": {
+			"basic": {
+				"name": "Basic",
+				"description": "GPT-4o mini",
+				"features": [
+					"GPT-4o mini",
+					"DeepSeek-R1",
+					"Unlimited boards and figures",
+					"Media storage — up to 100 MB"
+				],
+				"tokensFeature": "10 tokens"
+			},
+			"plus": {
+				"name": "Plus",
+				"description": "GPT-4o mini",
+				"features": [
+					"All features of the Basic plan",
+					"All premium board features except extra AI",
+					"Media storage — up to 100 GB",
+					"Premium support"
+				],
+				"tokensFeature": "10 tokens"
+			},
+			"plusAI": {
+				"name": "Plus AI",
+				"description": "GPT-4o mini and GPT-4o",
+				"features": [
+					"All features of the Basic plan",
+					"GPT-4o",
+					"Flux.1 Pro",
+					"Flux.1 Schnell",
+					"Text to speech HD",
+					"Media storage — up to 100 GB"
+				],
+				"tokensFeature": "1000 tokens"
+			},
+			"pro": {
+				"name": "Pro",
+				"description": "For use without limits",
+				"features": [
+					"All features of the Plus plan",
+					"On-premise version",
+					"Embed into your own product",
+					"Bring your own LLM"
+				],
+				"tokensFeature": "Personalized terms"
+			}
+		},
+		"paymentMethods": {
+			"payByCard": "Pay by card, $USD",
+			"payByCrypto": "Pay in crypto",
+			"totalTokens": "Total: ${{tokenPriceAmount}} for {{tokenAmount}} tokens",
+			"subscriptionTerms": "By confirming your subscription, you authorize Microboard to charge your account for future payments in accordance with the company's terms. You can cancel your subscription at any time.",
+			"addEmailToPayByCard": "Add email to pay with card",
+			"finalPriceAdjusted": "Final price may be adjusted",
+			"backToPlans": "Back to Plans",
+			"buyTokens": "Buy {{tokenAmount}} tokens",
+			"totalAnnual": "Total: ${{annualPrice}} (${{monthlyPrice}} per month)",
+			"totalMonthly": "Total: ${{price}}",
+			"payWithStripe": "Pay with Stripe",
+			"totalPaymentPeriod": "Total payment for {{period}}",
+			"period": {
+				"annual": "12 months",
+				"monthly": "a month"
+			},
+			"connectWallet": "Connect wallet",
+			"fromWallet": "From wallet: {{name}}",
+			"balance": "Balance: {{amount}}",
+			"switchWallet": "Switch Wallet",
+			"switchNetwork": "Switch Network",
+			"payWithWallet": "Pay {{amount}} with {{wallet}}",
+			"priceTooltip": "Total price may vary slightly",
+			"total": "Total",
+			"perMonth": "per month"
+		},
+		"notifications": {
+			"emailNotFound": {
+				"header": "Email not found",
+				"body": "Add email to your account to pay with stripe.",
+				"linkMessage": "to your account to pay with stripe."
+			},
+			"paymentError": {
+				"header": "Payment",
+				"body": "Payment error"
+			},
+			"transactionSuccessful": {
+				"header": "Transaction Successful",
+				"body": "Your transaction with {{currency}} on {{chain}} by {{sender}} was completed successfully, wait for confirmations"
+			},
+			"tokensPurchased": {
+				"header": "Tokens purchased",
+				"body": "Your tokens purchase is being processed"
+			},
+			"confirmedSuccessfully": {
+				"header": "Confirmed successfully",
+				"body": "Your checkout has been confirmed successfully. Reloading..."
+			},
+			"confirmationFailed": {
+				"header": "Confirmation failed",
+				"body": "There was an error confirming your checkout: {{message}}"
+			},
+			"transactionFailed": {
+				"header": "Transaction Failed",
+				"body": {
+					"canceled": "You canceled the transaction",
+					"error": "There was an error processing your transaction"
+				}
+			},
+			"notImplemented": {
+				"header": "Not implemented",
+				"body": "Token purchase with crypto is not yet implemented"
+			},
+			"unexpectedError": {
+				"header": "Error",
+				"body": "An unexpected error occurred"
+			}
+		}
+	},
+	"AIInput": {
+		"generatingResponse": "Generating response…",
+		"awaitingImageGeneration": "Generating image…",
+		"selectContext": "Select context, ask AI",
+		"selectMobileContext": "Ask AI",
+		"selectedItems": {
+			"one": "Selected {{count}} item",
+			"few": "Selected {{count}} items",
+			"many": "Selected {{count}} items"
+		},
+		"disable": "Available on boards you can edit",
+		"disableWhenGenerating": "Wait for the response",
+		"quoteBtnTooltip": "Quote to clarify",
+		"sendBtnTooltip": "Write a question or select an item on the board",
+		"nodeErrorText": "AI server is unavailable. Please try again later.",
+		"textGenerationError": {
+			"header": "Response generation Error",
+			"body": "Failed to get a response.\nPlease try again"
+		},
+		"imageGenerationError": {
+			"header": "Image generation Error",
+			"body": "Failed to generate an image.\nPlease try again"
+		},
+		"audioGenerationError": {
+			"header": "Audio generatio error",
+			"body": "Failed to generate audio.\nPlease try again"
+		},
+		"authTooltip": "Sign in to access all features of Microboard"
+	},
+	"hyperLink": {
+		"done": "Done",
+		"addLink": "Insert a link",
+		"errorTitle": "Invalid address.",
+		"errorBody": "Please enter a valid link."
+	},
+	"quickAdd": {
+		"panel": {
+			"sameObj": "Same object"
+		}
+	},
+	"models": {
+		"tokenTooltip": "for request",
+		"descriptions": {
+			"gpt-4o-mini": "Faster for everyday tasks",
+			"gpt-4o": "Great for everyday tasks",
+			"deepseek-reasoner": "Better than 4o in many cases",
+			"flux-schnell": "Image generation",
+			"flux-pro": "Image generation (higher quality)",
+			"tts-1-hd": "Speech generation",
+			"sonar-deep-research": "AI with interne search"
+		}
+	},
+	"video": {
+		"error": {
+			"header": "Failed to load video",
+			"body": "Ensure that the resource from which the video is requested is accessible"
+		}
+	},
+	"textEditor": {
+		"limitReached": "Character limit exceeded"
+	},
+	"audio": {
+		"download": "Download",
+		"playbackRate": "Playback speed"
+	}
+}

@@ -1,0 +1,14 @@
+.btn {
+	position: relative;
+}
+
+.badge {
+	position: absolute;
+	width: 8px;
+	height: 8px;
+	background-color: #924fe8;
+	border: 1px solid #442270;
+	right: 8px;
+	top: 8px;
+	border-radius: 50%;
+}

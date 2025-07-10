@@ -1,0 +1,47 @@
+.container {
+	position: fixed;
+	display: flex;
+	align-items: center;
+	background-color: #ffffff;
+	padding: 8px;
+	border-radius: 12px;
+	gap: 12px;
+	box-shadow: 0px 10px 16px -3px rgba(20, 21, 26, 0.08);
+	max-width: 400px;
+	font-family: Manrope;
+	font-weight: 400;
+	font-size: 14px;
+	line-height: 20px;
+	min-height: 56px;
+	z-index: 1000;
+}
+
+.confirmBtn {
+	text-align: center;
+	color: rgba(71, 120, 245, 1);
+	border: none;
+	background-color: transparent;
+	cursor: pointer;
+	padding: 0 12px;
+}
+
+.inputContainer {
+	display: flex;
+	gap: 8px;
+	width: 400px;
+	padding: 0 4px;
+}
+
+.link {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.iconButton {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+}

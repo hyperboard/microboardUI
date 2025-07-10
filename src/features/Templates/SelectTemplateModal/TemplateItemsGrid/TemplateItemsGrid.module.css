@@ -1,0 +1,51 @@
+.templatesGrid {
+	margin-top: 16px;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 16px;
+	max-height: calc(90vh - 152px);
+	height: auto;
+	overflow-y: scroll;
+	padding-right: 8px;
+	scrollbar-gutter: stable;
+	-webkit-overflow-scrolling: touch;
+	overflow-scrolling: touch;
+	touch-action: auto;
+	overscroll-behavior: contain;
+	-webkit-tap-highlight-color: transparent;
+	position: relative;
+	user-select: none;
+}
+
+.templatesGrid::-webkit-scrollbar {
+	appearance: none;
+	width: 4px;
+}
+
+.templatesGrid::-webkit-scrollbar-button {
+	display: none;
+}
+
+.templatesGrid::-webkit-scrollbar-thumb {
+	display: block;
+	background-color: rgba(222, 225, 232, 1);
+	border-radius: 4px;
+}
+
+.placeholder {
+}
+
+@media (max-width: 768px) {
+	.templatesGrid {
+		max-height: 70vh;
+		overflow-y: auto;
+		-webkit-overflow-scrolling: touch;
+		touch-action: auto;
+	}
+}
+
+.templatesGrid > * {
+	touch-action: auto;
+	pointer-events: auto;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}

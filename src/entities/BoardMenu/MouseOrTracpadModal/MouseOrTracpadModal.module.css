@@ -1,0 +1,93 @@
+.wrapper {
+	width: 100%;
+	padding: 32px 64px;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.title {
+	font-family: Manrope;
+	font-weight: 600;
+	font-size: 30px;
+	line-height: 36px;
+	text-align: center;
+	color: rgba(20, 21, 26, 1);
+}
+
+.subtitle {
+	font-family: Manrope;
+	font-weight: 400;
+	font-size: 20px;
+	line-height: 28px;
+	text-align: center;
+	color: rgba(15, 19, 36, 0.6);
+}
+
+.selectorPanel {
+	position: relative;
+	display: flex;
+	background-color: rgba(10, 15, 41, 0.08);
+	border-radius: 10px;
+	height: 36px;
+	align-items: center;
+}
+
+.selector {
+	width: 138px;
+	height: 100%;
+	position: relative;
+	z-index: 2;
+	font-family: Manrope;
+	font-weight: 500;
+	font-size: 16px;
+	line-height: 24px;
+	color: rgba(15, 19, 36, 0.6);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+}
+
+.movingBar {
+	position: absolute;
+	z-index: 1;
+	width: 138px;
+	height: 36px;
+	border-radius: 10px;
+	border: 1px solid rgba(222, 224, 227, 1);
+	background-color: rgba(255, 255, 255, 1);
+	box-shadow: 0px 1px 2px 0px rgba(20, 21, 26, 0.05);
+	top: 0;
+	left: 0;
+	transition: left 0.3s;
+}
+
+.cardsGrid {
+	display: grid;
+	width: 100%;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 16px;
+}
+
+.selected {
+	color: rgba(20, 21, 26, 1);
+}
+
+.card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	max-width: 203px;
+}
+
+.card > p {
+	font-family: Manrope;
+	font-weight: 400;
+	font-size: 16px;
+	line-height: 24px;
+	text-align: center;
+	color: rgba(15, 19, 36, 0.6);
+}
