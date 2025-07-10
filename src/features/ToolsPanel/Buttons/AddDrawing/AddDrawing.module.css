@@ -1,0 +1,13 @@
+.panel {
+	transform: translateY(calc(0% - (100% / 3)));
+}
+
+.indicator {
+	position: absolute;
+	right: 8px;
+	top: 8px;
+	border: 1px solid rgba(31, 31, 31, 0.25);
+	border-radius: 50%;
+	width: 8px;
+	height: 8px;
+}

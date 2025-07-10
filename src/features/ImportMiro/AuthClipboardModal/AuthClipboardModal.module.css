@@ -1,0 +1,26 @@
+.modal {
+	max-width: 608px;
+	width: 100%;
+}
+
+.wr {
+	padding: 32px 64px !important;
+}
+
+.title {
+	font-size: 30px;
+	font-weight: 600;
+	margin: 28px 0 8px;
+}
+
+.text {
+	text-align: left;
+	font-size: 14px;
+	margin-bottom: 16px;
+}
+
+.btn {
+	margin-bottom: 40px;
+	max-width: 73px;
+	border-radius: 12px;
+}

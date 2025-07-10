@@ -1,0 +1,22 @@
+.toggle {
+	width: 28px;
+	height: 16px;
+	background: #babdc5;
+	border-radius: 8px;
+	display: flex;
+	padding: 0 2px;
+	align-items: center;
+}
+
+.toggle > span {
+	display: block;
+	background: #ffffff;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+}
+
+.toggle.active {
+	justify-content: end;
+	background: #924fe8;
+}

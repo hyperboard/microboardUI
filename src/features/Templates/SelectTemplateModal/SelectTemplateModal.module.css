@@ -1,0 +1,152 @@
+.modal {
+	max-width: 988px;
+	width: 100%;
+}
+
+.modalWr {
+	padding: 0 4px 0 16px;
+}
+
+.wrapper {
+	display: flex;
+	width: 100%;
+	height: 90vh;
+	font-family: "Manrope", "Arial";
+	color: rgba(20, 21, 26, 1);
+	gap: 16px;
+	touch-action: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+.sidebar {
+	padding: 16px 0;
+	width: 280px;
+	border-right: 1px solid rgba(233, 234, 236, 1);
+}
+
+.sidebarHeader {
+	display: flex;
+	height: 32px;
+	align-items: center;
+	column-gap: 8px;
+}
+
+.sidebarHeaderIcon {
+	max-width: 30px;
+	max-height: 30px;
+}
+
+.sidebarHeader > img {
+	display: block;
+	width: 30px;
+	height: 30px;
+}
+
+.sidebarHeader > h3 {
+	font-size: 16px;
+	font-weight: 400;
+	line-height: 24px;
+	letter-spacing: -0.01em;
+}
+
+.templatesContainer {
+	padding: 16px 0;
+	width: 100%;
+	touch-action: pan-y;
+	-webkit-overflow-scrolling: touch;
+	overflow-scrolling: touch;
+	overscroll-behavior: contain;
+	position: relative;
+	overflow-y: auto;
+	height: auto;
+	display: flex;
+	flex-direction: column;
+}
+
+.searchOptions {
+	padding-right: 12px;
+	display: flex;
+	justify-content: space-between;
+	margin-top: 32px;
+}
+
+.searchOptions > p {
+	font-size: 24px;
+	font-weight: 500;
+	line-height: 32px;
+	letter-spacing: -0.014em;
+}
+
+.templatesContainerHeader {
+	padding-right: 12px;
+	display: flex;
+	gap: 12px;
+	height: 40px;
+	min-width: 208px;
+	max-width: 408px;
+}
+
+.resizeMarker {
+	width: 36px;
+	height: 100%;
+	display: block;
+}
+
+.burgerMenuContainer {
+	display: none;
+}
+
+.noTemplatesText {
+	color: #0f132499;
+	margin-top: 12px;
+	font-family: Manrope;
+	font-size: 24px;
+	font-weight: 500;
+	line-height: 32px;
+	letter-spacing: -0.014em;
+}
+
+@media (max-width: 768px) {
+	.sidebar {
+		display: none;
+	}
+
+	.templatesContainer {
+		height: auto;
+		position: relative;
+		touch-action: auto;
+		-webkit-overflow-scrolling: touch;
+		overflow-y: auto;
+	}
+
+	.burgerMenuContainer {
+		display: block;
+		position: relative;
+		padding-top: 4px;
+	}
+
+	.burgerMenuContainer > button {
+		cursor: pointer;
+		border-radius: 10px;
+	}
+
+	.burgerMenuContainer > button:hover {
+		background-color: rgba(10, 15, 41, 0.04);
+	}
+
+	.burgerMenu {
+		display: none;
+		min-width: 200px;
+		position: absolute;
+		top: 36px;
+		z-index: 5;
+		padding: 0 8px 12px 16px;
+		border-radius: 10px;
+		border: 1px solid rgba(233, 234, 236, 1);
+	}
+
+	.activeBurgerMenu {
+		display: block;
+		background-color: #ffffff;
+	}
+}

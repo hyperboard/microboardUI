@@ -1,0 +1,142 @@
+.container {
+	background-color: #ffffff;
+	border: 1px solid var(--border-action-normal, rgba(222, 224, 227, 1));
+	border-radius: 12px;
+	box-shadow:
+		0px 3px 10px -2px #14151a0d,
+		0px 10px 16px -3px #14151a0d;
+	padding: 16px;
+	gap: 12px;
+	display: grid;
+	grid-template-columns: 20px 1fr 20px;
+	align-items: center;
+}
+
+.headerContainer {
+	display: flex;
+	gap: 12px;
+}
+
+@media screen and (max-width: 640px) {
+	.container {
+		width: 100%;
+		height: 100%;
+	}
+}
+
+.black {
+	background-color: #000000;
+	border-radius: 0px;
+	gap: 9px;
+	transform: translate(0px, 4px);
+	padding: 12px 20px;
+
+	.title {
+		color: #fff;
+	}
+	.description {
+		color: #fff;
+	}
+
+	.content {
+		width: auto;
+	}
+}
+
+.container.black .icon {
+	visibility: hidden;
+}
+
+.container.info .icon {
+	color: rgb(71, 120, 245);
+}
+
+.container.warning .icon {
+	color: rgba(244, 142, 47, 1);
+}
+
+.container.success .icon {
+	color: rgba(38, 189, 108, 1);
+}
+
+.container.error .icon {
+	color: rgb(230, 72, 61);
+}
+
+.content {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	flex: 1 1 290px;
+	width: 290px;
+}
+
+.icon {
+	margin-top: 3px;
+	align-self: flex-start;
+}
+
+.closeButton {
+	--padding: 4px;
+	--radius: 0;
+	--min-width: 28px;
+	--min-height: 28px;
+	color: var(--text-base-primary);
+	align-self: flex-start;
+}
+
+.title {
+	font-size: 16px;
+	font-weight: 400;
+	line-height: 24px;
+	color: var(--text-base-primary);
+}
+
+.description {
+	font-size: 14px;
+	line-height: 20px;
+	word-wrap: normal;
+	color: var(--text-base-secondary);
+}
+
+.button {
+	width: fit-content;
+	border-radius: 8px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 4px 8px;
+	background-color: rgba(20, 21, 26, 1);
+	box-shadow: 0px 1px 2px 0px rgba(20, 21, 26, 0.05);
+	cursor: pointer;
+	color: #ffffff;
+	font-family: Manrope;
+	font-weight: 500;
+	font-size: 12px;
+	line-height: 16px;
+	text-align: center;
+	margin-top: 8px;
+}
+
+.button:active {
+	border: 1px solid #b78af0;
+	outline: 2px solid rgba(200, 178, 255, 0.5);
+}
+
+@keyframes fadeIn {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+@keyframes fadeOut {
+	0% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}

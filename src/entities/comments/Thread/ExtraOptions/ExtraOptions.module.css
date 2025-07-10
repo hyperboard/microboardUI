@@ -1,0 +1,44 @@
+.container {
+	position: relative;
+}
+
+.panelContainer {
+	position: absolute;
+	top: 100%;
+	padding-top: 8px;
+	z-index: 3;
+}
+
+.panel {
+	width: 100%;
+	padding: 4px !important;
+}
+
+.btn {
+	display: flex;
+	align-items: center;
+	padding: 6px;
+	gap: 6px;
+	background-color: #ffffff;
+	border-radius: 6px;
+	width: 100%;
+	border: none;
+	outline: none;
+	cursor: pointer;
+	text-wrap: nowrap;
+	font-family: Manrope;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 20px;
+	letter-spacing: -0.005em;
+}
+
+.btn:hover {
+	background-color: #f7f7f8;
+}
+
+@media (max-width: 568px) {
+	.panelContainer {
+		right: 0;
+	}
+}
