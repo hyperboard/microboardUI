@@ -17,6 +17,12 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git pull origin trunk
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
@@ -45,8 +51,6 @@ jobs:
           major-wording: "MAJOR,BREAKING CHANGE"
           patch-wording: "fix,refactor"
           rc-wording: "RELEASE,alpha"
-          # Используем токен с нужными правами
-          github-token: ${{ secrets.GITHUB_TOKEN }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
