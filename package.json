@@ -1,12 +1,20 @@
 {
   "name": "microboard-ui-temp",
   "version": "0.0.3",
+  "main": "dist/index.js",
   "module": "dist/index.js",
   "type": "module",
   "scripts": {
+    "clean": "rimraf dist",
     "build:app": "bun run scripts/buildSpa.ts",
     "build:pkg": "bun run scripts/buildPkg.ts",
     "start": "bun run server.ts"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js"
+    },
+    "./style": "./dist/index.css"
   },
   "devDependencies": {
     "@types/bun": "^1.2.18",
