@@ -21,7 +21,11 @@
     "@types/node": "^24.0.12"
   },
   "peerDependencies": {
-    "typescript": "^5"
+    "typescript": "^5",
+    "react": "18.1.0",
+    "react-dom": "18.1.0",
+    "slate": "^0.114.0",
+    "slate-react": "^0.114.2"
   },
   "dependencies": {
     "@bundled-es-modules/pdfjs-dist": "^3.6.172-alpha.1",
@@ -41,17 +45,13 @@
     "microboard-temp": "^0.4.39",
     "nanoid": "^5.1.5",
     "prop-types": "^15.8.1",
-    "react": "18.1.0",
-    "react-dom": "18.1.0",
     "react-hot-toast": "2.4.1",
     "react-i18next": "14.1.0",
     "react-router-dom": "6.22.0",
     "react-transition-group": "^4.4.5",
     "react-youtube": "^10.1.0",
-    "slate": "^0.114.0",
-    "slate-dom": "^0.116.0",
-    "slate-history": "^0.113.1",
-    "slate-react": "^0.114.2",
+		"slate-dom": "^0.116.0",
+		"slate-history": "^0.113.1",
     "uuid": "^11.1.0",
     "validator": "^13.15.15",
     "viem": "^2.31.7",
