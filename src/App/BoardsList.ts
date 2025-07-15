@@ -6,12 +6,6 @@ import { Storage } from "./Storage";
 
 function getI18n() {
 	const i18nInstance = getConfiguredI18n();
-	console.log("getI18n called, instance:", i18nInstance);
-	if (i18nInstance) {
-		console.log("i18n instance isInitialized:", i18nInstance.isInitialized);
-		console.log("i18n instance language:", i18nInstance.language);
-		console.log("i18n instance resources:", i18nInstance.store?.data);
-	}
 	return (
 		i18nInstance || {
 			t: (key: string) => {

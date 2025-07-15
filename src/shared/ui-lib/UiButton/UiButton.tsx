@@ -1,10 +1,13 @@
 import clsx from "clsx";
-import React, { CSSProperties, forwardRef, ReactNode } from "react";
+import React, { ButtonHTMLAttributes, CSSProperties, forwardRef, ReactNode } from "react";
 import style from "./UiButton.module.css";
 import { Tooltip } from "shared/ui-lib/Tooltip/Tooltip";
 import { Loader } from "./Loader";
-
-type CommonUiButtonProps = {
+type CommonUiButtonProps = Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  "size"
+> & {
+	id?: string,
 	active?: boolean;
 	disabled?: boolean;
 	tooltip?: string;
@@ -42,9 +45,9 @@ type CommonUiButtonProps = {
 	radius?: "xl" | "md" | "sm";
 	className?: string;
 	toolTipStyle?: CSSProperties;
+	hideTooltip?: boolean;
 	children: ReactNode;
 	loading?: boolean;
-	[key: string]: unknown;
 };
 
 export const UiButton = forwardRef<HTMLButtonElement, CommonUiButtonProps>(
@@ -65,12 +68,14 @@ export const UiButton = forwardRef<HTMLButtonElement, CommonUiButtonProps>(
 			tooltipVariant = "primary",
 			hideTooltip,
 			loading,
+			id,
 			...props
 		},
 		ref,
 	) => {
 		return (
 			<button
+				id={id}
 				className={clsx(
 					style.button,
 					active && style.active,
