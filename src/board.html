@@ -9,7 +9,7 @@
     rel="stylesheet"
   />
   <!-- <link rel="stylesheet" crossorigin href="./board.css" /> -->
-  <link rel="stylesheet" crossorigin href="https://unpkg.com/microboard-ui-temp@/public/board.css" />
+  <link rel="stylesheet" crossorigin href="https://unpkg.com/microboard-ui-temp@0.0.12/public/board.css" />
   <!-- <style>
     @import "https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap";
     @import "https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap";
@@ -377,12 +377,12 @@
             // 	"https://www.unpkg.com/test_package_board@0.0.99/dist/bundle.js"
             // );
             const { initInter } = await import(
-              "https://www.unpkg.com/microboard-ui-temp@/dist/index.js"
+              "https://www.unpkg.com/microboard-ui-temp@0.0.10/dist/index.js"
             );
             initInter();
 
             const { createApp } = await import(
-              "https://www.unpkg.com/microboard-ui-temp@/dist/index.js"
+              "https://www.unpkg.com/microboard-ui-temp@0.0.10/dist/index.js"
             );
             console.log("createapp", createApp);
 
@@ -448,8 +448,8 @@
         });
       });
     </script> -->
-    <script type="module" src="https://unpkg.com/microboard-ui-temp@/public/customWebComponents.js"></script>
-    <script defer src="https://unpkg.com/microboard-ui-temp@/public/loadLinksImages.js"></script>
+    <script type="module" src="https://unpkg.com/microboard-ui-temp@0.0.12/public/customWebComponents.js"></script>
+    <script defer src="https://unpkg.com/microboard-ui-temp@0.0.12/public/loadLinksImages.js"></script>
     <!-- <script type="module" href="./public/customWebComponents.js"></script>
     <script defer href="./public/loadLinksImages.js"></script> -->
   </body>
