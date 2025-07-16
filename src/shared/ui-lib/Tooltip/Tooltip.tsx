@@ -46,6 +46,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
 		ref,
 	): React.JSX.Element => {
 		console.log("tip-container class", style.tipContainer)
+		console.log("tip-container class", style["tip-container"])
 		console.log("whole style tooltip", style)
 		return (
 			<div
