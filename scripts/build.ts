@@ -1,12 +1,13 @@
 import { build } from "bun";
 import { copyPlugin } from "../bunPlugins/copyPlugin";
-import { bundleCSS } from "./bundleCss";
 import path from "path";
 import fs from "fs";
 
+const outdir = "dist";
+
 function cleanup() {
   // resulting html has empty chunk-xxxxxxxx.js file, remove tag and file
-  const htmlPath = path.join("public", "board.html");
+  const htmlPath = path.join(outdir, "board.html");
   let html = fs.readFileSync(htmlPath, "utf-8");
 
   const chunkRegex =
@@ -16,14 +17,14 @@ function cleanup() {
     const [tag, chunkFile] = match;
     html = html.replace(tag, "");
     fs.writeFileSync(htmlPath, html, "utf-8");
-    fs.unlinkSync(path.join("public", chunkFile));
+    fs.unlinkSync(path.join(outdir, chunkFile));
   }
 }
 
 async function main() {
   const result = await build({
-    entrypoints: ["src/board.html"],
-    outdir: "public",
+    entrypoints: ["src/board.html", "src/index.ts"],
+    outdir,
     loader: {
       ".css": "css",
     },
@@ -32,24 +33,22 @@ async function main() {
     plugins: [
       copyPlugin({
         from: "src/public",
-        to: "public",
+        to: outdir,
+        bundle: true,
+      }),
+      copyPlugin({
+        from: "src/board.css",
+        to: outdir,
         bundle: true,
       }),
       copyPlugin({
         from: "src/shared/ui-lib/Icon/sprite.svg",
-        to: "dist",
-        cleanDir: false,
+        to: outdir,
       }),
     ],
   });
 
-  const cssResult = await bundleCSS({
-    entryPoints: ["src/board.css"],
-    outfile: "public/board.css",
-    bundle: true,
-  });
-
-  if (!result.success || cssResult.errors.length > 0) process.exit(1);
+  if (!result.success) process.exit(1);
 
   cleanup();
 }
