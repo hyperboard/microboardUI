@@ -27,7 +27,6 @@ type Props = PropsWithChildren<
 		disableClose?: boolean;
 		closeOnClickOutside?: boolean;
 		clickOutsideRefs?: React.RefObject<HTMLElement>[];
-		[key: string]: unknown;
 	}
 >;
 
@@ -44,7 +43,7 @@ export function UiModal({
 	closeOnClickOutside = true,
 	clickOutsideRefs,
 	...otherProps
-}: Props): JSX.Element | null {
+}: Props): React.JSX.Element | null {
 	const {
 		closeModal,
 		openedModalId,

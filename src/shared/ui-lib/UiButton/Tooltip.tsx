@@ -24,7 +24,6 @@ interface TooltipProps {
 	className?: string;
 	width?: string | number;
 	allowTextWrap?: boolean;
-	[key: string]: unknown;
 }
 
 // eslint-disable-next-line react/display-name
@@ -45,7 +44,7 @@ export const Tooltip = forwardRef<HTMLDivElement, TooltipProps>(
 			...props
 		},
 		ref,
-	): JSX.Element => {
+	): React.JSX.Element => {
 		return (
 			<div
 				ref={ref}
