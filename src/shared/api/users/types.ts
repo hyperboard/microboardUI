@@ -1,17 +1,17 @@
 export type User = {
-	id: number;
-	email?: string;
-	address?: string;
-	name: string;
-	avatar: string;
-	avatarGenerated: boolean;
-	newsletter: boolean;
+  id: number;
+  email?: string;
+  address?: string;
+  name: string;
+  avatar: string;
+  avatarGenerated: boolean;
+  newsletter: boolean;
 };
 
 export type UpdateUserNewsletter = {
-	newsletter: boolean;
+  newsletter: boolean;
 };
 
 export type UpdateUserPayload = {
-	name: string;
+  name: string;
 };

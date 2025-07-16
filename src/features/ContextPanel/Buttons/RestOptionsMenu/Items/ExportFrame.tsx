@@ -7,26 +7,26 @@ import { Frame } from "microboard-temp";
 import { Icon } from "shared/ui-lib/Icon";
 
 export function ExportFrame(): JSX.Element {
-	const { board } = useAppContext();
-	const { toggleMenu } = usePanelContext();
-	const { t } = useTranslation();
+  const { board } = useAppContext();
+  const { toggleMenu } = usePanelContext();
+  const { t } = useTranslation();
 
-	const handleExportFrame = (): void => {
-		const item = board.selection.items.getSingle();
+  const handleExportFrame = (): void => {
+    const item = board.selection.items.getSingle();
 
-		if (item instanceof Frame) {
-			item.export(board);
-		}
+    if (item instanceof Frame) {
+      item.export(board);
+    }
 
-		toggleMenu("None");
-	};
+    toggleMenu("None");
+  };
 
-	return (
-		<RestOptionsMenuItem
-			onClick={handleExportFrame}
-			icon={<Icon iconName="SaveAsImage" width={20} height={20} />}
-		>
-			{t("contextPanel.exportFrame.text")}
-		</RestOptionsMenuItem>
-	);
+  return (
+    <RestOptionsMenuItem
+      onClick={handleExportFrame}
+      icon={<Icon iconName="SaveAsImage" width={20} height={20} />}
+    >
+      {t("contextPanel.exportFrame.text")}
+    </RestOptionsMenuItem>
+  );
 }

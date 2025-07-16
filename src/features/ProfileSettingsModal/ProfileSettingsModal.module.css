@@ -1,100 +1,100 @@
 .heading {
-	font-size: 48px;
-	font-weight: 600;
+  font-size: 48px;
+  font-weight: 600;
 }
 
 .email {
-	font-family: Manrope;
-	font-size: 16px;
-	font-weight: 600;
+  font-family: Manrope;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .container {
-	display: flex;
-	flex-direction: column;
-	gap: 16px;
-	align-items: center;
-	padding: 32px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  padding: 32px 64px;
 }
 
 .avatar {
-	width: 100%;
-	display: flex;
-	align-items: center;
-	gap: 12px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .avatarBtns {
-	display: flex;
-	align-items: center;
-	gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .avatarBtn {
-	padding: 6px 14px;
+  padding: 6px 14px;
 }
 
 .inputs {
-	display: flex;
-	flex-direction: column;
-	align-items: stretch;
-	width: 100%;
-	gap: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  gap: 16px;
 }
 
 .btns {
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	gap: 2px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .icon {
-	display: grid;
-	place-items: center;
-	color: #696b76;
+  display: grid;
+  place-items: center;
+  color: #696b76;
 }
 
 .btn {
-	align-self: flex-start;
-	padding: 6px 12px;
+  align-self: flex-start;
+  padding: 6px 12px;
 }
 
 .newsletter {
-	font-family: "Manrope";
-	font-size: 14px;
-	color: #6f717c;
+  font-family: "Manrope";
+  font-size: 14px;
+  color: #6f717c;
 }
 
 .newsletterLink {
-	color: #4778f5;
-	transition: all 0.35s;
+  color: #4778f5;
+  transition: all 0.35s;
 }
 
 .newsletterLink::after {
-	background-color: #4778f5;
-	height: 1px;
-	bottom: 1px;
-	transition: all 0.35s;
+  background-color: #4778f5;
+  height: 1px;
+  bottom: 1px;
+  transition: all 0.35s;
 }
 
 .newsletterLink:hover:after {
-	background-color: #ded1ff;
-	height: 1px;
-	bottom: 1px;
+  background-color: #ded1ff;
+  height: 1px;
+  bottom: 1px;
 }
 
 @media screen and (max-width: 1028px) {
-	.container {
-		padding: 16px;
-	}
-	.heading {
-		font-size: 24px;
-		align-self: flex-start;
-	}
+  .container {
+    padding: 16px;
+  }
+  .heading {
+    font-size: 24px;
+    align-self: flex-start;
+  }
 }
 
 .cryptoWallet {
-	align-self: flex-start;
-	font-size: 14px;
+  align-self: flex-start;
+  font-size: 14px;
 }

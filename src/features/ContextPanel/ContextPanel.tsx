@@ -19,9 +19,9 @@ import { FrameRatio } from "./Buttons/FrameRatio";
 import { ItemType } from "./Buttons/ItemType/ItemType";
 import { RestOptionsMenu } from "./Buttons/RestOptionsMenu";
 import {
-	BringToFront,
-	ExportFrame,
-	SendToBack,
+  BringToFront,
+  ExportFrame,
+  SendToBack,
 } from "./Buttons/RestOptionsMenu/Items";
 import { StartPointer } from "./Buttons/StartPointer/StartPointer";
 import { StickerFillStyle } from "./Buttons/StickerFillStyle";
@@ -59,473 +59,469 @@ import { ThrowDice } from "features/ContextPanel/Buttons/CardGame/Dice/ThrowDice
 import { ChangeRange } from "features/ContextPanel/Buttons/CardGame/Dice/ChangeRange/ChangeRange";
 
 export function ContextPanel(): React.ReactElement | null {
-	const { app, board } = useAppContext();
-	const [openedMenu, setOpenedMenu] = useState("None");
-	const panelRef = useRef<HTMLDivElement>(null);
-	const mbr = useDomMbr({
-		app,
-		board,
-		ref: panelRef,
-	});
-	useAppSubscription({
-		subjects: ["selectionItems"],
-		observer: () => {
-			setOpenedMenu("None");
-		},
-	});
-	const toggleMenu = (menu: string): void =>
-		setOpenedMenu(prev => (prev === menu ? "None" : menu));
+  const { app, board } = useAppContext();
+  const [openedMenu, setOpenedMenu] = useState("None");
+  const panelRef = useRef<HTMLDivElement>(null);
+  const mbr = useDomMbr({
+    app,
+    board,
+    ref: panelRef,
+  });
+  useAppSubscription({
+    subjects: ["selectionItems"],
+    observer: () => {
+      setOpenedMenu("None");
+    },
+  });
+  const toggleMenu = (menu: string): void =>
+    setOpenedMenu((prev) => (prev === menu ? "None" : menu));
 
-	const windowHeight = board.camera.window.height;
-	const windowWidth = board.camera.window.width;
+  const windowHeight = board.camera.window.height;
+  const windowWidth = board.camera.window.width;
 
-	const isInvisible =
-		board.selection.getContext() === "None" ||
-		board.selection.transformationRenderBlock;
+  const isInvisible =
+    board.selection.getContext() === "None" ||
+    board.selection.transformationRenderBlock;
 
-	if (isInvisible) {
-		return null;
-	}
+  if (isInvisible) {
+    return null;
+  }
 
-	const isLocked = board.selection.items
-		.list()
-		.filter(item => item.transformation.isLocked).length;
+  const isLocked = board.selection.items
+    .list()
+    .filter((item) => item.transformation.isLocked).length;
 
-	const isSelectUnderPointer =
-		board.selection.getContext() === "SelectUnderPointer";
+  const isSelectUnderPointer =
+    board.selection.getContext() === "SelectUnderPointer";
 
-	const isHoverUnderPointer =
-		board.selection.getContext() === "HoverUnderPointer";
+  const isHoverUnderPointer =
+    board.selection.getContext() === "HoverUnderPointer";
 
-	const ideaFromSelection = getIdeaFromSelection(
-		board.selection.items.list(),
-	);
+  const ideaFromSelection = getIdeaFromSelection(board.selection.items.list());
 
-	const isSingle = !!board.selection.items.getSingle();
-	const isText = board.selection.items.isAllItemsType("RichText");
-	const isSticker = board.selection.items.isAllItemsType("Sticker");
-	const isShape = board.selection.items.isAllItemsType("Shape");
-	const isConnector = board.selection.items.isAllItemsType("Connector");
-	const isPen = board.selection.items.isAllItemsType("Drawing");
-	const isImage = board.selection.items.isAllItemsType("Image");
-	const isFrame = board.selection.items.isAllItemsType("Frame");
-	const isPlaceholder = board.selection.items.isAllItemsType("Placeholder");
-	const isAINode = board.selection.items.isAllItemsType("AINode");
-	const isVideo = board.selection.items.isAllItemsType("Video");
-	const isAudio = board.selection.items.isAllItemsType("Audio");
-	const isStar = board.selection.items.isAllItemsType("Star");
-	const isDeck = board.selection.items.isAllItemsType("Deck");
-	const isCard = board.selection.items.isAllItemsType("Card");
-	const isCardOrDeck = board.selection.items.isItemTypes(["Card", "Deck"]);
-	const isDice = board.selection.items.isAllItemsType("Dice");
-	const isDifferentItems =
-		!isText &&
-		!isSticker &&
-		!isShape &&
-		!isConnector &&
-		!isPen &&
-		!isImage &&
-		!isFrame &&
-		!isPlaceholder &&
-		!isAINode &&
-		!isVideo &&
-		!isAudio &&
-		!isStar &&
-		!isDeck &&
-		!isCard &&
-		!isCardOrDeck &&
-		!isDice;
+  const isSingle = !!board.selection.items.getSingle();
+  const isText = board.selection.items.isAllItemsType("RichText");
+  const isSticker = board.selection.items.isAllItemsType("Sticker");
+  const isShape = board.selection.items.isAllItemsType("Shape");
+  const isConnector = board.selection.items.isAllItemsType("Connector");
+  const isPen = board.selection.items.isAllItemsType("Drawing");
+  const isImage = board.selection.items.isAllItemsType("Image");
+  const isFrame = board.selection.items.isAllItemsType("Frame");
+  const isPlaceholder = board.selection.items.isAllItemsType("Placeholder");
+  const isAINode = board.selection.items.isAllItemsType("AINode");
+  const isVideo = board.selection.items.isAllItemsType("Video");
+  const isAudio = board.selection.items.isAllItemsType("Audio");
+  const isStar = board.selection.items.isAllItemsType("Star");
+  const isDeck = board.selection.items.isAllItemsType("Deck");
+  const isCard = board.selection.items.isAllItemsType("Card");
+  const isCardOrDeck = board.selection.items.isItemTypes(["Card", "Deck"]);
+  const isDice = board.selection.items.isAllItemsType("Dice");
+  const isDifferentItems =
+    !isText &&
+    !isSticker &&
+    !isShape &&
+    !isConnector &&
+    !isPen &&
+    !isImage &&
+    !isFrame &&
+    !isPlaceholder &&
+    !isAINode &&
+    !isVideo &&
+    !isAudio &&
+    !isStar &&
+    !isDeck &&
+    !isCard &&
+    !isCardOrDeck &&
+    !isDice;
 
-	return (
-		<PanelContext.Provider
-			value={{
-				openedMenu,
-				panelMbr: mbr,
-				toggleMenu,
-				windowHeight,
-				windowWidth,
-			}}
-		>
-			<UiPanel
-				// className={style.contextPanel}
-				style={{
-					position: "absolute",
-					left: mbr.left,
-					top: mbr.top,
-				}}
-				zIndex={3}
-				ref={panelRef}
-				padding={0}
-				id="ContextPanel"
-			>
-				{isSelectUnderPointer && !isLocked && (
-					<>
-						<Edit />
-						<RestOptionsMenu rounded="right">
-							<BringToFront />
-							<SendToBack />
-						</RestOptionsMenu>
-					</>
-				)}
-				{isPlaceholder && !isSelectUnderPointer && !isLocked && (
-					<>
-						<Lock rounded="left" />
-						<UiSeparator vertical />
-						<Delete />
-						<RestOptionsMenu rounded="right">
-							<BringToFront />
-							<SendToBack />
-						</RestOptionsMenu>
-					</>
-				)}
-				{isText && !isSelectUnderPointer && !isLocked && (
-					<>
-						<FontSize rounded="left" />
-						<FontStyle />
-						<TextAlignment />
-						<AddList />
-						<HyperLinkBtn />
-						<UiSeparator vertical />
-						<TextColor />
-						<TextHighlight />
-						<UiSeparator vertical />
-						<Lock />
-						<UiSeparator vertical />
-						<Delete />
-						<UiSeparator vertical />
-						<AIModel />
-						<AIGeneration />
-						<UiSeparator vertical />
-						<RestOptionsMenu>
-							<BringToFront />
-							<SendToBack />
-							<CopyItemLink />
-							<SetLinkTo />
-							<Duplicate />
-						</RestOptionsMenu>
-					</>
-				)}
-				{isSticker && !isSelectUnderPointer && !isLocked && (
-					<>
-						<FontSize rounded="left" />
-						<UiSeparator vertical />
-						<FontStyle />
-						<TextAlignment />
-						<AddList />
-						<HyperLinkBtn />
-						<UiSeparator vertical />
-						<TextColor />
-						<TextHighlight />
-						<UiSeparator vertical />
-						<StickerFillStyle />
-						<UiSeparator vertical />
-						<Lock />
-						<UiSeparator vertical />
-						<Delete />
-						<UiSeparator vertical />
-						<AIModel />
-						<AIGeneration />
-						<UiSeparator vertical />
-						<RestOptionsMenu>
-							<BringToFront />
-							<SendToBack />
-							<CopyItemLink />
-							<SetLinkTo />
-							<Duplicate />
-						</RestOptionsMenu>
-					</>
-				)}
-				{isShape && !isSelectUnderPointer && !isLocked && (
-					<>
-						<ItemType />
-						<UiSeparator vertical />
-						{board.selection.items
-							.getItemsByItemTypes(["Shape"])[0]
-							.getIsShapeWithText() && (
-							<>
-								<FontSize />
-								<UiSeparator vertical />
-								<FontStyle />
-								<TextAlignment />
-								<AddList />
-								<HyperLinkBtn />
-								<UiSeparator vertical />
-								<TextColor />
-								<TextHighlight />
-								<UiSeparator vertical />
-							</>
-						)}
-						<StrokeStyle />
-						{board.selection.items
-							.getItemsByItemTypes(["Shape"])[0]
-							.getPath()
-							.isClosed() && <FillStyle />}
-						<UiSeparator vertical />
-						<Lock />
-						<UiSeparator vertical />
-						<Delete />
-						<UiSeparator vertical />
-						<AIModel />
-						<AIGeneration />
-						<UiSeparator vertical />
-						<RestOptionsMenu>
-							<BringToFront />
-							<SendToBack />
-							<CopyItemLink />
-							<SetLinkTo />
-							<Duplicate />
-						</RestOptionsMenu>
-					</>
-				)}
-				{isConnector && !isSelectUnderPointer && !isLocked && (
-					<>
-						<StartPointer />
-						<SwitchPointers />
-						<EndPointer />
-						<UiSeparator vertical />
-						<ConnectorType />
-						<ConnectorLineColor />
-						<UiSeparator vertical />
-						<ConnectorAddText />
-						<ConnectorFontSize />
-						<ConnectorFontStyle />
-						<ConnectorTextColor />
-						<ConnectorTextHighlight />
-						<Lock />
-						<UiSeparator vertical />
-						<Delete />
-						<UiSeparator vertical />
-						<RestOptionsMenu>
-							<BringToFront />
-							<SendToBack />
-							<CopyItemLink />
-							<SetLinkTo />
-							<Duplicate />
-						</RestOptionsMenu>
-					</>
-				)}
-				{isPen && !isSelectUnderPointer && !isLocked && (
-					<>
-						<DrawStrokeWidth />
-						<UiSeparator vertical />
-						<DrawFillStyle />
-						<UiSeparator vertical />
-						<Lock />
-						<UiSeparator vertical />
-						<Delete />
-						<UiSeparator vertical />
-						<RestOptionsMenu>
-							<BringToFront />
-							<SendToBack />
-							<CopyItemLink />
-							<SetLinkTo />
-							<Duplicate />
-						</RestOptionsMenu>
-					</>
-				)}
-				{isImage && !isSelectUnderPointer && !isLocked && (
-					<>
-						<Lock rounded="left" />
-						<UiSeparator vertical />
-						<Delete />
-						<UiSeparator vertical />
-						<RestOptionsMenu>
-							<BringToFront />
-							<SendToBack />
-							<CopyItemLink />
-							<SetLinkTo />
-							<Duplicate />
-							<SaveImg />
-						</RestOptionsMenu>
-					</>
-				)}
-				{isVideo && !isSelectUnderPointer && !isLocked && (
-					<>
-						<Lock rounded="left" />
-						<UiSeparator vertical />
-						<Delete />
-						<UiSeparator vertical />
-						<RestOptionsMenu>
-							<BringToFront />
-							<SendToBack />
-							<CopyItemLink />
-							{/* <SetLinkTo />*/}
-							{/* <Duplicate />*/}
-							<SaveVideoOrAudio itemType="Video" />
-						</RestOptionsMenu>
-					</>
-				)}
-				{isAudio && !isSelectUnderPointer && !isLocked && (
-					<>
-						<Lock rounded="left" />
-						<UiSeparator vertical />
-						<Delete />
-						<UiSeparator vertical />
-						<RestOptionsMenu>
-							<BringToFront />
-							<SendToBack />
-							<CopyItemLink />
-							<Duplicate />
-							<SaveVideoOrAudio itemType="Audio" />
-						</RestOptionsMenu>
-					</>
-				)}
-				{isFrame && !isSelectUnderPointer && !isLocked && (
-					<>
-						<FrameRatio />
-						<ToggleFrameRatio />
-						<UiSeparator vertical />
-						<FrameFill />
-						<UiSeparator vertical />
-						<Lock />
-						<UiSeparator vertical />
-						<Delete />
-						<UiSeparator vertical />
-						<RestOptionsMenu>
-							<BringToFront />
-							<SendToBack />
-							<FrameNavNext />
-							<FrameNavPrev />
-							<CopyItemLink />
-							<SetLinkTo />
-							<Duplicate />
-							<ExportFrame />
-						</RestOptionsMenu>
-					</>
-				)}
-				{isAINode && !isSelectUnderPointer && !isLocked && (
-					<>
-						<FontSize rounded="left" />
-						<UiSeparator vertical />
-						<FontStyle />
-						<TextAlignment />
-						<AddList />
-						<HyperLinkBtn />
-						<UiSeparator vertical />
-						<TextColor />
-						<TextHighlight />
-						<UiSeparator vertical />
-						<Lock />
-						<UiSeparator vertical />
-						<Delete />
-						<UiSeparator vertical />
-						<AIModel />
-						<AIGeneration />
-						<UiSeparator vertical />
-						<RestOptionsMenu>
-							<BringToFront />
-							<SendToBack />
-							<CopyItemLink />
-							<SetLinkTo />
-							<Duplicate />
-						</RestOptionsMenu>
-					</>
-				)}
-				{isStar && !isSelectUnderPointer && !isLocked && (
-					<>
-						<Lock rounded="left" />
-						<UiSeparator vertical />
-						<Delete />
-						<ToggleIsShining />
-						<UiSeparator vertical />
-						<RestOptionsMenu>
-							<BringToFront />
-							<SendToBack />
-							<CopyItemLink />
-							<SetLinkTo />
-							<Duplicate />
-						</RestOptionsMenu>
-					</>
-				)}
-				{isDeck && !isSelectUnderPointer && !isLocked && (
-					<>
-						<ShuffleDeck rounded="left" />
-						<UiSeparator vertical />
-						<GetCard cardPosition={"random"} />
-						<GetCard cardPosition={"top"} />
-						{isSingle ? (
-							<GetCard cardPosition={"bottom"} rounded="right" />
-						) : (
-							<>
-								<GetCard cardPosition={"bottom"} />
-								<UiSeparator vertical />
-								<CreateDeck onlyCards={false} rounded="right" />
-							</>
-						)}
-						<UiSeparator vertical />
-						<Delete rounded="right" />
-					</>
-				)}
-				{isCard && !isSelectUnderPointer && !isLocked && (
-					<>
-						<FlipCard rounded="left" />
-						<UiSeparator vertical />
-						<CreateDeck onlyCards={true} rounded="right" />
-						<UiSeparator vertical />
-						<Delete rounded="right" />
-					</>
-				)}
-				{isCardOrDeck &&
-					!isDeck &&
-					!isCard &&
-					!isSelectUnderPointer &&
-					!isLocked && (
-						<>
-							<FlipCard rounded="left" />
-							<UiSeparator vertical />
-							<CreateDeck onlyCards={false} rounded="right" />
-							<UiSeparator vertical />
-							<Delete rounded="right" />
-						</>
-					)}
-				{isDice && !isSelectUnderPointer && !isLocked && (
-					<>
-						<ThrowDice rounded="left" />
-						<ChangeRange rangeValue="min" />
-						<ChangeRange rangeValue="max" />
-						<UiSeparator vertical />
-						<StrokeStyle />
-						<FillStyle />
-						<UiSeparator vertical />
-						<Delete />
-						<UiSeparator vertical />
-						<RestOptionsMenu>
-							<BringToFront />
-							<SendToBack />
-							<CopyItemLink />
-							<Duplicate />
-						</RestOptionsMenu>
-					</>
-				)}
-				{!isDifferentItems && !!isLocked && (
-					<>
-						<Lock rounded="left" />
-						<UiSeparator vertical />
-						{isLocked <= 1 ? (
-							<RestOptionsMenu rounded="right">
-								<CopyItemLink />
-								<ExportFrame />
-								<Duplicate />
-							</RestOptionsMenu>
-						) : null}
-					</>
-				)}
-				{isDifferentItems &&
-					!isSelectUnderPointer &&
-					!isHoverUnderPointer && (
-						<>
-							<Lock rounded="left" />
-							<UiSeparator vertical />
-							<Delete />
-							{ideaFromSelection && <AIGeneration />}
-							<RestOptionsMenu rounded="full">
-								<BringToFront />
-								<SendToBack />
-								<Duplicate />
-							</RestOptionsMenu>
-						</>
-					)}
-			</UiPanel>
-		</PanelContext.Provider>
-	);
+  return (
+    <PanelContext.Provider
+      value={{
+        openedMenu,
+        panelMbr: mbr,
+        toggleMenu,
+        windowHeight,
+        windowWidth,
+      }}
+    >
+      <UiPanel
+        // className={style.contextPanel}
+        style={{
+          position: "absolute",
+          left: mbr.left,
+          top: mbr.top,
+        }}
+        zIndex={3}
+        ref={panelRef}
+        padding={0}
+        id="ContextPanel"
+      >
+        {isSelectUnderPointer && !isLocked && (
+          <>
+            <Edit />
+            <RestOptionsMenu rounded="right">
+              <BringToFront />
+              <SendToBack />
+            </RestOptionsMenu>
+          </>
+        )}
+        {isPlaceholder && !isSelectUnderPointer && !isLocked && (
+          <>
+            <Lock rounded="left" />
+            <UiSeparator vertical />
+            <Delete />
+            <RestOptionsMenu rounded="right">
+              <BringToFront />
+              <SendToBack />
+            </RestOptionsMenu>
+          </>
+        )}
+        {isText && !isSelectUnderPointer && !isLocked && (
+          <>
+            <FontSize rounded="left" />
+            <FontStyle />
+            <TextAlignment />
+            <AddList />
+            <HyperLinkBtn />
+            <UiSeparator vertical />
+            <TextColor />
+            <TextHighlight />
+            <UiSeparator vertical />
+            <Lock />
+            <UiSeparator vertical />
+            <Delete />
+            <UiSeparator vertical />
+            <AIModel />
+            <AIGeneration />
+            <UiSeparator vertical />
+            <RestOptionsMenu>
+              <BringToFront />
+              <SendToBack />
+              <CopyItemLink />
+              <SetLinkTo />
+              <Duplicate />
+            </RestOptionsMenu>
+          </>
+        )}
+        {isSticker && !isSelectUnderPointer && !isLocked && (
+          <>
+            <FontSize rounded="left" />
+            <UiSeparator vertical />
+            <FontStyle />
+            <TextAlignment />
+            <AddList />
+            <HyperLinkBtn />
+            <UiSeparator vertical />
+            <TextColor />
+            <TextHighlight />
+            <UiSeparator vertical />
+            <StickerFillStyle />
+            <UiSeparator vertical />
+            <Lock />
+            <UiSeparator vertical />
+            <Delete />
+            <UiSeparator vertical />
+            <AIModel />
+            <AIGeneration />
+            <UiSeparator vertical />
+            <RestOptionsMenu>
+              <BringToFront />
+              <SendToBack />
+              <CopyItemLink />
+              <SetLinkTo />
+              <Duplicate />
+            </RestOptionsMenu>
+          </>
+        )}
+        {isShape && !isSelectUnderPointer && !isLocked && (
+          <>
+            <ItemType />
+            <UiSeparator vertical />
+            {board.selection.items
+              .getItemsByItemTypes(["Shape"])[0]
+              .getIsShapeWithText() && (
+              <>
+                <FontSize />
+                <UiSeparator vertical />
+                <FontStyle />
+                <TextAlignment />
+                <AddList />
+                <HyperLinkBtn />
+                <UiSeparator vertical />
+                <TextColor />
+                <TextHighlight />
+                <UiSeparator vertical />
+              </>
+            )}
+            <StrokeStyle />
+            {board.selection.items
+              .getItemsByItemTypes(["Shape"])[0]
+              .getPath()
+              .isClosed() && <FillStyle />}
+            <UiSeparator vertical />
+            <Lock />
+            <UiSeparator vertical />
+            <Delete />
+            <UiSeparator vertical />
+            <AIModel />
+            <AIGeneration />
+            <UiSeparator vertical />
+            <RestOptionsMenu>
+              <BringToFront />
+              <SendToBack />
+              <CopyItemLink />
+              <SetLinkTo />
+              <Duplicate />
+            </RestOptionsMenu>
+          </>
+        )}
+        {isConnector && !isSelectUnderPointer && !isLocked && (
+          <>
+            <StartPointer />
+            <SwitchPointers />
+            <EndPointer />
+            <UiSeparator vertical />
+            <ConnectorType />
+            <ConnectorLineColor />
+            <UiSeparator vertical />
+            <ConnectorAddText />
+            <ConnectorFontSize />
+            <ConnectorFontStyle />
+            <ConnectorTextColor />
+            <ConnectorTextHighlight />
+            <Lock />
+            <UiSeparator vertical />
+            <Delete />
+            <UiSeparator vertical />
+            <RestOptionsMenu>
+              <BringToFront />
+              <SendToBack />
+              <CopyItemLink />
+              <SetLinkTo />
+              <Duplicate />
+            </RestOptionsMenu>
+          </>
+        )}
+        {isPen && !isSelectUnderPointer && !isLocked && (
+          <>
+            <DrawStrokeWidth />
+            <UiSeparator vertical />
+            <DrawFillStyle />
+            <UiSeparator vertical />
+            <Lock />
+            <UiSeparator vertical />
+            <Delete />
+            <UiSeparator vertical />
+            <RestOptionsMenu>
+              <BringToFront />
+              <SendToBack />
+              <CopyItemLink />
+              <SetLinkTo />
+              <Duplicate />
+            </RestOptionsMenu>
+          </>
+        )}
+        {isImage && !isSelectUnderPointer && !isLocked && (
+          <>
+            <Lock rounded="left" />
+            <UiSeparator vertical />
+            <Delete />
+            <UiSeparator vertical />
+            <RestOptionsMenu>
+              <BringToFront />
+              <SendToBack />
+              <CopyItemLink />
+              <SetLinkTo />
+              <Duplicate />
+              <SaveImg />
+            </RestOptionsMenu>
+          </>
+        )}
+        {isVideo && !isSelectUnderPointer && !isLocked && (
+          <>
+            <Lock rounded="left" />
+            <UiSeparator vertical />
+            <Delete />
+            <UiSeparator vertical />
+            <RestOptionsMenu>
+              <BringToFront />
+              <SendToBack />
+              <CopyItemLink />
+              {/* <SetLinkTo />*/}
+              {/* <Duplicate />*/}
+              <SaveVideoOrAudio itemType="Video" />
+            </RestOptionsMenu>
+          </>
+        )}
+        {isAudio && !isSelectUnderPointer && !isLocked && (
+          <>
+            <Lock rounded="left" />
+            <UiSeparator vertical />
+            <Delete />
+            <UiSeparator vertical />
+            <RestOptionsMenu>
+              <BringToFront />
+              <SendToBack />
+              <CopyItemLink />
+              <Duplicate />
+              <SaveVideoOrAudio itemType="Audio" />
+            </RestOptionsMenu>
+          </>
+        )}
+        {isFrame && !isSelectUnderPointer && !isLocked && (
+          <>
+            <FrameRatio />
+            <ToggleFrameRatio />
+            <UiSeparator vertical />
+            <FrameFill />
+            <UiSeparator vertical />
+            <Lock />
+            <UiSeparator vertical />
+            <Delete />
+            <UiSeparator vertical />
+            <RestOptionsMenu>
+              <BringToFront />
+              <SendToBack />
+              <FrameNavNext />
+              <FrameNavPrev />
+              <CopyItemLink />
+              <SetLinkTo />
+              <Duplicate />
+              <ExportFrame />
+            </RestOptionsMenu>
+          </>
+        )}
+        {isAINode && !isSelectUnderPointer && !isLocked && (
+          <>
+            <FontSize rounded="left" />
+            <UiSeparator vertical />
+            <FontStyle />
+            <TextAlignment />
+            <AddList />
+            <HyperLinkBtn />
+            <UiSeparator vertical />
+            <TextColor />
+            <TextHighlight />
+            <UiSeparator vertical />
+            <Lock />
+            <UiSeparator vertical />
+            <Delete />
+            <UiSeparator vertical />
+            <AIModel />
+            <AIGeneration />
+            <UiSeparator vertical />
+            <RestOptionsMenu>
+              <BringToFront />
+              <SendToBack />
+              <CopyItemLink />
+              <SetLinkTo />
+              <Duplicate />
+            </RestOptionsMenu>
+          </>
+        )}
+        {isStar && !isSelectUnderPointer && !isLocked && (
+          <>
+            <Lock rounded="left" />
+            <UiSeparator vertical />
+            <Delete />
+            <ToggleIsShining />
+            <UiSeparator vertical />
+            <RestOptionsMenu>
+              <BringToFront />
+              <SendToBack />
+              <CopyItemLink />
+              <SetLinkTo />
+              <Duplicate />
+            </RestOptionsMenu>
+          </>
+        )}
+        {isDeck && !isSelectUnderPointer && !isLocked && (
+          <>
+            <ShuffleDeck rounded="left" />
+            <UiSeparator vertical />
+            <GetCard cardPosition={"random"} />
+            <GetCard cardPosition={"top"} />
+            {isSingle ? (
+              <GetCard cardPosition={"bottom"} rounded="right" />
+            ) : (
+              <>
+                <GetCard cardPosition={"bottom"} />
+                <UiSeparator vertical />
+                <CreateDeck onlyCards={false} rounded="right" />
+              </>
+            )}
+            <UiSeparator vertical />
+            <Delete rounded="right" />
+          </>
+        )}
+        {isCard && !isSelectUnderPointer && !isLocked && (
+          <>
+            <FlipCard rounded="left" />
+            <UiSeparator vertical />
+            <CreateDeck onlyCards={true} rounded="right" />
+            <UiSeparator vertical />
+            <Delete rounded="right" />
+          </>
+        )}
+        {isCardOrDeck &&
+          !isDeck &&
+          !isCard &&
+          !isSelectUnderPointer &&
+          !isLocked && (
+            <>
+              <FlipCard rounded="left" />
+              <UiSeparator vertical />
+              <CreateDeck onlyCards={false} rounded="right" />
+              <UiSeparator vertical />
+              <Delete rounded="right" />
+            </>
+          )}
+        {isDice && !isSelectUnderPointer && !isLocked && (
+          <>
+            <ThrowDice rounded="left" />
+            <ChangeRange rangeValue="min" />
+            <ChangeRange rangeValue="max" />
+            <UiSeparator vertical />
+            <StrokeStyle />
+            <FillStyle />
+            <UiSeparator vertical />
+            <Delete />
+            <UiSeparator vertical />
+            <RestOptionsMenu>
+              <BringToFront />
+              <SendToBack />
+              <CopyItemLink />
+              <Duplicate />
+            </RestOptionsMenu>
+          </>
+        )}
+        {!isDifferentItems && !!isLocked && (
+          <>
+            <Lock rounded="left" />
+            <UiSeparator vertical />
+            {isLocked <= 1 ? (
+              <RestOptionsMenu rounded="right">
+                <CopyItemLink />
+                <ExportFrame />
+                <Duplicate />
+              </RestOptionsMenu>
+            ) : null}
+          </>
+        )}
+        {isDifferentItems && !isSelectUnderPointer && !isHoverUnderPointer && (
+          <>
+            <Lock rounded="left" />
+            <UiSeparator vertical />
+            <Delete />
+            {ideaFromSelection && <AIGeneration />}
+            <RestOptionsMenu rounded="full">
+              <BringToFront />
+              <SendToBack />
+              <Duplicate />
+            </RestOptionsMenu>
+          </>
+        )}
+      </UiPanel>
+    </PanelContext.Provider>
+  );
 }

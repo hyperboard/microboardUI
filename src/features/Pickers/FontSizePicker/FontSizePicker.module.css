@@ -1,8 +1,8 @@
 .button {
-	min-width: auto;
-	min-height: auto;
-	font-size: 1.6rem;
-	line-height: 2.4rem;
-	font-weight: 400;
-	padding: 6px 0;
+  min-width: auto;
+  min-height: auto;
+  font-size: 1.6rem;
+  line-height: 2.4rem;
+  font-weight: 400;
+  padding: 6px 0;
 }

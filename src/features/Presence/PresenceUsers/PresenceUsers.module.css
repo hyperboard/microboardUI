@@ -1,366 +1,366 @@
 .wrapper {
-	padding: 0 12px;
+  padding: 0 12px;
 }
 
 .container {
-	/* background-color: #1a1a1a; */
-	border-radius: 8px;
-	/* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
-	padding: 9px 0 9px 0;
-	display: flex;
+  /* background-color: #1a1a1a; */
+  border-radius: 8px;
+  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+  padding: 9px 0 9px 0;
+  display: flex;
 }
 
 .userList {
-	display: flex;
-	align-items: center;
-	/* gap: 4px; */
+  display: flex;
+  align-items: center;
+  /* gap: 4px; */
 }
 
 .userWrapper {
-	position: relative;
-	margin-left: -2px;
-	cursor: pointer;
-	background-color: white;
-	border-radius: 50%;
+  position: relative;
+  margin-left: -2px;
+  cursor: pointer;
+  background-color: white;
+  border-radius: 50%;
 }
 
 .usersOverflowWrapper {
-	background-color: #e9eaec;
-	border-radius: 1000px;
-	height: 32px;
-	margin-left: -24px;
-	display: flex;
-	align-items: center;
-	gap: 6px;
-	padding: 0 6px 0 0;
-	font-weight: 500;
-	outline: 1px solid #e9eaec;
-	cursor: pointer;
+  background-color: #e9eaec;
+  border-radius: 1000px;
+  height: 32px;
+  margin-left: -24px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 6px 0 0;
+  font-weight: 500;
+  outline: 1px solid #e9eaec;
+  cursor: pointer;
 }
 
 .usersOverflowGap {
-	width: 26px;
-	height: 24px;
+  width: 26px;
+  height: 24px;
 }
 
 .usersOverflowCounter {
-	display: flex;
-	align-items: center;
-	gap: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .userList > .userWrapper:nth-child(n) {
-	z-index: calc(100 + var(--index));
+  z-index: calc(100 + var(--index));
 }
 
 .userWrapper:not(:first-child) {
-	margin-left: -8px;
+  margin-left: -8px;
 }
 
 .userAvatar {
-	position: relative;
-	box-sizing: border-box;
-	width: 32px;
-	height: 32px;
-	border-radius: 50%;
-	border: 2px solid transparent;
-	background-color: #ddd4fd;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	color: #14151a;
-	font-size: 14px;
-	font-weight: 500;
+  position: relative;
+  box-sizing: border-box;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background-color: #ddd4fd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #14151a;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .userAvatar > img {
-	width: 100%;
-	height: 100%;
-	border-radius: 50%;
-	object-fit: cover;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .trackedUserOverlay {
-	position: absolute;
-	width: 30px;
-	height: 30px;
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
 
 .idle {
-	opacity: 50%;
+  opacity: 50%;
 }
 
 .userCounter {
-	color: #14151a;
-	background-color: #f7f7f8;
-	border: 2px solid #dee0e3;
+  color: #14151a;
+  background-color: #f7f7f8;
+  border: 2px solid #dee0e3;
 }
 
 .selectedAvatar {
-	/* border: 2px solid #22c55e; */
-	/* outline: solid 2px #22c55e;
+  /* border: 2px solid #22c55e; */
+  /* outline: solid 2px #22c55e;
 	outline-offset: 2px; */
 }
 
 .tooltip {
-	position: absolute;
-	bottom: -48px;
-	right: 0;
-	display: none;
-	background-color: #0b0c0e;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-	color: #ffffff;
-	font-size: 12px;
-	line-height: 16px;
-	padding: 4px 8px;
-	border-radius: 6px;
-	white-space: nowrap;
+  position: absolute;
+  bottom: -48px;
+  right: 0;
+  display: none;
+  background-color: #0b0c0e;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  color: #ffffff;
+  font-size: 12px;
+  line-height: 16px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
 }
 
 .tippy {
-	position: absolute;
-	display: none;
-	bottom: -29px;
-	right: 10px;
+  position: absolute;
+  display: none;
+  bottom: -29px;
+  right: 10px;
 }
 
 .userWrapper:hover .tooltip {
-	display: block;
+  display: block;
 }
 
 .userWrapper:hover .tippy {
-	display: block;
+  display: block;
 }
 
 .toggleButton {
-	width: 24px;
-	height: 24px;
-	border-radius: 50%;
-	background-color: #924fe8;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	margin-left: 4px;
-	cursor: pointer;
-	border: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #924fe8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+  cursor: pointer;
+  border: none;
 }
 
 .toggleButton:hover {
-	background-color: #1f2228;
+  background-color: #1f2228;
 }
 
 .toggleButton:focus {
-	outline: none;
-	ring: 2px solid #525252;
+  outline: none;
+  ring: 2px solid #525252;
 }
 
 .dropdown {
-	position: absolute;
-	top: 100%;
-	left: 0;
-	margin-top: 8px;
-	width: 240px;
-	max-width: 296px;
-	overflow: auto;
-	background-color: white;
-	border-radius: 8px;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-	padding: 4px 0;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  width: 240px;
+  max-width: 296px;
+  overflow: auto;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 4px 0;
 }
 
 .dropdownItem {
-	padding: 8px 12px;
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	cursor: pointer;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
 }
 
 .dropdownItem:hover {
-	background-color: #ececec;
+  background-color: #ececec;
 }
 
 .dropdownAvatar {
-	width: 24px;
-	height: 24px;
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	color: white;
-	font-size: 12px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
 }
 
 .dropdownSelectedAvatar {
-	border: 2px solid #22c55e;
+  border: 2px solid #22c55e;
 }
 
 .userName {
-	color: #1f2228;
-	font-size: 14px;
+  color: #1f2228;
+  font-size: 14px;
 }
 
 .selectedIndicator {
-	margin-left: auto;
-	width: 8px;
-	height: 8px;
-	border-radius: 50%;
-	background-color: #22c55e;
+  margin-left: auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #22c55e;
 }
 
 .followingCounter {
-	position: absolute;
-	top: 32px;
-	left: 0;
-	z-index: 1000;
+  position: absolute;
+  top: 32px;
+  left: 0;
+  z-index: 1000;
 }
 
 .followingCounterIcon {
-	display: flex;
-	gap: 4px;
-	padding: 2px 6px;
-	background-color: #f48e2f;
-	border-radius: 500px;
-	color: white;
-	font-size: 12px;
-	z-index: 1000;
-	cursor: pointer;
+  display: flex;
+  gap: 4px;
+  padding: 2px 6px;
+  background-color: #f48e2f;
+  border-radius: 500px;
+  color: white;
+  font-size: 12px;
+  z-index: 1000;
+  cursor: pointer;
 }
 
 .followersTooltip {
-	position: absolute;
-	width: 205px;
-	padding: 12px 16px;
-	display: none;
-	flex-direction: column;
+  position: absolute;
+  width: 205px;
+  padding: 12px 16px;
+  display: none;
+  flex-direction: column;
 
-	top: 32px;
-	right: 0px;
+  top: 32px;
+  right: 0px;
 
-	background-color: #0b0c0e;
-	border-radius: 8px;
-	font-size: 12px;
+  background-color: #0b0c0e;
+  border-radius: 8px;
+  font-size: 12px;
 }
 
 .followersMe {
-	color: white;
+  color: white;
 }
 
 .followersBoard {
-	display: block;
-	color: rgba(255, 255, 255, 0.6);
+  display: block;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .followersTooltipTitle {
-	color: #1f2228;
-	font-size: 14px;
-	font-weight: 500;
+  color: #1f2228;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .followersHr {
-	margin-top: 8px;
-	width: 100%;
-	height: 1px;
-	background-color: rgba(255, 255, 255, 0.18);
+  margin-top: 8px;
+  width: 100%;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.18);
 }
 
 .followersList {
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
-	margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
 }
 
 .followersItem {
-	display: block;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	max-width: 100%;
-	color: white;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  color: white;
 }
 
 .followersVisible {
-	display: flex;
+  display: flex;
 }
 
 .btn {
-	padding: 0 8px;
-	height: 32px;
-	margin-left: 8px;
+  padding: 0 8px;
+  height: 32px;
+  margin-left: 8px;
 }
 
 .shareModal {
-	width: 100%;
-	/* padding: 12px 16px; */
-	background-color: white;
-	border-radius: 12px;
-	/* border: 1px solid var(--border-action-normal); */
-	/* box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25); */
-	display: flex;
-	flex-direction: column;
-	/* gap: 12px; */
-	padding: 6px 10px 10px;
+  width: 100%;
+  /* padding: 12px 16px; */
+  background-color: white;
+  border-radius: 12px;
+  /* border: 1px solid var(--border-action-normal); */
+  /* box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25); */
+  display: flex;
+  flex-direction: column;
+  /* gap: 12px; */
+  padding: 6px 10px 10px;
 }
 
 .shareModalSearchIcon {
-	color: #696b76;
+  color: #696b76;
 }
 
 .shareModal input {
-	color: #14151a;
+  color: #14151a;
 }
 
 .shareModal input::placeholder {
-	color: #14151a;
+  color: #14151a;
 }
 
 .shareUser {
-	display: flex;
-	gap: 8px;
-	padding: 6px 8px;
-	align-items: center;
+  display: flex;
+  gap: 8px;
+  padding: 6px 8px;
+  align-items: center;
 
-	font-size: 14px;
-	line-height: 20px;
-	font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
 
-	position: relative;
+  position: relative;
 }
 
 .shareUserPic {
-	width: 32px;
-	height: 32px;
-	border-radius: 50%;
-	color: white;
-	cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
 
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	text-transform: uppercase;
-	flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  flex-shrink: 0;
 }
 
 .shareEye {
-	color: black;
-	z-index: 5;
-	width: 16px;
-	height: 16px;
-	position: absolute;
-	top: 14px;
-	left: 16px;
+  color: black;
+  z-index: 5;
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  top: 14px;
+  left: 16px;
 }
 
 .shareList {
-	/* border-bottom: 1px solid #dee0e3; */
-	max-height: 350px;
-	padding-bottom: 5px;
-	margin: 6px 0 7px 0;
+  /* border-bottom: 1px solid #dee0e3; */
+  max-height: 350px;
+  padding-bottom: 5px;
+  margin: 6px 0 7px 0;
 }

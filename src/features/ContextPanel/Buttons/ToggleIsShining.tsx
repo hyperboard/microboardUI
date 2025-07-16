@@ -6,31 +6,31 @@ import btnStyle from "./ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton/UiButton";
 
 export function ToggleIsShining() {
-	const { board } = useAppContext();
-	const { t } = useTranslation();
+  const { board } = useAppContext();
+  const { t } = useTranslation();
 
-	const single = board.selection.items.getSingle();
+  const single = board.selection.items.getSingle();
 
-	if (!single || single.itemType !== "Star") {
-		return null;
-	}
+  if (!single || single.itemType !== "Star") {
+    return null;
+  }
 
-	const handleClick = (): void => {
-		single.toggleIsShining();
-	};
+  const handleClick = (): void => {
+    single.toggleIsShining();
+  };
 
-	return (
-		<UiButton
-			className={btnStyle.contextPanelButton}
-			id="ChangeTextColor"
-			tooltip={t("contextPanel.textColor.tooltip")}
-			tooltipPosition="top"
-			onClick={handleClick}
-			variant="secondary"
-			active={single.isShining}
-			rounded="none"
-		>
-			<Icon iconName="Plus" />
-		</UiButton>
-	);
+  return (
+    <UiButton
+      className={btnStyle.contextPanelButton}
+      id="ChangeTextColor"
+      tooltip={t("contextPanel.textColor.tooltip")}
+      tooltipPosition="top"
+      onClick={handleClick}
+      variant="secondary"
+      active={single.isShining}
+      rounded="none"
+    >
+      <Icon iconName="Plus" />
+    </UiButton>
+  );
 }

@@ -5,14 +5,14 @@ import { createPortal } from "react-dom";
 type Props = PropsWithChildren<{}>;
 
 export function DraggingWrapper({ children }: Props) {
-	return (
-		<>
-			{createPortal(
-				<DragOverlay>
-					<div>{children}</div>
-				</DragOverlay>,
-				document.getElementById("drag")!,
-			)}
-		</>
-	);
+  return (
+    <>
+      {createPortal(
+        <DragOverlay>
+          <div>{children}</div>
+        </DragOverlay>,
+        document.getElementById("drag")!,
+      )}
+    </>
+  );
 }

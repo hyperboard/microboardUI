@@ -15,33 +15,33 @@ import { CryptoWrapper } from "./CryptoWrapper";
 import { CommentsContextProvider } from "entities/comments/CommentsContext";
 
 type Props = {
-	app: App;
-	board: Board;
+  app: App;
+  board: Board;
 };
 
 export function ContextWrapper({ app, board }: Props): JSX.Element {
-	return (
-		<CryptoWrapper>
-			<AppContext.Provider value={{ app, board }}>
-				<HyperLinkContextProvider>
-					<CommentsContextProvider>
-						<AIContextProvider>
-							<ModalsWrapper>
-								<ContextMenuContextProvider>
-									<RenameContextProvider>
-										<OpenedFoldersContextProvider>
-											<SidePanelContextProvider>
-												<Outlet />
-												<ToastProvider />
-											</SidePanelContextProvider>
-										</OpenedFoldersContextProvider>
-									</RenameContextProvider>
-								</ContextMenuContextProvider>
-							</ModalsWrapper>
-						</AIContextProvider>
-					</CommentsContextProvider>
-				</HyperLinkContextProvider>
-			</AppContext.Provider>
-		</CryptoWrapper>
-	);
+  return (
+    <CryptoWrapper>
+      <AppContext.Provider value={{ app, board }}>
+        <HyperLinkContextProvider>
+          <CommentsContextProvider>
+            <AIContextProvider>
+              <ModalsWrapper>
+                <ContextMenuContextProvider>
+                  <RenameContextProvider>
+                    <OpenedFoldersContextProvider>
+                      <SidePanelContextProvider>
+                        <Outlet />
+                        <ToastProvider />
+                      </SidePanelContextProvider>
+                    </OpenedFoldersContextProvider>
+                  </RenameContextProvider>
+                </ContextMenuContextProvider>
+              </ModalsWrapper>
+            </AIContextProvider>
+          </CommentsContextProvider>
+        </HyperLinkContextProvider>
+      </AppContext.Provider>
+    </CryptoWrapper>
+  );
 }

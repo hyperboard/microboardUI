@@ -8,33 +8,33 @@ import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
 
 export function Redo() {
-	const { board } = useAppContext();
-	const { t } = useTranslation();
+  const { board } = useAppContext();
+  const { t } = useTranslation();
 
-	const forceUpdate = useForceUpdate();
+  const forceUpdate = useForceUpdate();
 
-	useAppSubscription({
-		subjects: ["board"], // previously used events subscription
-		observer: forceUpdate,
-	});
+  useAppSubscription({
+    subjects: ["board"], // previously used events subscription
+    observer: forceUpdate,
+  });
 
-	const handleClick = () => {
-		board.events?.redo();
-	};
+  const handleClick = () => {
+    board.events?.redo();
+  };
 
-	const canRedo = board.events?.canRedo();
+  const canRedo = board.events?.canRedo();
 
-	return (
-		<UiButton
-			id={"redo"}
-			tooltip={t("toolsPanel.redo.tooltip")}
-			hotkey={getHotkeyLabel("redo")}
-			onClick={handleClick}
-			disabled={!canRedo}
-			variant="secondary"
-			rounded="bottom"
-		>
-			<Icon iconName="Redo" />
-		</UiButton>
-	);
+  return (
+    <UiButton
+      id={"redo"}
+      tooltip={t("toolsPanel.redo.tooltip")}
+      hotkey={getHotkeyLabel("redo")}
+      onClick={handleClick}
+      disabled={!canRedo}
+      variant="secondary"
+      rounded="bottom"
+    >
+      <Icon iconName="Redo" />
+    </UiButton>
+  );
 }

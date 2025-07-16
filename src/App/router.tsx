@@ -22,128 +22,128 @@ import React from "react";
 import ReactDOM from "react-dom";
 // import { createRoot } from "react-dom/client";
 import {
-	createBrowserRouter,
-	Navigate,
-	RouterProvider,
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
 } from "react-router-dom";
 
 export function getRender(app: App): {
-	render: () => void;
-	router: ReturnType<typeof createBrowserRouter>;
+  render: () => void;
+  router: ReturnType<typeof createBrowserRouter>;
 } {
-	// new IframeModule(app);
-	// const iframeModule = IframeModule.getInstance(app);
+  // new IframeModule(app);
+  // const iframeModule = IframeModule.getInstance(app);
 
-	const router = createBrowserRouter([
-		{
-			element: <AppLayout app={app} />,
-			children: [
-				{
-					path: "/",
-					element: <Navigate to={"/boards/blank"} />,
-				},
-				{
-					path: "/auth",
-					element: <AuthLayout showPolicies />,
-					children: [
-						{
-							element: <UnauthGuard />,
-							children: [
-								{
-									path: "sign-up",
-									element: <SignupPage />,
-								},
-								{
-									path: "sign-in",
-									element: <SigninPage />,
-								},
-								{
-									path: "verify",
-									element: <VerifyMailPage />,
-								},
-								{
-									path: "restore-password",
-									element: <RestorePasswordPage />,
-								},
-								{
-									path: "forgot-password",
-									element: <ForgotPasswordPage />,
-								},
-							],
-						},
-					],
-				},
-				{
-					path: "/bind-email",
-					element: <AuthLayout />,
-					children: [
-						{
-							path: "add-email",
-							element: <AddEmailPage />,
-						},
-						{
-							path: "verify",
-							element: <BindEmailPage />,
-						},
-					],
-				},
+  const router = createBrowserRouter([
+    {
+      element: <AppLayout app={app} />,
+      children: [
+        {
+          path: "/",
+          element: <Navigate to={"/boards/blank"} />,
+        },
+        {
+          path: "/auth",
+          element: <AuthLayout showPolicies />,
+          children: [
+            {
+              element: <UnauthGuard />,
+              children: [
+                {
+                  path: "sign-up",
+                  element: <SignupPage />,
+                },
+                {
+                  path: "sign-in",
+                  element: <SigninPage />,
+                },
+                {
+                  path: "verify",
+                  element: <VerifyMailPage />,
+                },
+                {
+                  path: "restore-password",
+                  element: <RestorePasswordPage />,
+                },
+                {
+                  path: "forgot-password",
+                  element: <ForgotPasswordPage />,
+                },
+              ],
+            },
+          ],
+        },
+        {
+          path: "/bind-email",
+          element: <AuthLayout />,
+          children: [
+            {
+              path: "add-email",
+              element: <AddEmailPage />,
+            },
+            {
+              path: "verify",
+              element: <BindEmailPage />,
+            },
+          ],
+        },
 
-				{
-					path: "/welcome",
-					element: <WelcomePage />,
-				},
+        {
+          path: "/welcome",
+          element: <WelcomePage />,
+        },
 
-				{
-					path: "/boards/:boardId?",
-					element: <BoardPage />,
-				},
+        {
+          path: "/boards/:boardId?",
+          element: <BoardPage />,
+        },
 
-				// {
-				// 	path: "/test",
-				// 	element: <TestPage />,
-				// },
-				{
-					path: "/selectBoard",
-					element: <SelectBoardPage />,
-				},
-				{
-					path: "/test-wheel",
-					element: <WheelEventLoggerPage />,
-				},
-				{
-					path: "/snapshots/:uid?",
-					element: <HTMLSnapshot />,
-				},
-			],
-		},
-	]);
-	// const root = createRoot(
-	// 	document.getElementById("root") as HTMLElement,
-	// );
+        // {
+        // 	path: "/test",
+        // 	element: <TestPage />,
+        // },
+        {
+          path: "/selectBoard",
+          element: <SelectBoardPage />,
+        },
+        {
+          path: "/test-wheel",
+          element: <WheelEventLoggerPage />,
+        },
+        {
+          path: "/snapshots/:uid?",
+          element: <HTMLSnapshot />,
+        },
+      ],
+    },
+  ]);
+  // const root = createRoot(
+  // 	document.getElementById("root") as HTMLElement,
+  // );
 
-	return {
-		render: function () {
-			ReactDOM.render(
-				// root.render(
-				<RouterProvider router={router} />,
-				document.getElementById("root") as HTMLDivElement,
-			);
-		},
-		router,
-	};
+  return {
+    render: function () {
+      ReactDOM.render(
+        // root.render(
+        <RouterProvider router={router} />,
+        document.getElementById("root") as HTMLDivElement,
+      );
+    },
+    router,
+  };
 }
 
 export function getLocalRender(app: App, customId: string): () => void {
-	// const root = createRoot(document.getElementById(customId) as HTMLElement);
-	return () => {
-		ReactDOM.render(
-			// root.render(
-			<LocalAppLayout app={app}>
-				<LocalSidePanelContextProvider>
-					<LocalAppView />
-				</LocalSidePanelContextProvider>
-			</LocalAppLayout>,
-			document.getElementById(customId) as HTMLElement,
-		);
-	};
+  // const root = createRoot(document.getElementById(customId) as HTMLElement);
+  return () => {
+    ReactDOM.render(
+      // root.render(
+      <LocalAppLayout app={app}>
+        <LocalSidePanelContextProvider>
+          <LocalAppView />
+        </LocalSidePanelContextProvider>
+      </LocalAppLayout>,
+      document.getElementById(customId) as HTMLElement,
+    );
+  };
 }

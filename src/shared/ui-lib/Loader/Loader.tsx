@@ -4,24 +4,24 @@ import React from "react";
 import { Icon } from "shared/ui-lib/Icon";
 
 interface LoaderProps {
-	className?: string;
-	width?: number;
-	height?: number;
-	variant?: "loader" | "MediaLoader";
+  className?: string;
+  width?: number;
+  height?: number;
+  variant?: "loader" | "MediaLoader";
 }
 
 export const Loader: React.FC<LoaderProps> = ({
-	variant = "loader",
-	className,
-	width = 32,
-	height = 32,
+  variant = "loader",
+  className,
+  width = 32,
+  height = 32,
 }: LoaderProps) => {
-	return (
-		<Icon
-			iconName={variant}
-			width={width}
-			height={height}
-			className={clsx(styles.loader, className)}
-		/>
-	);
+  return (
+    <Icon
+      iconName={variant}
+      width={width}
+      height={height}
+      className={clsx(styles.loader, className)}
+    />
+  );
 };

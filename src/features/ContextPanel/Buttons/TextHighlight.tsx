@@ -15,71 +15,67 @@ import { convertHexToRGBA } from "shared/lib/convertColors";
 const MENU_NAME = "TextHighlight";
 
 export function TextHighlight(): React.ReactElement | null {
-	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
-		usePanelContext();
-	const { board } = useAppContext();
-	const { t } = useTranslation();
+  const { toggleMenu, openedMenu, panelMbr, windowHeight } = usePanelContext();
+  const { board } = useAppContext();
+  const { t } = useTranslation();
 
-	const highlightColor = board.selection.getFontHighlight();
-	const handleClick = (): void => {
-		toggleMenu(MENU_NAME);
-	};
-	const handlePick = (color: string): void => {
-		board.selection.setFontHighlight(color);
-		toggleMenu("None");
-	};
-	const handleCustomPick = (color: string): void => {
-		const rgbColor = convertHexToRGBA(color, false);
-		board.selection.setFontHighlight(rgbColor);
-	};
-	const isPredefinedColor =
-		conf.TEXT_HIGHLIGHT_COLORS.includes(highlightColor);
-	return (
-		<ButtonWithMenu
-			menuName={MENU_NAME}
-			openedMenu={openedMenu}
-			panelMbr={panelMbr}
-			windowHeight={windowHeight}
-			align="left"
-			button={
-				<UiButton
-					className={btnStyle.contextPanelButton}
-					id="ChangeTextHighlight"
-					tooltip={t("contextPanel.textHighlight.tooltip")}
-					tooltipPosition="top"
-					onClick={handleClick}
-					variant="secondary"
-					active={openedMenu === MENU_NAME}
-					hideTooltip={openedMenu === MENU_NAME}
-					rounded="none"
-				>
-					<TextHighlightIndicator color={highlightColor} />
-				</UiButton>
-			}
-		>
-			{verticalAlign => (
-				<UiPanel
-					rounded={verticalAlign === "bottom" ? "bottom" : "full"}
-					grid
-					columns={4}
-					gap={8}
-				>
-					<ColorPicker
-						id={"TextHighlight"}
-						colors={conf.TEXT_HIGHLIGHT_COLORS}
-						selectedColor={highlightColor}
-						onPick={handlePick}
-					/>
-					<UiColorInput
-						onChange={handleCustomPick}
-						color={isPredefinedColor ? "none" : highlightColor}
-						isActive={
-							highlightColor !== "none" && !isPredefinedColor
-						}
-						toggleMenu={toggleMenu}
-					/>
-				</UiPanel>
-			)}
-		</ButtonWithMenu>
-	);
+  const highlightColor = board.selection.getFontHighlight();
+  const handleClick = (): void => {
+    toggleMenu(MENU_NAME);
+  };
+  const handlePick = (color: string): void => {
+    board.selection.setFontHighlight(color);
+    toggleMenu("None");
+  };
+  const handleCustomPick = (color: string): void => {
+    const rgbColor = convertHexToRGBA(color, false);
+    board.selection.setFontHighlight(rgbColor);
+  };
+  const isPredefinedColor = conf.TEXT_HIGHLIGHT_COLORS.includes(highlightColor);
+  return (
+    <ButtonWithMenu
+      menuName={MENU_NAME}
+      openedMenu={openedMenu}
+      panelMbr={panelMbr}
+      windowHeight={windowHeight}
+      align="left"
+      button={
+        <UiButton
+          className={btnStyle.contextPanelButton}
+          id="ChangeTextHighlight"
+          tooltip={t("contextPanel.textHighlight.tooltip")}
+          tooltipPosition="top"
+          onClick={handleClick}
+          variant="secondary"
+          active={openedMenu === MENU_NAME}
+          hideTooltip={openedMenu === MENU_NAME}
+          rounded="none"
+        >
+          <TextHighlightIndicator color={highlightColor} />
+        </UiButton>
+      }
+    >
+      {(verticalAlign) => (
+        <UiPanel
+          rounded={verticalAlign === "bottom" ? "bottom" : "full"}
+          grid
+          columns={4}
+          gap={8}
+        >
+          <ColorPicker
+            id={"TextHighlight"}
+            colors={conf.TEXT_HIGHLIGHT_COLORS}
+            selectedColor={highlightColor}
+            onPick={handlePick}
+          />
+          <UiColorInput
+            onChange={handleCustomPick}
+            color={isPredefinedColor ? "none" : highlightColor}
+            isActive={highlightColor !== "none" && !isPredefinedColor}
+            toggleMenu={toggleMenu}
+          />
+        </UiPanel>
+      )}
+    </ButtonWithMenu>
+  );
 }

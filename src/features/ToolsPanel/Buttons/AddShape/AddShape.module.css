@@ -1,18 +1,18 @@
 .panel {
-	display: grid;
-	grid-template-columns: repeat(3, 32px);
-	justify-content: center;
-	overflow: hidden;
+  display: grid;
+  grid-template-columns: repeat(3, 32px);
+  justify-content: center;
+  overflow: hidden;
 }
 
 .wrapper {
-	display: flex;
-	flex-direction: column;
-	align-items: stretch;
-	gap: 8px;
-	height: 192px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  height: 192px;
 }
 
 .button {
-	white-space: nowrap;
+  white-space: nowrap;
 }

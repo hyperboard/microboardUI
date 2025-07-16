@@ -1,75 +1,75 @@
 .shapesPanel {
-	transition:
-		width 0.3s,
-		max-width 0.3s,
-		min-width 0.3s;
-	overflow: hidden;
-	width: 0;
-	box-shadow: none;
-	border: none;
-	margin-left: 0;
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	align-items: stretch;
+  transition:
+    width 0.3s,
+    max-width 0.3s,
+    min-width 0.3s;
+  overflow: hidden;
+  width: 0;
+  box-shadow: none;
+  border: none;
+  margin-left: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .shapesPanel.open {
-	max-width: 35dvw;
-	width: 292px;
-	min-width: 192px;
-	visibility: visible;
-	box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
-	border: 1px solid var(--border-action-normal);
-	margin-left: 12px;
-	gap: 12px;
-	padding: 8px 4px !important;
+  max-width: 35dvw;
+  width: 292px;
+  min-width: 192px;
+  visibility: visible;
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border-action-normal);
+  margin-left: 12px;
+  gap: 12px;
+  padding: 8px 4px !important;
 }
 
 .header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
 }
 
 .title {
-	font-weight: 500;
-	font-size: 18px;
-	flex: 1 0;
-	padding: 4px 8px;
-	line-height: 24px;
+  font-weight: 500;
+  font-size: 18px;
+  flex: 1 0;
+  padding: 4px 8px;
+  line-height: 24px;
 }
 
 .close {
-	--padding: 4px;
-	--min-width: 28px;
-	--min-height: 28px;
-	color: var(--text-base-primary);
-	border-radius: 12px;
+  --padding: 4px;
+  --min-width: 28px;
+  --min-height: 28px;
+  color: var(--text-base-primary);
+  border-radius: 12px;
 }
 
 .scrollContainer {
-	overflow-y: auto;
-	scrollbar-gutter: stable;
-	width: 100%;
-	padding: 0 4px;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  width: 100%;
+  padding: 0 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .scrollContainer::-webkit-scrollbar {
-	appearance: none;
-	width: 2px;
+  appearance: none;
+  width: 2px;
 }
 
 .scrollContainer::-webkit-scrollbar-button {
-	display: none;
+  display: none;
 }
 
 .scrollContainer::-webkit-scrollbar-thumb {
-	display: block;
-	background-color: rgba(222, 225, 232, 1);
-	border-radius: 2px;
+  display: block;
+  background-color: rgba(222, 225, 232, 1);
+  border-radius: 2px;
 }

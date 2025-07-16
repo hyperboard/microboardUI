@@ -1,62 +1,62 @@
 .sidePanel {
-	transition:
-		max-width 0.3s,
-		outline 0.3s 0.35s,
-		box-shadow 0.3s 0.35s;
-	overflow: hidden;
-	max-width: 0;
-	display: block;
-	box-shadow: none;
-	border: none;
-	margin-left: 0;
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	align-items: stretch;
+  transition:
+    max-width 0.3s,
+    outline 0.3s 0.35s,
+    box-shadow 0.3s 0.35s;
+  overflow: hidden;
+  max-width: 0;
+  display: block;
+  box-shadow: none;
+  border: none;
+  margin-left: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .sidePanel.open {
-	max-width: 35dvw;
-	min-width: 150px;
-	visibility: visible;
-	box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
-	border: 1px solid var(--border-action-normal);
-	margin-left: 12px;
+  max-width: 35dvw;
+  min-width: 150px;
+  visibility: visible;
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border-action-normal);
+  margin-left: 12px;
 }
 
 .sidePanel.open.highlited {
-	box-shadow: 0px 0px 0px 4px rgba(200, 178, 255, 0.5);
-	outline: 1px solid rgba(183, 138, 240, 1);
+  box-shadow: 0px 0px 0px 4px rgba(200, 178, 255, 0.5);
+  outline: 1px solid rgba(183, 138, 240, 1);
 }
 
 @media screen and (max-width: 640px) {
-	.sidePanel.open {
-		max-width: calc(100dvw - 86px);
-	}
+  .sidePanel.open {
+    max-width: calc(100dvw - 86px);
+  }
 }
 
 .content {
-	display: grid;
-	grid-template-rows: max-content minmax(0, 1fr) max-content;
-	padding: 8px 8px;
-	padding-right: 3px;
-	display: flex;
-	flex-direction: column;
-	align-items: stretch;
-	flex: 1 0;
-	padding-bottom: 0;
-	padding-left: 14px;
+  display: grid;
+  grid-template-rows: max-content minmax(0, 1fr) max-content;
+  padding: 8px 8px;
+  padding-right: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex: 1 0;
+  padding-bottom: 0;
+  padding-left: 14px;
 }
 
 .folders {
-	flex: 1 1 50vh;
-	overflow: auto;
-	width: auto;
-	height: calc(100% - 100px);
+  flex: 1 1 50vh;
+  overflow: auto;
+  width: auto;
+  height: calc(100% - 100px);
 }
 
 .foldersWrapper {
-	max-width: 100%;
+  max-width: 100%;
 }
 
 /* .rootFolder {
@@ -65,76 +65,76 @@
 } */
 
 .folders::-webkit-scrollbar {
-	appearance: none;
-	width: 4px;
-	height: 4px;
+  appearance: none;
+  width: 4px;
+  height: 4px;
 }
 
 .folders::-webkit-scrollbar-button {
-	display: none;
+  display: none;
 }
 
 .folders::-webkit-scrollbar-thumb {
-	display: block;
-	background-color: rgba(222, 225, 232, 1);
-	border-radius: 2px;
+  display: block;
+  background-color: rgba(222, 225, 232, 1);
+  border-radius: 2px;
 }
 
 .header {
-	padding: 6px 12px;
-	display: flex;
-	gap: 4px;
-	align-items: center;
+  padding: 6px 12px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
 }
 
 .title {
-	font-weight: 500;
-	font-size: 14px;
-	flex: 1 0;
-	padding: 4px 8px;
-	line-height: 20px;
+  font-weight: 500;
+  font-size: 14px;
+  flex: 1 0;
+  padding: 4px 8px;
+  line-height: 20px;
 }
 
 .close {
-	--padding: 4px;
-	--radius: 0;
-	--min-width: 28px;
-	--min-height: 28px;
-	color: var(--text-base-primary);
+  --padding: 4px;
+  --radius: 0;
+  --min-width: 28px;
+  --min-height: 28px;
+  color: var(--text-base-primary);
 }
 
 .importMiroBtnWr {
-	padding: 0 16px 16px;
+  padding: 0 16px 16px;
 }
 
 .importMiroBtn {
-	width: 100%;
+  width: 100%;
 }
 
 .bottom {
-	padding: 14px 16px;
-	display: flex;
-	flex-direction: column;
-	justify-content: stretch;
-	align-items: center;
-	gap: 6px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  align-items: center;
+  gap: 6px;
 }
 
 .add {
-	display: flex;
-	gap: 6px;
-	align-items: center;
-	justify-content: center;
-	width: 100%;
-	flex: 1 0;
-	padding: 6px;
-	font-size: 1.4rem;
-	line-height: 2rem;
-	font-weight: 500;
-	cursor: pointer;
-	background: none;
-	border: 1px solid rgb(222, 223, 227);
-	border-radius: 10px;
-	box-shadow: 0px 1px 2px 0px rgba(20, 21, 26, 0.05);
-	font-family: Manrope;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  flex: 1 0;
+  padding: 6px;
+  font-size: 1.4rem;
+  line-height: 2rem;
+  font-weight: 500;
+  cursor: pointer;
+  background: none;
+  border: 1px solid rgb(222, 223, 227);
+  border-radius: 10px;
+  box-shadow: 0px 1px 2px 0px rgba(20, 21, 26, 0.05);
+  font-family: Manrope;
 }

@@ -14,83 +14,80 @@ import { UiButton } from "shared/ui-lib/UiButton";
 const MENU_NAME = "ConnectorLineColor";
 
 export function ConnectorLineColor(): React.ReactElement | null {
-	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
-		usePanelContext();
-	const { board, app } = useAppContext();
+  const { toggleMenu, openedMenu, panelMbr, windowHeight } = usePanelContext();
+  const { board, app } = useAppContext();
 
-	const { t } = useTranslation();
+  const { t } = useTranslation();
 
-	const connectorLineColor = board.selection.getConnectorLineColor();
+  const connectorLineColor = board.selection.getConnectorLineColor();
 
-	const handleClick = (): void => {
-		toggleMenu(MENU_NAME);
-	};
+  const handleClick = (): void => {
+    toggleMenu(MENU_NAME);
+  };
 
-	const handlePick = (color: string): void => {
-		board.selection.setStrokeColor(color);
-		app.sessionStorage.setConnectorFillColor(color);
-		toggleMenu("None");
-	};
+  const handlePick = (color: string): void => {
+    board.selection.setStrokeColor(color);
+    app.sessionStorage.setConnectorFillColor(color);
+    toggleMenu("None");
+  };
 
-	const handleCustomPick = (color: string): void => {
-		app.sessionStorage.setConnectorFillColor(color);
-		board.selection.setStrokeColor(color);
-	};
+  const handleCustomPick = (color: string): void => {
+    app.sessionStorage.setConnectorFillColor(color);
+    board.selection.setStrokeColor(color);
+  };
 
-	const isPredefinedColor = conf.SHAPE_STROKE_COLORS.some(
-		color => color === connectorLineColor,
-	);
+  const isPredefinedColor = conf.SHAPE_STROKE_COLORS.some(
+    (color) => color === connectorLineColor,
+  );
 
-	return (
-		<ButtonWithMenu
-			menuName={MENU_NAME}
-			openedMenu={openedMenu}
-			panelMbr={panelMbr}
-			windowHeight={windowHeight}
-			align="left"
-			button={
-				<UiButton
-					className={btnStyle.contextPanelButton}
-					id={"fill-style"}
-					tooltip={t("contextPanel.connectorColor.tooltip")}
-					tooltipPosition="top"
-					onClick={handleClick}
-					variant="secondary"
-					active={openedMenu === MENU_NAME}
-					hideTooltip={openedMenu === MENU_NAME}
-					rounded="none"
-				>
-					<FillColorIndicator
-						width={24}
-						height={24}
-						color={connectorLineColor}
-					/>
-				</UiButton>
-			}
-		>
-			{verticalAlign => (
-				<UiPanel
-					rounded={verticalAlign === "bottom" ? "bottom" : "full"}
-					grid
-					columns={4}
-					gap={8}
-				>
-					<ColorPicker
-						id={"connector-line-color"}
-						selectedColor={connectorLineColor}
-						colors={conf.SHAPE_STROKE_COLORS}
-						onPick={handlePick}
-					/>
-					<UiColorInput
-						onChange={handleCustomPick}
-						color={isPredefinedColor ? "none" : connectorLineColor}
-						isActive={
-							connectorLineColor !== "none" && !isPredefinedColor
-						}
-						toggleMenu={toggleMenu}
-					/>
-				</UiPanel>
-			)}
-		</ButtonWithMenu>
-	);
+  return (
+    <ButtonWithMenu
+      menuName={MENU_NAME}
+      openedMenu={openedMenu}
+      panelMbr={panelMbr}
+      windowHeight={windowHeight}
+      align="left"
+      button={
+        <UiButton
+          className={btnStyle.contextPanelButton}
+          id={"fill-style"}
+          tooltip={t("contextPanel.connectorColor.tooltip")}
+          tooltipPosition="top"
+          onClick={handleClick}
+          variant="secondary"
+          active={openedMenu === MENU_NAME}
+          hideTooltip={openedMenu === MENU_NAME}
+          rounded="none"
+        >
+          <FillColorIndicator
+            width={24}
+            height={24}
+            color={connectorLineColor}
+          />
+        </UiButton>
+      }
+    >
+      {(verticalAlign) => (
+        <UiPanel
+          rounded={verticalAlign === "bottom" ? "bottom" : "full"}
+          grid
+          columns={4}
+          gap={8}
+        >
+          <ColorPicker
+            id={"connector-line-color"}
+            selectedColor={connectorLineColor}
+            colors={conf.SHAPE_STROKE_COLORS}
+            onPick={handlePick}
+          />
+          <UiColorInput
+            onChange={handleCustomPick}
+            color={isPredefinedColor ? "none" : connectorLineColor}
+            isActive={connectorLineColor !== "none" && !isPredefinedColor}
+            toggleMenu={toggleMenu}
+          />
+        </UiPanel>
+      )}
+    </ButtonWithMenu>
+  );
 }

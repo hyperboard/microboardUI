@@ -1,11 +1,11 @@
 .indicator {
-	border-radius: 50%;
-	border: 1px solid rgba(15, 15, 15, 0.25);
-	background-size: 100% 100%;
-	background-repeat: no-repeat;
-	background-position: center;
+  border-radius: 50%;
+  border: 1px solid rgba(15, 15, 15, 0.25);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .indicator.none {
-	background-image: url("./bg.png");
+  background-image: url("./bg.png");
 }

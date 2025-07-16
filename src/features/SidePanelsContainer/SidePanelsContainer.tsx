@@ -13,49 +13,47 @@ import { ShapesPanel, ShapesPanelContextProvider } from "../ShapesPanel";
 import style from "./SidePanelsContainer.module.css";
 
 interface SidePanelsContainerProps {
-	isBlank: boolean;
+  isBlank: boolean;
 }
 
 export const SidePanelsContainer = memo(
-	({ isBlank }: SidePanelsContainerProps) => {
-		const { toggleSideMenu, isOpen } = useSidePanelContext();
-		const { renamingId } = useRenameContext();
-		const containerRef = useClickOutside(() => {
-			if (isOpen && renamingId !== null) {
-				toggleSideMenu();
-			}
-		});
+  ({ isBlank }: SidePanelsContainerProps) => {
+    const { toggleSideMenu, isOpen } = useSidePanelContext();
+    const { renamingId } = useRenameContext();
+    const containerRef = useClickOutside(() => {
+      if (isOpen && renamingId !== null) {
+        toggleSideMenu();
+      }
+    });
 
-		return (
-			<ShapesPanelContextProvider>
-				<div ref={containerRef} className={style.sidePanels}>
-					{(shouldShow("titlePanel") || !isIframe()) && (
-						<TitlePanel />
-					)}
-					<ViewModeGuard iframe>
-						<div className={style.hidingPanels}>
-							<SidePanel />
-							<ShapesPanel />
-						</div>
-						<InactiveBoardHidder>
-							<ViewModeGuard mode={["edit", "view"]}>
-								{interfaceType => {
-									switch (interfaceType) {
-										case "view":
-											return <ViewToolsPanel />;
-										case "edit":
-											return <ToolsPanel />;
-										default:
-											return null;
-									}
-								}}
-							</ViewModeGuard>
-						</InactiveBoardHidder>
-					</ViewModeGuard>
-				</div>
-			</ShapesPanelContextProvider>
-		);
-	},
+    return (
+      <ShapesPanelContextProvider>
+        <div ref={containerRef} className={style.sidePanels}>
+          {(shouldShow("titlePanel") || !isIframe()) && <TitlePanel />}
+          <ViewModeGuard iframe>
+            <div className={style.hidingPanels}>
+              <SidePanel />
+              <ShapesPanel />
+            </div>
+            <InactiveBoardHidder>
+              <ViewModeGuard mode={["edit", "view"]}>
+                {(interfaceType) => {
+                  switch (interfaceType) {
+                    case "view":
+                      return <ViewToolsPanel />;
+                    case "edit":
+                      return <ToolsPanel />;
+                    default:
+                      return null;
+                  }
+                }}
+              </ViewModeGuard>
+            </InactiveBoardHidder>
+          </ViewModeGuard>
+        </div>
+      </ShapesPanelContextProvider>
+    );
+  },
 );
 
 SidePanelsContainer.displayName = "SidePanelsContainer";

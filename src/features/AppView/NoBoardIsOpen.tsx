@@ -8,62 +8,62 @@ import { useAppContext } from "features/AppContext";
 import { useIsPhoneScreen } from "shared/lib/useIsPhoneScreen";
 
 const NoBoardIsOpen: React.FC = () => {
-	const { t } = useTranslation();
-	const { openMenu, handleAddNew, isOpen } = useSidePanelContext();
-	const { setRenamingId, setNewName } = useRenameContext();
-	const { board } = useAppContext();
-	const isProneScreen = useIsPhoneScreen();
+  const { t } = useTranslation();
+  const { openMenu, handleAddNew, isOpen } = useSidePanelContext();
+  const { setRenamingId, setNewName } = useRenameContext();
+  const { board } = useAppContext();
+  const isProneScreen = useIsPhoneScreen();
 
-	const handleOpenMenu: React.MouseEventHandler = event => {
-		event.stopPropagation();
-		event.preventDefault();
-		if (isOpen) {
-			openMenu(1500);
-		} else {
-			openMenu();
-		}
-	};
+  const handleOpenMenu: React.MouseEventHandler = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    if (isOpen) {
+      openMenu(1500);
+    } else {
+      openMenu();
+    }
+  };
 
-	const handleCreateNewBoard: React.MouseEventHandler = event => {
-		event.preventDefault();
-		event.stopPropagation();
-		handleAddNew(boardId => {
-			if (!isProneScreen) {
-				openMenu();
-			}
-			setNewName(t("board.untitled"));
-			setRenamingId(boardId);
-		});
-	};
+  const handleCreateNewBoard: React.MouseEventHandler = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    handleAddNew((boardId) => {
+      if (!isProneScreen) {
+        openMenu();
+      }
+      setNewName(t("board.untitled"));
+      setRenamingId(boardId);
+    });
+  };
 
-	if (board.getBoardId() !== "blank") {
-		return null;
-	}
+  if (board.getBoardId() !== "blank") {
+    return null;
+  }
 
-	return (
-		<div className={styles.container}>
-			<div className={styles.innerContainer}>
-				<span className={styles.title}>{t("noBoard.title")}</span>
-				<div className={styles.btns}>
-					<UiButton
-						className={styles.btn}
-						variant="quaternary"
-						onClick={handleOpenMenu}
-						size="lg"
-					>
-						{t("noBoard.chooseBoard")}
-					</UiButton>
-					<UiButton
-						className={styles.btn}
-						onClick={handleCreateNewBoard}
-						size="lg"
-					>
-						{t("noBoard.createNewBoard")}
-					</UiButton>
-				</div>
-			</div>
-		</div>
-	);
+  return (
+    <div className={styles.container}>
+      <div className={styles.innerContainer}>
+        <span className={styles.title}>{t("noBoard.title")}</span>
+        <div className={styles.btns}>
+          <UiButton
+            className={styles.btn}
+            variant="quaternary"
+            onClick={handleOpenMenu}
+            size="lg"
+          >
+            {t("noBoard.chooseBoard")}
+          </UiButton>
+          <UiButton
+            className={styles.btn}
+            onClick={handleCreateNewBoard}
+            size="lg"
+          >
+            {t("noBoard.createNewBoard")}
+          </UiButton>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default NoBoardIsOpen;

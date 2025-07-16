@@ -14,74 +14,71 @@ import { UiButton } from "shared/ui-lib/UiButton";
 const MENU_NAME = "TextAlignmentSticker";
 
 export function TextAlignmentSticker(): React.ReactElement | null {
-	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
-		usePanelContext();
-	const { t } = useTranslation();
-	const { board } = useAppContext();
+  const { toggleMenu, openedMenu, panelMbr, windowHeight } = usePanelContext();
+  const { t } = useTranslation();
+  const { board } = useAppContext();
 
-	const horizontalAlignment =
-		board.selection.getText()?.getHorisontalAlignment() ?? "center";
-	const verticalAlignment =
-		board.selection.getText()?.getVerticalAlignment() ?? "center";
+  const horizontalAlignment =
+    board.selection.getText()?.getHorisontalAlignment() ?? "center";
+  const verticalAlignment =
+    board.selection.getText()?.getVerticalAlignment() ?? "center";
 
-	const handleClick = (): void => {
-		toggleMenu(MENU_NAME);
-	};
+  const handleClick = (): void => {
+    toggleMenu(MENU_NAME);
+  };
 
-	const handleHorisontalAlignmentPick = (
-		alignment: HorisontalAlignment,
-	): void => {
-		board.selection.setHorisontalAlignment(alignment);
-		toggleMenu("None");
-	};
+  const handleHorisontalAlignmentPick = (
+    alignment: HorisontalAlignment,
+  ): void => {
+    board.selection.setHorisontalAlignment(alignment);
+    toggleMenu("None");
+  };
 
-	const handleVerticalAlignmentPick = (
-		alignment: VerticalAlignment,
-	): void => {
-		board.selection.setVerticalAlignment(alignment);
-		toggleMenu("None");
-	};
+  const handleVerticalAlignmentPick = (alignment: VerticalAlignment): void => {
+    board.selection.setVerticalAlignment(alignment);
+    toggleMenu("None");
+  };
 
-	return (
-		<ButtonWithMenu
-			menuName={MENU_NAME}
-			openedMenu={openedMenu}
-			panelMbr={panelMbr}
-			windowHeight={windowHeight}
-			align="center"
-			button={
-				<UiButton
-					className={btnStyle.contextPanelButton}
-					id={"sticker-text-alignment"}
-					tooltip={t("contextPanel.textAlignment.tooltip")}
-					tooltipPosition="top"
-					onClick={handleClick}
-					hideTooltip={openedMenu === MENU_NAME}
-				>
-					<Icon
-						iconName={`TextAlign${
-							horizontalAlignment === "center"
-								? "Center"
-								: horizontalAlignment === "left"
-									? "Left"
-									: "Right"
-						}`}
-						width={16}
-						height={16}
-					/>
-				</UiButton>
-			}
-		>
-			<UiPanel grid columns={3}>
-				<HorizontalAlignmentPicker
-					alignment={horizontalAlignment}
-					onPick={handleHorisontalAlignmentPick}
-				/>
-				<VerticalAlignmentPicker
-					alignment={verticalAlignment}
-					onPick={handleVerticalAlignmentPick}
-				/>
-			</UiPanel>
-		</ButtonWithMenu>
-	);
+  return (
+    <ButtonWithMenu
+      menuName={MENU_NAME}
+      openedMenu={openedMenu}
+      panelMbr={panelMbr}
+      windowHeight={windowHeight}
+      align="center"
+      button={
+        <UiButton
+          className={btnStyle.contextPanelButton}
+          id={"sticker-text-alignment"}
+          tooltip={t("contextPanel.textAlignment.tooltip")}
+          tooltipPosition="top"
+          onClick={handleClick}
+          hideTooltip={openedMenu === MENU_NAME}
+        >
+          <Icon
+            iconName={`TextAlign${
+              horizontalAlignment === "center"
+                ? "Center"
+                : horizontalAlignment === "left"
+                  ? "Left"
+                  : "Right"
+            }`}
+            width={16}
+            height={16}
+          />
+        </UiButton>
+      }
+    >
+      <UiPanel grid columns={3}>
+        <HorizontalAlignmentPicker
+          alignment={horizontalAlignment}
+          onPick={handleHorisontalAlignmentPick}
+        />
+        <VerticalAlignmentPicker
+          alignment={verticalAlignment}
+          onPick={handleVerticalAlignmentPick}
+        />
+      </UiPanel>
+    </ButtonWithMenu>
+  );
 }

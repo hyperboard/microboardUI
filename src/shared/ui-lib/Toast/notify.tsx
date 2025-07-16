@@ -8,112 +8,105 @@ import { conf } from "microboard-temp";
 import { Loader } from "shared/ui-lib/Loader/Loader.tsx";
 
 type Props = {
-	header?: ReactNode;
-	body?: ReactNode;
-	footer?: ReactNode;
-	duration?: number;
-	variant?: "success" | "error" | "info" | "warning" | "black";
-	position?: ToastPosition;
-	unclosable?: boolean;
-	inlineStyle?: CSSProperties;
-	button?: { text: string; onClick: () => void };
-	loader?: "loader" | "MediaLoader";
+  header?: ReactNode;
+  body?: ReactNode;
+  footer?: ReactNode;
+  duration?: number;
+  variant?: "success" | "error" | "info" | "warning" | "black";
+  position?: ToastPosition;
+  unclosable?: boolean;
+  inlineStyle?: CSSProperties;
+  button?: { text: string; onClick: () => void };
+  loader?: "loader" | "MediaLoader";
 };
 
 /** Triggers toast notification and returns notification id */
 export function notify({
-	header,
-	body,
-	footer,
-	duration = 4000,
-	variant = "info",
-	unclosable = false,
-	position = "top-right",
-	inlineStyle,
-	button,
-	loader,
+  header,
+  body,
+  footer,
+  duration = 4000,
+  variant = "info",
+  unclosable = false,
+  position = "top-right",
+  inlineStyle,
+  button,
+  loader,
 }: Props): string {
-	return toast.custom(
-		toastMsg => (
-			<div
-				onClick={
-					!unclosable ? () => toast.dismiss(toastMsg.id) : undefined
-				}
-				className={clsx(style.container, style[variant])}
-				style={{
-					opacity: toastMsg.visible ? 1 : 0,
-					animation: `${
-						toastMsg.visible ? style.fadeIn : style.fadeOut
-					} 0.3s ease`,
-				}}
-			>
-				{loader ? (
-					<Loader width={20} height={20} variant={loader} />
-				) : (
-					<Icon
-						className={style.icon}
-						iconName="Notification"
-						width={20}
-						height={20}
-					/>
-				)}
-				<div className={style.content}>
-					{header && typeof header === "string" ? (
-						<h3 className={style.title}>{header}</h3>
-					) : (
-						header
-					)}
-					{body && typeof body === "string" ? (
-						<p className={style.description}>
-							{body.split("\n").map((line, index) => (
-								<span key={index}>
-									{line}
-									{index < body.split("\n").length - 1 && (
-										<br />
-									)}
-								</span>
-							))}
-						</p>
-					) : (
-						body
-					)}
-					{footer}
-					{button && (
-						<button
-							className={style.button}
-							onClick={button.onClick}
-						>
-							{button.text}
-						</button>
-					)}
-				</div>
-				{!unclosable && (
-					<UiButton
-						size="sm"
-						rounded="none"
-						className={style.closeButton}
-						onClick={() => toast.dismiss(toastMsg.id)}
-						variant="secondary"
-					>
-						<Icon iconName="Close" width={20} height={20} />
-					</UiButton>
-				)}
-			</div>
-		),
-		{ duration, position, style: inlineStyle },
-	);
+  return toast.custom(
+    (toastMsg) => (
+      <div
+        onClick={!unclosable ? () => toast.dismiss(toastMsg.id) : undefined}
+        className={clsx(style.container, style[variant])}
+        style={{
+          opacity: toastMsg.visible ? 1 : 0,
+          animation: `${
+            toastMsg.visible ? style.fadeIn : style.fadeOut
+          } 0.3s ease`,
+        }}
+      >
+        {loader ? (
+          <Loader width={20} height={20} variant={loader} />
+        ) : (
+          <Icon
+            className={style.icon}
+            iconName="Notification"
+            width={20}
+            height={20}
+          />
+        )}
+        <div className={style.content}>
+          {header && typeof header === "string" ? (
+            <h3 className={style.title}>{header}</h3>
+          ) : (
+            header
+          )}
+          {body && typeof body === "string" ? (
+            <p className={style.description}>
+              {body.split("\n").map((line, index) => (
+                <span key={index}>
+                  {line}
+                  {index < body.split("\n").length - 1 && <br />}
+                </span>
+              ))}
+            </p>
+          ) : (
+            body
+          )}
+          {footer}
+          {button && (
+            <button className={style.button} onClick={button.onClick}>
+              {button.text}
+            </button>
+          )}
+        </div>
+        {!unclosable && (
+          <UiButton
+            size="sm"
+            rounded="none"
+            className={style.closeButton}
+            onClick={() => toast.dismiss(toastMsg.id)}
+            variant="secondary"
+          >
+            <Icon iconName="Close" width={20} height={20} />
+          </UiButton>
+        )}
+      </div>
+    ),
+    { duration, position, style: inlineStyle },
+  );
 }
 
 conf.notify = notify;
 conf.disMissNotification = toast.dismiss;
 
 export interface NotifyFunction {
-	(options: {
-		header: string;
-		body: string;
-		variant?: "info" | "success" | "warning" | "error";
-		duration?: number;
-		button?: { text: string; onClick: () => void };
-		loader?: "loader" | "MediaLoader";
-	}): string; // Returns notification id
+  (options: {
+    header: string;
+    body: string;
+    variant?: "info" | "success" | "warning" | "error";
+    duration?: number;
+    button?: { text: string; onClick: () => void };
+    loader?: "loader" | "MediaLoader";
+  }): string; // Returns notification id
 }

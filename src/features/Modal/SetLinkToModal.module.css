@@ -1,49 +1,49 @@
 .form {
-	display: flex;
-	flex-direction: column;
-	gap: 16px;
-	padding: 12px;
-	font-family: Manrope;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 12px;
+  font-family: Manrope;
 }
 
 .input {
-	max-width: 400px;
+  max-width: 400px;
 }
 
 .title {
-	font-weight: 600;
-	font-size: 30px;
-	font-weight: 600;
-	line-height: 36px;
-	letter-spacing: -0.016em;
+  font-weight: 600;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 36px;
+  letter-spacing: -0.016em;
 }
 
 .text {
-	font-size: 14px;
-	font-weight: 500;
-	line-height: 20px;
-	letter-spacing: -0.005em;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.005em;
 }
 
 .error {
-	font-size: 14px;
-	font-weight: 400;
-	color: red;
+  font-size: 14px;
+  font-weight: 400;
+  color: red;
 }
 
 .buttonsBox {
-	display: flex;
-	flex-wrap: nowrap;
-	gap: 16px;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 16px;
 }
 
 .btn {
-	padding: 12px;
-	width: fit-content;
+  padding: 12px;
+  width: fit-content;
 }
 
 @media (max-width: 768px) {
-	.buttonsBox {
-		flex-wrap: wrap;
-	}
+  .buttonsBox {
+    flex-wrap: wrap;
+  }
 }

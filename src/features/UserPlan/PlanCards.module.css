@@ -1,26 +1,26 @@
 .downgradeHeading {
-	font-size: 30px;
-	font-weight: 600;
+  font-size: 30px;
+  font-weight: 600;
 }
 
 .downgradeDesc {
-	font-size: 16px;
+  font-size: 16px;
 }
 
 .downgradeConfirmation {
-	display: flex;
-	flex-direction: column;
-	gap: 24px;
-	color: rgba(20, 21, 26, 1);
-	align-items: flex-start;
-	text-align: left;
-	padding: 32px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: rgba(20, 21, 26, 1);
+  align-items: flex-start;
+  text-align: left;
+  padding: 32px 64px;
 }
 
 .tooltip {
-	display: none;
-	position: absolute;
-	top: -35px;
-	left: 50%;
-	transform: translateX(-50%);
+  display: none;
+  position: absolute;
+  top: -35px;
+  left: 50%;
+  transform: translateX(-50%);
 }

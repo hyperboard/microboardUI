@@ -3,12 +3,12 @@ import ru from "./ru.json";
 
 export const defaultNS = "default";
 export const resources = {
-	en: {
-		default: en,
-	},
-	ru: {
-		default: ru,
-	},
+  en: {
+    default: en,
+  },
+  ru: {
+    default: ru,
+  },
 };
 
 // i18n.use(initReactI18next)

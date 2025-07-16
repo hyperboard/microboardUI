@@ -1,38 +1,38 @@
 .menu {
-	position: absolute;
-	width: max-content;
+  position: absolute;
+  width: max-content;
 }
 
 .item {
-	background: none;
-	display: flex;
-	align-items: center;
-	border-radius: 6px;
-	gap: 8px;
-	padding: 6px;
-	min-width: 100%;
-	white-space: nowrap;
-	cursor: pointer;
-	transition: 0.3s;
-	font-size: 1.4rem;
-	font-family: Manrope;
+  background: none;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  gap: 8px;
+  padding: 6px;
+  min-width: 100%;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 1.4rem;
+  font-family: Manrope;
 }
 
 .icon {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	color: #696b76;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #696b76;
 }
 
 .item:disabled,
 .item:disabled .icon {
-	color: rgba(10, 15, 41, 0.25);
-	cursor: not-allowed;
+  color: rgba(10, 15, 41, 0.25);
+  cursor: not-allowed;
 }
 
 @media (hover: hover) {
-	.item:hover:not(:disabled) {
-		background-color: rgba(10, 15, 41, 0.04);
-	}
+  .item:hover:not(:disabled) {
+    background-color: rgba(10, 15, 41, 0.04);
+  }
 }

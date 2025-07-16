@@ -1,82 +1,82 @@
 .panel {
-	width: 420px;
-	padding: 0 !important;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	z-index: 4;
-	max-width: 80dvw;
+  width: 420px;
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 4;
+  max-width: 80dvw;
 }
 
 .header {
-	width: 100%;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 12px 16px 12px 16px;
-	background-color: #ffffff;
-	position: relative;
-	border-radius: 12px 12px 0 0;
-	z-index: 2;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px 12px 16px;
+  background-color: #ffffff;
+  position: relative;
+  border-radius: 12px 12px 0 0;
+  z-index: 2;
 }
 
 .noPermission {
-	justify-content: end;
+  justify-content: end;
 }
 
 .headerOptions {
-	display: flex;
-	align-items: center;
-	gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .threadBtn {
-	width: fit-content;
-	height: fit-content;
-	padding: 6px 12px;
-	border-radius: 10px;
+  width: fit-content;
+  height: fit-content;
+  padding: 6px 12px;
+  border-radius: 10px;
 }
 
 .messages {
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	padding: 0 16px 4px 20px;
-	max-height: 60vh;
-	margin-right: 4px;
-	transform: translateY(-8px);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 0 16px 4px 20px;
+  max-height: 60vh;
+  margin-right: 4px;
+  transform: translateY(-8px);
 }
 
 .scrollContainer {
-	width: 100%;
-	overflow-y: auto;
-	scrollbar-gutter: stable;
+  width: 100%;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
 }
 
 .scrollContainer::-webkit-scrollbar {
-	appearance: none;
-	width: 4px;
+  appearance: none;
+  width: 4px;
 }
 
 .scrollContainer::-webkit-scrollbar-button {
-	display: none;
+  display: none;
 }
 
 .scrollContainer::-webkit-scrollbar-thumb {
-	display: block;
-	background-color: rgba(222, 225, 232, 1);
-	border-radius: 4px;
+  display: block;
+  background-color: rgba(222, 225, 232, 1);
+  border-radius: 4px;
 }
 
 .createMessage {
-	display: flex;
-	justify-content: space-between;
-	width: 100%;
-	align-items: center;
-	padding: 12px 16px;
-	gap: 12px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 12px;
 }
 
 .input {
-	width: 100%;
+  width: 100%;
 }

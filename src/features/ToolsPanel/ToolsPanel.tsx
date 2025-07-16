@@ -26,59 +26,57 @@ import { AddDice } from "features/ToolsPanel/Buttons/GameItems/AddDice";
 import { AddGameItem } from "features/ToolsPanel/Buttons/AddGameItem/AddGameItem";
 
 export function ToolsPanel(): JSX.Element {
-	const [openedMenu, setOpenedMenu] = useState("None");
+  const [openedMenu, setOpenedMenu] = useState("None");
 
-	const toggleMenu = (menu: string): void =>
-		setOpenedMenu(prev => (prev === menu ? "None" : menu));
+  const toggleMenu = (menu: string): void =>
+    setOpenedMenu((prev) => (prev === menu ? "None" : menu));
 
-	const { app } = useAppContext();
-	const forceUpdate = useForceUpdate();
-	useAppSubscription({
-		subjects: ["tools"],
-		observer: forceUpdate,
-	});
+  const { app } = useAppContext();
+  const forceUpdate = useForceUpdate();
+  useAppSubscription({
+    subjects: ["tools"],
+    observer: forceUpdate,
+  });
 
-	useEffect(() => {}, [window.showDebug]);
+  useEffect(() => {}, [window.showDebug]);
 
-	return (
-		<PanelContext.Provider value={{ toggleMenu, openedMenu }}>
-			<div
-				className={
-					window.location.protocol === "file:"
-						? style.localWrapper
-						: style.wrapper
-				}
-			>
-				<UiPanel vertical padding={0} zIndex={20}>
-					{/* <AddCounter /> */}
-					{/* <AddStar /> */}
-					{window.enableGames && (
-						<>
-							<AddGameItem />
-						</>
-					)}
-					<AddTemplate />
-					<UiSeparator />
-					<Select rounded={"none"} />
-					<AddDrawing />
-					<AddText />
-					<AddShape />
-					<AddConnector />
-					<AddSticker />
-					<AddFrame />
-					<AddMedia />
-				</UiPanel>
-				<UiPanel vertical padding={0}>
-					<Undo />
-					<Redo />
-				</UiPanel>
-				<div className={style.bottomLeftWrapper}>
-					{window.showDebug && <EventList />}
-					{window.enableDiagrams && (
-						<AIChatPanel board={app.getBoard()} />
-					)}
-				</div>
-			</div>
-		</PanelContext.Provider>
-	);
+  return (
+    <PanelContext.Provider value={{ toggleMenu, openedMenu }}>
+      <div
+        className={
+          window.location.protocol === "file:"
+            ? style.localWrapper
+            : style.wrapper
+        }
+      >
+        <UiPanel vertical padding={0} zIndex={20}>
+          {/* <AddCounter /> */}
+          {/* <AddStar /> */}
+          {window.enableGames && (
+            <>
+              <AddGameItem />
+            </>
+          )}
+          <AddTemplate />
+          <UiSeparator />
+          <Select rounded={"none"} />
+          <AddDrawing />
+          <AddText />
+          <AddShape />
+          <AddConnector />
+          <AddSticker />
+          <AddFrame />
+          <AddMedia />
+        </UiPanel>
+        <UiPanel vertical padding={0}>
+          <Undo />
+          <Redo />
+        </UiPanel>
+        <div className={style.bottomLeftWrapper}>
+          {window.showDebug && <EventList />}
+          {window.enableDiagrams && <AIChatPanel board={app.getBoard()} />}
+        </div>
+      </div>
+    </PanelContext.Provider>
+  );
 }

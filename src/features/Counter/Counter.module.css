@@ -1,20 +1,20 @@
 .container {
-	position: absolute;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	align-items: center;
-	padding: 12px;
-	background-color: #9a46f4;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background-color: #9a46f4;
 }
 
 .btn {
-	width: 100%;
-	font-size: 60%;
-	text-align: center;
-	padding: 8px;
-	background-color: #ffffff;
-	border: 1px solid black;
-	border-radius: 8px;
-	cursor: pointer;
+  width: 100%;
+  font-size: 60%;
+  text-align: center;
+  padding: 8px;
+  background-color: #ffffff;
+  border: 1px solid black;
+  border-radius: 8px;
+  cursor: pointer;
 }

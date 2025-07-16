@@ -47,12 +47,10 @@ To achive that eventual consistency the server orders the events that it recieve
 3. Events manager creates an event and sends it to the server, creates a command and applies it to the board.
 
 4. Server recieves an event and searches it in the board events table.
-
-    - If the event is already in the table then it is a repeated message, server does nothing.
-    - If the event is not in the table, then server appends it to the table.
+   - If the event is already in the table then it is a repeated message, server does nothing.
+   - If the event is not in the table, then server appends it to the table.
 
 5. Events manager recieves an event from the server.
-
-    - Events manager searches the event in the unacknoledged events. If the event in the unacknowledged events then the manager removes it from there and adds to acknoledged events.
-    - Events manager sends all unacknowledged events again with a small timeout.
-    - Events manager checks if the event is from another client and if it is then the manager checks if their order is lower then the order of acknoledged events and if it is then the server reverts all events with higher order (including all anacknowledged events) applies the event and reapplies all reverted events.
+   - Events manager searches the event in the unacknoledged events. If the event in the unacknowledged events then the manager removes it from there and adds to acknoledged events.
+   - Events manager sends all unacknowledged events again with a small timeout.
+   - Events manager checks if the event is from another client and if it is then the manager checks if their order is lower then the order of acknoledged events and if it is then the server reverts all events with higher order (including all anacknowledged events) applies the event and reapplies all reverted events.

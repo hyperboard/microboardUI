@@ -6,27 +6,27 @@ import { useUiModalContext } from "shared/ui-lib/UiModal/UiModalContext";
 import { CREATE_DICE_MODAL } from "../../../GameItems/CreateDiceModal";
 
 interface Props {
-	rounded?: string;
+  rounded?: string;
 }
 
 export function AddDice({ rounded }: Props) {
-	const { openModal } = useUiModalContext();
-	const { t } = useTranslation();
+  const { openModal } = useUiModalContext();
+  const { t } = useTranslation();
 
-	const handleClick = (): void => {
-		openModal(CREATE_DICE_MODAL);
-	};
+  const handleClick = (): void => {
+    openModal(CREATE_DICE_MODAL);
+  };
 
-	return (
-		<UiButton
-			id={"tool-add-dice"}
-			tooltip={t("toolsPanel.addGameItem.addDice.tooltip")}
-			onClick={handleClick}
-			active={false}
-			variant="secondary"
-			rounded={rounded}
-		>
-			<Icon iconName="Auto" />
-		</UiButton>
-	);
+  return (
+    <UiButton
+      id={"tool-add-dice"}
+      tooltip={t("toolsPanel.addGameItem.addDice.tooltip")}
+      onClick={handleClick}
+      active={false}
+      variant="secondary"
+      rounded={rounded}
+    >
+      <Icon iconName="Auto" />
+    </UiButton>
+  );
 }

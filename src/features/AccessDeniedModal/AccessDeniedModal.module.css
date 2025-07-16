@@ -1,56 +1,56 @@
 .wrapper {
-	padding: 72px 64px;
-	display: flex;
-	flex-direction: column;
-	min-width: 300px;
-	max-width: 610px;
+  padding: 72px 64px;
+  display: flex;
+  flex-direction: column;
+  min-width: 300px;
+  max-width: 610px;
 }
 
 @media screen and (max-width: 720px) {
-	.wrapper {
-		padding: 20px 12px;
-	}
+  .wrapper {
+    padding: 20px 12px;
+  }
 }
 
 .heading {
-	font-family: Manrope;
-	font-size: 30px;
-	font-style: normal;
-	font-weight: 600;
+  font-family: Manrope;
+  font-size: 30px;
+  font-style: normal;
+  font-weight: 600;
 }
 
 .msg {
-	font-family: Manrope;
-	font-size: 14px;
-	font-style: normal;
-	font-weight: 500;
-	margin-top: 8px;
-	display: flex;
-	flex-direction: column;
-	gap: 16px;
+  font-family: Manrope;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .link {
-	color: #924fe8;
-	text-decoration: underline;
-	border: none;
+  color: #924fe8;
+  text-decoration: underline;
+  border: none;
 }
 
 .link::after {
-	width: 0;
-	height: 0;
-	background: none;
+  width: 0;
+  height: 0;
+  background: none;
 }
 
 .link:hover::after {
-	width: 0;
-	height: 0;
-	background: none;
+  width: 0;
+  height: 0;
+  background: none;
 }
 
 .btn {
-	margin-top: 16px;
-	align-self: flex-start;
-	width: auto;
-	padding: 10px 16px;
+  margin-top: 16px;
+  align-self: flex-start;
+  width: auto;
+  padding: 10px 16px;
 }

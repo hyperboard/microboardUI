@@ -7,56 +7,52 @@ import React, { useEffect, type ReactNode } from "react";
 import { useAppContext } from "./AppContext";
 
 type Props = {
-	iframe?: boolean;
-	fallback?: ReactNode;
-	mode?: ViewMode | ViewMode[];
-	children?: ReactNode | ((interfaceType: InterfaceType) => ReactNode);
-	callback?: () => void;
-	fallbackCb?: () => void;
-	shouldLog?: boolean;
+  iframe?: boolean;
+  fallback?: ReactNode;
+  mode?: ViewMode | ViewMode[];
+  children?: ReactNode | ((interfaceType: InterfaceType) => ReactNode);
+  callback?: () => void;
+  fallbackCb?: () => void;
+  shouldLog?: boolean;
 };
 
 export function ViewModeGuard({
-	children,
-	iframe,
-	fallback,
-	mode = "edit",
-	callback,
-	fallbackCb,
+  children,
+  iframe,
+  fallback,
+  mode = "edit",
+  callback,
+  fallbackCb,
 }: Props) {
-	const { board } = useAppContext();
-	const forceUpdate = useForceUpdate();
-	useAppSubscription({
-		subjects: ["board"],
-		observer: forceUpdate,
-	});
+  const { board } = useAppContext();
+  const forceUpdate = useForceUpdate();
+  useAppSubscription({
+    subjects: ["board"],
+    observer: forceUpdate,
+  });
 
-	const interfaceType = board.getInterfaceType();
+  const interfaceType = board.getInterfaceType();
 
-	const shouldUseFallback =
-		((!Array.isArray(mode) && interfaceType !== mode) ||
-			(Array.isArray(mode) && !mode.includes(interfaceType))) &&
-		(!iframe || isIframe());
+  const shouldUseFallback =
+    ((!Array.isArray(mode) && interfaceType !== mode) ||
+      (Array.isArray(mode) && !mode.includes(interfaceType))) &&
+    (!iframe || isIframe());
 
-	useEffect(() => {
-		if (shouldUseFallback && fallbackCb) {
-			fallbackCb();
-		}
+  useEffect(() => {
+    if (shouldUseFallback && fallbackCb) {
+      fallbackCb();
+    }
 
-		if (callback) {
-			callback();
-		}
-	}, [shouldUseFallback, fallbackCb, callback]);
+    if (callback) {
+      callback();
+    }
+  }, [shouldUseFallback, fallbackCb, callback]);
 
-	if (shouldUseFallback) {
-		return <>{fallback}</>;
-	}
+  if (shouldUseFallback) {
+    return <>{fallback}</>;
+  }
 
-	return (
-		<>
-			{typeof children === "function"
-				? children(interfaceType)
-				: children}
-		</>
-	);
+  return (
+    <>{typeof children === "function" ? children(interfaceType) : children}</>
+  );
 }

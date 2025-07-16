@@ -1,51 +1,51 @@
 .comment {
-	position: relative;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	height: 32px;
-	border-radius: 6px;
-	border: 2px solid #dee0e3;
-	padding: 6px;
-	background-color: #ffffff;
-	color: #ffffff;
-	z-index: 1;
-	cursor: pointer;
-	box-shadow: 0px 10px 16px -3px #14151a0d;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 32px;
+  border-radius: 6px;
+  border: 2px solid #dee0e3;
+  padding: 6px;
+  background-color: #ffffff;
+  color: #ffffff;
+  z-index: 1;
+  cursor: pointer;
+  box-shadow: 0px 10px 16px -3px #14151a0d;
 }
 
 .unread {
-	background-color: #924fe8;
-	color: #924fe8;
+  background-color: #924fe8;
+  color: #924fe8;
 }
 
 .commentTippy {
-	position: absolute;
-	top: 100%;
-	z-index: 2;
+  position: absolute;
+  top: 100%;
+  z-index: 2;
 }
 
 .badge {
-	width: 16px;
-	height: 16px;
-	border-radius: 50%;
-	background-color: #924fe8;
-	position: absolute;
-	right: -8px;
-	top: -8px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	color: #ffffff;
-	font-family: Manrope;
-	font-size: 12px;
-	font-weight: 600;
-	line-height: 16px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #924fe8;
+  position: absolute;
+  right: -8px;
+  top: -8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ffffff;
+  font-family: Manrope;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
 }
 
 .badgeDot {
-	width: 4px;
-	height: 4px;
-	border-radius: 50%;
-	background-color: #ffffff;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: #ffffff;
 }
