@@ -19,7 +19,8 @@
     ".": {
       "import": "./dist/index.js"
     },
-    "./style": "./dist/index.css"
+    "./style": "./dist/index.css",
+    "./sprite": "./dist/sprite.svg"
   },
   "devDependencies": {
     "@types/bun": "^1.2.18",
