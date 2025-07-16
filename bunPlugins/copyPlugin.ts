@@ -42,14 +42,15 @@ export function copyPlugin(opts: {
   from: string;
   to: string;
   bundle?: boolean;
+  cleanDir?: boolean;
 }): BunPlugin {
-  const { from, to, bundle = false } = opts;
+  const { from, to, bundle = false, cleanDir = true } = opts;
 
   return {
     name: "copy-plugin",
     setup(build) {
       build.onStart(async () => {
-        if (!cleaned[to]) {
+        if (!cleaned[to] && cleanDir) {
           cleaned[to] = true;
           rmSync(to, { recursive: true, force: true });
           mkdirSync(to, { recursive: true });

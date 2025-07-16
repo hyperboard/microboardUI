@@ -35,6 +35,11 @@ async function main() {
         to: "public",
         bundle: true,
       }),
+      copyPlugin({
+        from: "src/shared/ui-lib/Icon/sprite.svg",
+        to: "dist",
+        cleanDir: false,
+      }),
     ],
   });
 
