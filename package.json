@@ -5,21 +5,16 @@
   "module": "dist/index.js",
   "type": "module",
   "scripts": {
-    "clean": "rimraf dist public",
-    "build:static": "bun run scripts/buildStatic.ts",
-    "build:pkg": "bun run scripts/buildPkg.ts",
-    "build": "bun run build:pkg; bun run build:static",
-    "start": "bun run server.ts"
+    "clean": "rimraf dist",
+    "build": "bun run scripts/build.ts"
   },
   "files": [
-    "dist",
-    "public"
+    "dist"
   ],
   "exports": {
     ".": {
       "import": "./dist/index.js"
     },
-    "./static/*": "./public/*",
     "./style": "./dist/index.css"
   },
   "devDependencies": {
