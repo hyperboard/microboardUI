@@ -1,306 +1,306 @@
 .default {
-	--background-color: rgba(146, 79, 232, 1);
-	--background-hover-color: rgb(115, 29, 226);
-	--background-active-color: rgb(115, 29, 226);
-	--background-disabled-color: rgb(233, 234, 236);
+  --background-color: rgba(146, 79, 232, 1);
+  --background-hover-color: rgb(115, 29, 226);
+  --background-active-color: rgb(115, 29, 226);
+  --background-disabled-color: rgb(233, 234, 236);
 
-	--content-color: rgba(255, 255, 255, 1);
-	--content-hover-color: rgba(255, 255, 255, 1);
-	--content-active-color: rgba(255, 255, 255, 1);
-	--content-disabled-color: rgb(177, 179, 187);
+  --content-color: rgba(255, 255, 255, 1);
+  --content-hover-color: rgba(255, 255, 255, 1);
+  --content-active-color: rgba(255, 255, 255, 1);
+  --content-disabled-color: rgb(177, 179, 187);
 
-	--focus-outline-color: rgb(227, 217, 255);
+  --focus-outline-color: rgb(227, 217, 255);
 }
 
 .secondary {
-	--background-color: rgb(255, 255, 255);
-	--background-hover-color: rgb(247, 247, 248);
-	--background-active-color: rgb(247, 247, 248);
-	--background-disabled-color: rgb(255, 255, 255);
+  --background-color: rgb(255, 255, 255);
+  --background-hover-color: rgb(247, 247, 248);
+  --background-active-color: rgb(247, 247, 248);
+  --background-disabled-color: rgb(255, 255, 255);
 
-	--content-color: rgb(20, 21, 26);
-	--content-hover-color: rgb(20, 21, 26);
-	--content-active-color: rgb(146, 79, 232);
-	--content-disabled-color: rgb(177, 179, 187);
+  --content-color: rgb(20, 21, 26);
+  --content-hover-color: rgb(20, 21, 26);
+  --content-active-color: rgb(146, 79, 232);
+  --content-disabled-color: rgb(177, 179, 187);
 
-	--focus-outline-color: rgb(227, 217, 255);
+  --focus-outline-color: rgb(227, 217, 255);
 }
 
 .tertiary {
-	--background-color: rgb(245, 246, 247);
-	--background-hover-color: rgb(236, 236, 238);
-	--background-active-color: rgb(236, 236, 238);
+  --background-color: rgb(245, 246, 247);
+  --background-hover-color: rgb(236, 236, 238);
+  --background-active-color: rgb(236, 236, 238);
 
-	--content-color: var(--text-base-primary);
-	--content-hover-color: var(--text-base-primary);
-	--content-active-color: var(--text-base-primary);
-	--content-disabled-color: var(--text-base-quaternary);
+  --content-color: var(--text-base-primary);
+  --content-hover-color: var(--text-base-primary);
+  --content-active-color: var(--text-base-primary);
+  --content-disabled-color: var(--text-base-quaternary);
 
-	--focus-outline-color: rgb(227, 217, 255);
+  --focus-outline-color: rgb(227, 217, 255);
 }
 
 .black {
-	--background-color: rgb(20, 21, 26);
-	--background-hover-color: rgb(31, 34, 40);
-	--background-active-color: rgb(236, 236, 238);
-	--background-disabled-color: rgb(233, 234, 236);
+  --background-color: rgb(20, 21, 26);
+  --background-hover-color: rgb(31, 34, 40);
+  --background-active-color: rgb(236, 236, 238);
+  --background-disabled-color: rgb(233, 234, 236);
 
-	--content-color: rgb(255, 255, 255);
-	--content-hover-color: var(--text-base-primary);
-	--content-active-color: var(--text-base-primary);
-	--content-disabled-color: var(--text-base-quaternary);
+  --content-color: rgb(255, 255, 255);
+  --content-hover-color: var(--text-base-primary);
+  --content-active-color: var(--text-base-primary);
+  --content-disabled-color: var(--text-base-quaternary);
 
-	--focus-outline-color: rgb(227, 217, 255);
+  --focus-outline-color: rgb(227, 217, 255);
 }
 
-.radius-xl {
-	--radius: 12px;
+.radiusXl {
+  --radius: 12px;
 }
 
-.radius-md {
-	--radius: 8px;
+.radiusMd {
+  --radius: 8px;
 }
 
-.radius-sm {
-	--radius: 4px;
+.radiusSm {
+  --radius: 4px;
 }
 
 .xl {
-	--min-width: 48px;
-	--min-height: 48px;
-	--padding: 0 12px;
+  --min-width: 48px;
+  --min-height: 48px;
+  --padding: 0 12px;
 }
 
 .lg {
-	--min-width: 40px;
-	--min-height: 40px;
-	--padding: 0;
+  --min-width: 40px;
+  --min-height: 40px;
+  --padding: 0;
 }
 
 .md {
-	--min-width: 32px;
-	--min-height: 32px;
-	--padding: 0 4px;
+  --min-width: 32px;
+  --min-height: 32px;
+  --padding: 0 4px;
 }
 
 .sm {
-	--min-width: 32px;
-	--min-height: 32px;
-	--padding: 6px 14px;
-	font-size: 14px;
+  --min-width: 32px;
+  --min-height: 32px;
+  --padding: 6px 14px;
+  font-size: 14px;
 }
 
 .fullRounded {
-	border-radius: var(--radius);
+  border-radius: var(--radius);
 }
 
 .topRounded {
-	border-top-left-radius: var(--radius);
-	border-top-right-radius: var(--radius);
+  border-top-left-radius: var(--radius);
+  border-top-right-radius: var(--radius);
 }
 
 .bottomRounded {
-	border-bottom-left-radius: var(--radius);
-	border-bottom-right-radius: var(--radius);
+  border-bottom-left-radius: var(--radius);
+  border-bottom-right-radius: var(--radius);
 }
 
 .leftRounded {
-	border-top-left-radius: var(--radius);
-	border-bottom-left-radius: var(--radius);
+  border-top-left-radius: var(--radius);
+  border-bottom-left-radius: var(--radius);
 }
 
 .rightRounded {
-	border-top-right-radius: var(--radius);
-	border-bottom-right-radius: var(--radius);
+  border-top-right-radius: var(--radius);
+  border-bottom-right-radius: var(--radius);
 }
 
 .button {
-	position: relative;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	min-width: var(--min-width);
-	min-height: var(--min-height);
-	padding: var(--padding);
-	border: none;
-	cursor: pointer;
-	transition:
-		background ease-in 0.2s,
-		color ease-in 0.2s;
-	outline: none;
-	background-color: var(--background-color);
-	color: var(--content-color);
-	gap: 8px;
-	font-family: "Manrope", "Arial";
-	font-size: 14px;
-	font-weight: 500;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: var(--min-width);
+  min-height: var(--min-height);
+  padding: var(--padding);
+  border: none;
+  cursor: pointer;
+  transition:
+    background ease-in 0.2s,
+    color ease-in 0.2s;
+  outline: none;
+  background-color: var(--background-color);
+  color: var(--content-color);
+  gap: 8px;
+  font-family: "Manrope", "Arial";
+  font-size: 14px;
+  font-weight: 500;
 }
 
 .button:focus-visible {
-	outline: 2px solid var(--focus-outline-color);
-	z-index: 20;
+  outline: 2px solid var(--focus-outline-color);
+  z-index: 20;
 }
 
 @media (hover: hover) {
-	.button:hover {
-		background-color: var(--background-hover-color);
-		color: var(--content-hover-color);
-	}
+  .button:hover {
+    background-color: var(--background-hover-color);
+    color: var(--content-hover-color);
+  }
 }
 
 .button.active:not([disabled]),
 .button:active:not([disabled]) {
-	background-color: var(--background-active-color);
-	color: var(--content-active-color);
+  background-color: var(--background-active-color);
+  color: var(--content-active-color);
 }
 
 .disableBg {
-	background-color: transparent;
+  background-color: transparent;
 }
 
 .button:disabled {
-	color: var(--content-disabled-color);
-	background-color: var(--background-disabled-color);
-	cursor: not-allowed;
+  color: var(--content-disabled-color);
+  background-color: var(--background-disabled-color);
+  cursor: not-allowed;
 }
 
 .hotkey {
-	color: rgb(246, 246, 246);
-	flex: 1 0;
-	white-space: nowrap;
-	padding: 0 4px;
-	border-radius: 2px;
-	background-color: rgb(94, 99, 110);
+  color: rgb(246, 246, 246);
+  flex: 1 0;
+  white-space: nowrap;
+  padding: 0 4px;
+  border-radius: 2px;
+  background-color: rgb(94, 99, 110);
 }
 
 /* PRIMARY */
 
 .primary {
-	border: 1px solid #14151a;
-	background-color: #14151a;
-	color: white;
+  border: 1px solid #14151a;
+  background-color: #14151a;
+  color: white;
 
-	box-shadow: 0 1px 2px rgba(20, 21, 26, 0.05);
+  box-shadow: 0 1px 2px rgba(20, 21, 26, 0.05);
 }
 
 .primary:hover:not(:disabled) {
-	background-color: #1f2228;
-	color: white;
+  background-color: #1f2228;
+  color: white;
 }
 
 .primary:active:not(:disabled) {
-	outline: 2px solid rgba(200, 178, 255, 0.5);
+  outline: 2px solid rgba(200, 178, 255, 0.5);
 }
 
 .primary:disabled {
-	border-color: #e9eaec;
-	background-color: #e9eaec;
-	color: #0a0f2940;
+  border-color: #e9eaec;
+  background-color: #e9eaec;
+  color: #0a0f2940;
 }
 
 .primary:disabled:hover {
-	border-color: #e9eaec;
-	background-color: #e9eaec;
-	color: rgba(10, 15, 41, 0.25);
+  border-color: #e9eaec;
+  background-color: #e9eaec;
+  color: rgba(10, 15, 41, 0.25);
 }
 
 .primary.loading {
-	border-color: #14151a;
-	background-color: #14151a;
-	color: white;
+  border-color: #14151a;
+  background-color: #14151a;
+  color: white;
 }
 
 /* quaternary */
 
 .quaternary,
 .quaternary:disabled {
-	color: #14151a;
-	background-color: rgba(10, 15, 41, 0.04);
+  color: #14151a;
+  background-color: rgba(10, 15, 41, 0.04);
 }
 
 .quaternary:disabled {
-	color: #0a0f2940;
+  color: #0a0f2940;
 }
 
 .quaternary:hover:not(:disabled) {
-	color: #14151a;
-	background-color: rgba(10, 15, 41, 0.08);
+  color: #14151a;
+  background-color: rgba(10, 15, 41, 0.08);
 }
 
 .quaternary:active:not(:disabled),
 .tertiary:active:not(:disabled) {
-	border: 1px solid #b78af0;
-	outline: 2px solid rgba(200, 178, 255, 0.5);
+  border: 1px solid #b78af0;
+  outline: 2px solid rgba(200, 178, 255, 0.5);
 }
 
 /* TERTIARY */
 
 .tertiary {
-	color: #14151a;
-	background-color: #ffffff;
-	border: 1px solid #dee0e3;
+  color: #14151a;
+  background-color: #ffffff;
+  border: 1px solid #dee0e3;
 }
 
 .tertiary:hover:not(:disabled) {
-	background-color: #f7f7f8;
+  background-color: #f7f7f8;
 }
 
 /* GHOST */
 
 .ghost {
-	background-color: transparent;
-	color: rgba(15, 19, 36, 0.6);
+  background-color: transparent;
+  color: rgba(15, 19, 36, 0.6);
 
-	font-weight: 600;
+  font-weight: 600;
 }
 
 .ghost:hover {
-	color: rgba(10, 15, 41, 0.6);
-	background-color: rgba(10, 15, 41, 0.04);
+  color: rgba(10, 15, 41, 0.6);
+  background-color: rgba(10, 15, 41, 0.04);
 }
 
 .ghost:active {
-	border: 1px solid #b78af0;
-	outline: 2px solid rgba(200, 178, 255, 0.5);
+  border: 1px solid #b78af0;
+  outline: 2px solid rgba(200, 178, 255, 0.5);
 }
 
 .ghost:disabled {
-	color: rgba(10, 15, 41, 0.25);
-	color: #0a0f2940;
+  color: rgba(10, 15, 41, 0.25);
+  color: #0a0f2940;
 }
 
 /* GHOST FILLED */
 
 .ghostFilled {
-	font-weight: 600;
-	color: rgba(10, 15, 41, 0.6);
-	background-color: rgba(10, 15, 41, 0.04);
+  font-weight: 600;
+  color: rgba(10, 15, 41, 0.6);
+  background-color: rgba(10, 15, 41, 0.04);
 }
 
 .ghostFilled:active {
-	border: 1px solid #b78af0;
-	outline: 2px solid rgba(200, 178, 255, 0.5);
+  border: 1px solid #b78af0;
+  outline: 2px solid rgba(200, 178, 255, 0.5);
 }
 
 .ghostFilled:disabled {
-	color: rgba(10, 15, 41, 0.25);
+  color: rgba(10, 15, 41, 0.25);
 }
 
 .loader {
-	width: 20px;
-	height: 20px;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	animation: rotate 2s linear infinite;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: rotate 2s linear infinite;
 }
 
 @keyframes rotate {
-	0% {
-		transform: rotate(0deg);
-	}
-	100% {
-		transform: rotate(360deg);
-	}
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

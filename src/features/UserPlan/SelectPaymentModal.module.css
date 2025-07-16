@@ -1,206 +1,206 @@
 .wrapper {
-	padding: 32px 64px;
-	display: flex;
-	flex-direction: column;
-	gap: 24px;
-	align-items: center;
+  padding: 32px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
 }
 
 .heading {
-	font-size: 56px;
-	font-weight: 600;
+  font-size: 56px;
+  font-weight: 600;
 }
 
 .cards {
-	display: flex;
-	flex-direction: column;
-	gap: 24px;
-	align-items: stretch;
-	width: 50vw;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: stretch;
+  width: 50vw;
 }
 
 @media (max-width: 600px) {
-	.cards {
-		width: 85vw;
-	}
+  .cards {
+    width: 85vw;
+  }
 }
 
 .card {
-	cursor: pointer;
-	width: 100%;
-	height: 100%;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
 
-	font-weight: 500;
-	font-size: 18px;
-	line-height: 26px;
-	color: #14151a;
-	background: #ffffff;
-	border: 1px solid #dee0e3;
-	box-shadow:
-		0px 10px 16px -3px rgba(20, 21, 26, 0.08),
-		0px 3px 6px -2px rgba(20, 21, 26, 0.05);
-	border-radius: 16px;
-	box-sizing: border-box;
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	justify-content: space-between;
-	padding: 24px;
-	gap: 8px;
-	isolation: isolate;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 26px;
+  color: #14151a;
+  background: #ffffff;
+  border: 1px solid #dee0e3;
+  box-shadow:
+    0px 10px 16px -3px rgba(20, 21, 26, 0.08),
+    0px 3px 6px -2px rgba(20, 21, 26, 0.05);
+  border-radius: 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 24px;
+  gap: 8px;
+  isolation: isolate;
 
-	> div {
-		text-align: left;
-	}
+  > div {
+    text-align: left;
+  }
 
-	.title {
-		align-items: flex-start;
-		display: flex;
-		flex-direction: row;
-		padding: 0px;
-		gap: 12px;
-		width: 100%;
-		.icons {
-			display: flex;
-			padding-top: 4px;
-			gap: 4px;
-		}
-		.text {
-			display: flex;
-			justify-content: space-between;
-		}
-		.main-content {
-			width: 100%;
-		}
-	}
+  .title {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: row;
+    padding: 0px;
+    gap: 12px;
+    width: 100%;
+    .icons {
+      display: flex;
+      padding-top: 4px;
+      gap: 4px;
+    }
+    .text {
+      display: flex;
+      justify-content: space-between;
+    }
+    .mainContent {
+      width: 100%;
+    }
+  }
 }
 
 .footer {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	gap: 12px;
-	button {
-		padding: 6px 10px;
-		display: flex;
-		font-family: Manrope;
-		font-weight: 500;
-		font-size: 14px;
-		line-height: 20px;
-		letter-spacing: -0.5%;
-		text-align: center;
-		white-space: nowrap;
-		flex: 0 0 auto;
-		width: auto;
-	}
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  button {
+    padding: 6px 10px;
+    display: flex;
+    font-family: Manrope;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: -0.5%;
+    text-align: center;
+    white-space: nowrap;
+    flex: 0 0 auto;
+    width: auto;
+  }
 }
 
-.inline-buttons {
-	width: 100%;
-	display: flex;
-	gap: 8px;
-	align-items: center;
-	justify-content: space-between;
+.inlineButtons {
+  width: 100%;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .description {
-	font-family: "Manrope", sans-serif;
-	font-weight: 400;
-	font-size: 16px;
-	color: #0f132499;
+  font-family: "Manrope", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: #0f132499;
 }
 
 .paddingTop {
-	padding-top: 8px;
+  padding-top: 8px;
 }
 
 .back {
-	align-self: flex-start;
-	flex: 1 1;
-	width: auto;
-	padding: 12px 16px;
+  align-self: flex-start;
+  flex: 1 1;
+  width: auto;
+  padding: 12px 16px;
 }
 
 .cardEnter {
-	overflow: hidden;
+  overflow: hidden;
 }
 .cardEnterActive {
-	transition: height 400ms ease-in-out;
+  transition: height 400ms ease-in-out;
 }
 .cardExit {
-	overflow: hidden;
+  overflow: hidden;
 }
 .cardExitActive {
-	transition: height 400ms ease-in-out;
+  transition: height 400ms ease-in-out;
 }
 
 .coins {
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	align-items: flex-start;
-	align-content: flex-start;
-	padding: 0px;
-	gap: 12px;
-	padding-bottom: 16px;
-	width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  align-content: flex-start;
+  padding: 0px;
+  gap: 12px;
+  padding-bottom: 16px;
+  width: 100%;
 }
 
 .coin {
-	box-sizing: border-box;
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	padding: 9px;
-	gap: 9px;
-	width: 26%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 9px;
+  gap: 9px;
+  width: 26%;
 
-	background: #ffffff;
-	border: 1px solid #dee0e3;
-	border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid #dee0e3;
+  border-radius: 10px;
 
-	flex: none;
-	order: 1;
-	flex-grow: 0;
+  flex: none;
+  order: 1;
+  flex-grow: 0;
 }
 
-.coin-title {
-	align-items: flex-start;
-	display: flex;
-	flex-direction: column;
-	padding: 0px;
-	gap: 9px;
-	width: 100%;
-	.main-content {
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-		width: 100%;
-	}
+.coinTitle {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  padding: 0px;
+  gap: 9px;
+  width: 100%;
+  .mainContent {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+  }
 }
 
 .active {
-	background: #ecdffb;
+  background: #ecdffb;
 }
 
 .coin.active:hover {
-	background-color: #ecdffb;
+  background-color: #ecdffb;
 }
 
 .tokenAmountWrapper {
-	margin-bottom: 20px;
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .tokenAmountInput {
-	width: 100%;
-	max-width: 200px;
+  width: 100%;
+  max-width: 200px;
 }
 
 .tokenPrice {
-	margin-top: 8px;
-	font-size: 14px;
-	color: var(--text-secondary);
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
 }

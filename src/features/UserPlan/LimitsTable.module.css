@@ -1,131 +1,131 @@
 .table {
-	font-size: 14px;
-	font-weight: 400;
-	border-collapse: collapse;
-	width: 100%;
+  font-size: 14px;
+  font-weight: 400;
+  border-collapse: collapse;
+  width: 100%;
 }
 
 .row {
-	border-bottom: 1px solid #e9eaec;
+  border-bottom: 1px solid #e9eaec;
 }
 
 .limit {
-	text-align: left;
+  text-align: left;
 }
 
 .unlimited {
-	color: rgba(38, 189, 108, 1);
+  color: rgba(38, 189, 108, 1);
 }
 
 .table td,
 .table th {
-	padding: 8px 12px;
+  padding: 8px 12px;
 }
 
 .table th {
-	font-weight: 400;
-	text-align: left;
-	border-right: 1px solid #e9eaec;
+  font-weight: 400;
+  text-align: left;
+  border-right: 1px solid #e9eaec;
 }
 
 .table th:last-child {
-	border-right: none;
+  border-right: none;
 }
 
 .header {
-	background-color: rgb(247, 247, 248);
+  background-color: rgb(247, 247, 248);
 }
 
 td.currentTariff {
-	background-color: rgba(245, 242, 251, 1);
-	color: rgba(114, 86, 171, 1);
+  background-color: rgba(245, 242, 251, 1);
+  color: rgba(114, 86, 171, 1);
 }
 
 .modelsHeading {
-	text-align: left;
+  text-align: left;
 }
 
 .model {
-	gap: 2px;
-	text-align: left;
+  gap: 2px;
+  text-align: left;
 }
 
 .modelName {
-	font-weight: 500;
-	color: rgba(20, 21, 26, 1);
+  font-weight: 500;
+  color: rgba(20, 21, 26, 1);
 }
 
 .modelDescription {
-	font-size: 12px;
-	font-weight: 400;
-	color: rgba(15, 19, 36, 0.6);
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(15, 19, 36, 0.6);
 }
 
 .modelDisabled {
-	color: rgba(10, 15, 41, 0.25);
+  color: rgba(10, 15, 41, 0.25);
 }
 
 .modelDisabled.currentTariff {
-	color: rgba(197, 178, 234, 1);
+  color: rgba(197, 178, 234, 1);
 }
 
 .modelLimitReached {
-	color: rgba(13, 17, 38, 0.4);
+  color: rgba(13, 17, 38, 0.4);
 }
 
 .limits {
-	font-size: 14px;
-	font-weight: 400;
+  font-size: 14px;
+  font-weight: 400;
 }
 
-.tip-container {
-	display: none;
-	position: absolute;
-	user-select: none;
-	pointer-events: none;
-	justify-items: center;
-	z-index: 2000;
+.tipContainer {
+  display: none;
+  position: absolute;
+  user-select: none;
+  pointer-events: none;
+  justify-items: center;
+  z-index: 2000;
 }
 
 .tip {
-	padding: 8px 12px;
-	border-radius: 6px;
-	display: flex;
-	align-items: center;
-	gap: 4px;
-	font-size: 1.4rem;
-	font-weight: 400;
-	background-color: rgb(11, 12, 14);
-	color: rgb(247, 247, 247);
-	position: relative;
+  padding: 8px 12px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 1.4rem;
+  font-weight: 400;
+  background-color: rgb(11, 12, 14);
+  color: rgb(247, 247, 247);
+  position: relative;
 }
 
 .tip::before {
-	content: "";
-	position: absolute;
-	width: 0;
-	height: 0;
-	border-left: 0.7rem solid transparent;
-	border-right: 0.7rem solid transparent;
-	border-bottom: 0.8rem solid rgb(11, 12, 14);
-	border-radius: 8px;
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 0.7rem solid transparent;
+  border-right: 0.7rem solid transparent;
+  border-bottom: 0.8rem solid rgb(11, 12, 14);
+  border-radius: 8px;
 }
 
-.tip-container.bottom-right .tip::before {
-	left: 2.5rem;
-	margin-right: -0.7rem;
-	top: -0.6rem;
+.tipContainer.bottomRight .tip::before {
+  left: 2.5rem;
+  margin-right: -0.7rem;
+  top: -0.6rem;
 }
 
-/* .tip-container.bottom-right {
+/* .tipContainer.bottomRight {
 	top: calc(100% + 1.2rem);
 	right: -1rem;
 } */
 
-.tip-text.center {
-	text-align: center;
+.tipText.center {
+  text-align: center;
 }
 
-.tip-container.visible {
-	display: flex;
+.tipContainer.visible {
+  display: flex;
 }

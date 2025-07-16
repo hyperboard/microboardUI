@@ -1,49 +1,49 @@
 .container {
-	position: relative;
-	display: flex;
-	flex-direction: column;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
 .menu {
-	position: absolute;
-	z-index: 20;
+  position: absolute;
+  z-index: 20;
 
-	--offset: 0px;
+  --offset: 0px;
 }
 
 .offset {
-	--offset: 8px;
+  --offset: 8px;
 }
 
 .top {
-	bottom: calc(100% + var(--offset));
+  bottom: calc(100% + var(--offset));
 }
 
 .bottom {
-	top: calc(100% + var(--offset));
+  top: calc(100% + var(--offset));
 }
 
-.offset-left {
-	left: calc(100% + var(--offset));
+.offsetLeft {
+  left: calc(100% + var(--offset));
 }
 
-.offset-right {
-	right: calc(100% + var(--offset));
+.offsetRight {
+  right: calc(100% + var(--offset));
 }
 
-.offset-center {
-	right: 0;
+.offsetCenter {
+  right: 0;
 }
 
 .middle {
-	top: 50%;
-	transform: translateY(-50%);
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .opened {
-	visibility: visible;
+  visibility: visible;
 }
 
 .closed {
-	visibility: hidden;
+  visibility: hidden;
 }

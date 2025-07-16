@@ -38,9 +38,8 @@ jobs:
       #   continue-on-error: true # ⚠️ ВРЕМЕННО: продолжить, даже если тесты падают
       #   run: bun test
 
-      # - name: Lint
-      #   continue-on-error: true # ⚠️ ВРЕМЕННО: продолжить, даже если линтер находит ошибки
-      #   run: bun run lint
+      - name: Lint
+        run: bun run lint
 
       - name: Automated Version Bump
         id: version-bump
