@@ -4,28 +4,28 @@ import { conf, DrawingTool } from "microboard-temp";
 import { UiButton } from "shared/ui-lib/UiButton";
 
 type Props = {
-	onPick: (type: DrawingTool) => void;
-	selected?: DrawingTool | "None";
+  onPick: (type: DrawingTool) => void;
+  selected?: DrawingTool | "None";
 };
 
 export const DrawingToolPicker = ({
-	selected,
-	onPick,
+  selected,
+  onPick,
 }: Props): React.ReactElement => {
-	return (
-		<>
-			{conf.DRAWING_TOOLS.map(drawing => (
-				<UiButton
-					id={`drawing-${drawing}`}
-					onClick={() => onPick(drawing)}
-					key={drawing}
-					size="md"
-					variant="secondary"
-					active={selected === drawing}
-				>
-					<Icon iconName={drawing} width={24} height={24} />
-				</UiButton>
-			))}
-		</>
-	);
+  return (
+    <>
+      {conf.DRAWING_TOOLS.map((drawing) => (
+        <UiButton
+          id={`drawing-${drawing}`}
+          onClick={() => onPick(drawing)}
+          key={drawing}
+          size="md"
+          variant="secondary"
+          active={selected === drawing}
+        >
+          <Icon iconName={drawing} width={24} height={24} />
+        </UiButton>
+      ))}
+    </>
+  );
 };

@@ -15,88 +15,72 @@ import { conf } from "microboard-temp";
 export const LIMITS_MODAL_ID = Symbol("limitsModal");
 
 export function LimitsModal() {
-	const { t, i18n } = useTranslation();
-	const account = useAccount();
-	const { openModal } = useUiModalContext();
-	const handleBackButton = () => openModal(USER_PLAN_MODAL_ID);
-	const { openModalConfirm } = useConfirmModalContext();
+  const { t, i18n } = useTranslation();
+  const account = useAccount();
+  const { openModal } = useUiModalContext();
+  const handleBackButton = () => openModal(USER_PLAN_MODAL_ID);
+  const { openModalConfirm } = useConfirmModalContext();
 
-	const onDowngrade = () => {
-		openModalConfirm(
-			<h2 className={styles.downgradeHeading}>
-				{t("userPlan.downgradeModal.heading", {
-					planName:
-						conf.planNames[
-							account.billingInfo?.plan.name ?? "basic"
-						],
-				})}
-			</h2>,
-			<p className={styles.downgradeDesc}>
-				{t("userPlan.downgradeModal.description", {
-					planName:
-						conf.planNames[
-							account.billingInfo?.plan.name ?? "basic"
-						],
-					currentPeriodEnd: new Intl.DateTimeFormat(i18n.language, {
-						year: "numeric",
-						month: "numeric",
-						day: "numeric",
-					}).format(new Date(account.billingInfo?.plan.endDate ?? 0)),
-				})}
-			</p>,
-			async () => {
-				await account.unsubscribe();
-				notify({
-					header: "Тариф обновлен",
-					body: "Автоматическое продление отменено",
-				});
-				Promise.resolve();
-			},
-			async () => {},
-			t("userPlan.downgradeModal.confirm", {
-				planName:
-					conf.planNames[account.billingInfo?.plan.name ?? "basic"],
-			}),
-			t("userPlan.downgradeModal.cancel"),
-			styles.downgradeConfirmation,
-		);
-	};
+  const onDowngrade = () => {
+    openModalConfirm(
+      <h2 className={styles.downgradeHeading}>
+        {t("userPlan.downgradeModal.heading", {
+          planName: conf.planNames[account.billingInfo?.plan.name ?? "basic"],
+        })}
+      </h2>,
+      <p className={styles.downgradeDesc}>
+        {t("userPlan.downgradeModal.description", {
+          planName: conf.planNames[account.billingInfo?.plan.name ?? "basic"],
+          currentPeriodEnd: new Intl.DateTimeFormat(i18n.language, {
+            year: "numeric",
+            month: "numeric",
+            day: "numeric",
+          }).format(new Date(account.billingInfo?.plan.endDate ?? 0)),
+        })}
+      </p>,
+      async () => {
+        await account.unsubscribe();
+        notify({
+          header: "Тариф обновлен",
+          body: "Автоматическое продление отменено",
+        });
+        Promise.resolve();
+      },
+      async () => {},
+      t("userPlan.downgradeModal.confirm", {
+        planName: conf.planNames[account.billingInfo?.plan.name ?? "basic"],
+      }),
+      t("userPlan.downgradeModal.cancel"),
+      styles.downgradeConfirmation,
+    );
+  };
 
-	return (
-		<UiModal modalId={LIMITS_MODAL_ID} closeByBgClick={false}>
-			<div className={styles.wrapper}>
-				<h1 className={styles.heading}>
-					{t("userPlan.currentPlanHeading")}
-				</h1>
-				<UserPlanUsage
-					cancellationDate={account.billingInfo?.plan.endDate}
-					planName={
-						conf.planNames[
-							account.billingInfo?.plan.name ?? "basic"
-						]
-					}
-					isFree={account.billingInfo?.plan.name === "basic"}
-					history
-					hasHistory={
-						account.billingHistory.filter(
-							entry => entry.planId !== "basic",
-						).length > 0
-					}
-					onCancel={
-						account.billingInfo?.plan.name !== "basic"
-							? onDowngrade
-							: undefined
-					}
-					status={account.billingInfo?.plan.status ?? "active"}
-				/>
-				<main className={styles.tables}>
-					<LimitsTable />
-				</main>
-				<button className={styles.plansBtn} onClick={handleBackButton}>
-					<Icon iconName="ArrowLeft1" />
-					{t("userPlan.backToPlans")}
-				</button>
-			</div>
-		</UiModal>
-	);
+  return (
+    <UiModal modalId={LIMITS_MODAL_ID} closeByBgClick={false}>
+      <div className={styles.wrapper}>
+        <h1 className={styles.heading}>{t("userPlan.currentPlanHeading")}</h1>
+        <UserPlanUsage
+          cancellationDate={account.billingInfo?.plan.endDate}
+          planName={conf.planNames[account.billingInfo?.plan.name ?? "basic"]}
+          isFree={account.billingInfo?.plan.name === "basic"}
+          history
+          hasHistory={
+            account.billingHistory.filter((entry) => entry.planId !== "basic")
+              .length > 0
+          }
+          onCancel={
+            account.billingInfo?.plan.name !== "basic" ? onDowngrade : undefined
+          }
+          status={account.billingInfo?.plan.status ?? "active"}
+        />
+        <main className={styles.tables}>
+          <LimitsTable />
+        </main>
+        <button className={styles.plansBtn} onClick={handleBackButton}>
+          <Icon iconName="ArrowLeft1" />
+          {t("userPlan.backToPlans")}
+        </button>
+      </div>
+    </UiModal>
+  );
 }

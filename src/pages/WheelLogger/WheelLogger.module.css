@@ -1,32 +1,32 @@
 .loggerContainer {
-	position: fixed;
-	bottom: 10px;
-	left: 10px;
-	padding: 10px;
-	background-color: rgba(0, 0, 0, 0.7);
-	color: white;
-	font-size: 12px;
-	z-index: 1000;
-	max-height: 300px;
-	overflow-y: auto;
-	width: 350px;
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 12px;
+  z-index: 1000;
+  max-height: 300px;
+  overflow-y: auto;
+  width: 350px;
 }
 
 .loggerTitle {
-	font-weight: bold;
+  font-weight: bold;
 }
 
 .loggerMouse {
-	margin-top: 5px;
+  margin-top: 5px;
 }
 
 .loggerEvents {
-	margin-top: 10px;
+  margin-top: 10px;
 }
 
 .loggerButton {
-	margin-top: 20px;
-	color: black;
-	cursor: pointer;
-	font-size: 12px;
+  margin-top: 20px;
+  color: black;
+  cursor: pointer;
+  font-size: 12px;
 }

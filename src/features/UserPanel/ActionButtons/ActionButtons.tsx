@@ -6,17 +6,17 @@ import styles from "./ActionButtons.module.css";
 import { useAppContext } from "features/AppContext";
 
 export const ActionButtons: React.FC = () => {
-	const { board } = useAppContext();
-	const account = useAccount();
+  const { board } = useAppContext();
+  const account = useAccount();
 
-	const isBoardOpen = board.getBoardId() !== "blank";
-	if (!isBoardOpen) {
-		return null;
-	}
-	return (
-		<div className={styles.wrapper}>
-			{(account.info?.name || account.info?.email) && <AddComment />}
-			<TogglePresenceRender />
-		</div>
-	);
+  const isBoardOpen = board.getBoardId() !== "blank";
+  if (!isBoardOpen) {
+    return null;
+  }
+  return (
+    <div className={styles.wrapper}>
+      {(account.info?.name || account.info?.email) && <AddComment />}
+      <TogglePresenceRender />
+    </div>
+  );
 };

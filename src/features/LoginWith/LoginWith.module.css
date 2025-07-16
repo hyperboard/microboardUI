@@ -1,18 +1,18 @@
 .wr {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 100%;
-	margin: 32px 0;
-	font-size: 14px;
-	font-family: "Manrope";
-	color: #666;
-	font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 32px 0;
+  font-size: 14px;
+  font-family: "Manrope";
+  color: #666;
+  font-weight: 400;
 }
 
 .line {
-	flex-grow: 1;
-	height: 1px;
-	background-color: #ddd;
-	margin: 0 10px;
+  flex-grow: 1;
+  height: 1px;
+  background-color: #ddd;
+  margin: 0 10px;
 }

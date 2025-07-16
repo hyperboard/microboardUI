@@ -13,50 +13,50 @@ import { WARN_NOTIFICATION } from "features/ImportMiro/ImportMiroBoards/Notifica
 const modalsContainer = document.getElementById("modal")!;
 
 export function UiModalBackground({
-	children,
+  children,
 }: PropsWithChildren<{}>): JSX.Element {
-	const { openedModalId, closeModal, isRenderedAsPage } = useUiModalContext();
+  const { openedModalId, closeModal, isRenderedAsPage } = useUiModalContext();
 
-	useEffect(() => {
-		const controller = new AbortController();
-		window.addEventListener(
-			"keydown",
-			ev => {
-				if (ev.key === "Escape" && openedModalId) {
-					closeModal();
-				}
-			},
-			{ signal: controller.signal },
-		);
+  useEffect(() => {
+    const controller = new AbortController();
+    window.addEventListener(
+      "keydown",
+      (ev) => {
+        if (ev.key === "Escape" && openedModalId) {
+          closeModal();
+        }
+      },
+      { signal: controller.signal },
+    );
 
-		return () => controller.abort();
-	});
+    return () => controller.abort();
+  });
 
-	const isBlackout =
-		openedModalId !== LOADING_NOTIFICATION &&
-		openedModalId !== SUCCESS_NOTIFICATION &&
-		openedModalId !== ERROR_NOTIFICATION &&
-		openedModalId !== WARN_CLIPBOARD_NOTIFICATION &&
-		openedModalId !== WARN_NOTIFICATION;
+  const isBlackout =
+    openedModalId !== LOADING_NOTIFICATION &&
+    openedModalId !== SUCCESS_NOTIFICATION &&
+    openedModalId !== ERROR_NOTIFICATION &&
+    openedModalId !== WARN_CLIPBOARD_NOTIFICATION &&
+    openedModalId !== WARN_NOTIFICATION;
 
-	const renderAsPage = isRenderedAsPage(openedModalId);
+  const renderAsPage = isRenderedAsPage(openedModalId);
 
-	return createPortal(
-		<OpacityTransition
-			timeout={500}
-			inProp={Boolean(openedModalId)}
-			unmountOnExit
-		>
-			<div
-				className={clsx({
-					[styles.blackout]: isBlackout,
-					[styles.page]: renderAsPage,
-				})}
-			>
-				{children}
-			</div>
-		</OpacityTransition>,
+  return createPortal(
+    <OpacityTransition
+      timeout={500}
+      inProp={Boolean(openedModalId)}
+      unmountOnExit
+    >
+      <div
+        className={clsx({
+          [styles.blackout]: isBlackout,
+          [styles.page]: renderAsPage,
+        })}
+      >
+        {children}
+      </div>
+    </OpacityTransition>,
 
-		modalsContainer,
-	);
+    modalsContainer,
+  );
 }

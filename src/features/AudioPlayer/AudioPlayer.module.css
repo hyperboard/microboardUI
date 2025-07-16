@@ -1,213 +1,213 @@
 .container {
-	position: absolute;
-	background-color: #ffffff;
-	padding: 24px 20px 20px 20px;
-	border-radius: 12px;
-	border: 1px solid rgba(222, 224, 227, 1);
+  position: absolute;
+  background-color: #ffffff;
+  padding: 24px 20px 20px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(222, 224, 227, 1);
 }
 
 .movementBar {
-	width: 50px;
-	background-color: rgba(222, 224, 227, 1);
-	height: 2px;
-	border-radius: 1px;
-	position: absolute;
-	top: 10px;
-	left: calc(50% - 25px);
+  width: 50px;
+  background-color: rgba(222, 224, 227, 1);
+  height: 2px;
+  border-radius: 1px;
+  position: absolute;
+  top: 10px;
+  left: calc(50% - 25px);
 }
 
 .audio {
-	background: transparent;
-	border: none;
-	width: 100%;
+  background: transparent;
+  border: none;
+  width: 100%;
 }
 
 audio::-webkit-media-controls-panel {
-	background-color: transparent;
+  background-color: transparent;
 }
 audio::-webkit-media-controls-enclosure {
-	background-color: transparent;
+  background-color: transparent;
 }
 
 .controls {
-	display: flex;
-	align-items: center;
-	gap: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .playPauseButton {
-	width: 32px;
-	height: 32px;
-	border-radius: 50%;
-	background-color: rgba(20, 21, 26, 1);
-	color: white;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	cursor: pointer;
-	transition: background-color 0.2s;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(20, 21, 26, 1);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .disabledColor {
-	color: rgba(10, 15, 41, 0.25);
+  color: rgba(10, 15, 41, 0.25);
 }
 
 .disabledBackground {
-	background-color: rgba(233, 234, 236, 1);
+  background-color: rgba(233, 234, 236, 1);
 }
 
 .timeControls {
-	flex: 1;
-	display: grid;
-	grid-template-columns: 10fr 13fr;
-	align-items: center;
-	gap: 8px;
+  flex: 1;
+  display: grid;
+  grid-template-columns: 10fr 13fr;
+  align-items: center;
+  gap: 8px;
 }
 
 .duration {
-	font-family: Manrope;
-	font-weight: 500;
-	font-size: 14px;
-	line-height: 20px;
-	color: rgba(15, 19, 36, 0.6);
+  font-family: Manrope;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  color: rgba(15, 19, 36, 0.6);
 }
 
 .barContainer {
-	display: flex;
-	align-items: center;
-	height: 24px;
-	flex: 1;
-	cursor: pointer;
+  display: flex;
+  align-items: center;
+  height: 24px;
+  flex: 1;
+  cursor: pointer;
 }
 
 .progressBarContainer {
-	flex: 1;
-	height: 4px;
-	background-color: rgba(233, 234, 236, 1);
-	border-radius: 3px;
-	cursor: pointer;
-	position: relative;
+  flex: 1;
+  height: 4px;
+  background-color: rgba(233, 234, 236, 1);
+  border-radius: 3px;
+  cursor: pointer;
+  position: relative;
 }
 
 .progressBar {
-	height: 100%;
-	background-color: rgba(20, 21, 26, 1);
-	border-radius: 2px;
-	position: absolute;
+  height: 100%;
+  background-color: rgba(20, 21, 26, 1);
+  border-radius: 2px;
+  position: absolute;
 }
 
 .bufferedProgressBar {
-	height: 100%;
-	background-color: rgba(200, 202, 208, 1);
-	border-radius: 2px;
-	position: absolute;
+  height: 100%;
+  background-color: rgba(200, 202, 208, 1);
+  border-radius: 2px;
+  position: absolute;
 }
 
 .controlsBtn {
-	width: 20px;
-	height: 20px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border-radius: 4px;
-	border: none;
-	outline: none;
-	cursor: pointer;
-	color: rgba(105, 107, 118, 1);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  color: rgba(105, 107, 118, 1);
 }
 
 .controlsBtn:hover {
-	background-color: rgba(10, 15, 41, 0.04);
+  background-color: rgba(10, 15, 41, 0.04);
 }
 
 .dropdown {
-	position: relative;
+  position: relative;
 }
 
 .dropdownMenu {
-	position: absolute;
-	top: 100%;
-	right: 0;
+  position: absolute;
+  top: 100%;
+  right: 0;
 }
 
 .volumeBarMenu {
-	border-color: rgba(222, 224, 227, 1);
-	border-radius: 4px;
-	width: 84px;
-	display: flex;
-	padding: 0 10px !important;
-	right: -34px;
+  border-color: rgba(222, 224, 227, 1);
+  border-radius: 4px;
+  width: 84px;
+  display: flex;
+  padding: 0 10px !important;
+  right: -34px;
 }
 
 .volumeBarContainer {
-	width: 100%;
-	height: 4px;
-	background-color: rgba(233, 234, 236, 1);
-	border-radius: 2px;
-	cursor: pointer;
-	position: relative;
+  width: 100%;
+  height: 4px;
+  background-color: rgba(233, 234, 236, 1);
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
 }
 
 .volumeBar {
-	height: 100%;
-	background-color: rgba(20, 21, 26, 1);
-	border-radius: 2px;
-	position: absolute;
+  height: 100%;
+  background-color: rgba(20, 21, 26, 1);
+  border-radius: 2px;
+  position: absolute;
 }
 
 .extraOptionsMenu {
-	width: 240px;
-	border-radius: 12px;
-	border-color: rgba(222, 224, 227, 1);
+  width: 240px;
+  border-radius: 12px;
+  border-color: rgba(222, 224, 227, 1);
 }
 
 .displayNone {
-	display: none;
+  display: none;
 }
 
 .scrollContainer {
-	overflow-y: auto;
-	scrollbar-gutter: stable;
-	width: 100%;
-	max-height: 142px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  width: 100%;
+  max-height: 142px;
 }
 
 .scrollContainer::-webkit-scrollbar {
-	appearance: none;
-	width: 4px;
+  appearance: none;
+  width: 4px;
 }
 
 .scrollContainer::-webkit-scrollbar-button {
-	display: none;
+  display: none;
 }
 
 .scrollContainer::-webkit-scrollbar-thumb {
-	display: block;
-	background-color: rgba(10, 15, 41, 0.04);
-	border-radius: 2px;
-	cursor: pointer;
+  display: block;
+  background-color: rgba(10, 15, 41, 0.04);
+  border-radius: 2px;
+  cursor: pointer;
 }
 
 .dropdownButton {
-	display: flex;
-	align-items: center;
-	font-family: Manrope;
-	font-weight: 400;
-	font-size: 14px;
-	line-height: 20px;
-	color: rgba(20, 21, 26, 1);
-	padding: 6px;
-	background-color: transparent;
-	cursor: pointer;
-	border-radius: 6px;
-	width: 100%;
-	gap: 8px;
+  display: flex;
+  align-items: center;
+  font-family: Manrope;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: rgba(20, 21, 26, 1);
+  padding: 6px;
+  background-color: transparent;
+  cursor: pointer;
+  border-radius: 6px;
+  width: 100%;
+  gap: 8px;
 }
 
 .paybackRateBtn {
-	justify-content: space-between;
+  justify-content: space-between;
 }
 
 .dropdownButton:hover {
-	background-color: rgba(10, 15, 41, 0.04);
+  background-color: rgba(10, 15, 41, 0.04);
 }

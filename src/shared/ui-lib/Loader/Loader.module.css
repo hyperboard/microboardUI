@@ -1,9 +1,9 @@
 .loader {
-	animation: loaderAnimation 1s infinite steps(12);
+  animation: loaderAnimation 1s infinite steps(12);
 }
 
 @keyframes loaderAnimation {
-	100% {
-		transform: rotate(1turn);
-	}
+  100% {
+    transform: rotate(1turn);
+  }
 }

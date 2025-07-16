@@ -1,80 +1,80 @@
 .authView {
-	width: 100%;
+  width: 100%;
 
-	display: grid;
-	grid-template-rows: max-content 1fr 64px;
-	align-items: center;
-	justify-content: center;
-	justify-items: center;
-	/* flex-direction: column; */
-	/* align-items: center; */
-	/* justify-content: center; */
+  display: grid;
+  grid-template-rows: max-content 1fr 64px;
+  align-items: center;
+  justify-content: center;
+  justify-items: center;
+  /* flex-direction: column; */
+  /* align-items: center; */
+  /* justify-content: center; */
 
-	height: 100vh;
+  height: 100vh;
 
-	font-family: "Manrope", "Arial";
+  font-family: "Manrope", "Arial";
 }
 
 .navbar {
-	width: 1280px;
-	min-height: 64px;
-	z-index: 100;
+  width: 1280px;
+  min-height: 64px;
+  z-index: 100;
 }
 
 .content {
-	max-width: 500px;
-	min-width: 300px;
-	width: 80%;
-	height: 100%;
-	display: flex;
-	flex-direction: column;
-	align-items: stretch;
-	justify-content: center;
+  max-width: 500px;
+  min-width: 300px;
+  width: 80%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
 }
 
 @media screen and (max-width: 1280px) {
-	.authView .content {
-		width: 500px;
-		padding: 0 16px;
-	}
+  .authView .content {
+    width: 500px;
+    padding: 0 16px;
+  }
 
-	.authView .navbar {
-		width: 100%;
-	}
+  .authView .navbar {
+    width: 100%;
+  }
 }
 
 @media (max-width: 640px) {
-	.authView .navbar {
-		width: 100%;
-	}
+  .authView .navbar {
+    width: 100%;
+  }
 
-	.authView .content {
-		width: 100%;
-		/*padding: 0 12px;*/
-	}
+  .authView .content {
+    width: 100%;
+    /*padding: 0 12px;*/
+  }
 }
 
 .policy {
-	margin-top: auto;
-	margin-bottom: 40px;
-	font-family: "Manrope", "Arial";
-	font-size: 14px;
-	color: rgba(15, 19, 36, 0.6);
-	text-align: center;
+  margin-top: auto;
+  margin-bottom: 40px;
+  font-family: "Manrope", "Arial";
+  font-size: 14px;
+  color: rgba(15, 19, 36, 0.6);
+  text-align: center;
 }
 
 .policyLink {
-	position: relative;
-	color: rgba(15, 19, 36, 0.6);
-	text-decoration: none;
+  position: relative;
+  color: rgba(15, 19, 36, 0.6);
+  text-decoration: none;
 }
 
 .policyLink::after {
-	content: "";
-	position: absolute;
-	bottom: -3px;
-	left: 0;
-	width: 100%;
-	height: 2px;
-	background-color: rgba(10, 15, 41, 0.08);
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: rgba(10, 15, 41, 0.08);
 }

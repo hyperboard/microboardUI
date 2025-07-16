@@ -7,35 +7,35 @@ import { Card } from "microboard-temp";
 import { useTranslation } from "react-i18next";
 
 interface Props {
-	rounded?: string;
+  rounded?: string;
 }
 
 export function FlipCard({ rounded = "none" }: Props) {
-	const { board } = useAppContext();
-	const { t } = useTranslation();
+  const { board } = useAppContext();
+  const { t } = useTranslation();
 
-	const single = board.selection.items.getSingle();
+  const single = board.selection.items.getSingle();
 
-	if (!single || single.itemType !== "Card") {
-		return null;
-	}
+  if (!single || single.itemType !== "Card") {
+    return null;
+  }
 
-	const handleClick = (): void => {
-		const card = single as Card;
-		card.toggleIsOpen();
-	};
+  const handleClick = (): void => {
+    const card = single as Card;
+    card.toggleIsOpen();
+  };
 
-	return (
-		<UiButton
-			className={btnStyle.contextPanelButton}
-			id="flip-card"
-			tooltip={t("contextPanel.gameItems.card.flip")}
-			tooltipPosition="top"
-			onClick={handleClick}
-			variant="secondary"
-			rounded={rounded}
-		>
-			<Icon iconName="ToggleCursors" />
-		</UiButton>
-	);
+  return (
+    <UiButton
+      className={btnStyle.contextPanelButton}
+      id="flip-card"
+      tooltip={t("contextPanel.gameItems.card.flip")}
+      tooltipPosition="top"
+      onClick={handleClick}
+      variant="secondary"
+      rounded={rounded}
+    >
+      <Icon iconName="ToggleCursors" />
+    </UiButton>
+  );
 }

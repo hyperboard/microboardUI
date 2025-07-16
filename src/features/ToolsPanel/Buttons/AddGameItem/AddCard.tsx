@@ -6,26 +6,26 @@ import { useUiModalContext } from "shared/ui-lib/UiModal/UiModalContext";
 import { CREATE_CARDS_MODAL } from "../../../GameItems/CreateCardsModal";
 
 interface Props {
-	rounded?: "top" | "bottom" | "none";
+  rounded?: "top" | "bottom" | "none";
 }
 
 export function AddCard({ rounded = "none" }: Props): JSX.Element {
-	const { t } = useTranslation();
-	const { openModal } = useUiModalContext();
+  const { t } = useTranslation();
+  const { openModal } = useUiModalContext();
 
-	const handleClick = (): void => {
-		openModal(CREATE_CARDS_MODAL);
-	};
+  const handleClick = (): void => {
+    openModal(CREATE_CARDS_MODAL);
+  };
 
-	return (
-		<UiButton
-			id={`tool-add-card`}
-			tooltip={t("toolsPanel.addGameItem.addCard.tooltip")}
-			onClick={handleClick}
-			rounded={rounded}
-			variant="secondary"
-		>
-			<Icon iconName="BoxedPlus" width={20} height={20} />
-		</UiButton>
-	);
+  return (
+    <UiButton
+      id={`tool-add-card`}
+      tooltip={t("toolsPanel.addGameItem.addCard.tooltip")}
+      onClick={handleClick}
+      rounded={rounded}
+      variant="secondary"
+    >
+      <Icon iconName="BoxedPlus" width={20} height={20} />
+    </UiButton>
+  );
 }

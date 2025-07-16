@@ -1,11 +1,11 @@
 .icon {
-	max-width: 24px;
-	max-height: 24px;
+  max-width: 24px;
+  max-height: 24px;
 }
 
 @media screen and (max-width: 748px) {
-	.icon {
-		max-width: 20px;
-		max-height: 20px;
-	}
+  .icon {
+    max-width: 20px;
+    max-height: 20px;
+  }
 }

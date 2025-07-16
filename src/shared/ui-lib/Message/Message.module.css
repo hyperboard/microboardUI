@@ -1,26 +1,28 @@
 .message {
-	position: absolute;
-	left: 0;
-	right: 0;
-	padding: 9px 20px;
-	background-color: #000000;
-	color: #ffffff;
-	margin: 0 auto;
-	width: max-content;
-	visibility: hidden;
-	opacity: 0;
-	transition: opacity 0.45s ease-out, visibility 0.45s ease-out;
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding: 9px 20px;
+  background-color: #000000;
+  color: #ffffff;
+  margin: 0 auto;
+  width: max-content;
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity 0.45s ease-out,
+    visibility 0.45s ease-out;
 }
 
 .open {
-	visibility: visible;
-	opacity: 1;
+  visibility: visible;
+  opacity: 1;
 }
 
 .bottom {
-	bottom: 12px;
+  bottom: 12px;
 }
 
 .top {
-	top: 12px;
+  top: 12px;
 }

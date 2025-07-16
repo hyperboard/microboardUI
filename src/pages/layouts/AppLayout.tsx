@@ -15,72 +15,72 @@ import { CryptoWrapper } from "features/CryptoWrapper";
 import { CommentsContextProvider } from "entities/comments/CommentsContext";
 
 type Props = {
-	app: App;
+  app: App;
 };
 
 type ComponentWithChildren = React.ComponentType<{
-	children?: React.ReactNode;
+  children?: React.ReactNode;
 }>;
 
 function compose(components: ComponentWithChildren[]): React.FC {
-	return function ComposedComponent({
-		children,
-	}: {
-		children?: React.ReactNode;
-	}) {
-		return components.reduceRight<React.ReactElement | null>(
-			(acc, Component) => {
-				return <Component>{acc}</Component>;
-			},
-			children ? <>{children}</> : <React.Fragment />,
-		);
-	};
+  return function ComposedComponent({
+    children,
+  }: {
+    children?: React.ReactNode;
+  }) {
+    return components.reduceRight<React.ReactElement | null>(
+      (acc, Component) => {
+        return <Component>{acc}</Component>;
+      },
+      children ? <>{children}</> : <React.Fragment />,
+    );
+  };
 }
 
 const PROVIDERS: ComponentWithChildren[] = [
-	CryptoWrapper,
-	HyperLinkContextProvider,
-	AIContextProvider,
-	CommentsContextProvider,
-	ModalsWrapper,
-	ContextMenuContextProvider,
-	RenameContextProvider,
-	OpenedFoldersContextProvider,
-	SidePanelContextProvider,
+  CryptoWrapper,
+  HyperLinkContextProvider,
+  AIContextProvider,
+  CommentsContextProvider,
+  ModalsWrapper,
+  ContextMenuContextProvider,
+  RenameContextProvider,
+  OpenedFoldersContextProvider,
+  SidePanelContextProvider,
 ];
 
 const LOCAL_PROVIDERS: ComponentWithChildren[] = [
-	HyperLinkContextProvider,
-	AIContextProvider,
-	LocalSidePanelContextProvider,
+  HyperLinkContextProvider,
+  AIContextProvider,
+  LocalSidePanelContextProvider,
 ];
 
 const Provider = compose(PROVIDERS);
 const LocalProvider = compose(LOCAL_PROVIDERS);
 
 export function AppLayout({ app }: Props): JSX.Element {
-	const board = app.getBoard();
-	return (
-		<AppContext.Provider value={{ app, board }}>
-			<Provider>
-				<Outlet />
-				<ToastProvider />
-			</Provider>
-		</AppContext.Provider>
-	);
+  const board = app.getBoard();
+  return (
+    <AppContext.Provider value={{ app, board }}>
+      <Provider>
+        <Outlet />
+        <ToastProvider />
+      </Provider>
+    </AppContext.Provider>
+  );
 }
 
 export function LocalAppLayout({
-	app,
-	children,
+  app,
+  children,
 }: Props & { children?: React.ReactNode }): JSX.Element {
-	const board = app.getBoard();
-	return (
-		<AppContext.Provider value={{ app, board }}>
-			<LocalProvider>
-				{children}
-				<Outlet />
-			</LocalProvider>
-		</AppContext.Provider>
-	);
+  const board = app.getBoard();
+  return (
+    <AppContext.Provider value={{ app, board }}>
+      <LocalProvider>
+        {children}
+        <Outlet />
+      </LocalProvider>
+    </AppContext.Provider>
+  );
 }

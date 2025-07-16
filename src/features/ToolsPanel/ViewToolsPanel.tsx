@@ -9,22 +9,22 @@ import style from "./ToolsPanel.module.css";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";
 
 export function ViewToolsPanel(): JSX.Element {
-	const forceUpdate = useForceUpdate();
-	useAppSubscription({
-		subjects: ["tools"],
-		observer: forceUpdate,
-	});
+  const forceUpdate = useForceUpdate();
+  useAppSubscription({
+    subjects: ["tools"],
+    observer: forceUpdate,
+  });
 
-	useEffect(() => {}, [window.showDebug]);
+  useEffect(() => {}, [window.showDebug]);
 
-	return (
-		<div className={style.wrapper}>
-			<UiPanel vertical padding={0} zIndex={20}>
-				<Grab />
-				<UiSeparator />
-				<Select rounded="bottom" />
-			</UiPanel>
-			{window.showDebug && <EventList />}
-		</div>
-	);
+  return (
+    <div className={style.wrapper}>
+      <UiPanel vertical padding={0} zIndex={20}>
+        <Grab />
+        <UiSeparator />
+        <Select rounded="bottom" />
+      </UiPanel>
+      {window.showDebug && <EventList />}
+    </div>
+  );
 }

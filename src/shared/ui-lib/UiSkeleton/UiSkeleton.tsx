@@ -3,8 +3,8 @@ import React, { type HTMLProps } from "react";
 import styles from "./UiSkeleton.module.css";
 
 export function UiSkeleton({
-	className,
-	...props
+  className,
+  ...props
 }: HTMLProps<HTMLDivElement>): JSX.Element {
-	return <div className={clsx(styles.skeleton, className)} {...props} />;
+  return <div className={clsx(styles.skeleton, className)} {...props} />;
 }

@@ -16,65 +16,59 @@ import style from "./EndPointer.module.css";
 const MENU_NAME = "EndPointer";
 
 export function EndPointer(): React.ReactElement | null {
-	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
-		usePanelContext();
-	const { board, app } = useAppContext();
-	const { t } = useTranslation();
-	const pointerStartStyle = board.selection.getEndPointerStyle();
+  const { toggleMenu, openedMenu, panelMbr, windowHeight } = usePanelContext();
+  const { board, app } = useAppContext();
+  const { t } = useTranslation();
+  const pointerStartStyle = board.selection.getEndPointerStyle();
 
-	const handleClick = (): void => {
-		toggleMenu(MENU_NAME);
-	};
-	const handlePick = (type: ConnectorPointerStyle): void => {
-		board.selection.setEndPointerStyle(type);
-		app.sessionStorage.setConnectorPointer(type, "end");
-		toggleMenu("None");
-	};
-	return (
-		<ButtonWithMenu
-			menuName={MENU_NAME}
-			openedMenu={openedMenu}
-			panelMbr={panelMbr}
-			windowHeight={windowHeight}
-			align="left"
-			button={
-				<UiButton
-					id={"end-pointer"}
-					tooltip={t("contextPanel.connectorEndPointer.tooltip")}
-					tooltipPosition="top"
-					onClick={handleClick}
-					variant="secondary"
-					rounded="none"
-					active={openedMenu === MENU_NAME}
-					hideTooltip={openedMenu === MENU_NAME}
-					className={clsx(style.button, btnStyle.contextPanelButton)}
-				>
-					{/* {pointerStartStyle === "None" ? (
+  const handleClick = (): void => {
+    toggleMenu(MENU_NAME);
+  };
+  const handlePick = (type: ConnectorPointerStyle): void => {
+    board.selection.setEndPointerStyle(type);
+    app.sessionStorage.setConnectorPointer(type, "end");
+    toggleMenu("None");
+  };
+  return (
+    <ButtonWithMenu
+      menuName={MENU_NAME}
+      openedMenu={openedMenu}
+      panelMbr={panelMbr}
+      windowHeight={windowHeight}
+      align="left"
+      button={
+        <UiButton
+          id={"end-pointer"}
+          tooltip={t("contextPanel.connectorEndPointer.tooltip")}
+          tooltipPosition="top"
+          onClick={handleClick}
+          variant="secondary"
+          rounded="none"
+          active={openedMenu === MENU_NAME}
+          hideTooltip={openedMenu === MENU_NAME}
+          className={clsx(style.button, btnStyle.contextPanelButton)}
+        >
+          {/* {pointerStartStyle === "None" ? (
 						t("contextPanel.connectorPointerNone")
 					) : (
 						<ConnectorPointerIcon
 							iconName={pointerStartStyle as ConnectorPointerType}
 						/>
 					)} */}
-					<ConnectorPointerIcon
-						iconName={pointerStartStyle as ConnectorPointerType}
-					/>
-				</UiButton>
-			}
-		>
-			{verticalAlign => (
-				<UiPanel
-					grid
-					padding={0}
-					columns={2}
-					className={style[verticalAlign]}
-				>
-					<ConnectorPointerPicker
-						selected={pointerStartStyle}
-						onPick={handlePick}
-					/>
-				</UiPanel>
-			)}
-		</ButtonWithMenu>
-	);
+          <ConnectorPointerIcon
+            iconName={pointerStartStyle as ConnectorPointerType}
+          />
+        </UiButton>
+      }
+    >
+      {(verticalAlign) => (
+        <UiPanel grid padding={0} columns={2} className={style[verticalAlign]}>
+          <ConnectorPointerPicker
+            selected={pointerStartStyle}
+            onPick={handlePick}
+          />
+        </UiPanel>
+      )}
+    </ButtonWithMenu>
+  );
 }

@@ -6,34 +6,34 @@ import { UiButton } from "shared/ui-lib/UiButton/UiButton";
 import { useTranslation } from "react-i18next";
 
 interface Props {
-	rounded?: string;
+  rounded?: string;
 }
 
 export function ShuffleDeck({ rounded = "none" }: Props) {
-	const { board } = useAppContext();
-	const { t } = useTranslation();
+  const { board } = useAppContext();
+  const { t } = useTranslation();
 
-	const single = board.selection.items.getSingle();
+  const single = board.selection.items.getSingle();
 
-	if (!single || single.itemType !== "Deck") {
-		return null;
-	}
+  if (!single || single.itemType !== "Deck") {
+    return null;
+  }
 
-	const handleClick = (): void => {
-		single.shuffleDeck();
-	};
+  const handleClick = (): void => {
+    single.shuffleDeck();
+  };
 
-	return (
-		<UiButton
-			className={btnStyle.contextPanelButton}
-			id="shuffle-deck"
-			tooltip={t("contextPanel.gameItems.deck.shuffle")}
-			tooltipPosition="top"
-			onClick={handleClick}
-			variant="secondary"
-			rounded={rounded}
-		>
-			<Icon iconName="publicDrafts" />
-		</UiButton>
-	);
+  return (
+    <UiButton
+      className={btnStyle.contextPanelButton}
+      id="shuffle-deck"
+      tooltip={t("contextPanel.gameItems.deck.shuffle")}
+      tooltipPosition="top"
+      onClick={handleClick}
+      variant="secondary"
+      rounded={rounded}
+    >
+      <Icon iconName="publicDrafts" />
+    </UiButton>
+  );
 }

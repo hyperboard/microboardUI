@@ -4,15 +4,15 @@ import { useAppContext } from "features/AppContext";
 import { BoardsList } from "./BoardsList";
 
 export function useBoardsList(): BoardsList {
-	const { app } = useAppContext();
-	const forceUpdate = useForceUpdate();
+  const { app } = useAppContext();
+  const forceUpdate = useForceUpdate();
 
-	useEffect(() => {
-		app.boardsList.subject.subscribe(forceUpdate);
-		return () => {
-			app.boardsList.subject.unsubscribe(forceUpdate);
-		};
-	}, []);
+  useEffect(() => {
+    app.boardsList.subject.subscribe(forceUpdate);
+    return () => {
+      app.boardsList.subject.unsubscribe(forceUpdate);
+    };
+  }, []);
 
-	return app.boardsList;
+  return app.boardsList;
 }

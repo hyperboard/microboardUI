@@ -8,32 +8,32 @@ import { useAppSubscription } from "App/useBoardSubscription";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 
 export function Undo() {
-	const { board } = useAppContext();
-	const { t } = useTranslation();
-	const forceUpdate = useForceUpdate();
+  const { board } = useAppContext();
+  const { t } = useTranslation();
+  const forceUpdate = useForceUpdate();
 
-	useAppSubscription({
-		subjects: ["board"], // previously used events subscription
-		observer: forceUpdate,
-	});
+  useAppSubscription({
+    subjects: ["board"], // previously used events subscription
+    observer: forceUpdate,
+  });
 
-	const handleClick = () => {
-		board.events?.undo();
-	};
+  const handleClick = () => {
+    board.events?.undo();
+  };
 
-	const canUndo = board.events?.canUndo();
+  const canUndo = board.events?.canUndo();
 
-	return (
-		<UiButton
-			id={"undo"}
-			tooltip={t("toolsPanel.undo.tooltip")}
-			hotkey={getHotkeyLabel("undo")}
-			onClick={handleClick}
-			disabled={!canUndo}
-			rounded="top"
-			variant="secondary"
-		>
-			<Icon iconName="Undo" />
-		</UiButton>
-	);
+  return (
+    <UiButton
+      id={"undo"}
+      tooltip={t("toolsPanel.undo.tooltip")}
+      hotkey={getHotkeyLabel("undo")}
+      onClick={handleClick}
+      disabled={!canUndo}
+      rounded="top"
+      variant="secondary"
+    >
+      <Icon iconName="Undo" />
+    </UiButton>
+  );
 }

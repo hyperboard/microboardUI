@@ -1,180 +1,150 @@
 import {
-	Board,
-	ImageItem,
-	calculatePosition,
-	prepareImage,
+  Board,
+  ImageItem,
+  calculatePosition,
+  prepareImage,
 } from "microboard-temp";
 import * as PDFJS from "@bundled-es-modules/pdfjs-dist";
 import { RenderParameters } from "@bundled-es-modules/pdfjs-dist/types/src/display/api";
 import { catchMediaErrorResponse } from "App/MediaHelpers";
 
 export function uploadImage(
-	file: File,
-	board: Board,
-	accessToken: string | null,
+  file: File,
+  board: Board,
+  accessToken: string | null,
 ) {
-	const reader = new FileReader();
+  const reader = new FileReader();
 
-	if (file.type === "application/pdf") {
-		reader.onload = event => {
-			const typedarray = new Uint8Array(
-				event.target?.result as ArrayBufferLike,
-			);
-			PDFJS.getDocument({ data: typedarray }).promise.then(
-				pdf => {
-					const maxPages = pdf.numPages;
-					let pagesRendered = 0;
-					let viewportYOffset = 0;
-					let pageHeight;
-					const renderPage = pageNum => {
-						pdf.getPage(pageNum).then(page => {
-							const viewport = page.getViewport({
-								scale: 1,
-							});
-							pageHeight = viewport.height;
-							const canvas = document.createElement("canvas");
-							const context = canvas.getContext("2d");
-							canvas.height = viewport.height;
-							canvas.width = viewport.width;
+  if (file.type === "application/pdf") {
+    reader.onload = (event) => {
+      const typedarray = new Uint8Array(
+        event.target?.result as ArrayBufferLike,
+      );
+      PDFJS.getDocument({ data: typedarray }).promise.then(
+        (pdf) => {
+          const maxPages = pdf.numPages;
+          let pagesRendered = 0;
+          let viewportYOffset = 0;
+          let pageHeight;
+          const renderPage = (pageNum) => {
+            pdf.getPage(pageNum).then((page) => {
+              const viewport = page.getViewport({
+                scale: 1,
+              });
+              pageHeight = viewport.height;
+              const canvas = document.createElement("canvas");
+              const context = canvas.getContext("2d");
+              canvas.height = viewport.height;
+              canvas.width = viewport.width;
 
-							const renderContext = {
-								canvasContext: context,
-								viewport: viewport,
-							};
+              const renderContext = {
+                canvasContext: context,
+                viewport: viewport,
+              };
 
-							if (renderContext.canvasContext) {
-								page.render(
-									renderContext as RenderParameters,
-								).promise.then(() => {
-									pagesRendered++;
-									const base64String =
-										canvas.toDataURL("image/png");
-									prepareImage(
-										base64String,
-										accessToken,
-										board.getBoardId(),
-									)
-										.then(imageData => {
-											const image = new ImageItem(
-												imageData,
-												board,
-												board.events,
-												"",
-											);
-											const boardImage = board.add(image);
-											boardImage.doOnceOnLoad(() => {
-												const viewportMbr =
-													board.camera.getMbr();
-												const scale = 1;
-												const viewportCenter =
-													viewportMbr.getCenter();
-												viewportCenter.y =
-													viewportMbr.top;
-												const offsetX =
-													((pagesRendered - 1) % 2) *
-														(scale *
-															image.getWidth()) -
-													(scale * image.getWidth()) /
-														2;
-												const offsetY = viewportYOffset;
-												const centeredX =
-													viewportCenter.x + offsetX;
-												const centeredY =
-													viewportCenter.y + offsetY;
-												boardImage.transformation.translateTo(
-													centeredX,
-													centeredY,
-												);
-												boardImage.transformation.scaleTo(
-													scale,
-													scale,
-												);
+              if (renderContext.canvasContext) {
+                page
+                  .render(renderContext as RenderParameters)
+                  .promise.then(() => {
+                    pagesRendered++;
+                    const base64String = canvas.toDataURL("image/png");
+                    prepareImage(base64String, accessToken, board.getBoardId())
+                      .then((imageData) => {
+                        const image = new ImageItem(
+                          imageData,
+                          board,
+                          board.events,
+                          "",
+                        );
+                        const boardImage = board.add(image);
+                        boardImage.doOnceOnLoad(() => {
+                          const viewportMbr = board.camera.getMbr();
+                          const scale = 1;
+                          const viewportCenter = viewportMbr.getCenter();
+                          viewportCenter.y = viewportMbr.top;
+                          const offsetX =
+                            ((pagesRendered - 1) % 2) *
+                              (scale * image.getWidth()) -
+                            (scale * image.getWidth()) / 2;
+                          const offsetY = viewportYOffset;
+                          const centeredX = viewportCenter.x + offsetX;
+                          const centeredY = viewportCenter.y + offsetY;
+                          boardImage.transformation.translateTo(
+                            centeredX,
+                            centeredY,
+                          );
+                          boardImage.transformation.scaleTo(scale, scale);
 
-												if (
-													pageNum % 2 === 0 ||
-													pageNum === maxPages
-												) {
-													viewportYOffset +=
-														pageHeight * scale;
-												}
+                          if (pageNum % 2 === 0 || pageNum === maxPages) {
+                            viewportYOffset += pageHeight * scale;
+                          }
 
-												if (pagesRendered < maxPages) {
-													renderPage(pageNum + 1);
-												}
-											});
-											canvas.remove();
-										})
-										.catch(er => {
-											console.error(
-												"Could not create pdf page:",
-												er,
-											);
-											// TODO notification
-										});
-								});
-							}
-						});
-					};
+                          if (pagesRendered < maxPages) {
+                            renderPage(pageNum + 1);
+                          }
+                        });
+                        canvas.remove();
+                      })
+                      .catch((er) => {
+                        console.error("Could not create pdf page:", er);
+                        // TODO notification
+                      });
+                  });
+              }
+            });
+          };
 
-					renderPage(1);
-				},
-				reason => {
-					console.error(reason);
-				},
-			);
-		};
-		reader.readAsArrayBuffer(file);
-	} else {
-		reader.onload = (event: ProgressEvent<FileReader>) => {
-			const base64String = event.target?.result as string;
-			prepareImage(base64String, accessToken, board.getBoardId())
-				.then(imageData => {
-					const image = new ImageItem(
-						imageData,
-						board,
-						board.events,
-						"",
-					);
-					image.doOnceBeforeOnLoad(() => {
-						const { scaleX, scaleY, translateX, translateY } =
-							calculatePosition(image, board);
-						image.transformation.applyTranslateTo(
-							translateX,
-							translateY,
-						);
-						image.transformation.applyScaleTo(scaleX, scaleY);
-						image.updateMbr();
-						const boardImage = board.add(image);
-						board.selection.removeAll();
-						board.selection.add(boardImage);
-					});
-				})
-				.catch(er => {
-					console.error("Could not create image:", er);
-					// TODO notification
-				});
-		};
-		reader.readAsDataURL(file);
-	}
+          renderPage(1);
+        },
+        (reason) => {
+          console.error(reason);
+        },
+      );
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    reader.onload = (event: ProgressEvent<FileReader>) => {
+      const base64String = event.target?.result as string;
+      prepareImage(base64String, accessToken, board.getBoardId())
+        .then((imageData) => {
+          const image = new ImageItem(imageData, board, board.events, "");
+          image.doOnceBeforeOnLoad(() => {
+            const { scaleX, scaleY, translateX, translateY } =
+              calculatePosition(image, board);
+            image.transformation.applyTranslateTo(translateX, translateY);
+            image.transformation.applyScaleTo(scaleX, scaleY);
+            image.updateMbr();
+            const boardImage = board.add(image);
+            board.selection.removeAll();
+            board.selection.add(boardImage);
+          });
+        })
+        .catch((er) => {
+          console.error("Could not create image:", er);
+          // TODO notification
+        });
+    };
+    reader.readAsDataURL(file);
+  }
 }
 
 export async function uploadImages(
-	files: File[],
-	boardId: string,
-	accessToken: string | null,
+  files: File[],
+  boardId: string,
+  accessToken: string | null,
 ): Promise<string[]> {
-	const formData = new FormData();
-	files.forEach(file => formData.append("images", file, file.name));
-	const resp = await fetch(`/api/v1/media/images/${boardId}`, {
-		method: "POST",
-		body: formData,
-		headers: {
-			Authorization: `Bearer ${accessToken}`,
-		},
-	});
-	if (!resp.ok) {
-		await catchMediaErrorResponse(resp, "image");
-	}
-	const data = await resp.json();
-	return (data.results || []).map((r: any) => r.src);
+  const formData = new FormData();
+  files.forEach((file) => formData.append("images", file, file.name));
+  const resp = await fetch(`/api/v1/media/images/${boardId}`, {
+    method: "POST",
+    body: formData,
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  if (!resp.ok) {
+    await catchMediaErrorResponse(resp, "image");
+  }
+  const data = await resp.json();
+  return (data.results || []).map((r: any) => r.src);
 }

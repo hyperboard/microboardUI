@@ -1,4 +1,4 @@
 export {
-	PROFILE_SETTINGS_MODAL_ID,
-	ProfileSettingsModal,
+  PROFILE_SETTINGS_MODAL_ID,
+  ProfileSettingsModal,
 } from "./ProfileSettingsModal";

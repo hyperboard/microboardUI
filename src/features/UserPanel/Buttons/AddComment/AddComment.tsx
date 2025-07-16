@@ -10,52 +10,52 @@ import { UiButton } from "shared/ui-lib/UiButton";
 import { useCommentsPanelContext } from "entities/comments/CommentsPanel/CommentsPanelContext";
 
 export function AddComment() {
-	const { board } = useAppContext();
-	const { t } = useTranslation();
-	const { setIsPanelOpen } = useCommentsPanelContext();
-	const isActive = Boolean(board.tools.getAddComment());
-	const account = useAccount();
+  const { board } = useAppContext();
+  const { t } = useTranslation();
+  const { setIsPanelOpen } = useCommentsPanelContext();
+  const isActive = Boolean(board.tools.getAddComment());
+  const account = useAccount();
 
-	const forceUpdate = useForceUpdate();
-	useAppSubscription({
-		subjects: ["tools", "items"],
-		observer: forceUpdate,
-	});
+  const forceUpdate = useForceUpdate();
+  useAppSubscription({
+    subjects: ["tools", "items"],
+    observer: forceUpdate,
+  });
 
-	const userId = account.info?.id;
+  const userId = account.info?.id;
 
-	let showBadge = !!userId;
-	if (userId) {
-		showBadge = board.items.getComments().some(comment => {
-			return (
-				comment.getIsThreadMarkedAsUnread(userId) ||
-				comment.getUnreadMessages(userId)
-			);
-		});
-	}
+  let showBadge = !!userId;
+  if (userId) {
+    showBadge = board.items.getComments().some((comment) => {
+      return (
+        comment.getIsThreadMarkedAsUnread(userId) ||
+        comment.getUnreadMessages(userId)
+      );
+    });
+  }
 
-	const handleClick = (): void => {
-		if (isActive) {
-			setIsPanelOpen(false);
-		} else {
-			setIsPanelOpen(true);
-		}
-		board.tools.addComment(true);
-	};
+  const handleClick = (): void => {
+    if (isActive) {
+      setIsPanelOpen(false);
+    } else {
+      setIsPanelOpen(true);
+    }
+    board.tools.addComment(true);
+  };
 
-	return (
-		<UiButton
-			className={styles.btn}
-			id={"tool-add-comment"}
-			tooltipPosition={"bottom"}
-			tooltip={isActive ? undefined : t("userPanel.comment")}
-			onClick={handleClick}
-			active={isActive}
-			variant="secondary"
-			rounded="left"
-		>
-			<Icon iconName="Comment" width={20} height={20} />
-			{showBadge && <div className={styles.badge}></div>}
-		</UiButton>
-	);
+  return (
+    <UiButton
+      className={styles.btn}
+      id={"tool-add-comment"}
+      tooltipPosition={"bottom"}
+      tooltip={isActive ? undefined : t("userPanel.comment")}
+      onClick={handleClick}
+      active={isActive}
+      variant="secondary"
+      rounded="left"
+    >
+      <Icon iconName="Comment" width={20} height={20} />
+      {showBadge && <div className={styles.badge}></div>}
+    </UiButton>
+  );
 }

@@ -3,13 +3,13 @@ import styles from "./LoginWith.module.css";
 import React from "react";
 
 export const LoginWith = (): JSX.Element => {
-	const { t } = useTranslation();
+  const { t } = useTranslation();
 
-	return (
-		<div className={styles.wr}>
-			<span className={styles.line}></span>
-			<span className={styles.text}>{t("auth.loginWith")}</span>
-			<span className={styles.line}></span>
-		</div>
-	);
+  return (
+    <div className={styles.wr}>
+      <span className={styles.line}></span>
+      <span className={styles.text}>{t("auth.loginWith")}</span>
+      <span className={styles.line}></span>
+    </div>
+  );
 };

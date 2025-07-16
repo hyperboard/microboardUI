@@ -1,32 +1,32 @@
 .wr {
-	max-width: 326px;
+  max-width: 326px;
 }
 
 .title {
-	font-size: 16px;
-	line-height: 1.5;
-	font-family: "Manrope";
-	font-weight: 500;
+  font-size: 16px;
+  line-height: 1.5;
+  font-family: "Manrope";
+  font-weight: 500;
 }
 
 .text {
-	font-size: 14px;
-	line-height: 1.42;
-	font-family: "Manrope";
-	font-weight: 400;
-	margin: 4px 0 12px;
+  font-size: 14px;
+  line-height: 1.42;
+  font-family: "Manrope";
+  font-weight: 400;
+  margin: 4px 0 12px;
 }
 
 .btns {
-	display: flex;
+  display: flex;
 }
 
 .btn {
-	font-size: 12px;
-	padding: 0 8px;
-	min-height: 24px;
-	height: 24px;
-	width: unset;
-	margin-right: 8px;
-	border-radius: 8px;
+  font-size: 12px;
+  padding: 0 8px;
+  min-height: 24px;
+  height: 24px;
+  width: unset;
+  margin-right: 8px;
+  border-radius: 8px;
 }

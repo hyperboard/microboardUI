@@ -5,15 +5,15 @@ import { initInter } from "initI18N";
 import "./index.css";
 
 declare global {
-	interface Window {
-		app: App;
-		showDebug: boolean;
-		enableTemplateCreating: boolean;
-		enableVideos: boolean;
-		enableGames: boolean;
-		enableLogger: () => void;
-		disableLogger: () => void;
-	}
+  interface Window {
+    app: App;
+    showDebug: boolean;
+    enableTemplateCreating: boolean;
+    enableVideos: boolean;
+    enableGames: boolean;
+    enableLogger: () => void;
+    disableLogger: () => void;
+  }
 }
 
 // var showDebug = isMicroboard() ? true : false;
@@ -24,16 +24,16 @@ window.enableVideos = true;
 window.enableGames = false;
 
 async function initializeApp() {
-	await initInter();
-	window.app = createApp();
-	window.enableLogger = window.app.enableLogger;
-	window.disableLogger = window.app.disableLogger;
+  await initInter();
+  window.app = createApp();
+  window.enableLogger = window.app.enableLogger;
+  window.disableLogger = window.app.disableLogger;
 
-	window.app.account.init().finally(() => {
-		window.app.connection.connect().then(() => {
-			window.app.render();
-		});
-	});
+  window.app.account.init().finally(() => {
+    window.app.connection.connect().then(() => {
+      window.app.render();
+    });
+  });
 }
 
 initializeApp();

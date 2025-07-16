@@ -13,83 +13,82 @@ import style from "./AIModel.module.css";
 import { UiPanel } from "shared/ui-lib/UiPanel";
 
 type Props = {
-	rounded?: "left" | "right" | "none" | "full";
+  rounded?: "left" | "right" | "none" | "full";
 };
 
 const MENU_NAME = "AIModelSelector";
 
 export function AIModel({ rounded = "none" }: Props): React.ReactElement {
-	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
-		usePanelContext();
-	const { t } = useTranslation();
-	const account = useAccount();
-	const { model } = useAIContext();
+  const { toggleMenu, openedMenu, panelMbr, windowHeight } = usePanelContext();
+  const { t } = useTranslation();
+  const account = useAccount();
+  const { model } = useAIContext();
 
-	const handleClick = () => {
-		toggleMenu(MENU_NAME);
-	};
+  const handleClick = () => {
+    toggleMenu(MENU_NAME);
+  };
 
-	const closeMenu = () => {
-		if (openedMenu === MENU_NAME) {
-			toggleMenu(MENU_NAME);
-		}
-	};
+  const closeMenu = () => {
+    if (openedMenu === MENU_NAME) {
+      toggleMenu(MENU_NAME);
+    }
+  };
 
-	return (
-		// <div>
-		// 	<UiButton
-		// 		className={clsx(btnStyle.contextPanelButton, btnStyle.bold)}
-		// 		id="SelectAiModel"
-		// 		tooltip={t("contextPanel.ai.model")}
-		// 		tooltipPosition="top"
-		// 		onClick={handleClick}
-		// 		variant="secondary"
-		// 		active={openedMenu === MENU_NAME}
-		// 		rounded={rounded}
-		// 	>
-		// 		{t(`ai.models.${model}.mobileTitle`)}
-		// 	</UiButton>
-		// 	{openedMenu === MENU_NAME && (
-		// 		<Dropdown
-		// 			isPhoneScreen={true}
-		// 			setIsDropdownOpen={closeMenu}
-		// 			account={account}
-		// 		/>
-		// 	)}
-		// </div>
-		<ButtonWithMenu
-			menuName={MENU_NAME}
-			openedMenu={openedMenu}
-			panelMbr={panelMbr}
-			windowHeight={windowHeight}
-			align="left"
-			button={verticalAlign => (
-				<UiButton
-					className={clsx(btnStyle.contextPanelButton, btnStyle.bold)}
-					id="SelectAiModel"
-					tooltip={t("contextPanel.ai.model")}
-					tooltipPosition="top"
-					onClick={handleClick}
-					variant="secondary"
-					active={openedMenu === MENU_NAME}
-					rounded={rounded}
-				>
-					{t(`ai.models.${model}.mobileTitle`)}
-				</UiButton>
-			)}
-		>
-			{verticalAlign => (
-				<UiPanel
-					rounded={verticalAlign === "bottom" ? "bottom" : "full"}
-					className={style.menu}
-				>
-					<Dropdown
-						isPhoneScreen={true}
-						setIsDropdownOpen={closeMenu}
-						account={account}
-					/>
-				</UiPanel>
-			)}
-		</ButtonWithMenu>
-	);
+  return (
+    // <div>
+    // 	<UiButton
+    // 		className={clsx(btnStyle.contextPanelButton, btnStyle.bold)}
+    // 		id="SelectAiModel"
+    // 		tooltip={t("contextPanel.ai.model")}
+    // 		tooltipPosition="top"
+    // 		onClick={handleClick}
+    // 		variant="secondary"
+    // 		active={openedMenu === MENU_NAME}
+    // 		rounded={rounded}
+    // 	>
+    // 		{t(`ai.models.${model}.mobileTitle`)}
+    // 	</UiButton>
+    // 	{openedMenu === MENU_NAME && (
+    // 		<Dropdown
+    // 			isPhoneScreen={true}
+    // 			setIsDropdownOpen={closeMenu}
+    // 			account={account}
+    // 		/>
+    // 	)}
+    // </div>
+    <ButtonWithMenu
+      menuName={MENU_NAME}
+      openedMenu={openedMenu}
+      panelMbr={panelMbr}
+      windowHeight={windowHeight}
+      align="left"
+      button={(verticalAlign) => (
+        <UiButton
+          className={clsx(btnStyle.contextPanelButton, btnStyle.bold)}
+          id="SelectAiModel"
+          tooltip={t("contextPanel.ai.model")}
+          tooltipPosition="top"
+          onClick={handleClick}
+          variant="secondary"
+          active={openedMenu === MENU_NAME}
+          rounded={rounded}
+        >
+          {t(`ai.models.${model}.mobileTitle`)}
+        </UiButton>
+      )}
+    >
+      {(verticalAlign) => (
+        <UiPanel
+          rounded={verticalAlign === "bottom" ? "bottom" : "full"}
+          className={style.menu}
+        >
+          <Dropdown
+            isPhoneScreen={true}
+            setIsDropdownOpen={closeMenu}
+            account={account}
+          />
+        </UiPanel>
+      )}
+    </ButtonWithMenu>
+  );
 }

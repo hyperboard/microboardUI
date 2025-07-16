@@ -7,55 +7,55 @@ import { useTranslation } from "react-i18next";
 import { Card, Deck } from "microboard-temp";
 
 interface Props {
-	cardPosition: "random" | "top" | "bottom";
-	rounded?: string;
+  cardPosition: "random" | "top" | "bottom";
+  rounded?: string;
 }
 
 export function GetCard({ cardPosition, rounded = "none" }: Props) {
-	const { board } = useAppContext();
-	const { t } = useTranslation();
+  const { board } = useAppContext();
+  const { t } = useTranslation();
 
-	const single = board.selection.items.getSingle();
+  const single = board.selection.items.getSingle();
 
-	if (!single || single.itemType !== "Deck") {
-		return null;
-	}
+  if (!single || single.itemType !== "Deck") {
+    return null;
+  }
 
-	const handleClick = (): void => {
-		let card: Card;
-		const deck = single as Deck;
-		switch (cardPosition) {
-			case "random":
-				card = deck.getRandomCard();
-				break;
-			case "top":
-				card = deck.getTopCard();
-				break;
-			case "bottom":
-				card = deck.getBottomCard();
-				break;
-			default:
-				card = deck.getRandomCard();
-				break;
-		}
-		const { left, top } = deck.getMbr();
-		card.transformation.translateTo(left, top - 200);
-		if (deck.getDeck().length === 0) {
-			board.remove(deck);
-		}
-	};
+  const handleClick = (): void => {
+    let card: Card;
+    const deck = single as Deck;
+    switch (cardPosition) {
+      case "random":
+        card = deck.getRandomCard();
+        break;
+      case "top":
+        card = deck.getTopCard();
+        break;
+      case "bottom":
+        card = deck.getBottomCard();
+        break;
+      default:
+        card = deck.getRandomCard();
+        break;
+    }
+    const { left, top } = deck.getMbr();
+    card.transformation.translateTo(left, top - 200);
+    if (deck.getDeck().length === 0) {
+      board.remove(deck);
+    }
+  };
 
-	return (
-		<UiButton
-			className={btnStyle.contextPanelButton}
-			id={`get-card-${cardPosition}`}
-			tooltip={t(`contextPanel.gameItems.deck.getCard.${cardPosition}`)}
-			tooltipPosition="top"
-			onClick={handleClick}
-			variant="secondary"
-			rounded={rounded}
-		>
-			<Icon iconName="Play" />
-		</UiButton>
-	);
+  return (
+    <UiButton
+      className={btnStyle.contextPanelButton}
+      id={`get-card-${cardPosition}`}
+      tooltip={t(`contextPanel.gameItems.deck.getCard.${cardPosition}`)}
+      tooltipPosition="top"
+      onClick={handleClick}
+      variant="secondary"
+      rounded={rounded}
+    >
+      <Icon iconName="Play" />
+    </UiButton>
+  );
 }

@@ -1,51 +1,51 @@
 export type UniqueString = `0x${string}`;
 
 export type ChangePasswordPayload = {
-	oldPassword: string;
-	newPassword: string;
+  oldPassword: string;
+  newPassword: string;
 };
 
 export type RegisterPayload = {
-	email: string;
-	password: string;
-	name: string;
-	newsletter: boolean;
+  email: string;
+  password: string;
+  name: string;
+  newsletter: boolean;
 };
 
 export type LoginPayload = Omit<RegisterPayload, "newsletter" | "name">;
 
 export type Tokens = {
-	accessToken: string;
-	refreshToken: string;
+  accessToken: string;
+  refreshToken: string;
 };
 
 export type VerifyMailPayload = {
-	email: string;
-	passcode: string;
+  email: string;
+  passcode: string;
 };
 
 export type ResendMailPayload = {
-	email: string;
+  email: string;
 };
 
 export type CheckVerificationCodesPayload = {
-	email: string;
+  email: string;
 };
 
 export type ForgotPasswordPayload = {
-	email: string;
+  email: string;
 };
 
 export type RestorePasswordPayload = {
-	token: string;
-	newPassword: string;
+  token: string;
+  newPassword: string;
 };
 
 export type GetNoncePayload = {
-	address: UniqueString;
+  address: UniqueString;
 };
 
 export type VerifySignaturePayload = {
-	address: UniqueString;
-	signature: UniqueString;
+  address: UniqueString;
+  signature: UniqueString;
 };

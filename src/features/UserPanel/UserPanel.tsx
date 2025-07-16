@@ -18,136 +18,133 @@ import { CommentsPanelContextProvider } from "entities/comments/CommentsPanel/Co
 import { CommentsPanel } from "entities/comments/CommentsPanel/CommentsPanel.tsx";
 
 export const UserPanel: React.FC = () => {
-	const { t } = useTranslation();
-	const navigate = useNavigate();
-	const { app, board } = useAppContext();
-	const account = useAccount();
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { app, board } = useAppContext();
+  const account = useAccount();
 
-	const insideOfMicroboard =
-		document.referrer.includes("https://microboard.io/") ||
-		document.referrer.includes("https://microboard.ru/");
+  const insideOfMicroboard =
+    document.referrer.includes("https://microboard.io/") ||
+    document.referrer.includes("https://microboard.ru/");
 
-	if (!account.isLoggedIn) {
-		return (
-			<UiPanel
-				padding={0}
-				className={clsx(
-					styles.wrapper,
-					isMicroboardIframe() && insideOfMicroboard && styles.iframe,
-				)}
-			>
-				<div className={styles.unauthWrapper}>
-					{/* <span className={styles.unauthText}> */}
-					{/* 	Save&nbsp;this&nbsp;board&nbsp;to&nbsp;favorite. */}
-					{/* </span> */}
+  if (!account.isLoggedIn) {
+    return (
+      <UiPanel
+        padding={0}
+        className={clsx(
+          styles.wrapper,
+          isMicroboardIframe() && insideOfMicroboard && styles.iframe,
+        )}
+      >
+        <div className={styles.unauthWrapper}>
+          {/* <span className={styles.unauthText}> */}
+          {/* 	Save&nbsp;this&nbsp;board&nbsp;to&nbsp;favorite. */}
+          {/* </span> */}
 
-					<div className={styles.unauthBtns}>
-						{/* <LanguagesDropdown */}
-						{/* 	items={[ */}
-						{/* 		<div key={1}> */}
-						{/* 			<p */}
-						{/* 				className={ */}
-						{/* 					styles.unauthDescriptionTitle */}
-						{/* 				} */}
-						{/* 			> */}
-						{/* 				You are the viewer on this board.{" "} */}
-						{/* 			</p>{" "} */}
-						{/* 			<p className={styles.unauthDescription}> */}
-						{/* 				To ask for editor rights to make */}
-						{/* 				changes, please{" "} */}
-						{/* 				<Link */}
-						{/* 					className={styles.unauthLink} */}
-						{/* 					to="/auth/login" */}
-						{/* 				> */}
-						{/* 					log in */}
-						{/* 				</Link>{" "} */}
-						{/* 				or{" "} */}
-						{/* 				<Link */}
-						{/* 					className={styles.unauthLink} */}
-						{/* 					to="/auth/sign-up" */}
-						{/* 				> */}
-						{/* 					sign up */}
-						{/* 				</Link> */}
-						{/* 				. */}
-						{/* 			</p> */}
-						{/* 		</div>, */}
-						{/* 	]} */}
-						{/* 	label={ */}
-						{/* 		<> */}
-						{/* 			<EyeOpen isCurrentColor /> View&nbsp;only */}
-						{/* 		</> */}
-						{/* 	} */}
-						{/* /> */}
-						{isMicroboardIframe() && insideOfMicroboard ? (
-							<>
-								<UiLink
-									variant="secondary"
-									className={styles.logInBtn}
-									href={`/auth/sign-in`}
-									target="_parent"
-									size="sm"
-								>
-									{t("auth.login")}
-								</UiLink>
-								<UiLink
-									className={clsx(
-										styles.signUpBtn,
-										styles.smallMobileHide,
-									)}
-									href={`/auth/sign-up`}
-									size="sm"
-									target="_parent"
-								>
-									{t("auth.signUpForFree")}
-								</UiLink>
-								<ShareBtn />
-							</>
-						) : (
-							<>
-								<UiButton
-									variant="secondary"
-									className={styles.logInBtn}
-									onClick={() => navigate("/auth/sign-in")}
-									size="sm"
-								>
-									{t("auth.login")}
-								</UiButton>
-								<UiButton
-									className={styles.signUpBtn}
-									onClick={() => navigate("/auth/sign-up")}
-									size="sm"
-								>
-									{t("auth.signUpForFree")}
-								</UiButton>
-								<ShareBtn />
-							</>
-						)}
-					</div>
-				</div>
-			</UiPanel>
-		);
-	}
+          <div className={styles.unauthBtns}>
+            {/* <LanguagesDropdown */}
+            {/* 	items={[ */}
+            {/* 		<div key={1}> */}
+            {/* 			<p */}
+            {/* 				className={ */}
+            {/* 					styles.unauthDescriptionTitle */}
+            {/* 				} */}
+            {/* 			> */}
+            {/* 				You are the viewer on this board.{" "} */}
+            {/* 			</p>{" "} */}
+            {/* 			<p className={styles.unauthDescription}> */}
+            {/* 				To ask for editor rights to make */}
+            {/* 				changes, please{" "} */}
+            {/* 				<Link */}
+            {/* 					className={styles.unauthLink} */}
+            {/* 					to="/auth/login" */}
+            {/* 				> */}
+            {/* 					log in */}
+            {/* 				</Link>{" "} */}
+            {/* 				or{" "} */}
+            {/* 				<Link */}
+            {/* 					className={styles.unauthLink} */}
+            {/* 					to="/auth/sign-up" */}
+            {/* 				> */}
+            {/* 					sign up */}
+            {/* 				</Link> */}
+            {/* 				. */}
+            {/* 			</p> */}
+            {/* 		</div>, */}
+            {/* 	]} */}
+            {/* 	label={ */}
+            {/* 		<> */}
+            {/* 			<EyeOpen isCurrentColor /> View&nbsp;only */}
+            {/* 		</> */}
+            {/* 	} */}
+            {/* /> */}
+            {isMicroboardIframe() && insideOfMicroboard ? (
+              <>
+                <UiLink
+                  variant="secondary"
+                  className={styles.logInBtn}
+                  href={`/auth/sign-in`}
+                  target="_parent"
+                  size="sm"
+                >
+                  {t("auth.login")}
+                </UiLink>
+                <UiLink
+                  className={clsx(styles.signUpBtn, styles.smallMobileHide)}
+                  href={`/auth/sign-up`}
+                  size="sm"
+                  target="_parent"
+                >
+                  {t("auth.signUpForFree")}
+                </UiLink>
+                <ShareBtn />
+              </>
+            ) : (
+              <>
+                <UiButton
+                  variant="secondary"
+                  className={styles.logInBtn}
+                  onClick={() => navigate("/auth/sign-in")}
+                  size="sm"
+                >
+                  {t("auth.login")}
+                </UiButton>
+                <UiButton
+                  className={styles.signUpBtn}
+                  onClick={() => navigate("/auth/sign-up")}
+                  size="sm"
+                >
+                  {t("auth.signUpForFree")}
+                </UiButton>
+                <ShareBtn />
+              </>
+            )}
+          </div>
+        </div>
+      </UiPanel>
+    );
+  }
 
-	return (
-		<CommentsPanelContextProvider>
-			<UiPanel zIndex={10} padding={0} className={styles.wrapper}>
-				<ActionButtons />
-				<PresenceUsers app={app} />
-				{board.getBoardId() !== "blank" && (
-					<div className={styles.container}>
-						<ShareBtn />
-					</div>
-				)}
-			</UiPanel>
-			<CommentsPanel />
-		</CommentsPanelContextProvider>
-	);
+  return (
+    <CommentsPanelContextProvider>
+      <UiPanel zIndex={10} padding={0} className={styles.wrapper}>
+        <ActionButtons />
+        <PresenceUsers app={app} />
+        {board.getBoardId() !== "blank" && (
+          <div className={styles.container}>
+            <ShareBtn />
+          </div>
+        )}
+      </UiPanel>
+      <CommentsPanel />
+    </CommentsPanelContextProvider>
+  );
 };
 
 export const UserPanelLayout: React.FC<{ app: App }> = () => {
-	return (
-		<div className={styles.layoutWrapper}>
-			{shouldShow("userPanel") && <UserPanel />}
-		</div>
-	);
+  return (
+    <div className={styles.layoutWrapper}>
+      {shouldShow("userPanel") && <UserPanel />}
+    </div>
+  );
 };

@@ -10,63 +10,59 @@ import { useAppContext } from "features/AppContext";
 import { useClickOutside } from "shared/lib/useClickOutside";
 
 export function AddMedia(): JSX.Element {
-	const { board } = useAppContext();
-	const [isOpen, setIsOpen] = useState(false);
-	const { t } = useTranslation();
-	const containerRef = useClickOutside(
-		() => {
-			if (isOpen) {
-				setIsOpen(false);
-			}
-		},
-		undefined,
-		true,
-	);
+  const { board } = useAppContext();
+  const [isOpen, setIsOpen] = useState(false);
+  const { t } = useTranslation();
+  const containerRef = useClickOutside(
+    () => {
+      if (isOpen) {
+        setIsOpen(false);
+      }
+    },
+    undefined,
+    true,
+  );
 
-	const toggleIsOpen = () => {
-		setIsOpen(!isOpen);
-		board.tools.cancel();
-	};
+  const toggleIsOpen = () => {
+    setIsOpen(!isOpen);
+    board.tools.cancel();
+  };
 
-	return (
-		<div ref={containerRef}>
-			<ButtonWithMenu
-				button={
-					<UiButton
-						id={"tool-add-media"}
-						tooltip={
-							isOpen
-								? undefined
-								: t("toolsPanel.addMedia.tooltip")
-						}
-						active={isOpen}
-						variant="secondary"
-						rounded="bottom"
-						onClick={toggleIsOpen}
-					>
-						<Icon iconName="AddMedia" />
-					</UiButton>
-				}
-				isOpen={isOpen}
-			>
-				<UiPanel vertical padding={0} className={style.panel}>
-					<AddMediaButton
-						type="Image"
-						rounded="top"
-						toggleMenu={toggleIsOpen}
-					/>
-					<AddMediaButton
-						type="Video"
-						rounded="none"
-						toggleMenu={toggleIsOpen}
-					/>
-					<AddMediaButton
-						type="Audio"
-						rounded="bottom"
-						toggleMenu={toggleIsOpen}
-					/>
-				</UiPanel>
-			</ButtonWithMenu>
-		</div>
-	);
+  return (
+    <div ref={containerRef}>
+      <ButtonWithMenu
+        button={
+          <UiButton
+            id={"tool-add-media"}
+            tooltip={isOpen ? undefined : t("toolsPanel.addMedia.tooltip")}
+            active={isOpen}
+            variant="secondary"
+            rounded="bottom"
+            onClick={toggleIsOpen}
+          >
+            <Icon iconName="AddMedia" />
+          </UiButton>
+        }
+        isOpen={isOpen}
+      >
+        <UiPanel vertical padding={0} className={style.panel}>
+          <AddMediaButton
+            type="Image"
+            rounded="top"
+            toggleMenu={toggleIsOpen}
+          />
+          <AddMediaButton
+            type="Video"
+            rounded="none"
+            toggleMenu={toggleIsOpen}
+          />
+          <AddMediaButton
+            type="Audio"
+            rounded="bottom"
+            toggleMenu={toggleIsOpen}
+          />
+        </UiPanel>
+      </ButtonWithMenu>
+    </div>
+  );
 }

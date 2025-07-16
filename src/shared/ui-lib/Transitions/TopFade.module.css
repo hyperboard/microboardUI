@@ -1,25 +1,25 @@
 .optionsEnter {
-	opacity: 0;
-	transform: translateY(-10px);
+  opacity: 0;
+  transform: translateY(-10px);
 }
 
 .optionsEnterActive {
-	opacity: 1;
-	transform: translateY(0);
-	transition:
-		opacity 300ms,
-		transform 300ms;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 300ms,
+    transform 300ms;
 }
 
 .optionsExit {
-	opacity: 1;
-	transform: translateY(0);
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .optionsExitActive {
-	opacity: 0;
-	transform: translateY(-10px);
-	transition:
-		opacity 300ms,
-		transform 300ms;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition:
+    opacity 300ms,
+    transform 300ms;
 }

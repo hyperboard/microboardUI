@@ -1,34 +1,34 @@
 .btn {
-	min-width: 24px;
-	min-height: 24px;
-	background-color: #ffffff;
-	padding: 0;
-	border-radius: 2px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+  background-color: #ffffff;
+  padding: 0;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .icon {
-	display: block;
-	width: 20px;
-	height: 20px;
-	background: none;
+  display: block;
+  width: 20px;
+  height: 20px;
+  background: none;
 }
 
 .tooltip {
-	position: fixed;
-	z-index: 100;
-	gap: 4px;
-	font-size: 1.4rem;
-	font-weight: 400;
-	display: block;
-	padding: 12px;
-	border-radius: 12px;
-	box-shadow: 0px 10px 16px -3px rgba(20, 21, 26, 0.08);
-	color: rgba(71, 120, 245, 1);
-	background-color: #ffffff;
-	max-width: 400px;
-	overflow: hidden;
-	text-overflow: ellipsis;
+  position: fixed;
+  z-index: 100;
+  gap: 4px;
+  font-size: 1.4rem;
+  font-weight: 400;
+  display: block;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0px 10px 16px -3px rgba(20, 21, 26, 0.08);
+  color: rgba(71, 120, 245, 1);
+  background-color: #ffffff;
+  max-width: 400px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

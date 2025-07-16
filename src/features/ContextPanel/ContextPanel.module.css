@@ -1,9 +1,9 @@
 .contextPanel {
-	height: 48px;
+  height: 48px;
 }
 
 @media screen and (max-width: 768px) {
-	.contextPanel {
-		height: 28px;
-	}
+  .contextPanel {
+    height: 28px;
+  }
 }

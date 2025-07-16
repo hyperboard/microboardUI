@@ -1,9 +1,9 @@
 .button {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	width: 40px;
-	gap: 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 40px;
+  gap: 2px;
 }
 
 /* .button svg {

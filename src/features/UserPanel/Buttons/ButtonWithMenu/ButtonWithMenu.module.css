@@ -1,8 +1,8 @@
 .container {
-	position: relative;
+  position: relative;
 }
 
 .menu {
-	position: absolute;
-	top: calc(100% + 0.8rem);
+  position: absolute;
+  top: calc(100% + 0.8rem);
 }

@@ -8,35 +8,35 @@ import ru from "shared/Lang/ru.json";
 let configuredI18n: any = null;
 
 export async function initInter(): Promise<void> {
-	const defaultNS = "default";
-	const resources = {
-		en: {
-			default: en,
-		},
-		ru: {
-			default: ru,
-		},
-	};
-	const i18Instance = createInstance({
-		debug: conf.debug,
-		detection: {
-			order: ["navigator"],
-		},
-		supportedLngs: ["en", "ru"],
-		defaultNS,
-		resources,
-		fallbackLng: conf.FALLBACK_LNG,
-		interpolation: {
-			escapeValue: false,
-		},
-	});
+  const defaultNS = "default";
+  const resources = {
+    en: {
+      default: en,
+    },
+    ru: {
+      default: ru,
+    },
+  };
+  const i18Instance = createInstance({
+    debug: conf.debug,
+    detection: {
+      order: ["navigator"],
+    },
+    supportedLngs: ["en", "ru"],
+    defaultNS,
+    resources,
+    fallbackLng: conf.FALLBACK_LNG,
+    interpolation: {
+      escapeValue: false,
+    },
+  });
 
-	await i18Instance.use(LanguageDetector).use(initReactI18next).init();
+  await i18Instance.use(LanguageDetector).use(initReactI18next).init();
 
-	configuredI18n = i18Instance;
-	initI18N(i18Instance);
+  configuredI18n = i18Instance;
+  initI18N(i18Instance);
 }
 
 export function getConfiguredI18n() {
-	return configuredI18n;
+  return configuredI18n;
 }

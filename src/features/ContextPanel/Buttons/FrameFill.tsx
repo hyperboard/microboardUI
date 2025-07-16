@@ -14,78 +14,73 @@ import { UiButton } from "shared/ui-lib/UiButton";
 const MENU_NAME = "FrameFill";
 
 export function FrameFill(): React.ReactElement | null {
-	const { toggleMenu, openedMenu, panelMbr, windowHeight } =
-		usePanelContext();
-	const { board } = useAppContext();
-	const { t } = useTranslation();
+  const { toggleMenu, openedMenu, panelMbr, windowHeight } = usePanelContext();
+  const { board } = useAppContext();
+  const { t } = useTranslation();
 
-	const fillColor = board.selection.getFillColor();
+  const fillColor = board.selection.getFillColor();
 
-	const handleClick = (): void => {
-		toggleMenu(MENU_NAME);
-	};
+  const handleClick = (): void => {
+    toggleMenu(MENU_NAME);
+  };
 
-	const handlePick = (color: string): void => {
-		board.selection.setFillColor(color);
-		toggleMenu("None");
-	};
+  const handlePick = (color: string): void => {
+    board.selection.setFillColor(color);
+    toggleMenu("None");
+  };
 
-	const handleCustomPick = (color: string): void => {
-		board.selection.setFillColor(color);
-	};
+  const handleCustomPick = (color: string): void => {
+    board.selection.setFillColor(color);
+  };
 
-	const isPredefinedColor = FRAME_FILL_COLORS.some(
-		color => color === fillColor,
-	);
+  const isPredefinedColor = FRAME_FILL_COLORS.some(
+    (color) => color === fillColor,
+  );
 
-	return (
-		<ButtonWithMenu
-			menuName={MENU_NAME}
-			openedMenu={openedMenu}
-			panelMbr={panelMbr}
-			windowHeight={windowHeight}
-			align="left"
-			button={
-				<UiButton
-					className={btnStyle.contextPanelButton}
-					id={"fill-style"}
-					onClick={handleClick}
-					tooltip={t("contextPanel.frameColor.tooltip")}
-					tooltipPosition="top"
-					variant="secondary"
-					active={openedMenu === MENU_NAME}
-					hideTooltip={openedMenu === MENU_NAME}
-					rounded="none"
-				>
-					<FillColorIndicator
-						width={24}
-						height={24}
-						color={fillColor}
-					/>
-				</UiButton>
-			}
-		>
-			{verticalAlign => (
-				<UiPanel
-					rounded={verticalAlign === "bottom" ? "bottom" : "full"}
-					grid
-					columns={4}
-					gap={8}
-				>
-					<ColorPicker
-						id={"fill-style"}
-						selectedColor={fillColor}
-						colors={FRAME_FILL_COLORS}
-						onPick={handlePick}
-					/>
-					<UiColorInput
-						onChange={handleCustomPick}
-						color={isPredefinedColor ? "none" : fillColor}
-						isActive={fillColor !== "none" && !isPredefinedColor}
-						toggleMenu={toggleMenu}
-					/>
-				</UiPanel>
-			)}
-		</ButtonWithMenu>
-	);
+  return (
+    <ButtonWithMenu
+      menuName={MENU_NAME}
+      openedMenu={openedMenu}
+      panelMbr={panelMbr}
+      windowHeight={windowHeight}
+      align="left"
+      button={
+        <UiButton
+          className={btnStyle.contextPanelButton}
+          id={"fill-style"}
+          onClick={handleClick}
+          tooltip={t("contextPanel.frameColor.tooltip")}
+          tooltipPosition="top"
+          variant="secondary"
+          active={openedMenu === MENU_NAME}
+          hideTooltip={openedMenu === MENU_NAME}
+          rounded="none"
+        >
+          <FillColorIndicator width={24} height={24} color={fillColor} />
+        </UiButton>
+      }
+    >
+      {(verticalAlign) => (
+        <UiPanel
+          rounded={verticalAlign === "bottom" ? "bottom" : "full"}
+          grid
+          columns={4}
+          gap={8}
+        >
+          <ColorPicker
+            id={"fill-style"}
+            selectedColor={fillColor}
+            colors={FRAME_FILL_COLORS}
+            onPick={handlePick}
+          />
+          <UiColorInput
+            onChange={handleCustomPick}
+            color={isPredefinedColor ? "none" : fillColor}
+            isActive={fillColor !== "none" && !isPredefinedColor}
+            toggleMenu={toggleMenu}
+          />
+        </UiPanel>
+      )}
+    </ButtonWithMenu>
+  );
 }
