@@ -279,14 +279,23 @@ document.addEventListener("DOMContentLoaded", () => {
 			scale = 1;
 			updateTransform();
 
-			const { initBrowserSettings } = await import(
-				"https://www.unpkg.com/test_package_board@0.0.99/dist/bundle.js"
+			// const { initBrowserSettings } = await import(
+			// 	"https://www.unpkg.com/test_package_board@0.0.99/dist/bundle.js"
+			// );
+			// initBrowserSettings();
+
+			// const { createApp } = await import(
+			// 	"https://www.unpkg.com/test_package_board@0.0.99/dist/bundle.js"
+			// );
+			const { initInter } = await import(
+				"https://www.unpkg.com/microboard-ui-temp@0.0.11/dist/index.js"
 			);
-			initBrowserSettings();
+			initInter();
 
 			const { createApp } = await import(
-				"https://www.unpkg.com/test_package_board@0.0.99/dist/bundle.js"
+				"https://www.unpkg.com/microboard-ui-temp@0.0.11/dist/index.js"
 			);
+			console.log("createapp", createApp);
 
 			const app = createApp();
 			window.app = app;

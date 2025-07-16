@@ -57,7 +57,7 @@ export function copyPlugin(opts: {
 
         const statsFrom = statSync(from);
         if (statsFrom.isFile()) {
-          await processFile(from, join(to, basename(from)), false);
+          await processFile(from, join(to, basename(from)), bundle);
           return;
         }
         if (!statsFrom.isDirectory()) {
