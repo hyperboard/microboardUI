@@ -14,7 +14,7 @@ declare global {
 		enableVideos: boolean;
 		enableGames: boolean;
 		enableDiagrams: boolean;
-		showOpenFilePicker: () => Promise<FileSystemFileHandle[]>; // should be there
+		showOpenFilePicker: (opts?: any) => Promise<FileSystemFileHandle[]>; // should be there
 	}
 }
 
