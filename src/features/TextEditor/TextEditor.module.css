@@ -1,115 +1,115 @@
-.editor-container {
-	position: relative;
+.editorContainer {
+  position: relative;
 }
 
-.scroll-container {
-	scrollbar-width: none;
+.scrollContainer {
+  scrollbar-width: none;
 }
 
-.scroll-container::-webkit-scrollbar {
-	display: none;
+.scrollContainer::-webkit-scrollbar {
+  display: none;
 }
 
-.editor-container::before {
-	content: attr(data-placeholder);
-	position: absolute;
-	left: 0;
-	right: 0;
-	top: 0;
-	bottom: 0;
-	width: 100%;
-	white-space: nowrap;
-	opacity: 0.33;
-	max-width: 100%;
-	text-decoration: none;
-	user-select: none;
-	pointer-events: none;
-	font-size: inherit;
-	align-items: center;
-	display: none;
-	overflow: hidden;
+.editorContainer::before {
+  content: attr(data-placeholder);
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  opacity: 0.33;
+  max-width: 100%;
+  text-decoration: none;
+  user-select: none;
+  pointer-events: none;
+  font-size: inherit;
+  align-items: center;
+  display: none;
+  overflow: hidden;
 }
 
-.show-placeholder.editor-container::before {
-	display: flex;
+.showPlaceholder.editorContainer::before {
+  display: flex;
 }
 
-.limit-warning {
-	position: absolute;
-	transform-origin: left top;
-	user-select: none;
-	opacity: 0;
+.limitWarning {
+  position: absolute;
+  transform-origin: left top;
+  user-select: none;
+  opacity: 0;
 }
 
-.limit-warning.show {
-	opacity: 0.5;
-	animation: fadeOut 3s ease-in-out;
+.limitWarning.show {
+  opacity: 0.5;
+  animation: fadeOut 3s ease-in-out;
 }
 
 @keyframes fadeOut {
-	0% {
-		opacity: 0.5;
-	}
-	100% {
-		opacity: 0;
-	}
+  0% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 .quoteBtn {
-	cursor: pointer;
-	background-color: rgba(247, 247, 248, 1);
-	border: 1px solid rgba(200, 202, 208, 1);
-	border-radius: 10px;
-	width: 48px;
-	height: 32px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	position: fixed;
-	box-shadow: 0px 1px 3px 0px rgba(20, 21, 26, 0.1);
-	z-index: 1000;
+  cursor: pointer;
+  background-color: rgba(247, 247, 248, 1);
+  border: 1px solid rgba(200, 202, 208, 1);
+  border-radius: 10px;
+  width: 48px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  box-shadow: 0px 1px 3px 0px rgba(20, 21, 26, 0.1);
+  z-index: 1000;
 }
 
 .tooltip {
-	position: absolute;
-	bottom: calc(100% + 1.2rem);
-	padding: 8px 12px;
-	border-radius: 6px;
-	display: flex;
-	align-items: center;
-	gap: 4px;
-	white-space: nowrap;
-	font-size: 1.4rem;
-	font-weight: 400;
-	background-color: rgb(11, 12, 14);
-	color: rgb(247, 247, 247);
+  position: absolute;
+  bottom: calc(100% + 1.2rem);
+  padding: 8px 12px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  font-size: 1.4rem;
+  font-weight: 400;
+  background-color: rgb(11, 12, 14);
+  color: rgb(247, 247, 247);
 }
 
 .tooltip::before {
-	content: "";
-	position: absolute;
-	width: 0;
-	height: 0;
-	border-left: 0.7rem solid transparent;
-	border-right: 0.7rem solid transparent;
-	border-bottom: 0.8rem solid rgb(11, 12, 14);
-	border-radius: 8px;
-	left: 50%;
-	margin-left: -0.7rem;
-	bottom: -0.6rem;
-	transform: rotate(180deg);
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 0.7rem solid transparent;
+  border-right: 0.7rem solid transparent;
+  border-bottom: 0.8rem solid rgb(11, 12, 14);
+  border-radius: 8px;
+  left: 50%;
+  margin-left: -0.7rem;
+  bottom: -0.6rem;
+  transform: rotate(180deg);
 }
 
 .listItem span {
-	left: 0 !important;
+  left: 0 !important;
 }
 
 .listLevel1 {
-	list-style-type: decimal;
+  list-style-type: decimal;
 }
 .listLevel2 {
-	list-style-type: lower-alpha;
+  list-style-type: lower-alpha;
 }
 .listLevel3 {
-	list-style-type: lower-roman;
+  list-style-type: lower-roman;
 }

@@ -5,8 +5,12 @@
   "module": "dist/index.js",
   "type": "module",
   "scripts": {
+    "lint:css": "stylelint '**/*.module.css' --fix",
+    "fix:css": "bun run scripts/cameliseCssClasses.ts",
+    "lint": "bun run lint:css",
     "clean": "rimraf dist",
-    "build": "bun run scripts/build.ts"
+    "build": "bun run scripts/build.ts",
+    "prepare": "bun run scripts/prepareHooks.ts"
   },
   "files": [
     "dist"
@@ -19,7 +23,8 @@
   },
   "devDependencies": {
     "@types/bun": "^1.2.18",
-    "@types/node": "^24.0.12"
+    "@types/node": "^24.0.12",
+    "stylelint": "^16.21.1"
   },
   "peerDependencies": {
     "typescript": "^5",

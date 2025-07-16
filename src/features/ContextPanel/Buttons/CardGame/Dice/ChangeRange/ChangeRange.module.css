@@ -1,53 +1,53 @@
 .button {
-	gap: 0.6rem;
-	padding: 0;
-	padding-left: 0.6rem;
-	padding-right: 0;
-	min-width: 76px;
+  gap: 0.6rem;
+  padding: 0;
+  padding-left: 0.6rem;
+  padding-right: 0;
+  min-width: 76px;
 }
 
-.font-size {
-	flex: 1 0;
-	height: 100%;
+.fontSize {
+  flex: 1 0;
+  height: 100%;
 }
 
 .input {
-	font-size: 1.6rem;
-	font-weight: 500;
-	max-width: 36px;
-	height: 100%;
-	text-align: center;
-	border: none;
-	outline: none;
+  font-size: 1.6rem;
+  font-weight: 500;
+  max-width: 36px;
+  height: 100%;
+  text-align: center;
+  border: none;
+  outline: none;
 }
 
 .input:focus {
-	color: rgba(83, 20, 163, 1);
+  color: rgba(83, 20, 163, 1);
 }
 
 .input:not(:focus) {
-	cursor: pointer;
-	color: rgba(20, 21, 26, 1);
+  cursor: pointer;
+  color: rgba(20, 21, 26, 1);
 }
 
-.size-list {
-	min-width: 52px;
-	display: flex;
-	flex-direction: column;
-	align-items: stretch;
-	overflow: hidden;
+.sizeList {
+  min-width: 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  overflow: hidden;
 }
 
 .menuBottom {
-	border-bottom-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 
 .chevron {
-	width: 2rem;
-	align-self: stretch;
-	min-height: 100%;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	flex: 1 0;
+  width: 2rem;
+  align-self: stretch;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1 0;
 }
