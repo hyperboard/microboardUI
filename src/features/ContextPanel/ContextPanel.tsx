@@ -118,6 +118,7 @@ export function ContextPanel(): React.ReactElement | null {
 	const isCard = board.selection.items.isAllItemsType("Card");
 	const isCardOrDeck = board.selection.items.isItemTypes(["Card", "Deck"]);
 	const isDice = board.selection.items.isAllItemsType("Dice");
+	const isHand = board.selection.items.isAllItemsType("Hand");
 	const isDifferentItems =
 		!isText &&
 		!isSticker &&
@@ -134,7 +135,8 @@ export function ContextPanel(): React.ReactElement | null {
 		!isDeck &&
 		!isCard &&
 		!isCardOrDeck &&
-		!isDice;
+		!isDice &&
+		!isHand;
 
 	return (
 		<PanelContext.Provider
@@ -484,6 +486,21 @@ export function ContextPanel(): React.ReactElement | null {
 						<ChangeRange rangeValue="min" />
 						<ChangeRange rangeValue="max" />
 						<UiSeparator vertical />
+						<StrokeStyle />
+						<FillStyle />
+						<UiSeparator vertical />
+						<Delete />
+						<UiSeparator vertical />
+						<RestOptionsMenu>
+							<BringToFront />
+							<SendToBack />
+							<CopyItemLink />
+							<Duplicate />
+						</RestOptionsMenu>
+					</>
+				)}
+				{isHand && !isSelectUnderPointer && !isLocked && (
+					<>
 						<StrokeStyle />
 						<FillStyle />
 						<UiSeparator vertical />

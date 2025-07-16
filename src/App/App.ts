@@ -195,9 +195,7 @@ export function createApp(isHistory = true): App {
 			}
 		}
 
-		const isItemsOnBoard =
-			newBoard.items.listAll().length > 0 ||
-			newBoard.items.listFrames().length > 0;
+		const isItemsOnBoard = newBoard.items.listAll().length > 0;
 
 		if (newBoard.items.getItemsInView().length === 0 && isItemsOnBoard) {
 			newBoard.camera.zoomToFit(newBoard.items.getMbr());

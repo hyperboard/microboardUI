@@ -294,7 +294,7 @@ function transformFrame(data: AiFrame, board: Board): void {
 				return;
 			}
 			if (item) {
-				frame.emitAddChild(item);
+				frame.addChildItem(item);
 			}
 		});
 	}

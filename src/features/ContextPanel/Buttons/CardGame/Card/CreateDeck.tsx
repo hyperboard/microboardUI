@@ -23,7 +23,16 @@ export function CreateDeck({ rounded = "none", onlyCards }: Props) {
 
 	const handleClick = (): void => {
 		if (onlyCards) {
-			board.add(new Deck(board, "", undefined, cardsOrDecks));
+			const deck = new Deck(board, "");
+			deck.transformation.apply({
+				class: "Transformation",
+				method: "translateTo",
+				item: [deck.getId()],
+				x: cardsOrDecks[cardsOrDecks.length - 1].left,
+				y: cardsOrDecks[cardsOrDecks.length - 1].top,
+			});
+			const addedDeck = board.add(deck);
+			addedDeck.addChildItems(cardsOrDecks);
 		} else {
 			let mainDeck: Deck | null = null;
 			const cards: Card[] = [];
@@ -40,11 +49,7 @@ export function CreateDeck({ rounded = "none", onlyCards }: Props) {
 					}
 				}
 			});
-			if (!mainDeck) {
-				board.add(new Deck(board, "", undefined, cards));
-				return;
-			}
-			mainDeck.addCards(cards);
+			mainDeck.addChildItems(cards);
 			board.selection.items.removeAll();
 		}
 	};

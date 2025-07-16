@@ -90,15 +90,15 @@ export function ContextMenu(): JSX.Element | null {
 			app.getBoard().deserializeHTML(stringedHTML);
 		}
 		app.render();
-		const sumMbr = [
-			...app.getBoard().items.listAll(),
-			...app.getBoard().items.listFrames(),
-		].reduce((acc: undefined | Mbr, item) => {
-			if (!acc) {
-				return item.getMbr();
-			}
-			return acc.combine(item.getMbr());
-		}, undefined);
+		const sumMbr = app
+			.getBoard()
+			.items.listAll()
+			.reduce((acc: undefined | Mbr, item) => {
+				if (!acc) {
+					return item.getMbr();
+				}
+				return acc.combine(item.getMbr());
+			}, undefined);
 		if (sumMbr) {
 			app.getBoard().camera.zoomToFit(sumMbr);
 		}
