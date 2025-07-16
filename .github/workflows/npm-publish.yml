@@ -60,6 +60,25 @@ jobs:
           node-version: "20.x"
           registry-url: "https://registry.npmjs.org"
 
+      - name: Extract new version
+        id: extract-version
+        run: |
+          # read version and store in GITHUB_ENV for later steps
+          VERSION=$(node -p "require('./package.json').version")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Update microboard-ui-temp references
+        run: |
+          # find and replace any microboard-ui-temp@ → current version
+          grep -RIlE 'microboard-ui-temp@[0-9]+\.[0-9]+\.[0-9]+' . \
+            | xargs sed -i -E "s|(microboard-ui-temp@)[0-9]+\.[0-9]+\.[0-9]+|\1${VERSION}|g"
+
+      - name: Commit updated references
+        run: |
+          git add .
+          git commit -m "chore: sync microboard-ui-temp URLs to v${VERSION} [skip ci]" || echo "✔️ No changes to commit"
+          git push origin trunk
+
       - name: Publish to NPM
         run: npm publish
         env:
