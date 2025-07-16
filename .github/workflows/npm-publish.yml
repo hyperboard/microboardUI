@@ -32,7 +32,7 @@ jobs:
         run: bun install
 
       - name: Build package
-        run: bun run build:pkg
+        run: bun run build
 
       # - name: Run tests
       #   continue-on-error: true # ⚠️ ВРЕМЕННО: продолжить, даже если тесты падают
