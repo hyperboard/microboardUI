@@ -288,12 +288,12 @@ document.addEventListener("DOMContentLoaded", () => {
 			// 	"https://www.unpkg.com/test_package_board@0.0.99/dist/bundle.js"
 			// );
 			const { initInter } = await import(
-				"https://www.unpkg.com/microboard-ui-temp@0.0.11/dist/index.js"
+				"https://www.unpkg.com/microboard-ui-temp@0.0.13/dist/index.js"
 			);
 			initInter();
 
 			const { createApp } = await import(
-				"https://www.unpkg.com/microboard-ui-temp@0.0.11/dist/index.js"
+				"https://www.unpkg.com/microboard-ui-temp@0.0.13/dist/index.js"
 			);
 			console.log("createapp", createApp);
 
