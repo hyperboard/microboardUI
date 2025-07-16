@@ -1,4 +1,4 @@
 export { App, createApp } from "App/App";
 export { initInter } from "initI18N";
-import "features/Cursors";
+export { customCursors } from "features/Cursors";
 import "./index.css";
