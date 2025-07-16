@@ -286,7 +286,14 @@ export function createApp(isHistory = true): App {
 	async function getFileForLocalEdit(): Promise<File> {
 		// chrome
 		if ("showOpenFilePicker" in window) {
-			const [newFileHandle] = await window.showOpenFilePicker();
+			const [newFileHandle] = await window.showOpenFilePicker({
+				types: [{
+				  description: "HTML-files",
+				  accept: { "text/html": [".html"] }
+				}],
+				excludeAcceptAllOption: false,
+				multiple: false
+			  });
 			fileHandle = newFileHandle;
 			const file = await newFileHandle.getFile();
 			return file;
