@@ -308,7 +308,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			}
 
 			const response = await fetch(
-				"https://www.unpkg.com/test_package_board@0.0.99/dist/bundle.css",
+				"https://www.unpkg.com/microboard-ui-temp@0.0.14/dist/index.css",
 			);
 			const cssText = await response.text();
 			const styleEl = document.createElement("style");
@@ -316,7 +316,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			document.body.appendChild(styleEl);
 
 			const responseSvg = await fetch(
-				"https://www.unpkg.com/test_package_board@0.0.99/dist/sprite.svg",
+				"https://www.unpkg.com/microboard-ui-temp@0.0.14/dist/sprite.svg",
 			);
 			const svgText = await responseSvg.text();
 			const div = document.createElement("div");
