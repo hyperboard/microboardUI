@@ -27,6 +27,7 @@ async function main() {
     outdir,
     loader: {
       ".css": "css",
+      ".svg": "file",
     },
     format: "esm",
     splitting: false,
