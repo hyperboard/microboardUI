@@ -32,7 +32,9 @@ export function CreateDeck({ rounded = "none", onlyCards }: Props) {
 				y: cardsOrDecks[cardsOrDecks.length - 1].top,
 			});
 			const addedDeck = board.add(deck);
+			board.selection.items.removeAll();
 			addedDeck.addChildItems(cardsOrDecks);
+			board.selection.items.add(addedDeck);
 		} else {
 			let mainDeck: Deck | null = null;
 			const cards: Card[] = [];
@@ -49,8 +51,9 @@ export function CreateDeck({ rounded = "none", onlyCards }: Props) {
 					}
 				}
 			});
-			mainDeck.addChildItems(cards);
 			board.selection.items.removeAll();
+			mainDeck.addChildItems(cards);
+			board.selection.items.add(mainDeck);
 		}
 	};
 
@@ -64,7 +67,7 @@ export function CreateDeck({ rounded = "none", onlyCards }: Props) {
 			variant="secondary"
 			rounded={rounded}
 		>
-			<Icon iconName="Plus" />
+			<Icon iconName="Stack" />
 		</UiButton>
 	);
 }

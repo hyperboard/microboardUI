@@ -33,7 +33,7 @@ export function ShuffleDeck({ rounded = "none" }: Props) {
 			variant="secondary"
 			rounded={rounded}
 		>
-			<Icon iconName="publicDrafts" />
+			<Icon iconName="ShuffleDeck" />
 		</UiButton>
 	);
 }

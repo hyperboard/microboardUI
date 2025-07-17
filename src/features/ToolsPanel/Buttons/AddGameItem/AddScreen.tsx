@@ -4,26 +4,26 @@ import { UiButton } from "shared/ui-lib/UiButton";
 import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
 
-export function AddHand() {
+export function AddScreen() {
 	const { board } = useAppContext();
 	const { t } = useTranslation();
 
 	const handleClick = () => {
-		board.tools.addRegisteredTool("AddHand", true);
+		board.tools.addRegisteredTool("AddScreen", true);
 	};
 
-	const isActive = Boolean(board.tools.getAddRegisteredTool("AddHand"));
+	const isActive = Boolean(board.tools.getAddRegisteredTool("AddScreen"));
 
 	return (
 		<UiButton
 			id={"redo"}
-			tooltip={"Hand"}
+			tooltip={t("toolsPanel.addGameItem.addScreen.tooltip")}
 			onClick={handleClick}
 			variant="secondary"
 			rounded="none"
 			active={isActive}
 		>
-			<Icon iconName="Redo" />
+			<Icon iconName="AddScreen" />
 		</UiButton>
 	);
 }

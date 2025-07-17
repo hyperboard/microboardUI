@@ -7,7 +7,7 @@ import { UiButton } from "shared/ui-lib/UiButton";
 import { AddDice } from "features/ToolsPanel/Buttons/AddGameItem/AddDice";
 import { AddCard } from "features/ToolsPanel/Buttons/AddGameItem/AddCard";
 import { useClickOutside } from "shared/lib/useClickOutside";
-import { AddHand } from "features/ToolsPanel/Buttons/AddGameItem/AddHand";
+import { AddScreen } from "features/ToolsPanel/Buttons/AddGameItem/AddScreen";
 
 export function AddGameItem() {
 	const [isOpen, setIsOpen] = useState(false);
@@ -26,14 +26,14 @@ export function AddGameItem() {
 					rounded="top"
 					onClick={() => setIsOpen(!isOpen)}
 				>
-					<Icon iconName={"Pen"} />
+					<Icon iconName={"GameItems"} />
 				</UiButton>
 			}
 			isOpen={isOpen}
 		>
 			<UiPanel vertical padding={0}>
 				<AddDice rounded={"top"} />
-				<AddHand />
+				<AddScreen />
 				<AddCard rounded={"bottom"} />
 			</UiPanel>
 		</ButtonWithMenu>

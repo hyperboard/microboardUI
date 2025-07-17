@@ -172,7 +172,16 @@ export type IconId =
 	| "MouseRightClick"
 	| "MouseRollClick"
 	| "TrackpadMove"
-	| "TrackpadPinch";
+	| "TrackpadPinch"
+	| "Dice"
+	| "Card"
+	| "Stack"
+	| "RotateDice"
+	| "RotateCard"
+	| "ShuffleDeck"
+	| "GameItems"
+	| "GetCard"
+	| "AddScreen";
 
 type Props = {
 	iconName: IconId;

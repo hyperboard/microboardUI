@@ -39,7 +39,7 @@ export function GetCard({ cardPosition, rounded = "none" }: Props) {
 				break;
 		}
 		const { left, top } = deck.getMbr();
-		card.transformation.translateTo(left, top - 200);
+		card.transformation.translateTo(left, top - 280);
 		if (deck.getDeck().length === 0) {
 			board.remove(deck);
 		}
@@ -55,7 +55,7 @@ export function GetCard({ cardPosition, rounded = "none" }: Props) {
 			variant="secondary"
 			rounded={rounded}
 		>
-			<Icon iconName="Play" />
+			<Icon iconName="GetCard" />
 		</UiButton>
 	);
 }

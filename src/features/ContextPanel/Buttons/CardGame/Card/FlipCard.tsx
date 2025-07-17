@@ -14,15 +14,11 @@ export function FlipCard({ rounded = "none" }: Props) {
 	const { board } = useAppContext();
 	const { t } = useTranslation();
 
-	const single = board.selection.items.getSingle();
-
-	if (!single || single.itemType !== "Card") {
-		return null;
-	}
-
 	const handleClick = (): void => {
-		const card = single as Card;
-		card.toggleIsOpen();
+		const cards = board.selection.items.list() as Card[];
+		cards.forEach((card: Card): void => {
+			card.toggleIsOpen();
+		});
 	};
 
 	return (
@@ -35,7 +31,7 @@ export function FlipCard({ rounded = "none" }: Props) {
 			variant="secondary"
 			rounded={rounded}
 		>
-			<Icon iconName="ToggleCursors" />
+			<Icon iconName="RotateCard" width={24} height={24} />
 		</UiButton>
 	);
 }
