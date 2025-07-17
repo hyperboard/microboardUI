@@ -29,6 +29,7 @@ async function main() {
       ".css": "css",
       ".svg": "file",
     },
+    publicPath: "/",
     format: "esm",
     splitting: false,
     plugins: [
