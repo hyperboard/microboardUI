@@ -1,10 +1,8 @@
 /* eslint-disable no-var */
 
-import { App } from "App";
-import { createApp } from "App/App";
+import { App, createApp, initInter } from "microboard-ui-temp";
+import "microboard-ui-temp/style";
 import "features/Cursors";
-import { initInter } from "initI18N";
-import "./index.css";
 
 declare global {
 	interface Window {
@@ -27,12 +25,13 @@ window.enableGames = true;
 
 async function initializeApp() {
 	await initInter();
-	window.app = createApp();
-	window.app.account.init().finally(() => {
-		window.app.connection.connect().then(() => {
-			window.app.render();
+	const app = createApp();
+	app.account.init().finally(() => {
+		app.connection.connect().then(() => {
+			app.render();
 		});
 	});
+	window.app = app;
 }
 
 initializeApp();
