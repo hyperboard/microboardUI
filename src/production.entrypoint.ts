@@ -1,7 +1,8 @@
 /* eslint-disable no-var */
 import { App, createApp, initInter } from "microboard-ui-temp";
+import "microboard-ui-temp/style";
 import "features/Cursors";
-import "./index.css";
+// import "./index.css";
 
 declare global {
 	interface Window {
