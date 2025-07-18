@@ -425,34 +425,56 @@ export function createConnection(
     );
   }
 
-  async function publishAuth(): Promise<void> {
-    try {
-      if (isAuthPublishing.flag) {
-        return tokenPromise?.promise;
-      }
-      isAuthPublishing.flag = true;
-      const account = getAccount();
-      if (!tokenPromise) {
-        tokenPromise = createPromiseWithResolvers();
-      }
-      await account.refreshTokens();
-      const jwt = account.accessToken;
-      if (!jwt) {
-        return;
-      }
-      ws.send({
-        type: "Auth",
-        jwt,
-      });
+	async function publishAuth(): Promise<void> {
+		// If already in progress, just return the existing promise
+		if (isAuthPublishing.flag && tokenPromise) {
+			return tokenPromise.promise;
+		}
 
-      await tokenPromise.promise;
-    } catch {
-      console.info("Unauthorized");
-    } finally {
-      isAuthPublishing.flag = false;
-      tokenPromise = null;
-    }
-  }
+		// Create a local reference to track our token promise
+		let localTokenPromise = tokenPromise;
+		let needsCleanup = false;
+
+		try {
+			// Set flag to indicate we're publishing
+			isAuthPublishing.flag = true;
+			needsCleanup = true;
+
+			// Create promise if it doesn't exist
+			if (!localTokenPromise) {
+				localTokenPromise = createPromiseWithResolvers();
+				tokenPromise = localTokenPromise;
+			}
+
+			const account = getAccount();
+			await account.refreshTokens();
+			const jwt = account.accessToken;
+
+			if (!jwt) {
+				// Explicitly resolve before returning
+				localTokenPromise.resolve();
+				return;
+			}
+
+			ws.send({
+				type: "Auth",
+				jwt,
+			});
+
+			// Explicitly resolve the promise to unblock any waiters
+			localTokenPromise.resolve();
+		} catch (error) {
+			console.info("Unauthorized", error);
+			// Resolve on error too to prevent hanging
+			localTokenPromise?.resolve();
+		} finally {
+			if (needsCleanup) {
+				// Only reset if this call set the flag
+				isAuthPublishing.flag = false;
+				tokenPromise = null;
+			}
+		}
+	}
 
   function publishLogout(): void {
     ws.send({
