@@ -1,4 +1,4 @@
-import { conf } from "microboard-temp";
+import { conf } from "index";
 
 const isSnapshotInIframe =
   typeof window !== "undefined" &&
@@ -22,6 +22,7 @@ export function getApiUrl(path?: string): string {
   if (!path) {
     path = "";
   }
+  console.log("GETapi url", conf.apiURL);
   if (conf.apiURL) {
     return `${conf.apiURL}${path}`;
   }
