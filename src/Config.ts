@@ -1,3 +1,5 @@
+import { conf } from "microboard-temp";
+
 const isSnapshotInIframe =
   typeof window !== "undefined" &&
   window.parent &&
@@ -20,6 +22,9 @@ export function getApiUrl(path?: string): string {
   if (!path) {
     path = "";
   }
+  if (conf.apiURL) {
+    return `${conf.apiURL}${path}`;
+  }
   return `${PROTOCOL}//${HOST}/api/v1${path}`;
 }
 
@@ -31,6 +36,9 @@ export function getPublicUrl(path?: string): string {
 }
 
 export function getWebsocketUrl(): string {
+  if (conf.wsURL) {
+    return conf.wsURL;
+  }
   return `${PROTOCOL === "https:" ? "wss" : "ws"}://${HOST}/ws`;
 }
 export function getApiUrlV2(path?: string): string {
