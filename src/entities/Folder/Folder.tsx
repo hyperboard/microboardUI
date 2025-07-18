@@ -66,7 +66,7 @@ export const Folder = ({
   const boardsList = useBoardsList();
   const boardId = board.getBoardId();
   const accordionRef = useRef<AccordionState>(null);
-  const currentBoardRef = useRef<HTMLDivElement>();
+  const currentBoardRef = useRef<HTMLDivElement>(null);
   const currentFolderRef = useRef<HTMLButtonElement>(null);
   const { id, foldersRefState } = useOpenedFoldersContext();
   const [openedByDragging, setOpenedByDragging] = useState(false);
@@ -94,7 +94,7 @@ export const Folder = ({
       folder?.type !== foldersApi.FolderType.NESTED,
   });
 
-  const isOverTimerRef = useRef<NodeJS.Timeout>();
+  const isOverTimerRef = useRef<NodeJS.Timeout>(setTimeout(() => {}));
   const itemRef = useRef<HTMLDivElement | null>(null);
 
   const style: CSSProperties | undefined = transform

@@ -85,11 +85,12 @@ customElements.define("comment-item", CommentElement);
 customElements.define("audio-item", AudioItemElement);
 
 document.addEventListener("DOMContentLoaded", () => {
-  const itemsDiv = document.querySelector("#items");
+  const itemsDiv = document.querySelector<HTMLDivElement>("#items");
   if (!itemsDiv) {
     console.error("ITEMS DIV NOT FOUND!");
     return;
   }
+
   let isDragging = false;
   let startX, startY;
   let translateX = 0;
@@ -100,6 +101,10 @@ document.addEventListener("DOMContentLoaded", () => {
   document.body.style.cursor = "grab";
 
   function updateTransform() {
+    if (!itemsDiv) {
+      return;
+    }
+
     itemsDiv.style.transform =
       "translate(" +
       translateX +
@@ -111,6 +116,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function handleMouseDown(ev) {
+    if (!itemsDiv) {
+      return;
+    }
+
     isDragging = true;
     startX = ev.clientX;
     startY = ev.clientY;
@@ -118,9 +127,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function handleMouseMove(ev) {
-    if (!isDragging) {
+    if (!isDragging || !itemsDiv) {
       return;
     }
+
     const dx = ev.clientX - startX;
     const dy = ev.clientY - startY;
     startX += dx;
@@ -131,9 +141,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function handleMouseUp(ev) {
-    if (!isDragging) {
+    if (!isDragging || !itemsDiv) {
       return;
     }
+
     isDragging = false;
     itemsDiv.style.cursor = "grab";
   }
@@ -150,7 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("mousedown", handleMouseDown);
   document.addEventListener("mousemove", handleMouseMove);
   document.addEventListener("mouseup", handleMouseUp);
-  document.addEventListener("wheel", handleWheel, { passive: false });
+  document.addEventListener("wheel", handleWheel);
 
   const titlePanel = document.createElement("div");
   titlePanel.style.boxShadow = "0px 10px 16px -3px rgba(20, 21, 26, 0.08)";
@@ -164,6 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
   titlePanel.style.gap = "8px";
   titlePanel.style.padding = "0 12px";
   titlePanel.style.height = "48px";
+
   const editButton = document.createElement("button");
   const editIcon = document.createElementNS(
     "http://www.w3.org/2000/svg",
@@ -192,7 +204,6 @@ document.addEventListener("DOMContentLoaded", () => {
     window.parent.location.href.includes("/snapshots/");
   editFileText.textContent = isSnapshotInIframe ? "Edit copy" : "Edit file";
   editButton.appendChild(editFileText);
-
   editButton.style.backgroundColor = "rgba(20, 21, 26, 1)";
   editButton.style.cursor = "pointer";
   editButton.style.boxShadow = "0px 1px 2px 0px rgba(20, 21, 26, 0.05)";
@@ -204,6 +215,23 @@ document.addEventListener("DOMContentLoaded", () => {
   editButton.style.gap = "8px";
   editButton.style.padding = "8px";
   editButton.style.borderRadius = "10px";
+
+  const shareButton = document.createElement("button");
+  const shareButtonText = document.createElement("p");
+  shareButtonText.textContent = "Share with friends";
+  shareButton.appendChild(shareButtonText);
+  shareButton.style.backgroundColor = "rgba(20, 21, 26, 1)";
+  shareButton.style.cursor = "pointer";
+  shareButton.style.boxShadow = "0px 1px 2px 0px rgba(20, 21, 26, 0.05)";
+  shareButton.style.color = "#ffff";
+  shareButton.style.fontSize = "14px";
+  shareButton.style.lineHeight = "20px";
+  shareButton.style.display = "flex";
+  shareButton.style.alignItems = "center";
+  shareButton.style.gap = "8px";
+  shareButton.style.padding = "8px";
+  shareButton.style.borderRadius = "10px";
+
   const separator = document.createElement("div");
   separator.style.borderRight = "1px solid rgba(222, 224, 227, 1)";
   separator.style.height = "100%";
@@ -228,7 +256,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const boardNameTag = document.querySelector('meta[name="board-name"]');
   let boardNameStr = "Untitled";
   if (boardNameTag) {
-    boardNameStr = boardNameTag.getAttribute("content");
+    boardNameStr = boardNameTag.getAttribute("content") || "";
   }
   const p = document.createElement("p");
   p.textContent = boardNameStr;
@@ -261,8 +289,8 @@ document.addEventListener("DOMContentLoaded", () => {
   titlePanel.appendChild(boardName);
   titlePanel.appendChild(separator);
   titlePanel.appendChild(editButton);
+  titlePanel.appendChild(shareButton);
   document.body.appendChild(titlePanel);
-
   editButton.onclick = async () => {
     editButton.disabled = true;
     editButton.textContent = "Loading...";
@@ -271,22 +299,12 @@ document.addEventListener("DOMContentLoaded", () => {
       document.removeEventListener("mousedown", handleMouseDown);
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
-      document.removeEventListener("wheel", handleWheel, {
-        passive: false,
-      });
+      document.removeEventListener("wheel", handleWheel);
       translateX = 0;
       translateY = 0;
       scale = 1;
       updateTransform();
 
-      // const { initBrowserSettings } = await import(
-      // 	"https://www.unpkg.com/test_package_board@0.0.99/dist/bundle.js"
-      // );
-      // initBrowserSettings();
-
-      // const { createApp } = await import(
-      // 	"https://www.unpkg.com/test_package_board@0.0.99/dist/bundle.js"
-      // );
       const { initInter } = await import(
         "https://www.unpkg.com/microboard-ui-temp@0.0.27/dist/index.js"
       );
@@ -295,7 +313,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const { createApp } = await import(
         "https://www.unpkg.com/microboard-ui-temp@0.0.27/dist/index.js"
       );
-      console.log("createapp", createApp);
 
       const app = createApp();
       window.app = app;
@@ -329,4 +346,26 @@ document.addEventListener("DOMContentLoaded", () => {
       editButton.textContent = "Edit board";
     }
   };
+
+  const handleShareBoard = async (ev) => {
+    ev.preventDefault();
+    ev.stopPropagation();
+
+    const htmlContent = document.documentElement.innerHTML;
+    const boardName = document.title?.trim() || "shared-board";
+
+    const { boardsApi, createApp } = await import(
+      "https://www.unpkg.com/microboard-ui-temp@0.0.27/dist/index.js"
+    );
+    const boardId = await boardsApi.createBoardUnAuthed(boardName);
+
+    const app = createApp();
+    window.app = app;
+    await app.openBoard(boardId);
+    await app.getBoard().deserializeHTMLAndEmit(htmlContent);
+
+    window.location.href = `https://dev-app.microboard.io/boards/${boardId}`;
+  };
+
+  shareButton.onclick = handleShareBoard;
 });

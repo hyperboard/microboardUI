@@ -33,7 +33,7 @@ import { useIsPhoneScreen } from "shared/lib/useIsPhoneScreen";
 
 const MIN_PANEL_WIDTH = 280;
 
-export function SidePanel(): JSX.Element {
+export function SidePanel(): React.JSX.Element {
   const { board } = useAppContext();
   const { isOpen, toggleSideMenu, isHighlighted, openMenu } =
     useSidePanelContext();
