@@ -66,7 +66,8 @@ export const LinksProvider = (): JSX.Element => {
 
   return (
     <>
-      {[...board.items.listAll(), ...board.items.listFrames()]
+      {board.items
+        .listAll()
         .filter((item) => item.getLinkTo() && !item.transformationRenderBlock)
         .map((item) => {
           return (

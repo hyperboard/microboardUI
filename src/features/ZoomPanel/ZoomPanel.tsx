@@ -23,7 +23,7 @@ export function ZoomPanel() {
   const isMobile = useMediaQuery("screen and (max-width: 1200px)");
 
   const zoomToFit = (): void => {
-    const items = [...board.items.listAll(), ...board.items.listFrames()];
+    const items = board.items.listAll();
     if (items.length > 0) {
       const rect = new Mbr(1000_000, 1000_000, -1000_000, -1000_000);
       items.forEach((item) => rect.combine([item.getMbr()]));

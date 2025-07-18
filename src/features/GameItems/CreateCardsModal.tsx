@@ -7,7 +7,6 @@ import { UiButton } from "shared/ui-lib/UiButton";
 import { useAppContext } from "features/AppContext";
 import { useAccount } from "App/useAccount";
 import { Card, ItemsMap } from "microboard-temp";
-import { catchMediaErrorResponse } from "App/MediaHelpers";
 import { uploadImages } from "shared/api/media/uploadImage";
 
 export const CREATE_CARDS_MODAL = Symbol("createCardsModal");
@@ -33,21 +32,10 @@ export function CreateCardsModal(): JSX.Element {
   const createDeck = (backsideUrl: string, faceUrls: string[]) => {
     const cards: Card[] = [];
 
-    const { left, top, bottom, right } = board.camera.getMbr();
-    const x = (left + right) / 2;
-    const y = (top + bottom) / 2;
-
     faceUrls.forEach((faceUrl, index) => {
       const card = new Card(board, index + faceUrl, {
         backsideUrl,
         faceUrl,
-      });
-      card.transformation.apply({
-        class: "Transformation",
-        method: "translateTo",
-        item: [card.getId()],
-        x: x,
-        y: y,
       });
       cards.push(card);
     });
@@ -56,7 +44,10 @@ export function CreateCardsModal(): JSX.Element {
     cards.forEach((card) => {
       itemsMap[card.getId()] = card.serialize();
     });
-
+    const { left, top, bottom, right } = board.camera.getMbr();
+    const x = (left + right) / 2 - cards[0].getWidth() / 2;
+    const y = (top + bottom) / 2 - cards[0].getHeight() / 2;
+    board.pointer.pointTo(x, y);
     board.paste(itemsMap, false, false);
   };
 
