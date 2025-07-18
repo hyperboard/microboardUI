@@ -354,9 +354,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const htmlContent = document.documentElement.innerHTML;
     const boardName = document.title?.trim() || "shared-board";
 
-    const { boardsApi, createApp } = await import(
+    const { boardsApi, createApp, conf } = await import(
       "https://www.unpkg.com/microboard-ui-temp@0.0.28/dist/index.js"
     );
+    conf.apiURL = "https://dev-app.microboard.io/api/v1/";
     const boardId = await boardsApi.createBoardUnAuthed(boardName);
 
     const app = createApp();
