@@ -24,6 +24,7 @@
   "devDependencies": {
     "@types/bun": "^1.2.18",
     "@types/node": "^24.0.12",
+    "prettier": "^3.6.2",
     "stylelint": "^16.21.1"
   },
   "peerDependencies": {
