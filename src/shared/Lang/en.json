@@ -291,6 +291,9 @@
         "cover": "Cover",
         "cards": "Cards",
         "title": "Card creation"
+      },
+      "addScreen": {
+        "tooltip": "Screen"
       }
     }
   },

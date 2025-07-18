@@ -26,7 +26,7 @@ export function AddDice({ rounded }: Props) {
       variant="secondary"
       rounded={rounded}
     >
-      <Icon iconName="Auto" />
+      <Icon iconName="Dice" />
     </UiButton>
   );
 }

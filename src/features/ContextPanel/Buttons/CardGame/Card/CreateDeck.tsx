@@ -23,7 +23,18 @@ export function CreateDeck({ rounded = "none", onlyCards }: Props) {
 
   const handleClick = (): void => {
     if (onlyCards) {
-      board.add(new Deck(board, "", undefined, cardsOrDecks));
+      const deck = new Deck(board, "");
+      deck.transformation.apply({
+        class: "Transformation",
+        method: "translateTo",
+        item: [deck.getId()],
+        x: cardsOrDecks[cardsOrDecks.length - 1].left,
+        y: cardsOrDecks[cardsOrDecks.length - 1].top,
+      });
+      const addedDeck = board.add(deck);
+      board.selection.items.removeAll();
+      addedDeck.addChildItems(cardsOrDecks);
+      board.selection.items.add(addedDeck);
     } else {
       let mainDeck: Deck | null = null;
       const cards: Card[] = [];
@@ -40,12 +51,9 @@ export function CreateDeck({ rounded = "none", onlyCards }: Props) {
           }
         }
       });
-      if (!mainDeck) {
-        board.add(new Deck(board, "", undefined, cards));
-        return;
-      }
-      mainDeck.addCards(cards);
       board.selection.items.removeAll();
+      mainDeck.addChildItems(cards);
+      board.selection.items.add(mainDeck);
     }
   };
 
@@ -59,7 +67,7 @@ export function CreateDeck({ rounded = "none", onlyCards }: Props) {
       variant="secondary"
       rounded={rounded}
     >
-      <Icon iconName="Plus" />
+      <Icon iconName="Stack" />
     </UiButton>
   );
 }

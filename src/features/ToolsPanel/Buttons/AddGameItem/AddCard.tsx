@@ -25,7 +25,7 @@ export function AddCard({ rounded = "none" }: Props): JSX.Element {
       rounded={rounded}
       variant="secondary"
     >
-      <Icon iconName="BoxedPlus" width={20} height={20} />
+      <Icon iconName="Card" width={24} height={24} />
     </UiButton>
   );
 }

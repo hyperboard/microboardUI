@@ -32,7 +32,7 @@ export function ThrowDice({ rounded = "none" }: Props) {
       variant="secondary"
       rounded={rounded}
     >
-      <Icon iconName="ToggleCursors" />
+      <Icon iconName="RotateDice" />
     </UiButton>
   );
 }
