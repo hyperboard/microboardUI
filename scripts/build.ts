@@ -6,18 +6,30 @@ import fs from "fs";
 const outdir = "dist";
 
 function cleanup() {
-  // resulting html has empty chunk-xxxxxxxx.js file, remove tag and file
+  // resulting html has empty chunk-xxxxxxxx.js file, removes tag and file
   const htmlPath = path.join(outdir, "board.html");
   let html = fs.readFileSync(htmlPath, "utf-8");
 
   const chunkRegex =
-    /<script\b[^>]*src="\.\/(chunk-[^"]+\.js)"[^>]*><\/script>\s*/;
+    /<script\b[^>]*\bsrc=(['"])(?:\.?\/)?(chunk-[^'"]+\.js)\1[^>]*>\s*<\/script>\s*/gi;
   const match = chunkRegex.exec(html);
-  if (match) {
-    const [tag, chunkFile] = match;
-    html = html.replace(tag, "");
+  if (!match) {
+    console.log("didnt find any js chunks");
+    return;
+  }
+
+  const [fullTag, , fileName] = match;
+  // fullTag — <script>…</script>
+  // fileName — e.g. "chunk-vz1894k0.js"
+  const filePath = path.join(outdir, fileName);
+  const stats = fs.statSync(filePath);
+  if (stats.size === 0) {
+    html = html.replace(fullTag, "");
     fs.writeFileSync(htmlPath, html, "utf-8");
-    fs.unlinkSync(path.join(outdir, chunkFile));
+    fs.unlinkSync(path.join(outdir, fileName));
+    console.log("cleaned empty chunk:", fileName);
+  } else {
+    console.log(`chunk ${fileName} is not empty`);
   }
 }
 
