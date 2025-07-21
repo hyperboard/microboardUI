@@ -1,3 +1,5 @@
+import { frontConf } from "Config";
+
 /* eslint-disable max-classes-per-file, @typescript-eslint/no-useless-constructor */
 class RichTextElement extends HTMLElement {
   constructor() {
@@ -306,12 +308,12 @@ document.addEventListener("DOMContentLoaded", () => {
       updateTransform();
 
       const { initInter } = await import(
-        "https://www.unpkg.com/microboard-ui-temp@0.0.45/dist/index.js"
+        "https://www.unpkg.com/microboard-ui-temp/dist/index.js"
       );
       initInter();
 
       const { createApp } = await import(
-        "https://www.unpkg.com/microboard-ui-temp@0.0.45/dist/index.js"
+        "https://www.unpkg.com/microboard-ui-temp/dist/index.js"
       );
 
       const app = createApp();
@@ -325,7 +327,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const response = await fetch(
-        "https://www.unpkg.com/microboard-ui-temp@0.0.45/dist/index.css",
+        "https://www.unpkg.com/microboard-ui-temp/dist/index.css",
       );
       const cssText = await response.text();
       const styleEl = document.createElement("style");
@@ -333,7 +335,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.appendChild(styleEl);
 
       const responseSvg = await fetch(
-        "https://www.unpkg.com/microboard-ui-temp@0.0.45/dist/sprite.svg",
+        "https://www.unpkg.com/microboard-ui-temp/dist/sprite.svg",
       );
       const svgText = await responseSvg.text();
       const div = document.createElement("div");
@@ -355,10 +357,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const boardName = document.title?.trim() || "shared-board";
 
     const { boardsApi, createApp, api } = await import(
-      "https://www.unpkg.com/microboard-ui-temp@0.0.45/dist/index.js"
+      "https://www.unpkg.com/microboard-ui-temp/dist/index.js"
     );
     api.updateURL("https://dev-app.microboard.io/api/v1");
-    const boardId = await boardsApi.createBoard(boardName);
+    frontConf.wsURL = "wss://dev-app.microboard.io/ws";
+    const boardId = await boardsApi.createBoard(boardName, true);
+    console.log("boardid", boardId);
 
     const app = createApp();
     window.app = app;
