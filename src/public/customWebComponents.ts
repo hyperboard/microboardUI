@@ -354,11 +354,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const htmlContent = document.documentElement.innerHTML;
     const boardName = document.title?.trim() || "shared-board";
 
-    const { boardsApi, createApp, frontConf, api } = await import(
-      "https://www.unpkg.com/microboard-ui-temp@0.0.43/dist/index.js"
+    const { boardsApi, createApp, api } = await import(
+      "https://www.unpkg.com/microboard-ui-temp@0.0.41/dist/index.js"
     );
-    // frontConf.apiURL = "https://dev-app.microboard.io/api/v1/";
-    api.updateURL("https://dev-app.microboard.io/api/v1/");
+    api.updateURL("https://dev-app.microboard.io/api/v1");
     const boardId = await boardsApi.createBoardUnAuthed(boardName);
 
     const app = createApp();
