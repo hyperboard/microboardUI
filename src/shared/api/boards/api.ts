@@ -18,21 +18,6 @@ export function createBoard(title?: string, isPublic?: boolean) {
   );
 }
 
-export function createBoardUnAuthed(title?: string) {
-  return api.post<AnonymousBoard>(
-    "/boards/unauthed",
-    {
-      title,
-    },
-    {
-      redirect: "follow",
-      referrerPolicy: "no-referrer",
-      mode: "cors",
-      cache: "no-cache",
-    },
-  );
-}
-
 export function claim(body: ClaimPayload) {
   return api.post<MessageResponse>("/boards/claim", body);
 }

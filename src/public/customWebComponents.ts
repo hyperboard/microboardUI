@@ -358,7 +358,7 @@ document.addEventListener("DOMContentLoaded", () => {
       "https://www.unpkg.com/microboard-ui-temp@0.0.44/dist/index.js"
     );
     api.updateURL("https://dev-app.microboard.io/api/v1");
-    const boardId = await boardsApi.createBoardUnAuthed(boardName);
+    const boardId = await boardsApi.createBoard(boardName);
 
     const app = createApp();
     window.app = app;
