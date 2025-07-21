@@ -306,12 +306,12 @@ document.addEventListener("DOMContentLoaded", () => {
       updateTransform();
 
       const { initInter } = await import(
-        "https://www.unpkg.com/microboard-ui-temp@0.0.41/dist/index.js"
+        "https://www.unpkg.com/microboard-ui-temp@0.0.42/dist/index.js"
       );
       initInter();
 
       const { createApp } = await import(
-        "https://www.unpkg.com/microboard-ui-temp@0.0.41/dist/index.js"
+        "https://www.unpkg.com/microboard-ui-temp@0.0.42/dist/index.js"
       );
 
       const app = createApp();
@@ -325,7 +325,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const response = await fetch(
-        "https://www.unpkg.com/microboard-ui-temp@0.0.41/dist/index.css",
+        "https://www.unpkg.com/microboard-ui-temp@0.0.42/dist/index.css",
       );
       const cssText = await response.text();
       const styleEl = document.createElement("style");
@@ -333,7 +333,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.appendChild(styleEl);
 
       const responseSvg = await fetch(
-        "https://www.unpkg.com/microboard-ui-temp@0.0.41/dist/sprite.svg",
+        "https://www.unpkg.com/microboard-ui-temp@0.0.42/dist/sprite.svg",
       );
       const svgText = await responseSvg.text();
       const div = document.createElement("div");
@@ -355,7 +355,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const boardName = document.title?.trim() || "shared-board";
 
     const { boardsApi, createApp, frontConf, api } = await import(
-      "https://www.unpkg.com/microboard-ui-temp@0.0.41/dist/index.js"
+      "https://www.unpkg.com/microboard-ui-temp@0.0.42/dist/index.js"
     );
     // frontConf.apiURL = "https://dev-app.microboard.io/api/v1/";
     api.updateURL("https://dev-app.microboard.io/api/v1/");
