@@ -1,4 +1,4 @@
-import { getApiUrl } from "Config";
+import { frontConf, getApiUrl } from "Config";
 import { createSearchParams, type URLSearchParamsInit } from "react-router-dom";
 import { HTTPError } from "./httpError";
 import { HTTPResponse } from "./httpResponse";
@@ -16,7 +16,7 @@ const RETRY_DELAY = 5_000;
 const RETRY_ATTEMPTS = 3;
 
 export class HTTP {
-  private readonly baseURL: string;
+  private baseURL: string;
   private readonly headers: Record<string, string>;
   private fetchCache = new Map<string, Promise<HTTPResponse<unknown>>>();
   readonly interceptors = new Interceptors();
@@ -24,6 +24,16 @@ export class HTTP {
   constructor(config: HTTPConfig) {
     this.baseURL = config.baseURL;
     this.headers = config.headers ?? {};
+  }
+
+  updateURL(customURL?: string) {
+    if (frontConf.apiURL) {
+      this.baseURL = frontConf.apiURL;
+    }
+    if (customURL) {
+      this.baseURL = customURL;
+      frontConf.apiURL = customURL;
+    }
   }
 
   private getQuery(query?: URLSearchParamsInit): string {
