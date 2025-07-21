@@ -26,6 +26,7 @@ export function getApiUrl(path?: string): string {
     path = "";
   }
   console.log("front conf", frontConf);
+  console.log("front conf spread", { ...frontConf });
   if (frontConf.apiURL) {
     return `${frontConf.apiURL}${path}`;
   }
