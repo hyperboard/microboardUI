@@ -1,4 +1,4 @@
-import { frontConf } from "Config";
+import { nanoid } from "nanoid";
 
 /* eslint-disable max-classes-per-file, @typescript-eslint/no-useless-constructor */
 class RichTextElement extends HTMLElement {
@@ -356,24 +356,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const htmlContent = document.documentElement.innerHTML;
     const boardName = document.title?.trim() || "shared-board";
 
-    const { boardsApi, createApp, api } = await import(
+    const { boardsApi, api } = await import(
       "https://www.unpkg.com/microboard-ui-temp/dist/index.js"
     );
     api.updateURL("https://dev-app.microboard.io/api/v1");
-    frontConf.wsURL = "wss://dev-app.microboard.io/ws";
     const boardRes = await boardsApi.createBoard(boardName, true);
-    const publishedSnapshot = await boardsApi.publishSnapshot(
+    await boardsApi.publishSnapshot(
       htmlContent,
-      boardName,
+      boardRes.data.id,
       boardRes.data.id,
     );
-    console.log("boardid", boardRes);
-    console.log("snapshot pub", publishedSnapshot);
-
-    // const app = createApp();
-    // window.app = app;
-    // await app.openBoard(boardRes);
-    // await app.getBoard().deserializeHTMLAndEmit(htmlContent);
 
     window.location.href = `https://dev-app.microboard.io/boards/${boardRes.data.id}`;
   };
