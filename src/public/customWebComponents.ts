@@ -361,15 +361,21 @@ document.addEventListener("DOMContentLoaded", () => {
     );
     api.updateURL("https://dev-app.microboard.io/api/v1");
     frontConf.wsURL = "wss://dev-app.microboard.io/ws";
-    const boardId = await boardsApi.createBoard(boardName, true);
-    console.log("boardid", boardId);
+    const boardRes = await boardsApi.createBoard(boardName, true);
+    const publishedSnapshot = await boardsApi.publishSnapshot(
+      htmlContent,
+      boardName,
+      boardRes.data.id,
+    );
+    console.log("boardid", boardRes);
+    console.log("snapshot pub", publishedSnapshot);
 
-    const app = createApp();
-    window.app = app;
-    await app.openBoard(boardId);
-    await app.getBoard().deserializeHTMLAndEmit(htmlContent);
+    // const app = createApp();
+    // window.app = app;
+    // await app.openBoard(boardRes);
+    // await app.getBoard().deserializeHTMLAndEmit(htmlContent);
 
-    window.location.href = `https://dev-app.microboard.io/boards/${boardId}`;
+    window.location.href = `https://dev-app.microboard.io/boards/${boardRes.data.id}`;
   };
 
   shareButton.onclick = handleShareBoard;
