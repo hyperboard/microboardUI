@@ -1,5 +1,3 @@
-import { nanoid } from "nanoid";
-
 /* eslint-disable max-classes-per-file, @typescript-eslint/no-useless-constructor */
 class RichTextElement extends HTMLElement {
   constructor() {
@@ -204,7 +202,8 @@ document.addEventListener("DOMContentLoaded", () => {
     window.parent &&
     window.parent !== window &&
     window.parent.location.href.includes("/snapshots/");
-  editFileText.textContent = isSnapshotInIframe ? "Edit copy" : "Edit file";
+  const editFileTextContent = isSnapshotInIframe ? "Edit copy" : "Edit file";
+  editFileText.textContent = editFileTextContent;
   editButton.appendChild(editFileText);
   editButton.style.backgroundColor = "rgba(20, 21, 26, 1)";
   editButton.style.cursor = "pointer";
@@ -220,7 +219,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const shareButton = document.createElement("button");
   const shareButtonText = document.createElement("p");
-  shareButtonText.textContent = "Share with friends";
+  const shareButtonTextContent = "Share with friends";
+  shareButtonText.textContent = shareButtonTextContent;
   shareButton.appendChild(shareButtonText);
   shareButton.style.backgroundColor = "rgba(20, 21, 26, 1)";
   shareButton.style.cursor = "pointer";
@@ -293,11 +293,45 @@ document.addEventListener("DOMContentLoaded", () => {
   titlePanel.appendChild(editButton);
   titlePanel.appendChild(shareButton);
   document.body.appendChild(titlePanel);
-  editButton.onclick = async () => {
-    editButton.disabled = true;
-    editButton.textContent = "Loading...";
 
-    try {
+  function setButtonsLoading(): void {
+    const loadingContent = "Loading…";
+    editButton.disabled = true;
+    editFileText.textContent = loadingContent;
+    shareButton.disabled = true;
+    shareButtonText.textContent = loadingContent;
+  }
+  function resetButtons(): void {
+    editButton.disabled = false;
+    editFileText.textContent = editFileTextContent;
+    shareButton.disabled = false;
+    shareButtonText.textContent = shareButtonTextContent;
+  }
+
+  function onClickWrapper(
+    handler: (
+      this: GlobalEventHandlers,
+      ev: MouseEvent,
+    ) => void | Promise<void>,
+  ): (this: GlobalEventHandlers, ev: MouseEvent) => Promise<void> {
+    return async function (
+      this: GlobalEventHandlers,
+      ev: MouseEvent,
+    ): Promise<void> {
+      setButtonsLoading();
+      try {
+        await handler.call(this, ev);
+      } finally {
+        resetButtons();
+      }
+    };
+  }
+
+  editButton.addEventListener(
+    "click",
+    onClickWrapper(async function (this, ev) {
+      ev.preventDefault();
+
       document.removeEventListener("mousedown", handleMouseDown);
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
@@ -343,32 +377,26 @@ document.addEventListener("DOMContentLoaded", () => {
       div.id = "sprite";
       div.innerHTML = svgText;
       document.body.appendChild(div);
-    } finally {
-      editButton.disabled = false;
-      editButton.textContent = "Edit board";
-    }
-  };
+    }),
+  );
 
-  const handleShareBoard = async (ev) => {
-    ev.preventDefault();
-    ev.stopPropagation();
-
-    const htmlContent = document.documentElement.innerHTML;
-    const boardName = document.title?.trim() || "shared-board";
-
-    const { boardsApi, api } = await import(
-      "https://www.unpkg.com/microboard-ui-temp/dist/index.js"
-    );
-    api.updateURL("https://dev-app.microboard.io/api/v1");
-    const boardRes = await boardsApi.createBoard(boardName, true);
-    await boardsApi.publishSnapshot(
-      htmlContent,
-      boardRes.data.id,
-      boardRes.data.id,
-    );
-
-    window.location.href = `https://dev-app.microboard.io/boards/${boardRes.data.id}`;
-  };
-
-  shareButton.onclick = handleShareBoard;
+  shareButton.addEventListener(
+    "click",
+    onClickWrapper(async function (this, ev) {
+      ev.preventDefault();
+      const htmlContent = document.documentElement.innerHTML;
+      const boardName = document.title?.trim() || "shared-board";
+      const { boardsApi, api } = await import(
+        "https://www.unpkg.com/microboard-ui-temp/dist/index.js"
+      );
+      api.updateURL("https://dev-app.microboard.io/api/v1");
+      const boardRes = await boardsApi.createBoard(boardName, true);
+      await boardsApi.publishSnapshot(
+        htmlContent,
+        boardRes.data.id,
+        boardRes.data.id,
+      );
+      window.location.href = `https://dev-app.microboard.io/boards/${boardRes.data.id}`;
+    }),
+  );
 });
