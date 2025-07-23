@@ -1,1 +1,1 @@
-preload = ["./bunPlugins/copyPlugin.ts"]
+preload = ["./bunUtils/copyPlugin.ts", "./bunUtils/cdnifyLinksPlugin.ts"]

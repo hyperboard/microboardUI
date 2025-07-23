@@ -1,14 +1,16 @@
 import { build } from "bun";
-import { copyPlugin } from "../bunPlugins/copyPlugin";
+import { copyPlugin } from "../bunUtils/copyPlugin";
 import path from "path";
-import fs from "fs";
+import { cdnifyLinksPlugin } from "../bunUtils/cdnifyLinksPlugin";
 
 const outdir = "dist";
 
-function cleanup() {
+async function cleanup() {
   // resulting html has empty chunk-xxxxxxxx.js file, removes tag and file
   const htmlPath = path.join(outdir, "board.html");
-  let html = fs.readFileSync(htmlPath, "utf-8");
+  const htmlFile = Bun.file(htmlPath);
+
+  let html = await htmlFile.text();
 
   const chunkRegex =
     /<script\b[^>]*\bsrc=(['"])(?:\.?\/)?(chunk-[^'"]+\.js)\1[^>]*>\s*<\/script>\s*/gi;
@@ -18,15 +20,16 @@ function cleanup() {
     return;
   }
 
-  const [fullTag, , fileName] = match;
   // fullTag — <script>…</script>
   // fileName — e.g. "chunk-vz1894k0.js"
+  const [fullTag, , fileName] = match;
   const filePath = path.join(outdir, fileName);
-  const stats = fs.statSync(filePath);
-  if (stats.size === 0) {
+
+  const scriptFile = Bun.file(filePath);
+  if (scriptFile.size === 0) {
     html = html.replace(fullTag, "");
-    fs.writeFileSync(htmlPath, html, "utf-8");
-    fs.unlinkSync(path.join(outdir, fileName));
+    htmlFile.write(html);
+    scriptFile.delete();
     console.log("cleaned empty chunk:", fileName);
   } else {
     console.log(`chunk ${fileName} is not empty`);
@@ -40,6 +43,7 @@ async function main() {
     loader: {
       ".css": "css",
       ".svg": "file",
+      // ".html": "file",
     },
     publicPath: "/",
     format: "esm",
@@ -51,14 +55,10 @@ async function main() {
         bundle: true,
       }),
       copyPlugin({
-        from: "src/board.css",
-        to: outdir,
-        bundle: true,
-      }),
-      copyPlugin({
         from: "src/shared/ui-lib/Icon/sprite.svg",
         to: outdir,
       }),
+      cdnifyLinksPlugin("https://unpkg.com/microboard-ui-temp/dist"),
     ],
   });
 
