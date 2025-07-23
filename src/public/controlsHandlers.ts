@@ -98,5 +98,3 @@ export function cleanupListeners() {
   }
   updateTransform(itemsDiv);
 }
-
-document.addEventListener("DOMContentLoaded", initListeners);
