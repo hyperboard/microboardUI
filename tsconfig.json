@@ -1,42 +1,35 @@
 {
-	"include": ["src/**/*"],
-	"exclude": [
-		"public",
-		"dist",
-		"node_modules",
-		"scripts",
-		"docs",
-		"examples"
-	],
-	"compilerOptions": {
-		"resolveJsonModule": true,
-		"lib": ["ES2017", "DOM", "ES2019"],
-		"outDir": "dist",
-		"target": "es2022",
-		"module": "es2022",
-		"sourceMap": true,
-		"baseUrl": "src",
-		"types": ["react"],
-		"jsx": "react",
-		"declaration": true,
-		"declarationMap": true,
-		"esModuleInterop": true,
-		"incremental": true,
-		"strict": true,
-		"noImplicitAny": false,
-		"allowSyntheticDefaultImports": true,
-		"noFallthroughCasesInSwitch": true,
-		"noUnusedLocals": true,
-		"noImplicitReturns": true,
-		"skipLibCheck": true,
-		"moduleResolution": "Bundler",
-		"noEmit": true,
-		"allowImportingTsExtensions": true,
-		"paths": {
-			"*": ["*", "*.js", "*.ts", "*.tsx"]
-		}
-	},
-	"ts-node": {
-		"files": true
-	}
+  "include": ["src/**/*", "src/global.d.ts"],
+  "exclude": ["public", "dist", "node_modules", "scripts", "docs", "examples"],
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "lib": ["ES2017", "DOM", "ES2019"],
+    "outDir": "dist",
+    "target": "es2022",
+    "module": "es2022",
+    "sourceMap": true,
+    "baseUrl": "src",
+    "types": ["react"],
+    "jsx": "react",
+    "declaration": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "incremental": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "allowSyntheticDefaultImports": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noImplicitReturns": true,
+    "skipLibCheck": true,
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "paths": {
+      "*": ["*", "*.js", "*.ts", "*.tsx"]
+    }
+  },
+  "ts-node": {
+    "files": true
+  }
 }
