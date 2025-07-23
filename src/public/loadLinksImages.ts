@@ -1,7 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll(".link-object").forEach((linkItem) => {
-    const linkImage = linkItem.querySelector(".link-image");
+    const linkImage = linkItem.querySelector<HTMLImageElement>(".link-image");
     const linkContainer = linkItem.querySelector("a");
+    if (!linkImage || !linkContainer) {
+      return;
+    }
+
     linkImage.onerror = () => {
       linkImage.onerror = null;
       linkImage.style.display = "none";
