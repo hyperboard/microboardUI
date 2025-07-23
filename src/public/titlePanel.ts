@@ -1,4 +1,4 @@
-import { cleanupListeners } from "./controlsHandlers";
+import { cleanupListeners, initListeners } from "./controlsHandlers";
 
 type ClickHandler = (
   this: GlobalEventHandlers,
@@ -241,4 +241,5 @@ function initUI(): void {
   document.body.append(panel);
 }
 
+document.addEventListener("DOMContentLoaded", initListeners);
 document.addEventListener("DOMContentLoaded", initUI);
