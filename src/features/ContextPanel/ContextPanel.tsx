@@ -442,7 +442,7 @@ export function ContextPanel(): React.ReactElement | null {
           <>
             <FlipDeck rounded="left" />
             <ShuffleDeck />
-            <UiSeparator vertical />
+            {isSingle && <UiSeparator vertical />}
             <GetCard cardPosition={"random"} />
             <GetCard cardPosition={"top"} />
             {isSingle ? (
