@@ -20,7 +20,7 @@ export function AddTemplate() {
       tooltip={t("toolsPanel.addTemplate.tooltip")}
       onClick={handleClick}
       variant="secondary"
-      rounded="top"
+      rounded="none"
     >
       <Icon iconName="Template" />
     </UiButton>
