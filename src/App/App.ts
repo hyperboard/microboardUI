@@ -31,6 +31,7 @@ import {
   catchMediaErrorResponse,
 } from "App/MediaHelpers";
 import i18n from "i18next";
+import { getConfiguredI18n } from "initI18N";
 
 export const LAST_BOARD_KEY = "lastSeenBoard";
 export const LAST_BOARD_KEY_QS = LAST_BOARD_KEY.concat("Wqs");
@@ -69,10 +70,22 @@ export interface App {
   getSettings: () => AppSettings;
 }
 
+function getI18n() {
+  const i18nInstance = getConfiguredI18n();
+  return (
+    i18nInstance || {
+      t: (key: string) => {
+        console.log("Using fallback i18n for key:", key);
+        return key;
+      },
+    }
+  );
+}
+
 export function createApp(isHistory = true): App {
   const connection = createConnection(getBoard, getAccount, getStorage);
   conf.connection = connection;
-  conf.i18n = i18n;
+  conf.i18n = getI18n();
   const clipboard = new Clipboard();
   const location = new Location();
   const storage = new Storage();
