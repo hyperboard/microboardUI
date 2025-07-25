@@ -7,6 +7,7 @@ import { Tooltip } from "../Tooltip";
 import { TopFade } from "../Transitions/TopFade";
 import { UiSkeleton } from "../UiSkeleton";
 import styles from "./UiSelector.module.css";
+import { useTranslation } from "react-i18next";
 
 export type Option = {
   label: string;
@@ -36,7 +37,8 @@ export function UiSelector({
   className,
   value,
   disabledTooltip,
-}: Props): JSX.Element {
+}: Props) {
+  const { t } = useTranslation();
   const selectedOption = options.find((opt) => opt.value === value);
   const [isOpen, setIsOpen] = useState(false);
   const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
@@ -121,7 +123,9 @@ export function UiSelector({
               {icon}
             </div>
           )}
-          <p className={styles.selectedOptionText}>{selectedOption?.label}</p>
+          <p className={styles.selectedOptionText}>
+            {t(selectedOption?.label)}
+          </p>
           <div className={styles.mark}>
             <Icon width={20} height={20} iconName="mark" />
           </div>
@@ -146,7 +150,7 @@ export function UiSelector({
                     >
                       {opt.icon}
                     </span>
-                    <span className={styles.optionText}>{opt.label}</span>
+                    <span className={styles.optionText}>{t(opt.label)}</span>
                     <span className={styles.checkMark}>
                       <Icon width={20} height={20} iconName="checkMark" />
                     </span>
