@@ -16,9 +16,7 @@ export function FlipCard({ rounded = "none" }: Props) {
 
   const handleClick = (): void => {
     const cards = board.selection.items.list() as Card[];
-    cards.forEach((card: Card): void => {
-      card.toggleIsOpen();
-    });
+    cards[0].toggleIsOpen(cards);
   };
 
   return (
