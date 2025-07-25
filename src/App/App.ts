@@ -30,8 +30,7 @@ import {
   beforeMediaUpload,
   catchMediaErrorResponse,
 } from "App/MediaHelpers";
-
-const { i18n } = conf;
+import i18n from "i18next";
 
 export const LAST_BOARD_KEY = "lastSeenBoard";
 export const LAST_BOARD_KEY_QS = LAST_BOARD_KEY.concat("Wqs");
@@ -73,6 +72,7 @@ export interface App {
 export function createApp(isHistory = true): App {
   const connection = createConnection(getBoard, getAccount, getStorage);
   conf.connection = connection;
+  conf.i18n = i18n;
   const clipboard = new Clipboard();
   const location = new Location();
   const storage = new Storage();
@@ -479,7 +479,7 @@ export function createApp(isHistory = true): App {
       account.onLogout?.();
       router.navigate(`/auth/sign-in${window.location.search}`);
       notify({
-        body: i18n.t("auth.sessionExpired"),
+        body: conf.i18n.t("auth.sessionExpired"),
         variant: "error",
       });
     });

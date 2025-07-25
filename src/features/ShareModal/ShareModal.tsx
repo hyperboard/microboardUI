@@ -3,7 +3,6 @@ import { useBoardsList } from "App/useBoardsList";
 import clsx from "clsx";
 import { useContextMenuContext } from "features/ContextMenu";
 import { UserAvatar } from "features/UserPanel/UserAvatar/UserAvatar";
-import i18next from "i18next";
 import React, {
   type ChangeEventHandler,
   useCallback,
@@ -41,12 +40,12 @@ export const SHARE_MODAL_ID = Symbol("shareModal");
 
 const PRIVACY_SELECTOR_OPTIONS: Option[] = [
   {
-    label: i18next.t("sharing.privacyOptions.public"),
+    label: "sharing.privacyOptions.public",
     value: "public",
     icon: <Icon width={20} height={20} iconName="publicDrafts" />,
   },
   {
-    label: i18next.t("sharing.privacyOptions.private"),
+    label: "sharing.privacyOptions.private",
     value: "private",
     icon: <Icon width={20} height={20} iconName="lock" />,
   },
@@ -54,12 +53,12 @@ const PRIVACY_SELECTOR_OPTIONS: Option[] = [
 
 const MODE_SELECTOR_OPTIONS: Option[] = [
   {
-    label: i18next.t("sharing.accessOptions.edit"),
+    label: "sharing.accessOptions.edit",
     value: "edit",
     icon: <Icon width={20} height={20} iconName="drawingPen" />,
   },
   {
-    label: i18next.t("sharing.accessOptions.view"),
+    label: "sharing.accessOptions.view",
     value: "view",
     icon: <Icon width={20} height={20} iconName="canView" />,
   },
@@ -478,17 +477,17 @@ export function ShareModal() {
 const USER_ACCESS_SELECTOR_OPTIONS: Option[] = [
   {
     value: "edit",
-    label: i18next.t("sharing.accessOptions.edit"),
+    label: "sharing.accessOptions.edit",
     icon: <Icon width={20} height={20} iconName="drawingPen" />,
   },
   {
     value: "view",
-    label: i18next.t("sharing.accessOptions.view"),
+    label: "sharing.accessOptions.view",
     icon: <Icon width={20} height={20} iconName="canView" />,
   },
   {
     value: "noAccess",
-    label: i18next.t("sharing.accessOptions.noAccess"),
+    label: "sharing.accessOptions.noAccess",
     icon: <Icon width={20} height={20} iconName="Close" />,
   },
 ];
