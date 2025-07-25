@@ -7,10 +7,9 @@ import { Icon } from "../../../shared/ui-lib/Icon";
 import { Input } from "shared/ui-lib/Input/Input";
 import clsx from "clsx";
 import { CategoriesMenu } from "./CategoriesMenu/CategoriesMenu";
-import i18next from "i18next";
 import { useDebounce } from "shared/lib/useDebounce";
 import { TemplateItemsGrid } from "./TemplateItemsGrid/TemplateItemsGrid";
-import { Template, TemplateCategory } from "microboard-temp";
+import { conf, Template, TemplateCategory } from "microboard-temp";
 import { LanguagesDropdown } from "./LanguagesDropdown/LanguagesDropdown";
 import { getCorrectEnding } from "shared/lib/getCorrectEnding";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
@@ -26,7 +25,7 @@ export const SelectTemplateModal = (): JSX.Element => {
   );
   const { isModalOpen } = useUiModalContext();
   const [selectedLanguage, setSelectedLanguage] = useState<string>(
-    i18next.language,
+    conf.i18n.language,
   );
   const [selectedCategory, setSelectedCategory] =
     useState<TemplateCategory>("All templates");
@@ -79,7 +78,7 @@ export const SelectTemplateModal = (): JSX.Element => {
 
   const hideModalAndReset = () => {
     setSelectedCategory("All templates");
-    setSelectedLanguage(i18next.language);
+    setSelectedLanguage(conf.i18n.language);
     setPresentedTemplate(null);
   };
 
