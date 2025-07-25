@@ -57,6 +57,7 @@ import { CreateDeck } from "features/ContextPanel/Buttons/CardGame/Card/CreateDe
 import { FlipCard } from "features/ContextPanel/Buttons/CardGame/Card/FlipCard";
 import { ThrowDice } from "features/ContextPanel/Buttons/CardGame/Dice/ThrowDice";
 import { ChangeRange } from "features/ContextPanel/Buttons/CardGame/Dice/ChangeRange/ChangeRange";
+import { FlipDeck } from "features/ContextPanel/Buttons/CardGame/Deck/FlipDeck";
 
 export function ContextPanel(): React.ReactElement | null {
   const { app, board } = useAppContext();
@@ -439,7 +440,8 @@ export function ContextPanel(): React.ReactElement | null {
         )}
         {isDeck && !isSelectUnderPointer && !isLocked && (
           <>
-            <ShuffleDeck rounded="left" />
+            <FlipDeck rounded="left" />
+            <ShuffleDeck />
             <UiSeparator vertical />
             <GetCard cardPosition={"random"} />
             <GetCard cardPosition={"top"} />
@@ -447,9 +449,7 @@ export function ContextPanel(): React.ReactElement | null {
               <GetCard cardPosition={"bottom"} rounded="right" />
             ) : (
               <>
-                <GetCard cardPosition={"bottom"} />
-                <UiSeparator vertical />
-                <CreateDeck onlyCards={false} rounded="right" />
+                <CreateDeck onlyCards={false} rounded="left" />
               </>
             )}
             <UiSeparator vertical />
@@ -499,7 +499,7 @@ export function ContextPanel(): React.ReactElement | null {
         )}
         {isScreen && !isSelectUnderPointer && !isLocked && (
           <>
-            <StrokeStyle />
+            <StrokeStyle rounded="left" />
             <FillStyle />
             <UiSeparator vertical />
             <Delete />

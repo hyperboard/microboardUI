@@ -51,7 +51,7 @@
     "i18next-browser-languagedetector": "^8.2.0",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
-    "microboard-temp": "^0.5.2",
+    "microboard-temp": "^0.5.3",
     "nanoid": "^5.1.5",
     "prop-types": "^15.8.1",
     "react-hot-toast": "2.4.1",

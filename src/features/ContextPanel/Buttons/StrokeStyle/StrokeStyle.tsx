@@ -35,7 +35,13 @@ const getIsBorderStyleEditable = (shapes: Shape[]): boolean => {
   return true;
 };
 
-export function StrokeStyle(): React.ReactElement | null {
+interface Props {
+  rounded?: string;
+}
+
+export function StrokeStyle({
+  rounded = "none",
+}: Props): React.ReactElement | null {
   const { toggleMenu, openedMenu, panelMbr, windowHeight } = usePanelContext();
   const { board } = useAppContext();
   const { t } = useTranslation();
@@ -91,7 +97,7 @@ export function StrokeStyle(): React.ReactElement | null {
           variant="secondary"
           active={openedMenu === MENU_NAME}
           hideTooltip={openedMenu === MENU_NAME}
-          rounded="none"
+          rounded={rounded}
         >
           <StrokeColorIndicator color={borderColor} />
         </UiButton>
