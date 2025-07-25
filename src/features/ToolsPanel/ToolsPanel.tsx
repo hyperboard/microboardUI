@@ -50,8 +50,6 @@ export function ToolsPanel(): JSX.Element {
         }
       >
         <UiPanel vertical padding={0} zIndex={20}>
-          {/* <AddCounter /> */}
-          {/* <AddStar /> */}
           {window.enableGames && (
             <>
               <AddGameItem />
