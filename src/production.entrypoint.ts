@@ -21,7 +21,7 @@ window.showDebug = false;
 window.enableTemplateCreating = false;
 window.enableDiagrams = false;
 window.enableVideos = true;
-window.enableGames = false;
+window.enableGames = true;
 
 async function initializeApp() {
   await initInter();
