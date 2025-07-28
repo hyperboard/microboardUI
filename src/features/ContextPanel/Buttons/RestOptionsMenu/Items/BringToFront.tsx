@@ -6,7 +6,7 @@ import React from "react";
 import { Icon } from "shared/ui-lib/Icon";
 import { getHotkeyLabel } from "microboard-temp";
 
-export function BringToFront(): JSX.Element {
+export function BringToFront(): React.JSX.Element {
   const { board } = useAppContext();
   const { toggleMenu } = usePanelContext();
   const { t } = useTranslation();

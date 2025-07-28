@@ -72,7 +72,7 @@ function useLocation(): string {
 
 export function ShapesPanelContextProvider({
   children,
-}: PropsWithChildren<{}>): JSX.Element {
+}: PropsWithChildren<{}>): React.JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<ShapeCategoryName>(
     getInitialShapeCategory(),

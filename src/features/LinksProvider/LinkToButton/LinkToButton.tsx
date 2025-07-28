@@ -36,7 +36,10 @@ interface Props {
   handleClick: (item: Item) => void;
 }
 
-export const LinkToButton = ({ item, handleClick }: Props): JSX.Element => {
+export const LinkToButton = ({
+  item,
+  handleClick,
+}: Props): React.JSX.Element => {
   const linkToButtonRef = useRef<HTMLButtonElement | null>(null);
   const [iconUrl, setIconUrl] = useState<string | undefined>(undefined);
   const imgRef = useRef<HTMLImageElement | null>(null);

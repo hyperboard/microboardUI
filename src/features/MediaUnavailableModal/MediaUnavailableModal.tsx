@@ -9,7 +9,7 @@ import { UiModal } from "shared/ui-lib/UiModal/UiModal";
 
 export const MEDIA_UNAVAILABLE_MODAL_ID = "MEDIA_UNAVAILABLE_MODAL_ID";
 
-export function MediaUnavailableModal(): JSX.Element {
+export function MediaUnavailableModal(): React.JSX.Element {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { closeModal } = useUiModalContext();

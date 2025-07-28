@@ -12,7 +12,7 @@ export function UiSeparator({
   vertical = false,
   className,
   color,
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   return (
     <div
       className={clsx(

@@ -35,7 +35,7 @@ type ModalData = {
   amount?: number;
 };
 
-export function SelectPaymentModal(): JSX.Element {
+export function SelectPaymentModal(): React.JSX.Element {
   const { openModal, data } = useUiModalContext();
   const location = useLocation();
   const navigate = useNavigate();
@@ -589,10 +589,10 @@ export function SelectPaymentModal(): JSX.Element {
 const Card: React.FC<{
   onClick?: MouseEventHandler<HTMLButtonElement>;
   disabled: boolean;
-  title: JSX.Element;
+  title: React.JSX.Element;
   description: string;
   active: boolean;
-  footer: JSX.Element;
+  footer: React.JSX.Element;
 }> = ({ onClick, disabled, title, description, footer, active }) => {
   return (
     <Button
@@ -624,7 +624,7 @@ const Card: React.FC<{
 const CoinCard: React.FC<{
   onClick: MouseEventHandler<HTMLButtonElement>;
   disabled: boolean;
-  title: JSX.Element;
+  title: React.JSX.Element;
   coin: "POL" | "ETH";
   active: boolean;
 }> = ({ onClick, disabled, title, active, coin }) => {

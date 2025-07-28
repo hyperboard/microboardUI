@@ -1,7 +1,4 @@
-export { CommentsProvider } from "./CommentsProvider.tsx";
-export {
-  useCommentsContext,
-  CommentsContextProvider,
-} from "./CommentsContext.tsx";
-export { CommentContainer } from "./CommentContainer/CommentContainer.tsx";
-export { useIntersectionObserver } from "./useIntersectionObserver.ts";
+export { CommentsProvider } from "./CommentsProvider";
+export { useCommentsContext, CommentsContextProvider } from "./CommentsContext";
+export { CommentContainer } from "./CommentContainer/CommentContainer";
+export { useIntersectionObserver } from "./useIntersectionObserver";

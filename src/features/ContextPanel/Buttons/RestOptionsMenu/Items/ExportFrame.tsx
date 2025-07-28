@@ -6,7 +6,7 @@ import React from "react";
 import { Frame } from "microboard-temp";
 import { Icon } from "shared/ui-lib/Icon";
 
-export function ExportFrame(): JSX.Element {
+export function ExportFrame(): React.JSX.Element {
   const { board } = useAppContext();
   const { toggleMenu } = usePanelContext();
   const { t } = useTranslation();

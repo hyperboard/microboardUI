@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import styles from "./LoginWith.module.css";
 import React from "react";
 
-export const LoginWith = (): JSX.Element => {
+export const LoginWith = (): React.JSX.Element => {
   const { t } = useTranslation();
 
   return (

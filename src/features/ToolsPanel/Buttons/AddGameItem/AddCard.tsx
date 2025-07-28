@@ -9,7 +9,7 @@ interface Props {
   rounded?: "top" | "bottom" | "none";
 }
 
-export function AddCard({ rounded = "none" }: Props): JSX.Element {
+export function AddCard({ rounded = "none" }: Props): React.JSX.Element {
   const { t } = useTranslation();
   const { openModal } = useUiModalContext();
 

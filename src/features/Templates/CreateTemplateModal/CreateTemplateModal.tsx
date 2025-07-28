@@ -2,22 +2,22 @@ import React, { ChangeEventHandler, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Input } from "shared/ui-lib/Input/Input";
 import { UiButton } from "shared/ui-lib/UiButton";
-import { useAppContext } from "features/AppContext.tsx";
+import { useAppContext } from "features/AppContext";
 import { getApiUrl } from "Config";
 import Cookies from "js-cookie";
 import styles from "./CreateTemplateModal.module.css";
 import { conf } from "microboard-temp";
 import { useTolgee } from "@tolgee/react";
-import { useForceUpdate } from "shared/lib/useForceUpdate.ts";
-import { notify } from "shared/ui-lib/Toast/notify.tsx";
-import { TolgeeProviderProvider } from "../TolgeeProvider.tsx";
-import { getTolgeeApiUrl } from "features/Templates/config.ts";
-import { createAccessKey } from "shared/api/boards/api.ts";
-import { AccessKeyType } from "shared/api/boards/types.ts";
-import { detectLanguage } from "../lib.ts";
+import { useForceUpdate } from "shared/lib/useForceUpdate";
+import { notify } from "shared/ui-lib/Toast/notify";
+import { TolgeeProviderProvider } from "../TolgeeProvider";
+import { getTolgeeApiUrl } from "features/Templates/config";
+import { createAccessKey } from "shared/api/boards/api";
+import { AccessKeyType } from "shared/api/boards/types";
+import { detectLanguage } from "../lib";
 import { Selector, type SelectorHandle } from "shared/ui-lib/Selector";
-import { UiModal } from "shared/ui-lib/UiModal/UiModal.tsx";
-import { useUiModalContext } from "shared/ui-lib/UiModal/UiModalContext.tsx";
+import { UiModal } from "shared/ui-lib/UiModal/UiModal";
+import { useUiModalContext } from "shared/ui-lib/UiModal/UiModalContext";
 
 interface TranslatableInput {
   id: string;
@@ -28,7 +28,7 @@ interface TranslatableInput {
 
 export const CREATE_TEMPLATE_MODAL = Symbol("createTemplate");
 
-const CreateTemplate = (): JSX.Element => {
+const CreateTemplate = (): React.JSX.Element => {
   const formRef = useRef<HTMLFormElement>(null);
   const categoriesSelectorRef = useRef<SelectorHandle<true>>(null);
   const languagesSelectorRef = useRef<SelectorHandle<true>>(null);

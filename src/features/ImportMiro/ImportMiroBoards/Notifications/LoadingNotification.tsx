@@ -15,7 +15,7 @@ interface LoadingNotificationProps {
 
 export const LoadingNotification = ({
   className,
-}: LoadingNotificationProps): JSX.Element => {
+}: LoadingNotificationProps): React.JSX.Element => {
   const { isModalOpen, data, closeModal } = useUiModalContext();
   const { t } = useTranslation();
   const { isLoggedIn } = useAccount();

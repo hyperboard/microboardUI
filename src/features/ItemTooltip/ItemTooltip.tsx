@@ -6,7 +6,7 @@ import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Tooltip } from "shared/ui-lib/Tooltip";
 
-export function ItemTooltip(): JSX.Element {
+export function ItemTooltip(): React.JSX.Element {
   const { app, board } = useAppContext();
   const { t } = useTranslation();
   const { items, camera } = board;

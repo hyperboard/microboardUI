@@ -9,6 +9,7 @@ import {
   HotkeysMap,
   checkHotkeys,
   isControlCharacter,
+  VideoItem,
 } from "microboard-temp";
 import { throttle } from "shared/lib/throttle";
 import { notify } from "shared/ui-lib/Toast/notify";
@@ -419,16 +420,16 @@ export function getController(
     const isSelect = tools.getSelect() !== undefined;
     const itemsUnderPointer = board.items.getUnderPointer();
     if (itemsUnderPointer.length) {
-      if (itemUnderPointer && itemUnderPointer.itemType === "Video") {
+      if (itemUnderPointer && itemUnderPointer instanceof VideoItem) {
         itemUnderPointer.setShouldShowControls(false);
       }
       itemUnderPointer = itemsUnderPointer[itemsUnderPointer.length - 1];
-      if (itemUnderPointer.itemType === "Video") {
+      if (itemUnderPointer instanceof VideoItem) {
         itemUnderPointer.setShouldShowControls(true);
       }
       board.pointer.subject.publish(board.pointer);
     } else if (itemUnderPointer) {
-      if (itemUnderPointer.itemType === "Video") {
+      if (itemUnderPointer instanceof VideoItem) {
         itemUnderPointer.setShouldShowControls(false);
       }
       itemUnderPointer = undefined;

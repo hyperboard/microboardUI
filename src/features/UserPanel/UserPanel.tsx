@@ -1,21 +1,21 @@
 import { useAccount } from "App/useAccount";
 import clsx from "clsx";
-import { isMicroboardIframe } from "shared/lib/isMicroboardIframe.ts";
+import { isMicroboardIframe } from "shared/lib/isMicroboardIframe";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { App } from "App";
-import { shouldShow } from "shared/lib/queryStringParser.ts";
-import { useAppContext } from "features/AppContext.tsx";
-import { PresenceUsers } from "features/Presence/PresenceUsers/PresenceUsers.tsx";
+import { shouldShow } from "shared/lib/queryStringParser";
+import { useAppContext } from "features/AppContext";
+import { PresenceUsers } from "features/Presence/PresenceUsers/PresenceUsers";
 import { UiButton } from "shared/ui-lib/UiButton";
-import { UiLink } from "shared/ui-lib/UiLink/index.ts";
-import { UiPanel } from "shared/ui-lib/UiPanel/index.ts";
+import { UiLink } from "shared/ui-lib/UiLink/index";
+import { UiPanel } from "shared/ui-lib/UiPanel/index";
 import styles from "./UserPanel.module.css";
-import { ActionButtons } from "./ActionButtons/ActionButtons.tsx";
-import { ShareBtn } from "./Buttons/ShareBtn/ShareBtn.tsx";
-import { CommentsPanelContextProvider } from "entities/comments/CommentsPanel/CommentsPanelContext.tsx";
-import { CommentsPanel } from "entities/comments/CommentsPanel/CommentsPanel.tsx";
+import { ActionButtons } from "./ActionButtons/ActionButtons";
+import { ShareBtn } from "./Buttons/ShareBtn/ShareBtn";
+import { CommentsPanelContextProvider } from "entities/comments/CommentsPanel/CommentsPanelContext";
+import { CommentsPanel } from "entities/comments/CommentsPanel/CommentsPanel";
 
 export const UserPanel: React.FC = () => {
   const { t } = useTranslation();

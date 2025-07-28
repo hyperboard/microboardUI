@@ -18,7 +18,7 @@ export function RestOptionsMenuItem({
   icon,
   id,
   hotkey,
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   return (
     <button id={id} className={style.item} onClick={onClick}>
       {icon}

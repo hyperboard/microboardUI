@@ -6,7 +6,7 @@ interface Props {
   isActive: boolean;
 }
 
-export const ToggleMark = ({ isActive }: Props): JSX.Element => {
+export const ToggleMark = ({ isActive }: Props): React.JSX.Element => {
   return (
     <div className={clsx(styles.toggle, isActive && styles.active)}>
       <span></span>

@@ -61,7 +61,7 @@ const sessionStorage = new SessionStorage();
 
 export const AIContextProvider = ({
   children,
-}: PropsWithChildren<{}>): JSX.Element => {
+}: PropsWithChildren<{}>): React.JSX.Element => {
   const { t } = useTranslation();
   const { app } = useAppContext();
   const [model, setModel] = useState<OpenAIModels>("gpt-4o-mini");

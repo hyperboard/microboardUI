@@ -20,7 +20,7 @@ import { notify } from "shared/ui-lib/Toast";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { pasteWelcomeBoardData } from "./WelcomePage/WelcomePage";
 
-export const BoardPage = (): JSX.Element => {
+export const BoardPage = (): React.JSX.Element => {
   const { app } = useAppContext();
   const board = app.getBoard();
   const params = useParams<{ boardId: string }>();

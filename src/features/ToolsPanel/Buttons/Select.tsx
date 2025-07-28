@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 
 type Props = { rounded?: "top" | "bottom" | "none" };
 
-export function Select({ rounded = "top" }: Props): JSX.Element {
+export function Select({ rounded = "top" }: Props): React.JSX.Element {
   const { board } = useAppContext();
   const { t } = useTranslation();
 

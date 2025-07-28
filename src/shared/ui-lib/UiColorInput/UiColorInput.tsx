@@ -19,7 +19,7 @@ export function UiColorInput({
   inputClassName,
   toggleMenu,
   setIsCloseMenu,
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleColorChange = (event: ChangeEvent<HTMLInputElement>): void => {

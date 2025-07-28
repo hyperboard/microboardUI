@@ -1,1 +1,1 @@
-export { AudioPlayer } from "./AudioPlayer.tsx";
+export { AudioPlayer } from "./AudioPlayer";

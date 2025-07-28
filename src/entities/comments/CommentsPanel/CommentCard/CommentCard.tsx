@@ -15,7 +15,7 @@ interface Props {
   comment: Comment;
 }
 
-export const CommentCard = ({ comment }: Props): JSX.Element => {
+export const CommentCard = ({ comment }: Props): React.JSX.Element => {
   const [showMoreComments, setShowMoreComments] = useState(false);
   const refs = useRef<Record<string, HTMLDivElement>>({});
   const { board } = useAppContext();

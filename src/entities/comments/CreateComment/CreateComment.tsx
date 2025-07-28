@@ -12,7 +12,10 @@ interface Props {
   className?: string;
 }
 
-export const CreateComment = ({ comment, className }: Props): JSX.Element => {
+export const CreateComment = ({
+  comment,
+  className,
+}: Props): React.JSX.Element => {
   const formRef = useRef<null | HTMLDivElement>(null);
   const [value, setValue] = useState("");
   const { app, board } = useAppContext();

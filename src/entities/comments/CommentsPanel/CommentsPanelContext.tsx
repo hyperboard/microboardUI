@@ -21,7 +21,7 @@ interface Props {
 
 export const CommentsPanelContextProvider = ({
   children,
-}: Props): JSX.Element => {
+}: Props): React.JSX.Element => {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
   return (

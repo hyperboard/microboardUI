@@ -29,7 +29,7 @@ export function AddMediaButton({
   type,
   rounded = "none",
   toggleMenu,
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   const { board } = useAppContext();
   const account = useAccount();
   const inputRef = useRef<HTMLInputElement>(null);

@@ -5,6 +5,6 @@ import styles from "./UiSkeleton.module.css";
 export function UiSkeleton({
   className,
   ...props
-}: HTMLProps<HTMLDivElement>): JSX.Element {
+}: HTMLProps<HTMLDivElement>): React.JSX.Element {
   return <div className={clsx(styles.skeleton, className)} {...props} />;
 }

@@ -12,10 +12,10 @@ interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
   isOpen: boolean;
   setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
   buttons: React.ReactNode[];
-  openerRef?: RefObject<HTMLDivElement>;
+  openerRef: RefObject<HTMLDivElement | null>;
   customTop?: number;
-  followers: PresenceUser[];
-  presenceUsers: User[];
+  followers?: PresenceUser[];
+  presenceUsers?: User[];
 }
 
 export const UserDropDown: React.FC<UserDropDownProps> = ({
@@ -25,8 +25,8 @@ export const UserDropDown: React.FC<UserDropDownProps> = ({
   email,
   openerRef,
   customTop,
-  followers,
-  presenceUsers,
+  followers = [],
+  presenceUsers = [],
 }) => {
   const account = useAccount();
 

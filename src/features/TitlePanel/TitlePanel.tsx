@@ -32,7 +32,7 @@ import { SHARE_SNAPSHOT_MODAL_ID } from "features/ShareSnapshotModal/ShareSnapsh
 
 const MAX_BOARD_TITLE_LENGTH = 32;
 
-export function TitlePanel(): JSX.Element | null {
+export function TitlePanel(): React.JSX.Element | null {
   const forceUpdate = useForceUpdate();
   const { t } = useTranslation();
   const { openModal } = useUiModalContext();

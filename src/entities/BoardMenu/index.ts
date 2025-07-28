@@ -1,1 +1,1 @@
-export { BoardMenu } from "./BoardMenu.tsx";
+export { BoardMenu } from "./BoardMenu";

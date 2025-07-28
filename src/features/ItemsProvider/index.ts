@@ -1,1 +1,1 @@
-export { ItemsProvider } from "./ItemsProvider.tsx";
+export { ItemsProvider } from "./ItemsProvider";

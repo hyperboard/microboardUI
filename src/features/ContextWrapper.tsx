@@ -19,7 +19,7 @@ type Props = {
   board: Board;
 };
 
-export function ContextWrapper({ app, board }: Props): JSX.Element {
+export function ContextWrapper({ app, board }: Props): React.JSX.Element {
   return (
     <CryptoWrapper>
       <AppContext.Provider value={{ app, board }}>

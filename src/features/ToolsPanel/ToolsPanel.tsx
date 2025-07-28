@@ -1,4 +1,4 @@
-import { useAppSubscription } from "App/useBoardSubscription.ts";
+import { useAppSubscription } from "App/useBoardSubscription";
 import { useAppContext } from "features/AppContext";
 import AIChatPanel from "features/GenerateChart/AIChatPanel";
 import React, { useEffect, useState } from "react";
@@ -8,7 +8,7 @@ import { UiSeparator } from "shared/ui-lib/UiSeparator";
 import { AddConnector } from "./Buttons/AddConnector";
 import { AddDrawing } from "./Buttons/AddDrawing/AddDrawing";
 import { AddFrame } from "./Buttons/AddFrame";
-import { AddMedia } from "./Buttons/AddMedia/AddMedia.tsx";
+import { AddMedia } from "./Buttons/AddMedia/AddMedia";
 import { AddShape } from "./Buttons/AddShape/AddShape";
 import { AddSticker } from "./Buttons/AddSticker";
 import { AddTemplate } from "./Buttons/AddTemplate";
@@ -25,7 +25,7 @@ import { AddCard } from "features/ToolsPanel/Buttons/GameItems/AddCard";
 import { AddDice } from "features/ToolsPanel/Buttons/GameItems/AddDice";
 import { AddGameItem } from "features/ToolsPanel/Buttons/AddGameItem/AddGameItem";
 
-export function ToolsPanel(): JSX.Element {
+export function ToolsPanel(): React.JSX.Element {
   const [openedMenu, setOpenedMenu] = useState("None");
 
   const toggleMenu = (menu: string): void =>

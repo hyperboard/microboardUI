@@ -25,7 +25,7 @@ export function BoardName({
   onClickContext,
   onDoubleClick,
   customStyle,
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   const clickTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const handleClick: MouseEventHandler = (event) => {

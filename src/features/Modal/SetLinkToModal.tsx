@@ -9,7 +9,7 @@ import { useUiModalContext } from "shared/ui-lib/UiModal";
 
 export const LINK_MODAL = Symbol("setLinkTo");
 
-export const SetLinkToModal = (): JSX.Element => {
+export const SetLinkToModal = (): React.JSX.Element => {
   const { t } = useTranslation();
   const { board } = useAppContext();
   const { closeModal, setModalData, data } = useUiModalContext();

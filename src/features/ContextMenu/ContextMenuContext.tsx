@@ -23,7 +23,7 @@ export function useContextMenuContext() {
 
 export function ContextMenuContextProvider({
   children,
-}: PropsWithChildren<{}>): JSX.Element {
+}: PropsWithChildren<{}>): React.JSX.Element {
   const [x, setX] = useState(0);
   const [y, setY] = useState(0);
   const [isOpen, setIsOpen] = useState(false);

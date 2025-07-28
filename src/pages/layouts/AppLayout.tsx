@@ -58,7 +58,7 @@ const LOCAL_PROVIDERS: ComponentWithChildren[] = [
 const Provider = compose(PROVIDERS);
 const LocalProvider = compose(LOCAL_PROVIDERS);
 
-export function AppLayout({ app }: Props): JSX.Element {
+export function AppLayout({ app }: Props): React.JSX.Element {
   const board = app.getBoard();
   return (
     <AppContext.Provider value={{ app, board }}>
@@ -73,7 +73,7 @@ export function AppLayout({ app }: Props): JSX.Element {
 export function LocalAppLayout({
   app,
   children,
-}: Props & { children?: React.ReactNode }): JSX.Element {
+}: Props & { children?: React.ReactNode }): React.JSX.Element {
   const board = app.getBoard();
   return (
     <AppContext.Provider value={{ app, board }}>

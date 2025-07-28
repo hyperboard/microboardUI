@@ -15,7 +15,7 @@ export const VideoPlayer = ({ item }: Props) => {
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const stopTimeoutRef = useRef<number | null>(null);
+  const stopTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const timeoutDuration = videoId ? 300 : 10;
 
   useEffect(() => {

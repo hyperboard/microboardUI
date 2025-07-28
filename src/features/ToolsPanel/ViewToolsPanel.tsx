@@ -8,7 +8,7 @@ import { Select } from "./Buttons/Select";
 import style from "./ToolsPanel.module.css";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";
 
-export function ViewToolsPanel(): JSX.Element {
+export function ViewToolsPanel(): React.JSX.Element {
   const forceUpdate = useForceUpdate();
   useAppSubscription({
     subjects: ["tools"],

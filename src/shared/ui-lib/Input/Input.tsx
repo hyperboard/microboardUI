@@ -10,7 +10,7 @@ import { EyeClose } from "./EyeClose";
 import { EyeOpen } from "./EyeOpen";
 import "./Input.css";
 
-interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
+interface BaseProps {
   id: string;
   placeholder?: string;
   label?: string;
@@ -27,74 +27,82 @@ interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
   keyhint?: string;
   password?: boolean;
   hasError?: boolean;
-  multiline?: boolean;
   inputContainerClassName?: string;
   shouldFocus?: boolean;
   shouldSelect?: boolean;
 }
 
-export const Input: React.FC<Props> = ({
-  id,
-  prefixIcon,
-  label,
-  tab,
-  keyhint,
-  errorText,
-  helperText,
-  password,
-  type,
-  isSuccess,
-  hasError,
-  iconColor,
-  postfixButton,
-  multiline = false,
-  inputContainerClassName,
-  shouldFocus,
-  successText,
-  shouldSelect,
-  disabled,
-  ...props
-}) => {
-  const [inputType, setInputType] = useState<string>(() => {
-    if (password) {
-      return "password";
-    }
-    return type || "text";
-  });
-  const inputRef = useRef<HTMLInputElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+type TextareaProps = BaseProps & {
+  multiline: true;
+} & Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "id">;
 
-  const handleInput = (): void => {
-    if (
-      textareaRef.current &&
-      textareaRef.current.textLength >= Number(textareaRef.current.style.width)
-    ) {
-      textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+type InputProps = BaseProps & {
+  multiline?: false;
+  type?: string;
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "id">;
+
+type Props = TextareaProps | InputProps;
+
+export const Input: React.FC<Props> = (props) => {
+  const {
+    id,
+    prefixIcon,
+    label,
+    tab,
+    keyhint,
+    errorText,
+    helperText,
+    password,
+    isSuccess,
+    hasError,
+    iconColor,
+    postfixButton,
+    inputContainerClassName,
+    shouldFocus,
+    successText,
+    shouldSelect,
+    disabled,
+    onInput,
+    onPaste,
+    onCopy,
+    onKeyDown,
+    onKeyUp,
+    onKeyPress,
+    ...restProps
+  } = props;
+
+  const [inputType, setInputType] = useState(
+    password ? "password" : ("type" in props && props.type) || "text",
+  );
+
+  const inputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleInput = () => {
+    const ta = textareaRef.current;
+    if (ta) {
+      ta.style.height = "auto";
+      ta.style.height = `${ta.scrollHeight}px`;
     }
   };
 
   useEffect(() => {
-    if (multiline) {
-      handleInput();
-    }
-  }, [textareaRef.current?.textLength === 0]);
+    if (props.multiline) handleInput();
+  }, [textareaRef.current?.textLength]);
 
   useEffect(() => {
-    const textarea = textareaRef.current;
-    const input = inputRef.current;
     if (shouldFocus) {
-      if (input) {
-        input.focus();
-      } else if (textarea) {
-        textarea.focus();
+      if (inputRef.current) {
+        inputRef.current.focus();
+      } else {
+        textareaRef.current?.focus();
       }
     }
     if (shouldSelect) {
-      if (input) {
-        input.select();
-      } else if (textarea) {
-        textarea.select();
+      if (inputRef.current) {
+        inputRef.current.select();
+      } else {
+        textareaRef.current?.select();
       }
     }
   }, []);
@@ -102,7 +110,7 @@ export const Input: React.FC<Props> = ({
   const togglePassword: MouseEventHandler = (ev) => {
     ev.stopPropagation();
     ev.preventDefault();
-    setInputType(inputType === "text" ? "password" : "text");
+    setInputType((t) => (t === "text" ? "password" : "text"));
   };
   const stopPropagation =
     (cb?: KeyboardEventHandler): KeyboardEventHandler =>
@@ -136,34 +144,31 @@ export const Input: React.FC<Props> = ({
               {prefixIcon}
             </span>
           )}
-          {multiline ? (
+          {props.multiline ? (
             <textarea
               ref={textareaRef}
-              className="textarea"
-              disabled={disabled}
               id={id}
+              disabled={disabled}
               rows={1}
-              {...props}
-              onInput={() => {
+              onInput={(ev) => {
                 handleInput();
-                if (props.onInput) {
-                  props.onInput();
-                }
+                props.onInput?.(ev);
               }}
+              onPaste={(ev) => ev.stopPropagation()}
+              onCopy={(ev) => ev.stopPropagation()}
+              {...(restProps as Omit<TextareaProps, "id">)}
             />
           ) : (
             <input
               ref={inputRef}
-              onPaste={(event) => event.stopPropagation()}
-              onCopy={(event) => event.stopPropagation()}
               id={id}
               type={inputType}
               className="Input"
               disabled={disabled}
-              onKeyDown={stopPropagation(props.onKeyDown)}
-              onKeyUp={stopPropagation(props.onKeyUp)}
-              onKeyPress={stopPropagation(props.onKeyPress)}
-              {...props}
+              onKeyDown={stopPropagation(onKeyDown)}
+              onKeyUp={stopPropagation(onKeyUp)}
+              onKeyPress={stopPropagation(onKeyPress)}
+              {...(restProps as Omit<InputProps, "id" | "multiline">)}
             />
           )}
           {password && inputType === "text" && (

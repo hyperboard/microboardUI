@@ -1,23 +1,23 @@
 import React, { forwardRef, useEffect, useRef, useState } from "react";
-import { UiPanel } from "../../../shared/ui-lib/UiPanel/index.ts";
+import { UiPanel } from "../../../shared/ui-lib/UiPanel/index";
 import styles from "./ThreadPanel.module.css";
-import { Icon } from "../../../shared/ui-lib/Icon/index.ts";
+import { Icon } from "../../../shared/ui-lib/Icon/index";
 import { UiButton } from "shared/ui-lib/UiButton";
-import { Message } from "./message/Message.tsx";
+import { Message } from "./message/Message";
 import clsx from "clsx";
-import { CommentInput } from "../CommentInput/CommentInput.tsx";
-import { useAppContext } from "features/AppContext.tsx";
+import { CommentInput } from "../CommentInput/CommentInput";
+import { useAppContext } from "features/AppContext";
 import { Mbr, Comment } from "microboard-temp";
-import { ExtraOptions } from "./ExtraOptions/ExtraOptions.tsx";
-import { OptionsPanel } from "./OptionsPanel/OptionsPanel.tsx";
-import { useCommentsContext } from "../CommentsContext.tsx";
+import { ExtraOptions } from "./ExtraOptions/ExtraOptions";
+import { OptionsPanel } from "./OptionsPanel/OptionsPanel";
+import { useCommentsContext } from "../CommentsContext";
 import { useTranslation } from "react-i18next";
-import { useIntersectionObserver } from "entities/comments/useIntersectionObserver.ts";
-import { Avatar } from "features/UserPanel/Avatar/Avatar.tsx";
-import { useAccount } from "App/useAccount.ts";
-import { useClickOutside } from "shared/lib/useClickOutside.ts";
-import { useScrollToUnreadMessage } from "entities/comments/useScrollToUnreadMessage.ts";
-import { UiSeparator } from "shared/ui-lib/UiSeparator/UiSeparator.tsx";
+import { useIntersectionObserver } from "entities/comments/useIntersectionObserver";
+import { Avatar } from "features/UserPanel/Avatar/Avatar";
+import { useAccount } from "App/useAccount";
+import { useClickOutside } from "shared/lib/useClickOutside";
+import { useScrollToUnreadMessage } from "entities/comments/useScrollToUnreadMessage";
+import { UiSeparator } from "shared/ui-lib/UiSeparator/UiSeparator";
 
 interface MessageOptionsData {
   top: number;

@@ -1,1 +1,1 @@
-export { CreateCardsModal } from "./CreateCardsModal.tsx";
+export { CreateCardsModal } from "./CreateCardsModal";

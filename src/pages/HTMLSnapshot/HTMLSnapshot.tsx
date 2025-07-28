@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { api, HTTPError } from "shared/api";
 
-const HTMLSnapshot = (): JSX.Element => {
+const HTMLSnapshot = (): React.JSX.Element => {
   const { uid } = useParams();
   const uniquePass = window.location.search;
   const [htmlContent, setHtmlContent] = useState("");

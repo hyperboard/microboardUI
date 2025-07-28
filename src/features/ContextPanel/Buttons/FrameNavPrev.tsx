@@ -7,7 +7,7 @@ import { getHotkeyLabel } from "microboard-temp";
 import styles from "./ContextPanelButton.module.css";
 import clsx from "clsx";
 
-export function FrameNavPrev(): JSX.Element {
+export function FrameNavPrev(): React.JSX.Element {
   const { board } = useAppContext();
   const { t } = useTranslation();
 

@@ -8,19 +8,6 @@ console.log("cursors", { ...customCursors });
 
 import "microboard-ui-temp/style";
 
-declare global {
-  interface Window {
-    app: App;
-    showDebug: boolean;
-    enableTemplateCreating: boolean;
-    enableVideos: boolean;
-    enableGames: boolean;
-    enableDiagrams: boolean;
-    enableLogger: () => void;
-    disableLogger: () => void;
-  }
-}
-
 window.showDebug = false;
 window.enableTemplateCreating = false;
 window.enableDiagrams = false;

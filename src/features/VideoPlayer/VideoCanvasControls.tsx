@@ -3,6 +3,7 @@ import { useAppSubscription } from "App/useBoardSubscription";
 import { useAppContext } from "features/AppContext";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { createPortal } from "react-dom";
+import { VideoItem } from "microboard-temp";
 
 export const VideoCanvasControls = () => {
   const { board } = useAppContext();
@@ -17,7 +18,7 @@ export const VideoCanvasControls = () => {
   const getCanvasPlayBtnMbr = () => {
     if (
       hoveredItem &&
-      hoveredItem.itemType === "Video" &&
+      hoveredItem instanceof VideoItem &&
       hoveredItem.getShouldShowControls() &&
       hoveredItem.getPreviewUrl()
     ) {
@@ -31,7 +32,7 @@ export const VideoCanvasControls = () => {
 
   const onClick = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();
-    if (hoveredItem && hoveredItem.itemType === "Video") {
+    if (hoveredItem && hoveredItem instanceof VideoItem) {
       hoveredItem.setIsPlaying(true);
     }
   };

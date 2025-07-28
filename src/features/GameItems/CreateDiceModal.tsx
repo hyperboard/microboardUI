@@ -14,7 +14,7 @@ export const CREATE_DICE_MODAL = Symbol("createDiceModal");
 const MIN_SIDES = 6;
 const MAX_SIDES = 12;
 
-export function CreateDiceModal(): JSX.Element {
+export function CreateDiceModal(): React.JSX.Element {
   const { closeModal } = useUiModalContext();
   const [faces, setFaces] = useState<(File | null)[]>(
     Array(MIN_SIDES).fill(null),

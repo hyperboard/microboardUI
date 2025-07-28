@@ -6,7 +6,7 @@ import { UiModal } from "shared/ui-lib/UiModal/UiModal";
 
 export const AUTH_CLIPBOARD_MODAL = Symbol("authClipboardMiro");
 
-export const AuthClipboardModal = (): JSX.Element => {
+export const AuthClipboardModal = (): React.JSX.Element => {
   const { t } = useTranslation();
 
   const onClick = (): void => {

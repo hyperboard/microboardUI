@@ -11,7 +11,7 @@ export const ProgressBar = ({
   width,
   classnames,
   ...props
-}: IProgressBar): JSX.Element => {
+}: IProgressBar): React.JSX.Element => {
   const [style, setStyle] = useState({});
 
   useEffect(() => {

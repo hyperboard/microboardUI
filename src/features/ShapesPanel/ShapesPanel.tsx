@@ -14,7 +14,7 @@ import { Icon } from "../../shared/ui-lib/Icon";
 import { ShapesCategory } from "./ShapesCategory/ShapesCategory";
 import { UiButton } from "shared/ui-lib/UiButton";
 
-export function ShapesPanel(): JSX.Element {
+export function ShapesPanel(): React.JSX.Element {
   const { isOpen, closeShapesPanel, setSelectedCategory } =
     useShapesPanelContext();
   const { board } = useAppContext();
