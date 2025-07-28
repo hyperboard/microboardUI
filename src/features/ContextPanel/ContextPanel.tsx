@@ -449,7 +449,7 @@ export function ContextPanel(): React.ReactElement | null {
               <GetCard cardPosition={"bottom"} rounded="right" />
             ) : (
               <>
-                <CreateDeck rounded="left" />
+                <CreateDeck onlyCards={false} rounded="left" />
               </>
             )}
             <UiSeparator vertical />
@@ -460,7 +460,7 @@ export function ContextPanel(): React.ReactElement | null {
           <>
             <FlipCard rounded="left" />
             <UiSeparator vertical />
-            <CreateDeck rounded="right" />
+            <CreateDeck onlyCards={true} rounded="right" />
             <UiSeparator vertical />
             <Delete rounded="right" />
           </>
@@ -473,7 +473,7 @@ export function ContextPanel(): React.ReactElement | null {
             <>
               <FlipCard rounded="left" />
               <UiSeparator vertical />
-              <CreateDeck rounded="right" />
+              <CreateDeck onlyCards={false} rounded="right" />
               <UiSeparator vertical />
               <Delete rounded="right" />
             </>
