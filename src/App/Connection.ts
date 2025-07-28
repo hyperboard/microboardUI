@@ -116,7 +116,6 @@ export interface BoardSubscriptionCompletedMsg {
 export type EventsMsg =
   | ModeMsg
   | BoardEventMsg
-  | BoardEventListMsg
   | SnapshotRequestMsg
   | ConfirmationMsg
   | BoardSubscriptionCompletedMsg
@@ -245,7 +244,6 @@ export function createConnection(
       case "AiChat":
       case "Confirmation":
       case "BoardEvent":
-      case "BoardSnapshot":
       case "CreateSnapshotRequest":
       case "BoardSubscriptionCompleted":
       case "UserJoin":
@@ -425,56 +423,56 @@ export function createConnection(
     );
   }
 
-	async function publishAuth(): Promise<void> {
-		// If already in progress, just return the existing promise
-		if (isAuthPublishing.flag && tokenPromise) {
-			return tokenPromise.promise;
-		}
+  async function publishAuth(): Promise<void> {
+    // If already in progress, just return the existing promise
+    if (isAuthPublishing.flag && tokenPromise) {
+      return tokenPromise.promise;
+    }
 
-		// Create a local reference to track our token promise
-		let localTokenPromise = tokenPromise;
-		let needsCleanup = false;
+    // Create a local reference to track our token promise
+    let localTokenPromise = tokenPromise;
+    let needsCleanup = false;
 
-		try {
-			// Set flag to indicate we're publishing
-			isAuthPublishing.flag = true;
-			needsCleanup = true;
+    try {
+      // Set flag to indicate we're publishing
+      isAuthPublishing.flag = true;
+      needsCleanup = true;
 
-			// Create promise if it doesn't exist
-			if (!localTokenPromise) {
-				localTokenPromise = createPromiseWithResolvers();
-				tokenPromise = localTokenPromise;
-			}
+      // Create promise if it doesn't exist
+      if (!localTokenPromise) {
+        localTokenPromise = createPromiseWithResolvers();
+        tokenPromise = localTokenPromise;
+      }
 
-			const account = getAccount();
-			await account.refreshTokens();
-			const jwt = account.accessToken;
+      const account = getAccount();
+      await account.refreshTokens();
+      const jwt = account.accessToken;
 
-			if (!jwt) {
-				// Explicitly resolve before returning
-				localTokenPromise.resolve();
-				return;
-			}
+      if (!jwt) {
+        // Explicitly resolve before returning
+        localTokenPromise.resolve();
+        return;
+      }
 
-			ws.send({
-				type: "Auth",
-				jwt,
-			});
+      ws.send({
+        type: "Auth",
+        jwt,
+      });
 
-			// Explicitly resolve the promise to unblock any waiters
-			localTokenPromise.resolve();
-		} catch (error) {
-			console.info("Unauthorized", error);
-			// Resolve on error too to prevent hanging
-			localTokenPromise?.resolve();
-		} finally {
-			if (needsCleanup) {
-				// Only reset if this call set the flag
-				isAuthPublishing.flag = false;
-				tokenPromise = null;
-			}
-		}
-	}
+      // Explicitly resolve the promise to unblock any waiters
+      localTokenPromise.resolve();
+    } catch (error) {
+      console.info("Unauthorized", error);
+      // Resolve on error too to prevent hanging
+      localTokenPromise?.resolve();
+    } finally {
+      if (needsCleanup) {
+        // Only reset if this call set the flag
+        isAuthPublishing.flag = false;
+        tokenPromise = null;
+      }
+    }
+  }
 
   function publishLogout(): void {
     ws.send({

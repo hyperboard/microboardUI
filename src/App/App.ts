@@ -225,16 +225,18 @@ export function createApp(isHistory = true): App {
       return;
     }
     const currIndex = board.getSnapshot().lastIndex;
+
     // temporaly disable snapshot cache
     // TODO: reenable when fixed multiple snapshots for one board
     // const snapshot = await this.getSnapshotFromCache();
-    const snapshot = undefined;
+    // const snapshot = undefined;
+    // board.events = createEvents(
+    //   board,
+    //   connection,
+    //   currIndex || snapshot?.lastIndex || 0,
+    // );
 
-    board.events = createEvents(
-      board,
-      connection,
-      currIndex || snapshot?.lastIndex || 0,
-    );
+    board.events = createEvents(board, connection, currIndex || 0);
 
     board.presence.addEvents(board.events);
     board.presence.setCurrentUser(
@@ -247,9 +249,10 @@ export function createApp(isHistory = true): App {
     );
     board.selection.events = board.events;
 
-    if (snapshot && currIndex === 0) {
-      // board.deserialize(snapshot);
-    }
+    // TODO: reenable when fixed multiple snapshots for one board
+    // if (snapshot && currIndex === 0) {
+    //   // board.deserialize(snapshot);
+    // }
     board.resolveConnecting();
     setTimeout(() => {
       board.items.subject.publish(board.items);
@@ -457,6 +460,7 @@ export function createApp(isHistory = true): App {
     disableLogger,
     getLocalEditFileHandler: () => fileHandle,
     setControlMode,
+    settings: getSettings(),
     getSettings,
   };
 
