@@ -3,7 +3,7 @@ import React from "react";
 import { useAppContext } from "features/AppContext";
 import btnStyle from "../../ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton/UiButton";
-import { Card, Deck } from "microboard-temp";
+import { Card, Deck, getHotkeyLabel } from "microboard-temp";
 import { useTranslation } from "react-i18next";
 
 interface Props {
@@ -66,6 +66,7 @@ export function CreateDeck({ rounded = "none", onlyCards }: Props) {
       onClick={handleClick}
       variant="secondary"
       rounded={rounded}
+      hotkey={getHotkeyLabel("createDeck")}
     >
       <Icon iconName="Stack" />
     </UiButton>
