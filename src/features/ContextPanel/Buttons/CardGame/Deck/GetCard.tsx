@@ -4,7 +4,7 @@ import { useAppContext } from "features/AppContext";
 import btnStyle from "../../ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton/UiButton";
 import { useTranslation } from "react-i18next";
-import { Card, Deck } from "microboard-temp";
+import { Card, Deck, getHotkeyLabel } from "microboard-temp";
 
 interface Props {
   cardPosition: "random" | "top" | "bottom";
@@ -54,6 +54,7 @@ export function GetCard({ cardPosition, rounded = "none" }: Props) {
       onClick={handleClick}
       variant="secondary"
       rounded={rounded}
+      hotkey={getHotkeyLabel(`getCard-${cardPosition}`)}
     >
       <Icon iconName="GetCard" />
     </UiButton>
