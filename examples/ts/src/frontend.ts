@@ -1,8 +1,13 @@
 /* eslint-disable no-var */
-import { App, createApp } from "App/App";
-import "features/Cursors";
-import { initInter } from "initI18N";
-import "./index.css";
+import { api, frontConf, apiV2 } from "microboard-ui-temp";
+frontConf.wsURL = "wss://dev-app.microboard.io/ws";
+api.updateURL("https://dev-app.microboard.io/api/v1");
+apiV2.updateURL("https://dev-app.microboard.io/api/v1");
+
+import { App, createApp, initInter, customCursors } from "microboard-ui-temp";
+console.log("cursors", { ...customCursors });
+
+import "microboard-ui-temp/style";
 
 declare global {
   interface Window {
@@ -11,12 +16,12 @@ declare global {
     enableTemplateCreating: boolean;
     enableVideos: boolean;
     enableGames: boolean;
+    enableDiagrams: boolean;
     enableLogger: () => void;
     disableLogger: () => void;
   }
 }
 
-// var showDebug = isMicroboard() ? true : false;
 window.showDebug = false;
 window.enableTemplateCreating = false;
 window.enableDiagrams = false;

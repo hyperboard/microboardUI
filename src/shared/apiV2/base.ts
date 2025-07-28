@@ -1,4 +1,4 @@
-import { getApiUrl, getApiUrlV2 } from "Config";
+import { getApiUrl } from "Config";
 import { HTTP } from "shared/api/base/base";
 
 export const apiV2 = new HTTP({

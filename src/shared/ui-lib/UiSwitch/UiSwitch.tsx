@@ -1,11 +1,8 @@
 import React, {
   useLayoutEffect,
   useRef,
-  useState,
   type MouseEventHandler,
-  type MutableRefObject,
   type ReactNode,
-  type Ref,
   type RefObject,
 } from "react";
 import style from "./UiSwitch.module.css";

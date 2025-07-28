@@ -25,8 +25,6 @@ export function getApiUrl(path?: string): string {
   if (!path) {
     path = "";
   }
-  console.log("front conf", frontConf);
-  console.log("front conf spread", { ...frontConf });
   if (frontConf.apiURL) {
     return `${frontConf.apiURL}${path}`;
   }
@@ -49,6 +47,9 @@ export function getWebsocketUrl(): string {
 export function getApiUrlV2(path?: string): string {
   if (!path) {
     path = "";
+  }
+  if (frontConf.apiURL) {
+    return `${frontConf.apiURL}${path}`;
   }
   return `${PROTOCOL}//${HOST}/api/v2${path}`;
 }
