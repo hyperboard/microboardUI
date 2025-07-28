@@ -56,7 +56,7 @@ const queryClient = new QueryClient();
 
 export function CryptoWrapper({
   children,
-}: PropsWithChildren<{}>): JSX.Element {
+}: PropsWithChildren<{}>): React.JSX.Element {
   return (
     <CryptoErrorBoundary
       fallback={<div>Crypto Provider Initialization Failed</div>}

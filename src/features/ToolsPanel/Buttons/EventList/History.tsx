@@ -16,7 +16,7 @@ interface Props {
 export const History = React.memo(function History({
   style,
   events,
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   const { t } = useTranslation();
   const { board } = useAppContext();
 

@@ -14,7 +14,7 @@ export const OptionsPanel = forwardRef<HTMLDivElement, Props>(
   (
     { canRemove, handleRemove, style, setTextUnderEditor }: Props,
     ref,
-  ): JSX.Element => {
+  ): React.JSX.Element => {
     const { t } = useTranslation();
 
     return (

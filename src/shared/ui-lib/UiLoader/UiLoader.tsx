@@ -13,7 +13,7 @@ export function UiLoader({
   rotateTime = 2,
   strokeWidth = 5,
   color = "rgba(10, 15, 41, 0.25)",
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   return (
     <span
       style={

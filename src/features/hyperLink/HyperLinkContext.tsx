@@ -28,7 +28,7 @@ export function useHyperLinkContext() {
 
 export const HyperLinkContextProvider = ({
   children,
-}: PropsWithChildren<{}>): JSX.Element => {
+}: PropsWithChildren<{}>): React.JSX.Element => {
   const [currentLink, setCurrentLink] = useState<string | undefined>();
   const [isEditingLink, setIsEditingLink] = useState(false);
   const [hyperLinkData, setHyperLinkData] =

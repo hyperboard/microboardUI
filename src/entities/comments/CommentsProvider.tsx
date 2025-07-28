@@ -9,7 +9,7 @@ import { Cluster } from "./Cluster/Cluster";
 import { useCommentsMerge } from "./useCommentsMerge";
 import { useCommentsContext } from "entities/comments/CommentsContext";
 
-export const CommentsProvider = (): JSX.Element => {
+export const CommentsProvider = (): React.JSX.Element => {
   const { board } = useAppContext();
   const { showResolved, showComments, enableClusters, movingComment } =
     useCommentsContext();

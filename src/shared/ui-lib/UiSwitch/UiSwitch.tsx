@@ -81,7 +81,12 @@ export function UiSwitch({ onChange, options, value }: Props) {
             key={label}
             className={clsx(style.btn, optionValue === value && style.active)}
             onClick={handleOptionClick(optionValue)}
-            ref={(ref) => optionsRefs.current.push(ref)}
+            ref={(ref) => {
+              if (!ref) {
+                return;
+              }
+              optionsRefs.current.push(ref);
+            }}
           >
             <span className={style.btnText}>{label}</span>
           </button>

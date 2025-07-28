@@ -11,7 +11,7 @@ import { uploadImages } from "shared/api/media/uploadImage";
 
 export const CREATE_CARDS_MODAL = Symbol("createCardsModal");
 
-export function CreateCardsModal(): JSX.Element {
+export function CreateCardsModal(): React.JSX.Element {
   const { t } = useTranslation();
   const { closeModal } = useUiModalContext();
   const { board } = useAppContext();

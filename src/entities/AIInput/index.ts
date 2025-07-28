@@ -1,10 +1,10 @@
-export { AIInput } from "./AIInput.tsx";
+export { AIInput } from "./AIInput";
 export {
   getIdeaFromSelection,
   getContextItems,
   getTextFromItem,
-} from "./utils.ts";
-export type { PossibleParentNode } from "./utils.ts";
-export { useAIContext, AIContextProvider } from "./AIContext.tsx";
-export { StarIcon } from "./StarIcon.tsx";
-export { Dropdown } from "./AIDropdown.tsx";
+} from "./utils";
+export type { PossibleParentNode } from "./utils";
+export { useAIContext, AIContextProvider } from "./AIContext";
+export { StarIcon } from "./StarIcon";
+export { Dropdown } from "./AIDropdown";

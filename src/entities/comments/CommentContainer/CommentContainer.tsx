@@ -1,17 +1,17 @@
 import React, { TouchEventHandler, useEffect, useRef, useState } from "react";
-import { useDomMbr } from "App/useDomMbr.ts";
-import { useAppContext } from "features/AppContext.tsx";
-import { Icon } from "../../../shared/ui-lib/Icon/index.ts";
+import { useDomMbr } from "App/useDomMbr";
+import { useAppContext } from "features/AppContext";
+import { Icon } from "../../../shared/ui-lib/Icon/index";
 import styles from "./CommentContainer.module.css";
 import clsx from "clsx";
-import { ThreadPanel } from "../Thread/ThreadPanel.tsx";
-import { useCommentsContext } from "../CommentsContext.tsx";
-import { useAppSubscription } from "App/useBoardSubscription.ts";
-import { useForceUpdate } from "shared/lib/useForceUpdate.ts";
+import { ThreadPanel } from "../Thread/ThreadPanel";
+import { useCommentsContext } from "../CommentsContext";
+import { useAppSubscription } from "App/useBoardSubscription";
+import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { Point, Comment } from "microboard-temp";
-import { CommentPreview } from "./CommentPreview/CommentPreview.tsx";
-import { Avatar } from "features/UserPanel/Avatar/Avatar.tsx";
-import { useAccount } from "App/useAccount.ts";
+import { CommentPreview } from "./CommentPreview/CommentPreview";
+import { Avatar } from "features/UserPanel/Avatar/Avatar";
+import { useAccount } from "App/useAccount";
 
 interface Props {
   comment: Comment;

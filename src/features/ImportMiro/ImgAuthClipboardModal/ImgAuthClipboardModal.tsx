@@ -9,7 +9,7 @@ import { useUiModalContext } from "shared/ui-lib/UiModal";
 
 export const MIRO_IMG_AUTH_CLIPBOARD = Symbol("imgAuthClipboardNotification");
 
-export const ImgAuthClipboardModal = (): JSX.Element => {
+export const ImgAuthClipboardModal = (): React.JSX.Element => {
   const { t } = useTranslation();
   const { closeModal } = useUiModalContext();
   const { app } = useAppContext();

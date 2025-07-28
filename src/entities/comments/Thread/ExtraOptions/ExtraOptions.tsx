@@ -15,7 +15,10 @@ interface Props {
   canEdit: boolean;
 }
 
-export const ExtraOptions = ({ comment, canEdit }: Props): JSX.Element => {
+export const ExtraOptions = ({
+  comment,
+  canEdit,
+}: Props): React.JSX.Element => {
   const [isCursorOnButton, setIsCursorOnButton] = useState(false);
   const [isCursorOnMenu, setIsCursorOnMenu] = useState(false);
   const { board } = useAppContext();

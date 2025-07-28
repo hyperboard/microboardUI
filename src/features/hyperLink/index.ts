@@ -1,6 +1,6 @@
-export { HyperLink } from "./HyperLink.tsx";
+export { HyperLink } from "./HyperLink";
 export {
   HyperLinkContextProvider,
   useHyperLinkContext,
-} from "./HyperLinkContext.tsx";
-export type { HyperLinkCreationData } from "./HyperLinkContext.tsx";
+} from "./HyperLinkContext";
+export type { HyperLinkCreationData } from "./HyperLinkContext";

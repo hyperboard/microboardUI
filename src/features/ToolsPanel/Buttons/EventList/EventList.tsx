@@ -11,7 +11,7 @@ import { History } from "./History";
 import { SyncJournal } from "./SyncJournal";
 import style from "./EventList.module.css";
 
-export const EventList = React.memo(function EventList(): JSX.Element {
+export const EventList = React.memo(function EventList(): React.JSX.Element {
   const { board } = useAppContext();
   const { t } = useTranslation();
   const [opened, setOpened] = useState(false);

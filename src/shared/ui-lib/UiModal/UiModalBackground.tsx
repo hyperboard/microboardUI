@@ -14,7 +14,7 @@ const modalsContainer = document.getElementById("modal")!;
 
 export function UiModalBackground({
   children,
-}: PropsWithChildren<{}>): JSX.Element {
+}: PropsWithChildren<{}>): React.JSX.Element {
   const { openedModalId, closeModal, isRenderedAsPage } = useUiModalContext();
 
   useEffect(() => {

@@ -7,7 +7,7 @@ import { Item } from "microboard-temp";
 import { notify } from "shared/ui-lib/Toast/notify";
 import { useTranslation } from "react-i18next";
 
-export const LinksProvider = (): JSX.Element => {
+export const LinksProvider = (): React.JSX.Element => {
   const { board } = useAppContext();
 
   const forceUpdate = useForceUpdate();

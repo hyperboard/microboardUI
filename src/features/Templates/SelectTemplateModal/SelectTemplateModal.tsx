@@ -17,7 +17,7 @@ import { useUiModalContext } from "shared/ui-lib/UiModal";
 
 export const SELECT_TEMPLATE_MODAL = Symbol("selectTemplate");
 
-export const SelectTemplateModal = (): JSX.Element => {
+export const SelectTemplateModal = (): React.JSX.Element => {
   const { t } = useTranslation();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [presentedTemplate, setPresentedTemplate] = useState<Template | null>(

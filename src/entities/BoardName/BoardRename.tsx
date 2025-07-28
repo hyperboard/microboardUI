@@ -28,7 +28,7 @@ export function BoardRename({
   value,
   className,
   width,
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {

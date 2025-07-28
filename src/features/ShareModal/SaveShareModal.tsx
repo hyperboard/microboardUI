@@ -12,7 +12,9 @@ type SaveShareModalType = {
   onSave: () => Promise<void>;
 };
 
-export function SaveShareModal({ onSave }: SaveShareModalType): JSX.Element {
+export function SaveShareModal({
+  onSave,
+}: SaveShareModalType): React.JSX.Element {
   const { openModal, closeModal } = useUiModalContext();
   const { t } = useTranslation();
   const onBackBtnClick: React.MouseEventHandler<HTMLButtonElement> = (

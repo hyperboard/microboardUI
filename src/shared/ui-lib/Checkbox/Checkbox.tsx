@@ -16,7 +16,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
   onChange,
   checked,
   ...props
-}: CheckboxProps): JSX.Element => {
+}: CheckboxProps): React.JSX.Element => {
   const [isChecked, setIsChecked] = useState<boolean>(checked ?? false);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {

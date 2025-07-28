@@ -1,8 +1,7 @@
 {
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "src/css-module.d.ts"],
   "exclude": ["public", "dist", "node_modules", "scripts", "docs", "examples"],
   "compilerOptions": {
-    "resolveJsonModule": true,
     "lib": ["ES2017", "DOM", "ES2019"],
     "target": "es2022",
     "module": "es2022",
@@ -12,6 +11,7 @@
     "declaration": true,
     "declarationMap": true,
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "incremental": true,
     "strict": true,
     "noImplicitAny": false,

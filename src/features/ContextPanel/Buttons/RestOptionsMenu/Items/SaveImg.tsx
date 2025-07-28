@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Icon } from "shared/ui-lib/Icon";
 import { RestOptionsMenuItem } from "../RestOptionsMenuItem";
 
-export function SaveImg(): JSX.Element {
+export function SaveImg(): React.JSX.Element {
   const { board } = useAppContext();
   const { toggleMenu } = usePanelContext();
   const { t } = useTranslation();

@@ -9,7 +9,7 @@ interface Props {
   itemType: "Audio" | "Video";
 }
 
-export function SaveVideoOrAudio({ itemType }: Props): JSX.Element {
+export function SaveVideoOrAudio({ itemType }: Props): React.JSX.Element {
   const { board } = useAppContext();
   const { toggleMenu } = usePanelContext();
   const { t } = useTranslation();

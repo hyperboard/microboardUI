@@ -11,7 +11,7 @@ import styles from "./AccessDeniedModal.module.css";
 
 export const ACCESS_DENIED_MODAL = Symbol("accessDeniedModal");
 
-export function AccessDeniedModal(): JSX.Element {
+export function AccessDeniedModal(): React.JSX.Element {
   const account = useAccount();
   const { t } = useTranslation();
   const navigate = useNavigate();

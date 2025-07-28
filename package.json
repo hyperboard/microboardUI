@@ -10,8 +10,10 @@
     "lint": "bun run lint:css",
     "clean": "rimraf dist",
     "build:dev": "bun run scripts/buildDev.ts",
-    "build": "bun run scripts/buildProd.ts",
-    "prepare": "bun run scripts/prepareHooks.ts"
+    "build:prod": "bun run scripts/buildProd.ts",
+    "build": "bun run build:prod && bun run build:types:each",
+    "prepare": "bun run scripts/prepareHooks.ts",
+    "build:types:each": "find src -type f \\( -name '*.ts' -o -name '*.tsx' \\) | while read file; do echo \"→ $file\"; bunx tsc src/css-module.d.ts src/global.d.ts \"$file\" --declaration --emitDeclarationOnly --declarationDir ./dist/types --skipLibCheck --pretty false --resolveJsonModule --esModuleInterop --baseUrl src --jsx react-jsx || { echo \"❌ Error in $file\"; break; }; done"
   },
   "files": [
     "dist"
@@ -29,7 +31,7 @@
     "stylelint": "^16.21.1"
   },
   "peerDependencies": {
-    "typescript": "^5",
+    "typescript": "^5.8.3",
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "slate": "^0.114.0",
@@ -51,7 +53,7 @@
     "i18next-browser-languagedetector": "^8.2.0",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
-    "microboard-temp": "^0.5.13",
+    "microboard-temp": "^0.5.14",
     "nanoid": "^5.1.5",
     "prop-types": "^15.8.1",
     "react-hot-toast": "2.4.1",

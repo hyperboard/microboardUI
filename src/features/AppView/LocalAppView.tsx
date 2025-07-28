@@ -23,7 +23,7 @@ import { AudioPlayer } from "features/AudioPlayer/AudioPlayer";
 import { ItemsProvider } from "features/ItemsProvider";
 import { ErrorBoundary } from "features/ErrorBoundary/ErrorBoundary";
 
-export function LocalAppView(): JSX.Element {
+export function LocalAppView(): React.JSX.Element {
   const { app, board } = useAppContext();
   const forceUpdate = useForceUpdate();
   const animationId = useRef<number | null>(null);

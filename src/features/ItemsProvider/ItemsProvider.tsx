@@ -8,7 +8,9 @@ interface Props {
   itemsComponents: Record<string, React.ComponentType<any>>;
 }
 
-export const ItemsProvider = ({ itemsComponents }: Props): JSX.Element => {
+export const ItemsProvider = ({
+  itemsComponents,
+}: Props): React.JSX.Element => {
   const { board } = useAppContext();
   const forceUpdate = useForceUpdate();
 

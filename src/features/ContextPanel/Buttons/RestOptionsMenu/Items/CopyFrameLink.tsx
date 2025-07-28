@@ -8,7 +8,7 @@ import { notify } from "shared/ui-lib/Toast";
 import { Icon } from "shared/ui-lib/Icon";
 import { getLinkToItem } from "./getLinkToItem";
 
-export function CopyFrameLink(): JSX.Element {
+export function CopyFrameLink(): React.JSX.Element {
   const { board } = useAppContext();
   const { toggleMenu } = usePanelContext();
   const { t } = useTranslation();

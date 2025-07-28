@@ -26,7 +26,7 @@ export function useLocalSidePanelContext(): SidePanelContext {
 
 export function LocalSidePanelContextProvider({
   children,
-}: PropsWithChildren<{}>): JSX.Element {
+}: PropsWithChildren<{}>): React.JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
   const [stamp, setStamp] = useState<null | number>(null);
   const [highlighted, setHighlighted] = useState(false);

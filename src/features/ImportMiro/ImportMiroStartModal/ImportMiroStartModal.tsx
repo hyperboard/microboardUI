@@ -7,7 +7,7 @@ import { useUiModalContext } from "shared/ui-lib/UiModal";
 
 export const IMPORT_MIRO_START_MODAL = Symbol("startImportMiro");
 
-export const ImportMiroStartModal = (): JSX.Element => {
+export const ImportMiroStartModal = (): React.JSX.Element => {
   const { t } = useTranslation();
   const { closeModal } = useUiModalContext();
 

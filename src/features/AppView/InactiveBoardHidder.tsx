@@ -3,7 +3,7 @@ import { useAppContext } from "features/AppContext";
 
 export function InactiveBoardHidder({
   children,
-}: PropsWithChildren<{}>): JSX.Element {
+}: PropsWithChildren<{}>): React.JSX.Element {
   const { app } = useAppContext();
   const appBoardId = app.getBoard().getBoardId();
 

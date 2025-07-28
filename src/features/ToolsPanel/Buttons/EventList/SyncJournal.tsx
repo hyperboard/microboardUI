@@ -13,7 +13,7 @@ interface Props {
 export const SyncJournal = memo(function SyncJournal({
   style,
   log,
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   const eventsLog = log.map((logMsg) => ({
     msg: logMsg.msg,
     events: logMsg.records.map((record) => record.event),

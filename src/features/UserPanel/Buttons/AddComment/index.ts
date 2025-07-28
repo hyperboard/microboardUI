@@ -1,1 +1,1 @@
-export { AddComment } from "./AddComment.tsx";
+export { AddComment } from "./AddComment";

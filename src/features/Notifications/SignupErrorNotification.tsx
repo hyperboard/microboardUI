@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 
 export const ERROR_SIGNUP_NOTIFY = Symbol("errorSignup");
 
-export const SignupErrorNotification = (): JSX.Element => {
+export const SignupErrorNotification = (): React.JSX.Element => {
   const { isModalOpen, closeModal } = useUiModalContext();
   const { t } = useTranslation();
 

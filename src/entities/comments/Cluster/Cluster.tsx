@@ -11,7 +11,7 @@ interface Props {
   comments: Comment[];
 }
 
-export const Cluster = ({ comments }: Props): JSX.Element => {
+export const Cluster = ({ comments }: Props): React.JSX.Element => {
   const clusterRef = useRef<HTMLDivElement>(null);
   const { board, app } = useAppContext();
   const account = useAccount();

@@ -9,7 +9,7 @@ import { UiModal } from "shared/ui-lib/UiModal/UiModal";
 
 export const AI_UNAVAILABLE_MODAL_ID = Symbol("aiUnavailableModal");
 
-export function AiUnavailableModal(): JSX.Element {
+export function AiUnavailableModal(): React.JSX.Element {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { closeModal } = useUiModalContext();

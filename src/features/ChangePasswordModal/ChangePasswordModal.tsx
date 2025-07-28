@@ -14,7 +14,7 @@ import { useUiModalContext } from "shared/ui-lib/UiModal";
 
 export const CHANGE_PASSWORD_MODAL = Symbol("ChangePasswordModal");
 
-export function ChangePasswordModal(): JSX.Element {
+export function ChangePasswordModal(): React.JSX.Element {
   const formRef = useRef<HTMLFormElement>(null);
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);

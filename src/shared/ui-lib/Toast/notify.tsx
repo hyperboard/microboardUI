@@ -5,7 +5,7 @@ import { Icon } from "shared/ui-lib/Icon";
 import { UiButton } from "../UiButton";
 import style from "./Toast.module.css";
 import { conf } from "microboard-temp";
-import { Loader } from "shared/ui-lib/Loader/Loader.tsx";
+import { Loader } from "shared/ui-lib/Loader/Loader";
 
 type Props = {
   header?: ReactNode;

@@ -25,10 +25,10 @@ export const CommentInput = ({
   mode,
   handleReject,
   onInput,
-}: Props): JSX.Element => {
+}: Props): React.JSX.Element => {
   const [showSeparator, setShowSeparator] = useState(true);
 
-  const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>): void => {
+  const onKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>): void => {
     event.stopPropagation();
     if (event.key === "Enter" && !value.trim()) {
       return event.preventDefault();
@@ -46,7 +46,9 @@ export const CommentInput = ({
   };
   const { t } = useTranslation();
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>,
+  ): void => {
     const target = event.target;
     setValue(target.value);
     if (target.scrollHeight > 20) {

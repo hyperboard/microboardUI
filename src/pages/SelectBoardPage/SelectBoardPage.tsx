@@ -34,9 +34,9 @@ export const SelectBoardPage: React.FC = () => {
   const userPanelRef = useRef<HTMLDivElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [selected, setSelected] = useState<boardsApi.Board | null | "addNew">(
-    null,
-  );
+  const [selected, setSelected] = useState<
+    (boardsApi.Board & { notFound?: boolean }) | null | "addNew"
+  >(null);
   const [newBoardName, setNewBoardName] = useState(t("board.untitled"));
 
   function handleError(er: unknown): void {

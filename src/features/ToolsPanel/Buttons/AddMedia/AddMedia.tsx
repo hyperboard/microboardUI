@@ -9,7 +9,7 @@ import { AddMediaButton } from "features/ToolsPanel/Buttons/AddMedia/AddMediaBut
 import { useAppContext } from "features/AppContext";
 import { useClickOutside } from "shared/lib/useClickOutside";
 
-export function AddMedia(): JSX.Element {
+export function AddMedia(): React.JSX.Element {
   const { board } = useAppContext();
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useTranslation();

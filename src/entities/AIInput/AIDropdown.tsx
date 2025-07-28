@@ -102,7 +102,7 @@ const getTokenForm = (count: number, t: (key: string) => string): string => {
   }
 };
 
-export const AIDropdown = (props: AIDropdownProps): JSX.Element => {
+export const AIDropdown = (props: AIDropdownProps): React.JSX.Element => {
   const { board, isPhoneScreen, account, isDropdownOpen, setIsDropdownOpen } =
     props;
   const { elementRef, rect } = useBoundingClientRect<HTMLDivElement>();
@@ -170,7 +170,7 @@ export const AIDropdown = (props: AIDropdownProps): JSX.Element => {
 
 export const Dropdown = (
   props: Pick<AIDropdownProps, "account" | "setIsDropdownOpen">,
-): JSX.Element => {
+): React.JSX.Element => {
   const { account, setIsDropdownOpen } = props;
   const { model, setModel } = useAIContext();
   const { openModal } = useUiModalContext();

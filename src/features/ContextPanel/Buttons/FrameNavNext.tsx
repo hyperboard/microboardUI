@@ -6,7 +6,7 @@ import { Icon } from "shared/ui-lib/Icon";
 import { getHotkeyLabel } from "microboard-temp";
 import styles from "./ContextPanelButton.module.css";
 
-export function FrameNavNext(): JSX.Element {
+export function FrameNavNext(): React.JSX.Element {
   const { board } = useAppContext();
   const { t } = useTranslation();
 
