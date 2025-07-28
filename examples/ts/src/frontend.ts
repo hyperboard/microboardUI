@@ -1,8 +1,7 @@
 /* eslint-disable no-var */
-import { api, frontConf, apiV2 } from "microboard-ui-temp";
+import { api, frontConf } from "microboard-ui-temp";
 frontConf.wsURL = "wss://dev-app.microboard.io/ws";
 api.updateURL("https://dev-app.microboard.io/api/v1");
-apiV2.updateURL("https://dev-app.microboard.io/api/v1");
 
 import { App, createApp, initInter, customCursors } from "microboard-ui-temp";
 console.log("cursors", { ...customCursors });

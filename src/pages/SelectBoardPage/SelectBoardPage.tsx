@@ -7,8 +7,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Folder } from "entities/Folder";
-import { boardsApiV2 } from "shared/apiV2";
-import { AccessKeyType } from "shared/apiV2/boards";
+import { boardsApi } from "shared/api";
+import { AccessKeyType } from "shared/api/boards";
 import { useAppContext } from "features/AppContext";
 import { Icon, Logo } from "shared/ui-lib/Icon";
 import { Selector, type SelectorHandle } from "shared/ui-lib/Selector";
@@ -34,7 +34,7 @@ export const SelectBoardPage: React.FC = () => {
   const userPanelRef = useRef<HTMLDivElement>(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [selected, setSelected] = useState<boardsApiV2.Board | null | "addNew">(
+  const [selected, setSelected] = useState<boardsApi.Board | null | "addNew">(
     null,
   );
   const [newBoardName, setNewBoardName] = useState(t("board.untitled"));
@@ -78,7 +78,7 @@ export const SelectBoardPage: React.FC = () => {
       throw new Error("Error creating access key");
     }
 
-    const { data: accessKey } = await boardsApiV2.createAccessKey(
+    const { data: accessKey } = await boardsApi.createAccessKey(
       boardId,
       {
         keyType: accessKeyType as AccessKeyType,

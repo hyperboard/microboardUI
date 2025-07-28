@@ -13,7 +13,7 @@ import React, {
   type SyntheticEvent,
 } from "react";
 import { useNavigate } from "react-router-dom";
-import type { boardsApiV2, foldersApi } from "shared/apiV2";
+import type { boardsApi, foldersApi } from "shared/api";
 import { handleClickDetection } from "shared/lib/handleClickDetection";
 import { Icon } from "shared/ui-lib/Icon";
 import { DragPlaceholder } from "./DragPlaceholder";
@@ -22,7 +22,7 @@ import styles from "./FolderItem.module.css";
 type Props = {
   board: foldersApi.NestedBoard;
   folder?: foldersApi.Folder | foldersApi.NestedFolder;
-  handleOpenBoard?: (board: boardsApiV2.Board) => void;
+  handleOpenBoard?: (board: boardsApi.Board) => void;
 };
 
 export const FolderItem = forwardRef<HTMLDivElement, Props>(

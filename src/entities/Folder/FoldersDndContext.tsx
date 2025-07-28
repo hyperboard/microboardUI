@@ -11,7 +11,7 @@ import {
 import { useBoardsList } from "App/useBoardsList";
 import type { PropsWithChildren } from "react";
 import React, { useState } from "react";
-import { foldersApi } from "shared/apiV2";
+import { foldersApi } from "shared/api";
 
 type Props = PropsWithChildren<{}>;
 

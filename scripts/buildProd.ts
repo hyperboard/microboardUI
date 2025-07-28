@@ -1,3 +1,4 @@
+import dts from "bun-plugin-dts";
 import { build } from "bun";
 import { copyPlugin } from "../bunUtils/copyPlugin";
 import path from "path";
@@ -45,6 +46,7 @@ async function main() {
       ".svg": "file",
       // ".html": "file",
     },
+
     publicPath: "/",
     format: "esm",
     splitting: false,
@@ -59,6 +61,7 @@ async function main() {
         to: outdir,
       }),
       cdnifyLinksPlugin("https://unpkg.com/microboard-ui-temp/dist"),
+      // dts(),
     ],
   });
 
