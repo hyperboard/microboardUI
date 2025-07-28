@@ -32,7 +32,7 @@ export function FlipDeck({ rounded = "none" }: Props) {
       onClick={handleClick}
       variant="secondary"
       rounded={rounded}
-      hotkey={getHotkeyLabel("flipDeck")}
+      hotkey={getHotkeyLabel("flipDeckOrCard")}
     >
       <Icon iconName="RotateCard" width={24} height={24} />
     </UiButton>
