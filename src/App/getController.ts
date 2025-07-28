@@ -295,13 +295,13 @@ export function getController(
       return;
     }
 
-    const editModeHotkeys: HotkeysMap = {
-      navigateMode: () => board.tools.exitNavigateMode(),
-    };
-
-    if (board.getInterfaceType() === "edit") {
-      checkHotkeys(editModeHotkeys, event, board);
-    }
+    // const editModeHotkeys: HotkeysMap = {
+    //   navigateMode: () => board.tools.exitNavigateMode(),
+    // };
+    //
+    // if (board.getInterfaceType() === "edit") {
+    //   checkHotkeys(editModeHotkeys, event, board);
+    // }
 
     board.keyboard.keyUp(event);
     if (!board.selection.tool.keyUp(board.keyboard.up)) {
