@@ -5,6 +5,7 @@ import btnStyle from "../../ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton/UiButton";
 import { Card, Deck } from "microboard-temp";
 import { useTranslation } from "react-i18next";
+import { createDeck } from "microboard-temp/dist/types/Items/Examples/CardGame/Deck";
 
 interface Props {
   rounded?: string;
@@ -19,42 +20,8 @@ export function CreateDeck({ rounded = "none", onlyCards }: Props) {
     return null;
   }
 
-  const cardsOrDecks = board.selection.items.list();
-
   const handleClick = (): void => {
-    if (onlyCards) {
-      const deck = new Deck(board, "");
-      deck.transformation.apply({
-        class: "Transformation",
-        method: "translateTo",
-        item: [deck.getId()],
-        x: cardsOrDecks[cardsOrDecks.length - 1].left,
-        y: cardsOrDecks[cardsOrDecks.length - 1].top,
-      });
-      const addedDeck = board.add(deck);
-      board.selection.items.removeAll();
-      addedDeck.addChildItems(cardsOrDecks);
-      board.selection.items.add(addedDeck);
-    } else {
-      let mainDeck: Deck | null = null;
-      const cards: Card[] = [];
-      cardsOrDecks.forEach((item) => {
-        if (item.itemType === "Card") {
-          cards.push(item);
-        } else if (item.itemType === "Deck") {
-          if (mainDeck) {
-            cards.push(...mainDeck.getDeck());
-            board.remove(mainDeck);
-            mainDeck = item;
-          } else {
-            mainDeck = item;
-          }
-        }
-      });
-      board.selection.items.removeAll();
-      mainDeck.addChildItems(cards);
-      board.selection.items.add(mainDeck);
-    }
+    createDeck(undefined, board);
   };
 
   return (
