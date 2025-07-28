@@ -4,6 +4,7 @@ import { useAppContext } from "features/AppContext";
 import btnStyle from "../../ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton/UiButton";
 import { useTranslation } from "react-i18next";
+import { getHotkeyLabel } from "microboard-temp";
 
 interface Props {
   rounded?: string;
@@ -31,6 +32,7 @@ export function FlipDeck({ rounded = "none" }: Props) {
       onClick={handleClick}
       variant="secondary"
       rounded={rounded}
+      hotkey={getHotkeyLabel("flipDeck")}
     >
       <Icon iconName="RotateCard" width={24} height={24} />
     </UiButton>
