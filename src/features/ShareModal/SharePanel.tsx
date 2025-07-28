@@ -4,7 +4,7 @@ import styles from "./SharePanel.module.css";
 import { useTranslation } from "react-i18next";
 import { UserAvatar } from "features/UserPanel/UserAvatar/UserAvatar";
 import { SearchInput } from "features/ShareModal/SearchInput";
-import { GrantedUser } from "shared/apiV2/boards/types";
+import { GrantedUser } from "shared/api/boards/types";
 import { usersApi } from "shared/api";
 import { useAccount } from "App/useAccount";
 import { UiButton } from "shared/ui-lib/UiButton/UiButton";
@@ -12,7 +12,7 @@ import clsx from "clsx";
 import shareModalStyles from "./ShareModal.module.css";
 import { Icon } from "shared/ui-lib/Icon/Icon";
 import { UiSelector, Option } from "shared/ui-lib/UiSelector";
-import { UserAccessType } from "shared/apiV2/boards";
+import { UserAccessType } from "shared/api/boards";
 import i18next from "i18next";
 
 const MODE_SELECTOR_OPTIONS: Option[] = [

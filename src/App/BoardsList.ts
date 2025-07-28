@@ -1,5 +1,5 @@
 import type { Account } from "entities/account";
-import { boardsApiV2, foldersApi } from "shared/apiV2";
+import { boardsApi, foldersApi } from "shared/api";
 import { Subject } from "shared/Subject";
 import { Storage } from "./Storage";
 import { conf } from "microboard-temp";
@@ -57,7 +57,7 @@ export class BoardsList {
   ): Promise<string> {
     return await this.action(
       async () => {
-        const { data } = await boardsApiV2.createBoard({
+        const { data } = await boardsApi.createBoard({
           title: name,
           parentFolder,
           isPublic,
@@ -69,7 +69,7 @@ export class BoardsList {
         return data.id;
       },
       async () => {
-        const { data } = await boardsApiV2.createBoard({
+        const { data } = await boardsApi.createBoard({
           title: name,
           isPublic: true,
           parentFolder,
@@ -333,7 +333,7 @@ export class BoardsList {
   async updatePrivacySettings(
     boardId: string,
     isPublic: boolean,
-    mode: boardsApiV2.DirectAccessType,
+    mode: boardsApi.DirectAccessType,
   ): Promise<void> {
     if (!this.account.isLoggedIn) {
       return;
@@ -341,7 +341,7 @@ export class BoardsList {
     this.isLoading = true;
     this.subject.publish();
 
-    await boardsApiV2.editBoard(boardId, {
+    await boardsApi.editBoard(boardId, {
       isPublic,
       directAccessType: mode,
     });
@@ -365,7 +365,7 @@ export class BoardsList {
   async visitBoard(id: string): Promise<Promise<void>> {
     return await this.action(
       async () => {
-        await boardsApiV2.claimBoards({ visited: [id] });
+        await boardsApi.claimBoards({ visited: [id] });
         await this.updateList();
       },
       async () => {
@@ -375,7 +375,7 @@ export class BoardsList {
         ) {
           return;
         }
-        const { data } = await boardsApiV2.getBoard(id);
+        const { data } = await boardsApi.getBoard(id);
         if (data && data.isPublic) {
           this.storage.addVisitedBoard(data);
           await this.updateList();
@@ -398,7 +398,7 @@ export class BoardsList {
       return;
     }
     try {
-      await boardsApiV2.claimBoards({
+      await boardsApi.claimBoards({
         authorKeys: publicBoards
           .map(({ authorKey }) => authorKey)
           .filter((ak) => ak !== null),
@@ -426,11 +426,11 @@ export class BoardsList {
 
     await this.action(
       async () => {
-        await boardsApiV2.editBoard(boardId, { title: name });
+        await boardsApi.editBoard(boardId, { title: name });
         await this.updateList();
       },
       async () => {
-        await boardsApiV2.editBoard(boardId, { title: name }, board.authorKey);
+        await boardsApi.editBoard(boardId, { title: name }, board.authorKey);
         this.storage.renameCreatedBoard(board.id, name);
         await this.updateList();
       },
@@ -466,14 +466,14 @@ export class BoardsList {
   async removeBoard(boardId: string): Promise<void> {
     await this.action(
       async () => {
-        await boardsApiV2.deleteBoard(boardId);
+        await boardsApi.deleteBoard(boardId);
         await this.updateList();
       },
       async () => {
         const createdBoard = this.storage.getCreatedBoard(boardId);
         if (createdBoard) {
           try {
-            await boardsApiV2.deleteBoard(
+            await boardsApi.deleteBoard(
               createdBoard.id,
               createdBoard.authorKey,
             );
@@ -645,7 +645,7 @@ export class BoardsList {
     const visitedBoards = this.storage.listVisitedBoards();
     try {
       const detailsRes = await Promise.all(
-        visitedBoards.map(async ({ id }) => await boardsApiV2.getBoard(id)),
+        visitedBoards.map(async ({ id }) => await boardsApi.getBoard(id)),
       );
       const details = detailsRes
         .map(({ data }) => data)
@@ -657,14 +657,11 @@ export class BoardsList {
     this.subject.publish();
   }
 
-  async manageAccess(
-    boardId: string,
-    payload: boardsApiV2.ManageAccessPayload,
-  ) {
+  async manageAccess(boardId: string, payload: boardsApi.ManageAccessPayload) {
     this.isLoading = true;
     this.subject.publish();
 
-    await boardsApiV2.manageAccess(boardId, payload);
+    await boardsApi.manageAccess(boardId, payload);
     this.loadBoards();
   }
 

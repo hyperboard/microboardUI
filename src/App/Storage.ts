@@ -1,4 +1,4 @@
-import type { boardsApiV2 } from "shared/apiV2";
+import type { boardsApi } from "shared/api";
 import { v4 } from "uuid";
 
 export class Storage {
@@ -6,7 +6,7 @@ export class Storage {
   visitedBoards = `${location.host}/visitedBoards`;
 
   /* Returns ids of visited public boards stored in the local storage */
-  listCreatedBoards(): boardsApiV2.Board[] {
+  listCreatedBoards(): boardsApi.Board[] {
     const createdBoards = localStorage.getItem(this.createdBoards);
     if (createdBoards) {
       return JSON.parse(createdBoards);
@@ -15,7 +15,7 @@ export class Storage {
     }
   }
 
-  listVisitedBoards(): boardsApiV2.Board[] {
+  listVisitedBoards(): boardsApi.Board[] {
     const visitedBoards = localStorage.getItem(this.visitedBoards);
     if (visitedBoards) {
       return JSON.parse(visitedBoards);
@@ -24,30 +24,30 @@ export class Storage {
     }
   }
 
-  setCreatedBoards(boards: boardsApiV2.Board[]): void {
+  setCreatedBoards(boards: boardsApi.Board[]): void {
     localStorage.setItem(this.createdBoards, JSON.stringify(boards));
   }
 
-  setVisitedBoards(boards: boardsApiV2.Board[]): void {
+  setVisitedBoards(boards: boardsApi.Board[]): void {
     localStorage.setItem(this.visitedBoards, JSON.stringify(boards));
   }
 
-  private filterCreatedBoards(boardId: string): boardsApiV2.Board[] {
+  private filterCreatedBoards(boardId: string): boardsApi.Board[] {
     const boards = this.listCreatedBoards();
     return boards.filter((board) => board.id !== boardId);
   }
 
-  private filterVisitedBoards(boardId: string): boardsApiV2.Board[] {
+  private filterVisitedBoards(boardId: string): boardsApi.Board[] {
     const boards = this.listVisitedBoards();
     return boards.filter((board) => board.id !== boardId);
   }
 
-  addCreatedBoard(board: boardsApiV2.Board): void {
+  addCreatedBoard(board: boardsApi.Board): void {
     const filteredBoards = this.filterCreatedBoards(board.id);
     this.setCreatedBoards([board, ...filteredBoards]);
   }
 
-  getCreatedBoard(boardId: string): boardsApiV2.Board | undefined {
+  getCreatedBoard(boardId: string): boardsApi.Board | undefined {
     return this.listCreatedBoards().find((board) => board.id === boardId);
   }
 
@@ -56,12 +56,12 @@ export class Storage {
     this.setCreatedBoards(filteredBoards);
   }
 
-  addVisitedBoard(board: boardsApiV2.Board): void {
+  addVisitedBoard(board: boardsApi.Board): void {
     const filteredBoards = this.filterVisitedBoards(board.id);
     this.setVisitedBoards([board, ...filteredBoards]);
   }
 
-  getVisitedBoard(boardId: string): boardsApiV2.Board | undefined {
+  getVisitedBoard(boardId: string): boardsApi.Board | undefined {
     return this.listVisitedBoards().find((board) => board.id === boardId);
   }
 

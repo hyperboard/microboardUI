@@ -9,7 +9,7 @@
     "start": "NODE_ENV=production bun src/index.tsx"
   },
   "dependencies": {
-    "microboard-ui-temp": "^0.1.27",
+    "microboard-ui-temp": "^0.1.28",
     "react": "^19",
     "react-dom": "^19"
   },

@@ -26,7 +26,7 @@ type Props = PropsWithChildren<
     wrClassName?: string;
     disableClose?: boolean;
     closeOnClickOutside?: boolean;
-    clickOutsideRefs?: React.RefObject<HTMLElement>[];
+    clickOutsideRefs?: React.RefObject<HTMLElement | null>[];
   }
 >;
 

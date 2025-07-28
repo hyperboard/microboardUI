@@ -1,15 +1,13 @@
 {
-  "include": ["src/**/*", "src/global.d.ts"],
+  "include": ["src/**/*"],
   "exclude": ["public", "dist", "node_modules", "scripts", "docs", "examples"],
   "compilerOptions": {
     "resolveJsonModule": true,
     "lib": ["ES2017", "DOM", "ES2019"],
-    "outDir": "dist",
     "target": "es2022",
     "module": "es2022",
     "sourceMap": true,
-    "baseUrl": "src",
-    "types": ["react"],
+    "types": ["react", "wicg-file-system-access"],
     "jsx": "react",
     "declaration": true,
     "declarationMap": true,
@@ -25,8 +23,16 @@
     "moduleResolution": "Bundler",
     "noEmit": true,
     "allowImportingTsExtensions": true,
+    "baseUrl": "src",
     "paths": {
-      "*": ["*", "*.js", "*.ts", "*.tsx"]
+      "*": ["*", "*.js", "*.ts", "*.tsx"],
+      "App/*": ["./App/*"],
+      "features/*": ["./features/*"],
+      "entities/*": ["./entities/*"],
+      "pages/*": ["./pages/*"],
+      "public/*": ["./public/*"],
+      "shared/*": ["./shared/*"],
+      "*/": ["./*"]
     }
   },
   "ts-node": {

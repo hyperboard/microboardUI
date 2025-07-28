@@ -1,113 +1,143 @@
 import { api } from "../base/base";
-import type { MessageResponse } from "../types";
-import type { AnonymousBoard, Board, BoardsList, ClaimPayload } from "./types";
+import {
+  AUTHOR_KEY_HEADER,
+  type AccessKey,
+  type AccessKeyPayload,
+  type Board,
+  type BoardPayload,
+  type ClaimBoardsPayload,
+  type GrantAccessPayload,
+  type GrantedUser,
+  type ManageAccessPayload,
+} from "./types";
 
-export function createBoard(title?: string, isPublic?: boolean) {
-  return api.post<Board>(
-    "/boards",
-    {
-      title,
-      isPublic,
-    },
-    {
-      redirect: "follow",
-      referrerPolicy: "no-referrer",
-      mode: "cors",
-      cache: "no-cache",
-    },
-  );
+export function createBoard(body: BoardPayload) {
+  return api.post<Board>("/boards", body);
 }
 
-export function claim(body: ClaimPayload) {
-  return api.post<MessageResponse>("/boards/claim", body);
+export function claimBoards(body: ClaimBoardsPayload) {
+  return api.post("/boards/claim", body);
 }
 
-export function getBoards() {
-  return api.get<BoardsList>("/boards");
-}
-
-export function getBoardDetails(boardId: string) {
-  return api.get<Board>("/boards/:boardId/details", {
+export function getBoard(boardId: string) {
+  return api.get<Board>("/boards/:boardId", {
     params: {
       boardId,
     },
   });
 }
 
-export function deleteBoard(boardId: string) {
+export function editBoard(
+  boardId: string,
+  body: BoardPayload,
+  authorKey?: string | null,
+) {
+  return api.patch<Board>("/boards/:boardId", body, {
+    params: {
+      boardId,
+    },
+    headers: {
+      ...(authorKey && { [AUTHOR_KEY_HEADER]: authorKey }),
+    },
+  });
+}
+
+export function deleteBoard(boardId: string, authorKey?: string | null) {
   return api.delete("/boards/:boardId", {
     params: {
       boardId,
     },
-  });
-}
-
-export function unvisitBoard(boardId: string) {
-  return api.delete("/boards/:boardId/visited", {
-    params: {
-      boardId,
+    headers: {
+      ...(authorKey && { [AUTHOR_KEY_HEADER]: authorKey }),
     },
   });
 }
 
-export function deleteBoardUnauthed(boardId: string, authorKey: string) {
-  return api.delete("/boards/:boardId/:authorKey", {
-    params: {
-      authorKey,
-      boardId,
-    },
-  });
-}
-
-export function renameBoard(boardId: string, newTitle: string) {
-  return api.patch(
-    "/boards/:boardId",
-    { newTitle },
-    {
-      params: {
-        boardId,
-      },
-    },
-  );
-}
-
-export function renameBoardUnauthed(
+export function createAccessKey(
   boardId: string,
-  authorKey: string,
-  newTitle: string,
+  body: AccessKeyPayload,
+  authorKey?: string,
 ) {
-  return api.patch(
-    "/boards/:boardId/:authorKey",
-    { newTitle },
+  return api.post<AccessKey>("/boards/:boardId/access-key", body, {
+    params: {
+      boardId,
+    },
+    headers: {
+      ...(authorKey && { [AUTHOR_KEY_HEADER]: authorKey }),
+    },
+  });
+}
+
+export function getAccessKeys(boardId: string, authorKey?: string) {
+  return api.get<AccessKey[]>("/boards/:boardId/access-key", {
+    params: {
+      boardId,
+    },
+    headers: {
+      ...(authorKey && { [AUTHOR_KEY_HEADER]: authorKey }),
+    },
+  });
+}
+
+export function getAccessKey(
+  boardId: string,
+  accessKey: string,
+  authorKey?: string,
+) {
+  return api.get<AccessKey[]>("/boards/:boardId/access-key/:accessKey", {
+    params: {
+      boardId,
+      accessKey,
+    },
+    headers: {
+      ...(authorKey && { [AUTHOR_KEY_HEADER]: authorKey }),
+    },
+  });
+}
+
+export function deleteAccessKey(
+  boardId: string,
+  accessKey: string,
+  authorKey?: string,
+) {
+  return api.delete("/boards/:boardId/access-key/:accessKey", {
+    params: {
+      boardId,
+      accessKey,
+    },
+    headers: {
+      ...(authorKey && { [AUTHOR_KEY_HEADER]: authorKey }),
+    },
+  });
+}
+
+export function getGrantedUsers(boardId: string) {
+  return api.get<GrantedUser[]>("/boards/:boardId/grant-access", {
+    params: {
+      boardId,
+    },
+  });
+}
+
+export function grantAccess(boardId: string, users: GrantAccessPayload[]) {
+  return api.post(
+    "/boards/:boardId/grant-access",
+    { users },
     {
       params: {
         boardId,
-        authorKey,
       },
     },
   );
 }
 
-export async function publishSnapshot(
-  HTMLSnapshot: string,
-  snapshotUId: string,
-  boardUId: string,
-): Promise<
-  MessageResponse & {
-    snapshotURI: string;
-  }
-> {
-  const { data } = await api.post<MessageResponse & { snapshotURI: string }>(
-    "/media/snapshot",
-    {
-      snapshot: HTMLSnapshot,
-      snapshotUId,
-      boardUId,
+export function manageAccess(
+  boardId: string,
+  manageAccess: ManageAccessPayload,
+) {
+  return api.post("/boards/:boardId/manage-access", manageAccess, {
+    params: {
+      boardId,
     },
-  );
-  if (!data) {
-    throw new Error();
-  }
-
-  return data;
+  });
 }

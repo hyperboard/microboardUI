@@ -18,8 +18,8 @@ import React, {
   type SyntheticEvent,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { foldersApi, type boardsApiV2 } from "shared/apiV2";
-import { FolderType } from "shared/apiV2/folders";
+import { foldersApi, type boardsApi } from "shared/api";
+import { FolderType } from "shared/api/folders";
 import { handleClickDetection } from "shared/lib/handleClickDetection";
 import { Icon } from "shared/ui-lib/Icon";
 import {
@@ -34,7 +34,7 @@ import { useOpenedFoldersContext } from "./OpenedFoldersContext";
 type Props = {
   folder: foldersApi.Folder | null;
   parentFolderId?: number;
-  handleOpenBoard?: (board: boardsApiV2.Board) => void;
+  handleOpenBoard?: (board: boardsApi.Board) => void;
   accordionClassName?: string;
   zIndex?: number;
 };

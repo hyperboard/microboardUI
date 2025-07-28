@@ -13,12 +13,12 @@ import React, {
 import { useTranslation } from "react-i18next";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { usersApi } from "shared/api";
-import { boardsApiV2 } from "shared/apiV2";
+import { boardsApi } from "shared/api";
 import {
   DirectAccessType,
   UserAccessType,
   type GrantedUser,
-} from "shared/apiV2/boards";
+} from "shared/api/boards";
 import { debounce } from "shared/lib/debounce";
 import { getEmailPrefix } from "shared/lib/getEmailPrefix";
 import { UiButton } from "shared/ui-lib/UiButton";
@@ -79,9 +79,7 @@ export function ShareModal() {
     UserAccessType.View,
   );
   const [isGrantedUsersLoading, setIsGrantedUsersLoading] = useState(true);
-  const [grantedUsers, setGrantedUsers] = useState<boardsApiV2.GrantedUser[]>(
-    [],
-  );
+  const [grantedUsers, setGrantedUsers] = useState<boardsApi.GrantedUser[]>([]);
   const [searchOptions, setSearchOptions] = useState<usersApi.User[]>([]);
   const [isSearchOptionsLoading, setIsSearchOptionsLoading] = useState(false);
   const [highlightedEmail, setHighlightedEmail] = useState<string | null>(null);
@@ -96,7 +94,7 @@ export function ShareModal() {
       return;
     }
     try {
-      const { data } = await boardsApiV2.getGrantedUsers(boardId);
+      const { data } = await boardsApi.getGrantedUsers(boardId);
       setGrantedUsers(
         data?.map((user) => {
           return {
@@ -412,7 +410,7 @@ export function ShareModal() {
                     setMode(opt as DirectAccessType);
                   }}
                   value={
-                    mode === boardsApiV2.DirectAccessType.EDIT
+                    mode === boardsApi.DirectAccessType.EDIT
                       ? MODE_SELECTOR_OPTIONS[0].value
                       : MODE_SELECTOR_OPTIONS[1].value
                   }

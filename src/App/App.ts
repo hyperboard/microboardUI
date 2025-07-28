@@ -7,9 +7,7 @@ import {
 } from "microboard-temp";
 import { Account } from "entities/account";
 import { getAuthInterceptor } from "entities/account/AuthInterceptor";
-import { api } from "shared/api";
-import { foldersApi } from "shared/apiV2";
-import { apiV2 } from "shared/apiV2/base";
+import { api, foldersApi } from "shared/api";
 import "shared/Lang";
 import { MemoryLogger } from "shared/Logger";
 import { notify } from "shared/ui-lib/Toast";
@@ -160,7 +158,6 @@ export function createApp(isHistory = true): App {
 
   const authInterceptor = getAuthInterceptor(account);
   api.interceptors.addRequestInterceptor(authInterceptor);
-  apiV2.interceptors.addRequestInterceptor(authInterceptor);
 
   async function openBoard(id: string, accessKey?: string): Promise<void> {
     const appBoard = app.getBoard();

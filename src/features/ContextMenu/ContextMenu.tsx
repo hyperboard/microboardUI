@@ -14,7 +14,7 @@ import style from "./ContextMenu.module.css";
 import { useContextMenuContext } from "./ContextMenuContext";
 import { useRenameContext } from "features/Rename";
 import { useConfirmModalContext } from "features/Modal/ConfirmModal";
-import { foldersApi } from "shared/apiV2";
+import { foldersApi } from "shared/api";
 import { SHARE_MODAL_ID } from "features/ShareModal/ShareModal";
 import { useAppContext } from "features/AppContext";
 import { useNavigate } from "react-router-dom";
@@ -24,7 +24,7 @@ import { Mbr } from "microboard-temp";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 
-export function ContextMenu(): JSX.Element | null {
+export function ContextMenu(): React.JSX.Element | null {
   const { boardId, x, y, isOpen, folderId, close } = useContextMenuContext();
   const { setNewName, setRenamingId } = useRenameContext();
   const boardsList = useBoardsList();
@@ -443,7 +443,7 @@ function ContextMenuItem({
   onClick,
   disabled = false,
   isLoading = false,
-}: ItemProps): JSX.Element {
+}: ItemProps): React.JSX.Element {
   return (
     <button
       disabled={disabled || isLoading}
