@@ -77,3 +77,10 @@ export function purchaseTokens(
 ): Promise<HTTPResponse<TokenPurchaseResponse>> {
   return api.post<TokenPurchaseResponse>("/billing/purchase-tokens", payload);
 }
+
+export function changePlan(
+  planId: string,
+): Promise<HTTPResponse<MessageResponse>> {
+  // TODO: реализовать PATCH /billing/subscriptions на бэке
+  return api.patch<MessageResponse>("/billing/subscriptions", { planId });
+}
