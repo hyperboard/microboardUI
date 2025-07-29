@@ -9,26 +9,30 @@
     "fix:css": "bun run scripts/cameliseCssClasses.ts",
     "lint": "bun run lint:css",
     "clean": "rimraf dist",
-    "build:dev": "bun run scripts/buildDev.ts",
+    "build:dev": "bun run clean && bun run scripts/buildDev.ts",
     "build:prod": "bun run scripts/buildProd.ts",
-    "build": "bun run build:prod && bun run build:types:each",
+    "build": "bun run clean && bun run build:prod && bun run build:types",
     "prepare": "bun run scripts/prepareHooks.ts",
-    "build:types:each": "find src -type f \\( -name '*.ts' -o -name '*.tsx' \\) | while read file; do echo \"→ $file\"; bunx tsc src/css-module.d.ts src/global.d.ts \"$file\" --declaration --emitDeclarationOnly --declarationDir ./dist/types --skipLibCheck --pretty false --resolveJsonModule --esModuleInterop --baseUrl src --jsx react-jsx || { echo \"❌ Error in $file\"; break; }; done"
+    "build:types": "bunx tsc src/global.d.ts src/css-module.d.ts src/index.ts --declaration --emitDeclarationOnly --declarationDir ./dist/types --skipLibCheck --pretty false --resolveJsonModule --esModuleInterop --baseUrl src --jsx react-jsx; bunx tsc-alias -p tsconfig.json --outDir dist/types",
+    "build:types:each": "find src -type f \\( -name '*.ts' -o -name '*.tsx' \\) | while read file; do echo \"→ $file\"; bunx tsc src/global.d.ts src/css-module.d.ts src/index.ts \"$file\" --declaration --emitDeclarationOnly --declarationDir ./dist/types --skipLibCheck --pretty false --resolveJsonModule --esModuleInterop --baseUrl src --jsx react-jsx || { echo \"❌ Error in $file\"; break; }; done; bunx tsc-alias -p tsconfig.json --declarationDir ./dist/types"
   },
   "files": [
     "dist"
   ],
   "exports": {
     ".": {
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "types": "./dist/types/index.d.ts"
     },
     "./style": "./dist/index.css"
   },
   "devDependencies": {
     "@types/bun": "^1.2.18",
     "@types/node": "^24.0.12",
+    "@types/wicg-file-system-access": "^2023.10.6",
     "prettier": "^3.6.2",
-    "stylelint": "^16.21.1"
+    "stylelint": "^16.21.1",
+    "tsc-alias": "^1.8.16"
   },
   "peerDependencies": {
     "typescript": "^5.8.3",
