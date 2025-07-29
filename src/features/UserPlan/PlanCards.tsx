@@ -13,13 +13,6 @@ import { conf } from "microboard-temp";
 const { i18n } = conf;
 import { setModalData } from "shared/ui-lib/UiModal/UiModalContext";
 
-if (!billingApi.changePlan) {
-  billingApi.changePlan = async function (planId) {
-    // TODO: реализовать на бэке PATCH /billing/subscriptions с planId
-    return Promise.resolve({ data: { message: "Plan changed" } });
-  };
-}
-
 const annualToMonthlyPrice = (price?: number) =>
   price ? Math.round(price / 12) : 0;
 
@@ -381,7 +374,6 @@ export function PlusPlanCard(): React.JSX.Element {
         planName: conf.planNames["plus"],
       }),
     });
-    // Можно добавить обновление состояния/перезагрузку
   };
 
   return (
