@@ -50,11 +50,7 @@ export function ToolsPanel(): React.JSX.Element {
         }
       >
         <UiPanel vertical padding={0} zIndex={20}>
-          {window.enableGames && (
-            <>
-              <AddGameItem />
-            </>
-          )}
+          <AddGameItem />
           <AddTemplate />
           <UiSeparator />
           <Select rounded={"none"} />
