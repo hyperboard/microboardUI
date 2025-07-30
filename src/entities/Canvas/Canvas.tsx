@@ -3,6 +3,7 @@ import { Subscription } from "App/getSubscriptions";
 import { Board, DrawingContext } from "microboard-temp";
 import * as React from "react";
 import { WithRouterProps, withRouter } from "shared/lib/withRouter";
+import { Watermark } from "./Watermark";
 
 export interface Props extends WithRouterProps {
   app: App;
@@ -169,6 +170,7 @@ export class CanvasBase extends React.Component<Props> {
         }}
         onContextMenu={(ev) => ev.preventDefault()}
       >
+        <Watermark />
         <canvas
           ref={this.canvasRef}
           width={Math.floor(width * window.devicePixelRatio)}
