@@ -8,6 +8,7 @@
     "sourceMap": true,
     "types": ["react", "wicg-file-system-access"],
     "jsx": "react",
+    "outDir": "dist",
     "declaration": true,
     "declarationMap": true,
     "esModuleInterop": true,
@@ -22,7 +23,6 @@
     "skipLibCheck": true,
     "moduleResolution": "Bundler",
     "noEmit": true,
-    "allowImportingTsExtensions": true,
     "baseUrl": "src",
     "paths": {
       "*": ["*", "*.js", "*.ts", "*.tsx"],
