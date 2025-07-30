@@ -42,8 +42,8 @@ async function main() {
     outdir,
     loader: {
       ".css": "css",
-      ".svg": "file",
-      // ".svg": "text",
+      // ".svg": "file",
+      ".svg": "text",
       // ".html": "file",
     },
 
