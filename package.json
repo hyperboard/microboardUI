@@ -11,6 +11,7 @@
     "clean": "rimraf dist",
     "build:dev": "bun run scripts/buildDev.ts",
     "build:prod": "bun run scripts/buildProd.ts",
+    "build:exports": "bun run scripts/updateSvgExports.ts",
     "build": "bun run build:prod && bun run build:types",
     "prepare": "bun run scripts/prepareHooks.ts",
     "build:types": "bunx tsc src/global.d.ts src/css-module.d.ts src/index.ts --declaration --emitDeclarationOnly --declarationDir ./dist/types --skipLibCheck --pretty false --resolveJsonModule --esModuleInterop --baseUrl src --jsx react-jsx; bun run cp:dts; bunx tsc-alias -p tsconfig.json --outDir dist/types",
