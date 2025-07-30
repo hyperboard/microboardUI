@@ -13,18 +13,21 @@
     "build:prod": "bun run scripts/buildProd.ts",
     "build": "bun run build:prod && bun run build:types",
     "prepare": "bun run scripts/prepareHooks.ts",
-    "build:types": "bunx tsc src/global.d.ts src/css-module.d.ts src/index.ts --declaration --emitDeclarationOnly --declarationDir ./dist/types --skipLibCheck --pretty false --resolveJsonModule --esModuleInterop --baseUrl src --jsx react-jsx; bunx tsc-alias -p tsconfig.json --outDir dist/types",
-    "build:types:each": "find src -type f \\( -name '*.ts' -o -name '*.tsx' \\) | while read file; do echo \"→ $file\"; bunx tsc src/global.d.ts src/css-module.d.ts src/index.ts \"$file\" --declaration --emitDeclarationOnly --declarationDir ./dist/types --skipLibCheck --pretty false --resolveJsonModule --esModuleInterop --baseUrl src --jsx react-jsx || { echo \"❌ Error in $file\"; break; }; done; bunx tsc-alias -p tsconfig.json --declarationDir ./dist/types"
+    "build:types": "bunx tsc src/global.d.ts src/css-module.d.ts src/index.ts --declaration --emitDeclarationOnly --declarationDir ./dist/types --skipLibCheck --pretty false --resolveJsonModule --esModuleInterop --baseUrl src --jsx react-jsx; bun run cp:dts; bunx tsc-alias -p tsconfig.json --outDir dist/types",
+    "cp:dts": "cp src/css-module.d.ts dist/types/; cp src/global.d.ts dist/types/"
   },
   "files": [
     "dist"
   ],
+  "types": "dist/types/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/index.js",
-      "types": "./dist/types/index.d.ts"
+      "types": "dist/types/index.d.ts"
     },
-    "./style": "./dist/index.css"
+    "./styles.css": {
+      "import": "./dist/index.css"
+    }
   },
   "devDependencies": {
     "@types/bun": "^1.2.18",
