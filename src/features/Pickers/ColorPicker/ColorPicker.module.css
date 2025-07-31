@@ -7,6 +7,5 @@
   padding: 0;
   margin: 0;
   cursor:
-    url("../../Cursors/pointer.svg") 13 9,
-    auto;
+    /* url("../../Cursors/pointer.svg") 13 9, */ auto;
 }

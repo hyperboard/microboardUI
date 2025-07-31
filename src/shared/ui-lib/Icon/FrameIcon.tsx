@@ -1,6 +1,5 @@
 import type { FrameType } from "microboard-temp";
 import React from "react";
-import sprite from "./sprite.svg";
 
 type Props = {
   iconName: FrameType;
@@ -23,11 +22,7 @@ export function FrameIcon({
       height={height}
       style={style}
     >
-      <use
-        width={width}
-        height={height}
-        xlinkHref={`${sprite}#${"Frame" + iconName}`}
-      />
+      <use width={width} height={height} xlinkHref={`#${"Frame" + iconName}`} />
     </svg>
   );
 }

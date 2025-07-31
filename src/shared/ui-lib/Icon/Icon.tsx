@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import React from "react";
 import styles from "./Icon.module.css";
-import sprite from "./sprite.svg";
 
 export type IconId =
   | "Select"
@@ -207,16 +206,7 @@ export function Icon({
       style={style}
       className={clsx(className, !width && !height && styles.icon)}
     >
-      <use
-        width={width}
-        height={height}
-        xlinkHref={`#${iconName}`}
-        // xlinkHref={
-        //   window.location.protocol === "file:"
-        //     ? `#${iconName}`
-        //     : `${sprite}#${iconName}`
-        // }
-      />
+      <use width={width} height={height} xlinkHref={`#${iconName}`} />
     </svg>
   );
 }
