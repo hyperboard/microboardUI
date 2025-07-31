@@ -210,11 +210,12 @@ export function Icon({
       <use
         width={width}
         height={height}
-        xlinkHref={
-          window.location.protocol === "file:"
-            ? `#${iconName}`
-            : `${sprite}#${iconName}`
-        }
+        xlinkHref={`#${iconName}`}
+        // xlinkHref={
+        //   window.location.protocol === "file:"
+        //     ? `#${iconName}`
+        //     : `${sprite}#${iconName}`
+        // }
       />
     </svg>
   );
