@@ -985,16 +985,16 @@
     "upgradePlan": "Upgrade Plan",
     "currentPlanFree": {
       "part1": "The ",
-      "part2": " plan is active. Tokens balance: {{tokensBalance}}."
+      "part2": " plan is active."
     },
     "limits": "Limits",
     "currentPlanPending": {
       "part1": "The ",
-      "part2": " plan is paid until {{cancellationDate}}. Tokens balance: {{tokensBalance}}."
+      "part2": " plan is paid until {{cancellationDate}}."
     },
     "currentPlanActive": {
       "part1": "The current ",
-      "part2": " plan is paid until {{cancellationDate}}. Tokens balance: {{tokensBalance}}. Auto-payment is enabled."
+      "part2": " plan is paid until {{cancellationDate}}. Auto-payment is enabled."
     },
     "nextPayment": "Next payment: {{paymentDate}}",
     "pendingBtn": "The plan will be effective as of {{activationDate}}",
@@ -1049,8 +1049,6 @@
         "name": "Basic",
         "description": "GPT-4o mini",
         "features": [
-          "GPT-4o mini",
-          "DeepSeek-R1",
           "Unlimited boards and figures",
           "Media storage — up to 100 MB"
         ],
@@ -1061,7 +1059,6 @@
         "description": "GPT-4o mini",
         "features": [
           "All features of the Basic plan",
-          "All premium board features except extra AI",
           "Media storage — up to 100 GB",
           "Premium support"
         ],

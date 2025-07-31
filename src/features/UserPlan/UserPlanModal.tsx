@@ -91,7 +91,7 @@ export function UserPlanModal() {
           <div className={styles.cards}>
             <BasicPlanCard />
             <PlusPlanCard />
-            <PlusAIPlanCard />
+            {window.enableAI && <PlusAIPlanCard />}
             <ProPlanCard />
           </div>
         </div>
