@@ -2,7 +2,6 @@ import { useAccount } from "App/useAccount";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { billingApi } from "shared/api";
-import { changePlan } from "shared/api/billing/api";
 import { useConfirmModalContext } from "features/Modal/ConfirmModal";
 import { notify } from "shared/ui-lib/Toast";
 import { PlanCard, type PlanState } from "./PlanCard";
@@ -121,22 +120,21 @@ export function BasicPlanCard() {
   );
 }
 
-export function PlusAIPlanCard(): React.JSX.Element {
+export function PlusAIPlanCard(): JSX.Element {
   const { t } = useTranslation();
   const account = useAccount();
   const { openModal } = useUiModalContext();
   const { openModalConfirm } = useConfirmModalContext();
 
   const [plan, setPlan] = useState<billingApi.Plan | null>(null);
-  const [plans, setPlans] = useState<billingApi.Plan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     billingApi
       .getPlans()
       .then(({ data }) => {
-        setPlans(data ?? []);
         const plusAIPlan = data?.find(({ id }) => id === "plusAI");
+
         setPlan(plusAIPlan ?? null);
       })
       .finally(() => setIsLoading(false));
@@ -146,15 +144,18 @@ export function PlusAIPlanCard(): React.JSX.Element {
     if (!account.billingInfo || account.billingInfo?.plan.name === "basic") {
       return "available";
     }
+
     if (account.billingInfo.plan.name === plan?.name) {
       return "current";
     }
+
     if (account.billingInfo.plan.name === "pro") {
       if (account.billingInfo.plan.status === "pending_cancellation") {
         return "pending";
       }
       return "downgrade";
     }
+
     return "available";
   };
 
@@ -210,56 +211,46 @@ export function PlusAIPlanCard(): React.JSX.Element {
   const handleBuyTokens = async (ev): Promise<void> => {
     ev.preventDefault();
     ev.stopPropagation();
+
     setModalData({
       mode: "tokens",
       amount: 1000,
     });
+
     openModal(SELECT_PAYMENT_MODAL_ID);
     return;
   };
 
   const isPlusAIPlan = account.billingInfo?.plan.name === plan?.name;
-  const isPlusActive = account.billingInfo?.plan.name === "plus";
-  const plusPlan = plans.find((p) => p.id === "plus");
-  const plusAIPrice = plan?.price ? Number(plan.price) : 0;
-  const plusPrice = plusPlan?.price ? Number(plusPlan.price) : 0;
-  const discountedPrice = isPlusActive
-    ? Math.max(plusAIPrice - plusPrice, 0)
-    : plusAIPrice;
-
-  const handleUpgradeWithDiscount = async (ev: React.MouseEvent) => {
-    ev.preventDefault();
-    ev.stopPropagation();
-    await billingApi.createCheckout({
-      planId: plan?.id || "plusAI",
-      successUrl: window.location.href,
-      cancelUrl: window.location.href,
-    });
-    // TODO: если потребуется, добавить параметр для скидки
-  };
-
   const planState = getPlusSubState();
 
   return (
     <PlanCard
       name={t("userPlan.plans.plusAI.name")}
-      features={t("userPlan.plans.plusAI.features", { returnObjects: true })}
+      // description={t("userPlan.plans.plus.description")}
+      features={t("userPlan.plans.plusAI.features", {
+        returnObjects: true,
+      })}
       additionalFeature={t("userPlan.plans.plusAI.tokensFeature")}
       additionalFeatureTooltip={t("userPlan.tokensTooltip")}
       variant="plus"
-      price={discountedPrice}
+      price={
+        isPlusAIPlan
+          ? 8
+          : account.getIsAnnualPayment()
+            ? annualToMonthlyPrice(plan?.annualPrice)
+            : plan?.price
+      }
       isTokenPrice={isPlusAIPlan}
       oldPrice={
         !isPlusAIPlan && account.getIsAnnualPayment()
           ? typeof plan?.price === "number"
-            ? (plan.price as number)
+            ? plan.price
             : null
           : null
       }
       state={planState}
-      onSubscribe={
-        isPlusActive ? handleUpgradeWithDiscount : handleOpenPaymentModal
-      }
+      onSubscribe={isPlusAIPlan ? handleBuyTokens : handleOpenPaymentModal}
       onDowngrade={onDowngrade}
       isLoading={isLoading}
       buttonText={isPlusAIPlan ? t("userPlan.buyTokens") : undefined}
@@ -267,7 +258,7 @@ export function PlusAIPlanCard(): React.JSX.Element {
   );
 }
 
-export function PlusPlanCard(): React.JSX.Element {
+export function PlusPlanCard(): JSX.Element {
   const { t } = useTranslation();
   const account = useAccount();
   const { openModal } = useUiModalContext();
@@ -281,6 +272,7 @@ export function PlusPlanCard(): React.JSX.Element {
       .getPlans()
       .then(({ data }) => {
         const plusPlan = data?.find(({ id }) => id === "plus");
+
         setPlan(plusPlan ?? null);
       })
       .finally(() => setIsLoading(false));
@@ -290,15 +282,18 @@ export function PlusPlanCard(): React.JSX.Element {
     if (!account.billingInfo || account.billingInfo?.plan.name === "basic") {
       return "available";
     }
+
     if (account.billingInfo.plan.name === plan?.name) {
       return "current";
     }
+
     if (account.billingInfo.plan.name === "pro") {
       if (account.billingInfo.plan.status === "pending_cancellation") {
         return "pending";
       }
       return "downgrade";
     }
+
     return "available";
   };
 
@@ -354,39 +349,33 @@ export function PlusPlanCard(): React.JSX.Element {
   const handleBuyTokens = async (ev): Promise<void> => {
     ev.preventDefault();
     ev.stopPropagation();
+
     setModalData({
       mode: "tokens",
       amount: 1000,
     });
+
     openModal(SELECT_PAYMENT_MODAL_ID);
     return;
   };
 
   const isPlusPlan = account.billingInfo?.plan.name === plan?.name;
-  const isPlusAIActive = account.billingInfo?.plan.name === "plusAI";
   const planState = getPlusSubState();
-
-  const handleDowngradeFromPlusAI = async () => {
-    await changePlan("plus");
-    notify({
-      header: "Тариф обновлен",
-      body: t("userPlan.downgradeModal.description", {
-        planName: conf.planNames["plus"],
-      }),
-    });
-  };
 
   return (
     <PlanCard
       name={t("userPlan.plans.plus.name")}
-      features={t("userPlan.plans.plus.features", { returnObjects: true })}
+      // description={t("userPlan.plans.plus.description")}
+      features={t("userPlan.plans.plus.features", {
+        returnObjects: true,
+      })}
       variant="basic"
       price={
         isPlusPlan
           ? 6
           : account.getIsAnnualPayment()
             ? annualToMonthlyPrice(plan?.annualPrice)
-            : (plan?.price ?? 0)
+            : plan?.price
       }
       additionalFeature={t("userPlan.plans.plus.tokensFeature")}
       additionalFeatureTooltip={t("userPlan.tokensTooltip")}
@@ -394,13 +383,13 @@ export function PlusPlanCard(): React.JSX.Element {
       oldPrice={
         !isPlusPlan && account.getIsAnnualPayment()
           ? typeof plan?.price === "number"
-            ? (plan.price as number)
+            ? plan.price
             : null
           : null
       }
-      state={isPlusAIActive ? "downgrade" : planState}
+      state={planState}
       onSubscribe={handleOpenPaymentModal}
-      onDowngrade={isPlusAIActive ? handleDowngradeFromPlusAI : onDowngrade}
+      onDowngrade={onDowngrade}
       isLoading={isLoading}
       buttonText={isPlusPlan ? t("userPlan.buyTokens") : undefined}
     />

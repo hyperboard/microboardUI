@@ -17,6 +17,7 @@ declare global {
     enableTemplateCreating: boolean;
     enableVideos: boolean;
     enableGames: boolean;
+    enableAI: boolean;
     enableDiagrams: boolean;
     enableLogger: () => void;
     disableLogger: () => void;

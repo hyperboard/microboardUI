@@ -222,7 +222,7 @@ export function AppView(): React.JSX.Element {
           <ItemTooltip />
           <ViewModeGuard mode={"edit"}>
             {(interfaceType) => {
-              if (interfaceType === "edit") {
+              if (interfaceType === "edit" && window.enableAI) {
                 return <AIInput />;
               }
               return null;

@@ -161,45 +161,45 @@ export function PlanCard({
         )}
         {description && <div className={styles.models}>{description}</div>}
       </div>
-      {state !== "downgrade" && (
-        <>
-          {/* <UiSeparator /> */}
-          <Button
-            onClick={getHandler()}
-            className={styles.button}
-            disabled={
-              (state === "current" && !buttonText) || state === "pending"
-            }
-            pattern={state === "pending" ? "tertiary" : "primary"}
-          >
-            {getButtonLabel()}
-          </Button>
-        </>
-      )}
-      {additionalFeature && (
-        <div className={clsx(styles.feature, styles.tokenFeature)}>
-          <span>{additionalFeature}</span>
-          {additionalFeatureTooltip && (
-            <div className={styles.tooltipContainer}>
-              <Icon
-                iconName="InformationLine"
-                width={24}
-                height={24}
-                className={styles.tooltipIcon}
-              />
-              <Tooltip
-                id={`${name}-${additionalFeature}-tooltip`}
-                tooltip={additionalFeatureTooltip}
-                tooltipPosition="right"
-                tooltipAlign="left"
-                className={styles.tooltip}
-                allowTextWrap={true}
-                width="232px"
-              />
-            </div>
-          )}
-        </div>
-      )}
+      {/*{state !== "downgrade" && (*/}
+      {/*  <>*/}
+      {/*    /!* <UiSeparator /> *!/*/}
+      {/*    <Button*/}
+      {/*      onClick={getHandler()}*/}
+      {/*      className={styles.button}*/}
+      {/*      disabled={*/}
+      {/*        (state === "current" && !buttonText) || state === "pending"*/}
+      {/*      }*/}
+      {/*      pattern={state === "pending" ? "tertiary" : "primary"}*/}
+      {/*    >*/}
+      {/*      {getButtonLabel()}*/}
+      {/*    </Button>*/}
+      {/*  </>*/}
+      {/*)}*/}
+      {/*{additionalFeature && (*/}
+      {/*  <div className={clsx(styles.feature, styles.tokenFeature)}>*/}
+      {/*    <span>{additionalFeature}</span>*/}
+      {/*    {additionalFeatureTooltip && (*/}
+      {/*      <div className={styles.tooltipContainer}>*/}
+      {/*        <Icon*/}
+      {/*          iconName="InformationLine"*/}
+      {/*          width={24}*/}
+      {/*          height={24}*/}
+      {/*          className={styles.tooltipIcon}*/}
+      {/*        />*/}
+      {/*        <Tooltip*/}
+      {/*          id={`${name}-${additionalFeature}-tooltip`}*/}
+      {/*          tooltip={additionalFeatureTooltip}*/}
+      {/*          tooltipPosition="right"*/}
+      {/*          tooltipAlign="left"*/}
+      {/*          className={styles.tooltip}*/}
+      {/*          allowTextWrap={true}*/}
+      {/*          width="232px"*/}
+      {/*        />*/}
+      {/*      </div>*/}
+      {/*    )}*/}
+      {/*  </div>*/}
+      {/*)}*/}
       <UiSeparator />
       <ul className={styles.features}>
         {features.map((feature) => (

@@ -984,16 +984,16 @@
     "upgradePlan": "Выбрать тариф",
     "currentPlanFree": {
       "part1": "Тариф ",
-      "part2": " активен. Баланс токенов: {{tokensBalance}}."
+      "part2": " активен."
     },
     "limits": "Лимиты",
     "currentPlanPending": {
       "part1": "Тариф ",
-      "part2": " оплачен до {{cancellationDate}}. Баланс токенов: {{tokensBalance}}."
+      "part2": " оплачен до {{cancellationDate}}."
     },
     "currentPlanActive": {
       "part1": "Тариф ",
-      "part2": " оплачен до {{cancellationDate}}. Баланс токенов: {{tokensBalance}}. Подключен автоплатеж."
+      "part2": " оплачен до {{cancellationDate}}. Подключен автоплатеж."
     },
     "nextPayment": "Следующее списание: {{paymentDate}}",
     "pendingBtn": "Будет действовать с {{activationDate}}",
@@ -1075,8 +1075,6 @@
         "name": "Базовый",
         "description": "GPT-4o mini",
         "features": [
-          "GPT-4o mini",
-          "DeepSeek-R1",
           "Доски, фигуры — без ограничений",
           "Добавление медиа - до 100 МБ"
         ],
@@ -1087,7 +1085,6 @@
         "description": "GPT-4o mini",
         "features": [
           "Все возможности тарифа Базовый",
-          "Все премиум возможности доски за исключением ИИ",
           "Добавление медиа - до 100 ГБ",
           "Премиум поддержка"
         ],

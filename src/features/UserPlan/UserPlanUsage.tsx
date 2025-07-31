@@ -77,9 +77,7 @@ export function UserPlanUsage({
               <span className={clsx(styles.planHighlight, styles.basicPlan)}>
                 {t("userPlan.plans.basic.name")}
               </span>
-              {t("userPlan.currentPlanFree.part2", {
-                tokensBalance,
-              })}{" "}
+              {t("userPlan.currentPlanFree.part2")}{" "}
               {!history && (
                 <span
                   className={styles.limitsBtn}
@@ -106,7 +104,6 @@ export function UserPlanUsage({
                   </span>
                   {t("userPlan.currentPlanPending.part2", {
                     cancellationDate: formattedCancellationDate,
-                    tokensBalance,
                   })}
                 </>
               ) : (
@@ -122,7 +119,6 @@ export function UserPlanUsage({
                   </span>
                   {t("userPlan.currentPlanActive.part2", {
                     cancellationDate: formattedPreviousCancellationDate,
-                    tokensBalance,
                   })}
                 </>
               )}
@@ -141,13 +137,13 @@ export function UserPlanUsage({
             : !isFree && (
                 <span
                   className={styles.limitsBtn}
-                  onClick={handleOpenLimitsModal}
+                  onClick={handleOpenHistoryModal}
                 >
                   {status === "active"
                     ? t("userPlan.nextPayment", {
                         paymentDate: formattedCancellationDate,
                       })
-                    : t("userPlan.limits")}
+                    : t("userPlan.paymentHistoryHeading")}
                   <Icon width={24} height={24} iconName="ArrowRightSm" />
                 </span>
               )}
