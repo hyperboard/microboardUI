@@ -14,18 +14,38 @@ import comment from "./comment.svg";
 import { conf } from "microboard-temp";
 
 const { cursorsMap } = conf;
-cursorsMap["eraser"] = `url(${eraser}) -10 10, auto`;
-cursorsMap["pen"] = `url(${pencil}) 1 24, auto`;
-cursorsMap["comment"] = `url(${comment}) 1 24, auto`;
-cursorsMap["sticker-purple"] = `url(${stickerPurple}) 12 12, auto`;
-cursorsMap["sticker-pink"] = `url(${stickerPink}) 12 12, auto`;
-cursorsMap["sticker-sky-blue"] = `url(${stickerSkyBlue}) 12 12, auto`;
-cursorsMap["sticker-blue"] = `url(${stickerBlue}) 12 12, auto`;
-cursorsMap["sticker-green"] = `url(${stickerGreen}) 12 12, auto`;
-cursorsMap["sticker-light-green"] = `url(${stickerLightGreen}) 12 12, auto`;
-cursorsMap["sticker-orange"] = `url(${stickerOrange}) 12 12, auto`;
-cursorsMap["sticker-yellow"] = `url(${stickerYellow}) 12 12, auto`;
-cursorsMap["sticker-light-gray"] = `url(${stickerLightGray}) 12 12, auto`;
-cursorsMap["sticker-gray"] = `url(${stickerGray}) 12 12, auto`;
+
+function svgToBase64(svg) {
+  // node
+  if (typeof Buffer !== "undefined" && typeof Buffer.from === "function") {
+    return Buffer.from(svg).toString("base64");
+  }
+  // browser
+  return btoa(svg);
+}
+
+function svgToDataUri(svg) {
+  return `data:image/svg+xml;base64,${svgToBase64(svg)}`;
+}
+
+cursorsMap["eraser"] = `url(${svgToDataUri(eraser)}) -10 10, auto`;
+cursorsMap["pen"] = `url(${svgToDataUri(pencil)}) 1 24, auto`;
+cursorsMap["comment"] = `url(${svgToDataUri(comment)}) 1 24, auto`;
+cursorsMap["sticker-purple"] =
+  `url(${svgToDataUri(stickerPurple)}) 12 12, auto`;
+cursorsMap["sticker-pink"] = `url(${svgToDataUri(stickerPink)}) 12 12, auto`;
+cursorsMap["sticker-sky-blue"] =
+  `url(${svgToDataUri(stickerSkyBlue)}) 12 12, auto`;
+cursorsMap["sticker-blue"] = `url(${svgToDataUri(stickerBlue)}) 12 12, auto`;
+cursorsMap["sticker-green"] = `url(${svgToDataUri(stickerGreen)}) 12 12, auto`;
+cursorsMap["sticker-light-green"] =
+  `url(${svgToDataUri(stickerLightGreen)}) 12 12, auto`;
+cursorsMap["sticker-orange"] =
+  `url(${svgToDataUri(stickerOrange)}) 12 12, auto`;
+cursorsMap["sticker-yellow"] =
+  `url(${svgToDataUri(stickerYellow)}) 12 12, auto`;
+cursorsMap["sticker-light-gray"] =
+  `url(${svgToDataUri(stickerLightGray)}) 12 12, auto`;
+cursorsMap["sticker-gray"] = `url(${svgToDataUri(stickerGray)}) 12 12, auto`;
 
 export default {};
