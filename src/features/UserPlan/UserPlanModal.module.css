@@ -22,6 +22,8 @@
   display: flex;
   gap: 16px;
   align-items: stretch;
+  width: fit-content;
+  margin: auto;
 }
 
 .cardsScroll {
