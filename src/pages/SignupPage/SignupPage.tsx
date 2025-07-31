@@ -39,6 +39,15 @@ export const SignupPage = (): React.ReactElement => {
     }
 
     setShowNameInput(false);
+    // Reset disabled state when moving to email/password step
+    setIsDisabled(true);
+    setError("");
+    setEmailError("");
+
+    // Validate form after a short delay to ensure inputs are rendered
+    setTimeout(() => {
+      checkForm();
+    }, 100);
   };
 
   const checkEmail = (): boolean => {
@@ -52,43 +61,98 @@ export const SignupPage = (): React.ReactElement => {
   };
 
   const checkForm = (): boolean => {
-    if (formRef.current && formRef.current.email) {
-      formRef.current.email.value = formRef.current.email.value.trim();
-    }
-
     const form = formRef.current;
     if (!form) {
       setIsDisabled(true);
       return false;
     }
-    const email = form?.email?.value;
-    const password = form?.password?.value;
-    if (!email || !password) {
-      setError("");
-      setIsDisabled(true);
-      if (email && !checkEmail()) {
-        return false;
-      }
+
+    // Check if we're on the email/password step
+    if (showNameInput) {
       return false;
     }
 
+    const emailInput = form.email;
+    const passwordInput = form.password;
+
+    if (!emailInput || !passwordInput) {
+      setIsDisabled(true);
+      return false;
+    }
+
+    // Trim email value
+    if (emailInput.value) {
+      emailInput.value = emailInput.value.trim();
+    }
+
+    const email = emailInput.value;
+    const password = passwordInput.value;
+
+    // Clear previous errors
+    setError("");
+    setEmailError("");
+
+    // Check if both fields are filled
+    if (!email || !password) {
+      setIsDisabled(true);
+      return false;
+    }
+
+    // Validate email format
     if (!isEmail(email)) {
       setIsDisabled(true);
       setEmailError(t("auth.enterAValidEmailAddress"));
       return false;
     }
 
+    // Validate password length
     const MIN_PASSWORD_LENGTH = 8;
-    // const MAX_PASSWORD_LENGTH = 14;
     if (password.length < MIN_PASSWORD_LENGTH) {
       setIsDisabled(true);
-      // setError(t("auth.passwordLengthError"));
+      setError(t("auth.passwordAtLeast"));
       return false;
     }
-    setError("");
-    setEmailError("");
+
+    // If we reach here, both fields are valid
     setIsDisabled(false);
     return true;
+  };
+
+  const handleInputChange = (): void => {
+    // Immediate validation on every input change
+    checkForm();
+  };
+
+  const handleEmailInput = (): void => {
+    const form = formRef.current;
+    const email = form?.email?.value;
+
+    // Validate email format during typing
+    if (email && !isEmail(email)) {
+      setEmailError(t("auth.enterAValidEmailAddress"));
+    } else {
+      setEmailError("");
+    }
+
+    // Also check overall form validity
+    checkForm();
+  };
+
+  const handlePasswordInput = (): void => {
+    const form = formRef.current;
+    const password = form?.password?.value;
+
+    const MIN_PASSWORD_LENGTH = 8;
+
+    // Validate password during typing
+    if (password && password.length < MIN_PASSWORD_LENGTH) {
+      setError(t("auth.passwordAtLeast"));
+    } else {
+      setError("");
+    }
+
+    // Also check overall form validity
+    checkForm();
   };
 
   const checkName = (val: string): void => {
@@ -110,12 +174,19 @@ export const SignupPage = (): React.ReactElement => {
     event: React.FormEvent<HTMLFormElement>,
   ): Promise<void> => {
     event.preventDefault();
-    checkName(username);
-    if (!username || error) {
-      return;
-    } else {
-      setShowNameInput(false);
+
+    // If we're on the name input step, validate name and move to next step
+    if (showNameInput) {
+      checkName(username);
+      if (!username || error) {
+        return;
+      } else {
+        setShowNameInput(false);
+        return;
+      }
     }
+
+    // If we're on the email/password step, validate form and submit
     if (!checkForm()) {
       return;
     }
@@ -162,8 +233,6 @@ export const SignupPage = (): React.ReactElement => {
 
   const onNewsletterChange = (checked: boolean): void => setNewsletter(checked);
 
-  // const dbCheckForm = checkForm;
-
   return (
     <>
       <AuthForm
@@ -195,6 +264,8 @@ export const SignupPage = (): React.ReactElement => {
               type="text"
               placeholder={t("auth.emailPlaceholder")}
               onBlur={checkForm}
+              onInput={handleEmailInput}
+              onFocus={checkForm}
               hasError={!!emailError}
               errorText={emailError}
             />
@@ -206,7 +277,9 @@ export const SignupPage = (): React.ReactElement => {
               hasError={!!error}
               placeholder={t("auth.passwordPlaceholder")}
               helperText={t("auth.passwordAtLeast")}
-              onInput={checkForm}
+              onInput={handlePasswordInput}
+              onFocus={checkForm}
+              onBlur={checkForm}
             />
           </>
         )}

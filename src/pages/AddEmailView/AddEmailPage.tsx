@@ -58,6 +58,21 @@ export const AddEmailPage = (): React.ReactElement => {
     return true;
   };
 
+  const handleEmailInput = (): void => {
+    const form = formRef.current;
+    const email = form?.email?.value;
+
+    // Validate email format during typing
+    if (email && !isEmail(email)) {
+      setEmailError(t("auth.enterAValidEmailAddress"));
+    } else {
+      setEmailError("");
+    }
+
+    // Also check overall form validity
+    checkForm();
+  };
+
   const onSubmit = async (
     event: React.FormEvent<HTMLFormElement>,
   ): Promise<void> => {
@@ -102,7 +117,7 @@ export const AddEmailPage = (): React.ReactElement => {
           type="text"
           placeholder={t("auth.emailPlaceholder")}
           onBlur={checkForm}
-          onChange={checkForm}
+          onChange={handleEmailInput}
           hasError={!!emailError}
           errorText={emailError}
         />

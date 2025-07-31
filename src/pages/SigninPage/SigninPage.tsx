@@ -106,27 +106,52 @@ export const SigninPage: React.FC = (): React.ReactElement => {
     const email = form?.email.value;
     const password = form?.password.value;
 
+    // Clear previous errors
+    setErrorText("");
+
+    // Check if both fields are filled
     if (!email || !password) {
-      setErrorText("");
-      setEmailError("");
       setSubmitDisabled(true);
-      if (email && !checkEmail()) {
-        return;
-      }
       return;
     }
 
+    // Validate email format
     if (!isEmail(email)) {
       setSubmitDisabled(true);
       setEmailError(t("auth.enterAValidEmailAddress"));
       return;
     }
 
-    setEmailError("");
+    // If we reach here, both fields are valid
     setSubmitDisabled(false);
+    setEmailError("");
   };
 
-  const dbCheckForm = checkForm;
+  const handleInputChange = (): void => {
+    // Immediate validation on every input change
+    checkForm();
+  };
+
+  const handleEmailInput = (): void => {
+    const form = formRef.current;
+    const email = form?.email.value;
+
+    // Validate email format during typing
+    if (email && !isEmail(email)) {
+      setEmailError(t("auth.enterAValidEmailAddress"));
+    } else {
+      setEmailError("");
+    }
+
+    // Also check overall form validity
+    checkForm();
+  };
+
+  const handlePasswordInput = (): void => {
+    // For sign-in, we don't have specific password validation rules
+    // but we still need to check form validity
+    checkForm();
+  };
 
   return (
     <>
@@ -145,13 +170,17 @@ export const SigninPage: React.FC = (): React.ReactElement => {
           hasError={!!emailError.length}
           errorText={emailError}
           onBlur={checkEmail}
+          onInput={handleEmailInput}
+          onFocus={checkForm}
         />
         <Input
           id="password"
           prefixIcon={<LockIcon />}
           placeholder={t("auth.passwordPlaceholder")}
           password
-          onInput={dbCheckForm}
+          onInput={handlePasswordInput}
+          onFocus={checkForm}
+          onBlur={checkForm}
           errorText={errorText}
           hasError={!!errorText}
         />

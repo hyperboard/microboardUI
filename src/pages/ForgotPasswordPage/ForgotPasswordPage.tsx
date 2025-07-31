@@ -20,20 +20,49 @@ export const ForgotPasswordPage: React.FC = () => {
 
   const checkForm = (): boolean => {
     if (!formRef.current) {
+      setDisabled(true);
       return false;
     }
 
     const email = formRef.current.email.value;
 
-    if (!isEmail(email)) {
-      // setError(t("auth.enterAValidEmailAddress"));
+    // Clear previous errors
+    setError("");
+
+    if (!email) {
       setDisabled(true);
       return false;
     }
 
+    if (!isEmail(email)) {
+      setDisabled(true);
+      setError(t("auth.enterAValidEmailAddress"));
+      return false;
+    }
+
+    // If we reach here, the email is valid
     setDisabled(false);
-    setError("");
     return true;
+  };
+
+  const handleInputChange = (): void => {
+    // Immediate validation on every input change
+    checkForm();
+  };
+
+  const handleEmailInput = (): void => {
+    const form = formRef.current;
+    const email = form?.email?.value;
+
+    // Validate email format during typing
+    if (email && !isEmail(email)) {
+      setError(t("auth.enterAValidEmailAddress"));
+    } else {
+      setError("");
+    }
+
+    // Also check overall form validity
+    checkForm();
   };
 
   const checkFormWithError = (): void => {
@@ -45,8 +74,6 @@ export const ForgotPasswordPage: React.FC = () => {
       setError("");
     }
   };
-
-  const dbCheckForm = checkForm;
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
@@ -118,7 +145,8 @@ export const ForgotPasswordPage: React.FC = () => {
         hasError={!!error.length}
         errorText={error}
         onBlur={checkFormWithError}
-        onInput={dbCheckForm}
+        onInput={handleEmailInput}
+        onFocus={checkForm}
       />
       <div className={styles.btns}>
         <UiButton

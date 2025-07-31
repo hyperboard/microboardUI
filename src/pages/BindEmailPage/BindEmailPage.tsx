@@ -87,13 +87,19 @@ export const BindEmailPage: React.FC = () => {
   const checkForm = (checkAttempts = true): void => {
     if (checkAttempts && isAttemptsExceeded) {
       setError(t("auth.errorVerificationCodeAttempts"));
+      setSubmitDisabled(true);
       return;
     }
 
     if (!formRef.current) {
+      setSubmitDisabled(true);
       return;
     }
+
     const passcode: string = formRef.current.code.value;
+
+    // Clear previous errors
+    setError("");
 
     if (!passcode) {
       setSubmitDisabled(true);
@@ -105,7 +111,13 @@ export const BindEmailPage: React.FC = () => {
       return;
     }
 
+    // If we reach here, the code is valid
     setSubmitDisabled(false);
+  };
+
+  const handleInputChange = (): void => {
+    // Immediate validation on every input change
+    checkForm();
   };
 
   const onResend = async (): Promise<void> => {
@@ -223,7 +235,9 @@ export const BindEmailPage: React.FC = () => {
           label={codeTip ? t(codeTip) : ""}
           hasError={!!error.length}
           errorText={error}
-          onInput={() => checkForm()}
+          onInput={handleInputChange}
+          onFocus={handleInputChange}
+          onBlur={handleInputChange}
         />
         <div className={styles.btns}>
           <UiButton

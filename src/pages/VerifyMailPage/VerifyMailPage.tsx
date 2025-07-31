@@ -86,25 +86,50 @@ export const VerifyMailPage: React.FC = () => {
   const checkForm = (checkAttempts = true): void => {
     if (checkAttempts && isAttemptsExceeded) {
       setError(t("auth.errorVerificationCodeAttempts"));
+      setSubmitDisabled(true);
       return;
     }
 
     if (!formRef.current) {
+      setSubmitDisabled(true);
       return;
     }
+
     const passcode: string = formRef.current.code.value;
+
+    // Clear previous errors
+    setError("");
 
     if (!passcode) {
       setSubmitDisabled(true);
       return;
     }
 
-    if (passcode.length !== 6 || isNaN(parseInt(passcode))) {
+    // Check if it's exactly 6 digits
+    if (passcode.length !== 6) {
       setSubmitDisabled(true);
       return;
     }
 
+    // Check if it's a valid number
+    if (isNaN(parseInt(passcode))) {
+      setSubmitDisabled(true);
+      setError(t("auth.enterAValidVerificationCode"));
+      return;
+    }
+
+    // If we reach here, the code is valid (6 digits)
     setSubmitDisabled(false);
+  };
+
+  const handleInputChange = (): void => {
+    // Immediate validation on every input change
+    console.log("handleInputChange");
+    checkForm();
+  };
+
+  const handleBlur = (): void => {
+    checkForm();
   };
 
   const onResend = async (): Promise<void> => {
@@ -152,8 +177,6 @@ export const VerifyMailPage: React.FC = () => {
         setIsRetryLoading(false);
       });
   };
-
-  const dbCheckForm = checkForm;
 
   useEffect(() => {
     if (!searchParams.get("email")) {
@@ -251,7 +274,9 @@ export const VerifyMailPage: React.FC = () => {
         label={codeTip ? t(codeTip) : ""}
         hasError={!!error.length}
         errorText={error}
-        onInput={() => dbCheckForm()}
+        onInput={handleInputChange}
+        onFocus={handleInputChange}
+        onBlur={handleBlur}
       />
       <div className={styles.btns}>
         <UiButton

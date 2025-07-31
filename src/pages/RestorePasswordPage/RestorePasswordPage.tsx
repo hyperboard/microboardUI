@@ -33,11 +33,15 @@ export const RestorePasswordPage: React.FC = () => {
       setError("");
       return;
     }
+
     const newPassword = form?.newPassword?.value;
     const repeatedPassword = form?.repeatedPassword?.value;
+
+    // Clear previous errors
+    setError("");
+
     if (!newPassword || !repeatedPassword) {
       setIsDisabled(true);
-      setError("");
       return;
     }
 
@@ -45,7 +49,7 @@ export const RestorePasswordPage: React.FC = () => {
 
     if (repeatedPassword.length < MIN_PASSWORD_LENGTH) {
       setIsDisabled(true);
-      setError("");
+      setError(t("auth.passwordAtLeast"));
       return;
     }
 
@@ -54,8 +58,55 @@ export const RestorePasswordPage: React.FC = () => {
       setError(t("auth.passwordDoNotMatch"));
       return;
     }
-    setError("");
+
+    // If we reach here, both passwords are valid and match
     setIsDisabled(false);
+  };
+
+  const handleInputChange = (): void => {
+    // Immediate validation on every input change
+    checkForm();
+  };
+
+  const handleNewPasswordInput = (): void => {
+    const form = formRef.current;
+    const newPassword = form?.newPassword?.value;
+
+    const MIN_PASSWORD_LENGTH = 8;
+
+    // Validate new password during typing
+    if (newPassword && newPassword.length < MIN_PASSWORD_LENGTH) {
+      setNewPassError(t("auth.passwordAtLeast"));
+    } else {
+      setNewPassError("");
+    }
+
+    // Also check overall form validity
+    checkForm();
+  };
+
+  const handleRepeatedPasswordInput = (): void => {
+    const form = formRef.current;
+    const newPassword = form?.newPassword?.value;
+    const repeatedPassword = form?.repeatedPassword?.value;
+
+    const MIN_PASSWORD_LENGTH = 8;
+
+    // Validate repeated password during typing
+    if (repeatedPassword && repeatedPassword.length < MIN_PASSWORD_LENGTH) {
+      setError(t("auth.passwordAtLeast"));
+    } else if (
+      newPassword &&
+      repeatedPassword &&
+      newPassword !== repeatedPassword
+    ) {
+      setError(t("auth.passwordDoNotMatch"));
+    } else {
+      setError("");
+    }
+
+    // Also check overall form validity
+    checkForm();
   };
 
   const checkNewPassword = (): void => {
@@ -160,12 +211,16 @@ export const RestorePasswordPage: React.FC = () => {
           checkForm();
           checkNewPassword();
         }}
+        onInput={handleNewPasswordInput}
+        onFocus={checkNewPassword}
       />
       <Input
         password
         placeholder={t("auth.newPassword")}
         id="repeatedPassword"
-        onInput={checkForm}
+        onInput={handleRepeatedPasswordInput}
+        onFocus={checkForm}
+        onBlur={checkForm}
         errorText={error}
         helperText={t("auth.passwordAtLeast")}
         hasError={!!error.length}

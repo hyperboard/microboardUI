@@ -35,7 +35,7 @@ export function register(body: RegisterPayload) {
 }
 
 export function logout() {
-  return api.put<MessageResponse>("/auth/logout");
+  return api.get<MessageResponse>("/auth/logout");
 }
 
 export function verifyMail(body: VerifyMailPayload) {
