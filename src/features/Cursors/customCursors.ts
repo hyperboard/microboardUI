@@ -16,11 +16,6 @@ import { conf } from "microboard-temp";
 const { cursorsMap } = conf;
 
 function svgToBase64(svg) {
-  // node
-  if (typeof Buffer !== "undefined" && typeof Buffer.from === "function") {
-    return Buffer.from(svg).toString("base64");
-  }
-  // browser
   return btoa(svg);
 }
 

@@ -1,5 +1,4 @@
 import React from "react";
-import sprite from "./sprite.svg";
 
 export type ConnectorPointerType =
   | "None"
@@ -40,7 +39,7 @@ export function ConnectorPointerIcon({
       height={height}
       style={style}
     >
-      <use width={width} height={height} xlinkHref={`${sprite}#${iconName}`} />
+      <use width={width} height={height} xlinkHref={`#${iconName}`} />
     </svg>
   );
 }

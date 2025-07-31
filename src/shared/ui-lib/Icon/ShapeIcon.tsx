@@ -1,6 +1,5 @@
 import type { ShapeType } from "microboard-temp";
 import React from "react";
-import sprite from "./sprite.svg";
 
 type Props = {
   iconName: ShapeType;
@@ -23,7 +22,7 @@ export function ShapeIcon({
       height={height}
       style={style}
     >
-      <use width={width} height={height} xlinkHref={`${sprite}#${iconName}`} />
+      <use width={width} height={height} xlinkHref={`#${iconName}`} />
     </svg>
   );
 }
