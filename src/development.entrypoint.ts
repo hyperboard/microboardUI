@@ -1,7 +1,7 @@
 /* eslint-disable no-var */
 
 import { App, createApp, initInter } from "microboard-ui-temp";
-import "microboard-ui-temp/style";
+import "microboard-ui-temp/styles.css";
 import "features/Cursors";
 
 declare global {

@@ -2,7 +2,7 @@
 import { App, createApp, initInter } from "microboard-ui-temp";
 import { customCursors } from "microboard-ui-temp";
 console.log("prevent shake", customCursors);
-import "microboard-ui-temp/style";
+import "microboard-ui-temp/styles.css";
 // import "features/Cursors";
 // import "./index.css";
 
