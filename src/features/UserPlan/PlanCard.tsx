@@ -119,34 +119,38 @@ export function PlanCard({
           )}
         </div>
 
-        <div className={styles.price}>
-          {typeof price === "string" && !isTokenPrice ? (
-            price
-          ) : (
-            <p className={styles.priceWrapper}>
-              <span>$</span>
-              <span className={styles.priceValue}>
-                {isTokenPrice
-                  ? "8"
-                  : centToUsd(typeof price === "number" ? price : 0)}
-              </span>
-
-              <span className={clsx(styles.slash, styles.perMonth)}>/</span>
-              <div className={styles.priceWrapper2}>
-                {oldPrice && !isTokenPrice && (
-                  <span className={styles.oldPrice}>
-                    ${centToUsd(oldPrice)}
-                  </span>
-                )}
-                <span className={styles.perMonth}>
+        {state === "current" && variant === "plus" ? (
+          <div className={styles.price}>{t("userPlan.active")}</div>
+        ) : (
+          <div className={styles.price}>
+            {typeof price === "string" && !isTokenPrice ? (
+              price
+            ) : (
+              <p className={styles.priceWrapper}>
+                <span>$</span>
+                <span className={styles.priceValue}>
                   {isTokenPrice
-                    ? t("userPlan.perThousandTokens")
-                    : t("userPlan.perMonth")}
+                    ? "8"
+                    : centToUsd(typeof price === "number" ? price : 0)}
                 </span>
-              </div>
-            </p>
-          )}
-        </div>
+
+                <span className={clsx(styles.slash, styles.perMonth)}>/</span>
+                <div className={styles.priceWrapper2}>
+                  {oldPrice && !isTokenPrice && (
+                    <span className={styles.oldPrice}>
+                      ${centToUsd(oldPrice)}
+                    </span>
+                  )}
+                  <span className={styles.perMonth}>
+                    {isTokenPrice
+                      ? t("userPlan.perThousandTokens")
+                      : t("userPlan.perMonth")}
+                  </span>
+                </div>
+              </p>
+            )}
+          </div>
+        )}
         {state === "downgrade" && (
           <>
             {/* <UiSeparator /> */}
@@ -161,21 +165,21 @@ export function PlanCard({
         )}
         {description && <div className={styles.models}>{description}</div>}
       </div>
-      {/*{state !== "downgrade" && (*/}
-      {/*  <>*/}
-      {/*    /!* <UiSeparator /> *!/*/}
-      {/*    <Button*/}
-      {/*      onClick={getHandler()}*/}
-      {/*      className={styles.button}*/}
-      {/*      disabled={*/}
-      {/*        (state === "current" && !buttonText) || state === "pending"*/}
-      {/*      }*/}
-      {/*      pattern={state === "pending" ? "tertiary" : "primary"}*/}
-      {/*    >*/}
-      {/*      {getButtonLabel()}*/}
-      {/*    </Button>*/}
-      {/*  </>*/}
-      {/*)}*/}
+      {state !== "downgrade" && (
+        <>
+          {/* <UiSeparator /> */}
+          <Button
+            onClick={getHandler()}
+            className={styles.button}
+            disabled={
+              (state === "current" && !buttonText) || state === "pending"
+            }
+            pattern={state === "pending" ? "tertiary" : "primary"}
+          >
+            {getButtonLabel()}
+          </Button>
+        </>
+      )}
       {/*{additionalFeature && (*/}
       {/*  <div className={clsx(styles.feature, styles.tokenFeature)}>*/}
       {/*    <span>{additionalFeature}</span>*/}

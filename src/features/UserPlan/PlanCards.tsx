@@ -369,7 +369,7 @@ export function PlusPlanCard(): JSX.Element {
       features={t("userPlan.plans.plus.features", {
         returnObjects: true,
       })}
-      variant="basic"
+      variant="plus"
       price={
         isPlusPlan
           ? 6
@@ -379,7 +379,7 @@ export function PlusPlanCard(): JSX.Element {
       }
       additionalFeature={t("userPlan.plans.plus.tokensFeature")}
       additionalFeatureTooltip={t("userPlan.tokensTooltip")}
-      isTokenPrice={isPlusPlan}
+      // isTokenPrice={isPlusPlan}
       oldPrice={
         !isPlusPlan && account.getIsAnnualPayment()
           ? typeof plan?.price === "number"
@@ -391,7 +391,7 @@ export function PlusPlanCard(): JSX.Element {
       onSubscribe={handleOpenPaymentModal}
       onDowngrade={onDowngrade}
       isLoading={isLoading}
-      buttonText={isPlusPlan ? t("userPlan.buyTokens") : undefined}
+      // buttonText={isPlusPlan ? t("userPlan.buyTokens") : undefined}
     />
   );
 }

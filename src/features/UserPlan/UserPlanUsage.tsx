@@ -77,17 +77,16 @@ export function UserPlanUsage({
               <span className={clsx(styles.planHighlight, styles.basicPlan)}>
                 {t("userPlan.plans.basic.name")}
               </span>
-              {t("userPlan.currentPlanFree.part2")}{" "}
-              {!history && (
-                <span
-                  className={styles.limitsBtn}
-                  onClick={handleOpenLimitsModal}
-                >
-                  {" "}
-                  {t("userPlan.limits")}{" "}
-                  <Icon width={24} height={24} iconName="ArrowRightSm" />
-                </span>
-              )}
+              {t("userPlan.currentPlanFree.part2")} {/*{!history && (*/}
+              {/*  <span*/}
+              {/*    className={styles.limitsBtn}*/}
+              {/*    onClick={handleOpenLimitsModal}*/}
+              {/*  >*/}
+              {/*    {" "}*/}
+              {/*    {t("userPlan.limits")}{" "}*/}
+              {/*    <Icon width={24} height={24} iconName="ArrowRightSm" />*/}
+              {/*  </span>*/}
+              {/*)}*/}
             </>
           ) : (
             <>
