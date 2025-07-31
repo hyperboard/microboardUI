@@ -1000,6 +1000,7 @@
     "cancelPayment": "Отказаться",
     "unlimited": "Без ограничений",
     "free": "Бесплатно",
+    "active": "Активен",
     "perMonth": "в месяц",
     "perThousandTokens": "за 1000 токенов",
     "customPrice": "По запросу",

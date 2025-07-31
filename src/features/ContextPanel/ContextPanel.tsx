@@ -194,9 +194,13 @@ export function ContextPanel(): React.ReactElement | null {
             <UiSeparator vertical />
             <Delete />
             <UiSeparator vertical />
-            <AIModel />
-            <AIGeneration />
-            <UiSeparator vertical />
+            {window.enableAI && (
+              <>
+                <AIModel />
+                <AIGeneration />
+                <UiSeparator vertical />
+              </>
+            )}
             <RestOptionsMenu>
               <BringToFront />
               <SendToBack />
@@ -224,9 +228,13 @@ export function ContextPanel(): React.ReactElement | null {
             <UiSeparator vertical />
             <Delete />
             <UiSeparator vertical />
-            <AIModel />
-            <AIGeneration />
-            <UiSeparator vertical />
+            {window.enableAI && (
+              <>
+                <AIModel />
+                <AIGeneration />
+                <UiSeparator vertical />
+              </>
+            )}
             <RestOptionsMenu>
               <BringToFront />
               <SendToBack />
@@ -266,9 +274,13 @@ export function ContextPanel(): React.ReactElement | null {
             <UiSeparator vertical />
             <Delete />
             <UiSeparator vertical />
-            <AIModel />
-            <AIGeneration />
-            <UiSeparator vertical />
+            {window.enableAI && (
+              <>
+                <AIModel />
+                <AIGeneration />
+                <UiSeparator vertical />
+              </>
+            )}
             <RestOptionsMenu>
               <BringToFront />
               <SendToBack />
@@ -410,9 +422,13 @@ export function ContextPanel(): React.ReactElement | null {
             <UiSeparator vertical />
             <Delete />
             <UiSeparator vertical />
-            <AIModel />
-            <AIGeneration />
-            <UiSeparator vertical />
+            {window.enableAI && (
+              <>
+                <AIModel />
+                <AIGeneration />
+                <UiSeparator vertical />
+              </>
+            )}
             <RestOptionsMenu>
               <BringToFront />
               <SendToBack />
@@ -530,7 +546,7 @@ export function ContextPanel(): React.ReactElement | null {
             <Lock rounded="left" />
             <UiSeparator vertical />
             <Delete />
-            {ideaFromSelection && <AIGeneration />}
+            {window.enableAI && ideaFromSelection && <AIGeneration />}
             <RestOptionsMenu rounded="full">
               <BringToFront />
               <SendToBack />

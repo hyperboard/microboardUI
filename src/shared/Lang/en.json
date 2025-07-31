@@ -1001,6 +1001,7 @@
     "cancelPayment": "Cancel upcoming payment",
     "unlimited": "Unlimited",
     "free": "Free",
+    "active": "Active",
     "perMonth": "per month",
     "perThousandTokens": "per 1000 tokens",
     "customPrice": "Custom Pricing",
