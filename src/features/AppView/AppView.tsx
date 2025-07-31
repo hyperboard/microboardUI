@@ -73,6 +73,7 @@ import { AudioPlayer } from "features/AudioPlayer/AudioPlayer";
 import { ErrorBoundary } from "features/ErrorBoundary/ErrorBoundary";
 import { CreateCardsModal } from "../GameItems/CreateCardsModal";
 import { CreateDiceModal } from "../GameItems/CreateDiceModal";
+import { Sprite } from "shared/ui-lib/Icon/Sprite";
 
 export function AppView(): React.JSX.Element {
   const { app, board } = useAppContext();
@@ -279,6 +280,7 @@ export function AppView(): React.JSX.Element {
         </UiModalBackground>
         <LocalFileSaveProgress />
       </div>
+      <Sprite />
     </ErrorBoundary>
   );
 }
