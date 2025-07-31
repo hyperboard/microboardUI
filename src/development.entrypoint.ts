@@ -11,6 +11,7 @@ declare global {
 		enableTemplateCreating: boolean;
 		enableVideos: boolean;
 		enableGames: boolean;
+		enableAI: boolean;
 		enableDiagrams: boolean;
 		showOpenFilePicker: () => Promise<FileSystemFileHandle[]>; // should be there
 	}
@@ -22,6 +23,7 @@ window.enableTemplateCreating = false;
 window.enableDiagrams = true;
 window.enableVideos = true;
 window.enableGames = true;
+window.enableAI = false;
 
 async function initializeApp() {
 	await initInter();

@@ -13,6 +13,7 @@ declare global {
 		enableTemplateCreating: boolean;
 		enableVideos: boolean;
 		enableGames: boolean;
+		enableAI: boolean;
 		enableLogger: () => void;
 		disableLogger: () => void;
 	}
@@ -24,6 +25,7 @@ window.enableTemplateCreating = false;
 window.enableDiagrams = false;
 window.enableVideos = true;
 window.enableGames = false;
+window.enableAI = false;
 
 async function initializeApp() {
 	await initInter();
