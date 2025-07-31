@@ -136,6 +136,80 @@ export function ChangePasswordModal(): React.JSX.Element {
     }
   };
 
+  const handleCurrentPasswordInput = (): void => {
+    const form = formRef.current;
+    if (!form) return;
+
+    const currentPassword = form.currentPassword.value;
+    const MIN_PASSWORD_LENGTH = 8;
+
+    // Validate current password during typing
+    if (
+      currentPasswordTouched &&
+      currentPassword &&
+      currentPassword.length < MIN_PASSWORD_LENGTH
+    ) {
+      setCurrentPasswordError(t("profile.passwordConstraint"));
+    } else {
+      setCurrentPasswordError("");
+    }
+
+    // Also check overall form validity
+    checkForm();
+  };
+
+  const handleNewPasswordInput = (): void => {
+    const form = formRef.current;
+    if (!form) return;
+
+    const currentPassword = form.currentPassword.value;
+    const newPassword = form.newPassword.value;
+    const MIN_PASSWORD_LENGTH = 8;
+
+    // Validate new password during typing
+    if (
+      newPasswordTouched &&
+      newPassword &&
+      newPassword.length < MIN_PASSWORD_LENGTH
+    ) {
+      setNewPasswordError(t("profile.passwordConstraint"));
+    } else if (
+      newPasswordTouched &&
+      newPassword &&
+      newPassword === currentPassword
+    ) {
+      setNewPasswordError(t("auth.passwordMustBeDifferent"));
+    } else {
+      setNewPasswordError("");
+    }
+
+    // Also check overall form validity
+    checkForm();
+  };
+
+  const handleConfirmPasswordInput = (): void => {
+    const form = formRef.current;
+    if (!form) return;
+
+    const newPassword = form.newPassword.value;
+    const confirmPassword = form.confirmPassword.value;
+
+    // Validate confirm password during typing
+    if (
+      confirmPasswordTouched &&
+      newPassword &&
+      confirmPassword &&
+      newPassword !== confirmPassword
+    ) {
+      setConfirmPasswordError(t("auth.passwordDoNotMatch"));
+    } else {
+      setConfirmPasswordError("");
+    }
+
+    // Also check overall form validity
+    checkForm();
+  };
+
   if (isPasswordChanged) {
     return (
       <UiModal modalId={CHANGE_PASSWORD_MODAL}>
@@ -173,8 +247,9 @@ export function ChangePasswordModal(): React.JSX.Element {
               }}
               hasError={!!currentPasswordError}
               placeholder={t("profile.currentPassword")}
-              onInput={checkForm}
+              onInput={handleCurrentPasswordInput}
               onBlur={checkForm}
+              onFocus={checkForm}
             />
             <Input
               prefixIcon={<LockIcon />}
@@ -182,10 +257,11 @@ export function ChangePasswordModal(): React.JSX.Element {
               password
               onFocus={() => {
                 setNewPasswordTouched(true);
+                checkForm();
               }}
               hasError={!!newPasswordError}
               placeholder={t("profile.newPassword")}
-              onInput={checkForm}
+              onInput={handleNewPasswordInput}
               onBlur={checkForm}
             />
             <Input
@@ -194,9 +270,10 @@ export function ChangePasswordModal(): React.JSX.Element {
               password
               onFocus={() => {
                 setConfirmPasswordTouched(true);
+                checkForm();
               }}
               placeholder={t("profile.repeatPassword")}
-              onInput={checkForm}
+              onInput={handleConfirmPasswordInput}
               onBlur={checkForm}
               hasError={!!confirmPasswordError}
               helperText={

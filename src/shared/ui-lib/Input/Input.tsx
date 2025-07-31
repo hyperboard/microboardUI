@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import { EyeClose } from "./EyeClose";
 import { EyeOpen } from "./EyeOpen";
-import "./Input.css";
+import styles from "./Input.module.css";
 
 interface BaseProps {
   id: string;
@@ -63,6 +63,8 @@ export const Input: React.FC<Props> = (props) => {
     shouldSelect,
     disabled,
     onInput,
+    onFocus,
+    onBlur,
     onPaste,
     onCopy,
     onKeyDown,
@@ -120,27 +122,27 @@ export const Input: React.FC<Props> = (props) => {
     };
 
   return (
-    <div className="InputWrapper">
+    <div className={styles.InputWrapper}>
       {label && (
         <label
           htmlFor={id}
-          className={clsx("InputLabel", disabled && "Disabled")}
+          className={clsx(styles.inputLabel, disabled && styles.disabled)}
         >
           {label}
         </label>
       )}
-      <div className="InputTabWrapper">
-        {tab && <span className="InputTab">{tab}</span>}
+      <div className={styles.inputTabWrapper}>
+        {tab && <span className={styles.inputTab}>{tab}</span>}
         <div
           className={clsx(
-            "InputContainer",
-            hasError && "InputError",
-            isSuccess && "InputSuccess",
+            styles.inputContainer,
+            hasError && styles.inputError,
+            isSuccess && styles.inputSuccess,
             inputContainerClassName,
           )}
         >
           {prefixIcon && (
-            <span style={{ color: iconColor }} className="InputPrefix">
+            <span style={{ color: iconColor }} className={styles.inputPrefix}>
               {prefixIcon}
             </span>
           )}
@@ -150,10 +152,13 @@ export const Input: React.FC<Props> = (props) => {
               id={id}
               disabled={disabled}
               rows={1}
+              className={styles.inputTextarea}
               onInput={(ev) => {
                 handleInput();
                 props.onInput?.(ev);
               }}
+              onFocus={onFocus as React.FocusEventHandler<HTMLTextAreaElement>}
+              onBlur={onBlur as React.FocusEventHandler<HTMLTextAreaElement>}
               onPaste={(ev) => ev.stopPropagation()}
               onCopy={(ev) => ev.stopPropagation()}
               {...(restProps as Omit<TextareaProps, "id">)}
@@ -163,8 +168,11 @@ export const Input: React.FC<Props> = (props) => {
               ref={inputRef}
               id={id}
               type={inputType}
-              className="Input"
+              className={styles.input}
               disabled={disabled}
+              onInput={onInput as React.FormEventHandler<HTMLInputElement>}
+              onFocus={onFocus as React.FocusEventHandler<HTMLInputElement>}
+              onBlur={onBlur as React.FocusEventHandler<HTMLInputElement>}
               onKeyDown={stopPropagation(onKeyDown)}
               onKeyUp={stopPropagation(onKeyUp)}
               onKeyPress={stopPropagation(onKeyPress)}
@@ -172,30 +180,32 @@ export const Input: React.FC<Props> = (props) => {
             />
           )}
           {password && inputType === "text" && (
-            <div className="Eye">
+            <div className={styles.eye}>
               <EyeClose onClick={togglePassword} />
             </div>
           )}
           {password && inputType === "password" && (
-            <div className="Eye">
+            <div className={styles.eye}>
               <EyeOpen onClick={togglePassword} />
             </div>
           )}
           {postfixButton && (
-            <span className="InputPostfix">{postfixButton}</span>
+            <span className={styles.inputPostfix}>{postfixButton}</span>
           )}
-          {keyhint && <div className="InputKeyHint">{keyhint}</div>}
+          {keyhint && <div className={styles.inputKeyHint}>{keyhint}</div>}
         </div>
-        <span className="InputPostTab">{props.postTab}</span>
+        <span className={styles.inputPostTab}>{props.postTab}</span>
       </div>
       {(errorText || helperText || successText) && (
-        <div className="Text">
-          {errorText && <span className="InputErrorText">{errorText}</span>}
+        <div className={styles.text}>
+          {errorText && (
+            <span className={styles.inputErrorText}>{errorText}</span>
+          )}
           {helperText && !errorText && (
-            <span className="InputHelperText">{helperText}</span>
+            <span className={styles.inputHelperText}>{helperText}</span>
           )}
           {successText && (
-            <span className="InputSuccessText">{successText}</span>
+            <span className={styles.inputSuccessText}>{successText}</span>
           )}
         </div>
       )}

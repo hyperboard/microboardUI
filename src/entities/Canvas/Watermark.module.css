@@ -1,7 +1,7 @@
 .watermark {
   position: absolute;
-  bottom: 20px;
-  left: 20px;
+  bottom: calc(var(--absolute-position-panel-padding) * 2 + 48px);
+  right: var(--absolute-position-panel-padding);
   pointer-events: auto;
   z-index: 1000;
   transition: transform 0.2s ease-in-out;

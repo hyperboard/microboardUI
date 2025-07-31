@@ -1,6 +1,5 @@
 import { App } from "App";
 import { UnauthGuard } from "entities/account";
-import { AppContext } from "features/AppContext";
 import { LocalAppView } from "features/AppView";
 import { LocalSidePanelContextProvider } from "features/SidePanel/LocalSidePanelContext";
 import { AddEmailPage } from "pages/AddEmailView";
@@ -14,7 +13,6 @@ import { RestorePasswordPage } from "pages/RestorePasswordPage";
 import { SelectBoardPage } from "pages/SelectBoardPage";
 import { SigninPage } from "pages/SigninPage";
 import { SignupPage } from "pages/SignupPage/SignupPage";
-import { TestPage } from "pages/TestPage";
 import { VerifyMailPage } from "pages/VerifyMailPage";
 import { WelcomePage } from "pages/WelcomePage/WelcomePage";
 import { WheelEventLoggerPage } from "pages/WheelLogger/WheelLogger";
