@@ -1,4 +1,5 @@
 import { api } from "../base/base";
+import { MessageResponse } from "../types";
 import {
   AUTHOR_KEY_HEADER,
   type AccessKey,
@@ -140,4 +141,28 @@ export function manageAccess(
       boardId,
     },
   });
+}
+
+export async function publishSnapshot(
+  HTMLSnapshot: string,
+  snapshotUId: string,
+  boardUId: string,
+): Promise<
+  MessageResponse & {
+    snapshotURI: string;
+  }
+> {
+  const { data } = await api.post<MessageResponse & { snapshotURI: string }>(
+    "/media/snapshot",
+    {
+      snapshot: HTMLSnapshot,
+      snapshotUId,
+      boardUId,
+    },
+  );
+  if (!data) {
+    throw new Error();
+  }
+
+  return data;
 }
