@@ -137,7 +137,10 @@ async function handleShare(this: GlobalEventHandlers, ev: MouseEvent) {
   );
   api.updateURL("https://dev-app.microboard.io/api/v1");
 
-  const res = await boardsApi.createBoard(name, true);
+  const res = await boardsApi.createBoard({
+    title: name,
+    isPublic: true,
+  });
   await boardsApi.publishSnapshot(html, res.data.id, res.data.id);
   window.location.href = `https://dev-app.microboard.io/boards/${res.data.id}`;
 }
