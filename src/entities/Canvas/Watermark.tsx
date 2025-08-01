@@ -4,58 +4,30 @@ import styles from "./Watermark.module.css";
 export function Watermark() {
   return (
     <a
-      href="https://github.com/hyperboard/microboard"
+      href="https://microboard.io"
       target="_blank"
       rel="noopener noreferrer"
       className={styles.watermark}
     >
       <svg
-        width="200"
-        height="50"
-        viewBox="0 0 200 50"
+        width="140"
+        height="38"
+        viewBox="0 0 140 38"
         className={styles.watermarkSvg}
       >
-        <defs>
-          <linearGradient
-            id="watermarkGradient"
-            x1="0%"
-            y1="0%"
-            x2="100%"
-            y2="0%"
-          >
-            <stop offset="0%" style={{ stopColor: "#999", stopOpacity: 0.5 }} />
-            <stop
-              offset="100%"
-              style={{ stopColor: "#666", stopOpacity: 0.7 }}
-            />
-          </linearGradient>
-        </defs>
-        <rect
-          x="5"
-          y="5"
-          width="190"
-          height="40"
-          rx="8"
-          fill="none"
-          stroke="url(#watermarkGradient)"
-          strokeWidth="1"
-          className={styles.watermarkBorder}
-        />
         <text
-          x="100"
-          y="22"
+          x="70"
+          y="16"
           textAnchor="middle"
           className={styles.watermarkText}
-          fill="url(#watermarkGradient)"
         >
-          Made with
+          Powered by
         </text>
         <text
-          x="100"
-          y="38"
+          x="70"
+          y="30"
           textAnchor="middle"
           className={styles.watermarkText}
-          fill="url(#watermarkGradient)"
         >
           Microboard
         </text>
