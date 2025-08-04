@@ -74,9 +74,12 @@ import { ErrorBoundary } from "features/ErrorBoundary/ErrorBoundary";
 import { CreateCardsModal } from "../GameItems/CreateCardsModal";
 import { CreateDiceModal } from "../GameItems/CreateDiceModal";
 import { Sprite } from "shared/ui-lib/Icon/Sprite";
+import { notify } from "shared/ui-lib/Toast";
+import { useTranslation } from "react-i18next";
 
 export function AppView(): React.JSX.Element {
   const { app, board } = useAppContext();
+  const { t } = useTranslation();
   const { setQuotedText, tryToSendGenerationRequest } = useAIContext();
   const { setHyperLinkData, hyperLinkData } = useHyperLinkContext();
   const location = useLocation();
@@ -107,6 +110,13 @@ export function AppView(): React.JSX.Element {
   };
 
   useEffect(() => {
+    notify({
+      header: t("notifications.offlineHeader"),
+      body: t("notifications.offlineBody"),
+      variant: "info",
+      duration: Infinity,
+    });
+
     const handleCtrlWheel = (ev: WheelEvent): void => {
       if (ev.ctrlKey) {
         ev.preventDefault();

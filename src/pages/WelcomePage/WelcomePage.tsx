@@ -47,8 +47,6 @@ export const pasteWelcomeBoardData = (board: Board, lang: string) => {
 export function WelcomePage(): React.ReactElement {
   const { app } = useAppContext();
   const navigate = useNavigate();
-  const { i18n, t } = useTranslation();
-  const boardsList = useBoardsList();
 
   const createPublicBoard = async (app: App): Promise<string> => {
     const lastBoardId = app.getLastBoardId();
@@ -57,7 +55,7 @@ export function WelcomePage(): React.ReactElement {
       return lastBoardId;
     }
 
-    return "welcome";
+    return "welcome-local";
   };
 
   React.useEffect(() => {

@@ -773,7 +773,9 @@
     "connectionLostHeader": "You are offline. Reconnecting...",
     "connectionReestablished": "Connection restored.",
     "restoringConnectionHeader": "Restoring connection.",
-    "restoringConnectionBody": "Do not refresh the page or close the tab to avoid losing your progress"
+    "restoringConnectionBody": "Do not refresh the page or close the tab to avoid losing your progress",
+    "offlineHeader": "Board opened in offline mode.",
+    "offlineBody": "Changes will not be saved."
   },
   "landing": {
     "menu": {
