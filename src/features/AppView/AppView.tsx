@@ -44,7 +44,7 @@ import { LimitsModal } from "features/UserPlan/LimitsModal";
 import { SelectPaymentModal } from "features/UserPlan/SelectPaymentModal";
 import { ViewModeGuard } from "features/ViewModeGuard";
 import { ZoomPanel } from "features/ZoomPanel";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   useLocation,
   useNavigate,
@@ -88,6 +88,7 @@ export function AppView(): React.JSX.Element {
   const forceUpdate = useForceUpdate();
   const animationId = useRef<number | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const [offlineNotificationSent, setOfflineNotificationSent] = useState(false);
   const [searchParams] = useSearchParams();
   const authCode = searchParams.get("code");
   const teamIdSearch = searchParams.get("team_id");
@@ -110,12 +111,15 @@ export function AppView(): React.JSX.Element {
   };
 
   useEffect(() => {
-    notify({
-      header: t("notifications.offlineHeader"),
-      body: t("notifications.offlineBody"),
-      variant: "info",
-      duration: Infinity,
-    });
+    if (!offlineNotificationSent) {
+      notify({
+        header: t("notifications.offlineHeader"),
+        body: t("notifications.offlineBody"),
+        variant: "info",
+        duration: Infinity,
+      });
+      setOfflineNotificationSent(true);
+    }
 
     const handleCtrlWheel = (ev: WheelEvent): void => {
       if (ev.ctrlKey) {
