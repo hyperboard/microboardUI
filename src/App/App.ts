@@ -174,6 +174,7 @@ export function createApp(isHistory = true): App {
       subscriptions.setBoard(welcomeBoard);
       boardSubject.publish(welcomeBoard);
       board = welcomeBoard;
+      await connectBoard(board);
       return;
     }
     const appBoard = app.getBoard();
