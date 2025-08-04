@@ -27,13 +27,17 @@ export const pasteWelcomeBoardData = (board: Board, lang: string) => {
     }),
   );
 
-  board.paste(
-    filteredBoardData as unknown as {
-      [key: string]: Item;
-    },
-    false,
-    false,
-  );
+  try {
+    board.paste(
+      filteredBoardData as unknown as {
+        [key: string]: Item;
+      },
+      false,
+      false,
+    );
+  } catch (e) {
+    console.error(e);
+  }
 
   const mbr = board.items.getMbr();
   board.selection.removeAll();
