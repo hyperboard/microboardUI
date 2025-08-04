@@ -29,6 +29,7 @@ import { getLocalRender, getRender } from "./router";
 import { SessionStorage } from "./SessionStorage";
 import { Storage } from "./Storage";
 import { TestRecorder, createTester } from "./testRecorder";
+import { pasteWelcomeBoardData } from "pages/WelcomePage/WelcomePage";
 
 export const LAST_BOARD_KEY = "lastSeenBoard";
 export const LAST_BOARD_KEY_QS = LAST_BOARD_KEY.concat("Wqs");
@@ -167,6 +168,14 @@ export function createApp(isHistory = true): App {
   api.interceptors.addRequestInterceptor(authInterceptor);
 
   async function openBoard(id: string, accessKey?: string): Promise<void> {
+    if (id === "welcome") {
+      const welcomeBoard = new Board("welcome");
+      pasteWelcomeBoardData(board, conf.i18n.language);
+      subscriptions.setBoard(welcomeBoard);
+      boardSubject.publish(welcomeBoard);
+      board = welcomeBoard;
+      return;
+    }
     const appBoard = app.getBoard();
     if (id === "boards" || appBoard?.getBoardId() === id) {
       return;
