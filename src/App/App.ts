@@ -492,7 +492,7 @@ export function createApp(isHistory = true): App {
       resetOpenedBoards();
       localStorage.removeItem(LAST_BOARD_KEY);
 
-      router.navigate(`/${window.location.search}`);
+      router.navigate(`/boards/blank${window.location.search}`);
       await boardsList.loadBoards();
       // await disconnect(wagmiConfig);
       account.subject.publish(account.info);
