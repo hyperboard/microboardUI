@@ -336,6 +336,9 @@ export function createConnection(
   }
 
   async function subscribe(board: Board): Promise<void> {
+    if (board.getBoardId() === "welcome") {
+      return;
+    }
     await invalidateToken();
     const boardId = board.getBoardId();
     const subject = subscriptions.get(boardId);

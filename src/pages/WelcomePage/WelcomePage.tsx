@@ -53,14 +53,7 @@ export function WelcomePage(): React.ReactElement {
       return lastBoardId;
     }
 
-    const boardId = await boardsList.createBoard(
-      t("board.welcomeBoardTitle"),
-      true,
-    );
-    await app.openBoard(boardId);
-    const board = app.getBoard();
-    pasteWelcomeBoardData(board, i18n.language);
-    return boardId;
+    return "welcome";
   };
 
   React.useEffect(() => {
@@ -69,7 +62,6 @@ export function WelcomePage(): React.ReactElement {
         navigate(`/boards/${boardId}`);
       })
       .catch(console.error);
-    // TODO notify user
   }, [app]);
 
   return null;
