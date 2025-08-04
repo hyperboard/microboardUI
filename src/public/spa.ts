@@ -1,12 +1,7 @@
-/* eslint-disable no-var */
-import { api, frontConf } from "microboard-ui-temp";
-frontConf.wsURL = "wss://dev-app.microboard.io/ws";
-api.updateURL("https://dev-app.microboard.io/api/v1");
+import { createApp, initInter, customCursors, sprite } from "../index";
+console.log("prevent shake", customCursors, sprite);
 
-import { App, createApp, initInter, customCursors } from "microboard-ui-temp";
-console.log("cursors", { ...customCursors });
-
-import "microboard-ui-temp/style";
+import "./index.css";
 
 window.showDebug = false;
 window.enableTemplateCreating = false;

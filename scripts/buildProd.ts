@@ -4,10 +4,11 @@ import path from "path";
 import { cdnifyLinksPlugin } from "../bunUtils/cdnifyLinksPlugin";
 
 const outdir = "dist";
+const entrypoints = ["src/board.html", "src/index.ts", "src/example.html"];
 
-async function cleanup() {
+async function cleanUpHTML(htmlEntrypoint: string) {
   // resulting html has empty chunk-xxxxxxxx.js file, removes tag and file
-  const htmlPath = path.join(outdir, "board.html");
+  const htmlPath = path.join(outdir, htmlEntrypoint);
   const htmlFile = Bun.file(htmlPath);
 
   let html = await htmlFile.text();
@@ -38,13 +39,11 @@ async function cleanup() {
 
 async function main() {
   const result = await build({
-    entrypoints: ["src/board.html", "src/index.ts"],
+    entrypoints,
     outdir,
     loader: {
       ".css": "css",
-      // ".svg": "file",
       ".svg": "text",
-      // ".html": "file",
     },
 
     publicPath: "/",
@@ -66,7 +65,10 @@ async function main() {
 
   if (!result.success) process.exit(1);
 
-  cleanup();
+  entrypoints
+    .filter((ep) => ep.endsWith(".html"))
+    .map((en) => en.split("/")[1])
+    .forEach((ep) => cleanUpHTML(ep));
 }
 
 main().catch(console.error);
