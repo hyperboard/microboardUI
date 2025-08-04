@@ -12,19 +12,3 @@ export function useAppSubscription(subscription: Subscription): void {
     };
   }, []);
 }
-
-export function useTools() {
-  const { board } = useAppContext();
-  const [tools, setTools] = React.useState(board.tools);
-
-  useAppSubscription({
-    subjects: ["tools"],
-    observer: () => {
-      setTools(board.tools);
-    },
-  });
-
-  useEffect(() => {}, [tools]);
-
-  return tools;
-}
