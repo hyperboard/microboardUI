@@ -31,13 +31,12 @@ export function ToolsPanel(): React.JSX.Element {
   const toggleMenu = (menu: string): void =>
     setOpenedMenu((prev) => (prev === menu ? "None" : menu));
 
-  useTools();
-  // const { app } = useAppContext();
-  // const forceUpdate = useForceUpdate();
-  // useAppSubscription({
-  //   subjects: ["tools"],
-  //   observer: forceUpdate,
-  // });
+  const { app } = useAppContext();
+  const forceUpdate = useForceUpdate();
+  useAppSubscription({
+    subjects: ["tools"],
+    observer: forceUpdate,
+  });
 
   useEffect(() => {}, [window.showDebug]);
 
