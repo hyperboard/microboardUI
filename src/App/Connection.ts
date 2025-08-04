@@ -742,7 +742,11 @@ export function createWsClient(
 
   function keepAlivePing(): void {
     const board = getCurrentBoard();
-    if (isConnected() && !board?.getBoardId().includes("local")) {
+    if (
+      isConnected() &&
+      !board?.getBoardId().includes("local") &&
+      !board?.getBoardId().includes("welcome")
+    ) {
       send(pingMsg);
       if (board) {
         board.presence.ping();
