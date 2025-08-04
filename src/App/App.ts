@@ -1,12 +1,18 @@
 import {
-  conf,
-  Board,
-  BoardSnapshot,
-  createEvents,
-  Operation,
-} from "microboard-temp";
+  beforeMediaRemove,
+  beforeMediaUpload,
+  catchMediaErrorResponse,
+} from "App/MediaHelpers";
 import { Account } from "entities/account";
 import { getAuthInterceptor } from "entities/account/AuthInterceptor";
+import { getConfiguredI18n } from "initI18N";
+import {
+  Board,
+  BoardSnapshot,
+  Operation,
+  conf,
+  createEvents,
+} from "microboard-temp";
 import { api, foldersApi } from "shared/api";
 import "shared/Lang";
 import { MemoryLogger } from "shared/Logger";
@@ -23,13 +29,6 @@ import { getLocalRender, getRender } from "./router";
 import { SessionStorage } from "./SessionStorage";
 import { Storage } from "./Storage";
 import { TestRecorder, createTester } from "./testRecorder";
-import {
-  beforeMediaRemove,
-  beforeMediaUpload,
-  catchMediaErrorResponse,
-} from "App/MediaHelpers";
-import i18n from "i18next";
-import { getConfiguredI18n } from "initI18N";
 
 export const LAST_BOARD_KEY = "lastSeenBoard";
 export const LAST_BOARD_KEY_QS = LAST_BOARD_KEY.concat("Wqs");
@@ -93,6 +92,14 @@ export function createApp(isHistory = true): App {
   const settings = { controlMode: getControlModeFromStorage() };
 
   const test = createTester(getBoard);
+
+  window.addEventListener("unhandledrejection", (event) => {
+    console.error("Unhandled rejection:", event.reason);
+  });
+
+  window.addEventListener("error", (event) => {
+    console.error("Error:", event.error);
+  });
 
   conf.hooks.beforeMediaRemove = beforeMediaRemove;
   conf.hooks.beforeMediaUpload = beforeMediaUpload;
@@ -479,6 +486,7 @@ export function createApp(isHistory = true): App {
       boardsList.subject.publish();
     });
     account.setOnLogout(async () => {
+      console.log("onLogout");
       storage.hardClean();
       connection.publishLogout();
       resetOpenedBoards();

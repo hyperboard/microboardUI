@@ -1,8 +1,8 @@
 import type { Account } from "entities/account";
+import { conf } from "microboard-temp";
 import { boardsApi, foldersApi } from "shared/api";
 import { Subject } from "shared/Subject";
 import { Storage } from "./Storage";
-import { conf } from "microboard-temp";
 
 type FolderItem = {
   id: string | number;
@@ -690,12 +690,15 @@ export class BoardsList {
   }
 
   private async updateList(): Promise<void> {
-    this.isLoading = true;
-    this.subject.publish();
-    await this.account.refreshTokens();
-    await this.loadBoards();
-    this.isLoading = false;
-    this.subject.publish();
+    try {
+      this.isLoading = true;
+      this.subject.publish();
+      await this.account.refreshTokens();
+      await this.loadBoards();
+    } finally {
+      this.isLoading = false;
+      this.subject.publish();
+    }
   }
 
   private async action<T, K>(
