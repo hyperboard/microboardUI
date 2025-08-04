@@ -1,5 +1,5 @@
 import { Subscription } from "App/getSubscriptions";
-import { useLayoutEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 import { useAppContext } from "features/AppContext";
 
 export function useAppSubscription(subscription: Subscription): void {
@@ -11,4 +11,20 @@ export function useAppSubscription(subscription: Subscription): void {
       app.subscriptions.remove(subscription);
     };
   }, []);
+}
+
+export function useTools() {
+  const { board } = useAppContext();
+  const [tools, setTools] = React.useState(board.tools);
+
+  useAppSubscription({
+    subjects: ["tools"],
+    observer: () => {
+      setTools(board.tools);
+    },
+  });
+
+  useEffect(() => {}, [tools]);
+
+  return tools;
 }

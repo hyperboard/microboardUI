@@ -1,4 +1,4 @@
-import { useAppSubscription } from "App/useBoardSubscription";
+import { useAppSubscription, useTools } from "App/useBoardSubscription";
 import { useAppContext } from "features/AppContext";
 import AIChatPanel from "features/GenerateChart/AIChatPanel";
 import React, { useEffect, useState } from "react";
@@ -31,12 +31,13 @@ export function ToolsPanel(): React.JSX.Element {
   const toggleMenu = (menu: string): void =>
     setOpenedMenu((prev) => (prev === menu ? "None" : menu));
 
-  const { app } = useAppContext();
-  const forceUpdate = useForceUpdate();
-  useAppSubscription({
-    subjects: ["tools"],
-    observer: forceUpdate,
-  });
+  useTools();
+  // const { app } = useAppContext();
+  // const forceUpdate = useForceUpdate();
+  // useAppSubscription({
+  //   subjects: ["tools"],
+  //   observer: forceUpdate,
+  // });
 
   useEffect(() => {}, [window.showDebug]);
 
