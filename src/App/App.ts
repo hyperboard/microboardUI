@@ -170,7 +170,7 @@ export function createApp(isHistory = true): App {
   async function openBoard(id: string, accessKey?: string): Promise<void> {
     if (id === "welcome") {
       const welcomeBoard = new Board("welcome");
-      pasteWelcomeBoardData(board, conf.i18n.language);
+      pasteWelcomeBoardData(welcomeBoard, conf.i18n.language);
       subscriptions.setBoard(welcomeBoard);
       boardSubject.publish(welcomeBoard);
       board = welcomeBoard;
