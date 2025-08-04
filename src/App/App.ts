@@ -168,8 +168,8 @@ export function createApp(isHistory = true): App {
   api.interceptors.addRequestInterceptor(authInterceptor);
 
   async function openBoard(id: string, accessKey?: string): Promise<void> {
-    if (id === "welcome") {
-      const welcomeBoard = new Board("welcome");
+    if (id.includes("welcome")) {
+      const welcomeBoard = new Board(id);
       pasteWelcomeBoardData(welcomeBoard, conf.i18n.language);
       subscriptions.setBoard(welcomeBoard);
       boardSubject.publish(welcomeBoard);
