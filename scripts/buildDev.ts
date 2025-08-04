@@ -6,7 +6,7 @@ const outdir = "dist";
 
 async function main() {
   const result = await build({
-    entrypoints: ["src/board.html", "src/index.ts"],
+    entrypoints: ["src/board.html", "src/index.ts", "src/example.html"],
     outdir,
     loader: {
       ".css": "css",

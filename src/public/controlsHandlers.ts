@@ -64,13 +64,7 @@ const handlers: Partial<{
   [K in ListenerKey]: (ev: DocumentEventMap[K]) => void;
 }> = {};
 
-export function initListeners() {
-  const itemsDiv = document.querySelector<HTMLDivElement>("#items");
-  if (!itemsDiv) {
-    console.error("ITEMS DIV NOT FOUND!");
-    return;
-  }
-
+export function initListeners(itemsDiv: HTMLDivElement) {
   itemsDiv.style.transformOrigin = "0 0";
   document.body.style.cursor = "grab";
 

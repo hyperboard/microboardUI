@@ -239,10 +239,17 @@ function createButton(
   return buttonWrapper;
 }
 
-function initUI(): void {
+function initUI(parent: HTMLElement): void {
   const panel = createTitlePanel();
-  document.body.append(panel);
+  parent.append(panel);
 }
 
-document.addEventListener("DOMContentLoaded", initListeners);
-document.addEventListener("DOMContentLoaded", initUI);
+document.addEventListener("DOMContentLoaded", () => {
+  const itemsDiv = document.querySelector<HTMLDivElement>("#items");
+  if (!itemsDiv) {
+    console.error("ITEMS DIV NOT FOUND!");
+    return;
+  }
+  initListeners(itemsDiv);
+  initUI(document.body);
+});
