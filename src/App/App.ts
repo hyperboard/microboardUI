@@ -174,6 +174,7 @@ export function createApp(isHistory = true): App {
       subscriptions.setBoard(welcomeBoard);
       boardSubject.publish(welcomeBoard);
       board = welcomeBoard;
+      board.setInterfaceType("edit");
       await connectBoard(board);
       return;
     }
