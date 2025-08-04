@@ -55,7 +55,7 @@ export function WelcomePage(): React.ReactElement {
       return lastBoardId;
     }
 
-    return "welcome-local";
+    return "welcome";
   };
 
   React.useEffect(() => {
