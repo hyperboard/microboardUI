@@ -58,6 +58,7 @@ import { FlipCard } from "features/ContextPanel/Buttons/CardGame/Card/FlipCard";
 import { ThrowDice } from "features/ContextPanel/Buttons/CardGame/Dice/ThrowDice";
 import { ChangeRange } from "features/ContextPanel/Buttons/CardGame/Dice/ChangeRange/ChangeRange";
 import { FlipDeck } from "features/ContextPanel/Buttons/CardGame/Deck/FlipDeck";
+import { RotateCard } from "features/ContextPanel/Buttons/CardGame/Card/RotateCard";
 
 export function ContextPanel(): React.ReactElement | null {
   const { app, board } = useAppContext();
@@ -477,6 +478,8 @@ export function ContextPanel(): React.ReactElement | null {
             <FlipCard rounded="left" />
             <UiSeparator vertical />
             <CreateDeck onlyCards={true} rounded="right" />
+            <RotateCard clockwise={false} />
+            <RotateCard clockwise={true} />
             <UiSeparator vertical />
             <Delete rounded="right" />
           </>
