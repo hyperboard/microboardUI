@@ -3,11 +3,11 @@ export const frontConf = {
   wsURL: undefined as string | undefined,
 };
 
-const isSnapshotInIframe =
-  typeof window !== "undefined" &&
-  window.parent &&
-  window.parent !== window &&
-  window.parent.location.href.includes("/snapshots/");
+const isSnapshotInIframe = false;
+// typeof window !== "undefined" &&
+// window.parent &&
+// window.parent !== window &&
+// window.parent.location.href.includes("/snapshots/");
 
 const baseUrl =
   typeof process !== "undefined" && process.env.BASE_URL
