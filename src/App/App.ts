@@ -317,14 +317,14 @@ export function createApp(isHistory = true): App {
 
 	async function openAndEditFile(): Promise<string | undefined> {
 		try {
-			const isSnapshotInIframe = false;
-			// window.parent &&
-			// window.parent !== window &&
-			// window.parent.location.href.includes("/snapshots/");
+			const isSnapshotInIframe =
+				window.parent &&
+				window.parent !== window &&
+				window.parent.location.href.includes("/snapshots/");
 
 			if (isSnapshotInIframe) {
-				const snapshotId = "1";
-				// window.parent.location.href.split("/snapshots/")[1];
+				const snapshotId =
+					window.parent.location.href.split("/snapshots/")[1];
 				const snapshot = document.documentElement.outerHTML;
 
 				const boardId = await boardsList.createBoard(
