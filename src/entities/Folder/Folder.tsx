@@ -299,7 +299,7 @@ export const Folder = ({
               {folder.items.length > 0 ? (
                 <>
                   {folder.items.map((item, idx) => (
-                    <>
+                    <React.Fragment key={item.id}>
                       {item.itemType === "board" ? (
                         <FolderItem
                           ref={(el) => {
@@ -308,7 +308,6 @@ export const Folder = ({
                             }
                           }}
                           folder={folder}
-                          key={item.id}
                           board={item}
                           handleOpenBoard={handleOpenBoard}
                         />
@@ -316,11 +315,10 @@ export const Folder = ({
                         <Folder
                           parentFolderId={folder.id}
                           zIndex={zIndex + 1}
-                          key={item.id}
                           folder={item}
                         />
                       )}
-                    </>
+                    </React.Fragment>
                   ))}
                 </>
               ) : (

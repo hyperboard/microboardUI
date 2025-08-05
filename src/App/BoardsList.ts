@@ -393,7 +393,6 @@ export class BoardsList {
     }
     const publicBoards = this.storage.listCreatedBoards();
     const sharedBoards = this.storage.listVisitedBoards();
-    console.log("claim", publicBoards, sharedBoards);
     if (publicBoards.length === 0 && sharedBoards.length === 0) {
       return;
     }

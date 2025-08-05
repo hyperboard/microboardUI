@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import React, {
   useLayoutEffect,
   useRef,
@@ -6,7 +7,6 @@ import React, {
   type RefObject,
 } from "react";
 import style from "./UiSwitch.module.css";
-import clsx from "clsx";
 
 type Value = string | number | boolean;
 type Option = {
@@ -65,20 +65,22 @@ export function UiSwitch({ onChange, options, value }: Props) {
 
   return (
     <div className={style.switch} ref={switchRef}>
-      {options.map(({ value: optionValue, label }) =>
+      {options.map(({ value: optionValue, label }, index) =>
         typeof label === "function" ? (
-          label({
-            textClass: style.btnText,
-            btnClass: style.btn,
-            handleClick: handleOptionClick(optionValue),
-            value: optionValue,
-            isActive: value === optionValue,
-            activeClass: style.active,
-            ref: optionsRefs as RefObject<(HTMLElement | null)[]>,
-          })
+          <React.Fragment key={index}>
+            {label({
+              textClass: style.btnText,
+              btnClass: style.btn,
+              handleClick: handleOptionClick(optionValue),
+              value: optionValue,
+              isActive: value === optionValue,
+              activeClass: style.active,
+              ref: optionsRefs as RefObject<(HTMLElement | null)[]>,
+            })}
+          </React.Fragment>
         ) : (
           <button
-            key={label}
+            key={String(optionValue)}
             className={clsx(style.btn, optionValue === value && style.active)}
             onClick={handleOptionClick(optionValue)}
             ref={(ref) => {

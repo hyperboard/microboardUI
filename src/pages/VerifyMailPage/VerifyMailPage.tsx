@@ -1,15 +1,15 @@
 import { LAST_BOARD_KEY_QS } from "App/App";
 import { useAccount } from "App/useAccount";
 import { useBoardsList } from "App/useBoardsList";
+import { AuthForm } from "entities/account";
+import { Tail } from "pages/layouts/AuthLayout/Tail";
+import { LockIcon } from "pages/SignupPage/LockIcon";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { UiButton } from "shared/ui-lib/UiButton";
 import { Input } from "shared/ui-lib/Input/Input";
-import { Tail } from "pages/layouts/AuthLayout/Tail";
+import { UiButton } from "shared/ui-lib/UiButton";
 import styles from "./VerifyMailPage.module.css";
-import { LockIcon } from "pages/SignupPage/LockIcon";
-import { AuthForm } from "entities/account";
 
 const secondsToHumanReadable = (seconds: number): string => {
   const minutes = Math.floor(seconds / 60);
@@ -124,7 +124,6 @@ export const VerifyMailPage: React.FC = () => {
 
   const handleInputChange = (): void => {
     // Immediate validation on every input change
-    console.log("handleInputChange");
     checkForm();
   };
 
@@ -191,8 +190,6 @@ export const VerifyMailPage: React.FC = () => {
           setRetryCount(60 * 3);
         }
         if (data?.message.startsWith("PASSCODE_NOT_SENDED")) {
-          console.log("here");
-
           try {
             // const dateString = data?.message.split(": ")[1];
             // const resendDate = new Date(dateString);

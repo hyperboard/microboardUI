@@ -1,5 +1,4 @@
 import { useAccount } from "App/useAccount";
-import { PresenceUser } from "microboard-temp";
 import { useCommentsPanelContext } from "entities/comments/CommentsPanel/CommentsPanelContext";
 import { useAppContext } from "features/AppContext";
 import {
@@ -8,6 +7,7 @@ import {
 } from "features/Presence/PresenceUsers/PresenceUsers";
 import { PROFILE_SETTINGS_MODAL_ID } from "features/ProfileSettingsModal";
 import { USER_PLAN_MODAL_ID } from "features/UserPlan";
+import { PresenceUser } from "microboard-temp";
 import React, { MouseEventHandler, RefObject, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -86,7 +86,6 @@ export const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
     <>
       <div
         className={styles.userPicWrapper}
-        {...props}
         ref={userPanelRef}
         onClick={(event) => {
           event.stopPropagation();

@@ -13,6 +13,7 @@ import {
   conf,
   createEvents,
 } from "microboard-temp";
+import { pasteWelcomeBoardData } from "pages/WelcomePage/WelcomePage";
 import { api, foldersApi } from "shared/api";
 import "shared/Lang";
 import { MemoryLogger } from "shared/Logger";
@@ -29,7 +30,6 @@ import { getLocalRender, getRender } from "./router";
 import { SessionStorage } from "./SessionStorage";
 import { Storage } from "./Storage";
 import { TestRecorder, createTester } from "./testRecorder";
-import { pasteWelcomeBoardData } from "pages/WelcomePage/WelcomePage";
 
 export const LAST_BOARD_KEY = "lastSeenBoard";
 export const LAST_BOARD_KEY_QS = LAST_BOARD_KEY.concat("Wqs");
@@ -171,7 +171,7 @@ export function createApp(isHistory = true): App {
     if (id.includes("welcome")) {
       const welcomeBoard = new Board(id);
       pasteWelcomeBoardData(welcomeBoard, conf.i18n.language);
-      subscriptions.setBoard(welcomeBoard);
+      await subscriptions.setBoard(welcomeBoard);
       boardSubject.publish(welcomeBoard);
       board = welcomeBoard;
       board.setInterfaceType("edit");
@@ -204,9 +204,14 @@ export function createApp(isHistory = true): App {
       localStorage.removeItem(LAST_BOARD_KEY);
     }
     sessionStorage.clear();
-    subscriptions.setBoard(currentBoard);
+    await subscriptions.setBoard(currentBoard);
     boardSubject.publish(currentBoard);
     board = currentBoard;
+
+    // Set interface type to edit for blank boards since they don't connect
+    if (id === "blank") {
+      board.setInterfaceType("edit");
+    }
     if (!board.getName()) {
       board.setName(boardsList.getBoardInfo(id)?.title);
     }
@@ -283,7 +288,7 @@ export function createApp(isHistory = true): App {
 
     const currentBoard = new Board(id, undefined, saveEditingFile.bind(app));
     connectBoard(currentBoard);
-    subscriptions.setBoard(currentBoard);
+    await subscriptions.setBoard(currentBoard);
     boardSubject.publish(currentBoard);
     currentBoard.setInterfaceType("edit");
     board = currentBoard;
@@ -498,14 +503,17 @@ export function createApp(isHistory = true): App {
       boardsList.subject.publish();
     });
     account.setOnLogout(async () => {
-      console.log("onLogout");
       storage.hardClean();
       connection.publishLogout();
       resetOpenedBoards();
       localStorage.removeItem(LAST_BOARD_KEY);
 
-      router.navigate(`/boards/blank${window.location.search}`);
+      // router.navigate(`/${window.location.search}`);
+
       await boardsList.loadBoards();
+      const boardId = await boardsList.createBoard();
+      await app.openBoard(boardId);
+      router.navigate(`/boards/${boardId}${window.location.search}`);
       // await disconnect(wagmiConfig);
       account.subject.publish(account.info);
     });
