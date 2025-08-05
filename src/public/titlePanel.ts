@@ -5,10 +5,10 @@ type ClickHandler = (
   ev: MouseEvent,
 ) => void | Promise<void>;
 
-const isSnapshotInIframe =
-  window.parent &&
-  window.parent !== window &&
-  window.parent.location.href.includes("/snapshots/");
+const isSnapshotInIframe = false;
+// window.parent &&
+// window.parent !== window &&
+// window.parent.location.href.includes("/snapshots/");
 
 type ButtonTypes = "editButton" | "shareButton";
 interface ButtonEntry {
