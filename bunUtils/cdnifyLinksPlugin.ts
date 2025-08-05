@@ -1,28 +1,42 @@
 import { type BunPlugin } from "bun";
 
 /**
- * Replace local “public/…” script and stylesheet URLs with CDN URLs.
+ * Rewrites local asset URLs in HTML to point to a CDN.
+ *
+ * @param cdnBase - Base URL of the CDN (e.g. "https://cdn.example.com")
+ * @param localDir - Local directory prefix to replace (default: "public")
+ * @returns A Bun plugin that replaces `<script src="…">` and `<link href="…">`
  */
-export function cdnifyLinksPlugin(cdnBase: string): BunPlugin {
+export function cdnifyLinksPlugin(
+  cdnBase: string,
+  localDir = "public",
+): BunPlugin {
+  const dirEscaped = localDir.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const scriptRe = new RegExp(
+    `\\bsrc=(['"])${dirEscaped}\\/([^'"]+?)\\.(?:ts|tsx|cjs|mjs|js)\\1`,
+    "gi",
+  );
+  const assetRe = new RegExp(
+    `\\bhref=(['"])${dirEscaped}\\/([^'"]+?)\\.(css|png|svg|ico|webmanifest)\\1`,
+    "gi",
+  );
+
   return {
     name: "cdnify-plugin",
     setup(build) {
       build.onLoad({ filter: /\.html$/ }, async (args) => {
-        const file = Bun.file(args.path);
-        let html = await file.text();
-
+        let html = await Bun.file(args.path).text();
         html = html
           .replace(
-            /\bsrc=(['"])public\/([^'"]+?)\.(?:ts|tsx|cjs|mjs|js)\1/gi,
+            scriptRe,
             (_match, quote, name) =>
               `src=${quote}${cdnBase}/${name}.js${quote}`,
           )
           .replace(
-            /\bhref=(['"])public\/([^'"]+?)\.css\1/gi,
-            (_match, quote, name) =>
-              `href=${quote}${cdnBase}/${name}.css${quote}`,
+            assetRe,
+            (_match, quote, name, ext) =>
+              `href=${quote}${cdnBase}/${name}.${ext}${quote}`,
           );
-
         return {
           loader: "html",
           contents: html,

@@ -1,4 +1,4 @@
-import { type BunPlugin } from "bun";
+import { BuildConfig, type BunPlugin } from "bun";
 import {
   rmSync,
   mkdirSync,
@@ -11,11 +11,12 @@ import { join, extname, dirname, basename } from "node:path";
 
 const bundleExt = new Set([".ts", ".js", ".html"]);
 
-async function processFile(from: string, to: string, bundle: boolean) {
+async function processFile(from: string, to: string, bundle?: BuildConfig) {
   const outDir = dirname(to);
   mkdirSync(outDir, { recursive: true });
   if (bundle && bundleExt.has(extname(from))) {
     await Bun.build({
+      ...bundle,
       entrypoints: [from],
       outdir: outDir,
     });
@@ -24,7 +25,11 @@ async function processFile(from: string, to: string, bundle: boolean) {
   }
 }
 
-async function processDirectory(src: string, dest: string, bundle: boolean) {
+async function processDirectory(
+  src: string,
+  dest: string,
+  bundle?: BuildConfig,
+) {
   const stats = statSync(src);
   if (stats.isDirectory()) {
     mkdirSync(dest, { recursive: true });
@@ -41,10 +46,10 @@ let cleaned: Record<string, boolean> = {};
 export function copyPlugin(opts: {
   from: string;
   to: string;
-  bundle?: boolean;
+  bundle?: BuildConfig;
   cleanDir?: boolean;
 }): BunPlugin {
-  const { from, to, bundle = false, cleanDir = true } = opts;
+  const { from, to, bundle, cleanDir = true } = opts;
 
   return {
     name: "copy-plugin",
