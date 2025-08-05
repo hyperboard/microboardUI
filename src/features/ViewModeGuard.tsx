@@ -1,10 +1,11 @@
-import type { ViewMode } from "App/Connection";
-import type { InterfaceType } from "microboard-temp";
 import { useAppSubscription } from "App/useBoardSubscription";
+import type { InterfaceType } from "microboard-temp";
+import React, { useCallback, useEffect, type ReactNode } from "react";
 import { isIframe } from "shared/lib/isIframe";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
-import React, { useEffect, type ReactNode } from "react";
 import { useAppContext } from "./AppContext";
+
+type ViewMode = "view" | "edit" | "loading";
 
 type Props = {
   iframe?: boolean;
@@ -26,9 +27,15 @@ export function ViewModeGuard({
 }: Props) {
   const { board } = useAppContext();
   const forceUpdate = useForceUpdate();
+
+  // Memoize the observer to prevent infinite re-renders
+  const observer = useCallback(() => {
+    forceUpdate();
+  }, [forceUpdate]);
+
   useAppSubscription({
     subjects: ["board"],
-    observer: forceUpdate,
+    observer,
   });
 
   const interfaceType = board.getInterfaceType();

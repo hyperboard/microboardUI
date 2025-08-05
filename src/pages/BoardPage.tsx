@@ -7,7 +7,7 @@ import { AppContext, useAppContext } from "features/AppContext";
 import { AppView } from "features/AppView";
 import { USER_PLAN_MODAL_ID } from "features/UserPlan";
 import Cookies from "js-cookie";
-import React, { useLayoutEffect } from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   useLocation,
@@ -57,7 +57,7 @@ export const BoardPage = (): React.JSX.Element => {
     }
   };
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     boardsList.loadBoards().then(() => {
       if (params.boardId?.includes("local")) {
         app.openBoardFromFile().then(() => {

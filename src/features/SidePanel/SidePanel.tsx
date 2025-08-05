@@ -21,6 +21,7 @@ import React, {
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { useClickOutside } from "shared/lib/useClickOutside";
+import { useIsPhoneScreen } from "shared/lib/useIsPhoneScreen";
 import { Icon } from "shared/ui-lib/Icon";
 import { Tooltip } from "shared/ui-lib/Tooltip";
 import { UiButton } from "shared/ui-lib/UiButton";
@@ -29,7 +30,6 @@ import { UiPanel } from "shared/ui-lib/UiPanel";
 import { ResizableEdge } from "./ResizableEdge";
 import style from "./SidePanel.module.css";
 import { useSidePanelContext } from "./SidePanelContext";
-import { useIsPhoneScreen } from "shared/lib/useIsPhoneScreen";
 
 const MIN_PANEL_WIDTH = 280;
 
@@ -126,14 +126,19 @@ export function SidePanel(): React.JSX.Element {
                 ]}
               >
                 <Folder
+                  key={boardsList.getRootFolder()?.id ?? "root"}
                   accordionClassName={style.rootFolder}
                   folder={boardsList.getRootFolder()}
                 />
                 <Folder
+                  key={boardsList.getDraftsFolder()?.id ?? "drafts"}
                   accordionClassName={style.rootFolder}
                   folder={boardsList.getDraftsFolder()}
                 />
-                <Folder folder={boardsList.getSharedFolder()} />
+                <Folder
+                  key={boardsList.getSharedFolder()?.id ?? "shared"}
+                  folder={boardsList.getSharedFolder()}
+                />
               </SortableContext>
               {createPortal(
                 <DraggingWrapper>
