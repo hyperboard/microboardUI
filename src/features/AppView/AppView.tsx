@@ -111,7 +111,7 @@ export function AppView(): React.JSX.Element {
   };
 
   useEffect(() => {
-    if (!offlineNotificationSent) {
+    if (!offlineNotificationSent && window.location.href.includes("/welcome")) {
       notify({
         header: t("notifications.offlineHeader"),
         body: t("notifications.offlineBody"),
