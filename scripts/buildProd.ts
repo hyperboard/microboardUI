@@ -1,10 +1,8 @@
-import { build } from "bun";
+import { build, BuildConfig } from "bun";
 import { copyPlugin } from "../bunUtils/copyPlugin";
 import path from "path";
 import { cdnifyLinksPlugin } from "../bunUtils/cdnifyLinksPlugin";
-
-const outdir = "dist";
-const entrypoints = ["src/board.html", "src/index.ts", "src/example.html"];
+import { outdir, baseConfig, entrypoints } from "./buildConfig";
 
 async function cleanUpHTML(htmlEntrypoint: string) {
   // resulting html has empty chunk-xxxxxxxx.js file, removes tag and file
@@ -39,21 +37,12 @@ async function cleanUpHTML(htmlEntrypoint: string) {
 
 async function main() {
   const result = await build({
-    entrypoints,
-    outdir,
-    loader: {
-      ".css": "css",
-      ".svg": "text",
-    },
-
-    publicPath: "/",
-    format: "esm",
-    splitting: false,
+    ...baseConfig,
     plugins: [
       copyPlugin({
         from: "src/public",
         to: outdir,
-        bundle: true,
+        bundle: baseConfig,
       }),
       copyPlugin({
         from: "src/shared/ui-lib/Icon/sprite.svg",

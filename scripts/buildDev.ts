@@ -1,26 +1,16 @@
-import { build } from "bun";
+import { build, BuildConfig } from "bun";
 import { copyPlugin } from "../bunUtils/copyPlugin";
 import { inlineLinks } from "../bunUtils/inlineLinks";
-
-const outdir = "dist";
+import { outdir, baseConfig, entrypoints } from "./buildConfig";
 
 async function main() {
   const result = await build({
-    entrypoints: ["src/board.html", "src/index.ts", "src/example.html"],
-    outdir,
-    loader: {
-      ".css": "css",
-      ".svg": "file",
-      // ".html": "file",
-    },
-    publicPath: "/",
-    format: "esm",
-    splitting: false,
+    ...baseConfig,
     plugins: [
       copyPlugin({
         from: "src/public",
         to: outdir,
-        bundle: true,
+        bundle: baseConfig,
       }),
       copyPlugin({
         from: "src/shared/ui-lib/Icon/sprite.svg",
@@ -31,7 +21,11 @@ async function main() {
 
   if (!result.success) process.exit(1);
 
-  await inlineLinks("dist/board.html", "dist");
+  const htmlEndpoints = entrypoints
+    .filter((ep) => ep.endsWith(".html"))
+    .map((en) => en.replace(/^[^\/]+\//, "dist/"));
+
+  await Promise.all(htmlEndpoints.map(async (ep) => inlineLinks(ep, outdir)));
 }
 
 main().catch(console.error);
