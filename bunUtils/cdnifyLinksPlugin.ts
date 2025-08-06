@@ -17,7 +17,7 @@ export function cdnifyLinksPlugin(
     "gi",
   );
   const assetRe = new RegExp(
-    `\\bhref=(['"])${dirEscaped}\\/([^'"]+?)\\.(css|png|svg|ico|webmanifest)\\1`,
+    `\\b(?:href|src)=(['"])${dirEscaped}\\/([^'"]+?)\\.(css|png|svg|ico|webmanifest)\\1`,
     "gi",
   );
 
