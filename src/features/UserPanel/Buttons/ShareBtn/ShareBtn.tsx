@@ -8,6 +8,8 @@ import { Icon } from "shared/ui-lib/Icon";
 import { SHARE_MODAL_ID } from "features/ShareModal/ShareModal";
 import commonStyles from "../../UserPanel.module.css";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
+import { isIframe } from "shared/lib/isIframe";
+import { redirectParentPage } from "shared/lib/IframeModule";
 
 export const ShareBtn: React.FC = () => {
   const { setIds } = useContextMenuContext();
@@ -20,6 +22,16 @@ export const ShareBtn: React.FC = () => {
   const boardInfo = boardsList.getBoardInfo(boardId);
 
   const handleShare: MouseEventHandler = (ev) => {
+    if (isIframe()) {
+      const currentPage = window.location.href;
+      redirectParentPage(
+        currentPage,
+        currentPage.includes("dev")
+          ? "https://dev-landing.microboard.io/"
+          : "https://microboard.io/",
+      );
+      return;
+    }
     ev.preventDefault();
     ev.stopPropagation();
     setIds(boardId);
