@@ -1,1 +1,0 @@
-export { StartPointer } from "./StartPointer";

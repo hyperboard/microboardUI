@@ -1,9 +1,0 @@
-.wrapper {
-	display: flex;
-}
-
-@media screen and (max-width: 960px) {
-	.wrapper {
-		display: none;
-	}
-}

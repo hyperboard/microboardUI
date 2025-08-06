@@ -1,1 +1,0 @@
-export { TextHighlightIndicator } from "./TextHighlightIndicator";

@@ -1,6 +1,0 @@
-.unauthText {
-	position: absolute;
-	top: var(--absolute-position-panel-padding);
-	left: 50%;
-	transform: translateX(-50%);
-}

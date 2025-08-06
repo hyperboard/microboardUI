@@ -1,1 +1,0 @@
-export { TextAlignment } from "./TextAlignment";

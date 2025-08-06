@@ -1,1 +1,0 @@
-export { UiSwitch } from "./UiSwitch";
