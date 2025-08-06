@@ -11,6 +11,8 @@ import clsx from "clsx";
 import { useMediaQuery } from "shared/lib/useMediaQuery";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";
+import { isIframe } from "shared/lib/isIframe";
+import { redirectParentPage } from "shared/lib/IframeModule";
 
 export function ZoomPanel() {
   const { board } = useAppContext();
@@ -23,6 +25,16 @@ export function ZoomPanel() {
   const isMobile = useMediaQuery("screen and (max-width: 1200px)");
 
   const zoomToFit = (): void => {
+    if (isIframe()) {
+      const currentPage = window.location.href;
+      redirectParentPage(
+        currentPage,
+        currentPage.includes("dev")
+          ? "https://dev-landing.microboard.io/"
+          : "https://microboard.io/",
+      );
+      return;
+    }
     const items = board.items.listAll();
     if (items.length > 0) {
       const rect = new Mbr(1000_000, 1000_000, -1000_000, -1000_000);
