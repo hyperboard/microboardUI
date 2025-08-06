@@ -218,3 +218,13 @@ export class IframeModule {
     );
   }
 }
+
+export function redirectParentPage(url: string, parentUrl: string) {
+  window.parent.postMessage(
+    {
+      type: "open-new-window",
+      url,
+    },
+    parentUrl,
+  );
+}

@@ -16,6 +16,8 @@ import { ActionButtons } from "./ActionButtons/ActionButtons";
 import { ShareBtn } from "./Buttons/ShareBtn/ShareBtn";
 import { CommentsPanelContextProvider } from "entities/comments/CommentsPanel/CommentsPanelContext";
 import { CommentsPanel } from "entities/comments/CommentsPanel/CommentsPanel";
+import { isIframe } from "shared/lib/isIframe";
+import { redirectParentPage } from "shared/lib/IframeModule";
 
 export const UserPanel: React.FC = () => {
   const { t } = useTranslation();
@@ -26,6 +28,20 @@ export const UserPanel: React.FC = () => {
   const insideOfMicroboard =
     document.referrer.includes("https://microboard.io/") ||
     document.referrer.includes("https://microboard.ru/");
+
+  const onLoginOrRegistrationClick = (url: string) => {
+    if (isIframe()) {
+      const origin = window.location.origin;
+      redirectParentPage(
+        origin + url,
+        origin.includes("dev")
+          ? "https://dev-landing.microboard.io/"
+          : "https://microboard.io/",
+      );
+    } else {
+      navigate(url);
+    }
+  };
 
   if (!account.isLoggedIn) {
     return (
@@ -83,7 +99,7 @@ export const UserPanel: React.FC = () => {
                 <UiLink
                   variant="secondary"
                   className={styles.logInBtn}
-                  href={`/auth/sign-in`}
+                  onClick={() => onLoginOrRegistrationClick(`/auth/sign-in`)}
                   target="_parent"
                   size="sm"
                 >
@@ -91,7 +107,7 @@ export const UserPanel: React.FC = () => {
                 </UiLink>
                 <UiLink
                   className={clsx(styles.signUpBtn, styles.smallMobileHide)}
-                  href={`/auth/sign-up`}
+                  onClick={() => onLoginOrRegistrationClick(`/auth/sign-up`)}
                   size="sm"
                   target="_parent"
                 >
@@ -104,14 +120,14 @@ export const UserPanel: React.FC = () => {
                 <UiButton
                   variant="secondary"
                   className={styles.logInBtn}
-                  onClick={() => navigate("/auth/sign-in")}
+                  onClick={() => onLoginOrRegistrationClick("/auth/sign-in")}
                   size="sm"
                 >
                   {t("auth.login")}
                 </UiButton>
                 <UiButton
                   className={styles.signUpBtn}
-                  onClick={() => navigate("/auth/sign-up")}
+                  onClick={() => onLoginOrRegistrationClick("/auth/sign-up")}
                   size="sm"
                 >
                   {t("auth.signUpForFree")}
