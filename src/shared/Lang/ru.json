@@ -20,6 +20,10 @@
     "MB": "МБ"
   },
   "contextPanel": {
+    "rotateItem": {
+      "clockwise": "Повернуть по часовой стрелке",
+      "counterclockwise": "Повернуть против часовой стрелки"
+    },
     "connectorAddText": {
       "tooltip": "Добавить текст"
     },

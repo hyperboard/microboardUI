@@ -26,14 +26,16 @@ export function RotateItem({ clockwise, rounded = "none" }: Props) {
     <UiButton
       className={btnStyle.contextPanelButton}
       id="rotate-item"
-      tooltip={t("contextPanel.gameItems.card.flip")}
+      tooltip={t(
+        `contextPanel.rotateItem.${clockwise ? "clockwise" : "counterclockwise"}`,
+      )}
       tooltipPosition="top"
       onClick={handleClick}
       variant="secondary"
       rounded={rounded}
-      hotkey={getHotkeyLabel("flipDeckOrCard")}
+      hotkey={getHotkeyLabel(`Rotate90deg${clockwise ? "-clockwise" : ""}`)}
     >
-      <Icon iconName="RotateCard" width={24} height={24} />
+      <Icon iconName={clockwise ? "Redo" : "Undo"} />
     </UiButton>
   );
 }

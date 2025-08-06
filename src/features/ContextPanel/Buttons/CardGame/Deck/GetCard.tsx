@@ -38,9 +38,9 @@ export function GetCard({ cardPosition, rounded = "none" }: Props) {
         card = deck.getRandomCard();
         break;
     }
-    const { left, top, right } = deck.getMbr();
+    const { left, top } = deck.getMbr();
     if (deck.getIsPerpendicular()) {
-      card.transformation.translateTo(right + 280, top);
+      card.transformation.translateTo(left + 280, top);
     } else {
       card.transformation.translateTo(left, top - 280);
     }

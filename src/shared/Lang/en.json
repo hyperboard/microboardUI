@@ -20,6 +20,10 @@
     "MB": "MB"
   },
   "contextPanel": {
+    "rotateItem": {
+      "clockwise": "rotate clockwise",
+      "counterclockwise": "rotate counterclockwise"
+    },
     "connectorAddText": {
       "tooltip": "Add text"
     },
