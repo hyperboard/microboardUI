@@ -36,7 +36,7 @@ export const UserPanel: React.FC = () => {
         origin + url,
         origin.includes("dev")
           ? "https://dev-landing.microboard.io/"
-          : "https://microboard.io/",
+          : "http://localhost:3001/",
       );
     } else {
       navigate(url);
