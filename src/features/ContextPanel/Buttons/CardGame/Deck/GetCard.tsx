@@ -38,8 +38,12 @@ export function GetCard({ cardPosition, rounded = "none" }: Props) {
         card = deck.getRandomCard();
         break;
     }
-    const { left, top } = deck.getMbr();
-    card.transformation.translateTo(left, top - 280);
+    const { left, top, right } = deck.getMbr();
+    if (deck.getIsPerpendicular()) {
+      card.transformation.translateTo(right + 280, top);
+    } else {
+      card.transformation.translateTo(left, top - 280);
+    }
     if (deck.getDeck().length === 0) {
       board.remove(deck);
     }
