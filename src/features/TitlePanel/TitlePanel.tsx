@@ -29,6 +29,8 @@ import { createPortal } from "react-dom";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { CREATE_TEMPLATE_MODAL } from "features/Templates/CreateTemplateModal/CreateTemplateModal";
 import { SHARE_SNAPSHOT_MODAL_ID } from "features/ShareSnapshotModal/ShareSnapshotModal";
+import { isIframe } from "shared/lib/isIframe";
+import { redirectParentPage } from "shared/lib/IframeModule";
 
 const MAX_BOARD_TITLE_LENGTH = 32;
 
@@ -271,12 +273,26 @@ function SidePanelButton({
 }): React.ReactElement {
   const { t } = useTranslation();
 
+  const onClick = () => {
+    if (isIframe()) {
+      const currentPage = window.location.href;
+      redirectParentPage(
+        currentPage,
+        currentPage.includes("dev")
+          ? "https://dev-landing.microboard.io/"
+          : "https://microboard.io/",
+      );
+      return;
+    }
+    toggle();
+  };
+
   return (
     <UiButton
       id={isOpen ? "CloseSidePanel" : "OpenSidePanel"}
       tooltip={isOpen ? t("titlePanel.menu.close") : t("titlePanel.menu.open")}
       tooltipPosition="bottom-left"
-      onClick={toggle}
+      onClick={onClick}
       variant="secondary"
       rounded="left"
       className={className}
