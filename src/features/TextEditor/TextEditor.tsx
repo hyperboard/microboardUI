@@ -214,7 +214,11 @@ export class TextEditor extends React.Component<
       return true;
     }
     if (event.key === "Enter" && !event.shiftKey) {
-      return this.props.text.editor.handleSplitListItem();
+      if (this.props.text.editor.handleSplitListItem()) {
+        return true;
+      }
+      this.props.text.editor.splitNode();
+      return true;
     }
 
     if (event.key === "Tab" && !event.shiftKey) {
