@@ -9,6 +9,7 @@
     "fix:css": "bun run scripts/cameliseCssClasses.ts",
     "lint": "bun run lint:css",
     "clean": "rimraf dist",
+    "build:watch": "bun run --watch scripts/buildDevAndCopy.ts",
     "build:dev": "bun run scripts/buildDev.ts",
     "build:prod": "bun run scripts/buildProd.ts",
     "build": "bun run build:prod && bun run build:types",
@@ -33,6 +34,8 @@
     "@types/bun": "^1.2.18",
     "@types/node": "^24.0.12",
     "@types/wicg-file-system-access": "^2023.10.6",
+    "chokidar": "^4.0.3",
+    "node-html-parser": "^7.0.1",
     "prettier": "^3.6.2",
     "stylelint": "^16.21.1",
     "tsc-alias": "^1.8.16"
