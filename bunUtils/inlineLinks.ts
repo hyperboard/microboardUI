@@ -1,5 +1,22 @@
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import { Options, parse, type HTMLElement } from "node-html-parser";
+
+const PARSE_OPTS: Options = {
+  lowerCaseTagName: false,
+  comment: true,
+  fixNestedATags: true,
+  parseNoneClosedTags: false,
+  blockTextElements: {
+    script: true,
+    style: true,
+    pre: true,
+    textarea: true,
+  },
+  voidTag: {
+    closingSlash: false,
+  },
+};
 
 /**
  * Inline all relative <script src="..."></script> and
@@ -11,30 +28,66 @@ export async function inlineLinks(
   htmlPath: string,
   outdir: string,
 ): Promise<void> {
-  const file = await Bun.file(htmlPath);
-  let html = await file.text();
+  const isExternal = (u: string) => /^(?:[a-z]+:)?\/\//i.test(u);
+  const stripQueryHash = (u: string) => u.split("#")[0].split("?")[0];
+  const normalizeRel = (u: string) => stripQueryHash(u).replace(/^[\\/]+/, "");
+  const readIfExists = (p: string) =>
+    existsSync(p) ? readFileSync(p, "utf8").trim() : null;
+  const escapeScript = (s: string) => s.replace(/<\/script/gi, "<\\/script>");
+  const escapeStyle = (s: string) => s.replace(/<\/style/gi, "<\\/style>");
 
-  // inline scripts
-  html = html.replace(
-    /<script\b[^>]*\bsrc\s*=\s*(['"])(?!https?:\/\/|\/\/)([^'"]+)\1[^>]*>[\s\S]*?<\/script>/gi,
-    (_match, _q, src) => {
-      const filePath = join(outdir, src);
-      if (!existsSync(filePath)) return _match;
-      const code = readFileSync(filePath, "utf-8");
-      return `<script>\n${code.trim()}\n</script>`;
-    },
-  );
+  const file = Bun.file(htmlPath);
+  const html = await file.text();
+  const root = parse(html, PARSE_OPTS);
 
-  // inline styles
-  html = html.replace(
-    /<link\b[^>]*\brel\s*=\s*(['"])stylesheet\1[^>]*\bhref\s*=\s*(['"])(?!https?:\/\/|\/\/)([^'"]+)\2[^>]*>/gi,
-    (_match, _r, _q, href) => {
-      const filePath = join(outdir, href);
-      if (!existsSync(filePath)) return _match;
-      const css = readFileSync(filePath, "utf-8");
-      return `<style>\n${css.trim()}\n</style>`;
-    },
-  );
+  // <script src="...">
+  root.querySelectorAll("script[src]").forEach((el) => {
+    const src = (el.getAttribute("src") || "").trim();
+    if (!src || isExternal(src)) return;
 
-  await file.write(html);
+    const filePath = join(outdir, normalizeRel(src));
+    const code = readIfExists(filePath);
+    if (code == null) return;
+
+    const attrs = Object.entries(el.attributes)
+      .filter(([k]) => k.toLowerCase() !== "src")
+      .map(([k, v]) =>
+        v === "" ? ` ${k}` : ` ${k}="${v.replace(/"/g, "&quot;")}"`,
+      )
+      .join("");
+
+    const scriptNode = parse(
+      `<script${attrs}>\n${escapeScript(code)}\n</script>`,
+      PARSE_OPTS,
+    ).querySelector("script") as HTMLElement;
+
+    el.parentNode?.exchangeChild(el, scriptNode);
+  });
+
+  // <link rel="stylesheet" href="...">
+  root.querySelectorAll('link[rel="stylesheet"][href]').forEach((el) => {
+    const href = (el.getAttribute("href") || "").trim();
+    if (!href || isExternal(href)) return;
+
+    const filePath = join(outdir, normalizeRel(href));
+    const css = readIfExists(filePath);
+    if (css == null) return;
+
+    const media = el.getAttribute("media");
+    const disabled = el.hasAttribute("disabled");
+
+    const styleOpen =
+      `<style` +
+      (media ? ` media="${media.replace(/"/g, "&quot;")}"` : "") +
+      (disabled ? ` disabled` : "") +
+      `>`;
+    const styleNode = parse(
+      `${styleOpen}\n${escapeStyle(css)}\n</style>`,
+      PARSE_OPTS,
+    ).querySelector("style") as HTMLElement;
+
+    el.parentNode?.exchangeChild(el, styleNode);
+  });
+
+  await Bun.write(htmlPath, root.toString());
 }
