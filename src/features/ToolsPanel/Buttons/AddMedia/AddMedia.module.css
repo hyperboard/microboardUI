@@ -1,0 +1,3 @@
+.panel {
+	transform: translateY(calc(0% - (100% / 3)));
+}

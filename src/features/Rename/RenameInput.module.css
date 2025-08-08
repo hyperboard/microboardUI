@@ -1,0 +1,15 @@
+.form {
+	max-width: 32ch;
+	min-width: 10ch;
+}
+
+.input {
+	font-weight: 500;
+	font-size: 14px;
+	line-height: 18px;
+	padding: 0 4px;
+	width: 100%;
+	display: inline-block;
+	border: 1px solid rgb(222, 223, 227);
+	outline: none;
+}

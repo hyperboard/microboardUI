@@ -1,0 +1,89 @@
+.avatarsMap {
+	display: flex;
+	width: 100%;
+	align-items: center;
+	gap: 8px;
+	flex-wrap: nowrap;
+}
+
+.preview {
+	background-color: #ffffff;
+	position: absolute;
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	padding: 12px;
+	gap: 12px;
+	color: #14151a;
+	border-radius: 6px;
+	border: 2px solid #dee0e3;
+	font-family: "Manrope", Arial;
+	box-shadow: 0 1px 2px rgba(20, 21, 26, 0.05);
+	z-index: 4;
+	bottom: 36px;
+}
+
+.noWrap {
+	gap: 12px;
+	display: flex;
+	flex-wrap: nowrap;
+}
+
+.wrap {
+	gap: 12px;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.commentTippy {
+	color: #ffffff;
+	position: absolute;
+	top: 100%;
+	z-index: 2;
+}
+
+.infoContainer {
+	max-width: 224px;
+	min-width: 220px;
+}
+
+.username {
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 20px;
+	letter-spacing: -0.005em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 140px;
+}
+
+.message {
+	font-size: 18px;
+	font-weight: 500;
+	line-height: 26px;
+	letter-spacing: -0.012em;
+	word-break: break-word;
+	max-height: 78px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+}
+
+.smallText {
+	white-space: nowrap;
+	font-weight: 400;
+	font-size: 12px;
+	line-height: 16px;
+	margin-top: 2px;
+	color: #0f132499;
+}
+
+.fullWidth {
+	width: 100%;
+}
+
+.spaceBetween {
+	justify-content: space-between;
+}

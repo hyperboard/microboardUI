@@ -1,0 +1,41 @@
+.button {
+	background: none;
+	width: 40px;
+	height: 40px;
+	border-radius: 5px;
+	display: flex;
+	padding: 7.5px;
+	align-items: center;
+	justify-content: center;
+	transition: 0.2s ease-out;
+	cursor: pointer;
+}
+
+@media (hover: hover) {
+	.button:hover {
+		background-color: rgb(233, 234, 236);
+	}
+}
+
+.button.active {
+	background-color: rgb(233, 234, 236);
+}
+
+.button span {
+	width: 25px;
+	height: 25px;
+	border: 1px solid rgba(31, 31, 31, 0.25);
+}
+
+@media screen and (max-width: 748px) {
+	.button {
+		width: 30px;
+		height: 30px;
+		padding: 5px;
+	}
+
+	.button span {
+		width: 20px;
+		height: 20px;
+	}
+}

@@ -1,0 +1,1 @@
+export { BindEmailPage } from "./BindEmailPage";

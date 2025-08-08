@@ -1,0 +1,145 @@
+.wrapper {
+	padding: 32px 64px;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	align-items: center;
+}
+
+.tables {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 20px;
+}
+
+.heading {
+	font-size: 48px;
+	font-weight: 600;
+}
+
+.cards {
+	display: flex;
+	gap: 16px;
+	align-items: stretch;
+}
+
+.cardsScroll {
+	display: block;
+	overflow-x: auto;
+	scrollbar-gutter: stable;
+	width: 85vw;
+	padding-bottom: 4px;
+}
+
+.cardsScroll::-webkit-scrollbar {
+	appearance: none;
+	width: 4px;
+	height: 6px;
+}
+
+.cardsScroll::-webkit-scrollbar-button {
+	display: none;
+}
+
+.cardsScroll::-webkit-scrollbar-thumb {
+	display: block;
+	background-color: rgba(222, 225, 232, 1);
+	border-radius: 2px;
+}
+
+.back {
+	align-self: flex-start;
+	flex: 1 1;
+	width: auto;
+	padding: 12px 16px;
+	color: rgba(20, 21, 26, 1);
+	font-size: 16px;
+	font-weight: 500;
+}
+
+.plansBtn {
+	color: rgba(15, 19, 36, 0.6);
+	display: flex;
+	align-items: center;
+	font-size: 14px;
+	font-weight: 500;
+	gap: 8px;
+	align-self: flex-start;
+	cursor: pointer;
+}
+
+@media screen and (max-width: 1028px) {
+	.heading {
+		font-size: 30px;
+		font-weight: 600;
+		align-self: flex-start;
+	}
+
+	.wrapper {
+		padding: 20px 16px;
+	}
+
+	.cardsScroll {
+		width: 100%;
+		padding-bottom: 0;
+	}
+
+	.cards {
+		align-self: stretch;
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		gap: 16px;
+	}
+
+	.back {
+		align-self: flex-start;
+		flex: 1 1;
+		width: auto;
+		padding: 12px 16px;
+	}
+}
+
+.downgradeHeading {
+	font-size: 30px;
+	font-weight: 600;
+}
+
+.downgradeDesc {
+	font-size: 16px;
+}
+
+.downgradeConfirmation {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+	color: rgba(20, 21, 26, 1);
+	align-items: flex-start;
+	text-align: left;
+	padding: 32px 64px;
+}
+
+.annualPayment {
+	display: flex;
+	align-items: center;
+	align-self: flex-start;
+	gap: 8px;
+	cursor: pointer;
+}
+
+.badge {
+	padding: 2px 6px;
+	background-color: rgba(10, 15, 41, 0.04);
+	border-radius: 8px;
+	transition: 0.3s;
+}
+
+.active {
+	background-color: rgba(236, 223, 251, 1);
+}
+
+.switchBtn {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}

@@ -1,0 +1,88 @@
+.card {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	border: 1px solid rgba(233, 234, 236, 1);
+	border-radius: 16px;
+	gap: 16px;
+	font-family: "Manrope", "Arial";
+	color: rgba(20, 21, 26, 1);
+	height: auto;
+	touch-action: auto;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.imageBox {
+	width: 100%;
+	height: fit-content;
+	position: relative;
+}
+
+.buttonsBox {
+	width: 100%;
+	background-color: rgba(217, 217, 217, 1);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 16px;
+	position: absolute;
+	bottom: 0;
+	/*visibility: hidden;*/
+	/*height: 75%;*/
+	/*bottom: 0;*/
+	/*animation-direction: alternate;*/
+	height: 100%;
+	opacity: 0;
+	transition: opacity 0.3s;
+}
+
+.buttonsBox > div {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	width: 120px;
+}
+
+.imageBox:hover > .buttonsBox {
+	/*animation: showButtons 250ms ease-out alternate;*/
+	/*animation-fill-mode: both;*/
+	opacity: 1;
+}
+
+.image {
+	display: block;
+	width: 100%;
+	border-radius: 16px;
+	aspect-ratio: 1/0.6;
+	object-fit: cover;
+	background-color: rgba(217, 217, 217, 0.8);
+}
+
+.noImage {
+	object-fit: contain;
+}
+
+.info {
+	width: 100%;
+	padding: 0 8px 16px 8px;
+	font-size: 20px;
+	font-weight: 500;
+	line-height: 28px;
+	letter-spacing: -0.012em;
+	word-break: break-word;
+}
+
+/*@keyframes showButtons {*/
+/*	0% {*/
+/*		bottom: 0;*/
+/*		height: 75%;*/
+/*		visibility: hidden;*/
+/*	}*/
+/*	10% {*/
+/*		visibility: visible;*/
+/*	}*/
+/*	100% {*/
+/*		visibility: visible;*/
+/*		height: 100%;*/
+/*	}*/
+/*}*/

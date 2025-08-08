@@ -1,0 +1,9 @@
+.contextPanel {
+	height: 48px;
+}
+
+@media screen and (max-width: 768px) {
+	.contextPanel {
+		height: 28px;
+	}
+}

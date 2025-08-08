@@ -1,0 +1,22 @@
+.accordion {
+	display: grid;
+	grid-template-rows: max-content 0fr;
+	transition: grid-template-rows 0.3s ease;
+	max-width: max-content;
+	width: 100%;
+	min-width: 100%;
+}
+
+.content {
+	overflow: hidden;
+	max-width: 0;
+}
+
+.open .content {
+	max-width: none;
+}
+
+.open {
+	grid-template-rows: max-content 1fr;
+	grid-template-columns: 1fr;
+}

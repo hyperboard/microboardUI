@@ -1,0 +1,162 @@
+.chatContainer {
+	padding: 20px;
+	background-color: #f5f5f5;
+	border-radius: 10px;
+	width: 100%;
+	max-width: 500px;
+	box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+	border: 1px solid var(--border-action-normal);
+	background-color: white;
+	position: fixed;
+	bottom: var(--absolute-position-panel-padding);
+	left: var(--absolute-position-panel-padding);
+	z-index: 150;
+}
+
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+}
+
+.closeButton {
+	background: none;
+	border: none;
+	padding: 4px;
+	cursor: pointer;
+	color: #666;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 4px;
+}
+
+.closeButton:hover {
+	background-color: #f5f5f5;
+}
+
+.flexTitle {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.title {
+	font-size: 16px;
+	font-weight: bold;
+	display: inline;
+}
+
+.betaTag {
+	padding: 2px 8px;
+	font-size: 10px;
+	color: #007bff;
+	background-color: #e0f0ff;
+	border-radius: 4px;
+	font-weight: 600;
+}
+
+.description {
+	font-size: 12px;
+	color: #666;
+	margin-bottom: 16px;
+}
+
+.inputContainer {
+	display: flex;
+	flex-direction: column;
+}
+
+.textarea {
+	width: 100%;
+	min-height: 100px;
+	padding: 12px;
+	font-size: 12px;
+	border: 1px solid #ddd;
+	border-radius: 12px;
+	resize: vertical;
+	margin-bottom: 12px;
+	resize: none;
+}
+
+.textarea:focus {
+	border-color: #b78af0;
+	outline: 2px solid rgba(200, 178, 255, 0.5);
+}
+
+.textarea:active {
+	border-color: #b78af0;
+}
+
+.button {
+	padding: 10px 16px;
+	font-size: 12px;
+	color: white;
+	background-color: #007bff;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.button:disabled {
+	background-color: #ccc;
+	cursor: not-allowed;
+}
+
+.loadingMessage {
+	margin-top: 12px;
+	font-size: 10px;
+	color: #007bff;
+}
+
+.select {
+	width: 100%;
+	padding: 8px;
+	font-size: 12px;
+	border: 1px solid #ddd;
+	border-radius: 12px;
+	margin-bottom: 12px;
+	background-color: white;
+	color: #333;
+	/* 
+	padding-right: 32px;
+	outline: 1px solid #ddd;
+	border-right: 12px solid transparent; */
+}
+
+.select:focus {
+	outline-color: 1px solid #b78af0;
+	/* outline:
+		1px solid #b78af0,
+		2px solid rgba(200, 178, 255, 0.5); */
+}
+
+.select:active {
+	outline-color: #b78af0;
+	/* outline:
+		1px solid #b78af0,
+		2px solid rgba(200, 178, 255, 0.5); */
+}
+
+.select:focus {
+	border-color: #b78af0;
+	outline: 2px solid rgba(200, 178, 255, 0.5);
+}
+
+.select:active {
+	border-color: #b78af0;
+}
+
+.charCount {
+	font-size: 10px;
+	color: #666;
+	margin-top: 4px;
+	text-align: right;
+	margin-bottom: 8px;
+}
+
+.errorMessage {
+	margin-top: 12px;
+	font-size: 10px;
+	color: #d9534f;
+}

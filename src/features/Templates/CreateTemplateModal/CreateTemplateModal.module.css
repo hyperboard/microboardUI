@@ -1,0 +1,34 @@
+.modal {
+	max-width: 608px;
+	width: 100%;
+}
+
+.wr {
+	padding: 32px 64px !important;
+}
+
+.form {
+	display: flex;
+	flex-wrap: nowrap;
+	flex-direction: column;
+	gap: 12px;
+	align-items: center;
+	overflow-y: auto;
+	max-height: calc(90vh - 64px);
+}
+
+.errorText {
+	color: red;
+}
+
+.categoriesSelector {
+	width: 100%;
+}
+
+.languagesSelector {
+	width: 50%;
+}
+
+.btn {
+	width: 100%;
+}

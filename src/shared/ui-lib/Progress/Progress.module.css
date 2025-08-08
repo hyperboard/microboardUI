@@ -1,0 +1,16 @@
+.progress {
+	border-radius: 20px;
+	height: 4px;
+	width: 100%;
+}
+
+.progress-done {
+	background: #924fe8;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	width: 0;
+	opacity: 0;
+	transition: 1s ease 0.3s;
+}
