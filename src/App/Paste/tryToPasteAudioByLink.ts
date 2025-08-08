@@ -1,16 +1,11 @@
-import {
-  conf,
-  Board,
-  AudioItem,
-  calculateAudioPosition,
-} from "microboard-temp";
+import { Board, AudioItem, calculateAudioPosition } from "microboard-temp";
 
 function isAudioUrl(url: string): boolean {
   const extension = url.split(".").pop()?.toLowerCase();
   return !(
     !url.startsWith("https://") ||
     !extension ||
-    !conf.AUDIO_FORMATS.includes(extension)
+    !window.MICROBOARD_CONFIG.AUDIO_FORMATS.includes(extension)
   );
 }
 

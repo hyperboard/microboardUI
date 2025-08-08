@@ -16,7 +16,6 @@ import { CryptoCheckout } from "shared/api/billing";
 import { MessageResponse } from "shared/api/types";
 import { getEmailPrefix } from "shared/lib/getEmailPrefix";
 import { Subject } from "shared/Subject";
-import { conf } from "microboard-temp";
 
 type AccountInfo = {
   id: number;
@@ -158,19 +157,22 @@ export class Account {
           billingInfo.storage.used / billingInfo.storage.limit >= 0.8
         ) {
           this.storageLimitNotificationShown = true;
-          conf.notify({
+          window.MICROBOARD_CONFIG.notify({
             variant: "warning",
-            header: conf.i18n.t(
+            header: window.MICROBOARD_CONFIG.i18n.t(
               "toolsPanel.addMedia.limitAlmostReached.header",
             ),
-            body: conf.i18n.t(
+            body: window.MICROBOARD_CONFIG.i18n.t(
               `toolsPanel.addMedia.limitAlmostReached.body.${billingInfo.plan.name}`,
             ),
             button:
               billingInfo.plan.name === "basic"
                 ? {
-                    text: conf.i18n.t("toolsPanel.addMedia.upgradeToPlus"),
-                    onClick: () => conf.openModal("USER_PLAN_MODAL_ID"),
+                    text: window.MICROBOARD_CONFIG.i18n.t(
+                      "toolsPanel.addMedia.upgradeToPlus",
+                    ),
+                    onClick: () =>
+                      window.MICROBOARD_CONFIG.openModal("USER_PLAN_MODAL_ID"),
                   }
                 : undefined,
             duration: 300_000,
@@ -225,12 +227,12 @@ export class Account {
   // 	) {
   // 		notify({
   // 			variant: "warning",
-  // 			header: conf.i18n.t("toolsPanel.addMedia.limitReached.header"),
-  // 			body: conf.i18n.t("toolsPanel.addMedia.limitReached.body",
+  // 			header: window.MICROBOARD_CONFIG.i18n.t("toolsPanel.addMedia.limitReached.header"),
+  // 			body: window.MICROBOARD_CONFIG.i18n.t("toolsPanel.addMedia.limitReached.body",
   // 				{
   // 					limit: this.billingInfo.plan.name === "basic" ?
-  // 						this.billingInfo.storage.limit + " " + conf.i18n.t("common.MB") :
-  // 						this.billingInfo.storage.limit / 1024  + " " + conf.i18n.t("common.GB")
+  // 						this.billingInfo.storage.limit + " " + window.MICROBOARD_CONFIG.i18n.t("common.MB") :
+  // 						this.billingInfo.storage.limit / 1024  + " " + window.MICROBOARD_CONFIG.i18n.t("common.GB")
   // 				}
   // 			),
   // 			duration: 10000,

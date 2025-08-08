@@ -2,7 +2,7 @@ import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
 import { FillColorIndicator } from "shared/ui-lib/Icon/FillColorIndicator";
 import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
-import { conf, Sticker } from "microboard-temp";
+import { Sticker } from "microboard-temp";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -63,7 +63,7 @@ export function StickerFillStyle(): React.ReactElement | null {
           <ColorPicker
             id="sticker-fill"
             selectedColor={color}
-            colors={conf.STICKER_COLORS}
+            colors={window.MICROBOARD_CONFIG.STICKER_COLORS}
             onPick={handlePick}
           />
         </UiPanel>

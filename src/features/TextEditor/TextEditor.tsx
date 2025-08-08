@@ -8,11 +8,9 @@ import styles from "./TextEditor.module.css";
 import clsx from "clsx";
 import { Icon } from "shared/ui-lib/Icon";
 import { tryToPasteAsItemOrReturnText } from "App/Paste";
-import { Transforms } from "slate";
 import { HyperLinkCreationData } from "features/hyperLink/HyperLinkContext";
 import {
   EditorContainer,
-  conf,
   Board,
   RichText,
   getSlateSelectionRect,
@@ -282,7 +280,10 @@ export class TextEditor extends React.Component<
       text = text.replace(/\n+/g, " ").trim();
     }
 
-    if (conf.URL_REGEX.test(text) && richText.editor.hasTextInSelection()) {
+    if (
+      window.MICROBOARD_CONFIG.URL_REGEX.test(text) &&
+      richText.editor.hasTextInSelection()
+    ) {
       board.selection.setHyperLink(text, richText.editor.getSelection());
     } else {
       richText.editor.insertCopiedText(text);
@@ -324,7 +325,7 @@ export class TextEditor extends React.Component<
 
       if (!this.state.limitReached) {
         notify({
-          header: conf.i18n.t("textEditor.limitReached"),
+          header: window.MICROBOARD_CONFIG.i18n.t("textEditor.limitReached"),
           duration: 3000,
           variant: "warning",
         });
@@ -394,10 +395,10 @@ export class TextEditor extends React.Component<
             alignItems: verticalAlignmentToFlex(verticalAlignment), // vertical
             justifyContent: "center", // horisontal
 
-            fontFamily: conf.DEFAULT_TEXT_STYLES.fontFamily,
-            fontSize: `${conf.DEFAULT_TEXT_STYLES.fontSize}px`,
-            lineHeight: conf.DEFAULT_TEXT_STYLES.lineHeight,
-            color: conf.DEFAULT_TEXT_STYLES.fontColor,
+            fontFamily: window.MICROBOARD_CONFIG.DEFAULT_TEXT_STYLES.fontFamily,
+            fontSize: `${window.MICROBOARD_CONFIG.DEFAULT_TEXT_STYLES.fontSize}px`,
+            lineHeight: window.MICROBOARD_CONFIG.DEFAULT_TEXT_STYLES.lineHeight,
+            color: window.MICROBOARD_CONFIG.DEFAULT_TEXT_STYLES.fontColor,
           }}
         >
           {"An editor error has occured"}
@@ -456,13 +457,14 @@ export class TextEditor extends React.Component<
             alignItems: verticalAlignmentToFlex(verticalAlignment), // vertical
             justifyContent: "center", // horisontal
 
-            fontFamily: conf.DEFAULT_TEXT_STYLES.fontFamily,
-            fontSize: `${conf.DEFAULT_TEXT_STYLES.fontSize}px`,
+            fontFamily: window.MICROBOARD_CONFIG.DEFAULT_TEXT_STYLES.fontFamily,
+            fontSize: `${window.MICROBOARD_CONFIG.DEFAULT_TEXT_STYLES.fontSize}px`,
             lineHeight:
               text.isAutosize() && text.getAutoSizeScale() < 1
-                ? conf.DEFAULT_TEXT_STYLES.lineHeight * text.getAutoSizeScale()
-                : conf.DEFAULT_TEXT_STYLES.lineHeight,
-            color: conf.DEFAULT_TEXT_STYLES.fontColor,
+                ? window.MICROBOARD_CONFIG.DEFAULT_TEXT_STYLES.lineHeight *
+                  text.getAutoSizeScale()
+                : window.MICROBOARD_CONFIG.DEFAULT_TEXT_STYLES.lineHeight,
+            color: window.MICROBOARD_CONFIG.DEFAULT_TEXT_STYLES.fontColor,
             pointerEvents: "none",
 
             willChange: "transform",
@@ -525,7 +527,7 @@ export class TextEditor extends React.Component<
                   overflowY: !text.isAutosize() ? "auto" : "visible",
                   // fontSize: "inherit",
                   fontSize: text.isEmpty()
-                    ? `${conf.DEFAULT_TEXT_STYLES.fontSize}px`
+                    ? `${window.MICROBOARD_CONFIG.DEFAULT_TEXT_STYLES.fontSize}px`
                     : undefined,
                   // transform: `scale(${editorScale})`,
                   // transformOrigin: `left top`,
@@ -569,7 +571,7 @@ export class TextEditor extends React.Component<
           >
             {this.state.isQuoteBtnTooltipVisible && (
               <div className={styles.tooltip}>
-                {conf.i18n.t("AIInput.quoteBtnTooltip")}
+                {window.MICROBOARD_CONFIG.i18n.t("AIInput.quoteBtnTooltip")}
               </div>
             )}
             <svg

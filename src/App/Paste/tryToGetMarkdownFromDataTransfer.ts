@@ -1,5 +1,4 @@
 import {
-  conf,
   transformHtmlOrTextToMarkdown,
   EditorContainer,
 } from "microboard-temp";
@@ -38,7 +37,7 @@ export async function tryToGetMarkdownFromDataTransfer(
   const shouldSkipMarkdownTransform = Boolean(
     textEditor?.getSelection() &&
       textEditor?.hasTextInSelection() &&
-      conf.URL_REGEX.test(text),
+      window.MICROBOARD_CONFIG.URL_REGEX.test(text),
   );
 
   if (

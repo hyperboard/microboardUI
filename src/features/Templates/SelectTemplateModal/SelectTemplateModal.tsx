@@ -9,7 +9,7 @@ import clsx from "clsx";
 import { CategoriesMenu } from "./CategoriesMenu/CategoriesMenu";
 import { useDebounce } from "shared/lib/useDebounce";
 import { TemplateItemsGrid } from "./TemplateItemsGrid/TemplateItemsGrid";
-import { conf, Template, TemplateCategory } from "microboard-temp";
+import { Template, TemplateCategory } from "microboard-temp";
 import { LanguagesDropdown } from "./LanguagesDropdown/LanguagesDropdown";
 import { getCorrectEnding } from "shared/lib/getCorrectEnding";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
@@ -25,7 +25,7 @@ export const SelectTemplateModal = (): React.JSX.Element => {
   );
   const { isModalOpen } = useUiModalContext();
   const [selectedLanguage, setSelectedLanguage] = useState<string>(
-    conf.i18n.language,
+    window.MICROBOARD_CONFIG.i18n.language,
   );
   const [selectedCategory, setSelectedCategory] =
     useState<TemplateCategory>("All templates");
@@ -78,7 +78,7 @@ export const SelectTemplateModal = (): React.JSX.Element => {
 
   const hideModalAndReset = () => {
     setSelectedCategory("All templates");
-    setSelectedLanguage(conf.i18n.language);
+    setSelectedLanguage(window.MICROBOARD_CONFIG.i18n.language);
     setPresentedTemplate(null);
   };
 

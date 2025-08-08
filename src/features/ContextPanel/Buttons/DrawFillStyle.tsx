@@ -2,7 +2,6 @@ import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
 import { FillColorIndicator } from "shared/ui-lib/Icon/FillColorIndicator";
 import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
-import { conf } from "microboard-temp";
 import { UiColorInput } from "shared/ui-lib/UiColorInput";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import React from "react";
@@ -54,7 +53,7 @@ export function DrawFillStyle(): React.ReactElement | null {
     board.selection.setStrokeColor(color);
   };
 
-  const isPredefinedColor = conf.PEN_COLORS.some(
+  const isPredefinedColor = window.MICROBOARD_CONFIG.PEN_COLORS.some(
     (color) => color === drawingColor,
   );
   return (
@@ -90,7 +89,7 @@ export function DrawFillStyle(): React.ReactElement | null {
           <ColorPicker
             id={"drawing"}
             selectedColor={drawingColor}
-            colors={conf.PEN_COLORS}
+            colors={window.MICROBOARD_CONFIG.PEN_COLORS}
             onPick={handlePick}
           />
           <UiColorInput

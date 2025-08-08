@@ -8,8 +8,6 @@ import { PlanCard, type PlanState } from "./PlanCard";
 import styles from "./PlanCards.module.css";
 import { SELECT_PAYMENT_MODAL_ID } from "./SelectPaymentModal";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
-import { conf } from "microboard-temp";
-const { i18n } = conf;
 import { setModalData } from "shared/ui-lib/UiModal/UiModalContext";
 
 const annualToMonthlyPrice = (price?: number) =>
@@ -57,17 +55,26 @@ export function BasicPlanCard() {
     openModalConfirm(
       <h2 className={styles.downgradeHeading}>
         {t("userPlan.downgradeModal.heading", {
-          planName: conf.planNames[account.billingInfo?.plan.name ?? "basic"],
+          planName:
+            window.MICROBOARD_CONFIG.planNames[
+              account.billingInfo?.plan.name ?? "basic"
+            ],
         })}
       </h2>,
       <p className={styles.downgradeDesc}>
         {t("userPlan.downgradeModal.description", {
-          planName: conf.planNames[account.billingInfo?.plan.name ?? "basic"],
-          currentPeriodEnd: new Intl.DateTimeFormat(i18n.language, {
-            year: "numeric",
-            month: "numeric",
-            day: "numeric",
-          }).format(new Date(account.billingInfo?.plan.endDate ?? 0)),
+          planName:
+            window.MICROBOARD_CONFIG.planNames[
+              account.billingInfo?.plan.name ?? "basic"
+            ],
+          currentPeriodEnd: new Intl.DateTimeFormat(
+            window.MICROBOARD_CONFIG.i18n.language,
+            {
+              year: "numeric",
+              month: "numeric",
+              day: "numeric",
+            },
+          ).format(new Date(account.billingInfo?.plan.endDate ?? 0)),
         })}
       </p>,
       async () => {
@@ -75,19 +82,28 @@ export function BasicPlanCard() {
         notify({
           header: "Тариф обновлен",
           body: t("userPlan.downgradeModal.description", {
-            planName: conf.planNames[account.billingInfo?.plan.name ?? "basic"],
-            currentPeriodEnd: new Intl.DateTimeFormat(i18n.language, {
-              year: "numeric",
-              month: "numeric",
-              day: "numeric",
-            }).format(new Date(account.billingInfo?.plan.endDate ?? 0)),
+            planName:
+              window.MICROBOARD_CONFIG.planNames[
+                account.billingInfo?.plan.name ?? "basic"
+              ],
+            currentPeriodEnd: new Intl.DateTimeFormat(
+              window.MICROBOARD_CONFIG.i18n.language,
+              {
+                year: "numeric",
+                month: "numeric",
+                day: "numeric",
+              },
+            ).format(new Date(account.billingInfo?.plan.endDate ?? 0)),
           }),
         });
         Promise.resolve();
       },
       async () => {},
       t("userPlan.downgradeModal.confirm", {
-        planName: conf.planNames[account.billingInfo?.plan.name ?? "basic"],
+        planName:
+          window.MICROBOARD_CONFIG.planNames[
+            account.billingInfo?.plan.name ?? "basic"
+          ],
       }),
       t("userPlan.downgradeModal.cancel"),
       styles.downgradeConfirmation,
@@ -104,11 +120,14 @@ export function BasicPlanCard() {
       })}
       additionalFeature={t("userPlan.plans.basic.tokensFeature")}
       additionalFeatureTooltip={t("userPlan.tokensTooltip")}
-      activationDate={new Intl.DateTimeFormat(i18n.language, {
-        year: "numeric",
-        month: "numeric",
-        day: "numeric",
-      }).format(
+      activationDate={new Intl.DateTimeFormat(
+        window.MICROBOARD_CONFIG.i18n.language,
+        {
+          year: "numeric",
+          month: "numeric",
+          day: "numeric",
+        },
+      ).format(
         new Date(account.billingInfo?.plan.endDate ?? 0).getTime() +
           24 * 60 * 60 * 1000,
       )}
@@ -163,17 +182,20 @@ export function PlusAIPlanCard(): JSX.Element {
     openModalConfirm(
       <h2 className={styles.downgradeHeading}>
         {t("userPlan.downgradeModal.heading", {
-          planName: conf.planNames["plusAI"],
+          planName: window.MICROBOARD_CONFIG.planNames["plusAI"],
         })}
       </h2>,
       <p className={styles.downgradeDesc}>
         {t("userPlan.downgradeModal.description", {
-          planName: conf.planNames["plusAI"],
-          currentPeriodEnd: new Intl.DateTimeFormat(i18n.language, {
-            year: "numeric",
-            month: "numeric",
-            day: "numeric",
-          }).format(new Date(account.billingInfo?.plan.endDate ?? 0)),
+          planName: window.MICROBOARD_CONFIG.planNames["plusAI"],
+          currentPeriodEnd: new Intl.DateTimeFormat(
+            window.MICROBOARD_CONFIG.i18n.language,
+            {
+              year: "numeric",
+              month: "numeric",
+              day: "numeric",
+            },
+          ).format(new Date(account.billingInfo?.plan.endDate ?? 0)),
         })}
       </p>,
       async () => {
@@ -181,19 +203,22 @@ export function PlusAIPlanCard(): JSX.Element {
         notify({
           header: "Тариф обновлен",
           body: t("userPlan.downgradeModal.description", {
-            planName: conf.planNames["plusAI"],
-            currentPeriodEnd: new Intl.DateTimeFormat(i18n.language, {
-              year: "numeric",
-              month: "numeric",
-              day: "numeric",
-            }).format(new Date(account.billingInfo?.plan.endDate ?? 0)),
+            planName: window.MICROBOARD_CONFIG.planNames["plusAI"],
+            currentPeriodEnd: new Intl.DateTimeFormat(
+              window.MICROBOARD_CONFIG.i18n.language,
+              {
+                year: "numeric",
+                month: "numeric",
+                day: "numeric",
+              },
+            ).format(new Date(account.billingInfo?.plan.endDate ?? 0)),
           }),
         });
         Promise.resolve();
       },
       async () => {},
       t("userPlan.downgradeModal.confirm", {
-        planName: conf.planNames["plusAI"],
+        planName: window.MICROBOARD_CONFIG.planNames["plusAI"],
       }),
       t("userPlan.downgradeModal.cancel"),
       styles.downgradeConfirmation,
@@ -301,17 +326,20 @@ export function PlusPlanCard(): JSX.Element {
     openModalConfirm(
       <h2 className={styles.downgradeHeading}>
         {t("userPlan.downgradeModal.heading", {
-          planName: conf.planNames["plus"],
+          planName: window.MICROBOARD_CONFIG.planNames["plus"],
         })}
       </h2>,
       <p className={styles.downgradeDesc}>
         {t("userPlan.downgradeModal.description", {
-          planName: conf.planNames["plus"],
-          currentPeriodEnd: new Intl.DateTimeFormat(i18n.language, {
-            year: "numeric",
-            month: "numeric",
-            day: "numeric",
-          }).format(new Date(account.billingInfo?.plan.endDate ?? 0)),
+          planName: window.MICROBOARD_CONFIG.planNames["plus"],
+          currentPeriodEnd: new Intl.DateTimeFormat(
+            window.MICROBOARD_CONFIG.i18n.language,
+            {
+              year: "numeric",
+              month: "numeric",
+              day: "numeric",
+            },
+          ).format(new Date(account.billingInfo?.plan.endDate ?? 0)),
         })}
       </p>,
       async () => {
@@ -319,19 +347,22 @@ export function PlusPlanCard(): JSX.Element {
         notify({
           header: "Тариф обновлен",
           body: t("userPlan.downgradeModal.description", {
-            planName: conf.planNames["plus"],
-            currentPeriodEnd: new Intl.DateTimeFormat(i18n.language, {
-              year: "numeric",
-              month: "numeric",
-              day: "numeric",
-            }).format(new Date(account.billingInfo?.plan.endDate ?? 0)),
+            planName: window.MICROBOARD_CONFIG.planNames["plus"],
+            currentPeriodEnd: new Intl.DateTimeFormat(
+              window.MICROBOARD_CONFIG.i18n.language,
+              {
+                year: "numeric",
+                month: "numeric",
+                day: "numeric",
+              },
+            ).format(new Date(account.billingInfo?.plan.endDate ?? 0)),
           }),
         });
         Promise.resolve();
       },
       async () => {},
       t("userPlan.downgradeModal.confirm", {
-        planName: conf.planNames["plus"],
+        planName: window.MICROBOARD_CONFIG.planNames["plus"],
       }),
       t("userPlan.downgradeModal.cancel"),
       styles.downgradeConfirmation,

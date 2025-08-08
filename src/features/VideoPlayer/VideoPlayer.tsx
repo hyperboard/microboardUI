@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { useAppContext } from "features/AppContext";
 import styles from "./VideoPlayer.module.css";
-import { conf, captureFrame, VideoItem } from "microboard-temp";
+import { captureFrame, VideoItem } from "microboard-temp";
 import YouTube from "react-youtube";
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 export const VideoPlayer = ({ item }: Props) => {
   const { board, app } = useAppContext();
 
-  const videoId = conf.getYouTubeId(item.getUrl());
+  const videoId = window.MICROBOARD_CONFIG.getYouTubeId(item.getUrl());
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);

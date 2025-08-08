@@ -5,7 +5,6 @@ import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
 import { SliderPicker } from "features/Pickers/SliderPicker";
 import { StrokeStylePicker } from "features/Pickers/StrokeStylePicker/StrokeStylePicker";
 import {
-  conf,
   MAX_STROKE_WIDTH,
   MIN_STROKE_WIDTH,
   STEP_STROKE_WIDTH,
@@ -76,7 +75,7 @@ export function StrokeStyle({
     board.selection.setStrokeColor(color);
   };
 
-  const isPredefinedColor = conf.SHAPE_STROKE_COLORS.some(
+  const isPredefinedColor = window.MICROBOARD_CONFIG.SHAPE_STROKE_COLORS.some(
     (color) => color === borderColor,
   );
 
@@ -129,7 +128,7 @@ export function StrokeStyle({
           <div className={style.colors}>
             <ColorPicker
               id={"stroke-style"}
-              colors={conf.SHAPE_STROKE_COLORS}
+              colors={window.MICROBOARD_CONFIG.SHAPE_STROKE_COLORS}
               onPick={handleStrokeColorPick}
               selectedColor={borderColor}
             />

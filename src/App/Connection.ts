@@ -7,7 +7,6 @@ import type {
   SyncBoardEvent,
 } from "microboard-temp";
 import {
-  conf,
   Board,
   messageRouter,
   PresenceEventMsg,
@@ -22,7 +21,6 @@ import { notify } from "shared/ui-lib/Toast";
 import { getWebsocketUrl } from "../Config";
 import { Storage } from "./Storage";
 import { VERSION } from "version";
-const { i18n } = conf;
 
 const SECOND = 1000;
 const WS_RECONNECT_TIMEOUT = 5 * SECOND;
@@ -565,8 +563,12 @@ export function createConnection(
     }
     window.addEventListener("beforeunload", warnAboutDataLossBeforeUnload);
     notificationId = notify({
-      header: i18n.t("notifications.restoringConnectionHeader"),
-      body: i18n.t("notifications.restoringConnectionBody"),
+      header: window.MICROBOARD_CONFIG.i18n.t(
+        "notifications.restoringConnectionHeader",
+      ),
+      body: window.MICROBOARD_CONFIG.i18n.t(
+        "notifications.restoringConnectionBody",
+      ),
       variant: "warning",
       duration: Infinity,
     });

@@ -6,13 +6,7 @@ import {
 import { Account } from "entities/account";
 import { getAuthInterceptor } from "entities/account/AuthInterceptor";
 import { getConfiguredI18n } from "initI18N";
-import {
-  Board,
-  BoardSnapshot,
-  Operation,
-  conf,
-  createEvents,
-} from "microboard-temp";
+import { Board, BoardSnapshot, Operation, createEvents } from "microboard-temp";
 import { pasteWelcomeBoardData } from "pages/WelcomePage/WelcomePage";
 import { api, foldersApi } from "shared/api";
 import "shared/Lang";
@@ -82,8 +76,8 @@ function getI18n() {
 
 export function createApp(isHistory = true): App {
   const connection = createConnection(getBoard, getAccount, getStorage);
-  conf.connection = connection;
-  conf.i18n = getI18n();
+  window.MICROBOARD_CONFIG.connection = connection;
+  window.MICROBOARD_CONFIG.i18n = getI18n();
   const clipboard = new Clipboard();
   const location = new Location();
   const storage = new Storage();
@@ -102,9 +96,9 @@ export function createApp(isHistory = true): App {
     console.error("Error:", event.error);
   });
 
-  conf.hooks.beforeMediaRemove = beforeMediaRemove;
-  conf.hooks.beforeMediaUpload = beforeMediaUpload;
-  conf.hooks.onUploadMediaError = catchMediaErrorResponse;
+  window.MICROBOARD_CONFIG.hooks.beforeMediaRemove = beforeMediaRemove;
+  window.MICROBOARD_CONFIG.hooks.beforeMediaUpload = beforeMediaUpload;
+  window.MICROBOARD_CONFIG.hooks.onUploadMediaError = catchMediaErrorResponse;
 
   let board: Board;
   // chrome handler for saving file
@@ -170,7 +164,10 @@ export function createApp(isHistory = true): App {
   async function openBoard(id: string, accessKey?: string): Promise<void> {
     if (id.includes("welcome")) {
       const welcomeBoard = new Board(id);
-      pasteWelcomeBoardData(welcomeBoard, conf.i18n.language);
+      pasteWelcomeBoardData(
+        welcomeBoard,
+        window.MICROBOARD_CONFIG.i18n.language,
+      );
       await subscriptions.setBoard(welcomeBoard);
       boardSubject.publish(welcomeBoard);
       board = welcomeBoard;
@@ -422,7 +419,9 @@ export function createApp(isHistory = true): App {
     }
 
     async function getData(): Promise<string> {
-      const items = getBoard().items.getWholeHTML(conf.documentFactory);
+      const items = getBoard().items.getWholeHTML(
+        window.MICROBOARD_CONFIG.documentFactory,
+      );
       const docCopy = document.cloneNode(true) as Document;
 
       const head = document.head.cloneNode(true);
@@ -521,7 +520,7 @@ export function createApp(isHistory = true): App {
       account.onLogout?.();
       router.navigate(`/auth/sign-in${window.location.search}`);
       notify({
-        body: conf.i18n.t("auth.sessionExpired"),
+        body: window.MICROBOARD_CONFIG.i18n.t("auth.sessionExpired"),
         variant: "error",
       });
     });

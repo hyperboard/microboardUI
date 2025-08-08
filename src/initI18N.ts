@@ -1,6 +1,6 @@
 import { createInstance } from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
-import { conf, initI18N } from "microboard-temp";
+import { initI18N } from "microboard-temp";
 import { initReactI18next } from "react-i18next";
 import en from "shared/Lang/en.json";
 import ru from "shared/Lang/ru.json";
@@ -18,14 +18,14 @@ export async function initInter(): Promise<void> {
     },
   };
   const i18Instance = createInstance({
-    debug: conf.debug,
+    debug: window.MICROBOARD_CONFIG.debug,
     detection: {
       order: ["navigator"],
     },
     supportedLngs: ["en", "ru"],
     defaultNS,
     resources,
-    fallbackLng: conf.FALLBACK_LNG,
+    fallbackLng: window.MICROBOARD_CONFIG.FALLBACK_LNG,
     interpolation: {
       escapeValue: false,
     },

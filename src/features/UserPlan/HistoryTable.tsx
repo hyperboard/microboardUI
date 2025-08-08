@@ -2,8 +2,6 @@ import { useAccount } from "App/useAccount";
 import React from "react";
 import styles from "./LimitsTable.module.css";
 import { useTranslation } from "react-i18next";
-import { conf } from "microboard-temp";
-const { i18n } = conf;
 
 const PAYMENT_TYPE_DISPLAYNAME = {
   card: "Card",
@@ -55,7 +53,7 @@ export function HistoryTable() {
 const centToUsd = (cents: number) => cents / 100;
 
 const formatDate = (date: string) =>
-  new Intl.DateTimeFormat(i18n.language, {
+  new Intl.DateTimeFormat(window.MICROBOARD_CONFIG.i18n.language, {
     year: "numeric",
     month: "numeric",
     day: "numeric",
@@ -81,7 +79,7 @@ function ModelRow({
   const { t } = useTranslation();
 
   const getPlanDisplayName = (planName: string) => {
-    return i18n.language === "ru"
+    return window.MICROBOARD_CONFIG.i18n.language === "ru"
       ? t(`userPlan.historyTable.planDisplayName.${planName}`, planName)
       : PLAN_DISPLAYNAME[planName] || planName;
   };

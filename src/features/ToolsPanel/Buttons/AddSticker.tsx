@@ -1,7 +1,7 @@
 import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
 import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
-import { conf, getHotkeyLabel } from "microboard-temp";
+import { getHotkeyLabel } from "microboard-temp";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -59,7 +59,7 @@ export function AddSticker() {
       <UiPanel grid columns={2}>
         <ColorPicker
           selectedColor={selectedColor}
-          colors={conf.STICKER_COLORS}
+          colors={window.MICROBOARD_CONFIG.STICKER_COLORS}
           onPick={handlePick}
           variant="square"
         />

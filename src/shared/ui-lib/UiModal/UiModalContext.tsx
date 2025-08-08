@@ -1,7 +1,6 @@
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { useLayoutEffect } from "react";
 import { Subject } from "shared/Subject";
-import { conf } from "microboard-temp";
 
 export type ModalId = string | symbol | null;
 
@@ -62,7 +61,7 @@ export const openModal = (modalId: ModalId): void => {
   UiModalStateInstance.openModal(modalId);
 };
 
-conf.openModal = openModal;
+window.MICROBOARD_CONFIG.openModal = openModal;
 
 export const closeModal = (): void => {
   UiModalStateInstance.closeModal();

@@ -10,7 +10,6 @@ import { UserPlanUsage } from "features/UserPlan/UserPlanUsage";
 import styles from "./UserPlanModal.module.css";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
-import { conf } from "microboard-temp";
 
 export const LIMITS_MODAL_ID = Symbol("limitsModal");
 
@@ -25,12 +24,18 @@ export function LimitsModal() {
     openModalConfirm(
       <h2 className={styles.downgradeHeading}>
         {t("userPlan.downgradeModal.heading", {
-          planName: conf.planNames[account.billingInfo?.plan.name ?? "basic"],
+          planName:
+            window.MICROBOARD_CONFIG.planNames[
+              account.billingInfo?.plan.name ?? "basic"
+            ],
         })}
       </h2>,
       <p className={styles.downgradeDesc}>
         {t("userPlan.downgradeModal.description", {
-          planName: conf.planNames[account.billingInfo?.plan.name ?? "basic"],
+          planName:
+            window.MICROBOARD_CONFIG.planNames[
+              account.billingInfo?.plan.name ?? "basic"
+            ],
           currentPeriodEnd: new Intl.DateTimeFormat(i18n.language, {
             year: "numeric",
             month: "numeric",
@@ -48,7 +53,10 @@ export function LimitsModal() {
       },
       async () => {},
       t("userPlan.downgradeModal.confirm", {
-        planName: conf.planNames[account.billingInfo?.plan.name ?? "basic"],
+        planName:
+          window.MICROBOARD_CONFIG.planNames[
+            account.billingInfo?.plan.name ?? "basic"
+          ],
       }),
       t("userPlan.downgradeModal.cancel"),
       styles.downgradeConfirmation,
@@ -61,7 +69,11 @@ export function LimitsModal() {
         <h1 className={styles.heading}>{t("userPlan.currentPlanHeading")}</h1>
         <UserPlanUsage
           cancellationDate={account.billingInfo?.plan.endDate}
-          planName={conf.planNames[account.billingInfo?.plan.name ?? "basic"]}
+          planName={
+            window.MICROBOARD_CONFIG.planNames[
+              account.billingInfo?.plan.name ?? "basic"
+            ]
+          }
           isFree={account.billingInfo?.plan.name === "basic"}
           history
           hasHistory={

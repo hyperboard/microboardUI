@@ -1,6 +1,5 @@
 import type { NotifyFunction } from "shared/ui-lib/Toast/notify";
 import {
-  conf,
   VideoItem,
   createVideoItem,
   getVideoMetadata,
@@ -20,7 +19,9 @@ export function uploadVideo(
       const onLoadCb = (videoItem: VideoItem) => {
         const notificationId = notify({
           variant: "info",
-          header: conf.i18n.t("toolsPanel.addMedia.loading"),
+          header: window.MICROBOARD_CONFIG.i18n.t(
+            "toolsPanel.addMedia.loading",
+          ),
           body: "",
           duration: 100_000,
           loader: "MediaLoader",
@@ -33,7 +34,9 @@ export function uploadVideo(
             board.remove(videoItem);
             console.error("Could not create video:", er);
           })
-          .finally(() => conf.disMissNotification(notificationId));
+          .finally(() =>
+            window.MICROBOARD_CONFIG.disMissNotification(notificationId),
+          );
       };
       createVideoItem(
         board,

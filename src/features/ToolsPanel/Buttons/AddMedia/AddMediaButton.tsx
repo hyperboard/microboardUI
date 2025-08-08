@@ -5,7 +5,6 @@ import { notify } from "shared/ui-lib/Toast/index";
 import React, { ChangeEventHandler, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { UiButton } from "shared/ui-lib/UiButton/index";
-import { conf } from "microboard-temp";
 import { mediaApi } from "shared/api";
 import { validateMediaFile } from "App/MediaHelpers";
 
@@ -78,7 +77,10 @@ export function AddMediaButton({
 
     switch (type) {
       case "Video":
-        if (!fileExtension || !conf.VIDEO_FORMATS.includes(fileExtension)) {
+        if (
+          !fileExtension ||
+          !window.MICROBOARD_CONFIG.VIDEO_FORMATS.includes(fileExtension)
+        ) {
           return notifyAboutUnsupportedFormat();
         }
         mediaApi.uploadVideo(
@@ -90,7 +92,10 @@ export function AddMediaButton({
         );
         break;
       case "Audio":
-        if (!fileExtension || !conf.AUDIO_FORMATS.includes(fileExtension)) {
+        if (
+          !fileExtension ||
+          !window.MICROBOARD_CONFIG.AUDIO_FORMATS.includes(fileExtension)
+        ) {
           return notifyAboutUnsupportedFormat();
         }
         mediaApi.uploadAudio(
@@ -112,11 +117,11 @@ export function AddMediaButton({
   let accept = "image/*,application/pdf";
 
   if (type === "Video") {
-    accept = conf.VIDEO_MIME_TYPES.join(",");
+    accept = window.MICROBOARD_CONFIG.VIDEO_MIME_TYPES.join(",");
   }
 
   if (type === "Audio") {
-    accept = conf.AUDIO_MIME_TYPES.join(",");
+    accept = window.MICROBOARD_CONFIG.AUDIO_MIME_TYPES.join(",");
   }
 
   return (
