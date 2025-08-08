@@ -16,7 +16,6 @@ import styles from "./UserPlanModal.module.css";
 import { UserPlanUsage } from "./UserPlanUsage";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
-import { conf } from "microboard-temp";
 
 export const USER_PLAN_MODAL_ID = "USER_PLAN_MODAL_ID";
 
@@ -48,7 +47,11 @@ export function UserPlanModal() {
         <h1 className={styles.heading}>{t("userPlan.upgradePlan")}</h1>
         <UserPlanUsage
           isFree={account.billingInfo?.plan.name === "basic"}
-          planName={conf.planNames[account.billingInfo?.plan.name ?? "basic"]}
+          planName={
+            window.MICROBOARD_CONFIG.planNames[
+              account.billingInfo?.plan.name ?? "basic"
+            ]
+          }
           status={account.billingInfo?.plan.status ?? "active"}
           cancellationDate={account.billingInfo?.plan.endDate}
         />

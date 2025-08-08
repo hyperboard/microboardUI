@@ -16,7 +16,7 @@ import {
 import { AI_UNAVAILABLE_MODAL_ID } from "features/AiUnavailableModal/AiUnavailableModal";
 import { useAppContext } from "features/AppContext";
 import { USER_PLAN_MODAL_ID } from "features/UserPlan/UserPlanModal";
-import { AINode, conf, getControlPointData } from "microboard-temp";
+import { AINode, getControlPointData } from "microboard-temp";
 import React, { useState, type PropsWithChildren } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -51,7 +51,7 @@ interface Context {
 }
 
 export const AIContext = createStrictContext<Context>();
-const DEFAULT_NODE_WIDTH = conf.AI_NODE_DEFAULT_NODE_WIDTH;
+const DEFAULT_NODE_WIDTH = window.MICROBOARD_CONFIG.AI_NODE_DEFAULT_NODE_WIDTH;
 
 export function useAIContext() {
   return useStrictContext(AIContext);

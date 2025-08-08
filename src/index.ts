@@ -1,5 +1,4 @@
 export { App, createApp } from "App";
-export { frontConf } from "Config";
 export { customCursors } from "features/Cursors";
 export { initInter } from "initI18N";
 export * from "shared/api";

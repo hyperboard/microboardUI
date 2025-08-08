@@ -1,4 +1,6 @@
 import { App } from "App";
+import { frontConf } from "Config";
+import { conf } from "microboard-temp";
 
 declare module "*.css";
 declare module "*.module.css";
@@ -21,6 +23,8 @@ declare global {
     enableDiagrams: boolean;
     enableLogger: () => void;
     disableLogger: () => void;
+    MICROBOARD_CONFIG: typeof conf;
+    MICROBOARD_FRONT_CONFIG: typeof frontConf;
   }
 }
 

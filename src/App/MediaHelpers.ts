@@ -1,46 +1,54 @@
-import { conf } from "microboard-temp";
 import { Account } from "entities/account/Account";
 
 export const validateMediaFile = (file: File, account: Account): boolean => {
   const fileExtension = file.name.split(".").pop()?.toLowerCase() || "";
   if (
     !file.type.startsWith("image") &&
-    !conf.AUDIO_FORMATS.includes(fileExtension) &&
-    !conf.VIDEO_FORMATS.includes(fileExtension)
+    !window.MICROBOARD_CONFIG.AUDIO_FORMATS.includes(fileExtension) &&
+    !window.MICROBOARD_CONFIG.VIDEO_FORMATS.includes(fileExtension)
   ) {
-    conf.notify({
+    window.MICROBOARD_CONFIG.notify({
       variant: "warning",
-      header: conf.i18n.t("toolsPanel.addMedia.unsupportedFormat.header"),
-      body: conf.i18n.t("toolsPanel.addMedia.unsupportedFormat.body"),
+      header: window.MICROBOARD_CONFIG.i18n.t(
+        "toolsPanel.addMedia.unsupportedFormat.header",
+      ),
+      body: window.MICROBOARD_CONFIG.i18n.t(
+        "toolsPanel.addMedia.unsupportedFormat.body",
+      ),
       duration: 4000,
     });
     return false;
   }
 
   const isBasicPlan = account.billingInfo?.plan.name === "basic";
-  let errorBody = conf.i18n.t(
+  let errorBody = window.MICROBOARD_CONFIG.i18n.t(
     `toolsPanel.addMedia.tooLarge.imageBody.${isBasicPlan ? "basic" : "plus"}`,
   );
 
   if (
-    conf.AUDIO_FORMATS.includes(fileExtension) ||
-    conf.VIDEO_FORMATS.includes(fileExtension)
+    window.MICROBOARD_CONFIG.AUDIO_FORMATS.includes(fileExtension) ||
+    window.MICROBOARD_CONFIG.VIDEO_FORMATS.includes(fileExtension)
   ) {
-    errorBody = conf.i18n.t(
+    errorBody = window.MICROBOARD_CONFIG.i18n.t(
       `toolsPanel.addMedia.tooLarge.audioOrVideoBody.${isBasicPlan ? "basic" : "plus"}`,
     );
     if (
       file.size / 1024 ** 2 >
       (account.billingInfo?.storage.maxMediaSize || Infinity)
     ) {
-      conf.notify({
+      window.MICROBOARD_CONFIG.notify({
         variant: "warning",
-        header: conf.i18n.t("toolsPanel.addMedia.tooLarge.header"),
+        header: window.MICROBOARD_CONFIG.i18n.t(
+          "toolsPanel.addMedia.tooLarge.header",
+        ),
         body: errorBody,
         button: isBasicPlan
           ? {
-              text: conf.i18n.t("toolsPanel.addMedia.upgradeToPlus"),
-              onClick: () => conf.openModal("USER_PLAN_MODAL_ID"),
+              text: window.MICROBOARD_CONFIG.i18n.t(
+                "toolsPanel.addMedia.upgradeToPlus",
+              ),
+              onClick: () =>
+                window.MICROBOARD_CONFIG.openModal("USER_PLAN_MODAL_ID"),
             }
           : undefined,
         duration: 4000,
@@ -51,14 +59,19 @@ export const validateMediaFile = (file: File, account: Account): boolean => {
     file.size / 1024 ** 2 >
     (account.billingInfo?.storage.maxImageSize || Infinity)
   ) {
-    conf.notify({
+    window.MICROBOARD_CONFIG.notify({
       variant: "warning",
-      header: conf.i18n.t("toolsPanel.addMedia.tooLarge.header"),
+      header: window.MICROBOARD_CONFIG.i18n.t(
+        "toolsPanel.addMedia.tooLarge.header",
+      ),
       body: errorBody,
       button: isBasicPlan
         ? {
-            text: conf.i18n.t("toolsPanel.addMedia.upgradeToPlus"),
-            onClick: () => conf.openModal("USER_PLAN_MODAL_ID"),
+            text: window.MICROBOARD_CONFIG.i18n.t(
+              "toolsPanel.addMedia.upgradeToPlus",
+            ),
+            onClick: () =>
+              window.MICROBOARD_CONFIG.openModal("USER_PLAN_MODAL_ID"),
           }
         : undefined,
       duration: 4000,
@@ -70,17 +83,25 @@ export const validateMediaFile = (file: File, account: Account): boolean => {
 
 export const catchDuplicateErrorResponse = async (response: Response) => {
   if (response.status === 403) {
-    conf.notify({
+    window.MICROBOARD_CONFIG.notify({
       variant: "warning",
-      header: conf.i18n.t("toolsPanel.addMedia.limitReached.header"),
-      body: conf.i18n.t("toolsPanel.addMedia.limitReached.duplicateBody"),
+      header: window.MICROBOARD_CONFIG.i18n.t(
+        "toolsPanel.addMedia.limitReached.header",
+      ),
+      body: window.MICROBOARD_CONFIG.i18n.t(
+        "toolsPanel.addMedia.limitReached.duplicateBody",
+      ),
       duration: 4000,
     });
   } else {
-    conf.notify({
+    window.MICROBOARD_CONFIG.notify({
       variant: "error",
-      header: conf.i18n.t("toolsPanel.addMedia.unhandled.header"),
-      body: conf.i18n.t("toolsPanel.addMedia.unhandled.body"),
+      header: window.MICROBOARD_CONFIG.i18n.t(
+        "toolsPanel.addMedia.unhandled.header",
+      ),
+      body: window.MICROBOARD_CONFIG.i18n.t(
+        "toolsPanel.addMedia.unhandled.body",
+      ),
       duration: 4000,
     });
   }
@@ -93,78 +114,98 @@ export const catchMediaErrorResponse = async (
 ) => {
   if (response.status === 403) {
     const data = await response.json();
-    let errorBody = conf.i18n.t(
+    let errorBody = window.MICROBOARD_CONFIG.i18n.t(
       "toolsPanel.addMedia.limitReached.bodyWithoutLimit",
     );
     if (!data.isOwnerRequest) {
-      errorBody = conf.i18n.t("toolsPanel.addMedia.limitReached.bodyOwner");
+      errorBody = window.MICROBOARD_CONFIG.i18n.t(
+        "toolsPanel.addMedia.limitReached.bodyOwner",
+      );
     } else if (data.currentUsage && data.storageLimit) {
-      errorBody = conf.i18n.t(
+      errorBody = window.MICROBOARD_CONFIG.i18n.t(
         `toolsPanel.addMedia.limitReached.body.${
           parseInt(data.storageLimit) < 100_000 ? "basic" : "plus"
         }`,
       );
     }
-    conf.notify({
+    window.MICROBOARD_CONFIG.notify({
       variant: "warning",
-      header: conf.i18n.t("toolsPanel.addMedia.limitReached.header"),
+      header: window.MICROBOARD_CONFIG.i18n.t(
+        "toolsPanel.addMedia.limitReached.header",
+      ),
       body: errorBody,
       button:
         data.isOwnerRequest && data.storageLimit <= 100
           ? {
-              text: conf.i18n.t("toolsPanel.addMedia.upgradeToPlus"),
-              onClick: () => conf.openModal("USER_PLAN_MODAL_ID"),
+              text: window.MICROBOARD_CONFIG.i18n.t(
+                "toolsPanel.addMedia.upgradeToPlus",
+              ),
+              onClick: () =>
+                window.MICROBOARD_CONFIG.openModal("USER_PLAN_MODAL_ID"),
             }
           : undefined,
       duration: 8000,
     });
   } else if (response.status === 413) {
     const data = await response.json();
-    let errorBody = conf.i18n.t(
+    let errorBody = window.MICROBOARD_CONFIG.i18n.t(
       "toolsPanel.addMedia.tooLarge.bodyWithoutLimit",
     );
     let isBasicPlan = false;
     if (data.fileSizeLimit && data.fileSize) {
       if (mediaType === "image") {
         isBasicPlan = parseInt(data.fileSizeLimit) < 20;
-        errorBody = conf.i18n.t(
+        errorBody = window.MICROBOARD_CONFIG.i18n.t(
           `toolsPanel.addMedia.tooLarge.imageBody.${isBasicPlan ? "basic" : "plus"}`,
         );
       } else {
         isBasicPlan = parseInt(data.fileSizeLimit) < 1000;
-        errorBody = conf.i18n.t(
+        errorBody = window.MICROBOARD_CONFIG.i18n.t(
           `toolsPanel.addMedia.tooLarge.audioOrVideoBody.${
             isBasicPlan ? "basic" : "plus"
           }`,
         );
       }
     }
-    conf.notify({
+    window.MICROBOARD_CONFIG.notify({
       variant: "warning",
-      header: conf.i18n.t("toolsPanel.addMedia.tooLarge.header"),
+      header: window.MICROBOARD_CONFIG.i18n.t(
+        "toolsPanel.addMedia.tooLarge.header",
+      ),
       body: errorBody,
       button: isBasicPlan
         ? {
-            text: conf.i18n.t("toolsPanel.addMedia.upgradeToPlus"),
-            onClick: () => conf.openModal("USER_PLAN_MODAL_ID"),
+            text: window.MICROBOARD_CONFIG.i18n.t(
+              "toolsPanel.addMedia.upgradeToPlus",
+            ),
+            onClick: () =>
+              window.MICROBOARD_CONFIG.openModal("USER_PLAN_MODAL_ID"),
           }
         : undefined,
       duration: 4000,
     });
   } else if (response.status === 401) {
-    conf.openModal("MEDIA_UNAVAILABLE_MODAL_ID");
+    window.MICROBOARD_CONFIG.openModal("MEDIA_UNAVAILABLE_MODAL_ID");
   } else if (response.status === 415) {
-    conf.notify({
+    window.MICROBOARD_CONFIG.notify({
       variant: "warning",
-      header: conf.i18n.t("toolsPanel.addMedia.unsupportedFormat.header"),
-      body: conf.i18n.t("toolsPanel.addMedia.unsupportedFormat.body"),
+      header: window.MICROBOARD_CONFIG.i18n.t(
+        "toolsPanel.addMedia.unsupportedFormat.header",
+      ),
+      body: window.MICROBOARD_CONFIG.i18n.t(
+        "toolsPanel.addMedia.unsupportedFormat.body",
+      ),
       duration: 4000,
     });
   } else {
-    conf.notify({
+    window.MICROBOARD_CONFIG.notify({
       variant: "error",
-      header: conf.i18n.t("toolsPanel.addMedia.unhandled.header"),
-      body: conf.i18n.t("toolsPanel.addMedia.unhandled.body"),
+      header: window.MICROBOARD_CONFIG.i18n.t(
+        "toolsPanel.addMedia.unhandled.header",
+      ),
+      body: window.MICROBOARD_CONFIG.i18n.t(
+        "toolsPanel.addMedia.unhandled.body",
+      ),
       duration: 4000,
     });
   }

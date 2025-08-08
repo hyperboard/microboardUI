@@ -1,9 +1,6 @@
-import { conf } from "microboard-temp";
-const { i18n } = conf;
-
 export function getEmailPrefix(
   email: string | null,
-  placeholder = i18n.t("common.anonymous"),
+  placeholder = window.MICROBOARD_CONFIG.i18n.t("common.anonymous"),
 ): string {
   const atIndex = email?.indexOf("@");
   if (email === null || atIndex === -1) {

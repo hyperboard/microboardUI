@@ -8,6 +8,7 @@ window.enableTemplateCreating = false;
 window.enableDiagrams = false;
 window.enableVideos = true;
 window.enableGames = true;
+window.microboardFrontendConfig.apiURL = "testurl";
 
 async function initializeApp() {
   await initInter();

@@ -1,6 +1,5 @@
 import type { Account } from "entities/account";
-import { conf } from "microboard-temp";
-import { boardsApi, foldersApi } from "shared/api";
+import { boardsApi, foldersApi } from "2shared/api";
 import { Subject } from "shared/Subject";
 import { Storage } from "./Storage";
 
@@ -297,9 +296,15 @@ export class BoardsList {
       this.updateEmptyTitles(this.rootFolder);
       this.updateEmptyTitles(this.sharedFolder);
       this.updateEmptyTitles(this.draftsFolder);
-      this.rootFolder.title = conf.i18n.t("sidePanel.folders.myBoards");
-      this.sharedFolder.title = conf.i18n.t("sidePanel.folders.sharedBoards");
-      this.draftsFolder.title = conf.i18n.t("sidePanel.folders.publicDrafts");
+      this.rootFolder.title = window.MICROBOARD_CONFIG.i18n.t(
+        "sidePanel.folders.myBoards",
+      );
+      this.sharedFolder.title = window.MICROBOARD_CONFIG.i18n.t(
+        "sidePanel.folders.sharedBoards",
+      );
+      this.draftsFolder.title = window.MICROBOARD_CONFIG.i18n.t(
+        "sidePanel.folders.publicDrafts",
+      );
       this.isLoading = false;
       this.subject.publish();
     } else {
@@ -308,9 +313,12 @@ export class BoardsList {
         items: this.storage.listCreatedBoards().map((board) => ({
           ...board,
           itemType: "board",
-          title: board.title || conf.i18n.t("board.untitled"),
+          title:
+            board.title || window.MICROBOARD_CONFIG.i18n.t("board.untitled"),
         })),
-        title: conf.i18n.t("sidePanel.folders.publicDrafts"),
+        title: window.MICROBOARD_CONFIG.i18n.t(
+          "sidePanel.folders.publicDrafts",
+        ),
         type: foldersApi.FolderType.DRAFTS,
       };
       this.sharedFolder = {
@@ -318,9 +326,12 @@ export class BoardsList {
         items: this.storage.listVisitedBoards().map((board) => ({
           ...board,
           itemType: "board" as const,
-          title: board.title || conf.i18n.t("board.untitled"),
+          title:
+            board.title || window.MICROBOARD_CONFIG.i18n.t("board.untitled"),
         })),
-        title: conf.i18n.t("sidePanel.folders.sharedBoards"),
+        title: window.MICROBOARD_CONFIG.i18n.t(
+          "sidePanel.folders.sharedBoards",
+        ),
         type: foldersApi.FolderType.VISITED,
       };
       this.draftsFolder = null;
@@ -354,7 +365,7 @@ export class BoardsList {
     }
     for (const item of folder.items) {
       if (!item.title) {
-        item.title = conf.i18n.t("board.untitled");
+        item.title = window.MICROBOARD_CONFIG.i18n.t("board.untitled");
       }
       if (item.itemType === "folder") {
         this.updateEmptyTitles(item as foldersApi.Folder);
@@ -410,7 +421,7 @@ export class BoardsList {
   }
 
   async rename(boardId: string, name: string): Promise<void> {
-    if (name === conf.i18n.t("board.untitled")) {
+    if (name === window.MICROBOARD_CONFIG.i18n.t("board.untitled")) {
       return;
     }
 
@@ -419,7 +430,7 @@ export class BoardsList {
       return;
     }
 
-    board.title = name || conf.i18n.t("board.untitled");
+    board.title = name || window.MICROBOARD_CONFIG.i18n.t("board.untitled");
 
     this.subject.publish();
 
@@ -441,7 +452,7 @@ export class BoardsList {
       return;
     }
 
-    if (name === conf.i18n.t("board.untitled")) {
+    if (name === window.MICROBOARD_CONFIG.i18n.t("board.untitled")) {
       return;
     }
 
@@ -451,7 +462,7 @@ export class BoardsList {
       return;
     }
 
-    folder.title = name || conf.i18n.t("board.untitled");
+    folder.title = name || window.MICROBOARD_CONFIG.i18n.t("board.untitled");
 
     this.subject.publish();
 

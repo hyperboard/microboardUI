@@ -6,7 +6,6 @@ import { useAppContext } from "features/AppContext";
 import { getApiUrl } from "Config";
 import Cookies from "js-cookie";
 import styles from "./CreateTemplateModal.module.css";
-import { conf } from "microboard-temp";
 import { useTolgee } from "@tolgee/react";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { notify } from "shared/ui-lib/Toast/notify";
@@ -49,18 +48,20 @@ const CreateTemplate = (): React.JSX.Element => {
   const { closeModal } = useUiModalContext();
   const forceUpdate = useForceUpdate();
 
-  const categories = conf.TEMPLATE_CATEGORIES.map((category) => {
-    return {
-      value: category,
-      label: t(`modalTemplate.category.useCaseItems.${category}`),
-    };
-  });
+  const categories = window.MICROBOARD_CONFIG.TEMPLATE_CATEGORIES.map(
+    (category) => {
+      return {
+        value: category,
+        label: t(`modalTemplate.category.useCaseItems.${category}`),
+      };
+    },
+  );
 
   const hideModalAndResetForm = () => {
     formRef.current?.reset();
     categoriesSelectorRef.current?.setSelectedOptions([categories[0]]);
     languagesSelectorRef.current?.setSelectedOptions([
-      conf.TEMPLATE_LANGUAGES[0],
+      window.MICROBOARD_CONFIG.TEMPLATE_LANGUAGES[0],
     ]);
   };
 
@@ -321,7 +322,7 @@ const CreateTemplate = (): React.JSX.Element => {
         formRef.current?.reset();
         categoriesSelectorRef.current?.setSelectedOptions([categories[0]]);
         languagesSelectorRef.current?.setSelectedOptions([
-          conf.TEMPLATE_LANGUAGES[0],
+          window.MICROBOARD_CONFIG.TEMPLATE_LANGUAGES[0],
         ]);
         notify({
           body: t("template.createSuccess"),
@@ -383,7 +384,7 @@ const CreateTemplate = (): React.JSX.Element => {
         </UiButton>
         <Selector
           multiselect={true}
-          options={conf.TEMPLATE_LANGUAGES.map((item) => {
+          options={window.MICROBOARD_CONFIG.TEMPLATE_LANGUAGES.map((item) => {
             item.label = t(`common.languages.${item.value}`);
             return item;
           })}

@@ -2,7 +2,6 @@ import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
 import { TextHighlightIndicator } from "shared/ui-lib/Icon";
 import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
-import { conf } from "microboard-temp";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -31,7 +30,8 @@ export function TextHighlight(): React.ReactElement | null {
     const rgbColor = convertHexToRGBA(color, false);
     board.selection.setFontHighlight(rgbColor);
   };
-  const isPredefinedColor = conf.TEXT_HIGHLIGHT_COLORS.includes(highlightColor);
+  const isPredefinedColor =
+    window.MICROBOARD_CONFIG.TEXT_HIGHLIGHT_COLORS.includes(highlightColor);
   return (
     <ButtonWithMenu
       menuName={MENU_NAME}
@@ -64,7 +64,7 @@ export function TextHighlight(): React.ReactElement | null {
         >
           <ColorPicker
             id={"TextHighlight"}
-            colors={conf.TEXT_HIGHLIGHT_COLORS}
+            colors={window.MICROBOARD_CONFIG.TEXT_HIGHLIGHT_COLORS}
             selectedColor={highlightColor}
             onPick={handlePick}
           />

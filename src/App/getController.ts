@@ -1,6 +1,5 @@
 import {
   Board,
-  conf,
   prepareImage,
   ImageItem,
   ImageItemData,
@@ -630,7 +629,10 @@ export function getController(
       return;
     }
 
-    if (fileExtension && conf.VIDEO_FORMATS.includes(fileExtension)) {
+    if (
+      fileExtension &&
+      window.MICROBOARD_CONFIG.VIDEO_FORMATS.includes(fileExtension)
+    ) {
       mediaApi.uploadVideo(
         file,
         board,
@@ -639,7 +641,10 @@ export function getController(
         account.accessToken,
       );
       return;
-    } else if (fileExtension && conf.AUDIO_FORMATS.includes(fileExtension)) {
+    } else if (
+      fileExtension &&
+      window.MICROBOARD_CONFIG.AUDIO_FORMATS.includes(fileExtension)
+    ) {
       mediaApi.uploadAudio(
         file,
         board,
@@ -676,10 +681,14 @@ export function getController(
         })
         .catch((er) => {
           console.error("Could not create image:", er);
-          conf.notify({
+          window.MICROBOARD_CONFIG.notify({
             variant: "error",
-            header: conf.i18n.t("toolsPanel.addMedia.unhandled.header"),
-            body: conf.i18n.t("toolsPanel.addMedia.unhandled.body"),
+            header: window.MICROBOARD_CONFIG.i18n.t(
+              "toolsPanel.addMedia.unhandled.header",
+            ),
+            body: window.MICROBOARD_CONFIG.i18n.t(
+              "toolsPanel.addMedia.unhandled.body",
+            ),
             duration: 4000,
           });
         });

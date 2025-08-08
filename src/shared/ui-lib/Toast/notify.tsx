@@ -4,7 +4,6 @@ import toast, { ToastPosition } from "react-hot-toast";
 import { Icon } from "shared/ui-lib/Icon";
 import { UiButton } from "../UiButton";
 import style from "./Toast.module.css";
-import { conf } from "microboard-temp";
 import { Loader } from "shared/ui-lib/Loader/Loader";
 
 type Props = {
@@ -97,8 +96,8 @@ export function notify({
   );
 }
 
-conf.notify = notify;
-conf.disMissNotification = toast.dismiss;
+window.MICROBOARD_CONFIG.notify = notify;
+window.MICROBOARD_CONFIG.disMissNotification = toast.dismiss;
 
 export interface NotifyFunction {
   (options: {

@@ -1,5 +1,4 @@
 import {
-  conf,
   getYouTubeThumbnail,
   getYouTubeVideoPreview,
   VideoItem,
@@ -14,7 +13,7 @@ export function tryToPasteVideoByLink(link: string, board: Board): boolean {
     const url = new URL(link);
     url.pathname = url.pathname.replace("/shorts/", "/embed/");
     const finalUrl = url.toString();
-    const youtubeId = conf.getYouTubeId(finalUrl);
+    const youtubeId = window.MICROBOARD_CONFIG.getYouTubeId(finalUrl);
     if (youtubeId) {
       createVideoItem(finalUrl, youtubeId, board);
       return true;

@@ -1,6 +1,5 @@
 import { SessionStorage } from "App/SessionStorage";
 import {
-  conf,
   Matrix,
   Item,
   AINode,
@@ -77,10 +76,10 @@ export function calculateNodePosition(
   const currData = selectedItem?.serialize() || null;
   const newNodeData = newNode.serialize();
   let width = isImage
-    ? conf.AI_NODE_DEFAULT_NODE_WIDTH
-    : currMbr?.getWidth() > conf.AI_NODE_DEFAULT_NODE_WIDTH
+    ? window.MICROBOARD_CONFIG.AI_NODE_DEFAULT_NODE_WIDTH
+    : currMbr?.getWidth() > window.MICROBOARD_CONFIG.AI_NODE_DEFAULT_NODE_WIDTH
       ? currMbr.getWidth()
-      : conf.AI_NODE_DEFAULT_NODE_WIDTH;
+      : window.MICROBOARD_CONFIG.AI_NODE_DEFAULT_NODE_WIDTH;
   const height = currMbr?.getHeight() || offsetY;
   const adjustmentIndex =
     selectedItem.itemType === "AINode" ? selectedItem.getThreadDirection() : 3;
@@ -191,7 +190,7 @@ function calculateParentItemPosition(
 
   const iterAdjustment = [
     { x: 0, y: 1.5 },
-    { x: conf.AI_NODE_DEFAULT_NODE_WIDTH / 2, y: 0 },
+    { x: window.MICROBOARD_CONFIG.AI_NODE_DEFAULT_NODE_WIDTH / 2, y: 0 },
   ];
 
   const cameraMbr = board.camera.getMbr();
@@ -209,7 +208,7 @@ function calculateParentItemPosition(
           20,
           (otherItem: Item) =>
             otherItem.itemType !== "Connector" && otherItem.isInView(cameraMbr),
-          conf.AI_NODE_DEFAULT_NODE_WIDTH,
+          window.MICROBOARD_CONFIG.AI_NODE_DEFAULT_NODE_WIDTH,
         ).length === 0
       ) {
         nearbyItemMbr = item.getMbr().copy();
@@ -219,7 +218,7 @@ function calculateParentItemPosition(
 
   let bestPosition = iterAdjustment[1];
   let step = 0.5;
-  let maxDistance = conf.AI_NODE_DEFAULT_NODE_WIDTH;
+  let maxDistance = window.MICROBOARD_CONFIG.AI_NODE_DEFAULT_NODE_WIDTH;
   if (board.selection.items.list().length) {
     nearbyItemMbr = board.selection.items.getMbr()?.copy()!;
     bestPosition = iterAdjustment[0];
@@ -304,7 +303,7 @@ export function createNode(
     nodeRichText.setSelectionHorisontalAlignment("left");
     nodeRichText.container.right = nodeRichText.container.left + 600;
     nodeRichText.editor.insertCopiedText(
-      conf.i18n.t("AIInput.awaitingImageGeneration"),
+      window.MICROBOARD_CONFIG.i18n.t("AIInput.awaitingImageGeneration"),
     );
     node.setId(crypto.randomUUID());
   } else {
@@ -321,7 +320,8 @@ export function createNode(
     nodeRichText.container.right = nodeRichText.container.left + 600;
     if (withPlaceholder) {
       nodeRichText.editor.insertCopiedText(
-        conf.i18n.t("AIInput.generatingResponse") + PLACEHOLDER_OFFSET,
+        window.MICROBOARD_CONFIG.i18n.t("AIInput.generatingResponse") +
+          PLACEHOLDER_OFFSET,
       );
     } else {
       nodeRichText.editor.insertCopiedText(inputValue);

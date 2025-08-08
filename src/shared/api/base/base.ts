@@ -1,4 +1,4 @@
-import { frontConf, getApiUrl } from "Config";
+import { getApiUrl } from "Config";
 import { createSearchParams, type URLSearchParamsInit } from "react-router-dom";
 import { HTTPError } from "./httpError";
 import { HTTPResponse } from "./httpResponse";
@@ -9,8 +9,6 @@ import type {
   MutationRequestBody,
   ParamsRecord,
 } from "./types";
-import { conf } from "microboard-temp";
-const { i18n } = conf;
 
 const RETRY_DELAY = 5_000;
 const RETRY_ATTEMPTS = 3;
@@ -27,12 +25,12 @@ export class HTTP {
   }
 
   updateURL(customURL?: string) {
-    if (frontConf.apiURL) {
-      this.baseURL = frontConf.apiURL;
+    if (window.MICROBOARD_FRONT_CONFIG.apiURL) {
+      this.baseURL = window.MICROBOARD_FRONT_CONFIG.apiURL;
     }
     if (customURL) {
       this.baseURL = customURL;
-      frontConf.apiURL = customURL;
+      window.MICROBOARD_FRONT_CONFIG.apiURL = customURL;
     }
   }
 
@@ -90,7 +88,7 @@ export class HTTP {
               ...this.headers,
               ...modifiedConfig.headers,
               ...config.headers,
-              "x-client-language": i18n.language,
+              "x-client-language": window.MICROBOARD_CONFIG.i18n.language,
             },
             credentials: "include",
           },

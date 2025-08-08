@@ -21,7 +21,6 @@ import { Descendant } from "slate";
 import type { HorisontalAlignment } from "microboard-temp";
 import {
   Board,
-  conf,
   Sticker,
   ImageItem,
   Connector,
@@ -91,22 +90,22 @@ const TEXT_VERTICAL_ALIGNMENT = {
 };
 
 const STICKER_COLOR = {
-  dark_blue: conf.STICKER_COLORS[2],
-  blue: conf.STICKER_COLORS[2],
-  light_blue: conf.STICKER_COLORS[3],
-  red: conf.STICKER_COLORS[1],
-  orange: conf.STICKER_COLORS[6],
-  violet: conf.STICKER_COLORS[0],
-  pink: conf.STICKER_COLORS[1],
-  light_pink: conf.STICKER_COLORS[1],
-  cyan: conf.STICKER_COLORS[5],
-  dark_green: conf.STICKER_COLORS[4],
-  green: conf.STICKER_COLORS[4],
-  light_green: conf.STICKER_COLORS[4],
-  yellow: conf.STICKER_COLORS[7],
-  light_yellow: conf.STICKER_COLORS[7],
-  gray: conf.STICKER_COLORS[8],
-  black: conf.STICKER_COLORS[9],
+  dark_blue: window.MICROBOARD_CONFIG.STICKER_COLORS[2],
+  blue: window.MICROBOARD_CONFIG.STICKER_COLORS[2],
+  light_blue: window.MICROBOARD_CONFIG.STICKER_COLORS[3],
+  red: window.MICROBOARD_CONFIG.STICKER_COLORS[1],
+  orange: window.MICROBOARD_CONFIG.STICKER_COLORS[6],
+  violet: window.MICROBOARD_CONFIG.STICKER_COLORS[0],
+  pink: window.MICROBOARD_CONFIG.STICKER_COLORS[1],
+  light_pink: window.MICROBOARD_CONFIG.STICKER_COLORS[1],
+  cyan: window.MICROBOARD_CONFIG.STICKER_COLORS[5],
+  dark_green: window.MICROBOARD_CONFIG.STICKER_COLORS[4],
+  green: window.MICROBOARD_CONFIG.STICKER_COLORS[4],
+  light_green: window.MICROBOARD_CONFIG.STICKER_COLORS[4],
+  yellow: window.MICROBOARD_CONFIG.STICKER_COLORS[7],
+  light_yellow: window.MICROBOARD_CONFIG.STICKER_COLORS[7],
+  gray: window.MICROBOARD_CONFIG.STICKER_COLORS[8],
+  black: window.MICROBOARD_CONFIG.STICKER_COLORS[9],
 };
 
 const SHAPE_TYPES = {
@@ -290,7 +289,8 @@ export const useCopyBoardItems = (
       const stickerColor =
         item &&
         item.itemType === "Sticker" &&
-        item.getBackgroundColor() === conf.STICKER_COLORS[7] &&
+        item.getBackgroundColor() ===
+          window.MICROBOARD_CONFIG.STICKER_COLORS[7] &&
         "white";
       const textColor =
         textStyles?.color || style?.color || stickerColor || "black";

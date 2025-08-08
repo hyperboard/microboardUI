@@ -11,9 +11,6 @@ import stickerLightGray from "./sticker/sticker-light-gray.svg";
 import stickerGray from "./sticker/sticker-gray.svg";
 import eraser from "./eraser.svg";
 import comment from "./comment.svg";
-import { conf } from "microboard-temp";
-
-const { cursorsMap } = conf;
 
 function svgToBase64(svg) {
   return btoa(svg);
@@ -23,24 +20,31 @@ function svgToDataUri(svg) {
   return `data:image/svg+xml;base64,${svgToBase64(svg)}`;
 }
 
-cursorsMap["eraser"] = `url(${svgToDataUri(eraser)}) -10 10, auto`;
-cursorsMap["pen"] = `url(${svgToDataUri(pencil)}) 1 24, auto`;
-cursorsMap["comment"] = `url(${svgToDataUri(comment)}) 1 24, auto`;
-cursorsMap["sticker-purple"] =
+window.MICROBOARD_CONFIG.cursorsMap["eraser"] =
+  `url(${svgToDataUri(eraser)}) -10 10, auto`;
+window.MICROBOARD_CONFIG.cursorsMap["pen"] =
+  `url(${svgToDataUri(pencil)}) 1 24, auto`;
+window.MICROBOARD_CONFIG.cursorsMap["comment"] =
+  `url(${svgToDataUri(comment)}) 1 24, auto`;
+window.MICROBOARD_CONFIG.cursorsMap["sticker-purple"] =
   `url(${svgToDataUri(stickerPurple)}) 12 12, auto`;
-cursorsMap["sticker-pink"] = `url(${svgToDataUri(stickerPink)}) 12 12, auto`;
-cursorsMap["sticker-sky-blue"] =
+window.MICROBOARD_CONFIG.cursorsMap["sticker-pink"] =
+  `url(${svgToDataUri(stickerPink)}) 12 12, auto`;
+window.MICROBOARD_CONFIG.cursorsMap["sticker-sky-blue"] =
   `url(${svgToDataUri(stickerSkyBlue)}) 12 12, auto`;
-cursorsMap["sticker-blue"] = `url(${svgToDataUri(stickerBlue)}) 12 12, auto`;
-cursorsMap["sticker-green"] = `url(${svgToDataUri(stickerGreen)}) 12 12, auto`;
-cursorsMap["sticker-light-green"] =
+window.MICROBOARD_CONFIG.cursorsMap["sticker-blue"] =
+  `url(${svgToDataUri(stickerBlue)}) 12 12, auto`;
+window.MICROBOARD_CONFIG.cursorsMap["sticker-green"] =
+  `url(${svgToDataUri(stickerGreen)}) 12 12, auto`;
+window.MICROBOARD_CONFIG.cursorsMap["sticker-light-green"] =
   `url(${svgToDataUri(stickerLightGreen)}) 12 12, auto`;
-cursorsMap["sticker-orange"] =
+window.MICROBOARD_CONFIG.cursorsMap["sticker-orange"] =
   `url(${svgToDataUri(stickerOrange)}) 12 12, auto`;
-cursorsMap["sticker-yellow"] =
+window.MICROBOARD_CONFIG.cursorsMap["sticker-yellow"] =
   `url(${svgToDataUri(stickerYellow)}) 12 12, auto`;
-cursorsMap["sticker-light-gray"] =
+window.MICROBOARD_CONFIG.cursorsMap["sticker-light-gray"] =
   `url(${svgToDataUri(stickerLightGray)}) 12 12, auto`;
-cursorsMap["sticker-gray"] = `url(${svgToDataUri(stickerGray)}) 12 12, auto`;
+window.MICROBOARD_CONFIG.cursorsMap["sticker-gray"] =
+  `url(${svgToDataUri(stickerGray)}) 12 12, auto`;
 
 export default {};

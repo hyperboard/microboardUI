@@ -4,7 +4,7 @@ import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
 import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
 import { SliderPicker } from "features/Pickers/SliderPicker/SliderPicker";
-import { conf, getHotkeyLabel } from "microboard-temp";
+import { getHotkeyLabel } from "microboard-temp";
 import { UiColorInput } from "shared/ui-lib/UiColorInput";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import { ButtonWithMenu } from "../../ButtonWithMenu";
@@ -69,7 +69,7 @@ export function AddPen() {
     }
   };
 
-  const isPredefinedColor = conf.PEN_COLORS.some(
+  const isPredefinedColor = window.MICROBOARD_CONFIG.PEN_COLORS.some(
     (color) => color === selectedColor,
   );
 
@@ -96,9 +96,9 @@ export function AddPen() {
         <div className={style.slider}>
           <SliderPicker
             onPick={handleSliderPick}
-            min={conf.PEN_MIN_STROKE_WIDTH}
-            max={conf.PEN_MAX_STROKE_WIDTH}
-            step={conf.PEN_STEP_STROKE_WIDTH}
+            min={window.MICROBOARD_CONFIG.PEN_MIN_STROKE_WIDTH}
+            max={window.MICROBOARD_CONFIG.PEN_MAX_STROKE_WIDTH}
+            step={window.MICROBOARD_CONFIG.PEN_STEP_STROKE_WIDTH}
             value={strokeWidth}
             showLabel
           />
@@ -107,7 +107,7 @@ export function AddPen() {
           <ColorPicker
             selectedColor={selectedColor}
             onPick={handleColorPick}
-            colors={conf.PEN_COLORS}
+            colors={window.MICROBOARD_CONFIG.PEN_COLORS}
           />
           <UiColorInput
             color={isPredefinedColor ? "none" : selectedColor}

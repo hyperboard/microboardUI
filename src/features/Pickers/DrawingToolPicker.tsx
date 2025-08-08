@@ -1,6 +1,6 @@
 import React from "react";
 import { Icon } from "../../shared/ui-lib/Icon";
-import { conf, DrawingTool } from "microboard-temp";
+import { DrawingTool } from "microboard-temp";
 import { UiButton } from "shared/ui-lib/UiButton";
 
 type Props = {
@@ -14,7 +14,7 @@ export const DrawingToolPicker = ({
 }: Props): React.ReactElement => {
   return (
     <>
-      {conf.DRAWING_TOOLS.map((drawing) => (
+      {window.MICROBOARD_CONFIG.DRAWING_TOOLS.map((drawing) => (
         <UiButton
           id={`drawing-${drawing}`}
           onClick={() => onPick(drawing)}

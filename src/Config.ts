@@ -1,7 +1,11 @@
+import { conf } from "microboard-temp";
 export const frontConf = {
   apiURL: undefined as string | undefined,
   wsURL: undefined as string | undefined,
 };
+
+window.MICROBOARD_CONFIG = conf;
+window.MICROBOARD_FRONT_CONFIG = frontConf;
 
 const isSnapshotInIframe = false;
 // typeof window !== "undefined" &&
@@ -25,8 +29,8 @@ export function getApiUrl(path?: string): string {
   if (!path) {
     path = "";
   }
-  if (frontConf.apiURL) {
-    return `${frontConf.apiURL}${path}`;
+  if (window.MICROBOARD_FRONT_CONFIG.apiURL) {
+    return `${window.MICROBOARD_FRONT_CONFIG.apiURL}${path}`;
   }
   return `${PROTOCOL}//${HOST}/api/v1${path}`;
 }
@@ -39,8 +43,8 @@ export function getPublicUrl(path?: string): string {
 }
 
 export function getWebsocketUrl(): string {
-  if (frontConf.wsURL) {
-    return frontConf.wsURL;
+  if (window.MICROBOARD_FRONT_CONFIG.wsURL) {
+    return window.MICROBOARD_FRONT_CONFIG.wsURL;
   }
   return `${PROTOCOL === "https:" ? "wss" : "ws"}://${HOST}/ws`;
 }
@@ -48,8 +52,8 @@ export function getApiUrlV2(path?: string): string {
   if (!path) {
     path = "";
   }
-  if (frontConf.apiURL) {
-    return `${frontConf.apiURL}${path}`;
+  if (window.MICROBOARD_FRONT_CONFIG.apiURL) {
+    return `${window.MICROBOARD_FRONT_CONFIG.apiURL}${path}`;
   }
   return `${PROTOCOL}//${HOST}/api/v2${path}`;
 }
