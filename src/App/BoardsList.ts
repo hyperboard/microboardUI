@@ -1,5 +1,5 @@
 import type { Account } from "entities/account";
-import { boardsApi, foldersApi } from "2shared/api";
+import { boardsApi, foldersApi } from "shared/api";
 import { Subject } from "shared/Subject";
 import { Storage } from "./Storage";
 
