@@ -2,8 +2,10 @@ import { build, BuildConfig } from "bun";
 import { copyPlugin } from "../bunUtils/copyPlugin";
 import { inlineLinks } from "../bunUtils/inlineLinks";
 import { outdir, baseConfig, entrypoints } from "./buildConfig";
+import { envFallbackPlugin, injectEnvTag } from "../bunUtils";
 
 async function main() {
+  const plugins = [envFallbackPlugin()];
   const result = await build({
     ...baseConfig,
     plugins: [
@@ -11,11 +13,14 @@ async function main() {
         from: "src/public",
         to: outdir,
         bundle: baseConfig,
+        plugins,
       }),
       copyPlugin({
         from: "src/shared/ui-lib/Icon/sprite.svg",
         to: outdir,
+        plugins,
       }),
+      ...plugins,
     ],
   });
 
@@ -25,7 +30,12 @@ async function main() {
     .filter((ep) => ep.endsWith(".html"))
     .map((en) => en.replace(/^[^\/]+\//, "dist/"));
 
-  await Promise.all(htmlEndpoints.map(async (ep) => inlineLinks(ep, outdir)));
+  await Promise.all(
+    htmlEndpoints.map(async (ep) => {
+      await inlineLinks(ep, outdir);
+      await injectEnvTag(ep, "/env.js", "");
+    }),
+  );
 }
 
 main().catch(console.error);
