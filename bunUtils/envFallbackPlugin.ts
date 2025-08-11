@@ -30,6 +30,8 @@ export function envFallbackPlugin(): BunPlugin {
             (_m, _q, key) => `(globalThis.__ENV__?.${key} ?? "")`,
           );
 
+        console.log(`contents of ${args.path}`, contents);
+
         const loader = args.path.endsWith(".tsx")
           ? "tsx"
           : args.path.endsWith(".ts")

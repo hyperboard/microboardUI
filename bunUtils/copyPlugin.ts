@@ -47,9 +47,14 @@ export function copyPlugin(opts: {
   from: string;
   to: string;
   bundle?: BuildConfig;
+  plugins?: BunPlugin[];
   cleanDir?: boolean;
 }): BunPlugin {
-  const { from, to, bundle, cleanDir = true } = opts;
+  const { from, to, bundle, plugins = [], cleanDir = true } = opts;
+  const buildConfig = structuredClone(bundle);
+  if (buildConfig) {
+    buildConfig.plugins = [...(buildConfig.plugins || []), ...plugins];
+  }
 
   return {
     name: "copy-plugin",
@@ -63,7 +68,7 @@ export function copyPlugin(opts: {
 
         const statsFrom = statSync(from);
         if (statsFrom.isFile()) {
-          await processFile(from, join(to, basename(from)), bundle);
+          await processFile(from, join(to, basename(from)), buildConfig);
           return;
         }
         if (!statsFrom.isDirectory()) {
@@ -76,9 +81,9 @@ export function copyPlugin(opts: {
           const stats = statSync(srcPath);
 
           if (stats.isDirectory()) {
-            await processDirectory(srcPath, destPath, bundle);
+            await processDirectory(srcPath, destPath, buildConfig);
           } else {
-            await processFile(srcPath, destPath, bundle);
+            await processFile(srcPath, destPath, buildConfig);
           }
         }
       });
