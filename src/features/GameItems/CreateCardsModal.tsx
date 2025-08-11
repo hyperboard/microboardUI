@@ -6,10 +6,25 @@ import { useTranslation } from "react-i18next";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { useAppContext } from "features/AppContext";
 import { useAccount } from "App/useAccount";
-import { Card, ItemsMap } from "microboard-temp";
+import { Card, conf, ItemsMap } from "microboard-temp";
 import { uploadImages } from "shared/api/media/uploadImage";
 
 export const CREATE_CARDS_MODAL = Symbol("createCardsModal");
+
+const getImageDimensions = (
+  file: File,
+): Promise<{ width: number; height: number }> => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.src = URL.createObjectURL(file);
+    img.onload = () => {
+      resolve({
+        width: img.naturalWidth,
+        height: img.naturalHeight,
+      });
+    };
+  });
+};
 
 export function CreateCardsModal(): React.JSX.Element {
   const { t } = useTranslation();
@@ -29,14 +44,30 @@ export function CreateCardsModal(): React.JSX.Element {
   const handleCoverClick = () => coverInputRef.current?.click();
   const handleCardsClick = () => cardsInputRef.current?.click();
 
-  const createDeck = (backsideUrl: string, faceUrls: string[]) => {
+  const createDeck = (
+    backsideUrl: string,
+    faceUrls: string[],
+    dimensions: { width: number; height: number },
+  ) => {
     const cards: Card[] = [];
+    const { width, height } = dimensions;
+    const { width: defaultWidth, height: defaultHeight } =
+      conf.DEFAULT_GAME_ITEM_DIMENSIONS;
+    const normalizedDimensions =
+      width > height
+        ? { width: (defaultWidth * width) / height, height: defaultHeight }
+        : { width: defaultWidth, height: (defaultHeight * height) / width };
 
     faceUrls.forEach((faceUrl, index) => {
-      const card = new Card(board, index + faceUrl, {
-        backsideUrl,
-        faceUrl,
-      });
+      const card = new Card(
+        board,
+        index + faceUrl,
+        {
+          backsideUrl,
+          faceUrl,
+        },
+        normalizedDimensions,
+      );
       cards.push(card);
     });
 
@@ -80,12 +111,13 @@ export function CreateCardsModal(): React.JSX.Element {
     setLoading(true);
     try {
       if (cards.length > 0 && cover) {
+        const dimensions = await getImageDimensions(cover);
         const urls = await uploadImages(
           [cover, ...cards],
           board.getBoardId(),
           account.accessToken,
         );
-        createDeck(urls[0], urls.slice(1));
+        createDeck(urls[0], urls.slice(1), dimensions);
       }
       closeModal();
     } catch (err) {
