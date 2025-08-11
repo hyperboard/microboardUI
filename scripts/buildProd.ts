@@ -40,6 +40,10 @@ async function cleanUpHTML(htmlEntrypoint: string, dir = outdir) {
 }
 
 async function main() {
+  const plugins = [
+    cdnifyLinksPlugin("https://unpkg.com/microboard-ui-temp/dist"),
+    envFallbackPlugin(),
+  ];
   const result = await build({
     ...baseConfig,
     plugins: [
@@ -47,13 +51,14 @@ async function main() {
         from: "src/public",
         to: outdir,
         bundle: baseConfig,
+        plugins,
       }),
       copyPlugin({
         from: "src/shared/ui-lib/Icon/sprite.svg",
         to: outdir,
+        plugins,
       }),
-      cdnifyLinksPlugin("https://unpkg.com/microboard-ui-temp/dist"),
-      envFallbackPlugin(),
+      ...plugins,
     ],
   });
 
