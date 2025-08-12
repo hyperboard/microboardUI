@@ -24,6 +24,12 @@
       "clockwise": "rotate clockwise",
       "counterclockwise": "rotate counterclockwise"
     },
+    "lockResize": {
+      "tooltip": "Lock resize"
+    },
+    "unlockResize": {
+      "tooltip": "Unlock resize"
+    },
     "connectorAddText": {
       "tooltip": "Add text"
     },

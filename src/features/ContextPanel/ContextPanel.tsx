@@ -59,6 +59,7 @@ import { ThrowDice } from "features/ContextPanel/Buttons/CardGame/Dice/ThrowDice
 import { ChangeRange } from "features/ContextPanel/Buttons/CardGame/Dice/ChangeRange/ChangeRange";
 import { FlipDeck } from "features/ContextPanel/Buttons/CardGame/Deck/FlipDeck";
 import { RotateItem } from "features/ContextPanel/Buttons/RotateItem";
+import { LockResize } from "features/ContextPanel/Buttons/LockResize";
 
 export function ContextPanel(): React.ReactElement | null {
   const { app, board } = useAppContext();
@@ -480,8 +481,11 @@ export function ContextPanel(): React.ReactElement | null {
             <FlipCard rounded="left" />
             <UiSeparator vertical />
             <CreateDeck onlyCards={true} rounded="right" />
+            <UiSeparator vertical />
             <RotateItem clockwise={false} />
             <RotateItem clockwise={true} />
+            <UiSeparator vertical />
+            <LockResize />
             <UiSeparator vertical />
             <Delete rounded="right" />
           </>
