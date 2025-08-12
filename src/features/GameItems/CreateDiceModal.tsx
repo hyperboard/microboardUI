@@ -11,8 +11,8 @@ import { useTranslation } from "react-i18next";
 
 export const CREATE_DICE_MODAL = Symbol("createDiceModal");
 
-const MIN_SIDES = 6;
-const MAX_SIDES = 12;
+const MIN_SIDES = 3;
+const MAX_SIDES = 20;
 
 export function CreateDiceModal(): React.JSX.Element {
   const { closeModal } = useUiModalContext();
