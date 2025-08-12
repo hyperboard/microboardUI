@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./Modal.module.css";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
@@ -37,6 +37,9 @@ export function CreateCardsModal(): React.JSX.Element {
   const [cards, setCards] = React.useState<File[]>([]);
   const [cardsPreview, setCardsPreview] = React.useState<string[]>([]);
   const [loading, setLoading] = React.useState(false);
+  const [cardDimensions, setCardDimensions] = useState(
+    conf.DEFAULT_GAME_ITEM_DIMENSIONS,
+  );
 
   const coverInputRef = React.useRef<HTMLInputElement>(null);
   const cardsInputRef = React.useRef<HTMLInputElement>(null);
@@ -44,19 +47,8 @@ export function CreateCardsModal(): React.JSX.Element {
   const handleCoverClick = () => coverInputRef.current?.click();
   const handleCardsClick = () => cardsInputRef.current?.click();
 
-  const createDeck = (
-    backsideUrl: string,
-    faceUrls: string[],
-    dimensions: { width: number; height: number },
-  ) => {
+  const createDeck = (backsideUrl: string, faceUrls: string[]) => {
     const cards: Card[] = [];
-    const { width, height } = dimensions;
-    const { width: defaultWidth, height: defaultHeight } =
-      conf.DEFAULT_GAME_ITEM_DIMENSIONS;
-    const normalizedDimensions =
-      width > height
-        ? { width: (defaultWidth * width) / height, height: defaultHeight }
-        : { width: defaultWidth, height: (defaultHeight * height) / width };
 
     faceUrls.forEach((faceUrl, index) => {
       const card = new Card(
@@ -66,7 +58,7 @@ export function CreateCardsModal(): React.JSX.Element {
           backsideUrl,
           faceUrl,
         },
-        normalizedDimensions,
+        cardDimensions,
       );
       cards.push(card);
     });
@@ -82,13 +74,21 @@ export function CreateCardsModal(): React.JSX.Element {
     board.paste(itemsMap, false, false);
   };
 
-  const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCoverChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setCover(file);
       const reader = new FileReader();
       reader.onload = (ev) => setCoverPreview(ev.target?.result as string);
       reader.readAsDataURL(file);
+      const { width, height } = await getImageDimensions(file);
+      const { width: defaultWidth, height: defaultHeight } =
+        conf.DEFAULT_GAME_ITEM_DIMENSIONS;
+      const normalizedDimensions =
+        width > height
+          ? { width: (defaultWidth * width) / height, height: defaultHeight }
+          : { width: defaultWidth, height: (defaultHeight * height) / width };
+      setCardDimensions(normalizedDimensions);
     }
   };
 
@@ -111,13 +111,12 @@ export function CreateCardsModal(): React.JSX.Element {
     setLoading(true);
     try {
       if (cards.length > 0 && cover) {
-        const dimensions = await getImageDimensions(cover);
         const urls = await uploadImages(
           [cover, ...cards],
           board.getBoardId(),
           account.accessToken,
         );
-        createDeck(urls[0], urls.slice(1), dimensions);
+        createDeck(urls[0], urls.slice(1));
       }
       closeModal();
     } catch (err) {
@@ -138,7 +137,14 @@ export function CreateCardsModal(): React.JSX.Element {
           {t("toolsPanel.addGameItem.addCard.title")}
         </div>
         <div className={styles.cardsRow}>
-          <div className={styles.cardSilhouette} onClick={handleCoverClick}>
+          <div
+            className={styles.cardSilhouette}
+            onClick={handleCoverClick}
+            style={{
+              width: cardDimensions.width,
+              height: cardDimensions.height,
+            }}
+          >
             {coverPreview ? (
               <img
                 src={coverPreview}
@@ -158,7 +164,14 @@ export function CreateCardsModal(): React.JSX.Element {
               onChange={handleCoverChange}
             />
           </div>
-          <div className={styles.cardSilhouette} onClick={handleCardsClick}>
+          <div
+            className={styles.cardSilhouette}
+            onClick={handleCardsClick}
+            style={{
+              width: cardDimensions.width,
+              height: cardDimensions.height,
+            }}
+          >
             {cardsPreview.length > 0 ? (
               <img
                 src={cardsPreview[0]}

@@ -38,6 +38,7 @@ export const LockResize = ({
       rounded={rounded}
       tooltip={tooltip}
       tooltipPosition="top"
+      active={!!lockedItems.length}
     >
       <Icon
         iconName={lockedItems.length ? "LockFrameUnlocked" : "LockFrameLocked"}
