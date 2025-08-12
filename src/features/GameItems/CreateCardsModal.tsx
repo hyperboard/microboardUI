@@ -88,6 +88,12 @@ export function CreateCardsModal(): React.JSX.Element {
         width > height
           ? { width: (defaultWidth * width) / height, height: defaultHeight }
           : { width: defaultWidth, height: (defaultHeight * height) / width };
+      if (normalizedDimensions.width > conf.MAX_CARD_SIZE) {
+        normalizedDimensions.width = conf.MAX_CARD_SIZE;
+      }
+      if (normalizedDimensions.height > conf.MAX_CARD_SIZE) {
+        normalizedDimensions.height = conf.MAX_CARD_SIZE;
+      }
       setCardDimensions(normalizedDimensions);
     }
   };
