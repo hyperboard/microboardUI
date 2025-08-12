@@ -490,8 +490,8 @@ export function createApp(isHistory = true): App {
     storage.softClean();
   });
 
+  const { render: appRender, router } = getRender(app);
   function render(): void {
-    const { render, router } = getRender(app);
     boardSubject.subscribe(() => {
       boardsList.subject.publish();
     });
@@ -524,13 +524,12 @@ export function createApp(isHistory = true): App {
         variant: "error",
       });
     });
-    render();
+    appRender();
   }
 
+  const localAppRender = getLocalRender(app);
   function localRender(id: string): void {
-    const render = getLocalRender(app, id);
-
-    render();
+    localAppRender(id);
   }
 
   return app;
