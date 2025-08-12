@@ -24,6 +24,12 @@
       "clockwise": "Повернуть по часовой стрелке",
       "counterclockwise": "Повернуть против часовой стрелки"
     },
+    "lockResize": {
+      "tooltip": "Фиксировать размер"
+    },
+    "unlockResize": {
+      "tooltip": "Не фиксировать размер"
+    },
     "connectorAddText": {
       "tooltip": "Добавить текст"
     },
