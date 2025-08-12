@@ -181,9 +181,9 @@
         "create": "Create deck",
         "shuffle": "Shuffle",
         "getCard": {
-          "top": "Get top card",
-          "bottom": "Get bottom card",
-          "random": "Get random card"
+          "top": "Get top item",
+          "bottom": "Get bottom item",
+          "random": "Get random item"
         }
       },
       "dice": {
@@ -297,10 +297,10 @@
         "removeFace": "Remove the last face"
       },
       "addCard": {
-        "tooltip": "Create cards",
+        "tooltip": "Create cards/tiles",
         "cover": "Cover",
         "cards": "Cards",
-        "title": "Card creation"
+        "title": "Card/tile creation"
       },
       "addScreen": {
         "tooltip": "Screen"
