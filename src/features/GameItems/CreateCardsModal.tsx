@@ -149,6 +149,7 @@ export function CreateCardsModal(): React.JSX.Element {
             style={{
               width: cardDimensions.width,
               height: cardDimensions.height,
+              maxWidth: "80vw",
             }}
           >
             {coverPreview ? (
@@ -176,6 +177,7 @@ export function CreateCardsModal(): React.JSX.Element {
             style={{
               width: cardDimensions.width,
               height: cardDimensions.height,
+              maxWidth: "80vw",
             }}
           >
             {cardsPreview.length > 0 ? (

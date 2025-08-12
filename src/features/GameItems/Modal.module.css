@@ -5,6 +5,7 @@
   align-items: center;
   gap: 24px;
   padding: 24px 16px 16px 16px;
+  max-width: 90vw;
 }
 
 .title {
@@ -16,6 +17,7 @@
 
 .cardsRow {
   display: flex;
+  flex-wrap: wrap;
   flex-direction: row;
   gap: 32px;
   justify-content: center;
