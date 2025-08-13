@@ -60,6 +60,7 @@ import { ChangeRange } from "features/ContextPanel/Buttons/CardGame/Dice/ChangeR
 import { FlipDeck } from "features/ContextPanel/Buttons/CardGame/Deck/FlipDeck";
 import { RotateItem } from "features/ContextPanel/Buttons/RotateItem";
 import { LockResize } from "features/ContextPanel/Buttons/LockResize";
+import { SpreadCards } from "features/ContextPanel/Buttons/CardGame/Deck/SpreadCards";
 
 export function ContextPanel(): React.ReactElement | null {
   const { app, board } = useAppContext();
@@ -463,6 +464,7 @@ export function ContextPanel(): React.ReactElement | null {
             <FlipDeck rounded="left" />
             <ShuffleDeck />
             {isSingle && <UiSeparator vertical />}
+            <SpreadCards />
             <GetCard cardPosition={"random"} />
             <GetCard cardPosition={"top"} />
             {isSingle ? (

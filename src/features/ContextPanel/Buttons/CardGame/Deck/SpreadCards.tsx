@@ -1,0 +1,109 @@
+import { Icon } from "shared/ui-lib/Icon";
+import React from "react";
+import { useAppContext } from "features/AppContext";
+import btnStyle from "../../ContextPanelButton.module.css";
+import { UiButton } from "shared/ui-lib/UiButton/UiButton";
+import { useTranslation } from "react-i18next";
+import { Deck, getHotkeyLabel } from "microboard-temp";
+import clsx from "clsx";
+import style from "features/ContextPanel/Buttons/FontSize/FontSize.module.css";
+import { UiPanel } from "shared/ui-lib/UiPanel";
+import { FontSizePicker } from "features/Pickers/FontSizePicker";
+import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
+import { usePanelContext } from "features/ContextPanel/PanelContext";
+
+interface Props {
+  rounded?: string;
+}
+
+const MENU_NAME = "SpreadCards";
+
+export function SpreadCards({ rounded = "none" }: Props) {
+  const { board } = useAppContext();
+  const { t } = useTranslation();
+  const { toggleMenu, openedMenu, panelMbr, windowHeight } = usePanelContext();
+
+  const single = board.selection.items.getSingle();
+
+  if (!single || single.itemType !== "Deck") {
+    return null;
+  }
+
+  const cardsCount = (single as Deck).getDeck().length;
+
+  const values: number[] = [];
+  for (let i = 1; i <= cardsCount; i++) {
+    if (i > 10) {
+      i = cardsCount;
+    }
+    values.push(i);
+  }
+
+  const handlePick = (count: number): void => {
+    const deck = single as Deck;
+    const { top, right } = deck.getMbr();
+    const cards = deck.getCards(count);
+    if (cards) {
+      const width = cards[0].getWidth();
+      cards.forEach((card, index) => {
+        card.transformation.translateTo(right + 5 + width * index, top);
+      });
+    }
+    if (deck.getDeck().length === 0) {
+      board.remove(deck);
+    }
+    toggleMenu("None");
+  };
+
+  const handleClick = () => {
+    if (openedMenu !== MENU_NAME) {
+      toggleMenu(MENU_NAME);
+    }
+  };
+
+  return (
+    <ButtonWithMenu
+      menuName={MENU_NAME}
+      openedMenu={openedMenu}
+      panelMbr={panelMbr}
+      windowHeight={windowHeight}
+      align="left"
+      offset="Right"
+      button={(verticalAlign) => (
+        <UiButton
+          className={btnStyle.contextPanelButton}
+          id={`spread-cards`}
+          tooltip={t(`contextPanel.gameItems.deck.getCard`)}
+          tooltipPosition="top"
+          onClick={handleClick}
+          variant="secondary"
+          rounded={rounded}
+        >
+          <Icon iconName="GetCard" />
+        </UiButton>
+      )}
+    >
+      {(verticalAlign) => (
+        <UiPanel
+          padding={0}
+          vertical
+          className={clsx(style.sizeList)}
+          rounded={verticalAlign === "bottom" ? "bottom" : "full"}
+        >
+          <FontSizePicker
+            id={"cards-count-picker"}
+            currentFontSize={5}
+            fontSizes={values}
+            showAuto={false}
+            onPick={handlePick}
+            max={
+              board.selection.getAutosize()
+                ? board.selection.getFontSize(false)
+                : undefined
+            }
+          />
+        </UiPanel>
+      )}
+    </ButtonWithMenu>
+  );
+}
