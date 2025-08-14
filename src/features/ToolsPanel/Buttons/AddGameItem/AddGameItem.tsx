@@ -8,6 +8,7 @@ import { AddDice } from "features/ToolsPanel/Buttons/AddGameItem/AddDice";
 import { AddCard } from "features/ToolsPanel/Buttons/AddGameItem/AddCard";
 import { useClickOutside } from "shared/lib/useClickOutside";
 import { AddScreen } from "features/ToolsPanel/Buttons/AddGameItem/AddScreen";
+import { AddPouch } from "features/ToolsPanel/Buttons/AddGameItem/AddPouch";
 
 export function AddGameItem() {
   const [isOpen, setIsOpen] = useState(false);
@@ -34,6 +35,7 @@ export function AddGameItem() {
       <UiPanel vertical padding={0}>
         <AddDice rounded={"top"} />
         <AddScreen />
+        <AddPouch />
         <AddCard rounded={"bottom"} />
       </UiPanel>
     </ButtonWithMenu>

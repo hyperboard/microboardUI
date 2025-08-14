@@ -64,6 +64,7 @@ import { SpreadCards } from "features/ContextPanel/Buttons/CardGame/Deck/SpreadC
 import { Screen } from "microboard-temp";
 import { RemoveBackgroundImage } from "features/ContextPanel/Buttons/CardGame/Screeen/RemoveBackgroundImage";
 import { SetBackgroundImage } from "features/ContextPanel/Buttons/CardGame/Screeen/SetBackgroundImage";
+import { GetRandomItem } from "features/ContextPanel/Buttons/CardGame/Screeen/GetRandomItem";
 
 export function ContextPanel(): React.ReactElement | null {
   const { app, board } = useAppContext();
@@ -479,7 +480,14 @@ export function ContextPanel(): React.ReactElement | null {
               </>
             )}
             <UiSeparator vertical />
-            <Delete rounded="right" />
+            <Delete />
+            <UiSeparator vertical />
+            <RestOptionsMenu>
+              <BringToFront />
+              <SendToBack />
+              <CopyItemLink />
+              <Duplicate />
+            </RestOptionsMenu>
           </>
         )}
         {isCard && !isSelectUnderPointer && !isLocked && (
@@ -493,7 +501,14 @@ export function ContextPanel(): React.ReactElement | null {
             <UiSeparator vertical />
             <LockResize />
             <UiSeparator vertical />
-            <Delete rounded="right" />
+            <Delete />
+            <UiSeparator vertical />
+            <RestOptionsMenu>
+              <BringToFront />
+              <SendToBack />
+              <CopyItemLink />
+              <Duplicate />
+            </RestOptionsMenu>
           </>
         )}
         {isCardOrDeck &&
@@ -545,6 +560,7 @@ export function ContextPanel(): React.ReactElement | null {
               </>
             )}
             <UiSeparator vertical />
+            <GetRandomItem />
             <Delete />
             <UiSeparator vertical />
             <RestOptionsMenu>
