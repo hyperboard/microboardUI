@@ -53,16 +53,18 @@ export function SetBackgroundImage({ rounded = "none" }: Props) {
   };
 
   return (
-    <UiButton
-      className={btnStyle.contextPanelButton}
-      id="set-background-image"
-      tooltip={t("contextPanel.gameItems.screen.setBackgroundImage")}
-      tooltipPosition="top"
-      onClick={handleClick}
-      variant="secondary"
-      rounded={rounded}
-    >
-      <Icon iconName="Image" />
+    <>
+      <UiButton
+        className={btnStyle.contextPanelButton}
+        id="set-background-image"
+        tooltip={t("contextPanel.gameItems.screen.setBackgroundImage")}
+        tooltipPosition="top"
+        onClick={handleClick}
+        variant="secondary"
+        rounded={rounded}
+      >
+        <Icon iconName="Image" />
+      </UiButton>
       <input
         multiple={false}
         onChange={handleChange}
@@ -71,6 +73,6 @@ export function SetBackgroundImage({ rounded = "none" }: Props) {
         style={{ display: "none" }}
         accept="image/*"
       />
-    </UiButton>
+    </>
   );
 }
