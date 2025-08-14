@@ -45,7 +45,7 @@ export const HyperLinkBtn = () => {
       }
       active={isEditingLink}
     >
-      <Icon iconName="Hyperlink" />
+      <Icon iconName="HyperlinkIcon" />
     </UiButton>
   );
 };
