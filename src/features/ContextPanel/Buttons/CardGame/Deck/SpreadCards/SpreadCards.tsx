@@ -49,6 +49,8 @@ export function SpreadCards({ rounded = "none" }: Props) {
         card.transformation.translateTo(right + 5 + width * index, top);
       });
     }
+    board.selection.items.removeAll();
+    board.selection.add(cards);
     if (deck.getDeck().length === 0) {
       board.remove(deck);
     }
