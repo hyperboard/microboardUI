@@ -19,19 +19,18 @@ export function SetBackgroundImage({ rounded = "none" }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const { t } = useTranslation();
 
+  const single = board.selection.items.getSingle();
+  if (!single || !(single instanceof Screen)) {
+    return null;
+  }
+
   const handleClick = (): void => {
     const input = inputRef.current;
     if (!input) {
       return;
     }
-    board.tools.cancel();
     input.click();
   };
-
-  const single = board.selection.items.getSingle();
-  if (!single || !(single instanceof Screen)) {
-    return null;
-  }
 
   const handleChange: ChangeEventHandler<HTMLInputElement> = async (ev) => {
     const input = ev.target;
