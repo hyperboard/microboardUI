@@ -180,6 +180,7 @@
       "deck": {
         "create": "Create deck",
         "shuffle": "Shuffle",
+        "spread": "Spread",
         "getCard": {
           "top": "Get top item",
           "bottom": "Get bottom item",

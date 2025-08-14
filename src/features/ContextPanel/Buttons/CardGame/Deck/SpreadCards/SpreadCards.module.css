@@ -1,0 +1,7 @@
+.picker {
+  min-width: 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  overflow: hidden;
+}
