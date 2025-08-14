@@ -27,7 +27,7 @@ export function GetRandomItem({ rounded = "none" }: Props) {
     if (item) {
       item.transformation.translateTo(
         (left + right) / 2 - item.getWidth() / 2,
-        top - item.getHeight(),
+        top - (item.getHeight() || 200),
       );
     }
   };

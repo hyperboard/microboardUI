@@ -121,7 +121,7 @@ export type IconId =
   | "BringToMe"
   | "EyeDashed"
   | "addLink"
-  | "Hyperlink"
+  | "HyperlinkIcon"
   | "EditPen"
   | "StopAiGeneration"
   | "AIChatArrowDisabled"
