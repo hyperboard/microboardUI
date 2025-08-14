@@ -193,6 +193,10 @@
           "min": "Минимум",
           "max": "Максимум"
         }
+      },
+      "screen": {
+        "setBackgroundImage": "Загрузить фон",
+        "removeBackgroundImage": "Удалить фон"
       }
     }
   },

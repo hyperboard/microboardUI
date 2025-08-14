@@ -193,6 +193,10 @@
           "min": "Minimum",
           "max": "Maximum"
         }
+      },
+      "screen": {
+        "setBackgroundImage": "Set background image",
+        "removeBackgroundImage": "Remove background image"
       }
     }
   },
