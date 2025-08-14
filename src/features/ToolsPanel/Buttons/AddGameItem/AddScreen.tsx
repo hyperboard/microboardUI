@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { UiButton } from "shared/ui-lib/UiButton/index";
 import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon/index";
-import { UiSeparator } from "shared/ui-lib/UiSeparator";
 
 export function AddScreen() {
   const { board } = useAppContext();
@@ -16,18 +15,15 @@ export function AddScreen() {
   const isActive = Boolean(board.tools.getAddRegisteredTool("AddScreen"));
 
   return (
-    <>
-      <UiButton
-        id={"tool-add-screen"}
-        tooltip={t("toolsPanel.addGameItem.addScreen.tooltip")}
-        onClick={handleClick}
-        variant="secondary"
-        rounded="none"
-        active={isActive}
-      >
-        <Icon iconName="AddScreen" />
-      </UiButton>
-      <UiSeparator vertical />
-    </>
+    <UiButton
+      id={"tool-add-screen"}
+      tooltip={t("toolsPanel.addGameItem.addScreen.tooltip")}
+      onClick={handleClick}
+      variant="secondary"
+      rounded="none"
+      active={isActive}
+    >
+      <Icon iconName="AddScreen" />
+    </UiButton>
   );
 }

@@ -23,7 +23,7 @@ export function AddPouch() {
       rounded="none"
       active={isActive}
     >
-      <Icon iconName="AddPouch" width={20} height={20} />
+      <Icon iconName="AddPouch" width={24} height={24} />
     </UiButton>
   );
 }

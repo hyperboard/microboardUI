@@ -5,6 +5,7 @@ import btnStyle from "../../ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton/UiButton";
 import { useTranslation } from "react-i18next";
 import { Screen } from "microboard-temp";
+import { UiSeparator } from "shared/ui-lib/UiSeparator";
 
 interface Props {
   rounded?: string;
@@ -32,16 +33,19 @@ export function GetRandomItem({ rounded = "none" }: Props) {
   };
 
   return (
-    <UiButton
-      className={btnStyle.contextPanelButton}
-      id={"get-random-item"}
-      tooltip={t("contextPanel.gameItems.deck.getCard.random")}
-      tooltipPosition="top"
-      onClick={handleClick}
-      variant="secondary"
-      rounded={rounded}
-    >
-      <Icon iconName="GetCard" />
-    </UiButton>
+    <>
+      <UiButton
+        className={btnStyle.contextPanelButton}
+        id={"get-random-item"}
+        tooltip={t("contextPanel.gameItems.deck.getCard.random")}
+        tooltipPosition="top"
+        onClick={handleClick}
+        variant="secondary"
+        rounded={rounded}
+      >
+        <Icon iconName="GetCard" />
+      </UiButton>
+      <UiSeparator vertical />
+    </>
   );
 }
