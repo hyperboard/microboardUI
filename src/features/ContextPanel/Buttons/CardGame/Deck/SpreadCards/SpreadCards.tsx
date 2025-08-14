@@ -1,12 +1,12 @@
 import { Icon } from "shared/ui-lib/Icon";
 import React from "react";
 import { useAppContext } from "features/AppContext";
-import btnStyle from "../../ContextPanelButton.module.css";
+import btnStyle from "../../../ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton/UiButton";
 import { useTranslation } from "react-i18next";
-import { Deck, getHotkeyLabel } from "microboard-temp";
+import { Deck } from "microboard-temp";
 import clsx from "clsx";
-import style from "features/ContextPanel/Buttons/FontSize/FontSize.module.css";
+import style from "./SpreadCards.module.css";
 import { UiPanel } from "shared/ui-lib/UiPanel";
 import { FontSizePicker } from "features/Pickers/FontSizePicker";
 import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
@@ -73,7 +73,7 @@ export function SpreadCards({ rounded = "none" }: Props) {
         <UiButton
           className={btnStyle.contextPanelButton}
           id={`spread-cards`}
-          tooltip={t(`contextPanel.gameItems.deck.getCard`)}
+          tooltip={t(`contextPanel.gameItems.deck.spread`)}
           tooltipPosition="top"
           onClick={handleClick}
           variant="secondary"
@@ -87,7 +87,7 @@ export function SpreadCards({ rounded = "none" }: Props) {
         <UiPanel
           padding={0}
           vertical
-          className={clsx(style.sizeList)}
+          className={clsx(style.picker)}
           rounded={verticalAlign === "bottom" ? "bottom" : "full"}
         >
           <FontSizePicker
@@ -96,11 +96,6 @@ export function SpreadCards({ rounded = "none" }: Props) {
             fontSizes={values}
             showAuto={false}
             onPick={handlePick}
-            max={
-              board.selection.getAutosize()
-                ? board.selection.getFontSize(false)
-                : undefined
-            }
           />
         </UiPanel>
       )}
