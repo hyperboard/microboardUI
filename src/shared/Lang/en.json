@@ -309,6 +309,9 @@
       },
       "addScreen": {
         "tooltip": "Screen"
+      },
+      "addPouch": {
+        "tooltip": "Pouch"
       }
     }
   },

@@ -309,6 +309,9 @@
       },
       "addScreen": {
         "tooltip": "Экран"
+      },
+      "addPouch": {
+        "tooltip": "Мешочек"
       }
     }
   },

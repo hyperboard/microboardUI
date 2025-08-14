@@ -180,7 +180,8 @@ export type IconId =
   | "ShuffleDeck"
   | "GameItems"
   | "GetCard"
-  | "AddScreen";
+  | "AddScreen"
+  | "AddPouch";
 
 type Props = {
   iconName: IconId;
