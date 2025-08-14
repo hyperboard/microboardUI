@@ -61,6 +61,9 @@ import { FlipDeck } from "features/ContextPanel/Buttons/CardGame/Deck/FlipDeck";
 import { RotateItem } from "features/ContextPanel/Buttons/RotateItem";
 import { LockResize } from "features/ContextPanel/Buttons/LockResize";
 import { SpreadCards } from "features/ContextPanel/Buttons/CardGame/Deck/SpreadCards/SpreadCards";
+import { Screen } from "microboard-temp";
+import { RemoveBackgroundImage } from "features/ContextPanel/Buttons/CardGame/Screeen/RemoveBackgroundImage";
+import { SetBackgroundImage } from "features/ContextPanel/Buttons/CardGame/Screeen/SetBackgroundImage";
 
 export function ContextPanel(): React.ReactElement | null {
   const { app, board } = useAppContext();
@@ -103,7 +106,7 @@ export function ContextPanel(): React.ReactElement | null {
 
   const ideaFromSelection = getIdeaFromSelection(board.selection.items.list());
 
-  const isSingle = !!board.selection.items.getSingle();
+  const single = board.selection.items.getSingle();
   const isText = board.selection.items.isAllItemsType("RichText");
   const isSticker = board.selection.items.isAllItemsType("Sticker");
   const isShape = board.selection.items.isAllItemsType("Shape");
@@ -463,12 +466,12 @@ export function ContextPanel(): React.ReactElement | null {
           <>
             <FlipDeck rounded="left" />
             <ShuffleDeck />
-            {isSingle && <UiSeparator vertical />}
+            {single && <UiSeparator vertical />}
             <SpreadCards />
-            {isSingle && <UiSeparator vertical />}
+            {single && <UiSeparator vertical />}
             <GetCard cardPosition={"random"} />
             <GetCard cardPosition={"top"} />
-            {isSingle ? (
+            {single ? (
               <GetCard cardPosition={"bottom"} rounded="right" />
             ) : (
               <>
@@ -528,7 +531,19 @@ export function ContextPanel(): React.ReactElement | null {
         {isScreen && !isSelectUnderPointer && !isLocked && (
           <>
             <StrokeStyle rounded="left" />
-            <FillStyle />
+            {board.selection.items
+              .list()
+              .some((item) => item instanceof Screen && item.backgroundUrl) ? (
+              <>
+                <SetBackgroundImage />
+                <RemoveBackgroundImage />
+              </>
+            ) : (
+              <>
+                <FillStyle />
+                <SetBackgroundImage />
+              </>
+            )}
             <UiSeparator vertical />
             <Delete />
             <UiSeparator vertical />
