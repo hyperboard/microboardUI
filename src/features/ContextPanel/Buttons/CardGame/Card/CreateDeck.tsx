@@ -5,6 +5,19 @@ import btnStyle from "../../ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton/UiButton";
 import { Card, Deck, getHotkeyLabel } from "microboard-temp";
 import { useTranslation } from "react-i18next";
+import { BaseItem } from "microboard-temp/dist/types/Items/BaseItem";
+
+function sortItemsByPosition(items: BaseItem[]) {
+  return items.sort((a, b) => {
+    if (a.top < b.top) return -1;
+    if (a.top > b.top) return 1;
+
+    if (a.left < b.left) return -1;
+    if (a.left > b.left) return 1;
+
+    return 0;
+  });
+}
 
 interface Props {
   rounded?: string;
@@ -19,7 +32,7 @@ export function CreateDeck({ rounded = "none", onlyCards }: Props) {
     return null;
   }
 
-  const cardsOrDecks = board.selection.items.list();
+  const cardsOrDecks = sortItemsByPosition(board.selection.items.list());
 
   const handleClick = (): void => {
     if (onlyCards) {
@@ -28,8 +41,8 @@ export function CreateDeck({ rounded = "none", onlyCards }: Props) {
         class: "Transformation",
         method: "translateTo",
         item: [deck.getId()],
-        x: cardsOrDecks[cardsOrDecks.length - 1].left,
-        y: cardsOrDecks[cardsOrDecks.length - 1].top,
+        x: cardsOrDecks[0].left,
+        y: cardsOrDecks[0].top,
       });
       const addedDeck = board.add(deck);
       board.selection.items.removeAll();
@@ -43,9 +56,8 @@ export function CreateDeck({ rounded = "none", onlyCards }: Props) {
           cards.push(item);
         } else if (item.itemType === "Deck") {
           if (mainDeck) {
-            cards.push(...mainDeck.getDeck());
-            board.remove(mainDeck);
-            mainDeck = item;
+            cards.push(...item.getDeck());
+            board.remove(item);
           } else {
             mainDeck = item;
           }
