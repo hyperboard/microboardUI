@@ -1,4 +1,4 @@
-import { build, BuildConfig } from "bun";
+import { build, BuildConfig, plugin } from "bun";
 import {
   copyPlugin,
   cdnifyLinksPlugin,
@@ -40,36 +40,45 @@ async function cleanUpHTML(htmlEntrypoint: string, dir = outdir) {
 }
 
 async function main() {
-  const plugins = [
-    cdnifyLinksPlugin("https://unpkg.com/microboard-ui-temp/dist"),
+  const examplePlugins = [envFallbackPlugin()];
+  const standalonePlugins = [
     envFallbackPlugin(),
+    copyPlugin({
+      from: "src/public",
+      to: outdir,
+      bundle: baseConfig,
+      plugins: examplePlugins,
+    }),
+    copyPlugin({
+      from: "src/shared/ui-lib/Icon/sprite.svg",
+      to: outdir,
+      plugins: examplePlugins,
+    }),
+    cdnifyLinksPlugin("https://unpkg.com/microboard-ui-temp/dist"),
   ];
-  const result = await build({
+
+  const boardStandalone = await build({
     ...baseConfig,
-    plugins: [
-      copyPlugin({
-        from: "src/public",
-        to: outdir,
-        bundle: baseConfig,
-        plugins,
-      }),
-      copyPlugin({
-        from: "src/shared/ui-lib/Icon/sprite.svg",
-        to: outdir,
-        plugins,
-      }),
-      ...plugins,
-    ],
+    entrypoints: ["src/board.html"],
+    plugins: standalonePlugins,
+  });
+  const exampleResult = await build({
+    ...baseConfig,
+    entrypoints: baseConfig.entrypoints.filter((ep) => ep !== "src/board.html"),
+    plugins: examplePlugins,
   });
 
-  if (!result.success) process.exit(1);
+  if (!exampleResult.success || !boardStandalone.success) process.exit(1);
 
   entrypoints
     .filter((ep) => ep.endsWith(".html"))
     .map((en) => en.split("/")[1])
     .forEach(async (htmlEP) => {
-      await cleanUpHTML(htmlEP);
-      await injectEnvTag(htmlEP, "/env.js");
+      if (htmlEP === "board.html") {
+        await cleanUpHTML(htmlEP);
+      } else {
+        await injectEnvTag(htmlEP, "/env.js");
+      }
     });
 }
 
