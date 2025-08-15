@@ -180,6 +180,8 @@ export type IconId =
   | "ShuffleDeck"
   | "GameItems"
   | "GetCard"
+  | "GetBottomCard"
+  | "GetRandomItem"
   | "AddScreen"
   | "AddPouch";
 
