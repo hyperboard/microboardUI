@@ -182,6 +182,7 @@ export type IconId =
   | "GetCard"
   | "GetBottomCard"
   | "GetRandomItem"
+  | "SpreadCards"
   | "AddScreen"
   | "AddPouch";
 

@@ -81,7 +81,7 @@ export function SpreadCards({ rounded = "none" }: Props) {
           variant="secondary"
           rounded={rounded}
         >
-          <Icon iconName="GetCard" />
+          <Icon iconName="SpreadCards" />
         </UiButton>
       )}
     >

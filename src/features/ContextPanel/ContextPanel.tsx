@@ -470,10 +470,10 @@ export function ContextPanel(): React.ReactElement | null {
             {single && <UiSeparator vertical />}
             <SpreadCards />
             {single && <UiSeparator vertical />}
-            <GetCard cardPosition={"random"} />
             <GetCard cardPosition={"top"} />
+            <GetCard cardPosition={"bottom"} />
             {single ? (
-              <GetCard cardPosition={"bottom"} rounded="right" />
+              <GetCard cardPosition={"random"} />
             ) : (
               <>
                 <CreateDeck onlyCards={false} rounded="left" />
