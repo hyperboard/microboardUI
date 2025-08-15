@@ -43,7 +43,7 @@ export function GetRandomItem({ rounded = "none" }: Props) {
         variant="secondary"
         rounded={rounded}
       >
-        <Icon iconName="GetCard" />
+        <Icon iconName="GetRandomItem" />
       </UiButton>
       <UiSeparator vertical />
     </>

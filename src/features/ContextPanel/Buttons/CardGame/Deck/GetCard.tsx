@@ -49,6 +49,13 @@ export function GetCard({ cardPosition, rounded = "none" }: Props) {
     }
   };
 
+  const iconName =
+    cardPosition === "random"
+      ? "GetRandomItem"
+      : cardPosition === "bottom"
+        ? "GetBottomCard"
+        : "GetCard";
+
   return (
     <UiButton
       className={btnStyle.contextPanelButton}
@@ -60,7 +67,7 @@ export function GetCard({ cardPosition, rounded = "none" }: Props) {
       rounded={rounded}
       hotkey={getHotkeyLabel(`getCard-${cardPosition}`)}
     >
-      <Icon iconName="GetCard" />
+      <Icon iconName={iconName} />
     </UiButton>
   );
 }
