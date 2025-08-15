@@ -739,8 +739,7 @@ export function createWsClient(
     }, WS_RECONNECT_TIMEOUT);
   }
 
-  // Double stringify
-  const pingMsg: SocketMsg = JSON.stringify({ type: "ping" });
+  const pingMsg: SocketMsg = { type: "ping" };
 
   function keepAlivePing(): void {
     const board = getCurrentBoard();
