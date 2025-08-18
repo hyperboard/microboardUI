@@ -13,6 +13,7 @@ import { ToastProvider } from "features/ToastProvider";
 import { LocalSidePanelContextProvider } from "features/SidePanel/LocalSidePanelContext";
 import { CryptoWrapper } from "features/CryptoWrapper";
 import { CommentsContextProvider } from "entities/comments/CommentsContext";
+import { Sprite } from "shared/ui-lib/Icon/Sprite";
 
 type Props = {
   app: App;
@@ -62,6 +63,7 @@ export function AppLayout({ app }: Props): React.JSX.Element {
   const board = app.getBoard();
   return (
     <AppContext.Provider value={{ app, board }}>
+      <Sprite />
       <Provider>
         <Outlet />
         <ToastProvider />
@@ -77,6 +79,7 @@ export function LocalAppLayout({
   const board = app.getBoard();
   return (
     <AppContext.Provider value={{ app, board }}>
+      <Sprite />
       <LocalProvider>
         {children}
         <Outlet />

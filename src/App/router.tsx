@@ -25,6 +25,7 @@ import {
 } from "react-router-dom";
 
 import { createRoot, type Root } from "react-dom/client";
+import { TestPage } from "pages/TestPage";
 
 export function getRender(app: App): {
   render: () => void;
@@ -64,6 +65,7 @@ export function getRender(app: App): {
         { path: "/selectBoard", element: <SelectBoardPage /> },
         { path: "/test-wheel", element: <WheelEventLoggerPage /> },
         { path: "/snapshots/:uid?", element: <HTMLSnapshot /> },
+        // { path: "test", element: <TestPage />}
       ],
     },
   ]);
