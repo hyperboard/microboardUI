@@ -4,7 +4,7 @@ import { useAppContext } from "features/AppContext";
 import btnStyle from "../../ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton/UiButton";
 import { useTranslation } from "react-i18next";
-import { getHotkeyLabel } from "microboard-temp";
+import { Deck, getHotkeyLabel } from "microboard-temp";
 
 interface Props {
   rounded?: string;
@@ -15,7 +15,7 @@ export function FlipDeck({ rounded = "none" }: Props) {
   const { t } = useTranslation();
   const deck = board.selection.items.getSingle();
 
-  if (!deck || deck.itemType !== "Deck") {
+  if (!deck || !(deck instanceof Deck)) {
     return null;
   }
 
