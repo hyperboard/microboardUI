@@ -94,7 +94,7 @@ export interface AuthConfirmationMsg {
 }
 
 export interface PingMsg {
-  type: "ping";
+  type: "ping" | "pong";
 }
 
 export interface BoardAccessDeniedMsg {
@@ -266,7 +266,8 @@ export function createConnection(
       case "Unsubscribe":
       case "Error":
       case "ping":
-        board.presence.ping();
+      case "pong":
+        board?.presence?.ping();
         break;
       case "AuthConfirmation":
         tokenPromise?.resolve();
