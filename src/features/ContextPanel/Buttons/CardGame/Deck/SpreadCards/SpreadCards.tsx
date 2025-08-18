@@ -51,9 +51,8 @@ export function SpreadCards({ rounded = "none" }: Props) {
         const id = card.getId();
         translation[id] = {
           class: "Transformation",
-          method: "scaleByTranslateBy",
+          method: "translateTo",
           item: [id],
-          scale: { x: 1, y: 1 },
           translate: { x: right + 5 + width * index, y: top },
         };
       });
