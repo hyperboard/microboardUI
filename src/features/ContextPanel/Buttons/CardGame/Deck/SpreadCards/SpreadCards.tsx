@@ -53,7 +53,8 @@ export function SpreadCards({ rounded = "none" }: Props) {
           class: "Transformation",
           method: "translateTo",
           item: [id],
-          translate: { x: right + 5 + width * index, y: top },
+          x: right + 5 + width * index,
+          y: top,
         };
       });
       board.selection.transformMany(translation, Date.now());
