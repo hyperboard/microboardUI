@@ -11,6 +11,7 @@ import { UiPanel } from "shared/ui-lib/UiPanel";
 import { FontSizePicker } from "features/Pickers/FontSizePicker";
 import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
+import { TransformManyItems } from "microboard-temp/dist/types/Items/Transformation/TransformationOperations";
 
 interface Props {
   rounded?: string;
@@ -44,13 +45,22 @@ export function SpreadCards({ rounded = "none" }: Props) {
     const { top, right } = deck.getMbr();
     const cards = deck.getCards(count);
     if (cards) {
+      const translation: TransformManyItems = {};
       const width = cards[0].getWidth();
       cards.forEach((card, index) => {
-        card.transformation.translateTo(right + 5 + width * index, top);
+        const id = card.getId();
+        translation[id] = {
+          class: "Transformation",
+          method: "scaleByTranslateBy",
+          item: [id],
+          scale: { x: 1, y: 1 },
+          translate: { x: right + 5 + width * index, y: top },
+        };
       });
+      board.selection.transformMany(translation, Date.now());
+      board.selection.items.removeAll();
+      board.selection.add(cards);
     }
-    board.selection.items.removeAll();
-    board.selection.add(cards);
     if (deck.getDeck().length === 0) {
       board.remove(deck);
     }
