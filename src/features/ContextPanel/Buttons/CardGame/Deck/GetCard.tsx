@@ -67,7 +67,11 @@ export function GetCard({ cardPosition, rounded = "none" }: Props) {
       rounded={rounded}
       hotkey={getHotkeyLabel(`getCard-${cardPosition}`)}
     >
-      <Icon iconName={iconName} width={cardPosition === "random" ? 20 : 24} />
+      <Icon
+        iconName={iconName}
+        width={cardPosition === "random" ? 20 : 24}
+        height={24}
+      />
     </UiButton>
   );
 }
