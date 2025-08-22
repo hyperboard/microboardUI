@@ -36,7 +36,7 @@ const NoBoardIsOpen: React.FC = () => {
     });
   };
 
-  if (board.getBoardId() !== "blank") {
+  if (board?.getBoardId() !== "blank") {
     return null;
   }
 

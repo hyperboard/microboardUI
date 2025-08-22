@@ -45,7 +45,7 @@ export function ContextMenu(): React.JSX.Element | null {
 
   const { setId } = useOpenedFoldersContext();
   const navigate = useNavigate();
-  const currentBoardId = board.getBoardId();
+  const currentBoardId = board?.getBoardId();
 
   const boardInfo = boardsList.getBoardInfo(boardId);
   const folderInfo = boardsList.getFolder(folderId);
@@ -264,7 +264,7 @@ export function ContextMenu(): React.JSX.Element | null {
           return;
         }
 
-        if (boardsList.isFolderContainsBoard(folderId, board.getBoardId())) {
+        if (boardsList.isFolderContainsBoard(folderId, board?.getBoardId())) {
           app.openBoard("blank");
           navigate("/boards/blank");
         }

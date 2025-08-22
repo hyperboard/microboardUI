@@ -7,7 +7,7 @@ import { envFallbackPlugin, injectEnvTag } from "../bunUtils";
 async function main() {
   const plugins = [
     envFallbackPlugin({
-      EMBED_URL: "https://app.microboard.io",
+      EMBED_URL: "https://dev-app.microboard.io",
     }),
   ];
   const result = await build({

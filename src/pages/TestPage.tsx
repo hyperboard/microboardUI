@@ -1,4 +1,4 @@
-import { getApiUrl } from "Config";
+import { getApiUrl, getPublicUrl } from "Config";
 import React, { useEffect, useRef } from "react";
 
 export const TestPage: React.FC = () => {
@@ -6,7 +6,7 @@ export const TestPage: React.FC = () => {
 
   useEffect(() => {
     const script1 = document.createElement("script");
-    script1.src = `${getApiUrl()}/embedMicroboard.js`;
+    script1.src = `${getPublicUrl()}/embedMicroboard.js`;
     document.body.appendChild(script1);
     return () => {
       document.body.removeChild(script1);
