@@ -65,7 +65,7 @@ export function getRender(app: App): {
         { path: "/selectBoard", element: <SelectBoardPage /> },
         { path: "/test-wheel", element: <WheelEventLoggerPage /> },
         { path: "/snapshots/:uid?", element: <HTMLSnapshot /> },
-        { path: "test", element: <TestPage /> },
+        // { path: "test", element: <TestPage /> },
       ],
     },
   ]);
