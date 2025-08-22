@@ -25,6 +25,15 @@ declare global {
     disableLogger: () => void;
     MICROBOARD_CONFIG: typeof conf;
     MICROBOARD_FRONT_CONFIG: typeof frontConf;
+
+    /**Embeder */
+    microboardOpener: {
+      selectBoard: (args: {
+        success: () => void;
+        error: () => void;
+        cancel: () => void;
+      }) => void;
+    };
   }
 }
 

@@ -40,9 +40,15 @@ async function cleanUpHTML(htmlEntrypoint: string, dir = outdir) {
 }
 
 async function main() {
-  const examplePlugins = [envFallbackPlugin()];
+  const examplePlugins = [
+    envFallbackPlugin({
+      EMBED_URL: "https://app.microboard.io",
+    }),
+  ];
   const standalonePlugins = [
-    envFallbackPlugin(),
+    envFallbackPlugin({
+      EMBED_URL: "https://app.microboard.io",
+    }),
     copyPlugin({
       from: "src/public",
       to: outdir,

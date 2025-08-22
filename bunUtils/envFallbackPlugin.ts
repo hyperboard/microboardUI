@@ -4,13 +4,24 @@ import path from "node:path";
 
 /**
  * Rewrites ANY `import.meta.env.FOO` or `import.meta.env["FOO"]`
- * to `(globalThis.__ENV__?.FOO ?? "")` at build time.
+ * - if FOO in `overrides`: to a string literal (e.g. `"https://..."`)
+ * - else: to `(globalThis.__ENV__?.FOO ?? "")`
  */
-export function envFallbackPlugin(): BunPlugin {
+export function envFallbackPlugin(
+  overrides: Record<string, string> = {},
+): BunPlugin {
   // dot access: import.meta.env.FOO
   const reDot = /\bimport\.meta\.env\.([A-Za-z_]\w*)\b/g;
   // bracket access: import.meta.env["FOO"] / ['FOO'] / `FOO`
   const reBracket = /import\.meta\.env\[(["'`])([A-Za-z_]\w*)\1\]/g;
+
+  const hasOverride = (key: string) =>
+    Object.prototype.hasOwnProperty.call(overrides, key);
+
+  const subst = (key: string) =>
+    hasOverride(key)
+      ? JSON.stringify(overrides[key]) // safe string literal
+      : `(globalThis.__ENV__?.${key} ?? "")`;
 
   return {
     name: "import-meta-env-fallback-all",
@@ -19,16 +30,11 @@ export function envFallbackPlugin(): BunPlugin {
         const text = await Bun.file(args.path).text();
 
         // fast check
-        if (!text.includes("import.meta.env")) {
-          return;
-        }
+        if (!text.includes("import.meta.env")) return;
 
         const contents = text
-          .replace(reDot, (_m, key) => `(globalThis.__ENV__?.${key} ?? "")`)
-          .replace(
-            reBracket,
-            (_m, _q, key) => `(globalThis.__ENV__?.${key} ?? "")`,
-          );
+          .replace(reDot, (_m, key: string) => subst(key))
+          .replace(reBracket, (_m, _q, key: string) => subst(key));
 
         const loader = args.path.endsWith(".tsx")
           ? "tsx"

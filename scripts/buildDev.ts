@@ -5,7 +5,11 @@ import { outdir, baseConfig, entrypoints } from "./buildConfig";
 import { envFallbackPlugin, injectEnvTag } from "../bunUtils";
 
 async function main() {
-  const plugins = [envFallbackPlugin()];
+  const plugins = [
+    envFallbackPlugin({
+      EMBED_URL: "https://app.microboard.io",
+    }),
+  ];
   const result = await build({
     ...baseConfig,
     plugins: [

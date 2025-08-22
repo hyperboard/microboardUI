@@ -6,9 +6,8 @@ export const TestPage: React.FC = () => {
 
   useEffect(() => {
     const script1 = document.createElement("script");
-    script1.src = `${getApiUrl()}/embed.js`;
+    script1.src = `${getApiUrl()}/embedMicroboard.js`;
     document.body.appendChild(script1);
-
     return () => {
       document.body.removeChild(script1);
     };
