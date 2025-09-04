@@ -1,10 +1,13 @@
-import { build, BuildConfig } from "bun";
+// buildDev.ts
+
+import { build } from "bun";
 import { copyPlugin } from "../bunUtils/copyPlugin";
 import { inlineLinks } from "../bunUtils/inlineLinks";
 import { outdir, baseConfig, entrypoints } from "./buildConfig";
 import { envFallbackPlugin, injectEnvTag } from "../bunUtils";
 
-async function main() {
+// 1. Переименовали и 2. экспортировали функцию
+export async function runBuildDev() {
   const plugins = [
     envFallbackPlugin({
       EMBED_URL: "https://dev-app.microboard.io",
@@ -28,7 +31,12 @@ async function main() {
     ],
   });
 
-  if (!result.success) process.exit(1);
+  // 3. Заменили process.exit на throw
+  if (!result.success) {
+    // Выводим ошибки для диагностики
+    console.error("Build failed:", result.logs);
+    throw new Error("Build failed");
+  }
 
   const htmlEndpoints = entrypoints
     .filter((ep) => ep.endsWith(".html"))
@@ -42,6 +50,5 @@ async function main() {
   );
 }
 
-main().catch(console.error);
-
-export default () => {};
+// 4. Удалили эту строку: main().catch(console.error);
+// export default () => {}; // Эта строка тоже не нужна, можно удалить

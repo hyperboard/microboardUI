@@ -1,25 +1,41 @@
+// buildDevAndCopy.ts (с логами для отладки)
+
 import { $ } from "bun";
 import { outdir } from "./buildConfig";
 import chokidar from "chokidar";
+import { runBuildDev } from "./buildDev";
 
-const target = process.env.FRONTEND_TARGET_DIR;
-if (!target) {
-  throw new Error(`No target dir env value FRONTEND_TARGET_DIR`);
+async function main() {
+  const target = process.env.FRONTEND_TARGET_DIR;
+  if (!target) {
+    throw new Error(`No target dir env value FRONTEND_TARGET_DIR`);
+  }
+
+  const run = async () => {
+    try {
+      await runBuildDev();
+      await $`mkdir -p ${target}`;
+      await $`cp -LR ${outdir}/* ${target}`;
+    } catch (error) {
+      console.error("Build process error.");
+    }
+  };
+
+  let timer: Timer | undefined;
+  const kick = () => {
+    clearTimeout(timer);
+    timer = setTimeout(run, 150);
+  };
+
+  await run();
+
+  chokidar.watch("src", { ignoreInitial: true }).on("all", (event, path) => {
+    kick();
+  });
+  await new Promise(() => {});
 }
 
-const run = async () => {
-  const b = await $`bun run build:dev`;
-  if (b.exitCode !== 0) return;
-  await $`mkdir -p ${target}`;
-  await $`cp -LR ${outdir}/* ${target}`;
-  console.log("Build+copy done", new Date().toLocaleTimeString());
-};
-
-let timer: Timer | undefined;
-const kick = () => {
-  clearTimeout(timer);
-  timer = setTimeout(run, 150);
-};
-
-await run();
-chokidar.watch("src", { ignoreInitial: true }).on("all", kick);
+main().catch((err) => {
+  console.error("Error main:", err);
+  process.exit(1);
+});
