@@ -136,23 +136,50 @@ export function uploadImage(
   }
 }
 
+const fileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
+};
+
 export async function uploadImages(
   files: File[],
   boardId: string,
   accessToken: string | null,
 ): Promise<string[]> {
-  const formData = new FormData();
-  files.forEach((file) => formData.append("images", file, file.name));
-  const resp = await fetch(`/api/v1/media/images/${boardId}`, {
-    method: "POST",
-    body: formData,
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-  if (!resp.ok) {
-    await catchMediaErrorResponse(resp, "image");
+  const successfullyUploadedUrls: string[] = [];
+
+  for (const file of files) {
+    let base64String: string;
+    try {
+      base64String = await fileToBase64(file);
+    } catch (error) {
+      console.error("Error while reading file", file.name, error);
+      break;
+    }
+
+    try {
+      const result = await prepareImage(base64String, accessToken, boardId);
+      if (result.storageLink) {
+        successfullyUploadedUrls.push(result.storageLink);
+      }
+    } catch (error) {
+      console.error(`First try ${file.name} failed.`, error);
+
+      try {
+        const result = await prepareImage(base64String, accessToken, boardId);
+        if (result.storageLink) {
+          successfullyUploadedUrls.push(result.storageLink);
+        }
+      } catch (retryError) {
+        console.error(`Second try ${file.name} failed.`, retryError);
+        break;
+      }
+    }
   }
-  const data = await resp.json();
-  return (data.results || []).map((r: any) => r.src);
+
+  return successfullyUploadedUrls;
 }
