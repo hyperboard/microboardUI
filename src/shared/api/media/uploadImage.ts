@@ -6,7 +6,11 @@ import {
 } from "microboard-temp";
 import * as PDFJS from "@bundled-es-modules/pdfjs-dist";
 import { RenderParameters } from "@bundled-es-modules/pdfjs-dist/types/src/display/api";
-import { catchMediaErrorResponse } from "App/MediaHelpers";
+import {
+  catchMediaErrorResponse,
+  getIdFromUrl,
+  updateMediaUsage,
+} from "App/MediaHelpers";
 
 export function uploadImage(
   file: File,
@@ -107,6 +111,10 @@ export function uploadImage(
       const base64String = event.target?.result as string;
       prepareImage(base64String, accessToken, board.getBoardId())
         .then((imageData) => {
+          updateMediaUsage(
+            [getIdFromUrl(imageData.storageLink)],
+            board.getBoardId(),
+          );
           const image = new ImageItem(imageData, board, board.events, "");
           image.doOnceBeforeOnLoad(() => {
             const { scaleX, scaleY, translateX, translateY } =

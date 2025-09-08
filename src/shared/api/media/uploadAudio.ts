@@ -5,6 +5,7 @@ import {
   prepareAudio,
   AudioItem,
 } from "microboard-temp";
+import { getIdFromUrl, updateMediaUsage } from "App/MediaHelpers";
 
 export function uploadAudio(
   file: File,
@@ -42,6 +43,7 @@ export function uploadAudio(
 
   prepareAudio(file, accessToken, board.getBoardId())
     .then((url) => {
+      updateMediaUsage([getIdFromUrl(url)], board.getBoardId());
       boardAudio.setUrl(url);
     })
     .catch((er) => {

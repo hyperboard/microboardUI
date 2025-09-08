@@ -254,3 +254,31 @@ export const beforeMediaUpload = async (
     return false;
   }
 };
+
+export const updateMediaUsage = async (
+  mediaIds: string[],
+  boardId: string,
+): Promise<boolean> => {
+  try {
+    await fetch(`${window?.location.origin}/api/v1/media/usage/${boardId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        mediaIds,
+        shouldIncrease: true,
+        skipLimitsCheck: true,
+      }),
+    });
+
+    return true;
+  } catch (error) {
+    console.error("Media storage error:", error);
+    return false;
+  }
+};
+
+export const getIdFromUrl = (url: string) => {
+  return url.split("/").pop() || "";
+};
