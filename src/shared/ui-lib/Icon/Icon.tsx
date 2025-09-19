@@ -184,7 +184,8 @@ export type IconId =
   | "GetRandomItem"
   | "SpreadCards"
   | "AddScreen"
-  | "AddPouch";
+  | "AddPouch"
+  | "Admin";
 
 type Props = {
   iconName: IconId;

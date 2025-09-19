@@ -25,7 +25,9 @@ import {
 } from "react-router-dom";
 
 import { createRoot, type Root } from "react-dom/client";
-import { TestPage } from "pages/TestPage";
+import { AdminDashboardPage } from "pages/AdminPage/AdminPage";
+import { RouterRolesGuard } from "entities/account/RouterRolesGuard";
+import { UserRoles } from "entities/account/Account";
 
 export function getRender(app: App): {
   render: () => void;
@@ -59,6 +61,10 @@ export function getRender(app: App): {
             { path: "add-email", element: <AddEmailPage /> },
             { path: "verify", element: <BindEmailPage /> },
           ],
+        },
+        {
+          element: <RouterRolesGuard allowedRoles={[UserRoles.ADMIN]} />,
+          children: [{ path: "/admin", element: <AdminDashboardPage /> }],
         },
         { path: "/welcome", element: <WelcomePage /> },
         { path: "/boards/:boardId?", element: <BoardPage /> },

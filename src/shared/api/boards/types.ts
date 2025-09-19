@@ -64,3 +64,28 @@ export type ManageAccessPayload = {
   directAccessType: DirectAccessType;
   isPublic: boolean;
 };
+
+export interface BoardUser {
+  id: number;
+  email: string;
+  permissions: UserAccessType[];
+}
+
+export interface BoardAuthor {
+  id: number;
+  email: string;
+}
+
+export interface BoardWithUsers {
+  uuid: string;
+  title: string | null;
+  isPublic: boolean;
+  author: BoardAuthor | null;
+  users: BoardUser[];
+}
+
+export interface GetBoardsResponse {
+  total: number;
+  results: number;
+  data: BoardWithUsers[];
+}

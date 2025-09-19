@@ -18,6 +18,8 @@ import { Logout } from "../icons/Logout";
 import { UserAvatar } from "../UserAvatar/UserAvatar";
 import { UserDropDown } from "../UserDropdown/UserDropdown";
 import styles from "../UserPanel.module.css";
+import { ComponentRolesGuard } from "entities/account/ComponentRolesGuard";
+import { UserRoles } from "entities/account/Account";
 
 interface UserDropDownProps extends React.HTMLAttributes<HTMLDivElement> {
   email?: string;
@@ -80,6 +82,12 @@ export const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
     ev.preventDefault();
     ev.stopPropagation();
     window.open("https://x.com/Microboard_io", "_blank");
+  };
+
+  const handleOpenAdminPage: MouseEventHandler = (ev) => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    window.location.href = window.location.origin + "/admin";
   };
 
   return (
@@ -151,9 +159,23 @@ export const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
               {t("profile.support")}
             </span>
           </UiButton>,
+          <ComponentRolesGuard allowedRoles={[UserRoles.ADMIN]}>
+            <UiButton
+              type="button"
+              key="userDropDown3"
+              onClick={handleOpenAdminPage}
+              variant="ghost"
+              size="lg"
+            >
+              <Icon width={20} height={20} iconName="Admin" />{" "}
+              <span className={styles.userDropDownButton}>
+                {t("profile.adminPanel")}
+              </span>
+            </UiButton>
+          </ComponentRolesGuard>,
           <UiButton
             type="button"
-            key="userDropDown3"
+            key="userDropDown4"
             onClick={handleLogout}
             variant="ghost"
             size="lg"

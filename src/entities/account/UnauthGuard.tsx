@@ -1,5 +1,5 @@
 import { useAccount } from "App/useAccount";
-import React, { useLayoutEffect } from "react";
+import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
 export function UnauthGuard() {

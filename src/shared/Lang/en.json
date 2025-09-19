@@ -979,6 +979,7 @@
     "passwordChanged": "Password changed successfully",
     "addEmail": "Add Email",
     "support": "Support",
+    "adminPanel": "Admin panel",
     "logout": "Logout",
     "name": "Name",
     "email": "Email Address",

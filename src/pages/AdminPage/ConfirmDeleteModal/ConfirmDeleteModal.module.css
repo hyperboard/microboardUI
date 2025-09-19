@@ -1,0 +1,70 @@
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  padding: 32px 24px 24px;
+  max-width: 460px;
+}
+
+.icon {
+  width: 48px;
+  height: 48px;
+  color: #faad14; /* Warning yellow color */
+  margin-bottom: 8px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.description {
+  font-size: 14px;
+  color: #595959;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.description strong {
+  color: #333;
+}
+
+.errorAlert {
+  width: 100%;
+  padding: 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #fff1f0;
+  border: 1px solid #ffa39e;
+  color: #cf1322;
+  margin-top: 8px;
+}
+
+.footer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* Переопределяем стиль кнопки, чтобы сделать ее "опасной" */
+.dangerButton {
+  background-color: #d9534f;
+  border-color: #d43f3a;
+}
+
+.dangerButton:hover {
+  background-color: #c9302c;
+  border-color: #ac2925;
+}
+
+.dangerButton:disabled {
+  background-color: #f8d7da !important; /* Важно, чтобы перебить базовый стиль */
+  border-color: #f5c6cb !important;
+  color: #721c24 !important;
+  cursor: not-allowed;
+}

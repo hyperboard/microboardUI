@@ -10,6 +10,8 @@ import {
   type GrantAccessPayload,
   type GrantedUser,
   type ManageAccessPayload,
+  GetBoardsResponse,
+  BoardWithUsers,
 } from "./types";
 
 export function createBoard(body: BoardPayload) {
@@ -165,4 +167,23 @@ export async function publishSnapshot(
   }
 
   return data;
+}
+
+export async function getBoardsWithUsers(
+  page: number,
+  pageSize: number,
+  boardId?: string,
+) {
+  const query = {
+    page: String(page),
+    pageSize: String(pageSize),
+  };
+
+  if (boardId && boardId.trim() !== "") {
+    query["uuid"] = boardId.trim();
+  }
+
+  return api.get<GetBoardsResponse>("/boards", {
+    query,
+  });
 }

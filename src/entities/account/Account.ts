@@ -17,6 +17,11 @@ import { MessageResponse } from "shared/api/types";
 import { getEmailPrefix } from "shared/lib/getEmailPrefix";
 import { Subject } from "shared/Subject";
 
+export enum UserRoles {
+  ADMIN = "ADMIN",
+  USER = "USER",
+}
+
 type AccountInfo = {
   id: number;
   email?: string;
@@ -35,6 +40,7 @@ type TokenData = {
   jti: string; // JWT ID
   aud: string; // Audience
   iss: string; // Issuer
+  role?: UserRoles;
 };
 
 type AccountEvent = "logout";

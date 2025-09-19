@@ -1,5 +1,3 @@
-// buildDevAndCopy.ts (с логами для отладки)
-
 import { $ } from "bun";
 import { outdir } from "./buildConfig";
 import chokidar from "chokidar";
@@ -15,7 +13,7 @@ async function main() {
     try {
       await runBuildDev();
       await $`mkdir -p ${target}`;
-      await $`cp -LR ${outdir}/* ${target}`;
+      await $`cp -R ${outdir}/* ${target}`;
     } catch (error) {
       console.error("Build process error.");
     }
