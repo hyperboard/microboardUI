@@ -18,6 +18,9 @@ import {
   CONFIRM_DELETE_MODAL,
   ConfirmDeleteModal,
 } from "pages/AdminPage/ConfirmDeleteModal/ConfirmDeleteModal";
+import { Icon } from "shared/ui-lib/Icon";
+import { UiButton } from "shared/ui-lib/UiButton";
+import { useNavigate } from "react-router-dom";
 
 export const AdminDashboardPage = () => {
   const [boards, setBoards] = useState<BoardWithUsers[]>([]);
@@ -29,6 +32,7 @@ export const AdminDashboardPage = () => {
     pageSize: 10,
     total: 0,
   });
+  const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -117,9 +121,22 @@ export const AdminDashboardPage = () => {
 
   const totalPages = Math.ceil(pagination.total / pagination.pageSize);
 
+  const handleBackBtnClick = () => {
+    navigate("/");
+  };
+
   return (
     <div className={styles.adminDashboard}>
-      <h2 className={styles.dashboardTitle}>Управление досками</h2>
+      <div className={styles.header}>
+        <UiButton
+          variant="secondary"
+          className={styles.backBtn}
+          onClick={handleBackBtnClick}
+        >
+          <Icon width={24} height={24} iconName="BackArrow" />
+        </UiButton>
+        <h2 className={styles.dashboardTitle}>Управление досками</h2>
+      </div>
 
       <div className={styles.searchBar}>
         <div style={{ width: "100%" }}>

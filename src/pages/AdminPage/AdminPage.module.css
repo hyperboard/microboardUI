@@ -3,12 +3,18 @@
   color: #333;
 }
 
+.header {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .dashboardTitle {
-  margin-bottom: 24px;
   font-size: 28px;
 }
 
 .searchBar {
+  margin-top: 24px;
   display: flex;
   gap: 8px;
   margin-bottom: 16px;
@@ -122,6 +128,15 @@
   align-items: center;
   gap: 16px;
   margin-top: 20px;
+}
+
+.backBtn {
+  border-radius: 4px;
+  min-width: 20px;
+  min-height: 20px;
+  color: rgba(13, 17, 38, 0.4);
+  cursor: pointer;
+  padding: 0;
 }
 
 @media screen and (max-width: 768px) {

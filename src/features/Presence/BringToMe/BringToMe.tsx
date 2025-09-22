@@ -1,7 +1,6 @@
-import { Presence, PresenceUser, rgbToRgba } from "microboard-temp";
+import { conf, Presence, PresenceUser, rgbToRgba } from "microboard-temp";
 import clsx from "clsx";
 import { useAppContext } from "features/AppContext";
-import i18next from "i18next";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Icon } from "shared/ui-lib/Icon";
@@ -66,11 +65,11 @@ export const UserActionsDropdown: React.FC<UserActionsDropdownProps> = ({
     }
     notify({
       header:
-        i18next.t("presence.bringNotify1") +
+        conf.i18n.t("presence.bringNotify1") +
         " " +
         user?.nickname +
         " " +
-        i18next.t("presence.bringNotify2"),
+        conf.i18n.t("presence.bringNotify2"),
       variant: "black",
       duration: 3_000,
       unclosable: true,

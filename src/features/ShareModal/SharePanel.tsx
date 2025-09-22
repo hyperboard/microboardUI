@@ -13,16 +13,16 @@ import shareModalStyles from "./ShareModal.module.css";
 import { Icon } from "shared/ui-lib/Icon/Icon";
 import { UiSelector, Option } from "shared/ui-lib/UiSelector";
 import { UserAccessType } from "shared/api/boards";
-import i18next from "i18next";
+import { conf } from "microboard-temp";
 
 const MODE_SELECTOR_OPTIONS: Option[] = [
   {
-    label: i18next.t("sharing.accessOptions.edit"),
+    label: conf.i18n.t("sharing.accessOptions.edit"),
     value: "edit",
     icon: <Icon width={20} height={20} iconName="drawingPen" />,
   },
   {
-    label: i18next.t("sharing.accessOptions.view"),
+    label: conf.i18n.t("sharing.accessOptions.view"),
     value: "view",
     icon: <Icon width={20} height={20} iconName="canView" />,
   },
@@ -86,7 +86,10 @@ export const SharePanel = forwardRef(
           <UiButton
             variant="secondary"
             className={clsx(styles.closeBtn)}
-            onClick={toggleIsOpen}
+            onClick={(evt) => {
+              evt.stopPropagation();
+              toggleIsOpen();
+            }}
           >
             <Icon width={28} height={28} iconName="Close" />
           </UiButton>

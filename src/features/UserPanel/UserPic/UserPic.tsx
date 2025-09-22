@@ -87,7 +87,7 @@ export const UserPic: React.FC<TUserPicProps> = ({ ...props }) => {
   const handleOpenAdminPage: MouseEventHandler = (ev) => {
     ev.preventDefault();
     ev.stopPropagation();
-    window.location.href = window.location.origin + "/admin";
+    navigate("/admin");
   };
 
   return (
