@@ -17,39 +17,24 @@ export function ImportMiro(): React.ReactElement | null {
   const teamIdSearch = searchParams.get("team_id");
   const { openModal } = useUiModalContext();
 
-  const fetchToken = async () => {
+  const fetchToken = async (authCode: string) => {
     try {
-      // @ts-expect-error import.meta object didn't exists in common-js modules
-      const clientId = import.meta.env.MIRO_CLIENT_ID;
-      // @ts-expect-error import.meta object didn't exists in common-js modules
-      const clientSecret = import.meta.env.MIRO_CLIENT_SECRET;
-      const redirectRoute = "/boards/blank?clipboard=true";
-      const redirectUrl = window.location.origin + redirectRoute;
-
-      const response = await fetch(
-        getApiUrl(
-          "/miro/token" +
-            "?grant_type=authorization_code&client_id=" +
-            clientId +
-            "&client_secret=" +
-            clientSecret +
-            "&code=" +
-            authCode +
-            "&redirect_uri=" +
-            redirectUrl,
-        ),
-        {
-          method: "POST",
-          headers: {
-            Accept:
-              "application/json, application/*+json, application/x-jackson-smile, application/cbor",
-          },
+      const response = await fetch(getApiUrl("/miro/get-token"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({ code: authCode }),
+      });
 
-      const token = await response.json();
-      if (token) {
-        Cookies.set("miro_accessToken", token.access_token);
+      if (!response.ok) {
+        throw new Error("Error getting token");
+      }
+
+      const tokenData = await response.json();
+
+      if (tokenData && tokenData.access_token) {
+        Cookies.set("miro_accessToken", tokenData.access_token);
         openSeenLastBoard();
       }
     } catch (error) {
@@ -84,7 +69,7 @@ export function ImportMiro(): React.ReactElement | null {
     }
 
     if (!token || token === "undefined") {
-      fetchToken();
+      fetchToken(authCode!);
     }
 
     if (token && token !== "undefined") {
