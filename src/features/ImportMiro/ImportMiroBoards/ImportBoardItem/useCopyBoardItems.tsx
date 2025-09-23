@@ -85,7 +85,7 @@ const INITIAL_GEOMETRY = {
 
 const TEXT_VERTICAL_ALIGNMENT = {
   top: "top",
-  middle: "center",
+  center: "center",
   bottom: "bottom",
 };
 
@@ -339,6 +339,7 @@ export const useCopyBoardItems = (
   };
 
   const setVerticalAlignment = (textAlignVertical: string): void => {
+    console.log(textAlignVertical);
     const lastBoardItem =
       board.items.listAll()[board.items.listAll().length - 1];
 
