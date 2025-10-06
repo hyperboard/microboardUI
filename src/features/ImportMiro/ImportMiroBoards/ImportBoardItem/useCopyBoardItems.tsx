@@ -339,7 +339,6 @@ export const useCopyBoardItems = (
   };
 
   const setVerticalAlignment = (textAlignVertical: string): void => {
-    console.log(textAlignVertical);
     const lastBoardItem =
       board.items.listAll()[board.items.listAll().length - 1];
 
