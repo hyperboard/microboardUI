@@ -15,7 +15,15 @@
     "build": "bun run build:prod && bun run build:types",
     "prepare": "bun run scripts/prepareHooks.ts",
     "build:types": "bunx tsc src/global.d.ts src/css-module.d.ts src/index.ts --declaration --emitDeclarationOnly --declarationDir ./dist/types --skipLibCheck --pretty false --resolveJsonModule --esModuleInterop --baseUrl src --jsx react-jsx; bun run cp:dts; bunx tsc-alias -p tsconfig.json --outDir dist/types",
-    "cp:dts": "cp src/css-module.d.ts dist/types/; cp src/global.d.ts dist/types/"
+    "cp:dts": "cp src/css-module.d.ts dist/types/; cp src/global.d.ts dist/types/",
+    "cucumber:playwright": "cucumber-js --profile playwright",
+    "cucumber:playwright:parallel": "cucumber-js --tags @microboard --profile playwright --parallel 9",
+    "cucumber:playwright:parallel:report": "cucumber-js --tags @microboard --profile playwright --parallel 9 --format html:features/reports/cucumber-report.html",
+    "cucumber:playwright:tag": "cucumber-js --tags @${npm_config_tag} --profile playwright",
+    "cucumber:playwright:parallel:report:firefox": "cucumber-js --tags @microboard --profile playwright --parallel 9 --format html:features/reports/cucumber-report.html --world-parameters '{\"browser\":\"firefox\"}'",
+    "cucumber:playwright:parallel:report:chrome": "cucumber-js --tags @microboard --profile playwright --parallel 9 --format html:features/reports/cucumber-report.html --world-parameters '{\"browser\":\"chrome\"}'",
+    "cucumber:playwright:parallel:report:safari": "cucumber-js --tags @microboard --profile playwright --parallel 9 --format html:features/reports/cucumber-report.html --world-parameters '{\"browser\":\"safari\"}'",
+    "cucumber:playwright:sync:report": "cucumber-js --tags @sync --profile playwright --format html:features/reports/cucumber-report.html --world-parameters '{\"isSync\":\"true\"}'"
   },
   "files": [
     "dist"
