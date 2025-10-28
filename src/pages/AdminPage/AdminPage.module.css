@@ -34,10 +34,10 @@
   color: white;
   font-weight: 500;
 }
-.customButton.button-secondary {
+.customButton.buttonSecondary {
   background-color: #6c757d;
 }
-.customButton.button-danger {
+.customButton.buttonDanger {
   background-color: #dc3545;
 }
 .customButton.disabled {
@@ -82,7 +82,7 @@
 }
 
 .loadingCell,
-.no-data-cell {
+.noDataCell {
   text-align: center;
   padding: 40px;
   color: #777;
