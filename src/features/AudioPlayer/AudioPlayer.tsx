@@ -14,6 +14,7 @@ import clsx from "clsx";
 import { useClickOutside } from "shared/lib/useClickOutside";
 import { useTranslation } from "react-i18next";
 import { createPortal } from "react-dom";
+import { useAccount } from "App/useAccount";
 
 interface Props {
   item: AudioItem;
@@ -57,6 +58,8 @@ export const AudioPlayer = ({ item }: Props) => {
   const [isProgressBarDown, setIsProgressBarDown] = useState(false);
   const [openedMenu, setOpenedMenu] = useState<OpenedMenu>("none");
   const [isMetadataLoaded, setIsMetadataLoaded] = useState(false);
+  const [resolvedAudioUrl, setResolvedAudioUrl] = useState<string | null>(null);
+  const [isLoadingUrl, setIsLoadingUrl] = useState(true);
   const audioRef = useRef<HTMLAudioElement>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
@@ -66,13 +69,55 @@ export const AudioPlayer = ({ item }: Props) => {
   const volumeBtnRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
   const isPlaying = item.getIsPlaying();
-  const isDisabled = !isMetadataLoaded || !item.getUrl();
+  const isDisabled = isLoadingUrl || !isMetadataLoaded || !resolvedAudioUrl;
+  const account = useAccount();
 
   const optionsRef = useClickOutside(
     () => setOpenedMenu("none"),
     [extraOptionsBtnRef, playbackRateBtnRef],
     true,
   );
+
+  useEffect(() => {
+    setResolvedAudioUrl(null);
+    setIsLoadingUrl(true);
+    setIsMetadataLoaded(false);
+
+    const apiUrl = item.getUrl();
+    if (!apiUrl || !account.accessToken) {
+      setIsLoadingUrl(false);
+      return;
+    }
+
+    let isMounted = true;
+
+    const resolveRedirectUrl = async () => {
+      try {
+        const response = await fetch(apiUrl, {
+          method: "HEAD",
+          headers: {
+            Authorization: `Bearer ${account.accessToken}`,
+          },
+        });
+
+        if (isMounted) {
+          setResolvedAudioUrl(response.url);
+        }
+      } catch (error) {
+        console.error("Error resolving redirect URL:", error);
+      } finally {
+        if (isMounted) {
+          setIsLoadingUrl(false);
+        }
+      }
+    };
+
+    resolveRedirectUrl();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [item.getUrl(), account.accessToken]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -248,7 +293,7 @@ export const AudioPlayer = ({ item }: Props) => {
       <audio
         ref={audioRef}
         className={styles.displayNone}
-        src={item.getUrl()}
+        src={resolvedAudioUrl || ""}
         onEnded={onEnded}
         onTimeUpdate={onTimeUpdate}
         onLoadedData={onLoadedData}
