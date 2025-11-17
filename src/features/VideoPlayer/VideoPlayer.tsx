@@ -27,6 +27,12 @@ export const VideoPlayer = ({ item }: Props) => {
   });
 
   useEffect(() => {
+    if (resolvedUrl && videoRef.current) {
+      videoRef.current.load();
+    }
+  }, [resolvedUrl]);
+
+  useEffect(() => {
     containerRef.current?.addEventListener("wheel", app.controller.onWheel, {
       capture: true,
       passive: false,

@@ -1,6 +1,5 @@
 {
   "lockfileVersion": 1,
-  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "front_mb_test",
@@ -23,7 +22,7 @@
         "i18next-browser-languagedetector": "^8.2.0",
         "js-cookie": "^3.0.5",
         "jwt-decode": "^4.0.0",
-        "microboard-temp": "^0.5.113",
+        "microboard-temp": "^0.5.118",
         "nanoid": "^5.1.5",
         "prop-types": "^15.8.1",
         "react-hot-toast": "2.4.1",
@@ -916,7 +915,7 @@
 
     "micro-ftch": ["micro-ftch@0.3.1", "", {}, "sha512-/0LLxhzP0tfiR5hcQebtudP56gUurs2CLkGarnCiB/OqEyUFQ6U3paQi/tgLv0hBJYt2rnr9MNpxz4fiiugstg=="],
 
-    "microboard-temp": ["microboard-temp@0.5.113", "", { "peerDependencies": { "canvas": "^3.1.0", "jsdom": "26.0.0", "slate": "^0.114.0", "slate-react": "^0.114.2" }, "optionalPeers": ["canvas", "jsdom", "slate-react"] }, "sha512-4OJIltVgHt4G+Tjshg64MWUPNRe3JrmC3dvU4702ltA52jPDHmqBgR/MNYby3hKH25tbGVjQSZGhHNPNgD80WA=="],
+    "microboard-temp": ["microboard-temp@0.5.118", "", { "peerDependencies": { "canvas": "^3.1.0", "jsdom": "26.0.0", "slate": "^0.114.0", "slate-react": "^0.114.2" }, "optionalPeers": ["canvas", "jsdom", "slate-react"] }, "sha512-1mjVv5CxHLZ2ubVaGpFh/DGjAsBPt6zG2GJX7sU4B7VXmh4XMVByafJiIfac2hFRFTacldlbEyrZnOfOKUCnwQ=="],
 
     "micromatch": ["micromatch@4.0.8", "", { "dependencies": { "braces": "^3.0.3", "picomatch": "^2.3.1" } }, "sha512-PXwfBhYu0hBCPw8Dn0E+WDYb7af3dSLVWKi3HGv84IdF4TyFoC0ysxFd0Goxw7nSv4T/PzEJQxsYsEiFCKo2BA=="],
 

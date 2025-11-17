@@ -108,6 +108,7 @@ export class Account {
     this.billingHistory = [];
     this.storage.clearUserId();
     this.sessionStorage.removeLastAIRequest();
+    this.subject.publish(this.info);
   }
 
   get accessToken(): string | null {
@@ -364,6 +365,7 @@ export class Account {
     const { data } = await authApi.verifyMail({ email, passcode });
 
     this._accessToken = data?.accessToken ?? null;
+    this.subject.publish(this.info);
 
     return data;
   };

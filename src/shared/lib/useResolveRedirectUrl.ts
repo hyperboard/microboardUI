@@ -29,7 +29,6 @@ export const useResolveRedirectUrl = ({
     const currentRequest = ++requestRef.current;
 
     const resolveRedirectUrl = async () => {
-      console.log(mediaUrl);
       beforeStartCb?.();
       setIsLoadingUrl(true);
       setResolvedUrl(null);

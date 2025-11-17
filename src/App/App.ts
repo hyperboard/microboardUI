@@ -182,7 +182,7 @@ export function createApp(isHistory = true): App {
 
     let currentBoard = boards.get(id);
     if (!currentBoard) {
-      currentBoard = new Board(id, accessKey);
+      currentBoard = new Board(id, accessKey, undefined, account);
       if (id !== "blank") {
         await connection.publishAuth();
         connectBoard(currentBoard).then(() => {
@@ -283,7 +283,12 @@ export function createApp(isHistory = true): App {
     app.getBoard()?.cleanup();
     const id = "local";
 
-    const currentBoard = new Board(id, undefined, saveEditingFile.bind(app));
+    const currentBoard = new Board(
+      id,
+      undefined,
+      saveEditingFile.bind(app),
+      account,
+    );
     connectBoard(currentBoard);
     await subscriptions.setBoard(currentBoard);
     boardSubject.publish(currentBoard);
