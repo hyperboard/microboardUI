@@ -2,6 +2,7 @@ import React, {
   CSSProperties,
   ReactNode,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -15,6 +16,7 @@ import { useClickOutside } from "shared/lib/useClickOutside";
 import { useTranslation } from "react-i18next";
 import { createPortal } from "react-dom";
 import { useAccount } from "App/useAccount";
+import { useResolveRedirectUrl } from "shared/lib/useResolveRedirectUrl";
 
 interface Props {
   item: AudioItem;
@@ -58,8 +60,6 @@ export const AudioPlayer = ({ item }: Props) => {
   const [isProgressBarDown, setIsProgressBarDown] = useState(false);
   const [openedMenu, setOpenedMenu] = useState<OpenedMenu>("none");
   const [isMetadataLoaded, setIsMetadataLoaded] = useState(false);
-  const [resolvedAudioUrl, setResolvedAudioUrl] = useState<string | null>(null);
-  const [isLoadingUrl, setIsLoadingUrl] = useState(true);
   const audioRef = useRef<HTMLAudioElement>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
@@ -68,8 +68,6 @@ export const AudioPlayer = ({ item }: Props) => {
   const playbackRateBtnRef = useRef<HTMLDivElement>(null);
   const volumeBtnRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
-  const isPlaying = item.getIsPlaying();
-  const isDisabled = isLoadingUrl || !isMetadataLoaded || !resolvedAudioUrl;
   const account = useAccount();
 
   const optionsRef = useClickOutside(
@@ -78,46 +76,14 @@ export const AudioPlayer = ({ item }: Props) => {
     true,
   );
 
-  useEffect(() => {
-    setResolvedAudioUrl(null);
-    setIsLoadingUrl(true);
-    setIsMetadataLoaded(false);
+  const { resolvedUrl, isLoadingUrl } = useResolveRedirectUrl({
+    mediaUrl: item.getUrl(),
+    accessToken: account.accessToken,
+    beforeStartCb: () => setIsMetadataLoaded(false),
+  });
 
-    const apiUrl = item.getUrl();
-    if (!apiUrl || !account.accessToken) {
-      setIsLoadingUrl(false);
-      return;
-    }
-
-    let isMounted = true;
-
-    const resolveRedirectUrl = async () => {
-      try {
-        const response = await fetch(apiUrl, {
-          method: "HEAD",
-          headers: {
-            Authorization: `Bearer ${account.accessToken}`,
-          },
-        });
-
-        if (isMounted) {
-          setResolvedAudioUrl(response.url);
-        }
-      } catch (error) {
-        console.error("Error resolving redirect URL:", error);
-      } finally {
-        if (isMounted) {
-          setIsLoadingUrl(false);
-        }
-      }
-    };
-
-    resolveRedirectUrl();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [item.getUrl(), account.accessToken]);
+  const isPlaying = item.getIsPlaying();
+  const isDisabled = isLoadingUrl || !isMetadataLoaded || !resolvedUrl;
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -293,7 +259,7 @@ export const AudioPlayer = ({ item }: Props) => {
       <audio
         ref={audioRef}
         className={styles.displayNone}
-        src={resolvedAudioUrl || ""}
+        src={resolvedUrl || ""}
         onEnded={onEnded}
         onTimeUpdate={onTimeUpdate}
         onLoadedData={onLoadedData}

@@ -3,6 +3,8 @@ import { useAppContext } from "features/AppContext";
 import styles from "./VideoPlayer.module.css";
 import { captureFrame, VideoItem } from "microboard-temp";
 import YouTube from "react-youtube";
+import { useResolveRedirectUrl } from "shared/lib/useResolveRedirectUrl";
+import { useAccount } from "App/useAccount";
 
 interface Props {
   item: VideoItem;
@@ -10,6 +12,7 @@ interface Props {
 
 export const VideoPlayer = ({ item }: Props) => {
   const { board, app } = useAppContext();
+  const account = useAccount();
 
   const videoId = window.MICROBOARD_CONFIG.getYouTubeId(item.getUrl());
 
@@ -17,6 +20,11 @@ export const VideoPlayer = ({ item }: Props) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const stopTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const timeoutDuration = videoId ? 300 : 10;
+
+  const { resolvedUrl } = useResolveRedirectUrl({
+    mediaUrl: item.getUrl(),
+    accessToken: account.accessToken,
+  });
 
   useEffect(() => {
     containerRef.current?.addEventListener("wheel", app.controller.onWheel, {
@@ -146,7 +154,7 @@ export const VideoPlayer = ({ item }: Props) => {
           onSeeked={clearStopTimeout}
           onEnded={onEnded}
         >
-          <source src={item.getUrl()} type="video/mp4" />
+          <source src={resolvedUrl || ""} type="video/mp4" />
         </video>
       )}
     </div>
