@@ -6,7 +6,6 @@ import {
   prepareVideo,
   Board,
 } from "microboard-temp";
-import { getIdFromUrl, updateMediaUsage } from "App/MediaHelpers";
 
 export function uploadVideo(
   file: File,
@@ -29,10 +28,6 @@ export function uploadVideo(
         });
         prepareVideo(file, accessToken, board.getBoardId())
           .then((urls) => {
-            updateMediaUsage(
-              [getIdFromUrl(urls.url), getIdFromUrl(urls.previewUrl)],
-              board.getBoardId(),
-            );
             videoItem.setVideoData(urls);
           })
           .catch((er) => {

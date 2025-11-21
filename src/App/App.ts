@@ -1,8 +1,4 @@
-import {
-  beforeMediaRemove,
-  beforeMediaUpload,
-  catchMediaErrorResponse,
-} from "App/MediaHelpers";
+import { catchMediaErrorResponse } from "App/MediaHelpers";
 import { Account } from "entities/account";
 import { getAuthInterceptor } from "entities/account/AuthInterceptor";
 import { getConfiguredI18n } from "initI18N";
@@ -96,8 +92,6 @@ export function createApp(isHistory = true): App {
     console.error("Error:", event.error);
   });
 
-  window.MICROBOARD_CONFIG.hooks.beforeMediaRemove = beforeMediaRemove;
-  window.MICROBOARD_CONFIG.hooks.beforeMediaUpload = beforeMediaUpload;
   window.MICROBOARD_CONFIG.hooks.onUploadMediaError = catchMediaErrorResponse;
 
   let board: Board;

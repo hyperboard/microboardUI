@@ -81,33 +81,6 @@ export const validateMediaFile = (file: File, account: Account): boolean => {
   return true;
 };
 
-export const catchDuplicateErrorResponse = async (response: Response) => {
-  if (response.status === 403) {
-    window.MICROBOARD_CONFIG.notify({
-      variant: "warning",
-      header: window.MICROBOARD_CONFIG.i18n.t(
-        "toolsPanel.addMedia.limitReached.header",
-      ),
-      body: window.MICROBOARD_CONFIG.i18n.t(
-        "toolsPanel.addMedia.limitReached.duplicateBody",
-      ),
-      duration: 4000,
-    });
-  } else {
-    window.MICROBOARD_CONFIG.notify({
-      variant: "error",
-      header: window.MICROBOARD_CONFIG.i18n.t(
-        "toolsPanel.addMedia.unhandled.header",
-      ),
-      body: window.MICROBOARD_CONFIG.i18n.t(
-        "toolsPanel.addMedia.unhandled.body",
-      ),
-      duration: 4000,
-    });
-  }
-  throw new Error(`HTTP status: ${response.status}`);
-};
-
 export const catchMediaErrorResponse = async (
   response: Response,
   mediaType: "image" | "video" | "audio",
@@ -210,75 +183,4 @@ export const catchMediaErrorResponse = async (
     });
   }
   throw new Error(`HTTP status: ${response.status}`);
-};
-
-export const beforeMediaRemove = async (
-  mediaIds: string[],
-  boardId: string,
-): Promise<void> => {
-  fetch(`${window?.location.origin}/api/v1/media/usage/${boardId}`, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({ mediaIds, shouldIncrease: false }),
-  }).catch((error) => {
-    console.error("Media storage error:", error);
-  });
-};
-
-export const beforeMediaUpload = async (
-  mediaIds: string[],
-  boardId: string,
-): Promise<boolean> => {
-  try {
-    const response = await fetch(
-      `${window?.location.origin}/api/v1/media/usage/${boardId}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ mediaIds, shouldIncrease: true }),
-      },
-    );
-
-    if (response.status !== 200) {
-      await catchDuplicateErrorResponse(response);
-      return false;
-    }
-
-    return true;
-  } catch (error) {
-    console.error("Media storage error:", error);
-    return false;
-  }
-};
-
-export const updateMediaUsage = async (
-  mediaIds: string[],
-  boardId: string,
-): Promise<boolean> => {
-  try {
-    await fetch(`${window?.location.origin}/api/v1/media/usage/${boardId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        mediaIds,
-        shouldIncrease: true,
-        skipLimitsCheck: true,
-      }),
-    });
-
-    return true;
-  } catch (error) {
-    console.error("Media storage error:", error);
-    return false;
-  }
-};
-
-export const getIdFromUrl = (url: string) => {
-  return url.split("/").pop() || "";
 };

@@ -20,11 +20,7 @@ import { Account } from "entities/account";
 import { tempStorage } from "App/SessionStorage";
 import { AppSettings } from "App/App";
 import { mediaApi } from "shared/api";
-import {
-  getIdFromUrl,
-  updateMediaUsage,
-  validateMediaFile,
-} from "App/MediaHelpers";
+import { validateMediaFile } from "App/MediaHelpers";
 
 export interface Controller {
   onWheel: (event: WheelEvent) => void;
@@ -668,10 +664,6 @@ export function getController(
         board.getBoardId(),
       )
         .then((imageData) => {
-          updateMediaUsage(
-            [getIdFromUrl(imageData.storageLink)],
-            board.getBoardId(),
-          );
           const image = new ImageItem(imageData, board, undefined);
           image.transformation.translateTo(
             board.pointer.point.x,
