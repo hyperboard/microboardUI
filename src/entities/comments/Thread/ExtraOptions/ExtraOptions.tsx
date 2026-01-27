@@ -2,7 +2,7 @@ import { useAccount } from "App/useAccount";
 import { Comment } from "microboard-temp";
 import React, { useState } from "react";
 import { useAppContext } from "features/AppContext";
-import { Icon } from "../../../../shared/ui-lib/Icon";
+import { Icon } from "shared/ui-lib/Icon";
 import styles from "./ExtraOptions.module.css";
 import { notify } from "shared/ui-lib/Toast/notify";
 import { useTranslation } from "react-i18next";

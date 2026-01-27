@@ -6,6 +6,7 @@ import {
   prepareVideo,
   Board,
 } from "microboard-temp";
+import { getApiUrl } from "Config";
 
 export function uploadVideo(
   file: File,
@@ -26,7 +27,7 @@ export function uploadVideo(
           duration: 100_000,
           loader: "MediaLoader",
         });
-        prepareVideo(file, accessToken, board.getBoardId())
+        prepareVideo(file, accessToken, board.getBoardId(), getApiUrl())
           .then((urls) => {
             videoItem.setVideoData(urls);
           })

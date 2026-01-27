@@ -5,7 +5,7 @@ import { Commentator, CommentMessage } from "microboard-temp";
 import styles from "./CommentPreview.module.css";
 import { useTranslation } from "react-i18next";
 import { Avatar } from "features/UserPanel/Avatar/Avatar";
-import { formatDate } from "entities/comments/lib";
+import { formatDate } from "shared/date/lib";
 import { getCorrectEnding } from "shared/lib/getCorrectEnding";
 
 interface Props {

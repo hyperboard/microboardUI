@@ -28,8 +28,29 @@ export function updateNewsletter(
   });
 }
 
-export function uploadAvatar(avatar: File) {
-  return api.patchRaw("/users/me/avatar", avatar);
+export async function uploadAvatar(avatar: File) {
+  const response = await api.post<{ uploadUrl: string; url: string }>(
+    "/users/me/avatar/upload-url",
+    {
+      fileSize: avatar.size,
+      fileType: avatar.type,
+    },
+  );
+
+  if (!response.data) {
+    console.error("No response data");
+    return;
+  }
+
+  const { uploadUrl, url } = response.data;
+
+  const uploadResult = await api.putRawExternal(uploadUrl, avatar);
+
+  if (!uploadResult.ok) {
+    throw new Error("Failed to upload image to storage");
+  }
+
+  return { url };
 }
 
 export function removeAvatar() {

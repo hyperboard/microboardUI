@@ -5,7 +5,7 @@ import { Avatar } from "features/UserPanel/Avatar/Avatar";
 import { useAccount } from "App/useAccount";
 import { Commentator } from "microboard-temp";
 import { UiButton } from "shared/ui-lib/UiButton";
-import { formatDate } from "entities/comments/lib";
+import { formatDate } from "shared/date/lib";
 import { Icon } from "shared/ui-lib/Icon";
 import { CommentInput } from "entities/comments/CommentInput/CommentInput";
 
@@ -23,7 +23,7 @@ interface Props {
   isOptionsPanelActive: boolean;
 }
 
-export const Message = forwardRef<HTMLElement, Props>(
+export const Message = forwardRef<HTMLDivElement, Props>(
   (
     {
       text,
@@ -45,6 +45,7 @@ export const Message = forwardRef<HTMLElement, Props>(
     const account = useAccount();
 
     const canEdit = account.info?.id === commentator.id;
+
     const handleEditClick = (): void => {
       setTextUnderEditor(undefined);
       handleEditMessage(value, id);

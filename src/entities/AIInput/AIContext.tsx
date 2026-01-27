@@ -209,10 +209,10 @@ export const AIContextProvider = ({
       return openModal(AI_UNAVAILABLE_MODAL_ID);
     }
     await account.fetchBillingInfo();
-    const balance = account.billingInfo?.tokens.totalTokensBalance || 0;
+    const balance = account.billingInfo?.tokens?.totalTokensBalance || 0;
     const isBasicPlan = account.billingInfo?.plan.planId === "basic";
     console.log("balance", balance);
-    const currentModel = account.billingInfo?.models.find(
+    const currentModel = account.billingInfo?.models?.find(
       ({ id }) => id === model,
     );
 

@@ -135,14 +135,13 @@ async function handleShare(this: GlobalEventHandlers, ev: MouseEvent) {
   const { boardsApi, api } = await import(
     "https://www.unpkg.com/microboard-ui-temp/dist/index.js"
   );
-  api.updateURL("https://dev-app.microboard.io/api/v1");
 
   const res = await boardsApi.createBoard({
     title: name,
     isPublic: true,
   });
   await boardsApi.publishSnapshot(html, res.data.id, res.data.id);
-  window.location.href = `https://dev-app.microboard.io/boards/${res.data.id}`;
+  window.location.href = `${api.getUrl()}/boards/${res.data.id}`;
 }
 
 async function injectStyles() {

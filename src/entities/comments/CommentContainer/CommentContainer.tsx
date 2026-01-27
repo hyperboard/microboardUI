@@ -1,11 +1,11 @@
-import React, { TouchEventHandler, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDomMbr } from "App/useDomMbr";
 import { useAppContext } from "features/AppContext";
-import { Icon } from "../../../shared/ui-lib/Icon/index";
+import { Icon } from "shared/ui-lib/Icon";
 import styles from "./CommentContainer.module.css";
 import clsx from "clsx";
 import { ThreadPanel } from "../Thread/ThreadPanel";
-import { useCommentsContext } from "../CommentsContext";
+import { useCommentsContext } from "entities/comments";
 import { useAppSubscription } from "App/useBoardSubscription";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { Point, Comment } from "microboard-temp";
@@ -16,6 +16,8 @@ import { useAccount } from "App/useAccount";
 interface Props {
   comment: Comment;
 }
+
+const AVATARS_OFFSET = 54;
 
 export const CommentContainer = ({ comment }: Props) => {
   const commentContainerRef = useRef<HTMLDivElement | null>(null);
@@ -60,7 +62,7 @@ export const CommentContainer = ({ comment }: Props) => {
 
   const commentators = comment.getCommentators();
   const width =
-    12 + 24 + 18 * (commentators.length > 3 ? 2 : commentators.length - 1);
+    AVATARS_OFFSET * (commentators.length > 3 ? 2 : commentators.length - 1);
 
   useEffect(() => {
     if (commentRef.current) {
@@ -94,7 +96,7 @@ export const CommentContainer = ({ comment }: Props) => {
   };
 
   const handleMouseDown = (
-    e: MouseEvent | TouchEventHandler<HTMLDivElement>,
+    e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>,
   ) => {
     if ("touches" in e) {
       return;
@@ -103,7 +105,7 @@ export const CommentContainer = ({ comment }: Props) => {
     setIsPreviewOpen(false);
     board.selection.removeAll();
 
-    if (isThreadOpen || (e as MouseEvent).button === 2) {
+    if (isThreadOpen || e.button === 2) {
       return;
     }
     const select = board.tools.getSelect();

@@ -12,11 +12,11 @@ import { ExtraOptions } from "./ExtraOptions/ExtraOptions";
 import { OptionsPanel } from "./OptionsPanel/OptionsPanel";
 import { useCommentsContext } from "../CommentsContext";
 import { useTranslation } from "react-i18next";
-import { useIntersectionObserver } from "entities/comments/useIntersectionObserver";
+import { useIntersectionObserver } from "entities/comments/hooks/useIntersectionObserver";
 import { Avatar } from "features/UserPanel/Avatar/Avatar";
 import { useAccount } from "App/useAccount";
 import { useClickOutside } from "shared/lib/useClickOutside";
-import { useScrollToUnreadMessage } from "entities/comments/useScrollToUnreadMessage";
+import { useScrollToUnreadMessage } from "entities/comments/hooks/useScrollToUnreadMessage";
 import { UiSeparator } from "shared/ui-lib/UiSeparator/UiSeparator";
 
 interface MessageOptionsData {

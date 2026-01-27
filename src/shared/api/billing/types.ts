@@ -60,9 +60,9 @@ export type TokensLimits = {
 export type UserLimits = {
   // tokens: AiTokensUsage;
   storage: StorageUsage;
-  models: AvailableModel[];
   plan: UserPlan;
-  tokens: TokensLimits;
+  models?: AvailableModel[];
+  tokens?: TokensLimits;
 };
 
 export type Plan = {

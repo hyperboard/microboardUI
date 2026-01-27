@@ -29,6 +29,7 @@ export function getApiUrl(path?: string): string {
   if (!path) {
     path = "";
   }
+  return `https://microboard.sanocks.workers.dev/api/v1${path ? "/" + path : ""}`;
   if (window.MICROBOARD_FRONT_CONFIG.apiURL) {
     return `${window.MICROBOARD_FRONT_CONFIG.apiURL}${path}`;
   }

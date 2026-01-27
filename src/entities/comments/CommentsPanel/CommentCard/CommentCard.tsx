@@ -6,9 +6,9 @@ import { useAppContext } from "features/AppContext";
 import clsx from "clsx";
 import { useAccount } from "App/useAccount";
 import { useTranslation } from "react-i18next";
-import { useIntersectionObserver } from "entities/comments/useIntersectionObserver";
+import { useIntersectionObserver } from "entities/comments/hooks/useIntersectionObserver";
 import { useCommentsContext } from "entities/comments";
-import { useScrollToUnreadMessage } from "entities/comments/useScrollToUnreadMessage";
+import { useScrollToUnreadMessage } from "entities/comments/hooks/useScrollToUnreadMessage";
 import { getCorrectEnding } from "shared/lib/getCorrectEnding";
 
 interface Props {

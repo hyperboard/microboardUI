@@ -1,12 +1,12 @@
 import React from "react";
 import { useAppSubscription } from "App/useBoardSubscription";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
-import { useAppContext } from "../../features/AppContext";
+import { useAppContext } from "features/AppContext";
 import { CommentContainer } from "./CommentContainer/CommentContainer";
 import { CreateComment } from "./CreateComment/CreateComment";
 import styles from "./CommentsProvider.module.css";
 import { Cluster } from "./Cluster/Cluster";
-import { useCommentsMerge } from "./useCommentsMerge";
+import { useCommentsMerge } from "./hooks/useCommentsMerge";
 import { useCommentsContext } from "entities/comments/CommentsContext";
 
 export const CommentsProvider = (): React.JSX.Element => {

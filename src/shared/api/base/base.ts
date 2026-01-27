@@ -199,6 +199,16 @@ export class HTTP {
     });
   }
 
+  putRawExternal<R>(url: string, file: File): Promise<Response> {
+    return fetch(url, {
+      method: "PUT",
+      body: file,
+      headers: {
+        "Content-Type": file.type,
+      },
+    });
+  }
+
   put<
     R,
     B extends MutationRequestBody = MutationRequestBody,

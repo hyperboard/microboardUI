@@ -65,7 +65,7 @@ export function UserPlanUsage({
     },
   ).format(previousCancellationDate);
 
-  const tokensBalance = account.billingInfo?.tokens.totalTokensBalance || 0;
+  const tokensBalance = account.billingInfo?.tokens?.totalTokensBalance || 0;
 
   return (
     <div className={styles.container}>

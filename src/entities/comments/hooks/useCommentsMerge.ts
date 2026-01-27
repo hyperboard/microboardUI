@@ -3,6 +3,8 @@ import { useRef } from "react";
 
 type MergeComments = { clusters: Comment[][]; singleComments: Comment[] };
 
+const TRESHOLD = 56;
+
 const mergeComments = (
   comments: Comment[],
   threshold: number,
@@ -76,7 +78,7 @@ export const useCommentsMerge = (
   const existingClusters = useRef<Comment[][]>([]);
   const { clusters, singleComments } = mergeComments(
     comments,
-    56 / cameraScale,
+    TRESHOLD / cameraScale,
     cameraScale,
     prevScale.current > cameraScale ? existingClusters.current : undefined,
   );

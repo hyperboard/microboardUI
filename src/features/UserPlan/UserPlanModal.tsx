@@ -1,4 +1,3 @@
-import type { OpenAIModels } from "App/Connection";
 import { useAccount } from "App/useAccount";
 import { PROFILE_SETTINGS_MODAL_ID } from "features/ProfileSettingsModal";
 import { UiSwitch } from "shared/ui-lib/UiSwitch";
@@ -24,11 +23,11 @@ export function UserPlanModal() {
   const { t, i18n } = useTranslation();
   const account = useAccount();
 
-  const currentModelId: OpenAIModels =
-    account.billingInfo?.plan.name === "plusAI" ? "gpt-4o" : "gpt-4o-mini";
-  const currentModel = account.billingInfo?.models.find(
-    ({ id }) => id === currentModelId,
-  );
+  // const currentModelId: OpenAIModels =
+  //   account.billingInfo?.plan.name === "plusAI" ? "gpt-4o" : "gpt-4o-mini";
+  // const currentModel = account.billingInfo?.models.find(
+  //   ({ id }) => id === currentModelId,
+  // );
 
   const handleOpenProfileSettings: MouseEventHandler = (ev) => {
     ev.preventDefault();

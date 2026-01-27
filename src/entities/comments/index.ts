@@ -1,4 +1,4 @@
 export { CommentsProvider } from "./CommentsProvider";
 export { useCommentsContext, CommentsContextProvider } from "./CommentsContext";
 export { CommentContainer } from "./CommentContainer/CommentContainer";
-export { useIntersectionObserver } from "./useIntersectionObserver";
+export { CommentsPanel } from "./CommentsPanel/CommentsPanel";

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styles from "./CommentInput.module.css";
-import { Icon } from "../../../shared/ui-lib/Icon";
+import { Icon } from "shared/ui-lib/Icon";
 import { Input } from "shared/ui-lib/Input/Input";
 import { useTranslation } from "react-i18next";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";
@@ -27,6 +27,7 @@ export const CommentInput = ({
   onInput,
 }: Props): React.JSX.Element => {
   const [showSeparator, setShowSeparator] = useState(true);
+  const { t } = useTranslation();
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>): void => {
     event.stopPropagation();
@@ -44,7 +45,6 @@ export const CommentInput = ({
       return setValue("");
     }
   };
-  const { t } = useTranslation();
 
   const handleChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>,
@@ -102,13 +102,13 @@ export const CommentInput = ({
       {mode === "edit" && (
         <div className={styles.editModeButtons}>
           <div>
-            <button onClick={handleReject}>Отменить</button>
+            <button onClick={handleReject}>{t("common.cancel")}</button>
             <button onClick={handleSubmit} className={styles.saveBtn}>
-              Сохранить
+              {t("common.save")}
             </button>
           </div>
           <button onClick={handleRemove} className={styles.deleteBtn}>
-            Удалить
+            {t("comment.deleteMessage")}
           </button>
         </div>
       )}

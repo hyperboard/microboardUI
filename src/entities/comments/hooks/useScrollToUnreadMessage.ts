@@ -1,8 +1,8 @@
-import { useEffect } from "react";
+import { RefObject, useEffect } from "react";
 import { CommentMessage } from "microboard-temp";
 
 interface Args {
-  refs: React.MutableRefObject<Record<string, HTMLDivElement | null>>;
+  refs: RefObject<Record<string, HTMLDivElement | null>>;
   unreadMessages?: CommentMessage[] | null;
   deps?: unknown[];
 }

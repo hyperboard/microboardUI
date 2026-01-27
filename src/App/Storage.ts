@@ -5,6 +5,23 @@ export class Storage {
   createdBoards = `${location.host}/createdBoards`;
   visitedBoards = `${location.host}/visitedBoards`;
 
+  setAnonKey(): void {
+    if (localStorage.getItem("anonKey")) {
+      return;
+    }
+    localStorage.setItem("anonKey", v4());
+  }
+
+  getAnonKey(): string {
+    const authorKey = localStorage.getItem("anonKey");
+    if (authorKey) {
+      return authorKey;
+    }
+    const newKey = v4();
+    localStorage.setItem("anonKey", newKey);
+    return newKey;
+  }
+
   /* Returns ids of visited public boards stored in the local storage */
   listCreatedBoards(): boardsApi.Board[] {
     const createdBoards = localStorage.getItem(this.createdBoards);

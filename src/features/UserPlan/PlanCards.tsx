@@ -260,11 +260,9 @@ export function PlusAIPlanCard(): JSX.Element {
       additionalFeatureTooltip={t("userPlan.tokensTooltip")}
       variant="plus"
       price={
-        isPlusAIPlan
-          ? 8
-          : account.getIsAnnualPayment()
-            ? annualToMonthlyPrice(plan?.annualPrice)
-            : plan?.price
+        account.getIsAnnualPayment()
+          ? annualToMonthlyPrice(plan?.annualPrice)
+          : plan?.price
       }
       isTokenPrice={isPlusAIPlan}
       oldPrice={
@@ -392,6 +390,8 @@ export function PlusPlanCard(): JSX.Element {
 
   const isPlusPlan = account.billingInfo?.plan.name === plan?.name;
   const planState = getPlusSubState();
+  console.log(account.getIsAnnualPayment());
+  console.log(JSON.stringify(plan));
 
   return (
     <PlanCard
@@ -402,11 +402,9 @@ export function PlusPlanCard(): JSX.Element {
       })}
       variant="plus"
       price={
-        isPlusPlan
-          ? 6
-          : account.getIsAnnualPayment()
-            ? annualToMonthlyPrice(plan?.annualPrice)
-            : plan?.price
+        account.getIsAnnualPayment()
+          ? annualToMonthlyPrice(plan?.annualPrice)
+          : plan?.price
       }
       additionalFeature={t("userPlan.plans.plus.tokensFeature")}
       additionalFeatureTooltip={t("userPlan.tokensTooltip")}

@@ -71,12 +71,12 @@ function getI18n() {
 }
 
 export function createApp(isHistory = true): App {
+  const storage = new Storage();
   const connection = createConnection(getBoard, getAccount, getStorage);
   window.MICROBOARD_CONFIG.connection = connection;
   window.MICROBOARD_CONFIG.i18n = getI18n();
   const clipboard = new Clipboard();
   const location = new Location();
-  const storage = new Storage();
   const sessionStorage = new SessionStorage();
   const account = new Account(storage, sessionStorage, connection);
   const boardsList = new BoardsList(storage, account);
@@ -178,7 +178,10 @@ export function createApp(isHistory = true): App {
     if (!currentBoard) {
       currentBoard = new Board(id, accessKey, undefined, account);
       if (id !== "blank") {
-        await connection.publishAuth();
+        // [CHANGE] Удалено: await connection.publishAuth();
+        // Аутентификация теперь происходит внутри subscriptions.setBoard -> connection.subscribe
+
+        // Сначала инициализируем внутренности доски
         connectBoard(currentBoard).then(() => {
           appBoard?.cleanup();
         });
@@ -195,7 +198,11 @@ export function createApp(isHistory = true): App {
       localStorage.removeItem(LAST_BOARD_KEY);
     }
     sessionStorage.clear();
+
+    // [CHANGE] Это действие инициирует connection.subscribe(currentBoard),
+    // которое сделает POST /connect, получит токен и откроет сокет.
     await subscriptions.setBoard(currentBoard);
+
     boardSubject.publish(currentBoard);
     board = currentBoard;
 
@@ -364,6 +371,7 @@ export function createApp(isHistory = true): App {
           snapshotId.split("?")[0] + " copy",
           !account.isLoggedIn,
         );
+        // [CHANGE] app.connection.connect() теперь легаси и не делает ничего важного, но можно оставить
         await app.connection.connect();
         window.parent.history.pushState({}, "", `/boards/${boardId}`);
         await app.openBoard(boardId);

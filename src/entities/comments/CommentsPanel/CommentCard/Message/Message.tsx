@@ -4,7 +4,7 @@ import { CommentMessage as IMessage } from "microboard-temp";
 import styles from "./Message.module.css";
 import { useCommentsContext } from "entities/comments";
 import { Avatar } from "features/UserPanel/Avatar/Avatar";
-import { formatDate } from "entities/comments/lib";
+import { formatDate } from "shared/date/lib";
 
 interface Props {
   message: IMessage;
