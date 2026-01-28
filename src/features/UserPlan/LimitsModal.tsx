@@ -74,7 +74,7 @@ export function LimitsModal() {
               account.billingInfo?.plan.name ?? "basic"
             ]
           }
-          isFree={account.billingInfo?.plan.name === "basic"}
+          isFree={account.billingInfo?.plan.planId === "basic"}
           history
           hasHistory={
             account.billingHistory.filter((entry) => entry.planId !== "basic")

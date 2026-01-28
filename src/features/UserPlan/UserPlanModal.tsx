@@ -45,7 +45,7 @@ export function UserPlanModal() {
       <div className={styles.wrapper}>
         <h1 className={styles.heading}>{t("userPlan.upgradePlan")}</h1>
         <UserPlanUsage
-          isFree={account.billingInfo?.plan.name === "basic"}
+          isFree={account.billingInfo?.plan.planId === "basic"}
           planName={
             window.MICROBOARD_CONFIG.planNames[
               account.billingInfo?.plan.name ?? "basic"
