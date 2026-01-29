@@ -190,7 +190,6 @@ export function createConnection(
 
     switch (msg.type) {
       case "BoardSubscriptionCompleted":
-        // [CHANGE] Это сообщение приходит первым при успешном соединении
         console.log(
           `[Connection] Subscribed to ${msg.boardId} in ${msg.mode} mode`,
         );
@@ -208,7 +207,6 @@ export function createConnection(
       case "PresenceEvent":
         clearConnectionError();
         dismissNotificationAboutLostConnection();
-        // [CHANGE] Прямая маршрутизация, без проверок таймаутов подписки
         messageRouter.handleMessage(msg, board);
         break;
 
@@ -222,7 +220,6 @@ export function createConnection(
         break;
 
       case "InvalidateRights":
-        // [CHANGE] Если права изменились, проще всего переподключиться для получения нового токена
         if (board) subscribe(board);
         break;
 
@@ -343,17 +340,22 @@ export function createConnection(
     if (wsClient) wsClient.close();
   }
 
-  // [CHANGE] GetMode отправляется сервером автоматически, заглушка
-  function publishGetMode(): void {}
-
   const getCurrentUser = (): string => {
     const storage = getStorage();
     const storageUser = storage.getUser();
     if (storageUser) {
+      const board = getCurrentBoard();
+      if (board && board.presence) {
+        board.presence.setCurrentUser(storageUser);
+      }
       return storageUser;
     }
     const currentUser = storage.setUser();
-    getCurrentBoard().presence.setCurrentUser(currentUser);
+
+    const board = getCurrentBoard();
+    if (board && board.presence) {
+      board.presence.setCurrentUser(currentUser);
+    }
     return currentUser;
   };
 
@@ -435,11 +437,9 @@ export function createConnection(
     }
   }
 
-  const connectionId = getCurrentUser();
-
   const connection: Connection = {
     get connectionId() {
-      return connectionId;
+      return getCurrentUser();
     },
     getCurrentUser,
     connect,
@@ -494,78 +494,75 @@ function postDisconnectedMsg(): void {
   );
 }
 
-// [CHANGE] Функция создания клиента теперь принимает URL и Token
 export function createWsClient(
-  wsUrl: string, // Динамический URL
-  token: string, // JWT токен
+  wsUrl: string,
+  token: string,
   msgHandler: SocketMsgHandler,
   onError: (error: unknown) => void,
-  onReconnect: () => void, // Функция для полного перезапуска flow (получение нового токена)
+  onReconnect: () => void,
 ): WsClient {
   let socket: WebSocket | null = null;
   let pingInterval: any = null;
   let isClosedIntentionally = false;
 
+  let lastAlive = Date.now();
+  const PING_INTERVAL = 5000;
+  const MAX_SILENCE = 15000;
+  const RECONNECT_DELAY = 1000;
+
   function connect(): void {
     try {
-      // [CHANGE] Добавляем токен в Query параметры
       const fullUrl = `${wsUrl}?token=${token}`;
       socket = new WebSocket(fullUrl);
+      lastAlive = Date.now();
     } catch (e) {
       onError(e);
       return;
     }
 
-    socket.onmessage = onMessage;
-    socket.onopen = onOpen;
-    socket.onclose = onClose;
+    socket.onmessage = (event) => {
+      lastAlive = Date.now();
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === "pong") return;
+        msgHandler(data);
+      } catch (e) {
+        console.warn("[WS] Parse error", e);
+      }
+    };
+
+    socket.onopen = () => {
+      console.log("[WS] Connected");
+      lastAlive = Date.now();
+      startPing();
+    };
+
+    socket.onclose = (e) => {
+      console.warn("[WS] Closed", e.code, e.reason);
+      stopPing();
+      if (!isClosedIntentionally) {
+        setTimeout(() => onReconnect(), RECONNECT_DELAY);
+      }
+    };
+
     socket.onerror = (e) => {
-      console.error("WS Error", e);
-      // onError(e); // Опционально
+      console.error("[WS] Error", e);
     };
   }
-
-  function onMessage(event: MessageEvent<SocketMsg>): void {
-    try {
-      const data = JSON.parse(event.data as unknown as string);
-      if (data.type === "Error") throw new Error(data.message);
-      msgHandler(data);
-    } catch (error) {
-      console.warn(error);
-    }
-  }
-
-  function send(message: SocketMsg): void {
-    if (socket && isConnected()) {
-      socket.send(JSON.stringify(message));
-    }
-  }
-
-  function isConnected(): boolean {
-    return socket ? socket.readyState === WebSocket.OPEN : false;
-  }
-
-  function onOpen(): void {
-    startPing();
-  }
-
-  function onClose(): void {
-    stopPing();
-    if (!isClosedIntentionally) {
-      // [CHANGE] Реконнект через 3 секунды путем перезапуска всего процесса (запрос нового токена)
-      setTimeout(() => {
-        onReconnect();
-      }, 3000);
-    }
-  }
-
-  const pingMsg: SocketMsg = { type: "ping" };
 
   function startPing() {
     stopPing();
     pingInterval = setInterval(() => {
-      if (isConnected()) send(pingMsg);
-    }, WS_PING_INTERVAL);
+      if (!socket || socket.readyState !== WebSocket.OPEN) return;
+
+      if (Date.now() - lastAlive > MAX_SILENCE) {
+        console.warn("[WS] Server timeout, forcing close...");
+        socket.close();
+        return;
+      }
+
+      socket.send(JSON.stringify({ type: "ping" }));
+    }, PING_INTERVAL);
   }
 
   function stopPing() {
@@ -584,8 +581,12 @@ export function createWsClient(
   connect();
 
   return {
-    send,
-    isConnected,
+    send: (msg: SocketMsg) => {
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify(msg));
+      }
+    },
+    isConnected: () => socket !== null && socket.readyState === WebSocket.OPEN,
     close,
   };
 }

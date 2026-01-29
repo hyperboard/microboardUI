@@ -427,150 +427,150 @@ export function SelectPaymentModal(): React.JSX.Element {
               </>
             }
           />
-          <Card
-            onClick={
-              active === "crypto" ? undefined : () => setActive("crypto")
-            }
-            active={active === "crypto"}
-            title={
-              <div className={styles.text}>
-                {t("userPlan.paymentMethods.payByCrypto")}
-                <div className={styles.icons}>
-                  <Icon iconName="XRP" width={25} height={25} />
-                  <Icon iconName="BTC" width={24} height={24} />
-                  <Icon iconName="ETH" width={24} height={24} />
-                </div>
-              </div>
-            }
-            description={
-              isPurchaseTokensMode
-                ? t("userPlan.paymentMethods.totalTokens", {
-                    tokenPriceAmount,
-                    tokenAmount,
-                  })
-                : t("userPlan.paymentMethods.totalPaymentPeriod", {
-                    period: account.getIsAnnualPayment()
-                      ? t("userPlan.paymentMethods.period.annual")
-                      : t("userPlan.paymentMethods.period.monthly"),
-                  })
-            }
-            disabled={isDisabled}
-            footer={
-              <ConnectButton.Custom>
-                {({
-                  account: walletAccount,
-                  chain,
-                  openAccountModal,
-                  openChainModal,
-                  openConnectModal,
-                  mounted,
-                }) => {
-                  if (!walletAccount || !mounted) {
-                    return (
-                      <Button
-                        id="crypto_connect_button"
-                        pattern="primary"
-                        onClick={openConnectModal}
-                        disabled={isDisabled}
-                        className={styles.footer}
-                      >
-                        {t("userPlan.paymentMethods.connectWallet")}
-                      </Button>
-                    );
-                  }
-                  return (
-                    // todo fix DRY
-                    <div>
-                      {t("userPlan.paymentMethods.fromWallet", {
-                        name: walletAccount.displayName,
-                      })}
-                      <div
-                        className={styles.description}
-                        style={{ paddingBottom: "8px" }}
-                      >
-                        {t("userPlan.paymentMethods.balance", {
-                          amount: walletAccount.displayBalance,
-                        })}
-                      </div>
-                      <div className={styles.coins}>
-                        <CoinCard
-                          onClick={() => {}} // todo set active coin when many coins
-                          disabled={isDisabled}
-                          active={true}
-                          coin={
-                            (walletAccount?.balanceSymbol || "ETH") as "ETH"
-                          }
-                          title={
-                            <>
-                              <div>
-                                {isPurchaseTokensMode
-                                  ? tokenPriceAmount
-                                  : // todo fix DRY
-                                    (+account.cryptoRates[
-                                      walletAccount?.balanceSymbol || "ETH"
-                                    ][
-                                      account.getIsAnnualPayment()
-                                        ? "annualPrice"
-                                        : "price"
-                                    ]).toFixed(5)}
-                              </div>
-                              <div className={styles.description}>
-                                on {chain?.name}
-                              </div>
-                            </>
-                          }
-                        />
-                      </div>
-                      <div className={styles.footer}>
-                        <Button
-                          id="crypto_chain_button"
-                          pattern="primary"
-                          onClick={openAccountModal}
-                          disabled={isDisabled}
-                        >
-                          {t("userPlan.paymentMethods.switchWallet")}
-                        </Button>
-                        <Button
-                          id="crypto_chain_button"
-                          pattern="primary"
-                          onClick={openChainModal}
-                          disabled={isDisabled}
-                        >
-                          {t("userPlan.paymentMethods.switchNetwork")}
-                        </Button>
-                        <Button
-                          id="crypto_account_button"
-                          pattern="primary"
-                          onClick={handleCrypto}
-                          disabled={isDisabled}
-                        >
-                          {isPurchaseTokensMode
-                            ? t("userPlan.paymentMethods.buyTokens", {
-                                tokenAmount,
-                              })
-                            : `${t("userPlan.paymentMethods.payWithWallet", {
-                                amount: (+account.cryptoRates[
-                                  walletAccount?.balanceSymbol || "ETH"
-                                ][
-                                  account.getIsAnnualPayment()
-                                    ? "annualPrice"
-                                    : "price"
-                                ]).toFixed(5),
-                                wallet: walletAccount.displayName,
-                              })}`}
-                        </Button>
-                      </div>
-                      <div
-                        className={clsx(styles.description, styles.paddingTop)}
-                      >
-                        {t("userPlan.paymentMethods.finalPriceAdjusted")}
-                      </div>
-                    </div>
-                  );
-                }}
-              </ConnectButton.Custom>
-            }
-          />
+          {/*<Card*/}
+          {/*  onClick={*/}
+          {/*    active === "crypto" ? undefined : () => setActive("crypto")*/}
+          {/*  }*/}
+          {/*  active={active === "crypto"}*/}
+          {/*  title={*/}
+          {/*    <div className={styles.text}>*/}
+          {/*      {t("userPlan.paymentMethods.payByCrypto")}*/}
+          {/*      <div className={styles.icons}>*/}
+          {/*        <Icon iconName="XRP" width={25} height={25} />*/}
+          {/*        <Icon iconName="BTC" width={24} height={24} />*/}
+          {/*        <Icon iconName="ETH" width={24} height={24} />*/}
+          {/*      </div>*/}
+          {/*    </div>*/}
+          {/*  }*/}
+          {/*  description={*/}
+          {/*    isPurchaseTokensMode*/}
+          {/*      ? t("userPlan.paymentMethods.totalTokens", {*/}
+          {/*          tokenPriceAmount,*/}
+          {/*          tokenAmount,*/}
+          {/*        })*/}
+          {/*      : t("userPlan.paymentMethods.totalPaymentPeriod", {*/}
+          {/*          period: account.getIsAnnualPayment()*/}
+          {/*            ? t("userPlan.paymentMethods.period.annual")*/}
+          {/*            : t("userPlan.paymentMethods.period.monthly"),*/}
+          {/*        })*/}
+          {/*  }*/}
+          {/*  disabled={isDisabled}*/}
+          {/*  footer={*/}
+          {/*    <ConnectButton.Custom>*/}
+          {/*      {({*/}
+          {/*        account: walletAccount,*/}
+          {/*        chain,*/}
+          {/*        openAccountModal,*/}
+          {/*        openChainModal,*/}
+          {/*        openConnectModal,*/}
+          {/*        mounted,*/}
+          {/*      }) => {*/}
+          {/*        if (!walletAccount || !mounted) {*/}
+          {/*          return (*/}
+          {/*            <Button*/}
+          {/*              id="crypto_connect_button"*/}
+          {/*              pattern="primary"*/}
+          {/*              onClick={openConnectModal}*/}
+          {/*              disabled={isDisabled}*/}
+          {/*              className={styles.footer}*/}
+          {/*            >*/}
+          {/*              {t("userPlan.paymentMethods.connectWallet")}*/}
+          {/*            </Button>*/}
+          {/*          );*/}
+          {/*        }*/}
+          {/*        return (*/}
+          {/*          // todo fix DRY*/}
+          {/*          <div>*/}
+          {/*            {t("userPlan.paymentMethods.fromWallet", {*/}
+          {/*              name: walletAccount.displayName,*/}
+          {/*            })}*/}
+          {/*            <div*/}
+          {/*              className={styles.description}*/}
+          {/*              style={{ paddingBottom: "8px" }}*/}
+          {/*            >*/}
+          {/*              {t("userPlan.paymentMethods.balance", {*/}
+          {/*                amount: walletAccount.displayBalance,*/}
+          {/*              })}*/}
+          {/*            </div>*/}
+          {/*            <div className={styles.coins}>*/}
+          {/*              <CoinCard*/}
+          {/*                onClick={() => {}} // todo set active coin when many coins*/}
+          {/*                disabled={isDisabled}*/}
+          {/*                active={true}*/}
+          {/*                coin={*/}
+          {/*                  (walletAccount?.balanceSymbol || "ETH") as "ETH"*/}
+          {/*                }*/}
+          {/*                title={*/}
+          {/*                  <>*/}
+          {/*                    <div>*/}
+          {/*                      {isPurchaseTokensMode*/}
+          {/*                        ? tokenPriceAmount*/}
+          {/*                        : // todo fix DRY*/}
+          {/*                          (+account.cryptoRates[*/}
+          {/*                            walletAccount?.balanceSymbol || "ETH"*/}
+          {/*                          ][*/}
+          {/*                            account.getIsAnnualPayment()*/}
+          {/*                              ? "annualPrice"*/}
+          {/*                              : "price"*/}
+          {/*                          ]).toFixed(5)}*/}
+          {/*                    </div>*/}
+          {/*                    <div className={styles.description}>*/}
+          {/*                      on {chain?.name}*/}
+          {/*                    </div>*/}
+          {/*                  </>*/}
+          {/*                }*/}
+          {/*              />*/}
+          {/*            </div>*/}
+          {/*            <div className={styles.footer}>*/}
+          {/*              <Button*/}
+          {/*                id="crypto_chain_button"*/}
+          {/*                pattern="primary"*/}
+          {/*                onClick={openAccountModal}*/}
+          {/*                disabled={isDisabled}*/}
+          {/*              >*/}
+          {/*                {t("userPlan.paymentMethods.switchWallet")}*/}
+          {/*              </Button>*/}
+          {/*              <Button*/}
+          {/*                id="crypto_chain_button"*/}
+          {/*                pattern="primary"*/}
+          {/*                onClick={openChainModal}*/}
+          {/*                disabled={isDisabled}*/}
+          {/*              >*/}
+          {/*                {t("userPlan.paymentMethods.switchNetwork")}*/}
+          {/*              </Button>*/}
+          {/*              <Button*/}
+          {/*                id="crypto_account_button"*/}
+          {/*                pattern="primary"*/}
+          {/*                onClick={handleCrypto}*/}
+          {/*                disabled={isDisabled}*/}
+          {/*              >*/}
+          {/*                {isPurchaseTokensMode*/}
+          {/*                  ? t("userPlan.paymentMethods.buyTokens", {*/}
+          {/*                      tokenAmount,*/}
+          {/*                    })*/}
+          {/*                  : `${t("userPlan.paymentMethods.payWithWallet", {*/}
+          {/*                      amount: (+account.cryptoRates[*/}
+          {/*                        walletAccount?.balanceSymbol || "ETH"*/}
+          {/*                      ][*/}
+          {/*                        account.getIsAnnualPayment()*/}
+          {/*                          ? "annualPrice"*/}
+          {/*                          : "price"*/}
+          {/*                      ]).toFixed(5),*/}
+          {/*                      wallet: walletAccount.displayName,*/}
+          {/*                    })}`}*/}
+          {/*              </Button>*/}
+          {/*            </div>*/}
+          {/*            <div*/}
+          {/*              className={clsx(styles.description, styles.paddingTop)}*/}
+          {/*            >*/}
+          {/*              {t("userPlan.paymentMethods.finalPriceAdjusted")}*/}
+          {/*            </div>*/}
+          {/*          </div>*/}
+          {/*        );*/}
+          {/*      }}*/}
+          {/*    </ConnectButton.Custom>*/}
+          {/*  }*/}
+          {/*/>*/}
         </div>
         {!location.pathname.includes("user") && (
           <Button

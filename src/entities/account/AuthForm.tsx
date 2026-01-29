@@ -30,7 +30,7 @@ export const AuthForm = forwardRef<HTMLFormElement, Props>(
         {showAnotherAuthWay && (
           <div className={styles.anotherBtns}>
             <LoginWith />
-            <WalletLoginButton />
+            {/*<WalletLoginButton />*/}
             <GoogleAuthBtn />
           </div>
         )}
