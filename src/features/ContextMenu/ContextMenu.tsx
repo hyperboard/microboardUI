@@ -343,14 +343,14 @@ export function ContextMenu(): React.JSX.Element | null {
           >
             {t("contextMenu.editHTML")}
           </ContextMenuItem>
-          <ContextMenuItem
-            disabled={!account.isLoggedIn || isMutationsDisabled}
-            onClick={handleCreateFolder}
-            icon={<Icon iconName="Folder" width={20} height={20} />}
-            isLoading={isCreatingFolder}
-          >
-            {t("contextMenu.newFolder")}
-          </ContextMenuItem>
+          {/*<ContextMenuItem*/}
+          {/*  disabled={!account.isLoggedIn || isMutationsDisabled}*/}
+          {/*  onClick={handleCreateFolder}*/}
+          {/*  icon={<Icon iconName="Folder" width={20} height={20} />}*/}
+          {/*  isLoading={isCreatingFolder}*/}
+          {/*>*/}
+          {/*  {t("contextMenu.newFolder")}*/}
+          {/*</ContextMenuItem>*/}
         </>
       )}
       {isFolderExtendable && !isBoardMenu && (
@@ -363,14 +363,14 @@ export function ContextMenu(): React.JSX.Element | null {
           >
             {t("contextMenu.newBoard")}
           </ContextMenuItem>
-          <ContextMenuItem
-            disabled={!account.isLoggedIn || isMutationsDisabled}
-            isLoading={isCreatingFolder}
-            onClick={handleCreateFolder}
-            icon={<Icon iconName="Folder" width={20} height={20} />}
-          >
-            {t("contextMenu.newFolder")}
-          </ContextMenuItem>
+          {/*<ContextMenuItem*/}
+          {/*  disabled={!account.isLoggedIn || isMutationsDisabled}*/}
+          {/*  isLoading={isCreatingFolder}*/}
+          {/*  onClick={handleCreateFolder}*/}
+          {/*  icon={<Icon iconName="Folder" width={20} height={20} />}*/}
+          {/*>*/}
+          {/*  {t("contextMenu.newFolder")}*/}
+          {/*</ContextMenuItem>*/}
         </>
       )}
       {isFolderExtendable && !isBoardMenu && hasOwnerRights && <UiSeparator />}
