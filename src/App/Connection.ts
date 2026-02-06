@@ -275,6 +275,22 @@ export function createConnection(
       );
 
       if (!response.ok) {
+        if (response.status === 401) {
+          try {
+            console.log(
+              "[Connection] Token expired (401), attempting refresh...",
+            );
+            await account.refreshTokens();
+
+            return await subscribe(board);
+          } catch (refreshErr) {
+            console.error(
+              "[Connection] Failed to refresh token during subscribe",
+              refreshErr,
+            );
+          }
+        }
+
         postDisconnectedMsg();
         dismissNotificationAboutLostConnection();
 
