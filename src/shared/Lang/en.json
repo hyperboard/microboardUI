@@ -1082,7 +1082,7 @@
         "description": "GPT-4o mini",
         "features": [
           "All features of the Basic plan",
-          "Media storage — up to 100 GB",
+          "Media storage — up to 10 GB",
           "Premium support"
         ],
         "tokensFeature": "10 tokens"
