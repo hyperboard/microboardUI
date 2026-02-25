@@ -17,7 +17,13 @@ interface Props {
   comment: Comment;
 }
 
-const AVATARS_OFFSET = 54;
+const AVATARS_OFFSET = 18;
+// Touch jitter can move the comment by a few board units even on a tap,
+// so use a threshold instead of strict equality to detect "no movement".
+const CLICK_THRESHOLD = 10;
+// Dead zone in screen pixels before we start forwarding touch pointermove to
+// the controller. Prevents jitter from being treated as intentional drag.
+const DRAG_THRESHOLD_PX = 8;
 
 export const CommentContainer = ({ comment }: Props) => {
   const commentContainerRef = useRef<HTMLDivElement | null>(null);
@@ -29,6 +35,9 @@ export const CommentContainer = ({ comment }: Props) => {
   const { openedThreadId, setOpenedThreadId, setMovingComment, movingComment } =
     useCommentsContext();
   const movingCommentRef = useRef<Comment | null>(movingComment);
+  const lastTouchStartRef = useRef(0);
+  const touchStartScreenPosRef = useRef<{ x: number; y: number } | null>(null);
+  const isDraggingRef = useRef(false);
   const isThreadOpen = openedThreadId === comment.getId();
   const account = useAccount();
 
@@ -49,9 +58,12 @@ export const CommentContainer = ({ comment }: Props) => {
       if (movingCommentRef.current && select && !select.isLeftDown) {
         setMovingComment(null);
         movingCommentRef.current = null;
+        const anchor = comment.getAnchorPoint();
         if (
-          initialCommentPosition.current.x === comment.getAnchorPoint().x &&
-          initialCommentPosition.current.y === comment.getAnchorPoint().y
+          Math.abs(initialCommentPosition.current.x - anchor.x) <
+            CLICK_THRESHOLD &&
+          Math.abs(initialCommentPosition.current.y - anchor.y) <
+            CLICK_THRESHOLD
         ) {
           return setOpenedThreadId(comment.getId());
         }
@@ -62,20 +74,57 @@ export const CommentContainer = ({ comment }: Props) => {
 
   const commentators = comment.getCommentators();
   const width =
+    36 +
     AVATARS_OFFSET * (commentators.length > 3 ? 2 : commentators.length - 1);
 
   useEffect(() => {
-    if (commentRef.current) {
-      commentRef.current.addEventListener("wheel", app.controller.onWheel, {
-        capture: true,
-        passive: false,
-      });
-    }
+    const el = commentRef.current;
+    if (!el) return;
+
+    el.addEventListener("wheel", app.controller.onWheel, {
+      capture: true,
+      passive: false,
+    });
+
+    // On mobile, touchstart establishes implicit pointer capture on the comment
+    // element, so all subsequent pointermove events target the comment instead
+    // of the canvas. The canvas's onPointerMove never fires, and the comment
+    // won't follow the finger. Forward touch pointermove to the controller,
+    // but only after the finger has moved past DRAG_THRESHOLD_PX to avoid
+    // forwarding natural jitter during a tap (which would shift the comment
+    // slightly and make the "no movement" check fail).
+    const forwardPointerMove = (e: PointerEvent) => {
+      if (movingCommentRef.current && e.pointerType !== "mouse") {
+        if (!isDraggingRef.current) {
+          const start = touchStartScreenPosRef.current;
+          if (!start) return;
+          if (
+            Math.abs(e.clientX - start.x) <= DRAG_THRESHOLD_PX &&
+            Math.abs(e.clientY - start.y) <= DRAG_THRESHOLD_PX
+          ) {
+            return;
+          }
+          isDraggingRef.current = true;
+        }
+        app.controller.onPointerMove(e);
+      }
+    };
+    el.addEventListener("pointermove", forwardPointerMove);
+
+    // Without preventDefault on touchmove, the browser decides after ~300-500ms
+    // that the gesture is a scroll, takes over, and stops delivering events.
+    // This keeps drag working for the full duration of the touch.
+    const blockScrollDuringDrag = (e: TouchEvent) => {
+      if (movingCommentRef.current) {
+        e.preventDefault();
+      }
+    };
+    el.addEventListener("touchmove", blockScrollDuringDrag, { passive: false });
 
     return () => {
-      if (commentRef.current) {
-        commentRef.current.removeEventListener("wheel", app.controller.onWheel);
-      }
+      el.removeEventListener("wheel", app.controller.onWheel);
+      el.removeEventListener("pointermove", forwardPointerMove);
+      el.removeEventListener("touchmove", blockScrollDuringDrag);
     };
   }, [isThreadOpen]);
 
@@ -92,20 +141,36 @@ export const CommentContainer = ({ comment }: Props) => {
   };
 
   const handleMouseUp = () => {
-    setOpenedThreadId(comment.getId());
+    const currentPosition = comment.getAnchorPoint();
+    const didNotMove =
+      Math.abs(initialCommentPosition.current.x - currentPosition.x) <
+        CLICK_THRESHOLD &&
+      Math.abs(initialCommentPosition.current.y - currentPosition.y) <
+        CLICK_THRESHOLD;
+    if (didNotMove) {
+      setOpenedThreadId(comment.getId());
+    }
   };
 
   const handleMouseDown = (
     e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>,
   ) => {
     if ("touches" in e) {
+      // Record the time so we can detect the synthetic mousedown that browsers
+      // fire after touchend (only on taps) and skip it to avoid restarting drag.
+      lastTouchStartRef.current = Date.now();
+      const touch = e.touches[0];
+      touchStartScreenPosRef.current = { x: touch.clientX, y: touch.clientY };
+      isDraggingRef.current = false;
+    } else if (Date.now() - lastTouchStartRef.current < 500) {
+      // Synthetic mousedown fired shortly after touchstart — skip.
       return;
     }
 
     setIsPreviewOpen(false);
     board.selection.removeAll();
 
-    if (isThreadOpen || e.button === 2) {
+    if (isThreadOpen || ("button" in e && e.button === 2)) {
       return;
     }
     const select = board.tools.getSelect();
@@ -118,6 +183,20 @@ export const CommentContainer = ({ comment }: Props) => {
       initialCommentPosition.current = commentAnchor;
       setIsPreviewOpen(false);
       board.pointer.pointTo(commentAnchor.x, commentAnchor.y);
+
+      // CommentsProvider is rendered outside the canvas stage DOM tree, so the
+      // canvas's capture-phase pointerup listener never fires for comment clicks.
+      // Without it, tools.leftButtonUp() is never called, isLeftDown stays true
+      // forever, and the comment never unsticks. This listener closes that gap.
+      window.addEventListener(
+        "pointerup",
+        () => {
+          if (movingCommentRef.current) {
+            board.tools.leftButtonUp();
+          }
+        },
+        { once: true },
+      );
     }
   };
 
@@ -127,7 +206,15 @@ export const CommentContainer = ({ comment }: Props) => {
     unreadMessages || (userId && comment.getIsThreadMarkedAsUnread(userId)),
   );
 
-  const zIndex = isThreadOpen ? 3 : isPreviewOpen ? 2 : 1;
+  // Thread must sit above the side panel (z-index: 100).
+  const zIndex = isThreadOpen ? 101 : isPreviewOpen ? 2 : 1;
+  // On mobile, center the thread panel on the screen instead of anchoring it
+  // to the comment's board position (which may be off-screen or awkward).
+  const isMobile = window.innerWidth <= 640;
+  const threadStyle =
+    isThreadOpen && isMobile
+      ? { left: "50%", top: "50%", transform: "translate(-50%, -50%)" }
+      : { left: mbr.left, top: mbr.top, transform: undefined };
 
   return (
     <div
@@ -137,8 +224,7 @@ export const CommentContainer = ({ comment }: Props) => {
         height: "fit-content",
         position: "fixed",
         zIndex,
-        left: mbr.left,
-        top: mbr.top,
+        ...threadStyle,
         pointerEvents: movingComment ? "none" : "auto",
       }}
       id={`comment-${comment.getId()}`}

@@ -102,6 +102,16 @@ export function getController(
       return;
     }
 
+    // Never intercept keystrokes while the user is typing in any input field.
+    const target = event.target as HTMLElement;
+    if (
+      target instanceof HTMLInputElement ||
+      target instanceof HTMLTextAreaElement ||
+      target.isContentEditable
+    ) {
+      return;
+    }
+
     board.camera.unsubscribeFromItem();
     board.presence.disableTracking();
 
