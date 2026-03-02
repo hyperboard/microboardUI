@@ -1,5 +1,7 @@
 import { Board } from "microboard-temp";
 import type { BoardSnapshot } from "microboard-temp";
+import { getApiUrl } from "Config";
+import Cookies from "js-cookie";
 
 export function detectLanguage(text: string) {
   const scores = {};
@@ -55,3 +57,53 @@ export const pasteSnapshot = ({
     board.camera.zoomToFit(itemsMbr);
   }
 };
+
+export async function fetchTemplateSnapshot(
+  templateId: string,
+): Promise<BoardSnapshot> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  const token = Cookies.get("accessToken");
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(
+    `${getApiUrl()}/templates/${templateId}/connect`,
+    { method: "POST", headers },
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to connect to template: ${response.status}`);
+  }
+
+  const { wsUrl, jwt } = await response.json();
+
+  return new Promise((resolve, reject) => {
+    const ws = new WebSocket(`${wsUrl}?token=${jwt}`);
+
+    const timeout = setTimeout(() => {
+      ws.close();
+      reject(new Error("Template connection timed out"));
+    }, 15000);
+
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === "BoardSubscriptionCompleted") {
+          clearTimeout(timeout);
+          ws.close();
+          resolve(data.JSONSnapshot as BoardSnapshot);
+        }
+      } catch {
+        // ignore parse errors
+      }
+    };
+
+    ws.onerror = () => {
+      clearTimeout(timeout);
+      reject(new Error("Template WS connection failed"));
+    };
+  });
+}

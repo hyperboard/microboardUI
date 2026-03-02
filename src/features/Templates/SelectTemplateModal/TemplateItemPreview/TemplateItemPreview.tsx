@@ -1,10 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./TemplateItemPreview.module.css";
 import { TemplateItemsGrid } from "../TemplateItemsGrid/TemplateItemsGrid";
-import { Template } from "microboard-temp";
-import type { BoardSnapshot } from "microboard-temp";
+import { Template } from "features/Templates/types";
 import { useTranslation } from "react-i18next";
-import { pasteSnapshot } from "features/Templates/lib";
+import { fetchTemplateSnapshot, pasteSnapshot } from "features/Templates/lib";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
@@ -12,31 +11,34 @@ import { useUiModalContext } from "shared/ui-lib/UiModal";
 
 interface TemplateItemPreviewProps {
   name: string;
-  language: string;
-  description: string;
-  tags: string[];
-  snapshot: BoardSnapshot;
+  templateId: string;
   setPresentedTemplate: (template: null | Template) => void;
-  viewLinkId: string;
   relatedTemplates: Template[];
 }
 
 export const TemplateItemPreview = ({
   name,
-  description,
-  snapshot,
+  templateId,
   setPresentedTemplate,
-  viewLinkId,
   relatedTemplates,
 }: TemplateItemPreviewProps) => {
   const { board } = useAppContext();
   const { closeModal } = useUiModalContext();
   const { t } = useTranslation();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const pasteSnapshotAndClose = () => {
-    setPresentedTemplate(null);
-    closeModal();
-    pasteSnapshot({ board, snapshot });
+  const pasteSnapshotAndClose = async () => {
+    setIsLoading(true);
+    try {
+      const snapshot = await fetchTemplateSnapshot(templateId);
+      setPresentedTemplate(null);
+      closeModal();
+      pasteSnapshot({ board, snapshot });
+    } catch (error) {
+      console.error("Failed to load template snapshot:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -54,12 +56,15 @@ export const TemplateItemPreview = ({
         <div className={styles.mainSection}>
           <iframe
             className={styles.frame}
-            src={`${window.location.origin}/${viewLinkId}&userPanel=false&titlePanel=false&isTemplateView=true`}
+            src={`${window.location.origin}/templates/${templateId}?userPanel=false&titlePanel=false`}
           ></iframe>
           <div className={styles.infoBox}>
             <h2>{name}</h2>
-            <p className={styles.description}>{description}</p>
-            <UiButton onClick={pasteSnapshotAndClose} size="lg">
+            <UiButton
+              onClick={pasteSnapshotAndClose}
+              size="lg"
+              loading={isLoading}
+            >
               {t("modalTemplate.UI.buttons.Use")}
             </UiButton>
           </div>

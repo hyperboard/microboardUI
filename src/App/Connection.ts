@@ -266,13 +266,15 @@ export function createConnection(
         headers["Authorization"] = `Bearer ${account.accessToken}`;
       }
 
-      const response = await fetch(
-        `${getApiUrl()}/websocket/${boardId}/connect`,
-        {
-          method: "POST",
-          headers,
-        },
-      );
+      const isTemplatePath = window.location.pathname.startsWith("/templates/");
+      const connectUrl = isTemplatePath
+        ? `${getApiUrl()}/templates/${boardId}/connect`
+        : `${getApiUrl()}/websocket/${boardId}/connect`;
+
+      const response = await fetch(connectUrl, {
+        method: "POST",
+        headers,
+      });
 
       if (!response.ok) {
         if (response.status === 401) {

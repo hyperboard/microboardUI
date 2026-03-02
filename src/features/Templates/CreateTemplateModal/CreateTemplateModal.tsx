@@ -3,16 +3,14 @@ import { useTranslation } from "react-i18next";
 import { Input } from "shared/ui-lib/Input/Input";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { useAppContext } from "features/AppContext";
+import { useAccount } from "App/useAccount";
 import { getApiUrl } from "Config";
-import Cookies from "js-cookie";
 import styles from "./CreateTemplateModal.module.css";
 import { useTolgee } from "@tolgee/react";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { notify } from "shared/ui-lib/Toast/notify";
 import { TolgeeProviderProvider } from "../TolgeeProvider";
 import { getTolgeeApiUrl } from "features/Templates/config";
-import { createAccessKey } from "shared/api/boards/api";
-import { AccessKeyType } from "shared/api/boards/types";
 import { detectLanguage } from "../lib";
 import { Selector, type SelectorHandle } from "shared/ui-lib/Selector";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
@@ -31,7 +29,7 @@ const CreateTemplate = (): React.JSX.Element => {
   const formRef = useRef<HTMLFormElement>(null);
   const categoriesSelectorRef = useRef<SelectorHandle<true>>(null);
   const languagesSelectorRef = useRef<SelectorHandle<true>>(null);
-  const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [previewKey, setPreviewKey] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [submitDisabled, setSubmitDisabled] = useState<boolean>(false);
   const [translateDisabled, setTranslateDisabled] = useState<boolean>(false);
@@ -45,6 +43,7 @@ const CreateTemplate = (): React.JSX.Element => {
   >([{ id: "description", placeholder: "Description" }]);
   const { t } = useTranslation();
   const { board } = useAppContext();
+  const account = useAccount();
   const { closeModal } = useUiModalContext();
   const forceUpdate = useForceUpdate();
 
@@ -106,50 +105,64 @@ const CreateTemplate = (): React.JSX.Element => {
       return;
     }
     setErrors([]);
-
-    const headers = new Headers();
-    headers.append("content-type", "image/png");
-    headers.append("x-image-id", Date.now().toString());
-
     setSubmitDisabled(true);
 
-    const response = await fetch(getApiUrl("/media"), {
-      method: "POST",
-      headers,
-      body: file,
-    });
-    if (!response.ok) {
-      setErrors(["Error while uploading image"]);
+    try {
+      const initResponse = await fetch(
+        `${getApiUrl()}/templates/upload-preview`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${account.accessToken}`,
+          },
+          body: JSON.stringify({ fileSize: file.size, fileType: file.type }),
+        },
+      );
+      if (!initResponse.ok) {
+        setErrors(["Error while uploading image"]);
+        return;
+      }
+      const { uploadUrl, previewKey: key } = await initResponse.json();
+
+      const uploadResponse = await fetch(uploadUrl, {
+        method: "PUT",
+        body: file,
+        headers: { "Content-Type": file.type },
+      });
+      if (!uploadResponse.ok) {
+        setErrors(["Error while uploading image"]);
+        return;
+      }
+      setPreviewKey(key);
+    } finally {
+      setSubmitDisabled(false);
     }
-    setImageSrc((await response.json()).src);
-    setSubmitDisabled(false);
   };
 
-  async function createTemplate(body: any) {
+  async function createTemplate(body: any): Promise<string> {
     const boardId = board.getBoardId();
-    const viewLink = (
-      await createAccessKey(boardId, {
-        boardUUID: boardId,
-        keyType: AccessKeyType.VIEW,
-      })
-    ).data?.accessKey;
-    if (!viewLink) {
-      throw new Error("Can not create access key.");
-    }
-
-    await fetch(`${getApiUrl()}/templates/${boardId}`, {
+    const response = await fetch(`${getApiUrl()}/templates`, {
       method: "POST",
       mode: "cors",
       cache: "no-cache",
       credentials: "same-origin",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${Cookies.get("accessToken")}`,
+        Authorization: `Bearer ${account.accessToken}`,
       },
-      body: JSON.stringify({ ...body, viewLink }),
+      body: JSON.stringify({ ...body, boardId }),
       redirect: "follow",
       referrerPolicy: "no-referrer",
     });
+    if (!response.ok) {
+      if (response.status === 409) {
+        throw new Error("conflict");
+      }
+      throw new Error(`Server error: ${response.status}`);
+    }
+    const data = await response.json();
+    return data.id as string;
   }
 
   const tolgee = useTolgee();
@@ -301,7 +314,6 @@ const CreateTemplate = (): React.JSX.Element => {
     const tags = categoriesSelectorRef
       .current!.getSelectedOptions()
       .map((o) => o.value);
-    const snapshot = board.getSnapshot();
 
     setIsSubmitLoading(true);
     setSubmitDisabled(true);
@@ -312,18 +324,19 @@ const CreateTemplate = (): React.JSX.Element => {
         .current!.getSelectedOptions()
         .map((o) => o.value),
       tags,
-      snapshot,
       name: multilanguageName,
-      preview: imageSrc,
+      preview: previewKey,
     };
 
     await createTemplate(body)
-      .then((res) => {
+      .then((templateId) => {
+        localStorage.setItem(`templateId:${board.getBoardId()}`, templateId);
         formRef.current?.reset();
         categoriesSelectorRef.current?.setSelectedOptions([categories[0]]);
         languagesSelectorRef.current?.setSelectedOptions([
           window.MICROBOARD_CONFIG.TEMPLATE_LANGUAGES[0],
         ]);
+        setPreviewKey(null);
         notify({
           body: t("template.createSuccess"),
           variant: "info",
@@ -333,14 +346,25 @@ const CreateTemplate = (): React.JSX.Element => {
         setIsSubmitLoading(false);
         closeModal();
       })
-      .catch(() => {
-        setErrors([t("template.createError")]);
+      .catch((err) => {
+        if (err?.message === "conflict") {
+          setErrors([
+            t("template.alreadyExists" as any) ||
+              "Template for this board already exists",
+          ]);
+        } else {
+          setErrors([t("template.createError")]);
+        }
       })
       .finally(() => {
         setSubmitDisabled(false);
         setIsSubmitLoading(false);
       });
   };
+
+  const tolgeeConfigured = Boolean(
+    import.meta.env.TOLGEE_API_URL && import.meta.env.TOLGEE_API_KEY,
+  );
 
   return (
     <UiModal
@@ -351,6 +375,7 @@ const CreateTemplate = (): React.JSX.Element => {
       }
       className={styles.wr}
       wrClassName={styles.modal}
+      closeOnClickOutside={false}
     >
       <form
         id="create-template-form"
@@ -379,7 +404,7 @@ const CreateTemplate = (): React.JSX.Element => {
           size="lg"
         >
           {t(
-            `modalTemplate.UI.buttons.${imageSrc ? "previewChosen" : "choosePreview"}`,
+            `modalTemplate.UI.buttons.${previewKey ? "previewChosen" : "choosePreview"}`,
           )}
         </UiButton>
         <Selector
@@ -414,7 +439,8 @@ const CreateTemplate = (): React.JSX.Element => {
             />
           );
         })}
-        {languagesSelectorRef.current &&
+        {tolgeeConfigured &&
+          languagesSelectorRef.current &&
           languagesSelectorRef.current.getSelectedOptions().length > 1 && (
             <UiButton
               variant="primary"

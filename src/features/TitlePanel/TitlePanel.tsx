@@ -117,44 +117,50 @@ export function TitlePanel(): React.JSX.Element | null {
     setIsDropdownOpen((prev) => !prev);
   };
 
+  const templateIdKey = `templateId:${board.getBoardId()}`;
+
   const saveTemplate = (): void => {
-    const body = JSON.stringify({ snapshot: board.getSnapshot() });
-    saveTemplateReq(body);
+    const templateId = localStorage.getItem(templateIdKey);
+    if (templateId) {
+      updateTemplateReq(templateId);
+    } else {
+      openModal(CREATE_TEMPLATE_MODAL);
+    }
   };
 
-  async function saveTemplateReq(body: any): Promise<void> {
+  async function updateTemplateReq(templateId: string): Promise<void> {
     try {
-      const response = await fetch(
-        `${getApiUrl()}/templates/${board.getBoardId()}`,
-        {
-          method: "PATCH",
-          mode: "cors",
-          cache: "no-cache",
-          credentials: "same-origin",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${Cookies.get("accessToken")}`,
-          },
-          body,
-          redirect: "follow",
-          referrerPolicy: "no-referrer",
+      const response = await fetch(`${getApiUrl()}/templates/${templateId}`, {
+        method: "PATCH",
+        mode: "cors",
+        cache: "no-cache",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${Cookies.get("accessToken")}`,
         },
-      );
+        body: JSON.stringify({}),
+        redirect: "follow",
+        referrerPolicy: "no-referrer",
+      });
 
-      if (response.status === 204) {
+      if (response.status === 404) {
+        // Шаблон удалён на сервере — сбрасываем и открываем форму создания
+        localStorage.removeItem(templateIdKey);
         return openModal(CREATE_TEMPLATE_MODAL);
       }
 
       if (!response.ok) {
         throw new Error("response not OK");
       }
+
       notify({
         body: t("template.saveSuccess"),
         variant: "info",
         duration: 3000,
       });
     } catch (error) {
-      console.error("Failed to create template.", error);
+      console.error("Failed to update template.", error);
     }
   }
 

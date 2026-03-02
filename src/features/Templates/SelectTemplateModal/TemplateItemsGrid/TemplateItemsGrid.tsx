@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./TemplateItemsGrid.module.css";
 import { TemplateItem } from "./TemplateItem/TemplateItem";
 import clsx from "clsx";
-import { Template } from "microboard-temp";
+import { Template } from "features/Templates/types";
 
 interface TemplateItemsGridProps {
   templates: Template[];
@@ -28,7 +28,7 @@ export const TemplateItemsGrid = ({
     <div className={clsx(styles.templatesGrid, className)}>
       {templates.map((template) => (
         <TemplateItem
-          key={template.uniqId}
+          key={template.id}
           template={template}
           setPresentedTemplate={setPresentedTemplate}
         />

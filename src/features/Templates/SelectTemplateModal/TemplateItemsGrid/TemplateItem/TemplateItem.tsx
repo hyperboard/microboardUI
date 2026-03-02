@@ -1,12 +1,12 @@
-import React, { SyntheticEvent, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import styles from "./templateItem.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { useAppContext } from "features/AppContext";
-import { Template } from "microboard-temp";
-import PlaceholderImg from "shared/assets/imgs/no-img-icon.svg";
+import { Template } from "features/Templates/types";
+import { getApiUrl } from "Config";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
-import { pasteSnapshot } from "features/Templates/lib";
+import { fetchTemplateSnapshot, pasteSnapshot } from "features/Templates/lib";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 
 interface TemplateItemProps {
@@ -18,8 +18,9 @@ export const TemplateItem = ({
   template,
   setPresentedTemplate,
 }: TemplateItemProps) => {
-  const [isLoading, setIsLoading] = useState(true);
   const [isImageError, setIsImageError] = useState(!template.preview);
+  const previewUrl = `${getApiUrl()}/templates/${template.id}/preview`;
+  const [isUseLoading, setIsUseLoading] = useState(false);
   const { board } = useAppContext();
   const { closeModal } = useUiModalContext();
   const { t } = useTranslation();
@@ -29,19 +30,22 @@ export const TemplateItem = ({
   const [isTouchStart, setIsTouchStart] = useState(false);
   const [touchStartY, setTouchStartY] = useState(0);
 
-  const handleImageLoad = () => {
-    setIsLoading(false);
-  };
-
-  const handleImageError = (e: SyntheticEvent<HTMLImageElement, Event>) => {
-    setIsLoading(false);
+  const handleImageError = () => {
     setIsImageError(true);
   };
 
-  const pasteSnapshotAndClose = () => {
-    setPresentedTemplate(null);
-    closeModal();
-    pasteSnapshot({ board, snapshot: template.snapshot });
+  const pasteSnapshotAndClose = async () => {
+    setIsUseLoading(true);
+    try {
+      const snapshot = await fetchTemplateSnapshot(template.id);
+      setPresentedTemplate(null);
+      closeModal();
+      pasteSnapshot({ board, snapshot });
+    } catch (error) {
+      console.error("Failed to load template snapshot:", error);
+    } finally {
+      setIsUseLoading(false);
+    }
   };
 
   // Обрабатываем события касания для пропуска жестов скролла на родительский контейнер
@@ -81,13 +85,8 @@ export const TemplateItem = ({
         <img
           onClick={() => setPresentedTemplate(template)}
           className={clsx(styles.image, isImageError && styles.noImage)}
-          src={
-            isLoading || isImageError
-              ? PlaceholderImg
-              : (template.preview as string) || ""
-          }
+          src={isImageError ? "" : previewUrl}
           alt={template.name}
-          onLoad={handleImageLoad}
           onError={handleImageError}
         />
         <div
@@ -102,7 +101,11 @@ export const TemplateItem = ({
             >
               {t("modalTemplate.UI.buttons.Preview")}
             </UiButton>
-            <UiButton onClick={pasteSnapshotAndClose} size="lg">
+            <UiButton
+              onClick={pasteSnapshotAndClose}
+              size="lg"
+              loading={isUseLoading}
+            >
               {t("modalTemplate.UI.buttons.Use")}
             </UiButton>
           </div>

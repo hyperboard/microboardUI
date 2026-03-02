@@ -9,11 +9,12 @@ import clsx from "clsx";
 import { CategoriesMenu } from "./CategoriesMenu/CategoriesMenu";
 import { useDebounce } from "shared/lib/useDebounce";
 import { TemplateItemsGrid } from "./TemplateItemsGrid/TemplateItemsGrid";
-import { Template, TemplateCategory } from "microboard-temp";
+import { TemplateCategory } from "microboard-temp";
 import { LanguagesDropdown } from "./LanguagesDropdown/LanguagesDropdown";
 import { getCorrectEnding } from "shared/lib/getCorrectEnding";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
+import { Template } from "../types";
 
 export const SELECT_TEMPLATE_MODAL = Symbol("selectTemplate");
 
@@ -62,7 +63,10 @@ export const SelectTemplateModal = (): React.JSX.Element => {
     tag?: TemplateCategory;
   }) => {
     const params = new URLSearchParams(
-      Object.entries({ term, language, tag }).filter(([_, v]) => v),
+      Object.entries({ term, language, tag }).filter(([_, v]) => v) as [
+        string,
+        string,
+      ][],
     );
 
     try {
@@ -113,14 +117,10 @@ export const SelectTemplateModal = (): React.JSX.Element => {
           {presentedTemplate ? (
             <TemplateItemPreview
               name={presentedTemplate.name}
-              language={presentedTemplate.lan}
-              description={presentedTemplate.description}
-              snapshot={presentedTemplate.snapshot}
+              templateId={presentedTemplate.id}
               setPresentedTemplate={setPresentedTemplate}
-              tags={presentedTemplate.tags}
-              viewLinkId={presentedTemplate.uniqId}
               relatedTemplates={templates.filter(
-                (t) => t.uniqId !== presentedTemplate.uniqId,
+                (t) => t.id !== presentedTemplate.id,
               )}
             />
           ) : (

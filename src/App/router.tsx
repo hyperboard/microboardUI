@@ -28,6 +28,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { AdminDashboardPage } from "pages/AdminPage/AdminPage";
 import { RouterRolesGuard } from "entities/account/RouterRolesGuard";
 import { UserRoles } from "entities/account/Account";
+import { TemplateBoardPage } from "pages/TemplateBoardPage";
 
 export function getRender(app: App): {
   render: () => void;
@@ -68,6 +69,7 @@ export function getRender(app: App): {
         },
         { path: "/welcome", element: <WelcomePage /> },
         { path: "/boards/:boardId?", element: <BoardPage /> },
+        { path: "/templates/:templateId", element: <TemplateBoardPage /> },
         { path: "/selectBoard", element: <SelectBoardPage /> },
         { path: "/test-wheel", element: <WheelEventLoggerPage /> },
         { path: "/snapshots/:uid?", element: <HTMLSnapshot /> },

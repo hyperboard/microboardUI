@@ -98,24 +98,24 @@ export const UserActionsDropdown: React.FC<UserActionsDropdownProps> = ({
         />
         <span>{t("presence.followUser")}</span>
       </UiButton>
-      {/* <UiButton */}
-      {/* 	className={styles.dropdownButton} */}
-      {/* 	size="sm" */}
-      {/* 	radius="md" */}
-      {/* 	variant="secondary" */}
-      {/* 	onClick={handleBringToMe} */}
-      {/* 	onMouseDown={ev => { */}
-      {/* 		ev.stopPropagation(); */}
-      {/* 	}} */}
-      {/* > */}
-      {/* 	<Icon */}
-      {/* 		iconName="BringToMe" */}
-      {/* 		width={16} */}
-      {/* 		height={16} */}
-      {/* 		className={styles.icon} */}
-      {/* 	/> */}
-      {/* 	<span>{t("presence.bringToMe...")}</span> */}
-      {/* </UiButton> */}
+      <UiButton
+        className={styles.dropdownButton}
+        size="sm"
+        radius="md"
+        variant="secondary"
+        onClick={handleBringToMe}
+        onMouseDown={(ev) => {
+          ev.stopPropagation();
+        }}
+      >
+        <Icon
+          iconName="BringToMe"
+          width={16}
+          height={16}
+          className={styles.icon}
+        />
+        <span>{t("presence.bringToMe")}</span>
+      </UiButton>
     </div>
   );
 };
@@ -238,37 +238,31 @@ export const BringToMe: React.FC<{
               <p className={styles.nickname}>{user.name}</p>
               {user.idle && <p className={styles.idle}>{t("presence.idle")}</p>}
             </div>
-            {/* <div className={styles.userActionsContainer}> */}
-            {/* 	<UiButton */}
-            {/* 		className={styles.btn} */}
-            {/* 		size="md" */}
-            {/* 		radius="md" */}
-            {/* 		variant="secondary" */}
-            {/* 		onMouseDown={ev => { */}
-            {/* 			ev.stopPropagation(); */}
-            {/* 			setOpenDropdownUserId( */}
-            {/* 				openDropdownUserId === user.id */}
-            {/* 					? null */}
-            {/* 					: user.id, */}
-            {/* 			); */}
-            {/* 		}} */}
-            {/* 		onClick={ev => { */}
-            {/* 			ev.stopPropagation(); */}
-            {/* 		}} */}
-            {/* 	> */}
-            {/* 		<Icon */}
-            {/* 			iconName="ThreeDots" */}
-            {/* 			width={20} */}
-            {/* 			height={20} */}
-            {/* 		/> */}
-            {/* 	</UiButton> */}
-            {/* 	{openDropdownUserId === user.id && ( */}
-            {/* 		<UserActionsDropdown */}
-            {/* 			userId={user.id} */}
-            {/* 			onClose={() => setOpenDropdownUserId(null)} */}
-            {/* 		/> */}
-            {/* 	)} */}
-            {/* </div> */}
+            <div className={styles.userActionsContainer}>
+              <UiButton
+                className={styles.btn}
+                size="md"
+                radius="md"
+                variant="secondary"
+                onMouseDown={(ev) => {
+                  ev.stopPropagation();
+                  setOpenDropdownUserId(
+                    openDropdownUserId === user.id ? null : user.id,
+                  );
+                }}
+                onClick={(ev) => {
+                  ev.stopPropagation();
+                }}
+              >
+                <Icon iconName="ThreeDots" width={20} height={20} />
+              </UiButton>
+              {openDropdownUserId === user.id && (
+                <UserActionsDropdown
+                  userId={user.id}
+                  onClose={() => setOpenDropdownUserId(null)}
+                />
+              )}
+            </div>
           </div>
         ))}
       </div>
@@ -279,76 +273,69 @@ export const BringToMe: React.FC<{
           <span>{t("presence.noUsersFoundPostfix")}</span>
         </div>
       )}
-      {/* <div className={styles.btns}> */}
-      {/* 	<UiButton */}
-      {/* 		size="md" */}
-      {/* 		className={styles.btnBring} */}
-      {/* 		onClick={() => { */}
-      {/* 			const presence = board.presence; */}
-      {/* 			const allUsers = presence.getUsers( */}
-      {/* 				board.getBoardId(), */}
-      {/* 				true, */}
-      {/* 			); */}
-      {/* 			const uniqueUsersByHardId = [ */}
-      {/* 				...new Map( */}
-      {/* 					allUsers */}
-      {/* 						.filter(user => user.hardId !== null) */}
-      {/* 						.map(user => [user.hardId, user]), */}
-      {/* 				).values(), */}
-      {/* 				...allUsers.filter(user => user.hardId === null), */}
-      {/* 			]; */}
-      {/* 			if (uniqueUsersByHardId.length > 0) { */}
-      {/* 				presence.emit({ */}
-      {/* 					method: "BringToMe", */}
-      {/* 					timestamp: Date.now(), */}
-      {/* 					users: uniqueUsersByHardId.map( */}
-      {/* 						user => user.userId, */}
-      {/* 					), */}
-      {/* 				}); */}
-      {/* 				notify({ */}
-      {/* 					header: t("presence.bringAllNotify"), */}
-      {/* 					variant: "black", */}
-      {/* 					duration: 3_000, */}
-      {/* 					unclosable: true, */}
-      {/* 					position: notifyPosition, */}
-      {/* 				}); */}
-      {/* 			} */}
-      {/* 		}} */}
-      {/* 	> */}
-      {/* 		{t("presence.bringToMe")} */}
-      {/* 	</UiButton> */}
-      {/* 	{followers.length > 0 && ( */}
-      {/* 		<UiButton */}
-      {/* 			className={styles.btnStop} */}
-      {/* 			variant="secondary" */}
-      {/* 			size="md" */}
-      {/* 			onClick={() => { */}
-      {/* 				const presence = board.presence; */}
-      {/* 				presence.emit({ */}
-      {/* 					method: "StopFollowing", */}
-      {/* 					timestamp: Date.now(), */}
-      {/* 					users: followers.map( */}
-      {/* 						follower => follower.userId, */}
-      {/* 					), */}
-      {/* 				}); */}
-      {/* 			}} */}
-      {/* 		> */}
-      {/* 			<Icon */}
-      {/* 				iconName="EyeDashed" */}
-      {/* 				width={16} */}
-      {/* 				height={16} */}
-      {/* 				style={{ color: "#696B76" }} */}
-      {/* 			/> */}
-      {/* 			<span className={styles.text}> */}
-      {/* 				{`${t("presence.stop")} ${followers.length} ${ */}
-      {/* 					followers?.length > 1 */}
-      {/* 						? t("presence.followers") */}
-      {/* 						: t("presence.follower") */}
-      {/* 				}`} */}
-      {/* 			</span> */}
-      {/* 		</UiButton> */}
-      {/* 	)} */}
-      {/* </div> */}
+      <div className={styles.btns}>
+        <UiButton
+          size="md"
+          className={styles.btnBring}
+          onClick={() => {
+            const presence = board.presence;
+            const allUsers = presence.getUsers(board.getBoardId(), true);
+            const uniqueUsersByHardId = [
+              ...new Map(
+                allUsers
+                  .filter((user) => user.hardId !== null)
+                  .map((user) => [user.hardId, user]),
+              ).values(),
+              ...allUsers.filter((user) => user.hardId === null),
+            ];
+            if (uniqueUsersByHardId.length > 0) {
+              presence.emit({
+                method: "BringToMe",
+                timestamp: Date.now(),
+                users: uniqueUsersByHardId.map((user) => user.userId),
+              });
+              notify({
+                header: t("presence.bringAllNotify"),
+                variant: "black",
+                duration: 3_000,
+                unclosable: true,
+                position: notifyPosition,
+              });
+            }
+          }}
+        >
+          {t("presence.bringToMe")}
+        </UiButton>
+        {followers.length > 0 && (
+          <UiButton
+            className={styles.btnStop}
+            variant="secondary"
+            size="md"
+            onClick={() => {
+              const presence = board.presence;
+              presence.emit({
+                method: "StopFollowing",
+                timestamp: Date.now(),
+                users: followers.map((follower) => follower.userId),
+              });
+            }}
+          >
+            <Icon
+              iconName="EyeDashed"
+              width={16}
+              height={16}
+              style={{ color: "#696B76" }}
+            />
+            <span className={styles.text}>
+              {`${t("presence.stop")} ${followers.length} ${
+                followers?.length > 1
+                  ? t("presence.followers")
+                  : t("presence.follower")
+              }`}
+            </span>
+          </UiButton>
+        )}
+      </div>
     </div>
   );
 };
