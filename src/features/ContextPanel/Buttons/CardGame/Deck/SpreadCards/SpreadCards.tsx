@@ -11,7 +11,7 @@ import { UiPanel } from "shared/ui-lib/UiPanel";
 import { FontSizePicker } from "features/Pickers/FontSizePicker";
 import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
-import { TransformManyItems } from "microboard-temp/dist/types/Items/Transformation/TransformationOperations";
+import { ApplyMatrixItem } from "microboard-temp/dist/types/Items/Transformation/TransformationOperations";
 
 interface Props {
   rounded?: string;
@@ -45,18 +45,19 @@ export function SpreadCards({ rounded = "none" }: Props) {
     const { top, right } = deck.getMbr();
     const cards = deck.getCards(count);
     if (cards) {
-      const translation: TransformManyItems = {};
       const width = cards[0].getWidth();
-      cards.forEach((card, index) => {
-        const id = card.getId();
-        translation[id] = {
-          class: "Transformation",
-          method: "translateTo",
-          item: [id],
-          x: right + 5 + width * index,
-          y: top,
-        };
-      });
+      const translation: ApplyMatrixItem[] = cards.map((card, index) => ({
+        id: card.getId(),
+        matrix: {
+          translateX:
+            right + 5 + width * index - card.transformation.getTranslation().x,
+          translateY: top - card.transformation.getTranslation().y,
+          scaleX: 1,
+          scaleY: 1,
+          shearX: 0,
+          shearY: 0,
+        },
+      }));
       board.selection.transformMany(translation, Date.now());
       board.selection.items.removeAll();
       board.selection.add(cards);
