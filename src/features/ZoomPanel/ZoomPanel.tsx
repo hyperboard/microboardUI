@@ -1,4 +1,4 @@
-import { getHotkeyLabel, Mbr } from "microboard-temp";
+import { getHotkeyLabel } from "microboard-temp";
 import { useAppSubscription } from "App/useBoardSubscription";
 import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
@@ -35,11 +35,8 @@ export function ZoomPanel() {
       );
       return;
     }
-    const items = board.items.listAll();
-    if (items.length > 0) {
-      const rect = new Mbr(1000_000, 1000_000, -1000_000, -1000_000);
-      items.forEach((item) => rect.combine([item.getMbr()]));
-      board.camera.zoomToFit(rect);
+    if (board.items.listAll().length > 0) {
+      board.camera.zoomToFit(board.items.getFilteredMbr());
     }
   };
 
