@@ -10,6 +10,10 @@ import { ToolsPanel } from "features/ToolsPanel";
 import { ViewToolsPanel } from "features/ToolsPanel/ViewToolsPanel";
 import { ViewModeGuard } from "features/ViewModeGuard";
 import { ShapesPanel, ShapesPanelContextProvider } from "../ShapesPanel";
+import {
+  BoardItemsPanel,
+  BoardItemsPanelContextProvider,
+} from "../BoardItemsPanel";
 import style from "./SidePanelsContainer.module.css";
 
 interface SidePanelsContainerProps {
@@ -27,31 +31,34 @@ export const SidePanelsContainer = memo(
     });
 
     return (
-      <ShapesPanelContextProvider>
-        <div ref={containerRef} className={style.sidePanels}>
-          {(shouldShow("titlePanel") || !isIframe()) && <TitlePanel />}
-          <ViewModeGuard iframe>
-            <div className={style.hidingPanels}>
-              <SidePanel />
-              <ShapesPanel />
-            </div>
-            <InactiveBoardHidder>
-              <ViewModeGuard mode={["edit", "view"]}>
-                {(interfaceType) => {
-                  switch (interfaceType) {
-                    case "view":
-                      return <ViewToolsPanel />;
-                    case "edit":
-                      return <ToolsPanel />;
-                    default:
-                      return null;
-                  }
-                }}
-              </ViewModeGuard>
-            </InactiveBoardHidder>
-          </ViewModeGuard>
-        </div>
-      </ShapesPanelContextProvider>
+      <BoardItemsPanelContextProvider>
+        <ShapesPanelContextProvider>
+          <div ref={containerRef} className={style.sidePanels}>
+            {(shouldShow("titlePanel") || !isIframe()) && <TitlePanel />}
+            <ViewModeGuard iframe>
+              <div className={style.hidingPanels}>
+                <SidePanel />
+                <ShapesPanel />
+                <BoardItemsPanel />
+              </div>
+              <InactiveBoardHidder>
+                <ViewModeGuard mode={["edit", "view"]}>
+                  {(interfaceType) => {
+                    switch (interfaceType) {
+                      case "view":
+                        return <ViewToolsPanel />;
+                      case "edit":
+                        return <ToolsPanel />;
+                      default:
+                        return null;
+                    }
+                  }}
+                </ViewModeGuard>
+              </InactiveBoardHidder>
+            </ViewModeGuard>
+          </div>
+        </ShapesPanelContextProvider>
+      </BoardItemsPanelContextProvider>
     );
   },
 );

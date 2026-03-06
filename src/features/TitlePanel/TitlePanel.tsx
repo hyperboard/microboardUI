@@ -15,6 +15,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "features/AppContext";
 import { useSidePanelContext } from "features/SidePanel/SidePanelContext";
+import { useBoardItemsPanelContext } from "features/BoardItemsPanel";
 import { notify } from "shared/ui-lib/Toast/notify";
 import { UiPanel } from "shared/ui-lib/UiPanel";
 import { ViewModeGuard } from "features/ViewModeGuard";
@@ -40,6 +41,7 @@ export function TitlePanel(): React.JSX.Element | null {
   const { openModal } = useUiModalContext();
   const { board } = useAppContext();
   const { isOpen, toggleSideMenu } = useSidePanelContext();
+  const { openPanel: openBoardItemsPanel } = useBoardItemsPanelContext();
   useAppSubscription({ observer: forceUpdate, subjects: ["tools"] });
   const boardsList = useBoardsList();
   const account = useAccount();
@@ -51,6 +53,12 @@ export function TitlePanel(): React.JSX.Element | null {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const clickOutsideRef = useClickOutside<HTMLButtonElement>(
     () => setIsDropdownOpen(false),
+    [],
+    true,
+  );
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuBtnRef = useClickOutside<HTMLButtonElement>(
+    () => setIsMenuOpen(false),
     [],
     true,
   );
@@ -234,7 +242,7 @@ export function TitlePanel(): React.JSX.Element | null {
           className={style.tabletHide}
           onClick={toggleExportDropdown}
           variant="secondary"
-          rounded="right"
+          rounded="none"
           tooltip={isDropdownOpen ? undefined : t("export.tooltip")}
           tooltipPosition="bottom"
         >
@@ -264,6 +272,26 @@ export function TitlePanel(): React.JSX.Element | null {
           </>
         )}
       </ViewModeGuard>
+      <UiSeparator vertical />
+      <UiButton
+        ref={menuBtnRef}
+        onClick={() => setIsMenuOpen((prev) => !prev)}
+        variant="secondary"
+        rounded="right"
+        tooltip={isMenuOpen ? undefined : "Меню"}
+        tooltipPosition="bottom"
+      >
+        <Icon iconName="ThreeDots" />
+      </UiButton>
+      {isMenuOpen && (
+        <MenuDropdown
+          buttonRef={menuBtnRef}
+          onItemsListClick={() => {
+            openBoardItemsPanel();
+            setIsMenuOpen(false);
+          }}
+        />
+      )}
     </UiPanel>
   );
 }
@@ -314,6 +342,42 @@ type ExportDropdownProps = {
   exportHTML: () => void;
   openShareSnapshot: () => void;
 };
+
+type MenuDropdownProps = {
+  buttonRef: RefObject<HTMLButtonElement>;
+  onItemsListClick: () => void;
+};
+
+function MenuDropdown({ buttonRef, onItemsListClick }: MenuDropdownProps) {
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+
+  useEffect(() => {
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setPosition({
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+      });
+    }
+  }, [buttonRef]);
+
+  return createPortal(
+    <div
+      className={style.exportDropdown}
+      style={{
+        position: "absolute",
+        top: position.top + 8,
+        left: position.left,
+      }}
+    >
+      <div onClick={onItemsListClick}>
+        <Icon iconName="Stack" width={20} height={20} />
+        <p>Список предметов</p>
+      </div>
+    </div>,
+    document.body,
+  );
+}
 
 function ExportDropdown({
   buttonRef,
