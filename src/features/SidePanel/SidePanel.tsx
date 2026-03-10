@@ -27,6 +27,7 @@ import { Tooltip } from "shared/ui-lib/Tooltip";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { UiPanel } from "shared/ui-lib/UiPanel";
+import { BoardItemsList } from "./BoardItemsList";
 import { ResizableEdge } from "./ResizableEdge";
 import style from "./SidePanel.module.css";
 import { useSidePanelContext } from "./SidePanelContext";
@@ -35,8 +36,17 @@ const MIN_PANEL_WIDTH = 280;
 
 export function SidePanel(): React.JSX.Element {
   const { board } = useAppContext();
-  const { isOpen, toggleSideMenu, isHighlighted, openMenu } =
-    useSidePanelContext();
+  const {
+    isOpen,
+    toggleSideMenu,
+    isHighlighted,
+    openMenu,
+    showItems,
+    openItemsView,
+    closeItemsView,
+  } = useSidePanelContext();
+  const [itemsQuery, setItemsQuery] = useState("");
+  const itemsSearchRef = useRef<HTMLInputElement>(null);
   const { setFoldersRefState, setId } = useOpenedFoldersContext();
   const { open, close } = useContextMenuContext();
   const { t } = useTranslation();
@@ -104,80 +114,134 @@ export function SidePanel(): React.JSX.Element {
       })}
       style={{ width: newWidth }}
     >
-      <div className={style.content}>
-        <div className={style.header}>
-          <h3 className={style.title}>{t("sidePanel.title")}</h3>
-          <UiButton
-            onClick={toggleSideMenu}
-            variant="secondary"
-            className={style.close}
-          >
-            <Icon iconName="Close" />
-          </UiButton>
-        </div>
-        <div className={style.folders} ref={foldersRef}>
-          <div className={style.foldersWrapper}>
-            <FoldersDndContext>
-              <SortableContext
-                items={[
-                  boardsList.getRootFolder()?.id ?? 0,
-                  boardsList.getDraftsFolder()?.id ?? 1,
-                  boardsList.getSharedFolder()?.id ?? 2,
-                ]}
+      {showItems ? (
+        <div className={style.content}>
+          <div className={style.header}>
+            <UiButton
+              onClick={closeItemsView}
+              variant="secondary"
+              className={style.close}
+            >
+              <Icon iconName="ArrowLeft1" />
+            </UiButton>
+            <h3 className={style.title}>Предметы</h3>
+            <UiButton
+              onClick={toggleSideMenu}
+              variant="secondary"
+              className={style.close}
+            >
+              <Icon iconName="Close" />
+            </UiButton>
+          </div>
+          <div className={style.itemsSearch}>
+            <Icon
+              iconName="Search"
+              width={14}
+              height={14}
+              className={style.itemsSearchIcon}
+            />
+            <input
+              className={style.itemsSearchInput}
+              placeholder="Поиск..."
+              ref={itemsSearchRef}
+              value={itemsQuery}
+              onChange={(e) => setItemsQuery(e.target.value)}
+            />
+            {itemsQuery && (
+              <button
+                className={style.itemsSearchClear}
+                onClick={() => setItemsQuery("")}
               >
-                <Folder
-                  key={boardsList.getRootFolder()?.id ?? "root"}
-                  accordionClassName={style.rootFolder}
-                  folder={boardsList.getRootFolder()}
-                />
-                <Folder
-                  key={boardsList.getDraftsFolder()?.id ?? "drafts"}
-                  accordionClassName={style.rootFolder}
-                  folder={boardsList.getDraftsFolder()}
-                />
-                <Folder
-                  key={boardsList.getSharedFolder()?.id ?? "shared"}
-                  folder={boardsList.getSharedFolder()}
-                />
-              </SortableContext>
-              {createPortal(
-                <DraggingWrapper>
-                  <DraggingItem />
-                </DraggingWrapper>,
-                document.body,
-              )}
-            </FoldersDndContext>
+                <Icon iconName="Close" width={12} height={12} />
+              </button>
+            )}
+          </div>
+          <div className={style.folders}>
+            <BoardItemsList query={itemsQuery} />
           </div>
         </div>
-      </div>
-      <div className={style.bottom}>
-        <button className={style.add} onClick={handleAddNewMenu}>
-          <Icon iconName="Plus" width={16} height={16} />
-          <span>{t("sidePanel.addNew")}</span>
-        </button>
-        <UiButton
-          id={"miro"}
-          variant="primary"
-          onClick={(e) => {
-            e.stopPropagation();
-            openModal(IMPORT_MIRO_START_MODAL);
-          }}
-          disabled={!account.isLoggedIn}
-          className={style.importMiroBtn}
-          size="lg"
-        >
-          <span>{t("miro.importMiroBtn")}</span>
-          <Tooltip
-            tooltip={
-              !account.isLoggedIn
-                ? t("miro.authTooltip")
-                : t("miro.tooltipClipboardImport")
-            }
-            tooltipPosition="top-center-fixed"
-            tooltipAlign="left"
-          />
-        </UiButton>
-      </div>
+      ) : (
+        <>
+          <div className={style.content}>
+            <div className={style.header}>
+              <h3 className={style.title}>{t("sidePanel.title")}</h3>
+              <UiButton
+                onClick={toggleSideMenu}
+                variant="secondary"
+                className={style.close}
+              >
+                <Icon iconName="Close" />
+              </UiButton>
+            </div>
+            <div className={style.folders} ref={foldersRef}>
+              <div className={style.foldersWrapper}>
+                <FoldersDndContext>
+                  <SortableContext
+                    items={[
+                      boardsList.getRootFolder()?.id ?? 0,
+                      boardsList.getDraftsFolder()?.id ?? 1,
+                      boardsList.getSharedFolder()?.id ?? 2,
+                    ]}
+                  >
+                    <Folder
+                      key={boardsList.getRootFolder()?.id ?? "root"}
+                      accordionClassName={style.rootFolder}
+                      folder={boardsList.getRootFolder()}
+                    />
+                    <Folder
+                      key={boardsList.getDraftsFolder()?.id ?? "drafts"}
+                      accordionClassName={style.rootFolder}
+                      folder={boardsList.getDraftsFolder()}
+                    />
+                    <Folder
+                      key={boardsList.getSharedFolder()?.id ?? "shared"}
+                      folder={boardsList.getSharedFolder()}
+                    />
+                  </SortableContext>
+                  {createPortal(
+                    <DraggingWrapper>
+                      <DraggingItem />
+                    </DraggingWrapper>,
+                    document.body,
+                  )}
+                </FoldersDndContext>
+              </div>
+            </div>
+          </div>
+          <div className={style.bottom}>
+            <button className={style.add} onClick={openItemsView}>
+              <Icon iconName="Stack" width={16} height={16} />
+              <span>Список предметов</span>
+            </button>
+            <button className={style.add} onClick={handleAddNewMenu}>
+              <Icon iconName="Plus" width={16} height={16} />
+              <span>{t("sidePanel.addNew")}</span>
+            </button>
+            <UiButton
+              id={"miro"}
+              variant="primary"
+              onClick={(e) => {
+                e.stopPropagation();
+                openModal(IMPORT_MIRO_START_MODAL);
+              }}
+              disabled={!account.isLoggedIn}
+              className={style.importMiroBtn}
+              size="lg"
+            >
+              <span>{t("miro.importMiroBtn")}</span>
+              <Tooltip
+                tooltip={
+                  !account.isLoggedIn
+                    ? t("miro.authTooltip")
+                    : t("miro.tooltipClipboardImport")
+                }
+                tooltipPosition="top-center-fixed"
+                tooltipAlign="left"
+              />
+            </UiButton>
+          </div>
+        </>
+      )}
       <ResizableEdge panelWidth={width} setWidth={setWidth} />
     </UiPanel>
   );
