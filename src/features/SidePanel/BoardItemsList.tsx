@@ -65,7 +65,12 @@ function ItemRow({
 
   return (
     <>
-      <div className={style.row} style={{ paddingLeft: 8 + depth * 16 }}>
+      <div
+        className={style.row}
+        style={{ paddingLeft: 8 + depth * 16 }}
+        onMouseEnter={() => (item as any).highlightMbr?.()}
+        onMouseLeave={() => (item as any).clearHighlightMbr?.()}
+      >
         <button
           className={style.item}
           onClick={() => onNavigate(item)}
@@ -145,7 +150,12 @@ function SearchItemRow({
   };
 
   return (
-    <div className={style.row} style={{ paddingLeft: 8 }}>
+    <div
+      className={style.row}
+      style={{ paddingLeft: 8 }}
+      onMouseEnter={() => (item as any).highlightMbr?.()}
+      onMouseLeave={() => (item as any).clearHighlightMbr?.()}
+    >
       <button
         className={style.item}
         onClick={() => onNavigate(item)}

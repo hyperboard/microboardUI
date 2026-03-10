@@ -103,6 +103,55 @@
   color: var(--text-base-primary);
 }
 
+.itemsSearch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 14px 6px;
+  padding: 5px 8px;
+  border: 1px solid var(--border-action-normal, rgba(0, 0, 0, 0.12));
+  border-radius: 8px;
+  background: var(--bg-action-secondary, #f5f5f7);
+  flex-shrink: 0;
+}
+
+.itemsSearchIcon {
+  flex-shrink: 0;
+  opacity: 0.45;
+}
+
+.itemsSearchInput {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  outline: none;
+  font-size: 12px;
+  font-family: Manrope, sans-serif;
+  color: var(--text-base-primary);
+}
+
+.itemsSearchInput::placeholder {
+  color: var(--text-base-secondary, #aaa);
+}
+
+.itemsSearchClear {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  opacity: 0.45;
+  border-radius: 3px;
+}
+
+.itemsSearchClear:hover {
+  opacity: 0.8;
+}
+
 .importMiroBtnWr {
   padding: 0 16px 16px;
 }
