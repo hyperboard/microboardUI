@@ -25,6 +25,10 @@
     "cucumber:playwright:parallel:report:safari": "cucumber-js --tags @microboard --profile playwright --parallel 9 --format html:features/reports/cucumber-report.html --world-parameters '{\"browser\":\"safari\"}'",
     "cucumber:playwright:sync:report": "cucumber-js --tags @sync --profile playwright --format html:features/reports/cucumber-report.html --world-parameters '{\"isSync\":\"true\"}'"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hyperboard/microboardUI"
+  },
   "files": [
     "dist"
   ],
