@@ -129,19 +129,41 @@ async function handleEdit(this: GlobalEventHandlers, ev: MouseEvent) {
 
 async function handleShare(this: GlobalEventHandlers, ev: MouseEvent) {
   ev.preventDefault();
-  const html = document.documentElement.innerHTML;
+  const html = document.documentElement.outerHTML;
   const name = getBoardName();
 
-  const { boardsApi, api } = await import(
+  const module = await import(
     "https://www.unpkg.com/microboard-ui-temp/dist/index.js"
   );
+  await module.initInter();
+  const app = module.createApp();
+  window.app = app;
 
-  const res = await boardsApi.createBoard({
-    title: name,
-    isPublic: true,
+  const boardId = await app.boardsList.createBoard(name, true);
+  await app.openBoard(boardId);
+  const addedIds = app.getBoard().deserializeHTMLAndEmit(html);
+
+  await new Promise<void>((resolve) => {
+    const interval = setInterval(() => {
+      const confirmedEvents = app.getBoard().events?.getRaw().confirmedEvents;
+      if (!confirmedEvents) return;
+      const flatOperations = confirmedEvents.flatMap((ev: any) =>
+        "operations" in ev.body ? ev.body.operations : ev.body.operation,
+      );
+      const confirmedAddedIds = flatOperations
+        .filter((op: any) => op.method === "add")
+        .flatMap((op: any) => op.item);
+      if (
+        addedIds.length === 0 ||
+        confirmedAddedIds.length >= addedIds.length
+      ) {
+        clearInterval(interval);
+        resolve();
+      }
+    }, 1000);
   });
-  await boardsApi.publishSnapshot(html, res.data.id, res.data.id);
-  window.location.href = `${api.getUrl()}/boards/${res.data.id}`;
+
+  window.location.href = `${window.location.origin}/boards/${boardId}`;
 }
 
 async function injectStyles() {
