@@ -132,8 +132,10 @@ async function handleShare(this: GlobalEventHandlers, ev: MouseEvent) {
   const html = document.documentElement.outerHTML;
   const name = getBoardName();
 
-  const appOrigin = window.location.origin;
-  const importWindow = window.open(`${appOrigin}/import-snapshot`, "_blank");
+  const importWindow = window.open(
+    "https://app.microboard.io/boards/blank",
+    "_blank",
+  );
   if (!importWindow) return;
 
   await new Promise<void>((resolve, reject) => {
