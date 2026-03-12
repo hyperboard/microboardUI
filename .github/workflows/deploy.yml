@@ -28,7 +28,14 @@ jobs:
           API_URL: ${{ secrets.API_URL }}
 
       - name: Deploy to Cloudflare Pages
-        run: bunx wrangler pages deploy dist --project-name=microboard-front-dev
+        run: bunx wrangler pages deploy dist --project-name=microboard-front-dev 2>&1 | tee deploy.log; exit ${PIPESTATUS[0]}
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Upload deploy log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-log
+          path: deploy.log
