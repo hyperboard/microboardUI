@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - trunk
+      - serverless
 
 permissions:
   id-token: write
@@ -22,7 +23,7 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git pull origin trunk
+          git pull origin ${{ github.ref_name }}
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
