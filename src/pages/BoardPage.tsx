@@ -75,6 +75,32 @@ export const BoardPage = (): React.JSX.Element => {
             });
             app.render();
           });
+      } else if (window.opener) {
+        boardsList.createBoard().then((boardId) => {
+          app.openBoard(boardId).then(() => {
+            navigate(`/boards/${boardId}`, { replace: true });
+            app.render();
+            console.log(
+              "[import] board ready, sending snapshot-ready to opener",
+            );
+            window.opener.postMessage(
+              { type: "microboard-snapshot-ready" },
+              "*",
+            );
+            const onMessage = (event: MessageEvent): void => {
+              if (event.data?.type !== "microboard-snapshot") return;
+              window.removeEventListener("message", onMessage);
+              const { html } = event.data as { html: string; name: string };
+              console.log(
+                "[import] received snapshot, html length:",
+                html.length,
+              );
+              const added = app.getBoard().deserializeHTMLAndEmit(html);
+              console.log("[import] deserializeHTMLAndEmit added ids:", added);
+            };
+            window.addEventListener("message", onMessage);
+          });
+        });
       } else {
         const lastSeenBoard = localStorage.getItem(LAST_BOARD_KEY);
         const isFirstVisit = !Cookies.get("first_visit");
@@ -102,37 +128,8 @@ export const BoardPage = (): React.JSX.Element => {
         } else {
           boardsList.createBoard().then((boardId) => {
             app.openBoard(boardId).then(() => {
-              navigate(`/boards/${boardId}`, {
-                replace: true,
-              });
+              navigate(`/boards/${boardId}`, { replace: true });
               app.render();
-
-              if (window.opener) {
-                console.log(
-                  "[import] board ready, sending snapshot-ready to opener",
-                );
-                window.opener.postMessage(
-                  { type: "microboard-snapshot-ready" },
-                  "*",
-                );
-                const onMessage = (event: MessageEvent): void => {
-                  if (event.data?.type !== "microboard-snapshot") return;
-                  window.removeEventListener("message", onMessage);
-                  const { html } = event.data as { html: string; name: string };
-                  console.log(
-                    "[import] received snapshot, html length:",
-                    html.length,
-                  );
-                  const added = app.getBoard().deserializeHTMLAndEmit(html);
-                  console.log(
-                    "[import] deserializeHTMLAndEmit added ids:",
-                    added,
-                  );
-                };
-                window.addEventListener("message", onMessage);
-              } else {
-                console.log("[import] no window.opener");
-              }
             });
           });
         }
