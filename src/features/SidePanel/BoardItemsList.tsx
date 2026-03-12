@@ -4,6 +4,7 @@ import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { Icon, type IconId } from "shared/ui-lib/Icon";
 import React, { useState } from "react";
 import type { Item } from "microboard-temp";
+import { useTranslation } from "react-i18next";
 import style from "./BoardItemsList.module.css";
 
 const EXCLUDED_TYPES = new Set(["Placeholder", "Mbr", "Point", "Anchor"]);
@@ -182,6 +183,7 @@ export function BoardItemsList({
 }: BoardItemsListProps): React.JSX.Element {
   const { board } = useAppContext();
   const forceUpdate = useForceUpdate();
+  const { t } = useTranslation();
 
   useAppSubscription({
     subjects: ["items"],
@@ -202,7 +204,7 @@ export function BoardItemsList({
       );
 
     if (matched.length === 0) {
-      return <div className={style.empty}>Ничего не найдено</div>;
+      return <div className={style.empty}>{t("sidePanel.itemsNotFound")}</div>;
     }
 
     return (
@@ -227,7 +229,7 @@ export function BoardItemsList({
     );
 
   if (topLevelItems.length === 0) {
-    return <div className={style.empty}>Нет элементов</div>;
+    return <div className={style.empty}>{t("sidePanel.itemsEmpty")}</div>;
   }
 
   return (

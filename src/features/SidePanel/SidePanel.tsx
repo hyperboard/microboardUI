@@ -124,7 +124,7 @@ export function SidePanel(): React.JSX.Element {
             >
               <Icon iconName="ArrowLeft1" />
             </UiButton>
-            <h3 className={style.title}>Предметы</h3>
+            <h3 className={style.title}>{t("sidePanel.itemsTitle")}</h3>
             <UiButton
               onClick={toggleSideMenu}
               variant="secondary"
@@ -142,7 +142,7 @@ export function SidePanel(): React.JSX.Element {
             />
             <input
               className={style.itemsSearchInput}
-              placeholder="Поиск..."
+              placeholder={t("sidePanel.itemsSearch")}
               ref={itemsSearchRef}
               value={itemsQuery}
               onChange={(e) => setItemsQuery(e.target.value)}
@@ -211,7 +211,7 @@ export function SidePanel(): React.JSX.Element {
           <div className={style.bottom}>
             <button className={style.add} onClick={openItemsView}>
               <Icon iconName="Stack" width={16} height={16} />
-              <span>Список предметов</span>
+              <span>{t("sidePanel.itemsList")}</span>
             </button>
             <button className={style.add} onClick={handleAddNewMenu}>
               <Icon iconName="Plus" width={16} height={16} />

@@ -715,7 +715,12 @@
       "myBoards": "My boards",
       "notAvailable": "No boards available yet"
     },
-    "addNew": "Add new"
+    "addNew": "Add new",
+    "itemsList": "Items list",
+    "itemsTitle": "Items",
+    "itemsSearch": "Search...",
+    "itemsEmpty": "No items",
+    "itemsNotFound": "Nothing found"
   },
   "contextMenu": {
     "delete": "Delete",

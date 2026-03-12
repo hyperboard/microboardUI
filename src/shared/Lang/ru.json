@@ -714,7 +714,12 @@
       "myBoards": "Мои доски",
       "notAvailable": "Досок пока нет"
     },
-    "addNew": "Добавить"
+    "addNew": "Добавить",
+    "itemsList": "Список предметов",
+    "itemsTitle": "Предметы",
+    "itemsSearch": "Поиск...",
+    "itemsEmpty": "Нет элементов",
+    "itemsNotFound": "Ничего не найдено"
   },
   "contextMenu": {
     "delete": "Удалить",
