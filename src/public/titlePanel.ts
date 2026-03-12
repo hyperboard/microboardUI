@@ -132,38 +132,31 @@ async function handleShare(this: GlobalEventHandlers, ev: MouseEvent) {
   const html = document.documentElement.outerHTML;
   const name = getBoardName();
 
-  const module = await import(
-    "https://www.unpkg.com/microboard-ui-temp/dist/index.js"
-  );
-  await module.initInter();
-  const app = module.createApp();
-  window.app = app;
+  const appOrigin = window.location.origin;
+  const importWindow = window.open(`${appOrigin}/import-snapshot`, "_blank");
+  if (!importWindow) return;
 
-  const boardId = await app.boardsList.createBoard(name, true);
-  await app.openBoard(boardId);
-  const addedIds = app.getBoard().deserializeHTMLAndEmit(html);
+  await new Promise<void>((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      window.removeEventListener("message", onMessage);
+      reject(new Error("Import timed out"));
+    }, 60000);
 
-  await new Promise<void>((resolve) => {
-    const interval = setInterval(() => {
-      const confirmedEvents = app.getBoard().events?.getRaw().confirmedEvents;
-      if (!confirmedEvents) return;
-      const flatOperations = confirmedEvents.flatMap((ev: any) =>
-        "operations" in ev.body ? ev.body.operations : ev.body.operation,
-      );
-      const confirmedAddedIds = flatOperations
-        .filter((op: any) => op.method === "add")
-        .flatMap((op: any) => op.item);
-      if (
-        addedIds.length === 0 ||
-        confirmedAddedIds.length >= addedIds.length
-      ) {
-        clearInterval(interval);
+    function onMessage(event: MessageEvent) {
+      if (event.source !== importWindow) return;
+      if (event.data?.type === "microboard-snapshot-ready") {
+        window.removeEventListener("message", onMessage);
+        clearTimeout(timeout);
+        importWindow.postMessage(
+          { type: "microboard-snapshot", html, name },
+          appOrigin,
+        );
         resolve();
       }
-    }, 1000);
-  });
+    }
 
-  window.location.href = `${window.location.origin}/boards/${boardId}`;
+    window.addEventListener("message", onMessage);
+  });
 }
 
 async function injectStyles() {
