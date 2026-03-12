@@ -108,6 +108,9 @@ export const BoardPage = (): React.JSX.Element => {
               app.render();
 
               if (window.opener) {
+                console.log(
+                  "[import] board ready, sending snapshot-ready to opener",
+                );
                 window.opener.postMessage(
                   { type: "microboard-snapshot-ready" },
                   "*",
@@ -116,9 +119,19 @@ export const BoardPage = (): React.JSX.Element => {
                   if (event.data?.type !== "microboard-snapshot") return;
                   window.removeEventListener("message", onMessage);
                   const { html } = event.data as { html: string; name: string };
-                  app.getBoard().deserializeHTMLAndEmit(html);
+                  console.log(
+                    "[import] received snapshot, html length:",
+                    html.length,
+                  );
+                  const added = app.getBoard().deserializeHTMLAndEmit(html);
+                  console.log(
+                    "[import] deserializeHTMLAndEmit added ids:",
+                    added,
+                  );
                 };
                 window.addEventListener("message", onMessage);
+              } else {
+                console.log("[import] no window.opener");
               }
             });
           });
