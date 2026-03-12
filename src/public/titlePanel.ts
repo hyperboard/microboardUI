@@ -151,7 +151,7 @@ async function handleShare(this: GlobalEventHandlers, ev: MouseEvent) {
         clearTimeout(timeout);
         importWindow.postMessage(
           { type: "microboard-snapshot", html, name },
-          appOrigin,
+          "https://app.microboard.io",
         );
         resolve();
       }
