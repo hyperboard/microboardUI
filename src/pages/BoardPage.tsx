@@ -106,6 +106,20 @@ export const BoardPage = (): React.JSX.Element => {
                 replace: true,
               });
               app.render();
+
+              if (window.opener) {
+                window.opener.postMessage(
+                  { type: "microboard-snapshot-ready" },
+                  "*",
+                );
+                const onMessage = (event: MessageEvent): void => {
+                  if (event.data?.type !== "microboard-snapshot") return;
+                  window.removeEventListener("message", onMessage);
+                  const { html } = event.data as { html: string; name: string };
+                  app.getBoard().deserializeHTMLAndEmit(html);
+                };
+                window.addEventListener("message", onMessage);
+              }
             });
           });
         }

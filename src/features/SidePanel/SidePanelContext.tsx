@@ -18,6 +18,9 @@ type SidePanelContext = {
   setStamp: React.Dispatch<React.SetStateAction<number | null>>;
   isOpen: boolean;
   isHighlighted: boolean;
+  showItems: boolean;
+  openItemsView: () => void;
+  closeItemsView: () => void;
 };
 
 export const SidePanelContext = createStrictContext<SidePanelContext>();
@@ -32,6 +35,7 @@ export function SidePanelContextProvider({
   const [isOpen, setIsOpen] = useState(false);
   const [stamp, setStamp] = useState<null | number>(null);
   const [highlighted, setHighlighted] = useState(false);
+  const [showItems, setShowItems] = useState(false);
   const { app } = useAppContext();
   const navigate = useNavigate();
   const boardsList = useBoardsList();
@@ -48,9 +52,19 @@ export function SidePanelContextProvider({
     setIsOpen((prev) => {
       if (prev) {
         close();
+        setShowItems(false);
       }
       return !prev;
     });
+  };
+
+  const openItemsView = (): void => {
+    setIsOpen(true);
+    setShowItems(true);
+  };
+
+  const closeItemsView = (): void => {
+    setShowItems(false);
   };
 
   useEffect(() => {
@@ -100,6 +114,9 @@ export function SidePanelContextProvider({
         stamp,
         setStamp,
         isHighlighted: highlighted,
+        showItems,
+        openItemsView,
+        closeItemsView,
       }}
     >
       {children}
