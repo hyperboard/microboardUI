@@ -2,6 +2,7 @@ import { useAccount } from "App/useAccount";
 import React from "react";
 import { AddComment } from "../Buttons/AddComment";
 import { TogglePresenceRender } from "../Buttons/TogglePresenceRender/TogglePresenceRender";
+import { ThemeToggle } from "features/ToolsPanel/Buttons/ThemeToggle";
 import styles from "./ActionButtons.module.css";
 import { useAppContext } from "features/AppContext";
 
@@ -17,6 +18,7 @@ export const ActionButtons: React.FC = () => {
     <div className={styles.wrapper}>
       {(account.info?.name || account.info?.email) && <AddComment />}
       <TogglePresenceRender />
+      <ThemeToggle />
     </div>
   );
 };

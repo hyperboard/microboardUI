@@ -4,12 +4,10 @@ import { useAppContext } from "features/AppContext";
 import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
 import { FillColorIndicator } from "shared/ui-lib/Icon/FillColorIndicator";
-import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
 import { SemanticColorPicker } from "features/Pickers/ColorPicker/SemanticColorPicker";
 import { UiColorInput } from "shared/ui-lib/UiColorInput";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import btnStyle from "./ContextPanelButton.module.css";
-import { FRAME_FILL_COLORS } from "microboard-temp";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { resolveColorForUI, getSemanticId } from "shared/lib/resolveColorValue";
 
@@ -37,8 +35,6 @@ export function FrameFill(): React.ReactElement | null {
   };
 
   const isSemanticFill = getSemanticId(rawFillColor as unknown) !== null;
-  const isPredefinedColor =
-    isSemanticFill || FRAME_FILL_COLORS.some((color) => color === fillColor);
 
   return (
     <ButtonWithMenu
@@ -75,16 +71,10 @@ export function FrameFill(): React.ReactElement | null {
             currentValue={rawFillColor as unknown}
             onPick={handlePick}
           />
-          <ColorPicker
-            id={"fill-style"}
-            selectedColor={fillColor}
-            colors={FRAME_FILL_COLORS}
-            onPick={handlePick}
-          />
           <UiColorInput
             onChange={handleCustomPick}
-            color={isPredefinedColor ? "none" : fillColor}
-            isActive={fillColor !== "none" && !isPredefinedColor}
+            color={isSemanticFill ? "none" : fillColor}
+            isActive={fillColor !== "none" && !isSemanticFill}
             toggleMenu={toggleMenu}
           />
         </UiPanel>

@@ -1,7 +1,6 @@
 import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
 import { StrokeColorIndicator } from "shared/ui-lib/Icon";
-import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
 import { SemanticColorPicker } from "features/Pickers/ColorPicker/SemanticColorPicker";
 import { SliderPicker } from "features/Pickers/SliderPicker";
 import { StrokeStylePicker } from "features/Pickers/StrokeStylePicker/StrokeStylePicker";
@@ -82,11 +81,6 @@ export function StrokeStyle({
   };
 
   const isSemanticStroke = getSemanticId(rawBorderColor as unknown) !== null;
-  const isPredefinedColor =
-    isSemanticStroke ||
-    window.MICROBOARD_CONFIG.SHAPE_STROKE_COLORS.some(
-      (color) => color === borderColor,
-    );
 
   return (
     <ButtonWithMenu
@@ -140,16 +134,10 @@ export function StrokeStyle({
               currentValue={rawBorderColor as unknown}
               onPick={handleStrokeColorPick}
             />
-            <ColorPicker
-              id={"stroke-style"}
-              colors={window.MICROBOARD_CONFIG.SHAPE_STROKE_COLORS}
-              onPick={handleStrokeColorPick}
-              selectedColor={borderColor}
-            />
             <UiColorInput
               onChange={handleStrokeCustomColorPick}
-              color={isPredefinedColor ? "none" : borderColor}
-              isActive={borderColor !== "none" && !isPredefinedColor}
+              color={isSemanticStroke ? "none" : borderColor}
+              isActive={borderColor !== "none" && !isSemanticStroke}
               toggleMenu={toggleMenu}
             />
           </div>
