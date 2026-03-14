@@ -1,7 +1,7 @@
 import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
 import { FillColorIndicator } from "shared/ui-lib/Icon/FillColorIndicator";
-import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
+import { SemanticColorPicker } from "features/Pickers/ColorPicker/SemanticColorPicker";
 import { UiColorInput } from "shared/ui-lib/UiColorInput";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import React from "react";
@@ -14,7 +14,7 @@ import {
   rgbaToRgb,
   rgbToRgba,
 } from "shared/lib/convertColors";
-import { resolveColorForUI } from "shared/lib/resolveColorValue";
+import { resolveColorForUI, getSemanticId } from "shared/lib/resolveColorValue";
 
 const MENU_NAME = "DrawFillStyle";
 
@@ -49,7 +49,8 @@ export function DrawFillStyle(): React.ReactElement | null {
   };
   const handlePick = (color: string): void => {
     if (isHighlight) {
-      color = rgbToRgba(color, 0.5, color);
+      const resolved = resolveColorForUI(color as unknown, "foreground");
+      color = rgbToRgba(resolved, 0.5, resolved);
     }
     board.selection.setStrokeColor(color);
     toggleMenu("None");
@@ -61,9 +62,7 @@ export function DrawFillStyle(): React.ReactElement | null {
     board.selection.setStrokeColor(color);
   };
 
-  const isPredefinedColor = window.MICROBOARD_CONFIG.PEN_COLORS.some(
-    (color) => color === drawingColor,
-  );
+  const isSemanticColor = getSemanticId(rawDrawingColor) !== null;
   return (
     <ButtonWithMenu
       menuName={MENU_NAME}
@@ -94,16 +93,15 @@ export function DrawFillStyle(): React.ReactElement | null {
           columns={4}
           gap={8}
         >
-          <ColorPicker
+          <SemanticColorPicker
             id={"drawing"}
-            selectedColor={drawingColor}
-            colors={window.MICROBOARD_CONFIG.PEN_COLORS}
+            currentValue={rawDrawingColor}
             onPick={handlePick}
           />
           <UiColorInput
             onChange={handleCustomPick}
-            color={isPredefinedColor ? "none" : drawingColor}
-            isActive={drawingColor !== "none" && !isPredefinedColor}
+            color={isSemanticColor ? "none" : drawingColor}
+            isActive={drawingColor !== "none" && !isSemanticColor}
             toggleMenu={toggleMenu}
           />
         </UiPanel>

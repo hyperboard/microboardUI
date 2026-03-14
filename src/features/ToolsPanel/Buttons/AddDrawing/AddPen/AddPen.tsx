@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
-import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
+import { SemanticColorPicker } from "features/Pickers/ColorPicker/SemanticColorPicker";
+import { getSemanticId } from "shared/lib/resolveColorValue";
 import { SliderPicker } from "features/Pickers/SliderPicker/SliderPicker";
 import { getHotkeyLabel } from "microboard-temp";
 import { UiColorInput } from "shared/ui-lib/UiColorInput";
@@ -69,9 +70,7 @@ export function AddPen() {
     }
   };
 
-  const isPredefinedColor = window.MICROBOARD_CONFIG.PEN_COLORS.some(
-    (color) => color === selectedColor,
-  );
+  const isSemanticColor = getSemanticId(selectedColor) !== null;
 
   return (
     <ButtonWithMenu
@@ -104,14 +103,15 @@ export function AddPen() {
           />
         </div>
         <div className={style.colors}>
-          <ColorPicker
-            selectedColor={selectedColor}
+          <SemanticColorPicker
+            currentValue={selectedColor as unknown}
             onPick={handleColorPick}
-            colors={window.MICROBOARD_CONFIG.PEN_COLORS}
           />
           <UiColorInput
-            color={isPredefinedColor ? "none" : selectedColor}
-            isActive={selectedColor !== "none" && !isPredefinedColor}
+            color={isSemanticColor ? "none" : selectedColor}
+            isActive={
+              !!selectedColor && selectedColor !== "none" && !isSemanticColor
+            }
             onChange={handleCustomColorPick}
             setIsCloseMenu={setIsColorSelected}
           />
