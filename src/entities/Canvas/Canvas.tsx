@@ -50,10 +50,7 @@ export class CanvasBase extends React.Component<Props> {
     context.clear();
     context.clearCursor();
 
-    board.items.render(context);
-    board.selection.render(context);
-    board.tools.render(context);
-    board.presence.render(context);
+    board.render(context);
   };
 
   initCanvasRendering = (): void => {

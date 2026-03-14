@@ -56,10 +56,11 @@ export function AddSticker() {
       }
       isOpen={isActive}
     >
-      <UiPanel grid columns={5} gap={8}>
+      <UiPanel grid columns={6} rows={2} gap={8}>
         <SemanticColorPicker
           currentValue={selectedColor as unknown}
           onPick={handlePick}
+          variant="square"
         />
       </UiPanel>
     </ButtonWithMenu>

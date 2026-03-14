@@ -1,6 +1,7 @@
 import React from "react";
 import { CONTRAST_PALETTE_LIST, semanticColor, conf } from "microboard-temp";
 import { ColorItem } from "./ColorItem";
+import { SquareColorItem } from "./SquareColorItem";
 import { getSemanticId } from "shared/lib/resolveColorValue";
 
 type Props = {
@@ -8,6 +9,7 @@ type Props = {
   currentValue?: unknown;
   id?: string;
   role?: "background" | "foreground";
+  variant?: "circle" | "square";
 };
 
 export function SemanticColorPicker({
@@ -15,6 +17,7 @@ export function SemanticColorPicker({
   currentValue,
   id = "",
   role = "background",
+  variant = "circle",
 }: Props): React.ReactElement {
   const activeSemanticId = getSemanticId(currentValue);
 
@@ -30,6 +33,19 @@ export function SemanticColorPicker({
           : isLight
             ? pair.light
             : pair.dark;
+        const semanticValue = semanticColor(pair.id) as unknown as string;
+        if (variant === "square") {
+          return (
+            <SquareColorItem
+              key={pair.id}
+              id={id ? `${id}-sem-${pair.id}` : ""}
+              color={displayColor}
+              selected={activeSemanticId === pair.id}
+              tooltip={pair.label}
+              onPick={() => onPick(semanticValue)}
+            />
+          );
+        }
         return (
           <ColorItem
             key={pair.id}
@@ -37,7 +53,7 @@ export function SemanticColorPicker({
             color={displayColor}
             active={activeSemanticId === pair.id}
             tooltip={pair.label}
-            onPick={() => onPick(semanticColor(pair.id) as unknown as string)}
+            onPick={() => onPick(semanticValue)}
           />
         );
       })}
