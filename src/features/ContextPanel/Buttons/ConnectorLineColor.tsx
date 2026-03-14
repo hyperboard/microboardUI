@@ -4,7 +4,6 @@ import { useAppContext } from "features/AppContext";
 import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
 import { FillColorIndicator } from "shared/ui-lib/Icon/FillColorIndicator";
-import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
 import { SemanticColorPicker } from "features/Pickers/ColorPicker/SemanticColorPicker";
 import { UiColorInput } from "shared/ui-lib/UiColorInput";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
@@ -42,11 +41,6 @@ export function ConnectorLineColor(): React.ReactElement | null {
   };
 
   const isSemanticLine = getSemanticId(rawLineColor as unknown) !== null;
-  const isPredefinedColor =
-    isSemanticLine ||
-    window.MICROBOARD_CONFIG.SHAPE_STROKE_COLORS.some(
-      (color) => color === connectorLineColor,
-    );
 
   return (
     <ButtonWithMenu
@@ -87,16 +81,10 @@ export function ConnectorLineColor(): React.ReactElement | null {
             currentValue={rawLineColor as unknown}
             onPick={handlePick}
           />
-          <ColorPicker
-            id={"connector-line-color"}
-            selectedColor={connectorLineColor}
-            colors={window.MICROBOARD_CONFIG.SHAPE_STROKE_COLORS}
-            onPick={handlePick}
-          />
           <UiColorInput
             onChange={handleCustomPick}
-            color={isPredefinedColor ? "none" : connectorLineColor}
-            isActive={connectorLineColor !== "none" && !isPredefinedColor}
+            color={isSemanticLine ? "none" : connectorLineColor}
+            isActive={connectorLineColor !== "none" && !isSemanticLine}
             toggleMenu={toggleMenu}
           />
         </UiPanel>

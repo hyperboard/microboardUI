@@ -1,7 +1,7 @@
 import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
 import { TextHighlightIndicator } from "shared/ui-lib/Icon";
-import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
+import { SemanticColorPicker } from "features/Pickers/ColorPicker/SemanticColorPicker";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -10,6 +10,8 @@ import { UiColorInput } from "shared/ui-lib/UiColorInput";
 import btnStyle from "./ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { convertHexToRGBA } from "shared/lib/convertColors";
+import { resolveColorForUI } from "shared/lib/resolveColorValue";
+import { CONTRAST_PALETTE_LIST, conf } from "microboard-temp";
 
 const MENU_NAME = "TextHighlight";
 
@@ -19,19 +21,32 @@ export function TextHighlight(): React.ReactElement | null {
   const { t } = useTranslation();
 
   const highlightColor = board.selection.getFontHighlight();
+
   const handleClick = (): void => {
     toggleMenu(MENU_NAME);
   };
-  const handlePick = (color: string): void => {
-    board.selection.setFontHighlight(color);
+
+  const handleSemanticPick = (colorValue: string): void => {
+    // colorValue is a SemanticColor object — resolve to CSS string for plain-string highlight storage
+    const resolved = resolveColorForUI(colorValue as unknown, "background");
+    board.selection.setFontHighlight(resolved);
     toggleMenu("None");
   };
+
   const handleCustomPick = (color: string): void => {
     const rgbColor = convertHexToRGBA(color, false);
     board.selection.setFontHighlight(rgbColor);
   };
-  const isPredefinedColor =
-    window.MICROBOARD_CONFIG.TEXT_HIGHLIGHT_COLORS.includes(highlightColor);
+
+  // A semantic swatch is active if the current highlight matches a palette background value
+  const activeSemanticId =
+    CONTRAST_PALETTE_LIST.find((pair) => {
+      const bg = conf.theme === "light" ? pair.light : pair.dark;
+      return bg === highlightColor;
+    })?.id ?? null;
+
+  const isSemanticHighlight = activeSemanticId !== null;
+
   return (
     <ButtonWithMenu
       menuName={MENU_NAME}
@@ -62,16 +77,15 @@ export function TextHighlight(): React.ReactElement | null {
           columns={4}
           gap={8}
         >
-          <ColorPicker
+          <SemanticColorPicker
             id={"TextHighlight"}
-            colors={window.MICROBOARD_CONFIG.TEXT_HIGHLIGHT_COLORS}
-            selectedColor={highlightColor}
-            onPick={handlePick}
+            currentValue={{ type: "semantic", id: activeSemanticId } as unknown}
+            onPick={handleSemanticPick}
           />
           <UiColorInput
             onChange={handleCustomPick}
-            color={isPredefinedColor ? "none" : highlightColor}
-            isActive={highlightColor !== "none" && !isPredefinedColor}
+            color={isSemanticHighlight ? "none" : highlightColor}
+            isActive={highlightColor !== "none" && !isSemanticHighlight}
             toggleMenu={toggleMenu}
           />
         </UiPanel>

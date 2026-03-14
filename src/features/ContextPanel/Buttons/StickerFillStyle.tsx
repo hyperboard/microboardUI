@@ -1,7 +1,6 @@
 import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
 import { FillColorIndicator } from "shared/ui-lib/Icon/FillColorIndicator";
-import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
 import { SemanticColorPicker } from "features/Pickers/ColorPicker/SemanticColorPicker";
 import { Sticker } from "microboard-temp";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
@@ -66,12 +65,6 @@ export function StickerFillStyle(): React.ReactElement | null {
           <SemanticColorPicker
             id="sticker-fill"
             currentValue={rawColor as unknown}
-            onPick={handlePick}
-          />
-          <ColorPicker
-            id="sticker-fill"
-            selectedColor={color}
-            colors={window.MICROBOARD_CONFIG.STICKER_COLORS}
             onPick={handlePick}
           />
         </UiPanel>
