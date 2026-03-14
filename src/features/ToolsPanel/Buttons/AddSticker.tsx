@@ -1,6 +1,6 @@
 import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
-import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
+import { SemanticColorPicker } from "features/Pickers/ColorPicker/SemanticColorPicker";
 import { getHotkeyLabel } from "microboard-temp";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import React, { useEffect, useState } from "react";
@@ -56,12 +56,10 @@ export function AddSticker() {
       }
       isOpen={isActive}
     >
-      <UiPanel grid columns={2}>
-        <ColorPicker
-          selectedColor={selectedColor}
-          colors={window.MICROBOARD_CONFIG.STICKER_COLORS}
+      <UiPanel grid columns={5} gap={8}>
+        <SemanticColorPicker
+          currentValue={selectedColor as unknown}
           onPick={handlePick}
-          variant="square"
         />
       </UiPanel>
     </ButtonWithMenu>

@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
-import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
+import { SemanticColorPicker } from "features/Pickers/ColorPicker/SemanticColorPicker";
+import { resolveColorForUI } from "shared/lib/resolveColorValue";
 import { SliderPicker } from "features/Pickers/SliderPicker/SliderPicker";
 import { UiColorInput } from "shared/ui-lib/UiColorInput";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
@@ -10,14 +11,11 @@ import { ButtonWithMenu } from "../../ButtonWithMenu";
 import style from "./AddHighlighter.module.css";
 import { useAddDrawingContext } from "../AddDrawingContext";
 import { UiButton } from "shared/ui-lib/UiButton";
-import {
-  convertHexToRGBA,
-  rgbaToRgb,
-  rgbToRgba,
-} from "shared/lib/convertColors";
+import { convertHexToRGBA, rgbToRgba } from "shared/lib/convertColors";
 
 export function AddHighlighter() {
   const [isColorSelected, setIsColorSelected] = useState(false);
+  const [isCustomColor, setIsCustomColor] = useState(false);
   const { board } = useAppContext();
   const { t } = useTranslation();
   const { setSelectedColor, setLastOpenedMenu } = useAddDrawingContext();
@@ -60,21 +58,16 @@ export function AddHighlighter() {
 
   const handleColorPick = (color: string): void => {
     if (addHighlighter) {
-      setSelectedColor(
-        rgbToRgba(
-          color,
-          0.5,
-          window.MICROBOARD_CONFIG.HIGHLIGHTER_DEFAULT_COLOR,
-        ),
+      const resolved = resolveColorForUI(color as unknown, "foreground");
+      const rgba = rgbToRgba(
+        resolved,
+        0.5,
+        window.MICROBOARD_CONFIG.HIGHLIGHTER_DEFAULT_COLOR,
       );
-      addHighlighter.setStrokeColor(
-        rgbToRgba(
-          color,
-          0.5,
-          window.MICROBOARD_CONFIG.HIGHLIGHTER_DEFAULT_COLOR,
-        ),
-      );
+      setSelectedColor(rgba);
+      addHighlighter.setStrokeColor(rgba);
       setIsColorSelected(true);
+      setIsCustomColor(false);
     }
   };
 
@@ -83,12 +76,9 @@ export function AddHighlighter() {
       const RGBA = convertHexToRGBA(color, true);
       setSelectedColor(RGBA);
       addHighlighter.setStrokeColor(RGBA);
+      setIsCustomColor(true);
     }
   };
-
-  const isPredefinedColor = window.MICROBOARD_CONFIG.HIGHLIGHTER_COLORS.some(
-    (color) => color === selectedColor,
-  );
 
   return (
     <ButtonWithMenu
@@ -122,20 +112,10 @@ export function AddHighlighter() {
           />
         </div>
         <div className={style.colors}>
-          <ColorPicker
-            selectedColor={
-              selectedColor &&
-              rgbaToRgb(
-                selectedColor,
-                window.MICROBOARD_CONFIG.PEN_DEFAULT_COLOR,
-              )
-            }
-            onPick={handleColorPick}
-            colors={window.MICROBOARD_CONFIG.PEN_COLORS}
-          />
+          <SemanticColorPicker onPick={handleColorPick} />
           <UiColorInput
-            color={isPredefinedColor ? "none" : selectedColor}
-            isActive={selectedColor !== "none" && !isPredefinedColor}
+            color={isCustomColor ? selectedColor : "none"}
+            isActive={isCustomColor && selectedColor !== "none"}
             onChange={handleCustomColorPick}
             setIsCloseMenu={setIsColorSelected}
           />

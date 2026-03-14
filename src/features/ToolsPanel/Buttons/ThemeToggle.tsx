@@ -126,6 +126,7 @@ export function ThemeToggle(): React.ReactElement {
       tooltip={
         theme === "light" ? "Switch to dark theme" : "Switch to light theme"
       }
+      tooltipPosition="bottom"
       onClick={handleClick}
       variant="secondary"
       rounded="none"
