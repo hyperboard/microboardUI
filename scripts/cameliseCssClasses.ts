@@ -16,7 +16,7 @@ function walk(
 ) {
   for (const name of fs.readdirSync(dir)) {
     const full = path.join(dir, name);
-    if (fs.statSync(full).isDirectory()) {
+    if (fs.statSync(full).isDirectory() && name !== "node_modules") {
       walk(full, filter, out);
     } else if (filter(full)) {
       out.push(full);
