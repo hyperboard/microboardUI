@@ -80,6 +80,7 @@ export function ConnectorLineColor(): React.ReactElement | null {
             id={"connector-line-color"}
             currentValue={rawLineColor as unknown}
             onPick={handlePick}
+            role="foreground"
           />
           <UiColorInput
             onChange={handleCustomPick}

@@ -80,6 +80,7 @@ export function TextColor(): React.ReactElement | null {
             id={"TextColor"}
             currentValue={{ type: "semantic", id: activeSemanticId } as unknown}
             onPick={handleSemanticPick}
+            role="foreground"
           />
           <UiColorInput
             onChange={handleCustomPick}

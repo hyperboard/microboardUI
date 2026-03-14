@@ -97,6 +97,7 @@ export function DrawFillStyle(): React.ReactElement | null {
             id={"drawing"}
             currentValue={rawDrawingColor}
             onPick={handlePick}
+            role="foreground"
           />
           <UiColorInput
             onChange={handleCustomPick}

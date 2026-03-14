@@ -133,6 +133,7 @@ export function StrokeStyle({
               id={"stroke-style"}
               currentValue={rawBorderColor as unknown}
               onPick={handleStrokeColorPick}
+              role="foreground"
             />
             <UiColorInput
               onChange={handleStrokeCustomColorPick}

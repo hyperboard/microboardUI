@@ -106,6 +106,7 @@ export function AddPen() {
           <SemanticColorPicker
             currentValue={selectedColor as unknown}
             onPick={handleColorPick}
+            role="foreground"
           />
           <UiColorInput
             color={isSemanticColor ? "none" : selectedColor}
