@@ -32,7 +32,7 @@ export function ColorItem({
         color === "none" && style.none,
       )}
     >
-      {tooltip && <Tooltip tooltip={tooltip} tooltipPosition="top" />}
+      {tooltip && <Tooltip tooltip={tooltip} tooltipPosition="bottom" />}
     </button>
   );
 }
