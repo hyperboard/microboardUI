@@ -9,6 +9,12 @@
   height: 32px;
 }
 
+@media (hover: hover) {
+  .button:hover {
+    z-index: 1;
+  }
+}
+
 .button.active::before {
   top: 50%;
   left: 50%;

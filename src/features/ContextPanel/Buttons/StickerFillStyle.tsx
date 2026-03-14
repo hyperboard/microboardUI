@@ -59,9 +59,9 @@ export function StickerFillStyle(): React.ReactElement | null {
         <UiPanel
           rounded={verticalAlign === "bottom" ? "bottom" : "full"}
           grid
-          columns={6}
-          rows={2}
-          gap={8}
+          columns={2}
+          gap={4}
+          padding={8}
         >
           <SemanticColorPicker
             id="sticker-fill"
