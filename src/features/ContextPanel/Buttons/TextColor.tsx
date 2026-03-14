@@ -10,8 +10,7 @@ import { useAppContext } from "features/AppContext";
 import btnStyle from "./ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { convertHexToRGBA } from "shared/lib/convertColors";
-import { resolveColorForUI } from "shared/lib/resolveColorValue";
-import { CONTRAST_PALETTE_LIST, conf } from "microboard-temp";
+import { resolveColorForUI, getSemanticId } from "shared/lib/resolveColorValue";
 
 const MENU_NAME = "TextColor";
 
@@ -19,16 +18,16 @@ export function TextColor(): React.ReactElement | null {
   const { toggleMenu, openedMenu, panelMbr, windowHeight } = usePanelContext();
   const { board } = useAppContext();
   const { t } = useTranslation();
-  const fontColor = board.selection.getFontColor();
+  const rawFontColor = board.selection.getFontColor();
+  const fontColor = resolveColorForUI(rawFontColor as unknown, "foreground");
+  const isSemanticFont = getSemanticId(rawFontColor as unknown) !== null;
 
   const handleClick = (): void => {
     toggleMenu(MENU_NAME);
   };
 
   const handleSemanticPick = (colorValue: string): void => {
-    // colorValue is a SemanticColor object — resolve to CSS string for plain-string font storage
-    const resolved = resolveColorForUI(colorValue as unknown, "foreground");
-    board.selection.setFontColor(resolved);
+    board.selection.setFontColor(colorValue);
     toggleMenu("None");
   };
 
@@ -36,15 +35,6 @@ export function TextColor(): React.ReactElement | null {
     const rgbColor = convertHexToRGBA(color, false);
     board.selection.setFontColor(rgbColor);
   };
-
-  // A semantic swatch is active if the current font color matches a palette foreground value
-  const activeSemanticId =
-    CONTRAST_PALETTE_LIST.find((pair) => {
-      const fg = conf.theme === "light" ? pair.dark : pair.light;
-      return fg === fontColor;
-    })?.id ?? null;
-
-  const isSemanticFont = activeSemanticId !== null;
 
   return (
     <ButtonWithMenu
@@ -78,7 +68,7 @@ export function TextColor(): React.ReactElement | null {
         >
           <SemanticColorPicker
             id={"TextColor"}
-            currentValue={{ type: "semantic", id: activeSemanticId } as unknown}
+            currentValue={rawFontColor as unknown}
             onPick={handleSemanticPick}
             role="foreground"
           />

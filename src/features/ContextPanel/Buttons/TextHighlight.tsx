@@ -10,8 +10,7 @@ import { UiColorInput } from "shared/ui-lib/UiColorInput";
 import btnStyle from "./ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { convertHexToRGBA } from "shared/lib/convertColors";
-import { resolveColorForUI } from "shared/lib/resolveColorValue";
-import { CONTRAST_PALETTE_LIST, conf } from "microboard-temp";
+import { resolveColorForUI, getSemanticId } from "shared/lib/resolveColorValue";
 
 const MENU_NAME = "TextHighlight";
 
@@ -20,16 +19,20 @@ export function TextHighlight(): React.ReactElement | null {
   const { board } = useAppContext();
   const { t } = useTranslation();
 
-  const highlightColor = board.selection.getFontHighlight();
+  const rawHighlightColor = board.selection.getFontHighlight();
+  const highlightColor = resolveColorForUI(
+    rawHighlightColor as unknown,
+    "background",
+  );
+  const isSemanticHighlight =
+    getSemanticId(rawHighlightColor as unknown) !== null;
 
   const handleClick = (): void => {
     toggleMenu(MENU_NAME);
   };
 
   const handleSemanticPick = (colorValue: string): void => {
-    // colorValue is a SemanticColor object — resolve to CSS string for plain-string highlight storage
-    const resolved = resolveColorForUI(colorValue as unknown, "background");
-    board.selection.setFontHighlight(resolved);
+    board.selection.setFontHighlight(colorValue);
     toggleMenu("None");
   };
 
@@ -37,15 +40,6 @@ export function TextHighlight(): React.ReactElement | null {
     const rgbColor = convertHexToRGBA(color, false);
     board.selection.setFontHighlight(rgbColor);
   };
-
-  // A semantic swatch is active if the current highlight matches a palette background value
-  const activeSemanticId =
-    CONTRAST_PALETTE_LIST.find((pair) => {
-      const bg = conf.theme === "light" ? pair.light : pair.dark;
-      return bg === highlightColor;
-    })?.id ?? null;
-
-  const isSemanticHighlight = activeSemanticId !== null;
 
   return (
     <ButtonWithMenu
@@ -79,7 +73,7 @@ export function TextHighlight(): React.ReactElement | null {
         >
           <SemanticColorPicker
             id={"TextHighlight"}
-            currentValue={{ type: "semantic", id: activeSemanticId } as unknown}
+            currentValue={rawHighlightColor as unknown}
             onPick={handleSemanticPick}
           />
           <UiColorInput
