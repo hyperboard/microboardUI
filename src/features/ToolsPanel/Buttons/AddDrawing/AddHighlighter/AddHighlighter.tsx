@@ -112,7 +112,7 @@ export function AddHighlighter() {
           />
         </div>
         <div className={style.colors}>
-          <SemanticColorPicker onPick={handleColorPick} />
+          <SemanticColorPicker onPick={handleColorPick} role="foreground" />
           <UiColorInput
             color={isCustomColor ? selectedColor : "none"}
             isActive={isCustomColor && selectedColor !== "none"}
