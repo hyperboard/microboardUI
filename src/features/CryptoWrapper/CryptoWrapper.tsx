@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { PropsWithChildren, ErrorInfo } from "react";
 import { ViewSettings } from "shared/ViewSettings";
 import { Config, WagmiProvider } from "wagmi";
+import { ErrorScreen } from "features/ErrorBoundary/ErrorScreen";
 
 class CryptoErrorBoundary extends React.Component<
   PropsWithChildren<{
@@ -31,12 +32,7 @@ class CryptoErrorBoundary extends React.Component<
 
   render(): React.ReactNode {
     if (this.state.hasError) {
-      // You can render any custom fallback UI
-      return (
-        this.props.fallback || (
-          <div>Something went wrong with crypto providers</div>
-        )
-      );
+      return this.props.fallback || <ErrorScreen />;
     }
 
     return this.props.children;
@@ -59,9 +55,7 @@ export function CryptoWrapper({
 }: PropsWithChildren<{}>): React.JSX.Element {
   return (
     <CryptoErrorBoundary
-      fallback={<div>Crypto Provider Initialization Failed</div>}
       onError={(error, errorInfo) => {
-        // Additional error handling logic if needed
         console.error("Detailed Crypto Wrapper Error:", error, errorInfo);
       }}
     >

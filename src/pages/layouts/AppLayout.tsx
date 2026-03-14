@@ -14,6 +14,7 @@ import { LocalSidePanelContextProvider } from "features/SidePanel/LocalSidePanel
 import { CryptoWrapper } from "features/CryptoWrapper";
 import { CommentsContextProvider } from "entities/comments/CommentsContext";
 import { Sprite } from "shared/ui-lib/Icon/Sprite";
+import { ErrorBoundary } from "features/ErrorBoundary";
 
 type Props = {
   app: App;
@@ -62,13 +63,15 @@ const LocalProvider = compose(LOCAL_PROVIDERS);
 export function AppLayout({ app }: Props): React.JSX.Element {
   const board = app.getBoard();
   return (
-    <AppContext.Provider value={{ app, board }}>
-      <Sprite />
-      <Provider>
-        <Outlet />
-        <ToastProvider />
-      </Provider>
-    </AppContext.Provider>
+    <ErrorBoundary>
+      <AppContext.Provider value={{ app, board }}>
+        <Sprite />
+        <Provider>
+          <Outlet />
+          <ToastProvider />
+        </Provider>
+      </AppContext.Provider>
+    </ErrorBoundary>
   );
 }
 

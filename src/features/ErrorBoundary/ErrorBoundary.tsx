@@ -1,6 +1,5 @@
 import React, { PropsWithChildren, ErrorInfo } from "react";
-import style from "./ErrorBoundary.module.css";
-import { Button } from "shared/ui-lib/Button/Button";
+import { ErrorScreen } from "./ErrorScreen";
 
 class ErrorBoundary extends React.Component<
   PropsWithChildren<{
@@ -82,25 +81,7 @@ class ErrorBoundary extends React.Component<
       this.state.hasError &&
       this.state.recoveryAttempts >= this.MAX_RECOVERY_ATTEMPTS
     ) {
-      return (
-        <div className={style.wrapper}>
-          <div className={style.errorContainer}>
-            <div className={style.errorMessage}>
-              <h2>Something went wrong</h2>
-              <p>An error occurred:</p>
-              <p className={style.recoveryInfo}>
-                {this.state.error?.message ||
-                  `We tried to recover automatically ${this.MAX_RECOVERY_ATTEMPTS} times but couldn't fix the issue.`}
-              </p>
-              <div className={style.errorButtons}>
-                <Button onClick={() => window.location.reload()}>
-                  Refresh Page
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
+      return <ErrorScreen message={this.state.error?.message} />;
     }
 
     return this.props.children;
