@@ -2,6 +2,7 @@ import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
 import { StrokeColorIndicator } from "shared/ui-lib/Icon";
 import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
+import { SemanticColorPicker } from "features/Pickers/ColorPicker/SemanticColorPicker";
 import { SliderPicker } from "features/Pickers/SliderPicker";
 import { StrokeStylePicker } from "features/Pickers/StrokeStylePicker/StrokeStylePicker";
 import {
@@ -19,6 +20,7 @@ import style from "./StrokeStyle.module.css";
 import { useAppContext } from "features/AppContext";
 import btnStyle from "../ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
+import { resolveColorForUI, getSemanticId } from "shared/lib/resolveColorValue";
 
 const MENU_NAME = "StrokeStyle";
 
@@ -45,7 +47,11 @@ export function StrokeStyle({
   const { board } = useAppContext();
   const { t } = useTranslation();
 
-  const borderColor = board.selection.getStrokeColor();
+  const rawBorderColor = board.selection.getStrokeColor();
+  const borderColor = resolveColorForUI(
+    rawBorderColor as unknown,
+    "foreground",
+  );
   const borderWidth = board.selection.getStrokeWidth();
   const borderStyle = board.selection.getBorderStyle();
 
@@ -75,9 +81,12 @@ export function StrokeStyle({
     board.selection.setStrokeColor(color);
   };
 
-  const isPredefinedColor = window.MICROBOARD_CONFIG.SHAPE_STROKE_COLORS.some(
-    (color) => color === borderColor,
-  );
+  const isSemanticStroke = getSemanticId(rawBorderColor as unknown) !== null;
+  const isPredefinedColor =
+    isSemanticStroke ||
+    window.MICROBOARD_CONFIG.SHAPE_STROKE_COLORS.some(
+      (color) => color === borderColor,
+    );
 
   return (
     <ButtonWithMenu
@@ -126,6 +135,11 @@ export function StrokeStyle({
             id="shape-stroke-width"
           />
           <div className={style.colors}>
+            <SemanticColorPicker
+              id={"stroke-style"}
+              currentValue={rawBorderColor as unknown}
+              onPick={handleStrokeColorPick}
+            />
             <ColorPicker
               id={"stroke-style"}
               colors={window.MICROBOARD_CONFIG.SHAPE_STROKE_COLORS}

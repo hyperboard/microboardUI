@@ -45,6 +45,7 @@ import {
   openModal,
   setModalData,
 } from "shared/ui-lib/UiModal/UiModalContext";
+import { resolveColorForUI } from "shared/lib/resolveColorValue";
 import { MIRO_IMG_AUTH_CLIPBOARD } from "features/ImportMiro/ImgAuthClipboardModal/ImgAuthClipboardModal";
 import { ERROR_NOTIFICATION } from "../Notifications/ErrorNotification";
 import { LOADING_NOTIFICATION } from "../Notifications/LoadingNotification";
@@ -289,7 +290,7 @@ export const useCopyBoardItems = (
       const stickerColor =
         item &&
         item.itemType === "Sticker" &&
-        item.getBackgroundColor() ===
+        resolveColorForUI((item as any).getBackgroundColor()) ===
           window.MICROBOARD_CONFIG.STICKER_COLORS[7] &&
         "white";
       const textColor =

@@ -2,6 +2,7 @@ import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
 import { FillColorIndicator } from "shared/ui-lib/Icon/FillColorIndicator";
 import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
+import { SemanticColorPicker } from "features/Pickers/ColorPicker/SemanticColorPicker";
 import { Sticker } from "microboard-temp";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import React from "react";
@@ -9,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import { useAppContext } from "features/AppContext";
 import btnStyle from "./ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
+import { resolveColorForUI } from "shared/lib/resolveColorValue";
 
 const MENU_NAME = "StickerFillStyle";
 
@@ -17,7 +19,8 @@ export function StickerFillStyle(): React.ReactElement | null {
   const { board } = useAppContext();
   const { t } = useTranslation();
 
-  const color = board.selection.getFillColor();
+  const rawColor = board.selection.getFillColor();
+  const color = resolveColorForUI(rawColor as unknown);
 
   const handleClick = (): void => {
     toggleMenu(MENU_NAME);
@@ -60,6 +63,11 @@ export function StickerFillStyle(): React.ReactElement | null {
           columns={5}
           gap={8}
         >
+          <SemanticColorPicker
+            id="sticker-fill"
+            currentValue={rawColor as unknown}
+            onPick={handlePick}
+          />
           <ColorPicker
             id="sticker-fill"
             selectedColor={color}
