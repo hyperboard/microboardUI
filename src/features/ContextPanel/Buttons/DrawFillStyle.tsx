@@ -14,6 +14,7 @@ import {
   rgbaToRgb,
   rgbToRgba,
 } from "shared/lib/convertColors";
+import { resolveColorForUI } from "shared/lib/resolveColorValue";
 
 const MENU_NAME = "DrawFillStyle";
 
@@ -25,12 +26,19 @@ export function DrawFillStyle(): React.ReactElement | null {
   const single = board.selection.items.getSingle();
   let isHighlight = false;
   if (single?.itemType === "Drawing") {
-    if (single.getStrokeColor().split(",").length === 4) {
+    // Resolve the ColorValue to a CSS string before checking for alpha channel
+    const rawStroke = (single as any).getStrokeColor();
+    const resolvedStroke = resolveColorForUI(rawStroke, "foreground");
+    if (resolvedStroke.split(",").length === 4) {
       isHighlight = true;
     }
   }
 
-  let drawingColor = board.selection.getStrokeColor();
+  const rawDrawingColor = board.selection.getStrokeColor();
+  let drawingColor = resolveColorForUI(
+    rawDrawingColor as unknown,
+    "foreground",
+  );
 
   if (isHighlight) {
     drawingColor = rgbaToRgb(drawingColor, drawingColor);

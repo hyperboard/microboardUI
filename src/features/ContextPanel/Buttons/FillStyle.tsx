@@ -5,10 +5,12 @@ import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
 import { FillColorIndicator } from "shared/ui-lib/Icon/FillColorIndicator";
 import { ColorPicker } from "features/Pickers/ColorPicker/ColorPicker";
+import { SemanticColorPicker } from "features/Pickers/ColorPicker/SemanticColorPicker";
 import { UiColorInput } from "shared/ui-lib/UiColorInput";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import btnStyle from "./ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
+import { resolveColorForUI, getSemanticId } from "shared/lib/resolveColorValue";
 
 const MENU_NAME = "FillStyle";
 
@@ -18,7 +20,8 @@ export function FillStyle(): React.ReactElement | null {
 
   const { t } = useTranslation();
 
-  const fillColor = board.selection.getFillColor();
+  const rawFillColor = board.selection.getFillColor();
+  const fillColor = resolveColorForUI(rawFillColor as unknown);
 
   const handleClick = (): void => {
     toggleMenu(MENU_NAME);
@@ -33,9 +36,13 @@ export function FillStyle(): React.ReactElement | null {
     board.selection.setFillColor(color);
   };
 
-  const isPredefinedColor = window.MICROBOARD_CONFIG.SHAPE_FILL_COLORS.some(
-    (color) => color === fillColor,
-  );
+  const isSemanticFill = getSemanticId(rawFillColor as unknown) !== null;
+  const isPredefinedColor =
+    isSemanticFill ||
+    window.MICROBOARD_CONFIG.SHAPE_FILL_COLORS.some(
+      (color) => color === fillColor,
+    );
+
   return (
     <ButtonWithMenu
       menuName={MENU_NAME}
@@ -66,6 +73,11 @@ export function FillStyle(): React.ReactElement | null {
           columns={4}
           gap={8}
         >
+          <SemanticColorPicker
+            id={"fill-style"}
+            currentValue={rawFillColor as unknown}
+            onPick={handlePick}
+          />
           <ColorPicker
             id={"fill-style"}
             selectedColor={fillColor}
