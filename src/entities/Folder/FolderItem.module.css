@@ -1,6 +1,6 @@
 .wrapper {
   position: relative;
-  background-color: #ffffff;
+  background-color: var(--background-surface-default);
 }
 
 .item {
@@ -10,7 +10,7 @@
   padding-right: 36px;
   position: relative;
   overflow: visible;
-  color: rgba(15, 19, 36, 0.6);
+  color: var(--text-base-secondary);
   font-size: 14px;
   font-weight: 500;
   gap: 8px;
@@ -23,14 +23,14 @@
 }
 
 .icon {
-  color: rgba(105, 107, 118, 1);
+  color: var(--icon-base-secondary);
   display: grid;
   place-items: center;
 }
 
 .active,
 .dragging {
-  background-color: rgba(10, 15, 41, 0.04);
+  background-color: var(--background-hover-subtle);
 }
 
 .active::before {
@@ -52,7 +52,7 @@
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-  color: rgba(105, 107, 118, 1);
+  color: var(--icon-base-secondary);
   transition: background 0.3s ease;
   border-radius: 4px;
   padding: 2px;
@@ -63,10 +63,10 @@
 @media screen and (hover: hover) {
   .item:hover:not(.disableHover),
   .contextMenuBtn:hover ~ .item:not(.disableHover) {
-    background-color: rgba(10, 15, 41, 0.04);
+    background-color: var(--background-hover-subtle);
   }
   .contextMenuBtn:hover {
-    background-color: rgba(10, 15, 41, 0.08);
+    background-color: var(--background-hover-subtle-strong);
   }
 
   .wrapper:hover .contextMenuBtn,
@@ -85,5 +85,5 @@
 .placeholder {
   width: 100%;
   height: 2px;
-  background-color: rgb(200, 202, 207);
+  background-color: var(--border-action-normal);
 }

@@ -9,7 +9,7 @@
 .header {
   display: flex;
   gap: 8px;
-  color: rgba(20, 21, 26, 1);
+  color: var(--text-base-primary);
   font-size: 14px;
   align-items: center;
   font-weight: 500;
@@ -22,24 +22,24 @@
 }
 
 .header.over {
-  background-color: rgba(10, 15, 41, 0.04);
+  background-color: var(--background-hover-subtle);
 }
 
 @media screen and (hover: hover) {
   .header:hover {
-    background-color: rgba(10, 15, 41, 0.04);
+    background-color: var(--background-hover-subtle);
   }
 }
 
 .icon {
-  color: rgb(105, 107, 117);
+  color: var(--icon-base-secondary);
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
 .noContent {
-  color: rgba(10, 15, 41, 0.25);
+  color: var(--text-disabled);
   font-weight: 500;
   font-size: 14px;
 }
@@ -52,7 +52,7 @@
 }
 
 .content {
-  border-left: 1px solid #dee0e3;
+  border-left: 1px solid var(--border-action-normal);
   padding-left: 6px;
   display: flex;
   flex-direction: column;
@@ -89,7 +89,7 @@
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-  color: rgba(105, 107, 118, 1);
+  color: var(--icon-base-secondary);
   transition: background 0.3s ease;
   border-radius: 4px;
   padding: 2px;
@@ -100,10 +100,10 @@
 @media screen and (hover: hover) {
   .header:hover,
   .contextMenuBtn:hover ~ .header {
-    background-color: rgba(10, 15, 41, 0.04);
+    background-color: var(--background-hover-subtle);
   }
   .contextMenuBtn:hover {
-    background-color: rgba(10, 15, 41, 0.08);
+    background-color: var(--background-hover-subtle-strong);
   }
 
   .wrapper:hover .contextMenuBtn,

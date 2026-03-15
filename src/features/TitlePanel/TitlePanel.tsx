@@ -322,7 +322,10 @@ function ExportDropdown({
   openShareSnapshot,
 }: ExportDropdownProps) {
   const { t } = useTranslation();
-  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const [position, setPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
 
   useEffect(() => {
     if (buttonRef.current) {
@@ -333,6 +336,8 @@ function ExportDropdown({
       });
     }
   }, [buttonRef]);
+
+  if (!position) return null;
 
   return createPortal(
     <div

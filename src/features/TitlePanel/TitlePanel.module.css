@@ -45,8 +45,8 @@ input.rename {
   position: absolute;
   top: calc(100% + var(--absolute-position-panel-padding));
   left: 86%;
-  background-color: white;
-  border: 1px solid rgba(204, 204, 204, 0.5);
+  background-color: var(--background-surface-default);
+  border: 1px solid var(--border-action-normal);
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 5px;
@@ -66,7 +66,7 @@ input.rename {
 }
 
 .exportDropdown > div:hover {
-  background-color: #0a0f290a;
+  background-color: var(--background-hover-subtle);
 }
 
 .exportDropdownItemTitle {
@@ -85,7 +85,7 @@ input.rename {
 
 .exportDropdown p {
   margin: 0;
-  color: rgba(20, 21, 26, 1);
+  color: var(--text-base-primary);
   font-size: 14px;
   line-height: 20px;
 }
