@@ -2,7 +2,7 @@
   background-color: var(--bg-color);
   padding: 20px;
   border-radius: 24px;
-  border: 1px solid rgba(10, 15, 41, 0.08);
+  border: 1px solid var(--border-action-normal);
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -17,7 +17,7 @@
 }
 
 .basic {
-  --bg-color: rgb(255, 255, 255);
+  --bg-color: var(--background-surface-default);
 }
 
 .plus {
@@ -42,12 +42,12 @@
 .price {
   font-size: 36px;
   font-weight: 500;
-  color: rgba(20, 21, 26, 1);
+  color: var(--text-base-primary);
 }
 
 .models {
   font-size: 16px;
-  color: rgba(15, 19, 36, 0.6);
+  color: var(--text-base-secondary);
 }
 
 .features {
@@ -64,7 +64,7 @@
   margin: 0;
   padding: 0;
   padding-left: 36px;
-  color: rgba(20, 21, 26, 1);
+  color: var(--text-base-primary);
   font-size: 16px;
   position: relative;
   display: flex;
@@ -88,13 +88,13 @@
 }
 
 .unlimited {
-  background-color: rgb(255, 255, 255);
+  background-color: var(--background-surface-default);
   padding: 2px 8px;
   border-radius: 360px;
   display: flex;
   gap: 4px;
   align-items: center;
-  color: rgba(20, 21, 26, 1);
+  color: var(--text-base-primary);
   font-size: 14px;
   font-weight: 500;
 }
@@ -113,7 +113,7 @@
 }
 
 .priceValue {
-  color: rgba(20, 21, 26, 1);
+  color: var(--text-base-primary);
 }
 
 .priceWrapper2 {
@@ -151,7 +151,7 @@
 }
 
 .tooltipIcon {
-  color: rgba(15, 19, 36, 0.6);
+  color: var(--text-base-secondary);
 }
 
 .tooltip {

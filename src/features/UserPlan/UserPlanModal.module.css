@@ -46,7 +46,7 @@
 
 .cardsScroll::-webkit-scrollbar-thumb {
   display: block;
-  background-color: rgba(222, 225, 232, 1);
+  background-color: var(--scrollbar-thumb);
   border-radius: 2px;
 }
 
@@ -55,13 +55,13 @@
   flex: 1 1;
   width: auto;
   padding: 12px 16px;
-  color: rgba(20, 21, 26, 1);
+  color: var(--text-base-primary);
   font-size: 16px;
   font-weight: 500;
 }
 
 .plansBtn {
-  color: rgba(15, 19, 36, 0.6);
+  color: var(--text-base-secondary);
   display: flex;
   align-items: center;
   font-size: 14px;
@@ -115,7 +115,7 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  color: rgba(20, 21, 26, 1);
+  color: var(--text-base-primary);
   align-items: flex-start;
   text-align: left;
   padding: 32px 64px;
@@ -131,7 +131,7 @@
 
 .badge {
   padding: 2px 6px;
-  background-color: rgba(10, 15, 41, 0.04);
+  background-color: var(--background-hover-subtle);
   border-radius: 8px;
   transition: 0.3s;
 }
