@@ -1,6 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap");
-@import "microboard-temp/style";
 
 :root {
   --background-surface-default: rgb(255, 255, 255);
@@ -117,6 +116,22 @@ input:-webkit-autofill:active {
 [data-theme="dark"] input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 30px rgb(30, 31, 38) inset !important;
   -webkit-text-fill-color: rgb(232, 233, 240) !important;
+}
+
+::-webkit-scrollbar {
+  appearance: none;
+  width: 3px;
+  height: 3px;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+}
+
+::-webkit-scrollbar-thumb {
+  display: block;
+  background-color: var(--scrollbar-thumb);
+  border-radius: 2px;
 }
 
 /* UiButton theme overrides — button[data-variant] has specificity (0,1,1)
