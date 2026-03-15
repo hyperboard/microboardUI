@@ -15,6 +15,7 @@ import { AddTemplate } from "./Buttons/AddTemplate";
 import { AddText } from "./Buttons/AddText";
 import { EventList } from "./Buttons/EventList";
 import { Redo } from "./Buttons/Redo";
+import { ThemeToggle } from "./Buttons/ThemeToggle";
 import { Select } from "./Buttons/Select";
 import { Undo } from "./Buttons/Undo";
 import { PanelContext } from "./PanelContext";
@@ -65,6 +66,7 @@ export function ToolsPanel(): React.JSX.Element {
         <UiPanel vertical padding={0}>
           <Undo />
           <Redo />
+          <ThemeToggle />
         </UiPanel>
         <div className={style.bottomLeftWrapper}>
           {window.showDebug && <EventList />}

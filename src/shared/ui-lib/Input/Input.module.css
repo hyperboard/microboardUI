@@ -28,7 +28,7 @@
 }
 
 .inputLabel.disabled {
-  color: rgba(10, 15, 41, 0.25);
+  color: var(--text-base-quaternary);
 }
 
 .input {
@@ -36,17 +36,18 @@
   font-family: "Manrope", Arial;
   font-size: 14px;
   width: 100%;
-  color: #0f1324; /* Dark text color */
+  color: var(--text-base-primary);
+  background-color: transparent;
 }
 
 .input:disabled,
 .input:disabled::placeholder {
-  color: rgba(10, 15, 41, 0.25);
+  color: var(--text-base-quaternary);
 }
 
 .input::placeholder {
   font-family: "Manrope", Arial;
-  color: rgba(15, 19, 36, 0.6);
+  color: var(--text-base-secondary);
 }
 
 .text {
@@ -55,7 +56,7 @@
 
 .inputHelperText {
   font-size: 14px;
-  color: rgba(15, 19, 36, 0.6);
+  color: var(--text-base-secondary);
 }
 
 .inputErrorText {
@@ -70,7 +71,8 @@
 
 .inputContainer {
   display: flex;
-  border: 1px solid #dee0e3;
+  border: 1px solid var(--border-action-normal);
+  background-color: var(--background-button-secondary);
   width: 100%;
 
   padding: 10px 12px;
@@ -133,5 +135,6 @@
   resize: none;
   overflow: hidden;
   height: 20px;
-  color: #0f1324; /* Dark text color */
+  color: var(--text-base-primary);
+  background-color: transparent;
 }

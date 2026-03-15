@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { conf } from "microboard-temp";
+import React from "react";
 import { useAppContext } from "features/AppContext";
+import { useUITheme } from "shared/lib/uiTheme";
 import { UiButton } from "shared/ui-lib/UiButton";
 
 function SunIcon(): React.ReactElement {
@@ -111,12 +111,10 @@ function MoonIcon(): React.ReactElement {
 
 export function ThemeToggle(): React.ReactElement {
   const { board } = useAppContext();
-  const [theme, setTheme] = useState(conf.theme);
+  const { theme, toggle } = useUITheme();
 
   const handleClick = (): void => {
-    const next = conf.theme === "light" ? "dark" : "light";
-    conf.theme = next;
-    setTheme(next);
+    toggle();
     board.items.subject.publish(board.items);
   };
 
