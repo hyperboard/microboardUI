@@ -1,10 +1,10 @@
 .notification {
   position: absolute;
   z-index: 5;
-  background: white;
+  background: var(--background-surface-default);
   padding: 16px 16px 16px 48px;
   border-radius: 12px;
-  border: 1px solid #dee0e3;
+  border: 1px solid var(--border-action-normal);
   /* box-shadow: 0 4px 4px #00000040; */
   box-shadow:
     0 10px 10px -3px #14151a14,
