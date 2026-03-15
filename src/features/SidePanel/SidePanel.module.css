@@ -76,7 +76,7 @@
 
 .folders::-webkit-scrollbar-thumb {
   display: block;
-  background-color: rgba(222, 225, 232, 1);
+  background-color: var(--scrollbar-thumb);
   border-radius: 2px;
 }
 
@@ -109,9 +109,9 @@
   gap: 6px;
   margin: 4px 14px 6px;
   padding: 5px 8px;
-  border: 1px solid var(--border-action-normal, rgba(0, 0, 0, 0.12));
+  border: 1px solid var(--border-action-normal);
   border-radius: 8px;
-  background: var(--bg-action-secondary, #f5f5f7);
+  background: var(--bg-action-secondary);
   flex-shrink: 0;
 }
 
@@ -182,7 +182,7 @@
   font-weight: 500;
   cursor: pointer;
   background: none;
-  border: 1px solid rgb(222, 223, 227);
+  border: 1px solid var(--border-action-normal);
   border-radius: 10px;
   box-shadow: 0px 1px 2px 0px rgba(20, 21, 26, 0.05);
   font-family: Manrope;

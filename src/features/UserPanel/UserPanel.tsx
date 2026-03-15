@@ -14,6 +14,7 @@ import { UiPanel } from "shared/ui-lib/UiPanel/index";
 import styles from "./UserPanel.module.css";
 import { ActionButtons } from "./ActionButtons/ActionButtons";
 import { ShareBtn } from "./Buttons/ShareBtn/ShareBtn";
+import { ThemeToggle } from "features/ToolsPanel/Buttons/ThemeToggle";
 import { CommentsPanelContextProvider } from "entities/comments/CommentsPanel/CommentsPanelContext";
 import { CommentsPanel } from "entities/comments/CommentsPanel/CommentsPanel";
 import { isIframe } from "shared/lib/isIframe";
@@ -58,6 +59,7 @@ export const UserPanel: React.FC = () => {
           {/* </span> */}
 
           <div className={styles.unauthBtns}>
+            <ThemeToggle />
             {/* <LanguagesDropdown */}
             {/* 	items={[ */}
             {/* 		<div key={1}> */}

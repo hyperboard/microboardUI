@@ -5,7 +5,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: white;
+  background-color: var(--background-button-secondary);
 
   transition: all 0.3s ease;
 
@@ -14,12 +14,9 @@
 }
 
 .iconActive {
-  background-color: #f7f7f8;
+  background-color: var(--background-button-secondary-hover);
   color: #924fe8;
-  /* outline-offset: -1px;
-	outline: 1px solid #e9eaec; */
-
-  border-color: #e9eaec;
+  border-color: var(--border-action-normal);
 }
 
 .icon:first-child {
@@ -28,21 +25,17 @@
 
 .icon:hover {
   cursor: pointer;
-  background-color: #f7f7f8;
+  background-color: var(--background-button-secondary-hover);
 }
 
 .icon svg {
   transition: all 0.3s ease;
 }
 
-/* .icon:hover svg {
-	transform: scale(0.9);
-} */
-
 .icon:active {
   box-shadow: inset 0px 0px 0px 2px #b78af0;
 }
 
 .icon:not(:last-child) {
-  border-right: 1px solid #e9eaec; /* Adjust color and width as needed */
+  border-right: 1px solid var(--border-action-normal);
 }

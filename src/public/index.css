@@ -6,9 +6,18 @@
   --background-surface-default: rgb(255, 255, 255);
   --background-button-secondary: rgb(255, 255, 255);
   --background-button-secondary-hover: rgb(247, 247, 248);
+  --background-button-tertiary: rgb(245, 246, 247);
+  --background-button-tertiary-hover: rgb(236, 236, 238);
+  --background-button-primary: rgb(20, 21, 26);
+  --background-button-primary-hover: rgb(31, 34, 40);
+  --color-button-primary: rgb(255, 255, 255);
   --background-badge-purple-disabled: rgb(247, 241, 253);
   --background-badge-gray: rgb(233, 234, 236);
   --background-accent-purple: rgb(146, 79, 232);
+  --background-hover-subtle: rgba(10, 15, 41, 0.04);
+  --background-hover-subtle-strong: rgba(10, 15, 41, 0.08);
+  --bg-action-secondary: rgb(245, 246, 247);
+  --bg-action-secondary-hover: rgba(10, 15, 41, 0.06);
 
   --border-action-normal: rgb(222, 223, 227);
   --border-action-focus: rgb(146, 79, 232);
@@ -18,10 +27,13 @@
   --text-base-secondary: rgba(15, 19, 36, 0.6);
   --text-base-quaternary: rgb(10, 15, 41, 0.25);
   --text-accent-purple: rgb(152, 89, 233);
+  --text-disabled: rgb(177, 179, 187);
 
   --icon-base-primary: rgb(20, 21, 26);
   --icon-base-secondary: rgb(105, 107, 118);
   --icon-accent-purple: rgb(146, 79, 232);
+
+  --scrollbar-thumb: rgba(222, 225, 232, 1);
 
   --absolute-position-panel-padding: 12px;
 }
@@ -30,9 +42,18 @@
   --background-surface-default: rgb(30, 31, 38);
   --background-button-secondary: rgb(30, 31, 38);
   --background-button-secondary-hover: rgb(42, 43, 52);
+  --background-button-tertiary: rgb(42, 43, 52);
+  --background-button-tertiary-hover: rgb(55, 56, 66);
+  --background-button-primary: rgb(232, 233, 240);
+  --background-button-primary-hover: rgb(210, 212, 222);
+  --color-button-primary: rgb(20, 21, 26);
   --background-badge-purple-disabled: rgb(40, 28, 60);
   --background-badge-gray: rgb(45, 46, 55);
   --background-accent-purple: rgb(146, 79, 232);
+  --background-hover-subtle: rgba(232, 233, 240, 0.06);
+  --background-hover-subtle-strong: rgba(232, 233, 240, 0.1);
+  --bg-action-secondary: rgb(38, 39, 47);
+  --bg-action-secondary-hover: rgba(232, 233, 240, 0.08);
 
   --border-action-normal: rgb(52, 53, 62);
   --border-action-focus: rgb(146, 79, 232);
@@ -42,10 +63,13 @@
   --text-base-secondary: rgba(232, 233, 240, 0.6);
   --text-base-quaternary: rgba(232, 233, 240, 0.25);
   --text-accent-purple: rgb(172, 120, 245);
+  --text-disabled: rgba(232, 233, 240, 0.3);
 
   --icon-base-primary: rgb(232, 233, 240);
   --icon-base-secondary: rgb(148, 150, 165);
   --icon-accent-purple: rgb(146, 79, 232);
+
+  --scrollbar-thumb: rgba(80, 82, 95, 1);
 }
 
 * {

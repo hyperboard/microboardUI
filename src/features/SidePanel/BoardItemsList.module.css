@@ -11,7 +11,7 @@
 }
 
 .list::-webkit-scrollbar-thumb {
-  background-color: rgba(222, 225, 232, 1);
+  background-color: var(--scrollbar-thumb);
   border-radius: 2px;
 }
 
@@ -56,11 +56,11 @@
 }
 
 .chevronBtn:hover {
-  background-color: var(--bg-action-secondary-hover, rgba(0, 0, 0, 0.05));
+  background-color: var(--bg-action-secondary-hover);
 }
 
 .item:hover {
-  background-color: var(--bg-action-secondary-hover, rgba(0, 0, 0, 0.05));
+  background-color: var(--bg-action-secondary-hover);
 }
 
 .typeIcon {

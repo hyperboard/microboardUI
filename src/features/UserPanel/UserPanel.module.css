@@ -14,7 +14,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #e9eaec;
+  background-color: var(--background-badge-gray);
   width: 100%;
   height: 100%;
 }
@@ -95,7 +95,7 @@
 }
 
 .unauthRights {
-  color: black !important;
+  color: var(--text-base-primary) !important;
   padding: 8px 10px;
 }
 
@@ -156,17 +156,17 @@
 
 .logInBtn {
   padding: 6px 16px;
-  background-color: white;
-  border: 1px solid #dee0e3;
-  color: #14151a;
+  background-color: var(--background-button-secondary);
+  border: 1px solid var(--border-action-normal);
+  color: var(--text-base-primary);
   white-space: nowrap;
   border-radius: 10px;
 }
 
 @media screen and (hover: hover) {
   .logInBtn:hover {
-    background-color: #1f2228;
-    color: white;
+    background-color: var(--background-button-primary);
+    color: var(--color-button-primary);
   }
 }
 
@@ -179,9 +179,9 @@
   top: calc(100% + 12px);
   right: 0;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
-  border: 1px solid #dee0e3;
+  border: 1px solid var(--border-action-normal);
   padding: 4px 6px;
-  background-color: white;
+  background-color: var(--background-surface-default);
   border-radius: 12px;
   min-width: 240px;
 
@@ -241,13 +241,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: white;
+  background-color: var(--background-button-secondary);
 
   transition: all 0.3s ease;
 }
 
 .iconActive {
-  background-color: #f7f7f8;
+  background-color: var(--background-button-secondary-hover);
 }
 
 .icon:first-child {
@@ -256,7 +256,7 @@
 
 .icon:hover {
   cursor: pointer;
-  background-color: #f7f7f8;
+  background-color: var(--background-button-secondary-hover);
 }
 
 .icon svg {
@@ -272,7 +272,7 @@
 }
 
 .icon:not(:last-child) {
-  border-right: 1px solid #e9eaec; /* Adjust color and width as needed */
+  border-right: 1px solid var(--border-action-normal);
 }
 
 .userPicWrapper {
@@ -284,7 +284,7 @@
   border-radius: 50%;
   width: 32px !important;
   height: 32px !important;
-  background-color: #e9eaec;
+  background-color: var(--background-badge-gray);
 
   margin: 0 8px;
 
@@ -296,7 +296,7 @@
 .userPic {
   width: 32px;
   height: 32px;
-  color: #696b76;
+  color: var(--icon-base-secondary);
 
   display: flex;
   flex-direction: column;
@@ -348,7 +348,7 @@
 }
 
 .modal {
-  background-color: white;
+  background-color: var(--background-surface-default);
   padding: 32px 64px;
   border-radius: 24px;
 
@@ -502,7 +502,7 @@
 }
 
 .userDropDownButton {
-  color: #14151a;
+  color: var(--text-base-primary);
   font-weight: 400;
   font-size: 14px;
 }
