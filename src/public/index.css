@@ -26,6 +26,28 @@
   --absolute-position-panel-padding: 12px;
 }
 
+[data-theme="dark"] {
+  --background-surface-default: rgb(30, 31, 38);
+  --background-button-secondary: rgb(30, 31, 38);
+  --background-button-secondary-hover: rgb(42, 43, 52);
+  --background-badge-purple-disabled: rgb(40, 28, 60);
+  --background-badge-gray: rgb(45, 46, 55);
+  --background-accent-purple: rgb(146, 79, 232);
+
+  --border-action-normal: rgb(52, 53, 62);
+  --border-action-focus: rgb(146, 79, 232);
+  --border-select-primary: rgb(146, 79, 232);
+
+  --text-base-primary: rgb(232, 233, 240);
+  --text-base-secondary: rgba(232, 233, 240, 0.6);
+  --text-base-quaternary: rgba(232, 233, 240, 0.25);
+  --text-accent-purple: rgb(172, 120, 245);
+
+  --icon-base-primary: rgb(232, 233, 240);
+  --icon-base-secondary: rgb(148, 150, 165);
+  --icon-accent-purple: rgb(146, 79, 232);
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -45,6 +67,7 @@ html {
 
 body {
   color: var(--text-base-primary);
+  background-color: var(--background-surface-default);
   font-size: 1.6rem;
   font-optical-sizing: auto;
   font-style: normal;
@@ -62,4 +85,12 @@ input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 30px white inset !important;
+}
+
+[data-theme="dark"] input:-webkit-autofill,
+[data-theme="dark"] input:-webkit-autofill:hover,
+[data-theme="dark"] input:-webkit-autofill:focus,
+[data-theme="dark"] input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px rgb(30, 31, 38) inset !important;
+  -webkit-text-fill-color: rgb(232, 233, 240) !important;
 }

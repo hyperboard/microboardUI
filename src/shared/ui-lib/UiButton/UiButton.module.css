@@ -286,6 +286,101 @@
   color: rgba(10, 15, 41, 0.25);
 }
 
+/* ── Dark theme overrides ── */
+
+:global([data-theme="dark"]) .secondary {
+  --background-color: var(--background-button-secondary);
+  --background-hover-color: var(--background-button-secondary-hover);
+  --background-active-color: var(--background-button-secondary-hover);
+  --background-disabled-color: var(--background-button-secondary);
+  --content-color: var(--text-base-primary);
+  --content-hover-color: var(--text-base-primary);
+  --content-disabled-color: rgba(232, 233, 240, 0.3);
+}
+
+:global([data-theme="dark"]) .tertiary {
+  --background-color: rgb(42, 43, 52);
+  --background-hover-color: rgb(55, 56, 66);
+  --background-active-color: rgb(55, 56, 66);
+  --content-color: var(--text-base-primary);
+  --content-hover-color: var(--text-base-primary);
+  --content-disabled-color: rgba(232, 233, 240, 0.25);
+}
+
+:global([data-theme="dark"]) .primary {
+  border-color: rgb(52, 53, 62);
+  background-color: rgb(232, 233, 240);
+  color: rgb(20, 21, 26);
+}
+
+:global([data-theme="dark"]) .primary:hover:not(:disabled) {
+  background-color: rgb(210, 212, 222);
+  color: rgb(20, 21, 26);
+}
+
+:global([data-theme="dark"]) .primary:disabled {
+  border-color: rgb(52, 53, 62);
+  background-color: rgb(52, 53, 62);
+  color: rgba(232, 233, 240, 0.25);
+}
+
+:global([data-theme="dark"]) .tertiary {
+  border-color: var(--border-action-normal);
+  color: var(--text-base-primary);
+  background-color: rgb(42, 43, 52);
+}
+
+:global([data-theme="dark"]) .tertiary:hover:not(:disabled) {
+  background-color: rgb(55, 56, 66);
+  color: var(--text-base-primary);
+}
+
+:global([data-theme="dark"]) .ghost {
+  color: var(--text-base-secondary);
+}
+
+:global([data-theme="dark"]) .ghost:hover {
+  color: var(--text-base-secondary);
+  background-color: rgba(232, 233, 240, 0.06);
+}
+
+:global([data-theme="dark"]) .ghost:disabled {
+  color: rgba(232, 233, 240, 0.25);
+}
+
+:global([data-theme="dark"]) .ghostFilled {
+  color: var(--text-base-secondary);
+  background-color: rgba(232, 233, 240, 0.06);
+}
+
+:global([data-theme="dark"]) .ghostFilled:disabled {
+  color: rgba(232, 233, 240, 0.25);
+}
+
+:global([data-theme="dark"]) .quaternary,
+:global([data-theme="dark"]) .quaternary:disabled {
+  color: var(--text-base-primary);
+  background-color: rgba(232, 233, 240, 0.06);
+}
+
+:global([data-theme="dark"]) .quaternary:disabled {
+  color: rgba(232, 233, 240, 0.25);
+}
+
+:global([data-theme="dark"]) .quaternary:hover:not(:disabled) {
+  color: var(--text-base-primary);
+  background-color: rgba(232, 233, 240, 0.1);
+}
+
+:global([data-theme="dark"]) .black {
+  --background-color: rgb(232, 233, 240);
+  --background-hover-color: rgb(210, 212, 222);
+  --background-active-color: rgb(210, 212, 222);
+  --content-color: rgb(20, 21, 26);
+  --content-hover-color: rgb(20, 21, 26);
+  --content-active-color: rgb(20, 21, 26);
+}
+
 .loader {
   width: 20px;
   height: 20px;
