@@ -6,7 +6,7 @@
 }
 
 .row {
-  border-bottom: 1px solid #e9eaec;
+  border-bottom: 1px solid var(--border-action-normal);
 }
 
 .limit {
@@ -25,7 +25,7 @@
 .table th {
   font-weight: 400;
   text-align: left;
-  border-right: 1px solid #e9eaec;
+  border-right: 1px solid var(--border-action-normal);
 }
 
 .table th:last-child {
@@ -33,7 +33,7 @@
 }
 
 .header {
-  background-color: rgb(247, 247, 248);
+  background-color: var(--background-button-tertiary);
 }
 
 td.currentTariff {
@@ -52,17 +52,17 @@ td.currentTariff {
 
 .modelName {
   font-weight: 500;
-  color: rgba(20, 21, 26, 1);
+  color: var(--text-base-primary);
 }
 
 .modelDescription {
   font-size: 12px;
   font-weight: 400;
-  color: rgba(15, 19, 36, 0.6);
+  color: var(--text-base-secondary);
 }
 
 .modelDisabled {
-  color: rgba(10, 15, 41, 0.25);
+  color: var(--text-base-quaternary);
 }
 
 .modelDisabled.currentTariff {
@@ -70,7 +70,7 @@ td.currentTariff {
 }
 
 .modelLimitReached {
-  color: rgba(13, 17, 38, 0.4);
+  color: var(--text-base-secondary);
 }
 
 .limits {

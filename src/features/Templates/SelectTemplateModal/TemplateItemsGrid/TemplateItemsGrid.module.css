@@ -28,7 +28,7 @@
 
 .templatesGrid::-webkit-scrollbar-thumb {
   display: block;
-  background-color: rgba(222, 225, 232, 1);
+  background-color: var(--scrollbar-thumb);
   border-radius: 4px;
 }
 
