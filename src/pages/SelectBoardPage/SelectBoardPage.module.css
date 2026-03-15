@@ -7,7 +7,7 @@
   margin: 0 auto;
   padding: 16px;
   gap: 12px;
-  background-color: #fff;
+  background-color: var(--background-surface-default);
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -41,7 +41,7 @@
 
 .folders::-webkit-scrollbar-thumb {
   display: block;
-  background-color: rgba(222, 225, 232, 1);
+  background-color: var(--scrollbar-thumb);
   border-radius: 2px;
 }
 
@@ -75,9 +75,9 @@
   display: flex;
   align-items: center;
   padding-right: 10px;
-  border: 1px solid #dee0e3;
+  border: 1px solid var(--border-action-normal);
   border-radius: 8px;
-  background-color: #ffffff;
+  background-color: var(--background-button-secondary);
   cursor: text;
 }
 
@@ -94,10 +94,11 @@
   background: none;
   font-size: 1.5rem;
   font-weight: 300;
+  color: var(--text-base-primary);
 }
 
 .search input::placeholder {
-  color: #9ca3af;
+  color: var(--text-base-secondary);
   font-weight: 200;
 }
 
@@ -130,15 +131,15 @@
 .header h1 {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-base-primary);
 }
 
 .header .profile {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #e9eaec;
-  color: #696b76;
+  background-color: var(--background-badge-gray);
+  color: var(--icon-base-secondary);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -188,20 +189,20 @@
 .button.primary {
   background: var(--text-base-primary);
   box-shadow: 0px 1px 2px rgba(20, 21, 26, 0.05);
-  color: #fff;
+  color: var(--background-surface-default);
 }
 
 .button.secondary {
-  background-color: #f3f4f6;
-  color: #111827;
+  background-color: var(--background-button-tertiary);
+  color: var(--text-base-primary);
 }
 
 .button.primary:hover {
-  background-color: #333;
+  opacity: 0.88;
 }
 
 .button.secondary:hover {
-  background-color: #e5e7eb;
+  background-color: var(--background-button-tertiary-hover);
 }
 
 .infoMessage {
@@ -236,12 +237,12 @@
   display: flex;
   gap: 6px;
   padding: 6px 8px;
-  background-color: rgb(246, 241, 252);
+  background-color: var(--background-badge-purple-disabled);
   border-radius: 10px;
 }
 
 .selectedIcon {
-  color: rgb(105, 107, 117);
+  color: var(--icon-base-secondary);
   display: grid;
   place-items: center;
 }
