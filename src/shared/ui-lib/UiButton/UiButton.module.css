@@ -12,47 +12,6 @@
   --focus-outline-color: rgb(227, 217, 255);
 }
 
-.secondary {
-  --background-color: var(--background-button-secondary);
-  --background-hover-color: var(--background-button-secondary-hover);
-  --background-active-color: var(--background-button-secondary-hover);
-  --background-disabled-color: var(--background-button-secondary);
-
-  --content-color: var(--text-base-primary);
-  --content-hover-color: var(--text-base-primary);
-  --content-active-color: rgb(146, 79, 232);
-  --content-disabled-color: var(--text-disabled);
-
-  --focus-outline-color: rgb(227, 217, 255);
-}
-
-.tertiary {
-  --background-color: var(--background-button-tertiary);
-  --background-hover-color: var(--background-button-tertiary-hover);
-  --background-active-color: var(--background-button-tertiary-hover);
-
-  --content-color: var(--text-base-primary);
-  --content-hover-color: var(--text-base-primary);
-  --content-active-color: var(--text-base-primary);
-  --content-disabled-color: var(--text-base-quaternary);
-
-  --focus-outline-color: rgb(227, 217, 255);
-}
-
-.black {
-  --background-color: var(--background-button-primary);
-  --background-hover-color: var(--background-button-primary-hover);
-  --background-active-color: var(--background-button-primary-hover);
-  --background-disabled-color: var(--border-action-normal);
-
-  --content-color: var(--color-button-primary);
-  --content-hover-color: var(--color-button-primary);
-  --content-active-color: var(--color-button-primary);
-  --content-disabled-color: var(--text-base-quaternary);
-
-  --focus-outline-color: rgb(227, 217, 255);
-}
-
 .radiusXl {
   --radius: 12px;
 }
@@ -173,6 +132,30 @@
   background-color: rgb(94, 99, 110);
 }
 
+/* SECONDARY */
+
+.secondary {
+  background-color: var(--background-button-secondary);
+  color: var(--text-base-primary);
+}
+
+@media (hover: hover) {
+  .secondary:hover:not(:disabled) {
+    background-color: var(--background-button-secondary-hover);
+    color: var(--text-base-primary);
+  }
+}
+
+.secondary:active:not(:disabled) {
+  color: rgb(146, 79, 232);
+  outline: 2px solid rgba(200, 178, 255, 0.5);
+}
+
+.secondary:disabled {
+  background-color: var(--background-button-secondary);
+  color: var(--text-disabled);
+}
+
 /* PRIMARY */
 
 .primary {
@@ -210,7 +193,26 @@
   color: var(--color-button-primary);
 }
 
-/* quaternary */
+/* BLACK */
+
+.black {
+  background-color: var(--background-button-primary);
+  color: var(--color-button-primary);
+}
+
+@media (hover: hover) {
+  .black:hover:not(:disabled) {
+    background-color: var(--background-button-primary-hover);
+    color: var(--color-button-primary);
+  }
+}
+
+.black:disabled {
+  background-color: var(--border-action-normal);
+  color: var(--text-base-quaternary);
+}
+
+/* QUATERNARY */
 
 .quaternary,
 .quaternary:disabled {
