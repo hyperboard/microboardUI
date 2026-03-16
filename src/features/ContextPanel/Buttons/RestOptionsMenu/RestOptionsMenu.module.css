@@ -13,6 +13,7 @@
   cursor: pointer;
   transition: background 0.3s;
   font-size: 1.4rem;
+  color: var(--text-base-primary);
 }
 
 @media (hover: hover) {

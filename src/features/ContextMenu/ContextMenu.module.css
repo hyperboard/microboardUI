@@ -16,6 +16,7 @@
   transition: 0.3s;
   font-size: 1.4rem;
   font-family: Manrope;
+  color: var(--text-base-primary);
 }
 
 .icon {
