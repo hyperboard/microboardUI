@@ -244,7 +244,11 @@ export function TitlePanel(): React.JSX.Element | null {
           className={style.tabletHide}
           onClick={toggleExportDropdown}
           variant="secondary"
-          rounded="none"
+          rounded={
+            window.enableTemplateCreating || window.enableGravity
+              ? "none"
+              : "right"
+          }
           tooltip={isDropdownOpen ? undefined : t("export.tooltip")}
           tooltipPosition="bottom"
         >
@@ -265,7 +269,7 @@ export function TitlePanel(): React.JSX.Element | null {
               className={style.tabletHide}
               onClick={saveTemplate}
               variant="secondary"
-              rounded="none"
+              rounded={window.enableGravity ? "none" : "right"}
               tooltip={t("template.save")}
               tooltipPosition="bottom"
             >
