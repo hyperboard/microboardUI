@@ -685,6 +685,10 @@
   },
   "thickness": "Thickness",
   "appTitle": "Microboard",
+  "gravity": {
+    "start": "Enable gravity mode",
+    "stop": "Disable gravity mode"
+  },
   "export": {
     "tooltip": "Export this board",
     "confirm": "Export",

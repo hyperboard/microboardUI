@@ -49,6 +49,7 @@ export function TitlePanel(): React.JSX.Element | null {
     boardsList.getBoardInfo(boardId)?.title || t("board.untitled");
   const isBlank = boardId === "blank";
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [gravityEnabled, setGravityEnabled] = useState(false);
   const clickOutsideRef = useClickOutside<HTMLButtonElement>(
     () => setIsDropdownOpen(false),
     [],
@@ -115,6 +116,15 @@ export function TitlePanel(): React.JSX.Element | null {
 
   const toggleExportDropdown = (): void => {
     setIsDropdownOpen((prev) => !prev);
+  };
+
+  const toggleGravity = (): void => {
+    if (gravityEnabled) {
+      board.disableGravity();
+    } else {
+      board.enableGravity();
+    }
+    setGravityEnabled((prev) => !prev);
   };
 
   const templateIdKey = `templateId:${board.getBoardId()}`;
@@ -234,7 +244,7 @@ export function TitlePanel(): React.JSX.Element | null {
           className={style.tabletHide}
           onClick={toggleExportDropdown}
           variant="secondary"
-          rounded={window.enableTemplateCreating ? "none" : "right"}
+          rounded="none"
           tooltip={isDropdownOpen ? undefined : t("export.tooltip")}
           tooltipPosition="bottom"
         >
@@ -255,11 +265,27 @@ export function TitlePanel(): React.JSX.Element | null {
               className={style.tabletHide}
               onClick={saveTemplate}
               variant="secondary"
-              rounded="right"
+              rounded="none"
               tooltip={t("template.save")}
               tooltipPosition="bottom"
             >
               <Icon iconName="Pen" />
+            </UiButton>
+          </>
+        )}
+        {window.enableGravity && (
+          <>
+            <UiSeparator vertical className={style.tabletHide} />
+            <UiButton
+              className={style.tabletHide}
+              onClick={toggleGravity}
+              variant="secondary"
+              rounded="right"
+              active={gravityEnabled}
+              tooltip={gravityEnabled ? t("gravity.stop") : t("gravity.start")}
+              tooltipPosition="bottom"
+            >
+              🪐
             </UiButton>
           </>
         )}

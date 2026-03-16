@@ -684,6 +684,10 @@
   },
   "thickness": "Толщина",
   "appTitle": "Microboard",
+  "gravity": {
+    "start": "Включить режим гравитации",
+    "stop": "Выключить режим гравитации"
+  },
   "export": {
     "tooltip": "Экспорт",
     "confirm": "Экспортировать",
