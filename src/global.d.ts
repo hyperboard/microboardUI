@@ -17,6 +17,7 @@ declare global {
     app: App;
     showDebug: boolean;
     enableTemplateCreating: boolean;
+    enableGravity: boolean;
     enableVideos: boolean;
     enableGames: boolean;
     enableAI: boolean;

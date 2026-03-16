@@ -16,23 +16,24 @@
   transition: 0.3s;
   font-size: 1.4rem;
   font-family: Manrope;
+  color: var(--text-base-primary);
 }
 
 .icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #696b76;
+  color: var(--icon-base-secondary);
 }
 
 .item:disabled,
 .item:disabled .icon {
-  color: rgba(10, 15, 41, 0.25);
+  color: var(--text-base-quaternary);
   cursor: not-allowed;
 }
 
 @media (hover: hover) {
   .item:hover:not(:disabled) {
-    background-color: rgba(10, 15, 41, 0.04);
+    background-color: var(--background-hover-subtle);
   }
 }

@@ -82,6 +82,7 @@ export const UiButton = forwardRef<HTMLButtonElement, CommonUiButtonProps>(
       <button
         id={id}
         data-variant={variant}
+        data-active={active || undefined}
         className={clsx(
           style.button,
           active && style.active,

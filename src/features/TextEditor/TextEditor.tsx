@@ -347,8 +347,9 @@ export class TextEditor extends React.Component<
     const editorHeight = isInsideOfFrame
       ? height
       : container.getHeight() / editorScale;
-    // @ts-expect-error maxHeight undefined
+
     const editorMaxHeight = isInsideOfFrame ? height : maxHeight + 1;
+
     const editorWidth =
       text.insideOf === "Sticker"
         ? container.getWidth() / editorScale

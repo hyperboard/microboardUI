@@ -1,8 +1,9 @@
 .item {
   display: flex;
   align-items: center;
-  background-color: rgb(247, 247, 248);
+  background-color: var(--background-button-secondary);
   gap: 4px;
   padding: 8px 16px;
-  border: 1px solid #c8cad0;
+  border: 1px solid var(--border-action-normal);
+  color: var(--text-base-primary);
 }

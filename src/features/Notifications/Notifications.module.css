@@ -9,6 +9,6 @@
 
 .notificationText {
   margin-top: 4px;
-  color: rgba(15, 19, 36, 0.6);
+  color: var(--text-base-secondary);
   font-size: 14px;
 }

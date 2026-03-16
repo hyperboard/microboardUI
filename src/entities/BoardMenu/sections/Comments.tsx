@@ -50,12 +50,7 @@ export const Comments = () => {
       {isOwner && (
         <button onClick={resolveAllComments} className={styles.btn}>
           <div className={styles.buttonContainer}>
-            <Icon
-              iconName="Comment"
-              width={18}
-              height={18}
-              style={{ color: "rgba(105, 107, 118, 1)" }}
-            />
+            <Icon iconName="Comment" width={18} height={18} />
             {t("boardMenu.comments.resolveAll")}
           </div>
         </button>

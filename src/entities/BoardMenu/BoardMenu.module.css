@@ -33,6 +33,12 @@
   width: calc(100% + 8px);
 }
 
-.btn:hover {
-  background-color: rgba(10, 15, 41, 0.04);
+.btn {
+  color: var(--text-base-primary);
+}
+
+@media (hover: hover) {
+  .btn:hover {
+    background-color: var(--background-hover-subtle);
+  }
 }
