@@ -348,23 +348,15 @@ export class TextEditor extends React.Component<
       ? height
       : container.getHeight() / editorScale;
 
-    // Scale max dimensions by textScale so the logical pixel bounds match the un-scaled editor content
-    const adjustedMaxWidth =
-      maxWidth !== undefined ? maxWidth / textScale : undefined;
-    const adjustedMaxHeight =
-      maxHeight !== undefined ? maxHeight / textScale : undefined;
+    const editorMaxHeight = isInsideOfFrame ? height : maxHeight + 1;
 
-    // @ts-expect-error adjustedMaxHeight undefined
-    const editorMaxHeight = isInsideOfFrame ? height : adjustedMaxHeight + 1;
     const editorWidth =
       text.insideOf === "Sticker"
         ? container.getWidth() / editorScale
         : Math.ceil(container.getWidth() / editorScale);
     const editorMaxWidth =
-      // @ts-expect-error adjustedMaxWidth undefined
-      text.insideOf === "Sticker"
-        ? adjustedMaxWidth
-        : Math.ceil(adjustedMaxWidth);
+      // @ts-expect-error maxWidth undefined
+      text.insideOf === "Sticker" ? maxWidth : Math.ceil(maxWidth);
     const showPlaceholder =
       !text.editor.includesListNode() && text.getTextString().length === 0;
 
