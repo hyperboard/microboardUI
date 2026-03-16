@@ -19,6 +19,8 @@
   text-align: center;
   border: none;
   outline: none;
+  background: transparent;
+  color: var(--text-base-primary);
 }
 
 .input:focus {
@@ -27,7 +29,7 @@
 
 .input:not(:focus) {
   cursor: pointer;
-  color: rgba(20, 21, 26, 1);
+  color: var(--text-base-primary);
 }
 
 .sizeList {

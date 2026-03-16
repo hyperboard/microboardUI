@@ -13,11 +13,12 @@
   cursor: pointer;
   transition: background 0.3s;
   font-size: 1.4rem;
+  color: var(--text-base-primary);
 }
 
 @media (hover: hover) {
   .item:hover {
-    background: rgba(233, 234, 236, 1);
+    background: var(--background-hover-subtle-strong);
   }
 }
 
@@ -30,7 +31,7 @@
   font-family: "Manrope";
   font-weight: 400;
   font-size: 1.4rem;
-  color: rgba(13, 17, 38, 0.4);
+  color: var(--text-base-quaternary);
   margin-left: auto;
   padding: 0 4px;
 }
@@ -46,6 +47,6 @@
 
 .hotkey {
   text-wrap: nowrap;
-  color: rgba(0, 0, 0, 0.24);
+  color: var(--text-base-quaternary);
   text-align: right;
 }

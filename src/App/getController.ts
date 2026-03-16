@@ -513,7 +513,9 @@ export function getController(
         case 1:
           return tools.middleButtonUp();
         case 2:
-          board.setIsBoardMenuOpen(true);
+          if (!board.tools.getNavigate()) {
+            board.setIsBoardMenuOpen(true);
+          }
           return tools.rightButtonUp();
         default:
           return tools.leftButtonUp();
