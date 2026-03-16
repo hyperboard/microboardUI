@@ -58,7 +58,9 @@ export const BoardMenu = () => {
     setIsOpen(board.getIsBoardMenuOpen());
   }, [board.getIsBoardMenuOpen()]);
 
-  return isOpen ? (
+  const isNavigate = Boolean(board.tools.getNavigate());
+
+  return isOpen && !isNavigate ? (
     <UiPanel
       onPointerUp={() => (shouldUpdatePosition.current = false)}
       onPointerDown={() => (shouldUpdatePosition.current = false)}

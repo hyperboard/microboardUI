@@ -146,6 +146,11 @@
   }
 }
 
+.secondary.active:not([disabled]) {
+  background-color: var(--background-hover-subtle-strong);
+  color: rgb(146, 79, 232);
+}
+
 .secondary:active:not(:disabled) {
   color: rgb(146, 79, 232);
   outline: 2px solid rgba(200, 178, 255, 0.5);

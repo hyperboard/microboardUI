@@ -33,6 +33,7 @@
   --icon-accent-purple: rgb(146, 79, 232);
 
   --scrollbar-thumb: rgba(222, 225, 232, 1);
+  --skeleton-shimmer: rgba(255, 255, 255, 0.5);
 
   --absolute-position-panel-padding: 12px;
 }
@@ -69,6 +70,7 @@
   --icon-accent-purple: rgb(146, 79, 232);
 
   --scrollbar-thumb: rgba(80, 82, 95, 1);
+  --skeleton-shimmer: rgba(255, 255, 255, 0.06);
 }
 
 * {
@@ -147,6 +149,11 @@ button[data-variant="secondary"] {
     background-color: var(--background-button-secondary-hover);
     color: var(--text-base-primary);
   }
+}
+
+button[data-variant="secondary"][data-active="true"]:not(:disabled) {
+  background-color: var(--background-hover-subtle-strong);
+  color: rgb(146, 79, 232);
 }
 
 button[data-variant="secondary"]:active:not(:disabled) {
