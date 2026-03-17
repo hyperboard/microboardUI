@@ -1,10 +1,11 @@
-import { Group } from "microboard-temp";
+import { Group } from "microboard";
 import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
-import React from "react";
+import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import btnStyle from "./ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
+import { BaseItem } from "microboard";
 
 type Props = {
   rounded?: "none" | "left";
@@ -16,59 +17,60 @@ export const Lock = ({
   const { t } = useTranslation();
   const { board } = useAppContext();
   const selectedItems = board.selection.list();
-  let isLocked = false;
 
+  if (selectedItems.length === 0) return null;
+
+  let isLocked = false;
   if (selectedItems.length > 1) {
     isLocked = !selectedItems.some((item) => !item.transformation.isLocked);
   } else if (selectedItems.length === 1) {
     isLocked = selectedItems[0].transformation.isLocked;
   }
 
-  const handleClick = (): void => {
-    if (
-      selectedItems.length > 1 ||
-      (selectedItems.length === 1 && selectedItems[0] instanceof Group)
-    ) {
-      const isLocked = selectedItems.every(
-        (item) => item.transformation.isLocked,
+  const handleClick = useCallback(() => {
+    if (isLocked) {
+      // Unlocking
+      if (selectedItems.length === 1 && selectedItems[0] instanceof Group) {
+        const group = selectedItems[0] as Group;
+        if (group.isLockedGroup) {
+          // Dissolve auto-created group
+          board.events?.emit({
+            class: "Board",
+            method: "removeLockedGroup",
+            item: [group.getId()],
+          });
+          return;
+        }
+      }
+
+      // Default unlocking behavior: just unlock transformations
+      selectedItems.forEach((item) => {
+        item.transformation.setIsLocked(false);
+      });
+    } else {
+      // Locking
+      const itemsToLock = selectedItems.filter(
+        (item) => !item.transformation.isLocked,
       );
 
-      if (!isLocked) {
-        const lockedIds = selectedItems.map((item) => item.getId());
-        const group = board.addLockedGroup(
-          new Group(board, undefined, lockedIds, undefined),
-        );
-        group.setBoard(board);
+      // If multiple items are selected and they aren't already in a group, create a "locked group" (legacy behavior)
+      const allHaveSameParent =
+        itemsToLock.length > 1 &&
+        itemsToLock.every((item) => item.parent === itemsToLock[0].parent);
+      const isAlreadyGrouped =
+        itemsToLock.length > 1 &&
+        itemsToLock.every((item) => item.parent !== "Board");
 
-        board.tools.getSelect()?.nestingHighlighter.clear();
-        if (board.selection.items.getSingle()?.itemType !== "Connector") {
-          board.selection.setContext("None");
-        }
-        return;
-      }
-
-      const groupId = selectedItems[0].getId();
-      const group = board.items.getById(groupId);
-
-      if (!(group instanceof Group)) {
-        return;
-      }
-
-      board.removeLockedGroup(group);
-      return;
-    }
-
-    const item = selectedItems[0];
-    const isLocked = item.transformation.isLocked;
-    item.transformation.setIsLocked(!isLocked);
-
-    if (isLocked) {
-      board.tools.getSelect()?.nestingHighlighter.clear();
-      if (board.selection.items.getSingle()?.itemType !== "Connector") {
-        board.selection.setContext("None");
+      if (itemsToLock.length > 1 && !isAlreadyGrouped && allHaveSameParent) {
+        board.addLockedGroup(itemsToLock as BaseItem[]);
+      } else {
+        // Just lock them individually (or the group item itself)
+        itemsToLock.forEach((item) => {
+          item.transformation.setIsLocked(true);
+        });
       }
     }
-  };
+  }, [board, isLocked, selectedItems]);
 
   const tooltip = isLocked
     ? t("contextPanel.unlock.tooltip")
