@@ -144,6 +144,14 @@
       "text": "Delete",
       "tooltip": "Delete"
     },
+    "group": {
+      "text": "Group",
+      "tooltip": "Group (Cmd/Ctrl + G)"
+    },
+    "ungroup": {
+      "text": "Ungroup",
+      "tooltip": "Ungroup (Cmd/Ctrl + G)"
+    },
     "edit": {
       "text": "Edit"
     },

@@ -9,7 +9,9 @@ import {
   checkHotkeys,
   isControlCharacter,
   VideoItem,
+  Group,
 } from "microboard-temp";
+
 import { throttle } from "shared/lib/throttle";
 import { notify } from "shared/ui-lib/Toast/notify";
 import { Clipboard } from "./Clipboard";
@@ -109,6 +111,23 @@ export function getController(
       target instanceof HTMLTextAreaElement ||
       target.isContentEditable
     ) {
+      return;
+    }
+
+    const isGroupHotkey =
+      (event.ctrlKey || event.metaKey) && event.code === "KeyG";
+    if (isGroupHotkey) {
+      event.preventDefault();
+      const selectedItems = board.selection.list();
+      const group =
+        selectedItems.length === 1 && selectedItems[0] instanceof Group
+          ? (selectedItems[0] as Group)
+          : null;
+      if (group) {
+        board.ungroup(group);
+      } else if (selectedItems.length > 1) {
+        board.group(selectedItems as any);
+      }
       return;
     }
 

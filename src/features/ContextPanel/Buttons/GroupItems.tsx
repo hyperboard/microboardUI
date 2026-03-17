@@ -22,7 +22,7 @@ export function GroupItems({
     selectedItems.length === 1 && selectedItems[0] instanceof Group;
 
   const handleGroup = (): void => {
-    const group = board.groupItems(selectedItems as BaseItem[]);
+    const group = board.group(selectedItems as BaseItem[]);
     if (group) {
       board.selection.removeAll();
       board.selection.add(group);
@@ -33,7 +33,7 @@ export function GroupItems({
 
   const handleUngroup = (): void => {
     const group = selectedItems[0] as Group;
-    board.ungroupItems(group);
+    board.ungroup(group);
     board.selection.setContext("None");
   };
 
@@ -45,10 +45,10 @@ export function GroupItems({
         onClick={handleUngroup}
         variant="secondary"
         rounded={rounded}
-        tooltip={t("contextPanel.ungroup.tooltip", "Ungroup")}
+        tooltip={t("contextPanel.ungroup.tooltip")}
         tooltipPosition="top"
       >
-        <Icon iconName="Ungroup" />
+        <Icon iconName="Stack" />
       </UiButton>
     );
   }
@@ -64,10 +64,10 @@ export function GroupItems({
       onClick={handleGroup}
       variant="secondary"
       rounded={rounded}
-      tooltip={t("contextPanel.group.tooltip", "Group")}
+      tooltip={t("contextPanel.group.tooltip")}
       tooltipPosition="top"
     >
-      <Icon iconName="Group" />
+      <Icon iconName="Stack" />
     </UiButton>
   );
 }
