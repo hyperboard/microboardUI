@@ -1,11 +1,11 @@
-import { Group } from "microboard";
+import { Group } from "microboard-temp";
 import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
 import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import btnStyle from "./ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
-import { BaseItem } from "microboard";
+import { BaseItem } from "microboard-temp";
 
 type Props = {
   rounded?: "none" | "left";
