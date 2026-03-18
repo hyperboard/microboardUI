@@ -343,23 +343,17 @@ export function ShareModal() {
                 ) : (
                   <TransitionGroup component={null}>
                     {grantedUsers.map((user) => (
-                      <CSSTransition
+                      <AnimatedGrantedUser
                         key={user.id}
-                        timeout={500}
-                        classNames={{
-                          enter: styles.fadeEnter,
-                          enterActive: styles.fadeEnterActive,
-                          exit: styles.fadeExit,
-                          exitActive: styles.fadeExitActive,
-                        }}
-                      >
-                        <GrantedUser
-                          highlighted={highlightedEmail === user.email}
-                          onChange={handleUserAccessChange}
-                          saveChanges={handleSubmit}
-                          {...user}
-                        />
-                      </CSSTransition>
+                        highlighted={highlightedEmail === user.email}
+                        onChange={handleUserAccessChange}
+                        saveChanges={handleSubmit}
+                        fadeEnter={styles.fadeEnter}
+                        fadeEnterActive={styles.fadeEnterActive}
+                        fadeExit={styles.fadeExit}
+                        fadeExitActive={styles.fadeExitActive}
+                        {...user}
+                      />
                     ))}
                   </TransitionGroup>
                 )}
@@ -495,6 +489,39 @@ type GrantedUserProps = GrantedUser & {
   highlighted?: boolean;
   saveChanges: () => Promise<void>;
 };
+
+type AnimatedGrantedUserProps = GrantedUserProps & {
+  fadeEnter: string;
+  fadeEnterActive: string;
+  fadeExit: string;
+  fadeExitActive: string;
+};
+
+function AnimatedGrantedUser({
+  fadeEnter,
+  fadeEnterActive,
+  fadeExit,
+  fadeExitActive,
+  ...props
+}: AnimatedGrantedUserProps) {
+  const nodeRef = useRef<HTMLDivElement>(null);
+  return (
+    <CSSTransition
+      timeout={500}
+      classNames={{
+        enter: fadeEnter,
+        enterActive: fadeEnterActive,
+        exit: fadeExit,
+        exitActive: fadeExitActive,
+      }}
+      nodeRef={nodeRef}
+    >
+      <div ref={nodeRef}>
+        <GrantedUser {...props} />
+      </div>
+    </CSSTransition>
+  );
+}
 
 function GrantedUser({
   id,

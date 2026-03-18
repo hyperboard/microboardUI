@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { CSSTransition } from "react-transition-group";
 import type { TransitionProps } from "./types";
 import styles from "./TopFade.module.css";
@@ -9,6 +9,7 @@ export function TopFade({
   unmountOnExit,
   children,
 }: TransitionProps) {
+  const nodeRef = useRef<HTMLElement>(null);
   return (
     <CSSTransition
       in={inProp}
@@ -20,8 +21,14 @@ export function TopFade({
         exitActive: styles.optionsExitActive,
       }}
       unmountOnExit={unmountOnExit}
+      nodeRef={nodeRef}
     >
-      {children}
+      {React.isValidElement(children)
+        ? React.cloneElement(
+            children as React.ReactElement<{ ref?: React.Ref<HTMLElement> }>,
+            { ref: nodeRef },
+          )
+        : children}
     </CSSTransition>
   );
 }

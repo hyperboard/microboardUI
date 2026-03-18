@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { CSSTransition } from "react-transition-group";
 import styles from "./OpacityTransition.module.css";
 import type { TransitionProps } from "./types";
@@ -9,6 +9,7 @@ export function OpacityTransition({
   timeout = 300,
   unmountOnExit,
 }: TransitionProps) {
+  const nodeRef = useRef<HTMLElement>(null);
   return (
     <CSSTransition
       in={inProp}
@@ -20,8 +21,14 @@ export function OpacityTransition({
         exitActive: styles.opacityExitActive,
       }}
       unmountOnExit={unmountOnExit}
+      nodeRef={nodeRef}
     >
-      {children}
+      {React.isValidElement(children)
+        ? React.cloneElement(
+            children as React.ReactElement<{ ref?: React.Ref<HTMLElement> }>,
+            { ref: nodeRef },
+          )
+        : children}
     </CSSTransition>
   );
 }

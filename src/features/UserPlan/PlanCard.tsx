@@ -126,7 +126,7 @@ export function PlanCard({
             {typeof price === "string" && !isTokenPrice ? (
               price
             ) : (
-              <p className={styles.priceWrapper}>
+              <div className={styles.priceWrapper}>
                 <span>$</span>
                 <span className={styles.priceValue}>
                   {isTokenPrice
@@ -147,7 +147,7 @@ export function PlanCard({
                       : t("userPlan.perMonth")}
                   </span>
                 </div>
-              </p>
+              </div>
             )}
           </div>
         )}
