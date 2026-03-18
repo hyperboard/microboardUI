@@ -18,6 +18,7 @@ declare global {
     showDebug: boolean;
     enableTemplateCreating: boolean;
     enableGravity: boolean;
+    enableForceGraph: boolean;
     enableVideos: boolean;
     enableGames: boolean;
     enableAI: boolean;

@@ -697,6 +697,10 @@
     "start": "Enable gravity mode",
     "stop": "Disable gravity mode"
   },
+  "forceGraph": {
+    "start": "Enable force graph layout",
+    "stop": "Disable force graph layout"
+  },
   "export": {
     "tooltip": "Export this board",
     "confirm": "Export",

@@ -50,6 +50,7 @@ export function TitlePanel(): React.JSX.Element | null {
   const isBlank = boardId === "blank";
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [gravityEnabled, setGravityEnabled] = useState(false);
+  const [forceGraphEnabled, setForceGraphEnabled] = useState(false);
   const clickOutsideRef = useClickOutside<HTMLButtonElement>(
     () => setIsDropdownOpen(false),
     [],
@@ -125,6 +126,15 @@ export function TitlePanel(): React.JSX.Element | null {
       board.enableGravity();
     }
     setGravityEnabled((prev) => !prev);
+  };
+
+  const toggleForceGraph = (): void => {
+    if (forceGraphEnabled) {
+      board.disableForceGraph();
+    } else {
+      board.enableForceGraph();
+    }
+    setForceGraphEnabled((prev) => !prev);
   };
 
   const templateIdKey = `templateId:${board.getBoardId()}`;
@@ -284,12 +294,32 @@ export function TitlePanel(): React.JSX.Element | null {
               className={style.tabletHide}
               onClick={toggleGravity}
               variant="secondary"
-              rounded="right"
+              rounded={window.enableForceGraph ? "none" : "right"}
               active={gravityEnabled}
               tooltip={gravityEnabled ? t("gravity.stop") : t("gravity.start")}
               tooltipPosition="bottom"
             >
               🪐
+            </UiButton>
+          </>
+        )}
+        {window.enableForceGraph && (
+          <>
+            {!window.enableGravity && (
+              <UiSeparator vertical className={style.tabletHide} />
+            )}
+            <UiButton
+              className={style.tabletHide}
+              onClick={toggleForceGraph}
+              variant="secondary"
+              rounded="right"
+              active={forceGraphEnabled}
+              tooltip={
+                forceGraphEnabled ? t("forceGraph.stop") : t("forceGraph.start")
+              }
+              tooltipPosition="bottom"
+            >
+              🕸️
             </UiButton>
           </>
         )}
