@@ -509,6 +509,9 @@ export function getController(
       pinchingTimeout = null;
     }, delay);
 
+    // Re-wake force graph after drag so physics resumes from fresh baseline.
+    board.wakeForceGraph();
+
     const transformerTool = selection.tool;
     const isSelect = tools.getSelect() !== undefined;
     if (isSelect) {
