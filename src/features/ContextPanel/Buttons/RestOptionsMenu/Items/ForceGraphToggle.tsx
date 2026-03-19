@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "features/AppContext";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
@@ -11,16 +11,18 @@ export function ForceGraphToggle(): React.JSX.Element | null {
   const { t } = useTranslation();
 
   const selected = board.selection.list();
-  if (selected.length !== 1) return null;
+  const nodeId = selected.length === 1 ? selected[0].getId() : null;
 
-  const nodeId = selected[0].getId();
+  // Hooks must always be called — no early returns before this
   const [isActive, setIsActive] = useState(() =>
-    board.isNodeInForceGraph(nodeId),
+    nodeId ? board.isNodeInForceGraph(nodeId) : false,
   );
 
   useEffect(() => {
-    setIsActive(board.isNodeInForceGraph(nodeId));
+    setIsActive(nodeId ? board.isNodeInForceGraph(nodeId) : false);
   }, [nodeId]);
+
+  if (!nodeId) return null;
 
   const handleClick = (): void => {
     if (isActive) {
