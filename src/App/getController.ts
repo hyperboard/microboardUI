@@ -380,6 +380,7 @@ export function getController(
     // knows the current position. Without this, the drag delta would be applied
     // on top of a stale server position, causing desync after reload.
     board.syncForceGraph();
+    board.syncGravity();
 
     const isSelect = tools.getSelect() !== undefined;
     if (isSelect) {
@@ -516,6 +517,7 @@ export function getController(
 
     // Re-wake force graph after drag so physics resumes from fresh baseline.
     board.wakeForceGraph();
+    board.wakeGravity();
 
     const transformerTool = selection.tool;
     const isSelect = tools.getSelect() !== undefined;
