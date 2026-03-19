@@ -376,6 +376,11 @@ export function getController(
       return false;
     }
     camera.pointTo(event.pageX, event.pageY);
+    // Flush any unsent physics movement BEFORE the drag starts so the server
+    // knows the current position. Without this, the drag delta would be applied
+    // on top of a stale server position, causing desync after reload.
+    board.syncForceGraph();
+
     const isSelect = tools.getSelect() !== undefined;
     if (isSelect) {
       switch (event.button) {
