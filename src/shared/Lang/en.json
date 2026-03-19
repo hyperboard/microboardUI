@@ -108,6 +108,10 @@
     "bringToFront": {
       "text": "Bring to front"
     },
+    "forceGraph": {
+      "start": "Enable graph layout",
+      "stop": "Disable graph layout"
+    },
     "sendToBack": {
       "text": "Send to back"
     },
