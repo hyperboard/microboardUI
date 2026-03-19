@@ -1,0 +1,44 @@
+.row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  min-width: 220px;
+}
+
+.label {
+  font-family: "Manrope";
+  font-size: 1.4rem;
+  color: var(--text-base-primary);
+  flex: 1;
+}
+
+.input {
+  width: 60px;
+  padding: 3px 6px;
+  font-family: "Manrope";
+  font-size: 1.4rem;
+  color: var(--text-base-primary);
+  background: var(--background-input);
+  border: 1px solid var(--border-base-primary);
+  border-radius: 6px;
+  text-align: right;
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--border-focus);
+}
+
+/* Hide spinner arrows */
+.input::-webkit-inner-spin-button,
+.input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+.unit {
+  font-family: "Manrope";
+  font-size: 1.2rem;
+  color: var(--text-base-quaternary);
+  width: 16px;
+}

@@ -21,6 +21,7 @@ import { RestOptionsMenu } from "./Buttons/RestOptionsMenu";
 import {
   BringToFront,
   ExportFrame,
+  ForceGraphGapInput,
   ForceGraphToggle,
   SendToBack,
 } from "./Buttons/RestOptionsMenu/Items";
@@ -218,6 +219,7 @@ export function ContextPanel(): React.ReactElement | null {
               <SetLinkTo />
               <Duplicate />
               <ForceGraphToggle />
+              <ForceGraphGapInput />
             </RestOptionsMenu>
           </>
         )}
@@ -254,6 +256,7 @@ export function ContextPanel(): React.ReactElement | null {
               <SetLinkTo />
               <Duplicate />
               <ForceGraphToggle />
+              <ForceGraphGapInput />
             </RestOptionsMenu>
           </>
         )}
@@ -302,6 +305,7 @@ export function ContextPanel(): React.ReactElement | null {
               <SetLinkTo />
               <Duplicate />
               <ForceGraphToggle />
+              <ForceGraphGapInput />
             </RestOptionsMenu>
           </>
         )}
@@ -460,6 +464,7 @@ export function ContextPanel(): React.ReactElement | null {
               <SetLinkTo />
               <Duplicate />
               <ForceGraphToggle />
+              <ForceGraphGapInput />
             </RestOptionsMenu>
           </>
         )}

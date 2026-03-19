@@ -6,8 +6,6 @@ import { RestOptionsMenuItem } from "../RestOptionsMenuItem";
 import { Icon } from "shared/ui-lib/Icon";
 
 export function ForceGraphToggle(): React.JSX.Element | null {
-  if (!window.enableForceGraph) return null;
-
   const { board } = useAppContext();
   const { toggleMenu } = usePanelContext();
   const { t } = useTranslation();

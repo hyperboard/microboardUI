@@ -110,7 +110,8 @@
     },
     "forceGraph": {
       "start": "Enable graph layout",
-      "stop": "Disable graph layout"
+      "stop": "Disable graph layout",
+      "gap": "Connector length"
     },
     "sendToBack": {
       "text": "Send to back"
