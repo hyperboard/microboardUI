@@ -1,0 +1,205 @@
+name: Sync Core Dependency
+
+on:
+  repository_dispatch:
+    types:
+      - microboard_published
+  workflow_dispatch:
+    inputs:
+      package_name:
+        description: NPM package name to update
+        required: true
+        default: microboard-temp
+      version:
+        description: Published version to install
+        required: true
+      target_branch:
+        description: Branch that should receive the dependency update
+        required: false
+        default: staging
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-core-${{ github.event.client_payload.package_name || inputs.package_name || 'microboard-temp' }}-${{ github.event.client_payload.version || inputs.version || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Resolve sync parameters
+        id: params
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_PACKAGE_NAME: ${{ inputs.package_name }}
+          INPUT_VERSION: ${{ inputs.version }}
+          INPUT_TARGET_BRANCH: ${{ inputs.target_branch }}
+          PAYLOAD_PACKAGE_NAME: ${{ github.event.client_payload.package_name }}
+          PAYLOAD_VERSION: ${{ github.event.client_payload.version }}
+          PAYLOAD_SOURCE_REPOSITORY: ${{ github.event.client_payload.source_repository }}
+          PAYLOAD_SOURCE_SHA: ${{ github.event.client_payload.source_sha }}
+          DEFAULT_TARGET_BRANCH: ${{ vars.CORE_SYNC_BRANCH || 'staging' }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            PACKAGE_NAME="$INPUT_PACKAGE_NAME"
+            TARGET_VERSION="$INPUT_VERSION"
+            TARGET_BRANCH="${INPUT_TARGET_BRANCH:-$DEFAULT_TARGET_BRANCH}"
+            SOURCE_REPOSITORY="${GITHUB_REPOSITORY}"
+            SOURCE_SHA="${GITHUB_SHA}"
+          else
+            PACKAGE_NAME="$PAYLOAD_PACKAGE_NAME"
+            TARGET_VERSION="$PAYLOAD_VERSION"
+            TARGET_BRANCH="$DEFAULT_TARGET_BRANCH"
+            SOURCE_REPOSITORY="$PAYLOAD_SOURCE_REPOSITORY"
+            SOURCE_SHA="$PAYLOAD_SOURCE_SHA"
+          fi
+
+          if [ -z "$PACKAGE_NAME" ]; then
+            echo "::error::Missing package_name in workflow input or repository_dispatch payload."
+            exit 1
+          fi
+
+          if [ -z "$TARGET_VERSION" ]; then
+            echo "::error::Missing version in workflow input or repository_dispatch payload."
+            exit 1
+          fi
+
+          if [ -z "$TARGET_BRANCH" ]; then
+            echo "::error::Target branch resolved to an empty value."
+            exit 1
+          fi
+
+          {
+            echo "package_name=$PACKAGE_NAME"
+            echo "target_version=$TARGET_VERSION"
+            echo "target_branch=$TARGET_BRANCH"
+            echo "source_repository=$SOURCE_REPOSITORY"
+            echo "source_sha=$SOURCE_SHA"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Checkout target branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.params.outputs.target_branch }}
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --ff-only origin "${{ steps.params.outputs.target_branch }}"
+
+      - name: Update package manifest
+        id: manifest
+        env:
+          PACKAGE_NAME: ${{ steps.params.outputs.package_name }}
+          TARGET_VERSION: ${{ steps.params.outputs.target_version }}
+        run: |
+          node <<'EOF'
+          const fs = require("fs");
+
+          const packageName = process.env.PACKAGE_NAME;
+          const targetVersion = process.env.TARGET_VERSION;
+          const packageJsonPath = "package.json";
+          const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+          const sections = [
+            "dependencies",
+            "devDependencies",
+            "peerDependencies",
+            "optionalDependencies",
+          ];
+
+          const dependencySection = sections.find((section) =>
+            packageJson[section] &&
+            Object.prototype.hasOwnProperty.call(packageJson[section], packageName),
+          );
+
+          if (!dependencySection) {
+            console.error(
+              `Dependency "${packageName}" is not declared in package.json.`,
+            );
+            process.exit(1);
+          }
+
+          const currentVersion = packageJson[dependencySection][packageName];
+          const output = [
+            `dependency_section=${dependencySection}`,
+            `current_version=${currentVersion}`,
+          ];
+
+          if (currentVersion === targetVersion) {
+            output.push("already_current=true");
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `${output.join("\n")}\n`);
+            console.log(`${packageName} is already pinned to ${targetVersion}.`);
+            process.exit(0);
+          }
+
+          packageJson[dependencySection][packageName] = targetVersion;
+          fs.writeFileSync(
+            packageJsonPath,
+            `${JSON.stringify(packageJson, null, 2)}\n`,
+          );
+
+          output.push("already_current=false");
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `${output.join("\n")}\n`);
+          console.log(
+            `Updated ${packageName} in ${dependencySection} from ${currentVersion} to ${targetVersion}.`,
+          );
+          EOF
+
+      - name: Setup Bun
+        if: steps.manifest.outputs.already_current != 'true'
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Refresh lockfile
+        if: steps.manifest.outputs.already_current != 'true'
+        run: bun install
+
+      - name: Check for dependency changes
+        id: changes
+        run: |
+          if git diff --quiet -- package.json bun.lock; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No dependency changes detected."
+            exit 0
+          fi
+
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          git diff --stat -- package.json bun.lock
+
+      - name: Validate build with updated dependency
+        if: steps.changes.outputs.changed == 'true'
+        run: bun run build
+
+      - name: Commit dependency update
+        if: steps.changes.outputs.changed == 'true'
+        env:
+          PACKAGE_NAME: ${{ steps.params.outputs.package_name }}
+          TARGET_VERSION: ${{ steps.params.outputs.target_version }}
+          TARGET_BRANCH: ${{ steps.params.outputs.target_branch }}
+          SOURCE_REPOSITORY: ${{ steps.params.outputs.source_repository }}
+          SOURCE_SHA: ${{ steps.params.outputs.source_sha }}
+        run: |
+          git add package.json bun.lock
+          git commit -m "chore: sync ${PACKAGE_NAME} to ${TARGET_VERSION}"
+          git push origin "HEAD:${TARGET_BRANCH}"
+
+      - name: Summarize sync result
+        run: |
+          if [ "${{ steps.manifest.outputs.already_current }}" = "true" ]; then
+            echo "Dependency already up to date. No commit created."
+            exit 0
+          fi
+
+          if [ "${{ steps.changes.outputs.changed }}" = "true" ]; then
+            echo "Committed ${{ steps.params.outputs.package_name }}@${{ steps.params.outputs.target_version }} to ${{ steps.params.outputs.target_branch }}."
+            echo "Triggered from ${{ steps.params.outputs.source_repository }}@${{ steps.params.outputs.source_sha }}."
+            exit 0
+          fi
+
+          echo "Workflow completed without a commit."
