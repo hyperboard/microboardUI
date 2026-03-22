@@ -8,7 +8,7 @@ import {
   selectHierarchyItem,
   type HierarchyTreeNode,
 } from "features/HierarchyNavigation/hierarchyUi";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import type { Item } from "microboard-temp";
 import { useTranslation } from "react-i18next";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
@@ -206,9 +206,7 @@ export function BoardItemsList({
       tree.filter((node) => node.children.length > 0).map((node) => node.id),
     [tree],
   );
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(
-    () => new Set(initialExpandedIds),
-  );
+  const [expandedIds, setExpandedIds] = useState<Set<string> | null>(null);
 
   const selectedIds = new Set<string>(
     board.selection.list().map((item) => item.getId()),
@@ -216,23 +214,14 @@ export function BoardItemsList({
   const selectionPathIds = board.selection
     .getSelectionHierarchyPaths()
     .flatMap((path) => path.map((node) => node.id));
-  const selectionPathKey = [...selectionPathIds].sort().join(":");
-
-  useEffect(() => {
-    if (expandedIds.size > 0 || initialExpandedIds.length === 0) {
-      return;
-    }
-
-    setExpandedIds(new Set(initialExpandedIds));
-  }, [expandedIds.size, initialExpandedIds]);
-
-  useEffect(() => {
-    if (!selectionPathKey) {
-      return;
-    }
-
-    setExpandedIds((prev) => new Set<string>([...prev, ...selectionPathIds]));
-  }, [selectionPathKey]);
+  const effectiveExpandedIds = useMemo(
+    () =>
+      new Set<string>([
+        ...(expandedIds ? [...expandedIds] : initialExpandedIds),
+        ...selectionPathIds,
+      ]),
+    [expandedIds, initialExpandedIds, selectionPathIds],
+  );
 
   const handleNavigate = (item: Item): void => {
     selectHierarchyItem(board, item);
@@ -240,7 +229,7 @@ export function BoardItemsList({
 
   const handleToggle = (itemId: string): void => {
     setExpandedIds((prev) => {
-      const next = new Set(prev);
+      const next = new Set(prev ?? effectiveExpandedIds);
       if (next.has(itemId)) {
         next.delete(itemId);
       } else {
@@ -287,7 +276,7 @@ export function BoardItemsList({
           key={node.id}
           node={node}
           depth={0}
-          expandedIds={expandedIds}
+          expandedIds={effectiveExpandedIds}
           selectedIds={selectedIds}
           onNavigate={handleNavigate}
           onToggle={handleToggle}
