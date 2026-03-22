@@ -5,14 +5,25 @@ on:
     branches:
       - staging
       - serverless
+  workflow_dispatch:
+    inputs:
+      target_branch:
+        description: Branch to deploy
+        required: true
+        default: staging
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    env:
+      TARGET_BRANCH: ${{ inputs.target_branch || github.ref_name }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -29,7 +40,7 @@ jobs:
 
       - name: Deploy to Cloudflare Pages
         run: |
-          if [ "${{ github.ref_name }}" = "serverless" ]; then
+          if [ "${TARGET_BRANCH}" = "serverless" ]; then
             PROJECT="microboard-front-dev"
           else
             PROJECT="microboard-front-staging"

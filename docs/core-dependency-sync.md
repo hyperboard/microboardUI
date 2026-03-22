@@ -47,7 +47,7 @@ Expected payload fields:
 - `source_sha`
 - `workflow`
 
-The workflow uses `package_name` and `version` to update `package.json` and `bun.lock`, validates the result with `bun run build`, commits only if files changed, and pushes to the target branch so the existing Cloudflare Pages deploy workflow runs automatically.
+The workflow uses `package_name` and `version` to update `package.json` and `bun.lock`, validates the result with `bun run build`, commits only if files changed, pushes to the target branch, and then explicitly dispatches the Cloudflare Pages deploy workflow for that branch.
 
 ## Manual testing
 
@@ -56,3 +56,7 @@ The workflow also supports `workflow_dispatch` with:
 - `package_name`
 - `version`
 - `target_branch`
+
+## Why deployment is dispatched explicitly
+
+GitHub does not start another workflow from a `push` created by a workflow that uses the repository `GITHUB_TOKEN`. Because of that, the dependency sync workflow cannot rely on its own bot push to trigger `deploy.yml`. Instead, after a successful sync commit, it dispatches the deploy workflow directly for the target branch.
