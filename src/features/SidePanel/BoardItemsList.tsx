@@ -201,11 +201,13 @@ export function BoardItemsList({
 
   const items = board.items.listAll() as Item[];
   const tree = useMemo(() => buildHierarchyTree(items), [items]);
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(
+  const initialExpandedIds = useMemo(
     () =>
-      new Set(
-        tree.filter((node) => node.children.length > 0).map((node) => node.id),
-      ),
+      tree.filter((node) => node.children.length > 0).map((node) => node.id),
+    [tree],
+  );
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(
+    () => new Set(initialExpandedIds),
   );
 
   const selectedIds = new Set<string>(
@@ -214,26 +216,23 @@ export function BoardItemsList({
   const selectionPathIds = board.selection
     .getSelectionHierarchyPaths()
     .flatMap((path) => path.map((node) => node.id));
+  const selectionPathKey = [...selectionPathIds].sort().join(":");
 
   useEffect(() => {
-    if (expandedIds.size > 0 || tree.length === 0) {
+    if (expandedIds.size > 0 || initialExpandedIds.length === 0) {
       return;
     }
 
-    setExpandedIds(
-      new Set<string>(
-        tree.filter((node) => node.children.length > 0).map((node) => node.id),
-      ),
-    );
-  }, [expandedIds.size, tree]);
+    setExpandedIds(new Set(initialExpandedIds));
+  }, [expandedIds.size, initialExpandedIds]);
 
   useEffect(() => {
-    if (selectionPathIds.length === 0) {
+    if (!selectionPathKey) {
       return;
     }
 
     setExpandedIds((prev) => new Set<string>([...prev, ...selectionPathIds]));
-  }, [selectionPathIds.sort().join(":")]);
+  }, [selectionPathKey]);
 
   const handleNavigate = (item: Item): void => {
     selectHierarchyItem(board, item);
