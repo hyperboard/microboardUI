@@ -10,7 +10,7 @@ import { useCommentsPanelContext } from "entities/comments/CommentsPanel/Comment
 import { useAppContext } from "features/AppContext";
 import { Icon } from "shared/ui-lib/Icon";
 import { UserPic } from "features/UserPanel/UserPic/UserPic";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getEmailPrefix } from "shared/lib/getEmailPrefix";
 import { useClickOutside } from "shared/lib/useClickOutside";
@@ -28,6 +28,57 @@ export interface User {
 
 interface Props {
   app: App;
+}
+
+function areUsersEqual(prevUsers: User[], nextUsers: User[]): boolean {
+  return (
+    prevUsers.length === nextUsers.length &&
+    prevUsers.every((user, index) => {
+      const nextUser = nextUsers[index];
+      return (
+        user.id === nextUser.id &&
+        user.name === nextUser.name &&
+        user.color === nextUser.color &&
+        user.avatar === nextUser.avatar &&
+        user.idle === nextUser.idle
+      );
+    })
+  );
+}
+
+function areFollowersEqual(
+  prevFollowers: PresenceUser[],
+  nextFollowers: PresenceUser[],
+): boolean {
+  return (
+    prevFollowers.length === nextFollowers.length &&
+    prevFollowers.every(
+      (follower, index) =>
+        follower.userId === nextFollowers[index].userId &&
+        follower.nickname === nextFollowers[index].nickname &&
+        follower.color === nextFollowers[index].color,
+    )
+  );
+}
+
+function isSameTrackedUser(
+  prevTrackedUser: PresenceUser | null,
+  nextTrackedUser: PresenceUser | null,
+): boolean {
+  if (prevTrackedUser === nextTrackedUser) {
+    return true;
+  }
+
+  if (!prevTrackedUser || !nextTrackedUser) {
+    return false;
+  }
+
+  return (
+    prevTrackedUser.userId === nextTrackedUser.userId &&
+    prevTrackedUser.nickname === nextTrackedUser.nickname &&
+    prevTrackedUser.color === nextTrackedUser.color &&
+    prevTrackedUser.avatar === nextTrackedUser.avatar
+  );
 }
 
 export const FollowingUsersCount: React.FC<{
@@ -88,6 +139,7 @@ const USERS_IN_ROW = 3;
 
 export const PresenceUsers: React.FC<Props> = () => {
   const { board } = useAppContext();
+  const boardRef = useRef(board);
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [users, setUsers] = useState<User[]>([]);
   const [followers, setFollowers] = useState<PresenceUser[]>([]);
@@ -96,6 +148,10 @@ export const PresenceUsers: React.FC<Props> = () => {
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const account = useAccount();
   const { setIsPanelOpen } = useCommentsPanelContext();
+
+  useEffect(() => {
+    boardRef.current = board;
+  }, [board]);
 
   const needsCollapse = users.length >= 3;
   useEffect(() => {
@@ -126,14 +182,17 @@ export const PresenceUsers: React.FC<Props> = () => {
 
   const updateUsers = (presence: Presence): void => {
     const now = Date.now();
-    const pUsers = presence.getUsers(board.getBoardId(), true).map((user) => ({
-      id: user.userId,
-      hardId: user.hardId,
-      name: user.nickname,
-      color: user.color,
-      avatar: user.avatar,
-      idle: user.lastActivity < now - PRESENCE_CLEANUP_IDLE_TIMER,
-    }));
+    const currentBoard = boardRef.current;
+    const pUsers = presence
+      .getUsers(currentBoard.getBoardId(), true)
+      .map((user) => ({
+        id: user.userId,
+        hardId: user.hardId,
+        name: user.nickname,
+        color: user.color,
+        avatar: user.avatar,
+        idle: user.lastActivity < now - PRESENCE_CLEANUP_IDLE_TIMER,
+      }));
 
     const uniqueUsersByHardId = [
       ...new Map(
@@ -144,27 +203,39 @@ export const PresenceUsers: React.FC<Props> = () => {
       ...pUsers.filter((user) => user.hardId === null),
     ];
 
-    setUsers(uniqueUsersByHardId);
+    setUsers((prevUsers) =>
+      areUsersEqual(prevUsers, uniqueUsersByHardId)
+        ? prevUsers
+        : uniqueUsersByHardId,
+    );
 
-    setFollowers(board.presence.getFollowers());
+    const nextFollowers = currentBoard.presence.getFollowers();
+    setFollowers((prevFollowers) =>
+      areFollowersEqual(prevFollowers, nextFollowers)
+        ? prevFollowers
+        : nextFollowers,
+    );
   };
 
   useEffect(() => {
     const observer = (presence: Presence): void => {
       updateUsers(presence);
-      setTrackedUser(presence.trackedUser || null);
+      const nextTrackedUser = presence.trackedUser || null;
+      setTrackedUser((prevTrackedUser) =>
+        isSameTrackedUser(prevTrackedUser, nextTrackedUser)
+          ? prevTrackedUser
+          : nextTrackedUser,
+      );
     };
 
-    board.presence.subject.subscribe(observer);
+    const subject = board.presence.subject;
+    observer(board.presence);
+    subject.subscribe(observer);
 
     return () => {
-      board.presence.subject.unsubscribe(observer);
+      subject.unsubscribe(observer);
     };
-  }, [board]);
-
-  useEffect(() => {
-    updateUsers(board.presence);
-  }, [board.getInterfaceType()]);
+  }, [board.presence, board.presence.subject]);
 
   return (
     <div className={styles.wrapper}>

@@ -28,12 +28,14 @@ export const UserTracking: React.FC<Props> = ({ board }) => {
         setTrackedUser(null);
       }
     };
-    board.presence.subject.subscribe(observer);
+    const subject = board.presence.subject;
+    observer(board.presence);
+    subject.subscribe(observer);
 
     return () => {
-      board.presence.subject.unsubscribe(observer);
+      subject.unsubscribe(observer);
     };
-  }, []);
+  }, [board.presence, board.presence.subject]);
 
   if (!trackedUser) {
     return null;

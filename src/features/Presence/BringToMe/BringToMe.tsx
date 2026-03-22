@@ -141,12 +141,14 @@ export const BringToMe: React.FC<{
       setIsTrackedUser(presence.trackedUser || null);
     };
 
-    board.presence.subject.subscribe(observer);
+    const subject = board.presence.subject;
+    observer(board.presence);
+    subject.subscribe(observer);
 
     return () => {
-      board.presence.subject.unsubscribe(observer);
+      subject.unsubscribe(observer);
     };
-  });
+  }, [board.presence, board.presence.subject]);
 
   const filteredUsers = useMemo(() => {
     return users.filter((user) =>
