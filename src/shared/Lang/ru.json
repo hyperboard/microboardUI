@@ -153,6 +153,10 @@
       "text": "Группировать",
       "tooltip": "Группировать (Cmd/Ctrl + G)"
     },
+    "selectParent": {
+      "text": "Выбрать родителя",
+      "tooltip": "Выбрать родителя"
+    },
     "ungroup": {
       "text": "Разгруппировать",
       "tooltip": "Разгруппировать (Cmd/Ctrl + G)"
@@ -740,7 +744,10 @@
     "itemsTitle": "Предметы",
     "itemsSearch": "Поиск...",
     "itemsEmpty": "Нет элементов",
-    "itemsNotFound": "Ничего не найдено"
+    "itemsNotFound": "Ничего не найдено",
+    "frame": "фрейм",
+    "group": "группа",
+    "item": "элемент"
   },
   "contextMenu": {
     "delete": "Удалить",

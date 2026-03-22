@@ -14,6 +14,7 @@ import {
 
 import { throttle } from "shared/lib/throttle";
 import { notify } from "shared/ui-lib/Toast/notify";
+import "features/HierarchyNavigation/hotkeys";
 import { Clipboard } from "./Clipboard";
 import { pasteTextToTheBoard, tryToPasteAsItemOrReturnText } from "./Paste";
 import { createWheel } from "./Wheel/Wheel";

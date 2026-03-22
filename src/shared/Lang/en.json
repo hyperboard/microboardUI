@@ -153,6 +153,10 @@
       "text": "Group",
       "tooltip": "Group (Cmd/Ctrl + G)"
     },
+    "selectParent": {
+      "text": "Select parent",
+      "tooltip": "Select parent"
+    },
     "ungroup": {
       "text": "Ungroup",
       "tooltip": "Ungroup (Cmd/Ctrl + G)"
@@ -741,7 +745,10 @@
     "itemsTitle": "Items",
     "itemsSearch": "Search...",
     "itemsEmpty": "No items",
-    "itemsNotFound": "Nothing found"
+    "itemsNotFound": "Nothing found",
+    "frame": "frame",
+    "group": "group",
+    "item": "item"
   },
   "contextMenu": {
     "delete": "Delete",

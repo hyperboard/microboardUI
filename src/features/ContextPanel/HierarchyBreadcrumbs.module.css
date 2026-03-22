@@ -1,0 +1,72 @@
+.breadcrumbs {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  max-width: min(560px, calc(100vw - 24px));
+  padding: 6px 8px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.breadcrumbs::-webkit-scrollbar {
+  height: 3px;
+}
+
+.breadcrumbs::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 999px;
+}
+
+.crumbButton,
+.crumbCurrent {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-family: Manrope, sans-serif;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.crumbButton {
+  border: none;
+  color: var(--text-base-secondary);
+  background: var(--bg-action-secondary, rgba(18, 19, 22, 0.06));
+  cursor: pointer;
+}
+
+.crumbButton:hover {
+  background: var(--bg-action-secondary-hover);
+  color: var(--text-base-primary);
+}
+
+.crumbCurrent {
+  color: var(--text-base-primary);
+  background: var(--bg-action-primary-hover, rgba(71, 120, 245, 0.12));
+}
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.separator {
+  flex-shrink: 0;
+  color: var(--text-base-secondary);
+}
+
+.kindIcon {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.kindGroup {
+  color: #a56218;
+}
+
+.kindFrame {
+  color: #3e69d7;
+}

@@ -67,6 +67,9 @@ import { RemoveBackgroundImage } from "features/ContextPanel/Buttons/CardGame/Sc
 import { SetBackgroundImage } from "features/ContextPanel/Buttons/CardGame/Screeen/SetBackgroundImage";
 import { GetRandomItem } from "features/ContextPanel/Buttons/CardGame/Screeen/GetRandomItem";
 import { GroupItems } from "./Buttons/GroupItems";
+import { SelectParent } from "./Buttons/SelectParent";
+import { HierarchyBreadcrumbs } from "./HierarchyBreadcrumbs";
+import { selectHierarchyAncestor } from "features/HierarchyNavigation/hierarchyUi";
 
 export function ContextPanel(): React.ReactElement | null {
   const { app, board } = useAppContext();
@@ -110,6 +113,7 @@ export function ContextPanel(): React.ReactElement | null {
   const ideaFromSelection = getIdeaFromSelection(board.selection.items.list());
 
   const single = board.selection.items.getSingle();
+  const selectionHierarchyPaths = board.selection.getSelectionHierarchyPaths();
   const isText = board.selection.items.isAllItemsType("RichText");
   const isSticker = board.selection.items.isAllItemsType("Sticker");
   const isShape = board.selection.items.isAllItemsType("Shape");
@@ -156,8 +160,15 @@ export function ContextPanel(): React.ReactElement | null {
         windowWidth,
       }}
     >
+      <HierarchyBreadcrumbs
+        path={selectionHierarchyPaths}
+        left={mbr.left}
+        top={mbr.top}
+        onSelect={(ancestorId) => {
+          selectHierarchyAncestor(board, ancestorId);
+        }}
+      />
       <UiPanel
-        // className={style.contextPanel}
         style={{
           position: "absolute",
           left: mbr.left,
@@ -181,6 +192,7 @@ export function ContextPanel(): React.ReactElement | null {
           <>
             <Lock rounded="left" />
             <UiSeparator vertical />
+            <SelectParent />
             <Delete />
             <RestOptionsMenu rounded="right">
               <BringToFront />
@@ -202,6 +214,7 @@ export function ContextPanel(): React.ReactElement | null {
             <Lock />
             <UiSeparator vertical />
             <GroupItems />
+            <SelectParent />
             <Delete />
             <UiSeparator vertical />
             {window.enableAI && (
@@ -238,6 +251,7 @@ export function ContextPanel(): React.ReactElement | null {
             <Lock />
             <UiSeparator vertical />
             <GroupItems />
+            <SelectParent />
             <Delete />
             <UiSeparator vertical />
             {window.enableAI && (
@@ -286,6 +300,7 @@ export function ContextPanel(): React.ReactElement | null {
             <Lock />
             <UiSeparator vertical />
             <GroupItems />
+            <SelectParent />
             <Delete />
             <UiSeparator vertical />
             {window.enableAI && (
@@ -322,6 +337,7 @@ export function ContextPanel(): React.ReactElement | null {
             <Lock />
             <UiSeparator vertical />
             <GroupItems />
+            <SelectParent />
             <Delete />
             <UiSeparator vertical />
             <RestOptionsMenu>
@@ -342,6 +358,7 @@ export function ContextPanel(): React.ReactElement | null {
             <Lock />
             <UiSeparator vertical />
             <GroupItems />
+            <SelectParent />
             <Delete />
             <UiSeparator vertical />
             <RestOptionsMenu>
@@ -360,6 +377,7 @@ export function ContextPanel(): React.ReactElement | null {
             <RotateItem clockwise={true} />
             <UiSeparator vertical />
             <GroupItems />
+            <SelectParent />
             <Delete />
             <UiSeparator vertical />
             <RestOptionsMenu>
@@ -377,6 +395,7 @@ export function ContextPanel(): React.ReactElement | null {
             <Lock rounded="left" />
             <UiSeparator vertical />
             <GroupItems />
+            <SelectParent />
             <Delete />
             <UiSeparator vertical />
             <RestOptionsMenu>
@@ -394,6 +413,7 @@ export function ContextPanel(): React.ReactElement | null {
             <Lock rounded="left" />
             <UiSeparator vertical />
             <GroupItems />
+            <SelectParent />
             <Delete />
             <UiSeparator vertical />
             <RestOptionsMenu>
@@ -415,6 +435,7 @@ export function ContextPanel(): React.ReactElement | null {
             <Lock />
             <UiSeparator vertical />
             <GroupItems />
+            <SelectParent />
             <Delete />
             <UiSeparator vertical />
             <RestOptionsMenu>
@@ -444,6 +465,7 @@ export function ContextPanel(): React.ReactElement | null {
             <Lock />
             <UiSeparator vertical />
             <GroupItems />
+            <SelectParent />
             <Delete />
             <UiSeparator vertical />
             {window.enableAI && (
@@ -469,6 +491,7 @@ export function ContextPanel(): React.ReactElement | null {
             <UiSeparator vertical />
             <Delete />
             <GroupItems />
+            <SelectParent />
             <ToggleIsShining />
             <UiSeparator vertical />
             <RestOptionsMenu>
@@ -498,6 +521,7 @@ export function ContextPanel(): React.ReactElement | null {
             )}
             <UiSeparator vertical />
             <GroupItems />
+            <SelectParent />
             <Delete />
             <UiSeparator vertical />
             <RestOptionsMenu>
@@ -520,6 +544,7 @@ export function ContextPanel(): React.ReactElement | null {
             <LockResize />
             <UiSeparator vertical />
             <GroupItems />
+            <SelectParent />
             <Delete />
             <UiSeparator vertical />
             <RestOptionsMenu>
@@ -553,6 +578,7 @@ export function ContextPanel(): React.ReactElement | null {
             <FillStyle />
             <UiSeparator vertical />
             <GroupItems />
+            <SelectParent />
             <Delete />
             <UiSeparator vertical />
             <RestOptionsMenu>
@@ -582,6 +608,7 @@ export function ContextPanel(): React.ReactElement | null {
             <UiSeparator vertical />
             <GetRandomItem />
             <GroupItems />
+            <SelectParent />
             <Delete />
             <UiSeparator vertical />
             <RestOptionsMenu>
@@ -596,6 +623,7 @@ export function ContextPanel(): React.ReactElement | null {
           <>
             <Lock rounded="left" />
             <UiSeparator vertical />
+            <SelectParent />
             {isLocked <= 1 ? (
               <RestOptionsMenu rounded="right">
                 <CopyItemLink />
@@ -610,6 +638,7 @@ export function ContextPanel(): React.ReactElement | null {
             <Lock rounded="left" />
             <UiSeparator vertical />
             <GroupItems />
+            <SelectParent />
             <Delete />
             {window.enableAI && ideaFromSelection && <AIGeneration />}
             <RestOptionsMenu rounded="full">

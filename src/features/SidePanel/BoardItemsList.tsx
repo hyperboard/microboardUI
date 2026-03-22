@@ -1,10 +1,18 @@
 import { useAppSubscription } from "App/useBoardSubscription";
 import { useAppContext } from "features/AppContext";
-import { useForceUpdate } from "shared/lib/useForceUpdate";
-import { Icon, type IconId } from "shared/ui-lib/Icon";
-import React, { useState } from "react";
+import {
+  buildHierarchyTree,
+  getHierarchyItemKind,
+  getHierarchyItemText,
+  itemMatchesHierarchyQuery,
+  selectHierarchyItem,
+  type HierarchyTreeNode,
+} from "features/HierarchyNavigation/hierarchyUi";
+import React, { useEffect, useMemo, useState } from "react";
 import type { Item } from "microboard-temp";
 import { useTranslation } from "react-i18next";
+import { useForceUpdate } from "shared/lib/useForceUpdate";
+import { Icon, type IconId } from "shared/ui-lib/Icon";
 import style from "./BoardItemsList.module.css";
 
 const EXCLUDED_TYPES = new Set(["Placeholder", "Mbr", "Point", "Anchor"]);
@@ -24,56 +32,42 @@ const ITEM_TYPE_ICON: Record<string, IconId> = {
   Sticker: "Sticker",
 };
 
-function getItemText(item: Item): string {
-  return (item as any).getRichText?.()?.getTextString?.()?.trim() ?? "";
-}
-
-function getItemLabel(item: Item, index: number): string {
-  const text = getItemText(item);
-  return text ? `${item.itemType} ${text}` : `${item.itemType} ${index + 1}`;
-}
-
-function getChildren(item: Item): Item[] {
-  return (item as any).index?.items.listAll() ?? [];
-}
-
-function itemMatchesQuery(item: Item, query: string): boolean {
-  const q = query.toLowerCase();
-  const text = getItemText(item).toLowerCase();
-  return text.includes(q) || item.itemType.toLowerCase().includes(q);
-}
-
 interface ItemRowProps {
-  item: Item;
-  index: number;
+  node: HierarchyTreeNode<Item>;
   depth: number;
+  expandedIds: Set<string>;
+  selectedIds: Set<string>;
   onNavigate: (item: Item) => void;
+  onToggle: (itemId: string) => void;
 }
 
 function ItemRow({
-  item,
-  index,
+  node,
   depth,
+  expandedIds,
+  selectedIds,
   onNavigate,
+  onToggle,
 }: ItemRowProps): React.JSX.Element {
-  const children = getChildren(item).filter(
-    (c) => !EXCLUDED_TYPES.has(c.itemType),
-  );
+  const { item, children, kind, label } = node;
   const hasChildren = children.length > 0;
-  const [isExpanded, setIsExpanded] = useState(true);
+  const isExpanded = expandedIds.has(node.id);
   const iconName: IconId = ITEM_TYPE_ICON[item.itemType] ?? "Select";
-  const label = getItemLabel(item, index);
+  const isSelected = selectedIds.has(node.id);
 
   return (
     <>
       <div
         className={style.row}
+        data-kind={kind}
+        data-selected={isSelected || undefined}
         style={{ paddingLeft: 8 + depth * 16 }}
         onMouseEnter={() => (item as any).highlightMbr?.()}
         onMouseLeave={() => (item as any).clearHighlightMbr?.()}
       >
         <button
           className={style.item}
+          data-selected={isSelected || undefined}
           onClick={() => onNavigate(item)}
           title={label}
         >
@@ -83,14 +77,17 @@ function ItemRow({
             height={14}
             className={style.typeIcon}
           />
+          <span className={style.kindBadge} data-kind={kind} aria-hidden="true">
+            {kind}
+          </span>
           <span className={style.label}>{label}</span>
         </button>
         {hasChildren && (
           <button
             className={style.chevronBtn}
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsExpanded((v) => !v);
+            onClick={(event) => {
+              event.stopPropagation();
+              onToggle(node.id);
             }}
           >
             <Icon
@@ -103,13 +100,15 @@ function ItemRow({
       </div>
       {hasChildren &&
         isExpanded &&
-        children.map((child, i) => (
+        children.map((child) => (
           <ItemRow
-            key={(child as any).getId?.() ?? i}
-            item={child}
-            index={i}
+            key={child.id}
+            node={child}
             depth={depth + 1}
+            expandedIds={expandedIds}
+            selectedIds={selectedIds}
             onNavigate={onNavigate}
+            onToggle={onToggle}
           />
         ))}
     </>
@@ -128,15 +127,21 @@ function SearchItemRow({
   onNavigate,
 }: SearchItemRowProps): React.JSX.Element {
   const iconName: IconId = ITEM_TYPE_ICON[item.itemType] ?? "Select";
-  const text = getItemText(item);
+  const text = getHierarchyItemText(item);
   const lowerQ = query.toLowerCase();
+  const kind = getHierarchyItemKind(item.itemType);
 
   const highlightedLabel = (): React.ReactNode => {
-    if (!text) return <span className={style.label}>{item.itemType}</span>;
+    if (!text) {
+      return <span className={style.label}>{item.itemType}</span>;
+    }
+
     const lowerText = text.toLowerCase();
     const idx = lowerText.indexOf(lowerQ);
-    if (idx === -1)
+    if (idx === -1) {
       return <span className={style.label}>{`${item.itemType} ${text}`}</span>;
+    }
+
     const full = `${item.itemType} `;
     return (
       <span className={style.label}>
@@ -153,6 +158,7 @@ function SearchItemRow({
   return (
     <div
       className={style.row}
+      data-kind={kind}
       style={{ paddingLeft: 8 }}
       onMouseEnter={() => (item as any).highlightMbr?.()}
       onMouseLeave={() => (item as any).clearHighlightMbr?.()}
@@ -168,6 +174,9 @@ function SearchItemRow({
           height={14}
           className={style.typeIcon}
         />
+        <span className={style.kindBadge} data-kind={kind} aria-hidden="true">
+          {kind}
+        </span>
         {highlightedLabel()}
       </button>
     </div>
@@ -186,22 +195,69 @@ export function BoardItemsList({
   const { t } = useTranslation();
 
   useAppSubscription({
-    subjects: ["items"],
+    subjects: ["items", "selectionItems"],
     observer: forceUpdate,
   });
 
+  const items = board.items.listAll() as Item[];
+  const tree = useMemo(() => buildHierarchyTree(items), [items]);
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(
+    () =>
+      new Set(
+        tree.filter((node) => node.children.length > 0).map((node) => node.id),
+      ),
+  );
+
+  const selectedIds = new Set<string>(
+    board.selection.list().map((item) => item.getId()),
+  );
+  const selectionPathIds = board.selection
+    .getSelectionHierarchyPaths()
+    .flatMap((path) => path.map((node) => node.id));
+
+  useEffect(() => {
+    if (expandedIds.size > 0 || tree.length === 0) {
+      return;
+    }
+
+    setExpandedIds(
+      new Set<string>(
+        tree.filter((node) => node.children.length > 0).map((node) => node.id),
+      ),
+    );
+  }, [expandedIds.size, tree]);
+
+  useEffect(() => {
+    if (selectionPathIds.length === 0) {
+      return;
+    }
+
+    setExpandedIds((prev) => new Set<string>([...prev, ...selectionPathIds]));
+  }, [selectionPathIds.sort().join(":")]);
+
   const handleNavigate = (item: Item): void => {
-    board.camera.zoomToFit(item.getMbr());
+    selectHierarchyItem(board, item);
+  };
+
+  const handleToggle = (itemId: string): void => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(itemId)) {
+        next.delete(itemId);
+      } else {
+        next.add(itemId);
+      }
+      return next;
+    });
   };
 
   if (query.trim()) {
     const q = query.trim();
-    const matched = board.items
-      .listAll()
-      .filter(
-        (item) =>
-          !EXCLUDED_TYPES.has(item.itemType) && itemMatchesQuery(item, q),
-      );
+    const matched = items.filter(
+      (item) =>
+        !EXCLUDED_TYPES.has(item.itemType) &&
+        itemMatchesHierarchyQuery(item, q),
+    );
 
     if (matched.length === 0) {
       return <div className={style.empty}>{t("sidePanel.itemsNotFound")}</div>;
@@ -209,9 +265,9 @@ export function BoardItemsList({
 
     return (
       <div className={style.list}>
-        {matched.map((item, i) => (
+        {matched.map((item, index) => (
           <SearchItemRow
-            key={(item as any).getId?.() ?? i}
+            key={(item as any).getId?.() ?? index}
             item={item}
             query={q}
             onNavigate={handleNavigate}
@@ -221,26 +277,21 @@ export function BoardItemsList({
     );
   }
 
-  const topLevelItems = board.items
-    .listAll()
-    .filter(
-      (item) =>
-        !EXCLUDED_TYPES.has(item.itemType) && (item as any).parent === "Board",
-    );
-
-  if (topLevelItems.length === 0) {
+  if (tree.length === 0) {
     return <div className={style.empty}>{t("sidePanel.itemsEmpty")}</div>;
   }
 
   return (
     <div className={style.list}>
-      {topLevelItems.map((item, index) => (
+      {tree.map((node) => (
         <ItemRow
-          key={(item as any).getId?.() ?? index}
-          item={item}
-          index={index}
+          key={node.id}
+          node={node}
           depth={0}
+          expandedIds={expandedIds}
+          selectedIds={selectedIds}
           onNavigate={handleNavigate}
+          onToggle={handleToggle}
         />
       ))}
     </div>

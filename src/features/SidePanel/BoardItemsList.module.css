@@ -40,6 +40,11 @@
   overflow: hidden;
 }
 
+.item[data-selected] {
+  background-color: var(--bg-action-primary-hover, rgba(71, 120, 245, 0.12));
+  color: var(--text-base-primary);
+}
+
 .chevronBtn {
   flex-shrink: 0;
   display: flex;
@@ -66,6 +71,27 @@
 .typeIcon {
   flex-shrink: 0;
   opacity: 0.55;
+}
+
+.kindBadge {
+  flex-shrink: 0;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  line-height: 1.4;
+  text-transform: capitalize;
+  color: var(--text-base-secondary);
+  background: rgba(18, 19, 22, 0.06);
+}
+
+.kindBadge[data-kind="frame"] {
+  color: #2f5fd1;
+  background: rgba(47, 95, 209, 0.12);
+}
+
+.kindBadge[data-kind="group"] {
+  color: #9f5d18;
+  background: rgba(159, 93, 24, 0.12);
 }
 
 .label {
