@@ -49,6 +49,10 @@
     "connectorSwitchPointers": {
       "tooltip": "Поменять местами"
     },
+    "connectorSmartJump": {
+      "on": "Включить умный переход",
+      "off": "Выключить умный переход"
+    },
     "connectorColor": {
       "tooltip": "Цвет линии"
     },

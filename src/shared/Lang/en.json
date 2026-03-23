@@ -49,6 +49,10 @@
     "connectorSwitchPointers": {
       "tooltip": "Switch pointers"
     },
+    "connectorSmartJump": {
+      "on": "Enable smart jump",
+      "off": "Disable smart jump"
+    },
     "connectorColor": {
       "tooltip": "Color"
     },

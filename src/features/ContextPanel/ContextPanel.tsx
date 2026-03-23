@@ -35,6 +35,7 @@ import { ToggleFrameRatio } from "./Buttons/ToggleFrameRatio";
 import { PanelContext } from "./PanelContext";
 import { Lock } from "./Buttons/Lock";
 import { ConnectorLineColor } from "./Buttons/ConnectorLineColor";
+import { ConnectorSmartJump } from "./Buttons/ConnectorSmartJump";
 import { ConnectorFontStyle } from "./Buttons/ConnectorFontStyle";
 import { ConnectorFontSize } from "./Buttons/FontSize";
 import { ConnectorTextColor } from "./Buttons/ConnectorTextColor";
@@ -327,6 +328,7 @@ export function ContextPanel(): React.ReactElement | null {
             <EndPointer />
             <UiSeparator vertical />
             <ConnectorType />
+            <ConnectorSmartJump />
             <ConnectorLineColor />
             <UiSeparator vertical />
             <ConnectorAddText />
