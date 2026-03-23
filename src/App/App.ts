@@ -257,14 +257,19 @@ export function createApp(isHistory = true): App {
     board.events = createEvents(board, connection, currIndex || 0);
 
     board.presence.addEvents(board.events);
-    board.presence.setCurrentUser(
+    const currentUser =
       localStorage.getItem(`currentUser`) ||
-        (() => {
-          const uuid = uuidv4();
-          localStorage.setItem(`currentUser`, uuid);
-          return uuid;
-        })(),
-    );
+      (() => {
+        const uuid = uuidv4();
+        localStorage.setItem(`currentUser`, uuid);
+        return uuid;
+      })();
+    const presence = board.presence as
+      | { setCurrentUser?: (userId: string) => void }
+      | undefined;
+    if (typeof presence?.setCurrentUser === "function") {
+      presence.setCurrentUser(currentUser);
+    }
     board.selection.events = board.events;
 
     // TODO: reenable when fixed multiple snapshots for one board

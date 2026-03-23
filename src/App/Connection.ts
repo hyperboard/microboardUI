@@ -197,12 +197,22 @@ export function createConnection(
     return activeAuthorUserId || getAuthenticatedAuthorUserId();
   }
 
+  function setPresenceCurrentUser(
+    board: Board | undefined,
+    userId: string,
+  ): void {
+    const presence = board?.presence as
+      | { setCurrentUser?: (nextUserId: string) => void }
+      | undefined;
+
+    if (typeof presence?.setCurrentUser === "function") {
+      presence.setCurrentUser(userId);
+    }
+  }
+
   function syncPresenceCurrentUser(sessionId?: string): void {
     const board = getCurrentBoard();
-    if (!board?.presence) {
-      return;
-    }
-    board.presence.setCurrentUser(sessionId || getCurrentUser());
+    setPresenceCurrentUser(board, sessionId || getCurrentUser());
   }
 
   function adoptTransportIdentity({
@@ -434,18 +444,12 @@ export function createConnection(
     const storage = getStorage();
     const storageUser = storage.getUser();
     if (storageUser) {
-      const board = getCurrentBoard();
-      if (board && board.presence) {
-        board.presence.setCurrentUser(storageUser);
-      }
+      setPresenceCurrentUser(getCurrentBoard(), storageUser);
       return storageUser;
     }
     const currentUser = storage.setUser();
 
-    const board = getCurrentBoard();
-    if (board && board.presence) {
-      board.presence.setCurrentUser(currentUser);
-    }
+    setPresenceCurrentUser(getCurrentBoard(), currentUser);
     return currentUser;
   };
 
