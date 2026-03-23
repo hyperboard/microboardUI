@@ -237,7 +237,7 @@ export const BringToMe: React.FC<{
             )}
 
             <div className={clsx(user.idle && styles.idleHide)}>
-              <p className={styles.nickname}>{user.name}</p>
+              <p className={styles.nickname}>{user.displayName}</p>
               {user.idle && <p className={styles.idle}>{t("presence.idle")}</p>}
             </div>
             <div className={styles.userActionsContainer}>
@@ -282,19 +282,11 @@ export const BringToMe: React.FC<{
           onClick={() => {
             const presence = board.presence;
             const allUsers = presence.getUsers(board.getBoardId(), true);
-            const uniqueUsersByHardId = [
-              ...new Map(
-                allUsers
-                  .filter((user) => user.hardId !== null)
-                  .map((user) => [user.hardId, user]),
-              ).values(),
-              ...allUsers.filter((user) => user.hardId === null),
-            ];
-            if (uniqueUsersByHardId.length > 0) {
+            if (allUsers.length > 0) {
               presence.emit({
                 method: "BringToMe",
                 timestamp: Date.now(),
-                users: uniqueUsersByHardId.map((user) => user.userId),
+                users: allUsers.map((user) => user.userId),
               });
               notify({
                 header: t("presence.bringAllNotify"),

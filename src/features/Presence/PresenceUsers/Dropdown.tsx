@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import clsx from "clsx";
 import { rgbToRgba } from "microboard-temp";
 import styles from "./PresenceUsers.module.css";
@@ -8,6 +8,7 @@ interface Props {
   users: {
     id: string;
     name: string;
+    displayName: string;
     color: string;
     avatar: string | null;
     idle: boolean;
@@ -62,7 +63,7 @@ export const Dropdown: React.FC<Props> = ({
               {user.name.charAt(0)}
             </div>
           )}
-          <span>{user.name}</span>
+          <span>{user.displayName}</span>
         </div>
       ))}
     </div>

@@ -20,7 +20,9 @@ import styles from "./PresenceUsers.module.css";
 
 export interface User {
   id: string;
+  hardId: string | null;
   name: string;
+  displayName: string;
   color: string;
   avatar: string | null;
   idle: boolean;
@@ -37,7 +39,9 @@ function areUsersEqual(prevUsers: User[], nextUsers: User[]): boolean {
       const nextUser = nextUsers[index];
       return (
         user.id === nextUser.id &&
+        user.hardId === nextUser.hardId &&
         user.name === nextUser.name &&
+        user.displayName === nextUser.displayName &&
         user.color === nextUser.color &&
         user.avatar === nextUser.avatar &&
         user.idle === nextUser.idle
@@ -94,6 +98,14 @@ export const FollowingUsersCount: React.FC<{
     return null;
   }
 
+  const followerNames = getSessionDisplayNames(
+    followers.map((follower) => ({
+      id: follower.userId,
+      hardId: follower.hardId ?? null,
+      name: follower.nickname,
+    })),
+  );
+
   return (
     <div className={styles.followingCounter}>
       <div
@@ -124,9 +136,9 @@ export const FollowingUsersCount: React.FC<{
         <span className={styles.followersBoard}>{t("presence.yourBoard")}</span>
         <div className={styles.followersHr} />
         <div className={styles.followersList}>
-          {followers.map((follower) => (
+          {followers.map((follower, index) => (
             <span key={follower.userId} className={styles.followersItem}>
-              {follower.nickname} {t("presence.following")}
+              {followerNames[index]} {t("presence.following")}
             </span>
           ))}
         </div>
@@ -136,6 +148,38 @@ export const FollowingUsersCount: React.FC<{
 };
 
 const USERS_IN_ROW = 3;
+
+function getSessionDisplayNames<
+  T extends { id: string; hardId: string | null; name: string },
+>(users: T[]): string[] {
+  const sessionsByHardId = new Map<string, T[]>();
+
+  for (const user of users) {
+    if (!user.hardId) {
+      continue;
+    }
+
+    const existingUsers = sessionsByHardId.get(user.hardId) || [];
+    existingUsers.push(user);
+    sessionsByHardId.set(user.hardId, existingUsers);
+  }
+
+  const indexedSessionNames = new Map<string, string>();
+  for (const groupedUsers of sessionsByHardId.values()) {
+    if (groupedUsers.length < 2) {
+      continue;
+    }
+
+    const sortedUsers = [...groupedUsers].sort((first, second) =>
+      first.id.localeCompare(second.id),
+    );
+    sortedUsers.forEach((user, index) => {
+      indexedSessionNames.set(user.id, `${user.name} (${index + 1})`);
+    });
+  }
+
+  return users.map((user) => indexedSessionNames.get(user.id) || user.name);
+}
 
 export const PresenceUsers: React.FC<Props> = () => {
   const { board } = useAppContext();
@@ -183,30 +227,24 @@ export const PresenceUsers: React.FC<Props> = () => {
   const updateUsers = (presence: Presence): void => {
     const now = Date.now();
     const currentBoard = boardRef.current;
-    const pUsers = presence
+    const rawUsers = presence
       .getUsers(currentBoard.getBoardId(), true)
       .map((user) => ({
         id: user.userId,
-        hardId: user.hardId,
+        hardId: user.hardId ?? null,
         name: user.nickname,
         color: user.color,
         avatar: user.avatar,
         idle: user.lastActivity < now - PRESENCE_CLEANUP_IDLE_TIMER,
       }));
-
-    const uniqueUsersByHardId = [
-      ...new Map(
-        pUsers
-          .filter((user) => user.hardId !== null)
-          .map((user) => [user.hardId, user]),
-      ).values(),
-      ...pUsers.filter((user) => user.hardId === null),
-    ];
+    const displayNames = getSessionDisplayNames(rawUsers);
+    const pUsers = rawUsers.map((user, index) => ({
+      ...user,
+      displayName: displayNames[index],
+    }));
 
     setUsers((prevUsers) =>
-      areUsersEqual(prevUsers, uniqueUsersByHardId)
-        ? prevUsers
-        : uniqueUsersByHardId,
+      areUsersEqual(prevUsers, pUsers) ? prevUsers : pUsers,
     );
 
     const nextFollowers = currentBoard.presence.getFollowers();

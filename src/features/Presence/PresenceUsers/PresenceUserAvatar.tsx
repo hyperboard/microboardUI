@@ -9,6 +9,7 @@ interface Props {
   user: {
     id: string;
     name: string;
+    displayName: string;
     color: string;
     avatar: string | null;
     idle: boolean;
@@ -78,7 +79,9 @@ export const PresenceUserAvatar: React.FC<Props> = ({
         )}
       </div>
       <div className={styles.tooltip}>
-        {user.name === "Anonymous" ? t("presence.anonymous") : user.name}
+        {user.name === "Anonymous"
+          ? user.displayName.replace("Anonymous", t("presence.anonymous"))
+          : user.displayName}
       </div>
       <div className={styles.tippy}>
         <TippySvg />
