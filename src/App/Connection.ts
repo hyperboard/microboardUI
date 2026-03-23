@@ -2,9 +2,9 @@ import type {
   AiChatMsg,
   BoardEventMsg,
   ConfirmationMsg,
-  SnapshotRequestMsg,
+  Connection as LibraryConnection,
   ModeMsg,
-  SyncBoardEvent,
+  SnapshotRequestMsg,
 } from "microboard-temp";
 import {
   Board,
@@ -21,18 +21,16 @@ import { notify } from "shared/ui-lib/Toast";
 import { Storage } from "./Storage";
 import { VERSION } from "version";
 
-const SECOND = 1000;
-// [CHANGE] Таймауты теперь управляются логикой реконнекта
-const WS_PING_INTERVAL = 10 * SECOND;
-
 // [CHANGE] Добавлен интерфейс сообщения о завершении подписки (приходит сразу после коннекта)
 export interface BoardSubscriptionCompletedMsg {
   type: "BoardSubscriptionCompleted";
   boardId: string;
   mode: "view" | "edit";
-  snapshot: any;
-  eventsSinceLastSnapshot: SyncBoardEvent[];
+  snapshot?: string | null;
+  JSONSnapshot?: any;
+  eventsSinceLastSnapshot: any[];
   initialSequenceNumber: number;
+  sessionId?: string;
 }
 
 export interface AuthMsg {
@@ -83,6 +81,7 @@ export interface VersionCheckMsg {
 
 export interface AuthConfirmationMsg {
   type: "AuthConfirmation";
+  sessionId?: string;
 }
 
 export interface PingMsg {
@@ -121,23 +120,11 @@ export type SocketMsg =
   | AiChatMsg
   | BoardAccessDeniedMsg;
 
-export interface Connection {
-  connectionId: string;
-  getCurrentUser: () => string;
-  connect(): Promise<void>;
-  subscribe(board: Board): void;
-  unsubscribe(board: Board): void;
-
-  publishPresenceEvent(boardId: string, event: PresenceEventType): void;
-  publishAuth(): Promise<void>;
-  publishLogout(): void;
-
-  onMessage?: (msg: SocketMsg) => void;
-  onAccessDenied: (boardId: string, forceUpdate?: boolean) => void;
-  notifyAboutLostConnection: () => void;
-  dismissNotificationAboutLostConnection: () => void;
-  resetConnection: () => void;
-  send: (msg: SocketMsg) => void;
+export interface Connection extends LibraryConnection {
+  sessionId?: string;
+  authorUserId?: string;
+  getSessionId?: () => string | undefined;
+  getAuthorUserId?: () => string | undefined;
 }
 
 export function createConnection(
@@ -148,6 +135,8 @@ export function createConnection(
   // [CHANGE] Вместо Map подписок храним один активный WS клиент и ID текущей доски
   let wsClient: WsClient | null = null;
   let activeBoardId: string | null = null;
+  let activeSessionId: string | undefined;
+  let activeAuthorUserId: string | undefined;
 
   const onConnectionLost = (): void => {
     postDisconnectedMsg();
@@ -170,11 +159,73 @@ export function createConnection(
     notify({ body: "Access denied", variant: "error" });
   };
 
-  // [CHANGE] InvalidateToken теперь не нужен для отправки Auth сообщений,
-  // так как аутентификация происходит при handshake. Оставляем заглушку или логику реконнекта.
-  const invalidateToken = async (alwaysSend = false) => {
-    // Logic if needed
-  };
+  function normalizeSessionId(value: unknown): string | undefined {
+    if (typeof value !== "string") {
+      return undefined;
+    }
+    const trimmed = value.trim();
+    return trimmed ? trimmed : undefined;
+  }
+
+  function normalizeAuthorUserId(value: unknown): string | undefined {
+    if (typeof value === "number") {
+      return String(value);
+    }
+    if (typeof value !== "string") {
+      return undefined;
+    }
+    const trimmed = value.trim();
+    if (!trimmed || trimmed === "anonymous") {
+      return undefined;
+    }
+    return trimmed;
+  }
+
+  function getAuthenticatedAuthorUserId(): string | undefined {
+    const account = getAccount();
+    if (!account.isLoggedIn) {
+      return undefined;
+    }
+    return normalizeAuthorUserId(account.info?.id);
+  }
+
+  function getSessionId(): string | undefined {
+    return activeSessionId;
+  }
+
+  function getAuthorUserId(): string | undefined {
+    return activeAuthorUserId || getAuthenticatedAuthorUserId();
+  }
+
+  function syncPresenceCurrentUser(sessionId?: string): void {
+    const board = getCurrentBoard();
+    if (!board?.presence) {
+      return;
+    }
+    board.presence.setCurrentUser(sessionId || getCurrentUser());
+  }
+
+  function adoptTransportIdentity({
+    sessionId,
+    authorUserId,
+  }: {
+    sessionId?: unknown;
+    authorUserId?: unknown;
+  }): void {
+    const nextSessionId = normalizeSessionId(sessionId);
+    if (nextSessionId) {
+      activeSessionId = nextSessionId;
+      syncPresenceCurrentUser(nextSessionId);
+    }
+
+    const nextAuthorUserId =
+      normalizeAuthorUserId(authorUserId) || getAuthenticatedAuthorUserId();
+    activeAuthorUserId = nextAuthorUserId;
+  }
+
+  function clearTransportSession(): void {
+    activeSessionId = undefined;
+  }
 
   // [CHANGE] Полностью обновленный обработчик сообщений
   async function onMessage(msg: SocketMsg): Promise<void> {
@@ -189,13 +240,18 @@ export function createConnection(
     const board = getCurrentBoard();
 
     switch (msg.type) {
+      case "AuthConfirmation":
+        adoptTransportIdentity({ sessionId: msg.sessionId });
+        break;
+
       case "BoardSubscriptionCompleted":
+        adoptTransportIdentity({ sessionId: msg.sessionId });
         console.log(
           `[Connection] Subscribed to ${msg.boardId} in ${msg.mode} mode`,
         );
         dismissNotificationAboutLostConnection();
         postConnectedMsg();
-        messageRouter.handleMessage(msg, board);
+        messageRouter.handleMessage(msg as any, board);
         break;
 
       case "AiChat":
@@ -248,6 +304,10 @@ export function createConnection(
       return;
     }
 
+    const previousBoardId = activeBoardId;
+    if (previousBoardId && previousBoardId !== boardId) {
+      clearTransportSession();
+    }
     activeBoardId = boardId;
 
     if (wsClient) {
@@ -264,6 +324,9 @@ export function createConnection(
       };
       if (account.isLoggedIn && account.accessToken) {
         headers["Authorization"] = `Bearer ${account.accessToken}`;
+      }
+      if (activeSessionId) {
+        headers["x-board-session-id"] = activeSessionId;
       }
 
       const isTemplatePath = window.location.pathname.startsWith("/templates/");
@@ -315,7 +378,12 @@ export function createConnection(
         return;
       }
 
-      const { wsUrl, jwt } = await response.json();
+      const { wsUrl, jwt, sessionId, userId, authorUserId } =
+        await response.json();
+      adoptTransportIdentity({
+        sessionId,
+        authorUserId: authorUserId ?? userId,
+      });
 
       wsClient = createWsClient(
         wsUrl,
@@ -324,6 +392,7 @@ export function createConnection(
         (err) => {
           onError(err);
         },
+        onConnectionLost,
         () => subscribe(board),
       );
     } catch (error: any) {
@@ -345,6 +414,7 @@ export function createConnection(
       wsClient?.close();
       wsClient = null;
       activeBoardId = null;
+      clearTransportSession();
       postDisconnectedMsg();
     }
   }
@@ -355,6 +425,8 @@ export function createConnection(
   }
 
   function publishLogout(): void {
+    clearTransportSession();
+    activeAuthorUserId = undefined;
     if (wsClient) wsClient.close();
   }
 
@@ -386,8 +458,9 @@ export function createConnection(
 
     const messageId = generateMessageId();
     const storage = getStorage();
-    const generatedClientId = getCurrentUser();
     const account = getAccount();
+    const currentSessionId = getSessionId() || getCurrentUser();
+    const currentAuthorUserId = getAuthorUserId();
     const generatedNickname = account.isLoggedIn
       ? account.info?.name || account.info?.email || "Wild Cat"
       : "Anonymous";
@@ -395,18 +468,24 @@ export function createConnection(
       storage.getUserColor() ||
       getCurrentBoard().presence.generateUserColor(false);
 
-    const message: PresenceEventMsg = {
+    const message: PresenceEventMsg & {
+      sessionId?: string;
+      authorUserId?: string;
+    } = {
       type: "PresenceEvent",
       boardId,
       event,
       messageId,
-      userId: generatedClientId,
+      userId: currentSessionId,
       hardId: storage.getUserId(),
       softId: storage.getUser(),
       nickname: generatedNickname,
       color: generatedColor,
       avatar: account.info?.avatar || null,
     };
+
+    message.sessionId = currentSessionId;
+    message.authorUserId = currentAuthorUserId;
 
     send(message);
   }
@@ -449,7 +528,7 @@ export function createConnection(
     if (board) subscribe(board);
   }
 
-  function send(msg: SocketMsg): void {
+  function send(msg: any): void {
     if (wsClient && wsClient.isConnected()) {
       wsClient.send(msg);
     }
@@ -457,9 +536,17 @@ export function createConnection(
 
   const connection: Connection = {
     get connectionId() {
-      return getCurrentUser();
+      return 0;
+    },
+    get sessionId() {
+      return getSessionId();
+    },
+    get authorUserId() {
+      return getAuthorUserId();
     },
     getCurrentUser,
+    getSessionId,
+    getAuthorUserId,
     connect,
     subscribe,
     unsubscribe,
@@ -517,6 +604,7 @@ export function createWsClient(
   token: string,
   msgHandler: SocketMsgHandler,
   onError: (error: unknown) => void,
+  onConnectionLost: () => void,
   onReconnect: () => void,
 ): WsClient {
   let socket: WebSocket | null = null;
@@ -559,6 +647,7 @@ export function createWsClient(
       console.warn("[WS] Closed", e.code, e.reason);
       stopPing();
       if (!isClosedIntentionally) {
+        onConnectionLost();
         setTimeout(() => onReconnect(), RECONNECT_DELAY);
       }
     };
