@@ -1,0 +1,35 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "entry": [
+    "src/public/spa.ts",
+    "src/public/titlePanel.ts",
+    "src/public/customWebComponents.ts",
+    "src/public/controlsHandlers.ts",
+    "src/public/loadLinksImages.ts",
+    "src/public/embedMicroboard.ts",
+    "features/**/*.playwright.steps.ts",
+    "features/helpers/world.ts",
+    "scripts/**/*.ts",
+    "scripts/**/*.js",
+    "build.js"
+  ],
+  "project": [
+    "src/**/*.{ts,tsx}",
+    "features/**/*.{ts,tsx}",
+    "scripts/**/*.{ts,js}"
+  ],
+  "ignoreFiles": [
+    "src/features/AiUnavailableModal/index.ts",
+    "src/features/ContextPanel/Buttons/AIModel.tsx",
+    "src/features/ContextPanel/Buttons/AIModel/index.ts"
+  ],
+  "ignoreDependencies": [
+    "@types/wicg-file-system-access",
+    "node-html-parser",
+    "prettier",
+    "@cucumber/cucumber",
+    "chai",
+    "playwright"
+  ],
+  "ignoreBinaries": ["cucumber-js", "rimraf"]
+}

@@ -1,6 +1,6 @@
 import { $ } from "bun";
-import { runBuildDev } from "./buildDev";
-import { outdir } from "./buildConfig";
+import { runBuildDev } from "./scripts/buildDev";
+import { outdir } from "./scripts/buildConfig";
 
 async function main() {
   const target = process.env.FRONTEND_TARGET_DIR || "./dist_final";
