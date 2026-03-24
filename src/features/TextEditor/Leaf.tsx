@@ -1,13 +1,16 @@
 import React from "react";
 import { RenderLeafProps } from "slate-react";
+import type { TextNode } from "microboard-temp";
 
 interface LeafProps extends RenderLeafProps {
   fontSize?: number;
-  isAutoSize: boolean;
+  isAutoSize?: boolean;
 }
 
 export function Leaf(props: LeafProps): React.ReactElement {
-  const { attributes, leaf, fontSize, isAutoSize, text } = props;
+  const { attributes } = props;
+  const leaf = props.leaf as RenderLeafProps["leaf"] & Partial<TextNode>;
+  const text = props.text as RenderLeafProps["text"] & Partial<TextNode>;
   let { children } = props;
   const styles = new Set<string>();
   if (leaf.bold) {
@@ -55,15 +58,11 @@ export function Leaf(props: LeafProps): React.ReactElement {
     <span
       {...attributes}
       style={{
-        color: props.text.fontColor,
-        backgroundColor: props.text.fontHighlight,
-        // fontSize:
-        // 	props.text.text === "" && !isAutoSize
-        // 		? fontSize
-        // 		: props.text.fontSize,
-        fontSize: props.text.fontSize,
+        color: text.fontColor,
+        backgroundColor: text.fontHighlight,
+        fontSize: text.fontSize,
         /* lineHeight: lineHeight + 'px', */
-        fontFamily: props.text.fontFamily,
+        fontFamily: text.fontFamily,
       }}
     >
       {children}

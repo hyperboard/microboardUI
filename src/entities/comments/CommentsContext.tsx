@@ -27,7 +27,7 @@ export function useCommentsContext() {
 }
 
 interface Props {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export const CommentsContextProvider = ({

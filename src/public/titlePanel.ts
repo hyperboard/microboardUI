@@ -17,7 +17,6 @@ interface ButtonEntry {
   defaultText: string;
   icon?: SVGElement;
 }
-type Buttons = Record<ButtonTypes, ButtonEntry>;
 
 // style constants
 const TITLE_PANEL_STYLES: Record<string, string> = {
@@ -50,8 +49,6 @@ const TEXT_DEAFULT: Record<ButtonTypes, string> = {
   editButton: isSnapshotInIframe ? "Edit copy" : "Edit file",
   shareButton: "Share with friends",
 };
-
-let buttons: Buttons;
 
 function applyStyles(
   el: HTMLElement | SVGElement,
@@ -108,9 +105,11 @@ function setLoadingState(
 async function handleEdit(this: GlobalEventHandlers, ev: MouseEvent) {
   ev.preventDefault();
 
-  const module = await import(
-    "https://www.unpkg.com/microboard-ui-temp/dist/index.js"
-  );
+  const importUrl = "https://www.unpkg.com/microboard-ui-temp/dist/index.js";
+  const module = (await import(/* @vite-ignore */ importUrl)) as {
+    initInter: () => Promise<void>;
+    createApp: (isHistory?: boolean) => Window["app"];
+  };
   module.initInter();
 
   const app = module.createApp();
@@ -137,6 +136,7 @@ async function handleShare(this: GlobalEventHandlers, ev: MouseEvent) {
     "_blank",
   );
   if (!importWindow) return;
+  const openedWindow = importWindow;
 
   await new Promise<void>((resolve, reject) => {
     const timeout = setTimeout(() => {
@@ -145,11 +145,11 @@ async function handleShare(this: GlobalEventHandlers, ev: MouseEvent) {
     }, 60000);
 
     function onMessage(event: MessageEvent) {
-      if (event.source !== importWindow) return;
+      if (event.source !== openedWindow) return;
       if (event.data?.type === "microboard-snapshot-ready") {
         window.removeEventListener("message", onMessage);
         clearTimeout(timeout);
-        importWindow.postMessage(
+        openedWindow.postMessage(
           { type: "microboard-snapshot", html, name },
           "https://app.microboard.io",
         );
@@ -230,7 +230,6 @@ function createTitlePanel(): HTMLDivElement {
 
   const editButton = createButton("editButton", handleEdit, editSvg);
   const shareButton = createButton("shareButton", handleShare);
-  buttons = { editButton, shareButton };
   panel.append(editButton.button, shareButton.button);
   return panel;
 }

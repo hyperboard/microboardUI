@@ -17,8 +17,6 @@ import {
   useChainModal,
   useConnectModal,
 } from "@rainbow-me/rainbowkit";
-import { useSendTransaction, useAccount as useWalletAccount } from "wagmi";
-import { parseEther } from "viem";
 import "@rainbow-me/rainbowkit/styles.css";
 import { Icon } from "shared/ui-lib/Icon";
 import { CSSTransition } from "react-transition-group";
@@ -40,7 +38,7 @@ export function SelectPaymentModal(): React.JSX.Element {
   const navigate = useNavigate();
   const account = useAccount();
   const { t } = useTranslation();
-  const [isDisabled, setIsDisabled] = useState(false);
+  const [isDisabled] = useState(false);
   const [plan, setPlan] = useState<billingApi.Plan | null>(null);
   const [active, setActive] = useState<"stripe" | "crypto">("stripe");
   const [isPurchaseTokensMode, setIsPurchaseTokensMode] = useState(false);
@@ -48,9 +46,7 @@ export function SelectPaymentModal(): React.JSX.Element {
 
   const { accountModalOpen } = useAccountModal();
   const { chainModalOpen } = useChainModal();
-  const { openConnectModal, connectModalOpen } = useConnectModal();
-  const { sendTransaction } = useSendTransaction();
-  const { address, isConnected, chain } = useWalletAccount();
+  const { connectModalOpen } = useConnectModal();
 
   useEffect(() => {
     account.fetchCryptoRates();

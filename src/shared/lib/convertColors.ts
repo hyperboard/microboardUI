@@ -24,7 +24,7 @@ export function rgbaToRgb(rgbaColor: string, defaultColor: string) {
     if (!rgba) {
       return defaultColor;
     }
-    const [r, g, b, a] = rgba.slice(1);
+    const [r, g, b] = rgba.slice(1);
     return `rgb(${r}, ${g}, ${b})`;
   } catch {
     return defaultColor;

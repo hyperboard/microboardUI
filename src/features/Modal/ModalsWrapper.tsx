@@ -2,7 +2,9 @@ import React from "react";
 import { ConfirmModalProvider } from "./ConfirmModal";
 import { InfoModalProvider } from "./InfoModal";
 
-type Props = React.PropsWithChildren;
+type Props = {
+  children?: React.ReactNode;
+};
 
 const ModalsWrapper = ({ children }: Props): React.JSX.Element => {
   return (

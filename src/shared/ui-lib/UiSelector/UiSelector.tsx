@@ -124,7 +124,9 @@ export function UiSelector({
             </div>
           )}
           <p className={styles.selectedOptionText}>
-            {t(selectedOption?.label)}
+            {selectedOption?.label
+              ? String(t(selectedOption.label as never))
+              : ""}
           </p>
           <div className={styles.mark}>
             <Icon width={20} height={20} iconName="mark" />
@@ -150,7 +152,9 @@ export function UiSelector({
                     >
                       {opt.icon}
                     </span>
-                    <span className={styles.optionText}>{t(opt.label)}</span>
+                    <span className={styles.optionText}>
+                      {String(t(opt.label as never))}
+                    </span>
                     <span className={styles.checkMark}>
                       <Icon width={20} height={20} iconName="checkMark" />
                     </span>

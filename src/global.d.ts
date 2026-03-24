@@ -8,13 +8,15 @@ declare module "*.svg";
 declare module "*.png";
 
 declare module "https://www.unpkg.com/microboard-ui-temp/dist/index.js" {
-  import * as local from "./index";
-  export = local;
+  import type { App } from "App";
+  export function initInter(): Promise<void>;
+  export function createApp(isHistory?: boolean): App;
 }
 
 declare module "https://unpkg.com/microboard-ui-temp/dist/index.js" {
-  import * as local from "./index";
-  export = local;
+  import type { App } from "App";
+  export function initInter(): Promise<void>;
+  export function createApp(isHistory?: boolean): App;
 }
 
 declare global {

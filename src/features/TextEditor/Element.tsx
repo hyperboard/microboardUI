@@ -3,13 +3,47 @@ import { RenderElementProps } from "slate-react";
 import styles from "./TextEditor.module.css";
 import { TextNode, BlockNode } from "microboard-temp";
 
+type TextLeafNode = Partial<TextNode> & {
+  text?: string;
+  type?: string;
+};
+
+type SlateBlockElement = Partial<BlockNode> & {
+  type:
+    | "paragraph"
+    | "ul_list"
+    | "ol_list"
+    | "block-quote"
+    | "heading_one"
+    | "heading_two"
+    | "heading_three"
+    | "heading_four"
+    | "heading_five"
+    | "code_block"
+    | "list_item"
+    | string;
+  children: Array<SlateBlockElement | TextLeafNode>;
+  horisontalAlignment?: string;
+  paddingTop?: number;
+  paddingBottom?: number;
+  listLevel?: number;
+};
+
+function isTextLeafNode(
+  node: SlateBlockElement | TextLeafNode,
+): node is TextLeafNode {
+  return !("children" in node);
+}
+
 export function Element(props: RenderElementProps): React.ReactElement {
-  const { attributes, element, children } = props;
-  function getFontSize(node: BlockNode | TextNode): number {
+  const { attributes, children } = props;
+  const element = props.element as unknown as SlateBlockElement;
+
+  function getFontSize(node: SlateBlockElement | TextLeafNode): number {
     if ("fontSize" in node) {
       return node.fontSize === "auto" ? 14 : (node.fontSize ?? 14);
     }
-    if ("children" in node && node.children[0]) {
+    if (!isTextLeafNode(node) && node.children[0]) {
       return getFontSize(node.children[0]);
     }
 
@@ -36,7 +70,7 @@ export function Element(props: RenderElementProps): React.ReactElement {
         <p
           {...attributes}
           style={{
-            textAlign: props.element.horisontalAlignment,
+            textAlign: element.horisontalAlignment,
             paddingTop: `${element.paddingTop ?? 0}em`,
             paddingBottom: `${element.paddingBottom ?? 0}em`,
             margin: 0,
@@ -50,7 +84,7 @@ export function Element(props: RenderElementProps): React.ReactElement {
         <ul
           {...attributes}
           style={{
-            textAlign: props.element.horisontalAlignment,
+            textAlign: element.horisontalAlignment,
             margin: 0,
             paddingLeft: `${(fontSize / 14) * 16}px`,
             whiteSpace: "nowrap",
@@ -64,7 +98,7 @@ export function Element(props: RenderElementProps): React.ReactElement {
         <ol
           {...attributes}
           style={{
-            textAlign: props.element.horisontalAlignment,
+            textAlign: element.horisontalAlignment,
             margin: 0,
             paddingLeft: `${(fontSize / 14) * 16}px`,
             whiteSpace: "nowrap",
@@ -79,7 +113,7 @@ export function Element(props: RenderElementProps): React.ReactElement {
         <blockquote
           {...attributes}
           style={{
-            textAlign: props.element.horisontalAlignment,
+            textAlign: element.horisontalAlignment,
             paddingTop: `${element.paddingTop ?? 0}em`,
             paddingBottom: `${element.paddingBottom ?? 0}em`,
           }}
@@ -92,7 +126,7 @@ export function Element(props: RenderElementProps): React.ReactElement {
         <h1
           {...attributes}
           style={{
-            textAlign: props.element.horisontalAlignment,
+            textAlign: element.horisontalAlignment,
             paddingTop: `${element.paddingTop ?? 0}em`,
             paddingBottom: `${element.paddingBottom ?? 0}em`,
           }}
@@ -105,7 +139,7 @@ export function Element(props: RenderElementProps): React.ReactElement {
         <h2
           {...attributes}
           style={{
-            textAlign: props.element.horisontalAlignment,
+            textAlign: element.horisontalAlignment,
             paddingTop: `${element.paddingTop ?? 0}em`,
             paddingBottom: `${element.paddingBottom ?? 0}em`,
           }}
@@ -118,7 +152,7 @@ export function Element(props: RenderElementProps): React.ReactElement {
         <h3
           {...attributes}
           style={{
-            textAlign: props.element.horisontalAlignment,
+            textAlign: element.horisontalAlignment,
             paddingTop: `${element.paddingTop ?? 0}em`,
             paddingBottom: `${element.paddingBottom ?? 0}em`,
           }}
@@ -131,7 +165,7 @@ export function Element(props: RenderElementProps): React.ReactElement {
         <h4
           {...attributes}
           style={{
-            textAlign: props.element.horisontalAlignment,
+            textAlign: element.horisontalAlignment,
             paddingTop: `${element.paddingTop ?? 0}em`,
             paddingBottom: `${element.paddingBottom ?? 0}em`,
           }}
@@ -144,7 +178,7 @@ export function Element(props: RenderElementProps): React.ReactElement {
         <h5
           {...attributes}
           style={{
-            textAlign: props.element.horisontalAlignment,
+            textAlign: element.horisontalAlignment,
             paddingTop: `${element.paddingTop ?? 0}em`,
             paddingBottom: `${element.paddingBottom ?? 0}em`,
           }}
@@ -157,7 +191,7 @@ export function Element(props: RenderElementProps): React.ReactElement {
         <code
           {...attributes}
           style={{
-            textAlign: props.element.horisontalAlignment,
+            textAlign: element.horisontalAlignment,
             margin: 0,
             paddingTop: `${element.paddingTop ?? 0}em`,
             paddingBottom: `${element.paddingBottom ?? 0}em`,
@@ -172,15 +206,16 @@ export function Element(props: RenderElementProps): React.ReactElement {
           {...attributes}
           className={styles.listItem}
           style={{
-            textAlign: props.element.horisontalAlignment,
+            textAlign: element.horisontalAlignment,
             margin: 0,
             paddingTop: `${element.paddingTop ?? 0}em`,
             paddingBottom: `${element.paddingBottom ?? 0}em`,
             whiteSpace: "pre-wrap",
             fontSize: `${fontSize}px`,
             listStyle:
-              element.children[0].type === "ul_list" ||
-              element.children[0].type === "ol_list"
+              !isTextLeafNode(element.children[0]) &&
+              (element.children[0].type === "ul_list" ||
+                element.children[0].type === "ol_list")
                 ? "none"
                 : "inherit",
           }}
@@ -193,7 +228,8 @@ export function Element(props: RenderElementProps): React.ReactElement {
         <span
           {...attributes}
           style={{
-            textAlign: props.element.horisontalAlignment,
+            textAlign:
+              (element as SlateBlockElement).horisontalAlignment ?? "left",
             margin: 0,
           }}
         >

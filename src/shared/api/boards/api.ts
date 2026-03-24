@@ -11,7 +11,6 @@ import {
   type GrantedUser,
   type ManageAccessPayload,
   GetBoardsResponse,
-  BoardWithUsers,
 } from "./types";
 
 export function createBoard(body: BoardPayload) {

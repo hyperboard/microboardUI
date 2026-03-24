@@ -13,7 +13,7 @@ export function useHotkey(
   options: HotkeyOptions = {},
 ): void {
   useEffect(() => {
-    const { ctrl = false, shift = false, alt = false, meta = false } = options;
+    const { ctrl = false, shift = false, alt = false } = options;
     const handler = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement;
       if (

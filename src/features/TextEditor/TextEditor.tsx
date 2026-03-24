@@ -18,6 +18,8 @@ import {
 } from "microboard-temp";
 import { notify } from "shared/ui-lib/Toast/notify";
 
+type SubscriptionSubject = "selection" | "camera" | "items";
+
 export class TextEditors extends React.Component<
   {
     app: App;
@@ -35,7 +37,7 @@ export class TextEditors extends React.Component<
 
   subscription = {
     observer: this.observer,
-    subjects: ["selection", "camera", "items"],
+    subjects: ["selection", "camera", "items"] as SubscriptionSubject[],
   };
 
   componentDidMount(): void {
@@ -128,7 +130,10 @@ export class TextEditor extends React.Component<
   updateHyperLinkDataFromSelectionAnchor(
     editor: EditorContainer,
     isWatchMode: boolean,
-  ) {
+  ): void {
+    const richTextEditor = editor as EditorContainer & {
+      getLinkNodeRange?: () => HyperLinkCreationData["selection"];
+    };
     const link = editor.getFirstSelectionLink(editor.getSelection());
     if (link) {
       const selection = window.getSelection();
@@ -142,7 +147,7 @@ export class TextEditor extends React.Component<
           top: rect.bottom,
           left: rect.left,
         },
-        selection: editor.getLinkNodeRange(),
+        selection: richTextEditor.getLinkNodeRange?.() ?? editor.getSelection(),
         isWatchMode,
       });
     } else {
@@ -233,12 +238,14 @@ export class TextEditor extends React.Component<
     return false;
   };
 
-  onPaste = async (event): Promise<void | boolean> => {
+  onPaste = async (
+    event: React.ClipboardEvent<HTMLDivElement>,
+  ): Promise<void | boolean> => {
     const board = this.props.board;
 
     // TODO: actually check login
     const data = await tryToPasteAsItemOrReturnText(
-      event,
+      event as unknown as ClipboardEvent,
       event.clipboardData,
       board,
       true,
@@ -306,6 +313,8 @@ export class TextEditor extends React.Component<
     };
 
     const { buttonPosition, isButtonVisible } = this.state;
+    const quoteButtonPosition: { top: number; left: number } | null =
+      buttonPosition;
     const { camera } = this.props.board;
     const { point, height, maxWidth, maxHeight, textScale } =
       text.getDimensions();
@@ -348,15 +357,15 @@ export class TextEditor extends React.Component<
       ? height
       : container.getHeight() / editorScale;
 
-    const editorMaxHeight = isInsideOfFrame ? height : maxHeight + 1;
-
     const editorWidth =
       text.insideOf === "Sticker"
         ? container.getWidth() / editorScale
         : Math.ceil(container.getWidth() / editorScale);
+    const safeMaxHeight = maxHeight ?? height;
+    const safeMaxWidth = maxWidth ?? editorWidth;
+    const editorMaxHeight = isInsideOfFrame ? height : safeMaxHeight + 1;
     const editorMaxWidth =
-      // @ts-expect-error maxWidth undefined
-      text.insideOf === "Sticker" ? maxWidth : Math.ceil(maxWidth);
+      text.insideOf === "Sticker" ? safeMaxWidth : Math.ceil(safeMaxWidth);
     const showPlaceholder =
       !text.editor.includesListNode() && text.getTextString().length === 0;
 
@@ -380,12 +389,10 @@ export class TextEditor extends React.Component<
             left: `${left}px`,
             top: `${top}px`,
 
-            // @ts-expect-error maxWidth undefined
-            maxWidth: `${Math.ceil(maxWidth)}px`,
-            maxHeight: `${maxHeight}px`,
-            // @ts-expect-error maxWidth undefined
-            width: `${Math.ceil(maxWidth)}px`,
-            height: `${maxHeight}px`,
+            maxWidth: `${Math.ceil(safeMaxWidth)}px`,
+            maxHeight: `${safeMaxHeight}px`,
+            width: `${Math.ceil(safeMaxWidth)}px`,
+            height: `${safeMaxHeight}px`,
 
             // transformOrigin: "left top",
             // transform: `translate(0px) scale(${editorScale})`,
@@ -399,7 +406,8 @@ export class TextEditor extends React.Component<
             fontFamily: window.MICROBOARD_CONFIG.DEFAULT_TEXT_STYLES.fontFamily,
             fontSize: `${window.MICROBOARD_CONFIG.DEFAULT_TEXT_STYLES.fontSize}px`,
             lineHeight: window.MICROBOARD_CONFIG.DEFAULT_TEXT_STYLES.lineHeight,
-            color: window.MICROBOARD_CONFIG.DEFAULT_TEXT_STYLES.fontColor,
+            color: window.MICROBOARD_CONFIG.DEFAULT_TEXT_STYLES
+              .fontColor as React.CSSProperties["color"],
           }}
         >
           {"An editor error has occured"}
@@ -465,7 +473,8 @@ export class TextEditor extends React.Component<
                 ? window.MICROBOARD_CONFIG.DEFAULT_TEXT_STYLES.lineHeight *
                   text.getAutoSizeScale()
                 : window.MICROBOARD_CONFIG.DEFAULT_TEXT_STYLES.lineHeight,
-            color: window.MICROBOARD_CONFIG.DEFAULT_TEXT_STYLES.fontColor,
+            color: window.MICROBOARD_CONFIG.DEFAULT_TEXT_STYLES
+              .fontColor as React.CSSProperties["color"],
             pointerEvents: "none",
 
             willChange: "transform",
@@ -506,13 +515,7 @@ export class TextEditor extends React.Component<
             >
               <Editable
                 renderElement={Element}
-                renderLeaf={(props) => (
-                  <Leaf
-                    fontSize={text.getFontSize()}
-                    isAutoSize={text.isAutosize()}
-                    {...props}
-                  />
-                )}
+                renderLeaf={(props) => <Leaf {...props} />}
                 onBlur={text.handleBlur}
                 onFocus={text.handleFocus}
                 className={isInsideOfFrame ? styles.scrollContainer : ""}
@@ -550,45 +553,57 @@ export class TextEditor extends React.Component<
             }}
           />
         </div>
-        {isButtonVisible && buttonPosition && text.insideOf === "AINode" && (
-          <button
-            onMouseEnter={() =>
-              this.setState({
-                isQuoteBtnTooltipVisible: true,
-              })
-            }
-            onMouseLeave={() =>
-              this.setState({
-                isQuoteBtnTooltipVisible: false,
-              })
-            }
-            className={styles.quoteBtn}
-            onClick={onQuoteBtnClick}
-            style={{
-              zIndex: 3,
-              top: buttonPosition.top,
-              left: buttonPosition.left,
-            }}
-          >
-            {this.state.isQuoteBtnTooltipVisible && (
-              <div className={styles.tooltip}>
-                {window.MICROBOARD_CONFIG.i18n.t("AIInput.quoteBtnTooltip")}
-              </div>
-            )}
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 12 10"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
+        {isButtonVisible &&
+          quoteButtonPosition !== null &&
+          text.insideOf === "AINode" && (
+            <button
+              onMouseEnter={() =>
+                this.setState({
+                  isQuoteBtnTooltipVisible: true,
+                })
+              }
+              onMouseLeave={() =>
+                this.setState({
+                  isQuoteBtnTooltipVisible: false,
+                })
+              }
+              className={styles.quoteBtn}
+              onClick={onQuoteBtnClick}
+              style={{
+                zIndex: 3,
+                top: (
+                  this.state.buttonPosition as unknown as {
+                    top: number;
+                    left: number;
+                  }
+                ).top,
+                left: (
+                  this.state.buttonPosition as unknown as {
+                    top: number;
+                    left: number;
+                  }
+                ).left,
+              }}
             >
-              <path
-                d="M10.9485 1.45275C11.6352 2.18208 12.0039 3.00008 12.0039 4.32608C12.0039 6.65942 10.3659 8.75075 7.98385 9.78475L7.38852 8.86608C9.61185 7.66341 10.0465 6.10275 10.2199 5.11875C9.86185 5.30408 9.39319 5.36875 8.93385 5.32608C7.73119 5.21475 6.78319 4.22741 6.78319 3.00008C6.78319 2.38124 7.02902 1.78775 7.4666 1.35017C7.90419 0.912581 8.49768 0.666748 9.11652 0.666748C9.83185 0.666748 10.5159 0.993415 10.9485 1.45275ZM4.28185 1.45275C4.96852 2.18208 5.33719 3.00008 5.33719 4.32608C5.33719 6.65942 3.69919 8.75075 1.31719 9.78475L0.721854 8.86608C2.94519 7.66341 3.37985 6.10275 3.55319 5.11875C3.19519 5.30408 2.72652 5.36875 2.26719 5.32608C1.06452 5.21475 0.117188 4.22741 0.117188 3.00008C0.117188 2.38124 0.36302 1.78775 0.800605 1.35017C1.23819 0.912581 1.83168 0.666748 2.45052 0.666748C3.16585 0.666748 3.84985 0.993415 4.28252 1.45275H4.28185Z"
-                fill="#696B76"
-              />
-            </svg>
-          </button>
-        )}
+              {this.state.isQuoteBtnTooltipVisible && (
+                <div className={styles.tooltip}>
+                  {window.MICROBOARD_CONFIG.i18n.t("AIInput.quoteBtnTooltip")}
+                </div>
+              )}
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 12 10"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10.9485 1.45275C11.6352 2.18208 12.0039 3.00008 12.0039 4.32608C12.0039 6.65942 10.3659 8.75075 7.98385 9.78475L7.38852 8.86608C9.61185 7.66341 10.0465 6.10275 10.2199 5.11875C9.86185 5.30408 9.39319 5.36875 8.93385 5.32608C7.73119 5.21475 6.78319 4.22741 6.78319 3.00008C6.78319 2.38124 7.02902 1.78775 7.4666 1.35017C7.90419 0.912581 8.49768 0.666748 9.11652 0.666748C9.83185 0.666748 10.5159 0.993415 10.9485 1.45275ZM4.28185 1.45275C4.96852 2.18208 5.33719 3.00008 5.33719 4.32608C5.33719 6.65942 3.69919 8.75075 1.31719 9.78475L0.721854 8.86608C2.94519 7.66341 3.37985 6.10275 3.55319 5.11875C3.19519 5.30408 2.72652 5.36875 2.26719 5.32608C1.06452 5.21475 0.117188 4.22741 0.117188 3.00008C0.117188 2.38124 0.36302 1.78775 0.800605 1.35017C1.23819 0.912581 1.83168 0.666748 2.45052 0.666748C3.16585 0.666748 3.84985 0.993415 4.28252 1.45275H4.28185Z"
+                  fill="#696B76"
+                />
+              </svg>
+            </button>
+          )}
       </>
       // </div>
     );
