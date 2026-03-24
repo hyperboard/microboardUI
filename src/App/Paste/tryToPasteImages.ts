@@ -1,4 +1,5 @@
 import { Board, ImageItem, prepareImage } from "microboard-temp";
+import { getApiUrl } from "Config";
 
 export function tryToPasteImages(
   dataTransfer: DataTransfer | null,
@@ -23,7 +24,12 @@ export function tryToPasteImages(
     isFoundImageInClipboard = true;
     const reader = new FileReader();
     reader.onload = (event) => {
-      prepareImage(event.target?.result, accessToken, board.getBoardId())
+      prepareImage(
+        event.target?.result,
+        accessToken,
+        board.getBoardId(),
+        getApiUrl(),
+      )
         .then((imageData) => {
           const image = new ImageItem(imageData, board, board.events);
           image.transformation.translateTo(
