@@ -93,6 +93,54 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git pull --ff-only origin "${{ steps.params.outputs.target_branch }}"
 
+      - name: Resolve build configuration
+        env:
+          TARGET_BRANCH: ${{ steps.params.outputs.target_branch }}
+          UI_API_URL_STAGING: ${{ vars.UI_API_URL_STAGING }}
+          UI_API_URL_RELEASE: ${{ vars.UI_API_URL_RELEASE }}
+          UI_EMBED_URL_STAGING: ${{ vars.UI_EMBED_URL_STAGING }}
+          UI_EMBED_URL_RELEASE: ${{ vars.UI_EMBED_URL_RELEASE }}
+          UI_WS_URL_STAGING: ${{ vars.UI_WS_URL_STAGING }}
+          UI_WS_URL_RELEASE: ${{ vars.UI_WS_URL_RELEASE }}
+        run: |
+          case "${TARGET_BRANCH}" in
+            staging)
+              API_URL="${UI_API_URL_STAGING}"
+              EMBED_URL="${UI_EMBED_URL_STAGING}"
+              WS_URL="${UI_WS_URL_STAGING}"
+              ;;
+            release)
+              API_URL="${UI_API_URL_RELEASE}"
+              EMBED_URL="${UI_EMBED_URL_RELEASE}"
+              WS_URL="${UI_WS_URL_RELEASE}"
+              ;;
+            *)
+              echo "::error::Unsupported target branch: ${TARGET_BRANCH}"
+              exit 1
+              ;;
+          esac
+
+          if [ -z "${API_URL}" ]; then
+            echo "::error::UI API URL is not configured for ${TARGET_BRANCH}."
+            exit 1
+          fi
+
+          if [ -z "${EMBED_URL}" ]; then
+            echo "::error::UI embed URL is not configured for ${TARGET_BRANCH}."
+            exit 1
+          fi
+
+          if [ -z "${WS_URL}" ]; then
+            WS_BASE="$(printf '%s' "${API_URL}" | sed -E -e 's#/api/v[0-9]+/?$##' -e 's#^https://#wss://#' -e 's#^http://#ws://#')"
+            WS_URL="${WS_BASE}/ws"
+          fi
+
+          {
+            echo "API_URL=${API_URL}"
+            echo "EMBED_URL=${EMBED_URL}"
+            echo "WS_URL=${WS_URL}"
+          } >> "$GITHUB_ENV"
+
       - name: Update package manifest
         id: manifest
         env:
@@ -175,7 +223,11 @@ jobs:
 
       - name: Validate build with updated dependency
         if: steps.changes.outputs.changed == 'true'
-        run: bun run build
+        run: bun run build:prod
+        env:
+          API_URL: ${{ env.API_URL }}
+          EMBED_URL: ${{ env.EMBED_URL }}
+          WS_URL: ${{ env.WS_URL }}
 
       - name: Commit dependency update
         if: steps.changes.outputs.changed == 'true'

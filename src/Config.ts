@@ -25,15 +25,32 @@ const parsedUrl = new URL(baseUrl);
 export const PROTOCOL = parsedUrl.protocol;
 export const HOST = parsedUrl.host;
 
+function normalizeApiPath(path?: string): string {
+  return path ? (path.startsWith("/") ? path : `/${path}`) : "";
+}
+
+function getConfiguredApiBase(version: "v1" | "v2"): string | undefined {
+  const configuredApiUrl = window.MICROBOARD_FRONT_CONFIG.apiURL;
+
+  if (!configuredApiUrl) {
+    return undefined;
+  }
+
+  if (version === "v2") {
+    return configuredApiUrl.replace(/\/api\/v1\/?$/, "/api/v2");
+  }
+
+  return configuredApiUrl;
+}
+
 export function getApiUrl(path?: string): string {
-  if (!path) {
-    path = "";
+  const normalizedPath = normalizeApiPath(path);
+  const configuredApiBase = getConfiguredApiBase("v1");
+
+  if (configuredApiBase) {
+    return `${configuredApiBase}${normalizedPath}`;
   }
-  return `https://api.microboard.io/api/v1${path ? "/" + path : ""}`;
-  if (window.MICROBOARD_FRONT_CONFIG.apiURL) {
-    return `${window.MICROBOARD_FRONT_CONFIG.apiURL}${path}`;
-  }
-  return `${PROTOCOL}//${HOST}/api/v1${path}`;
+  return `${PROTOCOL}//${HOST}/api/v1${normalizedPath}`;
 }
 
 export function getPublicUrl(path?: string): string {
@@ -50,11 +67,11 @@ export function getWebsocketUrl(): string {
   return `${PROTOCOL === "https:" ? "wss" : "ws"}://${HOST}/ws`;
 }
 export function getApiUrlV2(path?: string): string {
-  if (!path) {
-    path = "";
+  const normalizedPath = normalizeApiPath(path);
+  const configuredApiBase = getConfiguredApiBase("v2");
+
+  if (configuredApiBase) {
+    return `${configuredApiBase}${normalizedPath}`;
   }
-  if (window.MICROBOARD_FRONT_CONFIG.apiURL) {
-    return `${window.MICROBOARD_FRONT_CONFIG.apiURL}${path}`;
-  }
-  return `${PROTOCOL}//${HOST}/api/v2${path}`;
+  return `${PROTOCOL}//${HOST}/api/v2${normalizedPath}`;
 }

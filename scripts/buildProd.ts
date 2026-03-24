@@ -41,9 +41,11 @@ async function main() {
   const API_URL =
     process.env.API_URL || "https://microboard.sanocks.workers.dev";
   const EMBED_URL = process.env.EMBED_URL || "https://dev-app.microboard.io";
+  const websocketBase = API_URL.replace(/\/api\/v\d+\/?$/, "");
   const WS_URL =
     process.env.WS_URL ||
-    API_URL.replace("https://", "wss://").replace("http://", "ws://") + "/ws";
+    websocketBase.replace("https://", "wss://").replace("http://", "ws://") +
+      "/ws";
 
   console.log(`🚀 Building with API_URL: ${API_URL}`);
 

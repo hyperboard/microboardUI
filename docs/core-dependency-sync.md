@@ -1,24 +1,24 @@
 # Core Dependency Sync Setup
 
-This repository can automatically update the UI dependency when a new core package version is published and then reuse the existing deployment workflow by pushing the update branch.
+This repository can automatically update the UI dependency when a new core package version is published and then reuse the existing deployment workflow by pushing to the staging branch.
 
 ## UI repository settings
-
-Required:
-
-- No new required variables are needed if the update branch should stay `staging`.
-
-Optional:
 
 - `vars.CORE_SYNC_BRANCH`
   - Branch that should receive the automated dependency update.
   - Default: `staging`
 
-Already required by the existing deploy workflow:
+Required for the deploy workflow used after the sync:
 
-- `secrets.API_URL`
+- `vars.CLOUDFLARE_PAGES_PROJECT_STAGING`
+- `vars.UI_API_URL_STAGING`
+- `vars.UI_EMBED_URL_STAGING`
 - `secrets.CLOUDFLARE_API_TOKEN`
 - `secrets.CLOUDFLARE_ACCOUNT_ID`
+
+Optional for staging if websocket traffic uses a dedicated endpoint:
+
+- `vars.UI_WS_URL_STAGING`
 
 ## Core repository settings
 
@@ -47,7 +47,7 @@ Expected payload fields:
 - `source_sha`
 - `workflow`
 
-The workflow uses `package_name` and `version` to update `package.json` and `bun.lock`, validates the result with `bun run build`, commits only if files changed, pushes to the target branch, and then explicitly dispatches the Cloudflare Pages deploy workflow for that branch.
+The workflow uses `package_name` and `version` to update `package.json` and `bun.lock`, validates the result with `bun run build:prod` using the branch-specific UI environment variables, commits only if files changed, pushes to the target branch, and then explicitly dispatches the Cloudflare Pages deploy workflow for that branch.
 
 ## Manual testing
 

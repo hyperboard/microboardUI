@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - staging
-      - serverless
+      - release
   workflow_dispatch:
     inputs:
       target_branch:
@@ -20,6 +20,63 @@ jobs:
       TARGET_BRANCH: ${{ inputs.target_branch || github.ref_name }}
 
     steps:
+      - name: Resolve deployment configuration
+        env:
+          CF_PAGES_PROJECT_STAGING: ${{ vars.CLOUDFLARE_PAGES_PROJECT_STAGING }}
+          CF_PAGES_PROJECT_RELEASE: ${{ vars.CLOUDFLARE_PAGES_PROJECT_RELEASE }}
+          UI_API_URL_STAGING: ${{ vars.UI_API_URL_STAGING }}
+          UI_API_URL_RELEASE: ${{ vars.UI_API_URL_RELEASE }}
+          UI_EMBED_URL_STAGING: ${{ vars.UI_EMBED_URL_STAGING }}
+          UI_EMBED_URL_RELEASE: ${{ vars.UI_EMBED_URL_RELEASE }}
+          UI_WS_URL_STAGING: ${{ vars.UI_WS_URL_STAGING }}
+          UI_WS_URL_RELEASE: ${{ vars.UI_WS_URL_RELEASE }}
+        run: |
+          case "${TARGET_BRANCH}" in
+            staging)
+              PROJECT_NAME="${CF_PAGES_PROJECT_STAGING}"
+              API_URL="${UI_API_URL_STAGING}"
+              EMBED_URL="${UI_EMBED_URL_STAGING}"
+              WS_URL="${UI_WS_URL_STAGING}"
+              ;;
+            release)
+              PROJECT_NAME="${CF_PAGES_PROJECT_RELEASE}"
+              API_URL="${UI_API_URL_RELEASE}"
+              EMBED_URL="${UI_EMBED_URL_RELEASE}"
+              WS_URL="${UI_WS_URL_RELEASE}"
+              ;;
+            *)
+              echo "::error::Unsupported deployment branch: ${TARGET_BRANCH}"
+              exit 1
+              ;;
+          esac
+
+          if [ -z "${PROJECT_NAME}" ]; then
+            echo "::error::Cloudflare Pages project name is not configured for ${TARGET_BRANCH}."
+            exit 1
+          fi
+
+          if [ -z "${API_URL}" ]; then
+            echo "::error::UI API URL is not configured for ${TARGET_BRANCH}."
+            exit 1
+          fi
+
+          if [ -z "${EMBED_URL}" ]; then
+            echo "::error::UI embed URL is not configured for ${TARGET_BRANCH}."
+            exit 1
+          fi
+
+          if [ -z "${WS_URL}" ]; then
+            WS_BASE="$(printf '%s' "${API_URL}" | sed -E -e 's#/api/v[0-9]+/?$##' -e 's#^https://#wss://#' -e 's#^http://#ws://#')"
+            WS_URL="${WS_BASE}/ws"
+          fi
+
+          {
+            echo "PROJECT_NAME=${PROJECT_NAME}"
+            echo "API_URL=${API_URL}"
+            echo "EMBED_URL=${EMBED_URL}"
+            echo "WS_URL=${WS_URL}"
+          } >> "$GITHUB_ENV"
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -36,16 +93,12 @@ jobs:
       - name: Build
         run: bun run scripts/buildProd.ts
         env:
-          API_URL: ${{ secrets.API_URL }}
+          API_URL: ${{ env.API_URL }}
+          EMBED_URL: ${{ env.EMBED_URL }}
+          WS_URL: ${{ env.WS_URL }}
 
       - name: Deploy to Cloudflare Pages
-        run: |
-          if [ "${TARGET_BRANCH}" = "serverless" ]; then
-            PROJECT="microboard-front-dev"
-          else
-            PROJECT="microboard-front-staging"
-          fi
-          bunx wrangler pages deploy dist --project-name=$PROJECT 2>&1 | tee deploy.log; exit ${PIPESTATUS[0]}
+        run: bunx wrangler pages deploy dist --project-name="${PROJECT_NAME}" 2>&1 | tee deploy.log; exit ${PIPESTATUS[0]}
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

@@ -1,10 +1,7 @@
 name: NPM Publish
 
 on:
-  push:
-    branches:
-      - trunk
-      - serverless
+  workflow_dispatch:
 
 permissions:
   id-token: write
@@ -79,7 +76,7 @@ jobs:
       #   run: |
       #     git add .
       #     git commit -m "chore: sync microboard-ui-temp URLs to v${VERSION} [skip ci]" || echo "✔️ No changes to commit"
-      #     git push origin trunk
+      #     git push origin release
 
       - name: Publish to NPM
         run: |
