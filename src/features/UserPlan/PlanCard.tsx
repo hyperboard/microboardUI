@@ -95,6 +95,8 @@ export function PlanCard({
     if (state === "downgrade") {
       return onDowngrade;
     }
+
+    return undefined;
   };
 
   if (isLoading) {

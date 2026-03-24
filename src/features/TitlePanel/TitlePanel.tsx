@@ -129,10 +129,15 @@ export function TitlePanel(): React.JSX.Element | null {
   };
 
   const toggleForceGraph = (): void => {
+    const forceGraphBoard = board as typeof board & {
+      disableForceGraph: () => void;
+      enableForceGraph: () => void;
+    };
+
     if (forceGraphEnabled) {
-      board.disableForceGraph();
+      forceGraphBoard.disableForceGraph();
     } else {
-      board.enableForceGraph();
+      forceGraphBoard.enableForceGraph();
     }
     setForceGraphEnabled((prev) => !prev);
   };
@@ -369,7 +374,7 @@ function SidePanelButton({
 }
 
 type ExportDropdownProps = {
-  buttonRef: RefObject<HTMLButtonElement>;
+  buttonRef: RefObject<HTMLButtonElement | null>;
   openExport: () => void;
   exportHTML: () => void;
   openShareSnapshot: () => void;

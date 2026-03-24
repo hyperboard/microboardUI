@@ -63,11 +63,6 @@ export const RestorePasswordPage: React.FC = () => {
     setIsDisabled(false);
   };
 
-  const handleInputChange = (): void => {
-    // Immediate validation on every input change
-    checkForm();
-  };
-
   const handleNewPasswordInput = (): void => {
     const form = formRef.current;
     const newPassword = form?.newPassword?.value;

@@ -114,7 +114,7 @@ export const VerifyMailPage: React.FC = () => {
     // Check if it's a valid number
     if (isNaN(parseInt(passcode))) {
       setSubmitDisabled(true);
-      setError(t("auth.enterAValidVerificationCode"));
+      setError(String(t("auth.enterAValidVerificationCode" as never)));
       return;
     }
 

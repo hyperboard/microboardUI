@@ -18,13 +18,16 @@ import { ErrorBoundary } from "features/ErrorBoundary";
 
 type Props = {
   app: App;
+  children?: React.ReactNode;
 };
 
 type ComponentWithChildren = React.ComponentType<{
   children?: React.ReactNode;
 }>;
 
-function compose(components: ComponentWithChildren[]): React.FC {
+function compose(
+  components: ComponentWithChildren[],
+): React.FC<{ children?: React.ReactNode }> {
   return function ComposedComponent({
     children,
   }: {

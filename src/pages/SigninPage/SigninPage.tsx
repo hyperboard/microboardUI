@@ -127,11 +127,6 @@ export const SigninPage: React.FC = (): React.ReactElement => {
     setEmailError("");
   };
 
-  const handleInputChange = (): void => {
-    // Immediate validation on every input change
-    checkForm();
-  };
-
   const handleEmailInput = (): void => {
     const form = formRef.current;
     const email = form?.email.value;

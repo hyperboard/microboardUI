@@ -1,9 +1,7 @@
 import { App } from "App";
-import { useBoardsList } from "App/useBoardsList";
-import { Item, Board } from "microboard-temp";
+import { Board } from "microboard-temp";
 import { useAppContext } from "features/AppContext";
 import React from "react";
-import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import boardDataRu from "./welcomeBoard.json";
 import boardDataEn from "./welcomeBoardEn.json";
@@ -28,13 +26,10 @@ export const pasteWelcomeBoardData = (board: Board, lang: string) => {
   );
 
   try {
-    board.paste(
-      filteredBoardData as unknown as {
-        [key: string]: Item;
-      },
-      false,
-      false,
-    );
+    const itemsMap = filteredBoardData as unknown as Parameters<
+      typeof board.paste
+    >[0];
+    board.paste(itemsMap, false, false);
   } catch (e) {
     console.error(e);
   }
@@ -44,7 +39,7 @@ export const pasteWelcomeBoardData = (board: Board, lang: string) => {
   board.camera.zoomToFit(mbr);
 };
 
-export function WelcomePage(): React.ReactElement {
+export function WelcomePage(): React.ReactElement | null {
   const { app } = useAppContext();
   const navigate = useNavigate();
 

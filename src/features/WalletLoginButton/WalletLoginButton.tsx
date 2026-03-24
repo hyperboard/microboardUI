@@ -21,7 +21,7 @@ const WalletLoginButton: React.FC<WalletLoginButtonProps> = () => {
   const { t } = useTranslation();
   const { address } = useWalletAccount();
   const account = useAccount();
-  const { connectAsync, error } = useConnect();
+  const { connectAsync } = useConnect();
   const { disconnectAsync } = useDisconnect();
   const { signMessageAsync } = useSignMessage();
 

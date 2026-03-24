@@ -1,4 +1,4 @@
-import { getApiUrl, getPublicUrl } from "Config";
+import { getPublicUrl } from "Config";
 import React, { useEffect, useRef } from "react";
 
 export const TestPage: React.FC = () => {

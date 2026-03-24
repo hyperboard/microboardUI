@@ -73,8 +73,9 @@ export const History = React.memo(function History({
         const data = JSON.parse(text);
         const { confirmedEvents, eventsToSend, newEvents } = data as RawEvents;
         const events = [...confirmedEvents, ...eventsToSend, ...newEvents];
+        type EmittedOperation = Parameters<typeof board.emit>[0];
         events.forEach((event) => {
-          board.emit(event.body.operation);
+          board.emit(event.body.operation as EmittedOperation);
         });
       } catch (error) {
         console.error("Error parsing JSON:", error);

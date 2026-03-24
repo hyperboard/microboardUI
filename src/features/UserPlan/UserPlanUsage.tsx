@@ -1,7 +1,5 @@
-import { useAccount } from "App/useAccount";
 import clsx from "clsx";
 import { HISTORY_MODAL_ID } from "features/UserPlan/HistoryModal";
-import { LIMITS_MODAL_ID } from "features/UserPlan/LimitsModal";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Icon } from "shared/ui-lib/Icon";
@@ -18,17 +16,6 @@ type Props = {
   hasHistory?: boolean;
 };
 
-const isTomorrow = (date: Date): boolean => {
-  const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1);
-  return (
-    date.getDate() === tomorrow.getDate() &&
-    date.getMonth() === tomorrow.getMonth() &&
-    date.getFullYear() === tomorrow.getFullYear()
-  );
-};
-
 export function UserPlanUsage({
   cancellationDate,
   status,
@@ -40,9 +27,7 @@ export function UserPlanUsage({
 }: Props) {
   const { t, i18n } = useTranslation();
   const { openModal } = useUiModalContext();
-  const account = useAccount();
 
-  const handleOpenLimitsModal = () => openModal(LIMITS_MODAL_ID);
   const handleOpenHistoryModal = () => openModal(HISTORY_MODAL_ID);
 
   const formattedCancellationDate = new Intl.DateTimeFormat(i18n.language, {
@@ -64,8 +49,6 @@ export function UserPlanUsage({
       day: "numeric",
     },
   ).format(previousCancellationDate);
-
-  const tokensBalance = account.billingInfo?.tokens?.totalTokensBalance || 0;
 
   return (
     <div className={styles.container}>

@@ -23,8 +23,8 @@ export function ShapesPanel(): React.JSX.Element {
   const handlePick = (
     shape: ShapeType,
     category?: ShapeCategoryName,
-    e?: MouseEvent,
-  ) => {
+    e?: React.MouseEvent<HTMLButtonElement>,
+  ): void => {
     if (!board.tools.getAddShape()) {
       board.tools.addShape(true);
     }

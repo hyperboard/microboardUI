@@ -13,7 +13,6 @@ import { notify } from "shared/ui-lib/Toast";
 import { billingApi } from "shared/api";
 import { useAccount } from "App/useAccount";
 import {
-  ConnectButton,
   useAccountModal,
   useChainModal,
   useConnectModal,
@@ -97,15 +96,6 @@ export function SelectPaymentModal(): React.JSX.Element {
     openModal(USER_PLAN_MODAL_ID);
   };
 
-  const handleTokenAmountChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const value = parseInt(event.target.value, 10);
-    if (!isNaN(value) && value >= 100) {
-      setTokenAmount(value);
-    }
-  };
-
   const calculateTokenPrice = (amount: number): number => {
     return Math.ceil((amount / 1000) * 8 * 100) / 100;
   };
@@ -156,180 +146,6 @@ export function SelectPaymentModal(): React.JSX.Element {
         });
         console.error(err);
       }
-    }
-  };
-
-  const handleCrypto: MouseEventHandler<HTMLButtonElement> = async (_event) => {
-    if (!isConnected) {
-      if (openConnectModal) {
-        openConnectModal();
-      }
-      return;
-    }
-
-    setIsDisabled(true);
-
-    const onSuccessGetter = (
-      currency: string,
-      chain: string,
-      sender: string,
-      planId: string,
-      hash: `0x${string}`,
-    ): void => {
-      setIsDisabled(false);
-      notify({
-        header: t("userPlan.notifications.transactionSuccessful.header"),
-        body: t("userPlan.notifications.transactionSuccessful.body", {
-          currency,
-          chain,
-          sender,
-        }),
-        variant: "success",
-      });
-
-      if (isPurchaseTokensMode) {
-        notify({
-          header: t("userPlan.notifications.tokensPurchased.header"),
-          body: t("userPlan.notifications.tokensPurchased.body"),
-          variant: "success",
-        });
-        setTimeout(() => {
-          navigate(0);
-        }, 2000);
-      } else {
-        billingApi
-          .confirmCryptoCheckout({
-            symbol: currency,
-            chain,
-            sender,
-            planId,
-            hash,
-          })
-          .then(() => {
-            notify({
-              header: t("userPlan.notifications.confirmedSuccessfully.header"),
-              body: t("userPlan.notifications.confirmedSuccessfully.body"),
-              variant: "success",
-            });
-            setTimeout(() => {
-              navigate(0);
-            }, 2000);
-          })
-          .catch((err) => {
-            console.error(err);
-            notify({
-              header: t("userPlan.notifications.confirmationFailed.header"),
-              body: (
-                <>
-                  {t("userPlan.notifications.confirmationFailed.body", {
-                    message: "",
-                  })}{" "}
-                  {err.message.includes("support") ? (
-                    <span
-                      dangerouslySetInnerHTML={{
-                        __html: err.message.replace(
-                          /support/g,
-                          '<a href="mailto:ceo@microboard.io">support</a>',
-                        ),
-                      }}
-                    />
-                  ) : (
-                    err.message
-                  )}
-                </>
-              ),
-              variant: "error",
-              duration: 10_000,
-            });
-          });
-      }
-    };
-
-    const onError = (error): void => {
-      setIsDisabled(false);
-      if (error.shortMessage === "User rejected the request.") {
-        notify({
-          header: t("userPlan.notifications.transactionFailed.header"),
-          body: t("userPlan.notifications.transactionFailed.body.canceled"),
-          variant: "warning",
-        });
-      } else {
-        notify({
-          header: t("userPlan.notifications.transactionFailed.header"),
-          body: t("userPlan.notifications.transactionFailed.body.error"),
-          variant: "error",
-        });
-        console.error(`Transaction Failed: ${error}`);
-      }
-
-      if ("metaMessages" in error && error.metaMessages.length >= 2) {
-        const splitted = error.metaMessages[1].split(/[\s:]+/);
-        const from = splitted[2];
-        const to = splitted[4];
-        const price = splitted[6];
-
-        billingApi.cancelCryptoCheckout({
-          sender: from,
-          to,
-          value: parseEther(price).toString(),
-        });
-      }
-    };
-
-    try {
-      if (!isConnected || !address || !chain) {
-        throw new Error("Wallet is not connected");
-      }
-
-      if (isPurchaseTokensMode) {
-        notify({
-          header: t("userPlan.notifications.notImplemented.header"),
-          body: t("userPlan.notifications.notImplemented.body"),
-          variant: "error",
-        });
-        setIsDisabled(false);
-        return;
-      } else {
-        assertPlanExists(plan);
-
-        const checkout = await account.createCryptoCheckout(
-          chain.nativeCurrency.symbol,
-          chain.name,
-          address,
-          plan.id,
-        );
-
-        if (!checkout.address.startsWith("0x")) {
-          throw new Error("Received address has wrong format");
-        }
-        const guardedAddress = checkout.address as `0x${string}`;
-
-        sendTransaction(
-          {
-            to: guardedAddress,
-            value: BigInt(checkout.price),
-          },
-          {
-            onSuccess: (hash) =>
-              onSuccessGetter(
-                chain.nativeCurrency.symbol,
-                chain.name,
-                address,
-                plan.id,
-                hash,
-              ),
-            onError: onError,
-          },
-        );
-      }
-    } catch (err) {
-      console.error(err);
-      notify({
-        header: t("userPlan.notifications.unexpectedError.header"),
-        body: t("userPlan.notifications.unexpectedError.body"),
-        variant: "error",
-      });
-      setIsDisabled(false);
     }
   };
 
@@ -617,38 +433,6 @@ const Card: React.FC<{
         </div>
       </div>
       <Transition active={active}>{footer}</Transition>
-    </Button>
-  );
-};
-
-const CoinCard: React.FC<{
-  onClick: MouseEventHandler<HTMLButtonElement>;
-  disabled: boolean;
-  title: React.JSX.Element;
-  coin: "POL" | "ETH";
-  active: boolean;
-}> = ({ onClick, disabled, title, active, coin }) => {
-  const { t } = useTranslation();
-
-  return (
-    <Button
-      className={clsx(
-        styles.card,
-        styles.coin,
-        (active && styles.active) || "",
-      )}
-      pattern="tertiary"
-      onClick={onClick}
-      disabled={disabled}
-    >
-      <div className={styles.coinTitle}>
-        <Icon iconName={coin} width={24} height={24} />
-        <div className={styles.mainContent}>{title}</div>
-      </div>
-      {/* <Tooltip
-				tooltip={t("userPlan.paymentMethods.priceTooltip")}
-				tooltipPosition="top"
-			/> */}
     </Button>
   );
 };

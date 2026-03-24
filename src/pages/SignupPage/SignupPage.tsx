@@ -50,16 +50,6 @@ export const SignupPage = (): React.ReactElement => {
     }, 100);
   };
 
-  const checkEmail = (): boolean => {
-    const email = formRef.current?.email.value;
-    if (email && !isEmail(email)) {
-      setEmailError(t("auth.enterAValidEmailAddress"));
-      return false;
-    }
-    setEmailError("");
-    return true;
-  };
-
   const checkForm = (): boolean => {
     const form = formRef.current;
     if (!form) {
@@ -116,11 +106,6 @@ export const SignupPage = (): React.ReactElement => {
     // If we reach here, both fields are valid
     setIsDisabled(false);
     return true;
-  };
-
-  const handleInputChange = (): void => {
-    // Immediate validation on every input change
-    checkForm();
   };
 
   const handleEmailInput = (): void => {
@@ -209,13 +194,14 @@ export const SignupPage = (): React.ReactElement => {
       })
       .then((data) => {
         if (data) {
+          const verifyParams = {
+            ...Object.fromEntries(new URLSearchParams(location.search)),
+            userId: `${data.id}`,
+            ...(data.email ? { email: data.email } : {}),
+          };
           navigate({
             pathname: "/auth/verify",
-            search: createSearchParams({
-              ...Object.fromEntries(new URLSearchParams(location.search)),
-              userId: `${data.id}`,
-              email: data.email,
-            }).toString(),
+            search: createSearchParams(verifyParams).toString(),
           });
         }
       })
