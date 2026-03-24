@@ -1,7 +1,6 @@
 import { useAppSubscription } from "App/useBoardSubscription";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import React, { CSSProperties, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useAppContext } from "features/AppContext";
 import { ButtonWithMenu } from "../ButtonWithMenu";
 import { Icon } from "shared/ui-lib/Icon";
@@ -13,7 +12,6 @@ import style from "./EventList.module.css";
 
 export const EventList = React.memo(function EventList(): React.JSX.Element {
   const { board } = useAppContext();
-  const { t } = useTranslation();
   const [opened, setOpened] = useState(false);
   const forceUpdate = useForceUpdate();
   const buttonWithMenuRef = useRef<HTMLDivElement>(null);
@@ -126,7 +124,7 @@ export const EventList = React.memo(function EventList(): React.JSX.Element {
           {board.events && viewMode === "syncJournal" && (
             <SyncJournal
               style={listStyle}
-              log={board.events.log.getSyncLog()}
+              log={board.events.log.list.getSyncLog()}
             />
           )}
         </UiPanel>

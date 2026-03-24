@@ -197,7 +197,7 @@ export const AIInput = () => {
       const options = {
         model: model === "flux-pro" ? "flux-pro" : "flux-schnell",
         aspect_ratio: "1:1",
-      };
+      } as const;
 
       const message: AiChatMsg<GenerateImageRequest> = {
         type: "AiChat",

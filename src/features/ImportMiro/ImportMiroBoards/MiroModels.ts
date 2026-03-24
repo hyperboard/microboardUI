@@ -40,6 +40,9 @@ export type MiroItemsTypes =
   | "text"
   | "frame"
   | "connector"
+  | "card"
+  | "document"
+  | "mindmap_node"
   | "paint"
   | "unsupported";
 

@@ -10,7 +10,15 @@ import { validateMediaFile } from "App/MediaHelpers";
 import { uploadImages } from "shared/api/media";
 
 interface Props {
-  rounded?: string;
+  rounded?:
+    | "none"
+    | "left"
+    | "right"
+    | "top"
+    | "bottom"
+    | "bottom-right"
+    | "bottom-left"
+    | "full";
 }
 
 export function SetBackgroundImage({ rounded = "none" }: Props) {

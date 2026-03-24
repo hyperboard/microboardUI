@@ -7,7 +7,15 @@ import { useTranslation } from "react-i18next";
 import { Deck, getHotkeyLabel } from "microboard-temp";
 
 interface Props {
-  rounded?: string;
+  rounded?:
+    | "none"
+    | "left"
+    | "right"
+    | "top"
+    | "bottom"
+    | "bottom-right"
+    | "bottom-left"
+    | "full";
 }
 
 export function FlipDeck({ rounded = "none" }: Props) {

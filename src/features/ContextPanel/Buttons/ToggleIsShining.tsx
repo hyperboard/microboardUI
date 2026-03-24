@@ -10,13 +10,26 @@ export function ToggleIsShining() {
   const { t } = useTranslation();
 
   const single = board.selection.items.getSingle();
+  const starItem = single as unknown as
+    | ({
+        toggleIsShining?: () => void;
+        isShining?: boolean;
+      } & typeof single)
+    | null;
 
-  if (!single || single.itemType !== "Star") {
+  if (
+    !starItem ||
+    starItem.itemType !== "Star" ||
+    typeof starItem.toggleIsShining !== "function" ||
+    typeof starItem.isShining !== "boolean"
+  ) {
     return null;
   }
 
+  const toggleIsShining = starItem.toggleIsShining;
+
   const handleClick = (): void => {
-    single.toggleIsShining();
+    toggleIsShining();
   };
 
   return (
@@ -27,7 +40,7 @@ export function ToggleIsShining() {
       tooltipPosition="top"
       onClick={handleClick}
       variant="secondary"
-      active={single.isShining}
+      active={starItem.isShining}
       rounded="none"
     >
       <Icon iconName="Plus" />

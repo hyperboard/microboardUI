@@ -2,7 +2,7 @@ import clsx from "clsx";
 import React, { CSSProperties, forwardRef } from "react";
 import style from "./Tooltip.module.css";
 
-interface TooltipProps {
+interface TooltipProps extends React.HTMLAttributes<HTMLDivElement> {
   tooltip: string;
   hotkey?: string;
   tooltipPosition?:

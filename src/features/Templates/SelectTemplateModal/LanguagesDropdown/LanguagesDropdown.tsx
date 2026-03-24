@@ -33,7 +33,7 @@ export const LanguagesDropdown = ({
     <div ref={dropdownRef} className={styles.dropdown}>
       <button onClick={toggleDropdown} className={styles.dropdownButton}>
         <Icon width={16} height={16} iconName="Planet" />
-        {t(`common.languages.${selectedLanguage}`)}
+        {String(t(`common.languages.${selectedLanguage}` as never))}
         <Icon
           iconName={isDropdownOpen ? "StrokeChevronUp" : "StrokeChevronDown"}
           width={14}
@@ -51,7 +51,7 @@ export const LanguagesDropdown = ({
               )}
               onClick={handleSelectLanguage(value)}
             >
-              {t(`common.languages.${value}`)}
+              {String(t(`common.languages.${value}` as never))}
               {selectedLanguage === value && (
                 <Icon iconName="checkMark" width={20} height={20} />
               )}

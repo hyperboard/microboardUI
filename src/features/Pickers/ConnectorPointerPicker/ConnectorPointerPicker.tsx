@@ -1,23 +1,39 @@
-import {
-  ConnectorPointerStyle,
-  CONNECTOR_POINTER_TYPES,
-} from "microboard-temp";
 import React from "react";
-import { useTranslation } from "react-i18next";
-import { ConnectorPointerIcon } from "shared/ui-lib/Icon";
+import {
+  ConnectorPointerIcon,
+  type ConnectorPointerType,
+} from "shared/ui-lib/Icon";
 import { UiButton } from "shared/ui-lib/UiButton";
 import style from "./ConnectorPointerPicker.module.css";
 
+const CONNECTOR_POINTER_TYPES: ConnectorPointerType[] = [
+  "None",
+  "ArrowBroad",
+  "ArrowThin",
+  "TriangleFilled",
+  "CircleFilled",
+  "Angle",
+  "TriangleEmpty",
+  "DiamondFilled",
+  "DiamondEmpty",
+  "Zero",
+  "One",
+  "Many",
+  "ManyMandatory",
+  "OneMandatory",
+  "ManyOptional",
+  "OneOptional",
+];
+
 type Props = {
-  onPick: (pointer: ConnectorPointerStyle) => void;
-  selected: string;
+  onPick: (pointer: ConnectorPointerType) => void;
+  selected: ConnectorPointerType;
 };
 
 export function ConnectorPointerPicker({
   onPick,
   selected,
 }: Props): React.ReactElement {
-  const { t } = useTranslation();
   return (
     <>
       {CONNECTOR_POINTER_TYPES.map((type) => (

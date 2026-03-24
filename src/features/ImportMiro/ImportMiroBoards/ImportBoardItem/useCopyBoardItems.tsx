@@ -265,11 +265,11 @@ export const useCopyBoardItems = (
     textEls.forEach((element, index) => {
       const textChildren = getTextNodes(element as HTMLElement, style, item);
 
-      const node: Descendant = {
+      const node = {
         type: "paragraph",
         children: textChildren,
         horisontalAlignment: textAlign as HorisontalAlignment,
-      };
+      } as Descendant;
 
       editor.children = index === 0 ? [node] : [...editor.children, node];
     });
@@ -471,7 +471,13 @@ export const useCopyBoardItems = (
     );
 
     if (item.itemType === "RichText") {
-      applyRichTextTransformation(item, position, itemGeometry, parent, scale);
+      applyRichTextTransformation(
+        item as RichText,
+        position,
+        itemGeometry,
+        parent,
+        scale,
+      );
     } else {
       applyStandardTransformation(
         item,
@@ -1020,6 +1026,9 @@ export const useCopyBoardItems = (
     text: copyText,
     frame: copyFrame,
     connector: copyConnector,
+    card: copyUnsupportedItem,
+    document: copyUnsupportedItem,
+    mindmap_node: copyUnsupportedItem,
     paint: copyPaint,
     unsupported: copyUnsupportedItem,
   };

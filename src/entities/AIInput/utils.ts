@@ -11,7 +11,6 @@ import {
   Connector,
   Mbr,
   Board,
-  ImageItem,
   ThreadDirection,
 } from "microboard-temp";
 
@@ -28,7 +27,11 @@ export const getTextFromItem = (item: Item) => {
         .map((paragraph) => {
           if ("children" in paragraph) {
             return paragraph.children
-              .map((child) => child.text || "")
+              .map((child) =>
+                "text" in child && typeof child.text === "string"
+                  ? child.text
+                  : "",
+              )
               .join(" ");
           }
           return "";
@@ -54,7 +57,7 @@ export const getIdeaFromSelection = (
       case "Shape":
         const text = getTextFromItem(item);
         if (text.trim().length !== 0) {
-          return { item, idea: text };
+          return { item: item as PossibleParentNode, idea: text };
         }
     }
   }
@@ -70,7 +73,7 @@ export function calculateNodePosition(
   isResponseNode: boolean,
   board: Board,
   isImage: boolean,
-): { newItem: Item; connectorData: ConnectorData } {
+): { newItem: AINode; connectorData: ConnectorData } {
   const connectorStorage = new SessionStorage();
   const currMbr = selectedItem?.getMbr() || null;
   const currData = selectedItem?.serialize() || null;
@@ -131,12 +134,7 @@ export function calculateNodePosition(
   let step = 1;
   while (
     board.index
-      .getItemsEnclosedOrCrossed(
-        newMbr.left,
-        newMbr.top,
-        newMbr.right,
-        newMbr.bottom,
-      )
+      .listEnclosedOrCrossedBy(newMbr)
       .filter((item) => item.itemType !== "Connector").length > 0
   ) {
     const xDirection = step % 2 === 0 ? -1 : 1;
@@ -282,7 +280,7 @@ export function createNode(
   contextItems: string[] = [],
   withPlaceholder = false,
   isImage = false,
-): { node: AINode | ImageItem; connectorData: ConnectorData | null } {
+): { node: AINode; connectorData: ConnectorData | null } {
   let parentNodeId: string | undefined;
   let threadDirection: ThreadDirection | undefined;
   if (parentItem && parentItem.itemType === "AINode") {
@@ -341,7 +339,7 @@ export function createNode(
     board,
     isImage,
   );
-  return { node: newItem, connectorData };
+  return { node: newItem as AINode, connectorData };
 }
 
 export const getContextItems = (

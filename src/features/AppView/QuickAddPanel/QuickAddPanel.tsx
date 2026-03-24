@@ -3,8 +3,10 @@ import { StarIcon } from "entities/AIInput/StarIcon";
 import { useAppContext } from "features/AppContext";
 import {
   BASIC_SHAPES,
+  Connector,
   getHotkeyLabel,
   quickAddItem,
+  Shape,
   ShapeType,
 } from "microboard-temp";
 import React from "react";
@@ -35,26 +37,32 @@ export function QuickAddPanel(): React.ReactElement | null {
   ) {
     return null;
   }
-  const startPoint = single.getStartPoint();
+  const connector = single as Connector;
+  const startPoint = connector.getStartPoint();
   if (startPoint.pointType === "Board") {
     return null;
   }
   const startPointItem = startPoint.item;
   const itemToAddType =
     startPointItem.itemType === "Shape"
-      ? startPointItem.getShapeType()
+      ? (startPointItem as Shape).getShapeType()
       : startPointItem.itemType;
+  const sameItemType =
+    itemToAddType === "Sticker" ||
+    itemToAddType === "RichText" ||
+    itemToAddType === "AINode" ||
+    (BASIC_SHAPES as readonly string[]).includes(itemToAddType)
+      ? (itemToAddType as ShapeType | "RichText" | "AINode" | "Sticker")
+      : undefined;
 
-  const endPoint = single.getEndPoint();
+  const endPoint = connector.getEndPoint();
   const cameraMatrix = appBoard.camera.getMatrix();
 
   const handlePick = (
     type: ShapeType | "RichText" | "AINode" | "Sticker",
   ): void => {
-    quickAddItem(appBoard, type, single);
+    quickAddItem(appBoard, type, connector);
   };
-
-  console.log("render");
   const shapesButtons = [BASIC_SHAPES[0], ...BASIC_SHAPES.slice(2, 7)].map(
     (shape) => (
       <UiButton
@@ -121,9 +129,10 @@ export function QuickAddPanel(): React.ReactElement | null {
       rounded="full"
     >
       <UiButton
-        onClick={() => handlePick(itemToAddType)}
+        onClick={() => sameItemType && handlePick(sameItemType)}
         size="md"
         variant="tertiary"
+        disabled={!sameItemType}
         style={{
           maxHeight: "52px",
           width: "96px",

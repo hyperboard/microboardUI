@@ -1,6 +1,5 @@
 import { GoogleAuthBtn } from "features/GoogleAuthBtn";
 import { LoginWith } from "features/LoginWith/LoginWith";
-import { WalletLoginButton } from "features/WalletLoginButton";
 import React, {
   type FormEventHandler,
   type PropsWithChildren,

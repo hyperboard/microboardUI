@@ -36,7 +36,15 @@ const getIsBorderStyleEditable = (shapes: Shape[]): boolean => {
 };
 
 interface Props {
-  rounded?: string;
+  rounded?:
+    | "none"
+    | "left"
+    | "right"
+    | "top"
+    | "bottom"
+    | "bottom-right"
+    | "bottom-left"
+    | "full";
 }
 
 export function StrokeStyle({

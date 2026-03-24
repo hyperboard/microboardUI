@@ -92,12 +92,13 @@ export function CreateDiceModal(): React.JSX.Element {
       }
     });
 
-    const dice = new Dice(
-      board,
-      "",
-      values.some((value) => typeof value === "string") ? "custom" : "common",
+    const dice = new Dice(board, "", {
+      itemType: "Dice",
+      type: values.some((value) => typeof value === "string")
+        ? "custom"
+        : "common",
       values,
-    );
+    });
 
     const { left, top, bottom, right } = board.camera.getMbr();
     const x = (left + right) / 2 - dice.getWidth() / 2;
@@ -167,7 +168,9 @@ export function CreateDiceModal(): React.JSX.Element {
                 type="file"
                 accept="image/*"
                 style={{ display: "none" }}
-                ref={(el) => (inputRefs.current[idx] = el)}
+                ref={(el) => {
+                  inputRefs.current[idx] = el;
+                }}
                 onChange={(ev) => handleFileChange(idx, ev)}
               />
             </div>

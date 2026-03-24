@@ -1,4 +1,4 @@
-import type { Account } from "./Account";
+import type { Account } from "entities/account";
 import { Storage } from "./Storage";
 
 export type Action = "owns" | "edits" | "reads";

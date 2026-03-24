@@ -1,6 +1,5 @@
 import React from "react";
 import styles from "../BoardMenu.module.css";
-import { Button } from "shared/ui-lib/Button/Button";
 import { tryToPasteAsItemOrReturnText } from "App/Paste/tryToPasteAsItemOrReturnText";
 import { useAppContext } from "features/AppContext";
 import { useAccount } from "App/useAccount";

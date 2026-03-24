@@ -45,7 +45,9 @@ export const LinkToButton = ({
   const imgRef = useRef<HTMLImageElement | null>(null);
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const { app, board } = useAppContext();
-  const closeTooltipTimeoutId = useRef<number | undefined>();
+  const closeTooltipTimeoutId = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   const mbr = useDomMbr({
     app,
@@ -81,17 +83,17 @@ export const LinkToButton = ({
     }
   };
 
-  const closeTooltip = () => {
+  const closeTooltip = (): void => {
     closeTooltipTimeoutId.current = setTimeout(
       () => setIsTooltipOpen(false),
       50,
     );
   };
 
-  const openTooltip = () => {
+  const openTooltip = (): void => {
     if (closeTooltipTimeoutId.current) {
       clearTimeout(closeTooltipTimeoutId.current);
-      closeTooltipTimeoutId.current = undefined;
+      closeTooltipTimeoutId.current = null;
     }
     setIsTooltipOpen(true);
   };
@@ -154,7 +156,7 @@ const LinkTooltip = ({
   isOpen,
   openTooltip,
   closeTooltip,
-}: LinkTooltipProps) => {
+}: LinkTooltipProps): React.JSX.Element | null => {
   if (!link || !isOpen) {
     return null;
   }

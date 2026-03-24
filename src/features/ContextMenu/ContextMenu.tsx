@@ -39,7 +39,6 @@ export function ContextMenu(): React.JSX.Element | null {
   const [isCreatingBoard, setIsCreatingBoard] = useState(false);
   const [isImportingBoard, setIsImportingBoard] = useState(false);
   const [isEditingLocalFile, setIsEditingLocalFile] = useState(false);
-  const [isCreatingFolder, setIsCreatingFolder] = useState(false);
   const [isDeletingBoard, setIsDeletingBoard] = useState(false);
   const [isDeletingFolder, setIsDeletingFolder] = useState(false);
 
@@ -179,24 +178,6 @@ export function ContextMenu(): React.JSX.Element | null {
     setIsImportingBoard(false);
   };
 
-  const handleCreateFolder: MouseEventHandler = async (ev) => {
-    if (!account.isLoggedIn) {
-      return;
-    }
-    setIsCreatingFolder(true);
-    ev.preventDefault();
-    ev.stopPropagation();
-    const createdFolderId = await boardsList.createFolder(
-      undefined,
-      folderId ?? undefined,
-    );
-    setIsCreatingFolder(false);
-    close();
-    setId(createdFolderId ?? null);
-    setRenamingId(createdFolderId ?? null);
-    setNewName(t("board.untitled"));
-  };
-
   const handleRename: MouseEventHandler = (ev) => {
     ev.preventDefault();
     ev.stopPropagation();
@@ -295,7 +276,6 @@ export function ContextMenu(): React.JSX.Element | null {
     isCreatingBoard ||
     isImportingBoard ||
     isEditingLocalFile ||
-    isCreatingFolder ||
     isDeletingBoard ||
     isDeletingFolder;
 

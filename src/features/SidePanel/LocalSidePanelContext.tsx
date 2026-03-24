@@ -30,14 +30,20 @@ export function LocalSidePanelContextProvider({
   const [isOpen, setIsOpen] = useState(false);
   const [stamp, setStamp] = useState<null | number>(null);
   const [highlighted, setHighlighted] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    return () => clearTimeout(timeoutRef.current);
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, []);
 
   const openMenu = (highlightTime = 0): void => {
-    clearTimeout(timeoutRef.current);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
 
     if (highlightTime > 0) {
       setHighlighted(true);

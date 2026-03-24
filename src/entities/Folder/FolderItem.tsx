@@ -8,7 +8,6 @@ import React, {
   forwardRef,
   useCallback,
   useRef,
-  type CSSProperties,
   type MouseEventHandler,
   type SyntheticEvent,
 } from "react";
@@ -34,18 +33,11 @@ export const FolderItem = forwardRef<HTMLDivElement, Props>(
     const account = useAccount();
     const itemRef = useRef<HTMLDivElement | null>(null);
 
-    const { attributes, listeners, transform, setNodeRef, isDragging, isOver } =
+    const { attributes, listeners, setNodeRef, isDragging, isOver } =
       useSortable({
         id: board.id,
         data: { ...board, parentFolderId: folder?.id },
       });
-
-    const style: CSSProperties | undefined = transform
-      ? {
-          transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-          zIndex: 10000,
-        }
-      : undefined;
 
     const currentBoardId = currentBoard?.getBoardId();
     const isActive = currentBoardId === board.id;

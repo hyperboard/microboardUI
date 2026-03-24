@@ -69,8 +69,8 @@ export const Folder = ({
   const currentBoardRef = useRef<HTMLDivElement>(null);
   const currentFolderRef = useRef<HTMLButtonElement>(null);
   const { id, foldersRefState } = useOpenedFoldersContext();
-  const [openedByDragging, setOpenedByDragging] = useState(false);
-  const [originalPosition, setOriginalPosition] = useState<
+  const [, setOpenedByDragging] = useState(false);
+  const [, setOriginalPosition] = useState<
     Record<"left" | "top" | "width" | "height", number>
   >({ left: 0, top: 0, width: 0, height: 0 });
   const { isOver, setNodeRef } = useSortable({

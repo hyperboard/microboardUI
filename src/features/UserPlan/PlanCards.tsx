@@ -139,7 +139,7 @@ export function BasicPlanCard() {
   );
 }
 
-export function PlusAIPlanCard(): JSX.Element {
+export function PlusAIPlanCard(): React.JSX.Element {
   const { t } = useTranslation();
   const account = useAccount();
   const { openModal } = useUiModalContext();
@@ -281,7 +281,7 @@ export function PlusAIPlanCard(): JSX.Element {
   );
 }
 
-export function PlusPlanCard(): JSX.Element {
+export function PlusPlanCard(): React.JSX.Element {
   const { t } = useTranslation();
   const account = useAccount();
   const { openModal } = useUiModalContext();
@@ -371,19 +371,6 @@ export function PlusPlanCard(): JSX.Element {
     ev.preventDefault();
     ev.stopPropagation();
     setModalData({ planName: plan?.name });
-    openModal(SELECT_PAYMENT_MODAL_ID);
-    return;
-  };
-
-  const handleBuyTokens = async (ev): Promise<void> => {
-    ev.preventDefault();
-    ev.stopPropagation();
-
-    setModalData({
-      mode: "tokens",
-      amount: 1000,
-    });
-
     openModal(SELECT_PAYMENT_MODAL_ID);
     return;
   };

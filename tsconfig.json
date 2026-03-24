@@ -1,6 +1,14 @@
 {
   "include": ["src/**/*", "src/css-module.d.ts", "src/global.d.ts"],
-  "exclude": ["dist", "node_modules", "scripts", "docs", "examples"],
+  "exclude": [
+    "dist",
+    "node_modules",
+    "scripts",
+    "docs",
+    "examples",
+    "src/**/*.spec.ts",
+    "src/**/*.spec.tsx"
+  ],
   "compilerOptions": {
     "lib": ["ES2017", "DOM", "ES2019"],
     "target": "es2022",

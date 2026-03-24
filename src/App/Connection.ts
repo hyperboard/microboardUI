@@ -21,6 +21,83 @@ import { notify } from "shared/ui-lib/Toast";
 import { Storage } from "./Storage";
 import { VERSION } from "version";
 
+export type { AiChatMsg };
+
+export type OpenAIModels =
+  | "gpt-3.5-turbo"
+  | "gpt-4"
+  | "gpt-4o"
+  | "GPT-4o"
+  | "gpt-4o-mini"
+  | "GPT-4o mini"
+  | "gpt-4-32k"
+  | "gpt-3.5-turbo-0613"
+  | "gpt-4-0613"
+  | "gpt-3.5-turbo-16k"
+  | "gpt-4-16k"
+  | "o1-mini"
+  | "o1"
+  | "dall-e-2"
+  | "dall-e-3"
+  | "midjourney"
+  | "flux-schnell"
+  | "flux-pro"
+  | "recraft"
+  | "tts-1-hd"
+  | "deepseek-chat"
+  | "deepseek-reasoner"
+  | "sonar-deep-research";
+
+export interface UserRequest {
+  method: "UserRequest";
+  context: number[];
+  boardContext: string[];
+  boardContextIds?: string[];
+  idea: string;
+  model?: OpenAIModels;
+  images?: string[];
+  updatedFrom?: number;
+  itemId: string;
+  requestItemId: string;
+  action?: {
+    action: "adjust_text_length" | "adjust_reading_level" | "adjust_emojis";
+    level: number;
+  };
+  contextRequest?: {
+    messageId: string;
+    range?: number;
+  };
+}
+
+export interface GenerateImageRequest {
+  method: "GenerateImage";
+  prompt: string;
+  itemId: string;
+  options:
+    | {
+        model: "dall-e-2";
+        size: "256x256" | "512x512" | "1024x1024";
+      }
+    | {
+        model: "dall-e-3";
+        size: "1024x1024" | "1792x1024" | "1024x1792";
+        quality: "standard" | "hd";
+      }
+    | {
+        model: "midjourney";
+      }
+    | {
+        model: "flux-schnell" | "flux-pro";
+        aspect_ratio: string;
+      };
+}
+
+export interface GenerateAudioRequest {
+  method: "GenerateAudio";
+  text: string;
+  model: "tts-1-hd";
+}
+
 // [CHANGE] Добавлен интерфейс сообщения о завершении подписки (приходит сразу после коннекта)
 export interface BoardSubscriptionCompletedMsg {
   type: "BoardSubscriptionCompleted";

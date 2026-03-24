@@ -61,7 +61,11 @@ export function useModalInfoContext() {
   return useStrictContext(InfoModalContext);
 }
 
-export const InfoModalProvider: React.FC = ({ children }) => {
+type InfoModalProviderProps = React.PropsWithChildren;
+
+export const InfoModalProvider = ({
+  children,
+}: InfoModalProviderProps): React.JSX.Element => {
   const [modalInfo, setModalInfo] = useState<{
     title: string;
     description: string;

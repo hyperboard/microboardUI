@@ -1,5 +1,6 @@
 import { useAppContext } from "features/AppContext";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
+import { AudioItem, VideoItem } from "microboard-temp";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Icon } from "shared/ui-lib/Icon";
@@ -14,16 +15,20 @@ export function SaveVideoOrAudio({ itemType }: Props): React.JSX.Element {
   const { toggleMenu } = usePanelContext();
   const { t } = useTranslation();
   const item = board.selection.items.getSingle();
-  if (
-    item?.itemType !== itemType ||
-    (item.itemType === "Video" && !item.getIsStorageUrl()) ||
-    (item.itemType === "Audio" && !item.getExtension())
-  ) {
+  const selectedItem =
+    itemType === "Video"
+      ? item instanceof VideoItem && item.getIsStorageUrl()
+        ? item
+        : null
+      : item instanceof AudioItem && item.getExtension()
+        ? item
+        : null;
+  if (!selectedItem) {
     return <></>;
   }
 
   const onClick = (): void => {
-    item.download();
+    selectedItem.download();
     toggleMenu("None");
   };
 

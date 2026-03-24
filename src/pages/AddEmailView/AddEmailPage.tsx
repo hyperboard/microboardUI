@@ -97,7 +97,7 @@ export const AddEmailPage = (): React.ReactElement => {
       });
     } catch (err) {
       if (err instanceof HTTPError && err.status === 409) {
-        setEmailError(t("auth.emailAlreadyInUse"));
+        setEmailError(String(t("auth.emailAlreadyInUse" as never)));
         setIsDisabled(true);
         setIsSubmitLoading(false);
       } else {

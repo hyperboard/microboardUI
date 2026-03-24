@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "features/AppContext";
-import style from "../RestOptionsMenu.module.css";
 import inputStyle from "./ForceGraphGapInput.module.css";
 
 export function ForceGraphGapInput(): React.JSX.Element | null {

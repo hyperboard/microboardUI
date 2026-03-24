@@ -1,5 +1,6 @@
 import React from "react";
 import { Icon } from "../../shared/ui-lib/Icon";
+import type { IconId } from "../../shared/ui-lib/Icon/Icon";
 import { DrawingTool } from "microboard-temp";
 import { UiButton } from "shared/ui-lib/UiButton";
 
@@ -12,9 +13,14 @@ export const DrawingToolPicker = ({
   selected,
   onPick,
 }: Props): React.ReactElement => {
+  const drawingTools = window.MICROBOARD_CONFIG.DRAWING_TOOLS.filter(
+    (drawing): drawing is DrawingTool =>
+      drawing === "Pen" || drawing === "Eraser" || drawing === "Highlighter",
+  );
+
   return (
     <>
-      {window.MICROBOARD_CONFIG.DRAWING_TOOLS.map((drawing) => (
+      {drawingTools.map((drawing) => (
         <UiButton
           id={`drawing-${drawing}`}
           onClick={() => onPick(drawing)}
@@ -23,7 +29,7 @@ export const DrawingToolPicker = ({
           variant="secondary"
           active={selected === drawing}
         >
-          <Icon iconName={drawing} width={24} height={24} />
+          <Icon iconName={drawing as IconId} width={24} height={24} />
         </UiButton>
       ))}
     </>

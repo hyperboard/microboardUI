@@ -7,7 +7,15 @@ import { UiButton } from "shared/ui-lib/UiButton/UiButton";
 import btnStyle from "../../ContextPanelButton.module.css";
 
 interface Props {
-  rounded?: string;
+  rounded?:
+    | "none"
+    | "left"
+    | "right"
+    | "top"
+    | "bottom"
+    | "bottom-right"
+    | "bottom-left"
+    | "full";
 }
 
 export function ThrowDice({ rounded = "none" }: Props) {

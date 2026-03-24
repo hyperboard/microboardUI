@@ -13,15 +13,35 @@ export function ConnectorSmartJump(): React.ReactElement | null {
 
   const connectors = selectedItems.filter(
     (item) => item instanceof Connector,
-  ) as Connector[];
+  ) as Array<
+    Connector & {
+      getSmartJump?: () => boolean;
+      setSmartJump?: (nextValue: boolean) => void;
+    }
+  >;
 
-  if (connectors.length === 0) return null;
+  if (
+    connectors.length === 0 ||
+    connectors.some(
+      (connector) =>
+        typeof connector.getSmartJump !== "function" ||
+        typeof connector.setSmartJump !== "function",
+    )
+  ) {
+    return null;
+  }
+  const smartJumpConnectors = connectors as Array<
+    Connector & {
+      getSmartJump: () => boolean;
+      setSmartJump: (nextValue: boolean) => void;
+    }
+  >;
 
-  const isActive = connectors.every((c) => c.getSmartJump());
+  const isActive = smartJumpConnectors.every((c) => c.getSmartJump());
 
   const handleClick = useCallback(() => {
-    connectors.forEach((c) => c.setSmartJump(!isActive));
-  }, [connectors, isActive]);
+    smartJumpConnectors.forEach((c) => c.setSmartJump(!isActive));
+  }, [smartJumpConnectors, isActive]);
 
   return (
     <UiButton

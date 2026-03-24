@@ -92,7 +92,16 @@ export function createApp(isHistory = true): App {
     console.error("Error:", event.error);
   });
 
-  window.MICROBOARD_CONFIG.hooks.onUploadMediaError = catchMediaErrorResponse;
+  window.MICROBOARD_CONFIG.hooks.onUploadMediaError = async (...args) => {
+    const [response, mediaType] = args;
+    if (
+      response instanceof Response &&
+      (mediaType === "image" || mediaType === "video" || mediaType === "audio")
+    ) {
+      await catchMediaErrorResponse(response, mediaType);
+    }
+    return false;
+  };
 
   let board: Board;
   // chrome handler for saving file
@@ -270,7 +279,11 @@ export function createApp(isHistory = true): App {
     if (typeof presence?.setCurrentUser === "function") {
       presence.setCurrentUser(currentUser);
     }
-    board.selection.events = board.events;
+    (
+      board.selection as typeof board.selection & {
+        events?: typeof board.events;
+      }
+    ).events = board.events;
 
     // TODO: reenable when fixed multiple snapshots for one board
     // if (snapshot && currIndex === 0) {
@@ -386,7 +399,8 @@ export function createApp(isHistory = true): App {
           const reloadInterval = setInterval(() => {
             const confirmedEvents = app
               .getBoard()
-              .events?.getRaw().confirmedEvents;
+              .events?.log.list.getConfirmedRecords()
+              .map((record) => record.event);
             const flatOperations: Operation[] =
               confirmedEvents?.flatMap((ev) =>
                 "operations" in ev.body

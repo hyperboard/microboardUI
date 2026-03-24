@@ -153,9 +153,9 @@ export const SelectTemplateModal = (): React.JSX.Element => {
               <div className={styles.searchOptions}>
                 <p>
                   {inputValue
-                    ? `${templates.length} \"${inputValue}\" ${t("modalTemplate.searchResults." + getCorrectEnding(templates.length))}`
+                    ? `${templates.length} \"${inputValue}\" ${String(t(`modalTemplate.searchResults.${getCorrectEnding(templates.length)}` as never))}`
                     : t(
-                        `modalTemplate.category.useCaseItems.${selectedCategory}`,
+                        `modalTemplate.category.useCaseItems.${selectedCategory}` as never,
                       )}
                 </p>
                 <LanguagesDropdown

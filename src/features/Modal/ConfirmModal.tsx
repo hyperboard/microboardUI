@@ -127,7 +127,11 @@ export function useConfirmModalContext() {
   return useStrictContext(ConfirmModalContext);
 }
 
-export const ConfirmModalProvider: React.FC = ({ children }) => {
+type ConfirmModalProviderProps = React.PropsWithChildren;
+
+export const ConfirmModalProvider = ({
+  children,
+}: ConfirmModalProviderProps): React.JSX.Element => {
   const [modalConfirm, setModalConfirm] = useState<ConfirmModalData>({
     opened: false,
     title: "",

@@ -14,7 +14,7 @@ interface Props {
   handlePick: (
     shape: ShapeType,
     category?: ShapeCategoryName,
-    e?: MouseEvent,
+    e?: React.MouseEvent<HTMLButtonElement>,
   ) => void;
   categoryName: ShapeCategoryName;
 }

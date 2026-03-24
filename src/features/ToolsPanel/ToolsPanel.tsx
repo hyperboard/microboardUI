@@ -1,4 +1,4 @@
-import { useAppSubscription, useTools } from "App/useBoardSubscription";
+import { useAppSubscription } from "App/useBoardSubscription";
 import { useAppContext } from "features/AppContext";
 import AIChatPanel from "features/GenerateChart/AIChatPanel";
 import React, { useEffect, useState } from "react";
@@ -19,10 +19,6 @@ import { Select } from "./Buttons/Select";
 import { Undo } from "./Buttons/Undo";
 import { PanelContext } from "./PanelContext";
 import style from "./ToolsPanel.module.css";
-import { AddStar } from "features/ToolsPanel/Buttons/Star";
-import { AddCounter } from "features/ToolsPanel/Buttons/AddCounter";
-import { AddCard } from "features/ToolsPanel/Buttons/GameItems/AddCard";
-import { AddDice } from "features/ToolsPanel/Buttons/GameItems/AddDice";
 import { AddGameItem } from "features/ToolsPanel/Buttons/AddGameItem/AddGameItem";
 
 export function ToolsPanel(): React.JSX.Element {

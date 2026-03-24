@@ -4,7 +4,7 @@ import clsx from "clsx";
 import type { Account } from "entities/account";
 import { AI_UNAVAILABLE_MODAL_ID } from "features/AiUnavailableModal/AiUnavailableModal";
 import { USER_PLAN_MODAL_ID } from "features/UserPlan";
-import React, { MouseEventHandler, useRef } from "react";
+import React, { useRef } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { useClickOutside } from "shared/lib/useClickOutside";
@@ -12,6 +12,7 @@ import { useBoundingClientRect } from "shared/lib/useClientRect";
 import { useIsPhoneScreen } from "shared/lib/useIsPhoneScreen";
 import { Chevron } from "shared/ui-lib/Dropdown/Chevron";
 import { Icon } from "shared/ui-lib/Icon";
+import type { IconId } from "shared/ui-lib/Icon/Icon";
 import { Tooltip } from "shared/ui-lib/Tooltip";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { UiPanel } from "shared/ui-lib/UiPanel";
@@ -108,6 +109,7 @@ export const AIDropdown = (props: AIDropdownProps): React.JSX.Element => {
   const { elementRef, rect } = useBoundingClientRect<HTMLDivElement>();
   const { model } = useAIContext();
   const { t } = useTranslation();
+  const translate = (key: string): string => t(key as never);
   const dropdownContentRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useClickOutside(
     () => setIsDropdownOpen(false),
@@ -132,8 +134,8 @@ export const AIDropdown = (props: AIDropdownProps): React.JSX.Element => {
           <span>
             {" "}
             {isPhoneScreen
-              ? t(`ai.models.${model}.mobileTitle`)
-              : t(`ai.models.${model}.title`)}
+              ? translate(`ai.models.${model}.mobileTitle`)
+              : translate(`ai.models.${model}.title`)}
           </span>
           <Chevron
             className={clsx(styles.arrow, {
@@ -153,7 +155,7 @@ export const AIDropdown = (props: AIDropdownProps): React.JSX.Element => {
               className={clsx(styles.modelDropdown)}
               style={{
                 right: !isPhoneScreen ? rect?.right : "unset",
-                left: !isPhoneScreen ? rect?.right - 300 : "69px",
+                left: !isPhoneScreen ? (rect?.right ?? 300) - 300 : "69px",
               }}
             >
               <Dropdown
@@ -175,9 +177,10 @@ export const Dropdown = (
   const { model, setModel } = useAIContext();
   const { openModal } = useUiModalContext();
   const { t } = useTranslation();
+  const translate = (key: string): string => t(key as never);
 
   const isModelDisabled = (model: OpenAIModels): boolean =>
-    !account.billingInfo?.models.find(
+    !account.billingInfo?.models?.find(
       (item) => item.id === model && item.isEnabled,
     );
   const selectModel = (model: OpenAIModels) => (): void => {
@@ -185,7 +188,7 @@ export const Dropdown = (
     setIsDropdownOpen(false);
   };
 
-  const handleOpenModal: MouseEventHandler = (evt) => {
+  const handleOpenModal = (evt: React.ChangeEvent<HTMLInputElement>): void => {
     evt.preventDefault();
     evt.stopPropagation();
     setIsDropdownOpen(false);
@@ -202,8 +205,12 @@ export const Dropdown = (
         return (
           <div className={styles.categoryWr} key={category}>
             <div className={styles.category}>
-              <Icon iconName={"Dropdown_" + category} width={20} height={20} />
-              {t(`ai.categories.${category}`)}
+              <Icon
+                iconName={`Dropdown_${category}` as IconId}
+                width={20}
+                height={20}
+              />
+              {translate(`ai.categories.${category}`)}
             </div>
 
             {models.map((modelInfo, i) => {
@@ -246,6 +253,7 @@ const AiRadioBtn: React.FC<AiRadioBtnButtonProps> = ({
   modelInfo,
 }) => {
   const { t } = useTranslation();
+  const translate = (key: string): string => t(key as never);
   const isPhoneScreen = useIsPhoneScreen();
 
   return (
@@ -261,11 +269,11 @@ const AiRadioBtn: React.FC<AiRadioBtnButtonProps> = ({
       <div className={styles.modelText}>
         <h5 className={styles.modelTitle}>
           {isPhoneScreen
-            ? t(`ai.models.${modelInfo.id}.mobileTitle`)
-            : t(`ai.models.${modelInfo.id}.title`)}
+            ? translate(`ai.models.${modelInfo.id}.mobileTitle`)
+            : translate(`ai.models.${modelInfo.id}.title`)}
         </h5>
         <p className={styles.modelDescription}>
-          {t(`ai.models.${modelInfo.id}.description`)}
+          {translate(`ai.models.${modelInfo.id}.description`)}
         </p>
       </div>
       <span className={styles.tokenBadge}>
@@ -275,9 +283,9 @@ const AiRadioBtn: React.FC<AiRadioBtnButtonProps> = ({
           tooltip={
             modelInfo.tokens +
             " " +
-            getTokenForm(modelInfo.tokens, t) +
+            getTokenForm(modelInfo.tokens, translate) +
             " " +
-            t("models.tokenTooltip")
+            translate("models.tokenTooltip")
           }
         />
       </span>

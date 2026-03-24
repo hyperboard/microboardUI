@@ -22,14 +22,7 @@ export function uploadAudio(
     loader: "MediaLoader",
   });
 
-  const audio = new AudioItem(
-    board,
-    true,
-    undefined,
-    board.events,
-    "",
-    extension,
-  );
+  const audio = new AudioItem(board, undefined, board.events, "", extension);
   const { scaleX, scaleY, translateX, translateY } = calculateAudioPosition(
     board,
     audio,

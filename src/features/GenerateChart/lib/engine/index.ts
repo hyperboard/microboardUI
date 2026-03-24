@@ -68,8 +68,11 @@ export class LayoutEngine {
     endId: number;
     label?: string;
   }): Connector {
-    const startItem: Item = this.itemsById.get(options.startId);
-    const endItem: Item = this.itemsById.get(options.endId);
+    const startItem = this.itemsById.get(options.startId);
+    const endItem = this.itemsById.get(options.endId);
+    if (!startItem || !endItem) {
+      throw new Error("Cannot create connector without both endpoint items");
+    }
     const { left: startItemX, top: startItemY } = startItem.getPath().getMbr();
     const startWidth = startItem.getMbr().getWidth();
     const startHeight = startItem.getMbr().getHeight();

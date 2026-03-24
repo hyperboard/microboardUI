@@ -1,3 +1,4 @@
+import { Deck } from "microboard-temp";
 import { Icon } from "shared/ui-lib/Icon";
 import React from "react";
 import { useAppContext } from "features/AppContext";
@@ -6,7 +7,15 @@ import { UiButton } from "shared/ui-lib/UiButton/UiButton";
 import { useTranslation } from "react-i18next";
 
 interface Props {
-  rounded?: string;
+  rounded?:
+    | "none"
+    | "left"
+    | "right"
+    | "top"
+    | "bottom"
+    | "bottom-right"
+    | "bottom-left"
+    | "full";
 }
 
 export function ShuffleDeck({ rounded = "none" }: Props) {
@@ -15,7 +24,7 @@ export function ShuffleDeck({ rounded = "none" }: Props) {
 
   const single = board.selection.items.getSingle();
 
-  if (!single || single.itemType !== "Deck") {
+  if (!single || !(single instanceof Deck)) {
     return null;
   }
 

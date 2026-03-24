@@ -1,6 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { iconStyle, disabledIconStyle, svgStyle } from "./styles";
+
+const iconStyle: React.CSSProperties = { display: "inline-flex" };
+const disabledIconStyle: React.CSSProperties = {
+  ...iconStyle,
+  opacity: 0.5,
+};
+const svgStyle: React.CSSProperties = { display: "block" };
 
 const darkSvg = (
   <svg

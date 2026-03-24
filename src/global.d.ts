@@ -12,7 +12,23 @@ declare module "https://www.unpkg.com/microboard-ui-temp/dist/index.js" {
   export = local;
 }
 
+declare module "https://unpkg.com/microboard-ui-temp/dist/index.js" {
+  import * as local from "./index";
+  export = local;
+}
+
 declare global {
+  interface ImportMetaEnv {
+    readonly EMBED_URL: string;
+    readonly TOLGEE_API_KEY?: string;
+    readonly TOLGEE_API_URL?: string;
+    readonly TOLGEE_PROJECT_ID?: string;
+  }
+
+  interface ImportMeta {
+    readonly env: ImportMetaEnv;
+  }
+
   interface Window {
     app: App;
     showDebug: boolean;

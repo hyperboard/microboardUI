@@ -176,7 +176,8 @@ export const AIContextProvider = ({
 
     setResponseNodeId(responseAdded.getId());
 
-    board.aiImagePlaceholder = responseAdded;
+    board.aiImagePlaceholder =
+      responseAdded as unknown as typeof board.aiImagePlaceholder;
     const threadDirectionIndex =
       requestAdded?.itemType === "AINode"
         ? requestAdded.getThreadDirection()
@@ -294,7 +295,7 @@ export const AIContextProvider = ({
       const options = {
         model: model === "flux-pro" ? "flux-pro" : "flux-schnell",
         aspect_ratio: "1:1",
-      };
+      } as const;
 
       const message: AiChatMsg<GenerateImageRequest> = {
         type: "AiChat",

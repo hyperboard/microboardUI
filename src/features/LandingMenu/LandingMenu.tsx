@@ -1,14 +1,4 @@
-import clsx from "clsx";
-import { isMicroboardIframe } from "shared/lib/isMicroboardIframe";
-import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { EyeClosed, EyeOpened } from "../../shared/ui-lib/Icon";
-import { UiLink } from "shared/ui-lib/UiLink";
-import { UiPanel } from "shared/ui-lib/UiPanel";
-import { LANDING_URL, LANDING_URL_EN } from "./const";
-import style from "./LandingMenu.module.css";
-import { UiSeparator } from "shared/ui-lib/UiSeparator";
-import { UiButton } from "shared/ui-lib/UiButton";
+import React from "react";
 
 export function LandingMenu(): React.ReactElement | null {
   // const [isOpen, setIsOpen] = useState(true);

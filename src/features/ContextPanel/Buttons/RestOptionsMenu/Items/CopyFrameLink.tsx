@@ -12,6 +12,7 @@ export function CopyFrameLink(): React.JSX.Element {
   const { board } = useAppContext();
   const { toggleMenu } = usePanelContext();
   const { t } = useTranslation();
+  const translate = (key: string): string => t(key as never);
 
   const handleCopyFrameLink = async (): Promise<void> => {
     const item = board.selection.items.getSingle();
@@ -20,15 +21,15 @@ export function CopyFrameLink(): React.JSX.Element {
       try {
         await navigator.clipboard.writeText(getLinkToItem(item.getId()));
         notify({
-          body: t("contextPanel.copyFrameLink.success.description"),
+          body: translate("contextPanel.copyFrameLink.success.description"),
           variant: "success",
           duration: Number.POSITIVE_INFINITY,
         });
       } catch (err) {
         console.error(err);
         notify({
-          header: t("contextPanel.copyFrameLink.error.title"),
-          body: t("contextPanel.copyFrameLink.error.description"),
+          header: translate("contextPanel.copyFrameLink.error.title"),
+          body: translate("contextPanel.copyFrameLink.error.description"),
           variant: "error",
         });
       }
@@ -42,7 +43,7 @@ export function CopyFrameLink(): React.JSX.Element {
       onClick={handleCopyFrameLink}
       icon={<Icon width={20} height={20} iconName="CopyLink" />}
     >
-      {t("contextPanel.copyFrameLink.text")}
+      {translate("contextPanel.copyFrameLink.text")}
     </RestOptionsMenuItem>
   );
 }

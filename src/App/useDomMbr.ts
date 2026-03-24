@@ -8,7 +8,7 @@ import type { SubjectName } from "App/getSubscriptions";
 type Params = {
   app: App;
   board: Board;
-  ref: RefObject<HTMLElement>;
+  ref: RefObject<HTMLElement | null>;
   subjects?: SubjectName[];
   targetMbr?: Mbr;
   verticalOffset?: number;

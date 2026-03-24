@@ -2,8 +2,8 @@ import {
   Board,
   prepareImage,
   ImageItem,
-  ImageItemData,
   Item,
+  type ItemData,
   PRESENCE_CURSOR_THROTTLE,
   HotkeysMap,
   checkHotkeys,
@@ -24,6 +24,10 @@ import { tempStorage } from "App/SessionStorage";
 import { AppSettings } from "App/App";
 import { mediaApi } from "shared/api";
 import { validateMediaFile } from "App/MediaHelpers";
+
+function isVideoExtension(value: string): value is "mp4" | "webm" {
+  return value === "mp4" || value === "webm";
+}
 
 export interface Controller {
   onWheel: (event: WheelEvent) => void;
@@ -658,14 +662,17 @@ export function getController(
     }
   }
 
-  function onDrop(event): void {
+  function onDrop(event: DragEvent): void {
     event.preventDefault();
     const board = getBoard();
     if (!board) {
       return;
     }
 
-    const file = event.dataTransfer.files[0];
+    const file = event.dataTransfer?.files[0];
+    if (!file) {
+      return;
+    }
     const fileExtension = file.name.split(".").pop()?.toLowerCase();
     if (!validateMediaFile(file, account)) {
       return;
@@ -673,7 +680,8 @@ export function getController(
 
     if (
       fileExtension &&
-      window.MICROBOARD_CONFIG.VIDEO_FORMATS.includes(fileExtension)
+      window.MICROBOARD_CONFIG.VIDEO_FORMATS.includes(fileExtension) &&
+      isVideoExtension(fileExtension)
     ) {
       mediaApi.uploadVideo(
         file,
@@ -762,7 +770,10 @@ async function copyImage(
   event: ClipboardEvent,
   board: Board,
   clipboard: Clipboard,
-  data: { imageElement: HTMLImageElement; imageData: ImageItemData },
+  data: {
+    imageElement: HTMLImageElement;
+    imageData: { [key: string]: ItemData };
+  },
 ) {
   try {
     const { imageElement, imageData } = data;

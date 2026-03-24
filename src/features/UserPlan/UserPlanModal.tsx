@@ -20,7 +20,7 @@ export const USER_PLAN_MODAL_ID = "USER_PLAN_MODAL_ID";
 
 export function UserPlanModal() {
   const { openModal } = useUiModalContext();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const account = useAccount();
 
   // const currentModelId: OpenAIModels =
@@ -71,7 +71,9 @@ export function UserPlanModal() {
                   key={value.toString()}
                   onClick={handleClick}
                   className={clsx(btnClass, isActive && activeClass)}
-                  ref={(ref) => optionsRefs.current?.push(ref)}
+                  ref={(ref) => {
+                    optionsRefs.current?.push(ref);
+                  }}
                 >
                   <span className={clsx(textClass, styles.switchBtn)}>
                     <span>Annual</span>

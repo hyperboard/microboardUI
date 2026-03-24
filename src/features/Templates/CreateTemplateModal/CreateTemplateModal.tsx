@@ -23,6 +23,11 @@ interface TranslatableInput {
   defaultValue?: string;
 }
 
+type TemplateLanguageOption = {
+  value: string;
+  label: React.ReactNode;
+};
+
 export const CREATE_TEMPLATE_MODAL = Symbol("createTemplate");
 
 const CreateTemplate = (): React.JSX.Element => {
@@ -51,7 +56,9 @@ const CreateTemplate = (): React.JSX.Element => {
     (category) => {
       return {
         value: category,
-        label: t(`modalTemplate.category.useCaseItems.${category}`),
+        label: String(
+          t(`modalTemplate.category.useCaseItems.${category}` as never),
+        ),
       };
     },
   );
@@ -66,12 +73,15 @@ const CreateTemplate = (): React.JSX.Element => {
 
   const getLanguages = async () => {
     try {
+      const headers: HeadersInit = {
+        Accept: "application/json",
+      };
+      if (import.meta.env.TOLGEE_API_KEY) {
+        headers["X-API-Key"] = import.meta.env.TOLGEE_API_KEY;
+      }
       const response = await fetch(getTolgeeApiUrl("/languages"), {
         method: "get",
-        headers: {
-          Accept: "application/json",
-          "X-API-Key": import.meta.env.TOLGEE_API_KEY,
-        },
+        headers,
       });
       return (await response.json())._embedded.languages as {
         id: number;
@@ -86,13 +96,17 @@ const CreateTemplate = (): React.JSX.Element => {
   };
 
   const createTranslationRequest = async (data: string) => {
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    };
+    if (import.meta.env.TOLGEE_API_KEY) {
+      headers["X-API-Key"] = import.meta.env.TOLGEE_API_KEY;
+    }
+
     return fetch(getTolgeeApiUrl("/suggest/machine-translations"), {
       method: "post",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "X-API-Key": import.meta.env.TOLGEE_API_KEY,
-      },
+      headers,
       body: data,
     })
       .then((response) => response.json())
@@ -349,11 +363,11 @@ const CreateTemplate = (): React.JSX.Element => {
       .catch((err) => {
         if (err?.message === "conflict") {
           setErrors([
-            t("template.alreadyExists" as any) ||
+            String(t("template.alreadyExists" as never)) ||
               "Template for this board already exists",
           ]);
         } else {
-          setErrors([t("template.createError")]);
+          setErrors([String(t("template.createError"))]);
         }
       })
       .finally(() => {
@@ -409,10 +423,12 @@ const CreateTemplate = (): React.JSX.Element => {
         </UiButton>
         <Selector
           multiselect={true}
-          options={window.MICROBOARD_CONFIG.TEMPLATE_LANGUAGES.map((item) => {
-            item.label = t(`common.languages.${item.value}`);
-            return item;
-          })}
+          options={
+            window.MICROBOARD_CONFIG.TEMPLATE_LANGUAGES.map((item) => ({
+              ...item,
+              label: String(t(`common.languages.${item.value}` as never)),
+            })) as TemplateLanguageOption[]
+          }
           ref={languagesSelectorRef}
           onChange={forceUpdate}
           containerClassName={styles.languagesSelector}

@@ -1,5 +1,5 @@
 import { Subscription } from "App/getSubscriptions";
-import React, { useEffect, useLayoutEffect } from "react";
+import { useLayoutEffect } from "react";
 import { useAppContext } from "features/AppContext";
 
 export function useAppSubscription(subscription: Subscription): void {

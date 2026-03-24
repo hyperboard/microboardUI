@@ -18,7 +18,11 @@ export function ItemTooltip(): React.JSX.Element {
     .filter(
       (item) =>
         item.itemType === "Placeholder" &&
-        item.getMiroData()?.type !== MiroBoardItemTypes.IMAGE,
+        (
+          item as {
+            getMiroData?: () => { type?: MiroBoardItemTypes } | undefined;
+          }
+        ).getMiroData?.()?.type !== MiroBoardItemTypes.IMAGE,
     );
 
   const mbr = useDomMbr({

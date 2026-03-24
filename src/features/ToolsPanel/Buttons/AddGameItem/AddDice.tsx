@@ -6,7 +6,7 @@ import { useUiModalContext } from "shared/ui-lib/UiModal/UiModalContext";
 import { CREATE_DICE_MODAL } from "../../../GameItems/CreateDiceModal";
 
 interface Props {
-  rounded?: string;
+  rounded?: "top" | "bottom" | "none";
 }
 
 export function AddDice({ rounded }: Props) {

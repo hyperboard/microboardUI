@@ -38,7 +38,7 @@ export function ForceGraphToggle(): React.JSX.Element | null {
     <RestOptionsMenuItem
       id="force-graph-toggle"
       onClick={handleClick}
-      icon={<Icon width={20} height={20} iconName="Graph" />}
+      icon={<Icon width={20} height={20} iconName={"Gear" as const} />}
     >
       {isActive
         ? t("contextPanel.forceGraph.stop")

@@ -1,7 +1,7 @@
 import React from "react";
 import clsx from "clsx";
 import { Icon } from "shared/ui-lib/Icon/Icon";
-import { Commentator, CommentMessage } from "microboard-temp";
+import type { Commentator, CommentMessage } from "entities/comments/types";
 import styles from "./CommentPreview.module.css";
 import { useTranslation } from "react-i18next";
 import { Avatar } from "features/UserPanel/Avatar/Avatar";
@@ -24,6 +24,7 @@ export const CommentPreview = ({
   isOpen,
 }: Props): React.JSX.Element => {
   const { t } = useTranslation();
+  const translate = (key: string): string => t(key as never);
 
   return (
     <div
@@ -80,7 +81,7 @@ export const CommentPreview = ({
       {!!messagesCount && (
         <p className={clsx(styles.smallText, styles.fullWidth)}>
           {messagesCount}{" "}
-          {t(`comment.answer.${getCorrectEnding(messagesCount)}`)}
+          {translate(`comment.answer.${getCorrectEnding(messagesCount)}`)}
         </p>
       )}
     </div>

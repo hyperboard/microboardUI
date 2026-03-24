@@ -3,11 +3,10 @@ import React from "react";
 import { useAppContext } from "features/AppContext";
 import btnStyle from "../../ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton/UiButton";
-import { Card, Deck, getHotkeyLabel } from "microboard-temp";
+import { Card, Deck, getHotkeyLabel, type Item } from "microboard-temp";
 import { useTranslation } from "react-i18next";
-import { BaseItem } from "microboard-temp/dist/types/Items/BaseItem";
 
-function sortItemsByPosition(items: BaseItem[]) {
+function sortItemsByPosition(items: Item[]) {
   return items.sort((a, b) => {
     if (a.top < b.top) return -1;
     if (a.top > b.top) return 1;
@@ -20,7 +19,15 @@ function sortItemsByPosition(items: BaseItem[]) {
 }
 
 interface Props {
-  rounded?: string;
+  rounded?:
+    | "none"
+    | "left"
+    | "right"
+    | "top"
+    | "bottom"
+    | "bottom-right"
+    | "bottom-left"
+    | "full";
   onlyCards: boolean;
 }
 
@@ -49,23 +56,26 @@ export function CreateDeck({ rounded = "none", onlyCards }: Props) {
       addedDeck.addChildItems(cardsOrDecks);
       board.selection.items.add(addedDeck);
     } else {
-      let mainDeck: Deck | null = null;
+      let deckToUse: Deck | null = null;
       const cards: Card[] = [];
-      cardsOrDecks.forEach((item) => {
-        if (item.itemType === "Card") {
+      for (const item of cardsOrDecks) {
+        if (item instanceof Card) {
           cards.push(item);
-        } else if (item.itemType === "Deck") {
-          if (mainDeck) {
+        } else if (item instanceof Deck) {
+          if (deckToUse) {
             cards.push(...item.getDeck());
             board.remove(item);
           } else {
-            mainDeck = item;
+            deckToUse = item;
           }
         }
-      });
+      }
       board.selection.items.removeAll();
-      mainDeck.addChildItems(cards);
-      board.selection.items.add(mainDeck);
+      if (!deckToUse) {
+        return;
+      }
+      deckToUse.addChildItems(cards);
+      board.selection.items.add(deckToUse);
     }
   };
 

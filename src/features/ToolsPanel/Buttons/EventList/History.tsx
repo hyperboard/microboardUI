@@ -1,6 +1,5 @@
 import { BoardEvent } from "microboard-temp";
 import React, { CSSProperties } from "react";
-import { useTranslation } from "react-i18next";
 import { useAppContext } from "features/AppContext";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { UiPanel } from "shared/ui-lib/UiPanel";
@@ -17,7 +16,6 @@ export const History = React.memo(function History({
   style,
   events,
 }: Props): React.JSX.Element {
-  const { t } = useTranslation();
   const { board } = useAppContext();
 
   const headerStyle: CSSProperties = {
@@ -29,7 +27,19 @@ export const History = React.memo(function History({
   };
 
   const handleExport = (): void => {
-    const data = board.events?.getRaw();
+    const data = board.events
+      ? {
+          confirmedEvents: board.events.log.list
+            .getConfirmedRecords()
+            .map((record) => record.event),
+          eventsToSend: board.events.log.list
+            .getRecordsToSend()
+            .map((record) => record.event),
+          newEvents: board.events.log.list
+            .getNewRecords()
+            .map((record) => record.event),
+        }
+      : undefined;
     if (!data) {
       return;
     }

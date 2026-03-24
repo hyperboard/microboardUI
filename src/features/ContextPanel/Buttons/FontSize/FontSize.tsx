@@ -78,11 +78,13 @@ export function FontSize({ rounded = "none" }: Props): React.ReactElement {
   const resetTextScale = (): void => {
     const items = board.selection.items.list();
     items.forEach((item) => {
+      const richText = item.getRichText();
       if (
         (item.itemType === "RichText" || item.itemType === "AINode") &&
-        item.getRichText().transformation.getScale().x !== 1
+        richText &&
+        richText.transformation.getScale().x !== 1
       ) {
-        item.getRichText().transformation.scaleTo(1, 1);
+        richText.transformation.scaleTo(1, 1);
       }
     });
   };
@@ -106,7 +108,10 @@ export function FontSize({ rounded = "none" }: Props): React.ReactElement {
     const valueGetter = isBigger ? getNextBiggerValue : getNextSmallerValue;
 
     const smallest = board.selection.getFontSize(false);
-    if (isBigger && board.selection.getAutosize() && valueGetter(smallest)) {
+    if (
+      smallest === undefined ||
+      (isBigger && board.selection.getAutosize() && valueGetter(smallest))
+    ) {
       return;
     }
 

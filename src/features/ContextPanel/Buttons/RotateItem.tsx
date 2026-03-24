@@ -8,7 +8,15 @@ import { useTranslation } from "react-i18next";
 
 interface Props {
   clockwise: boolean;
-  rounded?: string;
+  rounded?:
+    | "none"
+    | "left"
+    | "right"
+    | "top"
+    | "bottom"
+    | "bottom-right"
+    | "bottom-left"
+    | "full";
 }
 
 export function RotateItem({ clockwise, rounded = "none" }: Props) {

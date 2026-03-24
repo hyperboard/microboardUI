@@ -1,6 +1,6 @@
 import { useBoardsList } from "App/useBoardsList";
 import { useContextMenuContext } from "features/ContextMenu";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
 import styles from "./ShareSnapshotModal.module.css";

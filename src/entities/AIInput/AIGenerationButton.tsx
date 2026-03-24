@@ -16,7 +16,11 @@ export const AiGenerationButton = () => {
   const buttonContainerRef = useRef<HTMLDivElement>(null);
   const hoveredItem = board.items.getUnderPointer().pop();
   const getCanvasButtonMbr = () => {
-    if (hoveredItem && hoveredItem.itemType === "AINode") {
+    if (
+      hoveredItem &&
+      hoveredItem.itemType === "AINode" &&
+      "getButtonMbr" in hoveredItem
+    ) {
       return hoveredItem
         .getButtonMbr()
         .getTransformed(board.camera.getMatrix());

@@ -1,27 +1,21 @@
+import React, { ChangeEventHandler, useRef } from "react";
 import { useAccount } from "App/useAccount";
 import { useAppContext } from "features/AppContext";
-import { Icon } from "shared/ui-lib/Icon/Icon";
-import { notify } from "shared/ui-lib/Toast/index";
-import React, { ChangeEventHandler, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { UiButton } from "shared/ui-lib/UiButton/index";
 import { mediaApi } from "shared/api";
 import { validateMediaFile } from "App/MediaHelpers";
-
-function bytesToGigabytes(bytes: number): number {
-  return bytes / 1024 ** 3;
-}
-
-function bytesToMegabytes(bytes: number): number {
-  return bytes / 1024 ** 2;
-}
-
-const MAX_FILE_SIZE = 50 * 1024 * 1024;
+import { Icon } from "shared/ui-lib/Icon/Icon";
+import { notify } from "shared/ui-lib/Toast/index";
+import { UiButton } from "shared/ui-lib/UiButton/index";
 
 interface Props {
   type: "Video" | "Audio" | "Image";
   toggleMenu: () => void;
   rounded?: "top" | "bottom" | "none";
+}
+
+function isVideoExtension(value: string): value is "mp4" | "webm" {
+  return value === "mp4" || value === "webm";
 }
 
 export function AddMediaButton({
@@ -79,7 +73,8 @@ export function AddMediaButton({
       case "Video":
         if (
           !fileExtension ||
-          !window.MICROBOARD_CONFIG.VIDEO_FORMATS.includes(fileExtension)
+          !window.MICROBOARD_CONFIG.VIDEO_FORMATS.includes(fileExtension) ||
+          !isVideoExtension(fileExtension)
         ) {
           return notifyAboutUnsupportedFormat();
         }

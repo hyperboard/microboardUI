@@ -8,7 +8,15 @@ import { Card, Deck, getHotkeyLabel } from "microboard-temp";
 
 interface Props {
   cardPosition: "random" | "top" | "bottom";
-  rounded?: string;
+  rounded?:
+    | "none"
+    | "left"
+    | "right"
+    | "top"
+    | "bottom"
+    | "bottom-right"
+    | "bottom-left"
+    | "full";
 }
 
 export function GetCard({ cardPosition, rounded = "none" }: Props) {
@@ -22,8 +30,8 @@ export function GetCard({ cardPosition, rounded = "none" }: Props) {
   }
 
   const handleClick = (): void => {
-    let card: Card;
     const deck = single as Deck;
+    let card: Card | undefined;
     switch (cardPosition) {
       case "random":
         card = deck.getRandomCard();
@@ -37,6 +45,9 @@ export function GetCard({ cardPosition, rounded = "none" }: Props) {
       default:
         card = deck.getRandomCard();
         break;
+    }
+    if (!card) {
+      return;
     }
     const { left, top } = deck.getMbr();
     if (deck.getIsPerpendicular()) {

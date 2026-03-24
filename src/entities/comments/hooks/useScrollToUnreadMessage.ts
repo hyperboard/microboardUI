@@ -1,5 +1,5 @@
 import { RefObject, useEffect } from "react";
-import { CommentMessage } from "microboard-temp";
+import type { CommentMessage } from "entities/comments/types";
 
 interface Args {
   refs: RefObject<Record<string, HTMLDivElement | null>>;

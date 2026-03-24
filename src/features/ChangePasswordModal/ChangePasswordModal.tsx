@@ -56,10 +56,7 @@ export function ChangePasswordModal(): React.JSX.Element {
     setIsSubmitLoading(true);
 
     account
-      .changePassword(
-        formRef.current.currentPassword.value,
-        formRef.current.newPassword.value,
-      )
+      .changePassword(form.currentPassword.value, form.newPassword.value)
       .then(() => {
         setIsPasswordChanged(true);
       })
@@ -242,14 +239,14 @@ export function ChangePasswordModal(): React.JSX.Element {
               prefixIcon={<LockIcon />}
               id="currentPassword"
               password
-              onFocus={() => {
-                setCurrentPasswordTouched(true);
-              }}
               hasError={!!currentPasswordError}
               placeholder={t("profile.currentPassword")}
               onInput={handleCurrentPasswordInput}
               onBlur={checkForm}
-              onFocus={checkForm}
+              onFocus={() => {
+                setCurrentPasswordTouched(true);
+                checkForm();
+              }}
             />
             <Input
               prefixIcon={<LockIcon />}

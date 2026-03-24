@@ -11,13 +11,31 @@ import { UiPanel } from "shared/ui-lib/UiPanel";
 import { FontSizePicker } from "features/Pickers/FontSizePicker";
 import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
-import { ApplyMatrixItem } from "microboard-temp/dist/types/Items/Transformation/TransformationOperations";
-
 interface Props {
-  rounded?: string;
+  rounded?:
+    | "none"
+    | "left"
+    | "right"
+    | "top"
+    | "bottom"
+    | "bottom-right"
+    | "bottom-left"
+    | "full";
 }
 
 const MENU_NAME = "SpreadCards";
+
+type ApplyMatrixItem = {
+  id: string;
+  matrix: {
+    translateX: number;
+    translateY: number;
+    scaleX: number;
+    scaleY: number;
+    shearX: number;
+    shearY: number;
+  };
+};
 
 export function SpreadCards({ rounded = "none" }: Props) {
   const { board } = useAppContext();
@@ -108,7 +126,11 @@ export function SpreadCards({ rounded = "none" }: Props) {
             currentFontSize={5}
             fontSizes={values}
             showAuto={false}
-            onPick={handlePick}
+            onPick={(size) => {
+              if (typeof size === "number") {
+                handlePick(size);
+              }
+            }}
           />
         </UiPanel>
       )}

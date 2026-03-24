@@ -7,7 +7,15 @@ import { Card, getHotkeyLabel } from "microboard-temp";
 import { useTranslation } from "react-i18next";
 
 interface Props {
-  rounded?: string;
+  rounded?:
+    | "none"
+    | "left"
+    | "right"
+    | "top"
+    | "bottom"
+    | "bottom-right"
+    | "bottom-left"
+    | "full";
 }
 
 export function FlipCard({ rounded = "none" }: Props) {

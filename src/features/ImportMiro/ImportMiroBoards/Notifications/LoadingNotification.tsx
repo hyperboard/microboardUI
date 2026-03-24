@@ -44,7 +44,8 @@ export const LoadingNotification = ({
           {t("miro.loadingNotification.title")}
         </h4>
         <p className={styles.notificationLoaderText}>
-          {t("miro.loadingNotification.text")} {data}
+          {t("miro.loadingNotification.text")}{" "}
+          {typeof data === "string" || typeof data === "number" ? data : ""}
           %...
         </p>
       </div>

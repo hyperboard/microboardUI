@@ -12,7 +12,7 @@ type Props = {
   onPick: (
     type: ShapeType,
     category?: ShapeCategoryName,
-    e?: MouseEvent,
+    e?: React.MouseEvent<HTMLButtonElement>,
   ) => void;
   selected?: ShapeType | "None";
   categoryName: ShapeCategoryName;
@@ -55,7 +55,7 @@ export function ShapePicker({
           tooltipPosition={"top-right-fixed"}
           tooltip={
             categoryName !== "basicShapes"
-              ? t(`shapePicker.${categoryName}.${shape}`)
+              ? String(t(`shapePicker.${categoryName}.${shape}` as never))
               : undefined
           }
           id={`shape-${shape}`}

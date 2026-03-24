@@ -4,8 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useAppContext } from "features/AppContext";
 import btnStyle from "./ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
-import { Group } from "microboard-temp";
-import { BaseItem } from "microboard-temp/dist/types/Items/BaseItem";
+import { Group, type BaseItem } from "microboard-temp";
 
 type Props = {
   rounded?: "left" | "right" | "none" | "full";

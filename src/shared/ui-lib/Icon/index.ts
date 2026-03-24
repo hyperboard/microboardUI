@@ -1,7 +1,9 @@
 export { ConnectorIcon } from "./ConnectorIcon";
 export { ConnectorPointerIcon } from "./ConnectorPointerIcon";
+export type { ConnectorPointerType } from "./ConnectorPointerIcon";
 export { FrameIcon } from "./FrameIcon";
 export { Icon } from "./Icon";
+export type { IconId } from "./Icon";
 export { Logo } from "./Logo";
 export { ShapeIcon } from "./ShapeIcon";
 export { StrokeColorIndicator } from "./StrokeColorIndicator";

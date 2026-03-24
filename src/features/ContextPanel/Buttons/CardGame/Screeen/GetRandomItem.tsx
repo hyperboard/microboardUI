@@ -8,7 +8,15 @@ import { Screen } from "microboard-temp";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";
 
 interface Props {
-  rounded?: string;
+  rounded?:
+    | "none"
+    | "left"
+    | "right"
+    | "top"
+    | "bottom"
+    | "bottom-right"
+    | "bottom-left"
+    | "full";
 }
 
 export function GetRandomItem({ rounded = "none" }: Props) {

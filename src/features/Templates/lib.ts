@@ -44,9 +44,8 @@ export const pasteSnapshot = ({
 }) => {
   const itemsMap = {};
   for (const itemData of snapshot.items) {
-    const id = itemData.id;
-    delete itemData.id;
-    itemsMap[id] = itemData;
+    const { id, ...itemWithoutId } = itemData;
+    itemsMap[id] = itemWithoutId;
   }
   if (board.events && snapshot) {
     board.paste(itemsMap, true, false);

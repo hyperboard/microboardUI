@@ -170,7 +170,7 @@ export class Account {
               "toolsPanel.addMedia.limitAlmostReached.header",
             ),
             body: window.MICROBOARD_CONFIG.i18n.t(
-              `toolsPanel.addMedia.limitAlmostReached.body.${billingInfo.plan.name}`,
+              `toolsPanel.addMedia.limitAlmostReached.body.${billingInfo.plan.name}` as never,
             ),
             button:
               billingInfo.plan.name === "basic"

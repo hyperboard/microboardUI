@@ -1,12 +1,7 @@
 import Cookies from "js-cookie";
+import type { App } from "App";
 import { isIframe } from "./isIframe";
-import {
-  Board,
-  exportBoardSnapshot,
-  BoardTool,
-  ExportSnapshot,
-} from "microboard-temp";
-import { App } from "App";
+import { Board, exportBoardSnapshot, ExportSnapshot } from "microboard-temp";
 
 // type MessagePattern = "updateUserToken" | "iframeEvent" | "makeSnapshot";
 
@@ -57,6 +52,8 @@ interface FireSnapshotEvent {
   pattern: "fireSnapshotEvent";
   payload: unknown;
 }
+
+type SetToolArgument = Parameters<Board["tools"]["setTool"]>[0];
 
 type Message =
   | SetAuthTokenMessage
@@ -169,7 +166,9 @@ export class IframeModule {
 
       if (data.pattern === "fireSnapshotEvent") {
         const board: Board = this.app.getBoard() as Board;
-        board.tools.setTool(new ExportSnapshot(board) as unknown as BoardTool);
+        board.tools.setTool(
+          new ExportSnapshot(board) as unknown as SetToolArgument,
+        );
         board.tools.publish();
       }
 
@@ -184,11 +183,13 @@ export class IframeModule {
           window.self.dispatchEvent(keyboardEvent);
         }
       }
-    } catch (error: Error) {
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Unknown iframe error";
       window.parent.postMessage(
         {
           pattern: "MicroboardError",
-          payload: JSON.stringify({ error: error.message }),
+          payload: JSON.stringify({ error: message }),
         },
         "*",
       );

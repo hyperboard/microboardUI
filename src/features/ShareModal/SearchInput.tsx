@@ -1,5 +1,4 @@
 import { Icon } from "shared/ui-lib/Icon";
-import { TopFade } from "shared/ui-lib/Transitions/TopFade";
 import React, {
   useEffect,
   useLayoutEffect,
@@ -12,10 +11,8 @@ import React, {
   type ReactNode,
   type SyntheticEvent,
 } from "react";
-import { createPortal } from "react-dom";
 import styles from "./SearchInput.module.css";
 import clsx from "clsx";
-import { useTranslation } from "react-i18next";
 import isEmail from "validator/lib/isEmail";
 import { validateItemsMap } from "microboard-temp";
 
@@ -44,16 +41,12 @@ export function SearchInput({
   excludeValues = [],
   addedEmails = [],
 }: Props) {
-  const { t } = useTranslation();
   const [addedValues, setAddedValues] = useState<string[]>(addedEmails);
   const [currValue, setCurrValue] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLDivElement>(null);
   const htmlInputRef = useRef<HTMLTextAreaElement>(null);
   const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
-  const [optionsListPosition, setOptionsListPosition] = useState<
-    Record<"top" | "left" | "width", number>
-  >({ left: 0, top: 0, width: 0 });
   const [inputWidth, setInputWidth] = useState(20);
   const [maxWidth, setMaxWidth] = useState<number>(0);
   const [highlightedValueIdx, setHighlightedValueIdx] = useState<number | null>(
@@ -63,18 +56,6 @@ export function SearchInput({
   const filteredOptions = options.filter(
     (op) => !addedValues.includes(op.value),
   );
-
-  const calcOptionsListPosition = () => {
-    const inputRect = inputRef.current?.getBoundingClientRect();
-    if (!inputRect) {
-      return;
-    }
-    setOptionsListPosition({
-      top: inputRect.bottom + 12,
-      left: inputRect.left,
-      width: inputRect.width,
-    });
-  };
 
   useEffect(() => {
     htmlInputRef.current?.focus();
@@ -109,9 +90,7 @@ export function SearchInput({
     }, 0);
   };
 
-  useLayoutEffect(() => {
-    calcOptionsListPosition();
-  }, [isFocused, filteredOptions.length]);
+  useLayoutEffect(() => {}, [isFocused, filteredOptions.length]);
 
   useEffect(() => {
     options.forEach((option) => {
@@ -128,15 +107,11 @@ export function SearchInput({
       nodes.forEach((node) => {
         if (node.target === inputRef.current) {
           const size = node.borderBoxSize[0];
-          if (size) {
-            setOptionsListPosition((prev) => ({
-              ...prev,
-              width: size.inlineSize,
-            }));
-          }
           const contentSize = node.contentBoxSize[0];
           if (contentSize) {
             setMaxWidth(contentSize.inlineSize);
+          } else if (size) {
+            setMaxWidth(size.inlineSize);
           }
         }
       });
@@ -164,7 +139,6 @@ export function SearchInput({
     setInputWidth(span.offsetWidth >= maxWidth ? maxWidth : span.offsetWidth);
 
     document.body.removeChild(span);
-    calcOptionsListPosition();
   };
 
   const handleInput: ChangeEventHandler<HTMLTextAreaElement> = (ev) => {
@@ -177,11 +151,6 @@ export function SearchInput({
 
   const stopPropagation = (evt: SyntheticEvent) => {
     evt.stopPropagation();
-  };
-
-  const preventDefault = (evt: SyntheticEvent) => {
-    evt.stopPropagation();
-    evt.preventDefault();
   };
 
   const addValue = (currValue: string) => {
@@ -289,19 +258,6 @@ export function SearchInput({
       }
     } catch {}
   };
-
-  const handleOptionClick =
-    (opt: SearchOption): MouseEventHandler =>
-    (ev) => {
-      ev.preventDefault();
-      ev.stopPropagation();
-      const values = [...addedValues, opt.value.trim()];
-      setAddedValues(values);
-      onValuesChange(values, currValue);
-      setCurrValue("");
-      calcInputSize("");
-      scrollInputToBottom();
-    };
 
   const handleAddedValueClick =
     (val: string): MouseEventHandler =>

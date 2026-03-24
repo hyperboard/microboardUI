@@ -37,13 +37,12 @@ export function AccessDeniedModal(): React.JSX.Element {
                 i18nKey={
                   isEmailAccount ? "sharing.loggedIn" : "sharing.loggedInCrypto"
                 }
+                values={{
+                  account: account.info?.email || account.info?.address,
+                }}
               >
                 You are logged in to your
-                <span className={styles.link}>
-                  {{
-                    account: account.info?.email || account.info?.address,
-                  }}
-                </span>{" "}
+                <span className={styles.link} />
                 account.
               </Trans>
             </p>

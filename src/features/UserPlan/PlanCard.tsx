@@ -6,7 +6,6 @@ import { Button } from "shared/ui-lib/Button";
 import { useTranslation } from "react-i18next";
 import { UiSkeleton } from "shared/ui-lib/UiSkeleton";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";
-import { Tooltip } from "shared/ui-lib/Tooltip";
 
 export type PlanState = "current" | "downgrade" | "available" | "pending";
 
@@ -69,6 +68,8 @@ export function PlanCard({
       case "pending":
         return t("userPlan.pendingBtn", { activationDate });
     }
+
+    return undefined;
   };
 
   const handleMailTo = () => {

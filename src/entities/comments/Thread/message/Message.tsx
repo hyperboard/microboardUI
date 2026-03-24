@@ -3,7 +3,7 @@ import clsx from "clsx";
 import styles from "./Message.module.css";
 import { Avatar } from "features/UserPanel/Avatar/Avatar";
 import { useAccount } from "App/useAccount";
-import { Commentator } from "microboard-temp";
+import type { Commentator } from "entities/comments/types";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { formatDate } from "shared/date/lib";
 import { Icon } from "shared/ui-lib/Icon";
@@ -92,7 +92,7 @@ export const Message = forwardRef<HTMLDivElement, Props>(
           <div className={styles.panelContainer}>
             {canEdit && (
               <UiButton
-                ref={ref}
+                ref={ref as React.Ref<HTMLButtonElement>}
                 className={clsx(
                   styles.dotsBtn,
                   isOptionsBtnVisible || isOptionsPanelActive

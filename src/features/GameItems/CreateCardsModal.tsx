@@ -51,15 +51,12 @@ export function CreateCardsModal(): React.JSX.Element {
     const cards: Card[] = [];
 
     faceUrls.forEach((faceUrl, index) => {
-      const card = new Card(
-        board,
-        index + faceUrl,
-        {
-          backsideUrl,
-          faceUrl,
-        },
-        cardDimensions,
-      );
+      const card = new Card(board, index + faceUrl, {
+        itemType: "Card",
+        backsideUrl,
+        faceUrl,
+        dimensions: cardDimensions,
+      });
       cards.push(card);
     });
 

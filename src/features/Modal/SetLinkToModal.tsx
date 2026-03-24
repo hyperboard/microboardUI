@@ -60,7 +60,7 @@ export const SetLinkToModal = (): React.JSX.Element => {
     <UiModal
       modalId={LINK_MODAL}
       onClose={handleCloseModal}
-      onPaste={(event: React.KeyboardEvent<HTMLDivElement>) =>
+      onPaste={(event: React.ClipboardEvent<HTMLDivElement>) =>
         event.stopPropagation()
       }
       onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) =>
@@ -92,7 +92,7 @@ export const SetLinkToModal = (): React.JSX.Element => {
           >
             {t("modalLinkTo.submit")}
           </UiButton>
-          {data && (
+          {typeof data === "string" && data.length > 0 && (
             <UiButton
               className={styles.btn}
               variant="tertiary"
@@ -103,7 +103,7 @@ export const SetLinkToModal = (): React.JSX.Element => {
             </UiButton>
           )}
         </div>
-        {error && <p className={styles.error}>{t(error)}</p>}
+        {error && <p className={styles.error}>{String(t(error))}</p>}
       </form>
     </UiModal>
   );

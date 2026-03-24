@@ -1,1 +1,4 @@
-export { ACCESS_DENIED_MODAL, AccessDeniedModal } from "./AiUnavailableModal";
+export {
+  AI_UNAVAILABLE_MODAL_ID,
+  AiUnavailableModal,
+} from "./AiUnavailableModal";

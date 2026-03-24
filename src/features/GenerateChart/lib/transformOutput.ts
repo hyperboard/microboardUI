@@ -127,37 +127,23 @@ const getPoint = (
 function getConnectorPoint(point: Point): BoardPoint {
   if (point.type === "Board") {
     return new ConnectorPoint(point.x, point.y);
-  } else {
-    // Fixed point
-    const targetItem = itemsById.get(point.id);
-    if (!targetItem) {
-      // Fallback to board point if item not found
-      return new ConnectorPoint(0, 0);
-    }
-    const { left: itemX, top: itemY } = targetItem.getPath().getMbr();
-    const x = getPoint(itemX, targetItem.getMbr().getWidth(), point.relativeX);
-    const y = getPoint(itemY, targetItem.getMbr().getHeight(), point.relativeY);
-    const relativePoint = toRelativePoint(new BoardPoint(x, y), targetItem);
-    return relativePoint;
-
-    // const targetWidth = targetItem.getMbr().getWidth();
-    // const targetHeight = targetItem.getMbr().getHeight();
-    // const targetX = targetItem.getMbr().left;
-    // const targetY = targetItem.getMbr().top;
-    // const startX = targetX + targetWidth * (point.relativeX / 100);
-    // const startY = targetY + targetHeight * (point.relativeY / 100);
-    // return toRelativePoint(new BoardPoint(startX, startY), targetItem);
-    // return new FixedPoint(
-    // 	targetItem,
-    // 	new BoardPoint(point.relativeX / 100, point.relativeY / 100),
-    // );
   }
+
+  const targetItem = itemsById.get(point.id);
+  if (!targetItem) {
+    return new ConnectorPoint(0, 0);
+  }
+
+  const { left: itemX, top: itemY } = targetItem.getPath().getMbr();
+  const x = getPoint(itemX, targetItem.getMbr().getWidth(), point.relativeX);
+  const y = getPoint(itemY, targetItem.getMbr().getHeight(), point.relativeY);
+  return toRelativePoint(new BoardPoint(x, y), targetItem);
 }
 
 function transformConnector(data: AiConnector, board: Board): void {
   const startPoint = getConnectorPoint(data.startPoint);
   const endPoint = getConnectorPoint(data.endPoint);
-  if (!data.startPoint?.id || !data.endPoint?.id) {
+  if (data.startPoint.type !== "Fixed" || data.endPoint.type !== "Fixed") {
     console.warn("Temporary not supported connector with Board point");
     return;
   }
@@ -216,7 +202,7 @@ function transformShape(data: AiShape, board: Board): void {
   const shape = new Shape(board, undefined, "Rectangle");
   shape.setId(board.getNewItemId());
   try {
-    shape.setShapeType(data.type);
+    shape.setShapeType(data.type as Parameters<typeof shape.setShapeType>[0]);
   } catch (err) {
     shape.setShapeType("Rectangle");
   }
@@ -286,19 +272,31 @@ function transformFrame(data: AiFrame, board: Board): void {
         return;
       }
       if (item) {
-        frame.addChildItem(item);
+        frame.addChildItems([item]);
       }
     });
   }
 }
 
-const transformers = {
-  RichText: transformText,
-  Shape: transformShape,
-  Frame: transformFrame,
-  Connector: transformConnector,
-  Sticker: transformSticker,
-};
+function transformItem(item: AiItem, board: Board): void {
+  switch (item.itemType) {
+    case "RichText":
+      transformText(item.data, board);
+      return;
+    case "Shape":
+      transformShape(item.data, board);
+      return;
+    case "Frame":
+      transformFrame(item.data, board);
+      return;
+    case "Connector":
+      transformConnector(item.data, board);
+      return;
+    case "Sticker":
+      transformSticker(item.data, board);
+      return;
+  }
+}
 
 export function transformAiOutput(output: AiItem[], board: Board): void {
   itemsById.clear(); // Clear previous items map
@@ -306,14 +304,14 @@ export function transformAiOutput(output: AiItem[], board: Board): void {
   // First pass: create all non-connector items
   output.forEach((item: AiItem) => {
     if (item.itemType !== "Connector") {
-      transformers[item.itemType](item.data, board);
+      transformItem(item, board);
     }
   });
 
   // Second pass: create connectors (now that all items exist)
   output.forEach((item: AiItem) => {
     if (item.itemType === "Connector") {
-      transformers[item.itemType](item.data, board);
+      transformItem(item, board);
     }
   });
 

@@ -8,7 +8,6 @@ import React, { PropsWithChildren, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "features/AppContext";
 import { useContextMenuContext } from "features/ContextMenu";
-import { useOpenedFoldersContext } from "entities/Folder";
 
 type SidePanelContext = {
   toggleSideMenu: () => void;
@@ -39,7 +38,7 @@ export function SidePanelContextProvider({
   const { app } = useAppContext();
   const navigate = useNavigate();
   const boardsList = useBoardsList();
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { close } = useContextMenuContext();
   const forceUpdate = useForceUpdate();
   useEffect(() => {
@@ -68,11 +67,17 @@ export function SidePanelContextProvider({
   };
 
   useEffect(() => {
-    return () => clearTimeout(timeoutRef.current);
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, []);
 
   const openMenu = (highlightTime = 0): void => {
-    clearTimeout(timeoutRef.current);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
 
     if (highlightTime > 0) {
       setHighlighted(true);
