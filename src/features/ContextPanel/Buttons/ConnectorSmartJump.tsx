@@ -38,7 +38,15 @@ export function ConnectorSmartJump(): React.ReactElement | null {
       }
       tooltipPosition="top"
     >
-      <Icon iconName="Switch" />
+      <span style={{ position: "relative", display: "inline-flex" }}>
+        <Icon iconName="Switch" />
+        <Icon
+          iconName={isActive ? "lock" : "unlock"}
+          width={12}
+          height={12}
+          style={{ position: "absolute", inset: 0, margin: "auto" }}
+        />
+      </span>
     </UiButton>
   );
 }
