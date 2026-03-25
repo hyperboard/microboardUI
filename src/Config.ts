@@ -5,7 +5,10 @@ export const frontConf = {
 };
 
 window.MICROBOARD_CONFIG = conf;
-window.MICROBOARD_FRONT_CONFIG = frontConf;
+window.MICROBOARD_FRONT_CONFIG = {
+  ...frontConf,
+  ...window.MICROBOARD_FRONT_CONFIG,
+};
 
 const isSnapshotInIframe = false;
 // typeof window !== "undefined" &&
