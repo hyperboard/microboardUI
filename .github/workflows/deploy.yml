@@ -90,6 +90,9 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      - name: Typecheck
+        run: bun run typecheck
+
       - name: Build
         run: bun run scripts/buildProd.ts
         env:
