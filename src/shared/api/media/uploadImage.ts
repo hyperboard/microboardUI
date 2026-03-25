@@ -4,7 +4,7 @@ import {
   calculatePosition,
   prepareImage,
 } from "microboard-temp";
-import * as PDFJS from "@bundled-es-modules/pdfjs-dist";
+import PDFJS from "@bundled-es-modules/pdfjs-dist";
 import { RenderParameters } from "@bundled-es-modules/pdfjs-dist/types/src/display/api";
 import { getApiUrl } from "Config";
 

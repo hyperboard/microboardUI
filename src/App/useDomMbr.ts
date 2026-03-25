@@ -1,9 +1,10 @@
 import { type App } from "App";
-import { Mbr, updateRects, Board } from "microboard-temp";
+import { Board, Mbr } from "microboard-temp";
 import { useAppSubscription } from "App/useBoardSubscription";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { useEffect, useState, type RefObject, useRef } from "react";
 import type { SubjectName } from "App/getSubscriptions";
+import { updateRects, type UpdateRectsFit } from "shared/lib/updateRects";
 
 type Params = {
   app: App;
@@ -13,13 +14,7 @@ type Params = {
   targetMbr?: Mbr;
   verticalOffset?: number;
   horizontalOffset?: number;
-  fit?:
-    | "contextPanel"
-    | "linkToBtn"
-    | "comment"
-    | "threadPanel"
-    | "boardMenu"
-    | "hyperLink";
+  fit?: UpdateRectsFit;
 };
 
 export function useDomMbr({
