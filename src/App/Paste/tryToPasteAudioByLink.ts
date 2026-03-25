@@ -17,8 +17,7 @@ export function tryToPasteAudioByLink(link: string, board: Board): boolean {
         board,
         audio,
       );
-      audio.transformation.applyTranslateTo(translateX, translateY);
-      audio.transformation.applyScaleTo(scaleX, scaleY);
+      audio.transformation.setLocal(translateX, translateY, scaleX, scaleY);
       audio.updateMbr();
       const boardAudio = board.add(audio);
       board.selection.removeAll();

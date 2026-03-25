@@ -116,8 +116,12 @@ export function uploadImage(
           image.doOnceBeforeOnLoad(() => {
             const { scaleX, scaleY, translateX, translateY } =
               calculatePosition(image, board);
-            image.transformation.applyTranslateTo(translateX, translateY);
-            image.transformation.applyScaleTo(scaleX, scaleY);
+            image.transformation.setLocal(
+              translateX,
+              translateY,
+              scaleX,
+              scaleY,
+            );
             image.updateMbr();
             const boardImage = board.add(image);
             board.selection.removeAll();

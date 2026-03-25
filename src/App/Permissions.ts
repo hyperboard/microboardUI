@@ -10,6 +10,10 @@ export class Permissions {
     private readonly storage: Storage,
   ) {}
 
+  toJSON(): undefined {
+    return undefined;
+  }
+
   checkPermissions(
     action: Action,
     resource: Resource,

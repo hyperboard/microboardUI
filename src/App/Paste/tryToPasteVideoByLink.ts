@@ -46,8 +46,12 @@ const createVideoItem = (url: string, youtubeId: string, board: Board) => {
           videoItem,
           board,
         );
-        videoItem.transformation.applyTranslateTo(translateX, translateY);
-        videoItem.transformation.applyScaleTo(scaleX, scaleY);
+        videoItem.transformation.setLocal(
+          translateX,
+          translateY,
+          scaleX,
+          scaleY,
+        );
         videoItem.updateMbr();
         const boardVideo = board.add(videoItem);
         board.selection.removeAll();

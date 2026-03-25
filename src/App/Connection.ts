@@ -611,7 +611,11 @@ export function createConnection(
 
   function send(msg: any): void {
     if (wsClient && wsClient.isConnected()) {
-      wsClient.send(msg);
+      try {
+        wsClient.send(msg);
+      } catch (e) {
+        console.error("Connection.send serialization error:", e);
+      }
     }
   }
 
@@ -771,7 +775,15 @@ export function createWsClient(
   return {
     send: (msg: SocketMsg) => {
       if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify(msg));
+        socket.send(
+          JSON.stringify(msg, (key, value) => {
+            if (value?.constructor?.name === "Account") {
+              console.trace("Account found at key:", key);
+              return "[ACCOUNT]";
+            }
+            return value;
+          }),
+        );
       }
     },
     isConnected: () => socket !== null && socket.readyState === WebSocket.OPEN,
