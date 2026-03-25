@@ -19,7 +19,7 @@ const PrettifiedEvent: React.FC<Props> = ({ event, style }) => {
     .replace(/([a-z])([A-Z])/g, "$1 $2")
     .replace(/^./, (str) => str.toUpperCase());
   const appendix = getOperationAppendix(operation);
-  const mappedId = getId(userId);
+  const mappedId = userId == null ? "Unknown" : getId(userId);
 
   const itemIds = (() => {
     if (
@@ -114,9 +114,9 @@ const PrettifiedEvent: React.FC<Props> = ({ event, style }) => {
 export default PrettifiedEvent;
 
 let currentId = 1;
-const idMap = new Map<number, number>();
+const idMap = new Map<number | string, number>();
 
-function getId(userId: number): number {
+function getId(userId: number | string): number {
   let mappedId = idMap.get(userId);
   if (!mappedId) {
     mappedId = currentId++;
