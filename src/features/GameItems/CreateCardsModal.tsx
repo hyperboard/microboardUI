@@ -5,7 +5,6 @@ import { UiModal } from "shared/ui-lib/UiModal/UiModal";
 import { useTranslation } from "react-i18next";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { useAppContext } from "features/AppContext";
-import { useAccount } from "App/useAccount";
 import { Card, conf, ItemsMap } from "microboard-temp";
 import { uploadImages } from "shared/api/media/uploadImage";
 
@@ -30,7 +29,6 @@ export function CreateCardsModal(): React.JSX.Element {
   const { t } = useTranslation();
   const { closeModal } = useUiModalContext();
   const { board } = useAppContext();
-  const account = useAccount();
 
   const [cover, setCover] = React.useState<File | null>(null);
   const [coverPreview, setCoverPreview] = React.useState<string | null>(null);
@@ -114,11 +112,7 @@ export function CreateCardsModal(): React.JSX.Element {
     setLoading(true);
     try {
       if (cards.length > 0 && cover) {
-        const urls = await uploadImages(
-          [cover, ...cards],
-          board.getBoardId(),
-          account.accessToken,
-        );
+        const urls = await uploadImages([cover, ...cards], board.getBoardId());
         createDeck(urls[0], urls.slice(1));
       }
       closeModal();

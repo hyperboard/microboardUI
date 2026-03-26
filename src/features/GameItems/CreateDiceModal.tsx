@@ -4,7 +4,6 @@ import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { useAppContext } from "features/AppContext";
-import { useAccount } from "App/useAccount";
 import { Dice } from "microboard-temp";
 import { uploadImages } from "shared/api/media/uploadImage";
 import { useTranslation } from "react-i18next";
@@ -25,7 +24,6 @@ export function CreateDiceModal(): React.JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const { board } = useAppContext();
-  const account = useAccount();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -120,11 +118,7 @@ export function CreateDiceModal(): React.JSX.Element {
     try {
       const files = faces.filter((face) => face !== null);
       if (files.length) {
-        const urls = await uploadImages(
-          files,
-          board.getBoardId(),
-          account.accessToken,
-        );
+        const urls = await uploadImages(files, board.getBoardId());
         createDice(urls);
       } else {
         createDice([]);

@@ -2,12 +2,16 @@ import { catchMediaErrorResponse } from "App/MediaHelpers";
 import { getApiUrl } from "Config";
 import { Account } from "entities/account";
 import { getAuthInterceptor } from "entities/account/AuthInterceptor";
-import { isInvalidAccessTokenError } from "entities/account/authRecovery";
 import { fetchTemplateSnapshot, pasteSnapshot } from "features/Templates/lib";
 import { getConfiguredI18n } from "initI18N";
-import { Board, BoardSnapshot, Operation, createEvents } from "microboard-temp";
+import {
+  Board,
+  BoardSnapshot,
+  Operation,
+  createEvents,
+  conf,
+} from "microboard-temp";
 import { api, foldersApi } from "shared/api";
-import { setAuthRecoveryHandler } from "shared/api/base/base";
 import "shared/Lang";
 import { MemoryLogger } from "shared/Logger";
 import { notify } from "shared/ui-lib/Toast";
@@ -171,17 +175,17 @@ export function createApp(isHistory = true): App {
 
   const authInterceptor = getAuthInterceptor(account);
   api.interceptors.addRequestInterceptor(authInterceptor);
-  setAuthRecoveryHandler(async (error) => {
-    if (!isInvalidAccessTokenError(error)) {
-      return "fail";
-    }
 
+  (conf as any).onAuthInvalid = async () => {
     const recovered = await account.recoverFromInvalidAccessToken({
-      notifySessionExpiredOnFailure: true,
+      notifySessionExpiredOnFailure: false,
     });
+    return recovered;
+  };
 
-    return recovered ? "retry" : "fail";
-  });
+  (conf as any).onAuthTerminalFailure = () => {
+    account.notifySessionExpired();
+  };
 
   async function openBoard(id: string, accessKey?: string): Promise<void> {
     if (id.includes("welcome")) {
@@ -574,7 +578,7 @@ export function createApp(isHistory = true): App {
       account.onLogout?.();
       router.navigate(`/auth/sign-in${window.location.search}`);
       notify({
-        body: window.MICROBOARD_CONFIG.i18n.t("auth.sessionExpired"),
+        body: window.MICROBOARD_CONFIG.i18n.t("auth.reloginRequired"),
         variant: "error",
       });
     });

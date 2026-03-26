@@ -386,6 +386,9 @@ export class Account {
         await this.fetchAccountInfo();
       } catch (error) {
         if (isTerminalRefreshFailureError(error)) {
+          console.warn(
+            "Terminal refresh failure, clearing authenticated session",
+          );
           this.clearAuthenticatedSession(
             hadAuthenticatedSession && this.refreshFailureShouldNotify,
             hadAuthenticatedSession,

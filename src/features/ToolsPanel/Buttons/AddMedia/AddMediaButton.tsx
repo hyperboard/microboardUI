@@ -78,13 +78,7 @@ export function AddMediaButton({
         ) {
           return notifyAboutUnsupportedFormat();
         }
-        mediaApi.uploadVideo(
-          file,
-          board,
-          notify,
-          fileExtension,
-          account.accessToken,
-        );
+        mediaApi.uploadVideo(file, board, notify, fileExtension);
         break;
       case "Audio":
         if (
@@ -93,16 +87,10 @@ export function AddMediaButton({
         ) {
           return notifyAboutUnsupportedFormat();
         }
-        mediaApi.uploadAudio(
-          file,
-          board,
-          notify,
-          fileExtension,
-          account.accessToken,
-        );
+        mediaApi.uploadAudio(file, board, notify, fileExtension);
         break;
       default:
-        mediaApi.uploadImage(file, board, account.accessToken);
+        mediaApi.uploadImage(file, board);
     }
 
     input.value = "";

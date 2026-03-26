@@ -12,7 +12,6 @@ export function uploadAudio(
   board: Board,
   notify: NotifyFunction,
   extension: string,
-  accessToken: string | null,
 ) {
   const notificationId = notify({
     variant: "info",
@@ -33,7 +32,7 @@ export function uploadAudio(
   board.selection.removeAll();
   board.selection.add(boardAudio);
 
-  prepareAudio(file, accessToken, board.getBoardId(), getApiUrl())
+  prepareAudio(file, board.getBoardId(), getApiUrl())
     .then((url) => {
       boardAudio.setUrl(url);
     })

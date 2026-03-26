@@ -497,6 +497,11 @@ export function createConnection(
             !options.hasRetriedAnonymously
           ) {
             clearTransportIdentity();
+            (board.events as any)?.refreshIdentity(); // [NEW] Refresh pending events with new identity
+            notify({
+              body: window.MICROBOARD_CONFIG.i18n.t("auth.guestMode"),
+              variant: "info",
+            });
             return subscribe(board, {
               ...options,
               forceAnonymous: true,

@@ -54,7 +54,7 @@ export function SetBackgroundImage({ rounded = "none" }: Props) {
       return;
     }
 
-    uploadImages([file], board.getBoardId(), account.accessToken)
+    uploadImages([file], board.getBoardId())
       .then((url) => single.setBackgroundUrl(url[0]))
       .finally(() => (input.value = ""));
   };

@@ -13,7 +13,6 @@ export function uploadVideo(
   board: Board,
   notify: NotifyFunction,
   extension: "mp4" | "webm",
-  accessToken: string | null,
 ) {
   getVideoMetadata(file)
     .then((dimension) => {
@@ -27,7 +26,7 @@ export function uploadVideo(
           duration: 100_000,
           loader: "MediaLoader",
         });
-        prepareVideo(file, accessToken, board.getBoardId(), getApiUrl())
+        prepareVideo(file, board.getBoardId(), getApiUrl())
           .then((urls) => {
             videoItem.setVideoData(urls);
           })
