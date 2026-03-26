@@ -4,6 +4,7 @@ import { Icon } from "../../../../shared/ui-lib/Icon";
 import styles from "./LanguagesDropdown.module.css";
 import { useTranslation } from "react-i18next";
 import { useClickOutside } from "shared/lib/useClickOutside";
+import { TEMPLATE_LANGUAGES } from "../../constants";
 
 interface Props {
   setSelectedLanguage: (lan: string) => void;
@@ -42,7 +43,7 @@ export const LanguagesDropdown = ({
       </button>
       {isDropdownOpen && (
         <ul className={styles.dropdownMenu}>
-          {window.MICROBOARD_CONFIG.TEMPLATE_LANGUAGES.map(({ value }) => (
+          {TEMPLATE_LANGUAGES.map(({ value }) => (
             <li
               key={value}
               className={clsx(

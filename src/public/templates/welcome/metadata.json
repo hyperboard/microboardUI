@@ -9,7 +9,7 @@
     "ru": "Стандартная доска, которая показывается новым пользователям."
   },
   "languages": ["en", "ru"],
-  "tags": ["Onboarding"],
+  "tags": ["Education"],
   "preview": "templates/welcome/preview.png",
   "created": "2026-03-26T13:13:54.683Z"
 }

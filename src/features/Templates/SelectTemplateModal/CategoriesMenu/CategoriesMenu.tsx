@@ -3,7 +3,11 @@ import styles from "./CategoriesMenu.module.css";
 import clsx from "clsx";
 import { Icon } from "../../../../shared/ui-lib/Icon";
 import { IconId } from "../../../../shared/ui-lib/Icon/Icon";
-import { TemplateCategory } from "microboard-temp";
+import {
+  TemplateCategory,
+  TEMPLATE_CATEGORIES,
+  CATEGORY_ICONS,
+} from "../../constants";
 import { useTranslation } from "react-i18next";
 
 interface CategoriesMenuProps {
@@ -12,15 +16,14 @@ interface CategoriesMenuProps {
 }
 
 const USE_CASE_CATEGORIES: { iconName: IconId; value: TemplateCategory }[] = [
-  { iconName: "AllTemplates", value: "All templates" },
-  { iconName: "ResearchAnalysis", value: "Research & Analysis" },
-  { iconName: "Diagramming", value: "Diagramming" },
-  { iconName: "MeetingWorkshop", value: "Meeting & Workshop" },
-  { iconName: "StrategyPlanning", value: "Strategy & Planning" },
-  { iconName: "Brainstorming", value: "Brainstorming" },
-  { iconName: "AgileWorkflow", value: "Agile Workflow" },
-  { iconName: "IcebreakerGame", value: "Icebreaker & Game" },
-  { iconName: "Education", value: "Education" },
+  {
+    iconName: CATEGORY_ICONS["All templates"] as IconId,
+    value: "All templates",
+  },
+  ...TEMPLATE_CATEGORIES.map((category) => ({
+    iconName: CATEGORY_ICONS[category] as IconId,
+    value: category,
+  })),
 ];
 
 export const CategoriesMenu = ({

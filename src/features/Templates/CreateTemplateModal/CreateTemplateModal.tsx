@@ -11,6 +11,7 @@ import { UiModal } from "shared/ui-lib/UiModal/UiModal";
 import { useUiModalContext } from "shared/ui-lib/UiModal/UiModalContext";
 import JSZip from "jszip";
 import { v4 as uuidv4 } from "uuid";
+import { TEMPLATE_CATEGORIES, TEMPLATE_LANGUAGES } from "../constants";
 
 type TemplateLanguageOption = {
   value: string;
@@ -34,29 +35,23 @@ export const CreateTemplateModal = (): React.JSX.Element => {
   const { closeModal } = useUiModalContext();
   const forceUpdate = useForceUpdate();
 
-  const categories = window.MICROBOARD_CONFIG.TEMPLATE_CATEGORIES.map(
-    (category) => {
-      return {
-        value: category,
-        label: String(
-          t(`modalTemplate.category.useCaseItems.${category}` as never),
-        ),
-      };
-    },
-  );
+  const categories = TEMPLATE_CATEGORIES.map((category) => {
+    return {
+      value: category,
+      label: String(
+        t(`modalTemplate.category.useCaseItems.${category}` as never),
+      ),
+    };
+  });
 
   const selectedLanguages = languagesSelectorRef.current
     ?.getSelectedOptions()
-    .map((o) => o.value) || [
-    window.MICROBOARD_CONFIG.TEMPLATE_LANGUAGES[0].value,
-  ];
+    .map((o) => o.value) || [TEMPLATE_LANGUAGES[0].value];
 
   const hideModalAndResetForm = () => {
     formRef.current?.reset();
     categoriesSelectorRef.current?.setSelectedOptions([categories[0]]);
-    languagesSelectorRef.current?.setSelectedOptions([
-      window.MICROBOARD_CONFIG.TEMPLATE_LANGUAGES[0],
-    ]);
+    languagesSelectorRef.current?.setSelectedOptions([TEMPLATE_LANGUAGES[0]]);
     setPreviewFile(null);
   };
 
@@ -190,7 +185,7 @@ export const CreateTemplateModal = (): React.JSX.Element => {
         <Selector
           multiselect={true}
           options={
-            window.MICROBOARD_CONFIG.TEMPLATE_LANGUAGES.map((item) => ({
+            TEMPLATE_LANGUAGES.map((item) => ({
               ...item,
               label: String(t(`common.languages.${item.value}` as never)),
             })) as TemplateLanguageOption[]
