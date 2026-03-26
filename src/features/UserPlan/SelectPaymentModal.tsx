@@ -49,10 +49,16 @@ export function SelectPaymentModal(): React.JSX.Element {
   const { connectModalOpen } = useConnectModal();
 
   useEffect(() => {
-    account.fetchCryptoRates();
-  }, []);
+    if (account.isLoggedIn) {
+      account.fetchCryptoRates();
+    }
+  }, [account.isLoggedIn]);
 
   useEffect(() => {
+    if (!account.isLoggedIn) {
+      return;
+    }
+
     const modalData = data as ModalData | null;
     billingApi.getPlans().then(({ data }) => {
       const selectedPlan = data?.find(

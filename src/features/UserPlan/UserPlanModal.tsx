@@ -37,8 +37,10 @@ export function UserPlanModal() {
   };
 
   useEffect(() => {
-    account.fetchBillingInfo();
-  }, []);
+    if (account.isLoggedIn) {
+      account.fetchBillingInfo();
+    }
+  }, [account.isLoggedIn]);
 
   return (
     <UiModal modalId={USER_PLAN_MODAL_ID} closeByBgClick={false}>

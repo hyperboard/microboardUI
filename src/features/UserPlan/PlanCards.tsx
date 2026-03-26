@@ -21,6 +21,11 @@ export function BasicPlanCard() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (!account.isLoggedIn) {
+      setIsLoading(false);
+      return;
+    }
+
     billingApi
       .getPlans()
       .then(({ data }) => {
@@ -149,6 +154,11 @@ export function PlusAIPlanCard(): React.JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (!account.isLoggedIn) {
+      setIsLoading(false);
+      return;
+    }
+
     billingApi
       .getPlans()
       .then(({ data }) => {
@@ -291,6 +301,11 @@ export function PlusPlanCard(): React.JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (!account.isLoggedIn) {
+      setIsLoading(false);
+      return;
+    }
+
     billingApi
       .getPlans()
       .then(({ data }) => {
@@ -418,6 +433,11 @@ export function ProPlanCard() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (!account.isLoggedIn) {
+      setIsLoading(false);
+      return;
+    }
+
     billingApi.getPlans().finally(() => setIsLoading(false));
   }, [account.isLoggedIn]);
 

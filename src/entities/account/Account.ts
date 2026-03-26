@@ -187,6 +187,10 @@ export class Account {
   }
 
   async fetchBillingInfo(): Promise<void> {
+    if (!this.isLoggedIn) {
+      return;
+    }
+
     try {
       const { data: billingInfo } = await billingApi.getUserPlanDetails();
       if (billingInfo) {
@@ -283,6 +287,10 @@ export class Account {
   // }
 
   async fetchBillingHistory(): Promise<void> {
+    if (!this.isLoggedIn) {
+      return;
+    }
+
     try {
       const { data } = await billingApi.getHistory();
       this.billingHistory = data ?? [];
@@ -294,6 +302,10 @@ export class Account {
   }
 
   async fetchCryptoRates(): Promise<void> {
+    if (!this.isLoggedIn) {
+      return;
+    }
+
     try {
       const { data } = await billingApi.getApproxCryptoRates();
       if (!data) {
