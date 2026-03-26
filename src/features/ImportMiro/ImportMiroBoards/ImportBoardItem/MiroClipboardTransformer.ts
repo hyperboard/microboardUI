@@ -692,11 +692,7 @@ export const parseItem = (
   }
 };
 
-export const pasteMiroClipboard = (
-  board: Board,
-  accessToken: string | null,
-  clipboardJson: any,
-): any => {
+export const pasteMiroClipboard = (board: Board, clipboardJson: any): any => {
   const clipboardItems: MiroClipboardItem[] =
     clipboardJson?.data?.objects || [];
   const boardId = clipboardJson?.boardId || "";
@@ -730,5 +726,5 @@ export const pasteMiroClipboard = (
     }
     return acc;
   }, [] as IMiroBoardItemConnector[]);
-  useCopyBoardItems(board, accessToken, [...miroItems, ...miroConnectors]);
+  useCopyBoardItems(board, [...miroItems, ...miroConnectors]);
 };

@@ -51,6 +51,7 @@ import { ERROR_NOTIFICATION } from "../Notifications/ErrorNotification";
 import { LOADING_NOTIFICATION } from "../Notifications/LoadingNotification";
 import { SUCCESS_NOTIFICATION } from "../Notifications/SuccessNotification";
 import { WARN_CLIPBOARD_NOTIFICATION } from "../Notifications/WarnClipboardNotification";
+import { getApiUrl } from "Config";
 
 interface MiroImage {
   type: string;
@@ -177,7 +178,6 @@ const CONNECTOR_STYLES = {
 
 export const useCopyBoardItems = (
   board: Board,
-  accessToken: string | null,
   miroItems?: IMiroBoardItem[],
   withoutImgs?: boolean,
 ): void => {
@@ -707,7 +707,7 @@ export const useCopyBoardItems = (
       return;
     }
 
-    await prepareImage(imgBase64, accessToken, board.getBoardId())
+    await prepareImage(imgBase64, board.getBoardId(), getApiUrl())
       .then((imageData) => {
         // remove placeholder
         const placeholder = board.items.getById(boardMiroId[id]);

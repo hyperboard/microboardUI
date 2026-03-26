@@ -6,7 +6,6 @@ import { openModal } from "shared/ui-lib/UiModal/UiModalContext";
 export function tryToPasteFromMiro(
   dataTransfer: DataTransfer | null,
   board: Board,
-  accessToken: string | null,
   isLoggedIn: boolean,
 ): boolean {
   const html = dataTransfer?.getData("text/html");
@@ -25,7 +24,7 @@ export function tryToPasteFromMiro(
         return true;
       }
 
-      pasteMiroClipboard(board, accessToken, miroData || []);
+      pasteMiroClipboard(board, miroData || []);
 
       return true;
     }

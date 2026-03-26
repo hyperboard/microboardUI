@@ -24,6 +24,7 @@ import { tempStorage } from "App/SessionStorage";
 import { AppSettings } from "App/App";
 import { mediaApi } from "shared/api";
 import { validateMediaFile } from "App/MediaHelpers";
+import { getApiUrl } from "Config";
 
 function isVideoExtension(value: string): value is "mp4" | "webm" {
   return value === "mp4" || value === "webm";
@@ -654,7 +655,6 @@ export function getController(
       event.clipboardData,
       board,
       account.isLoggedIn,
-      account.accessToken,
     );
 
     if (data) {
@@ -683,36 +683,20 @@ export function getController(
       window.MICROBOARD_CONFIG.VIDEO_FORMATS.includes(fileExtension) &&
       isVideoExtension(fileExtension)
     ) {
-      mediaApi.uploadVideo(
-        file,
-        board,
-        notify,
-        fileExtension,
-        account.accessToken,
-      );
+      mediaApi.uploadVideo(file, board, notify, fileExtension);
       return;
     } else if (
       fileExtension &&
       window.MICROBOARD_CONFIG.AUDIO_FORMATS.includes(fileExtension)
     ) {
-      mediaApi.uploadAudio(
-        file,
-        board,
-        notify,
-        fileExtension,
-        account.accessToken,
-      );
+      mediaApi.uploadAudio(file, board, notify, fileExtension);
       return;
     }
 
     const reader = new FileReader();
 
     reader.onload = function (event) {
-      prepareImage(
-        event.target?.result,
-        account.accessToken,
-        board.getBoardId(),
-      )
+      prepareImage(event.target?.result, board.getBoardId(), getApiUrl())
         .then((imageData) => {
           const image = new ImageItem(imageData, board, undefined);
           image.transformation.translateTo(

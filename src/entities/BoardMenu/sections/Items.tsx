@@ -59,7 +59,6 @@ export const Items = () => {
         clipboardData,
         board,
         account.isLoggedIn,
-        account.accessToken,
       );
       if (data) {
         pasteTextToTheBoard(board, data);

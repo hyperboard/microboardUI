@@ -249,7 +249,6 @@ export class TextEditor extends React.Component<
       event.clipboardData,
       board,
       true,
-      this.props.app.account.accessToken,
     );
 
     event.preventDefault();

@@ -58,7 +58,7 @@ export function ImportMiro(): React.ReactElement | null {
       app.render();
     });
     const lastSeenBoard = app.getBoard();
-    useCopyBoardItems(lastSeenBoard, app.account.accessToken);
+    useCopyBoardItems(lastSeenBoard);
   };
 
   useEffect(() => {

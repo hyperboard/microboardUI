@@ -4,7 +4,6 @@ import { getApiUrl } from "Config";
 export function tryToPasteImages(
   dataTransfer: DataTransfer | null,
   board: Board,
-  accessToken: string | null,
 ): boolean {
   let isFoundImageInClipboard = false;
   const items = dataTransfer?.items;
@@ -24,12 +23,7 @@ export function tryToPasteImages(
     isFoundImageInClipboard = true;
     const reader = new FileReader();
     reader.onload = (event) => {
-      prepareImage(
-        event.target?.result,
-        accessToken,
-        board.getBoardId(),
-        getApiUrl(),
-      )
+      prepareImage(event.target?.result, board.getBoardId(), getApiUrl())
         .then((imageData) => {
           const image = new ImageItem(imageData, board, board.events);
           image.transformation.translateTo(

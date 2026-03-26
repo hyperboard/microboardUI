@@ -13,9 +13,8 @@ export async function tryToPasteAsItemOrReturnText(
   dataTransfer: DataTransfer | null,
   board: Board,
   isLoggedIn: boolean,
-  accessToken: string | null,
 ): Promise<DataTransfer | null> {
-  if (tryToPasteFromMiro(dataTransfer, board, accessToken, isLoggedIn)) {
+  if (tryToPasteFromMiro(dataTransfer, board, isLoggedIn)) {
     event && preventPasteDefault(event);
     return null;
   }
@@ -23,7 +22,7 @@ export async function tryToPasteAsItemOrReturnText(
   const text = dataTransfer?.getData("text/plain");
 
   if (!text) {
-    if (tryToPasteImages(dataTransfer, board, accessToken)) {
+    if (tryToPasteImages(dataTransfer, board)) {
       event && preventPasteDefault(event);
     }
     return null;
@@ -58,7 +57,7 @@ export async function tryToPasteAsItemOrReturnText(
     }
   }
 
-  if (tryToPasteImages(dataTransfer, board, accessToken)) {
+  if (tryToPasteImages(dataTransfer, board)) {
     event && preventPasteDefault(event);
     return null;
   }
