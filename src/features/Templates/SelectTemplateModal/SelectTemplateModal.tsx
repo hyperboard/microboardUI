@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./SelectTemplateModal.module.css";
 import { TemplateItemPreview } from "./TemplateItemPreview/TemplateItemPreview";
-import { getApiUrl } from "Config";
 import { Icon } from "../../../shared/ui-lib/Icon";
 import { Input } from "shared/ui-lib/Input/Input";
 import clsx from "clsx";
@@ -19,7 +18,7 @@ import { Template } from "../types";
 export const SELECT_TEMPLATE_MODAL = Symbol("selectTemplate");
 
 export const SelectTemplateModal = (): React.JSX.Element => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [presentedTemplate, setPresentedTemplate] = useState<Template | null>(
     null,
@@ -62,18 +61,32 @@ export const SelectTemplateModal = (): React.JSX.Element => {
     language: string;
     tag?: TemplateCategory;
   }) => {
-    const params = new URLSearchParams(
-      Object.entries({ term, language, tag }).filter(([_, v]) => v) as [
-        string,
-        string,
-      ][],
-    );
-
     try {
-      const response = await fetch(`${getApiUrl()}/templates?${params}`, {
+      const response = await fetch(`/templates/index.json`, {
         method: "GET",
       });
-      return await response.json();
+      const allTemplates: Template[] = await response.json();
+
+      let filtered = allTemplates;
+
+      if (tag && tag !== "All templates") {
+        filtered = filtered.filter((t) => t.tags?.includes(tag));
+      }
+
+      if (term) {
+        const lowerTerm = term.toLowerCase();
+        filtered = filtered.filter((t) => {
+          const names = Object.values(t.name).join(" ").toLowerCase();
+          const descs = Object.values(t.description || {})
+            .join(" ")
+            .toLowerCase();
+          return names.includes(lowerTerm) || descs.includes(lowerTerm);
+        });
+      }
+
+      // Optionally filter by language if desired, or just show all languages
+
+      return filtered;
     } catch (error) {
       console.error(error);
       return [];
@@ -116,8 +129,16 @@ export const SelectTemplateModal = (): React.JSX.Element => {
         <div className={styles.templatesContainer}>
           {presentedTemplate ? (
             <TemplateItemPreview
-              name={presentedTemplate.name}
+              name={
+                presentedTemplate.name[i18n.language] ||
+                presentedTemplate.name["en"] ||
+                Object.values(presentedTemplate.name)[0] ||
+                "Unnamed"
+              }
               templateId={presentedTemplate.id}
+              preview={
+                presentedTemplate.preview ? `/${presentedTemplate.preview}` : ""
+              }
               setPresentedTemplate={setPresentedTemplate}
               relatedTemplates={templates.filter(
                 (t) => t.id !== presentedTemplate.id,

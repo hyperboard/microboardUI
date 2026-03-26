@@ -12,6 +12,7 @@ import { useUiModalContext } from "shared/ui-lib/UiModal";
 interface TemplateItemPreviewProps {
   name: string;
   templateId: string;
+  preview: string;
   setPresentedTemplate: (template: null | Template) => void;
   relatedTemplates: Template[];
 }
@@ -19,6 +20,7 @@ interface TemplateItemPreviewProps {
 export const TemplateItemPreview = ({
   name,
   templateId,
+  preview,
   setPresentedTemplate,
   relatedTemplates,
 }: TemplateItemPreviewProps) => {
@@ -54,10 +56,12 @@ export const TemplateItemPreview = ({
       </div>
       <div className={styles.scrollContainer}>
         <div className={styles.mainSection}>
-          <iframe
+          <img
             className={styles.frame}
-            src={`${window.location.origin}/templates/${templateId}?userPanel=false&titlePanel=false`}
-          ></iframe>
+            src={preview}
+            alt={name}
+            style={{ objectFit: "contain", backgroundColor: "#f0f0f0" }}
+          />
           <div className={styles.infoBox}>
             <h2>{name}</h2>
             <UiButton

@@ -1,0 +1,279 @@
+{
+  "items": [
+    {
+      "itemType": "Shape",
+      "shapeType": "PredefinedProcess",
+      "backgroundColor": "none",
+      "backgroundOpacity": 1,
+      "borderColor": "rgb(20, 21, 26)",
+      "borderOpacity": 1,
+      "borderStyle": "solid",
+      "borderWidth": 1,
+      "transformation": {
+        "translateX": 524,
+        "translateY": 416,
+        "scaleX": 1.41,
+        "scaleY": 1.41,
+        "rotate": 0,
+        "isLocked": false
+      },
+      "text": {
+        "itemType": "RichText",
+        "verticalAlignment": "center",
+        "children": [
+          {
+            "type": "paragraph",
+            "horisontalAlignment": "center",
+            "children": [
+              {
+                "type": "text",
+                "text": "",
+                "fontFamily": "Manrope",
+                "fontSize": 14,
+                "fontColor": "rgb(20, 21, 26)",
+                "fontHighlight": "",
+                "lineHeight": 1.4,
+                "bold": false,
+                "underline": false,
+                "italic": false,
+                "line-through": false,
+                "overline": false,
+                "subscript": false,
+                "superscript": false
+              }
+            ]
+          }
+        ],
+        "containerMaxWidth": 98.70000000000005,
+        "placeholderText": " ",
+        "insideOf": "Shape",
+        "realSize": 14
+      },
+      "id": "b5f9c9ae-0241-4e16-8372-429fdcfd08e9"
+    },
+    {
+      "itemType": "Frame",
+      "shapeType": "Custom",
+      "backgroundColor": "rgb(255, 255, 255)",
+      "backgroundOpacity": 1,
+      "borderColor": "rgba(10, 15, 41, 0.08)",
+      "borderOpacity": 0.08,
+      "borderStyle": "solid",
+      "borderWidth": 0.2,
+      "transformation": {
+        "translateX": 358,
+        "translateY": 596.1,
+        "scaleX": 2.46,
+        "scaleY": 1.79,
+        "rotate": 0,
+        "isLocked": false
+      },
+      "children": ["4cd92b34-cbd2-45c0-a2b8-c89eae5613a9"],
+      "text": {
+        "itemType": "RichText",
+        "verticalAlignment": "center",
+        "children": [
+          {
+            "type": "paragraph",
+            "horisontalAlignment": "left",
+            "children": [
+              {
+                "type": "text",
+                "text": "",
+                "fontFamily": "Manrope",
+                "fontSize": 14,
+                "fontColor": "rgb(107, 110, 120)",
+                "fontHighlight": "",
+                "lineHeight": 1.4,
+                "bold": false,
+                "underline": false,
+                "italic": false,
+                "line-through": false,
+                "overline": false,
+                "subscript": false,
+                "superscript": false
+              }
+            ]
+          }
+        ],
+        "containerMaxWidth": 246,
+        "placeholderText": "Frame 1",
+        "insideOf": "Frame",
+        "realSize": 14
+      },
+      "canChangeRatio": true,
+      "id": "04e3f012-2aef-47d0-a625-0e868a9cb90a"
+    },
+    {
+      "itemType": "Sticker",
+      "backgroundColor": "rgb(206, 228, 255)",
+      "transformation": {
+        "translateX": 395,
+        "translateY": 602.5217923168843,
+        "scaleX": 0.5757820768311567,
+        "scaleY": 0.5757820768311567,
+        "rotate": 0,
+        "isLocked": false
+      },
+      "text": {
+        "itemType": "RichText",
+        "verticalAlignment": "center",
+        "children": [
+          {
+            "type": "paragraph",
+            "horisontalAlignment": "center",
+            "children": [
+              {
+                "type": "text",
+                "text": "reer",
+                "fontFamily": "Manrope",
+                "fontSize": 14,
+                "fontColor": "rgb(20, 21, 26)",
+                "fontHighlight": "",
+                "lineHeight": 1.4,
+                "bold": false,
+                "underline": false,
+                "italic": false,
+                "line-through": false,
+                "overline": false,
+                "subscript": false,
+                "superscript": false
+              }
+            ]
+          }
+        ],
+        "placeholderText": " ",
+        "insideOf": "Sticker",
+        "realSize": "auto"
+      },
+      "id": "4cd92b34-cbd2-45c0-a2b8-c89eae5613a9"
+    },
+    {
+      "itemType": "Drawing",
+      "points": [
+        {
+          "x": 3,
+          "y": 8
+        },
+        {
+          "x": 4,
+          "y": 5
+        },
+        {
+          "x": 8,
+          "y": 3
+        },
+        {
+          "x": 13,
+          "y": 21
+        },
+        {
+          "x": 24,
+          "y": 97
+        },
+        {
+          "x": 26,
+          "y": 103
+        },
+        {
+          "x": 28,
+          "y": 104
+        },
+        {
+          "x": 29,
+          "y": 100
+        },
+        {
+          "x": 32,
+          "y": 98
+        },
+        {
+          "x": 37,
+          "y": 89
+        },
+        {
+          "x": 55,
+          "y": 68
+        },
+        {
+          "x": 59,
+          "y": 59
+        },
+        {
+          "x": 78,
+          "y": 37
+        },
+        {
+          "x": 89,
+          "y": 17
+        },
+        {
+          "x": 95,
+          "y": 30
+        },
+        {
+          "x": 97,
+          "y": 22
+        },
+        {
+          "x": 97,
+          "y": 22
+        }
+      ],
+      "transformation": {
+        "translateX": 429,
+        "translateY": 344,
+        "scaleX": 1,
+        "scaleY": 1,
+        "rotate": 0,
+        "isLocked": false
+      },
+      "strokeStyle": "rgb(20, 21, 26)",
+      "strokeWidth": 6,
+      "id": "41a6d729-6c92-4e6e-ba83-f9c8f9b26390"
+    },
+    {
+      "itemType": "RichText",
+      "verticalAlignment": "center",
+      "children": [
+        {
+          "type": "paragraph",
+          "horisontalAlignment": "left",
+          "children": [
+            {
+              "type": "text",
+              "text": "errerere",
+              "fontFamily": "Manrope",
+              "fontSize": 14,
+              "fontColor": "rgb(20, 21, 26)",
+              "fontHighlight": "",
+              "lineHeight": 1.4,
+              "bold": false,
+              "underline": false,
+              "italic": false,
+              "line-through": false,
+              "overline": false,
+              "subscript": false,
+              "superscript": false
+            }
+          ]
+        }
+      ],
+      "maxWidth": 600,
+      "containerMaxWidth": 600,
+      "placeholderText": "Напишите что-нибудь",
+      "transformation": {
+        "translateX": 176,
+        "translateY": 666,
+        "scaleX": 1,
+        "scaleY": 1,
+        "rotate": 0,
+        "isLocked": false
+      },
+      "insideOf": "RichText",
+      "realSize": 14,
+      "id": "a3d941aa-728f-4294-83a8-9744e683ad92"
+    }
+  ],
+  "lastEventOrder": 20
+}

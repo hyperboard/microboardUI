@@ -3,7 +3,6 @@ import styles from "./templateItem.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { useAppContext } from "features/AppContext";
 import { Template } from "features/Templates/types";
-import { getApiUrl } from "Config";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { fetchTemplateSnapshot, pasteSnapshot } from "features/Templates/lib";
@@ -18,13 +17,19 @@ export const TemplateItem = ({
   template,
   setPresentedTemplate,
 }: TemplateItemProps) => {
+  const { t, i18n } = useTranslation();
   const [isImageError, setIsImageError] = useState(!template.preview);
-  const previewUrl = `${getApiUrl()}/templates/${template.id}/preview`;
+  const previewUrl = template.preview ? `/${template.preview}` : "";
   const [isUseLoading, setIsUseLoading] = useState(false);
   const { board } = useAppContext();
   const { closeModal } = useUiModalContext();
-  const { t } = useTranslation();
   const cardRef = useRef<HTMLDivElement>(null);
+
+  const localizedName =
+    template.name[i18n.language] ||
+    template.name["en"] ||
+    Object.values(template.name)[0] ||
+    "";
 
   // Состояние для отслеживания начала касания
   const [isTouchStart, setIsTouchStart] = useState(false);
@@ -86,7 +91,7 @@ export const TemplateItem = ({
           onClick={() => setPresentedTemplate(template)}
           className={clsx(styles.image, isImageError && styles.noImage)}
           src={isImageError ? "" : previewUrl}
-          alt={template.name}
+          alt={localizedName}
           onError={handleImageError}
         />
         <div
@@ -112,7 +117,7 @@ export const TemplateItem = ({
         </div>
       </div>
       <div className={styles.info}>
-        <p>{template.name}</p>
+        <p>{localizedName}</p>
       </div>
     </div>
   );
