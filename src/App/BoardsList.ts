@@ -703,7 +703,9 @@ export class BoardsList {
     try {
       this.isLoading = true;
       this.subject.publish();
-      await this.account.refreshTokens();
+      if (this.account.isLoggedIn) {
+        await this.account.refreshTokens();
+      }
       await this.loadBoards();
     } finally {
       this.isLoading = false;
