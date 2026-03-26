@@ -35,7 +35,7 @@ export const TemplateItemPreview = ({
       const snapshot = await fetchTemplateSnapshot(templateId, i18n.language);
       setPresentedTemplate(null);
       closeModal();
-      pasteSnapshot({ board, snapshot });
+      pasteSnapshot({ board, snapshot, shouldEmit: true });
     } catch (error) {
       console.error("Failed to load template snapshot:", error);
     } finally {

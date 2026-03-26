@@ -3,7 +3,7 @@ import { getApiUrl } from "Config";
 import { Account } from "entities/account";
 import { getAuthInterceptor } from "entities/account/AuthInterceptor";
 import { isInvalidAccessTokenError } from "entities/account/authRecovery";
-import { fetchTemplateSnapshot } from "features/Templates/lib";
+import { fetchTemplateSnapshot, pasteSnapshot } from "features/Templates/lib";
 import { getConfiguredI18n } from "initI18N";
 import { Board, BoardSnapshot, Operation, createEvents } from "microboard-temp";
 import { api, foldersApi } from "shared/api";
@@ -193,26 +193,8 @@ export function createApp(isHistory = true): App {
           window.MICROBOARD_CONFIG.i18n.language,
         );
 
-        const baseUrl = window.location.origin;
-        const storageIndex =
-          baseUrl === "https://dev-app.microboard.io" ? 0 : 1;
-
-        const itemsMap: Record<string, any> = {};
-        for (const itemData of snapshot.items) {
-          const { id, ...itemWithoutId } = Object.assign({}, itemData);
-          if (
-            itemWithoutId.itemType === "Image" &&
-            Array.isArray(itemWithoutId.storageLink)
-          ) {
-            itemWithoutId.storageLink = itemWithoutId.storageLink[storageIndex];
-          }
-          itemsMap[id] = itemWithoutId;
-        }
-
-        welcomeBoard.paste(itemsMap, false, false);
-        const mbr = welcomeBoard.items.getMbr();
+        pasteSnapshot({ board: welcomeBoard, snapshot });
         welcomeBoard.selection.removeAll();
-        welcomeBoard.camera.zoomToFit(mbr);
       } catch (err) {
         console.error("Failed to load welcome template", err);
       }

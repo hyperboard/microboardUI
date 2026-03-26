@@ -124,7 +124,7 @@ export const BoardPage = (): React.JSX.Element => {
                 const board = app.getBoard();
                 fetchTemplateSnapshot("welcome", i18n.language)
                   .then((snapshot) => {
-                    pasteSnapshot({ board, snapshot });
+                    pasteSnapshot({ board, snapshot, shouldEmit: true });
                   })
                   .catch((err) =>
                     console.error("Failed to load welcome template:", err),

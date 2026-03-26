@@ -36,17 +36,30 @@ export function detectLanguage(text: string) {
 export const pasteSnapshot = ({
   board,
   snapshot,
+  shouldEmit = false,
 }: {
   board: Board;
   snapshot: BoardSnapshot;
+  shouldEmit?: boolean;
 }) => {
-  const itemsMap = {};
+  const baseUrl = window.location.origin;
+  const storageIndex = baseUrl === "https://dev-app.microboard.io" ? 0 : 1;
+
+  const itemsMap: Record<string, any> = {};
   for (const itemData of snapshot.items) {
-    const { id, ...itemWithoutId } = itemData;
+    const { id, ...itemWithoutId } = Object.assign({}, itemData);
+
+    if (
+      itemWithoutId.itemType === "Image" &&
+      Array.isArray(itemWithoutId.storageLink)
+    ) {
+      itemWithoutId.storageLink = itemWithoutId.storageLink[storageIndex];
+    }
+
     itemsMap[id] = itemWithoutId;
   }
   if (board.events && snapshot) {
-    board.paste(itemsMap, true, false);
+    board.paste(itemsMap, false, shouldEmit);
     if (!board.tools.getSelect()) {
       board.tools.select();
     }
