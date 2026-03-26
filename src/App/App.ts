@@ -2,10 +2,12 @@ import { catchMediaErrorResponse } from "App/MediaHelpers";
 import { getApiUrl } from "Config";
 import { Account } from "entities/account";
 import { getAuthInterceptor } from "entities/account/AuthInterceptor";
+import { isInvalidAccessTokenError } from "entities/account/authRecovery";
 import { getConfiguredI18n } from "initI18N";
 import { Board, BoardSnapshot, Operation, createEvents } from "microboard-temp";
 import { pasteWelcomeBoardData } from "pages/WelcomePage/WelcomePage";
 import { api, foldersApi } from "shared/api";
+import { setAuthRecoveryHandler } from "shared/api/base/base";
 import "shared/Lang";
 import { MemoryLogger } from "shared/Logger";
 import { notify } from "shared/ui-lib/Toast";
@@ -76,7 +78,11 @@ export function createApp(isHistory = true): App {
   const connection = createConnection(getBoard, getAccount, getStorage);
   window.MICROBOARD_CONFIG.connection = connection;
   window.MICROBOARD_CONFIG.i18n = getI18n();
-  window.MICROBOARD_CONFIG.apiUrl = getApiUrl();
+  (
+    window.MICROBOARD_CONFIG as typeof window.MICROBOARD_CONFIG & {
+      apiUrl?: string;
+    }
+  ).apiUrl = getApiUrl();
   const clipboard = new Clipboard();
   const location = new Location();
   const sessionStorage = new SessionStorage();
@@ -165,6 +171,17 @@ export function createApp(isHistory = true): App {
 
   const authInterceptor = getAuthInterceptor(account);
   api.interceptors.addRequestInterceptor(authInterceptor);
+  setAuthRecoveryHandler(async (error) => {
+    if (!isInvalidAccessTokenError(error)) {
+      return "fail";
+    }
+
+    const recovered = await account.recoverFromInvalidAccessToken({
+      notifySessionExpiredOnFailure: true,
+    });
+
+    return recovered ? "retry" : "fail";
+  });
 
   async function openBoard(id: string, accessKey?: string): Promise<void> {
     if (id.includes("welcome")) {

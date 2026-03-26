@@ -8,7 +8,11 @@ export function getAuthInterceptor(account: Account) {
     }
 
     if (account.isTokenExpired && !account.isTokenLoading) {
-      await account.refreshTokens();
+      await account.refreshTokens({ notifySessionExpiredOnFailure: true });
+    }
+
+    if (!account.accessToken) {
+      return config;
     }
 
     config.headers = {

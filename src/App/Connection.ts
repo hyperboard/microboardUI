@@ -15,6 +15,10 @@ import {
 } from "microboard-temp";
 import { getApiUrl } from "Config"; // [CHANGE] Импорт для получения REST API URL
 import type { Account } from "entities/account";
+import {
+  hasInvalidTokenChallenge,
+  isInvalidAccessTokenCode,
+} from "entities/account/authRecovery";
 import toast from "react-hot-toast";
 import { notify } from "shared/ui-lib/Toast";
 // [CHANGE] getWebsocketUrl удален, так как URL теперь динамический
@@ -204,6 +208,12 @@ export interface Connection extends LibraryConnection {
   getAuthorUserId?: () => string | undefined;
 }
 
+type ConnectErrorResponse = {
+  code?: string;
+  error?: string;
+  message?: string;
+};
+
 export function createConnection(
   getCurrentBoard: () => Board,
   getAccount: () => Account,
@@ -314,6 +324,36 @@ export function createConnection(
     activeSessionId = undefined;
   }
 
+  function clearTransportIdentity(): void {
+    activeSessionId = undefined;
+    activeAuthorUserId = undefined;
+    syncPresenceCurrentUser(undefined);
+  }
+
+  function supportsAnonymousReconnect(_board: Board): boolean {
+    return true;
+  }
+
+  async function readConnectError(
+    response: Response,
+  ): Promise<ConnectErrorResponse> {
+    try {
+      return (await response.json()) as ConnectErrorResponse;
+    } catch {
+      return {};
+    }
+  }
+
+  function isInvalidTokenConnectResponse(
+    response: Response,
+    errorData: ConnectErrorResponse,
+  ): boolean {
+    return (
+      isInvalidAccessTokenCode(errorData.code) ||
+      hasInvalidTokenChallenge(response.headers)
+    );
+  }
+
   // [CHANGE] Полностью обновленный обработчик сообщений
   async function onMessage(msg: SocketMsg): Promise<void> {
     if (msg.type === "VersionCheck") {
@@ -385,7 +425,13 @@ export function createConnection(
     postConnectingMsg();
   }
 
-  async function subscribe(board: Board): Promise<void> {
+  async function subscribe(
+    board: Board,
+    options: {
+      forceAnonymous?: boolean;
+      hasRetriedAnonymously?: boolean;
+    } = {},
+  ): Promise<void> {
     const boardId = board.getBoardId();
     if (boardId === "welcome" || boardId.includes("local")) {
       return;
@@ -409,10 +455,14 @@ export function createConnection(
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
       };
-      if (account.isLoggedIn && account.accessToken) {
+      if (
+        !options.forceAnonymous &&
+        account.isLoggedIn &&
+        account.accessToken
+      ) {
         headers["Authorization"] = `Bearer ${account.accessToken}`;
       }
-      if (activeSessionId) {
+      if (!options.forceAnonymous && activeSessionId) {
         headers["x-board-session-id"] = activeSessionId;
       }
 
@@ -427,33 +477,60 @@ export function createConnection(
       });
 
       if (!response.ok) {
-        if (response.status === 401) {
-          try {
-            console.log(
-              "[Connection] Token expired (401), attempting refresh...",
-            );
-            await account.refreshTokens();
+        const errorData = await readConnectError(response);
 
-            return await subscribe(board);
-          } catch (refreshErr) {
-            console.error(
-              "[Connection] Failed to refresh token during subscribe",
-              refreshErr,
-            );
+        if (
+          response.status === 401 &&
+          !options.forceAnonymous &&
+          isInvalidTokenConnectResponse(response, errorData)
+        ) {
+          const recovered = await account.recoverFromInvalidAccessToken({
+            notifySessionExpiredOnFailure: false,
+          });
+
+          if (recovered) {
+            return subscribe(board, options);
           }
+
+          if (
+            supportsAnonymousReconnect(board) &&
+            !options.hasRetriedAnonymously
+          ) {
+            clearTransportIdentity();
+            return subscribe(board, {
+              ...options,
+              forceAnonymous: true,
+              hasRetriedAnonymously: true,
+            });
+          }
+
+          account.notifySessionExpired();
+          postDisconnectedMsg();
+          dismissNotificationAboutLostConnection();
+          return;
         }
 
         postDisconnectedMsg();
         dismissNotificationAboutLostConnection();
+
+        if (
+          options.forceAnonymous &&
+          options.hasRetriedAnonymously &&
+          (response.status === 401 || response.status === 403)
+        ) {
+          account.notifySessionExpired();
+          return;
+        }
 
         if (response.status === 404 || response.status === 403) {
           onAccessDenied(boardId);
           return;
         }
 
-        const errorData = await response.json().catch(() => ({}));
         const errorText =
-          errorData.error || `Server error (${response.status})`;
+          errorData.message ||
+          errorData.error ||
+          `Server error (${response.status})`;
 
         notify({
           header: "Connection Error",
@@ -512,8 +589,7 @@ export function createConnection(
   }
 
   function publishLogout(): void {
-    clearTransportSession();
-    activeAuthorUserId = undefined;
+    clearTransportIdentity();
     if (wsClient) wsClient.close();
   }
 

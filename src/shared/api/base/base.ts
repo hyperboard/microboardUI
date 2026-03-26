@@ -13,6 +13,65 @@ import type {
 const RETRY_DELAY = 5_000;
 const RETRY_ATTEMPTS = 3;
 
+type AuthRecoveryResult = "retry" | "fail";
+type AuthRecoveryHandler = (
+  error: HTTPError,
+  requestConfig: HTTPRequestConfig,
+) => Promise<AuthRecoveryResult>;
+
+type InternalRequestConfig<
+  Q extends URLSearchParamsInit = URLSearchParamsInit,
+  P extends ParamsRecord = ParamsRecord,
+> = HTTPRequestConfig<Q, P> & {
+  __authRecoveryAttempted?: boolean;
+};
+
+let authRecoveryHandler: AuthRecoveryHandler | null = null;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+async function readErrorPayload(response: Response): Promise<{
+  data: Record<string, unknown> | null;
+  message: string;
+}> {
+  const fallbackMessage =
+    response.statusText || `Request failed with status ${response.status}`;
+
+  try {
+    const data = (await response.clone().json()) as unknown;
+
+    if (!isRecord(data)) {
+      return {
+        data: null,
+        message: fallbackMessage,
+      };
+    }
+
+    const message =
+      typeof data.message === "string"
+        ? data.message
+        : typeof data.error === "string"
+          ? data.error
+          : fallbackMessage;
+
+    return {
+      data,
+      message,
+    };
+  } catch {
+    return {
+      data: null,
+      message: fallbackMessage,
+    };
+  }
+}
+
+export function setAuthRecoveryHandler(handler: AuthRecoveryHandler | null) {
+  authRecoveryHandler = handler;
+}
+
 export class HTTP {
   private baseURL: string;
   private readonly headers: Record<string, string>;
@@ -67,7 +126,10 @@ export class HTTP {
     R,
     Q extends URLSearchParamsInit = URLSearchParamsInit,
     P extends ParamsRecord = ParamsRecord,
-  >(path: string, config: HTTPRequestConfig<Q, P>): Promise<HTTPResponse<R>> {
+  >(
+    path: string,
+    config: InternalRequestConfig<Q, P>,
+  ): Promise<HTTPResponse<R>> {
     const cacheKey = `${path}:${JSON.stringify(config)}`;
 
     if (this.fetchCache.has(cacheKey)) {
@@ -76,18 +138,19 @@ export class HTTP {
 
     const fetchWithRetry = async (
       retries: number,
+      currentConfig: InternalRequestConfig<Q, P>,
     ): Promise<HTTPResponse<R>> => {
       try {
         const modifiedConfig =
-          await this.interceptors.triggerRequestInterceptors(config);
+          await this.interceptors.triggerRequestInterceptors(currentConfig);
         const response = await fetch(
-          this.getUrl(path, config.params, config.query),
+          this.getUrl(path, currentConfig.params, currentConfig.query),
           {
             ...modifiedConfig,
             headers: {
               ...this.headers,
               ...modifiedConfig.headers,
-              ...config.headers,
+              ...currentConfig.headers,
               "x-client-language": window.MICROBOARD_CONFIG.i18n.language,
             },
             credentials: "include",
@@ -95,13 +158,34 @@ export class HTTP {
         );
 
         if (!response.ok) {
-          const message = await response.json();
-          throw new HTTPError(
+          const { data, message } = await readErrorPayload(response);
+          const error = new HTTPError(
             response.status,
-            message.message,
+            message,
             response,
             response.url,
+            data,
           );
+
+          if (
+            response.status === 401 &&
+            authRecoveryHandler &&
+            !currentConfig.__authRecoveryAttempted
+          ) {
+            const recoveryResult = await authRecoveryHandler(
+              error,
+              currentConfig,
+            );
+
+            if (recoveryResult === "retry") {
+              return fetchWithRetry(retries, {
+                ...currentConfig,
+                __authRecoveryAttempted: true,
+              });
+            }
+          }
+
+          throw error;
         }
 
         const customResponse = new HTTPResponse<R>(response);
@@ -124,7 +208,7 @@ export class HTTP {
         if (retries > 0) {
           // Retry for 5xx errors and unexpected exceptions
           await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
-          return fetchWithRetry(retries - 1);
+          return fetchWithRetry(retries - 1, currentConfig);
         }
         this.interceptors.triggerResponseErrorInterceptors(error);
         throw error;
@@ -133,7 +217,7 @@ export class HTTP {
       }
     };
 
-    const fetchPromise = fetchWithRetry(RETRY_ATTEMPTS);
+    const fetchPromise = fetchWithRetry(RETRY_ATTEMPTS, config);
     this.fetchCache.set(cacheKey, fetchPromise);
     return fetchPromise;
   }

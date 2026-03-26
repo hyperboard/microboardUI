@@ -4,18 +4,16 @@ import { SessionStorage } from "App/SessionStorage";
 import type { Storage } from "App/Storage";
 import { ethers } from "ethers";
 import { jwtDecode } from "jwt-decode";
-import {
-  authApi,
-  billingApi,
-  HTTPError,
-  HTTPResponse,
-  usersApi,
-} from "shared/api";
+import { authApi, billingApi, HTTPResponse, usersApi } from "shared/api";
 import { UniqueString } from "shared/api/auth";
 import { CryptoCheckout } from "shared/api/billing";
 import { MessageResponse } from "shared/api/types";
 import { getEmailPrefix } from "shared/lib/getEmailPrefix";
 import { Subject } from "shared/Subject";
+import {
+  isTerminalRefreshFailureError,
+  isInvalidAccessTokenError,
+} from "./authRecovery";
 
 export enum UserRoles {
   ADMIN = "ADMIN",
@@ -50,6 +48,10 @@ type ChannelMsg = {
   account: AccountInfo | null;
 };
 
+type RefreshTokensOptions = {
+  notifySessionExpiredOnFailure?: boolean;
+};
+
 export class Account {
   subject = new Subject<AccountInfo | null>();
   info: null | AccountInfo = null;
@@ -77,6 +79,8 @@ export class Account {
   onLogin: (() => Promise<void>) | null = null;
   onInit: (() => Promise<void>) | null = null;
   broadcastChannel = new BroadcastChannel("account");
+  private refreshFailureShouldNotify = false;
+  private sessionExpiredHandled = false;
 
   constructor(
     private readonly storage: Storage,
@@ -111,6 +115,26 @@ export class Account {
     this.subject.publish(this.info);
   }
 
+  private hasAuthenticatedSession(): boolean {
+    return Boolean(this._accessToken || this.info);
+  }
+
+  private markSessionActive(): void {
+    this.sessionExpiredHandled = false;
+  }
+
+  private clearAuthenticatedSession(
+    notifySessionExpired: boolean,
+    hadAuthenticatedSession = this.hasAuthenticatedSession(),
+  ): void {
+    this.cleanup();
+    this.connection.publishLogout();
+
+    if (notifySessionExpired && hadAuthenticatedSession) {
+      this.notifySessionExpired();
+    }
+  }
+
   get accessToken(): string | null {
     return this._accessToken;
   }
@@ -125,6 +149,15 @@ export class Account {
 
   setOnSessionExpired(callback: () => void): void {
     this.onSessionExpired = callback;
+  }
+
+  notifySessionExpired(): void {
+    if (this.sessionExpiredHandled) {
+      return;
+    }
+
+    this.sessionExpiredHandled = true;
+    this.onSessionExpired?.();
   }
 
   setOnInit(callback: () => Promise<void>): void {
@@ -298,6 +331,8 @@ export class Account {
 
     if (data?.accessToken) {
       this._accessToken = data.accessToken;
+      this.updateTokenData();
+      this.markSessionActive();
     }
 
     await this.fetchAccountInfo();
@@ -315,39 +350,67 @@ export class Account {
 
   private refreshTokensPromise: Promise<void> | null = null;
 
-  async refreshTokens(): Promise<void> {
-    this.isTokenLoading = true;
+  async refreshTokens(options: RefreshTokensOptions = {}): Promise<void> {
+    if (options.notifySessionExpiredOnFailure) {
+      this.refreshFailureShouldNotify = true;
+    }
+
     if (this.refreshTokensPromise) {
       return this.refreshTokensPromise;
     }
 
+    const hadAuthenticatedSession = this.hasAuthenticatedSession();
+    this.isTokenLoading = true;
     this.refreshTokensPromise = (async () => {
       try {
-        this.isTokenLoading = true;
         const { data } = await authApi.refreshTokens();
 
         if (data?.accessToken) {
           this._accessToken = data.accessToken;
+          this.updateTokenData();
+          this.markSessionActive();
           this.connection.publishAuth();
         }
-        this.updateTokenData();
         await this.fetchAccountInfo();
       } catch (error) {
-        if (
-          this.isLoggedIn &&
-          error instanceof HTTPError &&
-          error.status === 401
-        ) {
-          this.cleanup();
-          this.onSessionExpired?.();
+        if (isTerminalRefreshFailureError(error)) {
+          this.clearAuthenticatedSession(
+            hadAuthenticatedSession && this.refreshFailureShouldNotify,
+            hadAuthenticatedSession,
+          );
         }
+
+        throw error;
       } finally {
         this.isTokenLoading = false;
         this.refreshTokensPromise = null;
+        this.refreshFailureShouldNotify = false;
       }
     })();
 
     return this.refreshTokensPromise;
+  }
+
+  async recoverFromInvalidAccessToken(
+    options: RefreshTokensOptions = {},
+  ): Promise<boolean> {
+    if (!this.isLoggedIn || !this.accessToken) {
+      return false;
+    }
+
+    try {
+      await this.refreshTokens(options);
+      return Boolean(this.accessToken);
+    } catch (error) {
+      if (
+        !isInvalidAccessTokenError(error) &&
+        !isTerminalRefreshFailureError(error)
+      ) {
+        console.error("Failed to recover from invalid access token", error);
+      }
+
+      return false;
+    }
   }
 
   async logout(): Promise<void> {
@@ -365,6 +428,8 @@ export class Account {
     const { data } = await authApi.verifyMail({ email, passcode });
 
     this._accessToken = data?.accessToken ?? null;
+    this.updateTokenData();
+    this.markSessionActive();
     this.subject.publish(this.info);
 
     return data;
@@ -392,6 +457,8 @@ export class Account {
 
     if (data?.accessToken) {
       this._accessToken = data.accessToken;
+      this.updateTokenData();
+      this.markSessionActive();
     }
 
     await this.fetchAccountInfo();
