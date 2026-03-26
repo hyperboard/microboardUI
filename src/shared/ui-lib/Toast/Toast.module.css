@@ -1,5 +1,5 @@
 .container {
-  background-color: #ffffff;
+  background-color: var(--background-surface-default);
   border: 1px solid var(--border-action-normal, rgba(222, 224, 227, 1));
   border-radius: 12px;
   box-shadow:
@@ -106,10 +106,10 @@
   justify-content: center;
   align-items: center;
   padding: 4px 8px;
-  background-color: rgba(20, 21, 26, 1);
+  background-color: var(--background-button-primary);
   box-shadow: 0px 1px 2px 0px rgba(20, 21, 26, 0.05);
   cursor: pointer;
-  color: #ffffff;
+  color: var(--color-button-primary);
   font-family: Manrope;
   font-weight: 500;
   font-size: 12px;
