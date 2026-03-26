@@ -46,6 +46,7 @@
   "devDependencies": {
     "@types/bun": "^1.2.18",
     "@types/node": "^24.0.12",
+    "@types/react": "^19.1.8",
     "@types/wicg-file-system-access": "^2023.10.6",
     "chokidar": "^4.0.3",
     "node-html-parser": "^7.0.1",
