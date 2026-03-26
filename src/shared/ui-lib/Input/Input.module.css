@@ -109,6 +109,7 @@
   align-items: center;
   justify-content: center;
   margin-right: 8px;
+  color: var(--icon-base-secondary);
 }
 
 .inputPostfix {
