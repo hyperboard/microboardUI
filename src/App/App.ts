@@ -1,4 +1,5 @@
 import { catchMediaErrorResponse } from "App/MediaHelpers";
+import { getApiUrl } from "Config";
 import { Account } from "entities/account";
 import { getAuthInterceptor } from "entities/account/AuthInterceptor";
 import { getConfiguredI18n } from "initI18N";
@@ -75,6 +76,7 @@ export function createApp(isHistory = true): App {
   const connection = createConnection(getBoard, getAccount, getStorage);
   window.MICROBOARD_CONFIG.connection = connection;
   window.MICROBOARD_CONFIG.i18n = getI18n();
+  window.MICROBOARD_CONFIG.apiUrl = getApiUrl();
   const clipboard = new Clipboard();
   const location = new Location();
   const sessionStorage = new SessionStorage();

@@ -40,7 +40,7 @@
 
 [data-theme="dark"] {
   --background-surface-default: rgb(30, 31, 38);
-  --background-button-secondary: rgb(30, 31, 38);
+  --background-button-secondary: rgb(42, 43, 52);
   --background-button-secondary-hover: rgb(42, 43, 52);
   --background-button-tertiary: rgb(42, 43, 52);
   --background-button-tertiary-hover: rgb(55, 56, 66);
