@@ -26,13 +26,13 @@ export const TemplateItemPreview = ({
 }: TemplateItemPreviewProps) => {
   const { board } = useAppContext();
   const { closeModal } = useUiModalContext();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
 
   const pasteSnapshotAndClose = async () => {
     setIsLoading(true);
     try {
-      const snapshot = await fetchTemplateSnapshot(templateId);
+      const snapshot = await fetchTemplateSnapshot(templateId, i18n.language);
       setPresentedTemplate(null);
       closeModal();
       pasteSnapshot({ board, snapshot });

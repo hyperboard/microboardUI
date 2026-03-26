@@ -15,7 +15,7 @@ import { SelectBoardPage } from "pages/SelectBoardPage";
 import { SigninPage } from "pages/SigninPage";
 import { SignupPage } from "pages/SignupPage/SignupPage";
 import { VerifyMailPage } from "pages/VerifyMailPage";
-import { WelcomePage } from "pages/WelcomePage/WelcomePage";
+
 import { WheelEventLoggerPage } from "pages/WheelLogger/WheelLogger";
 
 import {
@@ -67,7 +67,7 @@ export function getRender(app: App): {
           element: <RouterRolesGuard allowedRoles={[UserRoles.ADMIN]} />,
           children: [{ path: "/admin", element: <AdminDashboardPage /> }],
         },
-        { path: "/welcome", element: <WelcomePage /> },
+        { path: "/welcome", element: <Navigate to="/boards/welcome" /> },
         { path: "/boards/:boardId?", element: <BoardPage /> },
         { path: "/templates/:templateId", element: <TemplateBoardPage /> },
         { path: "/selectBoard", element: <SelectBoardPage /> },

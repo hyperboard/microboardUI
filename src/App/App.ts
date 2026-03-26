@@ -3,9 +3,9 @@ import { getApiUrl } from "Config";
 import { Account } from "entities/account";
 import { getAuthInterceptor } from "entities/account/AuthInterceptor";
 import { isInvalidAccessTokenError } from "entities/account/authRecovery";
+import { fetchTemplateSnapshot } from "features/Templates/lib";
 import { getConfiguredI18n } from "initI18N";
 import { Board, BoardSnapshot, Operation, createEvents } from "microboard-temp";
-import { pasteWelcomeBoardData } from "pages/WelcomePage/WelcomePage";
 import { api, foldersApi } from "shared/api";
 import { setAuthRecoveryHandler } from "shared/api/base/base";
 import "shared/Lang";
@@ -186,10 +186,37 @@ export function createApp(isHistory = true): App {
   async function openBoard(id: string, accessKey?: string): Promise<void> {
     if (id.includes("welcome")) {
       const welcomeBoard = new Board(id);
-      pasteWelcomeBoardData(
-        welcomeBoard,
-        window.MICROBOARD_CONFIG.i18n.language,
-      );
+
+      try {
+        const snapshot = await fetchTemplateSnapshot(
+          "welcome",
+          window.MICROBOARD_CONFIG.i18n.language,
+        );
+
+        const baseUrl = window.location.origin;
+        const storageIndex =
+          baseUrl === "https://dev-app.microboard.io" ? 0 : 1;
+
+        const itemsMap: Record<string, any> = {};
+        for (const itemData of snapshot.items) {
+          const { id, ...itemWithoutId } = Object.assign({}, itemData);
+          if (
+            itemWithoutId.itemType === "Image" &&
+            Array.isArray(itemWithoutId.storageLink)
+          ) {
+            itemWithoutId.storageLink = itemWithoutId.storageLink[storageIndex];
+          }
+          itemsMap[id] = itemWithoutId;
+        }
+
+        welcomeBoard.paste(itemsMap, false, false);
+        const mbr = welcomeBoard.items.getMbr();
+        welcomeBoard.selection.removeAll();
+        welcomeBoard.camera.zoomToFit(mbr);
+      } catch (err) {
+        console.error("Failed to load welcome template", err);
+      }
+
       await subscriptions.setBoard(welcomeBoard);
       boardSubject.publish(welcomeBoard);
       board = welcomeBoard;

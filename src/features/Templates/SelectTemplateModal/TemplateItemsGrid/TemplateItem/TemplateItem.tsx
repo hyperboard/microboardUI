@@ -42,7 +42,7 @@ export const TemplateItem = ({
   const pasteSnapshotAndClose = async () => {
     setIsUseLoading(true);
     try {
-      const snapshot = await fetchTemplateSnapshot(template.id);
+      const snapshot = await fetchTemplateSnapshot(template.id, i18n.language);
       setPresentedTemplate(null);
       closeModal();
       pasteSnapshot({ board, snapshot });

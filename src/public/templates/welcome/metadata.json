@@ -1,0 +1,15 @@
+{
+  "id": "welcome",
+  "name": {
+    "en": "Welcome Board",
+    "ru": "Приветственная доска"
+  },
+  "description": {
+    "en": "The default board shown to new users.",
+    "ru": "Стандартная доска, которая показывается новым пользователям."
+  },
+  "languages": ["en", "ru"],
+  "tags": ["Onboarding"],
+  "preview": "templates/welcome/preview.png",
+  "created": "2026-03-26T13:13:54.683Z"
+}

@@ -57,7 +57,17 @@ export const pasteSnapshot = ({
 
 export async function fetchTemplateSnapshot(
   templateId: string,
+  language?: string,
 ): Promise<BoardSnapshot> {
+  if (language) {
+    const langResponse = await fetch(
+      `/templates/${templateId}/snapshot_${language}.json`,
+    );
+    if (langResponse.ok) {
+      return await langResponse.json();
+    }
+  }
+
   const response = await fetch(`/templates/${templateId}/snapshot.json`);
 
   if (!response.ok) {

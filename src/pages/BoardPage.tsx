@@ -6,6 +6,7 @@ import { ACCESS_DENIED_MODAL } from "features/AccessDeniedModal";
 import { AppContext, useAppContext } from "features/AppContext";
 import { AppView } from "features/AppView";
 import { USER_PLAN_MODAL_ID } from "features/UserPlan";
+import { fetchTemplateSnapshot, pasteSnapshot } from "features/Templates/lib";
 import Cookies from "js-cookie";
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -18,7 +19,6 @@ import {
 import { billingApi } from "shared/api";
 import { notify } from "shared/ui-lib/Toast";
 import { useUiModalContext } from "shared/ui-lib/UiModal";
-import { pasteWelcomeBoardData } from "./WelcomePage/WelcomePage";
 
 export const BoardPage = (): React.JSX.Element => {
   const { app } = useAppContext();
@@ -122,7 +122,13 @@ export const BoardPage = (): React.JSX.Element => {
                 app.render();
 
                 const board = app.getBoard();
-                pasteWelcomeBoardData(board, i18n.language);
+                fetchTemplateSnapshot("welcome", i18n.language)
+                  .then((snapshot) => {
+                    pasteSnapshot({ board, snapshot });
+                  })
+                  .catch((err) =>
+                    console.error("Failed to load welcome template:", err),
+                  );
               });
             });
         } else {
