@@ -18,7 +18,7 @@
         "js-cookie": "^3.0.5",
         "jwt-decode": "^4.0.0",
         "knip": "^6.0.4",
-        "microboard-temp": "0.13.77",
+        "microboard-temp": "0.13.78",
         "nanoid": "^5.1.5",
         "react-hot-toast": "2.4.1",
         "react-i18next": "14.1.0",
@@ -1063,7 +1063,7 @@
 
     "micro-ftch": ["micro-ftch@0.3.1", "", {}, "sha512-/0LLxhzP0tfiR5hcQebtudP56gUurs2CLkGarnCiB/OqEyUFQ6U3paQi/tgLv0hBJYt2rnr9MNpxz4fiiugstg=="],
 
-    "microboard-temp": ["microboard-temp@0.13.77", "", { "dependencies": { "zod": "^4.3.6" }, "peerDependencies": { "canvas": "^3.1.0", "jsdom": "26.0.0", "slate": "^0.114.0", "slate-react": "^0.114.2" }, "optionalPeers": ["canvas", "jsdom", "slate-react"] }, "sha512-MR3X4WK1Q5vdLnV/05iPL2bhvIZXekwxC7sxo5X73hrETERKSN4ho0GLY0Zr0+LuQRlBjQG78LfT/OhlR/8UUA=="],
+    "microboard-temp": ["microboard-temp@0.13.78", "", { "dependencies": { "zod": "^4.3.6" }, "peerDependencies": { "canvas": "^3.1.0", "jsdom": "26.0.0", "slate": "^0.114.0", "slate-react": "^0.114.2" }, "optionalPeers": ["canvas", "jsdom", "slate-react"] }, "sha512-rBsQJ9v7jLqgZ8F9ihbjkJAB/q51rx8qpvVCuwmJ9GE24RUaUaVX3/+g1r4TgnPsTgndcn+cIXcuPhkYe/VisA=="],
 
     "micromatch": ["micromatch@4.0.8", "", { "dependencies": { "braces": "^3.0.3", "picomatch": "^2.3.1" } }, "sha512-PXwfBhYu0hBCPw8Dn0E+WDYb7af3dSLVWKi3HGv84IdF4TyFoC0ysxFd0Goxw7nSv4T/PzEJQxsYsEiFCKo2BA=="],
 
