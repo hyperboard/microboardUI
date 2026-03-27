@@ -167,7 +167,10 @@ export class CanvasBase extends React.Component<Props> {
         }}
         onContextMenu={(ev) => ev.preventDefault()}
       >
-        {!window.location.pathname.startsWith("/templates/") && <Watermark />}
+        {!window.location.pathname.startsWith("/templates/") &&
+          !window.location.pathname.startsWith("/template-preview/") && (
+            <Watermark />
+          )}
         <canvas
           ref={this.canvasRef}
           width={Math.floor(width * window.devicePixelRatio)}
