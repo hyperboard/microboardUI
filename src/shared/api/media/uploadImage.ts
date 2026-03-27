@@ -3,6 +3,7 @@ import {
   ImageItem,
   calculatePosition,
   prepareImage,
+  conf,
 } from "microboard-temp";
 import * as PDFJS from "@bundled-es-modules/pdfjs-dist";
 import { RenderParameters } from "@bundled-es-modules/pdfjs-dist/types/src/display/api";
@@ -44,7 +45,12 @@ export function uploadImage(file: File, board: Board) {
                   .promise.then(() => {
                     pagesRendered++;
                     const base64String = canvas.toDataURL("image/png");
-                    prepareImage(base64String, board.getBoardId(), getApiUrl())
+                    prepareImage(
+                      base64String,
+                      conf.getAccessToken(),
+                      board.getBoardId(),
+                      getApiUrl(),
+                    )
                       .then((imageData) => {
                         const image = new ImageItem(
                           imageData,
@@ -101,7 +107,12 @@ export function uploadImage(file: File, board: Board) {
   } else {
     reader.onload = (event: ProgressEvent<FileReader>) => {
       const base64String = event.target?.result as string;
-      prepareImage(base64String, board.getBoardId(), getApiUrl())
+      prepareImage(
+        base64String,
+        conf.getAccessToken(),
+        board.getBoardId(),
+        getApiUrl(),
+      )
         .then((imageData) => {
           const image = new ImageItem(imageData, board, board.events, "");
           image.doOnceBeforeOnLoad(() => {
@@ -153,7 +164,12 @@ export async function uploadImages(
     }
 
     try {
-      const result = await prepareImage(base64String, boardId, getApiUrl());
+      const result = await prepareImage(
+        base64String,
+        conf.getAccessToken(),
+        boardId,
+        getApiUrl(),
+      );
       if (result.storageLink) {
         successfullyUploadedUrls.push(result.storageLink);
       }
@@ -161,7 +177,12 @@ export async function uploadImages(
       console.error(`First try ${file.name} failed.`, error);
 
       try {
-        const result = await prepareImage(base64String, boardId, getApiUrl());
+        const result = await prepareImage(
+          base64String,
+          conf.getAccessToken(),
+          boardId,
+          getApiUrl(),
+        );
         if (result.storageLink) {
           successfullyUploadedUrls.push(result.storageLink);
         }

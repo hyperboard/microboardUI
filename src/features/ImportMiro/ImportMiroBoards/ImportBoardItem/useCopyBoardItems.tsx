@@ -38,6 +38,7 @@ import {
   toRelativePoint,
   Drawing,
   Placeholder,
+  conf,
 } from "microboard-temp";
 import {
   closeModal,
@@ -707,7 +708,12 @@ export const useCopyBoardItems = (
       return;
     }
 
-    await prepareImage(imgBase64, board.getBoardId(), getApiUrl())
+    await prepareImage(
+      imgBase64,
+      conf.getAccessToken(),
+      board.getBoardId(),
+      getApiUrl(),
+    )
       .then((imageData) => {
         // remove placeholder
         const placeholder = board.items.getById(boardMiroId[id]);

@@ -4,6 +4,7 @@ import {
   calculateAudioPosition,
   prepareAudio,
   AudioItem,
+  conf,
 } from "microboard-temp";
 import { getApiUrl } from "Config";
 
@@ -32,7 +33,7 @@ export function uploadAudio(
   board.selection.removeAll();
   board.selection.add(boardAudio);
 
-  prepareAudio(file, board.getBoardId(), getApiUrl())
+  prepareAudio(file, conf.getAccessToken(), board.getBoardId(), getApiUrl())
     .then((url) => {
       boardAudio.setUrl(url);
     })
