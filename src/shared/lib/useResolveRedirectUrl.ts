@@ -35,7 +35,7 @@ export const useResolveRedirectUrl = ({
       setError(null);
 
       try {
-        const url = await getMediaSignedUrl(mediaUrl, accessToken);
+        const url = await getMediaSignedUrl(mediaUrl);
 
         if (currentRequest === requestRef.current) {
           setResolvedUrl(url);

@@ -10,7 +10,6 @@ import {
   isControlCharacter,
   VideoItem,
   Group,
-  conf,
 } from "microboard-temp";
 
 import { throttle } from "shared/lib/throttle";
@@ -697,12 +696,7 @@ export function getController(
     const reader = new FileReader();
 
     reader.onload = function (event) {
-      prepareImage(
-        event.target?.result,
-        conf.getAccessToken(),
-        board.getBoardId(),
-        getApiUrl(),
-      )
+      prepareImage(event.target?.result, board.getBoardId(), getApiUrl())
         .then((imageData) => {
           const image = new ImageItem(imageData, board, undefined);
           image.transformation.translateTo(
