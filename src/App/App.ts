@@ -541,6 +541,7 @@ export function createApp(isHistory = true): App {
     } catch (err) {
       console.error("Failed to load offline template:", err);
     }
+    board.tools.navigate();
   }
 
   const app: App = {
