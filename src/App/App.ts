@@ -180,6 +180,8 @@ export function createApp(isHistory = true): App {
   const authInterceptor = getAuthInterceptor(account);
   api.interceptors.addRequestInterceptor(authInterceptor);
 
+  (conf as any).getAccessToken = () => account.accessToken;
+
   (conf as any).onAuthInvalid = async () => {
     const recovered = await account.recoverFromInvalidAccessToken({
       notifySessionExpiredOnFailure: false,
