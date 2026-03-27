@@ -76,7 +76,10 @@ export async function fetchTemplateSnapshot(
     const langResponse = await fetch(
       `/templates/${templateId}/snapshot_${language}.json`,
     );
-    if (langResponse.ok) {
+    if (
+      langResponse.ok &&
+      langResponse.headers.get("content-type")?.includes("application/json")
+    ) {
       return await langResponse.json();
     }
   }

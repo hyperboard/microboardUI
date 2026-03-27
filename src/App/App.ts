@@ -524,11 +524,14 @@ export function createApp(isHistory = true): App {
   ): Promise<void> {
     const offlineBoard = new Board(`offline-${templateId}`);
 
+    // Set up events without server connection (undefined connection = local/offline mode)
+    offlineBoard.events = createEvents(offlineBoard, undefined, 0);
+    offlineBoard.resolveConnecting();
+
     subscriptions.setBoard(offlineBoard);
     boardSubject.publish(offlineBoard);
     board = offlineBoard;
     board.setInterfaceType("view");
-    await connectBoard(offlineBoard);
 
     try {
       const snapshot = await fetchTemplateSnapshot(templateId, language);
@@ -570,11 +573,16 @@ export function createApp(isHistory = true): App {
     openOfflineTemplateBoard,
   };
 
-  account.setOnInit(async () => {
-    await foldersApi.initFolders();
-    await boardsList.claim();
-    storage.softClean();
-  });
+  const isTemplatePreview =
+    window.location.pathname.startsWith("/template-preview/");
+
+  if (!isTemplatePreview) {
+    account.setOnInit(async () => {
+      await foldersApi.initFolders();
+      await boardsList.claim();
+      storage.softClean();
+    });
+  }
 
   const { render: appRender, router } = getRender(app);
   function render(): void {
