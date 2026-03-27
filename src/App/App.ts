@@ -528,6 +528,7 @@ export function createApp(isHistory = true): App {
     boardSubject.publish(offlineBoard);
     board = offlineBoard;
     board.setInterfaceType("view");
+    await connectBoard(offlineBoard);
 
     try {
       const snapshot = await fetchTemplateSnapshot(templateId, language);
