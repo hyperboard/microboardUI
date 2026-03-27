@@ -11,5 +11,18 @@
     "tags": ["Research & Analysis", "Diagramming"],
     "preview": "templates/f2b5da35-7ee3-4db4-a348-a114f0e0f119/preview.png",
     "created": "2026-03-02T11:40:57.577Z"
+  },
+  {
+    "id": "8a12ba98-d380-4ce1-8ddb-02bbd2c9484b",
+    "name": {
+      "ru": "тест1"
+    },
+    "description": {
+      "ru": "описание1"
+    },
+    "languages": ["ru"],
+    "tags": ["Research & Analysis"],
+    "preview": "templates/8a12ba98-d380-4ce1-8ddb-02bbd2c9484b/preview.png",
+    "created": "2026-03-27T12:57:14.376Z"
   }
 ]
