@@ -59,6 +59,8 @@
 
 .frame {
   width: 100%;
+  min-height: 362px;
+  border: none;
   border-top-left-radius: 16px;
   border-bottom-left-radius: 16px;
 }
@@ -130,6 +132,7 @@
   .frame {
     border-radius: 16px;
     width: 60%;
+    min-height: 300px;
   }
 
   .infoBox {

@@ -63,6 +63,10 @@ export interface App {
   settings: AppSettings;
   setControlMode: (mode: ControlMode) => void;
   getSettings: () => AppSettings;
+  openOfflineTemplateBoard: (
+    templateId: string,
+    language?: string,
+  ) => Promise<void>;
 }
 
 function getI18n() {
@@ -512,6 +516,26 @@ export function createApp(isHistory = true): App {
     await writable.close();
   }
 
+  async function openOfflineTemplateBoard(
+    templateId: string,
+    language?: string,
+  ): Promise<void> {
+    const offlineBoard = new Board(`offline-${templateId}`);
+
+    subscriptions.setBoard(offlineBoard);
+    boardSubject.publish(offlineBoard);
+    board = offlineBoard;
+    board.setInterfaceType("view");
+
+    try {
+      const snapshot = await fetchTemplateSnapshot(templateId, language);
+      pasteSnapshot({ board: offlineBoard, snapshot });
+      offlineBoard.selection.removeAll();
+    } catch (err) {
+      console.error("Failed to load offline template:", err);
+    }
+  }
+
   const app: App = {
     connection,
     clipboard,
@@ -540,6 +564,7 @@ export function createApp(isHistory = true): App {
     setControlMode,
     settings: getSettings(),
     getSettings,
+    openOfflineTemplateBoard,
   };
 
   account.setOnInit(async () => {

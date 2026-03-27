@@ -136,9 +136,6 @@ export const SelectTemplateModal = (): React.JSX.Element => {
                 "Unnamed"
               }
               templateId={presentedTemplate.id}
-              preview={
-                presentedTemplate.preview ? `/${presentedTemplate.preview}` : ""
-              }
               setPresentedTemplate={setPresentedTemplate}
               relatedTemplates={templates.filter(
                 (t) => t.id !== presentedTemplate.id,

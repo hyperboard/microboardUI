@@ -29,6 +29,7 @@ import { AdminDashboardPage } from "pages/AdminPage/AdminPage";
 import { RouterRolesGuard } from "entities/account/RouterRolesGuard";
 import { UserRoles } from "entities/account/Account";
 import { TemplateBoardPage } from "pages/TemplateBoardPage";
+import { TemplatePreviewPage } from "pages/TemplatePreviewPage";
 
 export function getRender(app: App): {
   render: () => void;
@@ -70,6 +71,10 @@ export function getRender(app: App): {
         { path: "/welcome", element: <Navigate to="/boards/welcome" /> },
         { path: "/boards/:boardId?", element: <BoardPage /> },
         { path: "/templates/:templateId", element: <TemplateBoardPage /> },
+        {
+          path: "/template-preview/:templateId",
+          element: <TemplatePreviewPage />,
+        },
         { path: "/selectBoard", element: <SelectBoardPage /> },
         { path: "/test-wheel", element: <WheelEventLoggerPage /> },
         { path: "/snapshots/:uid?", element: <HTMLSnapshot /> },
