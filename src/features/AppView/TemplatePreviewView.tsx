@@ -31,12 +31,25 @@ export function TemplatePreviewView(): React.JSX.Element {
   useEffect(() => {
     app.boardSubject.subscribe(update);
     const container = containerRef.current;
+    const controller = app.controller;
+    const abortController = new AbortController();
     if (container) {
-      window.addEventListener("resize", app.controller.onResize);
+      container.addEventListener("wheel", controller.onWheel, {
+        capture: true,
+        passive: false,
+        signal: abortController.signal,
+      });
+      container.addEventListener("pointermove", controller.onPointerMove, {
+        capture: true,
+        signal: abortController.signal,
+      });
+      window.addEventListener("resize", controller.onResize, {
+        signal: abortController.signal,
+      });
     }
     return () => {
       app.boardSubject.unsubscribe(update);
-      window.removeEventListener("resize", app.controller.onResize);
+      abortController.abort();
     };
   }, [containerRef.current]);
 
