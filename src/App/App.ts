@@ -531,6 +531,7 @@ export function createApp(isHistory = true): App {
     subscriptions.setBoard(offlineBoard);
     boardSubject.publish(offlineBoard);
     board = offlineBoard;
+    controller.onResize();
     board.setInterfaceType("view");
 
     try {
