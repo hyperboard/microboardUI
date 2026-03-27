@@ -1,0 +1,1112 @@
+{
+  "events": [
+    {
+      "order": 1,
+      "body": {
+        "eventId": "s_3wlSom3aCHfz:1",
+        "authorUserId": "48ed7dba-0cb6-4b34-b083-aa4f38e3ddd0",
+        "sessionId": "s_3wlSom3aCHfz",
+        "userId": "s_3wlSom3aCHfz",
+        "boardId": "7a65feb2-28ff-4764-ac8d-e912137b36cc",
+        "operation": {
+          "class": "Board",
+          "method": "add",
+          "item": "3c50beed-2ed2-4e5d-9287-fc21f416ba30",
+          "data": {
+            "id": "",
+            "itemType": "Sticker",
+            "backgroundColor": {
+              "type": "semantic",
+              "id": "contrastBlue"
+            },
+            "transformation": {
+              "translateX": 314,
+              "translateY": 351,
+              "scaleX": 1.0520278038150892,
+              "scaleY": 1.0520278038150892,
+              "rotate": 0,
+              "isLocked": false
+            },
+            "text": {
+              "id": "",
+              "itemType": "RichText",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "horisontalAlignment": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "text": "",
+                      "fontFamily": "Manrope",
+                      "fontSize": 14,
+                      "fontColor": {
+                        "type": "semantic",
+                        "id": "contrastNeutral"
+                      },
+                      "fontHighlight": "",
+                      "lineHeight": 1.4,
+                      "bold": false,
+                      "underline": false,
+                      "italic": false,
+                      "line-through": false,
+                      "overline": false,
+                      "subscript": false,
+                      "superscript": false
+                    }
+                  ]
+                }
+              ],
+              "verticalAlignment": "center",
+              "maxWidth": 184,
+              "transformation": {
+                "translateX": 314,
+                "translateY": 351,
+                "scaleX": 1.0520278038150892,
+                "scaleY": 1.0520278038150892,
+                "rotate": 0,
+                "isLocked": false
+              },
+              "insideOf": "Sticker",
+              "placeholderText": " ",
+              "realSize": "auto",
+              "maxHeight": 19.599999999999998
+            }
+          },
+          "actualId": "s_3wlSom3aCHfz:1"
+        }
+      },
+      "lastKnownOrder": 0
+    },
+    {
+      "order": 5,
+      "body": {
+        "eventId": "s_3wlSom3aCHfz:5",
+        "authorUserId": "48ed7dba-0cb6-4b34-b083-aa4f38e3ddd0",
+        "sessionId": "s_3wlSom3aCHfz",
+        "userId": "s_3wlSom3aCHfz",
+        "boardId": "7a65feb2-28ff-4764-ac8d-e912137b36cc",
+        "operation": {
+          "class": "RichText",
+          "method": "edit",
+          "item": ["3c50beed-2ed2-4e5d-9287-fc21f416ba30"],
+          "selection": {
+            "anchor": {
+              "path": [0, 0],
+              "offset": 5
+            },
+            "focus": {
+              "path": [0, 0],
+              "offset": 5
+            }
+          },
+          "ops": [
+            {
+              "type": "insert_text",
+              "path": [0, 0],
+              "offset": 0,
+              "text": "hello"
+            }
+          ],
+          "actualId": "s_3wlSom3aCHfz:5"
+        }
+      },
+      "lastKnownOrder": 4
+    },
+    {
+      "order": 6,
+      "body": {
+        "eventId": "s_3wlSom3aCHfz:7",
+        "authorUserId": "48ed7dba-0cb6-4b34-b083-aa4f38e3ddd0",
+        "sessionId": "s_3wlSom3aCHfz",
+        "userId": "s_3wlSom3aCHfz",
+        "boardId": "7a65feb2-28ff-4764-ac8d-e912137b36cc",
+        "operation": {
+          "class": "Board",
+          "method": "add",
+          "item": "0720b2d2-3d15-40b3-8267-870656fcc8fe",
+          "data": {
+            "id": "",
+            "itemType": "RichText",
+            "children": [
+              {
+                "type": "paragraph",
+                "horisontalAlignment": "left",
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "",
+                    "fontFamily": "Manrope",
+                    "fontSize": 14,
+                    "fontColor": {
+                      "type": "semantic",
+                      "id": "contrastNeutral"
+                    },
+                    "fontHighlight": "",
+                    "lineHeight": 1.4,
+                    "bold": false,
+                    "underline": false,
+                    "italic": false,
+                    "line-through": false,
+                    "overline": false,
+                    "subscript": false,
+                    "superscript": false
+                  }
+                ]
+              }
+            ],
+            "verticalAlignment": "center",
+            "maxWidth": 600,
+            "transformation": {
+              "translateX": 709,
+              "translateY": 416,
+              "scaleX": 1,
+              "scaleY": 1,
+              "rotate": 0,
+              "isLocked": false
+            },
+            "insideOf": "RichText",
+            "placeholderText": "Напишите что-нибудь",
+            "realSize": 14,
+            "maxHeight": 0
+          },
+          "actualId": "s_3wlSom3aCHfz:7"
+        }
+      },
+      "lastKnownOrder": 5
+    },
+    {
+      "order": 7,
+      "body": {
+        "eventId": "s_3wlSom3aCHfz:8",
+        "authorUserId": "48ed7dba-0cb6-4b34-b083-aa4f38e3ddd0",
+        "sessionId": "s_3wlSom3aCHfz",
+        "userId": "s_3wlSom3aCHfz",
+        "boardId": "7a65feb2-28ff-4764-ac8d-e912137b36cc",
+        "operation": {
+          "class": "RichText",
+          "method": "groupEdit",
+          "itemsOps": [
+            {
+              "item": "0720b2d2-3d15-40b3-8267-870656fcc8fe",
+              "selection": {
+                "anchor": {
+                  "path": [0, 0],
+                  "offset": 0
+                },
+                "focus": {
+                  "path": [0, 0],
+                  "offset": 0
+                }
+              },
+              "ops": [
+                {
+                  "type": "remove_node",
+                  "path": [0],
+                  "node": {
+                    "type": "paragraph",
+                    "horisontalAlignment": "left",
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "",
+                        "fontFamily": "Manrope",
+                        "fontSize": 14,
+                        "fontColor": {
+                          "type": "semantic",
+                          "id": "contrastNeutral"
+                        },
+                        "fontHighlight": "",
+                        "lineHeight": 1.4,
+                        "bold": false,
+                        "underline": false,
+                        "italic": false,
+                        "line-through": false,
+                        "overline": false,
+                        "subscript": false,
+                        "superscript": false
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "insert_node",
+                  "path": [0],
+                  "node": {
+                    "type": "paragraph",
+                    "lineHeight": 1.4,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "",
+                        "fontFamily": "Manrope",
+                        "fontSize": 36,
+                        "fontColor": {
+                          "type": "semantic",
+                          "id": "contrastNeutral"
+                        },
+                        "fontHighlight": "",
+                        "lineHeight": 1.4,
+                        "bold": false,
+                        "underline": false,
+                        "italic": false,
+                        "line-through": false,
+                        "overline": false,
+                        "subscript": false,
+                        "superscript": false
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "actualId": "s_3wlSom3aCHfz:8"
+        }
+      },
+      "lastKnownOrder": 6
+    },
+    {
+      "order": 9,
+      "body": {
+        "eventId": "s_3wlSom3aCHfz:10",
+        "authorUserId": "48ed7dba-0cb6-4b34-b083-aa4f38e3ddd0",
+        "sessionId": "s_3wlSom3aCHfz",
+        "userId": "s_3wlSom3aCHfz",
+        "boardId": "7a65feb2-28ff-4764-ac8d-e912137b36cc",
+        "operation": {
+          "class": "RichText",
+          "method": "edit",
+          "item": ["0720b2d2-3d15-40b3-8267-870656fcc8fe"],
+          "selection": {
+            "anchor": {
+              "path": [0, 0],
+              "offset": 2
+            },
+            "focus": {
+              "path": [0, 0],
+              "offset": 2
+            }
+          },
+          "ops": [
+            {
+              "type": "insert_text",
+              "path": [0, 0],
+              "offset": 0,
+              "text": "te"
+            }
+          ],
+          "actualId": "s_3wlSom3aCHfz:10"
+        }
+      },
+      "lastKnownOrder": 8
+    },
+    {
+      "order": 10,
+      "body": {
+        "eventId": "s_3wlSom3aCHfz:11",
+        "authorUserId": "48ed7dba-0cb6-4b34-b083-aa4f38e3ddd0",
+        "sessionId": "s_3wlSom3aCHfz",
+        "userId": "s_3wlSom3aCHfz",
+        "boardId": "7a65feb2-28ff-4764-ac8d-e912137b36cc",
+        "operation": {
+          "class": "RichText",
+          "method": "edit",
+          "item": ["0720b2d2-3d15-40b3-8267-870656fcc8fe"],
+          "selection": {
+            "anchor": {
+              "path": [0, 0],
+              "offset": 1
+            },
+            "focus": {
+              "path": [0, 0],
+              "offset": 1
+            }
+          },
+          "ops": [
+            {
+              "type": "remove_text",
+              "path": [0, 0],
+              "offset": 1,
+              "text": "e"
+            }
+          ],
+          "actualId": "s_3wlSom3aCHfz:11"
+        }
+      },
+      "lastKnownOrder": 9
+    },
+    {
+      "order": 11,
+      "body": {
+        "eventId": "s_3wlSom3aCHfz:12",
+        "authorUserId": "48ed7dba-0cb6-4b34-b083-aa4f38e3ddd0",
+        "sessionId": "s_3wlSom3aCHfz",
+        "userId": "s_3wlSom3aCHfz",
+        "boardId": "7a65feb2-28ff-4764-ac8d-e912137b36cc",
+        "operation": {
+          "class": "RichText",
+          "method": "edit",
+          "item": ["0720b2d2-3d15-40b3-8267-870656fcc8fe"],
+          "selection": {
+            "anchor": {
+              "path": [0, 0],
+              "offset": 2
+            },
+            "focus": {
+              "path": [0, 0],
+              "offset": 2
+            }
+          },
+          "ops": [
+            {
+              "type": "insert_text",
+              "path": [0, 0],
+              "offset": 1,
+              "text": "e"
+            }
+          ],
+          "actualId": "s_3wlSom3aCHfz:12"
+        }
+      },
+      "lastKnownOrder": 10
+    },
+    {
+      "order": 13,
+      "body": {
+        "eventId": "s_3wlSom3aCHfz:14",
+        "authorUserId": "48ed7dba-0cb6-4b34-b083-aa4f38e3ddd0",
+        "sessionId": "s_3wlSom3aCHfz",
+        "userId": "s_3wlSom3aCHfz",
+        "boardId": "7a65feb2-28ff-4764-ac8d-e912137b36cc",
+        "operation": {
+          "class": "RichText",
+          "method": "edit",
+          "item": ["0720b2d2-3d15-40b3-8267-870656fcc8fe"],
+          "selection": {
+            "anchor": {
+              "path": [0, 0],
+              "offset": 0
+            },
+            "focus": {
+              "path": [0, 0],
+              "offset": 0
+            }
+          },
+          "ops": [
+            {
+              "type": "remove_text",
+              "path": [0, 0],
+              "offset": 0,
+              "text": "te"
+            }
+          ],
+          "actualId": "s_3wlSom3aCHfz:14"
+        }
+      },
+      "lastKnownOrder": 12
+    },
+    {
+      "order": 23,
+      "body": {
+        "eventId": "s_3wlSom3aCHfz:27",
+        "authorUserId": "48ed7dba-0cb6-4b34-b083-aa4f38e3ddd0",
+        "sessionId": "s_3wlSom3aCHfz",
+        "userId": "s_3wlSom3aCHfz",
+        "boardId": "7a65feb2-28ff-4764-ac8d-e912137b36cc",
+        "operation": {
+          "class": "RichText",
+          "method": "edit",
+          "item": ["0720b2d2-3d15-40b3-8267-870656fcc8fe"],
+          "selection": {
+            "anchor": {
+              "path": [0, 0],
+              "offset": 13
+            },
+            "focus": {
+              "path": [0, 0],
+              "offset": 13
+            }
+          },
+          "ops": [
+            {
+              "type": "insert_text",
+              "path": [0, 0],
+              "offset": 0,
+              "text": "test template"
+            }
+          ],
+          "actualId": "s_3wlSom3aCHfz:27"
+        }
+      },
+      "lastKnownOrder": 22
+    },
+    {
+      "order": 24,
+      "body": {
+        "eventId": "s_3wlSom3aCHfz:28",
+        "authorUserId": "48ed7dba-0cb6-4b34-b083-aa4f38e3ddd0",
+        "sessionId": "s_3wlSom3aCHfz",
+        "userId": "s_3wlSom3aCHfz",
+        "boardId": "7a65feb2-28ff-4764-ac8d-e912137b36cc",
+        "operation": {
+          "class": "Board",
+          "method": "add",
+          "item": "8bce61bd-0682-45d5-a57a-88b1d9edb15b",
+          "data": {
+            "id": "",
+            "itemType": "RichText",
+            "children": [
+              {
+                "type": "paragraph",
+                "horisontalAlignment": "left",
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "",
+                    "fontFamily": "Manrope",
+                    "fontSize": 36,
+                    "fontColor": {
+                      "type": "semantic",
+                      "id": "contrastNeutral"
+                    },
+                    "fontHighlight": "",
+                    "lineHeight": 1.4,
+                    "bold": false,
+                    "underline": false,
+                    "italic": false,
+                    "line-through": false,
+                    "overline": false,
+                    "subscript": false,
+                    "superscript": false
+                  }
+                ]
+              }
+            ],
+            "verticalAlignment": "center",
+            "maxWidth": 600,
+            "transformation": {
+              "translateX": 706,
+              "translateY": 596,
+              "scaleX": 1,
+              "scaleY": 1,
+              "rotate": 0,
+              "isLocked": false
+            },
+            "insideOf": "RichText",
+            "placeholderText": "Напишите что-нибудь",
+            "realSize": 36,
+            "maxHeight": 0
+          },
+          "actualId": "s_3wlSom3aCHfz:28"
+        }
+      },
+      "lastKnownOrder": 23
+    },
+    {
+      "order": 24,
+      "body": {
+        "eventId": "s_3wlSom3aCHfz:29",
+        "authorUserId": "48ed7dba-0cb6-4b34-b083-aa4f38e3ddd0",
+        "sessionId": "s_3wlSom3aCHfz",
+        "userId": "s_3wlSom3aCHfz",
+        "boardId": "7a65feb2-28ff-4764-ac8d-e912137b36cc",
+        "operation": {
+          "class": "RichText",
+          "method": "setFontSize",
+          "item": ["8bce61bd-0682-45d5-a57a-88b1d9edb15b"],
+          "fontSize": 36,
+          "context": "None",
+          "actualId": "s_3wlSom3aCHfz:29"
+        }
+      },
+      "lastKnownOrder": 23
+    },
+    {
+      "order": 25,
+      "body": {
+        "eventId": "s_3wlSom3aCHfz:30",
+        "authorUserId": "48ed7dba-0cb6-4b34-b083-aa4f38e3ddd0",
+        "sessionId": "s_3wlSom3aCHfz",
+        "userId": "s_3wlSom3aCHfz",
+        "boardId": "7a65feb2-28ff-4764-ac8d-e912137b36cc",
+        "operation": {
+          "class": "RichText",
+          "method": "edit",
+          "item": ["8bce61bd-0682-45d5-a57a-88b1d9edb15b"],
+          "selection": {
+            "anchor": {
+              "path": [0, 0],
+              "offset": 1
+            },
+            "focus": {
+              "path": [0, 0],
+              "offset": 1
+            }
+          },
+          "ops": [
+            {
+              "type": "insert_node",
+              "path": [0, 1],
+              "node": {
+                "text": "у",
+                "type": "text",
+                "fontFamily": "Manrope",
+                "fontSize": 36,
+                "fontColor": {
+                  "type": "semantic",
+                  "id": "contrastNeutral"
+                },
+                "fontHighlight": "",
+                "lineHeight": 1.4,
+                "bold": false,
+                "underline": false,
+                "italic": false,
+                "line-through": false,
+                "overline": false,
+                "subscript": false,
+                "superscript": false
+              }
+            },
+            {
+              "type": "merge_node",
+              "path": [0, 1],
+              "position": 0,
+              "properties": {
+                "type": "text",
+                "fontFamily": "Manrope",
+                "fontSize": 36,
+                "fontColor": {
+                  "type": "semantic",
+                  "id": "contrastNeutral"
+                },
+                "fontHighlight": "",
+                "lineHeight": 1.4,
+                "bold": false,
+                "underline": false,
+                "italic": false,
+                "line-through": false,
+                "overline": false,
+                "subscript": false,
+                "superscript": false
+              }
+            }
+          ],
+          "actualId": "s_3wlSom3aCHfz:30"
+        }
+      },
+      "lastKnownOrder": 24
+    },
+    {
+      "order": 25,
+      "body": {
+        "eventId": "s_3wlSom3aCHfz:31",
+        "authorUserId": "48ed7dba-0cb6-4b34-b083-aa4f38e3ddd0",
+        "sessionId": "s_3wlSom3aCHfz",
+        "userId": "s_3wlSom3aCHfz",
+        "boardId": "7a65feb2-28ff-4764-ac8d-e912137b36cc",
+        "operation": {
+          "class": "RichText",
+          "method": "edit",
+          "item": ["8bce61bd-0682-45d5-a57a-88b1d9edb15b"],
+          "selection": {
+            "anchor": {
+              "path": [0, 0],
+              "offset": 5
+            },
+            "focus": {
+              "path": [0, 0],
+              "offset": 5
+            }
+          },
+          "ops": [
+            {
+              "type": "insert_text",
+              "path": [0, 0],
+              "offset": 1,
+              "text": "кпу"
+            }
+          ],
+          "actualId": "s_3wlSom3aCHfz:31"
+        }
+      },
+      "lastKnownOrder": 24
+    },
+    {
+      "order": 28,
+      "body": {
+        "eventId": "s_3wlSom3aCHfz:37",
+        "authorUserId": "48ed7dba-0cb6-4b34-b083-aa4f38e3ddd0",
+        "sessionId": "s_3wlSom3aCHfz",
+        "userId": "s_3wlSom3aCHfz",
+        "boardId": "7a65feb2-28ff-4764-ac8d-e912137b36cc",
+        "operation": {
+          "class": "RichText",
+          "method": "edit",
+          "item": ["8bce61bd-0682-45d5-a57a-88b1d9edb15b"],
+          "selection": {
+            "anchor": {
+              "path": [0, 0],
+              "offset": 9
+            },
+            "focus": {
+              "path": [0, 0],
+              "offset": 9
+            }
+          },
+          "ops": [
+            {
+              "type": "insert_text",
+              "path": [0, 0],
+              "offset": 5,
+              "text": "пцуа"
+            }
+          ],
+          "actualId": "s_3wlSom3aCHfz:37"
+        }
+      },
+      "lastKnownOrder": 27
+    },
+    {
+      "order": 29,
+      "body": {
+        "eventId": "s_3wlSom3aCHfz:38",
+        "authorUserId": "48ed7dba-0cb6-4b34-b083-aa4f38e3ddd0",
+        "sessionId": "s_3wlSom3aCHfz",
+        "userId": "s_3wlSom3aCHfz",
+        "boardId": "7a65feb2-28ff-4764-ac8d-e912137b36cc",
+        "operation": {
+          "class": "Board",
+          "method": "add",
+          "item": "483d09df-ae86-42ee-b4d0-17c0e3d6a07d",
+          "data": {
+            "id": "",
+            "itemType": "RichText",
+            "children": [
+              {
+                "type": "paragraph",
+                "horisontalAlignment": "left",
+                "children": [
+                  {
+                    "type": "text",
+                    "text": "",
+                    "fontFamily": "Manrope",
+                    "fontSize": 36,
+                    "fontColor": {
+                      "type": "semantic",
+                      "id": "contrastNeutral"
+                    },
+                    "fontHighlight": "",
+                    "lineHeight": 1.4,
+                    "bold": false,
+                    "underline": false,
+                    "italic": false,
+                    "line-through": false,
+                    "overline": false,
+                    "subscript": false,
+                    "superscript": false
+                  }
+                ]
+              }
+            ],
+            "verticalAlignment": "center",
+            "maxWidth": 600,
+            "transformation": {
+              "translateX": 702,
+              "translateY": 266,
+              "scaleX": 1,
+              "scaleY": 1,
+              "rotate": 0,
+              "isLocked": false
+            },
+            "insideOf": "RichText",
+            "placeholderText": "Напишите что-нибудь",
+            "realSize": 36,
+            "maxHeight": 0
+          },
+          "actualId": "s_3wlSom3aCHfz:38"
+        }
+      },
+      "lastKnownOrder": 28
+    },
+    {
+      "order": 29,
+      "body": {
+        "eventId": "s_3wlSom3aCHfz:39",
+        "authorUserId": "48ed7dba-0cb6-4b34-b083-aa4f38e3ddd0",
+        "sessionId": "s_3wlSom3aCHfz",
+        "userId": "s_3wlSom3aCHfz",
+        "boardId": "7a65feb2-28ff-4764-ac8d-e912137b36cc",
+        "operation": {
+          "class": "RichText",
+          "method": "setFontSize",
+          "item": ["483d09df-ae86-42ee-b4d0-17c0e3d6a07d"],
+          "fontSize": 36,
+          "context": "None",
+          "actualId": "s_3wlSom3aCHfz:39"
+        }
+      },
+      "lastKnownOrder": 28
+    },
+    {
+      "order": 30,
+      "body": {
+        "eventId": "s_3wlSom3aCHfz:40",
+        "authorUserId": "48ed7dba-0cb6-4b34-b083-aa4f38e3ddd0",
+        "sessionId": "s_3wlSom3aCHfz",
+        "userId": "s_3wlSom3aCHfz",
+        "boardId": "7a65feb2-28ff-4764-ac8d-e912137b36cc",
+        "operation": {
+          "class": "RichText",
+          "method": "groupEdit",
+          "itemsOps": [
+            {
+              "item": "483d09df-ae86-42ee-b4d0-17c0e3d6a07d",
+              "selection": {
+                "anchor": {
+                  "path": [0, 0],
+                  "offset": 0
+                },
+                "focus": {
+                  "path": [0, 0],
+                  "offset": 0
+                }
+              },
+              "ops": [
+                {
+                  "type": "remove_node",
+                  "path": [0],
+                  "node": {
+                    "type": "paragraph",
+                    "horisontalAlignment": "left",
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "",
+                        "fontFamily": "Manrope",
+                        "fontSize": 36,
+                        "fontColor": {
+                          "type": "semantic",
+                          "id": "contrastNeutral"
+                        },
+                        "fontHighlight": "",
+                        "lineHeight": 1.4,
+                        "bold": false,
+                        "underline": false,
+                        "italic": false,
+                        "line-through": false,
+                        "overline": false,
+                        "subscript": false,
+                        "superscript": false
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "insert_node",
+                  "path": [0],
+                  "node": {
+                    "type": "paragraph",
+                    "lineHeight": 1.4,
+                    "children": [
+                      {
+                        "type": "text",
+                        "text": "",
+                        "fontFamily": "Manrope",
+                        "fontSize": 14,
+                        "fontColor": {
+                          "type": "semantic",
+                          "id": "contrastNeutral"
+                        },
+                        "fontHighlight": "",
+                        "lineHeight": 1.4,
+                        "bold": false,
+                        "underline": false,
+                        "italic": false,
+                        "line-through": false,
+                        "overline": false,
+                        "subscript": false,
+                        "superscript": false
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "actualId": "s_3wlSom3aCHfz:40"
+        }
+      },
+      "lastKnownOrder": 29
+    },
+    {
+      "order": 38,
+      "body": {
+        "eventId": "s_3wlSom3aCHfz:50",
+        "authorUserId": "48ed7dba-0cb6-4b34-b083-aa4f38e3ddd0",
+        "sessionId": "s_3wlSom3aCHfz",
+        "userId": "s_3wlSom3aCHfz",
+        "boardId": "7a65feb2-28ff-4764-ac8d-e912137b36cc",
+        "operation": {
+          "class": "RichText",
+          "method": "edit",
+          "item": ["483d09df-ae86-42ee-b4d0-17c0e3d6a07d"],
+          "selection": {
+            "anchor": {
+              "path": [0, 0],
+              "offset": 11
+            },
+            "focus": {
+              "path": [0, 0],
+              "offset": 11
+            }
+          },
+          "ops": [
+            {
+              "type": "insert_text",
+              "path": [0, 0],
+              "offset": 0,
+              "text": "пкпук цу ц"
+            }
+          ],
+          "actualId": "s_3wlSom3aCHfz:50"
+        }
+      },
+      "lastKnownOrder": 37
+    },
+    {
+      "order": 40,
+      "body": {
+        "eventId": "s_3wlSom3aCHfz:52",
+        "authorUserId": "48ed7dba-0cb6-4b34-b083-aa4f38e3ddd0",
+        "sessionId": "s_3wlSom3aCHfz",
+        "userId": "s_3wlSom3aCHfz",
+        "boardId": "7a65feb2-28ff-4764-ac8d-e912137b36cc",
+        "operation": {
+          "class": "RichText",
+          "method": "edit",
+          "item": ["483d09df-ae86-42ee-b4d0-17c0e3d6a07d"],
+          "selection": {
+            "anchor": {
+              "path": [0, 0],
+              "offset": 14
+            },
+            "focus": {
+              "path": [0, 0],
+              "offset": 14
+            }
+          },
+          "ops": [
+            {
+              "type": "insert_text",
+              "path": [0, 0],
+              "offset": 11,
+              "text": "цуц"
+            }
+          ],
+          "actualId": "s_3wlSom3aCHfz:52"
+        }
+      },
+      "lastKnownOrder": 39
+    }
+  ],
+  "items": [
+    {
+      "id": "3c50beed-2ed2-4e5d-9287-fc21f416ba30",
+      "itemType": "Sticker",
+      "backgroundColor": {
+        "type": "semantic",
+        "id": "contrastBlue"
+      },
+      "transformation": {
+        "translateX": 314,
+        "translateY": 351,
+        "scaleX": 1.0520278038150892,
+        "scaleY": 1.0520278038150892,
+        "rotate": 0,
+        "isLocked": false
+      },
+      "text": {
+        "id": "3c50beed-2ed2-4e5d-9287-fc21f416ba30",
+        "itemType": "RichText",
+        "children": [
+          {
+            "type": "paragraph",
+            "horisontalAlignment": "center",
+            "children": [
+              {
+                "type": "text",
+                "text": "hello",
+                "fontFamily": "Manrope",
+                "fontSize": 14,
+                "fontColor": {
+                  "type": "semantic",
+                  "id": "contrastNeutral"
+                },
+                "fontHighlight": "",
+                "lineHeight": 1.4,
+                "bold": false,
+                "underline": false,
+                "italic": false,
+                "line-through": false,
+                "overline": false,
+                "subscript": false,
+                "superscript": false
+              }
+            ]
+          }
+        ],
+        "verticalAlignment": "center",
+        "maxWidth": 184,
+        "transformation": {
+          "translateX": 314,
+          "translateY": 351,
+          "scaleX": 1.0520278038150892,
+          "scaleY": 1.0520278038150892,
+          "rotate": 0,
+          "isLocked": false
+        },
+        "insideOf": "Sticker",
+        "placeholderText": " ",
+        "realSize": "auto",
+        "maxHeight": 31.31797790527344
+      }
+    },
+    {
+      "id": "0720b2d2-3d15-40b3-8267-870656fcc8fe",
+      "itemType": "RichText",
+      "children": [
+        {
+          "type": "paragraph",
+          "lineHeight": 1.4,
+          "children": [
+            {
+              "type": "text",
+              "text": "test template",
+              "fontFamily": "Manrope",
+              "fontSize": 36,
+              "fontColor": {
+                "type": "semantic",
+                "id": "contrastNeutral"
+              },
+              "fontHighlight": "",
+              "lineHeight": 1.4,
+              "bold": false,
+              "underline": false,
+              "italic": false,
+              "line-through": false,
+              "overline": false,
+              "subscript": false,
+              "superscript": false
+            }
+          ]
+        }
+      ],
+      "verticalAlignment": "center",
+      "maxWidth": 600,
+      "transformation": {
+        "translateX": 709,
+        "translateY": 416,
+        "scaleX": 1,
+        "scaleY": 1,
+        "rotate": 0,
+        "isLocked": false
+      },
+      "insideOf": "RichText",
+      "placeholderText": "Напишите что-нибудь",
+      "realSize": 36,
+      "maxHeight": 0
+    },
+    {
+      "id": "8bce61bd-0682-45d5-a57a-88b1d9edb15b",
+      "itemType": "RichText",
+      "children": [
+        {
+          "type": "paragraph",
+          "horisontalAlignment": "left",
+          "children": [
+            {
+              "type": "text",
+              "text": "укпупцуа",
+              "fontFamily": "Manrope",
+              "fontSize": 36,
+              "fontColor": {
+                "type": "semantic",
+                "id": "contrastNeutral"
+              },
+              "fontHighlight": "",
+              "lineHeight": 1.4,
+              "bold": false,
+              "underline": false,
+              "italic": false,
+              "line-through": false,
+              "overline": false,
+              "subscript": false,
+              "superscript": false
+            }
+          ]
+        }
+      ],
+      "verticalAlignment": "center",
+      "maxWidth": 600,
+      "transformation": {
+        "translateX": 706,
+        "translateY": 596,
+        "scaleX": 1,
+        "scaleY": 1,
+        "rotate": 0,
+        "isLocked": false
+      },
+      "insideOf": "RichText",
+      "placeholderText": "Напишите что-нибудь",
+      "realSize": 36,
+      "maxHeight": 0
+    },
+    {
+      "id": "483d09df-ae86-42ee-b4d0-17c0e3d6a07d",
+      "itemType": "RichText",
+      "children": [
+        {
+          "type": "paragraph",
+          "lineHeight": 1.4,
+          "children": [
+            {
+              "type": "text",
+              "text": "пкпук цу ццуц",
+              "fontFamily": "Manrope",
+              "fontSize": 14,
+              "fontColor": {
+                "type": "semantic",
+                "id": "contrastNeutral"
+              },
+              "fontHighlight": "",
+              "lineHeight": 1.4,
+              "bold": false,
+              "underline": false,
+              "italic": false,
+              "line-through": false,
+              "overline": false,
+              "subscript": false,
+              "superscript": false
+            }
+          ]
+        }
+      ],
+      "verticalAlignment": "center",
+      "maxWidth": 600,
+      "transformation": {
+        "translateX": 702,
+        "translateY": 266,
+        "scaleX": 1,
+        "scaleY": 1,
+        "rotate": 0,
+        "isLocked": false
+      },
+      "insideOf": "RichText",
+      "placeholderText": "Напишите что-нибудь",
+      "realSize": 14,
+      "maxHeight": 0
+    }
+  ],
+  "lastIndex": 40
+}
