@@ -545,9 +545,24 @@
   },
   "cookiesModal": {
     "title": "Этот сайт использует куки",
-    "text": "Мы используем куки для обеспечения нормальной работы сайта и улучшения вашего опыта.",
-    "learnMoreBtn": "Узнать больше",
-    "acceptBtn": "Принять"
+    "text": "Мы используем куки и локальное хранилище для работы приложения и сохранения ваших настроек.",
+    "learnMoreBtn": "Политика конфиденциальности",
+    "acceptBtn": "Принять все",
+    "declineBtn": "Только обязательные",
+    "showDetails": "Что именно мы храним?",
+    "hideDetails": "Скрыть подробности",
+    "necessaryTitle": "Обязательные (всегда активны)",
+    "necessary1": "cookie_consent — ваш выбор согласия (cookie, 6 месяцев)",
+    "necessary2": "accessToken / refreshToken — авторизация (cookie, сессия)",
+    "necessary3": "currentUser / userId — идентификатор активной сессии (localStorage)",
+    "necessary4": "userColor — цвет вашего курсора в совместной работе (localStorage)",
+    "necessary5": "ui-theme — светлая/тёмная тема (localStorage)",
+    "necessary6": "controlMode — режим управления мышью/тачпадом (localStorage)",
+    "necessary7": "lastSeenBoard — последняя открытая доска (localStorage)",
+    "necessary8": "Состояние UI для каждой доски: стили коннекторов, размеры шрифтов и т.д. (sessionStorage, очищается при закрытии вкладки)",
+    "preferencesTitle": "Настройки (необязательные, требуют вашего согласия)",
+    "pref1": "anonKey — анонимный идентификатор для авторства досок (localStorage)",
+    "pref2": "createdBoards / visitedBoards — история открытых досок (localStorage)"
   },
   "modalInfo": {
     "accessDenied": {

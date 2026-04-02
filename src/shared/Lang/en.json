@@ -548,9 +548,24 @@
   },
   "cookiesModal": {
     "title": "This site uses cookies",
-    "text": "We use cookies to ensure the proper functioning of the site and improve your experience.",
-    "learnMoreBtn": "Learn more",
-    "acceptBtn": "Accept"
+    "text": "We use cookies and local storage to keep the app working and remember your preferences.",
+    "learnMoreBtn": "Privacy Policy",
+    "acceptBtn": "Accept all",
+    "declineBtn": "Necessary only",
+    "showDetails": "What do we store?",
+    "hideDetails": "Hide details",
+    "necessaryTitle": "Necessary (always active)",
+    "necessary1": "cookie_consent — your consent choice (cookie, 6 months)",
+    "necessary2": "accessToken / refreshToken — authentication (cookie, session)",
+    "necessary3": "currentUser / userId — active session identity (localStorage)",
+    "necessary4": "userColor — your cursor color in collaboration (localStorage)",
+    "necessary5": "ui-theme — light/dark theme preference (localStorage)",
+    "necessary6": "controlMode — mouse/trackpad input mode (localStorage)",
+    "necessary7": "lastSeenBoard — last opened board (localStorage)",
+    "necessary8": "Per-board UI state: connector styles, font sizes, etc. (sessionStorage, cleared on tab close)",
+    "preferencesTitle": "Preferences (optional, requires your consent)",
+    "pref1": "anonKey — anonymous identifier for board authorship (localStorage)",
+    "pref2": "createdBoards / visitedBoards — history of boards you opened (localStorage)"
   },
   "modalInfo": {
     "accessDenied": {

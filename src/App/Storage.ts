@@ -1,30 +1,31 @@
 import type { boardsApi } from "shared/api";
 import { v4 } from "uuid";
+import { guardedSetItem, guardedGetItem } from "./consentStorage";
 
 export class Storage {
   createdBoards = `${location.host}/createdBoards`;
   visitedBoards = `${location.host}/visitedBoards`;
 
   setAnonKey(): void {
-    if (localStorage.getItem("anonKey")) {
+    if (guardedGetItem("anonKey")) {
       return;
     }
-    localStorage.setItem("anonKey", v4());
+    guardedSetItem("anonKey", v4());
   }
 
   getAnonKey(): string {
-    const authorKey = localStorage.getItem("anonKey");
+    const authorKey = guardedGetItem("anonKey");
     if (authorKey) {
       return authorKey;
     }
     const newKey = v4();
-    localStorage.setItem("anonKey", newKey);
+    guardedSetItem("anonKey", newKey);
     return newKey;
   }
 
   /* Returns ids of visited public boards stored in the local storage */
   listCreatedBoards(): boardsApi.Board[] {
-    const createdBoards = localStorage.getItem(this.createdBoards);
+    const createdBoards = guardedGetItem(this.createdBoards);
     if (createdBoards) {
       return JSON.parse(createdBoards);
     } else {
@@ -33,7 +34,7 @@ export class Storage {
   }
 
   listVisitedBoards(): boardsApi.Board[] {
-    const visitedBoards = localStorage.getItem(this.visitedBoards);
+    const visitedBoards = guardedGetItem(this.visitedBoards);
     if (visitedBoards) {
       return JSON.parse(visitedBoards);
     } else {
@@ -42,11 +43,11 @@ export class Storage {
   }
 
   setCreatedBoards(boards: boardsApi.Board[]): void {
-    localStorage.setItem(this.createdBoards, JSON.stringify(boards));
+    guardedSetItem(this.createdBoards, JSON.stringify(boards));
   }
 
   setVisitedBoards(boards: boardsApi.Board[]): void {
-    localStorage.setItem(this.visitedBoards, JSON.stringify(boards));
+    guardedSetItem(this.visitedBoards, JSON.stringify(boards));
   }
 
   private filterCreatedBoards(boardId: string): boardsApi.Board[] {

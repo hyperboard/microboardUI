@@ -1,5 +1,5 @@
 .wr {
-  max-width: 326px;
+  max-width: 380px;
 }
 
 .title {
@@ -14,11 +14,77 @@
   line-height: 1.42;
   font-family: "Manrope";
   font-weight: 400;
-  margin: 4px 0 12px;
+  margin: 4px 0 8px;
+}
+
+.detailsToggle {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: "Manrope";
+  color: var(--color-link, #4778f5);
+  text-decoration: underline;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.detailsToggle:hover {
+  opacity: 0.8;
+}
+
+.details {
+  font-size: 12px;
+  font-family: "Manrope";
+  line-height: 1.4;
+  margin-bottom: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  background: var(--color-surface-secondary, rgba(0, 0, 0, 0.04));
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.detailsCategory {
+  font-weight: 600;
+  margin: 6px 0 3px;
+  color: var(--color-text-primary, inherit);
+}
+
+.detailsCategory:first-child {
+  margin-top: 0;
+}
+
+.detailsList {
+  margin: 0 0 4px 0;
+  padding-left: 16px;
+  color: var(--color-text-secondary, rgba(0, 0, 0, 0.6));
+}
+
+.detailsList li {
+  margin-bottom: 2px;
 }
 
 .btns {
   display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.learnMore {
+  font-size: 12px;
+  font-family: "Manrope";
+  color: var(--color-link, #4778f5);
+  text-decoration: underline;
+  cursor: pointer;
+  margin-right: auto;
+}
+
+.learnMore:hover {
+  opacity: 0.8;
 }
 
 .btn {
@@ -27,6 +93,5 @@
   min-height: 24px;
   height: 24px;
   width: unset;
-  margin-right: 8px;
   border-radius: 8px;
 }

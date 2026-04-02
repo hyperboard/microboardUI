@@ -1,4 +1,3 @@
-import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -6,6 +5,11 @@ import {
   Notification,
 } from "shared/ui-lib/Notification/Notification";
 import { UiButton } from "shared/ui-lib/UiButton";
+import {
+  getConsent,
+  setConsent,
+  clearPreferenceStorage,
+} from "App/consentStorage";
 import styles from "./CookiesModal.module.css";
 
 interface CookiesModalProps {
@@ -17,29 +21,29 @@ export const CookiesModal = ({
 }: CookiesModalProps): React.ReactElement => {
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState<boolean>(false);
+  const [showDetails, setShowDetails] = useState<boolean>(false);
 
-  const redirectOnPolicy = (): void => {
-    const policyUrl =
-      i18n.language === "ru"
-        ? "https://app.microboard.io/pdf/privacy_policy_ru.pdf"
-        : "https://app.microboard.io/pdf/privacy_policy_en.pdf";
-    window.location.href = policyUrl;
-  };
+  useEffect(() => {
+    if (getConsent() === null) {
+      setOpen(true);
+    }
+  }, []);
 
-  const onAccept = (): void => {
-    Cookies.set("first_visit", "true", { expires: 182, path: "/" });
+  const handleAcceptAll = (): void => {
+    setConsent("accepted");
     setOpen(false);
   };
 
-  useEffect(() => {
-    const isOpenModal = Cookies.get("first_visit");
+  const handleDecline = (): void => {
+    setConsent("declined");
+    clearPreferenceStorage();
+    setOpen(false);
+  };
 
-    if (!isOpenModal) {
-      setOpen(true);
-    } else {
-      setOpen(false);
-    }
-  }, []);
+  const policyUrl =
+    i18n.language === "ru"
+      ? "https://app.microboard.io/pdf/privacy_policy_ru.pdf"
+      : "https://app.microboard.io/pdf/privacy_policy_en.pdf";
 
   return (
     <Notification
@@ -53,15 +57,115 @@ export const CookiesModal = ({
       <div className={styles.wr}>
         <h4 className={styles.title}>{t("cookiesModal.title")}</h4>
         <p className={styles.text}>{t("cookiesModal.text")}</p>
+
+        <button
+          className={styles.detailsToggle}
+          onClick={() => setShowDetails((v) => !v)}
+        >
+          {showDetails
+            ? t("cookiesModal.hideDetails", "Hide details")
+            : t("cookiesModal.showDetails", "What do we store?")}
+        </button>
+
+        {showDetails && (
+          <div className={styles.details}>
+            <p className={styles.detailsCategory}>
+              {t("cookiesModal.necessaryTitle", "Necessary (always active)")}
+            </p>
+            <ul className={styles.detailsList}>
+              <li>
+                {t(
+                  "cookiesModal.necessary1",
+                  "cookie_consent — your consent choice (cookie, 6 months)",
+                )}
+              </li>
+              <li>
+                {t(
+                  "cookiesModal.necessary2",
+                  "accessToken / refreshToken — authentication (cookie, session)",
+                )}
+              </li>
+              <li>
+                {t(
+                  "cookiesModal.necessary3",
+                  "currentUser / userId — active session identity (localStorage)",
+                )}
+              </li>
+              <li>
+                {t(
+                  "cookiesModal.necessary4",
+                  "userColor — your cursor color in collaboration (localStorage)",
+                )}
+              </li>
+              <li>
+                {t(
+                  "cookiesModal.necessary5",
+                  "ui-theme — light/dark theme preference (localStorage)",
+                )}
+              </li>
+              <li>
+                {t(
+                  "cookiesModal.necessary6",
+                  "controlMode — mouse/trackpad input mode (localStorage)",
+                )}
+              </li>
+              <li>
+                {t(
+                  "cookiesModal.necessary7",
+                  "lastSeenBoard — last opened board (localStorage)",
+                )}
+              </li>
+              <li>
+                {t(
+                  "cookiesModal.necessary8",
+                  "Per-board UI state: connector styles, font sizes, etc. (sessionStorage, cleared on tab close)",
+                )}
+              </li>
+            </ul>
+            <p className={styles.detailsCategory}>
+              {t(
+                "cookiesModal.preferencesTitle",
+                "Preferences (optional, requires your consent)",
+              )}
+            </p>
+            <ul className={styles.detailsList}>
+              <li>
+                {t(
+                  "cookiesModal.pref1",
+                  "anonKey — anonymous identifier for board authorship (localStorage)",
+                )}
+              </li>
+              <li>
+                {t(
+                  "cookiesModal.pref2",
+                  "createdBoards / visitedBoards — history of boards you opened (localStorage)",
+                )}
+              </li>
+            </ul>
+          </div>
+        )}
+
         <div className={styles.btns}>
-          <UiButton
-            variant="tertiary"
-            onClick={redirectOnPolicy}
-            className={styles.btn}
+          <a
+            href={policyUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.learnMore}
           >
             {t("cookiesModal.learnMoreBtn")}
+          </a>
+          <UiButton
+            variant="secondary"
+            onClick={handleDecline}
+            className={styles.btn}
+          >
+            {t("cookiesModal.declineBtn", "Necessary only")}
           </UiButton>
-          <UiButton variant="primary" onClick={onAccept} className={styles.btn}>
+          <UiButton
+            variant="primary"
+            onClick={handleAcceptAll}
+            className={styles.btn}
+          >
             {t("cookiesModal.acceptBtn")}
           </UiButton>
         </div>
