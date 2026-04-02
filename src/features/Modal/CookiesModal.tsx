@@ -40,10 +40,7 @@ export const CookiesModal = ({
     setOpen(false);
   };
 
-  const policyUrl =
-    i18n.language === "ru"
-      ? "https://app.microboard.io/pdf/privacy_policy_ru.pdf"
-      : "https://app.microboard.io/pdf/privacy_policy_en.pdf";
+  const policyUrl = "https://microboard.io/privacy-policy";
 
   return (
     <Notification
