@@ -40,7 +40,7 @@ export const CookiesModal = ({
     setOpen(false);
   };
 
-  const policyUrl = "https://microboard.io/privacy-policy";
+  const policyUrl = "https://microboard.io/pdf/privacy_policy_en.pdf";
 
   return (
     <Notification
