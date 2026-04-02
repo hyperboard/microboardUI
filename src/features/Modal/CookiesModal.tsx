@@ -19,7 +19,7 @@ interface CookiesModalProps {
 export const CookiesModal = ({
   className,
 }: CookiesModalProps): React.ReactElement => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [open, setOpen] = useState<boolean>(false);
   const [showDetails, setShowDetails] = useState<boolean>(false);
 
@@ -142,15 +142,15 @@ export const CookiesModal = ({
           </div>
         )}
 
+        <a
+          href={policyUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.learnMore}
+        >
+          {t("cookiesModal.learnMoreBtn")}
+        </a>
         <div className={styles.btns}>
-          <a
-            href={policyUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.learnMore}
-          >
-            {t("cookiesModal.learnMoreBtn")}
-          </a>
           <UiButton
             variant="secondary"
             onClick={handleDecline}
