@@ -7,7 +7,6 @@ import { AppContext, useAppContext } from "features/AppContext";
 import { AppView } from "features/AppView";
 import { USER_PLAN_MODAL_ID } from "features/UserPlan";
 import { fetchTemplateSnapshot, pasteSnapshot } from "features/Templates/lib";
-import Cookies from "js-cookie";
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -103,7 +102,7 @@ export const BoardPage = (): React.JSX.Element => {
         });
       } else {
         const lastSeenBoard = localStorage.getItem(LAST_BOARD_KEY);
-        const isFirstVisit = !Cookies.get("first_visit");
+        const isFirstVisit = !localStorage.getItem("firstBoardCreated");
         if (lastSeenBoard) {
           app.openBoard(lastSeenBoard).then(() => {
             navigate(`/boards/${lastSeenBoard}${search}`, {
@@ -112,6 +111,7 @@ export const BoardPage = (): React.JSX.Element => {
             app.render();
           });
         } else if (isFirstVisit) {
+          localStorage.setItem("firstBoardCreated", "true");
           boardsList
             .createBoard(t("board.welcomeBoardTitle"), true)
             .then((boardId) => {

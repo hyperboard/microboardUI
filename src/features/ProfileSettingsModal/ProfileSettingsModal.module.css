@@ -98,3 +98,32 @@
   align-self: flex-start;
   font-size: 14px;
 }
+
+.privacySection {
+  width: 100%;
+  border-top: 1px solid var(--color-border, rgba(0, 0, 0, 0.08));
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.privacyTitle {
+  font-family: "Manrope";
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.privacyStatus {
+  font-family: "Manrope";
+  font-size: 12px;
+  color: var(--color-text-secondary, #6f717c);
+  margin: 0;
+}
+
+.privacyBtns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

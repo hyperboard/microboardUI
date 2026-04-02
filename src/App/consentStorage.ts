@@ -3,6 +3,8 @@ import Cookies from "js-cookie";
 export type ConsentChoice = "accepted" | "declined";
 
 const CONSENT_COOKIE = "cookie_consent";
+/** Legacy cookie set by the old CookiesModal. Treated as implicit acceptance. */
+const LEGACY_CONSENT_COOKIE = "first_visit";
 const CONSENT_EXPIRES_DAYS = 182;
 
 /**
@@ -31,6 +33,33 @@ function isBoardHistoryKey(key: string): boolean {
   return key.endsWith("/createdBoards") || key.endsWith("/visitedBoards");
 }
 
+export function isPreferenceKey(key: string): boolean {
+  return PREFERENCE_STORAGE_KEYS.has(key) || isBoardHistoryKey(key);
+}
+
+/**
+ * Migrate users who consented via the old CookiesModal (first_visit=true).
+ * Converts the legacy cookie to the new cookie_consent=accepted and removes
+ * the old cookie so BoardPage's first-visit welcome board logic is unaffected.
+ * Must be called once at app startup.
+ */
+export function migrateLegacyConsent(): void {
+  if (Cookies.get(CONSENT_COOKIE)) {
+    // Already migrated — clean up legacy cookie if it still exists.
+    Cookies.remove(LEGACY_CONSENT_COOKIE, { path: "/" });
+    return;
+  }
+  if (Cookies.get(LEGACY_CONSENT_COOKIE)) {
+    // User previously accepted via old banner — honour their choice.
+    Cookies.set(CONSENT_COOKIE, "accepted", {
+      expires: CONSENT_EXPIRES_DAYS,
+      path: "/",
+    });
+    Cookies.remove(LEGACY_CONSENT_COOKIE, { path: "/" });
+  }
+  // No legacy cookie: first real visit — nothing to do, banner will show.
+}
+
 export function getConsent(): ConsentChoice | null {
   const value = Cookies.get(CONSENT_COOKIE);
   if (value === "accepted" || value === "declined") return value;
@@ -44,16 +73,17 @@ export function setConsent(choice: ConsentChoice): void {
   });
 }
 
+export function revokeConsent(): void {
+  setConsent("declined");
+  clearPreferenceStorage();
+}
+
 export function hasConsented(): boolean {
   return getConsent() === "accepted";
 }
 
 export function hasDeclined(): boolean {
   return getConsent() === "declined";
-}
-
-export function isPreferenceKey(key: string): boolean {
-  return PREFERENCE_STORAGE_KEYS.has(key) || isBoardHistoryKey(key);
 }
 
 /**

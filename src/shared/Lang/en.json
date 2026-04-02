@@ -1048,7 +1048,19 @@
     "cancelPassword": "Cancel",
     "avatarUploadError": "Avatar upload error",
     "avatarSizeConstraint": "Maximum image size is 10 MB",
-    "avatarTypeConstraint": "The image must be in jpeg, png or svg format"
+    "avatarTypeConstraint": "The image must be in jpeg, png or svg format",
+    "privacy": {
+      "title": "Cookie & data preferences",
+      "statusAccepted": "Status: you have accepted all cookies",
+      "statusDeclined": "Status: necessary cookies only",
+      "statusUnknown": "Status: not yet chosen",
+      "acceptAll": "Accept all cookies",
+      "revokeConsent": "Necessary only — remove optional data",
+      "clearData": "Delete optional local data now",
+      "acceptedNotify": "Preferences saved",
+      "revokedNotify": "Preference data removed",
+      "clearedNotify": "Optional local data has been deleted"
+    }
   },
   "userPlan": {
     "tokens": "tokens",

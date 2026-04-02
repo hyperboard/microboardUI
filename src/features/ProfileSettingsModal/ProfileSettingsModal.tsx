@@ -1,4 +1,10 @@
 import { useAccount } from "App/useAccount";
+import {
+  clearPreferenceStorage,
+  getConsent,
+  revokeConsent,
+  setConsent,
+} from "App/consentStorage";
 import { CHANGE_PASSWORD_MODAL } from "features/ChangePasswordModal";
 import { ChangePassword } from "features/UserPanel/icons/ChangePassword";
 import { Logout } from "features/UserPanel/icons/Logout";
@@ -258,6 +264,7 @@ export function ProfileSettingsModal(): ReactElement {
           accountNewsletter={account.info?.newsletter}
           onChange={handleNewsletterChange}
         />
+        <PrivacySection />
         <div className={styles.btns}>
           <UiButton
             type="button"
@@ -292,6 +299,96 @@ export function ProfileSettingsModal(): ReactElement {
         </div>
       </div>
     </UiModal>
+  );
+}
+
+function PrivacySection(): ReactElement {
+  const { t } = useTranslation();
+  const [consent, setConsentState] = useState(() => getConsent());
+
+  const handleAccept = (): void => {
+    setConsent("accepted");
+    setConsentState("accepted");
+    notify({
+      variant: "success",
+      header: t("profile.privacy.acceptedNotify", "Preferences saved"),
+    });
+  };
+
+  const handleRevoke = (): void => {
+    revokeConsent();
+    setConsentState("declined");
+    notify({
+      variant: "success",
+      header: t("profile.privacy.revokedNotify", "Preference data removed"),
+    });
+  };
+
+  const handleClearData = (): void => {
+    clearPreferenceStorage();
+    notify({
+      variant: "success",
+      header: t(
+        "profile.privacy.clearedNotify",
+        "Optional local data has been deleted",
+      ),
+    });
+  };
+
+  return (
+    <div className={styles.privacySection}>
+      <p className={styles.privacyTitle}>
+        {t("profile.privacy.title", "Cookie & data preferences")}
+      </p>
+      <p className={styles.privacyStatus}>
+        {consent === "accepted"
+          ? t(
+              "profile.privacy.statusAccepted",
+              "Status: you have accepted all cookies",
+            )
+          : consent === "declined"
+            ? t(
+                "profile.privacy.statusDeclined",
+                "Status: necessary cookies only",
+              )
+            : t("profile.privacy.statusUnknown", "Status: not yet chosen")}
+      </p>
+      <div className={styles.privacyBtns}>
+        {consent !== "accepted" && (
+          <UiButton
+            variant="tertiary"
+            size="md"
+            className={styles.btn}
+            onClick={handleAccept}
+          >
+            {t("profile.privacy.acceptAll", "Accept all cookies")}
+          </UiButton>
+        )}
+        {consent !== "declined" && (
+          <UiButton
+            variant="quaternary"
+            size="md"
+            className={styles.btn}
+            onClick={handleRevoke}
+          >
+            {t(
+              "profile.privacy.revokeConsent",
+              "Necessary only — remove optional data",
+            )}
+          </UiButton>
+        )}
+        {consent === "declined" && (
+          <UiButton
+            variant="quaternary"
+            size="md"
+            className={styles.btn}
+            onClick={handleClearData}
+          >
+            {t("profile.privacy.clearData", "Delete optional local data now")}
+          </UiButton>
+        )}
+      </div>
+    </div>
   );
 }
 
