@@ -14,10 +14,10 @@ import styles from "./BoardMenu.module.css";
 export const BoardMenu = () => {
   const menuRef = useRef<HTMLDivElement>(null);
   const { board, app } = useAppContext();
-  const cursorPosition = board.pointer.point;
-  const [isOpen, setIsOpen] = useState(false);
-  const position = useRef(new Mbr());
-  const shouldUpdatePosition = useRef(true);
+  const [anchorPoint, setAnchorPoint] = useState(() =>
+    board.pointer.point.copy(),
+  );
+  const wasOpen = useRef(false);
 
   const forceUpdate = useForceUpdate();
 
@@ -34,43 +34,39 @@ export const BoardMenu = () => {
     },
   });
 
+  const isOpen = board.getIsBoardMenuOpen();
+
+  useEffect(() => {
+    if (isOpen && !wasOpen.current) {
+      setAnchorPoint(board.pointer.point.copy());
+    }
+    wasOpen.current = isOpen;
+  }, [board, isOpen]);
+
   const mbr = useDomMbr({
     app,
     board,
     ref: menuRef,
     targetMbr: new Mbr(
-      cursorPosition.x,
-      cursorPosition.y,
-      cursorPosition.x,
-      cursorPosition.y,
+      anchorPoint.x,
+      anchorPoint.y,
+      anchorPoint.x,
+      anchorPoint.y,
     ),
     subjects: ["camera"],
     fit: "boardMenu",
   });
 
-  if (shouldUpdatePosition.current) {
-    position.current = mbr;
-  } else {
-    setTimeout(() => (shouldUpdatePosition.current = true), 100);
-  }
-
-  useEffect(() => {
-    setIsOpen(board.getIsBoardMenuOpen());
-  }, [board.getIsBoardMenuOpen()]);
-
   const isNavigate = Boolean(board.tools.getNavigate());
 
   return isOpen && !isNavigate ? (
     <UiPanel
-      onPointerUp={() => (shouldUpdatePosition.current = false)}
-      onPointerDown={() => (shouldUpdatePosition.current = false)}
-      onClick={() => (shouldUpdatePosition.current = false)}
       vertical={true}
       ref={menuRef}
       style={{
         position: "absolute",
-        left: position.current.left,
-        top: position.current.top,
+        left: mbr.left,
+        top: mbr.top,
         gap: "2px",
       }}
       padding={4}

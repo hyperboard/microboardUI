@@ -521,6 +521,9 @@ export function getController(
       pinchingTimeout = null;
     }, delay);
 
+    camera.pointTo(event.pageX, event.pageY);
+    const shouldOpenBoardMenu = board.items.getUnderPointer().length === 0;
+
     // Re-wake force graph after drag so physics resumes from fresh baseline.
     board.wakeForceGraph();
     board.wakeGravity();
@@ -534,7 +537,9 @@ export function getController(
         case 1:
           return transformerTool.middleButtonUp() || tools.middleButtonUp();
         case 2:
-          board.setIsBoardMenuOpen(true);
+          if (shouldOpenBoardMenu) {
+            board.setIsBoardMenuOpen(true);
+          }
           return transformerTool.rightButtonUp() || tools.rightButtonUp();
         default:
           return transformerTool.leftButtonUp() || tools.leftButtonUp();
@@ -548,7 +553,7 @@ export function getController(
         case 1:
           return tools.middleButtonUp();
         case 2:
-          if (!board.tools.getNavigate()) {
+          if (!board.tools.getNavigate() && shouldOpenBoardMenu) {
             board.setIsBoardMenuOpen(true);
           }
           return tools.rightButtonUp();
