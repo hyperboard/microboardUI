@@ -1,6 +1,6 @@
 import { useDomMbr } from "App/useDomMbr";
 import { useAppSubscription } from "App/useBoardSubscription";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAppContext } from "features/AppContext";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import { ConnectorAddText } from "./Buttons/ConnectorAddText";
@@ -84,13 +84,19 @@ export function ContextPanel(): React.ReactElement | null {
     board,
     ref: panelRef,
   });
+  const selectionSignature = `${board.selection.getContext()}::${board.selection.items
+    .ids()
+    .join(",")}`;
+
   useAppSubscription({
-    subjects: ["selectionItems", "selection"],
-    observer: () => {
-      setOpenedMenu("None");
-      forceUpdate();
-    },
+    subjects: ["selectionItems", "selectionItem"],
+    observer: forceUpdate,
   });
+
+  useEffect(() => {
+    setOpenedMenu("None");
+  }, [selectionSignature]);
+
   const toggleMenu = (menu: string): void =>
     setOpenedMenu((prev) => (prev === menu ? "None" : menu));
 
