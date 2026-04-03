@@ -5,7 +5,6 @@ import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import btnStyle from "./ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
-import { BaseItem } from "microboard-temp";
 
 type Props = {
   rounded?: "none" | "left";
@@ -43,32 +42,16 @@ export const Lock = ({
         }
       }
 
-      // Default unlocking behavior: just unlock transformations
       selectedItems.forEach((item) => {
         item.transformation.setIsLocked(false);
       });
     } else {
-      // Locking
       const itemsToLock = selectedItems.filter(
         (item) => !item.transformation.isLocked,
       );
-
-      // If multiple items are selected and they aren't already in a group, create a "locked group" (legacy behavior)
-      const allHaveSameParent =
-        itemsToLock.length > 1 &&
-        itemsToLock.every((item) => item.parent === itemsToLock[0].parent);
-      const isAlreadyGrouped =
-        itemsToLock.length > 1 &&
-        itemsToLock.every((item) => item.parent !== "Board");
-
-      if (itemsToLock.length > 1 && !isAlreadyGrouped && allHaveSameParent) {
-        board.addLockedGroup(itemsToLock as BaseItem[]);
-      } else {
-        // Just lock them individually (or the group item itself)
-        itemsToLock.forEach((item) => {
-          item.transformation.setIsLocked(true);
-        });
-      }
+      itemsToLock.forEach((item) => {
+        item.transformation.setIsLocked(true);
+      });
     }
   }, [board, isLocked, selectedItems]);
 

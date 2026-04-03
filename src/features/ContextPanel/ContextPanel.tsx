@@ -83,7 +83,7 @@ export function ContextPanel(): React.ReactElement | null {
     ref: panelRef,
   });
   useAppSubscription({
-    subjects: ["selectionItems"],
+    subjects: ["selectionItems", "selection"],
     observer: () => {
       setOpenedMenu("None");
     },
