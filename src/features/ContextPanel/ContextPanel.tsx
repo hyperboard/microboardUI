@@ -72,10 +72,12 @@ import { DetachFromGroup } from "./Buttons/DetachFromGroup";
 import { SelectParent } from "./Buttons/SelectParent";
 import { HierarchyBreadcrumbs } from "./HierarchyBreadcrumbs";
 import { selectHierarchyAncestor } from "features/HierarchyNavigation/hierarchyUi";
+import { useForceUpdate } from "shared/lib/useForceUpdate";
 
 export function ContextPanel(): React.ReactElement | null {
   const { app, board } = useAppContext();
   const [openedMenu, setOpenedMenu] = useState("None");
+  const forceUpdate = useForceUpdate();
   const panelRef = useRef<HTMLDivElement>(null);
   const mbr = useDomMbr({
     app,
@@ -86,6 +88,7 @@ export function ContextPanel(): React.ReactElement | null {
     subjects: ["selectionItems", "selection"],
     observer: () => {
       setOpenedMenu("None");
+      forceUpdate();
     },
   });
   const toggleMenu = (menu: string): void =>
