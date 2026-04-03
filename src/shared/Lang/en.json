@@ -390,7 +390,9 @@
   },
   "boardMenu": {
     "items": {
-      "paste": "Paste"
+      "paste": "Paste",
+      "enableConnectorSmartJump": "Enable connector smart jump",
+      "disableConnectorSmartJump": "Disable connector smart jump"
     },
     "comments": {
       "showResolved": "Show Resolved",

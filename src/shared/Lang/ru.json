@@ -390,7 +390,9 @@
   },
   "boardMenu": {
     "items": {
-      "paste": "Вставить"
+      "paste": "Вставить",
+      "enableConnectorSmartJump": "Включить умный переход коннекторов",
+      "disableConnectorSmartJump": "Выключить умный переход коннекторов"
     },
     "comments": {
       "showResolved": "Показать решенные",
