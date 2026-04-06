@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAppSubscription } from "App/useBoardSubscription";
 import { useAppContext } from "features/AppContext";
 import { useDomMbr } from "App/useDomMbr";
@@ -20,16 +20,21 @@ export const HyperLink = () => {
     .pop()
     ?.getRichText()
     ?.getHyperLinkByPointerCoordinates(board.pointer.point);
-  if (
-    link &&
-    !isTooltipUnderPointer &&
-    link.hyperLink !== currentLink?.hyperLink
-  ) {
-    setCurrentLink(link);
-  }
-  if (!link && !isTooltipUnderPointer && currentLink) {
-    setCurrentLink(null);
-  }
+
+  useEffect(() => {
+    if (isTooltipUnderPointer) {
+      return;
+    }
+
+    if (link && link.hyperLink !== currentLink?.hyperLink) {
+      setCurrentLink(link);
+      return;
+    }
+
+    if (!link && currentLink) {
+      setCurrentLink(null);
+    }
+  }, [currentLink, isTooltipUnderPointer, link]);
 
   useAppSubscription({
     subjects: ["pointer"],
