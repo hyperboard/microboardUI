@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
 import {
   type BaseItem,
   type OverlayActionDefinition,
@@ -21,6 +21,8 @@ import { usePanelContext as useToolsPanelContext } from "features/ToolsPanel/Pan
 import { usePanelContext as useContextPanelContext } from "features/ContextPanel/PanelContext";
 import { ButtonWithMenu as ToolbarButtonWithMenu } from "features/ToolsPanel/Buttons/ButtonWithMenu";
 import { ButtonWithMenu as ContextButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
+import { AddCard } from "features/ToolsPanel/Buttons/AddGameItem/AddCard";
+import { useShapesPanelContext } from "features/ShapesPanel";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { UiPanel } from "shared/ui-lib/UiPanel";
 import { Icon } from "shared/ui-lib/Icon";
@@ -37,6 +39,16 @@ type EditorContext = {
   controlsById: Map<string, OverlayControlDefinition>;
 };
 
+const DRAWING_FAMILY = "drawing";
+const SHAPE_FAMILY = "shape";
+const GAME_FAMILIES = new Set(["game", "container"]);
+const TOOLBAR_FAMILY_ORDER = [
+  "text",
+  SHAPE_FAMILY,
+  "connector",
+  "sticker",
+  "frame",
+] as const;
 function capitalize(value: string): string {
   return value ? value[0].toUpperCase() + value.slice(1) : value;
 }
@@ -830,28 +842,386 @@ function createControlsMap(
   return new Map((controls ?? []).map((control) => [control.id, control]));
 }
 
-export function OverlayToolbarTools(): React.ReactElement[] {
-  return listToolOverlays()
-    .slice()
-    .sort((left, right) => {
-      const familyCompare = (left.family ?? "").localeCompare(
-        right.family ?? "",
-      );
-      if (familyCompare !== 0) {
-        return familyCompare;
-      }
+function getToolIsActive(
+  board: ReturnType<typeof useAppContext>["board"],
+  toolName: string,
+): boolean {
+  return Boolean(board.tools.getAddRegisteredTool(toolName));
+}
 
-      return left.label.localeCompare(right.label);
-    })
-    .map((overlay) => (
-      <OverlayToolbarTool key={overlay.toolName} overlay={overlay} />
-    ));
+function activateTool(
+  board: ReturnType<typeof useAppContext>["board"],
+  toolName: string,
+): void {
+  board.tools.addRegisteredTool(toolName, true);
+}
+
+function getFamilyOverlays(
+  overlays: ToolOverlayDefinition[],
+  family: string,
+): ToolOverlayDefinition[] {
+  return overlays.filter((overlay) => overlay.family === family);
+}
+
+function getControlOptions(
+  control: OverlayControlDefinition | undefined,
+): OverlayOptionDefinition[] {
+  if (!control) {
+    return [];
+  }
+
+  if (control.editor.kind === "enum-icon") {
+    return [
+      ...control.editor.options,
+      ...(control.editor.catalog?.options ?? []),
+    ];
+  }
+
+  if (control.editor.kind === "catalog") {
+    return control.editor.options;
+  }
+
+  if (control.editor.kind === "enum-list") {
+    return control.editor.options;
+  }
+
+  return [];
+}
+
+function getOverlayPrimaryControl(
+  overlay: ToolOverlayDefinition,
+): OverlayControlDefinition | undefined {
+  return overlay.defaults?.controls[0];
+}
+
+function OverlayToolbarGameLauncher({
+  overlays,
+}: {
+  overlays: ToolOverlayDefinition[];
+}): React.ReactElement | null {
+  const [isOpen, setIsOpen] = useState(false);
+
+  if (!overlays.length) {
+    return null;
+  }
+
+  return (
+    <ToolbarButtonWithMenu
+      isOpen={isOpen}
+      button={
+        <UiButton
+          id="tool-add-game-item"
+          tooltip="Game items"
+          active={isOpen}
+          variant="secondary"
+          rounded="top"
+          onClick={() => setIsOpen((prev) => !prev)}
+        >
+          <Icon iconName="GameItems" />
+        </UiButton>
+      }
+    >
+      <UiPanel vertical padding={0}>
+        {overlays.map((overlay, index) => (
+          <OverlayToolbarTool
+            key={overlay.toolName}
+            overlay={overlay}
+            rounded={
+              index === 0
+                ? "top"
+                : index === overlays.length - 1
+                  ? "none"
+                  : "none"
+            }
+          />
+        ))}
+        <AddCard rounded="bottom" />
+      </UiPanel>
+    </ToolbarButtonWithMenu>
+  );
+}
+
+function OverlayToolbarDrawingLauncher({
+  overlays,
+}: {
+  overlays: ToolOverlayDefinition[];
+}): React.ReactElement | null {
+  const { board } = useAppContext();
+  const activeOverlay = overlays.find((overlay) =>
+    getToolIsActive(board, overlay.toolName),
+  );
+  const [lastToolName, setLastToolName] = useState(
+    activeOverlay?.toolName ?? overlays[0]?.toolName ?? "",
+  );
+  const [isOpen, setIsOpen] = useState(Boolean(activeOverlay));
+  const currentOverlay =
+    overlays.find((overlay) => overlay.toolName === lastToolName) ??
+    activeOverlay ??
+    overlays[0];
+
+  useEffect(() => {
+    if (activeOverlay) {
+      setLastToolName(activeOverlay.toolName);
+      setIsOpen(true);
+    } else {
+      setIsOpen(false);
+    }
+  }, [activeOverlay]);
+
+  if (!currentOverlay) {
+    return null;
+  }
+
+  return (
+    <ToolbarButtonWithMenu
+      isOpen={isOpen}
+      button={
+        <UiButton
+          id="tool-add-drawing"
+          tooltip={currentOverlay.label}
+          active={Boolean(activeOverlay)}
+          variant="secondary"
+          rounded="none"
+          className={styles.toolbarButton}
+          onClick={() => {
+            if (!activeOverlay) {
+              activateTool(board, currentOverlay.toolName);
+              setIsOpen(true);
+              return;
+            }
+
+            setIsOpen((prev) => !prev);
+          }}
+        >
+          <OverlayMetadataIcon
+            icon={currentOverlay.icon}
+            items={[]}
+            toolName={currentOverlay.toolName}
+            label={currentOverlay.label}
+          />
+        </UiButton>
+      }
+    >
+      <UiPanel vertical padding={0} className={styles.launcherMenu}>
+        {overlays.map((overlay, index) => (
+          <OverlayToolbarTool
+            key={overlay.toolName}
+            overlay={overlay}
+            rounded={
+              index === 0
+                ? "top"
+                : index === overlays.length - 1
+                  ? "bottom"
+                  : "none"
+            }
+            onActivate={() => {
+              setLastToolName(overlay.toolName);
+              setIsOpen(true);
+            }}
+          />
+        ))}
+      </UiPanel>
+    </ToolbarButtonWithMenu>
+  );
+}
+
+function OverlayToolbarShapeTool({
+  overlay,
+}: {
+  overlay: ToolOverlayDefinition;
+}): React.ReactElement | null {
+  const { board } = useAppContext();
+  const { isOpen: isShapesPanelOpen, openShapesPanel } =
+    useShapesPanelContext();
+  const [isQuickPickerOpen, setIsQuickPickerOpen] = useState(false);
+  const isActive = getToolIsActive(board, overlay.toolName);
+  const primaryControl = getOverlayPrimaryControl(overlay);
+  const controlsById = createControlsMap(overlay.defaults ?? { controls: [] });
+  const context = useMemo<EditorContext>(
+    () => ({
+      items: [],
+      toolName: overlay.toolName,
+      controlsById,
+    }),
+    [controlsById, overlay.toolName],
+  );
+  const currentValue = primaryControl
+    ? getControlValue(primaryControl, context, board)
+    : undefined;
+  const selectedOption = getControlOptions(primaryControl).find(
+    (option) => option.value === currentValue,
+  );
+  const quickOptions =
+    primaryControl?.editor.kind === "enum-icon"
+      ? primaryControl.editor.options
+      : [];
+
+  useEffect(() => {
+    if (!isActive) {
+      setIsQuickPickerOpen(false);
+    }
+  }, [isActive]);
+
+  if (!primaryControl) {
+    return <OverlayToolbarTool overlay={overlay} />;
+  }
+
+  return (
+    <ToolbarButtonWithMenu
+      isOpen={isActive && isQuickPickerOpen && !isShapesPanelOpen}
+      button={
+        <UiButton
+          id="tool-add-shape"
+          tooltip={overlay.label}
+          active={isActive}
+          variant="secondary"
+          rounded="none"
+          className={styles.toolbarButton}
+          onClick={() => {
+            if (
+              !isActive ||
+              currentValue === "None" ||
+              currentValue === undefined
+            ) {
+              activateTool(board, overlay.toolName);
+              setIsQuickPickerOpen(true);
+              return;
+            }
+
+            setIsQuickPickerOpen((prev) => !prev);
+          }}
+        >
+          <OverlayMetadataIcon
+            icon={selectedOption?.icon ?? overlay.icon}
+            items={[]}
+            toolName={overlay.toolName}
+            label={selectedOption?.label ?? overlay.label}
+          />
+        </UiButton>
+      }
+    >
+      <UiPanel className={styles.shapeMenu}>
+        <div className={styles.quickPicker}>
+          {quickOptions.map((option) => (
+            <OptionButton
+              key={option.id}
+              option={option}
+              selected={option.value === currentValue}
+              onClick={() => {
+                invokeControl(board, primaryControl, context, option.value);
+                setIsQuickPickerOpen(false);
+              }}
+              items={[]}
+              toolName={overlay.toolName}
+              size="sm"
+            />
+          ))}
+        </div>
+        <UiButton
+          onClick={() => {
+            openShapesPanel();
+            setIsQuickPickerOpen(false);
+          }}
+          variant="quaternary"
+          className={styles.shapeLibraryButton}
+          size="sm"
+        >
+          Show all
+        </UiButton>
+      </UiPanel>
+    </ToolbarButtonWithMenu>
+  );
+}
+
+function getOverlayToolbarSections(): {
+  leading: React.ReactElement[];
+  main: React.ReactElement[];
+} {
+  const overlays = listToolOverlays();
+  const gameOverlays = overlays.filter((overlay) =>
+    GAME_FAMILIES.has(overlay.family ?? ""),
+  );
+  const drawingOverlays = getFamilyOverlays(overlays, DRAWING_FAMILY);
+  const byFamily = new Map<string, ToolOverlayDefinition[]>();
+
+  overlays.forEach((overlay) => {
+    const family = overlay.family ?? "";
+    if (family === DRAWING_FAMILY || GAME_FAMILIES.has(family)) {
+      return;
+    }
+
+    const existing = byFamily.get(family) ?? [];
+    existing.push(overlay);
+    byFamily.set(family, existing);
+  });
+
+  const leading: React.ReactElement[] = [];
+  const main: React.ReactElement[] = [];
+
+  if (gameOverlays.length) {
+    leading.push(
+      <OverlayToolbarGameLauncher key="toolbar-game" overlays={gameOverlays} />,
+    );
+  }
+
+  if (drawingOverlays.length) {
+    main.push(
+      <OverlayToolbarDrawingLauncher
+        key="toolbar-drawing"
+        overlays={drawingOverlays}
+      />,
+    );
+  }
+
+  TOOLBAR_FAMILY_ORDER.forEach((family) => {
+    const familyOverlays = byFamily.get(family);
+    const overlay = familyOverlays?.[0];
+    if (!overlay) {
+      return;
+    }
+
+    if (family === SHAPE_FAMILY) {
+      main.push(
+        <OverlayToolbarShapeTool key={overlay.toolName} overlay={overlay} />,
+      );
+      return;
+    }
+
+    main.push(<OverlayToolbarTool key={overlay.toolName} overlay={overlay} />);
+  });
+
+  return { leading, main };
+}
+
+export function OverlayToolbarLeadingTools(): React.ReactElement[] {
+  return getOverlayToolbarSections().leading;
+}
+
+export function OverlayToolbarMainTools(): React.ReactElement[] {
+  return getOverlayToolbarSections().main;
+}
+
+export function OverlayToolbarTools(): React.ReactElement[] {
+  const sections = getOverlayToolbarSections();
+  return [...sections.leading, ...sections.main];
 }
 
 function OverlayToolbarTool({
   overlay,
+  rounded = "none",
+  onActivate,
 }: {
   overlay: ToolOverlayDefinition;
+  rounded?:
+    | "none"
+    | "left"
+    | "right"
+    | "top"
+    | "bottom"
+    | "bottom-right"
+    | "bottom-left"
+    | "full";
+  onActivate?: () => void;
 }): React.ReactElement {
   const { board } = useAppContext();
   const { openedMenu, toggleMenu } = useToolsPanelContext();
@@ -862,7 +1232,8 @@ function OverlayToolbarTool({
 
   const handleClick = (): void => {
     if (!isActive) {
-      board.tools.addRegisteredTool(overlay.toolName, true);
+      activateTool(board, overlay.toolName);
+      onActivate?.();
       if (hasDefaults) {
         toggleMenu(overlay.toolName);
       }
@@ -886,7 +1257,7 @@ function OverlayToolbarTool({
           active={isActive}
           onClick={handleClick}
           variant="secondary"
-          rounded="none"
+          rounded={rounded}
           className={styles.toolbarButton}
         >
           <OverlayMetadataIcon

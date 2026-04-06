@@ -13,8 +13,10 @@ import { Select } from "./Buttons/Select";
 import { Undo } from "./Buttons/Undo";
 import { PanelContext } from "./PanelContext";
 import style from "./ToolsPanel.module.css";
-import { AddCard } from "features/ToolsPanel/Buttons/AddGameItem/AddCard";
-import { OverlayToolbarTools } from "features/OverlayUI/overlayUi";
+import {
+  OverlayToolbarLeadingTools,
+  OverlayToolbarMainTools,
+} from "features/OverlayUI/overlayUi";
 
 export function ToolsPanel(): React.JSX.Element {
   const [openedMenu, setOpenedMenu] = useState("None");
@@ -41,11 +43,11 @@ export function ToolsPanel(): React.JSX.Element {
         }
       >
         <UiPanel vertical padding={0} zIndex={20}>
-          {OverlayToolbarTools()}
-          <AddCard />
+          {OverlayToolbarLeadingTools()}
           <AddTemplate />
           <UiSeparator />
           <Select rounded={"none"} />
+          {OverlayToolbarMainTools()}
           <AddMedia />
         </UiPanel>
         <UiPanel vertical padding={0}>

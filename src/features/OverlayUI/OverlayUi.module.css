@@ -26,6 +26,27 @@
   padding: 8px;
 }
 
+.launcherMenu {
+  min-width: 0;
+}
+
+.shapeMenu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+}
+
+.quickPicker {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(32px, 1fr));
+  gap: 6px;
+}
+
+.shapeLibraryButton {
+  align-self: stretch;
+}
+
 .menuSection {
   display: flex;
   flex-direction: column;
