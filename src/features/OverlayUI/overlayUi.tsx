@@ -10,6 +10,7 @@ import {
   type OverlayInvocation,
   type OverlayOptionDefinition,
   type SelectionOverlayActionDefinition,
+  type ShapeType,
   type ToolOverlayDefinition,
   getSelectionOverlayActions,
   intersectOverlayActions,
@@ -23,6 +24,7 @@ import { ButtonWithMenu as ToolbarButtonWithMenu } from "features/ToolsPanel/But
 import { ButtonWithMenu as ContextButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { AddCard } from "features/ToolsPanel/Buttons/AddGameItem/AddCard";
 import { useShapesPanelContext } from "features/ShapesPanel";
+import { ShapePicker } from "features/Pickers/ShapeTypePicker";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { UiPanel } from "shared/ui-lib/UiPanel";
 import { Icon } from "shared/ui-lib/Icon";
@@ -1031,8 +1033,11 @@ function OverlayToolbarShapeTool({
   overlay: ToolOverlayDefinition;
 }): React.ReactElement | null {
   const { board } = useAppContext();
-  const { isOpen: isShapesPanelOpen, openShapesPanel } =
-    useShapesPanelContext();
+  const {
+    isOpen: isShapesPanelOpen,
+    openShapesPanel,
+    selectedCategory,
+  } = useShapesPanelContext();
   const [isQuickPickerOpen, setIsQuickPickerOpen] = useState(false);
   const isActive = getToolIsActive(board, overlay.toolName);
   const primaryControl = getOverlayPrimaryControl(overlay);
@@ -1051,10 +1056,6 @@ function OverlayToolbarShapeTool({
   const selectedOption = getControlOptions(primaryControl).find(
     (option) => option.value === currentValue,
   );
-  const quickOptions =
-    primaryControl?.editor.kind === "enum-icon"
-      ? primaryControl.editor.options
-      : [];
 
   useEffect(() => {
     if (!isActive) {
@@ -1102,20 +1103,18 @@ function OverlayToolbarShapeTool({
     >
       <UiPanel className={styles.shapeMenu}>
         <div className={styles.quickPicker}>
-          {quickOptions.map((option) => (
-            <OptionButton
-              key={option.id}
-              option={option}
-              selected={option.value === currentValue}
-              onClick={() => {
-                invokeControl(board, primaryControl, context, option.value);
-                setIsQuickPickerOpen(false);
-              }}
-              items={[]}
-              toolName={overlay.toolName}
-              size="sm"
-            />
-          ))}
+          <ShapePicker
+            categoryName={selectedCategory}
+            selected={
+              typeof currentValue === "string"
+                ? (currentValue as ShapeType)
+                : "None"
+            }
+            onPick={(shape) => {
+              invokeControl(board, primaryControl, context, shape);
+              setIsQuickPickerOpen(false);
+            }}
+          />
         </div>
         <UiButton
           onClick={() => {
