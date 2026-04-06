@@ -25,18 +25,6 @@ interface Props {
 
 const MENU_NAME = "SpreadCards";
 
-type ApplyMatrixItem = {
-  id: string;
-  matrix: {
-    translateX: number;
-    translateY: number;
-    scaleX: number;
-    scaleY: number;
-    shearX: number;
-    shearY: number;
-  };
-};
-
 export function SpreadCards({ rounded = "none" }: Props) {
   const { board } = useAppContext();
   const { t } = useTranslation();
@@ -65,7 +53,6 @@ export function SpreadCards({ rounded = "none" }: Props) {
     if (cards) {
       const width = cards[0].getMbr().getWidth();
       for (const [index, card] of cards.entries()) {
-        const cardMbr = card.getMbr();
         card.apply({
           class: "Transformation",
           method: "translateTo",

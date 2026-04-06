@@ -1,4 +1,3 @@
-import { VideoItem } from "microboard-temp";
 import { prepareImage } from "./imageHelpers";
 import { uploadMediaToStorage } from "./mediaApi";
 

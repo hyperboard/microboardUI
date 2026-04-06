@@ -3,8 +3,6 @@ import { useAppSubscription } from "App/useBoardSubscription";
 import { useAppContext } from "features/AppContext";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { useAIContext } from "entities/AIInput/AIContext";
-import { AINode } from "microboard-temp";
-import { Button } from "shared/UI/Button";
 
 export const AiGenerationButton = () => {
   const { board } = useAppContext();

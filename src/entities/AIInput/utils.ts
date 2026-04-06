@@ -9,16 +9,23 @@ import {
   ConnectorData,
   Point,
   Connector,
-  Mbr,
   Board,
   ThreadDirection,
   DefaultTransformationData,
-  DefaultRichTextData,
+  type RichTextData,
 } from "microboard-temp";
 
 export type PossibleParentNode = AINode | Shape | RichText | Sticker;
 
 const PLACEHOLDER_OFFSET = "												";
+
+const createDefaultRichTextData = (): RichTextData => ({
+  itemType: "RichText",
+  children: [],
+  verticalAlignment: "center",
+  placeholderText: "",
+  realSize: "auto",
+});
 
 export const getTextFromItem = (item: Item) => {
   const richText = item.getRichText();
@@ -180,8 +187,7 @@ export function calculateNodePosition(
   }
   connectorData.text = (
     board.createItem(board.getNewItemId(), {
-      itemType: "RichText",
-      ...new DefaultRichTextData([], "center", undefined),
+      ...createDefaultRichTextData(),
       id: board.getNewItemId(),
       transformation: new DefaultTransformationData(),
     }) as any
@@ -281,8 +287,7 @@ function calculateParentItemPosition(
   }
   connectorData.text = (
     board.createItem(board.getNewItemId(), {
-      itemType: "RichText",
-      ...new DefaultRichTextData([], "center", undefined),
+      ...createDefaultRichTextData(),
       id: board.getNewItemId(),
       transformation: new DefaultTransformationData(),
     }) as any
@@ -317,7 +322,7 @@ export function createNode(
     contextItems,
     threadDirection: threadDirection ?? 3,
     transformation: new DefaultTransformationData(),
-    text: new DefaultRichTextData([], "center", undefined),
+    text: createDefaultRichTextData(),
   };
 
   if (isImage) {

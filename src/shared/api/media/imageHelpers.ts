@@ -122,7 +122,7 @@ export const prepareImage = (
   storageLink: string;
 }> =>
   resizeAndConvertToPng(inp).then(({ width, height, dataURL, hash }) => {
-    const { blob, mimeType } = getBlobFromDataURL(dataURL);
+    const { blob } = getBlobFromDataURL(dataURL);
     return uploadMediaToStorage(blob, boardId, "image", baseUrl).then((src) => {
       return {
         imageDimension: { width, height },
