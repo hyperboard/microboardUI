@@ -41,13 +41,104 @@ function capitalize(value: string): string {
   return value ? value[0].toUpperCase() + value.slice(1) : value;
 }
 
+const OVERLAY_SYMBOL_ID_MAP: Record<string, string> = {
+  "tool.pen": "Pen",
+  "tool.highlighter": "Highlighter",
+  "tool.eraser": "Eraser",
+  "tool.text": "Text",
+  "tool.shape": "Shape",
+  "tool.connector": "Connector",
+  "tool.sticker": "Sticker",
+  "tool.frame": "Frame",
+  "tool.dice": "Dice",
+  "tool.screen": "AddScreen",
+  "tool.pouch": "AddPouch",
+  "style.fontSize": "Text",
+  "style.fill": "TextHighlight",
+  "style.stroke": "SolidLine",
+  "style.color": "TextColor",
+  "text.fontSize": "Text",
+  "shape.type": "Shape",
+  "shape.fill": "TextHighlight",
+  "shape.stroke": "SolidLine",
+  "screen.background": "Image",
+  "connector.style": "Connector",
+  "connector.smartJump": "Switch",
+  "connector.switchPointers": "Switch",
+  "deck.createFromSelection": "GameItems",
+  "deck.drawTop": "GetCard",
+  "deck.drawBottom": "GetBottomCard",
+  "deck.drawRandom": "GetRandomItem",
+  "deck.drawMany": "SpreadCards",
+  "deck.shuffle": "ShuffleDeck",
+  "deck.flip": "RotateCard",
+  "card.flip": "RotateCard",
+  "card.rotateCcw": "RotateCard",
+  "card.rotateCw": "RotateCard",
+  "dice.range": "Dice",
+  "dice.throw": "RotateDice",
+  "stroke.solid": "SolidLine",
+  "stroke.dot": "DottedLine",
+  "stroke.dash": "DashedLine",
+  "stroke.longDash": "DashedLine",
+};
+
+function normalizeOverlaySymbolId(symbolId: string | null): string | null {
+  if (!symbolId) {
+    return null;
+  }
+
+  if (OVERLAY_SYMBOL_ID_MAP[symbolId]) {
+    return OVERLAY_SYMBOL_ID_MAP[symbolId];
+  }
+
+  if (symbolId.startsWith("connector.lineStyle.")) {
+    return symbolId.split(".").pop() ?? null;
+  }
+
+  if (symbolId.startsWith("connector.pointer.")) {
+    return symbolId.split(".").pop() ?? null;
+  }
+
+  if (symbolId.startsWith("frame.")) {
+    return `Frame${symbolId.slice("frame.".length)}`;
+  }
+
+  if (symbolId.startsWith("shape.bpmn.")) {
+    const suffix = symbolId.slice("shape.bpmn.".length);
+    const bpmnMap: Record<string, string> = {
+      task: "BPMN_Task",
+      gateway: "BPMN_Gateway",
+      gatewayParallel: "BPMN_GatewayParallel",
+      gatewayXor: "BPMN_GatewayXOR",
+      startEvent: "BPMN_StartEvent",
+      startEventNoneInterrupting: "BPMN_StartEventNoneInterrupting",
+      endEvent: "BPMN_EndEvent",
+      intermediateEvent: "BPMN_IntermediateEvent",
+      intermediateEventNoneInterrupting:
+        "BPMN_IntermediateEventNoneInterrupting",
+      dataObject: "BPMN_DataObject",
+      dataStore: "BPMN_DataStore",
+      participant: "BPMN_Participant",
+      transaction: "BPMN_Transaction",
+      eventSubprocess: "BPMN_EventSubprocess",
+      group: "BPMN_Group",
+      annotation: "BPMN_Annotation",
+    };
+
+    return bpmnMap[suffix] ?? null;
+  }
+
+  return symbolId;
+}
+
 function getSvgSymbolId(icon: OverlayIcon | undefined): string | null {
   if (!icon) {
     return null;
   }
 
   if (icon.kind === "symbol") {
-    return icon.key;
+    return normalizeOverlaySymbolId(icon.key);
   }
 
   const fileName = icon.path.split("/").pop();
@@ -55,7 +146,9 @@ function getSvgSymbolId(icon: OverlayIcon | undefined): string | null {
     return null;
   }
 
-  return fileName.replace(/\.icon\.svg$/i, "").replace(/\.svg$/i, "");
+  return normalizeOverlaySymbolId(
+    fileName.replace(/\.icon\.svg$/i, "").replace(/\.svg$/i, ""),
+  );
 }
 
 function hasSvgSymbol(symbolId: string | null): boolean {
