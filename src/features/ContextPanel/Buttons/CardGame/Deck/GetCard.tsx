@@ -49,11 +49,23 @@ export function GetCard({ cardPosition, rounded = "none" }: Props) {
     if (!card) {
       return;
     }
-    const { left, top } = deck.getMbr();
+    const deckMbr = deck.getMbr();
     if (deck.getIsPerpendicular()) {
-      card.transformation.translateTo(left + 280, top);
+      card.apply({
+        class: "Transformation",
+        method: "translateTo",
+        item: [card.getId()],
+        translateX: deckMbr.left + 280,
+        translateY: deckMbr.top,
+      } as any);
     } else {
-      card.transformation.translateTo(left, top - 280);
+      card.apply({
+        class: "Transformation",
+        method: "translateTo",
+        item: [card.getId()],
+        translateX: deckMbr.left,
+        translateY: deckMbr.top - 280,
+      } as any);
     }
     if (deck.getDeck().length === 0) {
       board.remove(deck);

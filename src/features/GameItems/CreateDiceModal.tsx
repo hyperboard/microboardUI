@@ -4,7 +4,7 @@ import { useUiModalContext } from "shared/ui-lib/UiModal";
 import { UiModal } from "shared/ui-lib/UiModal/UiModal";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { useAppContext } from "features/AppContext";
-import { Dice } from "microboard-temp";
+import { Dice, DefaultTransformationData } from "microboard-temp";
 import { uploadImages } from "shared/api/media/uploadImage";
 import { useTranslation } from "react-i18next";
 
@@ -90,27 +90,24 @@ export function CreateDiceModal(): React.JSX.Element {
       }
     });
 
-    const dice = new Dice(board, "", {
+    const cameraMbr = board.camera.getMbr();
+    const x = (cameraMbr.left + cameraMbr.right) / 2 - 50; // Default size 100
+    const y = (cameraMbr.top + cameraMbr.bottom) / 2 - 50;
+
+    board.createItemAndAdd<Dice>("Dice", {
       itemType: "Dice",
-      type: values.some((value) => typeof value === "string")
+      type: (values as (string | number)[]).some(
+        (value: string | number) => typeof value === "string",
+      )
         ? "custom"
         : "common",
       values,
-    });
-
-    const { left, top, bottom, right } = board.camera.getMbr();
-    const x = (left + right) / 2 - dice.getWidth() / 2;
-    const y = (top + bottom) / 2 - dice.getHeight() / 2;
-
-    dice.transformation.apply({
-      class: "Transformation",
-      method: "translateTo",
-      item: [dice.getId()],
-      x,
-      y,
-    });
-
-    board.add(dice);
+      transformation: {
+        ...new DefaultTransformationData(),
+        translateX: x,
+        translateY: y,
+      },
+    } as any);
   };
 
   const handleAccept = async () => {

@@ -5,21 +5,16 @@ import React, { useEffect, useState } from "react";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";
-import { AddConnector } from "./Buttons/AddConnector";
-import { AddDrawing } from "./Buttons/AddDrawing/AddDrawing";
-import { AddFrame } from "./Buttons/AddFrame";
 import { AddMedia } from "./Buttons/AddMedia/AddMedia";
-import { AddShape } from "./Buttons/AddShape/AddShape";
-import { AddSticker } from "./Buttons/AddSticker";
 import { AddTemplate } from "./Buttons/AddTemplate";
-import { AddText } from "./Buttons/AddText";
 import { EventList } from "./Buttons/EventList";
 import { Redo } from "./Buttons/Redo";
 import { Select } from "./Buttons/Select";
 import { Undo } from "./Buttons/Undo";
 import { PanelContext } from "./PanelContext";
 import style from "./ToolsPanel.module.css";
-import { AddGameItem } from "features/ToolsPanel/Buttons/AddGameItem/AddGameItem";
+import { AddCard } from "features/ToolsPanel/Buttons/AddGameItem/AddCard";
+import { OverlayToolbarTools } from "features/OverlayUI/overlayUi";
 
 export function ToolsPanel(): React.JSX.Element {
   const [openedMenu, setOpenedMenu] = useState("None");
@@ -46,16 +41,11 @@ export function ToolsPanel(): React.JSX.Element {
         }
       >
         <UiPanel vertical padding={0} zIndex={20}>
-          <AddGameItem />
+          {OverlayToolbarTools()}
+          <AddCard />
           <AddTemplate />
           <UiSeparator />
           <Select rounded={"none"} />
-          <AddDrawing />
-          <AddText />
-          <AddShape />
-          <AddConnector />
-          <AddSticker />
-          <AddFrame />
           <AddMedia />
         </UiPanel>
         <UiPanel vertical padding={0}>

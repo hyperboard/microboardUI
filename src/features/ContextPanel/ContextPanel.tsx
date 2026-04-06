@@ -2,21 +2,17 @@ import { useDomMbr } from "App/useDomMbr";
 import { useAppSubscription } from "App/useBoardSubscription";
 import React, { useEffect, useRef, useState } from "react";
 import { useAppContext } from "features/AppContext";
+import { OverlayContextActions } from "features/OverlayUI/overlayUi";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
-import { ConnectorAddText } from "./Buttons/ConnectorAddText";
-import { ConnectorType } from "./Buttons/ConnectorType";
 import { Delete } from "./Buttons/Delete";
 import { DrawFillStyle } from "./Buttons/DrawFillStyle";
 import { DrawStrokeWidth } from "./Buttons/DrawStrokeWidth/DrawStrokeWidth";
 import { Duplicate } from "./Buttons/Duplicate";
 import { Edit } from "./Buttons/Edit";
-import { EndPointer } from "./Buttons/EndPointer";
-import { FillStyle } from "./Buttons/FillStyle";
 import { FontSize } from "./Buttons/FontSize";
 import { FontStyle } from "./Buttons/FontStyle";
 import { FrameFill } from "./Buttons/FrameFill";
 import { FrameRatio } from "./Buttons/FrameRatio";
-import { ItemType } from "./Buttons/ItemType/ItemType";
 import { RestOptionsMenu } from "./Buttons/RestOptionsMenu";
 import {
   BringToFront,
@@ -24,18 +20,14 @@ import {
   ForceGraphToggle,
   SendToBack,
 } from "./Buttons/RestOptionsMenu/Items";
-import { StartPointer } from "./Buttons/StartPointer/StartPointer";
 import { StickerFillStyle } from "./Buttons/StickerFillStyle";
 import { StrokeStyle } from "./Buttons/StrokeStyle";
-import { SwitchPointers } from "./Buttons/SwitchPointers";
 import { TextAlignment } from "./Buttons/TextAlignment/TextAlignment";
 import { TextColor } from "./Buttons/TextColor";
 import { TextHighlight } from "./Buttons/TextHighlight";
 import { ToggleFrameRatio } from "./Buttons/ToggleFrameRatio";
 import { PanelContext } from "./PanelContext";
 import { Lock } from "./Buttons/Lock";
-import { ConnectorLineColor } from "./Buttons/ConnectorLineColor";
-import { ConnectorSmartJump } from "./Buttons/ConnectorSmartJump";
 import { ConnectorFontStyle } from "./Buttons/ConnectorFontStyle";
 import { ConnectorFontSize } from "./Buttons/FontSize";
 import { ConnectorTextColor } from "./Buttons/ConnectorTextColor";
@@ -53,16 +45,8 @@ import { SaveImg } from "./Buttons/RestOptionsMenu/Items/SaveImg";
 import { SaveVideoOrAudio } from "features/ContextPanel/Buttons/RestOptionsMenu/Items/SaveVideoOrAudio";
 import { AddList } from "features/ContextPanel/Buttons/AddList/AddList";
 import { ToggleIsShining } from "features/ContextPanel/Buttons/ToggleIsShining";
-import { ShuffleDeck } from "features/ContextPanel/Buttons/CardGame/Deck/ShuffleDeck";
-import { GetCard } from "features/ContextPanel/Buttons/CardGame/Deck/GetCard";
-import { CreateDeck } from "features/ContextPanel/Buttons/CardGame/Card/CreateDeck";
-import { FlipCard } from "features/ContextPanel/Buttons/CardGame/Card/FlipCard";
-import { ThrowDice } from "features/ContextPanel/Buttons/CardGame/Dice/ThrowDice";
-import { ChangeRange } from "features/ContextPanel/Buttons/CardGame/Dice/ChangeRange/ChangeRange";
-import { FlipDeck } from "features/ContextPanel/Buttons/CardGame/Deck/FlipDeck";
 import { RotateItem } from "features/ContextPanel/Buttons/RotateItem";
 import { LockResize } from "features/ContextPanel/Buttons/LockResize";
-import { SpreadCards } from "features/ContextPanel/Buttons/CardGame/Deck/SpreadCards/SpreadCards";
 import { Screen } from "microboard-temp";
 import { RemoveBackgroundImage } from "features/ContextPanel/Buttons/CardGame/Screeen/RemoveBackgroundImage";
 import { SetBackgroundImage } from "features/ContextPanel/Buttons/CardGame/Screeen/SetBackgroundImage";
@@ -123,7 +107,6 @@ export function ContextPanel(): React.ReactElement | null {
 
   const ideaFromSelection = getIdeaFromSelection(board.selection.items.list());
 
-  const single = board.selection.items.getSingle();
   const selectionHierarchyPaths = board.selection.getSelectionHierarchyPaths();
   const isText = board.selection.items.isAllItemsType("RichText");
   const isSticker = board.selection.items.isAllItemsType("Sticker");
@@ -286,7 +269,7 @@ export function ContextPanel(): React.ReactElement | null {
         )}
         {isShape && !isSelectUnderPointer && !isLocked && (
           <>
-            <ItemType />
+            <OverlayContextActions />
             <UiSeparator vertical />
             {board.selection.items
               .getItemsByItemTypes(["Shape"])[0]
@@ -304,12 +287,6 @@ export function ContextPanel(): React.ReactElement | null {
                 <UiSeparator vertical />
               </>
             )}
-            <StrokeStyle />
-            {board.selection.items
-              .getItemsByItemTypes(["Shape"])[0]
-              .getPath()
-              .isClosed() && <FillStyle />}
-            <UiSeparator vertical />
             <Lock />
             <UiSeparator vertical />
             <GroupItems />
@@ -336,15 +313,8 @@ export function ContextPanel(): React.ReactElement | null {
         )}
         {isConnector && !isSelectUnderPointer && !isLocked && (
           <>
-            <StartPointer />
-            <SwitchPointers />
-            <EndPointer />
+            <OverlayContextActions />
             <UiSeparator vertical />
-            <ConnectorType />
-            <ConnectorSmartJump />
-            <ConnectorLineColor />
-            <UiSeparator vertical />
-            <ConnectorAddText />
             <ConnectorFontSize />
             <ConnectorFontStyle />
             <ConnectorTextColor />
@@ -528,20 +498,7 @@ export function ContextPanel(): React.ReactElement | null {
         )}
         {isDeck && !isSelectUnderPointer && !isLocked && (
           <>
-            <FlipDeck rounded="left" />
-            <ShuffleDeck />
-            {single && <UiSeparator vertical />}
-            <SpreadCards />
-            {single && <UiSeparator vertical />}
-            <GetCard cardPosition={"top"} />
-            <GetCard cardPosition={"bottom"} />
-            {single ? (
-              <GetCard cardPosition={"random"} />
-            ) : (
-              <>
-                <CreateDeck onlyCards={false} rounded="left" />
-              </>
-            )}
+            <OverlayContextActions />
             <UiSeparator vertical />
             <GroupItems />
             <DetachFromGroup />
@@ -558,12 +515,7 @@ export function ContextPanel(): React.ReactElement | null {
         )}
         {isCard && !isSelectUnderPointer && !isLocked && (
           <>
-            <FlipCard rounded="left" />
-            <UiSeparator vertical />
-            <CreateDeck onlyCards={true} rounded="right" />
-            <UiSeparator vertical />
-            <RotateItem clockwise={false} />
-            <RotateItem clockwise={true} />
+            <OverlayContextActions />
             <UiSeparator vertical />
             <LockResize />
             <UiSeparator vertical />
@@ -586,21 +538,16 @@ export function ContextPanel(): React.ReactElement | null {
           !isSelectUnderPointer &&
           !isLocked && (
             <>
-              <FlipCard rounded="left" />
-              <UiSeparator vertical />
-              <CreateDeck onlyCards={false} rounded="right" />
+              <OverlayContextActions />
               <UiSeparator vertical />
               <Delete rounded="right" />
             </>
           )}
         {isDice && !isSelectUnderPointer && !isLocked && (
           <>
-            <ThrowDice rounded="left" />
-            <ChangeRange rangeValue="min" />
-            <ChangeRange rangeValue="max" />
+            <OverlayContextActions />
             <UiSeparator vertical />
             <StrokeStyle />
-            <FillStyle />
             <UiSeparator vertical />
             <GroupItems />
             <DetachFromGroup />
@@ -617,7 +564,7 @@ export function ContextPanel(): React.ReactElement | null {
         )}
         {isScreen && !isSelectUnderPointer && !isLocked && (
           <>
-            <StrokeStyle rounded="left" />
+            <OverlayContextActions />
             {board.selection.items
               .list()
               .some((item) => item instanceof Screen && item.backgroundUrl) ? (
@@ -627,7 +574,6 @@ export function ContextPanel(): React.ReactElement | null {
               </>
             ) : (
               <>
-                <FillStyle />
                 <SetBackgroundImage />
               </>
             )}

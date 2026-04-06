@@ -63,20 +63,17 @@ export function SpreadCards({ rounded = "none" }: Props) {
     const { top, right } = deck.getMbr();
     const cards = deck.getCards(count);
     if (cards) {
-      const width = cards[0].getWidth();
-      const translation: ApplyMatrixItem[] = cards.map((card, index) => ({
-        id: card.getId(),
-        matrix: {
-          translateX:
-            right + 5 + width * index - card.transformation.getTranslation().x,
-          translateY: top - card.transformation.getTranslation().y,
-          scaleX: 1,
-          scaleY: 1,
-          shearX: 0,
-          shearY: 0,
-        },
-      }));
-      board.selection.transformMany(translation, Date.now());
+      const width = cards[0].getMbr().getWidth();
+      for (const [index, card] of cards.entries()) {
+        const cardMbr = card.getMbr();
+        card.apply({
+          class: "Transformation",
+          method: "translateTo",
+          item: [card.getId()],
+          translateX: right + 5 + width * index,
+          translateY: top,
+        } as any);
+      }
       board.selection.items.removeAll();
       board.selection.add(cards);
     }

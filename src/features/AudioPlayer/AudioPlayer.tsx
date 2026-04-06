@@ -14,7 +14,6 @@ import clsx from "clsx";
 import { useClickOutside } from "shared/lib/useClickOutside";
 import { useTranslation } from "react-i18next";
 import { createPortal } from "react-dom";
-import { useAccount } from "App/useAccount";
 import { useResolveRedirectUrl } from "shared/lib/useResolveRedirectUrl";
 
 interface Props {
@@ -67,7 +66,6 @@ export const AudioPlayer = ({ item }: Props) => {
   const playbackRateBtnRef = useRef<HTMLDivElement>(null);
   const volumeBtnRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
-  const account = useAccount();
 
   const optionsRef = useClickOutside(
     () => setOpenedMenu("none"),
@@ -77,7 +75,6 @@ export const AudioPlayer = ({ item }: Props) => {
 
   const { resolvedUrl, isLoadingUrl } = useResolveRedirectUrl({
     mediaUrl: item.getUrl(),
-    accessToken: account.accessToken,
     beforeStartCb: () => setIsMetadataLoaded(false),
   });
 

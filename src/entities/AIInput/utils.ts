@@ -12,6 +12,8 @@ import {
   Mbr,
   Board,
   ThreadDirection,
+  DefaultTransformationData,
+  DefaultRichTextData,
 } from "microboard-temp";
 
 export type PossibleParentNode = AINode | Shape | RichText | Sticker;
@@ -156,7 +158,13 @@ export function calculateNodePosition(
 
   const newItem = board.createItem(board.getNewItemId(), newNodeData) as AINode;
 
-  newItem.transformation.applyTranslateBy(-newItem.getMbr().getWidth() / 2, 0);
+  newItem.apply({
+    class: "Transformation",
+    method: "applyTranslateBy",
+    item: [newItem.getId()],
+    translateX: -newItem.getMbr().getWidth() / 2,
+    translateY: 0,
+  } as any);
 
   const defaultConnector = new Connector(board);
   const connectorData = defaultConnector.serialize();
@@ -170,7 +178,14 @@ export function calculateNodePosition(
   if (savedEnd) {
     connectorData.endPointerStyle = savedEnd;
   }
-  connectorData.text = new RichText(board, new Mbr()).serialize();
+  connectorData.text = (
+    board.createItem(board.getNewItemId(), {
+      itemType: "RichText",
+      ...new DefaultRichTextData([], "center", undefined),
+      id: board.getNewItemId(),
+      transformation: new DefaultTransformationData(),
+    }) as any
+  ).serialize();
 
   return {
     newItem,
@@ -264,7 +279,14 @@ function calculateParentItemPosition(
   if (savedEnd) {
     connectorData.endPointerStyle = savedEnd;
   }
-  connectorData.text = new RichText(board, new Mbr()).serialize();
+  connectorData.text = (
+    board.createItem(board.getNewItemId(), {
+      itemType: "RichText",
+      ...new DefaultRichTextData([], "center", undefined),
+      id: board.getNewItemId(),
+      transformation: new DefaultTransformationData(),
+    }) as any
+  ).serialize();
 
   return {
     newItem: newItems,
@@ -288,41 +310,50 @@ export function createNode(
     threadDirection = parentItem.getThreadDirection();
   }
   let node: AINode;
+  const nodeData = {
+    itemType: "AINode" as const,
+    isUserRequest,
+    parentNodeId,
+    contextItems,
+    threadDirection: threadDirection ?? 3,
+    transformation: new DefaultTransformationData(),
+    text: new DefaultRichTextData([], "center", undefined),
+  };
+
   if (isImage) {
-    node = new AINode(
-      board,
-      isUserRequest,
-      parentNodeId,
-      contextItems,
-      threadDirection,
-    );
+    node = board.createItem(board.getNewItemId(), nodeData) as AINode;
     const nodeRichText = node.getRichText();
-    nodeRichText.applyMaxWidth(600);
-    nodeRichText.setSelectionHorisontalAlignment("left");
-    nodeRichText.container.right = nodeRichText.container.left + 600;
-    nodeRichText.editor.insertCopiedText(
-      window.MICROBOARD_CONFIG.i18n.t("AIInput.awaitingImageGeneration"),
-    );
-    node.setId(crypto.randomUUID());
-  } else {
-    node = new AINode(
-      board,
-      isUserRequest,
-      parentNodeId,
-      contextItems,
-      threadDirection,
-    );
-    const nodeRichText = node.getRichText();
-    nodeRichText.applyMaxWidth(600);
-    nodeRichText.setSelectionHorisontalAlignment("left");
-    nodeRichText.container.right = nodeRichText.container.left + 600;
-    if (withPlaceholder) {
+    if (nodeRichText) {
+      nodeRichText.apply({
+        class: "RichText",
+        method: "setMaxWidth",
+        item: [nodeRichText.getId()],
+        maxWidth: 600,
+      } as any);
+      nodeRichText.setSelectionHorisontalAlignment("left");
       nodeRichText.editor.insertCopiedText(
-        window.MICROBOARD_CONFIG.i18n.t("AIInput.generatingResponse") +
-          PLACEHOLDER_OFFSET,
+        window.MICROBOARD_CONFIG.i18n.t("AIInput.awaitingImageGeneration"),
       );
-    } else {
-      nodeRichText.editor.insertCopiedText(inputValue);
+    }
+  } else {
+    node = board.createItem(board.getNewItemId(), nodeData) as AINode;
+    const nodeRichText = node.getRichText();
+    if (nodeRichText) {
+      nodeRichText.apply({
+        class: "RichText",
+        method: "setMaxWidth",
+        item: [nodeRichText.getId()],
+        maxWidth: 600,
+      } as any);
+      nodeRichText.setSelectionHorisontalAlignment("left");
+      if (withPlaceholder) {
+        nodeRichText.editor.insertCopiedText(
+          window.MICROBOARD_CONFIG.i18n.t("AIInput.generatingResponse") +
+            PLACEHOLDER_OFFSET,
+        );
+      } else {
+        nodeRichText.editor.insertCopiedText(inputValue);
+      }
     }
   }
 

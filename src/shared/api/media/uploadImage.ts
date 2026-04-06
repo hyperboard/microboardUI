@@ -1,9 +1,5 @@
-import {
-  Board,
-  ImageItem,
-  calculatePosition,
-  prepareImage,
-} from "microboard-temp";
+import { Board, ImageItem, calculatePosition } from "microboard-temp";
+import { prepareImage } from "./imageHelpers";
 import * as PDFJS from "@bundled-es-modules/pdfjs-dist";
 import { RenderParameters } from "@bundled-es-modules/pdfjs-dist/types/src/display/api";
 import { getApiUrl } from "Config";
@@ -51,13 +47,10 @@ export function uploadImage(file: File, board: Board) {
                       getApiUrl(),
                     )
                       .then((imageData) => {
-                        const image = new ImageItem(
+                        const boardImage = board.createItemAndAdd<ImageItem>(
+                          "Image",
                           imageData,
-                          board,
-                          board.events,
-                          "",
                         );
-                        const boardImage = board.add(image);
                         boardImage.doOnceOnLoad(() => {
                           const viewportMbr = board.camera.getMbr();
                           const scale = 1;
@@ -65,16 +58,24 @@ export function uploadImage(file: File, board: Board) {
                           viewportCenter.y = viewportMbr.top;
                           const offsetX =
                             ((pagesRendered - 1) % 2) *
-                              (scale * image.getWidth()) -
-                            (scale * image.getWidth()) / 2;
+                              (scale * boardImage.getWidth()) -
+                            (scale * boardImage.getWidth()) / 2;
                           const offsetY = viewportYOffset;
                           const centeredX = viewportCenter.x + offsetX;
                           const centeredY = viewportCenter.y + offsetY;
-                          boardImage.transformation.translateTo(
-                            centeredX,
-                            centeredY,
-                          );
-                          boardImage.transformation.scaleTo(scale, scale);
+                          boardImage.apply({
+                            class: "Transformation",
+                            method: "translateTo",
+                            item: [boardImage.getId()],
+                            x: centeredX,
+                            y: centeredY,
+                          } as any);
+                          boardImage.apply({
+                            class: "Transformation",
+                            method: "scaleTo",
+                            item: [boardImage.getId()],
+                            scale: scale,
+                          } as any);
 
                           if (pageNum % 2 === 0 || pageNum === maxPages) {
                             viewportYOffset += pageHeight * scale;
@@ -108,20 +109,21 @@ export function uploadImage(file: File, board: Board) {
       const base64String = event.target?.result as string;
       prepareImage(base64String, board.getBoardId(), getApiUrl())
         .then((imageData) => {
-          const image = new ImageItem(imageData, board, board.events, "");
+          const image = board.createItemAndAdd<ImageItem>("Image", imageData);
           image.doOnceBeforeOnLoad(() => {
             const { scaleX, scaleY, translateX, translateY } =
               calculatePosition(image, board);
-            image.transformation.setLocal(
+            image.apply({
+              class: "Transformation",
+              method: "setLocal",
+              item: [image.getId()],
               translateX,
               translateY,
               scaleX,
               scaleY,
-            );
-            image.updateMbr();
-            const boardImage = board.add(image);
+            } as any);
             board.selection.removeAll();
-            board.selection.add(boardImage);
+            board.selection.add(image);
           });
         })
         .catch((er) => {

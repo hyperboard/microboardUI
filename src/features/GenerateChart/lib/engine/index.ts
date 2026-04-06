@@ -130,13 +130,15 @@ export class LayoutEngine {
     const startRelative = toRelativePoint(new Point(startX, startY), startItem);
     const endRelative = toRelativePoint(new Point(endX, endY), endItem);
 
-    const connector = new Connector(
-      this.board,
-      new FixedPoint(startItem, startRelative),
-      new FixedPoint(endItem, endRelative),
-    );
-    connector.setStartPointerStyle("None");
-    connector.setLineStyle("orthogonal");
+    const connector = this.board.createItemAndAdd<Connector>("Connector", {
+      startPoint: new FixedPoint(startItem, startRelative).serialize(),
+      endPoint: new FixedPoint(endItem, endRelative).serialize(),
+    });
+    connector.apply({
+      class: "Connector",
+      method: "setLineStyle",
+      lineStyle: "orthogonal",
+    } as any);
     if (options.label) {
       connector.text.editor.editor.children = [
         {
@@ -181,20 +183,26 @@ export class LayoutEngine {
     };
   }): void {
     const shape = new Shape(this.board);
+    let shapeType: any = "Rectangle";
     switch (options.shape) {
       case "rectangle":
-        shape.setShapeType("Rectangle");
+        shapeType = "Rectangle";
         break;
       case "diamond":
-        shape.setShapeType("Rhombus");
+        shapeType = "Rhombus";
         break;
       case "circle":
-        shape.setShapeType("Circle");
+        shapeType = "Circle";
         break;
       default:
-        shape.setShapeType("Rectangle");
+        shapeType = "Rectangle";
         break;
     }
+    shape.apply({
+      class: "Shape",
+      method: "setShapeType",
+      shapeType,
+    } as any);
 
     const camera = this.board.camera;
     const cameraPos = camera.getMbr().getCenter(); // { x: Number; y: Number }
@@ -209,11 +217,20 @@ export class LayoutEngine {
       cameraPos.y +
       options.rowInfo.rowIndex * (options.height + this.VERTICAL_GAP);
 
-    shape.transformation.translateTo(translateX, translateY);
-    shape.transformation.scaleTo(
-      this.DEFAULT_NODE_WIDTH / 100,
-      this.DEFAULT_NODE_HEIGHT / 100,
-    );
+    shape.apply({
+      class: "Transformation",
+      method: "translateTo",
+      item: [shape.getId()],
+      x: translateX,
+      y: translateY,
+    } as any);
+    shape.apply({
+      class: "Transformation",
+      method: "scaleTo",
+      item: [shape.getId()],
+      width: this.DEFAULT_NODE_WIDTH,
+      height: this.DEFAULT_NODE_HEIGHT,
+    } as any);
 
     if (options.label) {
       shape.text.editor.editor.children = [

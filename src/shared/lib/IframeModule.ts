@@ -1,7 +1,11 @@
 import Cookies from "js-cookie";
 import type { App } from "App";
 import { isIframe } from "./isIframe";
-import { Board, exportBoardSnapshot, ExportSnapshot } from "microboard-temp";
+import {
+  Board,
+  exportBoardScreenshot,
+  ExportScreenshot,
+} from "microboard-temp";
 
 // type MessagePattern = "updateUserToken" | "iframeEvent" | "makeSnapshot";
 
@@ -140,7 +144,7 @@ export class IframeModule {
           const cachedSelection = board.selection.items.list();
           board.selection.addAll();
 
-          const snapshot = await exportBoardSnapshot({
+          const snapshot = await exportBoardScreenshot({
             board,
             selection: board.selection.getMbr()!,
             nameToExport:
@@ -167,7 +171,7 @@ export class IframeModule {
       if (data.pattern === "fireSnapshotEvent") {
         const board: Board = this.app.getBoard() as Board;
         board.tools.setTool(
-          new ExportSnapshot(board) as unknown as SetToolArgument,
+          new ExportScreenshot(board) as unknown as SetToolArgument,
         );
         board.tools.publish();
       }

@@ -5,7 +5,12 @@ import { UiModal } from "shared/ui-lib/UiModal/UiModal";
 import { useTranslation } from "react-i18next";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { useAppContext } from "features/AppContext";
-import { Card, conf, ItemsMap } from "microboard-temp";
+import {
+  Card,
+  conf,
+  ItemsMap,
+  DefaultTransformationData,
+} from "microboard-temp";
 import { uploadImages } from "shared/api/media/uploadImage";
 
 export const CREATE_CARDS_MODAL = Symbol("createCardsModal");
@@ -48,23 +53,27 @@ export function CreateCardsModal(): React.JSX.Element {
   const createDeck = (backsideUrl: string, faceUrls: string[]) => {
     const cards: Card[] = [];
 
-    faceUrls.forEach((faceUrl, index) => {
-      const card = new Card(board, index + faceUrl, {
+    faceUrls.forEach((faceUrl) => {
+      const card = board.createItem(board.getNewItemId(), {
         itemType: "Card",
         backsideUrl,
         faceUrl,
         dimensions: cardDimensions,
-      });
-      cards.push(card);
+        transformation: new DefaultTransformationData(),
+      } as any);
+      cards.push(card as Card);
     });
 
     const itemsMap: ItemsMap = {};
     cards.forEach((card) => {
       itemsMap[card.getId()] = card.serialize();
     });
-    const { left, top, bottom, right } = board.camera.getMbr();
-    const x = (left + right) / 2 - cards[0].getWidth() / 2;
-    const y = (top + bottom) / 2 - cards[0].getHeight() / 2;
+    const cameraMbr = board.camera.getMbr();
+    const x =
+      (cameraMbr.left + cameraMbr.right) / 2 - cards[0].getMbr().getWidth() / 2;
+    const y =
+      (cameraMbr.top + cameraMbr.bottom) / 2 -
+      cards[0].getMbr().getHeight() / 2;
     board.pointer.pointTo(x, y);
     board.paste(itemsMap, false, false);
   };

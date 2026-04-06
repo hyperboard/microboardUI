@@ -20,7 +20,7 @@ export function ExportPanel(): React.ReactElement | null {
   useEffect(() => {
     if (isLoading) {
       exportTool
-        ?.takeSnapshot()
+        ?.takeScreenshot()
         ?.then(() => {
           setIsLoading(false);
           board.tools.cancel();

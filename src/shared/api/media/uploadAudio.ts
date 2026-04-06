@@ -21,20 +21,30 @@ export function uploadAudio(
     loader: "MediaLoader",
   });
 
-  const audio = new AudioItem(board, undefined, board.events, "", extension);
+  const boardAudio = board.createItemAndAdd<AudioItem>("Audio", { extension });
   const { scaleX, scaleY, translateX, translateY } = calculateAudioPosition(
     board,
-    audio,
+    boardAudio,
   );
-  audio.transformation.setLocal(translateX, translateY, scaleX, scaleY);
-  audio.updateMbr();
-  const boardAudio = board.add(audio);
+  boardAudio.apply({
+    class: "Transformation",
+    method: "setLocal",
+    item: [boardAudio.getId()],
+    translateX,
+    translateY,
+    scaleX,
+    scaleY,
+  } as any);
   board.selection.removeAll();
   board.selection.add(boardAudio);
 
   prepareAudio(file, board.getBoardId(), getApiUrl())
     .then((url) => {
-      boardAudio.setUrl(url);
+      boardAudio.apply({
+        class: "Audio",
+        method: "setUrl",
+        url,
+      } as any);
     })
     .catch((er) => {
       board.remove(boardAudio);

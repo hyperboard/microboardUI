@@ -1,11 +1,6 @@
 import type { NotifyFunction } from "shared/ui-lib/Toast/notify";
-import {
-  VideoItem,
-  createVideoItem,
-  getVideoMetadata,
-  prepareVideo,
-  Board,
-} from "microboard-temp";
+import { VideoItem, Board, calculatePosition } from "microboard-temp";
+import { getVideoMetadata, prepareVideo } from "./videoHelpers";
 import { getApiUrl } from "Config";
 
 export function uploadVideo(
@@ -16,7 +11,28 @@ export function uploadVideo(
 ) {
   getVideoMetadata(file)
     .then((dimension) => {
-      const onLoadCb = (videoItem: VideoItem) => {
+      const videoItem = board.createItemAndAdd<VideoItem>("Video", {
+        extension,
+        videoDimension: dimension,
+      });
+
+      videoItem.doOnceBeforeOnLoad(() => {
+        const { scaleX, scaleY, translateX, translateY } = calculatePosition(
+          videoItem,
+          board,
+        );
+        board.selection.removeAll();
+        board.selection.add(videoItem);
+        videoItem.apply({
+          class: "Transformation",
+          method: "setLocal",
+          item: [videoItem.getId()],
+          translateX,
+          translateY,
+          scaleX,
+          scaleY,
+        } as any);
+
         const notificationId = notify({
           variant: "info",
           header: window.MICROBOARD_CONFIG.i18n.t(
@@ -28,7 +44,12 @@ export function uploadVideo(
         });
         prepareVideo(file, board.getBoardId(), getApiUrl())
           .then((urls) => {
-            videoItem.setVideoData(urls);
+            videoItem.apply({
+              class: "Video",
+              method: "setVideoData",
+              url: urls.url,
+              previewUrl: urls.previewUrl,
+            } as any);
           })
           .catch((er) => {
             board.remove(videoItem);
@@ -37,13 +58,7 @@ export function uploadVideo(
           .finally(() =>
             window.MICROBOARD_CONFIG.disMissNotification(notificationId),
           );
-      };
-      createVideoItem(
-        board,
-        extension,
-        { videoDimension: dimension },
-        onLoadCb,
-      );
+      });
     })
     .catch((er) => {
       console.error("Could not create video:", er);

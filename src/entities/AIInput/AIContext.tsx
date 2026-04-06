@@ -162,7 +162,13 @@ export const AIContextProvider = ({
           const itemWidth = responseAdded.getMbr().getWidth();
           if (itemWidth < DEFAULT_NODE_WIDTH) {
             const offset = (DEFAULT_NODE_WIDTH - itemWidth) / 2;
-            responseAdded.transformation.translateBy(offset, 0);
+            responseAdded.apply({
+              class: "Transformation",
+              method: "translateBy",
+              item: [responseAdded.getId()],
+              translateX: offset,
+              translateY: 0,
+            } as any);
           }
           const mbrToFit = responseAdded.getMbr();
           const offsetX = (640 - mbrToFit.getWidth()) / 2;

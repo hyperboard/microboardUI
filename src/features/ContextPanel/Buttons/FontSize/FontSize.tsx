@@ -84,7 +84,13 @@ export function FontSize({ rounded = "none" }: Props): React.ReactElement {
         richText &&
         richText.transformation.getScale().x !== 1
       ) {
-        richText.transformation.scaleTo(1, 1);
+        item.apply({
+          class: "Transformation",
+          method: "scaleTo",
+          item: [item.getId()],
+          scaleX: 1,
+          scaleY: 1,
+        } as any);
       }
     });
   };

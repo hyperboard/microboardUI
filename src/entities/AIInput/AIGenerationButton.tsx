@@ -3,6 +3,8 @@ import { useAppSubscription } from "App/useBoardSubscription";
 import { useAppContext } from "features/AppContext";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { useAIContext } from "entities/AIInput/AIContext";
+import { AINode } from "microboard-temp";
+import { Button } from "shared/UI/Button";
 
 export const AiGenerationButton = () => {
   const { board } = useAppContext();
@@ -16,18 +18,15 @@ export const AiGenerationButton = () => {
   const buttonContainerRef = useRef<HTMLDivElement>(null);
   const hoveredItem = board.items.getUnderPointer().pop();
   const getCanvasButtonMbr = () => {
-    if (
-      hoveredItem &&
-      hoveredItem.itemType === "AINode" &&
-      "getButtonMbr" in hoveredItem
-    ) {
-      return hoveredItem
+    if (hoveredItem && hoveredItem.itemType === "AINode") {
+      return (hoveredItem as any)
         .getButtonMbr()
         .getTransformed(board.camera.getMatrix());
     }
     return undefined;
   };
   const mbr = getCanvasButtonMbr();
+  if (!mbr) return null;
 
   const onClick = (event: React.MouseEvent<HTMLDivElement>) => {
     event.stopPropagation();

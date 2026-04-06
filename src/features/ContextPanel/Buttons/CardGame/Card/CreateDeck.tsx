@@ -3,16 +3,24 @@ import React from "react";
 import { useAppContext } from "features/AppContext";
 import btnStyle from "../../ContextPanelButton.module.css";
 import { UiButton } from "shared/ui-lib/UiButton/UiButton";
-import { Card, Deck, getHotkeyLabel, type Item } from "microboard-temp";
+import {
+  Card,
+  Deck,
+  getHotkeyLabel,
+  type Item,
+  DefaultTransformationData,
+} from "microboard-temp";
 import { useTranslation } from "react-i18next";
 
 function sortItemsByPosition(items: Item[]) {
   return items.sort((a, b) => {
-    if (a.top < b.top) return -1;
-    if (a.top > b.top) return 1;
+    const aMbr = a.getMbr();
+    const bMbr = b.getMbr();
+    if (aMbr.top < bMbr.top) return -1;
+    if (aMbr.top > bMbr.top) return 1;
 
-    if (a.left < b.left) return -1;
-    if (a.left > b.left) return 1;
+    if (aMbr.left < bMbr.left) return -1;
+    if (aMbr.left > bMbr.left) return 1;
 
     return 0;
   });
@@ -43,15 +51,14 @@ export function CreateDeck({ rounded = "none", onlyCards }: Props) {
 
   const handleClick = (): void => {
     if (onlyCards) {
-      const deck = new Deck(board, "");
-      deck.transformation.apply({
-        class: "Transformation",
-        method: "translateTo",
-        item: [deck.getId()],
-        x: cardsOrDecks[0].left,
-        y: cardsOrDecks[0].top,
+      const firstMbr = cardsOrDecks[0].getMbr();
+      const addedDeck = board.createItemAndAdd<Deck>("Deck", {
+        transformation: {
+          ...new DefaultTransformationData(),
+          translateX: firstMbr.left,
+          translateY: firstMbr.top,
+        },
       });
-      const addedDeck = board.add(deck);
       board.selection.items.removeAll();
       addedDeck.addChildItems(cardsOrDecks);
       board.selection.items.add(addedDeck);

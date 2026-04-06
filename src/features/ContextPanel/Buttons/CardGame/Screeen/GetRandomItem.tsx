@@ -30,13 +30,17 @@ export function GetRandomItem({ rounded = "none" }: Props) {
   }
 
   const handleClick = (): void => {
-    const { left, top, right } = single.getMbr();
+    const mbr = single.getMbr();
     const item = single.getRandomItem();
     if (item) {
-      item.transformation.translateTo(
-        (left + right) / 2 - item.getWidth() / 2,
-        top - (item.getHeight() || 200),
-      );
+      const itemMbr = item.getMbr();
+      item.apply({
+        class: "Transformation",
+        method: "translateTo",
+        item: [item.getId()],
+        translateX: (mbr.left + mbr.right) / 2 - itemMbr.getWidth() / 2,
+        translateY: mbr.top - (itemMbr.getHeight() || 200),
+      } as any);
     }
   };
 

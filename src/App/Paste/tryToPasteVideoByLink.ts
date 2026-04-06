@@ -28,34 +28,33 @@ const createVideoItem = (url: string, youtubeId: string, board: Board) => {
   const previewUrl = getYouTubeThumbnail(youtubeId, "maxres");
   getYouTubeVideoPreview(previewUrl)
     .then((preview) => {
-      const videoItem = new VideoItem(
-        {
-          videoDimension: {
-            width: preview.width,
-            height: preview.height,
-          },
-          url,
-          previewUrl,
+      const videoItem = board.createItemAndAdd<VideoItem>("Video", {
+        videoDimension: {
+          width: preview.width,
+          height: preview.height,
         },
-        board,
-        board.events,
-        "",
-      );
+        url,
+        previewUrl,
+      });
+
       videoItem.doOnceBeforeOnLoad(() => {
         const { scaleX, scaleY, translateX, translateY } = calculatePosition(
           videoItem,
           board,
         );
-        videoItem.transformation.setLocal(
+
+        videoItem.apply({
+          class: "Transformation",
+          method: "setLocal",
+          item: [videoItem.getId()],
           translateX,
           translateY,
           scaleX,
           scaleY,
-        );
-        videoItem.updateMbr();
-        const boardVideo = board.add(videoItem);
+        } as any);
+
         board.selection.removeAll();
-        board.selection.add(boardVideo);
+        board.selection.add(videoItem);
       });
     })
     .catch((err) => {

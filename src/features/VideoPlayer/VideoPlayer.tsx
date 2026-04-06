@@ -4,7 +4,6 @@ import styles from "./VideoPlayer.module.css";
 import { captureFrame, VideoItem } from "microboard-temp";
 import YouTube from "react-youtube";
 import { useResolveRedirectUrl } from "shared/lib/useResolveRedirectUrl";
-import { useAccount } from "App/useAccount";
 
 interface Props {
   item: VideoItem;
@@ -12,7 +11,6 @@ interface Props {
 
 export const VideoPlayer = ({ item }: Props) => {
   const { board, app } = useAppContext();
-  const account = useAccount();
 
   const videoId = window.MICROBOARD_CONFIG.getYouTubeId(item.getUrl());
 
@@ -23,7 +21,6 @@ export const VideoPlayer = ({ item }: Props) => {
 
   const { resolvedUrl } = useResolveRedirectUrl({
     mediaUrl: item.getUrl(),
-    accessToken: account.accessToken,
   });
 
   useEffect(() => {

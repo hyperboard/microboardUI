@@ -703,20 +703,31 @@ export function getController(
     reader.onload = function (event) {
       prepareImage(event.target?.result, board.getBoardId(), getApiUrl())
         .then((imageData) => {
-          const image = new ImageItem(imageData, board, undefined);
-          image.transformation.translateTo(
-            board.pointer.point.x,
-            board.pointer.point.y,
+          const image = board.createItemAndAdd<ImageItem>(
+            "Image",
+            imageData as any,
           );
+          image.apply({
+            class: "Transformation",
+            method: "translateTo",
+            item: [image.getId()],
+            x: board.pointer.point.x,
+            y: board.pointer.point.y,
+          } as any);
           const prevDimensions = tempStorage.getImageDimensions();
           if (prevDimensions) {
             const imageMbr = image.getMbr();
             const scaleX = prevDimensions.width / imageMbr.getWidth();
             const scaleY = prevDimensions.height / imageMbr.getHeight();
             const finalScale = Math.min(scaleX, scaleY);
-            image.transformation.applyScaleBy(finalScale, finalScale);
+            image.apply({
+              class: "Transformation",
+              method: "applyScaleBy",
+              item: [image.getId()],
+              scaleX: finalScale,
+              scaleY: finalScale,
+            } as any);
           }
-          board.add(image);
         })
         .catch((er) => {
           console.error("Could not create image:", er);

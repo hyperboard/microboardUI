@@ -3,15 +3,10 @@ import { getMediaSignedUrl } from "microboard-temp";
 
 interface Args {
   mediaUrl: string;
-  accessToken: string | null;
   beforeStartCb?: () => void;
 }
 
-export const useResolveRedirectUrl = ({
-  mediaUrl,
-  accessToken,
-  beforeStartCb,
-}: Args) => {
+export const useResolveRedirectUrl = ({ mediaUrl, beforeStartCb }: Args) => {
   const [resolvedUrl, setResolvedUrl] = useState<string | null>(null);
   const [isLoadingUrl, setIsLoadingUrl] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -55,7 +50,7 @@ export const useResolveRedirectUrl = ({
     };
 
     resolveRedirectUrl();
-  }, [mediaUrl, accessToken]);
+  }, [mediaUrl]);
 
   return { resolvedUrl, isLoadingUrl, error };
 };
