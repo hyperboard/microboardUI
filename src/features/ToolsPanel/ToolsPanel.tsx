@@ -6,7 +6,6 @@ import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";
 import { AddMedia } from "./Buttons/AddMedia/AddMedia";
-import { AddDrawing } from "./Buttons/AddDrawing/AddDrawing";
 import { AddTemplate } from "./Buttons/AddTemplate";
 import { EventList } from "./Buttons/EventList";
 import { Redo } from "./Buttons/Redo";
@@ -24,6 +23,8 @@ export function ToolsPanel(): React.JSX.Element {
 
   const toggleMenu = (menu: string): void =>
     setOpenedMenu((prev) => (prev === menu ? "None" : menu));
+  const openMenu = (menu: string): void => setOpenedMenu(menu);
+  const closeMenu = (): void => setOpenedMenu("None");
 
   const { app } = useAppContext();
   const forceUpdate = useForceUpdate();
@@ -35,7 +36,9 @@ export function ToolsPanel(): React.JSX.Element {
   useEffect(() => {}, [window.showDebug]);
 
   return (
-    <PanelContext.Provider value={{ toggleMenu, openedMenu }}>
+    <PanelContext.Provider
+      value={{ toggleMenu, openMenu, closeMenu, openedMenu }}
+    >
       <div
         className={
           window.location.protocol === "file:"
@@ -48,7 +51,6 @@ export function ToolsPanel(): React.JSX.Element {
           <AddTemplate />
           <UiSeparator />
           <Select rounded={"none"} />
-          <AddDrawing />
           {OverlayToolbarMainTools()}
           <AddMedia />
         </UiPanel>

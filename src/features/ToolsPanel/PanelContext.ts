@@ -5,6 +5,8 @@ import {
 
 export const PanelContext = createStrictContext<{
   toggleMenu: (menu: string) => void;
+  openMenu: (menu: string) => void;
+  closeMenu: () => void;
   openedMenu: string;
 }>();
 

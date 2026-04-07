@@ -1609,6 +1609,7 @@ function OverlayToolbarGroup({
   entry: OverlayCreateSurfaceGroupEntry;
 }): React.ReactElement | null {
   const { board } = useAppContext();
+  const { openedMenu, openMenu, closeMenu } = useToolsPanelContext();
   const overlays = entry.tools;
   const activeOverlay = overlays.find((overlay) =>
     getToolIsActive(board, overlay.toolName),
@@ -1621,6 +1622,7 @@ function OverlayToolbarGroup({
     overlays.find((overlay) => overlay.toolName === lastToolName) ??
     activeOverlay ??
     overlays[0];
+  const behavior = entry.behavior ?? "open-panel";
 
   useEffect(() => {
     if (activeOverlay) {
@@ -1628,11 +1630,19 @@ function OverlayToolbarGroup({
     }
   }, [activeOverlay]);
 
+  useEffect(() => {
+    if (behavior === "activate-last-used" && isOpen && !activeOverlay) {
+      setIsOpen(false);
+      if (overlays.some((overlay) => overlay.toolName === openedMenu)) {
+        closeMenu();
+      }
+    }
+  }, [activeOverlay, behavior, closeMenu, isOpen, openedMenu, overlays]);
+
   if (!currentOverlay) {
     return null;
   }
 
-  const behavior = entry.behavior ?? "open-panel";
   const currentOption = getToolDisplayOption(currentOverlay, board);
   const currentIcon = currentOption?.icon ?? currentOverlay.icon;
   const currentLabel = currentOption?.label ?? currentOverlay.label;
@@ -1653,10 +1663,25 @@ function OverlayToolbarGroup({
           onClick={() => {
             if (behavior === "activate-last-used" && !activeOverlay) {
               activateTool(board, currentOverlay.toolName);
+              setIsOpen(true);
+              if (currentOverlay.defaults?.controls.length) {
+                openMenu(currentOverlay.toolName);
+              }
               return;
             }
 
-            setIsOpen((prev) => !prev);
+            setIsOpen((prev) => {
+              const next = !prev;
+              if (next && currentOverlay.defaults?.controls.length) {
+                openMenu(currentOverlay.toolName);
+              } else if (
+                !next &&
+                overlays.some((overlay) => overlay.toolName === openedMenu)
+              ) {
+                closeMenu();
+              }
+              return next;
+            });
           }}
         >
           <OverlayMetadataIcon
@@ -1680,10 +1705,16 @@ function OverlayToolbarGroup({
                   ? "bottom"
                   : "none"
             }
+            openDefaultsOnActivate={false}
             onActivate={() => {
               setLastToolName(overlay.toolName);
-              if (behavior === "open-panel") {
-                setIsOpen(false);
+              setIsOpen(false);
+              if (
+                overlays.some(
+                  (groupOverlay) => groupOverlay.toolName === openedMenu,
+                )
+              ) {
+                closeMenu();
               }
             }}
           />
@@ -1702,23 +1733,6 @@ function getOverlayToolbarSections(): {
   const main: React.ReactElement[] = [];
 
   entries.forEach((entry) => {
-    if (
-      entry.kind === "group" &&
-      entry.tools.length > 0 &&
-      entry.tools.every((tool) =>
-        ["AddDrawing", "AddHighlighter", "Eraser"].includes(tool.toolName),
-      )
-    ) {
-      return;
-    }
-
-    if (
-      entry.kind === "tool" &&
-      ["AddDrawing", "AddHighlighter", "Eraser"].includes(entry.tool.toolName)
-    ) {
-      return;
-    }
-
     if (entry.kind === "group" && entry.order === 1) {
       leading.push(<OverlayToolbarGroup key={entry.id} entry={entry} />);
       return;
@@ -1753,6 +1767,7 @@ export function OverlayToolbarTools(): React.ReactElement[] {
 function OverlayToolbarTool({
   overlay,
   rounded = "none",
+  openDefaultsOnActivate = true,
   onActivate,
 }: {
   overlay: ToolOverlayDefinition;
@@ -1765,10 +1780,11 @@ function OverlayToolbarTool({
     | "bottom-right"
     | "bottom-left"
     | "full";
+  openDefaultsOnActivate?: boolean;
   onActivate?: () => void;
 }): React.ReactElement {
   const { board } = useAppContext();
-  const { openedMenu, toggleMenu } = useToolsPanelContext();
+  const { openedMenu, toggleMenu, openMenu } = useToolsPanelContext();
   const isWorkflow = overlay.launch?.kind === "workflow";
   const isActive = Boolean(board.tools.getAddRegisteredTool(overlay.toolName));
   const hasDefaults = Boolean(overlay.defaults?.controls.length);
@@ -1789,14 +1805,18 @@ function OverlayToolbarTool({
     if (!isActive) {
       activateTool(board, overlay.toolName);
       onActivate?.();
-      if (hasDefaults) {
-        toggleMenu(overlay.toolName);
+      if (hasDefaults && openDefaultsOnActivate) {
+        openMenu(overlay.toolName);
       }
       return;
     }
 
     if (hasDefaults) {
-      toggleMenu(overlay.toolName);
+      if (openDefaultsOnActivate) {
+        toggleMenu(overlay.toolName);
+      } else {
+        onActivate?.();
+      }
     } else {
       board.tools.cancel();
     }
