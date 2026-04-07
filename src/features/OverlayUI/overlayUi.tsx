@@ -229,6 +229,19 @@ function getTool(
   board: ReturnType<typeof useAppContext>["board"],
   toolName: string,
 ): Record<string, unknown> | undefined {
+  switch (toolName) {
+    case "AddDrawing":
+      return board.tools.getAddDrawing() as Record<string, unknown> | undefined;
+    case "AddHighlighter":
+      return board.tools.getAddHighlighter() as
+        | Record<string, unknown>
+        | undefined;
+    case "Eraser":
+      return board.tools.getEraser() as Record<string, unknown> | undefined;
+    default:
+      break;
+  }
+
   return board.tools.getAddRegisteredTool(toolName) as
     | Record<string, unknown>
     | undefined;
@@ -1540,7 +1553,7 @@ function getToolIsActive(
   board: ReturnType<typeof useAppContext>["board"],
   toolName: string,
 ): boolean {
-  return Boolean(board.tools.getAddRegisteredTool(toolName));
+  return Boolean(getTool(board, toolName));
 }
 
 function activateTool(
@@ -1788,7 +1801,7 @@ function OverlayToolbarTool({
   const { board } = useAppContext();
   const { openedMenu, toggleMenu, openMenu } = useToolsPanelContext();
   const isWorkflow = overlay.launch?.kind === "workflow";
-  const isActive = Boolean(board.tools.getAddRegisteredTool(overlay.toolName));
+  const isActive = getToolIsActive(board, overlay.toolName);
   const hasDefaults = Boolean(overlay.defaults?.controls.length);
   const isOpen = isWorkflow
     ? openedMenu === overlay.toolName
