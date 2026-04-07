@@ -10,6 +10,7 @@ type Props = {
   step: number;
   onPick: (val: number) => void;
   showLabel?: boolean;
+  labelKey?: string;
   id?: string;
 };
 
@@ -19,6 +20,7 @@ export function SliderPicker({
   max,
   value,
   showLabel,
+  labelKey,
   id,
   step,
 }: Props): React.ReactElement {
@@ -33,10 +35,8 @@ export function SliderPicker({
         id={id}
         onChange={onPick}
       />
-      {showLabel && (
-        <label className={style.label}>
-          {t("toolsPanel.addDrawing.strokeWidth")}
-        </label>
+      {showLabel && labelKey && (
+        <label className={style.label}>{t(labelKey)}</label>
       )}
     </div>
   );

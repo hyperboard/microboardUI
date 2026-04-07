@@ -298,6 +298,16 @@ function getVisibleControls(
   });
 }
 
+function getOverlaySliderLabelKey(
+  control: OverlayControlDefinition,
+): string | undefined {
+  if (control.id === "strokeWidth") {
+    return "toolsPanel.addDrawing.strokeWidth";
+  }
+
+  return undefined;
+}
+
 function mergeOptionLists(
   primaryOptions: OverlayOptionDefinition[],
   extraOptions: OverlayOptionDefinition[],
@@ -1095,7 +1105,8 @@ function ControlEditor({
             ) : null}
           </div>
         );
-      case "slider":
+      case "slider": {
+        const sliderLabelKey = getOverlaySliderLabelKey(control);
         return (
           <div className={styles.menuSection}>
             <SliderPicker
@@ -1104,13 +1115,12 @@ function ControlEditor({
               max={editor.max}
               step={editor.step ?? 1}
               value={typeof value === "number" ? value : editor.min}
-              showLabel
+              showLabel={Boolean(sliderLabelKey)}
+              labelKey={sliderLabelKey}
             />
-            <div className={styles.label}>
-              {typeof value === "number" ? `${value}${editor.unit ?? ""}` : ""}
-            </div>
           </div>
         );
+      }
       case "toggle":
         return (
           <div className={styles.toggleRow}>
@@ -1198,12 +1208,7 @@ function ControlEditor({
     }
   };
 
-  return (
-    <div className={styles.menuSection}>
-      <div className={styles.label}>{control.label}</div>
-      {renderEditor(control.editor)}
-    </div>
-  );
+  return renderEditor(control.editor);
 }
 
 function OverlayControlsMenu({
@@ -1257,20 +1262,6 @@ function OverlayControlsMenu({
 
         return (
           <Fragment key={group.id}>
-            {group.label ? (
-              <div className={styles.groupHeader}>
-                {group.icon ? (
-                  <OverlayMetadataIcon
-                    icon={group.icon}
-                    items={context.items}
-                    toolName={context.toolName}
-                    label={group.label}
-                    size={16}
-                  />
-                ) : null}
-                <span>{group.label}</span>
-              </div>
-            ) : null}
             <div className={styles.menuSection}>
               {groupControls.map((control) => (
                 <ControlEditor
