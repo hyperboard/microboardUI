@@ -1,20 +1,23 @@
-import React, { Fragment, useEffect, useMemo, useState } from "react";
+import React, { Fragment, useEffect, useId, useRef, useState } from "react";
 import {
   type BaseItem,
   type OverlayActionDefinition,
   type OverlayCatalogDefinition,
   type OverlayControlDefinition,
   type OverlayControlGroupDefinition,
+  type OverlayCreateSurfaceGroupEntry,
+  type OverlayDynamicOptionsContext,
   type OverlayEditor,
   type OverlayIcon,
   type OverlayInvocation,
   type OverlayOptionDefinition,
   type SelectionOverlayActionDefinition,
-  type ShapeType,
   type ToolOverlayDefinition,
+  getItemOverlay,
   getSelectionOverlayActions,
   intersectOverlayActions,
-  listToolOverlays,
+  listCreateSurfaceEntries,
+  matchesOverlayCondition,
   resolveDynamicOptions,
 } from "microboard-temp";
 import { useAppContext } from "features/AppContext";
@@ -22,13 +25,14 @@ import { usePanelContext as useToolsPanelContext } from "features/ToolsPanel/Pan
 import { usePanelContext as useContextPanelContext } from "features/ContextPanel/PanelContext";
 import { ButtonWithMenu as ToolbarButtonWithMenu } from "features/ToolsPanel/Buttons/ButtonWithMenu";
 import { ButtonWithMenu as ContextButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
-import { AddCard } from "features/ToolsPanel/Buttons/AddGameItem/AddCard";
-import { useShapesPanelContext } from "features/ShapesPanel";
-import { ShapePicker } from "features/Pickers/ShapeTypePicker";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { UiPanel } from "shared/ui-lib/UiPanel";
 import { Icon } from "shared/ui-lib/Icon";
 import { resolveColorForUI } from "shared/lib/resolveColorValue";
+import { useAccount } from "App/useAccount";
+import { validateMediaFile } from "App/MediaHelpers";
+import { uploadImages } from "shared/api/media";
+import { getOverlayIconAsset } from "microboard-temp/overlay-icon-manifest";
 import styles from "./OverlayUi.module.css";
 
 type OverlayActionLike =
@@ -39,138 +43,41 @@ type EditorContext = {
   items: BaseItem[];
   toolName?: string;
   controlsById: Map<string, OverlayControlDefinition>;
+  selection?: unknown;
 };
 
-const DRAWING_FAMILY = "drawing";
-const SHAPE_FAMILY = "shape";
-const GAME_FAMILIES = new Set(["game", "container"]);
-const TOOLBAR_FAMILY_ORDER = [
-  "text",
-  SHAPE_FAMILY,
-  "connector",
-  "sticker",
-  "frame",
-] as const;
+type WorkflowUploadEntry = {
+  id: string;
+  fields: Record<string, File | null>;
+};
+
+type WorkflowUploadValue =
+  | {
+      mode: "single" | "multiple";
+      files: File[];
+    }
+  | {
+      mode: "paired";
+      entries: WorkflowUploadEntry[];
+    };
 function capitalize(value: string): string {
   return value ? value[0].toUpperCase() + value.slice(1) : value;
 }
 
-const OVERLAY_SYMBOL_ID_MAP: Record<string, string> = {
-  "tool.pen": "Pen",
-  "tool.highlighter": "Highlighter",
-  "tool.eraser": "Eraser",
-  "tool.text": "Text",
-  "tool.shape": "Shape",
-  "tool.connector": "Connector",
-  "tool.sticker": "Sticker",
-  "tool.frame": "Frame",
-  "tool.dice": "Dice",
-  "tool.screen": "AddScreen",
-  "tool.pouch": "AddPouch",
-  "style.fontSize": "Text",
-  "style.fill": "TextHighlight",
-  "style.stroke": "SolidLine",
-  "style.color": "TextColor",
-  "text.fontSize": "Text",
-  "shape.type": "Shape",
-  "shape.fill": "TextHighlight",
-  "shape.stroke": "SolidLine",
-  "screen.background": "Image",
-  "connector.style": "Connector",
-  "connector.smartJump": "Switch",
-  "connector.switchPointers": "Switch",
-  "deck.createFromSelection": "GameItems",
-  "deck.drawTop": "GetCard",
-  "deck.drawBottom": "GetBottomCard",
-  "deck.drawRandom": "GetRandomItem",
-  "deck.drawMany": "SpreadCards",
-  "deck.shuffle": "ShuffleDeck",
-  "deck.flip": "RotateCard",
-  "card.flip": "RotateCard",
-  "card.rotateCcw": "RotateCard",
-  "card.rotateCw": "RotateCard",
-  "dice.range": "Dice",
-  "dice.throw": "RotateDice",
-  "stroke.solid": "SolidLine",
-  "stroke.dot": "DottedLine",
-  "stroke.dash": "DashedLine",
-  "stroke.longDash": "DashedLine",
-};
-
-function normalizeOverlaySymbolId(symbolId: string | null): string | null {
-  if (!symbolId) {
-    return null;
-  }
-
-  if (OVERLAY_SYMBOL_ID_MAP[symbolId]) {
-    return OVERLAY_SYMBOL_ID_MAP[symbolId];
-  }
-
-  if (symbolId.startsWith("connector.lineStyle.")) {
-    return symbolId.split(".").pop() ?? null;
-  }
-
-  if (symbolId.startsWith("connector.pointer.")) {
-    return symbolId.split(".").pop() ?? null;
-  }
-
-  if (symbolId.startsWith("frame.")) {
-    return `Frame${symbolId.slice("frame.".length)}`;
-  }
-
-  if (symbolId.startsWith("shape.bpmn.")) {
-    const suffix = symbolId.slice("shape.bpmn.".length);
-    const bpmnMap: Record<string, string> = {
-      task: "BPMN_Task",
-      gateway: "BPMN_Gateway",
-      gatewayParallel: "BPMN_GatewayParallel",
-      gatewayXor: "BPMN_GatewayXOR",
-      startEvent: "BPMN_StartEvent",
-      startEventNoneInterrupting: "BPMN_StartEventNoneInterrupting",
-      endEvent: "BPMN_EndEvent",
-      intermediateEvent: "BPMN_IntermediateEvent",
-      intermediateEventNoneInterrupting:
-        "BPMN_IntermediateEventNoneInterrupting",
-      dataObject: "BPMN_DataObject",
-      dataStore: "BPMN_DataStore",
-      participant: "BPMN_Participant",
-      transaction: "BPMN_Transaction",
-      eventSubprocess: "BPMN_EventSubprocess",
-      group: "BPMN_Group",
-      annotation: "BPMN_Annotation",
-    };
-
-    return bpmnMap[suffix] ?? null;
-  }
-
-  return symbolId;
-}
-
-function getSvgSymbolId(icon: OverlayIcon | undefined): string | null {
+function getOverlayAssetSvg(icon: OverlayIcon | undefined): string | null {
   if (!icon) {
     return null;
   }
 
-  if (icon.kind === "symbol") {
-    return normalizeOverlaySymbolId(icon.key);
+  if (icon.kind === "asset") {
+    return getOverlayIconAsset(icon.path) ?? null;
   }
 
-  const fileName = icon.path.split("/").pop();
-  if (!fileName) {
+  if (!icon.sourcePath) {
     return null;
   }
 
-  return normalizeOverlaySymbolId(
-    fileName.replace(/\.icon\.svg$/i, "").replace(/\.svg$/i, ""),
-  );
-}
-
-function hasSvgSymbol(symbolId: string | null): boolean {
-  if (!symbolId || typeof document === "undefined") {
-    return false;
-  }
-
-  return Boolean(document.getElementById(symbolId));
+  return getOverlayIconAsset(icon.sourcePath) ?? null;
 }
 
 function makeRangeArray(length: number, start: number): number[] {
@@ -218,6 +125,19 @@ function setTargetProperty(
   }
 }
 
+function readTargetProperty(target: unknown, property: string): unknown {
+  if (!target) {
+    return undefined;
+  }
+
+  const value = (target as Record<string, unknown>)[property];
+  if (typeof value === "function") {
+    return (value as () => unknown).call(target);
+  }
+
+  return value;
+}
+
 function getTool(
   board: ReturnType<typeof useAppContext>["board"],
   toolName: string,
@@ -239,12 +159,57 @@ function getSwatchColor(
   }
 
   if (swatchSource.kind === "itemProperty") {
-    const item = items[0] as unknown as Record<string, unknown> | undefined;
-    return item ? resolveColorForUI(item[swatchSource.property]) : null;
+    return resolveColorForUI(
+      readTargetProperty(items[0], swatchSource.property),
+    );
+  }
+
+  if (swatchSource.kind === "selectionProperty") {
+    return resolveColorForUI(
+      readTargetProperty(board.selection, swatchSource.property),
+    );
   }
 
   const tool = toolName ? getTool(board, toolName) : undefined;
-  return tool ? resolveColorForUI(tool[swatchSource.property]) : null;
+  return resolveColorForUI(readTargetProperty(tool, swatchSource.property));
+}
+
+function buildOverlayConditionContext(
+  context: EditorContext,
+  board: ReturnType<typeof useAppContext>["board"],
+): OverlayDynamicOptionsContext {
+  return {
+    item: context.items[0],
+    items: context.items,
+    selection: context.selection ?? board.selection,
+    tool: context.toolName
+      ? (getTool(board, context.toolName) as never)
+      : undefined,
+  };
+}
+
+function getVisibleControls(
+  controls: OverlayControlDefinition[],
+  context: EditorContext,
+  board: ReturnType<typeof useAppContext>["board"],
+): OverlayControlDefinition[] {
+  const conditionContext = buildOverlayConditionContext(context, board);
+  return controls.filter((control) =>
+    matchesOverlayCondition(control.when, conditionContext),
+  );
+}
+
+function mergeOptionLists(
+  primaryOptions: OverlayOptionDefinition[],
+  extraOptions: OverlayOptionDefinition[],
+): OverlayOptionDefinition[] {
+  const options = new Map<string, OverlayOptionDefinition>();
+  [...primaryOptions, ...extraOptions].forEach((option) => {
+    if (!options.has(option.id)) {
+      options.set(option.id, option);
+    }
+  });
+  return [...options.values()];
 }
 
 function getControlValue(
@@ -253,22 +218,28 @@ function getControlValue(
   board: ReturnType<typeof useAppContext>["board"],
 ): unknown {
   if (control.valueSource?.kind === "itemProperty") {
-    const item = context.items[0] as unknown as
-      | Record<string, unknown>
-      | undefined;
-    return adaptIncomingValue(control, item?.[control.valueSource.property]);
+    return adaptIncomingValue(
+      control,
+      readTargetProperty(context.items[0], control.valueSource.property),
+    );
+  }
+
+  if (control.valueSource?.kind === "selectionProperty") {
+    return adaptIncomingValue(
+      control,
+      readTargetProperty(
+        context.selection ?? board.selection,
+        control.valueSource.property,
+      ),
+    );
   }
 
   if (control.valueSource?.kind === "toolProperty" && context.toolName) {
     const tool = getTool(board, context.toolName);
-    return adaptIncomingValue(control, tool?.[control.valueSource.property]);
-  }
-
-  if (
-    control.id === "fontSize" &&
-    typeof board.selection.getFontSize === "function"
-  ) {
-    return board.selection.getFontSize();
+    return adaptIncomingValue(
+      control,
+      readTargetProperty(tool, control.valueSource.property),
+    );
   }
 
   return undefined;
@@ -325,6 +296,21 @@ function invokeControl(
     if (tool) {
       setTargetProperty(tool, invoke.property, nextValue);
       board.tools.publish();
+    }
+    return;
+  }
+
+  if (invoke?.kind === "selectionMethod") {
+    const method = (context.selection ?? board.selection) as Record<
+      string,
+      unknown
+    >;
+    const selectionMethod = method[invoke.methodName];
+    if (typeof selectionMethod === "function") {
+      const args = resolveInvocationArgs(invoke, context, board);
+      (selectionMethod as (...nextArgs: unknown[]) => void)(
+        ...(args.length ? args : [nextValue]),
+      );
     }
     return;
   }
@@ -412,16 +398,17 @@ function OverlayMetadataIcon({
 }): React.ReactElement {
   const { board } = useAppContext();
   const swatchColor = getSwatchColor(icon, items, toolName, board);
-  const symbolId = getSvgSymbolId(icon);
-  const canUseSprite = hasSvgSymbol(symbolId);
+  const assetSvg = getOverlayAssetSvg(icon);
 
   let content: React.ReactElement;
 
-  if (canUseSprite && symbolId) {
+  if (assetSvg) {
     content = (
-      <svg width={size} height={size} fill="none">
-        <use href={`#${symbolId}`} />
-      </svg>
+      <span
+        className={styles.assetIcon}
+        style={{ width: size, height: size }}
+        dangerouslySetInnerHTML={{ __html: assetSvg }}
+      />
     );
   } else if (label) {
     content = (
@@ -519,17 +506,246 @@ function renderCatalog(
   );
 }
 
-function ControlEditor({
+function getQuickOptions(
+  editor: Extract<OverlayEditor, { kind: "enum-icon" }>,
+): OverlayOptionDefinition[] {
+  const allOptions = mergeOptionLists(
+    editor.options,
+    editor.catalog?.options ?? [],
+  );
+  const quickOptions = editor.quickOptions;
+  if (!quickOptions) {
+    return allOptions;
+  }
+
+  let options = allOptions;
+  if (quickOptions.optionIds?.length) {
+    const allowed = new Set(quickOptions.optionIds);
+    options = allOptions.filter((option) => allowed.has(option.id));
+  } else if (quickOptions.family) {
+    options = allOptions.filter(
+      (option) => option.family === quickOptions.family,
+    );
+  }
+
+  if (quickOptions.maxVisible !== undefined) {
+    options = options.slice(0, quickOptions.maxVisible);
+  }
+
+  return options;
+}
+
+function OverlayAssetUploadField({
   control,
   context,
+  value,
+  onChange,
 }: {
   control: OverlayControlDefinition;
   context: EditorContext;
+  value?: WorkflowUploadValue;
+  onChange?: (nextValue: WorkflowUploadValue) => void;
 }): React.ReactElement {
   const { board } = useAppContext();
-  const value = getControlValue(control, context, board);
+  const account = useAccount();
+  const inputId = useId();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const editor = control.editor.kind === "asset-upload" ? control.editor : null;
+  const pairedFields = editor?.fields ?? [];
+
+  if (!editor) {
+    return <div className={styles.label}>Unsupported upload</div>;
+  }
+
+  const createEmptyPairedEntry = (): WorkflowUploadEntry => ({
+    id: `${control.id}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    fields: Object.fromEntries(
+      pairedFields.map((field) => [field.id, null]),
+    ) as Record<string, File | null>,
+  });
+
+  const handleClick = (): void => {
+    inputRef.current?.click();
+  };
+
+  const handleChange: React.ChangeEventHandler<HTMLInputElement> = async (
+    event,
+  ) => {
+    const input = event.currentTarget;
+    const files = input.files ? Array.from(input.files) : [];
+    if (!files.length) {
+      return;
+    }
+
+    const validFiles = files.filter((file) => validateMediaFile(file, account));
+    if (!validFiles.length) {
+      input.value = "";
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const urls = await uploadImages(validFiles, board.getBoardId());
+      if (!urls.length) {
+        return;
+      }
+
+      const nextValue = editor.mode === "multiple" ? urls : (urls[0] ?? "");
+
+      if (onChange) {
+        onChange({
+          mode: editor.mode === "multiple" ? "multiple" : "single",
+          files: validFiles,
+        });
+      } else {
+        invokeControl(board, control, context, nextValue);
+      }
+    } finally {
+      input.value = "";
+      setIsUploading(false);
+    }
+  };
+
+  if (onChange && editor.mode === "paired") {
+    const pairedValue =
+      value?.mode === "paired"
+        ? value
+        : { mode: "paired" as const, entries: [createEmptyPairedEntry()] };
+
+    const updateEntryField = (
+      entryId: string,
+      fieldId: string,
+      file: File | null,
+    ): void => {
+      onChange({
+        mode: "paired",
+        entries: pairedValue.entries.map((entry) =>
+          entry.id === entryId
+            ? {
+                ...entry,
+                fields: {
+                  ...entry.fields,
+                  [fieldId]: file,
+                },
+              }
+            : entry,
+        ),
+      });
+    };
+
+    const removeEntry = (entryId: string): void => {
+      const remaining = pairedValue.entries.filter(
+        (entry) => entry.id !== entryId,
+      );
+      onChange({
+        mode: "paired",
+        entries: remaining.length ? remaining : [createEmptyPairedEntry()],
+      });
+    };
+
+    return (
+      <div className={styles.assetUpload}>
+        {pairedValue.entries.map((entry, index) => (
+          <div key={entry.id} className={styles.pairedUploadRow}>
+            {pairedFields.map((field) => (
+              <label key={field.id} className={styles.uploadFieldLabel}>
+                <span className={styles.uploadFieldTitle}>{field.label}</span>
+                <span className={styles.uploadFieldButton}>
+                  {entry.fields[field.id]?.name ??
+                    `Choose ${field.label.toLowerCase()}`}
+                </span>
+                <input
+                  className={styles.hiddenInput}
+                  type="file"
+                  accept={(field.accept ?? editor.accept)?.join(",")}
+                  multiple={false}
+                  onChange={(event) => {
+                    const file = event.currentTarget.files?.[0] ?? null;
+                    if (file && !validateMediaFile(file, account)) {
+                      event.currentTarget.value = "";
+                      return;
+                    }
+                    updateEntryField(entry.id, field.id, file);
+                    event.currentTarget.value = "";
+                  }}
+                />
+              </label>
+            ))}
+            {pairedValue.entries.length > 1 ? (
+              <UiButton
+                size="sm"
+                variant="quaternary"
+                onClick={() => removeEntry(entry.id)}
+              >
+                Remove
+              </UiButton>
+            ) : null}
+            <span className={styles.uploadEntryLabel}>Pair {index + 1}</span>
+          </div>
+        ))}
+        <UiButton
+          onClick={() =>
+            onChange({
+              mode: "paired",
+              entries: [...pairedValue.entries, createEmptyPairedEntry()],
+            })
+          }
+          variant="quaternary"
+          size="sm"
+        >
+          Add pair
+        </UiButton>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.assetUpload}>
+      <UiButton
+        onClick={handleClick}
+        variant="secondary"
+        size="sm"
+        disabled={isUploading}
+      >
+        {isUploading ? "Uploading..." : control.label}
+      </UiButton>
+      <input
+        id={inputId}
+        ref={inputRef}
+        className={styles.hiddenInput}
+        type="file"
+        accept={editor.accept?.join(",")}
+        multiple={editor.mode === "multiple"}
+        onChange={handleChange}
+      />
+    </div>
+  );
+}
+
+function ControlEditor({
+  control,
+  context,
+  valueOverride,
+  onValueChange,
+}: {
+  control: OverlayControlDefinition;
+  context: EditorContext;
+  valueOverride?: unknown;
+  onValueChange?: (nextValue: unknown) => void;
+}): React.ReactElement {
+  const { board } = useAppContext();
+  const value =
+    valueOverride !== undefined
+      ? valueOverride
+      : getControlValue(control, context, board);
+  const [isCatalogOpen, setIsCatalogOpen] = useState(false);
 
   const updateValue = (nextValue: unknown): void => {
+    if (onValueChange) {
+      onValueChange(nextValue);
+      return;
+    }
     invokeControl(board, control, context, nextValue);
   };
 
@@ -544,6 +760,7 @@ function ControlEditor({
                   ? "transparent"
                   : resolveColorForUI(color);
               const isActive = value === color;
+              const presentation = editor.presentation ?? "circle";
               return (
                 <UiButton
                   key={color}
@@ -556,13 +773,21 @@ function ControlEditor({
                   <span
                     className={
                       color === "transparent"
-                        ? styles.transparentSwatch
-                        : undefined
+                        ? `${styles.colorSwatch} ${styles.transparentSwatch}`
+                        : [
+                            styles.colorSwatch,
+                            presentation === "square" ||
+                            presentation === "sticker"
+                              ? styles.squareSwatch
+                              : styles.circleSwatch,
+                            presentation === "sticker"
+                              ? styles.stickerSwatch
+                              : "",
+                          ]
+                            .filter(Boolean)
+                            .join(" ")
                     }
                     style={{
-                      width: 18,
-                      height: 18,
-                      borderRadius: 999,
                       background:
                         color === "transparent" ? undefined : swatchValue,
                     }}
@@ -572,26 +797,52 @@ function ControlEditor({
             })}
           </div>
         );
-      case "enum-icon":
+      case "enum-icon": {
+        const quickOptions = getQuickOptions(editor);
+        const hasCollapsedCatalog =
+          Boolean(editor.catalog) &&
+          Boolean(editor.quickOptions) &&
+          editor.quickOptions?.overflow === "show-more";
+
         return (
           <div className={styles.menuSection}>
             <div className={styles.grid}>
-              {editor.options.map((option) => (
+              {(hasCollapsedCatalog && !isCatalogOpen
+                ? quickOptions
+                : mergeOptionLists(
+                    editor.options,
+                    editor.catalog?.options ?? [],
+                  )
+              ).map((option) => (
                 <OptionButton
                   key={option.id}
                   option={option}
                   selected={option.value === value}
-                  onClick={() => updateValue(option.value)}
+                  onClick={() => {
+                    updateValue(option.value);
+                    setIsCatalogOpen(false);
+                  }}
                   items={context.items}
                   toolName={context.toolName}
                 />
               ))}
             </div>
-            {editor.catalog
+            {hasCollapsedCatalog && !isCatalogOpen ? (
+              <UiButton
+                size="sm"
+                variant="quaternary"
+                onClick={() => setIsCatalogOpen(true)}
+                className={styles.showMoreButton}
+              >
+                Show all
+              </UiButton>
+            ) : null}
+            {editor.catalog && (!hasCollapsedCatalog || isCatalogOpen)
               ? renderCatalog(editor.catalog, value, updateValue, context.items)
               : null}
           </div>
         );
+      }
       case "enum-list":
         return (
           <div className={styles.list}>
@@ -726,6 +977,7 @@ function ControlEditor({
         const options = resolveDynamicOptions(editor.providerId, {
           item: context.items[0],
           items: context.items,
+          selection: context.selection,
           tool: context.toolName
             ? (getTool(board, context.toolName) as never)
             : undefined,
@@ -743,6 +995,15 @@ function ControlEditor({
                 active={option.value === value}
                 onClick={() => updateValue(option.value)}
               >
+                {option.icon ? (
+                  <OverlayMetadataIcon
+                    icon={option.icon}
+                    items={context.items}
+                    toolName={context.toolName}
+                    label={option.label}
+                    size={18}
+                  />
+                ) : null}
                 {option.label}
               </UiButton>
             ))}
@@ -761,6 +1022,19 @@ function ControlEditor({
           updateValue,
           context.items,
         );
+      case "asset-upload":
+        return (
+          <OverlayAssetUploadField
+            control={control}
+            context={context}
+            value={value as WorkflowUploadValue | undefined}
+            onChange={
+              onValueChange as
+                | ((nextValue: WorkflowUploadValue) => void)
+                | undefined
+            }
+          />
+        );
       default:
         return <div className={styles.label}>Unsupported editor</div>;
     }
@@ -778,29 +1052,50 @@ function OverlayControlsMenu({
   controls,
   groups,
   context,
+  compact = false,
 }: {
   controls: OverlayControlDefinition[];
   groups?: OverlayControlGroupDefinition[];
   context: EditorContext;
+  compact?: boolean;
 }): React.ReactElement {
-  const groupsToRender = groups?.length
-    ? groups
+  const { board } = useAppContext();
+  const [showAdvancedGroups, setShowAdvancedGroups] = useState(false);
+  const visibleControls = getVisibleControls(controls, context, board);
+  const controlsById = new Map(
+    visibleControls.map((control) => [control.id, control]),
+  );
+  const conditionContext = buildOverlayConditionContext(context, board);
+
+  const baseGroups = groups?.length
+    ? groups.filter((group) =>
+        matchesOverlayCondition(group.when, conditionContext),
+      )
     : [
         {
           id: "default",
           label: "",
-          controlIds: controls.map((control) => control.id),
+          controlIds: visibleControls.map((control) => control.id),
         },
       ];
+
+  const groupsToRender =
+    compact && baseGroups.length > 1 && !showAdvancedGroups
+      ? baseGroups.slice(0, 1)
+      : baseGroups;
 
   return (
     <UiPanel vertical className={styles.menu}>
       {groupsToRender.map((group, groupIndex) => {
         const groupControls = group.controlIds
-          .map((controlId) => context.controlsById.get(controlId))
+          .map((controlId) => controlsById.get(controlId))
           .filter((control): control is OverlayControlDefinition =>
             Boolean(control),
           );
+
+        if (!groupControls.length) {
+          return null;
+        }
 
         return (
           <Fragment key={group.id}>
@@ -833,6 +1128,254 @@ function OverlayControlsMenu({
           </Fragment>
         );
       })}
+      {compact && baseGroups.length > 1 && !showAdvancedGroups ? (
+        <UiButton
+          size="sm"
+          variant="quaternary"
+          onClick={() => setShowAdvancedGroups(true)}
+          className={styles.showMoreButton}
+        >
+          More options
+        </UiButton>
+      ) : null}
+    </UiPanel>
+  );
+}
+
+function placeCreatedItem(
+  board: ReturnType<typeof useAppContext>["board"],
+  item: BaseItem,
+  placement: "center-viewport" | "stagger-from-pointer" | undefined,
+  index: number,
+): void {
+  const center =
+    placement === "center-viewport"
+      ? board.camera.getMbr().getCenter()
+      : board.pointer.point;
+  const offset = placement === "stagger-from-pointer" ? index * 28 : 0;
+  const mbr = item.getMbr();
+  const x = center.x + offset - mbr.getWidth() / 2;
+  const y = center.y + offset - mbr.getHeight() / 2;
+
+  item.apply({
+    class: "Transformation",
+    method: "translateTo",
+    item: [item.getId()],
+    x,
+    y,
+  } as never);
+}
+
+async function uploadWorkflowControlValue(
+  uploadValue: WorkflowUploadValue,
+  boardId: string,
+): Promise<
+  | { mode: "single" | "multiple"; urls: string[] }
+  | {
+      mode: "paired";
+      entries: Array<{ id: string; fields: Record<string, string> }>;
+    }
+> {
+  if (uploadValue.mode === "single" || uploadValue.mode === "multiple") {
+    const urls = await uploadImages(uploadValue.files, boardId);
+    return {
+      mode: uploadValue.mode,
+      urls,
+    };
+  }
+
+  if (uploadValue.mode !== "paired") {
+    return {
+      mode: "single",
+      urls: [],
+    };
+  }
+
+  const entries = await Promise.all(
+    uploadValue.entries.map(async (entry) => {
+      const fieldEntries = Object.entries(entry.fields).filter(([, file]) =>
+        Boolean(file),
+      ) as Array<[string, File]>;
+      const urls = await uploadImages(
+        fieldEntries.map(([, file]) => file),
+        boardId,
+      );
+      return {
+        id: entry.id,
+        fields: Object.fromEntries(
+          fieldEntries.map(([fieldId], index) => [fieldId, urls[index] ?? ""]),
+        ),
+      };
+    }),
+  );
+
+  return {
+    mode: "paired",
+    entries,
+  };
+}
+
+function OverlayWorkflowMenu({
+  overlay,
+  onSubmit,
+}: {
+  overlay: ToolOverlayDefinition;
+  onSubmit?: () => void;
+}): React.ReactElement | null {
+  const { board } = useAppContext();
+  const workflow =
+    overlay.launch?.kind === "workflow" ? overlay.launch.workflow : null;
+  const [draftValues, setDraftValues] = useState<Record<string, unknown>>({});
+  const [uploadValues, setUploadValues] = useState<
+    Record<string, WorkflowUploadValue>
+  >({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  if (!workflow) {
+    return null;
+  }
+
+  const controlsById = new Map(
+    workflow.controls.map((control) => [control.id, control]),
+  );
+
+  const handleSubmit = async (): Promise<void> => {
+    if (!workflow.submit || workflow.submit.kind !== "create-items") {
+      onSubmit?.();
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const uploadedValues = Object.fromEntries(
+        await Promise.all(
+          workflow.controls
+            .filter((control) => control.editor.kind === "asset-upload")
+            .map(async (control) => {
+              const uploadValue = uploadValues[control.id];
+              if (!uploadValue) {
+                return [control.id, undefined] as const;
+              }
+              const uploaded = await uploadWorkflowControlValue(
+                uploadValue,
+                board.getBoardId(),
+              );
+              return [control.id, uploaded] as const;
+            }),
+        ),
+      );
+
+      const count =
+        workflow.submit.strategy === "per-upload-entry"
+          ? Math.max(
+              1,
+              ...workflow.submit.properties.map((binding) => {
+                if (binding.source.kind !== "uploadField") {
+                  return 1;
+                }
+                const uploaded = uploadedValues[binding.source.controlId];
+                if (!uploaded) {
+                  return 0;
+                }
+                return uploaded.mode === "paired"
+                  ? uploaded.entries.length
+                  : uploaded.urls.length;
+              }),
+            )
+          : 1;
+
+      const createdItems: BaseItem[] = [];
+
+      for (let index = 0; index < count; index += 1) {
+        const itemData = Object.fromEntries(
+          workflow.submit.properties.map((binding) => {
+            if (binding.source.kind === "controlValue") {
+              return [binding.property, draftValues[binding.source.controlId]];
+            }
+
+            const uploaded = uploadedValues[binding.source.controlId];
+            if (!uploaded) {
+              return [binding.property, ""];
+            }
+
+            if (uploaded.mode === "paired") {
+              return [
+                binding.property,
+                uploaded.entries[index]?.fields[binding.source.fieldId ?? ""] ??
+                  "",
+              ];
+            }
+
+            return [
+              binding.property,
+              uploaded.urls[index] ?? uploaded.urls[0] ?? "",
+            ];
+          }),
+        );
+
+        const item = board.createItemAndAdd<BaseItem>(
+          workflow.submit.itemType,
+          itemData,
+        );
+        placeCreatedItem(board, item, workflow.submit.placement, index);
+        createdItems.push(item);
+      }
+
+      if (createdItems.length) {
+        board.selection.removeAll();
+        createdItems.forEach((item) => board.selection.add(item));
+      }
+
+      onSubmit?.();
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <UiPanel vertical className={styles.menu}>
+      {workflow.description ? (
+        <div className={styles.menuTitle}>{workflow.description}</div>
+      ) : null}
+      <div className={styles.menuSection}>
+        {workflow.controls.map((control) => (
+          <ControlEditor
+            key={control.id}
+            control={control}
+            context={{
+              items: [],
+              toolName: overlay.toolName,
+              controlsById,
+            }}
+            valueOverride={draftValues[control.id] ?? uploadValues[control.id]}
+            onValueChange={(nextValue) => {
+              if (control.editor.kind === "asset-upload") {
+                setUploadValues((current) => ({
+                  ...current,
+                  [control.id]: nextValue as WorkflowUploadValue,
+                }));
+                return;
+              }
+
+              setDraftValues((current) => ({
+                ...current,
+                [control.id]: nextValue,
+              }));
+            }}
+          />
+        ))}
+      </div>
+      <UiButton
+        variant="primary"
+        size="sm"
+        onClick={() => {
+          void handleSubmit();
+        }}
+        disabled={isSubmitting}
+        className={styles.submitButton}
+      >
+        {isSubmitting ? "Submitting..." : (workflow.submitLabel ?? "Submit")}
+      </UiButton>
     </UiPanel>
   );
 }
@@ -856,13 +1399,6 @@ function activateTool(
   toolName: string,
 ): void {
   board.tools.addRegisteredTool(toolName, true);
-}
-
-function getFamilyOverlays(
-  overlays: ToolOverlayDefinition[],
-  family: string,
-): ToolOverlayDefinition[] {
-  return overlays.filter((overlay) => overlay.family === family);
 }
 
 function getControlOptions(
@@ -896,66 +1432,42 @@ function getOverlayPrimaryControl(
   return overlay.defaults?.controls[0];
 }
 
-function OverlayToolbarGameLauncher({
-  overlays,
-}: {
-  overlays: ToolOverlayDefinition[];
-}): React.ReactElement | null {
-  const [isOpen, setIsOpen] = useState(false);
-
-  if (!overlays.length) {
-    return null;
+function getToolDisplayOption(
+  overlay: ToolOverlayDefinition,
+  board: ReturnType<typeof useAppContext>["board"],
+): OverlayOptionDefinition | undefined {
+  const primaryControl = getOverlayPrimaryControl(overlay);
+  if (!primaryControl) {
+    return undefined;
   }
 
-  return (
-    <ToolbarButtonWithMenu
-      isOpen={isOpen}
-      button={
-        <UiButton
-          id="tool-add-game-item"
-          tooltip="Game items"
-          active={isOpen}
-          variant="secondary"
-          rounded="top"
-          onClick={() => setIsOpen((prev) => !prev)}
-        >
-          <Icon iconName="GameItems" />
-        </UiButton>
-      }
-    >
-      <UiPanel vertical padding={0}>
-        {overlays.map((overlay, index) => (
-          <OverlayToolbarTool
-            key={overlay.toolName}
-            overlay={overlay}
-            rounded={
-              index === 0
-                ? "top"
-                : index === overlays.length - 1
-                  ? "none"
-                  : "none"
-            }
-          />
-        ))}
-        <AddCard rounded="bottom" />
-      </UiPanel>
-    </ToolbarButtonWithMenu>
+  const controlsById = createControlsMap(overlay.defaults ?? { controls: [] });
+  const context: EditorContext = {
+    items: [],
+    toolName: overlay.toolName,
+    controlsById,
+    selection: board.selection,
+  };
+  const currentValue = getControlValue(primaryControl, context, board);
+  return getControlOptions(primaryControl).find(
+    (option) => option.value === currentValue,
   );
 }
 
-function OverlayToolbarDrawingLauncher({
-  overlays,
+function OverlayToolbarGroup({
+  entry,
 }: {
-  overlays: ToolOverlayDefinition[];
+  entry: OverlayCreateSurfaceGroupEntry;
 }): React.ReactElement | null {
   const { board } = useAppContext();
+  const overlays = entry.tools;
   const activeOverlay = overlays.find((overlay) =>
     getToolIsActive(board, overlay.toolName),
   );
   const [lastToolName, setLastToolName] = useState(
     activeOverlay?.toolName ?? overlays[0]?.toolName ?? "",
   );
-  const [isOpen, setIsOpen] = useState(Boolean(activeOverlay));
+  const [isOpen, setIsOpen] = useState(false);
   const currentOverlay =
     overlays.find((overlay) => overlay.toolName === lastToolName) ??
     activeOverlay ??
@@ -964,9 +1476,6 @@ function OverlayToolbarDrawingLauncher({
   useEffect(() => {
     if (activeOverlay) {
       setLastToolName(activeOverlay.toolName);
-      setIsOpen(true);
-    } else {
-      setIsOpen(false);
     }
   }, [activeOverlay]);
 
@@ -974,21 +1483,27 @@ function OverlayToolbarDrawingLauncher({
     return null;
   }
 
+  const behavior = entry.behavior ?? "open-panel";
+  const currentOption = getToolDisplayOption(currentOverlay, board);
+  const currentIcon = currentOption?.icon ?? currentOverlay.icon;
+  const currentLabel = currentOption?.label ?? currentOverlay.label;
+  const groupIsActive =
+    behavior === "activate-last-used" ? Boolean(activeOverlay) : isOpen;
+
   return (
     <ToolbarButtonWithMenu
       isOpen={isOpen}
       button={
         <UiButton
-          id="tool-add-drawing"
-          tooltip={currentOverlay.label}
-          active={Boolean(activeOverlay)}
+          id={`tool-group-${entry.id}`}
+          tooltip={entry.label}
+          active={groupIsActive}
           variant="secondary"
-          rounded="none"
+          rounded={behavior === "open-panel" ? "top" : "none"}
           className={styles.toolbarButton}
           onClick={() => {
-            if (!activeOverlay) {
+            if (behavior === "activate-last-used" && !activeOverlay) {
               activateTool(board, currentOverlay.toolName);
-              setIsOpen(true);
               return;
             }
 
@@ -996,10 +1511,10 @@ function OverlayToolbarDrawingLauncher({
           }}
         >
           <OverlayMetadataIcon
-            icon={currentOverlay.icon}
+            icon={currentIcon ?? entry.icon}
             items={[]}
             toolName={currentOverlay.toolName}
-            label={currentOverlay.label}
+            label={currentLabel}
           />
         </UiButton>
       }
@@ -1018,115 +1533,12 @@ function OverlayToolbarDrawingLauncher({
             }
             onActivate={() => {
               setLastToolName(overlay.toolName);
-              setIsOpen(true);
+              if (behavior === "open-panel") {
+                setIsOpen(false);
+              }
             }}
           />
         ))}
-      </UiPanel>
-    </ToolbarButtonWithMenu>
-  );
-}
-
-function OverlayToolbarShapeTool({
-  overlay,
-}: {
-  overlay: ToolOverlayDefinition;
-}): React.ReactElement | null {
-  const { board } = useAppContext();
-  const {
-    isOpen: isShapesPanelOpen,
-    openShapesPanel,
-    selectedCategory,
-  } = useShapesPanelContext();
-  const [isQuickPickerOpen, setIsQuickPickerOpen] = useState(false);
-  const isActive = getToolIsActive(board, overlay.toolName);
-  const primaryControl = getOverlayPrimaryControl(overlay);
-  const controlsById = createControlsMap(overlay.defaults ?? { controls: [] });
-  const context = useMemo<EditorContext>(
-    () => ({
-      items: [],
-      toolName: overlay.toolName,
-      controlsById,
-    }),
-    [controlsById, overlay.toolName],
-  );
-  const currentValue = primaryControl
-    ? getControlValue(primaryControl, context, board)
-    : undefined;
-  const selectedOption = getControlOptions(primaryControl).find(
-    (option) => option.value === currentValue,
-  );
-
-  useEffect(() => {
-    if (!isActive) {
-      setIsQuickPickerOpen(false);
-    }
-  }, [isActive]);
-
-  if (!primaryControl) {
-    return <OverlayToolbarTool overlay={overlay} />;
-  }
-
-  return (
-    <ToolbarButtonWithMenu
-      isOpen={isActive && isQuickPickerOpen && !isShapesPanelOpen}
-      button={
-        <UiButton
-          id="tool-add-shape"
-          tooltip={overlay.label}
-          active={isActive}
-          variant="secondary"
-          rounded="none"
-          className={styles.toolbarButton}
-          onClick={() => {
-            if (
-              !isActive ||
-              currentValue === "None" ||
-              currentValue === undefined
-            ) {
-              activateTool(board, overlay.toolName);
-              setIsQuickPickerOpen(true);
-              return;
-            }
-
-            setIsQuickPickerOpen((prev) => !prev);
-          }}
-        >
-          <OverlayMetadataIcon
-            icon={selectedOption?.icon ?? overlay.icon}
-            items={[]}
-            toolName={overlay.toolName}
-            label={selectedOption?.label ?? overlay.label}
-          />
-        </UiButton>
-      }
-    >
-      <UiPanel className={styles.shapeMenu}>
-        <div className={styles.quickPicker}>
-          <ShapePicker
-            categoryName={selectedCategory}
-            selected={
-              typeof currentValue === "string"
-                ? (currentValue as ShapeType)
-                : "None"
-            }
-            onPick={(shape) => {
-              invokeControl(board, primaryControl, context, shape);
-              setIsQuickPickerOpen(false);
-            }}
-          />
-        </div>
-        <UiButton
-          onClick={() => {
-            openShapesPanel();
-            setIsQuickPickerOpen(false);
-          }}
-          variant="quaternary"
-          className={styles.shapeLibraryButton}
-          size="sm"
-        >
-          Show all
-        </UiButton>
       </UiPanel>
     </ToolbarButtonWithMenu>
   );
@@ -1136,57 +1548,24 @@ function getOverlayToolbarSections(): {
   leading: React.ReactElement[];
   main: React.ReactElement[];
 } {
-  const overlays = listToolOverlays();
-  const gameOverlays = overlays.filter((overlay) =>
-    GAME_FAMILIES.has(overlay.family ?? ""),
-  );
-  const drawingOverlays = getFamilyOverlays(overlays, DRAWING_FAMILY);
-  const byFamily = new Map<string, ToolOverlayDefinition[]>();
-
-  overlays.forEach((overlay) => {
-    const family = overlay.family ?? "";
-    if (family === DRAWING_FAMILY || GAME_FAMILIES.has(family)) {
-      return;
-    }
-
-    const existing = byFamily.get(family) ?? [];
-    existing.push(overlay);
-    byFamily.set(family, existing);
-  });
-
+  const entries = listCreateSurfaceEntries();
   const leading: React.ReactElement[] = [];
   const main: React.ReactElement[] = [];
 
-  if (gameOverlays.length) {
-    leading.push(
-      <OverlayToolbarGameLauncher key="toolbar-game" overlays={gameOverlays} />,
-    );
-  }
+  entries.forEach((entry) => {
+    if (entry.kind === "group" && entry.order === 1) {
+      leading.push(<OverlayToolbarGroup key={entry.id} entry={entry} />);
+      return;
+    }
 
-  if (drawingOverlays.length) {
+    if (entry.kind === "group") {
+      main.push(<OverlayToolbarGroup key={entry.id} entry={entry} />);
+      return;
+    }
+
     main.push(
-      <OverlayToolbarDrawingLauncher
-        key="toolbar-drawing"
-        overlays={drawingOverlays}
-      />,
+      <OverlayToolbarTool key={entry.tool.toolName} overlay={entry.tool} />,
     );
-  }
-
-  TOOLBAR_FAMILY_ORDER.forEach((family) => {
-    const familyOverlays = byFamily.get(family);
-    const overlay = familyOverlays?.[0];
-    if (!overlay) {
-      return;
-    }
-
-    if (family === SHAPE_FAMILY) {
-      main.push(
-        <OverlayToolbarShapeTool key={overlay.toolName} overlay={overlay} />,
-      );
-      return;
-    }
-
-    main.push(<OverlayToolbarTool key={overlay.toolName} overlay={overlay} />);
   });
 
   return { leading, main };
@@ -1224,12 +1603,23 @@ function OverlayToolbarTool({
 }): React.ReactElement {
   const { board } = useAppContext();
   const { openedMenu, toggleMenu } = useToolsPanelContext();
+  const isWorkflow = overlay.launch?.kind === "workflow";
   const isActive = Boolean(board.tools.getAddRegisteredTool(overlay.toolName));
   const hasDefaults = Boolean(overlay.defaults?.controls.length);
-  const isOpen = openedMenu === overlay.toolName && isActive && hasDefaults;
+  const isOpen = isWorkflow
+    ? openedMenu === overlay.toolName
+    : openedMenu === overlay.toolName && isActive && hasDefaults;
   const controlsById = createControlsMap(overlay.defaults ?? { controls: [] });
+  const selectedOption = getToolDisplayOption(overlay, board);
+  const displayIcon = selectedOption?.icon ?? overlay.icon;
+  const displayLabel = selectedOption?.label ?? overlay.label;
 
   const handleClick = (): void => {
+    if (isWorkflow) {
+      toggleMenu(overlay.toolName);
+      return;
+    }
+
     if (!isActive) {
       activateTool(board, overlay.toolName);
       onActivate?.();
@@ -1253,29 +1643,36 @@ function OverlayToolbarTool({
         <UiButton
           id={`tool-${overlay.toolName}`}
           tooltip={overlay.label}
-          active={isActive}
+          active={isWorkflow ? isOpen : isActive}
           onClick={handleClick}
           variant="secondary"
           rounded={rounded}
           className={styles.toolbarButton}
         >
           <OverlayMetadataIcon
-            icon={overlay.icon}
+            icon={displayIcon}
             items={[]}
             toolName={overlay.toolName}
-            label={overlay.label}
+            label={displayLabel}
           />
         </UiButton>
       }
     >
-      {overlay.defaults ? (
+      {isWorkflow ? (
+        <OverlayWorkflowMenu
+          overlay={overlay}
+          onSubmit={() => toggleMenu(overlay.toolName)}
+        />
+      ) : overlay.defaults ? (
         <OverlayControlsMenu
           controls={overlay.defaults.controls}
           groups={overlay.defaults.groups}
+          compact
           context={{
             items: [],
             toolName: overlay.toolName,
             controlsById,
+            selection: board.selection,
           }}
         />
       ) : null}
@@ -1308,6 +1705,7 @@ function OverlayContextAction({
     invokeAction(board, action, {
       items,
       controlsById,
+      selection: board.selection,
     });
   };
 
@@ -1341,6 +1739,7 @@ function OverlayContextAction({
         context={{
           items,
           controlsById,
+          selection: board.selection,
         }}
       />
     </ContextButtonWithMenu>
@@ -1350,8 +1749,42 @@ function OverlayContextAction({
 export function OverlayContextActions(): React.ReactElement[] {
   const { board } = useAppContext();
   const items = board.selection.items.list() as BaseItem[];
+  const overlay = items.length ? getItemOverlay(items[0]) : undefined;
+  const sameOverlay =
+    overlay &&
+    items.every((item) => getItemOverlay(item)?.itemType === overlay.itemType)
+      ? overlay
+      : undefined;
+  const conditionContext = {
+    item: items[0],
+    items,
+    selection: board.selection,
+  };
+
+  const sharedActions = intersectOverlayActions(items).filter((action) =>
+    matchesOverlayCondition(action.when, conditionContext),
+  );
+  const sharedActionsById = new Map(
+    sharedActions.map((action) => [action.id, action]),
+  );
+
+  const orderedItemActions = sameOverlay?.sections?.length
+    ? sameOverlay.sections.flatMap((section) =>
+        section.actionIds
+          .map((actionId) => sharedActionsById.get(actionId))
+          .filter((action): action is OverlayActionDefinition =>
+            Boolean(action),
+          ),
+      )
+    : sharedActions;
+
+  const leftoverItemActions = sharedActions.filter(
+    (action) => !orderedItemActions.some((ordered) => ordered.id === action.id),
+  );
+
   const actions = [
-    ...intersectOverlayActions(items),
+    ...orderedItemActions,
+    ...leftoverItemActions,
     ...getSelectionOverlayActions(items),
   ];
 

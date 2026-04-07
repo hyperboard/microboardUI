@@ -45,13 +45,15 @@ export function ButtonWithMenu({
       return;
     }
     const menuHeight = menu.getBoundingClientRect().height;
+    const roomBelow = windowHeight - panelMbr.bottom;
+    const roomAbove = panelMbr.top;
 
-    if (panelMbr.bottom + menuHeight < windowHeight) {
+    if (roomBelow >= menuHeight) {
       setVerticalAlign("bottom");
       return;
     }
 
-    if (panelMbr.top < windowHeight) {
+    if (roomAbove >= menuHeight) {
       setVerticalAlign("top");
       return;
     }

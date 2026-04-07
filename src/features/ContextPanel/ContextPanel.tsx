@@ -47,9 +47,10 @@ import { AddList } from "features/ContextPanel/Buttons/AddList/AddList";
 import { ToggleIsShining } from "features/ContextPanel/Buttons/ToggleIsShining";
 import { RotateItem } from "features/ContextPanel/Buttons/RotateItem";
 import { LockResize } from "features/ContextPanel/Buttons/LockResize";
-import { Screen } from "microboard-temp";
-import { RemoveBackgroundImage } from "features/ContextPanel/Buttons/CardGame/Screeen/RemoveBackgroundImage";
-import { SetBackgroundImage } from "features/ContextPanel/Buttons/CardGame/Screeen/SetBackgroundImage";
+import {
+  getSelectionOverlayActions,
+  intersectOverlayActions,
+} from "microboard-temp";
 import { GetRandomItem } from "features/ContextPanel/Buttons/CardGame/Screeen/GetRandomItem";
 import { GroupItems } from "./Buttons/GroupItems";
 import { DetachFromGroup } from "./Buttons/DetachFromGroup";
@@ -143,6 +144,9 @@ export function ContextPanel(): React.ReactElement | null {
     !isCardOrDeck &&
     !isDice &&
     !isScreen;
+  const overlayActionsCount =
+    intersectOverlayActions(board.selection.items.list()).length +
+    getSelectionOverlayActions(board.selection.items.list()).length;
 
   return (
     <PanelContext.Provider
@@ -196,21 +200,15 @@ export function ContextPanel(): React.ReactElement | null {
         )}
         {isText && !isSelectUnderPointer && !isLocked && (
           <>
-            <FontSize rounded="left" />
+            <OverlayContextActions />
             <FontStyle />
             <TextAlignment />
             <AddList />
             <HyperLinkBtn />
             <UiSeparator vertical />
-            <TextColor />
-            <TextHighlight />
-            <UiSeparator vertical />
-            <Lock />
-            <UiSeparator vertical />
             <GroupItems />
             <DetachFromGroup />
             <SelectParent />
-            <Delete />
             <UiSeparator vertical />
             {window.enableAI && (
               <>
@@ -220,36 +218,26 @@ export function ContextPanel(): React.ReactElement | null {
               </>
             )}
             <RestOptionsMenu>
-              <BringToFront />
-              <SendToBack />
               <CopyItemLink />
               <SetLinkTo />
-              <Duplicate />
               <ForceGraphToggle />
             </RestOptionsMenu>
           </>
         )}
         {isSticker && !isSelectUnderPointer && !isLocked && (
           <>
-            <FontSize rounded="left" />
+            <OverlayContextActions />
             <UiSeparator vertical />
             <FontStyle />
             <TextAlignment />
             <AddList />
             <HyperLinkBtn />
             <UiSeparator vertical />
-            <TextColor />
-            <TextHighlight />
-            <UiSeparator vertical />
             <StickerFillStyle />
-            <UiSeparator vertical />
-            <Lock />
             <UiSeparator vertical />
             <GroupItems />
             <DetachFromGroup />
             <SelectParent />
-            <Delete />
-            <UiSeparator vertical />
             {window.enableAI && (
               <>
                 <AIModel />
@@ -258,11 +246,8 @@ export function ContextPanel(): React.ReactElement | null {
               </>
             )}
             <RestOptionsMenu>
-              <BringToFront />
-              <SendToBack />
               <CopyItemLink />
               <SetLinkTo />
-              <Duplicate />
               <ForceGraphToggle />
             </RestOptionsMenu>
           </>
@@ -287,12 +272,10 @@ export function ContextPanel(): React.ReactElement | null {
                 <UiSeparator vertical />
               </>
             )}
-            <Lock />
             <UiSeparator vertical />
             <GroupItems />
             <DetachFromGroup />
             <SelectParent />
-            <Delete />
             <UiSeparator vertical />
             {window.enableAI && (
               <>
@@ -302,11 +285,8 @@ export function ContextPanel(): React.ReactElement | null {
               </>
             )}
             <RestOptionsMenu>
-              <BringToFront />
-              <SendToBack />
               <CopyItemLink />
               <SetLinkTo />
-              <Duplicate />
               <ForceGraphToggle />
             </RestOptionsMenu>
           </>
@@ -319,19 +299,14 @@ export function ContextPanel(): React.ReactElement | null {
             <ConnectorFontStyle />
             <ConnectorTextColor />
             <ConnectorTextHighlight />
-            <Lock />
             <UiSeparator vertical />
             <GroupItems />
             <DetachFromGroup />
             <SelectParent />
-            <Delete />
             <UiSeparator vertical />
             <RestOptionsMenu>
-              <BringToFront />
-              <SendToBack />
               <CopyItemLink />
               <SetLinkTo />
-              <Duplicate />
             </RestOptionsMenu>
           </>
         )}
@@ -359,37 +334,30 @@ export function ContextPanel(): React.ReactElement | null {
         )}
         {isImage && !isSelectUnderPointer && !isLocked && (
           <>
-            <Lock rounded="left" />
+            <OverlayContextActions />
             <RotateItem clockwise={false} />
             <RotateItem clockwise={true} />
             <UiSeparator vertical />
             <GroupItems />
             <DetachFromGroup />
             <SelectParent />
-            <Delete />
             <UiSeparator vertical />
             <RestOptionsMenu>
-              <BringToFront />
-              <SendToBack />
               <CopyItemLink />
               <SetLinkTo />
-              <Duplicate />
               <SaveImg />
             </RestOptionsMenu>
           </>
         )}
         {isVideo && !isSelectUnderPointer && !isLocked && (
           <>
-            <Lock rounded="left" />
+            <OverlayContextActions />
             <UiSeparator vertical />
             <GroupItems />
             <DetachFromGroup />
             <SelectParent />
-            <Delete />
             <UiSeparator vertical />
             <RestOptionsMenu>
-              <BringToFront />
-              <SendToBack />
               <CopyItemLink />
               {/* <SetLinkTo />*/}
               {/* <Duplicate />*/}
@@ -399,66 +367,52 @@ export function ContextPanel(): React.ReactElement | null {
         )}
         {isAudio && !isSelectUnderPointer && !isLocked && (
           <>
-            <Lock rounded="left" />
+            <OverlayContextActions />
             <UiSeparator vertical />
             <GroupItems />
             <DetachFromGroup />
             <SelectParent />
-            <Delete />
             <UiSeparator vertical />
             <RestOptionsMenu>
-              <BringToFront />
-              <SendToBack />
               <CopyItemLink />
-              <Duplicate />
               <SaveVideoOrAudio itemType="Audio" />
             </RestOptionsMenu>
           </>
         )}
         {isFrame && !isSelectUnderPointer && !isLocked && (
           <>
+            <OverlayContextActions />
+            <UiSeparator vertical />
             <FrameRatio />
             <ToggleFrameRatio />
             <UiSeparator vertical />
             <FrameFill />
             <UiSeparator vertical />
-            <Lock />
-            <UiSeparator vertical />
             <GroupItems />
             <DetachFromGroup />
             <SelectParent />
-            <Delete />
             <UiSeparator vertical />
             <RestOptionsMenu>
-              <BringToFront />
-              <SendToBack />
               <FrameNavNext />
               <FrameNavPrev />
               <CopyItemLink />
               <SetLinkTo />
-              <Duplicate />
               <ExportFrame />
             </RestOptionsMenu>
           </>
         )}
         {isAINode && !isSelectUnderPointer && !isLocked && (
           <>
-            <FontSize rounded="left" />
+            <OverlayContextActions />
             <UiSeparator vertical />
             <FontStyle />
             <TextAlignment />
             <AddList />
             <HyperLinkBtn />
             <UiSeparator vertical />
-            <TextColor />
-            <TextHighlight />
-            <UiSeparator vertical />
-            <Lock />
-            <UiSeparator vertical />
             <GroupItems />
             <DetachFromGroup />
             <SelectParent />
-            <Delete />
             <UiSeparator vertical />
             {window.enableAI && (
               <>
@@ -468,31 +422,24 @@ export function ContextPanel(): React.ReactElement | null {
               </>
             )}
             <RestOptionsMenu>
-              <BringToFront />
-              <SendToBack />
               <CopyItemLink />
               <SetLinkTo />
-              <Duplicate />
               <ForceGraphToggle />
             </RestOptionsMenu>
           </>
         )}
         {isStar && !isSelectUnderPointer && !isLocked && (
           <>
-            <Lock rounded="left" />
+            <OverlayContextActions />
             <UiSeparator vertical />
-            <Delete />
             <GroupItems />
             <DetachFromGroup />
             <SelectParent />
             <ToggleIsShining />
             <UiSeparator vertical />
             <RestOptionsMenu>
-              <BringToFront />
-              <SendToBack />
               <CopyItemLink />
               <SetLinkTo />
-              <Duplicate />
             </RestOptionsMenu>
           </>
         )}
@@ -503,13 +450,9 @@ export function ContextPanel(): React.ReactElement | null {
             <GroupItems />
             <DetachFromGroup />
             <SelectParent />
-            <Delete />
             <UiSeparator vertical />
             <RestOptionsMenu>
-              <BringToFront />
-              <SendToBack />
               <CopyItemLink />
-              <Duplicate />
             </RestOptionsMenu>
           </>
         )}
@@ -522,13 +465,9 @@ export function ContextPanel(): React.ReactElement | null {
             <GroupItems />
             <DetachFromGroup />
             <SelectParent />
-            <Delete />
             <UiSeparator vertical />
             <RestOptionsMenu>
-              <BringToFront />
-              <SendToBack />
               <CopyItemLink />
-              <Duplicate />
             </RestOptionsMenu>
           </>
         )}
@@ -552,43 +491,23 @@ export function ContextPanel(): React.ReactElement | null {
             <GroupItems />
             <DetachFromGroup />
             <SelectParent />
-            <Delete />
             <UiSeparator vertical />
             <RestOptionsMenu>
-              <BringToFront />
-              <SendToBack />
               <CopyItemLink />
-              <Duplicate />
             </RestOptionsMenu>
           </>
         )}
         {isScreen && !isSelectUnderPointer && !isLocked && (
           <>
             <OverlayContextActions />
-            {board.selection.items
-              .list()
-              .some((item) => item instanceof Screen && item.backgroundUrl) ? (
-              <>
-                <SetBackgroundImage />
-                <RemoveBackgroundImage />
-              </>
-            ) : (
-              <>
-                <SetBackgroundImage />
-              </>
-            )}
             <UiSeparator vertical />
             <GetRandomItem />
             <GroupItems />
             <DetachFromGroup />
             <SelectParent />
-            <Delete />
             <UiSeparator vertical />
             <RestOptionsMenu>
-              <BringToFront />
-              <SendToBack />
               <CopyItemLink />
-              <Duplicate />
             </RestOptionsMenu>
           </>
         )}
@@ -608,18 +527,16 @@ export function ContextPanel(): React.ReactElement | null {
         )}
         {isDifferentItems && !isSelectUnderPointer && !isHoverUnderPointer && (
           <>
-            <Lock rounded="left" />
-            <UiSeparator vertical />
+            {overlayActionsCount > 0 ? (
+              <>
+                <OverlayContextActions />
+                <UiSeparator vertical />
+              </>
+            ) : null}
             <GroupItems />
             <DetachFromGroup />
             <SelectParent />
-            <Delete />
             {window.enableAI && ideaFromSelection && <AIGeneration />}
-            <RestOptionsMenu rounded="full">
-              <BringToFront />
-              <SendToBack />
-              <Duplicate />
-            </RestOptionsMenu>
           </>
         )}
       </UiPanel>
