@@ -1702,6 +1702,23 @@ function getOverlayToolbarSections(): {
   const main: React.ReactElement[] = [];
 
   entries.forEach((entry) => {
+    if (
+      entry.kind === "group" &&
+      entry.tools.length > 0 &&
+      entry.tools.every((tool) =>
+        ["AddDrawing", "AddHighlighter", "Eraser"].includes(tool.toolName),
+      )
+    ) {
+      return;
+    }
+
+    if (
+      entry.kind === "tool" &&
+      ["AddDrawing", "AddHighlighter", "Eraser"].includes(entry.tool.toolName)
+    ) {
+      return;
+    }
+
     if (entry.kind === "group" && entry.order === 1) {
       leading.push(<OverlayToolbarGroup key={entry.id} entry={entry} />);
       return;
