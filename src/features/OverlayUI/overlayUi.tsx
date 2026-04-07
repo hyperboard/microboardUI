@@ -1708,8 +1708,10 @@ function OverlayToolbarGroup({
             openDefaultsOnActivate={false}
             onActivate={() => {
               setLastToolName(overlay.toolName);
-              setIsOpen(false);
-              if (
+              setIsOpen(true);
+              if (overlay.defaults?.controls.length) {
+                openMenu(overlay.toolName);
+              } else if (
                 overlays.some(
                   (groupOverlay) => groupOverlay.toolName === openedMenu,
                 )
