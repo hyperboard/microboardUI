@@ -64,7 +64,31 @@ function capitalize(value: string): string {
   return value ? value[0].toUpperCase() + value.slice(1) : value;
 }
 
-function getOverlayAssetSvg(icon: OverlayIcon | undefined): string | null {
+function decodeSvgDataUrl(dataUrl: string): string | null {
+  if (!dataUrl.startsWith("data:image/svg+xml")) {
+    return null;
+  }
+
+  const commaIndex = dataUrl.indexOf(",");
+  if (commaIndex === -1) {
+    return null;
+  }
+
+  const metadata = dataUrl.slice(0, commaIndex);
+  const payload = dataUrl.slice(commaIndex + 1);
+
+  try {
+    if (metadata.includes(";base64")) {
+      return atob(payload);
+    }
+
+    return decodeURIComponent(payload);
+  } catch {
+    return null;
+  }
+}
+
+function getOverlayAssetDataUrl(icon: OverlayIcon | undefined): string | null {
   if (!icon) {
     return null;
   }
@@ -78,6 +102,63 @@ function getOverlayAssetSvg(icon: OverlayIcon | undefined): string | null {
   }
 
   return getOverlayIconAsset(icon.sourcePath) ?? null;
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function hasLocalSymbol(symbolId: string | undefined): boolean {
+  if (!symbolId || typeof document === "undefined") {
+    return false;
+  }
+
+  return Boolean(document.getElementById(symbolId));
+}
+
+function getOverlaySymbolSvg(icon: OverlayIcon | undefined): string | null {
+  if (!icon || icon.kind !== "symbol") {
+    return null;
+  }
+
+  if (!icon.sourcePath) {
+    return null;
+  }
+
+  const spriteDataUrl = getOverlayIconAsset(icon.sourcePath);
+  if (!spriteDataUrl) {
+    return null;
+  }
+
+  const spriteSvg = decodeSvgDataUrl(spriteDataUrl);
+  if (!spriteSvg) {
+    return null;
+  }
+
+  const symbolMatch = spriteSvg.match(
+    new RegExp(
+      `<symbol\\b([^>]*)\\bid=(["'])${escapeRegExp(icon.key)}\\2([^>]*)>([\\s\\S]*?)<\\/symbol>`,
+      "i",
+    ),
+  );
+  if (!symbolMatch) {
+    return null;
+  }
+
+  const attributes = `${symbolMatch[1]} ${symbolMatch[3]}`;
+  const body = symbolMatch[4];
+  const viewBoxMatch = attributes.match(/viewBox=(["'])(.*?)\1/i);
+  const fillMatch = attributes.match(/fill=(["'])(.*?)\1/i);
+
+  const svgAttributes = [
+    'xmlns="http://www.w3.org/2000/svg"',
+    viewBoxMatch ? `viewBox="${viewBoxMatch[2]}"` : "",
+    fillMatch ? `fill="${fillMatch[2]}"` : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return `<svg ${svgAttributes}>${body}</svg>`;
 }
 
 function makeRangeArray(length: number, start: number): number[] {
@@ -398,17 +479,35 @@ function OverlayMetadataIcon({
 }): React.ReactElement {
   const { board } = useAppContext();
   const swatchColor = getSwatchColor(icon, items, toolName, board);
-  const assetSvg = getOverlayAssetSvg(icon);
+  const assetDataUrl = getOverlayAssetDataUrl(icon);
+  const symbolSvg = getOverlaySymbolSvg(icon);
+  const localSymbolId = icon?.kind === "symbol" ? icon.key : undefined;
 
   let content: React.ReactElement;
 
-  if (assetSvg) {
+  if (icon?.kind === "asset" && assetDataUrl) {
+    content = (
+      <img
+        className={styles.assetImage}
+        style={{ width: size, height: size }}
+        src={assetDataUrl}
+        alt=""
+        aria-hidden
+      />
+    );
+  } else if (symbolSvg) {
     content = (
       <span
         className={styles.assetIcon}
         style={{ width: size, height: size }}
-        dangerouslySetInnerHTML={{ __html: assetSvg }}
+        dangerouslySetInnerHTML={{ __html: symbolSvg }}
       />
+    );
+  } else if (icon?.kind === "symbol" && hasLocalSymbol(localSymbolId)) {
+    content = (
+      <svg width={size} height={size} fill="none">
+        <use href={`#${localSymbolId}`} />
+      </svg>
     );
   } else if (label) {
     content = (

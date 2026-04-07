@@ -13,6 +13,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex: 0 0 auto;
+}
+
+.assetImage {
+  display: block;
+  flex: 0 0 auto;
+  object-fit: contain;
 }
 
 .assetIcon :global(svg) {
