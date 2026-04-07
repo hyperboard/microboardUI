@@ -27,6 +27,7 @@ import { ButtonWithMenu as ToolbarButtonWithMenu } from "features/ToolsPanel/But
 import { ButtonWithMenu as ContextButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { ColorItem } from "features/Pickers/ColorPicker/ColorItem";
 import { SquareColorItem } from "features/Pickers/ColorPicker/SquareColorItem";
+import { UiColorInput } from "shared/ui-lib/UiColorInput";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { UiPanel } from "shared/ui-lib/UiPanel";
 import { Icon } from "shared/ui-lib/Icon";
@@ -339,6 +340,16 @@ function renderOverlayColorItem(
       onPick={() => onPick(color)}
     />
   );
+}
+
+function getOverlayColorInputValue(value: unknown): string {
+  const semanticId = getSemanticId(value);
+  if (semanticId) {
+    return "none";
+  }
+
+  const resolved = resolveColorForUI(value);
+  return resolved === "none" || resolved === "transparent" ? "none" : resolved;
 }
 
 function getControlValue(
@@ -904,18 +915,32 @@ function ControlEditor({
             className={
               editor.presentation === "square" ||
               editor.presentation === "sticker"
-                ? styles.squareColorGrid
-                : styles.colorGrid
+                ? styles.squareColorMenu
+                : styles.colorMenu
             }
           >
-            {(editor.palette ?? []).map((color) =>
-              renderOverlayColorItem(
-                color,
-                value,
-                editor.presentation ?? "circle",
-                (nextColor) => updateValue(nextColor),
-              ),
-            )}
+            <div
+              className={
+                editor.presentation === "square" ||
+                editor.presentation === "sticker"
+                  ? styles.squareColorGrid
+                  : styles.colorGrid
+              }
+            >
+              {(editor.palette ?? []).map((color) =>
+                renderOverlayColorItem(
+                  color,
+                  value,
+                  editor.presentation ?? "circle",
+                  (nextColor) => updateValue(nextColor),
+                ),
+              )}
+              <UiColorInput
+                color={getOverlayColorInputValue(value)}
+                isActive={getOverlayColorInputValue(value) !== "none"}
+                onChange={(nextColor) => updateValue(nextColor)}
+              />
+            </div>
           </div>
         );
       case "enum-icon": {

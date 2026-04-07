@@ -81,10 +81,22 @@
   min-height: 32px;
 }
 
+.colorMenu {
+  display: flex;
+  width: max-content;
+  max-width: 100%;
+}
+
+.squareColorMenu {
+  display: flex;
+  width: max-content;
+  max-width: 100%;
+}
+
 .colorGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(32px, max-content));
-  gap: 10px;
+  grid-template-columns: repeat(4, 32px);
+  gap: 8px;
   justify-content: start;
   width: max-content;
   max-width: 100%;
@@ -92,7 +104,7 @@
 
 .squareColorGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(40px, max-content));
+  grid-template-columns: repeat(2, 40px);
   gap: 4px;
   justify-content: start;
   width: max-content;
