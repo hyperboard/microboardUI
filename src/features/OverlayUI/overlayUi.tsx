@@ -27,6 +27,7 @@ import { ButtonWithMenu as ToolbarButtonWithMenu } from "features/ToolsPanel/But
 import { ButtonWithMenu as ContextButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { ColorItem } from "features/Pickers/ColorPicker/ColorItem";
 import { SquareColorItem } from "features/Pickers/ColorPicker/SquareColorItem";
+import { SliderPicker } from "features/Pickers/SliderPicker/SliderPicker";
 import { UiColorInput } from "shared/ui-lib/UiColorInput";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { UiPanel } from "shared/ui-lib/UiPanel";
@@ -278,9 +279,21 @@ function getVisibleControls(
   board: ReturnType<typeof useAppContext>["board"],
 ): OverlayControlDefinition[] {
   const conditionContext = buildOverlayConditionContext(context, board);
-  return controls.filter((control) =>
-    matchesOverlayCondition(control.when, conditionContext),
-  );
+  return controls.filter((control) => {
+    if (!matchesOverlayCondition(control.when, conditionContext)) {
+      return false;
+    }
+
+    if (
+      (context.toolName === "AddDrawing" ||
+        context.toolName === "AddHighlighter") &&
+      control.id === "strokeStyle"
+    ) {
+      return false;
+    }
+
+    return true;
+  });
 }
 
 function mergeOptionLists(
@@ -1083,16 +1096,13 @@ function ControlEditor({
       case "slider":
         return (
           <div className={styles.menuSection}>
-            <input
-              className={styles.slider}
-              type="range"
+            <SliderPicker
+              onPick={(nextValue) => updateValue(nextValue)}
               min={editor.min}
               max={editor.max}
               step={editor.step ?? 1}
               value={typeof value === "number" ? value : editor.min}
-              onChange={(event) =>
-                updateValue(Number(event.currentTarget.value))
-              }
+              showLabel
             />
             <div className={styles.label}>
               {typeof value === "number" ? `${value}${editor.unit ?? ""}` : ""}
