@@ -25,10 +25,12 @@ import { usePanelContext as useToolsPanelContext } from "features/ToolsPanel/Pan
 import { usePanelContext as useContextPanelContext } from "features/ContextPanel/PanelContext";
 import { ButtonWithMenu as ToolbarButtonWithMenu } from "features/ToolsPanel/Buttons/ButtonWithMenu";
 import { ButtonWithMenu as ContextButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
+import { ColorItem } from "features/Pickers/ColorPicker/ColorItem";
+import { SquareColorItem } from "features/Pickers/ColorPicker/SquareColorItem";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { UiPanel } from "shared/ui-lib/UiPanel";
 import { Icon } from "shared/ui-lib/Icon";
-import { resolveColorForUI } from "shared/lib/resolveColorValue";
+import { getSemanticId, resolveColorForUI } from "shared/lib/resolveColorValue";
 import { useAccount } from "App/useAccount";
 import { validateMediaFile } from "App/MediaHelpers";
 import { uploadImages } from "shared/api/media";
@@ -291,6 +293,52 @@ function mergeOptionLists(
     }
   });
   return [...options.values()];
+}
+
+function areOverlayColorsEqual(left: unknown, right: unknown): boolean {
+  if (left === right) {
+    return true;
+  }
+
+  const leftSemanticId = getSemanticId(left);
+  const rightSemanticId = getSemanticId(right);
+  if (leftSemanticId && rightSemanticId) {
+    return leftSemanticId === rightSemanticId;
+  }
+
+  return resolveColorForUI(left) === resolveColorForUI(right);
+}
+
+function renderOverlayColorItem(
+  color: string,
+  value: unknown,
+  presentation: "circle" | "square" | "sticker",
+  onPick: (color: string) => void,
+): React.ReactElement {
+  const isActive = areOverlayColorsEqual(value, color);
+  const isSquare = presentation === "square" || presentation === "sticker";
+  const displayColor =
+    color === "transparent" ? "transparent" : resolveColorForUI(color);
+
+  if (isSquare) {
+    return (
+      <SquareColorItem
+        key={color}
+        color={displayColor}
+        selected={isActive}
+        onPick={() => onPick(color)}
+      />
+    );
+  }
+
+  return (
+    <ColorItem
+      key={color}
+      color={color === "transparent" ? "none" : displayColor}
+      active={isActive}
+      onPick={() => onPick(color)}
+    />
+  );
 }
 
 function getControlValue(
@@ -852,48 +900,22 @@ function ControlEditor({
     switch (editor.kind) {
       case "color":
         return (
-          <div className={styles.grid}>
-            {(editor.palette ?? []).map((color) => {
-              const swatchValue =
-                color === "transparent"
-                  ? "transparent"
-                  : resolveColorForUI(color);
-              const isActive = value === color;
-              const presentation = editor.presentation ?? "circle";
-              return (
-                <UiButton
-                  key={color}
-                  onClick={() => updateValue(color)}
-                  active={isActive}
-                  variant="secondary"
-                  size="sm"
-                  className={styles.colorButton}
-                >
-                  <span
-                    className={
-                      color === "transparent"
-                        ? `${styles.colorSwatch} ${styles.transparentSwatch}`
-                        : [
-                            styles.colorSwatch,
-                            presentation === "square" ||
-                            presentation === "sticker"
-                              ? styles.squareSwatch
-                              : styles.circleSwatch,
-                            presentation === "sticker"
-                              ? styles.stickerSwatch
-                              : "",
-                          ]
-                            .filter(Boolean)
-                            .join(" ")
-                    }
-                    style={{
-                      background:
-                        color === "transparent" ? undefined : swatchValue,
-                    }}
-                  />
-                </UiButton>
-              );
-            })}
+          <div
+            className={
+              editor.presentation === "square" ||
+              editor.presentation === "sticker"
+                ? styles.squareColorGrid
+                : styles.colorGrid
+            }
+          >
+            {(editor.palette ?? []).map((color) =>
+              renderOverlayColorItem(
+                color,
+                value,
+                editor.presentation ?? "circle",
+                (nextColor) => updateValue(nextColor),
+              ),
+            )}
           </div>
         );
       case "enum-icon": {

@@ -81,6 +81,24 @@
   min-height: 32px;
 }
 
+.colorGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(32px, max-content));
+  gap: 10px;
+  justify-content: start;
+  width: max-content;
+  max-width: 100%;
+}
+
+.squareColorGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(40px, max-content));
+  gap: 4px;
+  justify-content: start;
+  width: max-content;
+  max-width: 100%;
+}
+
 .colorButton {
   width: 28px;
   height: 28px;
