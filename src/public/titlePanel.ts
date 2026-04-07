@@ -105,7 +105,7 @@ function setLoadingState(
 async function handleEdit(this: GlobalEventHandlers, ev: MouseEvent) {
   ev.preventDefault();
 
-  const importUrl = "https://www.unpkg.com/microboard-ui-temp/dist/index.js";
+  const importUrl = new URL("../index.js", import.meta.url).href;
   const module = (await import(/* @vite-ignore */ importUrl)) as {
     initInter: () => Promise<void>;
     createApp: (isHistory?: boolean) => Window["app"];
@@ -162,9 +162,7 @@ async function handleShare(this: GlobalEventHandlers, ev: MouseEvent) {
 }
 
 async function injectStyles() {
-  const resp = await fetch(
-    "https://www.unpkg.com/microboard-ui-temp/dist/index.css",
-  );
+  const resp = await fetch(new URL("../index.css", import.meta.url));
   const css = await resp.text();
   const style = document.createElement("style");
   style.textContent = css;
@@ -172,9 +170,7 @@ async function injectStyles() {
 }
 
 async function injectSprite() {
-  const resp = await fetch(
-    "https://www.unpkg.com/microboard-ui-temp/dist/sprite.svg",
-  );
+  const resp = await fetch(new URL("../sprite.svg", import.meta.url));
   const svgText = await resp.text();
   const div = document.createElement("div");
   div.style.display = "none";
