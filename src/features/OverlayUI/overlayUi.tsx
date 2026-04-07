@@ -204,7 +204,9 @@ function setTargetProperty(
   const setter = target[setterName];
 
   if (typeof setter === "function") {
-    (setter as (nextValue: unknown) => void)(value);
+    (
+      setter as (this: Record<string, unknown>, nextValue: unknown) => void
+    ).call(target, value);
   } else {
     target[property] = value;
   }
