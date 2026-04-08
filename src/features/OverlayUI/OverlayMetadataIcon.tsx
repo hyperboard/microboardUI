@@ -97,6 +97,27 @@ function getOverlaySymbolSvg(icon: OverlayIcon | undefined): string | null {
   return `<svg ${svgAttributes}>${body}</svg>`;
 }
 
+function normalizePresentationSvg(svg: string): string {
+  return svg
+    .replace(
+      /\s(fill|stroke)=("|')(?!(none|currentColor|transparent|url\())[^"']*\2/gi,
+      (_match, attr, quote) => {
+        return ` ${attr}=${quote}currentColor${quote}`;
+      },
+    )
+    .replace(
+      /style=(["'])(.*?)\1/gi,
+      (_match, quote: string, styleValue: string) => {
+        const normalized = styleValue.replace(
+          /(fill|stroke)\s*:\s*(?!none|currentColor|transparent|url\()[^;"]+/gi,
+          (_styleMatch, prop: string) => `${prop}: currentColor`,
+        );
+
+        return `style=${quote}${normalized}${quote}`;
+      },
+    );
+}
+
 export function OverlayMetadataIcon({
   icon,
   label,
@@ -107,17 +128,19 @@ export function OverlayMetadataIcon({
   size?: number;
 }): React.ReactElement {
   const assetDataUrl = getOverlayAssetDataUrl(icon);
+  const assetSvg =
+    icon?.kind === "asset" && assetDataUrl
+      ? decodeSvgDataUrl(assetDataUrl)
+      : null;
   const symbolSvg = getOverlaySymbolSvg(icon);
   const localSymbolId = icon?.kind === "symbol" ? icon.key : undefined;
 
-  if (icon?.kind === "asset" && assetDataUrl) {
+  if (assetSvg) {
     return (
-      <img
-        className={styles.assetImage}
+      <span
+        className={styles.assetIcon}
         style={{ width: size, height: size }}
-        src={assetDataUrl}
-        alt=""
-        aria-hidden
+        dangerouslySetInnerHTML={{ __html: normalizePresentationSvg(assetSvg) }}
       />
     );
   }
@@ -127,7 +150,9 @@ export function OverlayMetadataIcon({
       <span
         className={styles.assetIcon}
         style={{ width: size, height: size }}
-        dangerouslySetInnerHTML={{ __html: symbolSvg }}
+        dangerouslySetInnerHTML={{
+          __html: normalizePresentationSvg(symbolSvg),
+        }}
       />
     );
   }
