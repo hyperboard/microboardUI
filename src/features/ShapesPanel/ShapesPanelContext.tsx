@@ -3,15 +3,15 @@ import {
   useStrictContext,
 } from "shared/lib/strictContext";
 import React, { PropsWithChildren, useEffect, useState } from "react";
-import { ShapeCategoryName } from "microboard-temp";
 import { tempStorage } from "App/SessionStorage";
+import { type ShapeFamilyName } from "./shapeMetadata";
 
 type ShapesPanelContext = {
   openShapesPanel: () => void;
   closeShapesPanel: () => void;
   isOpen: boolean;
-  selectedCategory: ShapeCategoryName;
-  setSelectedCategory: (selectedCategory: ShapeCategoryName) => void;
+  selectedCategory: ShapeFamilyName;
+  setSelectedCategory: (selectedCategory: ShapeFamilyName) => void;
 };
 
 export const ShapesPanelContext = createStrictContext<ShapesPanelContext>();
@@ -20,13 +20,13 @@ export function useShapesPanelContext(): ShapesPanelContext {
   return useStrictContext(ShapesPanelContext);
 }
 
-const getInitialShapeCategory = (): ShapeCategoryName => {
+const getInitialShapeCategory = (): ShapeFamilyName => {
   const savedShapeData = tempStorage.getShapeData();
 
   if (savedShapeData) {
     const splitted = savedShapeData.shapeType.split("_");
     if (splitted.length > 1) {
-      return splitted[0] as ShapeCategoryName;
+      return splitted[0] === "BPMN" ? "bpmn" : splitted[0];
     }
   }
   return "basicShapes";
@@ -74,7 +74,7 @@ export function ShapesPanelContextProvider({
   children,
 }: PropsWithChildren<{}>): React.JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<ShapeCategoryName>(
+  const [selectedCategory, setSelectedCategory] = useState<ShapeFamilyName>(
     getInitialShapeCategory(),
   );
   const location = useLocation();

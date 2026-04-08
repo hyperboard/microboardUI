@@ -1,21 +1,19 @@
 import React, { CSSProperties, useRef, useState } from "react";
-import { ShapeIcon } from "shared/ui-lib/Icon";
-import {
-  ShapeCategoryName,
-  SHAPES_CATEGORIES,
-  ShapeType,
-} from "microboard-temp";
+import type { OverlayOptionDefinition, ShapeType } from "microboard-temp";
 import { useTranslation } from "react-i18next";
 import { UiButton } from "shared/ui-lib/UiButton";
+import { OverlayMetadataIcon } from "features/OverlayUI/OverlayMetadataIcon";
+import { type ShapeFamilyName } from "features/ShapesPanel/shapeMetadata";
 
 type Props = {
   onPick: (
     type: ShapeType,
-    category?: ShapeCategoryName,
+    category?: ShapeFamilyName,
     e?: React.MouseEvent<HTMLButtonElement>,
   ) => void;
   selected?: ShapeType | "None";
-  categoryName: ShapeCategoryName;
+  categoryName: ShapeFamilyName;
+  options: OverlayOptionDefinition[];
   buttonSize?: "lg" | "md" | "sm";
 };
 
@@ -23,6 +21,7 @@ export function ShapePicker({
   onPick,
   selected,
   categoryName,
+  options,
   buttonSize = "md",
 }: Props): React.ReactElement {
   const [toolTipStyle, setToolTipStyle] = useState<CSSProperties | undefined>(
@@ -31,50 +30,49 @@ export function ShapePicker({
   const refs = useRef({});
   const { t } = useTranslation();
 
-  const shapes = SHAPES_CATEGORIES.find(
-    (category) => category.name === categoryName,
-  )!.shapes as ShapeType[];
-
-  const getToolTipStyle = (shape: ShapeType): CSSProperties => {
-    const { left, top } = refs.current[shape].getBoundingClientRect();
+  const getToolTipStyle = (shapeId: string): CSSProperties => {
+    const { left, top } = refs.current[shapeId].getBoundingClientRect();
     return {
       left: `calc(${left + 24}px - 1rem)`,
       bottom: `calc(100% - ${top}px + 0.6rem)`,
     };
   };
 
-  const setRef = (name: ShapeType) => (el: HTMLButtonElement) => {
+  const setRef = (name: string) => (el: HTMLButtonElement) => {
     refs.current[name] = el;
   };
 
   return (
     <>
-      {shapes.map((shape: ShapeType) => (
-        <UiButton
-          ref={setRef(shape)}
-          tooltipPosition={"top-right-fixed"}
-          tooltip={
-            categoryName !== "basicShapes"
-              ? String(t(`shapePicker.${categoryName}.${shape}` as never))
-              : undefined
-          }
-          id={`shape-${shape}`}
-          onClick={(e) => onPick(shape, categoryName, e)}
-          key={shape}
-          size={buttonSize}
-          variant="secondary"
-          active={selected === shape}
-          onMouseEnter={() => setToolTipStyle(getToolTipStyle(shape))}
-          toolTipStyle={toolTipStyle}
-        >
-          <ShapeIcon
-            style={{ objectFit: "cover" }}
-            iconName={shape}
-            width={20}
-            height={20}
-          />
-        </UiButton>
-      ))}
+      {options.map((option) => {
+        const shape = option.value as ShapeType;
+        const tooltipKey = `shapePicker.${categoryName}.${shape}` as never;
+        return (
+          <UiButton
+            ref={setRef(option.id)}
+            tooltipPosition={"top-right-fixed"}
+            tooltip={
+              categoryName !== "basicShapes"
+                ? String(t(tooltipKey, { defaultValue: option.label }))
+                : undefined
+            }
+            id={`shape-${shape}`}
+            onClick={(e) => onPick(shape, categoryName, e)}
+            key={option.id}
+            size={buttonSize}
+            variant="secondary"
+            active={selected === shape}
+            onMouseEnter={() => setToolTipStyle(getToolTipStyle(option.id))}
+            toolTipStyle={toolTipStyle}
+          >
+            <OverlayMetadataIcon
+              icon={option.icon}
+              label={option.label}
+              size={20}
+            />
+          </UiButton>
+        );
+      })}
     </>
   );
 }

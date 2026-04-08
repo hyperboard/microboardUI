@@ -1,25 +1,38 @@
-import { getHotkeyLabel, ShapeType } from "microboard-temp";
+import { getHotkeyLabel, type ShapeType } from "microboard-temp";
 import { useAppContext } from "features/AppContext";
 import { ShapePicker } from "features/Pickers/ShapeTypePicker";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Icon, ShapeIcon } from "shared/ui-lib/Icon";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import { useShapesPanelContext } from "../../../ShapesPanel";
 import { ButtonWithMenu } from "../ButtonWithMenu";
 import style from "./AddShape.module.css";
+import {
+  findShapeOption,
+  getAddShapeOverlay,
+  getShapeCategories,
+} from "features/ShapesPanel/shapeMetadata";
+import { OverlayMetadataIcon } from "features/OverlayUI/OverlayMetadataIcon";
 
 export function AddShape() {
   const [isShapeSelected, setIsShapeSelected] = useState(false);
   const { board } = useAppContext();
   const { isOpen, openShapesPanel, selectedCategory } = useShapesPanelContext();
   const { t } = useTranslation();
+  const overlay = getAddShapeOverlay();
+  const categories = getShapeCategories();
 
   const addShape = board.tools.getAddShape();
   const isActive = Boolean(addShape);
   const selectedShape = addShape?.type;
   const isDown = addShape?.isDown;
+  const selectedOption = findShapeOption(selectedShape);
+  const selectedCategoryOptions =
+    categories.find((category) => category.name === selectedCategory)
+      ?.options ??
+    categories[0]?.options ??
+    [];
 
   useEffect(() => {
     if (isDown) {
@@ -59,11 +72,11 @@ export function AddShape() {
           variant="secondary"
           rounded="none"
         >
-          {isActive && selectedShape !== "None" ? (
-            <ShapeIcon height={24} width={24} iconName={selectedShape!} />
-          ) : (
-            <Icon iconName="Shape" />
-          )}
+          <OverlayMetadataIcon
+            icon={selectedOption?.icon ?? overlay?.icon}
+            label={selectedOption?.label ?? overlay?.label}
+            size={24}
+          />
         </UiButton>
       }
       isOpen={isActive && !isShapeSelected && !isOpen}
@@ -72,6 +85,7 @@ export function AddShape() {
         <div className={style.panel}>
           <ShapePicker
             categoryName={selectedCategory}
+            options={selectedCategoryOptions}
             selected={selectedShape}
             onPick={handlePick}
           />

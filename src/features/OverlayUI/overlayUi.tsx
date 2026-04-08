@@ -36,7 +36,7 @@ import { getSemanticId, resolveColorForUI } from "shared/lib/resolveColorValue";
 import { useAccount } from "App/useAccount";
 import { validateMediaFile } from "App/MediaHelpers";
 import { uploadImages } from "shared/api/media";
-import { getOverlayIconAsset } from "microboard-temp/overlay-icon-manifest";
+import { OverlayMetadataIcon as BaseOverlayMetadataIcon } from "./OverlayMetadataIcon";
 import styles from "./OverlayUi.module.css";
 
 type OverlayActionLike =
@@ -66,103 +66,6 @@ type WorkflowUploadValue =
     };
 function capitalize(value: string): string {
   return value ? value[0].toUpperCase() + value.slice(1) : value;
-}
-
-function decodeSvgDataUrl(dataUrl: string): string | null {
-  if (!dataUrl.startsWith("data:image/svg+xml")) {
-    return null;
-  }
-
-  const commaIndex = dataUrl.indexOf(",");
-  if (commaIndex === -1) {
-    return null;
-  }
-
-  const metadata = dataUrl.slice(0, commaIndex);
-  const payload = dataUrl.slice(commaIndex + 1);
-
-  try {
-    if (metadata.includes(";base64")) {
-      return atob(payload);
-    }
-
-    return decodeURIComponent(payload);
-  } catch {
-    return null;
-  }
-}
-
-function getOverlayAssetDataUrl(icon: OverlayIcon | undefined): string | null {
-  if (!icon) {
-    return null;
-  }
-
-  if (icon.kind === "asset") {
-    return getOverlayIconAsset(icon.path) ?? null;
-  }
-
-  if (!icon.sourcePath) {
-    return null;
-  }
-
-  return getOverlayIconAsset(icon.sourcePath) ?? null;
-}
-
-function escapeRegExp(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-function hasLocalSymbol(symbolId: string | undefined): boolean {
-  if (!symbolId || typeof document === "undefined") {
-    return false;
-  }
-
-  return Boolean(document.getElementById(symbolId));
-}
-
-function getOverlaySymbolSvg(icon: OverlayIcon | undefined): string | null {
-  if (!icon || icon.kind !== "symbol") {
-    return null;
-  }
-
-  if (!icon.sourcePath) {
-    return null;
-  }
-
-  const spriteDataUrl = getOverlayIconAsset(icon.sourcePath);
-  if (!spriteDataUrl) {
-    return null;
-  }
-
-  const spriteSvg = decodeSvgDataUrl(spriteDataUrl);
-  if (!spriteSvg) {
-    return null;
-  }
-
-  const symbolMatch = spriteSvg.match(
-    new RegExp(
-      `<symbol\\b([^>]*)\\bid=(["'])${escapeRegExp(icon.key)}\\2([^>]*)>([\\s\\S]*?)<\\/symbol>`,
-      "i",
-    ),
-  );
-  if (!symbolMatch) {
-    return null;
-  }
-
-  const attributes = `${symbolMatch[1]} ${symbolMatch[3]}`;
-  const body = symbolMatch[4];
-  const viewBoxMatch = attributes.match(/viewBox=(["'])(.*?)\1/i);
-  const fillMatch = attributes.match(/fill=(["'])(.*?)\1/i);
-
-  const svgAttributes = [
-    'xmlns="http://www.w3.org/2000/svg"',
-    viewBoxMatch ? `viewBox="${viewBoxMatch[2]}"` : "",
-    fillMatch ? `fill="${fillMatch[2]}"` : "",
-  ]
-    .filter(Boolean)
-    .join(" ");
-
-  return `<svg ${svgAttributes}>${body}</svg>`;
 }
 
 function makeRangeArray(length: number, start: number): number[] {
@@ -569,67 +472,17 @@ function OverlayMetadataIcon({
   size = 24,
 }: {
   icon?: OverlayIcon;
-  items: BaseItem[];
+  items?: BaseItem[];
   toolName?: string;
   label?: string;
   size?: number;
 }): React.ReactElement {
   const { board } = useAppContext();
-  const swatchColor = getSwatchColor(icon, items, toolName, board);
-  const assetDataUrl = getOverlayAssetDataUrl(icon);
-  const symbolSvg = getOverlaySymbolSvg(icon);
-  const localSymbolId = icon?.kind === "symbol" ? icon.key : undefined;
-
-  let content: React.ReactElement;
-
-  if (icon?.kind === "asset" && assetDataUrl) {
-    content = (
-      <img
-        className={styles.assetImage}
-        style={{ width: size, height: size }}
-        src={assetDataUrl}
-        alt=""
-        aria-hidden
-      />
-    );
-  } else if (symbolSvg) {
-    content = (
-      <span
-        className={styles.assetIcon}
-        style={{ width: size, height: size }}
-        dangerouslySetInnerHTML={{ __html: symbolSvg }}
-      />
-    );
-  } else if (icon?.kind === "symbol" && hasLocalSymbol(localSymbolId)) {
-    content = (
-      <svg width={size} height={size} fill="none">
-        <use href={`#${localSymbolId}`} />
-      </svg>
-    );
-  } else if (label) {
-    content = (
-      <span
-        style={{
-          width: size,
-          height: size,
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: Math.max(10, Math.floor(size / 2.4)),
-          fontWeight: 600,
-          lineHeight: 1,
-        }}
-      >
-        {label.slice(0, 1).toUpperCase()}
-      </span>
-    );
-  } else {
-    content = <Icon iconName="Gear" width={size} height={size} />;
-  }
+  const swatchColor = getSwatchColor(icon, items ?? [], toolName, board);
 
   return (
     <span className={styles.iconWrap}>
-      {content}
+      <BaseOverlayMetadataIcon icon={icon} label={label} size={size} />
       {swatchColor && swatchColor !== "none" ? (
         <span className={styles.swatch} style={{ color: swatchColor }} />
       ) : null}
@@ -1699,8 +1552,6 @@ function OverlayToolbarGroup({
         >
           <OverlayMetadataIcon
             icon={currentIcon ?? entry.icon}
-            items={[]}
-            toolName={currentOverlay.toolName}
             label={currentLabel}
           />
         </UiButton>
@@ -1743,7 +1594,13 @@ function getOverlayToolbarSections(): {
   leading: React.ReactElement[];
   main: React.ReactElement[];
 } {
-  const entries = listCreateSurfaceEntries();
+  const entries = listCreateSurfaceEntries().filter((entry) => {
+    if (entry.kind === "tool") {
+      return entry.tool.toolName !== "AddShape";
+    }
+
+    return !entry.tools.some((tool) => tool.toolName === "AddShape");
+  });
   const leading: React.ReactElement[] = [];
   const main: React.ReactElement[] = [];
 

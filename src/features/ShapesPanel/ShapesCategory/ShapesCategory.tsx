@@ -2,24 +2,30 @@ import React, { useState } from "react";
 import styles from "./ShapesCategory.module.css";
 import { ShapePicker } from "../../Pickers/ShapeTypePicker";
 import { useTranslation } from "react-i18next";
-import { ShapeCategoryName, ShapeType } from "microboard-temp";
+import type { OverlayOptionDefinition, ShapeType } from "microboard-temp";
 import { Icon } from "../../../shared/ui-lib/Icon";
 import clsx from "clsx";
 import { useAppContext } from "features/AppContext";
 import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { useAppSubscription } from "App/useBoardSubscription";
 import { UiButton } from "shared/ui-lib/UiButton";
+import { type ShapeFamilyName } from "../shapeMetadata";
 
 interface Props {
   handlePick: (
     shape: ShapeType,
-    category?: ShapeCategoryName,
+    category?: ShapeFamilyName,
     e?: React.MouseEvent<HTMLButtonElement>,
   ) => void;
-  categoryName: ShapeCategoryName;
+  categoryName: ShapeFamilyName;
+  options: OverlayOptionDefinition[];
 }
 
-export const ShapesCategory = ({ handlePick, categoryName }: Props) => {
+export const ShapesCategory = ({
+  handlePick,
+  categoryName,
+  options,
+}: Props) => {
   const [isPickerShown, setIsPickerShown] = useState(true);
   const { board } = useAppContext();
   const forceUpdate = useForceUpdate();
@@ -33,7 +39,9 @@ export const ShapesCategory = ({ handlePick, categoryName }: Props) => {
     <div className={styles.categoryContainer}>
       <div className={styles.categoryHeader}>
         <p className={styles.categoryName}>
-          {t(`shapesPanel.${categoryName}`)}
+          {t(`shapesPanel.${categoryName}` as never, {
+            defaultValue: categoryName,
+          })}
         </p>
         <UiButton
           onClick={() => setIsPickerShown(!isPickerShown)}
@@ -51,6 +59,7 @@ export const ShapesCategory = ({ handlePick, categoryName }: Props) => {
       <div className={clsx(styles.shapesGrid, !isPickerShown && styles.closed)}>
         <ShapePicker
           categoryName={categoryName}
+          options={options}
           onPick={handlePick}
           buttonSize="lg"
           selected={board.tools.getAddShape()?.type}
