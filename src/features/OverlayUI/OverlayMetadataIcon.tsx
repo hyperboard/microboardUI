@@ -82,9 +82,38 @@ function getOverlaySymbolSvg(icon: OverlayIcon | undefined): string | null {
   }
 
   const attributes = `${symbolMatch[1]} ${symbolMatch[3]}`;
-  const body = symbolMatch[4];
   const viewBoxMatch = attributes.match(/viewBox=(["'])(.*?)\1/i);
   const fillMatch = attributes.match(/fill=(["'])(.*?)\1/i);
+
+  const resolveSymbolBody = (
+    body: string,
+    visited = new Set<string>([icon.key]),
+  ): string =>
+    body.replace(
+      /<use\b[^>]*href=(["'])#([^"']+)\1[^>]*><\/use>|<use\b[^>]*href=(["'])#([^"']+)\3[^>]*\/>/gi,
+      (match, _quoteA, refA, _quoteB, refB) => {
+        const refId = refA ?? refB;
+        if (!refId || visited.has(refId)) {
+          return match;
+        }
+
+        const referencedMatch = spriteSvg.match(
+          new RegExp(
+            `<symbol\\b([^>]*)\\bid=(["'])${escapeRegExp(refId)}\\2([^>]*)>([\\s\\S]*?)<\\/symbol>`,
+            "i",
+          ),
+        );
+        if (!referencedMatch) {
+          return match;
+        }
+
+        const nextVisited = new Set(visited);
+        nextVisited.add(refId);
+        return resolveSymbolBody(referencedMatch[4], nextVisited);
+      },
+    );
+
+  const body = resolveSymbolBody(symbolMatch[4]);
 
   const svgAttributes = [
     'xmlns="http://www.w3.org/2000/svg"',
