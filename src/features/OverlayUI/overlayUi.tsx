@@ -26,6 +26,7 @@ import { usePanelContext as useContextPanelContext } from "features/ContextPanel
 import { ButtonWithMenu as ToolbarButtonWithMenu } from "features/ToolsPanel/Buttons/ButtonWithMenu";
 import { ButtonWithMenu as ContextButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { ColorItem } from "features/Pickers/ColorPicker/ColorItem";
+import { SemanticColorPicker } from "features/Pickers/ColorPicker/SemanticColorPicker";
 import { SquareColorItem } from "features/Pickers/ColorPicker/SquareColorItem";
 import { SliderPicker } from "features/Pickers/SliderPicker/SliderPicker";
 import { UiColorInput } from "shared/ui-lib/UiColorInput";
@@ -801,6 +802,20 @@ function ControlEditor({
   const renderEditor = (editor: OverlayEditor): React.ReactElement => {
     switch (editor.kind) {
       case "color":
+        if (editor.presentation === "sticker") {
+          return (
+            <div className={styles.squareColorMenu}>
+              <div className={styles.squareColorGrid}>
+                <SemanticColorPicker
+                  currentValue={value}
+                  onPick={(nextColor) => updateValue(nextColor)}
+                  variant="square"
+                />
+              </div>
+            </div>
+          );
+        }
+
         return (
           <div
             className={
