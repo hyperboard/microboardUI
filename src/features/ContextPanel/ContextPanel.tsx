@@ -47,10 +47,7 @@ import { AddList } from "features/ContextPanel/Buttons/AddList/AddList";
 import { ToggleIsShining } from "features/ContextPanel/Buttons/ToggleIsShining";
 import { RotateItem } from "features/ContextPanel/Buttons/RotateItem";
 import { LockResize } from "features/ContextPanel/Buttons/LockResize";
-import {
-  getSelectionOverlayActions,
-  intersectOverlayActions,
-} from "microboard-temp";
+import { intersectOverlayActions } from "microboard-temp";
 import { GetRandomItem } from "features/ContextPanel/Buttons/CardGame/Screeen/GetRandomItem";
 import { GroupItems } from "./Buttons/GroupItems";
 import { DetachFromGroup } from "./Buttons/DetachFromGroup";
@@ -144,9 +141,9 @@ export function ContextPanel(): React.ReactElement | null {
     !isCardOrDeck &&
     !isDice &&
     !isScreen;
-  const overlayActionsCount =
-    intersectOverlayActions(board.selection.items.list()).length +
-    getSelectionOverlayActions(board.selection.items.list()).length;
+  const overlayActionsCount = intersectOverlayActions(
+    board.selection.items.list(),
+  ).length;
 
   return (
     <PanelContext.Provider
@@ -200,11 +197,15 @@ export function ContextPanel(): React.ReactElement | null {
         )}
         {isText && !isSelectUnderPointer && !isLocked && (
           <>
-            <OverlayContextActions />
+            <FontSize />
+            <UiSeparator vertical />
             <FontStyle />
             <TextAlignment />
             <AddList />
             <HyperLinkBtn />
+            <UiSeparator vertical />
+            <TextColor />
+            <TextHighlight />
             <UiSeparator vertical />
             <GroupItems />
             <DetachFromGroup />
@@ -226,12 +227,15 @@ export function ContextPanel(): React.ReactElement | null {
         )}
         {isSticker && !isSelectUnderPointer && !isLocked && (
           <>
-            <OverlayContextActions />
+            <FontSize />
             <UiSeparator vertical />
             <FontStyle />
             <TextAlignment />
             <AddList />
             <HyperLinkBtn />
+            <UiSeparator vertical />
+            <TextColor />
+            <TextHighlight />
             <UiSeparator vertical />
             <StickerFillStyle />
             <UiSeparator vertical />
@@ -254,8 +258,6 @@ export function ContextPanel(): React.ReactElement | null {
         )}
         {isShape && !isSelectUnderPointer && !isLocked && (
           <>
-            <OverlayContextActions />
-            <UiSeparator vertical />
             {board.selection.items
               .getItemsByItemTypes(["Shape"])[0]
               .getIsShapeWithText() && (
@@ -272,6 +274,7 @@ export function ContextPanel(): React.ReactElement | null {
                 <UiSeparator vertical />
               </>
             )}
+            <OverlayContextActions includeSelectionActions={false} />
             <UiSeparator vertical />
             <GroupItems />
             <DetachFromGroup />
@@ -293,12 +296,13 @@ export function ContextPanel(): React.ReactElement | null {
         )}
         {isConnector && !isSelectUnderPointer && !isLocked && (
           <>
-            <OverlayContextActions />
-            <UiSeparator vertical />
             <ConnectorFontSize />
             <ConnectorFontStyle />
+            <UiSeparator vertical />
             <ConnectorTextColor />
             <ConnectorTextHighlight />
+            <UiSeparator vertical />
+            <OverlayContextActions includeSelectionActions={false} />
             <UiSeparator vertical />
             <GroupItems />
             <DetachFromGroup />
@@ -334,7 +338,7 @@ export function ContextPanel(): React.ReactElement | null {
         )}
         {isImage && !isSelectUnderPointer && !isLocked && (
           <>
-            <OverlayContextActions />
+            <OverlayContextActions includeSelectionActions={false} />
             <RotateItem clockwise={false} />
             <RotateItem clockwise={true} />
             <UiSeparator vertical />
@@ -351,7 +355,7 @@ export function ContextPanel(): React.ReactElement | null {
         )}
         {isVideo && !isSelectUnderPointer && !isLocked && (
           <>
-            <OverlayContextActions />
+            <OverlayContextActions includeSelectionActions={false} />
             <UiSeparator vertical />
             <GroupItems />
             <DetachFromGroup />
@@ -367,7 +371,7 @@ export function ContextPanel(): React.ReactElement | null {
         )}
         {isAudio && !isSelectUnderPointer && !isLocked && (
           <>
-            <OverlayContextActions />
+            <OverlayContextActions includeSelectionActions={false} />
             <UiSeparator vertical />
             <GroupItems />
             <DetachFromGroup />
@@ -381,7 +385,7 @@ export function ContextPanel(): React.ReactElement | null {
         )}
         {isFrame && !isSelectUnderPointer && !isLocked && (
           <>
-            <OverlayContextActions />
+            <OverlayContextActions includeSelectionActions={false} />
             <UiSeparator vertical />
             <FrameRatio />
             <ToggleFrameRatio />
@@ -403,12 +407,15 @@ export function ContextPanel(): React.ReactElement | null {
         )}
         {isAINode && !isSelectUnderPointer && !isLocked && (
           <>
-            <OverlayContextActions />
+            <FontSize />
             <UiSeparator vertical />
             <FontStyle />
             <TextAlignment />
             <AddList />
             <HyperLinkBtn />
+            <UiSeparator vertical />
+            <TextColor />
+            <TextHighlight />
             <UiSeparator vertical />
             <GroupItems />
             <DetachFromGroup />
@@ -430,7 +437,7 @@ export function ContextPanel(): React.ReactElement | null {
         )}
         {isStar && !isSelectUnderPointer && !isLocked && (
           <>
-            <OverlayContextActions />
+            <OverlayContextActions includeSelectionActions={false} />
             <UiSeparator vertical />
             <GroupItems />
             <DetachFromGroup />
@@ -445,7 +452,7 @@ export function ContextPanel(): React.ReactElement | null {
         )}
         {isDeck && !isSelectUnderPointer && !isLocked && (
           <>
-            <OverlayContextActions />
+            <OverlayContextActions includeSelectionActions={false} />
             <UiSeparator vertical />
             <GroupItems />
             <DetachFromGroup />
@@ -458,7 +465,7 @@ export function ContextPanel(): React.ReactElement | null {
         )}
         {isCard && !isSelectUnderPointer && !isLocked && (
           <>
-            <OverlayContextActions />
+            <OverlayContextActions includeSelectionActions={false} />
             <UiSeparator vertical />
             <LockResize />
             <UiSeparator vertical />
@@ -477,14 +484,14 @@ export function ContextPanel(): React.ReactElement | null {
           !isSelectUnderPointer &&
           !isLocked && (
             <>
-              <OverlayContextActions />
+              <OverlayContextActions includeSelectionActions={false} />
               <UiSeparator vertical />
               <Delete rounded="right" />
             </>
           )}
         {isDice && !isSelectUnderPointer && !isLocked && (
           <>
-            <OverlayContextActions />
+            <OverlayContextActions includeSelectionActions={false} />
             <UiSeparator vertical />
             <StrokeStyle />
             <UiSeparator vertical />
@@ -499,7 +506,7 @@ export function ContextPanel(): React.ReactElement | null {
         )}
         {isScreen && !isSelectUnderPointer && !isLocked && (
           <>
-            <OverlayContextActions />
+            <OverlayContextActions includeSelectionActions={false} />
             <UiSeparator vertical />
             <GetRandomItem />
             <GroupItems />
@@ -529,7 +536,7 @@ export function ContextPanel(): React.ReactElement | null {
           <>
             {overlayActionsCount > 0 ? (
               <>
-                <OverlayContextActions />
+                <OverlayContextActions includeSelectionActions={false} />
                 <UiSeparator vertical />
               </>
             ) : null}

@@ -15,6 +15,7 @@ import {
   type ToolOverlayDefinition,
   getItemOverlay,
   getSelectionOverlayActions,
+  listSelectionActionSections,
   intersectOverlayActions,
   listCreateSurfaceEntries,
   matchesOverlayCondition,
@@ -30,11 +31,14 @@ import { ButtonWithMenu as ContextButtonWithMenu } from "features/ContextPanel/B
 import { ColorItem } from "features/Pickers/ColorPicker/ColorItem";
 import { SemanticColorPicker } from "features/Pickers/ColorPicker/SemanticColorPicker";
 import { SquareColorItem } from "features/Pickers/ColorPicker/SquareColorItem";
+import { StrokeStylePicker } from "features/Pickers/StrokeStylePicker/StrokeStylePicker";
 import { SliderPicker } from "features/Pickers/SliderPicker/SliderPicker";
 import { UiColorInput } from "shared/ui-lib/UiColorInput";
 import { UiButton } from "shared/ui-lib/UiButton";
 import { UiPanel } from "shared/ui-lib/UiPanel";
-import { Icon } from "shared/ui-lib/Icon";
+import { UiSeparator } from "shared/ui-lib/UiSeparator";
+import { Icon, StrokeColorIndicator } from "shared/ui-lib/Icon";
+import { FillColorIndicator } from "shared/ui-lib/Icon/FillColorIndicator";
 import { getSemanticId, resolveColorForUI } from "shared/lib/resolveColorValue";
 import { useAccount } from "App/useAccount";
 import { validateMediaFile } from "App/MediaHelpers";
@@ -1496,6 +1500,34 @@ function getOverlayPrimaryControl(
   return overlay.defaults?.controls[0];
 }
 
+function getActionPrimaryControl(
+  action: OverlayActionLike,
+): OverlayControlDefinition | undefined {
+  return action.controls?.[0];
+}
+
+function getActionDisplayOption(
+  action: OverlayActionLike,
+  board: ReturnType<typeof useAppContext>["board"],
+  items: BaseItem[],
+): OverlayOptionDefinition | undefined {
+  const primaryControl = getActionPrimaryControl(action);
+  if (!primaryControl) {
+    return undefined;
+  }
+
+  const controlsById = createControlsMap(action);
+  const context: EditorContext = {
+    items,
+    controlsById,
+    selection: board.selection,
+  };
+  const currentValue = getControlValue(primaryControl, context, board);
+  return getControlOptions(primaryControl).find(
+    (option) => option.value === currentValue,
+  );
+}
+
 function getToolDisplayOption(
   overlay: ToolOverlayDefinition,
   board: ReturnType<typeof useAppContext>["board"],
@@ -1825,6 +1857,203 @@ function OverlayContextAction({
     });
   };
 
+  const selectedOption = getActionDisplayOption(action, board, items);
+  const displayIcon = selectedOption?.icon ?? action.icon;
+  const displayLabel = selectedOption?.label ?? action.label;
+
+  if (action.id === "shape.fill" && action.controls?.length) {
+    const fillControl = action.controls.find(
+      (control) => control.id === "backgroundColor",
+    );
+    if (fillControl && fillControl.editor.kind === "color") {
+      const value = getControlValue(
+        fillControl,
+        { items, controlsById, selection: board.selection },
+        board,
+      );
+      const fillColor = resolveColorForUI(value);
+      const colorInputValue = getOverlayColorInputValue(value);
+
+      return (
+        <ContextButtonWithMenu
+          menuName={menuName}
+          openedMenu={openedMenu}
+          panelMbr={panelMbr}
+          windowHeight={windowHeight}
+          windowWidth={windowWidth}
+          align="left"
+          button={
+            <UiButton
+              tooltip={action.label}
+              tooltipPosition="top"
+              variant="secondary"
+              onClick={handleClick}
+              active={isOpen}
+            >
+              <FillColorIndicator width={24} height={24} color={fillColor} />
+            </UiButton>
+          }
+        >
+          <UiPanel vertical className={styles.menu}>
+            <div className={styles.colorMenu}>
+              <div className={styles.colorGrid}>
+                {(fillControl.editor.palette ?? []).map((color) =>
+                  renderOverlayColorItem(
+                    color,
+                    value,
+                    fillControl.editor.presentation ?? "circle",
+                    (nextColor) =>
+                      invokeControl(
+                        board,
+                        fillControl,
+                        { items, controlsById, selection: board.selection },
+                        nextColor,
+                      ),
+                  ),
+                )}
+                <UiColorInput
+                  color={colorInputValue}
+                  isActive={colorInputValue !== "none"}
+                  onChange={(nextColor) =>
+                    invokeControl(
+                      board,
+                      fillControl,
+                      { items, controlsById, selection: board.selection },
+                      nextColor,
+                    )
+                  }
+                />
+              </div>
+            </div>
+          </UiPanel>
+        </ContextButtonWithMenu>
+      );
+    }
+  }
+
+  if (action.id === "shape.strokeStyle" && action.controls?.length) {
+    const borderColorControl = action.controls.find(
+      (control) => control.id === "borderColor",
+    );
+    const borderWidthControl = action.controls.find(
+      (control) => control.id === "borderWidth",
+    );
+    const borderStyleControl = action.controls.find(
+      (control) => control.id === "borderStyle",
+    );
+
+    if (
+      borderColorControl?.editor.kind === "color" &&
+      borderWidthControl?.editor.kind === "number-stepper" &&
+      borderStyleControl?.editor.kind === "enum-list"
+    ) {
+      const context: EditorContext = {
+        items,
+        controlsById,
+        selection: board.selection,
+      };
+      const borderColorValue = getControlValue(
+        borderColorControl,
+        context,
+        board,
+      );
+      const borderStyleValue = getControlValue(
+        borderStyleControl,
+        context,
+        board,
+      );
+      const borderWidthValue = getControlValue(
+        borderWidthControl,
+        context,
+        board,
+      );
+      const colorInputValue = getOverlayColorInputValue(borderColorValue);
+
+      return (
+        <ContextButtonWithMenu
+          menuName={menuName}
+          openedMenu={openedMenu}
+          panelMbr={panelMbr}
+          windowHeight={windowHeight}
+          windowWidth={windowWidth}
+          align="left"
+          button={
+            <UiButton
+              tooltip={action.label}
+              tooltipPosition="top"
+              variant="secondary"
+              onClick={handleClick}
+              active={isOpen}
+            >
+              <StrokeColorIndicator
+                color={resolveColorForUI(borderColorValue)}
+              />
+            </UiButton>
+          }
+        >
+          <UiPanel vertical className={styles.menu}>
+            <div className={styles.menuSection}>
+              <div className={styles.grid}>
+                <StrokeStylePicker
+                  stroke={
+                    typeof borderStyleValue === "string"
+                      ? borderStyleValue
+                      : undefined
+                  }
+                  onPick={(nextStyle) =>
+                    invokeControl(board, borderStyleControl, context, nextStyle)
+                  }
+                />
+              </div>
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.menuSection}>
+              <SliderPicker
+                onPick={(nextWidth) =>
+                  invokeControl(board, borderWidthControl, context, nextWidth)
+                }
+                min={borderWidthControl.editor.min}
+                max={borderWidthControl.editor.max}
+                step={borderWidthControl.editor.step ?? 1}
+                value={
+                  typeof borderWidthValue === "number"
+                    ? borderWidthValue
+                    : borderWidthControl.editor.min
+                }
+              />
+            </div>
+            <div className={styles.divider} />
+            <div className={styles.colorMenu}>
+              <div className={styles.colorGrid}>
+                {(borderColorControl.editor.palette ?? []).map((color) =>
+                  renderOverlayColorItem(
+                    color,
+                    borderColorValue,
+                    borderColorControl.editor.presentation ?? "circle",
+                    (nextColor) =>
+                      invokeControl(
+                        board,
+                        borderColorControl,
+                        context,
+                        nextColor,
+                      ),
+                  ),
+                )}
+                <UiColorInput
+                  color={colorInputValue}
+                  isActive={colorInputValue !== "none"}
+                  onChange={(nextColor) =>
+                    invokeControl(board, borderColorControl, context, nextColor)
+                  }
+                />
+              </div>
+            </div>
+          </UiPanel>
+        </ContextButtonWithMenu>
+      );
+    }
+  }
+
   return (
     <ContextButtonWithMenu
       menuName={menuName}
@@ -1842,9 +2071,9 @@ function OverlayContextAction({
           active={isOpen}
         >
           <OverlayMetadataIcon
-            icon={action.icon}
+            icon={displayIcon}
             items={items}
-            label={action.label}
+            label={displayLabel}
           />
         </UiButton>
       }
@@ -1862,8 +2091,16 @@ function OverlayContextAction({
   );
 }
 
-export function OverlayContextActions(): React.ReactElement[] {
-  const { board } = useAppContext();
+function getOverlayContextActionList(
+  board: ReturnType<typeof useAppContext>["board"],
+  {
+    includeItemActions = true,
+    includeSelectionActions = true,
+  }: {
+    includeItemActions?: boolean;
+    includeSelectionActions?: boolean;
+  } = {},
+): OverlayActionLike[] {
   const items = board.selection.items.list() as BaseItem[];
   const overlay = items.length ? getItemOverlay(items[0]) : undefined;
   const sameOverlay =
@@ -1884,27 +2121,134 @@ export function OverlayContextActions(): React.ReactElement[] {
     sharedActions.map((action) => [action.id, action]),
   );
 
-  const orderedItemActions = sameOverlay?.sections?.length
-    ? sameOverlay.sections.flatMap((section) =>
-        section.actionIds
-          .map((actionId) => sharedActionsById.get(actionId))
-          .filter((action): action is OverlayActionDefinition =>
-            Boolean(action),
-          ),
+  const orderedItemActions =
+    includeItemActions && sameOverlay?.sections?.length
+      ? sameOverlay.sections.flatMap((section) =>
+          section.actionIds
+            .map((actionId) => sharedActionsById.get(actionId))
+            .filter((action): action is OverlayActionDefinition =>
+              Boolean(action),
+            ),
+        )
+      : includeItemActions
+        ? sharedActions
+        : [];
+
+  const leftoverItemActions = includeItemActions
+    ? sharedActions.filter(
+        (action) =>
+          !orderedItemActions.some((ordered) => ordered.id === action.id),
       )
-    : sharedActions;
+    : [];
 
-  const leftoverItemActions = sharedActions.filter(
-    (action) => !orderedItemActions.some((ordered) => ordered.id === action.id),
-  );
-
-  const actions = [
+  return [
     ...orderedItemActions,
     ...leftoverItemActions,
-    ...getSelectionOverlayActions(items),
+    ...(includeSelectionActions ? getSelectionOverlayActions(items) : []),
   ];
+}
 
-  return actions.map((action) => (
-    <OverlayContextAction key={action.id} action={action} items={items} />
-  ));
+function getOverlayContextActionSections(
+  board: ReturnType<typeof useAppContext>["board"],
+  {
+    includeItemActions = true,
+    includeSelectionActions = true,
+  }: {
+    includeItemActions?: boolean;
+    includeSelectionActions?: boolean;
+  } = {},
+): OverlayActionLike[][] {
+  const items = board.selection.items.list() as BaseItem[];
+  const overlay = items.length ? getItemOverlay(items[0]) : undefined;
+  const sameOverlay =
+    overlay &&
+    items.every((item) => getItemOverlay(item)?.itemType === overlay.itemType)
+      ? overlay
+      : undefined;
+  const actions = getOverlayContextActionList(board, {
+    includeItemActions,
+    includeSelectionActions,
+  });
+  const actionsById = new Map(actions.map((action) => [action.id, action]));
+  const sections: OverlayActionLike[][] = [];
+  const consumedIds = new Set<string>();
+
+  if (includeItemActions && sameOverlay?.sections?.length) {
+    sameOverlay.sections.forEach((section) => {
+      const sectionActions = section.actionIds
+        .map((actionId) => actionsById.get(actionId))
+        .filter((action): action is OverlayActionLike => Boolean(action));
+
+      if (!sectionActions.length) {
+        return;
+      }
+
+      sectionActions.forEach((action) => consumedIds.add(action.id));
+      sections.push(sectionActions);
+    });
+  }
+
+  if (includeSelectionActions) {
+    listSelectionActionSections().forEach((section) => {
+      const sectionActions = section.actionIds
+        .map((actionId) => actionsById.get(actionId))
+        .filter((action): action is OverlayActionLike => Boolean(action));
+
+      if (!sectionActions.length) {
+        return;
+      }
+
+      sectionActions.forEach((action) => consumedIds.add(action.id));
+      sections.push(sectionActions);
+    });
+  }
+
+  const leftovers = actions
+    .filter((action) => !consumedIds.has(action.id))
+    .sort((left, right) => {
+      const leftOrder =
+        "order" in left && typeof left.order === "number"
+          ? left.order
+          : Number.MAX_SAFE_INTEGER;
+      const rightOrder =
+        "order" in right && typeof right.order === "number"
+          ? right.order
+          : Number.MAX_SAFE_INTEGER;
+      return leftOrder - rightOrder || left.label.localeCompare(right.label);
+    });
+
+  if (leftovers.length) {
+    sections.push(leftovers);
+  }
+
+  return sections;
+}
+
+export function OverlayContextActions({
+  includeItemActions = true,
+  includeSelectionActions = true,
+}: {
+  includeItemActions?: boolean;
+  includeSelectionActions?: boolean;
+} = {}): React.ReactElement[] {
+  const { board } = useAppContext();
+  const items = board.selection.items.list() as BaseItem[];
+  const sections = getOverlayContextActionSections(board, {
+    includeItemActions,
+    includeSelectionActions,
+  });
+
+  return sections.flatMap((actions, sectionIndex) => {
+    const elements = actions.map((action) => (
+      <OverlayContextAction key={action.id} action={action} items={items} />
+    ));
+
+    if (sectionIndex < sections.length - 1) {
+      elements.push(
+        <UiSeparator key={`overlay-section-${sectionIndex}`} vertical />,
+      );
+    }
+
+    return elements;
+  });
 }
