@@ -144,6 +144,18 @@ function getTool(
   toolName: string,
 ): Record<string, unknown> | undefined {
   switch (toolName) {
+    case "AddSticker":
+      return board.tools.getAddSticker() as Record<string, unknown> | undefined;
+    case "AddShape":
+      return board.tools.getAddShape() as Record<string, unknown> | undefined;
+    case "AddFrame":
+      return board.tools.getAddFrame() as Record<string, unknown> | undefined;
+    case "AddConnector":
+      return board.tools.getAddConnector() as
+        | Record<string, unknown>
+        | undefined;
+    case "AddText":
+      return board.tools.getAddText() as Record<string, unknown> | undefined;
     case "AddDrawing":
       return board.tools.getAddDrawing() as Record<string, unknown> | undefined;
     case "AddHighlighter":
@@ -1634,12 +1646,17 @@ function getOverlayToolbarSections(): {
   const entries = listCreateSurfaceEntries().filter((entry) => {
     if (entry.kind === "tool") {
       return (
-        entry.tool.toolName !== "AddShape" && entry.tool.toolName !== "AddFrame"
+        entry.tool.toolName !== "AddShape" &&
+        entry.tool.toolName !== "AddFrame" &&
+        entry.tool.toolName !== "AddConnector"
       );
     }
 
     return !entry.tools.some(
-      (tool) => tool.toolName === "AddShape" || tool.toolName === "AddFrame",
+      (tool) =>
+        tool.toolName === "AddShape" ||
+        tool.toolName === "AddFrame" ||
+        tool.toolName === "AddConnector",
     );
   });
   const leading: React.ReactElement[] = [];

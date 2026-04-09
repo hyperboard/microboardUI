@@ -1,17 +1,58 @@
-import type { ConnectorLineStyle } from "microboard-temp";
-import { getHotkeyLabel } from "microboard-temp";
+import {
+  getHotkeyLabel,
+  listCreateSurfaceEntries,
+  type ConnectorLineStyle,
+  type OverlayOptionDefinition,
+  type ToolOverlayDefinition,
+} from "microboard-temp";
 import { useAppContext } from "features/AppContext";
-import { Icon } from "shared/ui-lib/Icon";
-import { ConnectorLineStylePicker } from "features/Pickers/ConnectorLineStylePicker";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ButtonWithMenu } from "./ButtonWithMenu/ButtonWithMenu";
 import { UiButton } from "shared/ui-lib/UiButton";
+import { OverlayMetadataIcon } from "features/OverlayUI/OverlayMetadataIcon";
+
+function getAddConnectorOverlay(): ToolOverlayDefinition | undefined {
+  const entry = listCreateSurfaceEntries().find((surfaceEntry) => {
+    if (surfaceEntry.kind === "tool") {
+      return surfaceEntry.tool.toolName === "AddConnector";
+    }
+
+    return surfaceEntry.tools.some((tool) => tool.toolName === "AddConnector");
+  });
+
+  if (!entry) {
+    return undefined;
+  }
+
+  if (entry.kind === "tool") {
+    return entry.tool;
+  }
+
+  return entry.tools.find((tool) => tool.toolName === "AddConnector");
+}
+
+function getConnectorLineStyleOptions(): OverlayOptionDefinition[] {
+  const control = getAddConnectorOverlay()?.defaults?.controls.find(
+    (nextControl) => nextControl.id === "toolLineStyle",
+  );
+
+  if (!control || control.editor.kind !== "enum-icon") {
+    return [];
+  }
+
+  return [
+    ...control.editor.options,
+    ...(control.editor.catalog?.options ?? []),
+  ];
+}
 
 export function AddConnector(): React.ReactElement {
-  const { board, app } = useAppContext();
+  const { board } = useAppContext();
   const { t } = useTranslation();
+  const overlay = getAddConnectorOverlay();
+  const options = getConnectorLineStyleOptions();
   const [isActive, setIsActive] = useState(
     Boolean(board.tools.getAddConnector()),
   );
@@ -33,8 +74,8 @@ export function AddConnector(): React.ReactElement {
   const handlePick = (lineStyle: ConnectorLineStyle): void => {
     const tool = board.tools.getAddConnector();
     if (tool) {
-      tool.applyLineStyle(lineStyle);
-      app.sessionStorage.setConnectorLineStyle(lineStyle);
+      tool.lineStyle = lineStyle;
+      board.tools.publish();
       setIsActive(false);
     }
   };
@@ -53,16 +94,27 @@ export function AddConnector(): React.ReactElement {
           variant="secondary"
           rounded="none"
         >
-          <Icon iconName="Connector" />
+          <OverlayMetadataIcon icon={overlay?.icon} label={overlay?.label} />
         </UiButton>
       }
       isOpen={isActive}
     >
       <UiPanel vertical padding={0}>
-        <ConnectorLineStylePicker
-          selected={selectedConnector}
-          onPick={handlePick}
-        />
+        {options.map((option) => (
+          <UiButton
+            key={option.id}
+            id={`connector-${option.id}`}
+            onClick={() => handlePick(option.value as ConnectorLineStyle)}
+            active={selectedConnector === option.value}
+            variant="secondary"
+          >
+            <OverlayMetadataIcon
+              icon={option.icon}
+              label={option.label}
+              size={20}
+            />
+          </UiButton>
+        ))}
       </UiPanel>
     </ButtonWithMenu>
   );

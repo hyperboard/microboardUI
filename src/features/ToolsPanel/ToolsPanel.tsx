@@ -6,6 +6,7 @@ import { useForceUpdate } from "shared/lib/useForceUpdate";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import { UiSeparator } from "shared/ui-lib/UiSeparator";
 import { AddShape } from "./Buttons/AddShape/AddShape";
+import { AddConnector } from "./Buttons/AddConnector";
 import { AddFrame } from "./Buttons/AddFrame";
 import { AddMedia } from "./Buttons/AddMedia/AddMedia";
 import { AddTemplate } from "./Buttons/AddTemplate";
@@ -54,6 +55,7 @@ export function ToolsPanel(): React.JSX.Element {
           <UiSeparator />
           <Select rounded={"none"} />
           {OverlayToolbarMainTools()}
+          <AddConnector />
           <AddFrame />
           <AddShape />
           <AddMedia />
