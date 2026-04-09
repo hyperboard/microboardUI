@@ -1,11 +1,11 @@
-import type { FrameType } from "microboard-temp";
-import { FRAME_TYPES } from "microboard-temp";
+import type { FrameType, OverlayOptionDefinition } from "microboard-temp";
 import React from "react";
-import { FrameIcon } from "shared/ui-lib/Icon";
+import { OverlayMetadataIcon } from "features/OverlayUI/OverlayMetadataIcon";
 import style from "./FramePicker.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
 
 type Props = {
+  options: OverlayOptionDefinition[];
   onPick: (type: FrameType) => void;
   selected: FrameType;
   onPointerEnter?: (type: FrameType) => void;
@@ -13,6 +13,7 @@ type Props = {
 };
 
 export function FramePicker({
+  options,
   onPick,
   onPointerEnter,
   onPointerLeave,
@@ -20,18 +21,22 @@ export function FramePicker({
 }: Props): React.ReactElement {
   return (
     <>
-      {FRAME_TYPES.map(({ id, label }) => (
+      {options.map(({ id, label, icon, value }) => (
         <UiButton
-          onClick={() => onPick(id)}
+          onClick={() => onPick(value as FrameType)}
           className={style.button}
           variant="secondary"
-          active={id === selected}
-          onPointerEnter={() => onPointerEnter && onPointerEnter(id)}
-          onPointerLeave={() => onPointerLeave && onPointerLeave(id)}
+          active={value === selected}
+          onPointerEnter={() =>
+            onPointerEnter && onPointerEnter(value as FrameType)
+          }
+          onPointerLeave={() =>
+            onPointerLeave && onPointerLeave(value as FrameType)
+          }
           key={id}
           id={`frame-picker-${id}`}
         >
-          <FrameIcon iconName={id} />
+          <OverlayMetadataIcon icon={icon} label={label} size={24} />
           <span>{label}</span>
         </UiButton>
       ))}

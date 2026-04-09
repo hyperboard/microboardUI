@@ -1596,10 +1596,14 @@ function getOverlayToolbarSections(): {
 } {
   const entries = listCreateSurfaceEntries().filter((entry) => {
     if (entry.kind === "tool") {
-      return entry.tool.toolName !== "AddShape";
+      return (
+        entry.tool.toolName !== "AddShape" && entry.tool.toolName !== "AddFrame"
+      );
     }
 
-    return !entry.tools.some((tool) => tool.toolName === "AddShape");
+    return !entry.tools.some(
+      (tool) => tool.toolName === "AddShape" || tool.toolName === "AddFrame",
+    );
   });
   const leading: React.ReactElement[] = [];
   const main: React.ReactElement[] = [];
