@@ -19,6 +19,8 @@ import {
   listCreateSurfaceEntries,
   matchesOverlayCondition,
   resolveDynamicOptions,
+  SEMANTIC_COLOR_IDS,
+  semanticColor,
 } from "microboard-temp";
 import { useAppContext } from "features/AppContext";
 import { usePanelContext as useToolsPanelContext } from "features/ToolsPanel/PanelContext";
@@ -77,6 +79,14 @@ function adaptOutgoingValue(
   control: OverlayControlDefinition,
   value: unknown,
 ): unknown {
+  if (
+    control.editor.kind === "color" &&
+    typeof value === "string" &&
+    (SEMANTIC_COLOR_IDS as readonly string[]).includes(value)
+  ) {
+    return semanticColor(value as (typeof SEMANTIC_COLOR_IDS)[number]);
+  }
+
   if (
     control.valueAdapter?.kind === "rangeArray" &&
     typeof value === "number" &&
@@ -801,15 +811,26 @@ function ControlEditor({
 
   const renderEditor = (editor: OverlayEditor): React.ReactElement => {
     switch (editor.kind) {
-      case "color":
-        if (editor.presentation === "sticker") {
+      case "color": {
+        const paletteContainsSemanticIds = (editor.palette ?? []).some(
+          (color) =>
+            typeof color === "string" &&
+            (SEMANTIC_COLOR_IDS as readonly string[]).includes(color),
+        );
+
+        if (paletteContainsSemanticIds) {
           return (
             <div className={styles.squareColorMenu}>
               <div className={styles.squareColorGrid}>
                 <SemanticColorPicker
                   currentValue={value}
                   onPick={(nextColor) => updateValue(nextColor)}
-                  variant="square"
+                  variant={
+                    editor.presentation === "square" ||
+                    editor.presentation === "sticker"
+                      ? "square"
+                      : "circle"
+                  }
                 />
               </div>
             </div>
@@ -849,6 +870,7 @@ function ControlEditor({
             </div>
           </div>
         );
+      }
       case "enum-icon": {
         const quickOptions = getQuickOptions(editor);
         const hasCollapsedCatalog =
