@@ -18,7 +18,7 @@
         "jszip": "^3.10.1",
         "jwt-decode": "^4.0.0",
         "knip": "^6.0.4",
-        "microboard-temp": "0.14.44",
+        "microboard-temp": "0.14.45",
         "nanoid": "^5.1.5",
         "react-hot-toast": "2.4.1",
         "react-i18next": "14.1.0",
@@ -1068,7 +1068,7 @@
 
     "micro-ftch": ["micro-ftch@0.3.1", "", {}, "sha512-/0LLxhzP0tfiR5hcQebtudP56gUurs2CLkGarnCiB/OqEyUFQ6U3paQi/tgLv0hBJYt2rnr9MNpxz4fiiugstg=="],
 
-    "microboard-temp": ["microboard-temp@0.14.44", "", { "dependencies": { "canvas2d-geometry-ir": "^0.1.0", "web-component-json-codec": "^0.1.0", "zod": "^4.3.6" }, "peerDependencies": { "canvas": "^3.1.0", "jsdom": "26.0.0", "slate": "^0.114.0", "slate-react": "^0.114.2" }, "optionalPeers": ["canvas", "jsdom", "slate-react"] }, "sha512-Q0R3KkKbu3F6tG+TKI4cS/j+d9y/gafUEjjFE+96v478ODIAYZGkoXvP6/Y1GUFaLJ0J+rIkVaxfk1Jt0LxX9Q=="],
+    "microboard-temp": ["microboard-temp@0.14.45", "", { "dependencies": { "canvas2d-geometry-ir": "^0.1.0", "web-component-json-codec": "^0.1.0", "zod": "^4.3.6" }, "peerDependencies": { "canvas": "^3.1.0", "jsdom": "26.0.0", "slate": "^0.114.0", "slate-react": "^0.114.2" }, "optionalPeers": ["canvas", "jsdom", "slate-react"] }, "sha512-HO+SA9BVoUoAOuFvbo4ODEM+toIspsXAVkyExDknXidcO8d4VT0gw2WChEWQSYmbaoV6lii49Cv7tBQn3LlvVQ=="],
 
     "micromatch": ["micromatch@4.0.8", "", { "dependencies": { "braces": "^3.0.3", "picomatch": "^2.3.1" } }, "sha512-PXwfBhYu0hBCPw8Dn0E+WDYb7af3dSLVWKi3HGv84IdF4TyFoC0ysxFd0Goxw7nSv4T/PzEJQxsYsEiFCKo2BA=="],
 
