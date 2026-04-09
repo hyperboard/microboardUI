@@ -1831,9 +1831,11 @@ function OverlayToolbarTool({
 function OverlayContextAction({
   action,
   items,
+  rounded = "none",
 }: {
   action: OverlayActionLike;
   items: BaseItem[];
+  rounded?: "none" | "left";
 }): React.ReactElement {
   const { board } = useAppContext();
   const { openedMenu, toggleMenu, panelMbr, windowHeight, windowWidth } =
@@ -1887,6 +1889,7 @@ function OverlayContextAction({
               tooltip={action.label}
               tooltipPosition="top"
               variant="secondary"
+              rounded={rounded}
               onClick={handleClick}
               active={isOpen}
             >
@@ -1982,6 +1985,7 @@ function OverlayContextAction({
               tooltip={action.label}
               tooltipPosition="top"
               variant="secondary"
+              rounded={rounded}
               onClick={handleClick}
               active={isOpen}
             >
@@ -2067,6 +2071,7 @@ function OverlayContextAction({
           tooltip={action.label}
           tooltipPosition="top"
           variant="secondary"
+          rounded={rounded}
           onClick={handleClick}
           active={isOpen}
         >
@@ -2239,8 +2244,13 @@ export function OverlayContextActions({
   });
 
   return sections.flatMap((actions, sectionIndex) => {
-    const elements = actions.map((action) => (
-      <OverlayContextAction key={action.id} action={action} items={items} />
+    const elements = actions.map((action, actionIndex) => (
+      <OverlayContextAction
+        key={action.id}
+        action={action}
+        items={items}
+        rounded={sectionIndex === 0 && actionIndex === 0 ? "left" : "none"}
+      />
     ));
 
     if (sectionIndex < sections.length - 1) {
