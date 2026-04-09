@@ -6,6 +6,7 @@ import { ButtonWithMenu } from "features/ContextPanel/Buttons/ButtonWithMenu";
 import { usePanelContext } from "features/ContextPanel/PanelContext";
 import { Icon } from "shared/ui-lib/Icon";
 import { FramePicker } from "features/Pickers/FramePicker";
+import { getFrameOptions } from "features/Pickers/FramePicker/frameMetadata";
 import { UiPanel } from "shared/ui-lib/UiPanel/UiPanel";
 import style from "./FrameRatio.module.css";
 import btnStyle from "../ContextPanelButton.module.css";
@@ -30,6 +31,7 @@ export function FrameRatio(): React.ReactElement | null {
   const { toggleMenu, openedMenu, panelMbr, windowHeight } = usePanelContext();
   const { board } = useAppContext();
   const { t } = useTranslation();
+  const frameOptions = getFrameOptions();
 
   const frameType = board.selection.getFrameType();
 
@@ -97,6 +99,7 @@ export function FrameRatio(): React.ReactElement | null {
           gap={4}
         >
           <FramePicker
+            options={frameOptions}
             selected={frameType}
             onPick={handlePick}
             onPointerEnter={handlePointerEnter}

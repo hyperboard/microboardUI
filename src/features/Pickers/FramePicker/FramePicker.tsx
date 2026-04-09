@@ -1,11 +1,12 @@
 import type { FrameType, OverlayOptionDefinition } from "microboard-temp";
 import React from "react";
 import { OverlayMetadataIcon } from "features/OverlayUI/OverlayMetadataIcon";
+import { getFrameOptions } from "./frameMetadata";
 import style from "./FramePicker.module.css";
 import { UiButton } from "shared/ui-lib/UiButton";
 
 type Props = {
-  options: OverlayOptionDefinition[];
+  options?: OverlayOptionDefinition[];
   onPick: (type: FrameType) => void;
   selected: FrameType;
   onPointerEnter?: (type: FrameType) => void;
@@ -19,9 +20,11 @@ export function FramePicker({
   onPointerLeave,
   selected,
 }: Props): React.ReactElement {
+  const resolvedOptions = options ?? getFrameOptions();
+
   return (
     <>
-      {options.map(({ id, label, icon, value }) => (
+      {resolvedOptions.map(({ id, label, icon, value }) => (
         <UiButton
           onClick={() => onPick(value as FrameType)}
           className={style.button}
