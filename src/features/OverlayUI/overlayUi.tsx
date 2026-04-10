@@ -917,19 +917,28 @@ function ControlEditor({
         );
 
         if (paletteContainsSemanticIds) {
+          const isSquarePresentation =
+            editor.presentation === "square" ||
+            editor.presentation === "sticker";
+
           return (
-            <div className={styles.squareColorMenu}>
-              <div className={styles.squareColorGrid}>
+            <div
+              className={
+                isSquarePresentation ? styles.squareColorMenu : styles.colorMenu
+              }
+            >
+              <div
+                className={
+                  isSquarePresentation
+                    ? styles.squareColorGrid
+                    : styles.colorGrid
+                }
+              >
                 <SemanticColorPicker
                   currentValue={value}
                   onPick={(nextColor) => updateValue(nextColor)}
                   role={getSemanticColorRole(control)}
-                  variant={
-                    editor.presentation === "square" ||
-                    editor.presentation === "sticker"
-                      ? "square"
-                      : "circle"
-                  }
+                  variant={isSquarePresentation ? "square" : "circle"}
                 />
               </div>
             </div>
