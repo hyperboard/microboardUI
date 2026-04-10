@@ -29,7 +29,7 @@ export const HyperLinkInput = () => {
     app,
     board,
     ref: containerRef,
-    targetMbr: board.selection.items.getSingle()?.getRichText()?.getMbr(),
+    targetMbr: board.selection.getMbr(),
     subjects: ["pointer"],
     fit: "hyperLink",
   });
@@ -86,20 +86,21 @@ export const HyperLinkInput = () => {
   };
 
   const onPaste = (event: React.ClipboardEvent<HTMLInputElement>): void => {
+    const pastedText = event.clipboardData.getData("text/plain");
+
+    event.preventDefault();
     event.stopPropagation();
-    if (
-      !window.MICROBOARD_CONFIG.URL_REGEX.test(
-        event.clipboardData.getData("text/plain"),
-      )
-    ) {
-      event.preventDefault();
+    if (!window.MICROBOARD_CONFIG.URL_REGEX.test(pastedText)) {
       notify({
         header: t("hyperLink.errorTitle"),
         body: t("hyperLink.errorBody"),
         variant: "error",
         duration: 3000,
       });
+      return;
     }
+
+    setInputValue(pastedText);
   };
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>): void => {
@@ -117,8 +118,8 @@ export const HyperLinkInput = () => {
   const handleDeleteBtnClick = () => {
     board.selection.setHyperLink(undefined, hyperLinkData.selection);
   };
-  let left = hyperLinkData.inputPosition?.left || mbr.left;
-  let top = hyperLinkData.inputPosition?.top || mbr.top;
+  let left = hyperLinkData.inputPosition?.left ?? mbr.left;
+  let top = hyperLinkData.inputPosition?.top ?? mbr.top;
   const width = containerRef.current?.clientWidth || 0;
   const height = containerRef.current?.clientHeight || 0;
   const right = left + width;
