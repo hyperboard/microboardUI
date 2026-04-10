@@ -336,6 +336,17 @@ function mergeOptionLists(
   return [...options.values()];
 }
 
+function normalizeOverlayColorValue(value: unknown): unknown {
+  if (
+    typeof value === "string" &&
+    (SEMANTIC_COLOR_IDS as readonly string[]).includes(value)
+  ) {
+    return semanticColor(value as (typeof SEMANTIC_COLOR_IDS)[number]);
+  }
+
+  return value;
+}
+
 function areOverlayColorsEqual(left: unknown, right: unknown): boolean {
   if (left === right) {
     return true;
@@ -347,7 +358,10 @@ function areOverlayColorsEqual(left: unknown, right: unknown): boolean {
     return leftSemanticId === rightSemanticId;
   }
 
-  return resolveColorForUI(left) === resolveColorForUI(right);
+  return (
+    resolveColorForUI(normalizeOverlayColorValue(left)) ===
+    resolveColorForUI(normalizeOverlayColorValue(right))
+  );
 }
 
 function renderOverlayColorItem(
@@ -359,7 +373,9 @@ function renderOverlayColorItem(
   const isActive = areOverlayColorsEqual(value, color);
   const isSquare = presentation === "square" || presentation === "sticker";
   const displayColor =
-    color === "transparent" ? "transparent" : resolveColorForUI(color);
+    color === "transparent"
+      ? "transparent"
+      : resolveColorForUI(normalizeOverlayColorValue(color));
 
   if (isSquare) {
     return (
