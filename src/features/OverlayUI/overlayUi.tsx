@@ -130,6 +130,47 @@ function setTargetProperty(
   }
 }
 
+function emitItemPropertyUpdate(
+  items: BaseItem[],
+  property: string,
+  value: unknown,
+): void {
+  if (!items.length) {
+    return;
+  }
+
+  const emitter = items[0] as BaseItem & {
+    emit?: (operation: {
+      class: "Item";
+      method: "setProperty";
+      item: string[];
+      property: string;
+      value: unknown;
+      prevValues: unknown[];
+    }) => void;
+  };
+
+  if (typeof emitter.emit !== "function") {
+    items.forEach((item) => {
+      setTargetProperty(
+        item as unknown as Record<string, unknown>,
+        property,
+        value,
+      );
+    });
+    return;
+  }
+
+  emitter.emit({
+    class: "Item",
+    method: "setProperty",
+    item: items.map((item) => item.getId()),
+    property,
+    value,
+    prevValues: items.map((item) => readTargetProperty(item, property)),
+  });
+}
+
 function readTargetProperty(target: unknown, property: string): unknown {
   if (!target) {
     return undefined;
@@ -389,13 +430,7 @@ function invokeControl(
   const invoke = control.invoke;
 
   if (invoke?.kind === "setProperty") {
-    context.items.forEach((item) => {
-      setTargetProperty(
-        item as unknown as Record<string, unknown>,
-        invoke.property,
-        nextValue,
-      );
-    });
+    emitItemPropertyUpdate(context.items, invoke.property, nextValue);
     return;
   }
 
@@ -1862,6 +1897,7 @@ function OverlayContextAction({
   const selectedOption = getActionDisplayOption(action, board, items);
   const displayIcon = selectedOption?.icon ?? action.icon;
   const displayLabel = selectedOption?.label ?? action.label;
+  const buttonRounded = action.id === "shape.shapeType" ? "none" : rounded;
 
   if (action.id === "shape.fill" && action.controls?.length) {
     const fillControl = action.controls.find(
@@ -1889,7 +1925,7 @@ function OverlayContextAction({
               tooltip={action.label}
               tooltipPosition="top"
               variant="secondary"
-              rounded={rounded}
+              rounded={buttonRounded}
               onClick={handleClick}
               active={isOpen}
             >
@@ -1985,7 +2021,7 @@ function OverlayContextAction({
               tooltip={action.label}
               tooltipPosition="top"
               variant="secondary"
-              rounded={rounded}
+              rounded={buttonRounded}
               onClick={handleClick}
               active={isOpen}
             >
@@ -2071,7 +2107,7 @@ function OverlayContextAction({
           tooltip={action.label}
           tooltipPosition="top"
           variant="secondary"
-          rounded={rounded}
+          rounded={buttonRounded}
           onClick={handleClick}
           active={isOpen}
         >
