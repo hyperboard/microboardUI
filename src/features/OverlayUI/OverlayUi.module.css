@@ -76,6 +76,14 @@
   max-width: 100%;
 }
 
+.iconList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: max-content;
+  max-width: 100%;
+}
+
 .optionButton {
   min-width: 32px;
   min-height: 32px;

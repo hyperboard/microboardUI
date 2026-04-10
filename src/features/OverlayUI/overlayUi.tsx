@@ -31,7 +31,6 @@ import { ButtonWithMenu as ContextButtonWithMenu } from "features/ContextPanel/B
 import { ColorItem } from "features/Pickers/ColorPicker/ColorItem";
 import { SemanticColorPicker } from "features/Pickers/ColorPicker/SemanticColorPicker";
 import { SquareColorItem } from "features/Pickers/ColorPicker/SquareColorItem";
-import { StrokeStylePicker } from "features/Pickers/StrokeStylePicker/StrokeStylePicker";
 import { SliderPicker } from "features/Pickers/SliderPicker/SliderPicker";
 import { UiColorInput } from "shared/ui-lib/UiColorInput";
 import { UiButton } from "shared/ui-lib/UiButton";
@@ -285,11 +284,43 @@ function getVisibleControls(
 function getOverlaySliderLabelKey(
   control: OverlayControlDefinition,
 ): string | undefined {
-  if (control.id === "strokeWidth") {
-    return "toolsPanel.addDrawing.strokeWidth";
+  if (
+    control.id === "strokeWidth" ||
+    control.id === "borderWidth" ||
+    control.id === "lineWidth"
+  ) {
+    return "contextPanel.strokeStyle.strokeWidth";
   }
 
   return undefined;
+}
+
+function getSemanticColorRole(
+  control: OverlayControlDefinition,
+): "background" | "foreground" {
+  const property =
+    control.valueSource.kind === "itemProperty" ||
+    control.valueSource.kind === "toolProperty" ||
+    control.valueSource.kind === "selectionProperty"
+      ? control.valueSource.property
+      : control.id;
+
+  if (
+    property === "fontColor" ||
+    property === "borderColor" ||
+    property === "lineColor" ||
+    property === "strokeColor"
+  ) {
+    return "foreground";
+  }
+
+  return "background";
+}
+
+function isIconOnlyEnumList(
+  editor: Extract<OverlayEditor, { kind: "enum-list" }>,
+): boolean {
+  return editor.options.every((option) => Boolean(option.icon));
 }
 
 function mergeOptionLists(
@@ -876,6 +907,7 @@ function ControlEditor({
                 <SemanticColorPicker
                   currentValue={value}
                   onPick={(nextColor) => updateValue(nextColor)}
+                  role={getSemanticColorRole(control)}
                   variant={
                     editor.presentation === "square" ||
                     editor.presentation === "sticker"
@@ -970,7 +1002,11 @@ function ControlEditor({
       }
       case "enum-list":
         return (
-          <div className={styles.list}>
+          <div
+            className={
+              isIconOnlyEnumList(editor) ? styles.iconList : styles.list
+            }
+          >
             {editor.options.map((option) => (
               <UiButton
                 key={option.id}
@@ -978,6 +1014,9 @@ function ControlEditor({
                 active={option.value === value}
                 variant="secondary"
                 size="sm"
+                className={
+                  isIconOnlyEnumList(editor) ? styles.optionButton : undefined
+                }
               >
                 {option.icon ? (
                   <OverlayMetadataIcon
@@ -988,7 +1027,9 @@ function ControlEditor({
                     size={18}
                   />
                 ) : null}
-                <span>{option.label}</span>
+                {!isIconOnlyEnumList(editor) ? (
+                  <span>{option.label}</span>
+                ) : null}
               </UiButton>
             ))}
           </div>
@@ -2033,17 +2074,35 @@ function OverlayContextAction({
         >
           <UiPanel vertical className={styles.menu}>
             <div className={styles.menuSection}>
-              <div className={styles.grid}>
-                <StrokeStylePicker
-                  stroke={
-                    typeof borderStyleValue === "string"
-                      ? borderStyleValue
-                      : undefined
-                  }
-                  onPick={(nextStyle) =>
-                    invokeControl(board, borderStyleControl, context, nextStyle)
-                  }
-                />
+              <div className={styles.iconList}>
+                {borderStyleControl.editor.options.map((option) => (
+                  <UiButton
+                    key={option.id}
+                    onClick={() =>
+                      invokeControl(
+                        board,
+                        borderStyleControl,
+                        context,
+                        option.value,
+                      )
+                    }
+                    active={option.value === borderStyleValue}
+                    variant="secondary"
+                    size="sm"
+                    className={styles.optionButton}
+                    tooltip={option.label}
+                    tooltipPosition="top"
+                  >
+                    {option.icon ? (
+                      <OverlayMetadataIcon
+                        icon={option.icon}
+                        items={items}
+                        label={option.label}
+                        size={18}
+                      />
+                    ) : null}
+                  </UiButton>
+                ))}
               </div>
             </div>
             <div className={styles.divider} />
@@ -2060,24 +2119,45 @@ function OverlayContextAction({
                     ? borderWidthValue
                     : borderWidthControl.editor.min
                 }
+                showLabel
+                labelKey="contextPanel.strokeStyle.strokeWidth"
               />
             </div>
             <div className={styles.divider} />
             <div className={styles.colorMenu}>
               <div className={styles.colorGrid}>
-                {(borderColorControl.editor.palette ?? []).map((color) =>
-                  renderOverlayColorItem(
-                    color,
-                    borderColorValue,
-                    borderColorControl.editor.presentation ?? "circle",
-                    (nextColor) =>
+                {(borderColorControl.editor.palette ?? []).some(
+                  (color) =>
+                    typeof color === "string" &&
+                    (SEMANTIC_COLOR_IDS as readonly string[]).includes(color),
+                ) ? (
+                  <SemanticColorPicker
+                    currentValue={borderColorValue}
+                    onPick={(nextColor) =>
                       invokeControl(
                         board,
                         borderColorControl,
                         context,
                         nextColor,
-                      ),
-                  ),
+                      )
+                    }
+                    role="foreground"
+                  />
+                ) : (
+                  (borderColorControl.editor.palette ?? []).map((color) =>
+                    renderOverlayColorItem(
+                      color,
+                      borderColorValue,
+                      borderColorControl.editor.presentation ?? "circle",
+                      (nextColor) =>
+                        invokeControl(
+                          board,
+                          borderColorControl,
+                          context,
+                          nextColor,
+                        ),
+                    ),
+                  )
                 )}
                 <UiColorInput
                   color={colorInputValue}
