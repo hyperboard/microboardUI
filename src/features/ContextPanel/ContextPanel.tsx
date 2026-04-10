@@ -145,6 +145,16 @@ export function ContextPanel(): React.ReactElement | null {
     board.selection.items.list(),
   ).length;
   const hasItemOverlayActions = overlayActionsCount > 0;
+  const renderCommonRestOptions = (
+    extraItems?: React.ReactNode,
+  ): React.ReactElement => (
+    <RestOptionsMenu>
+      <BringToFront />
+      <SendToBack />
+      <Duplicate />
+      {extraItems}
+    </RestOptionsMenu>
+  );
 
   return (
     <PanelContext.Provider
@@ -219,11 +229,16 @@ export function ContextPanel(): React.ReactElement | null {
                 <UiSeparator vertical />
               </>
             )}
-            <RestOptionsMenu>
-              <CopyItemLink />
-              <SetLinkTo />
-              <ForceGraphToggle />
-            </RestOptionsMenu>
+            <Lock />
+            <Delete />
+            <UiSeparator vertical />
+            {renderCommonRestOptions(
+              <>
+                <CopyItemLink />
+                <SetLinkTo />
+                <ForceGraphToggle />
+              </>,
+            )}
           </>
         )}
         {isSticker && !isSelectUnderPointer && !isLocked && (
@@ -250,11 +265,16 @@ export function ContextPanel(): React.ReactElement | null {
                 <UiSeparator vertical />
               </>
             )}
-            <RestOptionsMenu>
-              <CopyItemLink />
-              <SetLinkTo />
-              <ForceGraphToggle />
-            </RestOptionsMenu>
+            <Lock />
+            <Delete />
+            <UiSeparator vertical />
+            {renderCommonRestOptions(
+              <>
+                <CopyItemLink />
+                <SetLinkTo />
+                <ForceGraphToggle />
+              </>,
+            )}
           </>
         )}
         {isShape && !isSelectUnderPointer && !isLocked && (
@@ -292,11 +312,16 @@ export function ContextPanel(): React.ReactElement | null {
                 <UiSeparator vertical />
               </>
             )}
-            <RestOptionsMenu>
-              <CopyItemLink />
-              <SetLinkTo />
-              <ForceGraphToggle />
-            </RestOptionsMenu>
+            <Lock />
+            <Delete />
+            <UiSeparator vertical />
+            {renderCommonRestOptions(
+              <>
+                <CopyItemLink />
+                <SetLinkTo />
+                <ForceGraphToggle />
+              </>,
+            )}
           </>
         )}
         {isConnector && !isSelectUnderPointer && !isLocked && (
@@ -317,10 +342,15 @@ export function ContextPanel(): React.ReactElement | null {
             <DetachFromGroup />
             <SelectParent />
             <UiSeparator vertical />
-            <RestOptionsMenu>
-              <CopyItemLink />
-              <SetLinkTo />
-            </RestOptionsMenu>
+            <Lock />
+            <Delete />
+            <UiSeparator vertical />
+            {renderCommonRestOptions(
+              <>
+                <CopyItemLink />
+                <SetLinkTo />
+              </>,
+            )}
           </>
         )}
         {isPen && !isSelectUnderPointer && !isLocked && (
@@ -336,13 +366,12 @@ export function ContextPanel(): React.ReactElement | null {
             <SelectParent />
             <Delete />
             <UiSeparator vertical />
-            <RestOptionsMenu>
-              <BringToFront />
-              <SendToBack />
-              <CopyItemLink />
-              <SetLinkTo />
-              <Duplicate />
-            </RestOptionsMenu>
+            {renderCommonRestOptions(
+              <>
+                <CopyItemLink />
+                <SetLinkTo />
+              </>,
+            )}
           </>
         )}
         {isImage && !isSelectUnderPointer && !isLocked && (
@@ -360,11 +389,16 @@ export function ContextPanel(): React.ReactElement | null {
             <DetachFromGroup />
             <SelectParent />
             <UiSeparator vertical />
-            <RestOptionsMenu>
-              <CopyItemLink />
-              <SetLinkTo />
-              <SaveImg />
-            </RestOptionsMenu>
+            <Lock />
+            <Delete />
+            <UiSeparator vertical />
+            {renderCommonRestOptions(
+              <>
+                <CopyItemLink />
+                <SetLinkTo />
+                <SaveImg />
+              </>,
+            )}
           </>
         )}
         {isVideo && !isSelectUnderPointer && !isLocked && (
@@ -379,12 +413,15 @@ export function ContextPanel(): React.ReactElement | null {
             <DetachFromGroup />
             <SelectParent />
             <UiSeparator vertical />
-            <RestOptionsMenu>
-              <CopyItemLink />
-              {/* <SetLinkTo />*/}
-              {/* <Duplicate />*/}
-              <SaveVideoOrAudio itemType="Video" />
-            </RestOptionsMenu>
+            <Lock />
+            <Delete />
+            <UiSeparator vertical />
+            {renderCommonRestOptions(
+              <>
+                <CopyItemLink />
+                <SaveVideoOrAudio itemType="Video" />
+              </>,
+            )}
           </>
         )}
         {isAudio && !isSelectUnderPointer && !isLocked && (
@@ -399,10 +436,15 @@ export function ContextPanel(): React.ReactElement | null {
             <DetachFromGroup />
             <SelectParent />
             <UiSeparator vertical />
-            <RestOptionsMenu>
-              <CopyItemLink />
-              <SaveVideoOrAudio itemType="Audio" />
-            </RestOptionsMenu>
+            <Lock />
+            <Delete />
+            <UiSeparator vertical />
+            {renderCommonRestOptions(
+              <>
+                <CopyItemLink />
+                <SaveVideoOrAudio itemType="Audio" />
+              </>,
+            )}
           </>
         )}
         {isFrame && !isSelectUnderPointer && !isLocked && (
@@ -422,13 +464,18 @@ export function ContextPanel(): React.ReactElement | null {
             <DetachFromGroup />
             <SelectParent />
             <UiSeparator vertical />
-            <RestOptionsMenu>
-              <FrameNavNext />
-              <FrameNavPrev />
-              <CopyItemLink />
-              <SetLinkTo />
-              <ExportFrame />
-            </RestOptionsMenu>
+            <Lock />
+            <Delete />
+            <UiSeparator vertical />
+            {renderCommonRestOptions(
+              <>
+                <FrameNavNext />
+                <FrameNavPrev />
+                <CopyItemLink />
+                <SetLinkTo />
+                <ExportFrame />
+              </>,
+            )}
           </>
         )}
         {isAINode && !isSelectUnderPointer && !isLocked && (
@@ -454,11 +501,16 @@ export function ContextPanel(): React.ReactElement | null {
                 <UiSeparator vertical />
               </>
             )}
-            <RestOptionsMenu>
-              <CopyItemLink />
-              <SetLinkTo />
-              <ForceGraphToggle />
-            </RestOptionsMenu>
+            <Lock />
+            <Delete />
+            <UiSeparator vertical />
+            {renderCommonRestOptions(
+              <>
+                <CopyItemLink />
+                <SetLinkTo />
+                <ForceGraphToggle />
+              </>,
+            )}
           </>
         )}
         {isStar && !isSelectUnderPointer && !isLocked && (
@@ -474,10 +526,15 @@ export function ContextPanel(): React.ReactElement | null {
             <SelectParent />
             <ToggleIsShining />
             <UiSeparator vertical />
-            <RestOptionsMenu>
-              <CopyItemLink />
-              <SetLinkTo />
-            </RestOptionsMenu>
+            <Lock />
+            <Delete />
+            <UiSeparator vertical />
+            {renderCommonRestOptions(
+              <>
+                <CopyItemLink />
+                <SetLinkTo />
+              </>,
+            )}
           </>
         )}
         {isDeck && !isSelectUnderPointer && !isLocked && (
@@ -492,9 +549,10 @@ export function ContextPanel(): React.ReactElement | null {
             <DetachFromGroup />
             <SelectParent />
             <UiSeparator vertical />
-            <RestOptionsMenu>
-              <CopyItemLink />
-            </RestOptionsMenu>
+            <Lock />
+            <Delete />
+            <UiSeparator vertical />
+            {renderCommonRestOptions(<CopyItemLink />)}
           </>
         )}
         {isCard && !isSelectUnderPointer && !isLocked && (
@@ -511,9 +569,10 @@ export function ContextPanel(): React.ReactElement | null {
             <DetachFromGroup />
             <SelectParent />
             <UiSeparator vertical />
-            <RestOptionsMenu>
-              <CopyItemLink />
-            </RestOptionsMenu>
+            <Lock />
+            <Delete />
+            <UiSeparator vertical />
+            {renderCommonRestOptions(<CopyItemLink />)}
           </>
         )}
         {isCardOrDeck &&
@@ -545,9 +604,10 @@ export function ContextPanel(): React.ReactElement | null {
             <DetachFromGroup />
             <SelectParent />
             <UiSeparator vertical />
-            <RestOptionsMenu>
-              <CopyItemLink />
-            </RestOptionsMenu>
+            <Lock />
+            <Delete />
+            <UiSeparator vertical />
+            {renderCommonRestOptions(<CopyItemLink />)}
           </>
         )}
         {isScreen && !isSelectUnderPointer && !isLocked && (
@@ -563,9 +623,10 @@ export function ContextPanel(): React.ReactElement | null {
             <DetachFromGroup />
             <SelectParent />
             <UiSeparator vertical />
-            <RestOptionsMenu>
-              <CopyItemLink />
-            </RestOptionsMenu>
+            <Lock />
+            <Delete />
+            <UiSeparator vertical />
+            {renderCommonRestOptions(<CopyItemLink />)}
           </>
         )}
         {!isDifferentItems && !!isLocked && (
@@ -594,6 +655,11 @@ export function ContextPanel(): React.ReactElement | null {
             <DetachFromGroup />
             <SelectParent />
             {window.enableAI && ideaFromSelection && <AIGeneration />}
+            <UiSeparator vertical />
+            <Lock />
+            <Delete />
+            <UiSeparator vertical />
+            {renderCommonRestOptions()}
           </>
         )}
       </UiPanel>

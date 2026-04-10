@@ -20,12 +20,20 @@ export const HyperLinkBtn = () => {
     }
   }, [isEditingLink]);
 
-  const toggleIsEditing = () => {
+  const toggleIsEditing: React.MouseEventHandler<HTMLButtonElement> = (
+    event,
+  ) => {
+    event.stopPropagation();
+
     if (!isEditingLink && !hyperLinkData) {
+      const selection =
+        board.selection.items.getSingle()?.getRichText?.()?.editor?.selection ??
+        null;
+
       setHyperLinkData({
         isWatchMode: false,
         inputPosition: null,
-        selection: null,
+        selection,
       });
     }
     setIsEditingLink(!isEditingLink);
@@ -39,10 +47,6 @@ export const HyperLinkBtn = () => {
       variant="secondary"
       tooltipPosition="top"
       rounded="none"
-      disabled={
-        !hyperLinkData &&
-        board.selection.getContext() === "EditTextUnderPointer"
-      }
       active={isEditingLink}
     >
       <Icon iconName="HyperlinkIcon" />
